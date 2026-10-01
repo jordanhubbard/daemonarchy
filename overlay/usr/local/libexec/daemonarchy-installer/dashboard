@@ -1,0 +1,231 @@
+#!/usr/local/bin/bash
+
+# The install screen: the logo, what the installer is doing, a progress bar, and
+# a rotating tip, drawn from the install log while daemonarchy-installer/install
+# runs in the background. The log keeps every line pkg prints; the screen shows
+# only where things stand. Modeled on the Omarchy ISO's install dashboard.
+#
+#   dashboard <install log> <status file>
+#
+# The install's exit status appears in the status file when it finishes; the
+# dashboard exits with it, after showing the end of the log if it failed.
+
+LOG=$1
+STATUS_FILE=$2
+ISO_SHARE=${ISO_SHARE:-/usr/local/share/daemonarchy-installer}
+LOGO_PATH="$ISO_SHARE/logo.txt"
+LOGO_WIDTH=$(awk '{ if (length > max) max = length } END { print max+0 }' "$LOGO_PATH")
+LOGO_HEIGHT=$(wc -l <"$LOGO_PATH")
+BAR_WIDTH=34
+
+CSI=$'\033['
+RESET="${CSI}0m"
+RED="${CSI}31m"
+WHITE="${CSI}37m"
+DIM="${CSI}2m"
+DARK="${CSI}90m"
+CLEAR_LINE="${CSI}2K"
+
+tips=(
+  "Super + Space opens the menu for apps, settings, and more"
+  "Super + K shows all the key bindings"
+  "Super + Return opens a terminal, Super + Shift + Return the browser"
+  "Switch themes from Style > Theme in the menu"
+  "Super + 1 through 0 switches workspaces, add Shift to bring the window"
+  "Your system lives on ZFS: bectl list shows its boot environments"
+  "Pick an older boot environment from the boot menu to roll back"
+  "pkg search finds software; pkg info lists what you have"
+  "The FreeBSD Handbook is at docs.freebsd.org/en/books/handbook"
+  "Omarchy's desktop, FreeBSD's daemon: Daemonarchy"
+)
+spinner=(⠋ ⠙ ⠹ ⠸ ⠼ ⠴ ⠦ ⠧ ⠇ ⠏)
+
+# Per-mille bands for each phase, and what the screen calls it.
+phase_band() {
+  case $1 in
+    disk) echo "0 40" ;;
+    base) echo "40 130" ;;
+    loader) echo "130 140" ;;
+    config) echo "140 150" ;;
+    fetch) echo "150 620" ;;
+    install) echo "620 960" ;;
+    user) echo "960 985" ;;
+    finish) echo "985 999" ;;
+    *) echo "0 0" ;;
+  esac
+}
+
+phase_title() {
+  case $1 in
+    disk) echo "Preparing the disk" ;;
+    base) echo "Summoning the FreeBSD base system" ;;
+    loader) echo "Installing the boot loader" ;;
+    config) echo "Configuring the system" ;;
+    fetch) echo "Gathering packages" ;;
+    install) echo "Installing the desktop" ;;
+    user) echo "Creating your account" ;;
+    finish) echo "Finishing up" ;;
+    *) echo "Starting" ;;
+  esac
+}
+
+term_size() {
+  local size
+  size=$(stty size 2>/dev/null </dev/tty) || size="24 80"
+  ROWS=${size% *}
+  COLS=${size#* }
+  [[ $ROWS =~ ^[0-9]+$ ]] || ROWS=24
+  [[ $COLS =~ ^[0-9]+$ ]] || COLS=80
+}
+
+repeat() {
+  local out="" i
+  for ((i = 0; i < $2; i++)); do out+="$1"; done
+  printf '%s' "$out"
+}
+
+# Print text centered on a row, clearing whatever was there.
+at_center() {
+  local row=$1 text=$2 style=${3:-} pad
+  pad=$(((COLS - ${#text}) / 2))
+  ((pad < 0)) && pad=0
+  printf '%s%d;1H%s%*s%s%s%s' "$CSI" "$row" "$CLEAR_LINE" "$pad" '' "$style" "$text" "$RESET"
+}
+
+# The screen's layout, worked out again whenever the console changes size.
+layout() {
+  term_size
+  local height=$((LOGO_HEIGHT + 8))
+  TOP=$(((ROWS - height) / 2))
+  ((TOP < 1)) && TOP=1
+  TITLE_ROW=$((TOP + LOGO_HEIGHT + 1))
+  BAR_ROW=$((TITLE_ROW + 2))
+  DETAIL_ROW=$((BAR_ROW + 2))
+  TIP_ROW=$((DETAIL_ROW + 2))
+  LAST_SIZE="$ROWS $COLS"
+
+  printf '%s?25l%s2J' "$CSI" "$CSI"
+  local pad line row=$TOP
+  pad=$(((COLS - LOGO_WIDTH) / 2))
+  ((pad < 0)) && pad=0
+  while IFS= read -r line; do
+    printf '%s%d;%dH%s%s%s' "$CSI" "$row" "$((pad + 1))" "$RED" "$line" "$RESET"
+    row=$((row + 1))
+  done <"$LOGO_PATH"
+}
+
+# Where the install stands, read from its log: the phase, how many packages
+# there are and how far along fetching and installing are, and the package at
+# hand.
+read_log() {
+  local state
+  state=$(LC_ALL=C awk '
+    /^@@phase / { phase = $2 }
+    /packages to be fetched:/ { total = $NF }
+    /packages to be installed:/ { total = $NF }
+    /^Fetching / { fetched++; item = $2; sub(/:$/, "", item) }
+    match($0, /^\[[0-9]+\/[0-9]+\] (Installing|Extracting|Upgrading) /) {
+      split(substr($0, 2), f, "[]/]"); done_n = f[1]; total_n = f[2]
+      item = $3; sub(/[.:]+$/, "", item)
+    }
+    END { printf "%s %d %d %d %d %s\n", phase ? phase : "start", total, fetched, done_n, total_n, item ? item : "-" }
+  ' "$LOG" 2>/dev/null)
+  read -r PHASE TOTAL FETCHED DONE_N TOTAL_N ITEM <<<"$state"
+}
+
+POS=0
+PHASE_SEEN=""
+PHASE_T0=$SECONDS
+T0=$SECONDS
+
+progress() {
+  local lo hi t frac=0
+  read -r lo hi <<<"$(phase_band "$PHASE")"
+  if [[ $PHASE != "$PHASE_SEEN" ]]; then
+    PHASE_SEEN=$PHASE
+    PHASE_T0=$SECONDS
+  fi
+  case $PHASE in
+    fetch) ((TOTAL > 0)) && frac=$((FETCHED * 1000 / TOTAL)) ;;
+    install) ((TOTAL_N > 0)) && frac=$((DONE_N * 1000 / TOTAL_N)) ;;
+  esac
+  if ((frac == 0)); then
+    # No count to go on: creep toward the end of the band, slower and slower.
+    t=$((SECONDS - PHASE_T0))
+    frac=$((t * 1000 / (t + 30)))
+  fi
+  ((frac > 1000)) && frac=1000
+  local pm=$((lo + (hi - lo) * frac / 1000))
+  ((pm > POS)) && POS=$pm
+}
+
+detail() {
+  case $PHASE in
+    fetch)
+      if ((TOTAL > 0)); then
+        printf '%s  ·  %d of %d' "$ITEM" "$((FETCHED > TOTAL ? TOTAL : FETCHED))" "$TOTAL"
+      else
+        printf 'Looking up packages'
+      fi
+      ;;
+    install) ((TOTAL_N > 0)) && printf '%s  ·  %d of %d' "$ITEM" "$DONE_N" "$TOTAL_N" ;;
+  esac
+}
+
+draw() {
+  [[ "$(stty size 2>/dev/null </dev/tty)" == "$LAST_SIZE" ]] || layout
+  local frame title bar filled elapsed text
+  frame=${spinner[$((TICK % ${#spinner[@]}))]}
+  title=$(phase_title "$PHASE")
+  at_center "$TITLE_ROW" "$frame  $title" "$WHITE"
+
+  filled=$((POS * BAR_WIDTH / 1000))
+  bar="$(repeat █ "$filled")"
+  printf '%s%d;1H%s' "$CSI" "$BAR_ROW" "$CLEAR_LINE"
+  local pad=$(((COLS - BAR_WIDTH - 6) / 2))
+  ((pad < 0)) && pad=0
+  printf '%*s%s%s%s%s%s %3d%%' "$pad" '' "$WHITE" "$bar" "$DARK" "$(repeat ░ $((BAR_WIDTH - filled)))" "$RESET" "$((POS / 10))"
+
+  text=$(detail)
+  ((${#text} > COLS - 4)) && text="${text:0:$((COLS - 7))}..."
+  at_center "$DETAIL_ROW" "$text" "$DIM"
+
+  elapsed=$((SECONDS - T0))
+  at_center "$TIP_ROW" "${tips[$((elapsed / 8 % ${#tips[@]}))]}" "$DARK"
+  at_center "$((TIP_ROW + 2))" "$(printf '%d:%02d' $((elapsed / 60)) $((elapsed % 60)))" "$DARK"
+}
+
+finish() {
+  local status=$1
+  if ((status == 0)); then
+    POS=1000
+    PHASE=finish
+    draw
+    at_center "$TITLE_ROW" "Daemonarchy is installed." "$WHITE"
+    at_center "$DETAIL_ROW" "" ""
+  else
+    # Keep the logo, swap the progress for the end of the log.
+    printf '%s%d;1H%sJ' "$CSI" "$TITLE_ROW" "$CSI"
+    at_center "$TITLE_ROW" "The installation stopped during: $(phase_title "$PHASE")" "$RED"
+    printf '%s%d;1H' "$CSI" "$((TITLE_ROW + 2))"
+    LC_ALL=C sed -E $'s/\x1b\\[[0-9;?]*[A-Za-z]//g' "$LOG" | grep -v '^@@' | grep -v '^[[:space:]]*$' | tail -n 12 |
+      cut -c1-$((COLS > 90 ? 86 : COLS - 4)) |
+      gum style --border rounded --border-foreground 1 --padding "0 1" --margin "0 0 0 $(((COLS - 90) / 2 > 0 ? (COLS - 90) / 2 : 0))"
+    printf '\n%*s%sThe full log is in %s%s\n\n' "$(((COLS - 19 - ${#LOG}) / 2))" '' "$DIM" "$LOG" "$RESET"
+  fi
+  printf '%s?25h' "$CSI"
+  return "$status"
+}
+
+trap 'printf "%s?25h" "$CSI"' EXIT
+layout
+TICK=0
+while [[ ! -s $STATUS_FILE ]]; do
+  read_log
+  progress
+  draw
+  TICK=$((TICK + 1))
+  sleep 0.5
+done
+read_log
+finish "$(<"$STATUS_FILE")"

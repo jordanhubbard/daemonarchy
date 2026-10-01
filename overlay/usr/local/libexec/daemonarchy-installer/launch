@@ -13,6 +13,7 @@ set -o pipefail
 ISO_LIBEXEC=/usr/local/libexec/daemonarchy-installer
 export DAEMONARCHY_INSTALL_CONF=/tmp/daemonarchy-install.conf
 log=/tmp/daemonarchy-install.log
+status_file=/tmp/daemonarchy-install.status
 
 find_cidata() {
   local dev mnt=/tmp/cidata
@@ -34,6 +35,29 @@ find_cidata() {
   return 1
 }
 
+# The log also goes to the first serial port when there is one, for installs
+# nobody is watching. When it is a console, a getty already holds ttyu0 open
+# (3-wire, so a second open does not wait for a carrier) and the callout device
+# is busy; otherwise use the callout device, which never waits.
+serial=()
+if pgrep -qf "getty.* ttyu0" && [[ -c /dev/ttyu0 ]]; then
+  serial=(/dev/ttyu0)
+elif [[ -c /dev/cuau0 ]]; then
+  serial=(/dev/cuau0)
+fi
+
+# Run the install in the background with everything it prints going to the
+# log, and draw the install screen from that log until it finishes.
+run_install() {
+  rm -f "$status_file"
+  : >"$log"
+  (
+    "$ISO_LIBEXEC/install" 2>&1 | tee "${serial[@]}" >>"$log"
+    echo "$?" >"$status_file"
+  ) &
+  "$ISO_LIBEXEC/dashboard" "$log" "$status_file"
+}
+
 if find_cidata; then
   echo "Daemonarchy autoinstall: using daemonarchy-install.conf from the CIDATA drive."
   # Configs may give the password in clear text only; hash it as the
@@ -43,18 +67,7 @@ if find_cidata; then
   if [[ -z ${password_hash:-} ]]; then
     printf 'password_hash=%q\n' "$(printf '%s' "$password" | openssl passwd -6 -stdin)" >>"$DAEMONARCHY_INSTALL_CONF"
   fi
-  # Unattended installs have nobody watching the screen, so the log also goes
-  # to the first serial port when there is one. When it is a console, a getty
-  # already holds ttyu0 open (3-wire, so a second open does not wait for a
-  # carrier) and the callout device is busy; otherwise use the callout device,
-  # which never waits.
-  serial=()
-  if pgrep -qf "getty.* ttyu0" && [[ -c /dev/ttyu0 ]]; then
-    serial=(/dev/ttyu0)
-  elif [[ -c /dev/cuau0 ]]; then
-    serial=(/dev/cuau0)
-  fi
-  if "$ISO_LIBEXEC/install" 2>&1 | tee "$log" "${serial[@]}"; then
+  if run_install; then
     echo "Daemonarchy autoinstall finished; powering off."
     shutdown -p now
   else
@@ -65,12 +78,10 @@ fi
 
 "$ISO_LIBEXEC/configurator" || exec /bin/sh
 
-if "$ISO_LIBEXEC/install" 2>&1 | tee "$log"; then
+if run_install; then
   echo
-  if gum confirm --affirmative "Reboot now" --negative "Stay in the installer" "Daemonarchy is installed. Reboot into it?"; then
+  if gum confirm --affirmative "Reboot now" --negative "Stay in the installer" "Reboot into Daemonarchy?"; then
     shutdown -r now
   fi
-else
-  gum style --foreground 1 "The installation failed. The full log is in $log."
 fi
 exec /bin/sh

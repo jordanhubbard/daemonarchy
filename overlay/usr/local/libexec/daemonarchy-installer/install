@@ -40,6 +40,13 @@ wpa_network() {
   fi | if [[ $hidden == true ]]; then awk '/^}$/ { print "\tscan_ssid=1" } { print }'; else cat; fi
 }
 
+# Mark the start of a stage for the install screen (daemonarchy-installer/
+# dashboard), which follows this log.
+phase() {
+  printf '@@phase %s\n' "$1"
+  log "$2"
+}
+
 cleanup() {
   umount "$TARGET/dev" 2>/dev/null || true
   umount "$TARGET/boot/efi" 2>/dev/null || true
@@ -56,7 +63,7 @@ fi
 
 # ---------------------------------------------------------------- disk
 
-log "Partitioning $disk"
+phase disk "Partitioning $disk"
 zpool export -f "$POOL" 2>/dev/null || true
 gpart destroy -F "$disk" >/dev/null 2>&1 || true
 gpart create -s gpt "$disk"
@@ -95,12 +102,12 @@ chmod 1777 "$TARGET/tmp" "$TARGET/var/tmp"
 
 # ---------------------------------------------------------------- base system
 
-log "Installing the FreeBSD base system"
+phase base "Installing the FreeBSD base system"
 for set in base kernel; do
   tar -xpf "$DIST/$set.txz" -C "$TARGET"
 done
 
-log "Installing the boot loader"
+phase loader "Installing the boot loader"
 newfs_msdos -F 32 -c 1 -L DAEMONARCHY /dev/gpt/daemonarchy-efi >/dev/null
 mkdir -p "$TARGET/boot/efi"
 mount -t msdosfs /dev/gpt/daemonarchy-efi "$TARGET/boot/efi"
@@ -113,7 +120,7 @@ cp "$ISO_SHARE/brand-daemonarchy.lua" "$TARGET/boot/lua/"
 
 # ---------------------------------------------------------------- configuration
 
-log "Configuring the system"
+phase config "Configuring the system"
 
 # The GPU decides which DRM driver loads at boot. Current Mesa needs
 # drm-66-kmod or newer for amdgpu.
@@ -208,7 +215,7 @@ esac
 
 # ---------------------------------------------------------------- packages
 
-log "Installing Daemonarchy packages (this downloads from pkg.FreeBSD.org)"
+phase fetch "Downloading Daemonarchy packages from pkg.FreeBSD.org"
 mount -t devfs devfs "$TARGET/dev"
 
 # Packages from the ISO take precedence: they carry the Omarchy ports and the
@@ -250,6 +257,7 @@ for attempt in 1 2 3 4 5; do
   log "Download interrupted; retrying ($((attempt + 1)) of 5)"
   sleep 10
 done
+phase install "Installing Daemonarchy packages"
 pkg_target install -y "${packages[@]}"
 
 # Keep the ISO's packages on the installed system as its own repository,
@@ -268,7 +276,7 @@ EOF
 
 # ---------------------------------------------------------------- users
 
-log "Creating $username"
+phase user "Creating $username"
 printf '%s\n' "$password_hash" | pw -R "$TARGET" usermod root -H 0
 printf '%s\n' "$password_hash" | pw -R "$TARGET" useradd -n "$username" \
   -c "${full_name:-$username}" -m -G wheel,operator,video \
@@ -301,7 +309,7 @@ fi
 
 # ---------------------------------------------------------------- done
 
-log "Finishing up"
+phase finish "Finishing up"
 umount "$TARGET/dev"
 umount "$TARGET/boot/efi"
 zpool export "$POOL"
