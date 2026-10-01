@@ -34,6 +34,14 @@ cleanup() {
 }
 trap cleanup EXIT
 
+# An account name FreeBSD or a package already uses would fail at the very end,
+# after the disk is erased; refuse it first (autoinstall configs skip the
+# configurator's check).
+if pw usershow "$username" >/dev/null 2>&1 || grep -qx -- "$username" "$ISO_SHARE/reserved-users" 2>/dev/null; then
+  echo "The username '$username' is already used by FreeBSD or a package; choose another." >&2
+  exit 1
+fi
+
 # ---------------------------------------------------------------- disk
 
 log "Partitioning $disk"

@@ -7,6 +7,9 @@
 # unattended from that file and the machine powers off when it is done.
 # Otherwise the configurator asks its questions first.
 
+# The install runs through tee for its log; report the install's own status.
+set -o pipefail
+
 ISO_LIBEXEC=/usr/local/libexec/daemonarchy-installer
 export DAEMONARCHY_INSTALL_CONF=/tmp/daemonarchy-install.conf
 log=/tmp/daemonarchy-install.log

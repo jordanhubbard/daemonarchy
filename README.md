@@ -29,7 +29,7 @@ Like the Arch ISO, the installer runs without a keyboard when it finds its answe
 disk=nda0
 encrypt_installation=false
 keyboard=us
-username=daemon
+username=tester
 password=changeme
 full_name="Daemonarchy User"
 email_address=user@example.com

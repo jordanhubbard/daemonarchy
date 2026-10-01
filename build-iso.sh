@@ -65,6 +65,12 @@ pkg repo -q "$share/repo" >/dev/null
 echo "    $(ls "$share/repo/All" | wc -l | tr -d ' ') packages"
 echo "$ABI" >"$share/ABI"
 
+# Accounts the packages create, which the installer must not hand to a user.
+for pkgfile in "$packages"/All/*.pkg; do
+	pkg query -F "$pkgfile" '%U'
+done | sort -u >"$share/reserved-users"
+echo "    $(wc -l <"$share/reserved-users" | tr -d ' ') package accounts reserved"
+
 echo "==> Taking the setup form from the omarchy package"
 omarchy_pkg=$(ls "$share"/repo/All/omarchy-[0-9]*.pkg | head -n 1)
 extract=$(mktemp -d)

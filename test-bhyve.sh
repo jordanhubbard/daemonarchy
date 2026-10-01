@@ -90,7 +90,7 @@ cat >"$WORK/cidata/daemonarchy-install.conf" <<'EOF'
 disk=vtbd0
 encrypt_installation=false
 keyboard=us
-username=daemon
+username=tester
 password=daemonarchy
 full_name="Daemonarchy Test"
 email_address=test@example.com
@@ -102,6 +102,8 @@ makefs -t msdos -o volume_label=CIDATA -o fat_type=16 -s 32m "$WORK/cidata.img" 
 
 run_vm() {
 	bhyvectl --destroy --vm="$VM" >/dev/null 2>&1 || true
+	# Closing the tap drops its address; give it back before every run.
+	[ "$NET" = bridge ] || ifconfig "$TAP" inet "$SUBNET.1/24" up
 	bhyve -c 4 -m 4G -H -A -P \
 		-s 0,hostbridge \
 		-s 2,virtio-blk,"$disk" \
