@@ -23,6 +23,9 @@ BRIDGE=${BRIDGE:-dmbr0}
 SUBNET=10.77.0
 NIC=${NIC:-$(route -n get default | awk '/interface:/ { print $2 }')}
 VNC_PORT=${VNC_PORT:-5900}
+# Wired, so a busy host cannot swap the guest out: a guest paged out for long
+# enough trips its kernel's deadlock detector and panics mid-install.
+MEM=${MEM:-3G}
 FIRMWARE=/usr/local/share/uefi-firmware/BHYVE_UEFI.fd
 INSTALL_TIMEOUT=${INSTALL_TIMEOUT:-7200}
 
@@ -104,7 +107,7 @@ run_vm() {
 	bhyvectl --destroy --vm="$VM" >/dev/null 2>&1 || true
 	# Closing the tap drops its address; give it back before every run.
 	[ "$NET" = bridge ] || ifconfig "$TAP" inet "$SUBNET.1/24" up
-	bhyve -c 4 -m 4G -H -A -P \
+	bhyve -c 4 -m "$MEM" -S -H -A -P \
 		-s 0,hostbridge \
 		-s 2,virtio-blk,"$disk" \
 		-s 4,virtio-net,"$TAP" \
