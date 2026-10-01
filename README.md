@@ -54,3 +54,9 @@ On a FreeBSD 16.0-CURRENT host with poudriere, as root:
 - The install needs a network connection (wired, or Wi-Fi with WPA-PSK or no password; no enterprise Wi-Fi). After the install, Omarchy's Wi-Fi and Bluetooth panels stay empty: they need NetworkManager and BlueZ, which FreeBSD does not have.
 - NVIDIA GPUs get no driver.
 - Virtual machines install and boot, but Hyprland needs a DRM driver, which FreeBSD VMs lack.
+
+## Names and marks
+
+Daemonarchy is a union of two projects and claims to be neither. Omarchy is the desktop and FreeBSD is the operating system underneath; both are credited by name wherever the system describes what it is (the About screen reads "Omarchy <version> on FreeBSD <release>"). Daemonarchy's own identity — the wordmark, the horned "A", the wallpaper, and the login theme's logo — is original artwork that lives in the `x11-wm/daemonarchy` port, apart from Omarchy's files, which are installed as Omarchy ships them. No FreeBSD or Arch Linux logo is used.
+
+Daemonarchy is not affiliated with or endorsed by Omarchy, the FreeBSD Project, or The FreeBSD Foundation. FreeBSD is a registered trademark of The FreeBSD Foundation. Omarchy is used under the MIT license.
