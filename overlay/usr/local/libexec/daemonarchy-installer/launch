@@ -44,10 +44,16 @@ if find_cidata; then
     printf 'password_hash=%q\n' "$(printf '%s' "$password" | openssl passwd -6 -stdin)" >>"$DAEMONARCHY_INSTALL_CONF"
   fi
   # Unattended installs have nobody watching the screen, so the log also goes
-  # to the first serial port when there is one (the callout device, which does
-  # not wait for a carrier).
+  # to the first serial port when there is one. When it is a console, a getty
+  # already holds ttyu0 open (3-wire, so a second open does not wait for a
+  # carrier) and the callout device is busy; otherwise use the callout device,
+  # which never waits.
   serial=()
-  [[ -c /dev/cuau0 ]] && serial=(/dev/cuau0)
+  if pgrep -qf "getty.* ttyu0" && [[ -c /dev/ttyu0 ]]; then
+    serial=(/dev/ttyu0)
+  elif [[ -c /dev/cuau0 ]]; then
+    serial=(/dev/cuau0)
+  fi
   if "$ISO_LIBEXEC/install" 2>&1 | tee "$log" "${serial[@]}"; then
     echo "Daemonarchy autoinstall finished; powering off."
     shutdown -p now
