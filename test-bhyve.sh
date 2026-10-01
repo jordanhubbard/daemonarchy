@@ -99,6 +99,7 @@ full_name="Daemonarchy Test"
 email_address=test@example.com
 hostname=daemonarchy-test
 timezone=America/Los_Angeles
+ssh_enable=true
 EOF
 rm -f "$WORK/cidata.img"
 makefs -t msdos -o volume_label=CIDATA -o fat_type=16 -s 32m "$WORK/cidata.img" "$WORK/cidata"
@@ -139,6 +140,38 @@ wait "$vm_pid" || status=$?
 kill "$watchdog" 2>/dev/null || true
 echo "    bhyve exited with $status after $(( $(date +%s) - start ))s (1 = powered off)"
 [ "$status" -eq 1 ] || { echo "install did not power off cleanly" >&2; exit 1; }
+
+# Check the installed disk before booting it: what a VM cannot show on screen
+# (it has no GPU driver for the desktop) can still be read off the disk.
+echo "==> Checking the installed system"
+md=$(mdconfig -a -t vnode -o readonly -f "$disk")
+pool_id=$(zpool import -d "/dev/${md}p3" 2>/dev/null | awk '/id:/ { print $2; exit }')
+mnt=$WORK/mnt
+mkdir -p "$mnt"
+zpool import -f -N -o readonly=on -R "$mnt" -t -d "/dev/${md}p3" "$pool_id" dmtest
+zfs mount dmtest/ROOT/default
+failures=0
+check() {
+	if eval "$2"; then echo "    ok    $1"; else echo "    FAIL  $1"; failures=$((failures + 1)); fi
+}
+check "tester exists" "grep -q '^tester:' '$mnt/etc/passwd'"
+for g in wheel operator video audio; do
+	check "tester in $g" "grep -E '^$g:' '$mnt/etc/group' | grep -qw tester"
+done
+check "SDDM signs in as tester" "grep -qx 'User=tester' '$mnt/var/lib/sddm/state.conf'"
+check "SDDM opens the Omarchy session" "grep -qx 'Session=/usr/local/share/wayland-sessions/omarchy.desktop' '$mnt/var/lib/sddm/state.conf'"
+check "SDDM uses the Daemonarchy theme" "grep -qx 'Current=daemonarchy' '$mnt'/usr/local/etc/sddm.conf.d/*.conf"
+check "sshd enabled, no reverse DNS" "grep -q '^sshd_enable=\"YES\"' '$mnt/etc/rc.conf' && grep -qx 'UseDNS no' '$mnt/etc/ssh/sshd_config'"
+check "avahi enabled with mdns lookups" "grep -q '^avahi_daemon_enable=\"YES\"' '$mnt/etc/rc.conf' && grep -q '^hosts: files mdns dns' '$mnt/etc/nsswitch.conf'"
+check "network by DHCP" "grep -q '^ifconfig_DEFAULT=\"DHCP\"' '$mnt/etc/rc.conf'"
+check "daemonarchy installed" "ls '$mnt'/var/cache/pkg/daemonarchy-* >/dev/null 2>&1 || grep -q daemonarchy '$mnt/var/db/pkg/local.sqlite'"
+zfs umount dmtest/ROOT/default
+zpool export dmtest
+mdconfig -d -u "${md#md}"
+if [ "$failures" -ne 0 ]; then
+	echo "$failures check(s) failed" >&2
+	exit 1
+fi
 
 echo "==> Booting the installed system (VNC on 127.0.0.1:$VNC_PORT)"
 run_vm &
