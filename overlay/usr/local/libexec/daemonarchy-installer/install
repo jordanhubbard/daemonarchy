@@ -1,0 +1,251 @@
+#!/usr/local/bin/bash
+
+# Install Daemonarchy (Omarchy on FreeBSD) from the answers the configurator (or an
+# autoinstall config) left in $DAEMONARCHY_INSTALL_CONF.
+#
+# The whole disk becomes Daemonarchy:
+#   p1  EFI system partition (FreeBSD loader, also as the fallback BOOTX64.EFI)
+#   p2  swap
+#   p3  ZFS pool "zroot" (GELI-encrypted with the user's password if asked),
+#       laid out as bsdinstall does so bectl boot environments work
+#
+# The base system and kernel come from the release sets on the ISO. The
+# Omarchy ports and the GPU and Wi-Fi kernel modules come from the package repository on the ISO,
+# everything else from pkg.FreeBSD.org.
+
+set -euo pipefail
+
+DAEMONARCHY_INSTALL_CONF=${DAEMONARCHY_INSTALL_CONF:-/tmp/daemonarchy-install.conf}
+ISO_SHARE=/usr/local/share/daemonarchy-installer
+DIST=/usr/freebsd-dist
+REPO=$ISO_SHARE/repo
+TARGET=/mnt
+POOL=zroot
+ABI=$(cat "$ISO_SHARE/ABI")
+
+# shellcheck disable=SC1090
+source "$DAEMONARCHY_INSTALL_CONF"
+
+log() { printf '\033[32m==>\033[0m %s\n' "$*"; }
+
+cleanup() {
+  umount "$TARGET/dev" 2>/dev/null || true
+  umount "$TARGET/boot/efi" 2>/dev/null || true
+}
+trap cleanup EXIT
+
+# ---------------------------------------------------------------- disk
+
+log "Partitioning $disk"
+zpool export -f "$POOL" 2>/dev/null || true
+gpart destroy -F "$disk" >/dev/null 2>&1 || true
+gpart create -s gpt "$disk"
+gpart add -t efi -a 1m -s 260m -l daemonarchy-efi "$disk"
+gpart add -t freebsd-swap -a 1m -s 4g -l daemonarchy-swap "$disk"
+gpart add -t freebsd-zfs -a 1m -l daemonarchy-zfs "$disk"
+
+zfs_dev=/dev/gpt/daemonarchy-zfs
+if [[ $encrypt_installation == true ]]; then
+  log "Encrypting the ZFS partition"
+  passfile=$(mktemp)
+  printf '%s' "$password" >"$passfile"
+  # -g: the loader asks for the passphrase and hands the key to the kernel.
+  geli init -b -g -e AES-XTS -l 256 -s 4096 -J "$passfile" "$zfs_dev"
+  geli attach -j "$passfile" "$zfs_dev"
+  rm -P -f "$passfile"
+  zfs_dev=$zfs_dev.eli
+fi
+
+log "Creating the ZFS pool"
+zpool create -f -o altroot="$TARGET" -O compress=lz4 -O atime=off -m none "$POOL" "$zfs_dev"
+zfs create -o mountpoint=none "$POOL/ROOT"
+zfs create -o mountpoint=/ "$POOL/ROOT/default"
+zfs create -o mountpoint=/home "$POOL/home"
+zfs create -o mountpoint=/tmp -o exec=on -o setuid=off "$POOL/tmp"
+zfs create -o mountpoint=/usr -o canmount=off "$POOL/usr"
+zfs create -o setuid=off "$POOL/usr/ports"
+zfs create "$POOL/usr/src"
+zfs create -o mountpoint=/var -o canmount=off "$POOL/var"
+for ds in audit crash log mail; do
+  zfs create -o exec=off -o setuid=off "$POOL/var/$ds"
+done
+zfs create -o setuid=off "$POOL/var/tmp"
+zpool set bootfs="$POOL/ROOT/default" "$POOL"
+chmod 1777 "$TARGET/tmp" "$TARGET/var/tmp"
+
+# ---------------------------------------------------------------- base system
+
+log "Installing the FreeBSD base system"
+for set in base kernel; do
+  tar -xpf "$DIST/$set.txz" -C "$TARGET"
+done
+
+log "Installing the boot loader"
+newfs_msdos -F 32 -c 1 -L DAEMONARCHY /dev/gpt/daemonarchy-efi >/dev/null
+mkdir -p "$TARGET/boot/efi"
+mount -t msdosfs /dev/gpt/daemonarchy-efi "$TARGET/boot/efi"
+mkdir -p "$TARGET/boot/efi/EFI/BOOT" "$TARGET/boot/efi/EFI/FreeBSD"
+cp "$TARGET/boot/loader.efi" "$TARGET/boot/efi/EFI/BOOT/BOOTX64.EFI"
+cp "$TARGET/boot/loader.efi" "$TARGET/boot/efi/EFI/FreeBSD/loader.efi"
+efibootmgr -a -c -l "$TARGET/boot/efi/EFI/FreeBSD/loader.efi" -L Daemonarchy >/dev/null 2>&1 ||
+  log "No EFI boot entry created; the firmware falls back to EFI/BOOT/BOOTX64.EFI"
+cp "$ISO_SHARE/brand-daemonarchy.lua" "$TARGET/boot/lua/"
+
+# ---------------------------------------------------------------- configuration
+
+log "Configuring the system"
+
+# The GPU decides which DRM driver loads at boot. Current Mesa needs
+# drm-66-kmod or newer for amdgpu.
+kld_list=""
+for vendor in $(pciconf -l | awk '/class=0x03/ { for (i = 1; i <= NF; i++) if ($i ~ /^vendor=/) { sub("vendor=", "", $i); print $i } }'); do
+  case "$vendor" in
+    0x8086) kld_list="$kld_list i915kms" ;;
+    0x1002) kld_list="$kld_list amdgpu" ;;
+  esac
+done
+kld_list=$(echo $kld_list | tr ' ' '\n' | sort -u | tr '\n' ' ')
+
+vt_keymap=$("$ISO_SHARE/keymap" vt "$keyboard")
+read -r xkb_layout xkb_variant <<<"$("$ISO_SHARE/keymap" xkb "$keyboard")"
+
+cat >"$TARGET/boot/loader.conf" <<EOF
+zfs_load="YES"
+autoboot_delay="3"
+loader_logo="none"
+loader_brand="daemonarchy"
+kern.vty="vt"
+EOF
+[[ $encrypt_installation == true ]] && echo 'geom_eli_load="YES"' >>"$TARGET/boot/loader.conf"
+
+cat >"$TARGET/etc/rc.conf" <<EOF
+hostname="$hostname"
+zfs_enable="YES"
+ifconfig_DEFAULT="DHCP"
+ntpd_enable="YES"
+ntpd_sync_on_start="YES"
+powerd_enable="YES"
+dumpdev="AUTO"
+clear_tmp_enable="YES"
+
+# Omarchy's session: D-Bus, seat access, and the SDDM login.
+dbus_enable="YES"
+seatd_enable="YES"
+sddm_enable="YES"
+EOF
+[[ -n ${kld_list// /} ]] && echo "kld_list=\"${kld_list% }\"" >>"$TARGET/etc/rc.conf"
+[[ -n $vt_keymap ]] && echo "keymap=\"${vt_keymap%.kbd}\"" >>"$TARGET/etc/rc.conf"
+
+swap_dev=/dev/gpt/daemonarchy-swap
+[[ $encrypt_installation == true ]] && swap_dev=$swap_dev.eli
+cat >"$TARGET/etc/fstab" <<EOF
+# Device               Mountpoint  FStype     Options  Dump  Pass
+/dev/gpt/daemonarchy-efi   /boot/efi   msdosfs    rw       2     2
+$swap_dev              none        swap       sw       0     0
+fdesc                  /dev/fd     fdescfs    rw       0     0
+proc                   /proc       linprocfs  rw       0     0
+EOF
+
+# Omarchy's Hyprland input config reads the layout from /etc/vconsole.conf.
+cat >"$TARGET/etc/vconsole.conf" <<EOF
+XKBLAYOUT=$xkb_layout
+XKBVARIANT=$xkb_variant
+EOF
+
+cp "$TARGET/usr/share/zoneinfo/$timezone" "$TARGET/etc/localtime"
+echo "$timezone" >"$TARGET/var/db/zoneinfo"
+
+cp /etc/resolv.conf "$TARGET/etc/resolv.conf"
+
+# Wi-Fi joined in the installer stays joined on the installed system.
+if [[ -r /tmp/daemonarchy-wifi.conf ]]; then
+  # shellcheck disable=SC1091
+  source /tmp/daemonarchy-wifi.conf
+  printf 'wlans_%s="wlan0"\nifconfig_wlan0="WPA DHCP"\n' "$wifi_device" >>"$TARGET/etc/rc.conf"
+  install -m 0600 /tmp/wpa_supplicant.conf "$TARGET/etc/wpa_supplicant.conf"
+fi
+
+# ---------------------------------------------------------------- packages
+
+log "Installing Omarchy packages (this downloads from pkg.FreeBSD.org)"
+mount -t devfs devfs "$TARGET/dev"
+
+# Packages from the ISO take precedence: they carry the Omarchy ports and the
+# GPU modules built for this kernel.
+repos=$(mktemp -d)
+cat >"$repos/repos.conf" <<EOF
+FreeBSD: {
+  url: "pkg+https://pkg.FreeBSD.org/\${ABI}/latest",
+  mirror_type: "srv",
+  signature_type: "fingerprints",
+  fingerprints: "/usr/share/keys/pkg",
+  enabled: yes
+}
+Daemonarchy: {
+  url: "file://$REPO",
+  signature_type: "none",
+  priority: 10,
+  enabled: yes
+}
+EOF
+pkg_target() {
+  ASSUME_ALWAYS_YES=yes IGNORE_OSVERSION=yes \
+    pkg -r "$TARGET" -o REPOS_DIR="$repos" -o ABI="$ABI" "$@"
+}
+pkg_target update -f
+pkg_target install -y pkg bash sudo daemonarchy drm-66-kmod gpu-firmware-kmod wifi-firmware-kmod
+
+# Keep the ISO's packages on the installed system as its own repository,
+# alongside FreeBSD's latest set.
+mkdir -p "$TARGET/var/db/daemonarchy" "$TARGET/usr/local/etc/pkg/repos"
+cp -R "$REPO" "$TARGET/var/db/daemonarchy/repo"
+cat >"$TARGET/usr/local/etc/pkg/repos/Daemonarchy.conf" <<EOF
+FreeBSD: { url: "pkg+https://pkg.FreeBSD.org/\${ABI}/latest" }
+Daemonarchy: {
+  url: "file:///var/db/daemonarchy/repo",
+  signature_type: "none",
+  priority: 10,
+  enabled: yes
+}
+EOF
+
+# ---------------------------------------------------------------- users
+
+log "Creating $username"
+printf '%s\n' "$password_hash" | pw -R "$TARGET" usermod root -H 0
+printf '%s\n' "$password_hash" | pw -R "$TARGET" useradd -n "$username" \
+  -c "${full_name:-$username}" -m -G wheel,operator,video \
+  -s /usr/local/bin/bash -H 0
+
+mkdir -p "$TARGET/usr/local/etc/sudoers.d"
+echo '%wheel ALL=(ALL:ALL) ALL' >"$TARGET/usr/local/etc/sudoers.d/wheel"
+chmod 0440 "$TARGET/usr/local/etc/sudoers.d/wheel"
+
+home=$TARGET/home/$username
+if [[ -n $full_name || -n $email_address ]]; then
+  {
+    echo "[user]"
+    [[ -n $full_name ]] && printf '\tname = %s\n' "$full_name"
+    [[ -n $email_address ]] && printf '\temail = %s\n' "$email_address"
+  } >"$home/.gitconfig"
+  chroot "$TARGET" chown "$username:$username" "/home/$username/.gitconfig"
+fi
+
+# As on the Arch ISO: an encrypted disk already asked for the password at
+# boot, so log straight into Omarchy; otherwise SDDM asks.
+if [[ $encrypt_installation == true ]]; then
+  cat >"$TARGET/usr/local/etc/sddm.conf.d/20-daemonarchy-autologin.conf" <<EOF
+[Autologin]
+User=$username
+Session=omarchy.desktop
+Relogin=false
+EOF
+fi
+
+# ---------------------------------------------------------------- done
+
+log "Finishing up"
+umount "$TARGET/dev"
+umount "$TARGET/boot/efi"
+zpool export "$POOL"
+log "Daemonarchy is installed."

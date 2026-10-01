@@ -1,0 +1,381 @@
+#!/usr/local/bin/bash
+
+# The Daemonarchy installer: the Omarchy ISO configurator's screens
+# (greeter, keyboard, account, hostname, timezone) with a FreeBSD disk step.
+# It writes its answers to $DAEMONARCHY_INSTALL_CONF and hands off to
+# daemonarchy-installer/install, which does the actual installation.
+#
+# The account and machine questions come from Omarchy's own setup form
+# (install/provisioning/setup-form.sh), vendored into the image, so this asks
+# exactly what the Arch installer asks and checks answers the same way.
+
+ISO_SHARE=/usr/local/share/daemonarchy-installer
+DAEMONARCHY_INSTALL_CONF=${DAEMONARCHY_INSTALL_CONF:-/tmp/daemonarchy-install.conf}
+LOGO_PATH="$ISO_SHARE/logo.txt"
+
+# timedatectl for the setup form's timezone list.
+export PATH="$ISO_SHARE/compat:$PATH"
+
+source "$ISO_SHARE/setup-form.sh"
+
+LOGO_WIDTH=$(awk '{ if (length > max) max = length } END { print max+0 }' "$LOGO_PATH")
+
+export GUM_CONFIRM_PROMPT_FOREGROUND="6"
+export GUM_CONFIRM_SELECTED_FOREGROUND="0"
+export GUM_CONFIRM_SELECTED_BACKGROUND="2"
+export GUM_CONFIRM_UNSELECTED_FOREGROUND="7"
+export GUM_CONFIRM_UNSELECTED_BACKGROUND="0"
+
+# The console can grow after boot (the framebuffer settles late, especially in
+# VMs), so remeasure at every redraw rather than trusting startup geometry.
+measure_terminal() {
+  TERM_WIDTH=$(stty size 2>/dev/null </dev/tty | awk '{print $2}')
+  ((TERM_WIDTH > 0)) || TERM_WIDTH=${COLUMNS:-80}
+
+  PADDING_LEFT=$(((TERM_WIDTH - LOGO_WIDTH) / 2))
+  ((PADDING_LEFT < 0)) && PADDING_LEFT=0
+  PADDING_LEFT_SPACES=$(printf "%*s" "$PADDING_LEFT" "")
+
+  PADDING="0 0 0 $PADDING_LEFT"
+  export GUM_CHOOSE_PADDING="$PADDING"
+  export GUM_FILTER_PADDING="$PADDING"
+  export GUM_INPUT_PADDING="$PADDING"
+  export GUM_SPIN_PADDING="$PADDING"
+  export GUM_TABLE_PADDING="$PADDING"
+  export GUM_CONFIRM_PADDING="$PADDING"
+}
+measure_terminal
+
+clear_logo() {
+  measure_terminal
+  printf "\033[H\033[2J"
+  gum style --foreground 2 --padding "1 0 0 $PADDING_LEFT" "$(<"$LOGO_PATH")"
+}
+
+# The same welcome frame the Arch ISO opens on: logo, tagline, one button.
+greeter() {
+  measure_terminal
+
+  local rows logo_h content_h top cols logo_row tagline_row hint_row
+  local tagline hint tpad hpad anim
+  cols=$TERM_WIDTH
+  rows=$(stty size 2>/dev/null </dev/tty | awk '{print $1}')
+  [[ $rows =~ ^[0-9]+$ ]] || rows=${LINES:-24}
+  logo_h=$(wc -l <"$LOGO_PATH")
+
+  content_h=$((logo_h + 4))
+  top=$(((rows - content_h) / 2))
+  ((top < 0)) && top=0
+  logo_row=$((top + 1))
+  tagline_row=$((top + logo_h + 2))
+  hint_row=$((top + logo_h + 4))
+
+  printf '\033[?25l\033[H\033[2J'
+
+  printf '\033[%d;1H' "$logo_row"
+  gum style --foreground 2 --padding "0 0 0 $PADDING_LEFT" "$(<"$LOGO_PATH")"
+
+  tagline="The Omarchy desktop, at home on FreeBSD"
+  tpad=$(((cols - ${#tagline}) / 2)); ((tpad < 0)) && tpad=0
+  printf '\033[%d;%dH%s' "$tagline_row" "$((tpad + 1))" "$tagline"
+
+  hint="Press Return to Start Install"
+  hpad=$(((cols - ${#hint}) / 2)); ((hpad < 0)) && hpad=0
+  printf '\033[%d;%dH\033[2m%s\033[0m' "$hint_row" "$((hpad + 1))" "$hint"
+
+  # The Arch ISO's colorshift on the logo, if ttfx is on the image.
+  anim=""
+  if command -v ttfx >/dev/null; then
+    printf '\033[%d;1H\0337' "$((logo_row + logo_h))"
+    ttfx -i "$LOGO_PATH" \
+      --canvas-width "$((cols > 2 ? cols - 2 : cols))" \
+      --anchor-text c \
+      --frame-rate 60 \
+      --reuse-canvas \
+      --xterm-colors \
+      colorshift \
+      --gradient-stops 2 10 6 10 \
+      --gradient-frames 3 \
+      --cycles 1000 \
+      --final-gradient-stops 2 \
+      </dev/null >/dev/tty 2>/dev/null &
+    anim=$!
+  fi
+
+  IFS= read -r _ </dev/tty || true
+  if [[ -n $anim ]]; then
+    kill "$anim" 2>/dev/null
+    wait "$anim" 2>/dev/null || true
+  fi
+  stty sane </dev/tty 2>/dev/null || true
+  printf '\033[0m\033[H\033[2J\033[?25h'
+}
+
+abort() {
+  gum style "${1:-Aborted installation}"
+  echo
+  gum style "You can retry by running: /usr/local/libexec/daemonarchy-installer/launch"
+  exit 1
+}
+
+step() {
+  clear_logo
+  echo
+  gum style --padding "0 0 0 $PADDING_LEFT" "$1"
+  echo
+}
+
+say() {
+  gum style --padding "0 0 0 $PADDING_LEFT" "$@"
+}
+
+notice() {
+  clear_logo
+  echo
+  gum spin --spinner "pulse" --title "$1" -- sleep "${2:-2}"
+  echo
+}
+
+# STEP 1: KEYBOARD LAYOUT
+
+keyboard_form() {
+  local status
+
+  while true; do
+    clear_logo
+    echo
+    say "Let's setup your machine..."
+    echo
+
+    omarchy_prompt_keyboard && status=0 || status=$?
+    ((status == 0)) && break
+    ((status == OMARCHY_FORM_BACK)) && continue
+    abort
+  done
+
+  # Switch the console keymap now, so the password is typed on the layout
+  # the user just picked.
+  local vt_map
+  vt_map=$("$ISO_SHARE/keymap" vt "$keyboard")
+  [[ -n $vt_map ]] && kbdcontrol -l "$vt_map" </dev/tty 2>/dev/null
+}
+
+# STEP 2: ACCOUNT, HOSTNAME, TIMEZONE
+
+user_form() {
+  step "Let's setup your user account..."
+
+  omarchy_prompt_username || return $?
+  omarchy_prompt_password || return $?
+
+  password_hash=$(printf '%s' "$password" | openssl passwd -6 -stdin)
+
+  omarchy_prompt_identity || return $?
+  omarchy_prompt_hostname || return $?
+  omarchy_prompt_timezone || return $?
+}
+
+user_step() {
+  local status
+
+  while true; do
+    user_form && status=0 || status=$?
+    if ((status != 0)); then
+      ((status == OMARCHY_FORM_BACK)) || abort
+      keyboard_form
+      continue
+    fi
+
+    echo -e "Field,Value
+Username,$username
+Password,$(printf "%${#password}s" | tr ' ' '*')
+Full name,${full_name:-[Skipped]}
+Email address,${email_address:-[Skipped]}
+Hostname,$hostname
+Timezone,$timezone
+Keyboard,$keyboard_label" |
+      gum table -s "," -p | sed "s/^/${PADDING_LEFT_SPACES}/"
+
+    echo
+    if gum confirm --negative "No, change it" "Does this look right?"; then
+      break
+    else
+      keyboard_form
+    fi
+  done
+}
+
+# STEP 3: NETWORK
+#
+# Unlike the Arch ISO, which carries every package, this installer downloads
+# most of the desktop from pkg.FreeBSD.org, so it needs a network before the disk
+# is touched. Wired networks were already configured by DHCP at boot; Wi-Fi is
+# set up here and carried over to the installed system.
+
+WIFI_CONF=/tmp/daemonarchy-wifi.conf
+
+online() {
+  fetch -q -T 5 -o /dev/null https://pkg.FreeBSD.org/ 2>/dev/null
+}
+
+wlan_device() {
+  sysctl -n net.wlan.devices 2>/dev/null | awk '{ print $1 }'
+}
+
+# Scan for networks and print one SSID per line, strongest first. ifconfig's
+# scan list pads the SSID column to the widest name, so cut it at the BSSID
+# column rather than at whitespace.
+wifi_scan() {
+  ifconfig wlan0 up scan >/dev/null 2>&1
+  ifconfig -v wlan0 list scan 2>/dev/null | awk '
+    NR == 1 { width = index($0, "BSSID") - 1; next }
+    {
+      ssid = substr($0, 1, width); sub(/[[:space:]]+$/, "", ssid)
+      rest = substr($0, width + 1); split(rest, f, " ")
+      split(f[4], sn, ":")
+      if (ssid != "" && !(ssid in seen)) { seen[ssid] = 1; print sn[1] "\t" ssid }
+    }' | sort -rn | cut -f2
+}
+
+wifi_connect() {
+  local ssid=$1 psk=$2 tries
+  {
+    echo 'ctrl_interface=/var/run/wpa_supplicant'
+    echo 'network={'
+    printf '\tssid="%s"\n' "$ssid"
+    if [[ -n $psk ]]; then printf '\tpsk="%s"\n' "$psk"; else printf '\tkey_mgmt=NONE\n'; fi
+    echo '}'
+  } >/tmp/wpa_supplicant.conf
+  chmod 600 /tmp/wpa_supplicant.conf
+
+  pkill -f "wpa_supplicant.*wlan0" 2>/dev/null
+  wpa_supplicant -B -i wlan0 -c /tmp/wpa_supplicant.conf >/dev/null 2>&1 || return 1
+  for tries in 1 2 3 4 5 6 7 8 9 10; do
+    ifconfig wlan0 | grep -q "status: associated" && break
+    sleep 1
+  done
+  dhclient wlan0 >/dev/null 2>&1 || return 1
+  online
+}
+
+network_step() {
+  local dev ssid psk status
+  online && return 0
+
+  dev=$(wlan_device)
+  while ! online; do
+    if [[ -z $dev ]]; then
+      step "Daemonarchy downloads most of its packages during the install."
+      say "No network connection and no Wi-Fi adapter were found."
+      say --foreground 8 "Plug in an Ethernet cable, then continue."
+      echo
+      gum confirm --affirmative "Try again" --negative "Quit" "Connected?" || abort
+      dhclient -b -q $(ifconfig -l ether) >/dev/null 2>&1
+      sleep 3
+      continue
+    fi
+
+    ifconfig wlan0 >/dev/null 2>&1 || ifconfig wlan0 create wlandev "$dev" >/dev/null 2>&1
+
+    step "Connect to Wi-Fi"
+    say --foreground 8 "Daemonarchy downloads most of its packages during the install."
+    echo
+    ssid=$(gum spin --show-output --spinner pulse --title "Scanning for networks..." -- bash -c "$(declare -f wifi_scan); wifi_scan" |
+      gum choose --height 10 --header "Wi-Fi network") && status=0 || status=$?
+    ((status == 0)) || { ((status == OMARCHY_FORM_BACK)) && continue; abort; }
+    [[ -n $ssid ]] || continue
+
+    psk=$(gum input --password --placeholder "Leave empty for an open network" \
+      --prompt.foreground="#845DF9" --prompt "Password> ") || continue
+
+    if gum spin --spinner pulse --title "Connecting to $ssid..." -- \
+      bash -c "$(declare -f online wifi_connect); wifi_connect \"\$1\" \"\$2\"" _ "$ssid" "$psk"; then
+      umask 077
+      { printf 'wifi_device=%q\n' "$dev"; printf 'wifi_ssid=%q\n' "$ssid"; printf 'wifi_psk=%q\n' "$psk"; } >"$WIFI_CONF"
+    else
+      notice "Could not connect to $ssid" 3
+    fi
+  done
+}
+
+# STEP 4: DISK
+#
+# The whole disk becomes Daemonarchy: an EFI system partition, swap, and a ZFS
+# pool whose boot environments stand in for the Arch install's Snapper
+# snapshots. Install media and disks too small to hold it are not offered.
+
+MIN_DISK_BYTES=$((20 * 1024 * 1024 * 1024))
+
+disk_choices() {
+  local disk bytes desc media
+  # The disk the live system runs from (a USB stick written with the hybrid
+  # ISO) carries the image's ISO 9660 label.
+  media=$(glabel status 2>/dev/null | awk '$1 ~ /^iso9660\// { sub(/[sp][0-9]+.*$/, "", $3); print $3 }')
+  for disk in $(sysctl -n kern.disks); do
+    case "$disk" in cd* | md*) continue ;; esac
+    [[ " $media " == *" $disk "* ]] && continue
+    bytes=$(diskinfo "$disk" 2>/dev/null | awk '{ print $3 }')
+    [[ $bytes =~ ^[0-9]+$ ]] || continue
+    ((bytes >= MIN_DISK_BYTES)) || continue
+    desc=$(geom disk list "$disk" 2>/dev/null | awk -F': ' '/descr:/ { print $2; exit }')
+    printf '%s\t%s GB\t%s\n' "$disk" "$((bytes / 1000000000))" "${desc:-disk}"
+  done
+}
+
+disk_form() {
+  local choices choice status
+  choices=$(disk_choices)
+  if [[ -z $choices ]]; then
+    step "No disk large enough to install Daemonarchy (20 GB or more) was found."
+    abort "Installation needs a disk of at least 20 GB."
+  fi
+
+  while true; do
+    step "Select install disk"
+    say --foreground 8 "Everything on the selected disk will be erased."
+    echo
+    choice=$(printf '%s\n' "$choices" | column -t -s $'\t' |
+      gum choose --height 10 --header "Install disk") && status=0 || status=$?
+    ((status == 0)) || { ((status == OMARCHY_FORM_BACK)) && continue; abort; }
+    disk=${choice%% *}
+
+    step "Disk encryption"
+    if gum confirm --affirmative "Yes, encrypt" --negative "No" \
+      "Encrypt the disk with your password?"; then
+      encrypt_installation=true
+    else
+      encrypt_installation=false
+    fi
+
+    step "Ready to install"
+    say "Daemonarchy will be installed on $choice"
+    say --foreground 8 "All data on $disk will be destroyed."
+    echo
+    gum confirm --affirmative "Install Daemonarchy" --negative "Go back" \
+      "Erase $disk and install?" && break
+  done
+}
+
+write_install_conf() {
+  umask 077
+  {
+    printf 'disk=%q\n' "$disk"
+    printf 'encrypt_installation=%q\n' "$encrypt_installation"
+    printf 'keyboard=%q\n' "$keyboard"
+    printf 'username=%q\n' "$username"
+    printf 'password=%q\n' "$password"
+    printf 'password_hash=%q\n' "$password_hash"
+    printf 'full_name=%q\n' "$full_name"
+    printf 'email_address=%q\n' "$email_address"
+    printf 'hostname=%q\n' "$hostname"
+    printf 'timezone=%q\n' "$timezone"
+  } >"$DAEMONARCHY_INSTALL_CONF"
+}
+
+greeter
+keyboard_form
+user_step
+network_step
+disk_form
+clear
+write_install_conf

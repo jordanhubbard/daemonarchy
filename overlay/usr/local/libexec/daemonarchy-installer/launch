@@ -1,0 +1,62 @@
+#!/usr/local/bin/bash
+
+# Started from root's login on the live system's first console.
+#
+# With a drive labeled CIDATA that holds daemonarchy-install.conf (the cloud-init
+# NoCloud label the Arch ISO uses for the same purpose), the install runs
+# unattended from that file and the machine powers off when it is done.
+# Otherwise the configurator asks its questions first.
+
+ISO_LIBEXEC=/usr/local/libexec/daemonarchy-installer
+export DAEMONARCHY_INSTALL_CONF=/tmp/daemonarchy-install.conf
+log=/tmp/daemonarchy-install.log
+
+find_cidata() {
+  local dev mnt=/tmp/cidata
+  for dev in /dev/msdosfs/CIDATA /dev/iso9660/CIDATA /dev/ufs/CIDATA; do
+    [[ -e $dev ]] || continue
+    mkdir -p "$mnt"
+    case "$dev" in
+      */msdosfs/*) mount -t msdosfs -o ro "$dev" "$mnt" ;;
+      */iso9660/*) mount -t cd9660 -o ro "$dev" "$mnt" ;;
+      *) mount -o ro "$dev" "$mnt" ;;
+    esac 2>/dev/null || continue
+    if [[ -f $mnt/daemonarchy-install.conf ]]; then
+      install -m 0600 "$mnt/daemonarchy-install.conf" "$DAEMONARCHY_INSTALL_CONF"
+      umount "$mnt"
+      return 0
+    fi
+    umount "$mnt"
+  done
+  return 1
+}
+
+if find_cidata; then
+  echo "Daemonarchy autoinstall: using daemonarchy-install.conf from the CIDATA drive."
+  # Configs may give the password in clear text only; hash it as the
+  # configurator would.
+  # shellcheck disable=SC1090
+  source "$DAEMONARCHY_INSTALL_CONF"
+  if [[ -z ${password_hash:-} ]]; then
+    printf 'password_hash=%q\n' "$(printf '%s' "$password" | openssl passwd -6 -stdin)" >>"$DAEMONARCHY_INSTALL_CONF"
+  fi
+  if "$ISO_LIBEXEC/install" 2>&1 | tee "$log"; then
+    echo "Daemonarchy autoinstall finished; powering off."
+    shutdown -p now
+  else
+    echo "Daemonarchy autoinstall FAILED; see $log"
+  fi
+  exec /bin/sh
+fi
+
+"$ISO_LIBEXEC/configurator" || exec /bin/sh
+
+if "$ISO_LIBEXEC/install" 2>&1 | tee "$log"; then
+  echo
+  if gum confirm --affirmative "Reboot now" --negative "Stay in the installer" "Daemonarchy is installed. Reboot into it?"; then
+    shutdown -r now
+  fi
+else
+  gum style --foreground 1 "The installation failed. The full log is in $log."
+fi
+exec /bin/sh

@@ -1,0 +1,79 @@
+#!/bin/sh
+
+# Translate an Omarchy keyboard code (the Linux console keymap names the
+# setup form offers) into what FreeBSD and Hyprland use:
+#
+#   keymap vt  <code>   the vt(4) keymap for kbdcontrol -l / rc.conf keymap=
+#   keymap xkb <code>   "layout variant" for /etc/vconsole.conf (XKBLAYOUT and
+#                       XKBVARIANT), which Omarchy's Hyprland input config reads
+#
+# Unknown codes map to nothing for vt (the console stays US) and to "us" for
+# Hyprland.
+
+table='us            us.kbd               us
+uk            uk.kbd               gb
+dvorak        us.dvorak.kbd        us dvorak
+colemak       us.colemak.kbd       us colemak
+azerty        az.kbd               az
+by            by.kbd               by
+be-latin1     be.kbd               be
+bg-cp1251     bg.bds.kbd           bg
+croat         hr.kbd               hr
+cz            cz.kbd               cz
+dk-latin1     dk.kbd               dk
+nl            nl.kbd               nl
+et            ee.kbd               ee
+fi            fi.kbd               fi
+fr            fr.kbd               fr
+cf            ca-fr.kbd            ca fr
+fr_CH         ch-fr.kbd            ch fr
+ge            -                    ge
+de            de.kbd               de
+de_CH-latin1  ch.kbd               ch
+gr            gr.kbd               gr
+il            il.kbd               il
+hu            hu.101.kbd           hu
+is-latin1     is.kbd               is
+ie            -                    ie
+it            it.kbd               it
+jp106         jp.kbd               jp
+kazakh        kz.io.kbd            kz
+kyrgyz        -                    kg
+la-latin1     latinamerican.kbd    latam
+lv            -                    lv
+lt            -                    lt
+mk-utf        -                    mk
+no-latin1     no.kbd               no
+pl            pl.kbd               pl
+pt-latin1     pt.kbd               pt
+br-abnt2      br.kbd               br
+ro            -                    ro
+ru            ru.kbd               ru
+sr-latin      -                    rs latin
+sk-qwertz     -                    sk
+slovene       si.kbd               si
+es            es.kbd               es
+sv-latin1     se.kbd               se
+tj_alt-UTF8   -                    tj
+trq           tr.kbd               tr
+ua            ua.kbd               ua'
+
+field=$1
+code=$2
+line=$(printf '%s\n' "$table" | awk -v code="$code" '$1 == code { print; exit }')
+
+case "$field" in
+vt)
+  map=$(printf '%s\n' "$line" | awk '{ print $2 }')
+  [ -n "$map" ] && [ "$map" != - ] && [ -f "/usr/share/vt/keymaps/$map" ] && echo "$map"
+  ;;
+xkb)
+  layout=$(printf '%s\n' "$line" | awk '{ print $3 }')
+  variant=$(printf '%s\n' "$line" | awk '{ print $4 }')
+  echo "${layout:-us} $variant"
+  ;;
+*)
+  echo "usage: keymap vt|xkb <code>" >&2
+  exit 2
+  ;;
+esac
