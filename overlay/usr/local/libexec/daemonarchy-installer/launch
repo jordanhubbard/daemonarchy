@@ -43,7 +43,12 @@ if find_cidata; then
   if [[ -z ${password_hash:-} ]]; then
     printf 'password_hash=%q\n' "$(printf '%s' "$password" | openssl passwd -6 -stdin)" >>"$DAEMONARCHY_INSTALL_CONF"
   fi
-  if "$ISO_LIBEXEC/install" 2>&1 | tee "$log"; then
+  # Unattended installs have nobody watching the screen, so the log also goes
+  # to the first serial port when there is one (the callout device, which does
+  # not wait for a carrier).
+  serial=()
+  [[ -c /dev/cuau0 ]] && serial=(/dev/cuau0)
+  if "$ISO_LIBEXEC/install" 2>&1 | tee "$log" "${serial[@]}"; then
     echo "Daemonarchy autoinstall finished; powering off."
     shutdown -p now
   else

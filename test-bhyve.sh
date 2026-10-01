@@ -43,7 +43,7 @@ fi
 
 ISO=${1:?usage: test-bhyve.sh daemonarchy.iso | --cleanup}
 
-kldload -n vmm if_bridge if_tap
+kldload -n vmm if_bridge if_tap nmdm
 mkdir -p "$WORK"
 sysctl -q net.link.tap.up_on_open=1 >/dev/null
 
@@ -112,11 +112,17 @@ run_vm() {
 		-s 29,fbuf,tcp=127.0.0.1:"$VNC_PORT",w=1280,h=800 \
 		-s 30,xhci,tablet \
 		-s 31,lpc \
+		-l com1,/dev/nmdm-dm-A \
 		-l bootrom,"$FIRMWARE" \
 		"$VM"
 }
 
-echo "==> Installing from $ISO (VNC on 127.0.0.1:$VNC_PORT)"
+# The guest's first serial port, where an unattended install copies its log.
+cat /dev/nmdm-dm-B >"$WORK/serial.log" 2>/dev/null &
+serial_reader=$!
+trap 'kill "$serial_reader" 2>/dev/null || true' EXIT
+
+echo "==> Installing from $ISO (VNC on 127.0.0.1:$VNC_PORT; log in $WORK/serial.log)"
 start=$(date +%s)
 status=0
 run_vm -s 3,ahci-cd,"$ISO" -s 5,ahci-hd,"$WORK/cidata.img" &
