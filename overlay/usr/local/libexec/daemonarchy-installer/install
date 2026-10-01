@@ -200,8 +200,24 @@ pkg_target() {
   ASSUME_ALWAYS_YES=yes IGNORE_OSVERSION=yes \
     pkg -r "$TARGET" -o REPOS_DIR="$repos" -o ABI="$ABI" "$@"
 }
+packages=(pkg bash sudo daemonarchy drm-66-kmod gpu-firmware-kmod wifi-firmware-kmod)
 pkg_target update -f
-pkg_target install -y pkg bash sudo daemonarchy drm-66-kmod gpu-firmware-kmod wifi-firmware-kmod
+
+# A thousand downloads over a home connection will see the odd one fail.
+# Fetch everything first, retrying: packages already in the cache are kept, so
+# each attempt picks up where the last one stopped. Then install from the cache.
+for attempt in 1 2 3 4 5; do
+  if pkg_target -o FETCH_TIMEOUT=60 fetch -d -y "${packages[@]}"; then
+    break
+  fi
+  if (( attempt == 5 )); then
+    echo "Downloading packages failed five times; check the network and try again." >&2
+    exit 1
+  fi
+  log "Download interrupted; retrying ($((attempt + 1)) of 5)"
+  sleep 10
+done
+pkg_target install -y "${packages[@]}"
 
 # Keep the ISO's packages on the installed system as its own repository,
 # alongside FreeBSD's latest set.
