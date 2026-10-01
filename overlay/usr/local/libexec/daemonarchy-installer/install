@@ -309,9 +309,10 @@ fi
 
 # Omarchy's login theme has no user list: it signs in as the user SDDM last
 # saw. On a fresh system there is none, so name the new user, as Omarchy's
-# own first-boot setup does on Arch.
+# own first-boot setup does on Arch. FreeBSD's SDDM matches the session by its
+# full path; a bare name falls back to the first session, plain Hyprland.
 mkdir -p "$TARGET/var/lib/sddm"
-printf '[Last]\nSession=omarchy.desktop\nUser=%s\n' "$username" >"$TARGET/var/lib/sddm/state.conf"
+printf '[Last]\nSession=/usr/local/share/wayland-sessions/omarchy.desktop\nUser=%s\n' "$username" >"$TARGET/var/lib/sddm/state.conf"
 chroot "$TARGET" chown -R sddm:sddm /var/lib/sddm
 
 # ---------------------------------------------------------------- network services
@@ -328,6 +329,9 @@ fi
 # Avahi's own package already advertises SSH; sshd itself runs only if asked.
 if [[ ${ssh_enable:-false} == true ]]; then
   echo 'sshd_enable="YES"' >>"$TARGET/etc/rc.conf"
+  # A reverse lookup of every client stalls logins when the DNS servers DHCP
+  # hands out are slow or unreachable; a desktop has no use for it.
+  echo 'UseDNS no' >>"$TARGET/etc/ssh/sshd_config"
 fi
 
 # ---------------------------------------------------------------- done
