@@ -8,31 +8,76 @@
 #   2. boot the installed disk on its own
 #
 # Both runs expose the guest framebuffer over VNC on 127.0.0.1:$VNC_PORT.
+#
+# NET=nat (default) puts the guest on a private network behind pf NAT, with
+# dnsmasq handing out addresses on the tap only; NET=bridge bridges the tap
+# onto the host's network instead. "test-bhyve.sh --cleanup" undoes either.
 
 set -eu
 
-ISO=${1:?usage: test-bhyve.sh daemonarchy.iso}
 WORK=${WORK:-/var/tmp/daemonarchy-bhyve}
 VM=${VM:-daemonarchy-test}
+NET=${NET:-nat}
+TAP=${TAP:-tapdm0}  # bhyve picks its backend from the "tap" prefix
+BRIDGE=${BRIDGE:-dmbr0}
+SUBNET=10.77.0
 NIC=${NIC:-$(route -n get default | awk '/interface:/ { print $2 }')}
 VNC_PORT=${VNC_PORT:-5900}
 FIRMWARE=/usr/local/share/uefi-firmware/BHYVE_UEFI.fd
 INSTALL_TIMEOUT=${INSTALL_TIMEOUT:-7200}
 
+if [ "${1:-}" = --cleanup ]; then
+	bhyvectl --destroy --vm="$VM" >/dev/null 2>&1 || true
+	if [ -f "$WORK/dnsmasq.pid" ]; then
+		kill "$(cat "$WORK/dnsmasq.pid")" 2>/dev/null || true
+		rm -f "$WORK/dnsmasq.pid"
+	fi
+	if [ -f "$WORK/pf-enabled-by-test" ]; then
+		pfctl -q -d 2>/dev/null || true
+		rm -f "$WORK/pf-enabled-by-test"
+	fi
+	ifconfig "$TAP" destroy 2>/dev/null || true
+	ifconfig "$BRIDGE" destroy 2>/dev/null || true
+	exit 0
+fi
+
+ISO=${1:?usage: test-bhyve.sh daemonarchy.iso | --cleanup}
+
 kldload -n vmm if_bridge if_tap
 mkdir -p "$WORK"
+sysctl -q net.link.tap.up_on_open=1 >/dev/null
 
-# A bridge onto the host's network so the guest can reach pkg.FreeBSD.org.
-if ! ifconfig "$VM-br" >/dev/null 2>&1; then
-	bridge=$(ifconfig bridge create)
-	ifconfig "$bridge" name "$VM-br" >/dev/null
-	ifconfig "$VM-br" addm "$NIC" up
-fi
-if ! ifconfig "$VM-tap" >/dev/null 2>&1; then
+if ! ifconfig "$TAP" >/dev/null 2>&1; then
 	tap=$(ifconfig tap create)
-	ifconfig "$tap" name "$VM-tap" >/dev/null
-	ifconfig "$VM-br" addm "$VM-tap"
-	sysctl -q net.link.tap.up_on_open=1 >/dev/null
+	ifconfig "$tap" name "$TAP" >/dev/null
+fi
+
+if [ "$NET" = bridge ]; then
+	# Bridge onto the host's network so the guest can reach pkg.FreeBSD.org.
+	if ! ifconfig "$BRIDGE" >/dev/null 2>&1; then
+		bridge=$(ifconfig bridge create)
+		ifconfig "$bridge" name "$BRIDGE" >/dev/null
+		ifconfig "$BRIDGE" addm "$NIC" up
+	fi
+	ifconfig "$BRIDGE" addm "$TAP" 2>/dev/null || true
+else
+	# A private network behind NAT, leaving the host's own interface alone.
+	ifconfig "$TAP" inet "$SUBNET.1/24" up
+	sysctl -q net.inet.ip.forwarding=1 >/dev/null
+	kldload -n pf
+	if ! pfctl -s info 2>/dev/null | grep -q "Status: Enabled"; then
+		printf 'nat on %s inet from %s.0/24 to any -> (%s)\npass all\n' "$NIC" "$SUBNET" "$NIC" | pfctl -q -f -
+		pfctl -q -e
+		touch "$WORK/pf-enabled-by-test"
+	else
+		echo "pf is already enabled; add: nat on $NIC inet from $SUBNET.0/24 to any -> ($NIC)" >&2
+	fi
+	if [ ! -f "$WORK/dnsmasq.pid" ] || ! kill -0 "$(cat "$WORK/dnsmasq.pid")" 2>/dev/null; then
+		dnsmasq --interface="$TAP" --bind-interfaces --port=0 \
+			--dhcp-range="$SUBNET.10,$SUBNET.50,1h" \
+			--dhcp-option=option:dns-server,1.1.1.1 \
+			--pid-file="$WORK/dnsmasq.pid"
+	fi
 fi
 
 disk=$WORK/disk.img
@@ -60,7 +105,7 @@ run_vm() {
 	bhyve -c 4 -m 4G -H -A -P \
 		-s 0,hostbridge \
 		-s 2,virtio-blk,"$disk" \
-		-s 4,virtio-net,"$VM-tap" \
+		-s 4,virtio-net,"$TAP" \
 		"$@" \
 		-s 29,fbuf,tcp=127.0.0.1:"$VNC_PORT",w=1280,h=800 \
 		-s 30,xhci,tablet \
