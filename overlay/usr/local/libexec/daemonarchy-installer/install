@@ -314,6 +314,22 @@ mkdir -p "$TARGET/var/lib/sddm"
 printf '[Last]\nSession=omarchy.desktop\nUser=%s\n' "$username" >"$TARGET/var/lib/sddm/state.conf"
 chroot "$TARGET" chown -R sddm:sddm /var/lib/sddm
 
+# ---------------------------------------------------------------- network services
+
+# Avahi comes with the printing tools; with it running the machine answers as
+# <hostname>.local, and nss_mdns lets it find other .local machines.
+if [[ -x $TARGET/usr/local/sbin/avahi-daemon ]]; then
+  echo 'avahi_daemon_enable="YES"' >>"$TARGET/etc/rc.conf"
+  if [[ -e $TARGET/usr/local/lib/nss_mdns.so ]]; then
+    sed -i '' -E 's/^hosts:.*/hosts: files mdns dns/' "$TARGET/etc/nsswitch.conf"
+  fi
+fi
+
+# Avahi's own package already advertises SSH; sshd itself runs only if asked.
+if [[ ${ssh_enable:-false} == true ]]; then
+  echo 'sshd_enable="YES"' >>"$TARGET/etc/rc.conf"
+fi
+
 # ---------------------------------------------------------------- done
 
 phase finish "Finishing up"

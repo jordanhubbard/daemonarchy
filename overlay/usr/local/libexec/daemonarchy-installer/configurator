@@ -432,6 +432,20 @@ network_step() {
   done
 }
 
+# Remote access: off unless asked for, as on any desktop.
+ssh_enable=false
+ssh_step() {
+  step "Remote access"
+  say --foreground 8 "With SSH on, you can log in to this machine from another computer."
+  echo
+  if gum confirm --default=false --affirmative "Turn on SSH" --negative "Leave it off" \
+    "Turn on SSH logins?"; then
+    ssh_enable=true
+  else
+    ssh_enable=false
+  fi
+}
+
 # STEP 4: DISK
 #
 # The whole disk becomes Daemonarchy: an EFI system partition, swap, and a ZFS
@@ -511,6 +525,7 @@ write_install_conf() {
     printf 'wifi_ssid=%q\n' "$wifi_ssid"
     printf 'wifi_psk=%q\n' "$wifi_psk"
     printf 'wifi_hidden=%q\n' "$wifi_hidden"
+    printf 'ssh_enable=%q\n' "$ssh_enable"
   } >"$DAEMONARCHY_INSTALL_CONF"
 }
 
@@ -518,6 +533,7 @@ greeter
 keyboard_form
 user_step
 network_step
+ssh_step
 disk_form
 clear
 write_install_conf
