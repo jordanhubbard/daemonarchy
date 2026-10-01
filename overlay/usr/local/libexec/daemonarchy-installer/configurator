@@ -57,7 +57,7 @@ measure_terminal
 clear_logo() {
   measure_terminal
   printf "\033[H\033[2J"
-  gum style --foreground 2 --padding "1 0 0 $PADDING_LEFT" "$(<"$LOGO_PATH")"
+  gum style --foreground 1 --padding "1 0 0 $PADDING_LEFT" "$(<"$LOGO_PATH")"
 }
 
 # The same welcome frame the Arch ISO opens on: logo, tagline, one button.
@@ -81,7 +81,7 @@ greeter() {
   printf '\033[?25l\033[H\033[2J'
 
   printf '\033[%d;1H' "$logo_row"
-  gum style --foreground 2 --padding "0 0 0 $PADDING_LEFT" "$(<"$LOGO_PATH")"
+  gum style --foreground 1 --padding "0 0 0 $PADDING_LEFT" "$(<"$LOGO_PATH")"
 
   tagline="Omarchy's desktop spliced onto FreeBSD's daemon"
   tpad=$(((cols - ${#tagline}) / 2)); ((tpad < 0)) && tpad=0
@@ -102,10 +102,10 @@ greeter() {
       --reuse-canvas \
       --xterm-colors \
       colorshift \
-      --gradient-stops 2 10 6 10 \
+      --gradient-stops 1 9 3 9 \
       --gradient-frames 3 \
       --cycles 1000 \
-      --final-gradient-stops 2 \
+      --final-gradient-stops 1 \
       </dev/null >/dev/tty 2>/dev/null &
     anim=$!
   fi
