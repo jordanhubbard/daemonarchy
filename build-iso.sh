@@ -28,14 +28,16 @@ packages=/usr/local/poudriere/data/packages/$JAIL-$PTREE
 stage=/var/tmp/daemonarchy-iso-stage
 cache=/var/cache/daemonarchy-iso
 
-# Ports whose packages ship on the ISO rather than coming from pkg.FreeBSD.org.
+# Ports whose packages ship on the ISO rather than coming from pkg.FreeBSD.org:
+# the Omarchy ports, ports carrying fixes the official packages lack yet
+# (x11/quickshell), and kernel modules built for the ISO's kernel.
 ISO_ORIGINS="
 audio/cliamp devel/tobi-try devel/usage editors/omarchy-nvim editors/omawrite
 graphics/omasnap graphics/tensaku math/omacalc misc/ttfx multimedia/omacut
 sysutils/herdr sysutils/lazydocker sysutils/tzupdate sysutils/udiskie
 x11-fonts/ia-writer-fonts x11-themes/aether x11-wm/omarchy
 x11-wm/daemonarchy x11/hyprland-preview-share-picker x11/owe
-x11/owe-lockfeed graphics/drm-66-kmod graphics/gpu-firmware-kmod
+x11/owe-lockfeed x11/quickshell graphics/drm-66-kmod graphics/gpu-firmware-kmod
 net/wifi-firmware-kmod
 "
 
@@ -96,11 +98,14 @@ echo "==> Building the image"
 printf '%s\n' bash gum jq ttfx tzupdate pkg wifi-firmware-kmod >"$stage/live-packages"
 printf '%s\n' usr/src usr/lib/debug usr/tests usr/lib32 usr/libexec/ld-elf32.so.1 >"$stage/exclude"
 
-poudriere image -t hybridiso -j "$JAIL" -p "$PTREE" -n "$NAME" \
+# poudriere image names (also the ISO volume label) are alphanumeric only.
+image=$(echo "$NAME" | tr -cd '[:alnum:]')
+poudriere image -t hybridiso -j "$JAIL" -p "$PTREE" -n "$image" \
 	-h daemonarchy-installer -c "$stage/overlay" -f "$stage/live-packages" \
 	-A "$here/live-post.sh" -X "$stage/exclude" -o "$OUTDIR"
 
 iso=$OUTDIR/$NAME.iso
+[ "$image" = "$NAME" ] || mv "$OUTDIR/$image.iso" "$iso"
 sha256 -r "$iso" | sed "s|$OUTDIR/||" >"$iso.sha256"
 ls -lh "$iso"
 cat "$iso.sha256"
