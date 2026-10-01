@@ -44,7 +44,7 @@ The machine powers off when the install finishes.
 On a FreeBSD 16.0-CURRENT host with poudriere, as root:
 
 1. Create a jail from the snapshot to install, and extract the snapshot's `kernel.txz` into it (poudriere's `url` method fetches no kernel).
-2. Create a ports tree at the commit the official `latest` package set was built from (the `ports_top_git_hash` annotation on any package from it), cherry-pick the Omarchy ports onto it, and bulk-build them together with `graphics/drm-66-kmod`, `graphics/gpu-firmware-kmod`, and `net/wifi-firmware-kmod` using `-b latest`. With `PACKAGE_FETCH_BLACKLIST="drm-*-kmod gpu-firmware-* wifi-firmware-*"` the kernel modules are built for the jail's kernel while every other dependency is the official binary, so the Omarchy packages match what the installer fetches.
+2. Create a ports tree at the commit the official `latest` package set was built from (the newest `ports_top_git_hash` annotation across its packages; builds are incremental, so a package that was not rebuilt keeps an older one), cherry-pick the Omarchy ports onto it, and bulk-build them together with `graphics/drm-66-kmod`, `graphics/gpu-firmware-kmod`, and `net/wifi-firmware-kmod` using `-b latest`. With `PACKAGE_FETCH_BLACKLIST="drm-*-kmod gpu-firmware-* wifi-firmware-*"` the kernel modules are built for the jail's kernel while every other dependency is the official binary, so the Omarchy packages match what the installer fetches.
 3. Run `./build-iso.sh` (see the variables at its top). The image and its `.sha256` land in `/usr/local/poudriere/data/images`.
 
 ## Limits of the proof of concept
