@@ -118,7 +118,9 @@ run_vm() {
 }
 
 # The guest's first serial port, where an unattended install copies its log.
-cat /dev/nmdm-dm-B >"$WORK/serial.log" 2>/dev/null &
+# Raw and without echo: an echoing host side would feed the guest its own
+# output, which its getty then reads as failed logins.
+( stty raw -echo && cat ) </dev/nmdm-dm-B >"$WORK/serial.log" 2>/dev/null &
 serial_reader=$!
 trap 'kill "$serial_reader" 2>/dev/null || true' EXIT
 
