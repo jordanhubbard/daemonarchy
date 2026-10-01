@@ -279,7 +279,7 @@ EOF
 phase user "Creating $username"
 printf '%s\n' "$password_hash" | pw -R "$TARGET" usermod root -H 0
 printf '%s\n' "$password_hash" | pw -R "$TARGET" useradd -n "$username" \
-  -c "${full_name:-$username}" -m -G wheel,operator,video \
+  -c "${full_name:-$username}" -m -G wheel,operator,video,audio \
   -s /usr/local/bin/bash -H 0
 
 mkdir -p "$TARGET/usr/local/etc/sudoers.d"
