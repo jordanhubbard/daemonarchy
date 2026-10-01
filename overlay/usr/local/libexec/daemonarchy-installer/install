@@ -175,7 +175,7 @@ fi
 
 # ---------------------------------------------------------------- packages
 
-log "Installing Omarchy packages (this downloads from pkg.FreeBSD.org)"
+log "Installing Daemonarchy packages (this downloads from pkg.FreeBSD.org)"
 mount -t devfs devfs "$TARGET/dev"
 
 # Packages from the ISO take precedence: they carry the Omarchy ports and the
