@@ -28,6 +28,18 @@ source "$DAEMONARCHY_INSTALL_CONF"
 
 log() { printf '\033[32m==>\033[0m %s\n' "$*"; }
 
+# A wpa_supplicant.conf for one network. wpa_passphrase hashes the password, so
+# no character in it can break the file.
+wpa_network() {
+  local ssid=$1 psk=$2 hidden=$3
+  echo 'ctrl_interface=/var/run/wpa_supplicant'
+  if [[ -n $psk ]]; then
+    wpa_passphrase "$ssid" "$psk" | grep -v '^[[:space:]]*#psk='
+  else
+    printf 'network={\n\tssid="%s"\n\tkey_mgmt=NONE\n}\n' "$ssid"
+  fi | if [[ $hidden == true ]]; then awk '/^}$/ { print "\tscan_ssid=1" } { print }'; else cat; fi
+}
+
 cleanup() {
   umount "$TARGET/dev" 2>/dev/null || true
   umount "$TARGET/boot/efi" 2>/dev/null || true
@@ -129,7 +141,6 @@ EOF
 cat >"$TARGET/etc/rc.conf" <<EOF
 hostname="$hostname"
 zfs_enable="YES"
-ifconfig_DEFAULT="DHCP"
 ntpd_enable="YES"
 ntpd_sync_on_start="YES"
 powerd_enable="YES"
@@ -163,15 +174,37 @@ EOF
 cp "$TARGET/usr/share/zoneinfo/$timezone" "$TARGET/etc/localtime"
 echo "$timezone" >"$TARGET/var/db/zoneinfo"
 
-cp /etc/resolv.conf "$TARGET/etc/resolv.conf"
-
-# Wi-Fi joined in the installer stays joined on the installed system.
-if [[ -r /tmp/daemonarchy-wifi.conf ]]; then
-  # shellcheck disable=SC1091
-  source /tmp/daemonarchy-wifi.conf
-  printf 'wlans_%s="wlan0"\nifconfig_wlan0="WPA DHCP"\n' "$wifi_device" >>"$TARGET/etc/rc.conf"
-  install -m 0600 /tmp/wpa_supplicant.conf "$TARGET/etc/wpa_supplicant.conf"
-fi
+# The network the installer used carries over. Wired DHCP (the default, and
+# what an autoinstall without network settings gets) covers every Ethernet port,
+# so a cable plugged in later just works; a static address stays on the port
+# it was set on; Wi-Fi keeps the network that was joined.
+case ${net_mode:-dhcp} in
+  static)
+    {
+      echo
+      echo "# Set by hand in the installer."
+      printf 'ifconfig_%s="inet %s"\n' "$net_if" "$net_addr"
+      printf 'defaultrouter="%s"\n' "$net_gw"
+    } >>"$TARGET/etc/rc.conf"
+    printf 'nameserver %s\n' ${net_dns//,/ } >"$TARGET/etc/resolv.conf"
+    ;;
+  wifi)
+    {
+      echo
+      echo 'ifconfig_DEFAULT="DHCP"'
+      printf 'wlans_%s="wlan0"\n' "$net_if"
+      echo 'ifconfig_wlan0="WPA DHCP"'
+    } >>"$TARGET/etc/rc.conf"
+    umask 077
+    wpa_network "$wifi_ssid" "${wifi_psk:-}" "${wifi_hidden:-false}" >"$TARGET/etc/wpa_supplicant.conf"
+    umask 022
+    cp /etc/resolv.conf "$TARGET/etc/resolv.conf"
+    ;;
+  *)
+    printf '\nifconfig_DEFAULT="DHCP"\n' >>"$TARGET/etc/rc.conf"
+    cp /etc/resolv.conf "$TARGET/etc/resolv.conf"
+    ;;
+esac
 
 # ---------------------------------------------------------------- packages
 

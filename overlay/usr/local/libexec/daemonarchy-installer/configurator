@@ -217,17 +217,104 @@ Keyboard,$keyboard_label" |
 #
 # Unlike the Arch ISO, which carries every package, this installer downloads
 # most of the desktop from pkg.FreeBSD.org, so it needs a network before the disk
-# is touched. Wired networks were already configured by DHCP at boot; Wi-Fi is
-# set up here and carried over to the installed system.
+# is touched. Every Ethernet port asked for DHCP at boot; this step shows what
+# came of it and lets the user pick a different port, join Wi-Fi on any
+# wireless adapter, or set an address by hand. Whatever is chosen here is what
+# the installed system uses.
 
-WIFI_CONF=/tmp/daemonarchy-wifi.conf
+net_mode=dhcp net_if="" net_addr="" net_gw="" net_dns=""
+wifi_ssid="" wifi_psk="" wifi_hidden=false
 
 online() {
   fetch -q -T 5 -o /dev/null https://pkg.FreeBSD.org/ 2>/dev/null
 }
 
-wlan_device() {
-  sysctl -n net.wlan.devices 2>/dev/null | awk '{ print $1 }'
+ether_ports() {
+  local ifc
+  for ifc in $(ifconfig -l ether); do
+    [[ $ifc == wlan* ]] || echo "$ifc"
+  done
+}
+
+wifi_adapters() {
+  sysctl -n net.wlan.devices 2>/dev/null | tr ' ' '\n' | grep .
+}
+
+port_address() {
+  ifconfig "$1" inet 2>/dev/null | awk '/inet / { print $2; exit }'
+}
+
+port_state() {
+  local status
+  status=$(ifconfig "$1" 2>/dev/null | awk '/status:/ { sub(/.*status: /, ""); print; exit }')
+  case $status in
+    active | associated) echo connected ;;
+    "no carrier") echo "no cable" ;;
+    *) echo "${status:-down}" ;;
+  esac
+}
+
+default_port() {
+  route -n get default 2>/dev/null | awk '/interface:/ { print $2 }'
+}
+
+# One line per adapter: a status dot, its name, what it is, and its address.
+network_summary() {
+  local ifc addr state dot
+  for ifc in $(ether_ports); do
+    addr=$(port_address "$ifc")
+    state=$(port_state "$ifc")
+    if [[ -n $addr ]]; then dot=$'\033[32m●\033[0m'; else dot=$'\033[90m○\033[0m'; fi
+    printf '%s%s  %-8s %-9s %-10s %s\n' "$PADDING_LEFT_SPACES" "$dot" "$ifc" "Ethernet" "$state" "$addr"
+  done
+  for ifc in $(wifi_adapters); do
+    addr="" state=""
+    if [[ $(sysctl -n net.wlan.0.%parent 2>/dev/null) == "$ifc" ]]; then
+      addr=$(port_address wlan0)
+      state=$(port_state wlan0)
+    fi
+    if [[ -n $addr ]]; then dot=$'\033[32m●\033[0m'; else dot=$'\033[90m○\033[0m'; fi
+    printf '%s%s  %-8s %-9s %-10s %s\n' "$PADDING_LEFT_SPACES" "$dot" "$ifc" "Wi-Fi" "$state" "$addr"
+  done
+}
+
+valid_cidr() {
+  [[ $1 =~ ^([0-9]{1,3}\.){3}[0-9]{1,3}/([0-9]|[12][0-9]|3[0-2])$ ]]
+}
+
+valid_ip() {
+  [[ $1 =~ ^([0-9]{1,3}\.){3}[0-9]{1,3}$ ]]
+}
+
+use_dhcp() {
+  local ifc=$1
+  gum spin --spinner pulse --title "Asking for an address on $ifc..." -- \
+    bash -c "dhclient '$ifc' >/dev/null 2>&1; sleep 2"
+  net_mode=dhcp net_if=$ifc
+}
+
+use_static() {
+  local ifc=$1 addr gw dns
+  step "Set up $ifc by hand"
+  addr=$(gum input --placeholder "192.168.1.50/24" --prompt.foreground="#845DF9" --prompt "Address> ") || return 1
+  until valid_cidr "$addr"; do
+    addr=$(gum input --value "$addr" --placeholder "Address with prefix length, like 192.168.1.50/24" \
+      --prompt.foreground="#845DF9" --prompt "Address> ") || return 1
+  done
+  gw=$(gum input --placeholder "192.168.1.1" --prompt.foreground="#845DF9" --prompt "Gateway> ") || return 1
+  until valid_ip "$gw"; do
+    gw=$(gum input --value "$gw" --placeholder "Gateway address, like 192.168.1.1" \
+      --prompt.foreground="#845DF9" --prompt "Gateway> ") || return 1
+  done
+  dns=$(gum input --value "1.1.1.1" --prompt.foreground="#845DF9" --prompt "DNS servers> ") || return 1
+
+  pkill -f "dhclient: $ifc" 2>/dev/null
+  pkill -f "dhclient.*$ifc" 2>/dev/null
+  ifconfig "$ifc" inet "$addr" up
+  route -q delete default >/dev/null 2>&1
+  route -q add default "$gw" >/dev/null
+  printf 'nameserver %s\n' ${dns//,/ } >/etc/resolv.conf
+  net_mode=static net_if=$ifc net_addr=$addr net_gw=$gw net_dns=$dns
 }
 
 # Scan for networks and print one SSID per line, strongest first. ifconfig's
@@ -246,19 +333,20 @@ wifi_scan() {
 }
 
 wifi_connect() {
-  local ssid=$1 psk=$2 tries
+  local ssid=$1 psk=$2 hidden=$3 tries
   {
     echo 'ctrl_interface=/var/run/wpa_supplicant'
-    echo 'network={'
-    printf '\tssid="%s"\n' "$ssid"
-    if [[ -n $psk ]]; then printf '\tpsk="%s"\n' "$psk"; else printf '\tkey_mgmt=NONE\n'; fi
-    echo '}'
+    if [[ -n $psk ]]; then
+      wpa_passphrase "$ssid" "$psk" | grep -v '^[[:space:]]*#psk='
+    else
+      printf 'network={\n\tssid="%s"\n\tkey_mgmt=NONE\n}\n' "$ssid"
+    fi | if [[ $hidden == true ]]; then awk '/^}$/ { print "\tscan_ssid=1" } { print }'; else cat; fi
   } >/tmp/wpa_supplicant.conf
   chmod 600 /tmp/wpa_supplicant.conf
 
   pkill -f "wpa_supplicant.*wlan0" 2>/dev/null
   wpa_supplicant -B -i wlan0 -c /tmp/wpa_supplicant.conf >/dev/null 2>&1 || return 1
-  for tries in 1 2 3 4 5 6 7 8 9 10; do
+  for tries in 1 2 3 4 5 6 7 8 9 10 11 12 13 14 15; do
     ifconfig wlan0 | grep -q "status: associated" && break
     sleep 1
   done
@@ -266,43 +354,81 @@ wifi_connect() {
   online
 }
 
+use_wifi() {
+  local dev=$1 ssid psk hidden=false status
+  # wlan0 is the one wireless interface; move it to the adapter chosen.
+  if [[ $(sysctl -n net.wlan.0.%parent 2>/dev/null) != "$dev" ]]; then
+    ifconfig wlan0 destroy >/dev/null 2>&1
+    ifconfig wlan0 create wlandev "$dev" >/dev/null 2>&1 || { notice "Could not use $dev" 3; return 1; }
+  fi
+
+  step "Connect to Wi-Fi"
+  ssid=$( { gum spin --show-output --spinner pulse --title "Scanning for networks..." -- \
+      bash -c "$(declare -f wifi_scan); wifi_scan"; echo "Other network..."; } |
+    gum choose --height 12 --header "Wi-Fi network on $dev") && status=0 || status=$?
+  ((status == 0)) && [[ -n $ssid ]] || return 1
+  if [[ $ssid == "Other network..." ]]; then
+    ssid=$(gum input --placeholder "Network name" --prompt.foreground="#845DF9" --prompt "Name> ") || return 1
+    [[ -n $ssid ]] || return 1
+    hidden=true
+  fi
+
+  psk=$(gum input --password --placeholder "Leave empty for an open network" \
+    --prompt.foreground="#845DF9" --prompt "Password> ") || return 1
+
+  if gum spin --spinner pulse --title "Connecting to $ssid..." -- \
+    bash -c "$(declare -f online wifi_connect); wifi_connect \"\$1\" \"\$2\" \"\$3\"" _ "$ssid" "$psk" "$hidden"; then
+    net_mode=wifi net_if=$dev wifi_ssid=$ssid wifi_psk=$psk wifi_hidden=$hidden
+  else
+    notice "Could not connect to $ssid" 3
+    return 1
+  fi
+}
+
 network_step() {
-  local dev ssid psk status
-  online && return 0
-
-  dev=$(wlan_device)
-  while ! online; do
-    if [[ -z $dev ]]; then
-      step "Daemonarchy downloads most of its packages during the install."
-      say "No network connection and no Wi-Fi adapter were found."
-      say --foreground 8 "Plug in an Ethernet cable, then continue."
-      echo
-      gum confirm --affirmative "Try again" --negative "Quit" "Connected?" || abort
-      dhclient -b -q $(ifconfig -l ether) >/dev/null 2>&1
-      sleep 3
-      continue
-    fi
-
-    ifconfig wlan0 >/dev/null 2>&1 || ifconfig wlan0 create wlandev "$dev" >/dev/null 2>&1
-
-    step "Connect to Wi-Fi"
+  local choice status ifc via connected options
+  while true; do
+    step "Network"
     say --foreground 8 "Daemonarchy downloads most of its packages during the install."
     echo
-    ssid=$(gum spin --show-output --spinner pulse --title "Scanning for networks..." -- bash -c "$(declare -f wifi_scan); wifi_scan" |
-      gum choose --height 10 --header "Wi-Fi network") && status=0 || status=$?
-    ((status == 0)) || { ((status == OMARCHY_FORM_BACK)) && continue; abort; }
-    [[ -n $ssid ]] || continue
+    network_summary
+    echo
 
-    psk=$(gum input --password --placeholder "Leave empty for an open network" \
-      --prompt.foreground="#845DF9" --prompt "Password> ") || continue
-
-    if gum spin --spinner pulse --title "Connecting to $ssid..." -- \
-      bash -c "$(declare -f online wifi_connect); wifi_connect \"\$1\" \"\$2\"" _ "$ssid" "$psk"; then
-      umask 077
-      { printf 'wifi_device=%q\n' "$dev"; printf 'wifi_ssid=%q\n' "$ssid"; printf 'wifi_psk=%q\n' "$psk"; } >"$WIFI_CONF"
+    connected=false
+    if online; then
+      connected=true
+      via=$(default_port)
+      [[ $net_mode == wifi ]] && via="$via ($wifi_ssid)"
+      say "Connected to the internet through $via."
     else
-      notice "Could not connect to $ssid" 3
+      say --foreground 3 "Not connected to the internet yet."
     fi
+    echo
+
+    options=()
+    $connected && options+=("Continue")
+    for ifc in $(wifi_adapters); do options+=("Join Wi-Fi with $ifc"); done
+    for ifc in $(ether_ports); do
+      options+=("Use DHCP on $ifc" "Set up $ifc by hand")
+    done
+    options+=("Check again")
+
+    choice=$(gum choose --height 12 --header "Network" "${options[@]}") && status=0 || status=$?
+    if ((status != 0)); then
+      ((status == OMARCHY_FORM_BACK)) && continue
+      abort
+    fi
+
+    case $choice in
+      Continue)
+        # Keep what was chosen; a connection DHCP made at boot is just DHCP.
+        if [[ $net_mode == dhcp ]]; then net_if=$(default_port); fi
+        return 0
+        ;;
+      "Join Wi-Fi with "*) use_wifi "${choice#Join Wi-Fi with }" ;;
+      "Use DHCP on "*) use_dhcp "${choice#Use DHCP on }" ;;
+      "Set up "*" by hand") ifc=${choice#Set up }; use_static "${ifc% by hand}" ;;
+    esac
   done
 }
 
@@ -377,6 +503,14 @@ write_install_conf() {
     printf 'email_address=%q\n' "$email_address"
     printf 'hostname=%q\n' "$hostname"
     printf 'timezone=%q\n' "$timezone"
+    printf 'net_mode=%q\n' "$net_mode"
+    printf 'net_if=%q\n' "$net_if"
+    printf 'net_addr=%q\n' "$net_addr"
+    printf 'net_gw=%q\n' "$net_gw"
+    printf 'net_dns=%q\n' "$net_dns"
+    printf 'wifi_ssid=%q\n' "$wifi_ssid"
+    printf 'wifi_psk=%q\n' "$wifi_psk"
+    printf 'wifi_hidden=%q\n' "$wifi_hidden"
   } >"$DAEMONARCHY_INSTALL_CONF"
 }
 
