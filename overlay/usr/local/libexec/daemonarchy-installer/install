@@ -307,6 +307,13 @@ Relogin=false
 EOF
 fi
 
+# Omarchy's login theme has no user list: it signs in as the user SDDM last
+# saw. On a fresh system there is none, so name the new user, as Omarchy's
+# own first-boot setup does on Arch.
+mkdir -p "$TARGET/var/lib/sddm"
+printf '[Last]\nSession=omarchy.desktop\nUser=%s\n' "$username" >"$TARGET/var/lib/sddm/state.conf"
+chroot "$TARGET" chown -R sddm:sddm /var/lib/sddm
+
 # ---------------------------------------------------------------- done
 
 phase finish "Finishing up"
