@@ -18,6 +18,24 @@ Daemonarchy is two repositories:
   - The applications and tools Omarchy uses, one port each (`x11-themes/aether`, `graphics/tensaku`, `misc/ttfx`, ...), submitted upstream in [freebsd/freebsd-ports#630](https://github.com/freebsd/freebsd-ports/pull/630).
   - `x11/quickshell`, carrying a fix for a use-after-free in its Hyprland IPC.
 
+## Working on Daemonarchy from Daemonarchy
+
+A Daemonarchy machine can be its own development machine, much as Omarchy's repo mode works on Arch.
+
+`daemonarchy-dev-setup` (also System > FreeBSD > Hack on Daemonarchy) clones the three trees into `~/src`: Omarchy at the installed version on a `daemonarchy-dev` branch, the ports tree with the Omarchy ports, and this repository. It then offers to link the desktop to the Omarchy checkout.
+
+### Omarchy from a checkout
+
+`omarchy dev link ~/src/omarchy` runs the desktop from your checkout after a reboot. A checkout of Omarchy is Arch-flavored, so on FreeBSD it is not run directly: the omarchy port's `freebsdize` builds the same FreeBSD tree the port installs (applying the port's patches, adding the FreeBSD versions of commands, rewriting paths and interpreters) into `~/.local/share/omarchy-dev`, and `OMARCHY_PATH` points there. While an Omarchy session runs, `omarchy dev sync --watch` rebuilds that tree a moment after each save; `omarchy dev sync` does it by hand. `omarchy dev unlink` goes back to the installed Omarchy.
+
+The link also points sudo at the tree's commands (a `secure_path` in `/usr/local/etc/sudoers.d/omarchy-dev-path` that keeps FreeBSD's `/sbin`, `/bin`, and `/usr/sbin`).
+
+If one of the port's patches stops applying to your checkout (you moved past the version the port packages), `omarchy dev link` and `sync` say so; refresh the patch in `~/src/freebsd-ports/x11-wm/omarchy/files`.
+
+### Ports from the ports tree
+
+Rebuild and install a port from `~/src/freebsd-ports` with `sudo make reinstall clean` in its directory: `x11-wm/omarchy` for Omarchy's FreeBSD layer (compat tools, FreeBSD commands, `freebsdize`), `x11-wm/daemonarchy` for Daemonarchy's own look and the System > FreeBSD tools.
+
 ## Setting up a build host
 
 You need a FreeBSD 16.0-CURRENT machine (bare metal or a VM with about 8 GB of memory and 100 GB of disk) with poudriere, git, and the ports tree, as root.
