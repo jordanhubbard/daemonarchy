@@ -121,6 +121,8 @@ check "avahi running" "service avahi-daemon onestatus"
 check "mdns lookups" "grep -q '^hosts: files mdns dns' /etc/nsswitch.conf"
 check "network by DHCP" "grep -q '^ifconfig_DEFAULT=\"DHCP\"' /etc/rc.conf"
 check "daemonarchy installed" "pkg info -e daemonarchy && pkg info -e omarchy"
+check "/bin/bash runs bash" "/bin/bash -c true && test \$(readlink /bin/bash) = /usr/local/bin/bash"
+check "no broken FreeBSD repository entry" "! grep -q '^FreeBSD:' /usr/local/etc/pkg/repos/Daemonarchy.conf"
 check "Daemonarchy defaults staged" "test -d /usr/local/share/omarchy/skel.d/daemonarchy"
 exit \$failures
 EOF

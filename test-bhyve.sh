@@ -164,6 +164,8 @@ check "SDDM uses the Daemonarchy theme" "grep -qx 'Current=daemonarchy' '$mnt'/u
 check "sshd enabled, no reverse DNS" "grep -q '^sshd_enable=\"YES\"' '$mnt/etc/rc.conf' && grep -qx 'UseDNS no' '$mnt/etc/ssh/sshd_config'"
 check "avahi enabled with mdns lookups" "grep -q '^avahi_daemon_enable=\"YES\"' '$mnt/etc/rc.conf' && grep -q '^hosts: files mdns dns' '$mnt/etc/nsswitch.conf'"
 check "network by DHCP" "grep -q '^ifconfig_DEFAULT=\"DHCP\"' '$mnt/etc/rc.conf'"
+check "/bin/bash links to bash" "test \"\$(readlink '$mnt/bin/bash')\" = /usr/local/bin/bash"
+check "no broken FreeBSD repository entry" "! grep -q '^FreeBSD:' '$mnt/usr/local/etc/pkg/repos/Daemonarchy.conf'"
 check "daemonarchy installed" "ls '$mnt'/var/cache/pkg/daemonarchy-* >/dev/null 2>&1 || grep -q daemonarchy '$mnt/var/db/pkg/local.sqlite'"
 zfs umount dmtest/ROOT/default
 zpool export dmtest
