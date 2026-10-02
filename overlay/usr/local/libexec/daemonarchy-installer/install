@@ -261,11 +261,11 @@ phase install "Installing Daemonarchy packages"
 pkg_target install -y "${packages[@]}"
 
 # Keep the ISO's packages on the installed system as its own repository,
-# alongside FreeBSD's latest set.
+# alongside the base system's FreeBSD-ports repository (already "latest" on
+# -CURRENT).
 mkdir -p "$TARGET/var/db/daemonarchy" "$TARGET/usr/local/etc/pkg/repos"
 cp -R "$REPO" "$TARGET/var/db/daemonarchy/repo"
 cat >"$TARGET/usr/local/etc/pkg/repos/Daemonarchy.conf" <<EOF
-FreeBSD: { url: "pkg+https://pkg.FreeBSD.org/\${ABI}/latest" }
 Daemonarchy: {
   url: "file:///var/db/daemonarchy/repo",
   signature_type: "none",
