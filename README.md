@@ -17,6 +17,19 @@ Write it to a USB stick with `dd if=daemonarchy-16.0-20261001-2.iso of=/dev/<usb
 
 To build an image yourself or work on Daemonarchy, see [HACKING.md](HACKING.md).
 
+## What FreeBSD adds
+
+Daemonarchy is the Omarchy desktop with FreeBSD underneath, and it puts FreeBSD's strengths in the Omarchy menu under **System > FreeBSD** (from the image after daemonarchy-16.0-20261001-2):
+
+- **Boot environments.** The system lives on ZFS, and every Omarchy update first saves a boot environment: a bootable copy of the whole system. Roll back to any of them from the menu or the boot loader.
+- **Restore files.** Hourly and daily ZFS snapshots of home directories, kept for a day and a week; open one in the file manager and copy back what you lost.
+- **Jails.** Lightweight FreeBSD containers, each with its own FreeBSD system and packages.
+- **Virtual machines.** Run Linux, Windows, or the BSDs with bhyve, FreeBSD's hypervisor.
+- **Trace the system.** Live views of what the system is doing, through DTrace.
+- **Hack on Daemonarchy.** Fetch the sources and run the desktop from your own checkout of Omarchy; see [HACKING.md](HACKING.md).
+
+Omarchy's AI coding agents work here too: Claude Code, Codex, Crush, and the GitHub CLI come from FreeBSD's own packages, and Linux-only tools such as the Cursor CLI and OpenCode run under FreeBSD's Linux compatibility, each installed the first time you run it.
+
 ## What the image contains
 
 - A live FreeBSD system (from the snapshot) that logs root in on the first console and starts the installer.
