@@ -260,6 +260,11 @@ done
 phase install "Installing Daemonarchy packages"
 pkg_target install -y "${packages[@]}"
 
+# Scripts written for Omarchy (and most found online) start with #!/bin/bash.
+# FreeBSD keeps bash in /usr/local, which is part of the root file system and
+# of every boot environment, so a link in /bin is always good.
+[[ -e $TARGET/bin/bash ]] || ln -s /usr/local/bin/bash "$TARGET/bin/bash"
+
 # Keep the ISO's packages on the installed system as its own repository,
 # alongside the base system's FreeBSD-ports repository (already "latest" on
 # -CURRENT).
