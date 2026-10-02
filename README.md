@@ -8,18 +8,18 @@ This is a snapshot-based proof of concept. CURRENT moves daily, so an image is t
 
 ## Download
 
-The current installable image is **[daemonarchy-16.0-20261001-2](https://github.com/jordanhubbard/daemonarchy/releases/tag/daemonarchy-16.0-20261001-2)** (UEFI, x86-64, 1.7 GB):
+The current installable image is **[daemonarchy-16.0-20261002](https://github.com/jordanhubbard/daemonarchy/releases/tag/daemonarchy-16.0-20261002)** (UEFI, x86-64, 1.7 GB):
 
-- ISO: [daemonarchy-16.0-20261001-2.iso](https://github.com/jordanhubbard/daemonarchy/releases/download/daemonarchy-16.0-20261001-2/daemonarchy-16.0-20261001-2.iso)
-- SHA-256: `8c7dc40d8c01372ecc633e24a3c15057c8ebcb94e3eef24a340026388df22648` ([checksum file](https://github.com/jordanhubbard/daemonarchy/releases/download/daemonarchy-16.0-20261001-2/daemonarchy-16.0-20261001-2.iso.sha256))
+- ISO: [daemonarchy-16.0-20261002.iso](https://github.com/jordanhubbard/daemonarchy/releases/download/daemonarchy-16.0-20261002/daemonarchy-16.0-20261002.iso)
+- SHA-256: `e865bccdb5cb749132e899a39a14105b2446e3aeb042f833e952b005f69e4b12` ([checksum file](https://github.com/jordanhubbard/daemonarchy/releases/download/daemonarchy-16.0-20261002/daemonarchy-16.0-20261002.iso.sha256))
 
-Write it to a USB stick with `dd if=daemonarchy-16.0-20261001-2.iso of=/dev/<usb-device> bs=1m` (`bs=1M` on Linux), turn Secure Boot off, and boot from the stick. The install erases the disk you choose and downloads about 1,000 packages, so it needs a network connection. Every image, with its release notes, is on the [releases page](https://github.com/jordanhubbard/daemonarchy/releases).
+Write it to a USB stick with `dd if=daemonarchy-16.0-20261002.iso of=/dev/<usb-device> bs=1m` (`bs=1M` on Linux), turn Secure Boot off, and boot from the stick. The install erases the disk you choose and downloads about 1,000 packages, so it needs a network connection. Every image, with its release notes, is on the [releases page](https://github.com/jordanhubbard/daemonarchy/releases).
 
 To build an image yourself or work on Daemonarchy, see [HACKING.md](HACKING.md).
 
 ## What FreeBSD adds
 
-Daemonarchy is the Omarchy desktop with FreeBSD underneath, and it puts FreeBSD's strengths in the Omarchy menu under **System > FreeBSD** (from the image after daemonarchy-16.0-20261001-2):
+Daemonarchy is the Omarchy desktop with FreeBSD underneath, and it puts FreeBSD's strengths in the Omarchy menu under **System > FreeBSD**:
 
 - **Boot environments.** The system lives on ZFS, and every Omarchy update first saves a boot environment: a bootable copy of the whole system. Roll back to any of them from the menu or the boot loader.
 - **Restore files.** Hourly and daily ZFS snapshots of home directories, kept for a day and a week; open one in the file manager and copy back what you lost.
