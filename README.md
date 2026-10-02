@@ -6,10 +6,21 @@ This repository builds a bootable FreeBSD 16.0-CURRENT image with the Daemonarch
 
 This is a snapshot-based proof of concept. CURRENT moves daily, so an image is tied to the snapshot it was built from.
 
+## Download
+
+The current installable image is **[daemonarchy-16.0-20261001-2](https://github.com/jordanhubbard/daemonarchy/releases/tag/daemonarchy-16.0-20261001-2)** (UEFI, x86-64, 1.7 GB):
+
+- ISO: [daemonarchy-16.0-20261001-2.iso](https://github.com/jordanhubbard/daemonarchy/releases/download/daemonarchy-16.0-20261001-2/daemonarchy-16.0-20261001-2.iso)
+- SHA-256: `8c7dc40d8c01372ecc633e24a3c15057c8ebcb94e3eef24a340026388df22648` ([checksum file](https://github.com/jordanhubbard/daemonarchy/releases/download/daemonarchy-16.0-20261001-2/daemonarchy-16.0-20261001-2.iso.sha256))
+
+Write it to a USB stick with `dd if=daemonarchy-16.0-20261001-2.iso of=/dev/<usb-device> bs=1m` (`bs=1M` on Linux), turn Secure Boot off, and boot from the stick. The install erases the disk you choose and downloads about 1,000 packages, so it needs a network connection. Every image, with its release notes, is on the [releases page](https://github.com/jordanhubbard/daemonarchy/releases).
+
+To build an image yourself or work on Daemonarchy, see [HACKING.md](HACKING.md).
+
 ## What the image contains
 
 - A live FreeBSD system (from the snapshot) that logs root in on the first console and starts the installer.
-- The installer: `configurator` asks the questions, `install` installs, `launch` ties them together.
+- The installer: `configurator` asks the questions, `install` installs, `dashboard` shows its progress, `launch` ties them together.
 - The snapshot's `base.txz` and `kernel.txz`, which become the installed system.
 - A package repository with what pkg.FreeBSD.org does not publish: the Omarchy ports from [jordanhubbard/freebsd-ports](https://github.com/jordanhubbard/freebsd-ports) (`omarchy` branch), and the GPU and Wi-Fi kernel modules (`drm-66-kmod`, `gpu-firmware-*-kmod`, `wifi-firmware-*-kmod`) built for the snapshot kernel.
 
@@ -41,11 +52,7 @@ The machine powers off when the install finishes.
 
 ## Building
 
-On a FreeBSD 16.0-CURRENT host with poudriere, as root:
-
-1. Create a jail from the snapshot to install, and extract the snapshot's `kernel.txz` into it (poudriere's `url` method fetches no kernel).
-2. Create a ports tree at the commit the official `latest` package set was built from (the newest `ports_top_git_hash` annotation across its packages; builds are incremental, so a package that was not rebuilt keeps an older one), cherry-pick the Omarchy ports onto it, and bulk-build them together with `graphics/drm-66-kmod`, `graphics/gpu-firmware-kmod`, and `net/wifi-firmware-kmod` using `-b latest`. With `PACKAGE_FETCH_BLACKLIST="drm-*-kmod gpu-firmware-* wifi-firmware-*"` the kernel modules are built for the jail's kernel while every other dependency is the official binary, so the Omarchy packages match what the installer fetches.
-3. Run `./build-iso.sh` (see the variables at its top). The image and its `.sha256` land in `/usr/local/poudriere/data/images`.
+On a FreeBSD 16.0-CURRENT host with poudriere: build the ports, build the image with `./build-iso.sh`, test it with `./test-bhyve.sh` (or `./test-qemu.sh` on a host without bhyve), and publish it. [HACKING.md](HACKING.md) walks through each step, the faster loops for changing the installer, the ports, and the artwork, and the pitfalls met so far.
 
 ## Limits of the proof of concept
 
