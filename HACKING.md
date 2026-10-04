@@ -129,10 +129,10 @@ On real hardware, the install log is `/tmp/daemonarchy-install.log` on the live 
 ## Releasing
 
 1. Build the packages and the image as above, and run a test.
-2. Publish the image and its `.sha256` as a GitHub prerelease (GitHub will not mark a prerelease as the latest release, so do not ask it to):
+2. Publish the image and its `.sha256` as a GitHub release, marked as the latest:
 
    ```
-   gh release create <name> --prerelease --title "Daemonarchy ..." --notes-file notes.md <name>.iso <name>.iso.sha256
+   gh release create <name> --latest --title "Daemonarchy ..." --notes-file notes.md <name>.iso <name>.iso.sha256
    ```
 
 3. Point the Download section at the top of README.md to the new release: release name, ISO and checksum links, SHA-256, and the `dd` example.
