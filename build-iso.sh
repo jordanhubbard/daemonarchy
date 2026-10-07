@@ -75,7 +75,11 @@ cp "$extract/usr/local/libexec/omarchy/compat/timedatectl" "$share/compat/"
 rm -rf "$extract"
 
 echo "==> Fetching the FreeBSD base and kernel sets"
-fetch -q -o "$cache/MANIFEST" "$SNAPSHOT_URL/MANIFEST"
+# The sets must be the snapshot the jail was made from, since the packages and
+# kernel modules on the image are built against it. $SNAPSHOT_URL always has
+# the newest snapshot, so the sets are fetched once and kept: after updating
+# the jail to a new snapshot, empty $cache to fetch that one.
+[ -f "$cache/MANIFEST" ] || fetch -q -o "$cache/MANIFEST" "$SNAPSHOT_URL/MANIFEST"
 mkdir -p "$stage/overlay/usr/freebsd-dist"
 for set in base kernel; do
 	want=$(awk -v f="$set.txz" '$1 == f { print $2 }' "$cache/MANIFEST")
@@ -86,6 +90,14 @@ for set in base kernel; do
 	cp "$cache/$set.txz" "$stage/overlay/usr/freebsd-dist/"
 done
 cp "$cache/MANIFEST" "$stage/overlay/usr/freebsd-dist/"
+jail_root=$(poudriere jail -l -q | awk -v j="$JAIL" '$1 == j { print $NF }')
+version() { awk '/^#define __FreeBSD_version/ { print $3 }'; }
+jail_version=$(version <"$jail_root/usr/include/sys/param.h")
+set_version=$(tar -xOf "$cache/base.txz" ./usr/include/sys/param.h | version)
+if [ "$set_version" != "$jail_version" ]; then
+	echo "base.txz is FreeBSD $set_version but jail $JAIL is $jail_version: empty $cache, or update the jail and rebuild the packages" >&2
+	exit 1
+fi
 
 chmod 0755 "$stage"/overlay/usr/local/libexec/daemonarchy-installer/* "$share/keymap" "$share/compat/timedatectl"
 
