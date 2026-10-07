@@ -265,16 +265,26 @@ pkg_target install -y "${packages[@]}"
 # of every boot environment, so a link in /bin is always good.
 [[ -e $TARGET/bin/bash ]] || ln -s /usr/local/bin/bash "$TARGET/bin/bash"
 
-# Keep the ISO's packages on the installed system as its own repository,
-# alongside the base system's FreeBSD-ports repository (already "latest" on
-# -CURRENT).
-mkdir -p "$TARGET/var/db/daemonarchy" "$TARGET/usr/local/etc/pkg/repos"
+# Updates to Daemonarchy's own packages come from its signed online
+# repository (pkg-repo.sh), ahead of the base system's FreeBSD-ports
+# repository (already "latest" on -CURRENT). The ISO's packages stay on the
+# installed system as a fallback below it: the GPU and Wi-Fi modules built
+# for this kernel are only there.
+mkdir -p "$TARGET/var/db/daemonarchy" "$TARGET/usr/local/etc/pkg/repos" "$TARGET/usr/local/etc/pkg/keys"
 cp -R "$REPO" "$TARGET/var/db/daemonarchy/repo"
+cp "$ISO_SHARE/daemonarchy.pub" "$TARGET/usr/local/etc/pkg/keys/daemonarchy.pub"
 cat >"$TARGET/usr/local/etc/pkg/repos/Daemonarchy.conf" <<EOF
 Daemonarchy: {
+  url: "https://github.com/jordanhubbard/daemonarchy/releases/download/packages-16-amd64",
+  signature_type: "pubkey",
+  pubkey: "/usr/local/etc/pkg/keys/daemonarchy.pub",
+  priority: 10,
+  enabled: yes
+}
+Daemonarchy-ISO: {
   url: "file:///var/db/daemonarchy/repo",
   signature_type: "none",
-  priority: 10,
+  priority: 5,
   enabled: yes
 }
 EOF

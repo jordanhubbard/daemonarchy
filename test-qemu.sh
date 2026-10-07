@@ -123,6 +123,7 @@ check "network by DHCP" "grep -q '^ifconfig_DEFAULT=\"DHCP\"' /etc/rc.conf"
 check "daemonarchy installed" "pkg info -e daemonarchy && pkg info -e omarchy"
 check "/bin/bash runs bash" "/bin/bash -c true && test \$(readlink /bin/bash) = /usr/local/bin/bash"
 check "no broken FreeBSD repository entry" "! grep -q '^FreeBSD:' /usr/local/etc/pkg/repos/Daemonarchy.conf"
+check "updates from the signed Daemonarchy repository" "test -s /usr/local/etc/pkg/keys/daemonarchy.pub && as_root pkg update -f -r Daemonarchy && pkg rquery -r Daemonarchy %n omarchy | grep -qx omarchy"
 check "Daemonarchy defaults staged" "test -d /usr/local/share/omarchy/skel.d/daemonarchy"
 exit \$failures
 EOF

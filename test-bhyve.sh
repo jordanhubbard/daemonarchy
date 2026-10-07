@@ -166,6 +166,7 @@ check "avahi enabled with mdns lookups" "grep -q '^avahi_daemon_enable=\"YES\"' 
 check "network by DHCP" "grep -q '^ifconfig_DEFAULT=\"DHCP\"' '$mnt/etc/rc.conf'"
 check "/bin/bash links to bash" "test \"\$(readlink '$mnt/bin/bash')\" = /usr/local/bin/bash"
 check "no broken FreeBSD repository entry" "! grep -q '^FreeBSD:' '$mnt/usr/local/etc/pkg/repos/Daemonarchy.conf'"
+check "signed Daemonarchy repository configured" "test -s '$mnt/usr/local/etc/pkg/keys/daemonarchy.pub' && grep -q 'signature_type: \"pubkey\"' '$mnt/usr/local/etc/pkg/repos/Daemonarchy.conf'"
 check "daemonarchy installed" "ls '$mnt'/var/cache/pkg/daemonarchy-* >/dev/null 2>&1 || grep -q daemonarchy '$mnt/var/db/pkg/local.sqlite'"
 zfs umount dmtest/ROOT/default
 zpool export dmtest

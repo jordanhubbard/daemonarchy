@@ -39,6 +39,33 @@ Omarchy's AI coding agents work here too: Claude Code, Codex, Crush, and the Git
 
 Everything else the desktop needs (Hyprland, Qt, browsers, ...) is downloaded from pkg.FreeBSD.org during the install, so the machine needs network access. That keeps the image well under GitHub's 2 GiB release asset limit; a fully offline image would be 7-8 GB.
 
+## Updates
+
+An installed system keeps itself current with `pkg upgrade` (which Omarchy's update runs). FreeBSD's packages come from pkg.FreeBSD.org. Daemonarchy's own packages (the Omarchy ports and the patched Quickshell) come from a signed repository published as the assets of the [`packages-16-amd64`](https://github.com/jordanhubbard/daemonarchy/releases/tag/packages-16-amd64) release. The installer adds its key as `/usr/local/etc/pkg/keys/daemonarchy.pub`, so fixes reach you without a new ISO. The image's own packages stay on the disk as a fallback repository, `Daemonarchy-ISO`, since the GPU and Wi-Fi modules built for its kernel are only there.
+
+A system installed from an earlier image (2026-10-02 or before) has only the on-disk repository. To move it to the online one, run as root:
+
+```
+mkdir -p /usr/local/etc/pkg/keys
+fetch -o /usr/local/etc/pkg/keys/daemonarchy.pub https://raw.githubusercontent.com/jordanhubbard/daemonarchy/main/overlay/usr/local/share/daemonarchy-installer/daemonarchy.pub
+cat >/usr/local/etc/pkg/repos/Daemonarchy.conf <<'EOF'
+Daemonarchy: {
+  url: "https://github.com/jordanhubbard/daemonarchy/releases/download/packages-16-amd64",
+  signature_type: "pubkey",
+  pubkey: "/usr/local/etc/pkg/keys/daemonarchy.pub",
+  priority: 10,
+  enabled: yes
+}
+Daemonarchy-ISO: {
+  url: "file:///var/db/daemonarchy/repo",
+  signature_type: "none",
+  priority: 5,
+  enabled: yes
+}
+EOF
+pkg upgrade
+```
+
 ## The installer
 
 `overlay/usr/local/libexec/daemonarchy-installer/configurator` keeps the Omarchy ISO configurator's screens and look, and sources Omarchy's own setup form (`install/provisioning/setup-form.sh`, taken from the `omarchy` package at build time) so the questions and validation are identical. Two steps are FreeBSD's own: a network step, since packages are downloaded during the install (wired networks are configured by DHCP at boot; otherwise it scans for Wi-Fi, joins the chosen network, and carries the setting over to the installed system), and the disk step: pick a disk, optionally encrypt it.

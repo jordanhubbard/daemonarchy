@@ -28,18 +28,7 @@ packages=/usr/local/poudriere/data/packages/$JAIL-$PTREE
 stage=/var/tmp/daemonarchy-iso-stage
 cache=/var/cache/daemonarchy-iso
 
-# Ports whose packages ship on the ISO rather than coming from pkg.FreeBSD.org:
-# the Omarchy ports, ports carrying fixes the official packages lack yet
-# (x11/quickshell), and kernel modules built for the ISO's kernel.
-ISO_ORIGINS="
-audio/cliamp devel/tobi-try devel/usage editors/omarchy-nvim editors/omawrite
-graphics/omasnap graphics/tensaku math/omacalc misc/ttfx multimedia/omacut
-sysutils/herdr sysutils/lazydocker sysutils/tzupdate sysutils/udiskie
-x11-fonts/ia-writer-fonts x11-themes/aether x11-wm/omarchy
-x11-wm/daemonarchy x11/hyprland-preview-share-picker x11/owe
-x11/owe-lockfeed x11/quickshell graphics/drm-66-kmod graphics/gpu-firmware-kmod
-net/wifi-firmware-kmod
-"
+. "$here/origins.sh"
 
 rm -rf "$stage"
 mkdir -p "$stage" "$cache" "$OUTDIR"

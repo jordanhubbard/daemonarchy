@@ -9,14 +9,16 @@ Daemonarchy is two repositories:
 - **This one** builds the installer image:
   - `overlay/usr/local/libexec/daemonarchy-installer/`: the installer. `launch` runs from root's login on the live system; `configurator` asks the questions (it vendors Omarchy's own setup form); `install` partitions, installs, and configures; `dashboard` draws the install screen from the install log.
   - `overlay/usr/local/share/daemonarchy-installer/`: the installer's logo, the loader brand, and the keymap table.
+  - `origins.sh`: the ports whose packages Daemonarchy publishes itself, rather than taking them from pkg.FreeBSD.org.
   - `build-iso.sh`: collects the package repository and builds the hybrid ISO with `poudriere image`.
+  - `pkg-repo.sh`: publishes the signed online package repository that installed systems update from (see Releasing).
   - `live-post.sh`: turns the plain FreeBSD image into the live installer (console autologin, memory-backed `/var`, loader brand).
   - `test-bhyve.sh` and `test-qemu.sh`: unattended install tests.
 - **[jordanhubbard/freebsd-ports](https://github.com/jordanhubbard/freebsd-ports/tree/omarchy)**, the `omarchy` branch, carries the ports:
   - `x11-wm/omarchy`: Omarchy itself, kept as Omarchy ships it apart from FreeBSD compatibility. `files/compat/` has stand-ins for the systemd and Linux tools Omarchy calls (`systemctl`, `uwsm`, `journalctl`, `timedatectl`, `brightnessctl`, ...); `files/freebsd-bin/` has FreeBSD versions of commands built on pacman, `/sys`, or NetworkManager; `files/seed-user` copies Omarchy's defaults into a home on the first session (Arch does this from `/etc/skel`).
   - `x11-wm/daemonarchy`: the full desktop's dependencies, plus Daemonarchy's own look: `files/wallpaper.svg`, `files/wordmark.svg` (the login screen's logo), `files/mark.svg` (the horned "A"), `files/screensaver.txt`, `files/about.txt`, and an SDDM theme that reuses Omarchy's with the Daemonarchy wordmark. Defaults for new users go to `share/omarchy/skel.d/daemonarchy`, which `seed-user` copies in ahead of Omarchy's.
-  - The applications and tools Omarchy uses, one port each (`x11-themes/aether`, `graphics/tensaku`, `misc/ttfx`, ...), submitted upstream in [freebsd/freebsd-ports#630](https://github.com/freebsd/freebsd-ports/pull/630).
-  - `x11/quickshell`, carrying a fix for a use-after-free in its Hyprland IPC.
+  - The applications and tools Omarchy uses, one port each (`x11-themes/aether`, `graphics/tensaku`, `misc/ttfx`, ...), submitted upstream in [freebsd/freebsd-ports#630](https://github.com/freebsd/freebsd-ports/pull/630); `x11-wm/omarchy` and `x11-wm/daemonarchy` are in [#635](https://github.com/freebsd/freebsd-ports/pull/635).
+  - `x11/quickshell`, carrying a fix for a use-after-free in its Hyprland IPC ([#634](https://github.com/freebsd/freebsd-ports/pull/634)).
 
 ## Working on Daemonarchy from Daemonarchy
 
@@ -128,7 +130,21 @@ On real hardware, the install log is `/tmp/daemonarchy-install.log` on the live 
 
 ## Releasing
 
-1. Build the packages and the image as above, and run a test.
+### Packages
+
+A fix to a port reaches installed systems through the online repository; no new image is needed. After rebuilding the packages (step 4 of the build host setup), run this from a workstation with `gh`:
+
+```
+./pkg-repo.sh publish
+```
+
+It copies `origins.sh` and itself to the build host (`BUILD_HOST`, default `freebsd.local`), and collects and signs the `OMARCHY_ORIGINS` packages there. It then replaces the assets of the `packages-16-amd64` release, uploading the packages first and the catalogue last. That release is never marked latest, so the latest release stays the ISO.
+
+The signing key is `/usr/local/etc/daemonarchy/pkg-repo.key` on the build host. Make it once with `pkg-repo.sh keygen`, and commit the public key it prints as `overlay/usr/local/share/daemonarchy-installer/daemonarchy.pub`. Keep a copy of the private key somewhere safe. If it is lost, a new key has to be put on every installed system by hand.
+
+### Images
+
+1. Build the packages and the image as above, publish the packages, and run a test.
 2. Publish the image and its `.sha256` as a GitHub release, marked as the latest:
 
    ```
