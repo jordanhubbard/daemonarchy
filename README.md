@@ -8,12 +8,12 @@ Each release is built from a FreeBSD 16.0-CURRENT snapshot. CURRENT moves daily,
 
 ## Download
 
-The current installable image is **[daemonarchy-16.0-20261002](https://github.com/jordanhubbard/daemonarchy/releases/tag/daemonarchy-16.0-20261002)** (UEFI, x86-64, 1.7 GB):
+The current installable image is **[daemonarchy-16.0-20261007](https://github.com/jordanhubbard/daemonarchy/releases/tag/daemonarchy-16.0-20261007)** (UEFI, x86-64, 1.7 GB):
 
-- ISO: [daemonarchy-16.0-20261002.iso](https://github.com/jordanhubbard/daemonarchy/releases/download/daemonarchy-16.0-20261002/daemonarchy-16.0-20261002.iso)
-- SHA-256: `e865bccdb5cb749132e899a39a14105b2446e3aeb042f833e952b005f69e4b12` ([checksum file](https://github.com/jordanhubbard/daemonarchy/releases/download/daemonarchy-16.0-20261002/daemonarchy-16.0-20261002.iso.sha256))
+- ISO: [daemonarchy-16.0-20261007.iso](https://github.com/jordanhubbard/daemonarchy/releases/download/daemonarchy-16.0-20261007/daemonarchy-16.0-20261007.iso)
+- SHA-256: `1b4695920a2164aac60776c11a71ddf4aac4bbb9d980242ec355f3ac4805f539` ([checksum file](https://github.com/jordanhubbard/daemonarchy/releases/download/daemonarchy-16.0-20261007/daemonarchy-16.0-20261007.iso.sha256))
 
-Write it to a USB stick with `dd if=daemonarchy-16.0-20261002.iso of=/dev/<usb-device> bs=1m` (`bs=1M` on Linux), turn Secure Boot off, and boot from the stick. The install erases the disk you choose and downloads about 1,000 packages, so it needs a network connection. Every image, with its release notes, is on the [releases page](https://github.com/jordanhubbard/daemonarchy/releases).
+Write it to a USB stick with `dd if=daemonarchy-16.0-20261007.iso of=/dev/<usb-device> bs=1m` (`bs=1M` on Linux), turn Secure Boot off, and boot from the stick. The install erases the disk you choose and downloads about 1,000 packages, so it needs a network connection. Every image, with its release notes, is on the [releases page](https://github.com/jordanhubbard/daemonarchy/releases).
 
 To build an image yourself or work on Daemonarchy, see [HACKING.md](HACKING.md).
 
@@ -43,7 +43,7 @@ Everything else the desktop needs (Hyprland, Qt, browsers, ...) is downloaded fr
 
 An installed system keeps itself current with `pkg upgrade` (which Omarchy's update runs). FreeBSD's packages come from pkg.FreeBSD.org. Daemonarchy's own packages (the Omarchy ports and the patched Quickshell) come from a signed repository published as the assets of the [`packages-16-amd64`](https://github.com/jordanhubbard/daemonarchy/releases/tag/packages-16-amd64) release. The installer adds its key as `/usr/local/etc/pkg/keys/daemonarchy.pub`, so fixes reach you without a new ISO. The image's own packages stay on the disk as a fallback repository, `Daemonarchy-ISO`, since the GPU and Wi-Fi modules built for its kernel are only there.
 
-A system installed from an earlier image (2026-10-02 or before) has only the on-disk repository. To move it to the online one, run as root:
+A system installed from an image dated 2026-10-02 or earlier has only the on-disk repository. To move it to the online one, run as root:
 
 ```
 mkdir -p /usr/local/etc/pkg/keys
