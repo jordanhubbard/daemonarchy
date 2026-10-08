@@ -30,9 +30,13 @@ log() { printf '\033[32m==>\033[0m %s\n' "$*"; }
 
 # A wpa_supplicant.conf for one network. wpa_passphrase hashes the password, so
 # no character in it can break the file.
+# The control socket belongs to wheel and the file may be rewritten, so the
+# desktop's Wi-Fi panel (omarchy-wifi, through wpa_cli) can join and forget
+# networks without root.
 wpa_network() {
   local ssid=$1 psk=$2 hidden=$3
-  echo 'ctrl_interface=/var/run/wpa_supplicant'
+  echo 'ctrl_interface=DIR=/var/run/wpa_supplicant GROUP=wheel'
+  echo 'update_config=1'
   if [[ -n $psk ]]; then
     wpa_passphrase "$ssid" "$psk" | grep -v '^[[:space:]]*#psk='
   else
