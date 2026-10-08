@@ -1,5 +1,7 @@
 # Daemonarchy
 
+![The Daemonarchy desktop: fastfetch, btop, boot environments and home snapshots, with the System > FreeBSD menu open](docs/images/desktop.png)
+
 Daemonarchy is the [Omarchy](https://omarchy.org) desktop on FreeBSD: DHH's opinionated Hyprland desktop, ported to FreeBSD and installed the way the Omarchy ISO installs it on Arch. The name is a homage: Omarchy's *-archy*, ruled by the BSD daemon.
 
 This repository builds a bootable FreeBSD 16.0-CURRENT image with the Daemonarchy installer: the same welcome screen, keyboard, account, hostname, and timezone questions as the Omarchy ISO, then a whole-disk install that boots into the desktop. Daemonarchy is not affiliated with Omarchy; the Omarchy software itself comes, unchanged apart from FreeBSD compatibility, from the `x11-wm/omarchy` port.
@@ -13,9 +15,9 @@ The current installable image is **[daemonarchy-16.0-20261007](https://github.co
 - ISO: [daemonarchy-16.0-20261007.iso](https://github.com/jordanhubbard/daemonarchy/releases/download/daemonarchy-16.0-20261007/daemonarchy-16.0-20261007.iso)
 - SHA-256: `1b4695920a2164aac60776c11a71ddf4aac4bbb9d980242ec355f3ac4805f539` ([checksum file](https://github.com/jordanhubbard/daemonarchy/releases/download/daemonarchy-16.0-20261007/daemonarchy-16.0-20261007.iso.sha256))
 
-Write it to a USB stick with `dd if=daemonarchy-16.0-20261007.iso of=/dev/<usb-device> bs=1m` (`bs=1M` on Linux), turn Secure Boot off, and boot from the stick. The install erases the disk you choose and downloads about 1,000 packages, so it needs a network connection. Every image, with its release notes, is on the [releases page](https://github.com/jordanhubbard/daemonarchy/releases).
+Write it to a USB stick with `dd if=daemonarchy-16.0-20261007.iso of=/dev/<usb-device> bs=1m` (`bs=1M` on Linux), turn Secure Boot off, and boot from the stick. The install erases the disk you choose and downloads about 1,200 packages, so it needs a network connection. Every image, with its release notes, is on the [releases page](https://github.com/jordanhubbard/daemonarchy/releases).
 
-To build an image yourself or work on Daemonarchy, see [HACKING.md](HACKING.md).
+New to Daemonarchy? [Getting started](docs/getting-started.md) walks through writing the stick, installing, and your first hour on the desktop: Wi-Fi, sound, Bluetooth, updates, and what FreeBSD adds. To build an image yourself or work on Daemonarchy, see [HACKING.md](HACKING.md).
 
 ## What FreeBSD adds
 
@@ -27,6 +29,12 @@ Daemonarchy is the Omarchy desktop with FreeBSD underneath, and it puts FreeBSD'
 - **Virtual machines.** Run Linux, Windows, or the BSDs with bhyve, FreeBSD's hypervisor.
 - **Trace the system.** Live views of what the system is doing, through DTrace.
 - **Hack on Daemonarchy.** Fetch the sources and run the desktop from your own checkout of Omarchy; see [HACKING.md](HACKING.md).
+
+![Hourly snapshots of a home directory in Files, a live DTrace view of system calls, the ZFS pool, and the sound panel](docs/images/freebsd.png)
+
+Omarchy's panels work on FreeBSD too. Wi-Fi runs through FreeBSD's `wpa_supplicant`, sound through PipeWire, and Bluetooth keyboards and mice through FreeBSD's own Bluetooth stack:
+
+![The network panel: Ethernet status, DNS, and nearby Wi-Fi networks (names blurred)](docs/images/network.png)
 
 Omarchy's AI coding agents work here too: Claude Code, Codex, Crush, and the GitHub CLI come from FreeBSD's own packages, and Linux-only tools such as the Cursor CLI and OpenCode run under FreeBSD's Linux compatibility, each installed the first time you run it.
 

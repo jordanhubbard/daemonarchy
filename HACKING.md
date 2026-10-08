@@ -8,14 +8,16 @@ Daemonarchy is two repositories:
 
 - **This one** builds the installer image:
   - `overlay/usr/local/libexec/daemonarchy-installer/`: the installer. `launch` runs from root's login on the live system; `configurator` asks the questions (it vendors Omarchy's own setup form); `install` partitions, installs, and configures; `dashboard` draws the install screen from the install log.
-  - `overlay/usr/local/share/daemonarchy-installer/`: the installer's logo, the loader brand, and the keymap table.
+  - `overlay/usr/local/libexec/daemonarchy-installer/fix-ownership`: restores the owners, groups and modes packages record, which `pkg -r` loses when installing into the target (see Pitfalls).
+  - `overlay/usr/local/share/daemonarchy-installer/`: the installer's logo, the loader brand, the keymap table, and the package repository's public key (`daemonarchy.pub`).
   - `origins.sh`: the ports whose packages Daemonarchy publishes itself, rather than taking them from pkg.FreeBSD.org.
   - `build-iso.sh`: collects the package repository and builds the hybrid ISO with `poudriere image`.
   - `pkg-repo.sh`: publishes the signed online package repository that installed systems update from (see Releasing).
   - `live-post.sh`: turns the plain FreeBSD image into the live installer (console autologin, memory-backed `/var`, loader brand).
   - `test-bhyve.sh` and `test-qemu.sh`: unattended install tests.
+  - `docs/getting-started.md`: the beginner's guide; its screenshots are in `docs/images/`.
 - **[jordanhubbard/freebsd-ports](https://github.com/jordanhubbard/freebsd-ports/tree/omarchy)**, the `omarchy` branch, carries the ports:
-  - `x11-wm/omarchy`: Omarchy itself, kept as Omarchy ships it apart from FreeBSD compatibility. `files/compat/` has stand-ins for the systemd and Linux tools Omarchy calls (`systemctl`, `uwsm`, `journalctl`, `timedatectl`, `brightnessctl`, ...); `files/freebsd-bin/` has FreeBSD versions of commands built on pacman, `/sys`, or NetworkManager; `files/seed-user` copies Omarchy's defaults into a home on the first session (Arch does this from `/etc/skel`).
+  - `x11-wm/omarchy`: Omarchy itself, kept as Omarchy ships it apart from FreeBSD compatibility. `files/compat/` has stand-ins for the systemd and Linux tools Omarchy calls (`systemctl`, `uwsm`, `journalctl`, `timedatectl`, `brightnessctl`, ...); `files/freebsd-bin/` has FreeBSD versions of commands built on pacman, `/sys`, NetworkManager or BlueZ, among them `omarchy-wifi` (wpa_supplicant) and `omarchy-bluetooth` (FreeBSD's Bluetooth stack), which feed the network and Bluetooth panels through the `FreeBSDWifi.qml` and `FreeBSDBluetooth.qml` stand-ins the port's patches add; `files/polkit-omarchy.rules` lets an active wheel session run those two as root; `files/seed-user` copies Omarchy's defaults into a home on the first session (Arch does this from `/etc/skel`).
   - `x11-wm/daemonarchy`: the full desktop's dependencies, plus Daemonarchy's own look: `files/wallpaper.svg`, `files/wordmark.svg` (the login screen's logo), `files/mark.svg` (the horned "A"), `files/screensaver.txt`, `files/about.txt`, and an SDDM theme that reuses Omarchy's with the Daemonarchy wordmark. Defaults for new users go to `share/omarchy/skel.d/daemonarchy`, which `seed-user` copies in ahead of Omarchy's.
   - The applications and tools Omarchy uses, one port each (`x11-themes/aether`, `graphics/tensaku`, `misc/ttfx`, ...), submitted upstream in [freebsd/freebsd-ports#630](https://github.com/freebsd/freebsd-ports/pull/630); `x11-wm/omarchy` and `x11-wm/daemonarchy` are in [#635](https://github.com/freebsd/freebsd-ports/pull/635).
   - `x11/quickshell`, carrying a fix for a use-after-free in its Hyprland IPC ([#634](https://github.com/freebsd/freebsd-ports/pull/634)).
