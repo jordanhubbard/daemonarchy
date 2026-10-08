@@ -87,8 +87,10 @@ You need a FreeBSD 16.0-CURRENT machine (bare metal or a VM with about 8 GB of m
 5. **Build the image:**
 
    ```
-   NAME=daemonarchy-16.0-$(date +%Y%m%d) ./build-iso.sh
+   ./build-iso.sh
    ```
+
+   The image is named after the version of the `daemonarchy` package it carries: `daemonarchy-<version>-<arch>.iso`, for example `daemonarchy-1.0.0-amd64.iso`. Set `NAME` to override.
 
    The image and its `.sha256` land in `/usr/local/poudriere/data/images`.
 
@@ -144,11 +146,19 @@ The signing key is `/usr/local/etc/daemonarchy/pkg-repo.key` on the build host. 
 
 ### Images
 
-1. Build the packages and the image as above, publish the packages, and run a test.
-2. Publish the image and its `.sha256` as a GitHub release, marked as the latest:
+Daemonarchy releases use [semantic versioning](https://semver.org), numbered on their own rather than after Omarchy's or FreeBSD's releases (the notes say which of each a release carries). The number is `PORTVERSION` in `x11-wm/daemonarchy`:
+
+- **Patch** (1.0.1): fixes only.
+- **Minor** (1.1.0): new features that leave existing installs working as they were.
+- **Major** (2.0.0): changes an existing install cannot simply upgrade into, such as a new FreeBSD branch or a disk layout the installer no longer makes.
+
+Package-only fixes between images bump `PORTREVISION` instead and ship through the package repository.
+
+1. Set the version in `x11-wm/daemonarchy`, build the packages and the image as above, publish the packages, and run a test.
+2. Publish the image and its `.sha256` as a GitHub release tagged `daemonarchy-<version>`, marked as the latest:
 
    ```
-   gh release create <name> --latest --title "Daemonarchy ..." --notes-file notes.md <name>.iso <name>.iso.sha256
+   gh release create daemonarchy-<version> --latest --title "Daemonarchy <version>" --notes-file notes.md daemonarchy-<version>-amd64.iso daemonarchy-<version>-amd64.iso.sha256
    ```
 
 3. Point the Download section at the top of README.md to the new release: release name, ISO and checksum links, SHA-256, and the `dd` example.

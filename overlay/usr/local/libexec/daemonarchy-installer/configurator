@@ -84,6 +84,7 @@ greeter() {
   gum style --foreground 1 --padding "0 0 0 $PADDING_LEFT" "$(<"$LOGO_PATH")"
 
   tagline="Omarchy's desktop spliced onto FreeBSD's daemon"
+  [[ -r $ISO_SHARE/version ]] && tagline="$tagline · $(<"$ISO_SHARE/version")"
   tpad=$(((cols - ${#tagline}) / 2)); ((tpad < 0)) && tpad=0
   printf '\033[%d;%dH%s' "$tagline_row" "$((tpad + 1))" "$tagline"
 

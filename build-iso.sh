@@ -21,7 +21,7 @@ PTREE=${PTREE:-omarchyiso}
 SNAPSHOT_URL=${SNAPSHOT_URL:-https://download.freebsd.org/snapshots/amd64/16.0-CURRENT}
 OUTDIR=${OUTDIR:-/usr/local/poudriere/data/images}
 ABI=${ABI:-FreeBSD:16:amd64}
-NAME=${NAME:-daemonarchy-$(date +%Y%m%d)}
+ARCH=${ARCH:-amd64}
 
 here=$(cd "$(dirname "$0")" && pwd)
 packages=/usr/local/poudriere/data/packages/$JAIL-$PTREE
@@ -61,6 +61,14 @@ done | sort -u >"$share/reserved-users"
 echo "    $(wc -l <"$share/reserved-users" | tr -d ' ') package accounts reserved"
 
 echo "==> Taking the setup form from the omarchy package"
+# Releases are numbered by the daemonarchy package's version (semantic
+# versioning, Daemonarchy's own), without its epoch or port revision.
+daemonarchy_pkg=$(ls "$share"/repo/All/daemonarchy-[0-9]*.pkg | head -n 1)
+VERSION=$(pkg query -F "$daemonarchy_pkg" '%v' | sed -e 's/^[0-9]*,//' -e 's/_[0-9]*$//')
+NAME=${NAME:-daemonarchy-$VERSION-$ARCH}
+echo "$VERSION" >"$share/version"
+echo "    Daemonarchy $VERSION"
+
 omarchy_pkg=$(ls "$share"/repo/All/omarchy-[0-9]*.pkg | head -n 1)
 extract=$(mktemp -d)
 tar -xf "$omarchy_pkg" -C "$extract" \
