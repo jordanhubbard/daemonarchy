@@ -164,6 +164,7 @@ check "SDDM uses the Daemonarchy theme" "grep -qx 'Current=daemonarchy' '$mnt'/u
 check "sshd enabled, no reverse DNS" "grep -q '^sshd_enable=\"YES\"' '$mnt/etc/rc.conf' && grep -qx 'UseDNS no' '$mnt/etc/ssh/sshd_config'"
 check "avahi enabled with mdns lookups" "grep -q '^avahi_daemon_enable=\"YES\"' '$mnt/etc/rc.conf' && grep -q '^hosts: files mdns dns' '$mnt/etc/nsswitch.conf'"
 check "network by DHCP" "grep -q '^ifconfig_DEFAULT=\"DHCP\"' '$mnt/etc/rc.conf'"
+check "packaged files keep their owners" "test \"\$(stat -f %g '$mnt/usr/local/libexec/dbus-daemon-launch-helper')\" = \"\$(awk -F: '\$1 == \"messagebus\" { print \$3 }' '$mnt/etc/group')\" && test -u '$mnt/usr/local/libexec/dbus-daemon-launch-helper'"
 check "/bin/bash links to bash" "test \"\$(readlink '$mnt/bin/bash')\" = /usr/local/bin/bash"
 check "no broken FreeBSD repository entry" "! grep -q '^FreeBSD:' '$mnt/usr/local/etc/pkg/repos/Daemonarchy.conf'"
 check "signed Daemonarchy repository configured" "test -s '$mnt/usr/local/etc/pkg/keys/daemonarchy.pub' && grep -q 'signature_type: \"pubkey\"' '$mnt/usr/local/etc/pkg/repos/Daemonarchy.conf'"

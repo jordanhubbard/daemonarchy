@@ -1,0 +1,43 @@
+#!/bin/sh
+
+# Give every packaged file and directory the owner, group and mode its package
+# records, inside the system rooted at $1 (default /).
+#
+# pkg -r looks owner and group names up on the running system, not under the
+# root it installs into. The live installer has none of the accounts packages
+# create (messagebus, polkitd, cups, ...), so their files land as root:wheel:
+# D-Bus can then start no system service on demand (its setuid launch helper
+# is messagebus's), polkit agents fail, and CUPS cannot read its own spool.
+# Inside the installed system the names resolve, so chown there; chmod after
+# chown, which clears setuid and setgid bits.
+
+set -eu
+
+root=${1:-/}
+script=$(mktemp "$root/tmp/fix-ownership.XXXXXX")
+
+# A shell command restoring one path; a config file pkg copied from its
+# .sample gets the sample's ownership too.
+emit() {
+	printf "if [ -e '%s' ] || [ -L '%s' ]; then chown -h %s:%s '%s'" "$1" "$1" "$2" "$3" "$1"
+	if [ -n "$4" ]; then
+		printf " && { [ -L '%s' ] || chmod %s '%s'; }" "$1" "$4" "$1"
+	fi
+	printf '; fi\n'
+}
+
+pkg -r "$root" info --raw --raw-format json-compact -a |
+jq -r '
+  .[] | ((.files // {}) + (.directories // {})) | to_entries[]
+  | select(.value | type == "object")
+  | select(.value.uname != "root" or (.value.gname != "wheel" and .value.gname != "root"))
+  | [.key, .value.uname, .value.gname, (.value.perm // "")] | @tsv' |
+while IFS='	' read -r path user group mode; do
+	emit "$path" "$user" "$group" "$mode"
+	case $path in
+	*.sample) emit "${path%.sample}" "$user" "$group" "$mode" ;;
+	esac
+done >"$script"
+
+chroot "$root" /bin/sh "/tmp/${script##*/}"
+rm -f "$script"

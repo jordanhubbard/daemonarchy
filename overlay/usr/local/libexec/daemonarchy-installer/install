@@ -265,6 +265,10 @@ pkg_target install -y "${packages[@]}"
 # of every boot environment, so a link in /bin is always good.
 [[ -e $TARGET/bin/bash ]] || ln -s /usr/local/bin/bash "$TARGET/bin/bash"
 
+# pkg -r gave files owned by accounts the packages create (messagebus,
+# polkitd, cups, ...) to root:wheel, since the live system has none of them.
+/usr/local/libexec/daemonarchy-installer/fix-ownership "$TARGET"
+
 # Updates to Daemonarchy's own packages come from its signed online
 # repository (pkg-repo.sh), ahead of the base system's FreeBSD-ports
 # repository (already "latest" on -CURRENT). The ISO's packages stay on the
