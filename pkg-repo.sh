@@ -52,7 +52,11 @@ build() {
 	for pkgfile in "$packages"/All/*.pkg; do
 		origin=$(pkg query -F "$pkgfile" '%o')
 		case " $(echo $OMARCHY_ORIGINS) " in
-		*" $origin "*) cp "$pkgfile" "$OUT/" ;;
+		# GitHub renames assets with characters outside [A-Za-z0-9._-],
+		# such as the comma of an epoch (daemonarchy-1.0.0,1). pkg finds a
+		# package by the path the catalogue records, not by its name, so
+		# give the file a name GitHub keeps.
+		*" $origin "*) cp "$pkgfile" "$OUT/$(basename "$pkgfile" | tr -c 'A-Za-z0-9._\n-' '.')" ;;
 		esac
 	done
 	pkg repo -q "$OUT" "$KEY" >/dev/null
