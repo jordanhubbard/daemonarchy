@@ -1,0 +1,31 @@
+#!/bin/sh
+
+# Rebuild the caches packages' pkg triggers maintain, inside the system rooted
+# at $1 (default /).
+#
+# pkg -r runs triggers on the running system rather than under the root it
+# installs into, and the live installer has none of the tools they call
+# (glib-compile-schemas, gio-querymodules, ...), so a fresh install was left
+# without them. Without compiled GSettings schemas, GTK applications such as
+# the Files app abort at start. These are the commands of the triggers in
+# /usr/local/share/pkg/triggers, plus GTK's input-method cache.
+
+set -u
+
+root=${1:-/}
+
+chroot "$root" /bin/sh -c '
+PATH=/usr/local/sbin:/usr/local/bin:/usr/sbin:/usr/bin:/sbin:/bin
+run() { command -v "$1" >/dev/null 2>&1 && "$@"; }
+run glib-compile-schemas /usr/local/share/glib-2.0/schemas
+run gio-querymodules /usr/local/lib/gio/modules
+run gdk-pixbuf-query-loaders --update-cache
+run gtk-query-immodules-3.0 --update-cache
+run update-mime-database /usr/local/share/mime
+run update-desktop-database -q /usr/local/share/applications
+for theme in /usr/local/share/icons/*/; do
+	[ -f "$theme/index.theme" ] && run gtk-update-icon-cache -q -f "$theme"
+done
+run fc-cache -s
+true
+'

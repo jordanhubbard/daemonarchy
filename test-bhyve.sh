@@ -165,6 +165,7 @@ check "sshd enabled, no reverse DNS" "grep -q '^sshd_enable=\"YES\"' '$mnt/etc/r
 check "avahi enabled with mdns lookups" "grep -q '^avahi_daemon_enable=\"YES\"' '$mnt/etc/rc.conf' && grep -q '^hosts: files mdns dns' '$mnt/etc/nsswitch.conf'"
 check "network by DHCP" "grep -q '^ifconfig_DEFAULT=\"DHCP\"' '$mnt/etc/rc.conf'"
 check "packaged files keep their owners" "test \"\$(stat -f %g '$mnt/usr/local/libexec/dbus-daemon-launch-helper')\" = \"\$(awk -F: '\$1 == \"messagebus\" { print \$3 }' '$mnt/etc/group')\" && test -u '$mnt/usr/local/libexec/dbus-daemon-launch-helper'"
+check "GSettings schemas compiled" "test -s '$mnt/usr/local/share/glib-2.0/schemas/gschemas.compiled' && test -s '$mnt/usr/local/lib/gio/modules/giomodule.cache'"
 check "/bin/bash links to bash" "test \"\$(readlink '$mnt/bin/bash')\" = /usr/local/bin/bash"
 check "no broken FreeBSD repository entry" "! grep -q '^FreeBSD:' '$mnt/usr/local/etc/pkg/repos/Daemonarchy.conf'"
 check "signed Daemonarchy repository configured" "test -s '$mnt/usr/local/etc/pkg/keys/daemonarchy.pub' && grep -q 'signature_type: \"pubkey\"' '$mnt/usr/local/etc/pkg/repos/Daemonarchy.conf'"

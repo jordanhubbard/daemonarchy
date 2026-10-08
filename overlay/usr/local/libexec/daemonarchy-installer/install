@@ -273,6 +273,11 @@ pkg_target install -y "${packages[@]}"
 # polkitd, cups, ...) to root:wheel, since the live system has none of them.
 /usr/local/libexec/daemonarchy-installer/fix-ownership "$TARGET"
 
+# pkg -r also ran the packages' triggers on the live system, which lacks the
+# tools they call; rebuild their caches (GSettings schemas, GIO modules, ...)
+# inside the target.
+/usr/local/libexec/daemonarchy-installer/rebuild-caches "$TARGET"
+
 # Updates to Daemonarchy's own packages come from its signed online
 # repository (pkg-repo.sh), ahead of the base system's FreeBSD-ports
 # repository (already "latest" on -CURRENT). The ISO's packages stay on the
