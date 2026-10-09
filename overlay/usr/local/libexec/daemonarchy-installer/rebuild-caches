@@ -8,7 +8,8 @@
 # (glib-compile-schemas, gio-querymodules, ...), so a fresh install was left
 # without them. Without compiled GSettings schemas, GTK applications such as
 # the Files app abort at start. These are the commands of the triggers in
-# /usr/local/share/pkg/triggers, plus GTK's input-method cache.
+# /usr/local/share/pkg/triggers, plus GTK's input-method cache, run after
+# building the linker hints a booted system would have.
 
 set -u
 
@@ -17,6 +18,9 @@ root=${1:-/}
 chroot "$root" /bin/sh -c '
 PATH=/usr/local/sbin:/usr/local/bin:/usr/sbin:/usr/bin:/sbin:/bin
 run() { command -v "$1" >/dev/null 2>&1 && "$@"; }
+# A system that has never booted has no linker hints, without which nothing
+# in /usr/local/lib is found; build them as rc.d/ldconfig does at boot.
+ldconfig -elf /lib /usr/lib /usr/local/lib $(cat /usr/local/libdata/ldconfig/* 2>/dev/null)
 run glib-compile-schemas /usr/local/share/glib-2.0/schemas
 run gio-querymodules /usr/local/lib/gio/modules
 run gdk-pixbuf-query-loaders --update-cache
