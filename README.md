@@ -10,12 +10,12 @@ Each release is built from a FreeBSD 16.0-CURRENT snapshot. CURRENT moves daily,
 
 ## Download
 
-The current installable image is **[daemonarchy-16.0-20261007](https://github.com/jordanhubbard/daemonarchy/releases/tag/daemonarchy-16.0-20261007)** (UEFI, x86-64, 1.7 GB):
+The current release is **[Daemonarchy 1.0.0](https://github.com/jordanhubbard/daemonarchy/releases/tag/daemonarchy-1.0.0)** (UEFI, x86-64, 1.7 GB), with Omarchy 4.0.4 on FreeBSD 16.0-CURRENT of 2026-10-05:
 
-- ISO: [daemonarchy-16.0-20261007.iso](https://github.com/jordanhubbard/daemonarchy/releases/download/daemonarchy-16.0-20261007/daemonarchy-16.0-20261007.iso)
-- SHA-256: `1b4695920a2164aac60776c11a71ddf4aac4bbb9d980242ec355f3ac4805f539` ([checksum file](https://github.com/jordanhubbard/daemonarchy/releases/download/daemonarchy-16.0-20261007/daemonarchy-16.0-20261007.iso.sha256))
+- ISO: [daemonarchy-1.0.0-amd64.iso](https://github.com/jordanhubbard/daemonarchy/releases/download/daemonarchy-1.0.0/daemonarchy-1.0.0-amd64.iso)
+- SHA-256: `f38885cd342f1fff722edd7790480c8bca352577986574029edd562776f191a6` ([checksum file](https://github.com/jordanhubbard/daemonarchy/releases/download/daemonarchy-1.0.0/daemonarchy-1.0.0-amd64.iso.sha256))
 
-Write it to a USB stick with `dd if=daemonarchy-16.0-20261007.iso of=/dev/<usb-device> bs=1m` (`bs=1M` on Linux), turn Secure Boot off, and boot from the stick. The install erases the disk you choose and downloads about 1,200 packages, so it needs a network connection. Every image, with its release notes, is on the [releases page](https://github.com/jordanhubbard/daemonarchy/releases).
+Write it to a USB stick with `dd if=daemonarchy-1.0.0-amd64.iso of=/dev/<usb-device> bs=1m` (`bs=1M` on Linux), turn Secure Boot off, and boot from the stick. The install erases the disk you choose and downloads about 1,200 packages, so it needs a network connection. Every image, with its release notes, is on the [releases page](https://github.com/jordanhubbard/daemonarchy/releases).
 
 New to Daemonarchy? [Getting started](docs/getting-started.md) walks through writing the stick, installing, and your first hour on the desktop: Wi-Fi, sound, Bluetooth, updates, and what FreeBSD adds. To build an image yourself or work on Daemonarchy, see [HACKING.md](HACKING.md).
 
