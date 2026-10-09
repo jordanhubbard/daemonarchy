@@ -144,5 +144,6 @@ Daemonarchy can set up Claude Code, Codex, Cursor and others for you: open the m
 ## Going further
 
 - [The hacking guide](../HACKING.md): how Daemonarchy is built, how to change it, and how to build your own image.
+- The source: [daemonarchy](https://github.com/jordanhubbard/daemonarchy) (the installer), [daemonarchy-desktop](https://github.com/jordanhubbard/daemonarchy-desktop) (Daemonarchy's look and FreeBSD tools) and [omarchy-freebsd](https://github.com/jordanhubbard/omarchy-freebsd) (what lets Omarchy run on FreeBSD).
 - [Omarchy's manual](https://learn.omacom.io/2/the-omarchy-manual) for the desktop itself; nearly all of it applies here.
 - [The FreeBSD Handbook](https://docs.freebsd.org/en/books/handbook/) for the operating system underneath.

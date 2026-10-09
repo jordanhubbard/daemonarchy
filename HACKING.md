@@ -4,7 +4,7 @@ How to build a Daemonarchy image yourself, change the installer, the ports, or t
 
 ## Where things live
 
-Daemonarchy is two repositories:
+Daemonarchy is four repositories:
 
 - **This one** builds the installer image:
   - `overlay/usr/local/libexec/daemonarchy-installer/`: the installer. `launch` runs from root's login on the live system; `configurator` asks the questions (it vendors Omarchy's own setup form); `install` partitions, installs, and configures; `dashboard` draws the install screen from the install log.
@@ -17,17 +17,29 @@ Daemonarchy is two repositories:
   - `live-post.sh`: turns the plain FreeBSD image into the live installer (console autologin, memory-backed `/var`, loader brand).
   - `test-bhyve.sh` and `test-qemu.sh`: unattended install tests.
   - `docs/getting-started.md`: the beginner's guide; its screenshots are in `docs/images/`.
+- **[jordanhubbard/omarchy-freebsd](https://github.com/jordanhubbard/omarchy-freebsd)**: the FreeBSD layer that `x11-wm/omarchy` installs together with Omarchy:
+  - `freebsdize.in`: the adaptation of Omarchy's sources, run by the port and by `omarchy dev link`.
+  - `compat/`: stand-ins for the systemd and Linux tools Omarchy calls (`systemctl`, `uwsm`, `journalctl`, `timedatectl`, `brightnessctl`, ...).
+  - `freebsd-bin/`: FreeBSD versions of commands built on pacman, `/sys`, NetworkManager or BlueZ, among them `omarchy-wifi` (wpa_supplicant) and `omarchy-bluetooth` (FreeBSD's Bluetooth stack), which feed the network and Bluetooth panels.
+  - `systemd-user/`: the session's PipeWire and keyring units.
+  - `seed-user`: copies Omarchy's defaults into a home on the first session (Arch does this from `/etc/skel`).
+  - `polkit-omarchy.rules`: lets an active wheel session run `omarchy-wifi` and `omarchy-bluetooth` as root.
+- **[jordanhubbard/daemonarchy-desktop](https://github.com/jordanhubbard/daemonarchy-desktop)**: Daemonarchy's own layer, installed by `x11-wm/daemonarchy`:
+  - The artwork: `wallpaper.svg`, `wordmark.svg` (the login screen's logo), `mark.svg` (the horned "A"), `screensaver.txt`, `about.txt`.
+  - The SDDM theme that reuses Omarchy's with the Daemonarchy wordmark.
+  - The System > FreeBSD menu (`omarchy-menu.jsonc`) and the `daemonarchy-*` commands behind it.
+  - Its tags set Daemonarchy's version (see Releasing).
 - **[jordanhubbard/freebsd-ports](https://github.com/jordanhubbard/freebsd-ports/tree/omarchy)**, the `omarchy` branch, carries the ports:
-  - `x11-wm/omarchy`: Omarchy itself, kept as Omarchy ships it apart from FreeBSD compatibility. `files/compat/` has stand-ins for the systemd and Linux tools Omarchy calls (`systemctl`, `uwsm`, `journalctl`, `timedatectl`, `brightnessctl`, ...); `files/freebsd-bin/` has FreeBSD versions of commands built on pacman, `/sys`, NetworkManager or BlueZ, among them `omarchy-wifi` (wpa_supplicant) and `omarchy-bluetooth` (FreeBSD's Bluetooth stack), which feed the network and Bluetooth panels through the `FreeBSDWifi.qml` and `FreeBSDBluetooth.qml` stand-ins the port's patches add; `files/polkit-omarchy.rules` lets an active wheel session run those two as root; `files/seed-user` copies Omarchy's defaults into a home on the first session (Arch does this from `/etc/skel`).
-  - `x11-wm/daemonarchy`: the full desktop's dependencies, plus Daemonarchy's own look: `files/wallpaper.svg`, `files/wordmark.svg` (the login screen's logo), `files/mark.svg` (the horned "A"), `files/screensaver.txt`, `files/about.txt`, and an SDDM theme that reuses Omarchy's with the Daemonarchy wordmark. Defaults for new users go to `share/omarchy/skel.d/daemonarchy`, which `seed-user` copies in ahead of Omarchy's.
+  - `x11-wm/omarchy`: Omarchy itself, with omarchy-freebsd as a second distfile. Its `files/` holds only patches to Omarchy's own files, among them the ones that add the `FreeBSDWifi.qml` and `FreeBSDBluetooth.qml` stand-ins to the panels.
+  - `x11-wm/daemonarchy`: the full desktop's dependencies, plus daemonarchy-desktop. Defaults for new users go to `share/omarchy/skel.d/daemonarchy`, which `seed-user` copies in ahead of Omarchy's.
   - The applications and tools Omarchy uses, one port each (`x11-themes/aether`, `graphics/tensaku`, `misc/ttfx`, ...), submitted upstream in [freebsd/freebsd-ports#630](https://github.com/freebsd/freebsd-ports/pull/630); `x11-wm/omarchy` and `x11-wm/daemonarchy` are in [#635](https://github.com/freebsd/freebsd-ports/pull/635).
-  - `x11/quickshell`, carrying a fix for a use-after-free in its Hyprland IPC ([#634](https://github.com/freebsd/freebsd-ports/pull/634)).
+  - `x11/quickshell` carries a fix for a use-after-free in its Hyprland IPC, which is now committed upstream ([#634](https://github.com/freebsd/freebsd-ports/pull/634)).
 
 ## Working on Daemonarchy from Daemonarchy
 
 A Daemonarchy machine can be its own development machine, much as Omarchy's repo mode works on Arch.
 
-`daemonarchy-dev-setup` (also System > FreeBSD > Hack on Daemonarchy) clones the three trees into `~/src`: Omarchy at the installed version on a `daemonarchy-dev` branch, the ports tree with the Omarchy ports, and this repository. It then offers to link the desktop to the Omarchy checkout.
+`daemonarchy-dev-setup` (also System > FreeBSD > Hack on Daemonarchy) clones the trees into `~/src`: Omarchy at the installed version on a `daemonarchy-dev` branch, omarchy-freebsd, daemonarchy-desktop, this repository, and the ports tree with the Omarchy ports. It then offers to link the desktop to the Omarchy checkout.
 
 ### Omarchy from a checkout
 
@@ -37,9 +49,19 @@ The link also points sudo at the tree's commands (a `secure_path` in `/usr/local
 
 If one of the port's patches stops applying to your checkout (you moved past the version the port packages), `omarchy dev link` and `sync` say so; refresh the patch in `~/src/freebsd-ports/x11-wm/omarchy/files`.
 
-### Ports from the ports tree
+### The FreeBSD layer and the desktop layer
 
-Rebuild and install a port from `~/src/freebsd-ports` with `sudo make reinstall clean` in its directory: `x11-wm/omarchy` for Omarchy's FreeBSD layer (compat tools, FreeBSD commands, `freebsdize`), `x11-wm/daemonarchy` for Daemonarchy's own look and the System > FreeBSD tools.
+The ports fetch omarchy-freebsd and daemonarchy-desktop as tagged releases. To try your own checkout instead, let the port extract its sources, lay the checkout over them, and let it carry on:
+
+```
+cd ~/src/freebsd-ports/x11-wm/omarchy        # or x11-wm/daemonarchy
+make extract
+rsync -a --exclude .git ~/src/omarchy-freebsd/ "$(make -V WRKSRC_freebsd)/"
+#   for daemonarchy: rsync -a --exclude .git ~/src/daemonarchy-desktop/ "$(make -V WRKSRC)/"
+sudo make reinstall clean
+```
+
+`omarchy dev link` takes the FreeBSD commands and `freebsdize` from the installed port, so reinstall the omarchy port this way before linking to try changes to them.
 
 ## Setting up a build host
 
@@ -114,14 +136,15 @@ Work in a checkout of the fork's `omarchy` branch (the build host's `/usr/ports`
 
 - `poudriere testport -j 16amd64 -p <tree> -o <origin>` checks a port in a clean jail: stage-qa, the plist, install, and deinstall. Use it rather than `make stage-qa` as root on the host, which installs the port's dependencies onto the host.
 - To try a change on a running Daemonarchy desktop, `make reinstall` the port there; `seed-user --force` re-copies the defaults into the home (it never overwrites a file you have).
+- A change to omarchy-freebsd or daemonarchy-desktop ships as a new tag there: tag it, set the tag in the port (`GH_TUPLE` in `x11-wm/omarchy`, `DISTVERSION` in `x11-wm/daemonarchy`), and run `make makesum`.
 - Bump `PORTREVISION` whenever a package's contents change: poudriere rebuilds on version changes, not on file changes, so an unbumped port keeps its old package.
 - Commit each change on the `omarchy` branch, cherry-pick it onto the ISO tree, and rebuild the packages (step 4 above).
 
 ### The artwork
 
-The wallpaper, wordmark, and mark are SVG in `x11-wm/daemonarchy/files/`; the port renders the wallpaper to a 3840x2160 JPEG and the wordmark to the login screen's PNG with `rsvg-convert` at build time. Preview an edit with `rsvg-convert -w 1920 wallpaper.svg -o preview.png`. `about.txt` (the About screen's art) was made from `mark.svg` with Omarchy's own `omarchy-transcode-ascii`, and `screensaver.txt` is the same wordmark the installer shows.
+The wallpaper, wordmark, and mark are SVG in daemonarchy-desktop; the `x11-wm/daemonarchy` port renders the wallpaper to a 3840x2160 JPEG and the wordmark to the login screen's PNG with `rsvg-convert` at build time. Preview an edit with `rsvg-convert -w 1920 wallpaper.svg -o preview.png`. `about.txt` (the About screen's art) was made from `mark.svg` with Omarchy's own `omarchy-transcode-ascii`, and `screensaver.txt` is the same wordmark the installer shows.
 
-Daemonarchy's artwork is original: keep the FreeBSD and Arch Linux logos out of it, and keep Daemonarchy's identity in the `daemonarchy` port rather than in Omarchy's files.
+Daemonarchy's artwork is original: keep the FreeBSD and Arch Linux logos out of it, and keep Daemonarchy's identity in daemonarchy-desktop rather than in Omarchy's files or omarchy-freebsd.
 
 ## Testing
 
@@ -150,7 +173,7 @@ The signing key is `/usr/local/etc/daemonarchy/pkg-repo.key` on the build host. 
 
 ### Images
 
-Daemonarchy releases use [semantic versioning](https://semver.org), numbered on their own rather than after Omarchy's or FreeBSD's releases (the notes say which of each a release carries). The number is `PORTVERSION` in `x11-wm/daemonarchy`:
+Daemonarchy releases use [semantic versioning](https://semver.org), numbered on their own rather than after Omarchy's or FreeBSD's releases (the notes say which of each a release carries). The number is the daemonarchy-desktop tag that `x11-wm/daemonarchy` fetches (its `DISTVERSION`):
 
 - **Patch** (1.0.1): fixes only.
 - **Minor** (1.1.0): new features that leave existing installs working as they were.
@@ -158,7 +181,7 @@ Daemonarchy releases use [semantic versioning](https://semver.org), numbered on 
 
 Package-only fixes between images bump `PORTREVISION` instead and ship through the package repository.
 
-1. Set the version in `x11-wm/daemonarchy`, build the packages and the image as above, publish the packages, and run a test.
+1. Tag daemonarchy-desktop `v<version>`, set `DISTVERSION` in `x11-wm/daemonarchy` to it and run `make makesum`, then build the packages and the image as above, publish the packages, and run a test.
 2. Publish the image and its `.sha256` as a GitHub release tagged `daemonarchy-<version>`, marked as the latest:
 
    ```
