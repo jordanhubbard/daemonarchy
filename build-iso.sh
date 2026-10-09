@@ -64,7 +64,7 @@ echo "==> Taking the setup form from the omarchy package"
 # Releases are numbered by the daemonarchy package's version (semantic
 # versioning, Daemonarchy's own), without its epoch or port revision.
 daemonarchy_pkg=$(ls "$share"/repo/All/daemonarchy-[0-9]*.pkg | head -n 1)
-VERSION=$(pkg query -F "$daemonarchy_pkg" '%v' | sed -e 's/^[0-9]*,//' -e 's/_[0-9]*$//')
+VERSION=$(pkg query -F "$daemonarchy_pkg" '%v' | sed -e 's/,[0-9]*$//' -e 's/_[0-9]*$//')
 NAME=${NAME:-daemonarchy-$VERSION-$ARCH}
 echo "$VERSION" >"$share/version"
 echo "    Daemonarchy $VERSION"
