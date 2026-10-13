@@ -48,7 +48,7 @@ start_server() {
     fail 'Port must be 1–65535.'
   fi
   port=$((10#$port))
-  network_has_address || fail 'No usable IPv4 address. Return to the installer menu and configure the network.'
+  network_has_address || fail 'No usable IPv4 address. Configure the network from the debug shell, then retry remote-debug listen.'
   [[ ! -e $state ]] || fail 'Another debug session is already active.'
   # The snapshot's live root account must permit key authentication.
   [[ $(awk -F: '$1 == "root" {print $2}' /etc/master.passwd) != '*' ]] || fail 'Live root account is locked.'
@@ -93,8 +93,7 @@ EOF
 }
 
 show_status() {
-  clear
-  gum style --bold 'Installer remote debug mode'
+  echo 'Installer remote debug mode'
   echo
   echo 'No installation has been started. Pairing grants a root shell.'
   echo 'Tell your agent this IP address and port:'
@@ -105,14 +104,15 @@ show_status() {
   echo
   echo 'The agent should use a temporary SSH key and tell you its fingerprint.'
   echo 'Approve only the matching fingerprint when the pairing request appears.'
-  echo 'Press Enter to stop remote access and return to the installer menu.'
+  echo 'Press Enter to stop remote access and return to the debug shell.'
 }
 
-debug_menu() {
-  local port request fingerprint
-  port=$(gum input --value 2222 --header 'Remote debug port') || return 0
-  gum confirm --default=false --affirmative 'Enable remote debug' --negative 'Back' \
-    'An approved agent gets root access to this machine until you stop this mode or reboot. Enable?' || return 0
+debug_listen() {
+  local port=${1:-2222} request fingerprint answer
+  echo "Pairing grants the approved agent root access until you stop this listener."
+  printf 'Enable remote access on port %s? [y/N] ' "$port"
+  IFS= read -r answer || return 0
+  [[ $answer == y || $answer == Y ]] || return 0
   start_server "$port"
   show_status
   while kill -0 "$server_pid" 2>/dev/null; do
@@ -120,24 +120,64 @@ debug_menu() {
       [[ -f $request ]] || continue
       [[ ! -e $state/${request##*/}.approved && ! -e $state/${request##*/}.denied ]] || continue
       fingerprint=$(head -n 1 "$request")
-      gum style --bold 'Agent pairing request'
-      printf '\n%s\n\n' "$fingerprint"
-      if gum confirm --default=false --affirmative 'Pair with agent' --negative 'Reject' \
-        'Does this fingerprint match the one your agent gave you?'; then
+      printf '\nAgent pairing request: %s\n' "$fingerprint"
+      printf 'Does this match the fingerprint your agent gave you? [y/N] '
+      answer=""
+      IFS= read -r answer || return 0
+      if [[ $answer == y || $answer == Y ]]; then
         touch "$state/${request##*/}.approved"
       else
         touch "$state/${request##*/}.denied"
       fi
       show_status
     done
-    if IFS= read -r -t 1 </dev/tty; then
+    if IFS= read -r -t 1; then
       break
     fi
   done
 }
 
-case ${1:-menu} in
+debug_help() {
+  cat <<'HELP'
+Installer debug shell (root). Networking is not required to use this shell.
+No installation or remote listener has been started.
+
+Inspect hardware and networking:
+  ifconfig -a
+  usbconfig
+  pciconf -lv
+  sysctl net.wlan.devices
+  dmesg | less
+
+Request an address (replace ue0 with the correct interface):
+  dhclient ue0
+
+For Wi-Fi, use ifconfig to create wlan0 on a supported wireless adapter,
+configure /tmp/wpa_supplicant.conf, then run:
+  wpa_supplicant -B -i wlan0 -c /tmp/wpa_supplicant.conf
+  dhclient wlan0
+
+Start console-approved remote access after networking works:
+  remote-debug listen          # port 2222
+  remote-debug listen 2207     # custom port
+
+The listener asks before enabling access and before pairing each new key.
+Press Enter or Ctrl-C in the listener to stop it and return to this shell.
+Run remote-debug help to show this help again; exit returns to the installer.
+HELP
+}
+
+debug_shell() {
+  debug_help
+  PATH="$(dirname "$self"):$PATH"
+  export PATH
+  PS1='installer-debug# ' /usr/local/bin/bash --noprofile --norc -i
+}
+
+case ${1:-shell} in
   authorize) [[ $# == 4 ]] || exit 1; authorize "$2" "$3" "$4" ;;
-  menu) debug_menu ;;
-  *) fail 'Run remote-debug with no arguments from the live console.' ;;
+  shell|menu) debug_shell ;;
+  listen) [[ $# -le 2 ]] || fail 'Usage: remote-debug listen [port]'; debug_listen "${2:-2222}" ;;
+  help) debug_help ;;
+  *) fail 'Usage: remote-debug [shell | listen [port] | help]' ;;
 esac

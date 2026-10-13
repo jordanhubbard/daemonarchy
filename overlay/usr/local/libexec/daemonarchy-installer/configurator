@@ -457,7 +457,7 @@ network_step() {
     for ifc in $(ether_ports); do
       options+=("Use DHCP on $ifc" "Set up $ifc by hand")
     done
-    options+=("Check again")
+    options+=("Open debug shell" "Check again")
     [[ $mode == remote-debug ]] && options+=("Back to installer menu")
 
     choice=$(gum choose --height 12 --header "Network" "${options[@]}") && status=0 || status=$?
@@ -468,6 +468,7 @@ network_step() {
     fi
 
     case $choice in
+      "Open debug shell") "$(dirname "$0")/remote-debug" shell ;;
       "Back to installer menu") return 1 ;;
       Continue)
         if [[ $mode == remote-debug ]] && ! network_has_address; then continue; fi
@@ -687,7 +688,6 @@ while true; do
   case "$action" in
     'Install Daemonarchy') break ;;
     'Remote agent debug')
-      network_step remote-debug || continue
       "$(dirname "$0")/remote-debug" || {
         echo 'Remote debug could not start. Press Return to return to the menu.'
         IFS= read -r _ </dev/tty || true

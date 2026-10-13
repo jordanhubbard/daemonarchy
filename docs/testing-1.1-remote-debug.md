@@ -83,3 +83,25 @@ The host serial log is
 `/var/tmp/daemonarchy-debug-network-test/serial.log`; graphical console
 captures used for the menu checks are retained locally as
 `/tmp/daemonarchy-network-{menu,dhcp,debug,pair}.png`.
+
+## Preview.5: offline CLI access
+
+The debug entry now opens an interactive root Bash shell immediately, without
+network setup or an address prerequisite. Network setup also has an explicit
+Open debug shell action. `remote-debug listen [port]` uses text prompts for
+listener opt-in and key pairing; Enter/Ctrl-C stops it and returns to the shell.
+
+On 2026-10-13, preview.5 booted under UEFI bhyve on daemon.local with no NIC and
+no target disk attached. The main debug entry opened a working shell;
+`ifconfig -l` returned only `lo0`. Attempting `remote-debug listen` and answering
+y failed with the no-address explanation and returned to the same usable shell.
+Exiting the shell returned to the installer menu. CLI regression tests cover
+opt-in, default/custom ports, approval/rejection, and the real no-address guard.
+ShellCheck, Bash syntax checks, and network regression tests passed.
+Actual SSH pairing was exercised on preview.4; preview.5's text pairing prompts
+were tested with a simulated listener. Physical Mac networking remains pending.
+
+Artifact: `daemonarchy-1.1.0-preview.5-amd64.iso`.
+SHA-256: `599e8e6a2730b094fe7f4aa8a040cc66fc97831e1e907f3b5362878f816f31f5`.
+Console captures: `/tmp/daemonarchy-cli-shell.png`,
+`/tmp/daemonarchy-cli-no-network.png`, and `/tmp/daemonarchy-cli-return.png`.

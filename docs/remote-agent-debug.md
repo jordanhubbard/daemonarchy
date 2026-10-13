@@ -14,26 +14,28 @@ and preview.2 do not contain the menu option.
    firmware's one-time boot menu. The preview currently requires Secure Boot
    to be disabled. Use Ethernet initially where possible.
 2. Press Return at the welcome screen and choose **Remote agent debug**.
-   The network screen opens first: choose DHCP, Wi-Fi, or manual settings.
-   Continue becomes available once an active interface has an IPv4 address.
-   Remote debug only needs connectivity to the agent, not internet access.
-   **Back to installer menu** cancels without starting remote access.
-   The screen shows interface names and kernel hardware descriptions. If it
-   reports no supported Wi-Fi adapter, FreeBSD has not exposed one to the
-   installer; a supported USB network adapter may be needed. For diagnosis,
-   use **Exit to shell** and inspect `ifconfig -a`, `sysctl net.wlan.devices`,
-   and `pciconf -lv`.
-3. Accept port **2222** or enter another port, then enable debug mode.
-4. Give the agent the IP address and port displayed on screen.
-5. The agent generates a temporary SSH key and tells you its fingerprint.
-   When the pairing request appears, compare it and choose **Pair with agent**.
+   This opens a root CLI immediately, even with no network connection. The
+   network configuration screen also offers **Open debug shell**.
+3. Inspect interfaces with `ifconfig -a`, `usbconfig`, `pciconf -lv`, and
+   `sysctl net.wlan.devices`. Request DHCP with `dhclient ue0`, substituting
+   the actual interface. Normal FreeBSD shell commands are available.
+4. Once a usable IPv4 address exists, run `remote-debug listen` (port 2222)
+   or `remote-debug listen 2207` for a different port. Answer `y` to enable
+   remote access. Internet access is not required.
+5. Give the agent the displayed IP address, port, and server fingerprint.
+   Compare the agent's temporary key fingerprint when prompted, then type
+   `y` to pair. Any other answer rejects the request.
+
+Run `remote-debug help` for CLI instructions. `exit` returns from the debug
+shell to the installer screen that opened it. The shell itself does not
+start a listener or require working networking.
 
 The approved agent has a root shell and can inspect hardware, retrieve logs,
 transfer files, or operate the installer. Agree on the intended disk or
 partition before asking it to install. For Windows-preservation testing,
 identify the replaceable partition or free space explicitly.
 
-Press **Enter** on the debug screen to stop access and return to the menu.
+Press **Enter** on the debug screen to stop access and return to the debug shell.
 This closes the listener and its SSH connections and discards pairing
 approvals. Rebooting also discards them. Starting another debug session
 requires pairing again. Stopping access does not undo work the agent performed.
