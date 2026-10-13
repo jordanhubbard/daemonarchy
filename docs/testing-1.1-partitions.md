@@ -8,6 +8,27 @@ The preview carries the existing 1.0.1 desktop package with the new installer
 and updated Omarchy package. Its welcome screen adds `1.1 partition preview`
 to that package version; it does not claim to be the final 1.1.0 release.
 
+## Preview build receipt
+
+The 2026-10-12 test image is `daemonarchy-1.1.0-preview.1-amd64.iso`
+(approximately 1.7 GiB), with SHA-256:
+
+```text
+a4d34877d05d661f119a8bfbdff27478efa15968cb019548f762ec7237f2e9cf
+```
+
+The installer comes from daemonarchy commit `720b2d6`. It includes
+`omarchy-4.0.4_11`, built from compatibility-layer commit `ce86c32`, with
+Daemonarchy updater branding and repository checks. Eight updater tests passed
+on macOS and FreeBSD. Poudriere package QA, installation/deinstallation, and
+the subsequent package and ISO builds passed. The build worker reported an
+older kernel than its jail (1600026 versus 1600027); this remains a build-host
+qualification limitation for the final release.
+
+The copied image's checksum verified, its packaged installer files matched
+the source, and it booted to the installer welcome screen in QEMU with UEFI.
+That smoke test had no target disk and does not establish a complete install.
+
 ## Choose where to install
 
 The disk screen shows existing partitions, their device names, types and sizes,
