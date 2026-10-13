@@ -148,13 +148,24 @@ trap cleanup_run EXIT
 trap 'exit 130' INT
 trap 'exit 143' TERM
 
+# Reap the timer when cancelled. An orphaned sleep keeps SSH's output pipe
+# open even after the test has reported success and its shell has exited.
+watchdog_vm() {
+	sleep "$1" &
+	watchdog_sleep=$!
+	trap 'kill "$watchdog_sleep" 2>/dev/null || true; wait "$watchdog_sleep" 2>/dev/null || true' EXIT
+	trap 'exit 0' INT TERM
+	wait "$watchdog_sleep" || return 0
+	bhyvectl --destroy --vm="$VM" >/dev/null 2>&1
+}
+
 echo "==> Installing from $ISO (VNC on 127.0.0.1:$VNC_PORT; log in $WORK/serial.log)"
 start=$(date +%s)
 status=0
 run_vm -s 3,ahci-cd,"$ISO" -s 5,ahci-hd,"$WORK/cidata.img" &
 vm_pid=$!
 # Destroy the guest if the install has not finished in time.
-( sleep "$INSTALL_TIMEOUT"; bhyvectl --destroy --vm="$VM" >/dev/null 2>&1 ) &
+watchdog_vm "$INSTALL_TIMEOUT" &
 watchdog=$!
 wait "$vm_pid" || status=$?
 kill "$watchdog" 2>/dev/null || true
@@ -203,7 +214,7 @@ fi
 echo "==> Booting the installed system (VNC on 127.0.0.1:$VNC_PORT)"
 run_vm &
 boot_pid=$!
-( sleep "$BOOT_TIMEOUT"; bhyvectl --destroy --vm="$VM" >/dev/null 2>&1 ) &
+watchdog_vm "$BOOT_TIMEOUT" &
 watchdog=$!
 # Bridge users supply the guest address; NAT learns it from this test's lease.
 guest_ip=${GUEST_IP:-}

@@ -34,7 +34,7 @@ gate and requires new packages and a new catalogue.
 | Source `__FreeBSD_version` matches the selected snapshot (`1600027`) | Passed |
 | Existing BIOS disk-layout and shared-disk preservation tests | Passed, including both sector sizes and encrypted selection cases |
 | Preview ISO build and archive payload inspection | Passed |
-| Full installation with both options selected | Pending |
+| Full UEFI bhyve installation with both options selected, reboot and SSH login | Passed on a bare-metal host; see below |
 
 The real checkouts occupied approximately 1.1 GiB (ports) and 1.3 GiB (source)
 on the test worker's compressed ZFS filesystem. Those figures are not universal
@@ -86,7 +86,7 @@ other active build or test VM. The guest requested 3 GiB of wired memory.
 Immediately after bhyve launched, the worker became unreachable over SSH
 and ICMP. The launch connection did not return an installation result.
 This does not establish a guest failure or a host panic; console diagnosis
-is required. Full installation and reboot remain **unverified**.
+was required. That attempt did not verify installation or reboot.
 
 The test harness now checks selected trees after reboot as the installed
 user: ownership, clean Git status, exact revisions, shallow depth, tracking
@@ -94,4 +94,43 @@ configuration, and source/kernel identity. Unselected trees must lack a
 Git checkout. The bhyve harness also requires the installer success marker,
 checks SSH login and firmware mode, and shuts down the guest after testing.
 Shell syntax, ShellCheck, and whitespace checks passed for these harness
-changes; the new post-boot assertions have not yet run in a guest.
+changes. The first worker was a VM; a second attempt reproduced the loss of
+connectivity immediately after bhyve launch. Nested virtualization is a
+suspected cause, not a confirmed diagnosis.
+
+## Bare-metal UEFI installation passed
+
+The same preview.2 ISO and harness checkpoint `6dfaeba` were tested on
+2026-10-13 using a bare-metal AMD Ryzen 3 5425U host (`kern.vm_guest=none`).
+The guest used 4 virtual CPUs, 3 GiB wired RAM, a fresh 40 GiB disk, UEFI,
+an unencrypted installation, and both checkout selections enabled.
+
+- Installation completed and powered off cleanly after 2,833 seconds.
+- All 17 offline checks passed: account and groups, SDDM configuration,
+  network configuration, package ownership, schema caches, shell link,
+  signed repository configuration and installed desktop packages.
+- The installed disk booted in UEFI mode and accepted SSH login as `tester`.
+- Both `/usr/ports` and `/usr/src` passed the post-boot checks for user
+  ownership and writability, clean working trees, pinned revisions, tracking
+  branches, one-commit shallow history, and self-contained Git objects.
+- Source revision `a52c50b4b7c2652954ef1bd34710a4b1fc8ef391` matched the
+  installed kernel. Ports revision was
+  `6fb491f4c73a49b71b4843bbe2fd267953a59bc1`.
+- The guest shut down cleanly. Test DHCP/NAT interfaces and processes were
+  removed, and host forwarding/tap settings restored to their prior values.
+
+The serial log is retained on the test host at
+`/var/tmp/daemonarchy-preview2-live/serial.log`, alongside the installed disk,
+and locally at
+`/tmp/daemonarchy-validation-20261013/bhyve-uefi-both-checkouts.log`.
+Log SHA-256:
+`74e198ce3bcb532419d588c69a04c432923d0db051b79728fdabb96b1649aeda`.
+
+The run exposed a harness cleanup issue: cancelled watchdog shells left their
+sleep children holding SSH output open. Timer cancellation now terminates and
+reaps the sleep child. Separate native checks verify cancellation leaves no
+timer and does not request VM destruction, while expiry requests destruction.
+
+This qualifies the unencrypted UEFI bhyve installation with both checkouts.
+It does not qualify a graphical VM desktop, physical GPUs, BIOS, encrypted
+boot, a runtime-only checkout installation, or the refreshed release baseline.

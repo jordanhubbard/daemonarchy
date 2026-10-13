@@ -49,7 +49,7 @@ validated packages can ship from the fork while these reviews remain open.
 - [ ] Ports fork refreshed from upstream and system sources re-synced with FreeBSD CURRENT; exact release revisions recorded.
 - [ ] Kernel modules match the image's exact FreeBSD snapshot.
 - [ ] Changed ports pass `poudriere testport`.
-- [ ] Unattended installation passes the existing QEMU and bhyve checks.
+- [ ] Unattended installation passes the existing QEMU and bhyve checks. Unencrypted UEFI bhyve installation and reboot passed with both shallow checkouts; remaining boot modes and QEMU coverage are pending.
 - [ ] Graphical VM and physical-hardware checks pass.
 - [ ] Existing installations upgrade successfully; failed updates remain recoverable.
 - [ ] Documentation states supported GPUs, hypervisors, Bluetooth profiles,
@@ -100,5 +100,8 @@ is recorded in [the sizing report](docs/optional-source-sizing.md). The live
 packages now contain depth-1 shallow Git checkouts, superseding the original
 source-only estimate. Separate installer selections and the runtime
 `daemonarchy-checkouts` command are implemented; native package round-trip tests
-pass. Complete ISO installation remains pending. Repeat sizing after the ports
-refresh and FreeBSD CURRENT source sync.
+pass. A complete unencrypted UEFI bhyve ISO installation and reboot with both
+options selected also passed on bare metal, including post-boot checkout
+verification; see the [test record](docs/testing-1.1-live-checkouts.md).
+Other boot modes and runtime-only installation remain pending. Repeat sizing
+after the ports refresh and FreeBSD CURRENT source sync.
