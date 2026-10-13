@@ -1,0 +1,21 @@
+# IPv4 endpoints usable for live remote access; no default route or DNS needed.
+network_addresses() {
+  ifconfig -a inet 2>/dev/null | awk '
+    function emit() { if (up && !unavailable && addresses != "") printf "%s", addresses }
+    /^[^[:space:]]/ {
+      emit()
+      up = ($0 ~ /<UP[,>]/)
+      unavailable = ($0 ~ /[,<]LOOPBACK[,>]/)
+      addresses = ""
+    }
+    $1 == "inet" && $2 !~ /^127\./ && $2 != "0.0.0.0" {
+      addresses = addresses $2 "\n"
+    }
+    /status: (no carrier|disassociated)/ { unavailable = 1 }
+    END { emit() }
+  '
+}
+
+network_has_address() {
+  [[ -n $(network_addresses) ]]
+}

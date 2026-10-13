@@ -14,9 +14,15 @@ and preview.2 do not contain the menu option.
    firmware's one-time boot menu. The preview currently requires Secure Boot
    to be disabled. Use Ethernet initially where possible.
 2. Press Return at the welcome screen and choose **Remote agent debug**.
-   **Configure network** is also available from that menu for Wi-Fi or
-   manual network settings. Remote debug only needs connectivity to the
-   agent, not internet access.
+   The network screen opens first: choose DHCP, Wi-Fi, or manual settings.
+   Continue becomes available once an active interface has an IPv4 address.
+   Remote debug only needs connectivity to the agent, not internet access.
+   **Back to installer menu** cancels without starting remote access.
+   The screen shows interface names and kernel hardware descriptions. If it
+   reports no supported Wi-Fi adapter, FreeBSD has not exposed one to the
+   installer; a supported USB network adapter may be needed. For diagnosis,
+   use **Exit to shell** and inspect `ifconfig -a`, `sysctl net.wlan.devices`,
+   and `pciconf -lv`.
 3. Accept port **2222** or enter another port, then enable debug mode.
 4. Give the agent the IP address and port displayed on screen.
 5. The agent generates a temporary SSH key and tells you its fingerprint.

@@ -1,6 +1,7 @@
 #!/usr/local/bin/bash
 # Console-approved SSH pairing for the live installer; state stays in RAM.
 set -euo pipefail
+source "$(dirname "$0")/network-addresses"
 state=/var/run/daemonarchy-remote-debug
 self=/usr/local/libexec/daemonarchy-installer/remote-debug
 
@@ -47,6 +48,7 @@ start_server() {
     fail 'Port must be 1–65535.'
   fi
   port=$((10#$port))
+  network_has_address || fail 'No usable IPv4 address. Return to the installer menu and configure the network.'
   [[ ! -e $state ]] || fail 'Another debug session is already active.'
   # The snapshot's live root account must permit key authentication.
   [[ $(awk -F: '$1 == "root" {print $2}' /etc/master.passwd) != '*' ]] || fail 'Live root account is locked.'
@@ -96,7 +98,7 @@ show_status() {
   echo
   echo 'No installation has been started. Pairing grants a root shell.'
   echo 'Tell your agent this IP address and port:'
-  ifconfig -a inet | awk -v port="$port" '$1 == "inet" && $2 != "127.0.0.1" {print "  ssh -p " port " root@" $2}'
+  network_addresses | awk -v port="$port" '{print "  ssh -p " port " root@" $1}'
   echo
   echo 'Server fingerprint:'
   ssh-keygen -l -f "$state/host_key.pub"

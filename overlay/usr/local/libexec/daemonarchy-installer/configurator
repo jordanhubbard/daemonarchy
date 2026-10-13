@@ -19,6 +19,7 @@ export PATH="$ISO_SHARE/compat:$PATH"
 source "$ISO_SHARE/setup-form.sh"
 source "$(dirname "$0")/disk-layout"
 source "$(dirname "$0")/checkout-options"
+source "$(dirname "$0")/network-addresses"
 
 # The setup form's reserved names are Linux's. On FreeBSD a name is taken if
 # the base system has it (the live system's accounts are the base system's)
@@ -261,16 +262,38 @@ default_port() {
   route -n get default 2>/dev/null | awk '/interface:/ { print $2 }'
 }
 
-# One line per adapter: a status dot, its name, what it is, and its address.
+# Kernel device descriptions identify the hardware without guessing from its MAC.
+adapter_description() {
+  local dev=$1 driver unit description
+  driver=${dev%%[0-9]*}
+  unit=${dev#"$driver"}
+  description=$(sysctl -n "dev.$driver.$unit.%desc" 2>/dev/null)
+  [[ -n $description ]] || description=$(ifconfig "$dev" 2>/dev/null |
+    awk '/description:/ { sub(/.*description: /, ""); print; exit }')
+  printf '%s' "${description:-Hardware description unavailable}"
+}
+
+adapter_kind() {
+  case $1 in
+    wlan*) echo 'Wi-Fi' ;;
+    ue*) echo 'USB network' ;;
+    tap*|tun*|bridge*|epair*|vtnet*) echo 'Virtual' ;;
+    *) echo 'Network' ;;
+  esac
+}
+
+# One line per adapter plus the kernel's hardware description.
 network_summary() {
-  local ifc addr state dot
+  local ifc addr state dot wireless
   for ifc in $(ether_ports); do
     addr=$(port_address "$ifc")
     state=$(port_state "$ifc")
     if [[ -n $addr ]]; then dot=$'\033[32m●\033[0m'; else dot=$'\033[90m○\033[0m'; fi
-    printf '%s%s  %-8s %-9s %-10s %s\n' "$PADDING_LEFT_SPACES" "$dot" "$ifc" "Ethernet" "$state" "$addr"
+    printf '%s%s  %-8s %-9s %-10s %s\n' "$PADDING_LEFT_SPACES" "$dot" "$ifc" "$(adapter_kind "$ifc")" "$state" "$addr"
+    say --foreground 8 "  $(adapter_description "$ifc")"
   done
-  for ifc in $(wifi_adapters); do
+  wireless=$(wifi_adapters)
+  for ifc in $wireless; do
     addr="" state=""
     if [[ $(sysctl -n net.wlan.0.%parent 2>/dev/null) == "$ifc" ]]; then
       addr=$(port_address wlan0)
@@ -278,7 +301,14 @@ network_summary() {
     fi
     if [[ -n $addr ]]; then dot=$'\033[32m●\033[0m'; else dot=$'\033[90m○\033[0m'; fi
     printf '%s%s  %-8s %-9s %-10s %s\n' "$PADDING_LEFT_SPACES" "$dot" "$ifc" "Wi-Fi" "$state" "$addr"
+    say --foreground 8 "  $(adapter_description "$ifc")"
   done
+  if [[ -z $wireless ]]; then
+    say --foreground 3 "No supported Wi-Fi adapter detected by FreeBSD."
+    say --foreground 8 "Built-in Wi-Fi may need a driver or firmware; a supported USB network adapter can provide access."
+  else
+    say --foreground 8 'Choose "Join Wi-Fi" below to select a network and enter its password.'
+  fi
 }
 
 valid_cidr() {
@@ -354,7 +384,7 @@ wifi_connect() {
     sleep 1
   done
   dhclient wlan0 >/dev/null 2>&1 || return 1
-  online
+  [[ -n $(port_address wlan0) ]]
 }
 
 use_wifi() {
@@ -380,7 +410,7 @@ use_wifi() {
     --prompt.foreground="#845DF9" --prompt "Password> ") || return 1
 
   if gum spin --spinner pulse --title "Connecting to $ssid..." -- \
-    bash -c "$(declare -f online wifi_connect); wifi_connect \"\$1\" \"\$2\" \"\$3\"" _ "$ssid" "$psk" "$hidden"; then
+    bash -c "$(declare -f port_address wifi_connect); wifi_connect \"\$1\" \"\$2\" \"\$3\"" _ "$ssid" "$psk" "$hidden"; then
     net_mode=wifi net_if=$dev wifi_ssid=$ssid wifi_psk=$psk wifi_hidden=$hidden
   else
     notice "Could not connect to $ssid" 3
@@ -390,15 +420,28 @@ use_wifi() {
 
 network_step() {
   local choice status ifc via connected options
+  local mode=${1:-install}
   while true; do
     step "Network"
-    say --foreground 8 "Daemonarchy downloads most of its packages during the install."
+    if [[ $mode == remote-debug ]]; then
+      say "Configure a network address so your agent can reach this machine."
+      say --foreground 8 "Internet access is not required for remote debug."
+    else
+      say --foreground 8 "Daemonarchy downloads most of its packages during the install."
+    fi
     echo
     network_summary
     echo
 
     connected=false
-    if online; then
+    if [[ $mode == remote-debug ]]; then
+      if network_has_address; then
+        connected=true
+        say "Network address ready for remote debug."
+      else
+        say --foreground 3 "Choose DHCP, Wi-Fi, or manual setup to obtain an address."
+      fi
+    elif online; then
       connected=true
       via=$(default_port)
       [[ $net_mode == wifi ]] && via="$via ($wifi_ssid)"
@@ -415,15 +458,19 @@ network_step() {
       options+=("Use DHCP on $ifc" "Set up $ifc by hand")
     done
     options+=("Check again")
+    [[ $mode == remote-debug ]] && options+=("Back to installer menu")
 
     choice=$(gum choose --height 12 --header "Network" "${options[@]}") && status=0 || status=$?
     if ((status != 0)); then
+      [[ $mode == remote-debug ]] && return 1
       ((status == OMARCHY_FORM_BACK)) && continue
       abort
     fi
 
     case $choice in
+      "Back to installer menu") return 1 ;;
       Continue)
+        if [[ $mode == remote-debug ]] && ! network_has_address; then continue; fi
         # Keep what was chosen; a connection DHCP made at boot is just DHCP.
         if [[ $net_mode == dhcp ]]; then net_if=$(default_port); fi
         return 0
@@ -640,6 +687,7 @@ while true; do
   case "$action" in
     'Install Daemonarchy') break ;;
     'Remote agent debug')
+      network_step remote-debug || continue
       "$(dirname "$0")/remote-debug" || {
         echo 'Remote debug could not start. Press Return to return to the menu.'
         IFS= read -r _ </dev/tty || true
