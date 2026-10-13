@@ -74,6 +74,12 @@ EOF
 pkg upgrade
 ```
 
+## Roadmap
+
+The next release is **1.1.0**. See the [roadmap](ROADMAP.md) for planned
+graphics, Bluetooth, enterprise Wi-Fi, installation and boot support, upstream
+ports work, and the checks required before release.
+
 ## The installer
 
 `overlay/usr/local/libexec/daemonarchy-installer/configurator` keeps the Omarchy ISO configurator's screens and look, and sources Omarchy's own setup form (`install/provisioning/setup-form.sh`, taken from the `omarchy` package at build time) so the questions and validation are identical. Two steps are FreeBSD's own: a network step, since packages are downloaded during the install (wired networks are configured by DHCP at boot; otherwise it scans for Wi-Fi, joins the chosen network, and carries the setting over to the installed system), and the disk step: pick a disk, optionally encrypt it.
@@ -115,7 +121,7 @@ On a FreeBSD 16.0-CURRENT host with poudriere: build the ports, build the image 
 
 - Whole-disk installs only; no dual boot.
 - UEFI machines only, with Secure Boot turned off: the FreeBSD loader is not signed, and the installed disk has no BIOS boot code.
-- The install needs a network connection (wired, or Wi-Fi with WPA-PSK or no password; no enterprise Wi-Fi). After the install, Omarchy's Wi-Fi and Bluetooth panels stay empty: they need NetworkManager and BlueZ, which FreeBSD does not have.
+- The install needs a network connection (wired, or Wi-Fi with WPA-PSK or no password; no enterprise Wi-Fi). The desktop has FreeBSD Wi-Fi and Bluetooth panels; Bluetooth supports input devices only.
 - NVIDIA GPUs get no driver.
 - Virtual machines install and boot, but Hyprland needs a DRM driver, which FreeBSD VMs lack.
 
