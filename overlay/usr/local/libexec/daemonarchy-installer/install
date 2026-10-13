@@ -29,6 +29,7 @@ ABI=$(cat "$ISO_SHARE/ABI")
 # shellcheck disable=SC1090
 source "$DAEMONARCHY_INSTALL_CONF"
 source "$(dirname "$0")/disk-layout"
+source "$(dirname "$0")/gpu-config"
 
 log() { printf '\033[32m==>\033[0m %s\n' "$*"; }
 
@@ -70,6 +71,14 @@ if pw usershow "$username" >/dev/null 2>&1 || grep -qx -- "$username" "$ISO_SHAR
 fi
 
 # ---------------------------------------------------------------- disk
+
+# Selection and payload admission happen before partition writes. Detect only
+# display-class PCI functions (never NVIDIA/AMD HDMI audio controllers).
+gpu_inventory=$(mktemp)
+pciconf -l >"$gpu_inventory"
+gpu_select "$gpu_inventory" "$ISO_SHARE/gpu-ids"
+rm -f "$gpu_inventory"
+gpu_resolve_packages "$ISO_SHARE/gpu-packages" "$REPO"
 
 install_mode=${install_mode:-whole_disk}
 shared_install=false
@@ -148,16 +157,7 @@ cp "$ISO_SHARE/brand-daemonarchy.lua" "$TARGET/boot/lua/"
 
 phase config "Configuring the system"
 
-# The GPU decides which DRM driver loads at boot. Current Mesa needs
-# drm-66-kmod or newer for amdgpu.
-kld_list=""
-for vendor in $(pciconf -l | awk '/class=0x03/ { for (i = 1; i <= NF; i++) if ($i ~ /^vendor=/) { sub("vendor=", "", $i); print $i } }'); do
-  case "$vendor" in
-    0x8086) kld_list="$kld_list i915kms" ;;
-    0x1002) kld_list="$kld_list amdgpu" ;;
-  esac
-done
-kld_list=$(echo $kld_list | tr ' ' '\n' | sort -u | tr '\n' ' ')
+# gpu_select has chosen the modules for the installed kernel, not the live one.
 
 vt_keymap=$("$ISO_SHARE/keymap" vt "$keyboard")
 read -r xkb_layout xkb_variant <<<"$("$ISO_SHARE/keymap" xkb "$keyboard")"
@@ -272,7 +272,7 @@ pkg_target() {
   ASSUME_ALWAYS_YES=yes IGNORE_OSVERSION=yes \
     pkg -r "$TARGET" -o REPOS_DIR="$repos" -o ABI="$ABI" "$@"
 }
-packages=(pkg bash sudo daemonarchy drm-66-kmod gpu-firmware-kmod wifi-firmware-kmod)
+packages=(pkg bash sudo daemonarchy wifi-firmware-kmod "${gpu_exact_packages[@]}")
 pkg_target update -f
 
 # A thousand downloads over a home connection will see the odd one fail.
@@ -291,6 +291,14 @@ for attempt in 1 2 3 4 5; do
 done
 phase install "Installing Daemonarchy packages"
 pkg_target install -y "${packages[@]}"
+
+# Refuse resolver drift and keep kernel-bound packages together until a
+# coordinated kernel/driver update, rather than taking a moving CURRENT kmod.
+for gpu_package in "${gpu_exact_packages[@]}"; do
+  pkg_target info -e "$gpu_package" || { echo "GPU package mismatch: $gpu_package" >&2; exit 1; }
+done
+pkg_target lock -y "${gpu_lock_packages[@]}"
+gpu_write_config "$TARGET"
 
 # Scripts written for Omarchy (and most found online) start with #!/bin/bash.
 # FreeBSD keeps bash in /usr/local, which is part of the root file system and

@@ -1,0 +1,67 @@
+#!/usr/local/bin/bash
+# Install a pinned, independent working checkout from signed pkg seed payloads.
+set -euo pipefail
+
+fail() { echo "daemonarchy-checkouts: $*" >&2; exit 1; }
+
+checkout_install() (
+  local kind=$1 owner=${2:-root} catalog=$3 destination=$4
+  local revision branch remote bundle_hash need available package file hash extra tmp
+  [[ $kind == ports || $kind == src ]] || fail 'Choose ports or src'
+  id "$owner" >/dev/null 2>&1 || fail "Unknown owner: $owner"
+  [[ -r $catalog ]] || fail 'This image has no checkout package catalogue'
+  jq -e --arg k "$kind" '.trees[$k] | .revision and .branch and .remote and (.parts | length > 0)' "$catalog" >/dev/null || fail 'Invalid checkout catalogue'
+  revision=$(jq -r --arg k "$kind" '.trees[$k].revision' "$catalog")
+  branch=$(jq -r --arg k "$kind" '.trees[$k].branch' "$catalog")
+  remote=$(jq -r --arg k "$kind" '.trees[$k].remote' "$catalog")
+  bundle_hash=$(jq -r --arg k "$kind" '.trees[$k].bundle_sha256' "$catalog")
+  need=$(jq -r --arg k "$kind" '.trees[$k].required_bytes' "$catalog")
+  [[ $revision =~ ^[0-9a-f]{40}$ && $bundle_hash =~ ^[0-9a-f]{64}$ && $need =~ ^[0-9]+$ ]] || fail 'Invalid checkout identity or size'
+  [[ $remote == https://github.com/* && $branch =~ ^[a-zA-Z0-9_-]+$ ]] || fail 'Invalid checkout remote or branch'
+  [[ ! -L $destination ]] || fail "Refusing symlink: $destination"
+  mkdir -p "$destination"
+  [[ -z $(find "$destination" -mindepth 1 -maxdepth 1 -print -quit) ]] || fail "$destination is not empty; existing work is preserved"
+  available=$(df -k "$destination" | awk 'END {print $4}')
+  ((available * 1024 >= need)) || fail "Need at least $(( (need + 1073741823) / 1073741824 )) GiB free for this checkout"
+  # These paths may be separate datasets; conservatively require room for all
+  # temporary payloads on the cache volume as well as on the destination.
+  available=$(df -k /var/tmp | awk 'END {print $4}')
+  ((available * 1024 >= need)) || fail 'Not enough space in /var/tmp for checkout staging'
+  pkg update -f -r Daemonarchy-Checkouts
+  local packages=()
+  while IFS= read -r package; do
+    [[ $package =~ ^daemonarchy-(ports|src)-history-[0-9]+-[0-9]{8}\.g[0-9a-f]{12}$ ]] || fail 'Invalid history package name'
+    packages+=("$package")
+  done < <(jq -r --arg k "$kind" '.trees[$k].parts[].package' "$catalog")
+  pkg install -y -r Daemonarchy-Checkouts "${packages[@]}"
+  command -v git >/dev/null || pkg install -y git
+  tmp=$(mktemp -d /var/tmp/daemonarchy-checkout.XXXXXX)
+  # Only task-owned temporary data is removed. Failed or completed working
+  # trees are never removed by this command or by package lifecycle scripts.
+  trap 'rm -rf "$tmp"' EXIT
+  while IFS=$'\t' read -r file hash extra; do
+    [[ $file == /usr/local/share/daemonarchy/checkouts/"$kind"/"$revision"/part-* && $file != *..* && $hash =~ ^[0-9a-f]{64}$ && -z $extra ]] || fail 'Invalid history part'
+    [[ $(sha256 -q "$file") == "$hash" ]] || fail "History checksum mismatch: $file"
+    cat "$file" >>"$tmp/checkout.bundle"
+  done < <(jq -r --arg k "$kind" '.trees[$k].parts[] | [.file,.sha256] | @tsv' "$catalog")
+  [[ $(sha256 -q "$tmp/checkout.bundle") == "$bundle_hash" ]] || fail 'Bundle checksum mismatch'
+  git clone --branch "$branch" "$tmp/checkout.bundle" "$destination"
+  [[ $(git -C "$destination" rev-parse HEAD) == "$revision" ]] || fail 'Checkout revision mismatch'
+  [[ $(git -C "$destination" rev-parse --is-shallow-repository) == false ]] || fail 'History is incomplete'
+  git -C "$destination" fsck --connectivity-only
+  git -C "$destination" remote set-url origin "$remote"
+  if [[ $kind == ports ]]; then
+    git -C "$destination" remote add upstream https://github.com/freebsd/freebsd-ports.git
+  fi
+  chown -R "$owner:$(id -gn "$owner")" "$destination"
+  echo "Installed $destination at $revision, owned by $owner."
+  echo 'Seed packages can be removed with pkg delete; they do not own this checkout:'
+  printf '  %s\n' "${packages[@]}"
+)
+
+if [[ ${BASH_SOURCE[0]} == "$0" ]]; then
+  [[ $# -ge 1 && $# -le 2 ]] || fail 'usage: daemonarchy-checkouts ports|src [owner]'
+  [[ $(id -u) == 0 ]] || fail 'Run with sudo or as root'
+  [[ $1 == ports || $1 == src ]] || fail 'Choose ports or src'
+  checkout_install "$1" "${2:-root}" /usr/local/share/daemonarchy-installer/checkouts.json "/usr/$1"
+fi

@@ -1,0 +1,93 @@
+#!/usr/local/bin/bash
+# Sourced by install and tests. No module is loaded on the live system.
+
+gpu_select() {
+  local inventory=$1 ids=$2 vendor device subvendor subdevice module family
+  [[ -r $inventory && -s $ids ]] || { echo 'Missing GPU inventory or selection table' >&2; return 1; }
+  gpu_modules=() gpu_packages=() gpu_nvidia=false gpu_other=false gpu_navi14=false
+  while read -r vendor device subvendor subdevice; do
+    module='' family=''
+    case "$vendor" in
+      8086) module=i915kms ;;
+      1002|10de)
+        read -r module family < <(awk -v v="$vendor" -v d="$device" -v sv="$subvendor" -v sd="$subdevice" '
+          $1 == v && $2 == d && ($3 == "*" || $3 == sv) && ($4 == "*" || $4 == sd) { print $5, $6; exit }
+        ' "$ids") || true
+        if [[ $vendor == 1002 && -z $module ]]; then
+          # amdgpu also uses IP discovery for newer devices, not just PCI IDs.
+          module=amdgpu
+        fi
+        ;;
+    esac
+    case "$module" in
+      nvidia-drm) gpu_nvidia=true ;;
+      i915kms|amdgpu|radeonkms) gpu_other=true ;;
+      *) printf 'GPU %s:%s: no selected desktop driver; NVIDIA legacy GPUs are outside the 595 target.\n' "$vendor" "$device" >&2; continue ;;
+    esac
+    if [[ $module == radeonkms ]]; then
+      printf 'GPU %s:%s: legacy Radeon (%s); KMS selection is not Hyprland qualification.\n' "$vendor" "$device" "$family" >&2
+    fi
+    [[ " ${gpu_modules[*]} " == *" $module "* ]] || gpu_modules+=("$module")
+    if [[ $vendor == 1002 && $device =~ ^(7340|7341|7347|734f)$ ]]; then
+      gpu_navi14=true
+    fi
+  done < <(awk '
+    /class=0x03/ {
+      v=d=sv=sd=""
+      for (i=1; i<=NF; i++) {
+        split($i,a,"="); val=tolower(a[2]); sub(/^0x/,"",val)
+        if(a[1]=="vendor") v=val
+        if(a[1]=="device") d=val
+        if(a[1]=="subvendor") sv=val
+        if(a[1]=="subdevice") sd=val
+      }
+      if(v!="" && d!="") print v,d,(sv=="" ? "-" : sv),(sd=="" ? "-" : sd)
+    }' "$inventory")
+  if $gpu_nvidia; then
+    gpu_packages=(nvidia-driver nvidia-kmod nvidia-drm-66-kmod)
+  fi
+  if $gpu_navi14; then
+    gpu_packages+=(gpu-firmware-amd-kmod-navi14)
+  fi
+  kld_list="${gpu_modules[*]}"
+}
+
+# Resolve exact image package versions before the installer writes any disk.
+gpu_resolve_packages() {
+  local manifest=$1 repo=$2 name version required
+  [[ -s $manifest ]] || { echo 'Missing GPU package manifest' >&2; return 1; }
+  gpu_exact_packages=() gpu_lock_packages=()
+  for required in drm-66-kmod gpu-firmware-kmod "${gpu_packages[@]}"; do
+    [[ $(awk -v n="$required" '$1 == n { count++ } END { print count+0 }' "$manifest") == 1 ]] || {
+      echo "Missing or duplicate GPU package: $required" >&2; return 1;
+    }
+  done
+  while read -r name version; do
+    case "$name" in
+      drm-66-kmod|gpu-firmware-*) ;;
+      nvidia-driver|nvidia-kmod|nvidia-drm-66-kmod) $gpu_nvidia || continue ;;
+      *) echo "Unexpected GPU manifest entry: $name" >&2; return 1 ;;
+    esac
+    [[ $name =~ ^[a-zA-Z0-9_-]+$ && $version =~ ^[a-zA-Z0-9._,+-]+$ && -f $repo/All/$name-$version.pkg ]] || {
+      echo "Missing or invalid GPU payload: $name-$version" >&2; return 1;
+    }
+    gpu_exact_packages+=("$name-$version")
+    gpu_lock_packages+=("$name")
+  done <"$manifest"
+}
+
+gpu_write_config() {
+  local target=$1
+  if $gpu_nvidia; then
+    printf '\nhw.nvidiadrm.modeset="1"\n' >>"$target/boot/loader.conf"
+    # The ports disable fbdev by default; do not copy Linux fbdev/GSP options.
+    if ! $gpu_other; then
+      mkdir -p "$target/usr/local/share/uwsm/env.d"
+      cat >"$target/usr/local/share/uwsm/env.d/90-daemonarchy-nvidia" <<'EOF'
+# Single-vendor NVIDIA install. Mixed GPUs keep automatic EGL/GBM selection.
+export GBM_BACKEND=nvidia-drm
+export __GLX_VENDOR_LIBRARY_NAME=nvidia
+EOF
+    fi
+  fi
+}

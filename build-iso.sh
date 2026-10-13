@@ -107,6 +107,10 @@ if [ "$set_version" != "$jail_version" ]; then
 	exit 1
 fi
 
+# The default NVIDIA DRM metaport chooses 6.12 on CURRENT, conflicting with
+# this image's 6.6 AMD/Intel modules. Validate the explicit package family.
+sh "$here/scripts/check-gpu-packages.sh" "$share/repo/All" "$set_version" >"$share/gpu-packages"
+
 chmod 0755 "$stage"/overlay/usr/local/libexec/daemonarchy-installer/* "$share/keymap" "$share/compat/timedatectl"
 
 echo "==> Building the image"
