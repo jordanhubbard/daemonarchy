@@ -1,0 +1,92 @@
+# Optional ports and system source: space estimate
+
+Measured on 2026-10-12 for planning installer selections. These options are not
+implemented yet. Refresh both inputs before the 1.1 release and repeat these
+measurements; they are not fixed budgets for a future FreeBSD CURRENT snapshot.
+
+## Inputs and locations
+
+- `/usr/ports`: a source-only archive of the Daemonarchy release ports tree,
+  based on [jordanhubbard/freebsd-ports, branch `omarchy`](https://github.com/jordanhubbard/freebsd-ports/tree/omarchy).
+  The published fork revision measured was
+  `c9249ea1d16b911e5326c1509d8707a842bb7989`.
+  The release archive should use the final package-compatible integration tree,
+  including any Daemonarchy changes not yet pushed to the fork.
+- `/usr/src`: sources matching the installed FreeBSD snapshot, following
+  [FreeBSD CURRENT (`main`)](https://github.com/freebsd/freebsd-src/tree/main).
+  This estimate uses the 2026-10-05 snapshot's source tree in the image build
+  jail. The snapshot download endpoint currently reports `src.txz` as
+  230,837,504 bytes. The cached snapshot MANIFEST records SHA-256
+  `681c8a77d8ecd15ecdcc2e160e459adc2311e7457f0f5a81652c1cfce24d59f3`.
+  The archive download was not completed or checksum-verified for this sizing
+  exercise; installed sizes were measured directly from the existing jail tree.
+
+The snapshot endpoint is mutable. Release artifacts must retain the matching
+source archive, revision and checksum alongside the base/kernel sets. Do not
+resolve a moving source or ports branch when the user installs an older image.
+
+The table uses the current image integration tree, measured at
+`6fb491f4c73a49b71b4843bbe2fd267953a59bc1`, rather than the slightly smaller
+published fork tree.
+
+## Measured sizes and planning allowance
+
+All units below are binary (MiB = 2^20 bytes; GiB = 2^30 bytes).
+
+| Selection | Compressed download | File contents | Estimated installed allocation | Suggested extra free space during installation |
+| --- | ---: | ---: | ---: | ---: |
+| Ports → `/usr/ports` | 99.5 MiB | 0.54 GiB | 1.29 GiB | 1.5 GiB |
+| System source → `/usr/src` | 220.1 MiB | 1.43 GiB | 1.73 GiB | 2.5 GiB |
+| Both | 319.7 MiB | 1.98 GiB | 3.02 GiB | 4.0 GiB |
+
+The allowance is **additional to the desktop installation**, not a new total
+minimum disk size. The allocation estimate rounds each regular file up to
+4 KiB and allows 4 KiB per directory. This is a planning model, not a measured
+ZFS allocation or a guaranteed upper bound: metadata, compression, record sizes,
+snapshots and filesystem settings change actual use. The free-space allowances
+include downloaded archives and headroom; remove temporary archives after
+successful extraction. Recheck capacity against the final packaged artifacts.
+
+Ports contain build recipes and patches, not all third-party source code.
+These numbers exclude Git history, ports distfiles, installed build dependencies,
+ports work directories, `/usr/obj`, and compiler outputs. Building software needs
+additional space depending on the selected ports or system build.
+
+## Measurement method
+
+For ports, archive the exact commit without Git history or untracked work:
+
+```sh
+git -C /usr/ports archive --format=tar --prefix=usr/ports/ c9249ea1d16b911e5326c1509d8707a842bb7989 | gzip -n -6 > ports.tar.gz
+```
+
+The resulting archive is 103,677,791 bytes, SHA-256
+`ce5c91382dac015e8c3d349be5e82dcc0b6046a04b70bb383f15407deae75695`.
+Its 176,129 regular files contain 580,284,721 bytes, or 1,185,525,760
+bytes after rounding each file to 4 KiB; there are 47,584 directories.
+
+The current image integration tree produces a 104,378,040-byte gzip archive,
+SHA-256 `8b44685ccaef5ea256277764886787cfd88c66c17e55f20f84323e91a3a1f624`,
+with 175,670 regular files, 582,023,043 content bytes, 1,185,865,728
+bytes rounded per file to 4 KiB, and 47,613 directories. It was measured using
+the same archive command with the integration-tree path and revision.
+
+For source, walk the snapshot jail's `/usr/src` with `lstat`, excluding symlinks
+from regular-file byte totals. Its 114,642 regular files contain 1,539,737,866
+bytes, or 1,820,225,536 bytes rounded per file to 4 KiB; there are 9,857
+subdirectories. The compressed size is the HTTP Content-Length of the matching
+October 5 `src.txz`, not a newly built package size. A future `.pkg` wrapper or
+different compressor will change download sizes.
+
+## ISO impact
+
+The published 1.0.1 ISO is 1,834,121,216 bytes. Adding these two compressed
+archives gives approximately 2,169,336,760 bytes (2.020 GiB), before additional
+ISO metadata or other 1.1 changes. That exceeds the documented 2 GiB release
+asset budget by about 20.8 MiB. This is arithmetic on the existing ISO, not a
+new ISO build measurement.
+
+Prefer downloading selected, pinned archives during installation; this adds
+no archive payload to the ISO. Offer independent selections and verify their
+checksums before extraction. Validate the final installation's actual disk use
+and source/kernel identity before advertising these options as supported.

@@ -29,7 +29,7 @@ Daemonarchy is four repositories:
   - The SDDM theme that reuses Omarchy's with the Daemonarchy wordmark.
   - The System > FreeBSD menu (`omarchy-menu.jsonc`) and the `daemonarchy-*` commands behind it.
   - Its tags set Daemonarchy's version (see Releasing).
-- **[jordanhubbard/freebsd-ports](https://github.com/jordanhubbard/freebsd-ports/tree/omarchy)**, the `omarchy` branch, carries the ports:
+- **[jordanhubbard/freebsd-ports](https://github.com/jordanhubbard/freebsd-ports/tree/omarchy)**, the `omarchy` branch, is the release ports fork. Upstream review does not block releases from this fork. It carries the ports:
   - `x11-wm/omarchy`: Omarchy itself, with omarchy-freebsd as a second distfile. Its `files/` holds only patches to Omarchy's own files, among them the ones that add the `FreeBSDWifi.qml` and `FreeBSDBluetooth.qml` stand-ins to the panels.
   - `x11-wm/daemonarchy`: the full desktop's dependencies, plus daemonarchy-desktop. Defaults for new users go to `share/omarchy/skel.d/daemonarchy`, which `seed-user` copies in ahead of Omarchy's.
   - The applications and tools Omarchy uses, one port each (`x11-themes/aether`, `graphics/tensaku`, `misc/ttfx`, ...), submitted upstream in [freebsd/freebsd-ports#630](https://github.com/freebsd/freebsd-ports/pull/630); `x11-wm/omarchy` and `x11-wm/daemonarchy` are in [#635](https://github.com/freebsd/freebsd-ports/pull/635).
@@ -67,14 +67,14 @@ sudo make reinstall clean
 
 You need a FreeBSD 16.0-CURRENT machine (bare metal or a VM with about 8 GB of memory and 100 GB of disk) with poudriere, git, and the ports tree, as root.
 
-1. **A jail from the snapshot the image installs.** poudriere's `url` method fetches no kernel, and the image needs one, so add it:
+1. **A jail from the snapshot the image installs.** Before the next release, re-sync system sources with [FreeBSD CURRENT (`main`)](https://github.com/freebsd/freebsd-src/tree/main), select the image snapshot, and record its exact source revision. `/usr/src` offered by the installer must match that snapshot; do not fetch a moving branch at install time. Recreate/update the build jail and rebuild the selected kernel modules when moving snapshots. Poudriere's `url` method fetches no kernel, and the image needs one, so add it:
 
    ```
    poudriere jail -c -j 16amd64 -a amd64 -v 16.0-CURRENT -m url=https://download.freebsd.org/snapshots/amd64/16.0-CURRENT/
    fetch -o - https://download.freebsd.org/snapshots/amd64/16.0-CURRENT/kernel.txz | tar -xJf - -C /usr/local/poudriere/jails/16amd64
    ```
 
-2. **A ports tree pinned to the official package set.** The installer takes most packages from pkg.FreeBSD.org's `latest` set, so the Omarchy ports must be built against the same ports commit. That commit is the newest `ports_top_git_hash` annotation across the set's packages. Builds are incremental, so one package's annotation can be older than the set:
+2. **A ports tree pinned to the official package set.** Before the next release, refresh [the fork's `omarchy` branch](https://github.com/jordanhubbard/freebsd-ports/tree/omarchy) from [upstream FreeBSD ports](https://github.com/freebsd/freebsd-ports), preserving and testing the Daemonarchy changes. The installer takes most packages from pkg.FreeBSD.org's `latest` set, so the Omarchy ports must be built against the same ports commit. That commit is the newest `ports_top_git_hash` annotation across the set's packages. Builds are incremental, so one package's annotation can be older than the set:
 
    ```
    mkdir -p /tmp/pq/db /tmp/pq/repos
@@ -84,14 +84,15 @@ You need a FreeBSD 16.0-CURRENT machine (bare metal or a VM with about 8 GB of m
    $P rquery -a '%At=%Av' | sed -n 's/^ports_top_git_hash=//p' | sort -u
    ```
 
-   Check out the newest of those commits, cherry-pick the `omarchy` branch's commits onto it, and register it with poudriere:
+   Check out the newest of those commits and apply the Daemonarchy-specific commits from `origin/omarchy` in order, skipping changes already upstream. Review that list after each sync; it must not include upstream merge commits. Register the resulting tree with poudriere:
 
    ```
-   git clone https://github.com/freebsd/freebsd-ports.git /usr/local/poudriere/ports/omarchyiso
+   git clone --branch omarchy https://github.com/jordanhubbard/freebsd-ports.git /usr/local/poudriere/ports/omarchyiso
    cd /usr/local/poudriere/ports/omarchyiso
+   git remote add upstream https://github.com/freebsd/freebsd-ports.git
+   git fetch upstream main
    git checkout -b omarchy-iso <commit>
-   git fetch https://github.com/jordanhubbard/freebsd-ports.git omarchy
-   git cherry-pick <first-omarchy-commit>^..FETCH_HEAD   # the omarchy branch's own commits
+   git cherry-pick <daemonarchy-commit-1> <daemonarchy-commit-2> # reviewed list, in order
    poudriere ports -c -p omarchyiso -m null -M /usr/local/poudriere/ports/omarchyiso
    ```
 
@@ -237,3 +238,10 @@ Package-only fixes between images bump `PORTREVISION` instead and ship through t
 - **The package mirrors disagree.** poudriere's default `pkg+http://pkg.FreeBSD.org` hands each run a random mirror, and a mirror partway through a sync gives it a partial catalogue: one run fetched 56 packages where the next fetched 1,178, and built the rest from source. Pin `PACKAGE_FETCH_URL` to `http://pkg.FreeBSD.org/${ABI}` (step 3). The mirrors can also be slow from a given host (100 to 400 KB/s here); a faster machine can download the packages and copy them into the repository's `.pkg-cache`.
 - **The official set's dependency versions lag.** pkg.FreeBSD.org builds incrementally, so some of its packages record older versions of their dependencies than the set now holds (chromium recorded `dbus-glib-0.114` while the set had 0.116). poudriere then refuses or deletes them and builds them, chromium and LibreOffice included, which takes most of a day. Only the ISO's own ports need building here; the others come from pkg.FreeBSD.org at install time.
 - **Quoting through ssh.** Don't pass code containing apostrophes inside `ssh host '...'`: a stray quote ends the remote command early and runs the rest locally. Write the file locally and copy it with scp instead.
+
+## Optional installed ports and source trees
+
+See [the sizing report](docs/optional-source-sizing.md) for `/usr/ports` and
+`/usr/src` archive locations, measured sizes, and installation-space allowances.
+These are planned installer options; archives must be pinned to the release
+ports integration and the installed FreeBSD snapshot.

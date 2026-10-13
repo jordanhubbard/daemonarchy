@@ -43,7 +43,7 @@ Omarchy's AI coding agents work here too: Claude Code, Codex, Crush, and the Git
 - A live FreeBSD system (from the snapshot) that logs root in on the first console and starts the installer.
 - The installer: `configurator` asks the questions, `install` installs, `dashboard` shows its progress, `launch` ties them together.
 - The snapshot's `base.txz` and `kernel.txz`, which become the installed system.
-- A package repository with what pkg.FreeBSD.org does not publish: the Omarchy ports from [jordanhubbard/freebsd-ports](https://github.com/jordanhubbard/freebsd-ports) (`omarchy` branch), and the GPU and Wi-Fi kernel modules (`drm-66-kmod`, `gpu-firmware-*-kmod`, `wifi-firmware-*-kmod`) built for the snapshot kernel.
+- A package repository with what pkg.FreeBSD.org does not publish: the Omarchy ports from [jordanhubbard/freebsd-ports, branch `omarchy`](https://github.com/jordanhubbard/freebsd-ports/tree/omarchy), and the GPU and Wi-Fi kernel modules (`drm-66-kmod`, `gpu-firmware-*-kmod`, `wifi-firmware-*-kmod`) built for the snapshot kernel.
 
 Everything else the desktop needs (Hyprland, Qt, browsers, ...) is downloaded from pkg.FreeBSD.org during the install, so the machine needs network access. That keeps the image well under GitHub's 2 GiB release asset limit; a fully offline image would be 7-8 GB.
 
@@ -113,7 +113,7 @@ Daemonarchy is four repositories:
 - **[jordanhubbard/daemonarchy](https://github.com/jordanhubbard/daemonarchy)** (this one): the installer image, its build and test scripts, and these docs.
 - **[jordanhubbard/daemonarchy-desktop](https://github.com/jordanhubbard/daemonarchy-desktop)**: Daemonarchy's artwork and login theme, and the System > FreeBSD tools. Its tags are Daemonarchy's version numbers.
 - **[jordanhubbard/omarchy-freebsd](https://github.com/jordanhubbard/omarchy-freebsd)**: the FreeBSD compatibility layer that lets Omarchy run unchanged.
-- **[jordanhubbard/freebsd-ports](https://github.com/jordanhubbard/freebsd-ports/tree/omarchy)** (`omarchy` branch): the FreeBSD ports that package all of it, being submitted to FreeBSD.
+- **[jordanhubbard/freebsd-ports](https://github.com/jordanhubbard/freebsd-ports/tree/omarchy)** (`omarchy` branch): the release ports fork that packages all of it. Upstream submissions continue independently of Daemonarchy releases.
 
 ## Building
 
