@@ -153,6 +153,22 @@ A VM cannot run the desktop (Hyprland needs a DRM driver), so the tests install 
 - **`test-bhyve.sh <iso>`** on a FreeBSD host with VT-x or AMD-V, as root, with `edk2-bhyve` installed. It reads the installed disk directly after the install. `NET=nat` (the default, with pf and dnsmasq) or `NET=bridge` (onto the host's network, using the LAN's DHCP); `test-bhyve.sh --cleanup` undoes either. The guest's memory is wired (`MEM`, default 3G) so a busy host cannot swap it out: leave the host at least that much free, or lower `MEM`.
 - **`test-qemu.sh <iso>`** anywhere QEMU runs, without root: it logs in over SSH and checks from inside. On a non-x86 host the guest is emulated, and an install takes two to three hours.
 
+For the 1.1 BIOS work, run `BOOT_MODE=bios ./test-qemu.sh <iso>` and
+`BOOT_MODE=uefi OVMF=/path/to/OVMF.fd ./test-qemu.sh <iso>` with separate
+`WORK` directories. UEFI remains the default. Both runs check the firmware
+mode reported by the installed kernel. `sudo bash tests/disk-layout.sh` on
+FreeBSD checks the partition layout and actual BIOS bootcode on temporary
+memory disks with 512-byte and 4 KiB sectors; it does not prove bootability.
+The added BIOS partition is p4, in the alignment gap before the EFI partition,
+so the existing EFI, swap, and ZFS partition numbers remain unchanged.
+
+For a faster BIOS boot-chain check, run
+`sudo bash tests/bios-boot-image.sh /new/test-directory /usr/local/poudriere/jails/16amd64`
+on FreeBSD. It creates a disposable ZFS disk containing that snapshot's boot
+files. Boot `disk.img` in QEMU with SeaBIOS and `-serial stdio`; reaching the
+FreeBSD loader prompt checks the BIOS-to-ZFS-loader chain. This deliberately
+does not install packages or qualify the complete installed desktop.
+
 Both send the installer's log to the guest's serial port, so a stalled install leaves a trail.
 
 On real hardware, the install log is `/tmp/daemonarchy-install.log` on the live system.

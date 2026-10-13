@@ -1,0 +1,21 @@
+#!/usr/local/bin/bash
+
+# Sourced by install and the disposable-disk tests. Call only after the user
+# has confirmed whole-disk erasure. Keep p1/p2/p3 stable for existing tooling.
+create_whole_disk_layout() {
+  local disk=$1
+  gpart destroy -F "$disk" >/dev/null 2>&1 || true
+  gpart create -s gpt "$disk" || return
+  gpart add -i 1 -t efi -a 1m -s 260m -l daemonarchy-efi "$disk" || return
+  gpart add -i 2 -t freebsd-swap -a 1m -s 4g -l daemonarchy-swap "$disk" || return
+  # Use the gap before the 1 MiB-aligned EFI partition. pmbr loads this entire
+  # partition into memory, so it must remain smaller than 545 KiB (gpart(8)).
+  gpart add -i 4 -t freebsd-boot -b 40 -s 512k -l daemonarchy-boot "$disk" || return
+  gpart add -i 3 -t freebsd-zfs -a 1m -l daemonarchy-zfs "$disk"
+}
+
+install_bios_bootcode() {
+  local disk=$1 target=$2
+  # Use the installed system's bootcode, matching its ZFS implementation.
+  gpart bootcode -b "$target/boot/pmbr" -p "$target/boot/gptzfsboot" -i 4 "$disk"
+}

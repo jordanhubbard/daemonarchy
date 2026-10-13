@@ -8,6 +8,7 @@
 #   p2  swap
 #   p3  ZFS pool "zroot" (GELI-encrypted with the user's password if asked),
 #       laid out as bsdinstall does so bectl boot environments work
+#   p4  BIOS boot code, in the alignment gap before p1
 #
 # The base system and kernel come from the release sets on the ISO. The
 # Omarchy ports and the GPU and Wi-Fi kernel modules come from the package repository on the ISO,
@@ -25,6 +26,7 @@ ABI=$(cat "$ISO_SHARE/ABI")
 
 # shellcheck disable=SC1090
 source "$DAEMONARCHY_INSTALL_CONF"
+source "$(dirname "$0")/disk-layout"
 
 log() { printf '\033[32m==>\033[0m %s\n' "$*"; }
 
@@ -69,11 +71,7 @@ fi
 
 phase disk "Partitioning $disk"
 zpool export -f "$POOL" 2>/dev/null || true
-gpart destroy -F "$disk" >/dev/null 2>&1 || true
-gpart create -s gpt "$disk"
-gpart add -t efi -a 1m -s 260m -l daemonarchy-efi "$disk"
-gpart add -t freebsd-swap -a 1m -s 4g -l daemonarchy-swap "$disk"
-gpart add -t freebsd-zfs -a 1m -l daemonarchy-zfs "$disk"
+create_whole_disk_layout "$disk"
 
 zfs_dev=/dev/gpt/daemonarchy-zfs
 if [[ $encrypt_installation == true ]]; then
@@ -112,14 +110,17 @@ for set in base kernel; do
 done
 
 phase loader "Installing the boot loader"
+install_bios_bootcode "$disk" "$TARGET"
 newfs_msdos -F 32 -c 1 -L DAEMONARCHY /dev/gpt/daemonarchy-efi >/dev/null
 mkdir -p "$TARGET/boot/efi"
 mount -t msdosfs /dev/gpt/daemonarchy-efi "$TARGET/boot/efi"
 mkdir -p "$TARGET/boot/efi/EFI/BOOT" "$TARGET/boot/efi/EFI/FreeBSD"
 cp "$TARGET/boot/loader.efi" "$TARGET/boot/efi/EFI/BOOT/BOOTX64.EFI"
 cp "$TARGET/boot/loader.efi" "$TARGET/boot/efi/EFI/FreeBSD/loader.efi"
-efibootmgr -a -c -l "$TARGET/boot/efi/EFI/FreeBSD/loader.efi" -L Daemonarchy >/dev/null 2>&1 ||
-  log "No EFI boot entry created; the firmware falls back to EFI/BOOT/BOOTX64.EFI"
+if [[ $(sysctl -n machdep.bootmethod) == UEFI ]]; then
+  efibootmgr -a -c -l "$TARGET/boot/efi/EFI/FreeBSD/loader.efi" -L Daemonarchy >/dev/null 2>&1 ||
+    log "No EFI boot entry created; the firmware falls back to EFI/BOOT/BOOTX64.EFI"
+fi
 cp "$ISO_SHARE/brand-daemonarchy.lua" "$TARGET/boot/lua/"
 
 # ---------------------------------------------------------------- configuration

@@ -48,3 +48,26 @@ Their merge timing depends on FreeBSD maintainers.
 Feature status and evidence belong here as work progresses. If a platform
 dependency prevents a feature from shipping, record the blocker and agree on
 any scope change before calling 1.1.0 complete.
+
+### Implementation notes
+
+- BIOS: the installer now adds a 512 KiB `freebsd-boot` partition in the gap
+  before the EFI partition and writes the target snapshot's `pmbr` and
+  `gptzfsboot`. Native disposable-disk tests passed with both 512-byte and
+  4 KiB sectors. A QEMU SeaBIOS smoke test reached the snapshot's FreeBSD loader
+  and loaded its kernel from ZFS; the development ISO also built successfully.
+  The QEMU installation harness accepts `BOOT_MODE=bios` or `BOOT_MODE=uefi`.
+  Full installation and encrypted-boot coverage remain open. See the
+  [development check record](docs/testing-1.1-bios.md).
+- VM graphics: `graphics/virtio-gpu-qemu-kmod` in the current ports tree exposes
+  a framebuffer for Xorg's `scfb` driver, not the DRM interface needed by
+  Hyprland. Installing that port alone does not satisfy this feature.
+- NVIDIA: the current image uses `drm-66-kmod`; the default NVIDIA DRM
+  metaport on the selected FreeBSD version chooses the 6.12 DRM family.
+  Resolve that driver-family choice and GPU model support before integrating
+  packages, and build every selected kernel module for the image's snapshot.
+- Physical qualification needs assigned NVIDIA, Bluetooth audio, and Wi-Fi
+  hardware, an enterprise authentication test network, and disposable
+  dual-boot disks. No physical-hardware acceptance results are recorded yet.
+- The upstream ports review's request to move bundled files into source
+  repositories was addressed in 1.0.1. Both upstream PRs still await merge.

@@ -20,8 +20,15 @@ set -eu
 ISO=$(realpath "${1:?usage: test-qemu.sh daemonarchy.iso}")
 WORK=${WORK:-$PWD/daemonarchy-qemu}
 OVMF=${OVMF:-/usr/share/ovmf/OVMF.fd}
+BOOT_MODE=${BOOT_MODE:-uefi}
 SSH_PORT=${SSH_PORT:-2222}
 PASSWORD=daemonarchy
+
+case "$BOOT_MODE" in
+	uefi) [ -r "$OVMF" ] || { echo "UEFI firmware not found: $OVMF" >&2; exit 1; } ;;
+	bios) ;; # QEMU's default SeaBIOS firmware.
+	*) echo "BOOT_MODE must be uefi or bios" >&2; exit 1 ;;
+esac
 
 # Emulated guests get a CPU model without AVX: QEMU's emulation of AVX2 has
 # faulted inside ZFS's SHA-256 routines. With KVM, use the host's CPU.
@@ -54,9 +61,12 @@ mcopy -i cidata.img daemonarchy-install.conf ::/
 vm() {
 	log=$1
 	shift
+	if [ "$BOOT_MODE" = uefi ]; then
+		set -- -bios "$OVMF" "$@"
+	fi
 	# shellcheck disable=SC2086
 	qemu-system-x86_64 -machine q35 $accel -smp 4 -m 4G \
-		-bios "$OVMF" -display none -no-reboot -monitor none \
+		-display none -no-reboot -monitor none \
 		-serial "file:$log" -daemonize -pidfile qemu.pid \
 		-drive file=disk.img,if=virtio,format=raw,cache=unsafe "$@"
 	pid=$(cat qemu.pid)
@@ -109,6 +119,8 @@ check() {
 }
 as_root() { echo $PASSWORD | sudo -S -p "" "\$@"; }
 check "sudo works for tester" "as_root true"
+check "booted using $BOOT_MODE firmware" "sysctl -n machdep.bootmethod | grep -ix $BOOT_MODE"
+check "BIOS boot partition present" "gpart show vtbd0 | grep -q freebsd-boot"
 for g in wheel operator video audio; do
 	check "tester in \$g" "id -Gn | grep -qw \$g"
 done
