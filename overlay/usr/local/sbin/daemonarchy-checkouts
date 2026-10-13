@@ -1,60 +1,91 @@
 #!/usr/local/bin/bash
-# Install a pinned, independent working checkout from signed pkg seed payloads.
+# Install a pinned shallow working checkout from signed pkg seed payloads.
 set -euo pipefail
 
 fail() { echo "daemonarchy-checkouts: $*" >&2; exit 1; }
 
-checkout_install() (
-  local kind=$1 owner=${2:-root} catalog=$3 destination=$4
-  local revision branch remote bundle_hash need available package file hash extra tmp
+checkout_identity() {
+  local kind=$1 catalog=$2
   [[ $kind == ports || $kind == src ]] || fail 'Choose ports or src'
-  id "$owner" >/dev/null 2>&1 || fail "Unknown owner: $owner"
   [[ -r $catalog ]] || fail 'This image has no checkout package catalogue'
   jq -e --arg k "$kind" '.trees[$k] | .revision and .branch and .remote and (.parts | length > 0)' "$catalog" >/dev/null || fail 'Invalid checkout catalogue'
   revision=$(jq -r --arg k "$kind" '.trees[$k].revision' "$catalog")
   branch=$(jq -r --arg k "$kind" '.trees[$k].branch' "$catalog")
+  tracking_branch=$(jq -r --arg k "$kind" '.trees[$k] | .tracking_branch // .branch' "$catalog")
+  [[ $tracking_branch =~ ^[a-zA-Z0-9_.-]+$ && $tracking_branch != *..* ]] || fail 'Invalid tracking branch'
   remote=$(jq -r --arg k "$kind" '.trees[$k].remote' "$catalog")
-  bundle_hash=$(jq -r --arg k "$kind" '.trees[$k].bundle_sha256' "$catalog")
+  archive_hash=$(jq -r --arg k "$kind" '.trees[$k].archive_sha256' "$catalog")
   need=$(jq -r --arg k "$kind" '.trees[$k].required_bytes' "$catalog")
-  [[ $revision =~ ^[0-9a-f]{40}$ && $bundle_hash =~ ^[0-9a-f]{64}$ && $need =~ ^[0-9]+$ ]] || fail 'Invalid checkout identity or size'
+  [[ $revision =~ ^[0-9a-f]{40}$ && $archive_hash =~ ^[0-9a-f]{64}$ && $need =~ ^[0-9]+$ && ${#need} -le 12 ]] || fail 'Invalid checkout identity or size'
   [[ $remote == https://github.com/* && $branch =~ ^[a-zA-Z0-9_-]+$ ]] || fail 'Invalid checkout remote or branch'
-  [[ ! -L $destination ]] || fail "Refusing symlink: $destination"
-  mkdir -p "$destination"
-  [[ -z $(find "$destination" -mindepth 1 -maxdepth 1 -print -quit) ]] || fail "$destination is not empty; existing work is preserved"
-  available=$(df -k "$destination" | awk 'END {print $4}')
-  ((available * 1024 >= need)) || fail "Need at least $(( (need + 1073741823) / 1073741824 )) GiB free for this checkout"
-  # These paths may be separate datasets; conservatively require room for all
-  # temporary payloads on the cache volume as well as on the destination.
-  available=$(df -k /var/tmp | awk 'END {print $4}')
-  ((available * 1024 >= need)) || fail 'Not enough space in /var/tmp for checkout staging'
-  pkg update -f -r Daemonarchy-Checkouts
-  local packages=()
-  while IFS= read -r package; do
-    [[ $package =~ ^daemonarchy-(ports|src)-history-[0-9]+-[0-9]{8}\.g[0-9a-f]{12}$ ]] || fail 'Invalid history package name'
-    packages+=("$package")
-  done < <(jq -r --arg k "$kind" '.trees[$k].parts[].package' "$catalog")
-  pkg install -y -r Daemonarchy-Checkouts "${packages[@]}"
-  command -v git >/dev/null || pkg install -y git
+}
+
+checkout_empty_destination() {
+  [[ ! -L $1 ]] || fail "Refusing symlink: $1"
+  mkdir -p "$1"
+  [[ -z $(find "$1" -mindepth 1 -maxdepth 1 -print -quit) ]] || fail "$1 is not empty; existing work is preserved"
+}
+
+# The separate materialization step also permits native pkg tests in an
+# isolated root. Production always uses the default (real) seed root.
+checkout_materialize() (
+  local kind=$1 owner=$2 catalog=$3 destination=$4 seed_root=${5:-}
+  local revision branch tracking_branch remote archive_hash need file hash extra tmp
+  checkout_identity "$kind" "$catalog"
+  checkout_empty_destination "$destination"
   tmp=$(mktemp -d /var/tmp/daemonarchy-checkout.XXXXXX)
-  # Only task-owned temporary data is removed. Failed or completed working
-  # trees are never removed by this command or by package lifecycle scripts.
   trap 'rm -rf "$tmp"' EXIT
   while IFS=$'\t' read -r file hash extra; do
-    [[ $file == /usr/local/share/daemonarchy/checkouts/"$kind"/"$revision"/part-* && $file != *..* && $hash =~ ^[0-9a-f]{64}$ && -z $extra ]] || fail 'Invalid history part'
-    [[ $(sha256 -q "$file") == "$hash" ]] || fail "History checksum mismatch: $file"
-    cat "$file" >>"$tmp/checkout.bundle"
+    [[ $file == /usr/local/share/daemonarchy/checkouts/"$kind"/"$revision"/part-* && $file != *..* && $hash =~ ^[0-9a-f]{64}$ && -z $extra ]] || fail 'Invalid checkout part'
+    [[ $(sha256 -q "$seed_root$file") == "$hash" ]] || fail "Checkout checksum mismatch: $file"
+    cat "$seed_root$file" >>"$tmp/checkout.tar.gz"
   done < <(jq -r --arg k "$kind" '.trees[$k].parts[] | [.file,.sha256] | @tsv' "$catalog")
-  [[ $(sha256 -q "$tmp/checkout.bundle") == "$bundle_hash" ]] || fail 'Bundle checksum mismatch'
-  git clone --branch "$branch" "$tmp/checkout.bundle" "$destination"
+  [[ $(sha256 -q "$tmp/checkout.tar.gz") == "$archive_hash" ]] || fail 'Archive checksum mismatch'
+  tar -xpf "$tmp/checkout.tar.gz" -C "$destination"
   [[ $(git -C "$destination" rev-parse HEAD) == "$revision" ]] || fail 'Checkout revision mismatch'
-  [[ $(git -C "$destination" rev-parse --is-shallow-repository) == false ]] || fail 'History is incomplete'
+  [[ $(git -C "$destination" symbolic-ref --short HEAD) == "$branch" ]] || fail 'Checkout branch mismatch'
+  [[ $(git -C "$destination" rev-parse --is-shallow-repository) == true ]] || fail 'Expected a shallow checkout'
+  [[ ! -e $destination/.git/objects/info/alternates ]] || fail 'Checkout must be self-contained'
   git -C "$destination" fsck --connectivity-only
   git -C "$destination" remote set-url origin "$remote"
+  git -C "$destination" config remote.origin.fetch "+refs/heads/$tracking_branch:refs/remotes/origin/$tracking_branch"
+  git -C "$destination" config "branch.$branch.merge" "refs/heads/$tracking_branch"
+  git -C "$destination" update-ref "refs/remotes/origin/$tracking_branch" "$revision"
   if [[ $kind == ports ]]; then
     git -C "$destination" remote add upstream https://github.com/freebsd/freebsd-ports.git
   fi
   chown -R "$owner:$(id -gn "$owner")" "$destination"
   echo "Installed $destination at $revision, owned by $owner."
+)
+
+checkout_install() (
+  local kind=$1 owner=${2:-root} catalog=$3 destination=$4
+  local revision branch tracking_branch remote archive_hash need available package volume
+  id "$owner" >/dev/null 2>&1 || fail "Unknown owner: $owner"
+  checkout_identity "$kind" "$catalog"
+  checkout_empty_destination "$destination"
+  if [[ $kind == src ]]; then
+    local kernel_identity
+    kernel_identity=$(strings /boot/kernel/kernel | awk '/^FreeBSD .*main-n[0-9]+-[0-9a-f]+:/ { if (!found++) print }')
+    [[ $kernel_identity == *"-${revision:0:12}:"* ]] || fail 'The source catalogue does not match the installed kernel; use the catalogue for this snapshot'
+  fi
+  # Conservative peak allowance covers package cache, installed seed chunks,
+  # archive staging and extracted files, even on separate datasets.
+  mkdir -p /var/cache/pkg
+  for volume in "$destination" /var/tmp /var/cache/pkg /usr/local/share; do
+    available=$(df -k "$volume" | awk 'END {print $4}')
+    ((available * 1024 >= need)) || fail "Need at least $(( (need + 1073741823) / 1073741824 )) GiB free on $volume"
+  done
+  local packages=()
+  while IFS= read -r package; do
+    [[ $package =~ ^daemonarchy-(ports|src)-checkout-[0-9]+-[0-9]{8}\.g[0-9a-f]{12}$ ]] || fail 'Invalid checkout package name'
+    packages+=("$package")
+  done < <(jq -r --arg k "$kind" '.trees[$k].parts[].package' "$catalog")
+  pkg update -f -r Daemonarchy-Checkouts
+  pkg install -y -r Daemonarchy-Checkouts "${packages[@]}"
+  command -v git >/dev/null || pkg install -y git
+  checkout_materialize "$kind" "$owner" "$catalog" "$destination"
+  echo 'This is a shallow checkout; git fetch --deepen=N can retrieve more history.'
   echo 'Seed packages can be removed with pkg delete; they do not own this checkout:'
   printf '  %s\n' "${packages[@]}"
 )

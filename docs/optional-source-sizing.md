@@ -1,5 +1,39 @@
 # Optional ports and system source: space estimate
 
+**Superseded by shallow live checkout packages (2026-10-13).** The original
+measurements below exclude Git metadata. The installer now uses depth-1 Git
+checkouts, with download and peak-space sizes from the generated `checkouts.json`
+catalogue. See [the build and runtime instructions](../HACKING.md#building-live-checkout-packages).
+The seed packages contain no full historical repository; users can deepen
+history explicitly with Git.
+
+## Shallow live packages
+
+Built on 2026-10-13. These figures include a depth-1 `.git` directory and a
+complete working tree. Package seed archives and temporary extraction files are
+included in the conservative peak allowance, but compiler output is not.
+
+| Selection | Package download | Extracted file contents including `.git` | Peak free-space allowance |
+| --- | ---: | ---: | ---: |
+| Ports | 221.4 MiB | 0.67 GiB | 3.60 GiB (UI rounds to 4) |
+| System source | 680.3 MiB | 1.80 GiB | 6.45 GiB (UI rounds to 7) |
+| Both | 901.7 MiB | 2.47 GiB | 10.05 GiB |
+
+File-content sizes are not filesystem allocation. The allowance includes
+cached packages, installed seeds, the assembled archive, extracted contents,
+per-file allocation and metadata headroom. The installer adds it to the base
+20 GiB target minimum; both options therefore require just over 30 GiB before
+any additional space for building software. Seed packages may be removed after
+creation without touching the working checkouts.
+
+The [pinned catalogue](../overlay/usr/local/share/daemonarchy-installer/checkouts.json)
+records exact revisions, sizes and payload hashes. Ports use integration commit
+`6fb491f4c73a49b71b4843bbe2fd267953a59bc1`; system sources use the image kernel's
+`a52c50b4b7c2652954ef1bd34710a4b1fc8ef391`. Updating to a new release snapshot
+requires rebuilding these packages and regenerating the catalogue.
+
+## Original source-only estimate
+
 Measured on 2026-10-12 for planning installer selections. These options are not
 implemented yet. Refresh both inputs before the 1.1 release and repeat these
 measurements; they are not fixed budgets for a future FreeBSD CURRENT snapshot.

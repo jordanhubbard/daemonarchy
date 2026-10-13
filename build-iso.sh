@@ -24,7 +24,13 @@ ABI=${ABI:-FreeBSD:16:amd64}
 ARCH=${ARCH:-amd64}
 
 here=$(cd "$(dirname "$0")" && pwd)
+CHECKOUT_CATALOG=${CHECKOUT_CATALOG:-$here/overlay/usr/local/share/daemonarchy-installer/checkouts.json}
 packages=/usr/local/poudriere/data/packages/$JAIL-$PTREE
+[ -n "$CHECKOUT_CATALOG" ] && [ -s "$CHECKOUT_CATALOG" ] || {
+  echo 'Set CHECKOUT_CATALOG to the published, signed checkout repository catalogue' >&2
+  exit 1
+}
+jq -e '.schema == 1 and (.trees.ports.depth >= 1) and (.trees.src.depth >= 1)' "$CHECKOUT_CATALOG" >/dev/null
 stage=/var/tmp/daemonarchy-iso-stage
 cache=/var/cache/daemonarchy-iso
 
@@ -34,6 +40,7 @@ rm -rf "$stage"
 mkdir -p "$stage" "$cache" "$OUTDIR"
 cp -R "$here/overlay" "$stage/overlay"
 share=$stage/overlay/usr/local/share/daemonarchy-installer
+cp "$CHECKOUT_CATALOG" "$share/checkouts.json"
 
 echo "==> Collecting the Omarchy package repository"
 mkdir -p "$share/repo/All"
@@ -106,6 +113,15 @@ if [ "$set_version" != "$jail_version" ]; then
 	echo "base.txz is FreeBSD $set_version but jail $JAIL is $jail_version: empty $cache, or update the jail and rebuild the packages" >&2
 	exit 1
 fi
+
+# The optional source checkout must describe the kernel in these release sets.
+source_revision=$(jq -er '.trees.src.revision' "$CHECKOUT_CATALOG")
+# Extract only the embedded build identity, not the build worker's running kernel.
+kernel_identity=$(tar -xOf "$cache/kernel.txz" ./boot/kernel/kernel | strings | awk '/^FreeBSD .*main-n[0-9]+-[0-9a-f]+:/ { if (!found++) print }')
+case "$kernel_identity" in
+  *"-$(printf '%.12s' "$source_revision"):"*) ;;
+  *) echo "Source checkout $source_revision does not match image kernel: $kernel_identity" >&2; exit 1 ;;
+esac
 
 # The default NVIDIA DRM metaport chooses 6.12 on CURRENT, conflicting with
 # this image's 6.6 AMD/Intel modules. Validate the explicit package family.

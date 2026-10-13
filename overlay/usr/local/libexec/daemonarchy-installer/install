@@ -30,6 +30,8 @@ ABI=$(cat "$ISO_SHARE/ABI")
 source "$DAEMONARCHY_INSTALL_CONF"
 source "$(dirname "$0")/disk-layout"
 source "$(dirname "$0")/gpu-config"
+source "$(dirname "$0")/checkout-options"
+checkout_options_prepare "$ISO_SHARE/checkouts.json"
 
 log() { printf '\033[32m==>\033[0m %s\n' "$*"; }
 
@@ -338,6 +340,21 @@ Daemonarchy-ISO: {
 }
 EOF
 
+# Keep a release-pinned checkout catalogue and command for optional runtime use.
+mkdir -p "$TARGET/usr/local/share/daemonarchy-installer"
+cp "$ISO_SHARE/checkouts.json" "$TARGET/usr/local/share/daemonarchy-installer/checkouts.json"
+install -m 0755 /usr/local/sbin/daemonarchy-checkouts "$TARGET/usr/local/sbin/daemonarchy-checkouts"
+checkout_url=$(jq -er '.repository_url' "$ISO_SHARE/checkouts.json")
+[[ $checkout_url =~ ^https://github.com/jordanhubbard/daemonarchy/releases/download/[a-zA-Z0-9._-]+$ ]] || { echo 'Invalid checkout repository URL' >&2; exit 1; }
+cat >"$TARGET/usr/local/etc/pkg/repos/Daemonarchy-Checkouts.conf" <<EOF
+Daemonarchy-Checkouts: {
+  url: "$checkout_url",
+  signature_type: "pubkey",
+  pubkey: "/usr/local/etc/pkg/keys/daemonarchy.pub",
+  enabled: yes
+}
+EOF
+
 # ---------------------------------------------------------------- users
 
 phase user "Creating $username"
@@ -378,6 +395,14 @@ fi
 mkdir -p "$TARGET/var/lib/sddm"
 printf '[Last]\nSession=/usr/local/share/wayland-sessions/omarchy.desktop\nUser=%s\n' "$username" >"$TARGET/var/lib/sddm/state.conf"
 chroot "$TARGET" chown -R sddm:sddm /var/lib/sddm
+
+# The working checkout belongs to the selected user. Seed packages own only
+# immutable payloads; updates and removals cannot replace local source edits.
+for checkout_kind in ports src; do
+  [[ $checkout_kind == ports && $install_ports == true || $checkout_kind == src && $install_src == true ]] || continue
+  phase checkouts "Installing the $checkout_kind Git checkout"
+  chroot "$TARGET" /usr/local/sbin/daemonarchy-checkouts "$checkout_kind" "$username"
+done
 
 # ---------------------------------------------------------------- network services
 

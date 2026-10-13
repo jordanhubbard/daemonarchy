@@ -75,7 +75,7 @@ validate_install_layout() {
   info=$(diskinfo "$disk") || return
   read -r _ sector_bytes media_bytes _ <<<"$info"
   [[ $sector_bytes =~ ^[0-9]+$ && $media_bytes =~ ^[0-9]+$ ]] || return 1
-  ((media_bytes >= 20 * 1024 * 1024 * 1024)) || { layout_error 'The disk must hold at least 20 GiB.'; return 1; }
+  ((media_bytes >= ${MIN_INSTALL_BYTES:-21474836480})) || { layout_error "The disk must hold at least ${MIN_INSTALL_MIB:-20480} MiB for the selected options."; return 1; }
   disk_is_idle "$disk" || return
   if [[ -n ${disk_snapshot:-} ]]; then
     current=$(disk_fingerprint "$disk") || return
@@ -102,7 +102,7 @@ validate_install_layout() {
       *) layout_error 'Only an OS/data partition may be replaced; EFI, reserved and recovery partitions are protected.'; return 1 ;;
     esac
     length=$(partition_field "$disk" "$partition_index" 4)
-    ((length * sector_bytes >= 20 * 1024 * 1024 * 1024)) || { layout_error 'The selected partition must hold at least 20 GiB.'; return 1; }
+    ((length * sector_bytes >= ${MIN_INSTALL_BYTES:-21474836480})) || { layout_error "The selected partition must hold at least ${MIN_INSTALL_MIB:-20480} MiB for the selected options."; return 1; }
     planned_start=$(partition_field "$disk" "$partition_index" 3)
     planned_size=$length
   else
@@ -112,7 +112,7 @@ validate_install_layout() {
     gap_start='' gap_length=''
     read -r gap_start gap_length <<<"$(free_rows "$disk" | awk -v start="$free_start" '$1 == start')"
     [[ -n $gap_length ]] || { layout_error 'The selected free-space range no longer exists.'; return 1; }
-    ((install_size_mib >= 20480)) || { layout_error 'Allocate at least 20480 MiB (20 GiB).'; return 1; }
+    ((install_size_mib >= ${MIN_INSTALL_MIB:-20480})) || { layout_error "Allocate at least ${MIN_INSTALL_MIB:-20480} MiB for the selected options."; return 1; }
     align=$((1024 * 1024 / sector_bytes))
     ((align > 0)) || return 1
     start=$(((gap_start + align - 1) / align * align))

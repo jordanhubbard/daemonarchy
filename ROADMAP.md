@@ -11,7 +11,7 @@ installation path.
 
 | Work | Implementation scope | Required acceptance evidence | Status |
 | --- | --- | --- | --- |
-| NVIDIA graphics | Detect supported GPUs, package kernel-matched drivers, configure modesetting and the desktop session, and explain unsupported models. | Install and reboot on NVIDIA hardware; SDDM login, Hyprland rendering, external displays, and suspend/resume; Intel/AMD regression checks. | Planned |
+| NVIDIA graphics | Detect supported GPUs, package kernel-matched drivers, configure modesetting and the desktop session, and explain unsupported models. | Install and reboot on NVIDIA hardware; SDDM login, Hyprland rendering, external displays, and suspend/resume; Intel/AMD regression checks. | In progress: NVIDIA 595 and DRM 6.6 packages built; selection tests pass; physical desktop qualification pending |
 | Graphical VM desktops | Select a supported virtual graphics path and configure the compositor and login session for it. | Boot the installed image into a usable desktop in each advertised hypervisor; verify rendering, keyboard, pointer, resizing, and reboot. SSH-only checks do not qualify. | Planned |
 | Bluetooth beyond input devices | Add audio device pairing, connection, output selection, reconnect, and removal to the FreeBSD backend and panel. Document the supported audio profiles. | Real headset/speaker playback, volume, disconnect/reconnect, and reboot persistence; existing keyboard/mouse pairing still works. | Planned |
 | Enterprise Wi-Fi | Support certificate-validated 802.1X connections in the installer and desktop panel, including PEAP/MSCHAPv2 and EAP-TLS. Preserve credentials and certificate files securely across installation. | Join a test enterprise network with each supported EAP method, reject an untrusted server certificate, reconnect after reboot, and check that credentials stay out of logs. | Planned |
@@ -73,10 +73,12 @@ any scope change before calling 1.1.0 complete.
 - VM graphics: `graphics/virtio-gpu-qemu-kmod` in the current ports tree exposes
   a framebuffer for Xorg's `scfb` driver, not the DRM interface needed by
   Hyprland. Installing that port alone does not satisfy this feature.
-- NVIDIA: the current image uses `drm-66-kmod`; the default NVIDIA DRM
-  metaport on the selected FreeBSD version chooses the 6.12 DRM family.
-  Resolve that driver-family choice and GPU model support before integrating
-  packages, and build every selected kernel module for the image's snapshot.
+- NVIDIA: the image explicitly packages `nvidia-drm-66-kmod` alongside
+  `drm-66-kmod`, avoiding the default NVIDIA metaport's 6.12 family. NVIDIA
+  595.104.02 userland and kernel packages are built for the selected snapshot.
+  AMD firmware and Radeon/AMDGPU selection remain included. Native package
+  admission and policy tests do not replace physical display, login or suspend
+  qualification.
 - An AMD desktop is assigned for non-NVIDIA testing. The user will prepare
   both a replaceable OS partition and free space for Windows-preservation
   testing. NVIDIA qualification still needs separate hardware. No physical
@@ -94,7 +96,9 @@ any scope change before calling 1.1.0 complete.
 ### Optional development trees
 
 Space planning for installer selections that populate `/usr/ports` and `/usr/src`
-is recorded in [the sizing report](docs/optional-source-sizing.md). The current
-estimate is 320 MiB of downloads and a 4 GiB additional free-space allowance for
-both. Implementation and acceptance remain pending; repeat sizing after the
-ports refresh and FreeBSD CURRENT source sync.
+is recorded in [the sizing report](docs/optional-source-sizing.md). The live
+packages now contain depth-1 shallow Git checkouts, superseding the original
+source-only estimate. Separate installer selections and the runtime
+`daemonarchy-checkouts` command are implemented; native package round-trip tests
+pass. Complete ISO installation remains pending. Repeat sizing after the ports
+refresh and FreeBSD CURRENT source sync.

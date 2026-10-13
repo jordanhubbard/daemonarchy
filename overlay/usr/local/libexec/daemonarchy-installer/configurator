@@ -18,6 +18,7 @@ export PATH="$ISO_SHARE/compat:$PATH"
 
 source "$ISO_SHARE/setup-form.sh"
 source "$(dirname "$0")/disk-layout"
+source "$(dirname "$0")/checkout-options"
 
 # The setup form's reserved names are Linux's. On FreeBSD a name is taken if
 # the base system has it (the live system's accounts are the base system's)
@@ -448,13 +449,30 @@ ssh_step() {
   fi
 }
 
+# Optional development trees are downloaded only when selected.
+install_ports=false install_src=false
+checkout_step() {
+  local kind label download size
+  step "Development checkouts"
+  say --foreground 8 "Optional shallow Git checkouts. Fetch updates or deepen history later."
+  for kind in ports src; do
+    if [[ $kind == ports ]]; then label="Ports tree in /usr/ports"; else label="System sources in /usr/src"; fi
+    download=$(jq -r --arg k "$kind" '[.trees[$k].parts[].download_bytes] | add | . / 1048576 | ceil' "$ISO_SHARE/checkouts.json") || abort "Missing checkout packages"
+    size=$(jq -r --arg k "$kind" '.trees[$k].required_bytes / 1073741824 | ceil' "$ISO_SHARE/checkouts.json") || abort "Missing checkout sizes"
+    if gum confirm --default=false --affirmative "Install" --negative "Skip" "$label ($download MiB download; allow $size GiB extra)?"; then
+      if [[ $kind == ports ]]; then install_ports=true; else install_src=true; fi
+    fi
+  done
+  checkout_options_prepare "$ISO_SHARE/checkouts.json" || abort "Invalid checkout selection"
+}
+
 # STEP 4: DISK
 #
 # The whole disk becomes Daemonarchy: an EFI system partition, swap, and a ZFS
 # pool whose boot environments stand in for the Arch install's Snapper
 # snapshots. Install media and disks too small to hold it are not offered.
 
-MIN_DISK_BYTES=$((20 * 1024 * 1024 * 1024))
+MIN_DISK_BYTES=${MIN_DISK_BYTES:-$((20 * 1024 * 1024 * 1024))}
 
 disk_choices() {
   local disk bytes desc media
@@ -486,20 +504,20 @@ select_shared_space() {
       ((size * sectors >= MIN_DISK_BYTES)) || continue
       rows+=("Partition $index | ${disk}p${index} | $type | $((size * sectors / 1024 / 1024)) MiB")
     done < <(partition_rows "$disk")
-    ((${#rows[@]})) || { notice "No replaceable OS/data partition of at least 20 GiB was found." 3; return 1; }
+    ((${#rows[@]})) || { notice "No replaceable OS/data partition of at least $MIN_INSTALL_MIB MiB was found." 3; return 1; }
     choice=$(gum choose --height 12 --header "Partition to replace (its contents will be erased)" "${rows[@]}") || return 1
     read -r _ partition_index _ <<<"$choice"
   else
     while read -r start size; do
       aligned=$(((start + 1048576 / sectors - 1) / (1048576 / sectors) * (1048576 / sectors)))
       available=$(((start + size - aligned) * sectors / 1048576))
-      ((available >= 20480)) || continue
+      ((available >= MIN_INSTALL_MIB)) || continue
       rows+=("Free $start | $available MiB available")
     done < <(free_rows "$disk")
-    ((${#rows[@]})) || { notice "No free-space extent of at least 20 GiB was found. No partitions will be resized." 3; return 1; }
+    ((${#rows[@]})) || { notice "No free-space extent of at least $MIN_INSTALL_MIB MiB was found. No partitions will be resized." 3; return 1; }
     choice=$(gum choose --height 12 --header "Free space for a new partition" "${rows[@]}") || return 1
     read -r _ free_start _ max_mib _ <<<"$choice"
-    install_size_mib=$(gum input --value "$max_mib" --prompt "Size in MiB> " --placeholder "20480 or more") || return 1
+    install_size_mib=$(gum input --value "$max_mib" --prompt "Size in MiB> " --placeholder "$MIN_INSTALL_MIB or more") || return 1
   fi
   rows=()
   while read -r index type start size; do
@@ -514,7 +532,7 @@ disk_form() {
   local choices choice status action confirmation error
   while true; do
     choices=$(disk_choices)
-    [[ -n $choices ]] || abort "Installation needs a disk of at least 20 GiB."
+    [[ -n $choices ]] || abort "Installation needs a disk of at least $MIN_INSTALL_MIB MiB for these selections."
     step "Select install disk"
     say --foreground 8 "Next, review its partitions and choose where to install."
     echo
@@ -610,6 +628,8 @@ write_install_conf() {
     printf 'wifi_psk=%q\n' "$wifi_psk"
     printf 'wifi_hidden=%q\n' "$wifi_hidden"
     printf 'ssh_enable=%q\n' "$ssh_enable"
+    printf 'install_ports=%q\n' "$install_ports"
+    printf 'install_src=%q\n' "$install_src"
   } >"$DAEMONARCHY_INSTALL_CONF"
 }
 
@@ -618,6 +638,7 @@ keyboard_form
 user_step
 network_step
 ssh_step
+checkout_step
 disk_form
 clear
 write_install_conf

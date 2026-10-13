@@ -106,6 +106,26 @@ timezone=America/Los_Angeles
 
 The machine powers off when the install finishes.
 
+### Optional live checkouts (1.1 development)
+
+The development installer offers `/usr/ports` and `/usr/src` separately, both off
+by default. These are shallow Git checkouts (depth 1), pinned to the release
+ports tree and kernel sources. They support fetching updates and making commits;
+fetch more history explicitly with `git fetch --deepen=100` when needed.
+Set `install_ports=true` and/or `install_src=true` for unattended installation.
+
+On a system installed with this development image, they can also be added later:
+
+```sh
+sudo daemonarchy-checkouts ports "$USER"
+sudo daemonarchy-checkouts src "$USER"
+```
+
+Existing nonempty directories are preserved. The installer displays each
+option's download size and additional space allowance. See
+[the packaging instructions](HACKING.md#building-live-checkout-packages) for
+release pinning and validation details.
+
 ## Source
 
 Daemonarchy is four repositories:

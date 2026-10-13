@@ -1,0 +1,52 @@
+{
+  "schema": 1,
+  "repository_url": "https://github.com/jordanhubbard/daemonarchy/releases/download/checkouts-16-a52c50b4b7c2-6fb491f4c73a-v1",
+  "trees": {
+    "ports": {
+      "revision": "6fb491f4c73a49b71b4843bbe2fd267953a59bc1",
+      "branch": "omarchy",
+      "remote": "https://github.com/jordanhubbard/freebsd-ports.git",
+      "depth": 1,
+      "archive_sha256": "80bf5dc374ab1ea39c7d5f18c7b9da456a036a8c097a1b4d27d588ef17fadbb6",
+      "archive_bytes": 234361426,
+      "expanded_bytes": 720668785,
+      "required_bytes": 3866034023,
+      "parts": [
+        {
+          "package": "daemonarchy-ports-checkout-000-20261012.g6fb491f4c73a",
+          "file": "/usr/local/share/daemonarchy/checkouts/ports/6fb491f4c73a49b71b4843bbe2fd267953a59bc1/part-000",
+          "sha256": "80bf5dc374ab1ea39c7d5f18c7b9da456a036a8c097a1b4d27d588ef17fadbb6",
+          "bytes": 234361426,
+          "download_bytes": 232151169
+        }
+      ],
+      "tracking_branch": "daemonarchy-1.1-iso"
+    },
+    "src": {
+      "revision": "a52c50b4b7c2652954ef1bd34710a4b1fc8ef391",
+      "branch": "main",
+      "remote": "https://github.com/freebsd/freebsd-src.git",
+      "depth": 1,
+      "archive_sha256": "cc16adb42a853fb1a703db3270d0e4aeeff94873ef2861ddecd5c87f24dc6a76",
+      "archive_bytes": 721914980,
+      "expanded_bytes": 1930227361,
+      "required_bytes": 6922183629,
+      "parts": [
+        {
+          "package": "daemonarchy-src-checkout-000-20261004.ga52c50b4b7c2",
+          "file": "/usr/local/share/daemonarchy/checkouts/src/a52c50b4b7c2652954ef1bd34710a4b1fc8ef391/part-000",
+          "sha256": "90308601e3c51bedb582d4988ff66c0176e8c9be747779283dd44f96970a2b6d",
+          "bytes": 536870912,
+          "download_bytes": 535542543
+        },
+        {
+          "package": "daemonarchy-src-checkout-001-20261004.ga52c50b4b7c2",
+          "file": "/usr/local/share/daemonarchy/checkouts/src/a52c50b4b7c2652954ef1bd34710a4b1fc8ef391/part-001",
+          "sha256": "50798fd89a692fbd686a9561e5108ca16a42cf6cebb6621c2d29f66bfe2d7adb",
+          "bytes": 185044068,
+          "download_bytes": 177825120
+        }
+      ]
+    }
+  }
+}

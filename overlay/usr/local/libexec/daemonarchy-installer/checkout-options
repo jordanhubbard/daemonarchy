@@ -1,0 +1,20 @@
+#!/usr/local/bin/bash
+# Optional live source trees; shared by the configurator, installer and tests.
+checkout_options_prepare() {
+  local catalog=$1 kind amount
+  install_ports=${install_ports:-false}
+  install_src=${install_src:-false}
+  [[ $install_ports == true || $install_ports == false ]] || { echo 'install_ports must be true or false' >&2; return 1; }
+  [[ $install_src == true || $install_src == false ]] || { echo 'install_src must be true or false' >&2; return 1; }
+  checkout_required_bytes=0
+  for kind in ports src; do
+    [[ $kind == ports && $install_ports == true || $kind == src && $install_src == true ]] || continue
+    [[ -s $catalog ]] || { echo 'Missing live checkout catalogue' >&2; return 1; }
+    amount=$(jq -er --arg k "$kind" '.trees[$k] | select(.depth >= 1 and .depth <= 100 and (.parts | length > 0)) | .required_bytes' "$catalog") || return 1
+    [[ $amount =~ ^[0-9]+$ && ${#amount} -le 12 ]] || { echo 'Invalid checkout size' >&2; return 1; }
+    checkout_required_bytes=$((checkout_required_bytes + amount))
+  done
+  MIN_INSTALL_BYTES=$((20 * 1024 * 1024 * 1024 + checkout_required_bytes))
+  MIN_INSTALL_MIB=$(((MIN_INSTALL_BYTES + 1048575) / 1048576))
+  MIN_DISK_BYTES=$MIN_INSTALL_BYTES
+}

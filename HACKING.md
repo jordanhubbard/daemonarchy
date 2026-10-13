@@ -99,7 +99,7 @@ You need a FreeBSD 16.0-CURRENT machine (bare metal or a VM with about 8 GB of m
 3. **poudriere settings** (`/usr/local/etc/poudriere.d/omarchyiso-poudriere.conf`): build the kernel modules for the jail's kernel instead of fetching the package builders' copies, which target a different kernel:
 
    ```
-   PACKAGE_FETCH_BLACKLIST="drm-*-kmod gpu-firmware-* wifi-firmware-*"
+   PACKAGE_FETCH_BLACKLIST="drm-*-kmod gpu-firmware-* wifi-firmware-* nvidia-*"
    PACKAGE_FETCH_URL="http://pkg.FreeBSD.org/\${ABI}"
    ```
 
@@ -243,5 +243,62 @@ Package-only fixes between images bump `PORTREVISION` instead and ship through t
 
 See [the sizing report](docs/optional-source-sizing.md) for `/usr/ports` and
 `/usr/src` archive locations, measured sizes, and installation-space allowances.
-These are planned installer options; archives must be pinned to the release
+These development installer options require archives pinned to the release
 ports integration and the installed FreeBSD snapshot.
+
+### Building live checkout packages
+
+The optional trees are **depth-1 shallow Git checkouts**, not full repository
+history. They include `.git`, the release revision and a configured HTTPS remote.
+Users can fetch changes, deepen history and commit. Package files own only seed
+archives in `/usr/local/share/daemonarchy/checkouts`; the working trees in
+`/usr/ports` and `/usr/src` are independent, so package removal cannot delete work.
+
+On the FreeBSD build worker, run `scripts/build-checkout-packages.py` for each
+release input. Use the image's integrated ports revision and the source revision
+printed in the selected kernel's build identity:
+
+```sh
+python3 scripts/build-checkout-packages.py --kind ports \
+  --repo /usr/local/poudriere/ports/omarchyiso --revision <ports-commit> \
+  --branch omarchy --remote https://github.com/jordanhubbard/freebsd-ports.git \
+  --out /path/to/checkout-repo
+python3 scripts/build-checkout-packages.py --kind src \
+  --repo /usr/src --revision <kernel-source-commit> \
+  --branch main --remote https://github.com/freebsd/freebsd-src.git \
+  --out /path/to/checkout-repo
+python3 scripts/make-checkout-catalog.py /path/to/checkout-repo \
+  --url https://github.com/jordanhubbard/daemonarchy/releases/download/<checkout-tag> \
+  --ports-tracking-branch daemonarchy-1.1-iso \
+  > /path/to/checkout-repo/checkouts.json
+sudo pkg repo /path/to/checkout-repo /usr/local/etc/daemonarchy/pkg-repo.key
+```
+
+`--depth` defaults to 1. The current image integration is published on the fork's
+`daemonarchy-1.1-iso` branch; the local ports branch is named `omarchy` and tracks
+that integration branch. Default fetches are restricted to one branch. Payloads are split into 512 MiB parts before packaging,
+keeping each asset below 2 GiB. Publish the signed repository at a dedicated,
+release-specific tag, packages first and catalogues last. Retain that tag for
+older installations. Pass `CHECKOUT_CATALOG=/path/to/checkout-repo/checkouts.json`
+to `build-iso.sh`; it rejects sources that do not match the selected kernel.
+The checkout packages are downloaded when selected and do not enlarge the ISO.
+
+The installer offers each tree separately. Unattended installs default both off;
+set `install_ports=true` and/or `install_src=true` to enable them. Selections
+increase the required disk/partition size by the measured peak-space allowance.
+The checkout is owned by the new user. Later, install either tree with:
+
+```sh
+sudo daemonarchy-checkouts ports "$USER"
+sudo daemonarchy-checkouts src "$USER"
+```
+
+The command refuses nonempty destinations and verifies payload checksums. It
+also refuses to install source from a catalogue for a different kernel snapshot.
+Seed packages and pkg's download cache can be removed after successful creation;
+the command lists the seed package names. Build dependencies, distfiles and
+compiler outputs still need additional disk space.
+
+Run `sudo bash tests/checkout-packages.sh` on FreeBSD for the native package
+round trip, shallow/deepen/commit checks, edit preservation and corruption
+rejection. `bash tests/checkout-options.sh` checks selection and capacity policy.

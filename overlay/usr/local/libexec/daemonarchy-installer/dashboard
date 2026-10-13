@@ -48,8 +48,9 @@ phase_band() {
     loader) echo "130 140" ;;
     config) echo "140 150" ;;
     fetch) echo "150 620" ;;
-    install) echo "620 960" ;;
-    user) echo "960 985" ;;
+    install) echo "620 950" ;;
+    user) echo "950 960" ;;
+    checkouts) echo "960 985" ;;
     finish) echo "985 999" ;;
     *) echo "0 0" ;;
   esac
@@ -64,6 +65,7 @@ phase_title() {
     fetch) echo "Gathering packages" ;;
     install) echo "Installing the desktop" ;;
     user) echo "Creating your account" ;;
+    checkouts) echo "Installing development checkouts" ;;
     finish) echo "Finishing up" ;;
     *) echo "Starting" ;;
   esac

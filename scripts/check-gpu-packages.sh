@@ -19,7 +19,11 @@ for file in "$packages"/*.pkg; do
     nvidia-*) case "$version" in 595.104.02|595.104.02.*|595.104.02_*) ;; *) echo "Refresh the NVIDIA PCI table before changing driver versions" >&2; exit 1 ;; esac ;;
   esac
   abi=$(pkg query -F "$file" '%q')
-  [ "$abi" = FreeBSD:16:amd64 ] || { echo "$name: unexpected ABI $abi" >&2; exit 1; }
+  case "$name:$abi" in
+    gpu-firmware-kmod:FreeBSD:16:\*) ;;
+    *:FreeBSD:16:amd64) ;;
+    *) echo "$name: unexpected ABI $abi" >&2; exit 1 ;;
+  esac
   case "$name" in
     drm-66-kmod|nvidia-kmod|nvidia-drm-66-kmod|gpu-firmware-*-kmod-*)
       built_for=$(pkg query -F "$file" '%At %Av' | awk '$1 == "FreeBSD_version" { print $2 }')
