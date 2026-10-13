@@ -90,7 +90,7 @@ greeter() {
   tpad=$(((cols - ${#tagline}) / 2)); ((tpad < 0)) && tpad=0
   printf '\033[%d;%dH%s' "$tagline_row" "$((tpad + 1))" "$tagline"
 
-  hint="Press Return to Start Install"
+  hint="Press Return for installer options"
   hpad=$(((cols - ${#hint}) / 2)); ((hpad < 0)) && hpad=0
   printf '\033[%d;%dH\033[2m%s\033[0m' "$hint_row" "$((hpad + 1))" "$hint"
 
@@ -409,7 +409,7 @@ network_step() {
     echo
 
     options=()
-    $connected && options+=("Continue")
+    if $connected || [[ ${1:-} == allow-offline ]]; then options+=("Continue"); fi
     for ifc in $(wifi_adapters); do options+=("Join Wi-Fi with $ifc"); done
     for ifc in $(ether_ports); do
       options+=("Use DHCP on $ifc" "Set up $ifc by hand")
@@ -634,6 +634,21 @@ write_install_conf() {
 }
 
 greeter
+while true; do
+  clear_logo
+  action=$(gum choose --header 'Installer options' 'Install Daemonarchy' 'Remote agent debug' 'Configure network' 'Exit to shell') || exit 1
+  case "$action" in
+    'Install Daemonarchy') break ;;
+    'Remote agent debug')
+      "$(dirname "$0")/remote-debug" || {
+        echo 'Remote debug could not start. Press Return to return to the menu.'
+        IFS= read -r _ </dev/tty || true
+      }
+      ;;
+    'Configure network') network_step allow-offline ;;
+    'Exit to shell') exit 1 ;;
+  esac
+done
 keyboard_form
 user_step
 network_step

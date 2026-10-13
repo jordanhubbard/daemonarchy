@@ -62,6 +62,13 @@ any scope change before calling 1.1.0 complete.
 
 ### Implementation notes
 
+- Remote agent debug: the live installer menu can open a temporary SSH
+  listener (default port 2222, configurable), with console approval of the
+  agent's key fingerprint. This provides the USB-to-agent handoff for physical
+  test machines. Pairing, rejection, custom ports, reconnecting and stopping
+  access passed native live-VM checks. See the [handoff guide](docs/remote-agent-debug.md)
+  and [validation record](docs/testing-1.1-remote-debug.md).
+
 - BIOS: the installer now adds a 512 KiB `freebsd-boot` partition in the gap
   before the EFI partition and writes the target snapshot's `pmbr` and
   `gptzfsboot`. Native disposable-disk tests passed with both 512-byte and

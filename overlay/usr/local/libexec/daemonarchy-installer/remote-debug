@@ -1,0 +1,141 @@
+#!/usr/local/bin/bash
+# Console-approved SSH pairing for the live installer; state stays in RAM.
+set -euo pipefail
+state=/var/run/daemonarchy-remote-debug
+self=/usr/local/libexec/daemonarchy-installer/remote-debug
+
+fail() { echo "Remote debug: $*" >&2; exit 1; }
+
+authorize() {
+  local type=$1 key=$2 fingerprint=$3 request temporary i
+  [[ -d $state/requests && -f $state/active ]] || exit 1
+  request=$(printf '%s %s' "$type" "$key" | sha256 -q)
+  if [[ ! -f $state/requests/$request ]]; then
+    temporary=$(mktemp "$state/requests/.pending.XXXXXX")
+    printf '%s\n%s %s\n' "$fingerprint" "$type" "$key" >"$temporary"
+    mv "$temporary" "$state/requests/$request"
+  fi
+  for ((i=0; i<120; i++)); do
+    [[ -f $state/active ]] || exit 1
+    [[ ! -f $state/$request.denied ]] || exit 1
+    if [[ -f $state/$request.approved ]]; then
+      printf '%s %s\n' "$type" "$key"
+      return
+    fi
+    sleep 1
+  done
+  return 1
+}
+
+stop_server() {
+  [[ -d $state ]] || return 0
+  rm -f "$state/active"
+  if [[ -n ${server_pid:-} ]]; then
+    # Terminate this listener's connections as well as the listener itself.
+    pkill -TERM -P "$server_pid" 2>/dev/null || true
+    kill "$server_pid" 2>/dev/null || true
+    wait "$server_pid" 2>/dev/null || true
+  fi
+  rm -rf "$state"
+}
+
+start_server() {
+  local port=$1
+  [[ $(id -u) == 0 && $(uname -s) == FreeBSD ]] || fail 'Requires the live FreeBSD root console.'
+  [[ $(mount -p | awk '$2 == "/" {print $3}') == cd9660 ]] || fail 'Only available on the live installer ISO.'
+  if [[ ! $port =~ ^[0-9]{1,5}$ ]] || ((10#$port < 1 || 10#$port > 65535)); then
+    fail 'Port must be 1–65535.'
+  fi
+  port=$((10#$port))
+  [[ ! -e $state ]] || fail 'Another debug session is already active.'
+  # The snapshot's live root account must permit key authentication.
+  [[ $(awk -F: '$1 == "root" {print $2}' /etc/master.passwd) != '*' ]] || fail 'Live root account is locked.'
+  umask 077
+  mkdir -p "$state/requests"
+  trap stop_server EXIT
+  trap 'exit 130' INT
+  trap 'exit 143' TERM HUP
+  ssh-keygen -q -t ed25519 -N '' -f "$state/host_key"
+  cat >"$state/sshd_config" <<EOF
+Port $port
+HostKey $state/host_key
+PidFile $state/sshd.pid
+AuthorizedKeysFile none
+AuthorizedKeysCommand $self authorize %t %k %f
+AuthorizedKeysCommandUser root
+PermitRootLogin prohibit-password
+AllowUsers root
+AuthenticationMethods publickey
+PubkeyAuthentication yes
+PasswordAuthentication no
+KbdInteractiveAuthentication no
+UsePAM no
+StrictModes yes
+UseDNS no
+LoginGraceTime 150
+MaxStartups 3:30:10
+AllowAgentForwarding no
+AllowTcpForwarding no
+X11Forwarding no
+Subsystem sftp internal-sftp
+EOF
+  /usr/sbin/sshd -t -f "$state/sshd_config"
+  touch "$state/active"
+  /usr/sbin/sshd -D -E "$state/sshd.log" -f "$state/sshd_config" &
+  server_pid=$!
+  sleep 1
+  if ! kill -0 "$server_pid" 2>/dev/null; then
+    cat "$state/sshd.log" >&2
+    fail "Cannot listen on port $port; choose another port."
+  fi
+}
+
+show_status() {
+  clear
+  gum style --bold 'Installer remote debug mode'
+  echo
+  echo 'No installation has been started. Pairing grants a root shell.'
+  echo 'Tell your agent this IP address and port:'
+  ifconfig -a inet | awk -v port="$port" '$1 == "inet" && $2 != "127.0.0.1" {print "  ssh -p " port " root@" $2}'
+  echo
+  echo 'Server fingerprint:'
+  ssh-keygen -l -f "$state/host_key.pub"
+  echo
+  echo 'The agent should use a temporary SSH key and tell you its fingerprint.'
+  echo 'Approve only the matching fingerprint when the pairing request appears.'
+  echo 'Press Enter to stop remote access and return to the installer menu.'
+}
+
+debug_menu() {
+  local port request fingerprint
+  port=$(gum input --value 2222 --header 'Remote debug port') || return 0
+  gum confirm --default=false --affirmative 'Enable remote debug' --negative 'Back' \
+    'An approved agent gets root access to this machine until you stop this mode or reboot. Enable?' || return 0
+  start_server "$port"
+  show_status
+  while kill -0 "$server_pid" 2>/dev/null; do
+    for request in "$state"/requests/*; do
+      [[ -f $request ]] || continue
+      [[ ! -e $state/${request##*/}.approved && ! -e $state/${request##*/}.denied ]] || continue
+      fingerprint=$(head -n 1 "$request")
+      gum style --bold 'Agent pairing request'
+      printf '\n%s\n\n' "$fingerprint"
+      if gum confirm --default=false --affirmative 'Pair with agent' --negative 'Reject' \
+        'Does this fingerprint match the one your agent gave you?'; then
+        touch "$state/${request##*/}.approved"
+      else
+        touch "$state/${request##*/}.denied"
+      fi
+      show_status
+    done
+    if IFS= read -r -t 1 </dev/tty; then
+      break
+    fi
+  done
+}
+
+case ${1:-menu} in
+  authorize) [[ $# == 4 ]] || exit 1; authorize "$2" "$3" "$4" ;;
+  menu) debug_menu ;;
+  *) fail 'Run remote-debug with no arguments from the live console.' ;;
+esac
