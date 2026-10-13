@@ -121,6 +121,7 @@ poudriere image -t hybridiso -j "$JAIL" -p "$PTREE" -n "$image" \
 
 iso=$OUTDIR/$NAME.iso
 [ "$image" = "$NAME" ] || mv "$OUTDIR/$image.iso" "$iso"
-sha256 -r "$iso" | sed "s|$OUTDIR/||" >"$iso.sha256"
+digest=$(sha256 -q "$iso")
+printf '%s  %s\n' "$digest" "$(basename "$iso")" >"$iso.sha256"
 ls -lh "$iso"
 cat "$iso.sha256"
