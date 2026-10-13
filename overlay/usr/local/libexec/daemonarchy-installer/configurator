@@ -17,6 +17,7 @@ LOGO_PATH="$ISO_SHARE/logo.txt"
 export PATH="$ISO_SHARE/compat:$PATH"
 
 source "$ISO_SHARE/setup-form.sh"
+source "$(dirname "$0")/disk-layout"
 
 # The setup form's reserved names are Linux's. On FreeBSD a name is taken if
 # the base system has it (the live system's accounts are the base system's)
@@ -471,37 +472,116 @@ disk_choices() {
   done
 }
 
-disk_form() {
-  local choices choice status
-  choices=$(disk_choices)
-  if [[ -z $choices ]]; then
-    step "No disk large enough to install Daemonarchy (20 GB or more) was found."
-    abort "Installation needs a disk of at least 20 GB."
-  fi
+# The selection is a plan until the final confirmation. Re-read and compare
+# the disk identity and table again in install immediately before any write.
+install_mode=whole_disk partition_index="" efi_index="" free_start=""
+install_size_mib="" disk_snapshot=""
 
+select_shared_space() {
+  local rows=() index type start size sectors choice available aligned max_mib
+  sectors=$(diskinfo "$disk" | awk '{ print $2 }')
+  if [[ $install_mode == partition ]]; then
+    while read -r index type start size; do
+      case $type in freebsd-zfs | freebsd-ufs | ms-basic-data | linux-data) ;; *) continue ;; esac
+      ((size * sectors >= MIN_DISK_BYTES)) || continue
+      rows+=("Partition $index | ${disk}p${index} | $type | $((size * sectors / 1024 / 1024)) MiB")
+    done < <(partition_rows "$disk")
+    ((${#rows[@]})) || { notice "No replaceable OS/data partition of at least 20 GiB was found." 3; return 1; }
+    choice=$(gum choose --height 12 --header "Partition to replace (its contents will be erased)" "${rows[@]}") || return 1
+    read -r _ partition_index _ <<<"$choice"
+  else
+    while read -r start size; do
+      aligned=$(((start + 1048576 / sectors - 1) / (1048576 / sectors) * (1048576 / sectors)))
+      available=$(((start + size - aligned) * sectors / 1048576))
+      ((available >= 20480)) || continue
+      rows+=("Free $start | $available MiB available")
+    done < <(free_rows "$disk")
+    ((${#rows[@]})) || { notice "No free-space extent of at least 20 GiB was found. No partitions will be resized." 3; return 1; }
+    choice=$(gum choose --height 12 --header "Free space for a new partition" "${rows[@]}") || return 1
+    read -r _ free_start _ max_mib _ <<<"$choice"
+    install_size_mib=$(gum input --value "$max_mib" --prompt "Size in MiB> " --placeholder "20480 or more") || return 1
+  fi
+  rows=()
+  while read -r index type start size; do
+    [[ $type == efi ]] && rows+=("EFI $index | ${disk}p${index} | $((size * sectors / 1048576)) MiB")
+  done < <(partition_rows "$disk")
+  ((${#rows[@]})) || { notice "An existing EFI partition is required for a shared-disk installation." 3; return 1; }
+  choice=$(gum choose --header "EFI partition to share (existing files are preserved)" "${rows[@]}") || return 1
+  read -r _ efi_index _ <<<"$choice"
+}
+
+disk_form() {
+  local choices choice status action confirmation error
   while true; do
+    choices=$(disk_choices)
+    [[ -n $choices ]] || abort "Installation needs a disk of at least 20 GiB."
     step "Select install disk"
-    say --foreground 8 "Everything on the selected disk will be erased."
+    say --foreground 8 "Next, review its partitions and choose where to install."
     echo
     choice=$(printf '%s\n' "$choices" | column -t -s $'\t' |
       gum choose --height 10 --header "Install disk") && status=0 || status=$?
     ((status == 0)) || { ((status == OMARCHY_FORM_BACK)) && continue; abort; }
     disk=${choice%% *}
-
+    install_mode=whole_disk partition_index="" efi_index="" free_start="" install_size_mib=""
+    disk_snapshot=$(disk_fingerprint "$disk") || { notice "Could not read $disk" 3; continue; }
+    step "Existing partitions on $disk"
+    gpart show -p "$disk" 2>/dev/null || say "No partition table."
+    echo
+    say --foreground 8 "Types describe partitions, not their contents. ms-basic-data may contain Windows or data."
+    say --foreground 8 "EFI, reserved and recovery partitions cannot be selected for replacement."
+    echo
+    action=$(gum choose --header "Installation layout" \
+      "Use an existing OS/data partition" "Create a partition in free space" \
+      "Erase the entire disk" "Choose another disk") || continue
+    case $action in
+      "Use an existing"*) install_mode=partition ;;
+      "Create a partition"*) install_mode=free_space ;;
+      "Erase the entire disk") install_mode=whole_disk ;;
+      *) continue ;;
+    esac
+    if [[ $install_mode != whole_disk ]]; then
+      if [[ $(sysctl -n machdep.bootmethod) != UEFI ]] || ! gpart backup "$disk" | head -n 1 | grep -q '^GPT '; then
+        notice "Preserving an existing disk requires UEFI boot and a GPT partition table." 3
+        continue
+      fi
+      select_shared_space || continue
+    fi
+    if ! error=$(validate_install_layout 2>&1); then
+      notice "$error" 4
+      continue
+    fi
+    if [[ $install_mode != whole_disk ]] && ! error=$(check_shared_efi 2>&1); then
+      notice "$error" 4
+      continue
+    fi
     step "Disk encryption"
     if gum confirm --affirmative "Yes, encrypt" --negative "No" \
-      "Encrypt the disk with your password?"; then
+      "Encrypt Daemonarchy's partition with your password?"; then
       encrypt_installation=true
     else
       encrypt_installation=false
     fi
-
     step "Ready to install"
-    say "Daemonarchy will be installed on $choice"
-    say --foreground 8 "All data on $disk will be destroyed."
+    case $install_mode in
+      whole_disk)
+        say --foreground 1 "All partitions and data on $disk will be destroyed."
+        confirmation="Erase $disk and install?"
+        ;;
+      partition)
+        say --foreground 1 "All contents of ${disk}p${partition_index} will be erased and replaced by Daemonarchy."
+        say "Other partitions and existing EFI boot files will be preserved."
+        [[ $(gum input --prompt "Type ${disk}p${partition_index} to confirm> ") == "${disk}p${partition_index}" ]] || continue
+        confirmation="Replace ${disk}p${partition_index} and install?"
+        ;;
+      free_space)
+        say "Create a $install_size_mib MiB Daemonarchy partition in the selected free space."
+        say "Existing partitions and EFI boot files will be preserved."
+        confirmation="Create the new partition and install?"
+        ;;
+    esac
+    [[ $install_mode == whole_disk ]] || say "A Daemonarchy boot entry will be added. Existing filesystems will not be resized."
     echo
-    gum confirm --affirmative "Install Daemonarchy" --negative "Go back" \
-      "Erase $disk and install?" && break
+    gum confirm --default=false --affirmative "Install Daemonarchy" --negative "Go back" "$confirmation" && break
   done
 }
 
@@ -509,6 +589,9 @@ write_install_conf() {
   umask 077
   {
     printf 'disk=%q\n' "$disk"
+    for setting in install_mode partition_index efi_index free_start install_size_mib disk_snapshot; do
+      printf '%s=%q\n' "$setting" "${!setting}"
+    done
     printf 'encrypt_installation=%q\n' "$encrypt_installation"
     printf 'keyboard=%q\n' "$keyboard"
     printf 'username=%q\n' "$username"

@@ -15,7 +15,7 @@ installation path.
 | Graphical VM desktops | Select a supported virtual graphics path and configure the compositor and login session for it. | Boot the installed image into a usable desktop in each advertised hypervisor; verify rendering, keyboard, pointer, resizing, and reboot. SSH-only checks do not qualify. | Planned |
 | Bluetooth beyond input devices | Add audio device pairing, connection, output selection, reconnect, and removal to the FreeBSD backend and panel. Document the supported audio profiles. | Real headset/speaker playback, volume, disconnect/reconnect, and reboot persistence; existing keyboard/mouse pairing still works. | Planned |
 | Enterprise Wi-Fi | Support certificate-validated 802.1X connections in the installer and desktop panel, including PEAP/MSCHAPv2 and EAP-TLS. Preserve credentials and certificate files securely across installation. | Join a test enterprise network with each supported EAP method, reject an untrusted server certificate, reconnect after reboot, and check that credentials stay out of logs. | Planned |
-| Dual boot and partition selection | Install into explicitly selected available space without deleting other systems; preserve existing EFI loaders and entries. Never resize an existing filesystem implicitly. | Disposable disks containing another OS survive installation with partition/data checks and both operating systems booting; insufficient space and invalid selections fail before writes. | Planned |
+| Dual boot and partition selection | Show existing partitions; replace only an explicitly selected OS/data partition or create one in selected free space; preserve existing EFI loaders and entries. Never resize an existing filesystem implicitly. | Disposable disks containing another OS survive installation with partition/data checks and both operating systems booting; insufficient space and invalid selections fail before writes. | In progress: native preservation tests pass for both selection modes; physical Windows boot tests pending |
 | Legacy BIOS boot | Add BIOS image boot and installed-system boot code, alongside the UEFI path. | Boot the ISO, install, and reboot in BIOS and UEFI VMs, including encrypted installations. | In progress: disk layout and bootcode tests pass; full boot tests pending |
 | Secure Boot | Establish a signed FreeBSD boot chain and a documented key-enrollment/update process. | Install and boot with Secure Boot enabled; reject an untrusted boot component and verify signed updates. | Planned |
 | Upstream FreeBSD ports | Complete review and integration of the supporting ports and the Omarchy/Daemonarchy ports; reconcile the image's ports tree with upstream. | Upstream changes merged and packaged; clean `poudriere testport` and installation against the selected package set. | Under upstream review |
@@ -26,10 +26,10 @@ Their merge timing depends on FreeBSD maintainers.
 
 ### Delivery order
 
-1. Establish hardware and VM test coverage and resolve driver/profile feasibility.
+1. Deliver the partition-selection preview for existing-partition and free-space testing; establish hardware and VM coverage.
 2. Implement graphics, networking, and Bluetooth in their owning repositories;
    update the ports and installer integration together.
-3. Implement and validate the new disk and boot modes on disposable disks.
+3. Complete physical Windows preservation and boot checks; validate the remaining boot modes.
 4. Build the release candidate, exercise upgrades from 1.0.1, and complete the
    acceptance matrix before publishing 1.1.0.
 
@@ -66,8 +66,15 @@ any scope change before calling 1.1.0 complete.
   metaport on the selected FreeBSD version chooses the 6.12 DRM family.
   Resolve that driver-family choice and GPU model support before integrating
   packages, and build every selected kernel module for the image's snapshot.
-- Physical qualification needs assigned NVIDIA, Bluetooth audio, and Wi-Fi
-  hardware, an enterprise authentication test network, and disposable
-  dual-boot disks. No physical-hardware acceptance results are recorded yet.
+- An AMD desktop is assigned for non-NVIDIA testing. The user will prepare
+  both a replaceable OS partition and free space for Windows-preservation
+  testing. NVIDIA qualification still needs separate hardware. No physical
+  Windows dual-boot acceptance result is recorded yet.
+- Partition selection: see the [preview test guide](docs/testing-1.1-partitions.md).
+  Shared-disk installs preserve the existing EFI filesystem and add a separate
+  loader/firmware entry. They require UEFI/GPT and do not resize filesystems.
+- Updates: Daemonarchy installations must identify themselves as Daemonarchy,
+  link to Daemonarchy releases/support, and check its own package catalog.
+  FreeBSD dependency repositories remain identified separately.
 - The upstream ports review's request to move bundled files into source
   repositories was addressed in 1.0.1. Both upstream PRs still await merge.

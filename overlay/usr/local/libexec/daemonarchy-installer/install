@@ -3,7 +3,9 @@
 # Install Daemonarchy (Omarchy on FreeBSD) from the answers the configurator (or an
 # autoinstall config) left in $DAEMONARCHY_INSTALL_CONF.
 #
-# The whole disk becomes Daemonarchy:
+# Whole-disk mode creates the following layout. Shared-disk modes replace only
+# the selected OS/data partition or allocate one in the selected free extent:
+# Whole-disk layout:
 #   p1  EFI system partition (FreeBSD loader, also as the fallback BOOTX64.EFI)
 #   p2  swap
 #   p3  ZFS pool "zroot" (GELI-encrypted with the user's password if asked),
@@ -69,11 +71,21 @@ fi
 
 # ---------------------------------------------------------------- disk
 
-phase disk "Partitioning $disk"
-zpool export -f "$POOL" 2>/dev/null || true
-create_whole_disk_layout "$disk"
-
-zfs_dev=/dev/gpt/daemonarchy-zfs
+install_mode=${install_mode:-whole_disk}
+shared_install=false
+if [[ $install_mode != whole_disk ]]; then
+  shared_install=true
+  POOL="daemonarchy-$(uuidgen | tr '[:upper:]' '[:lower:]' | cut -c1-8)"
+fi
+if zpool list -H -o name | grep -qxF "$POOL"; then
+  echo "Pool $POOL is already imported. Refusing to export or overwrite it." >&2
+  exit 1
+fi
+validate_install_layout
+layout_backup=$(mktemp)
+gpart backup "$disk" >"$layout_backup" 2>/dev/null || : >"$layout_backup"
+phase disk "Preparing the selected installation space on $disk"
+apply_install_layout
 if [[ $encrypt_installation == true ]]; then
   log "Encrypting the ZFS partition"
   passfile=$(mktemp)
@@ -110,17 +122,26 @@ for set in base kernel; do
 done
 
 phase loader "Installing the boot loader"
-install_bios_bootcode "$disk" "$TARGET"
-newfs_msdos -F 32 -c 1 -L DAEMONARCHY /dev/gpt/daemonarchy-efi >/dev/null
-mkdir -p "$TARGET/boot/efi"
-mount -t msdosfs /dev/gpt/daemonarchy-efi "$TARGET/boot/efi"
-mkdir -p "$TARGET/boot/efi/EFI/BOOT" "$TARGET/boot/efi/EFI/FreeBSD"
-cp "$TARGET/boot/loader.efi" "$TARGET/boot/efi/EFI/BOOT/BOOTX64.EFI"
-cp "$TARGET/boot/loader.efi" "$TARGET/boot/efi/EFI/FreeBSD/loader.efi"
-if [[ $(sysctl -n machdep.bootmethod) == UEFI ]]; then
-  efibootmgr -a -c -l "$TARGET/boot/efi/EFI/FreeBSD/loader.efi" -L Daemonarchy >/dev/null 2>&1 ||
-    log "No EFI boot entry created; the firmware falls back to EFI/BOOT/BOOTX64.EFI"
+if ! $shared_install; then
+  install_bios_bootcode "$disk" "$TARGET"
+  newfs_msdos -F 32 -c 1 -L DAEMONARCHY "$efi_dev" >/dev/null
 fi
+mkdir -p "$TARGET/boot/efi"
+mount -t msdosfs "$efi_dev" "$TARGET/boot/efi"
+write_efi_loader "$TARGET" "$POOL" "$shared_install"
+if [[ $(sysctl -n machdep.bootmethod) == UEFI ]]; then
+  # rootdev selects this pool even when another FreeBSD installation exists.
+  if ! efibootmgr -a -c -l "$efi_loader" -L Daemonarchy -e "rootdev=zfs:$POOL:"; then
+    if $shared_install; then
+      echo "Could not register the Daemonarchy EFI entry. Existing boot loaders are preserved; installation cannot finish." >&2
+      exit 1
+    fi
+    log "No EFI boot entry created; the firmware falls back to EFI/BOOT/BOOTX64.EFI"
+  fi
+fi
+mkdir -p "$TARGET/var/db/daemonarchy"
+cp "$layout_backup" "$TARGET/var/db/daemonarchy/partition-table.before"
+rm -f "$layout_backup"
 cp "$ISO_SHARE/brand-daemonarchy.lua" "$TARGET/boot/lua/"
 
 # ---------------------------------------------------------------- configuration
@@ -147,6 +168,7 @@ autoboot_delay="3"
 loader_logo="none"
 loader_brand="daemonarchy"
 kern.vty="vt"
+kern.geom.label.gptid.enable="1"
 EOF
 [[ $encrypt_installation == true ]] && echo 'geom_eli_load="YES"' >>"$TARGET/boot/loader.conf"
 
@@ -167,15 +189,20 @@ EOF
 [[ -n ${kld_list// /} ]] && echo "kld_list=\"${kld_list% }\"" >>"$TARGET/etc/rc.conf"
 [[ -n $vt_keymap ]] && echo "keymap=\"${vt_keymap%.kbd}\"" >>"$TARGET/etc/rc.conf"
 
-swap_dev=/dev/gpt/daemonarchy-swap
-[[ $encrypt_installation == true ]] && swap_dev=$swap_dev.eli
+[[ -n $swap_dev && $encrypt_installation == true ]] && swap_dev=$swap_dev.eli
 cat >"$TARGET/etc/fstab" <<EOF
 # Device               Mountpoint  FStype     Options  Dump  Pass
-/dev/gpt/daemonarchy-efi   /boot/efi   msdosfs    rw       2     2
-$swap_dev              none        swap       sw       0     0
+$efi_fstab             /boot/efi   msdosfs    rw       2     2
 fdesc                  /dev/fd     fdescfs    rw       0     0
 proc                   /proc       linprocfs  rw       0     0
 EOF
+
+if [[ -n $swap_dev ]]; then
+  printf '%s none swap sw 0 0\n' "$swap_dev" >>"$TARGET/etc/fstab"
+else
+  # A shared-disk install does not borrow another OS's swap partition.
+  sed -i '' 's/dumpdev="AUTO"/dumpdev="NO"/' "$TARGET/etc/rc.conf"
+fi
 
 # Omarchy's Hyprland input config reads the layout from /etc/vconsole.conf.
 cat >"$TARGET/etc/vconsole.conf" <<EOF

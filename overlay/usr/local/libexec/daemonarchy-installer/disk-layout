@@ -1,7 +1,8 @@
 #!/usr/local/bin/bash
 
-# Sourced by install and the disposable-disk tests. Call only after the user
-# has confirmed whole-disk erasure. Keep p1/p2/p3 stable for existing tooling.
+# Sourced by the configurator, installer and disposable-disk tests.
+# Whole-disk creation requires explicit erasure confirmation; keep p1/p2/p3
+# stable for existing tooling. Shared-disk plans are validated below.
 create_whole_disk_layout() {
   local disk=$1
   gpart destroy -F "$disk" >/dev/null 2>&1 || true
@@ -18,4 +19,167 @@ install_bios_bootcode() {
   local disk=$1 target=$2
   # Use the installed system's bootcode, matching its ZFS implementation.
   gpart bootcode -b "$target/boot/pmbr" -p "$target/boot/gptzfsboot" -i 4 "$disk"
+}
+
+# Read-only inventory. The first four backup fields are stable even when a
+# GPT label contains spaces. Never infer an OS from a partition type alone.
+partition_rows() {
+  gpart backup "$1" | awk 'NR > 1 { print $1, $2, $3, $4 }'
+}
+
+free_rows() {
+  gpart show "$1" | awk '$3 == "-" && $4 == "free" { print $1, $2 }'
+}
+
+partition_field() {
+  partition_rows "$1" | awk -v i="$2" -v f="$3" '$1 == i { print $f }'
+}
+
+partition_uuid() {
+  gpart list "$1" | awk -v name="${1}p${2}" '
+    $2 == "Name:" { selected = ($3 == name) }
+    selected && $1 == "rawuuid:" { print $2; exit }'
+}
+
+disk_fingerprint() {
+  # Include the device geometry/identity and partition UUIDs, labels and flags.
+  # Mount/open counts are deliberately omitted from this identity snapshot.
+  local info table detail
+  info=$(diskinfo "$1") || return
+  table=$(gpart backup "$1" 2>/dev/null) || table=unpartitioned
+  detail=$(gpart list "$1" 2>/dev/null | sed '/^[[:space:]]*Mode:/d') || detail=''
+  { printf '%s\n%s\n%s\n' "$info" "$table" "$detail"; diskinfo -s "$1" 2>/dev/null || true; } | sha256 -q
+}
+
+layout_error() { echo "$*" >&2; return 1; }
+
+# Refuse disks used by mounted filesystems, swap, imported pools, or the live
+# image, including consumers reached through GPT/diskid aliases and GELI.
+# GEOM exposes their open counts on the underlying partition providers.
+disk_is_idle() {
+  local info
+  if ! info=$(gpart list "$1" 2>/dev/null); then
+    info=$(geom disk list "$1" 2>/dev/null) || {
+      layout_error "Cannot determine whether disk $1 is in use."; return 1;
+    }
+  fi
+  if awk '$1 == "Mode:" && $2 != "r0w0e0" { busy=1 } END { exit !busy }' <<<"$info"; then
+    layout_error "Disk $1 is in use. Boot the installer from another disk and retry."
+    return 1
+  fi
+}
+
+validate_install_layout() {
+  local info sector_bytes media_bytes current type start length gap_start gap_length align wanted
+  [[ ${disk:-} =~ ^[a-z][a-z0-9]*[0-9]$ ]] || { layout_error 'Invalid disk name.'; return 1; }
+  info=$(diskinfo "$disk") || return
+  read -r _ sector_bytes media_bytes _ <<<"$info"
+  [[ $sector_bytes =~ ^[0-9]+$ && $media_bytes =~ ^[0-9]+$ ]] || return 1
+  ((media_bytes >= 20 * 1024 * 1024 * 1024)) || { layout_error 'The disk must hold at least 20 GiB.'; return 1; }
+  disk_is_idle "$disk" || return
+  if [[ -n ${disk_snapshot:-} ]]; then
+    current=$(disk_fingerprint "$disk") || return
+    [[ $current == "$disk_snapshot" ]] || { layout_error 'The disk changed after selection. Select it again.'; return 1; }
+  fi
+  case ${install_mode:-whole_disk} in
+    whole_disk) return 0 ;;
+    partition | free_space) ;;
+    *) layout_error 'Unknown installation mode.'; return 1 ;;
+  esac
+  [[ -n ${disk_snapshot:-} ]] || { layout_error 'Partition installation requires a disk fingerprint.'; return 1; }
+  [[ $(sysctl -n machdep.bootmethod) == UEFI ]] || { layout_error 'Boot the installer in UEFI mode to preserve an existing disk.'; return 1; }
+  info=$(gpart list "$disk") || return
+  grep -qx 'scheme: GPT' <<<"$info" && grep -qx 'state: OK' <<<"$info" || {
+    layout_error 'Shared-disk installation requires a healthy GPT partition table.'; return 1;
+  }
+  [[ ${efi_index:-} =~ ^[1-9][0-9]{0,3}$ ]] || { layout_error 'Select an existing EFI partition.'; return 1; }
+  [[ $(partition_field "$disk" "$efi_index" 2) == efi ]] || { layout_error 'The selected boot partition is not EFI.'; return 1; }
+  if [[ $install_mode == partition ]]; then
+    [[ ${partition_index:-} =~ ^[1-9][0-9]{0,3}$ ]] || { layout_error 'Select an existing OS/data partition.'; return 1; }
+    type=$(partition_field "$disk" "$partition_index" 2)
+    case $type in
+      freebsd-zfs | freebsd-ufs | ms-basic-data | linux-data) ;;
+      *) layout_error 'Only an OS/data partition may be replaced; EFI, reserved and recovery partitions are protected.'; return 1 ;;
+    esac
+    length=$(partition_field "$disk" "$partition_index" 4)
+    ((length * sector_bytes >= 20 * 1024 * 1024 * 1024)) || { layout_error 'The selected partition must hold at least 20 GiB.'; return 1; }
+    planned_start=$(partition_field "$disk" "$partition_index" 3)
+    planned_size=$length
+  else
+    [[ ${free_start:-} =~ ^[0-9]{1,16}$ && ${install_size_mib:-} =~ ^[1-9][0-9]{0,8}$ ]] || {
+      layout_error 'Select free space and an integer size in MiB.'; return 1;
+    }
+    gap_start='' gap_length=''
+    read -r gap_start gap_length <<<"$(free_rows "$disk" | awk -v start="$free_start" '$1 == start')"
+    [[ -n $gap_length ]] || { layout_error 'The selected free-space range no longer exists.'; return 1; }
+    ((install_size_mib >= 20480)) || { layout_error 'Allocate at least 20480 MiB (20 GiB).'; return 1; }
+    align=$((1024 * 1024 / sector_bytes))
+    ((align > 0)) || return 1
+    start=$(((gap_start + align - 1) / align * align))
+    wanted=$((install_size_mib * 1024 * 1024 / sector_bytes))
+    ((start + wanted <= gap_start + gap_length)) || { layout_error 'The requested partition does not fit in the selected free space.'; return 1; }
+    planned_start=$start planned_size=$wanted
+  fi
+}
+
+# Verify the existing ESP before modifying the selected OS partition. Never
+# format or repair an existing ESP. No file is written by this probe.
+check_shared_efi() (
+  local probe
+  probe=$(mktemp -d) || return
+  trap 'umount "$probe" 2>/dev/null || true; rmdir "$probe"' EXIT
+  mount -t msdosfs -o ro "/dev/${disk}p${efi_index}" "$probe" || return
+  local available
+  available=$(df -k "$probe" | awk 'END { print $4 }')
+  [[ $available =~ ^[0-9]+$ ]] && ((available >= 8192)) || {
+    layout_error 'The EFI partition needs at least 8 MiB free.'; return 1;
+  }
+)
+
+apply_install_layout() {
+  # Validate again immediately before the first write, including the exact
+  # table displayed and confirmed by the user.
+  validate_install_layout || return
+  swap_dev=''
+  if [[ ${install_mode:-whole_disk} == whole_disk ]]; then
+    create_whole_disk_layout "$disk" || return
+    partition_index=3 efi_index=1
+    swap_dev="/dev/${disk}p2"
+  else
+    check_shared_efi || return
+    if [[ $install_mode == partition ]]; then
+      # Preserve start, size, label and UUID; only the selected type changes.
+      gpart modify -i "$partition_index" -t freebsd-zfs "$disk" || return
+    else
+      gpart add -t freebsd-zfs -b "$planned_start" -s "$planned_size" "$disk" || return
+      partition_index=$(partition_rows "$disk" | awk -v start="$planned_start" '$3 == start { print $1 }')
+      [[ $partition_index =~ ^[1-9][0-9]*$ ]] || return 1
+    fi
+  fi
+  zfs_dev="/dev/${disk}p${partition_index}"
+  efi_dev="/dev/${disk}p${efi_index}"
+  efi_fstab="/dev/gptid/$(partition_uuid "$disk" "$efi_index")"
+  [[ $efi_fstab != /dev/gptid/ ]] || return 1
+  if [[ -n $swap_dev ]]; then
+    swap_dev="/dev/gptid/$(partition_uuid "$disk" 2)"
+    [[ $swap_dev != /dev/gptid/ ]] || return 1
+  fi
+}
+
+write_efi_loader() {
+  local target=$1 pool=$2 shared=$3 esp="$1/boot/efi" destination
+  if [[ $shared == true ]]; then
+    # A unique directory avoids replacing Windows, another FreeBSD install,
+    # any existing fallback loader, or an earlier Daemonarchy installation.
+    destination="$esp/EFI/Daemonarchy-$pool"
+    [[ ! -e $destination ]] || { layout_error 'The new EFI loader directory already exists.'; return 1; }
+    mkdir -p "$destination" || return
+    cp "$target/boot/loader.efi" "$destination/loader.efi" || return
+    efi_loader="$destination/loader.efi"
+  else
+    mkdir -p "$esp/EFI/BOOT" "$esp/EFI/FreeBSD" || return
+    cp "$target/boot/loader.efi" "$esp/EFI/BOOT/BOOTX64.EFI" || return
+    cp "$target/boot/loader.efi" "$esp/EFI/FreeBSD/loader.efi" || return
+    efi_loader="$esp/EFI/FreeBSD/loader.efi"
+  fi
 }

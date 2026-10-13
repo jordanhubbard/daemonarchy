@@ -78,7 +78,9 @@ pkg upgrade
 
 The next release is **1.1.0**. See the [roadmap](ROADMAP.md) for planned
 graphics, Bluetooth, enterprise Wi-Fi, installation and boot support, upstream
-ports work, and the checks required before release.
+ports work, and the checks required before release. The
+[partition preview guide](docs/testing-1.1-partitions.md) covers installing into
+an existing OS/data partition or creating a new one in free space.
 
 ## The installer
 
@@ -117,7 +119,7 @@ Daemonarchy is four repositories:
 
 On a FreeBSD 16.0-CURRENT host with poudriere: build the ports, build the image with `./build-iso.sh`, test it with `./test-bhyve.sh` (or `./test-qemu.sh` on a host without bhyve), and publish it. [HACKING.md](HACKING.md) walks through each step, the faster loops for changing the installer, the ports, and the artwork, and the pitfalls met so far.
 
-## Limits
+## Limits of the current 1.0.1 release
 
 - Whole-disk installs only; no dual boot.
 - UEFI machines only, with Secure Boot turned off: the FreeBSD loader is not signed, and the installed disk has no BIOS boot code.

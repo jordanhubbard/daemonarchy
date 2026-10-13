@@ -169,6 +169,17 @@ files. Boot `disk.img` in QEMU with SeaBIOS and `-serial stdio`; reaching the
 FreeBSD loader prompt checks the BIOS-to-ZFS-loader chain. This deliberately
 does not install packages or qualify the complete installed desktop.
 
+Shared-disk development is covered by `sudo bash tests/shared-disk.sh` on a
+headless FreeBSD worker. It allocates its own disposable memory disks and tests
+partition/EFI preservation and pre-write rejection. See the
+[partition preview guide](docs/testing-1.1-partitions.md) for scope and physical
+acceptance. A shared-disk unattended config must explicitly set
+`install_mode=partition` with `partition_index`, or `install_mode=free_space`
+with `free_start` (sector offset) and `install_size_mib`; both also require
+`efi_index` and a current `disk_snapshot` from `disk_fingerprint`. The interactive
+configurator writes these values. Omitting the mode retains the original
+whole-disk unattended behavior; never omit it when preserving another OS.
+
 Both send the installer's log to the guest's serial port, so a stalled install leaves a trail.
 
 On real hardware, the install log is `/tmp/daemonarchy-install.log` on the live system.
