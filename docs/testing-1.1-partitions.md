@@ -4,6 +4,10 @@ This is a development preview, not the completed 1.1 release. The partition
 installer supports **UEFI boot with a healthy GPT disk and an existing EFI
 system partition**. Secure Boot still needs to be off.
 
+The preview carries the existing 1.0.1 desktop package with the new installer
+and updated Omarchy package. Its welcome screen adds `1.1 partition preview`
+to that package version; it does not claim to be the final 1.1.0 release.
+
 ## Choose where to install
 
 The disk screen shows existing partitions, their device names, types and sizes,

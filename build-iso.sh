@@ -66,7 +66,7 @@ echo "==> Taking the setup form from the omarchy package"
 daemonarchy_pkg=$(ls "$share"/repo/All/daemonarchy-[0-9]*.pkg | head -n 1)
 VERSION=$(pkg query -F "$daemonarchy_pkg" '%v' | sed -e 's/,[0-9]*$//' -e 's/_[0-9]*$//')
 NAME=${NAME:-daemonarchy-$VERSION-$ARCH}
-echo "$VERSION" >"$share/version"
+echo "$VERSION${PREVIEW_LABEL:+ ($PREVIEW_LABEL)}" >"$share/version"
 echo "    Daemonarchy $VERSION"
 
 omarchy_pkg=$(ls "$share"/repo/All/omarchy-[0-9]*.pkg | head -n 1)

@@ -120,6 +120,10 @@ You need a FreeBSD 16.0-CURRENT machine (bare metal or a VM with about 8 GB of m
 
    The image and its `.sha256` land in `/usr/local/poudriere/data/images`.
 
+   For development images, set `NAME` to a distinct preview filename and
+   `PREVIEW_LABEL` to a short description. The installer welcome screen shows
+   that label alongside the actual desktop package version.
+
 ## Changing things
 
 ### The installer
