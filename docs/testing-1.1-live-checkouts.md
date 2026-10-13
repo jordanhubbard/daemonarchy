@@ -76,3 +76,22 @@ SHA-256: `2501945fdae76af025179294db99159df14319e7d108e9134012ec6c2e702973`.
 The desktop package remains 1.0.1, labelled as a drivers and shallow-checkouts
 preview. The image build and archive inspection do not establish a complete
 installation, a graphical desktop, or physical GPU acceptance.
+
+## Full installation attempt
+
+On 2026-10-13, the preview.2 bhyve test was started on a fresh 40 GiB
+disposable disk with both `INSTALL_PORTS=true` and `INSTALL_SRC=true`.
+The worker had 185 GiB free, approximately 3.1 GiB of free memory, and no
+other active build or test VM. The guest requested 3 GiB of wired memory.
+Immediately after bhyve launched, the worker became unreachable over SSH
+and ICMP. The launch connection did not return an installation result.
+This does not establish a guest failure or a host panic; console diagnosis
+is required. Full installation and reboot remain **unverified**.
+
+The test harness now checks selected trees after reboot as the installed
+user: ownership, clean Git status, exact revisions, shallow depth, tracking
+configuration, and source/kernel identity. Unselected trees must lack a
+Git checkout. The bhyve harness also requires the installer success marker,
+checks SSH login and firmware mode, and shuts down the guest after testing.
+Shell syntax, ShellCheck, and whitespace checks passed for these harness
+changes; the new post-boot assertions have not yet run in a guest.

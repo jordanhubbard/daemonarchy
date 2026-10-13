@@ -17,6 +17,12 @@
 
 set -eu
 
+SCRIPT_DIR=$(CDPATH='' cd -- "$(dirname -- "$0")" && pwd)
+INSTALL_PORTS=${INSTALL_PORTS:-false}
+INSTALL_SRC=${INSTALL_SRC:-false}
+for selected in "$INSTALL_PORTS" "$INSTALL_SRC"; do
+	case "$selected" in true|false) ;; *) echo 'Checkout selections must be true or false' >&2; exit 1 ;; esac
+done
 ISO=$(realpath "${1:?usage: test-qemu.sh daemonarchy.iso}")
 WORK=${WORK:-$PWD/daemonarchy-qemu}
 OVMF=${OVMF:-/usr/share/ovmf/OVMF.fd}
@@ -46,6 +52,8 @@ truncate -s 40G disk.img
 cat >daemonarchy-install.conf <<EOF
 disk=vtbd0
 encrypt_installation=false
+install_ports=$INSTALL_PORTS
+install_src=$INSTALL_SRC
 keyboard=us
 username=tester
 password=$PASSWORD
@@ -141,6 +149,7 @@ check "updates from the signed Daemonarchy repository" "test -s /usr/local/etc/p
 check "Daemonarchy defaults staged" "test -d /usr/local/share/omarchy/skel.d/daemonarchy"
 exit \$failures
 EOF
+guest "sh -s -- $INSTALL_PORTS $INSTALL_SRC" <"$SCRIPT_DIR/tests/installed-checkouts.sh" || status=1
 guest "echo $PASSWORD | sudo -S -p '' shutdown -p now" >/dev/null 2>&1 || true
 wait "$booter" 2>/dev/null || true
 if [ "$status" -ne 0 ]; then

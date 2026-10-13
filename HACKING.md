@@ -187,6 +187,17 @@ whole-disk unattended behavior; never omit it when preserving another OS.
 
 Both send the installer's log to the guest's serial port, so a stalled install leaves a trail.
 
+Set `INSTALL_PORTS=true INSTALL_SRC=true` on either harness to exercise both
+optional live checkouts. After reboot, the checks run as the installed user and
+verify ownership, clean Git status, exact catalogue revisions, tracking branches
+and depth-1 history. The source revision must match the installed kernel.
+Leave either option unset to check its default-off behavior. Use separate
+`WORK` directories for each run. The bhyve harness now verifies SSH login after
+reboot and shuts down the guest after checking it; bridge mode requires
+`GUEST_IP`. Its NAT mode discovers the address from its own DHCP lease file.
+Run `test-bhyve.sh --cleanup` with the same `WORK`, `VM`, `TAP` and `BRIDGE`
+settings afterwards to remove the test network.
+
 On real hardware, the install log is `/tmp/daemonarchy-install.log` on the live system.
 
 ## Releasing

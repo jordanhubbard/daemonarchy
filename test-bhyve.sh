@@ -8,6 +8,8 @@
 #   2. boot the installed disk on its own
 #
 # Both runs expose the guest framebuffer over VNC on 127.0.0.1:$VNC_PORT.
+# After reboot, SSH checks run as the installed user and shut down the guest.
+# INSTALL_PORTS=true INSTALL_SRC=true includes the optional shallow trees.
 #
 # NET=nat (default) puts the guest on a private network behind pf NAT, with
 # dnsmasq handing out addresses on the tap only; NET=bridge bridges the tap
@@ -15,6 +17,12 @@
 
 set -eu
 
+SCRIPT_DIR=$(CDPATH='' cd -- "$(dirname -- "$0")" && pwd)
+INSTALL_PORTS=${INSTALL_PORTS:-false}
+INSTALL_SRC=${INSTALL_SRC:-false}
+for selected in "$INSTALL_PORTS" "$INSTALL_SRC"; do
+	case "$selected" in true|false) ;; *) echo 'Checkout selections must be true or false' >&2; exit 1 ;; esac
+done
 WORK=${WORK:-/var/tmp/daemonarchy-bhyve}
 VM=${VM:-daemonarchy-test}
 NET=${NET:-nat}
@@ -28,6 +36,7 @@ VNC_PORT=${VNC_PORT:-5900}
 MEM=${MEM:-3G}
 FIRMWARE=/usr/local/share/uefi-firmware/BHYVE_UEFI.fd
 INSTALL_TIMEOUT=${INSTALL_TIMEOUT:-7200}
+BOOT_TIMEOUT=${BOOT_TIMEOUT:-1200}
 
 if [ "${1:-}" = --cleanup ]; then
 	bhyvectl --destroy --vm="$VM" >/dev/null 2>&1 || true
@@ -79,6 +88,7 @@ else
 		dnsmasq --interface="$TAP" --bind-interfaces --port=0 \
 			--dhcp-range="$SUBNET.10,$SUBNET.50,1h" \
 			--dhcp-option=option:dns-server,1.1.1.1 \
+			--dhcp-leasefile="$WORK/dnsmasq.leases" \
 			--pid-file="$WORK/dnsmasq.pid"
 	fi
 fi
@@ -89,9 +99,11 @@ truncate -s 40G "$disk"
 
 # The guest sees the scratch disk as vtbd0 and the CIDATA drive as ada0.
 mkdir -p "$WORK/cidata"
-cat >"$WORK/cidata/daemonarchy-install.conf" <<'EOF'
+cat >"$WORK/cidata/daemonarchy-install.conf" <<EOF
 disk=vtbd0
 encrypt_installation=false
+install_ports=$INSTALL_PORTS
+install_src=$INSTALL_SRC
 keyboard=us
 username=tester
 password=daemonarchy
@@ -126,7 +138,15 @@ run_vm() {
 # output, which its getty then reads as failed logins.
 ( stty raw -echo && cat ) </dev/nmdm-dm-B >"$WORK/serial.log" 2>/dev/null &
 serial_reader=$!
-trap 'kill "$serial_reader" 2>/dev/null || true' EXIT
+watchdog=
+cleanup_run() {
+	[ -z "$watchdog" ] || kill "$watchdog" 2>/dev/null || true
+	bhyvectl --destroy --vm="$VM" >/dev/null 2>&1 || true
+	kill "$serial_reader" 2>/dev/null || true
+}
+trap cleanup_run EXIT
+trap 'exit 130' INT
+trap 'exit 143' TERM
 
 echo "==> Installing from $ISO (VNC on 127.0.0.1:$VNC_PORT; log in $WORK/serial.log)"
 start=$(date +%s)
@@ -138,8 +158,10 @@ vm_pid=$!
 watchdog=$!
 wait "$vm_pid" || status=$?
 kill "$watchdog" 2>/dev/null || true
+watchdog=
 echo "    bhyve exited with $status after $(( $(date +%s) - start ))s (1 = powered off)"
 [ "$status" -eq 1 ] || { echo "install did not power off cleanly" >&2; exit 1; }
+grep -aq 'Daemonarchy is installed' "$WORK/serial.log" || { echo 'Installer success marker missing' >&2; exit 1; }
 
 # Check the installed disk before booting it: what a VM cannot show on screen
 # (it has no GPU driver for the desktop) can still be read off the disk.
@@ -180,4 +202,43 @@ fi
 
 echo "==> Booting the installed system (VNC on 127.0.0.1:$VNC_PORT)"
 run_vm &
-echo "    guest running as pid $!; stop it with: bhyvectl --destroy --vm=$VM"
+boot_pid=$!
+( sleep "$BOOT_TIMEOUT"; bhyvectl --destroy --vm="$VM" >/dev/null 2>&1 ) &
+watchdog=$!
+# Bridge users supply the guest address; NAT learns it from this test's lease.
+guest_ip=${GUEST_IP:-}
+tries=0
+while [ -z "$guest_ip" ]; do
+	kill -0 "$boot_pid" 2>/dev/null || { echo 'Guest exited before receiving an address' >&2; exit 1; }
+	guest_ip=$(awk 'NR == 1 {print $3}' "$WORK/dnsmasq.leases" 2>/dev/null || true)
+	tries=$((tries + 1))
+	[ "$tries" -lt 120 ] || { echo 'No guest address; set GUEST_IP for bridge mode' >&2; exit 1; }
+	[ -n "$guest_ip" ] || sleep 5
+done
+printf '#!/bin/sh\necho daemonarchy\n' >"$WORK/askpass.sh"
+chmod 700 "$WORK/askpass.sh"
+guest() {
+	SSH_ASKPASS=$WORK/askpass.sh SSH_ASKPASS_REQUIRE=force DISPLAY=:0 \
+		ssh -o StrictHostKeyChecking=no -o UserKnownHostsFile=/dev/null \
+		-o LogLevel=ERROR -o PreferredAuthentications=password,keyboard-interactive \
+		-o PubkeyAuthentication=no -o ConnectTimeout=10 \
+		-o ServerAliveInterval=15 -o ServerAliveCountMax=2 "tester@$guest_ip" "$@"
+}
+tries=0
+until guest true 2>/dev/null; do
+	kill -0 "$boot_pid" 2>/dev/null || { echo 'Guest exited before SSH login' >&2; exit 1; }
+	tries=$((tries + 1))
+	[ "$tries" -lt 120 ] || { echo 'No SSH login after boot' >&2; exit 1; }
+	sleep 5
+done
+status=0
+# Expanded by the guest shell.
+# shellcheck disable=SC2016
+guest 'sysctl -n machdep.bootmethod | grep -ix uefi && service sshd onestatus' || status=1
+guest "sh -s -- $INSTALL_PORTS $INSTALL_SRC" <"$SCRIPT_DIR/tests/installed-checkouts.sh" || status=1
+guest "echo daemonarchy | sudo -S -p '' shutdown -p now" >/dev/null 2>&1 || true
+boot_status=0
+wait "$boot_pid" 2>/dev/null || boot_status=$?
+[ "$boot_status" -eq 1 ] || { echo "Guest did not power off cleanly (bhyve status $boot_status)" >&2; status=1; }
+[ "$status" -eq 0 ] || { echo 'Installed-system checks failed' >&2; exit 1; }
+echo '==> All checks passed; guest shut down'
