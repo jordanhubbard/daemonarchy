@@ -163,7 +163,9 @@ Start console-approved remote access after networking works:
 
 The listener asks before enabling access and before pairing each new key.
 Press Enter or Ctrl-C in the listener to stop it and return to this shell.
-Run remote-debug help to show this help again; exit returns to the installer.
+Run help (or remote-debug help) to show these debugging instructions again.
+Use help <builtin> for Bash help, for example: help cd.
+The exit command returns to the installer.
 HELP
 }
 
@@ -171,6 +173,14 @@ debug_shell() {
   debug_help
   PATH="$(dirname "$self"):$PATH"
   export PATH
+  help() {
+    if (($# == 0)); then
+      remote-debug help
+    else
+      builtin help "$@"
+    fi
+  }
+  export -f help
   PS1='installer-debug# ' /usr/local/bin/bash --noprofile --norc -i
 }
 

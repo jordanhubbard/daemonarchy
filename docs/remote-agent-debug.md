@@ -26,7 +26,8 @@ and preview.2 do not contain the menu option.
    Compare the agent's temporary key fingerprint when prompted, then type
    `y` to pair. Any other answer rejects the request.
 
-Run `remote-debug help` for CLI instructions. `exit` returns from the debug
+Run `help` or `remote-debug help` for debugging instructions. Use `help cd`
+(or another Bash builtin name) for shell command help. `exit` returns from the debug
 shell to the installer screen that opened it. The shell itself does not
 start a listener or require working networking.
 
