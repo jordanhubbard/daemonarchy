@@ -10,6 +10,11 @@ studio=$(DISPLAY=:0 XAUTHORITY='' XDG_RUNTIME_DIR='' cudalab_script jkh)
 grep -q 'exec ./build/dev/cudalab$' <<<"$studio"
 showcase=$(DISPLAY=:0 XAUTHORITY='' XDG_RUNTIME_DIR='' cudalab_script jkh cuda-cosmos)
 grep -q 'exec ./build/dev/cudalab --demo cuda-cosmos$' <<<"$showcase"
+build=$(cudalab_script jkh '' build)
+grep -q 'cmake --build --preset dev' <<<"$build"
+grep -q 'Cudalab build complete' <<<"$build"
+! grep -q 'exec ./build/dev/cudalab' <<<"$build"
+bash -n <<<"$build"
 [[ -f $here/overlay/usr/local/share/daemonarchy-installer/uvm_ioctl_override.c ]]
 grep -q 'NV_UVM_INITIALIZE' "$here/overlay/usr/local/share/daemonarchy-installer/uvm_ioctl_override.c"
 echo 'PASS: Linux CUDA toolkit pin and UVM shim'

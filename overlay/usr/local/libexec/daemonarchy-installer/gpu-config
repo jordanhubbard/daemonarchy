@@ -24,7 +24,7 @@ gpu_select() {
       nvidia-drm) gpu_nvidia=true; gpu_vulkan=true ;;
       amdgpu|i915kms) gpu_other=true; gpu_vulkan=true ;;
       radeonkms) gpu_other=true ;;
-      *) printf 'GPU %s:%s: no selected desktop driver; NVIDIA legacy GPUs are outside the 595 target.\n' "$vendor" "$device" >&2; continue ;;
+      *) printf 'GPU %s:%s: no supported desktop driver in this image.\n' "$vendor" "$device" >&2; continue ;;
     esac
     if [[ $module == radeonkms ]]; then
       printf 'GPU %s:%s: legacy Radeon (%s); KMS selection is not Hyprland qualification.\n' "$vendor" "$device" "$family" >&2

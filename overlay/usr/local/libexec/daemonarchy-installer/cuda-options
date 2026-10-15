@@ -1,0 +1,45 @@
+#!/usr/local/bin/bash
+# Optional compute tools, separate from the hardware's desktop driver.
+cuda_options_prepare() {
+  install_cuda=${install_cuda:-false}
+  [[ $install_cuda == true || $install_cuda == false ]] || {
+    echo 'install_cuda must be true or false' >&2; return 1;
+  }
+  if [[ $install_cuda == true && ${gpu_nvidia:-false} != true ]]; then
+    echo 'The selected compute tools require a GPU supported by the bundled NVIDIA driver.' >&2
+    return 1
+  fi
+}
+
+# The toolkit uses nested Linuxulator mounts inside the target during setup.
+# Release children first, on both completion and failure, before exporting ZFS.
+cuda_unmount_target() {
+  local target=$1 path
+  while IFS= read -r path; do
+    umount "$path" || return 1
+  done < <(mount -p | awk -v root="$target/compat/linux" '
+    $2 == root || index($2, root "/") == 1 { print $2 }
+  ' | sort -r)
+}
+
+# Install launchers only for the explicit selection, and filter the vendor menu.
+cuda_install_support() {
+  local target=$1 share=$2 source_root=${3:-}
+  cuda_options_prepare || return 1
+  if [[ $install_cuda == true ]]; then
+    install -m 0755 "$source_root/usr/local/sbin/daemonarchy-linux-cuda" "$target/usr/local/sbin/daemonarchy-linux-cuda"
+    install -m 0755 "$source_root/usr/local/bin/daemonarchy-cudalab" "$target/usr/local/bin/daemonarchy-cudalab"
+    install -m 0644 "$share/uvm_ioctl_override.c" "$target/usr/local/share/daemonarchy-installer/uvm_ioctl_override.c"
+    install -m 0644 "$share/cudalab.desktop" "$target/usr/local/share/applications/cudalab.desktop"
+    # The desktop package's vendor menu may predate this ISO. Ship the menu
+    # entry with the image so System > FreeBSD shows Cudalab without a package rebuild.
+    mkdir -p "$target/usr/local/share/omarchy/vendor"
+    install -m 0644 "$share/omarchy-menu.jsonc" "$target/usr/local/share/omarchy/vendor/omarchy-menu.jsonc"
+  else
+    # A desktop package may already carry this vendor entry; omit it when the
+    # optional application was not selected, including on non-NVIDIA hardware.
+    mkdir -p "$target/usr/local/share/omarchy/vendor"
+    sed '/"system.freebsd.cudalab":/d' "$share/omarchy-menu.jsonc" >"$target/usr/local/share/omarchy/vendor/omarchy-menu.jsonc"
+    rm -f "$target/usr/local/share/applications/cudalab.desktop"
+  fi
+}

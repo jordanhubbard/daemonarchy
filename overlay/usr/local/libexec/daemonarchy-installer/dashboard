@@ -51,6 +51,7 @@ phase_band() {
     install) echo "620 950" ;;
     user) echo "950 960" ;;
     checkouts) echo "960 985" ;;
+    cuda) echo "985 990" ;;
     finish) echo "985 999" ;;
     *) echo "0 0" ;;
   esac
@@ -66,6 +67,7 @@ phase_title() {
     install) echo "Installing the desktop" ;;
     user) echo "Creating your account" ;;
     checkouts) echo "Installing development checkouts" ;;
+    cuda) echo "Installing optional GPU applications" ;;
     finish) echo "Finishing up" ;;
     *) echo "Starting" ;;
   esac

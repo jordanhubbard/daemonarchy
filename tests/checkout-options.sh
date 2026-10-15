@@ -16,6 +16,10 @@ checkout_options_prepare "$work/catalog"
 install_src=true
 checkout_options_prepare "$work/catalog"
 [[ $MIN_INSTALL_BYTES == 31474836480 ]]
+install_cuda=true
+checkout_options_prepare "$work/catalog"
+[[ $MIN_INSTALL_BYTES == $((31474836480 + 16 * 1024 * 1024 * 1024)) ]]
+install_cuda=false
 if checkout_options_prepare "$work/absent"; then exit 1; fi
 install_ports=bad
 if checkout_options_prepare "$work/catalog"; then exit 1; fi

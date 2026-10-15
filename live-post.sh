@@ -33,6 +33,10 @@ varmfs="YES"
 varsize="256m"
 populate_var="YES"
 ifconfig_DEFAULT="DHCP"
+# HTTPS package downloads require a valid clock, including on machines whose
+# hardware clock has reset. Allow ntpd's initial correction to exceed 1000s.
+ntpd_enable="YES"
+ntpd_sync_on_start="YES"
 sendmail_enable="NONE"
 cron_enable="NO"
 update_motd="NO"

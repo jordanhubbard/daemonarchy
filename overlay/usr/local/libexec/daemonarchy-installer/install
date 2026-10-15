@@ -32,6 +32,7 @@ source "$DAEMONARCHY_INSTALL_CONF"
 source "$(dirname "$0")/disk-layout"
 source "$(dirname "$0")/gpu-config"
 source "$(dirname "$0")/checkout-options"
+source "$(dirname "$0")/cuda-options"
 checkout_options_prepare "$ISO_SHARE/checkouts.json"
 
 log() { printf '\033[32m==>\033[0m %s\n' "$*"; }
@@ -59,7 +60,9 @@ phase() {
   log "$2"
 }
 
+cuda_setup_started=false
 cleanup() {
+  if $cuda_setup_started; then cuda_unmount_target "$TARGET" || true; fi
   umount "$TARGET/dev" 2>/dev/null || true
   umount "$TARGET/boot/efi" 2>/dev/null || true
 }
@@ -82,6 +85,7 @@ pciconf -l >"$gpu_inventory"
 gpu_select "$gpu_inventory" "$ISO_SHARE/gpu-ids"
 rm -f "$gpu_inventory"
 gpu_resolve_packages "$ISO_SHARE/gpu-packages" "$REPO"
+cuda_options_prepare
 
 install_mode=${install_mode:-whole_disk}
 shared_install=false
@@ -345,17 +349,7 @@ EOF
 mkdir -p "$TARGET/usr/local/share/daemonarchy-installer"
 cp "$ISO_SHARE/checkouts.json" "$TARGET/usr/local/share/daemonarchy-installer/checkouts.json"
 install -m 0755 /usr/local/sbin/daemonarchy-checkouts "$TARGET/usr/local/sbin/daemonarchy-checkouts"
-if $gpu_nvidia; then
-  install -m 0755 /usr/local/sbin/daemonarchy-linux-cuda "$TARGET/usr/local/sbin/daemonarchy-linux-cuda"
-  install -m 0755 /usr/local/bin/daemonarchy-cudalab "$TARGET/usr/local/bin/daemonarchy-cudalab"
-  install -m 0644 "$ISO_SHARE/uvm_ioctl_override.c" "$TARGET/usr/local/share/daemonarchy-installer/uvm_ioctl_override.c"
-  install -m 0644 "$ISO_SHARE/cudalab.desktop" "$TARGET/usr/local/share/applications/cudalab.desktop"
-  # The desktop package's vendor menu may predate this ISO. Ship the menu
-  # entry with the image so System > FreeBSD shows Cudalab without a package rebuild.
-  mkdir -p "$TARGET/usr/local/share/omarchy/vendor"
-  install -m 0644 "$ISO_SHARE/omarchy-menu.jsonc" "$TARGET/usr/local/share/omarchy/vendor/omarchy-menu.jsonc"
-  log "Cudalab is installed. The first launch from the menu installs CUDA and opens the studio."
-fi
+cuda_install_support "$TARGET" "$ISO_SHARE"
 checkout_url=$(jq -er '.repository_url' "$ISO_SHARE/checkouts.json")
 [[ $checkout_url =~ ^https://github.com/jordanhubbard/daemonarchy/releases/download/[a-zA-Z0-9._-]+$ ]] || { echo 'Invalid checkout repository URL' >&2; exit 1; }
 cat >"$TARGET/usr/local/etc/pkg/repos/Daemonarchy-Checkouts.conf" <<EOF
@@ -417,6 +411,15 @@ for checkout_kind in ports src; do
 done
 
 # ---------------------------------------------------------------- network services
+
+if [[ $install_cuda == true ]]; then
+  phase cuda "Installing CUDA and building cudalab"
+  cuda_setup_started=true
+  chroot "$TARGET" /usr/local/sbin/daemonarchy-linux-cuda setup
+  chroot "$TARGET" /usr/local/sbin/daemonarchy-linux-cuda prepare-cudalab "$username"
+  cuda_unmount_target "$TARGET"
+  cuda_setup_started=false
+fi
 
 # Avahi comes with the printing tools; with it running the machine answers as
 # <hostname>.local, and nss_mdns lets it find other .local machines.

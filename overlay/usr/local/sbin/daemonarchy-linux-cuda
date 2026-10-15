@@ -183,8 +183,10 @@ prepare_desktop() {
 }
 
 cudalab_script() {
-  local user=$1 demo=${2:-} launch
-  if [[ -n $demo ]]; then
+  local user=$1 demo=${2:-} mode=${3:-run} launch
+  if [[ $mode == build ]]; then
+    launch='echo "Cudalab build complete."'
+  elif [[ -n $demo ]]; then
     launch="exec ./build/dev/cudalab --demo $(q "$demo")"
   else
     launch='exec ./build/dev/cudalab'
@@ -213,6 +215,22 @@ $launch
 EOF
 }
 
+cuda_prepare_cudalab() {
+  require_root
+  require_nvidia_install
+  local user=${1:-} script
+  [[ $user =~ ^[A-Za-z_][A-Za-z0-9_-]*$ && -d /home/$user ]] || fail 'Specify an installed desktop user.'
+  [[ -f $marker ]] || fail 'Run setup before preparing cudalab.'
+  ensure_linuxulator
+  mount_nullfs /home "$linux_root/home"
+  sync_user "$user"
+  script=$linux_root/var/tmp/daemonarchy-cudalab-build.sh
+  mkdir -p "$linux_root/var/tmp"
+  cudalab_script "$user" '' build >"$script"
+  chmod 755 "$script"
+  linux_shell "su '$user' -s /bin/bash -c '/bin/bash /var/tmp/daemonarchy-cudalab-build.sh'"
+}
+
 cuda_cudalab() {
   require_root
   local demo=${1:-} user script
@@ -234,9 +252,10 @@ cuda_cudalab() {
 
 cuda_help() {
   cat <<EOF
-Usage: daemonarchy-linux-cuda <setup|cudalab [demo]>
+Usage: daemonarchy-linux-cuda <setup|prepare-cudalab user|cudalab [demo]>
 
 setup    Install CUDA $toolkit_package and the Cudalab build tools in the Linuxulator.
+prepare-cudalab user  Clone and build cudalab for a user without opening a window.
 cudalab  Clone, build, and run https://github.com/jordanhubbard/cudalab.git
          An optional demo name, such as cuda-cosmos, opens that piece.
 
@@ -249,6 +268,7 @@ EOF
 if [[ ${BASH_SOURCE[0]} == "$0" ]]; then
   case ${1:-} in
     setup) cuda_setup ;;
+    prepare-cudalab) shift; cuda_prepare_cudalab "$@" ;;
     cudalab) shift; cuda_cudalab "$@" ;;
     help|-h|--help) cuda_help ;;
     *) cuda_help >&2; exit 2 ;;

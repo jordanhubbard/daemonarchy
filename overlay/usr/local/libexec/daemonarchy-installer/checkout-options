@@ -14,7 +14,10 @@ checkout_options_prepare() {
     [[ $amount =~ ^[0-9]+$ && ${#amount} -le 12 ]] || { echo 'Invalid checkout size' >&2; return 1; }
     checkout_required_bytes=$((checkout_required_bytes + amount))
   done
-  MIN_INSTALL_BYTES=$((20 * 1024 * 1024 * 1024 + checkout_required_bytes))
+  # Reserve the toolkit's 12 GiB minimum plus room for its build/cache overhead.
+  local compute_required_bytes=0
+  [[ ${install_cuda:-false} != true ]] || compute_required_bytes=$((16 * 1024 * 1024 * 1024))
+  MIN_INSTALL_BYTES=$((20 * 1024 * 1024 * 1024 + checkout_required_bytes + compute_required_bytes))
   MIN_INSTALL_MIB=$(((MIN_INSTALL_BYTES + 1048575) / 1048576))
   MIN_DISK_BYTES=$MIN_INSTALL_BYTES
 }

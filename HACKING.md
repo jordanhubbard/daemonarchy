@@ -200,6 +200,25 @@ settings afterwards to remove the test network.
 
 On real hardware, the install log is `/tmp/daemonarchy-install.log` on the live system.
 
+The installer offers CUDA and cudalab only when the detected display GPU is
+supported by the image's NVIDIA driver table (including mixed-GPU machines).
+The option defaults to Skip; unattended installs must set `install_cuda=true`
+to select it. Unsupported hardware and invalid values are rejected before disk
+writes. Desktop driver installation does not depend on this option.
+
+Selecting it reserves an additional 16 GiB in the disk-space checks, downloads
+the CUDA toolkit into the target's Linuxulator, and clones/builds cudalab for
+the new user without opening a graphical session. The launcher and menu entry
+are included only when selected. Linuxulator mounts are released before the
+target pool is exported, including on failure. The allowance is a budget, not
+a measured download size; the toolkit and build dependencies need internet.
+
+`bash tests/cuda-options.sh` covers hardware gating, opt-in/default behavior,
+space allowance, launcher/menu inclusion, and mount cleanup. Run
+`bash tests/linux-cuda.sh` for toolkit policy and the headless build script.
+These portable tests do not replace an installation and desktop launch on
+supported NVIDIA hardware.
+
 ## Releasing
 
 ### Packages

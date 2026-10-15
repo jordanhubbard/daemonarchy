@@ -19,6 +19,8 @@ export PATH="$ISO_SHARE/compat:$PATH"
 source "$ISO_SHARE/setup-form.sh"
 source "$(dirname "$0")/disk-layout"
 source "$(dirname "$0")/checkout-options"
+source "$(dirname "$0")/gpu-config"
+source "$(dirname "$0")/cuda-options"
 source "$(dirname "$0")/network-addresses"
 
 # The setup form's reserved names are Linux's. On FreeBSD a name is taken if
@@ -232,7 +234,45 @@ net_mode=dhcp net_if="" net_addr="" net_gw="" net_dns=""
 wifi_ssid="" wifi_psk="" wifi_hidden=false
 
 online() {
-  fetch -q -T 5 -o /dev/null https://pkg.FreeBSD.org/ 2>/dev/null
+  # Preserve fetch's diagnostic: DNS, TLS, HTTP and timeouts all used to be
+  # flattened into "not connected", even with a working DHCP lease and route.
+  network_probe_error=$(LC_ALL=C fetch -q -T 5 -o /dev/null https://pkg.FreeBSD.org/ 2>&1)
+}
+
+network_failure() {
+  local error=${network_probe_error:-No diagnostic returned.} year line
+  say --foreground 3 "Could not reach the package repository securely (https://pkg.FreeBSD.org/)."
+  year=$(date -u +%Y)
+  # A clearly invalid clock is actionable evidence; a plausible year alone
+  # cannot establish that the clock is correct or explain a TLS failure.
+  if [[ $year =~ ^[0-9]+$ ]] && ((10#$year < 2025)); then
+    say --foreground 3 "The system clock is incorrect. HTTPS certificates cannot be checked reliably."
+    say "Wait for time synchronization, or correct the date in the debug shell, then Check again."
+  else
+    case $error in
+      *"certificate verification failed"*|*"Certificate verification failed"*|*"certificate verify failed"*)
+        say --foreground 3 "TLS certificate verification failed."
+        say "Check the system date and time. If correct, check certificate trust or network interception."
+        ;;
+      *"No address record"*|*"Name does not resolve"*|*"Name or service not known"*|*"hostname nor servname"*|*"Temporary failure in name resolution"*)
+        say --foreground 3 "DNS could not resolve the package server. Check the DHCP-provided DNS servers."
+        ;;
+      *"Network is unreachable"*|*"No route to host"*)
+        say --foreground 3 "The package server is unreachable. Check the interface and default gateway."
+        ;;
+      *"timed out"*|*"Timeout"*)
+        say --foreground 3 "The package request timed out. The server or network may be unavailable; try again."
+        ;;
+      *)
+        say "The package request failed; this does not necessarily mean the network is disconnected."
+        ;;
+    esac
+  fi
+  say "System time: $(date -u '+%Y-%m-%d %H:%M:%S UTC')"
+  # Show the underlying error even when it does not match a known category.
+  while IFS= read -r line; do
+    say --foreground 8 "$line"
+  done <<< "$error"
 }
 
 ether_ports() {
@@ -456,9 +496,9 @@ network_step() {
       connected=true
       via=$(default_port)
       [[ $net_mode == wifi ]] && via="$via ($wifi_ssid)"
-      say "Connected to the internet through $via."
+      say "Package repository reachable securely through $via."
     else
-      say --foreground 3 "Not connected to the internet yet."
+      network_failure
     fi
     echo
 
@@ -509,7 +549,31 @@ ssh_step() {
 }
 
 # Optional development trees are downloaded only when selected.
-install_ports=false install_src=false
+install_ports=false install_src=false install_cuda=false
+cuda_step() {
+  local inventory
+  install_cuda=false
+  inventory=$(mktemp) || return 1
+  if ! pciconf -l >"$inventory"; then
+    rm -f "$inventory"
+    abort "Could not inspect graphics hardware"
+  fi
+  if ! gpu_select "$inventory" "$ISO_SHARE/gpu-ids"; then
+    rm -f "$inventory"
+    abort "Could not select a graphics driver"
+  fi
+  rm -f "$inventory"
+  [[ $gpu_nvidia == true ]] || return 0
+  step "Optional GPU applications"
+  say "A supported NVIDIA GPU was detected."
+  say "CUDA and the cudalab sample application are optional."
+  say "This downloads the toolkit and builds cudalab; allow 16 GiB extra and additional installation time."
+  if gum confirm --default=false --affirmative "Install" --negative "Skip" "Install CUDA and cudalab?"; then
+    install_cuda=true
+  fi
+  cuda_options_prepare
+}
+
 checkout_step() {
   local kind label download size
   step "Development checkouts"
@@ -689,6 +753,7 @@ write_install_conf() {
     printf 'ssh_enable=%q\n' "$ssh_enable"
     printf 'install_ports=%q\n' "$install_ports"
     printf 'install_src=%q\n' "$install_src"
+    printf 'install_cuda=%q\n' "$install_cuda"
   } >"$DAEMONARCHY_INSTALL_CONF"
 }
 
@@ -712,6 +777,7 @@ keyboard_form
 user_step
 network_step
 ssh_step
+cuda_step
 checkout_step
 disk_form
 clear
