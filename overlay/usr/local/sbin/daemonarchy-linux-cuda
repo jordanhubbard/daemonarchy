@@ -1,0 +1,256 @@
+#!/usr/local/bin/bash
+# Linuxulator CUDA for an installed Daemonarchy system with an NVIDIA GPU.
+#
+# The FreeBSD 595.104.02 driver remains the kernel driver. linux-nvidia-libs
+# must be that same version. CUDA 13.2 is the newest toolkit whose required
+# driver (595.58.03) this driver satisfies; CUDA 13.3 needs 610.43.02.
+# Cudalab requires CUDA 13.0 or newer, so 13.2 is the matching package.
+set -euo pipefail
+
+driver_prefix=595.104.02
+toolkit_package='cuda-toolkit-13-2'
+cmake_version=3.31.8
+cudalab_url=https://github.com/jordanhubbard/cudalab.git
+marker=/var/db/daemonarchy/linux-cuda.done
+uvm_src=/usr/local/share/daemonarchy-installer/uvm_ioctl_override.c
+linux_root=/compat/linux
+
+fail() { echo "daemonarchy-linux-cuda: $*" >&2; exit 1; }
+
+linux_cuda_spec() {
+  printf '%s %s\n' "$driver_prefix" "$toolkit_package"
+}
+
+require_root() {
+  [[ $(id -u) == 0 ]] || fail 'Run as root.'
+}
+
+require_nvidia_install() {
+  local driver libs
+  driver=$(pkg query '%v' nvidia-driver 2>/dev/null || true)
+  libs=$(pkg query '%v' linux-nvidia-libs 2>/dev/null || true)
+  [[ $driver == "$driver_prefix" || $driver == "$driver_prefix"* ]] || fail "nvidia-driver $driver_prefix is not installed (found '${driver:-none}')."
+  [[ $libs == "$driver_prefix" || $libs == "$driver_prefix"* ]] || fail "linux-nvidia-libs must match driver $driver_prefix (found '${libs:-none}')."
+  pciconf -l | awk '/class=0x03/ && /vendor=0x10de/ { found=1 } END { exit !found }' || fail 'No NVIDIA display GPU is present.'
+  [[ -d $linux_root/usr ]] || fail 'linux-nvidia-libs did not populate /compat/linux.'
+}
+
+require_space() {
+  local avail
+  avail=$(df -k "$linux_root" | awk 'NR == 2 { print $4 }')
+  [[ $avail =~ ^[0-9]+$ && $avail -ge 12582912 ]] || fail 'Need at least 12 GiB free for the CUDA toolkit.'
+}
+
+mount_nullfs() {
+  local src=$1 dst=$2
+  mount | awk -v dst="$dst" '$3 == dst { found=1 } END { exit !found }' && return 0
+  mkdir -p "$dst"
+  mount -t nullfs "$src" "$dst"
+}
+
+linux_shell() {
+  chroot "$linux_root" /bin/bash -lc "$*"
+}
+
+ensure_linuxulator() {
+  sysrc linux_enable=YES >/dev/null
+  service linux start || service linux status
+  cp /etc/resolv.conf /etc/hosts "$linux_root/etc/"
+}
+
+sync_user() {
+  local user=$1 group
+  [[ $user =~ ^[A-Za-z_][A-Za-z0-9_-]*$ ]] || fail "Unsupported username: $user"
+  grep -q "^${user}:" "$linux_root/etc/passwd" || grep "^${user}:" /etc/passwd >>"$linux_root/etc/passwd"
+  group=$(id -gn "$user")
+  grep -q "^${group}:" "$linux_root/etc/group" || grep "^${group}:" /etc/group >>"$linux_root/etc/group"
+}
+
+extract_rootfs() {
+  local image=$1 root=$2 blob kind
+  mkdir -p "$root"
+  while IFS= read -r blob; do
+    kind=$(file -b "$blob")
+    case "$kind" in
+      *gzip*) tar -xpzf "$blob" -C "$root" ;;
+      *Zstandard*|*zstd*)
+        command -v zstd >/dev/null 2>&1 || pkg install -y zstd
+        zstd -dc "$blob" | tar -xpf - -C "$root"
+        ;;
+    esac
+  done < <(find "$image" -type f)
+}
+
+bootstrap_dnf() {
+  linux_shell 'command -v dnf' >/dev/null 2>&1 && return 0
+  command -v rpm2cpio >/dev/null 2>&1 || pkg install -y rpm4
+  local release tmp archive layer
+  release=$(awk -F= '$1 == "VERSION_ID" { gsub(/"/, "", $2); print $2 }' "$linux_root/etc/os-release")
+  [[ $release =~ ^[0-9.]+$ ]] || fail 'Cannot read the Rocky Linux version in /compat/linux.'
+  tmp=$(mktemp -d /var/tmp/daemonarchy-rocky.XXXXXX)
+  archive=$tmp/rootfs.tar.xz
+  fetch -o "$archive" "https://dl.rockylinux.org/pub/rocky/${release}/images/x86_64/Rocky-9-Container-Base.latest.x86_64.tar.xz" \
+    || fetch -o "$archive" "https://dl.rockylinux.org/pub/rocky/${release%%.*}/images/x86_64/Rocky-9-Container-Base.latest.x86_64.tar.xz"
+  mkdir -p "$tmp/image" "$tmp/root"
+  tar -xpf "$archive" -C "$tmp/image"
+  extract_rootfs "$tmp/image" "$tmp/root"
+  [[ -x $tmp/root/usr/bin/dnf ]] || fail 'Could not unpack a Rocky Linux root that contains dnf.'
+  cp /etc/resolv.conf /etc/hosts "$tmp/root/etc/"
+  chroot "$tmp/root" /bin/bash -lc "dnf --releasever '$release' -y install dnf-plugins-core && dnf --releasever '$release' -y download --resolve --alldeps --downloaddir /root/DNF dnf dnf-plugins-core"
+  while IFS= read -r layer; do
+    rpm2cpio "$layer" | (cd "$linux_root" && cpio -idmu)
+  done < <(find "$tmp/root/root/DNF" -name '*.rpm' -type f)
+  rm -rf "$tmp"
+  cp /etc/resolv.conf /etc/hosts "$linux_root/etc/"
+  linux_shell "update-ca-trust && dnf --releasever '$release' -y update"
+}
+
+install_toolkit() {
+  local release
+  release=$(awk -F= '$1 == "VERSION_ID" { gsub(/"/, "", $2); print $2 }' "$linux_root/etc/os-release")
+  linux_shell "dnf --releasever '$release' -y install dnf-plugins-core gcc-c++ ninja-build git pkgconf-pkg-config libglvnd-devel libglvnd-glx which make tar gzip ca-certificates curl"
+  if ! linux_shell 'test -x /usr/bin/clang-format || test -x /usr/bin/clang-format-17'; then
+    linux_shell "dnf --releasever '$release' -y install clang-tools-extra" || true
+  fi
+  linux_shell "dnf config-manager --add-repo https://developer.download.nvidia.com/compute/cuda/repos/rhel9/x86_64/cuda-rhel9.repo"
+  linux_shell "dnf --releasever '$release' -y install '$toolkit_package' --exclude='nvidia-driver*' --exclude='cuda-drivers*' --exclude='kmod-nvidia*' --exclude='dkms*'"
+  if linux_shell 'rpm -q nvidia-driver' >/dev/null 2>&1; then
+    fail 'The toolkit install pulled a Linux NVIDIA driver. The FreeBSD driver must stay in place.'
+  fi
+  local cuda
+  cuda=$(linux_shell 'readlink -f /usr/lib64/libcuda.so.1 || true')
+  [[ $cuda == *"$driver_prefix"* ]] || fail "libcuda.so.1 is '$cuda', not the $driver_prefix driver library."
+  linux_shell 'test -x /usr/local/cuda/bin/nvcc'
+}
+
+install_cmake() {
+  linux_shell "cmake --version" 2>/dev/null | awk -v need="$cmake_version" 'NR == 1 { split($3, v, "."); split(need, n, "."); ok = (v[1] > n[1]) || (v[1] == n[1] && v[2] > n[2]) || (v[1] == n[1] && v[2] == n[2] && v[3] >= n[3]) } END { exit !ok }' && return 0
+  local archive=$linux_root/var/tmp/cmake.tar.gz
+  mkdir -p "$linux_root/var/tmp" "$linux_root/opt" "$linux_root/usr/local/bin"
+  fetch -o "$archive" "https://github.com/Kitware/CMake/releases/download/v${cmake_version}/cmake-${cmake_version}-linux-x86_64.tar.gz"
+  tar -xpf "$archive" -C "$linux_root/opt"
+  ln -sfn "/opt/cmake-${cmake_version}-linux-x86_64/bin/cmake" "$linux_root/usr/local/bin/cmake"
+  rm -f "$archive"
+}
+
+install_uvm_shim() {
+  [[ -f $uvm_src ]] || fail "Missing $uvm_src"
+  mkdir -p "$linux_root/usr/local/lib/daemonarchy" "$linux_root/usr/local/src"
+  cp "$uvm_src" "$linux_root/usr/local/src/uvm_ioctl_override.c"
+  linux_shell 'gcc -m64 -std=c99 -Wall -Wextra -ldl -fPIC -shared -fno-lto -o /usr/local/lib/daemonarchy/dummy-uvm.so /usr/local/src/uvm_ioctl_override.c'
+}
+
+cuda_setup() {
+  require_root
+  require_nvidia_install
+  require_space
+  ensure_linuxulator
+  bootstrap_dnf
+  install_toolkit
+  install_cmake
+  install_uvm_shim
+  mkdir -p "$(dirname "$marker")"
+  printf 'driver=%s\ntoolkit=%s\n' "$driver_prefix" "$toolkit_package" >"$marker"
+  echo "CUDA toolkit $toolkit_package is installed in /compat/linux."
+  echo 'From a desktop session: daemonarchy-linux-cuda cudalab'
+}
+
+desktop_user() {
+  if [[ -n ${SUDO_USER:-} && $SUDO_USER != root ]]; then
+    printf '%s\n' "$SUDO_USER"
+  elif [[ $(id -u) != 0 ]]; then
+    id -un
+  else
+    fail 'Run cudalab from the desktop user, or with sudo from that user.'
+  fi
+}
+
+q() { printf '%q' "$1"; }
+
+prepare_desktop() {
+  local user=$1 runtime=${XDG_RUNTIME_DIR:-}
+  [[ -n ${DISPLAY:-} ]] || fail 'DISPLAY is not set. Start this from the graphical session.'
+  mount_nullfs /home "$linux_root/home"
+  if [[ -d /tmp/.X11-unix ]]; then
+    mkdir -p "$linux_root/tmp/.X11-unix"
+    mount_nullfs /tmp/.X11-unix "$linux_root/tmp/.X11-unix"
+  fi
+  if [[ -n $runtime && -d $runtime ]]; then
+    mkdir -p "$linux_root$runtime"
+    mount_nullfs "$runtime" "$linux_root$runtime"
+  fi
+  sync_user "$user"
+}
+
+cudalab_script() {
+  local user=$1 demo=${2:-} launch
+  if [[ -n $demo ]]; then
+    launch="exec ./build/dev/cudalab --demo $(q "$demo")"
+  else
+    launch='exec ./build/dev/cudalab'
+  fi
+  cat <<EOF
+#!/bin/bash
+set -euo pipefail
+export HOME=$(q "/home/$user")
+export USER=$(q "$user")
+export DISPLAY=$(q "${DISPLAY:-}")
+export XAUTHORITY=$(q "${XAUTHORITY:-}")
+export XDG_RUNTIME_DIR=$(q "${XDG_RUNTIME_DIR:-}")
+export SDL_VIDEODRIVER=x11
+export __GLX_VENDOR_LIBRARY_NAME=nvidia
+export CUDAToolkit_ROOT=/usr/local/cuda
+export PATH=/usr/local/cuda/bin:/usr/local/bin:\$PATH
+mkdir -p "\$HOME/src"
+if [[ ! -d \$HOME/src/cudalab/.git ]]; then
+  git clone $(q "$cudalab_url") "\$HOME/src/cudalab"
+fi
+cd "\$HOME/src/cudalab"
+cmake --preset dev
+cmake --build --preset dev
+export LD_PRELOAD=/usr/local/lib/daemonarchy/dummy-uvm.so
+$launch
+EOF
+}
+
+cuda_cudalab() {
+  require_root
+  local demo=${1:-} user script
+  if [[ -n $demo && ! $demo =~ ^[a-z0-9][a-z0-9-]*$ ]]; then
+    fail 'Demo name must be a cudalab package name, such as cuda-cosmos.'
+  fi
+  [[ -n ${DISPLAY:-} ]] || fail 'DISPLAY is not set. Start this from the graphical session.'
+  [[ -f $marker ]] || cuda_setup
+  user=$(desktop_user)
+  [[ -d /home/$user ]] || fail "No home directory for $user."
+  ensure_linuxulator
+  prepare_desktop "$user"
+  script=$linux_root/var/tmp/daemonarchy-cudalab.sh
+  mkdir -p "$linux_root/var/tmp"
+  cudalab_script "$user" "$demo" >"$script"
+  chmod 755 "$script"
+  linux_shell "su '$user' -s /bin/bash -c '/bin/bash /var/tmp/daemonarchy-cudalab.sh'"
+}
+
+cuda_help() {
+  cat <<EOF
+Usage: daemonarchy-linux-cuda <setup|cudalab [demo]>
+
+setup    Install CUDA $toolkit_package and the Cudalab build tools in the Linuxulator.
+cudalab  Clone, build, and run https://github.com/jordanhubbard/cudalab.git
+         An optional demo name, such as cuda-cosmos, opens that piece.
+
+The kernel driver stays the installed FreeBSD NVIDIA driver ($driver_prefix).
+Pieces that need tensor cores run only on a GPU that has them. Start cudalab
+from the desktop session so it can use XWayland.
+EOF
+}
+
+if [[ ${BASH_SOURCE[0]} == "$0" ]]; then
+  case ${1:-} in
+    setup) cuda_setup ;;
+    cudalab) shift; cuda_cudalab "$@" ;;
+    help|-h|--help) cuda_help ;;
+    *) cuda_help >&2; exit 2 ;;
+  esac
+fi

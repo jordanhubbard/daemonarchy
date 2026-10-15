@@ -93,7 +93,7 @@ Open the network panel with **Super + Ctrl + W**, or click the network icon in t
 
 ![The network panel](images/network.png)
 
-If no Wi-Fi switch appears, FreeBSD has no driver for your Wi-Fi card; a USB Wi-Fi adapter or a cable will get you going.
+A cable is enough. If a wireless card is present and no Wi-Fi switch appears, FreeBSD has no driver for that card.
 
 ## 8. Sound
 

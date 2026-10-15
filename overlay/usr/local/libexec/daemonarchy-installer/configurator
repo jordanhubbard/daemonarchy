@@ -224,7 +224,9 @@ Keyboard,$keyboard_label" |
 # is touched. Every Ethernet port asked for DHCP at boot; this step shows what
 # came of it and lets the user pick a different port, join Wi-Fi on any
 # wireless adapter, or set an address by hand. Whatever is chosen here is what
-# the installed system uses.
+# the installed system uses. Wi-Fi is optional. An empty adapter list is a
+# normal Ethernet machine: the probe succeeds with no output, and the screen
+# does not mention Wi-Fi unless a wireless adapter is present.
 
 net_mode=dhcp net_if="" net_addr="" net_gw="" net_dns=""
 wifi_ssid="" wifi_psk="" wifi_hidden=false
@@ -240,8 +242,17 @@ ether_ports() {
   done
 }
 
+# Success with no output when FreeBSD has no wireless devices. `sysctl` fails
+# if the oid is absent, and a search that rejects blank lines also fails; either
+# status would abort a `set -e` caller before Ethernet DHCP is offered.
 wifi_adapters() {
-  sysctl -n net.wlan.devices 2>/dev/null | tr ' ' '\n' | grep .
+  local devices device
+  devices=$(sysctl -n net.wlan.devices 2>/dev/null) || true
+  # sysctl prints one space-separated list.
+  # shellcheck disable=SC2086
+  for device in $devices; do
+    printf '%s\n' "$device"
+  done
 }
 
 port_address() {
@@ -284,8 +295,9 @@ adapter_kind() {
 
 # One line per adapter plus the kernel's hardware description.
 network_summary() {
-  local ifc addr state dot wireless
+  local ifc addr state dot wireless wired=false
   for ifc in $(ether_ports); do
+    wired=true
     addr=$(port_address "$ifc")
     state=$(port_state "$ifc")
     if [[ -n $addr ]]; then dot=$'\033[32m●\033[0m'; else dot=$'\033[90m○\033[0m'; fi
@@ -303,11 +315,10 @@ network_summary() {
     printf '%s%s  %-8s %-9s %-10s %s\n' "$PADDING_LEFT_SPACES" "$dot" "$ifc" "Wi-Fi" "$state" "$addr"
     say --foreground 8 "  $(adapter_description "$ifc")"
   done
-  if [[ -z $wireless ]]; then
-    say --foreground 3 "No supported Wi-Fi adapter detected by FreeBSD."
-    say --foreground 8 "Built-in Wi-Fi may need a driver or firmware; a supported USB network adapter can provide access."
-  else
+  if [[ -n $wireless ]]; then
     say --foreground 8 'Choose "Join Wi-Fi" below to select a network and enter its password.'
+  elif [[ $wired == false ]]; then
+    say --foreground 8 "No network adapter detected. A USB Ethernet adapter is enough to install."
   fi
 }
 
@@ -453,10 +464,10 @@ network_step() {
 
     options=()
     if $connected || [[ ${1:-} == allow-offline ]]; then options+=("Continue"); fi
-    for ifc in $(wifi_adapters); do options+=("Join Wi-Fi with $ifc"); done
     for ifc in $(ether_ports); do
       options+=("Use DHCP on $ifc" "Set up $ifc by hand")
     done
+    for ifc in $(wifi_adapters); do options+=("Join Wi-Fi with $ifc"); done
     options+=("Open debug shell" "Check again")
     [[ $mode == remote-debug ]] && options+=("Back to installer menu")
 

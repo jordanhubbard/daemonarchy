@@ -46,6 +46,24 @@ elif [[ -c /dev/cuau0 ]]; then
   serial=(/dev/cuau0)
 fi
 
+# Linux fbcon selects Terminus 16x32 when the pixel grid would otherwise be a
+# huge character cell count. FreeBSD vt stays on 8x16, so the 16-inch MacBook's
+# 3584x2240 console is 448 columns and unreadable. terminus-b32 is that same
+# Terminus face and is already in the base system. A lower mode would only blur
+# the panel; the graphics driver modesets back to native anyway.
+console_font() {
+  local cols dev term
+  dev=$(tty 2>/dev/null || true)
+  [[ $dev == /dev/ttyv0 ]] || return 0
+  term=${DAEMONARCHY_CONSOLE_TTY:-/dev/tty}
+  [[ -r $term && -w $term ]] || return 0
+  IFS=' ' read -r _ cols < <(stty size <"$term" 2>/dev/null) || return 0
+  [[ ${cols:-0} -gt 200 ]] || return 0
+  [[ -r ${DAEMONARCHY_CONSOLE_FONT:-/usr/share/vt/fonts/terminus-b32.fnt} ]] || return 0
+  vidcontrol -f terminus-b32 <"$term" >"$term" 2>&1 || true
+}
+console_font
+
 # Run the install in the background with everything it prints going to the
 # log, and draw the install screen from that log until it finishes.
 run_install() {

@@ -1,0 +1,13 @@
+{
+  // Daemonarchy's additions to the Omarchy menu: FreeBSD features, under
+  // System > FreeBSD. Installed by the daemonarchy package as the vendor menu,
+  // merged after Omarchy's own entries and before the user's extension.
+  "system.freebsd": {"icon":"","label":"FreeBSD","description":"Boot environments, jails, virtual machines, snapshots, and tracing"},
+  "system.freebsd.be": {"icon":"󰆓","label":"Boot Environments","description":"Roll the whole system back to an earlier state","action":"omarchy-launch-floating-terminal-with-presentation daemonarchy-be"},
+  "system.freebsd.snapshots": {"icon":"󰁯","label":"Restore Files","description":"Browse hourly and daily snapshots of your home","action":"omarchy-launch-floating-terminal-with-presentation 'daemonarchy-home-snapshots restore'"},
+  "system.freebsd.jails": {"icon":"󰆧","label":"Jails","description":"Lightweight FreeBSD containers","action":"omarchy-launch-floating-terminal-with-presentation daemonarchy-jail"},
+  "system.freebsd.vms": {"icon":"󰍹","label":"Virtual Machines","description":"Run other operating systems with bhyve","action":"omarchy-launch-floating-terminal-with-presentation daemonarchy-vm"},
+  "system.freebsd.hack": {"icon":"󰵮","label":"Hack on Daemonarchy","description":"Get the sources and run the desktop from your own checkout","action":"omarchy-launch-floating-terminal-with-presentation daemonarchy-dev-setup"},
+  "system.freebsd.dtrace": {"icon":"󰓅","label":"Trace the System","description":"See what the system is doing right now with DTrace","action":"omarchy-launch-floating-terminal-with-presentation daemonarchy-dtrace"},
+  "system.freebsd.cudalab": {"icon":"󰈸","label":"Cudalab","description":"Live CUDA studio on NVIDIA: cosmos, oceans, glass, and tensor cores","action":"omarchy-launch-floating-terminal-with-presentation daemonarchy-cudalab"},
+}

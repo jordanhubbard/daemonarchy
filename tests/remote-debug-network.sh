@@ -58,4 +58,51 @@ eval "$(sed -n '/^adapter_kind() {$/,/^}$/p' "$here/overlay/usr/local/libexec/da
 [[ $(adapter_kind vtnet0) == Virtual ]]
 [[ $(adapter_kind wlan0) == Wi-Fi ]]
 [[ $(adapter_kind em0) == Network ]]
+
+# Wi-Fi is optional. A missing adapter must not fail the probe, and an
+# Ethernet machine must not be told that the absence is a problem.
+eval "$(sed -n '/^wifi_adapters() {$/,/^}$/p' "$here/overlay/usr/local/libexec/daemonarchy-installer/configurator")"
+eval "$(sed -n '/^network_summary() {$/,/^}$/p' "$here/overlay/usr/local/libexec/daemonarchy-installer/configurator")"
+PADDING_LEFT_SPACES=
+port_address() { echo 10.1.1.9; }
+port_state() { echo connected; }
+adapter_description() { echo USB Ethernet; }
+say() { printf '%s\n' "$*" >>"$work/messages"; }
+for wifi_probe in missing empty listed; do
+  case $wifi_probe in
+    missing) sysctl() { return 1; } ;;
+    empty) sysctl() { printf '\n'; } ;;
+    listed) sysctl() { printf 'iwm0 iwlwifi0\n'; } ;;
+  esac
+  if [[ $wifi_probe == listed ]]; then
+    [[ $(wifi_adapters) == $'iwm0\niwlwifi0' ]]
+  else
+    [[ -z $(wifi_adapters) ]]
+    : >"$work/messages"
+    network_summary >/dev/null
+    grep -i 'wi-fi' "$work/messages" && exit 1
+  fi
+done
+ether_ports() { :; }
+sysctl() { return 1; }
+: >"$work/messages"
+network_summary >/dev/null
+grep -F 'A USB Ethernet adapter is enough to install.' "$work/messages" >/dev/null
+grep -i 'wi-fi' "$work/messages" && exit 1
+ether_ports() { echo em0; }
+sysctl() { printf 'iwm0\n'; }
+online() { return 0; }
+default_port() { echo em0; }
+touch "$work/ready"
+network_step >/dev/null
+dhcp_line=$(grep -n 'Use DHCP on em0' "$work/options" | cut -d: -f1)
+wifi_line=$(grep -n 'Join Wi-Fi with iwm0' "$work/options" | cut -d: -f1)
+[[ -n $dhcp_line && -n $wifi_line && $dhcp_line -lt $wifi_line ]]
+sysctl() { return 1; }
+touch "$work/ready"
+network_step >/dev/null
+grep -qx 'Use DHCP on em0' "$work/options"
+grep -qx 'Set up em0 by hand' "$work/options"
+grep -q 'Join Wi-Fi' "$work/options" && exit 1
 echo 'PASS: inactive addresses rejected; LAN-only DHCP/Wi-Fi, cancellation and interface labels'
+echo 'PASS: missing Wi-Fi is not fatal for Ethernet'

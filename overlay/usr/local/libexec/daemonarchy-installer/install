@@ -13,7 +13,8 @@
 #   p4  BIOS boot code, in the alignment gap before p1
 #
 # The base system and kernel come from the release sets on the ISO. The
-# Omarchy ports and the GPU and Wi-Fi kernel modules come from the package repository on the ISO,
+# Omarchy ports, the GPU and Wi-Fi kernel modules, and the matching Linux NVIDIA
+# libraries come from the package repository on the ISO,
 # everything else from pkg.FreeBSD.org.
 
 set -euo pipefail
@@ -274,7 +275,7 @@ pkg_target() {
   ASSUME_ALWAYS_YES=yes IGNORE_OSVERSION=yes \
     pkg -r "$TARGET" -o REPOS_DIR="$repos" -o ABI="$ABI" "$@"
 }
-packages=(pkg bash sudo daemonarchy wifi-firmware-kmod "${gpu_exact_packages[@]}")
+packages=(pkg bash sudo daemonarchy wifi-firmware-kmod "${gpu_exact_packages[@]}" "${gpu_userspace_packages[@]}")
 pkg_target update -f
 
 # A thousand downloads over a home connection will see the odd one fail.
@@ -344,6 +345,17 @@ EOF
 mkdir -p "$TARGET/usr/local/share/daemonarchy-installer"
 cp "$ISO_SHARE/checkouts.json" "$TARGET/usr/local/share/daemonarchy-installer/checkouts.json"
 install -m 0755 /usr/local/sbin/daemonarchy-checkouts "$TARGET/usr/local/sbin/daemonarchy-checkouts"
+if $gpu_nvidia; then
+  install -m 0755 /usr/local/sbin/daemonarchy-linux-cuda "$TARGET/usr/local/sbin/daemonarchy-linux-cuda"
+  install -m 0755 /usr/local/bin/daemonarchy-cudalab "$TARGET/usr/local/bin/daemonarchy-cudalab"
+  install -m 0644 "$ISO_SHARE/uvm_ioctl_override.c" "$TARGET/usr/local/share/daemonarchy-installer/uvm_ioctl_override.c"
+  install -m 0644 "$ISO_SHARE/cudalab.desktop" "$TARGET/usr/local/share/applications/cudalab.desktop"
+  # The desktop package's vendor menu may predate this ISO. Ship the menu
+  # entry with the image so System > FreeBSD shows Cudalab without a package rebuild.
+  mkdir -p "$TARGET/usr/local/share/omarchy/vendor"
+  install -m 0644 "$ISO_SHARE/omarchy-menu.jsonc" "$TARGET/usr/local/share/omarchy/vendor/omarchy-menu.jsonc"
+  log "Cudalab is installed. The first launch from the menu installs CUDA and opens the studio."
+fi
 checkout_url=$(jq -er '.repository_url' "$ISO_SHARE/checkouts.json")
 [[ $checkout_url =~ ^https://github.com/jordanhubbard/daemonarchy/releases/download/[a-zA-Z0-9._-]+$ ]] || { echo 'Invalid checkout repository URL' >&2; exit 1; }
 cat >"$TARGET/usr/local/etc/pkg/repos/Daemonarchy-Checkouts.conf" <<EOF

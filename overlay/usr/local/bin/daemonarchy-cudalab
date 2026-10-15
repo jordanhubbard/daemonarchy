@@ -1,0 +1,14 @@
+#!/usr/local/bin/bash
+# Open the Cudalab studio on the NVIDIA Linuxulator. The first launch installs
+# the CUDA toolkit. An optional argument is a demo name, such as cuda-cosmos.
+set -euo pipefail
+
+tool=/usr/local/sbin/daemonarchy-linux-cuda
+if [[ ! -x $tool ]]; then
+  echo 'Cudalab needs an NVIDIA GPU and the Daemonarchy CUDA setup.' >&2
+  exit 1
+fi
+if [[ $(id -u) != 0 ]]; then
+  exec sudo --preserve-env=DISPLAY,XAUTHORITY,XDG_RUNTIME_DIR "$tool" cudalab "$@"
+fi
+exec "$tool" cudalab "$@"

@@ -99,7 +99,7 @@ You need a FreeBSD 16.0-CURRENT machine (bare metal or a VM with about 8 GB of m
 3. **poudriere settings** (`/usr/local/etc/poudriere.d/omarchyiso-poudriere.conf`): build the kernel modules for the jail's kernel instead of fetching the package builders' copies, which target a different kernel:
 
    ```
-   PACKAGE_FETCH_BLACKLIST="drm-*-kmod gpu-firmware-* wifi-firmware-* nvidia-*"
+   PACKAGE_FETCH_BLACKLIST="drm-*-kmod gpu-firmware-* wifi-firmware-* nvidia-* linux-nvidia-libs"
    PACKAGE_FETCH_URL="http://pkg.FreeBSD.org/\${ABI}"
    ```
 

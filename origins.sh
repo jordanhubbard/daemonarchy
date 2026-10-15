@@ -14,5 +14,5 @@ x11/owe-lockfeed x11/quickshell
 # the online repository, which installed systems on older kernels also use.
 ISO_ORIGINS="$OMARCHY_ORIGINS
 graphics/drm-66-kmod graphics/gpu-firmware-kmod net/wifi-firmware-kmod
-x11/nvidia-driver x11/nvidia-kmod graphics/nvidia-drm-66-kmod
+x11/nvidia-driver x11/nvidia-kmod graphics/nvidia-drm-66-kmod x11/linux-nvidia-libs
 "

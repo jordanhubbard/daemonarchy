@@ -14,9 +14,13 @@ select_gpu() {
 select_gpu 'vgapci0@pci0:3:0:0: class=0x030000 vendor=0x1002 device=0x7340 subvendor=0x106b subdevice=0x021e'
 check "$kld_list" amdgpu
 check "$gpu_navi14" true
+check "$gpu_vulkan" true
 check "${gpu_packages[*]}" gpu-firmware-amd-kmod-navi14
+check "${gpu_userspace_packages[*]}" 'vulkan-loader mesa-dri'
 select_gpu 'vgapci0@pci0:1:0:0: class=0x030000 vendor=0x1002 device=0x68c1'
 check "$kld_list" radeonkms
+check "$gpu_vulkan" false
+check "${gpu_userspace_packages[*]}" ''
 check "$gpu_navi14" false
 select_gpu 'vgapci0@pci0:1:0:0: class=0x030000 vendor=0x1002 device=0x71c5'
 check "$kld_list" radeonkms
@@ -24,13 +28,21 @@ select_gpu 'vgapci0@pci0:1:0:0: class=0x030000 vendor=0x1002 device=0x67ef'
 check "$kld_list" amdgpu
 for device in 2182 1e04 2204 2684 2b85; do
   select_gpu "vgapci0@pci0:1:0:0: class=0x030000 vendor=0x10de device=0x$device"
-  check "$kld_list" nvidia-drm
-  check "${gpu_packages[*]}" 'nvidia-driver nvidia-kmod nvidia-drm-66-kmod'
+  check "$kld_list" 'linux nvidia-drm'
+  check "$gpu_vulkan" true
+  check "${gpu_packages[*]}" 'nvidia-driver nvidia-kmod nvidia-drm-66-kmod linux-nvidia-libs'
+  check "${gpu_userspace_packages[*]}" 'vulkan-loader mesa-dri'
 done
-mkdir -p "$work/nvidia/boot"
+mkdir -p "$work/nvidia/boot" "$work/nvidia/etc"
+touch "$work/nvidia/etc/rc.conf"
 gpu_write_config "$work/nvidia"
 grep -qx 'hw.nvidiadrm.modeset="1"' "$work/nvidia/boot/loader.conf"
 grep -qx 'export GBM_BACKEND=nvidia-drm' "$work/nvidia/usr/local/share/uwsm/env.d/90-daemonarchy-nvidia"
+grep -qx 'linux_enable="YES"' "$work/nvidia/etc/rc.conf"
+select_gpu 'vgapci0@pci0:0:2:0: class=0x030000 vendor=0x8086 device=0x3e9b'
+check "$kld_list" i915kms
+check "$gpu_vulkan" true
+check "${gpu_userspace_packages[*]}" 'vulkan-loader mesa-dri'
 for device in 0393 0407 0863 0a29 0fd5 0fe9 13c2 1b80 ffff; do
   select_gpu "vgapci0@pci0:1:0:0: class=0x030000 vendor=0x10de device=0x$device"
   check "$gpu_nvidia" false
@@ -42,7 +54,7 @@ select_gpu \
   'vgapci0@pci0:0:2:0: class=0x030000 vendor=0x8086 device=0x3e9b' \
   'vgapci1@pci0:1:0:0: class=0x030200 vendor=0x10de device=0x2684' \
   'vgapci2@pci0:2:0:0: class=0x030000 vendor=0x10de device=0x2684'
-check "$kld_list" 'i915kms nvidia-drm'
+check "$kld_list" 'linux i915kms nvidia-drm'
 mkdir -p "$work/mixed/boot"
 gpu_write_config "$work/mixed"
 [[ ! -e $work/mixed/usr/local/share/uwsm/env.d/90-daemonarchy-nvidia ]]
@@ -55,12 +67,12 @@ check "$gpu_nvidia" false
 # Missing/malformed payload fails before installation; no fallback to remote kmods.
 select_gpu 'vgapci0@pci0:1:0:0: class=0x030000 vendor=0x10de device=0x2684'
 mkdir -p "$work/repo/All"
-for name in drm-66-kmod gpu-firmware-kmod nvidia-driver nvidia-kmod nvidia-drm-66-kmod; do
+for name in drm-66-kmod gpu-firmware-kmod nvidia-driver nvidia-kmod nvidia-drm-66-kmod linux-nvidia-libs; do
   printf '%s 1.0\n' "$name" >>"$work/manifest"
   touch "$work/repo/All/$name-1.0.pkg"
 done
 gpu_resolve_packages "$work/manifest" "$work/repo"
-check "${#gpu_exact_packages[@]}" 5
+check "${#gpu_exact_packages[@]}" 6
 rm "$work/repo/All/nvidia-kmod-1.0.pkg"
 if gpu_resolve_packages "$work/manifest" "$work/repo"; then echo 'Accepted missing kmod' >&2; exit 1; fi
 if gpu_select "$work/pci" "$work/missing-ids"; then echo 'Accepted missing table' >&2; exit 1; fi

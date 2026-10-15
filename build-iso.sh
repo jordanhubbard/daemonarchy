@@ -127,7 +127,9 @@ esac
 # this image's 6.6 AMD/Intel modules. Validate the explicit package family.
 sh "$here/scripts/check-gpu-packages.sh" "$share/repo/All" "$set_version" >"$share/gpu-packages"
 
-chmod 0755 "$stage"/overlay/usr/local/libexec/daemonarchy-installer/* "$share/keymap" "$share/compat/timedatectl"
+chmod 0755 "$stage"/overlay/usr/local/libexec/daemonarchy-installer/* \
+	"$stage"/overlay/usr/local/bin/* "$stage"/overlay/usr/local/sbin/* \
+	"$share/keymap" "$share/compat/timedatectl"
 
 echo "==> Building the image"
 printf '%s\n' bash gum jq ttfx tzupdate pkg wifi-firmware-kmod >"$stage/live-packages"

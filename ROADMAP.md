@@ -83,9 +83,27 @@ any scope change before calling 1.1.0 complete.
 - NVIDIA: the image explicitly packages `nvidia-drm-66-kmod` alongside
   `drm-66-kmod`, avoiding the default NVIDIA metaport's 6.12 family. NVIDIA
   595.104.02 userland and kernel packages are built for the selected snapshot.
-  AMD firmware and Radeon/AMDGPU selection remain included. Native package
-  admission and policy tests do not replace physical display, login or suspend
-  qualification.
+  An NVIDIA install also loads `linux.ko`, enables the Linuxulator, and
+  installs `linux-nvidia-libs` at that same driver version. After the first
+  boot, `daemonarchy-linux-cuda setup` installs the Rocky Linux CUDA 13.2
+  toolkit inside `/compat/linux` without a Linux kernel driver. CUDA 13.3 and
+  later need a newer driver branch than 595.104.02. `daemonarchy-linux-cuda cudalab`
+  builds and runs [cudalab](https://github.com/jordanhubbard/cudalab.git) as a
+  Linux program. An NVIDIA install adds a Cudalab application; its first
+  launch installs that toolkit and opens the studio, including pieces such
+  as `cuda-cosmos`. AMD firmware and Radeon/AMDGPU selection remain included.
+  Supported AMD (`amdgpu`), Intel (`i915kms`), and NVIDIA installs also
+  install `vulkan-loader` and `mesa-dri`. That is the common Vulkan layer:
+  RADV, ANV, and NVIDIA's ICD from `nvidia-driver`. Legacy `radeonkms` does
+  not get it. CUDA stays a NVIDIA-only extra and does not replace Vulkan.
+  Native package admission and policy tests do not replace physical display,
+  login, suspend, or cudalab qualification. An NVIDIA install also writes the
+  System > FreeBSD Cudalab menu entry from the image, so the entry is present
+  even when the packaged desktop menu is older.
+- Installer console: the live installer loads Terminus 16×32 (`terminus-b32`)
+  when the console is wider than 200 columns. That is the face the Linux
+  console selects on a HiDPI panel. The 16-inch MacBook's 3584×2240 EFI
+  console is otherwise 448 columns of the default 8×16 font.
 - An AMD desktop is assigned for non-NVIDIA testing. The user will prepare
   both a replaceable OS partition and free space for Windows-preservation
   testing. NVIDIA qualification still needs separate hardware. No physical

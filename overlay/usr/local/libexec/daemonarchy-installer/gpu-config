@@ -4,7 +4,8 @@
 gpu_select() {
   local inventory=$1 ids=$2 vendor device subvendor subdevice module family
   [[ -r $inventory && -s $ids ]] || { echo 'Missing GPU inventory or selection table' >&2; return 1; }
-  gpu_modules=() gpu_packages=() gpu_nvidia=false gpu_other=false gpu_navi14=false
+  gpu_modules=() gpu_packages=() gpu_userspace_packages=()
+  gpu_nvidia=false gpu_other=false gpu_navi14=false gpu_vulkan=false
   while read -r vendor device subvendor subdevice; do
     module='' family=''
     case "$vendor" in
@@ -20,8 +21,9 @@ gpu_select() {
         ;;
     esac
     case "$module" in
-      nvidia-drm) gpu_nvidia=true ;;
-      i915kms|amdgpu|radeonkms) gpu_other=true ;;
+      nvidia-drm) gpu_nvidia=true; gpu_vulkan=true ;;
+      amdgpu|i915kms) gpu_other=true; gpu_vulkan=true ;;
+      radeonkms) gpu_other=true ;;
       *) printf 'GPU %s:%s: no selected desktop driver; NVIDIA legacy GPUs are outside the 595 target.\n' "$vendor" "$device" >&2; continue ;;
     esac
     if [[ $module == radeonkms ]]; then
@@ -44,10 +46,18 @@ gpu_select() {
       if(v!="" && d!="") print v,d,(sv=="" ? "-" : sv),(sd=="" ? "-" : sd)
     }' "$inventory")
   if $gpu_nvidia; then
-    gpu_packages=(nvidia-driver nvidia-kmod nvidia-drm-66-kmod)
+    # linux.ko must be loaded before nvidia.ko so the Linuxulator can open the GPU.
+    gpu_packages=(nvidia-driver nvidia-kmod nvidia-drm-66-kmod linux-nvidia-libs)
+    gpu_modules=(linux "${gpu_modules[@]}")
   fi
   if $gpu_navi14; then
     gpu_packages+=(gpu-firmware-amd-kmod-navi14)
+  fi
+  # Vulkan is the common graphics layer. Mesa supplies RADV for amdgpu and ANV
+  # for i915; nvidia-driver supplies NVIDIA's own ICD. Legacy radeonkms has no
+  # Vulkan driver here. CUDA remains a separate NVIDIA extra.
+  if $gpu_vulkan; then
+    gpu_userspace_packages=(vulkan-loader mesa-dri)
   fi
   kld_list="${gpu_modules[*]}"
 }
@@ -65,7 +75,7 @@ gpu_resolve_packages() {
   while read -r name version; do
     case "$name" in
       drm-66-kmod|gpu-firmware-*) ;;
-      nvidia-driver|nvidia-kmod|nvidia-drm-66-kmod) $gpu_nvidia || continue ;;
+      nvidia-driver|nvidia-kmod|nvidia-drm-66-kmod|linux-nvidia-libs) $gpu_nvidia || continue ;;
       *) echo "Unexpected GPU manifest entry: $name" >&2; return 1 ;;
     esac
     [[ $name =~ ^[a-zA-Z0-9_-]+$ && $version =~ ^[a-zA-Z0-9._,+-]+$ && -f $repo/All/$name-$version.pkg ]] || {
@@ -88,6 +98,9 @@ gpu_write_config() {
 export GBM_BACKEND=nvidia-drm
 export __GLX_VENDOR_LIBRARY_NAME=nvidia
 EOF
+    fi
+    if [[ -f $target/etc/rc.conf ]] && ! grep -q '^linux_enable=' "$target/etc/rc.conf"; then
+      printf '\nlinux_enable="YES"\n' >>"$target/etc/rc.conf"
     fi
   fi
 }
