@@ -58,6 +58,8 @@ status=0
 (network_step >"$work/messages") || status=$?
 [[ $status == 73 ]]
 ! grep -qx Continue "$work/options"
+grep -qx 'Set date and time' "$work/options"
+grep -qx 'Synchronize time over network' "$work/options"
 
 # Recovery clears the previous error and offers Continue on a successful probe.
 gum() { printf '%s\n' "$@" >"$work/options"; echo Continue; }

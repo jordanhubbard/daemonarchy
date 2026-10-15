@@ -247,7 +247,7 @@ network_failure() {
   # cannot establish that the clock is correct or explain a TLS failure.
   if [[ $year =~ ^[0-9]+$ ]] && ((10#$year < 2025)); then
     say --foreground 3 "The system clock is incorrect. HTTPS certificates cannot be checked reliably."
-    say "Wait for time synchronization, or correct the date in the debug shell, then Check again."
+    say "Choose Set date and time, or Synchronize time over network, then Check again."
   else
     case $error in
       *"certificate verification failed"*|*"Certificate verification failed"*|*"certificate verify failed"*)
@@ -273,6 +273,62 @@ network_failure() {
   while IFS= read -r line; do
     say --foreground 8 "$line"
   done <<< "$error"
+}
+
+# Round-trip parsing rejects dates BSD date would otherwise normalize.
+valid_clock_time() {
+  local value=$1 parsed
+  [[ $value =~ ^[0-9]{4}-[0-9]{2}-[0-9]{2}\ [0-9]{2}:[0-9]{2}:[0-9]{2}$ ]] || return 1
+  parsed=$(date -j -u -f '%Y-%m-%d %H:%M:%S' "$value" '+%Y-%m-%d %H:%M:%S' 2>/dev/null) || return 1
+  [[ $parsed == "$value" ]]
+}
+
+set_clock_manually() {
+  local value
+  step "Set date and time"
+  say "Enter UTC time (not local time). No network connection is needed."
+  say "Format: YYYY-MM-DD HH:MM:SS. This does not change your selected desktop timezone."
+  value=$(date -u '+%Y-%m-%d %H:%M:%S')
+  while true; do
+    value=$(gum input --value "$value" --prompt "UTC date and time> ") || return 0
+    if valid_clock_time "$value"; then break; fi
+    say --foreground 3 "Enter a valid date and time, for example 2026-10-15 17:30:00."
+  done
+  gum confirm "Set the system clock to $value UTC?" || return 0
+  # Stop automatic adjustment while applying the user's chosen time. The
+  # network-sync action can re-enable it; installed systems still enable NTP.
+  if service ntpd onestatus >/dev/null 2>&1 && ! service ntpd onestop >/dev/null 2>&1; then
+    notice "Could not stop network time synchronization; the clock was not changed." 3
+    return 0
+  fi
+  if date -u -f '%Y-%m-%d %H:%M:%S' "$value" >/dev/null 2>&1; then
+    notice "System clock set to $value UTC."
+  else
+    notice "Could not set the system clock. Try again or open the debug shell." 3
+  fi
+}
+
+wait_for_clock_sync() {
+  while true; do
+    if ntpq -c rv 2>/dev/null | grep -Eq 'leap=00([,[:space:]]|$)'; then return 0; fi
+    sleep 1
+  done
+}
+
+sync_clock_network() {
+  step "Synchronize time"
+  say "Network time needs a working connection to an NTP server."
+  say "This waits up to 30 seconds. You can also set the date and time manually."
+  if ! service ntpd onestatus >/dev/null 2>&1 && ! service ntpd onestart >/dev/null 2>&1; then
+    notice "Could not start network time synchronization. Set the date and time manually." 3
+    return 0
+  fi
+  if gum spin --spinner pulse --title "Waiting for network time (up to 30 seconds)..." -- \
+      timeout 30 bash -c "$(declare -f wait_for_clock_sync); wait_for_clock_sync"; then
+    notice "Network time synchronized: $(date -u '+%Y-%m-%d %H:%M:%S UTC')"
+  else
+    notice "Time synchronization did not complete. Check the network or set the date and time manually." 3
+  fi
 }
 
 ether_ports() {
@@ -508,7 +564,7 @@ network_step() {
       options+=("Use DHCP on $ifc" "Set up $ifc by hand")
     done
     for ifc in $(wifi_adapters); do options+=("Join Wi-Fi with $ifc"); done
-    options+=("Open debug shell" "Check again")
+    options+=("Set date and time" "Synchronize time over network" "Open debug shell" "Check again")
     [[ $mode == remote-debug ]] && options+=("Back to installer menu")
 
     choice=$(gum choose --height 12 --header "Network" "${options[@]}") && status=0 || status=$?
@@ -519,6 +575,8 @@ network_step() {
     fi
 
     case $choice in
+      "Set date and time") set_clock_manually ;;
+      "Synchronize time over network") sync_clock_network ;;
       "Open debug shell") "$(dirname "$0")/remote-debug" shell ;;
       "Back to installer menu") return 1 ;;
       Continue)

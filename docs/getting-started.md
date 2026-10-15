@@ -49,7 +49,7 @@ The installer asks a handful of questions, then installs on its own. Use the arr
 1. **Welcome.** Press Enter to begin.
 2. **Keyboard.** Pick your keyboard layout.
 3. **Your account.** Your name, a user name, a password (you will log in with it, and give it when the system asks for your permission), a name for the computer, and your time zone.
-4. **Network.** The installer lists your network adapters. A plugged-in cable is usually already connected; otherwise pick **Join Wi-Fi**, choose your network and type its password. You can also set an address by hand if your network has no DHCP.
+4. **Network.** The installer lists your network adapters. A plugged-in cable is usually already connected; otherwise pick **Join Wi-Fi**, choose your network and type its password. You can also set an address by hand if your network has no DHCP. If the clock is wrong, choose **Set date and time** and enter the current UTC date and time; this works offline. **Synchronize time over network** tries NTP for up to 30 seconds. After either action the installer checks package access again. Package downloads still require internet access.
 5. **Remote access.** Say yes only if you want to log in to this machine from another one over SSH.
 6. **Disk.** Pick the disk to install on, and whether to **encrypt** it. Encryption means typing your password each time the machine starts, and keeps your files safe if the machine is lost.
 7. **Ready.** Check the summary and confirm. The disk is erased from here on.
