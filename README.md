@@ -43,7 +43,7 @@ Omarchy's AI coding agents work here too: Claude Code, Codex, Crush, and the Git
 - A live FreeBSD system (from the snapshot) that logs root in on the first console and starts the installer.
 - The installer: `configurator` asks the questions, `install` installs, `dashboard` shows its progress, `launch` ties them together.
 - The snapshot's `base.txz` and `kernel.txz`, which become the installed system.
-- A package repository with what pkg.FreeBSD.org does not publish: the Omarchy ports from [jordanhubbard/freebsd-ports, branch `omarchy`](https://github.com/jordanhubbard/freebsd-ports/tree/omarchy), and the GPU and Wi-Fi kernel modules (`drm-66-kmod`, `gpu-firmware-*-kmod`, `wifi-firmware-*-kmod`) built for the snapshot kernel.
+- A package repository with what pkg.FreeBSD.org does not publish: the Omarchy ports from [jordanhubbard/freebsd-ports, branch `omarchy`](https://github.com/jordanhubbard/freebsd-ports/tree/omarchy), and the GPU and Wi-Fi kernel modules (`drm-612-kmod`, `gpu-firmware-*-kmod`, `wifi-firmware-*-kmod`) built for the snapshot kernel.
 
 Everything else the desktop needs (Hyprland, Qt, browsers, ...) is downloaded from pkg.FreeBSD.org during the install, so the machine needs network access. That keeps the image well under GitHub's 2 GiB release asset limit; a fully offline image would be 7-8 GB.
 
@@ -83,6 +83,12 @@ ports work, and the checks required before release. The
 an existing OS/data partition or creating a new one in free space.
 
 ## The installer
+
+Development installers retain installation output on the target disk and
+provide a [console rescue menu](docs/rescue-console.md) when installation is
+interrupted or graphical login fails. It offers logs, a local shell, and the
+same console-approved remote debugging used by the installer. Recovery actions
+require the password selected during installation.
 
 The 1.1 development installer includes **Remote agent debug** in its welcome
 menu. It displays an IP address and configurable SSH port (default 2222), then

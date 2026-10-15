@@ -199,6 +199,11 @@ Run `test-bhyve.sh --cleanup` with the same `WORK`, `VM`, `TAP` and `BRIDGE`
 settings afterwards to remove the test network.
 
 On real hardware, the install log is `/tmp/daemonarchy-install.log` on the live system.
+Development installs also stream it to the target's
+`/var/log/daemonarchy-install.log`, retain installation state and kernel
+snapshots under `/var/db/daemonarchy/install`, and install recovery before
+the desktop package transaction. See the [rescue console guide](docs/rescue-console.md)
+for the password gate, boot monitor, interrupted-install behavior and tests.
 
 The installer offers CUDA and cudalab only when the detected display GPU is
 supported by the image's NVIDIA driver table (including mixed-GPU machines).

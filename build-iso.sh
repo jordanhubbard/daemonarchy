@@ -123,8 +123,8 @@ case "$kernel_identity" in
   *) echo "Source checkout $source_revision does not match image kernel: $kernel_identity" >&2; exit 1 ;;
 esac
 
-# The default NVIDIA DRM metaport chooses 6.12 on CURRENT, conflicting with
-# this image's 6.6 AMD/Intel modules. Validate the explicit package family.
+# Keep NVIDIA and AMD/Intel on the same explicit DRM family. Validate every
+# kernel module against the snapshot ABI before generating the image.
 sh "$here/scripts/check-gpu-packages.sh" "$share/repo/All" "$set_version" >"$share/gpu-packages"
 
 chmod 0755 "$stage"/overlay/usr/local/libexec/daemonarchy-installer/* \

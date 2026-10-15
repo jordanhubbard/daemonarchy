@@ -13,6 +13,6 @@ x11/owe-lockfeed x11/quickshell
 # The ISO also carries kernel modules built for its own kernel. They stay off
 # the online repository, which installed systems on older kernels also use.
 ISO_ORIGINS="$OMARCHY_ORIGINS
-graphics/drm-66-kmod graphics/gpu-firmware-kmod net/wifi-firmware-kmod
-x11/nvidia-driver x11/nvidia-kmod graphics/nvidia-drm-66-kmod x11/linux-nvidia-libs
+graphics/drm-612-kmod graphics/gpu-firmware-kmod net/wifi-firmware-kmod
+x11/nvidia-driver x11/nvidia-kmod graphics/nvidia-drm-612-kmod x11/linux-nvidia-libs
 "

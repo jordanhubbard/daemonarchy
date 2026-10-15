@@ -47,7 +47,7 @@ gpu_select() {
     }' "$inventory")
   if $gpu_nvidia; then
     # linux.ko must be loaded before nvidia.ko so the Linuxulator can open the GPU.
-    gpu_packages=(nvidia-driver nvidia-kmod nvidia-drm-66-kmod linux-nvidia-libs)
+    gpu_packages=(nvidia-driver nvidia-kmod nvidia-drm-612-kmod linux-nvidia-libs)
     gpu_modules=(linux "${gpu_modules[@]}")
   fi
   if $gpu_navi14; then
@@ -67,15 +67,15 @@ gpu_resolve_packages() {
   local manifest=$1 repo=$2 name version required
   [[ -s $manifest ]] || { echo 'Missing GPU package manifest' >&2; return 1; }
   gpu_exact_packages=() gpu_lock_packages=()
-  for required in drm-66-kmod gpu-firmware-kmod "${gpu_packages[@]}"; do
+  for required in drm-612-kmod gpu-firmware-kmod "${gpu_packages[@]}"; do
     [[ $(awk -v n="$required" '$1 == n { count++ } END { print count+0 }' "$manifest") == 1 ]] || {
       echo "Missing or duplicate GPU package: $required" >&2; return 1;
     }
   done
   while read -r name version; do
     case "$name" in
-      drm-66-kmod|gpu-firmware-*) ;;
-      nvidia-driver|nvidia-kmod|nvidia-drm-66-kmod|linux-nvidia-libs) $gpu_nvidia || continue ;;
+      drm-612-kmod|gpu-firmware-*) ;;
+      nvidia-driver|nvidia-kmod|nvidia-drm-612-kmod|linux-nvidia-libs) $gpu_nvidia || continue ;;
       *) echo "Unexpected GPU manifest entry: $name" >&2; return 1 ;;
     esac
     [[ $name =~ ^[a-zA-Z0-9_-]+$ && $version =~ ^[a-zA-Z0-9._,+-]+$ && -f $repo/All/$name-$version.pkg ]] || {

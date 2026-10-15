@@ -1,5 +1,5 @@
 #!/usr/local/bin/bash
-# Console-approved SSH pairing for the live installer; state stays in RAM.
+# Console-approved SSH pairing for the live installer and installed systems.
 set -euo pipefail
 source "$(dirname "$0")/network-addresses"
 state=/var/run/daemonarchy-remote-debug
@@ -42,16 +42,15 @@ stop_server() {
 
 start_server() {
   local port=$1
-  [[ $(id -u) == 0 && $(uname -s) == FreeBSD ]] || fail 'Requires the live FreeBSD root console.'
-  [[ $(mount -p | awk '$2 == "/" {print $3}') == cd9660 ]] || fail 'Only available on the live installer ISO.'
+  [[ $(id -u) == 0 && $(uname -s) == FreeBSD ]] || fail 'Requires a FreeBSD root console.'
   if [[ ! $port =~ ^[0-9]{1,5}$ ]] || ((10#$port < 1 || 10#$port > 65535)); then
     fail 'Port must be 1–65535.'
   fi
   port=$((10#$port))
   network_has_address || fail 'No usable IPv4 address. Configure the network from the debug shell, then retry remote-debug listen.'
   [[ ! -e $state ]] || fail 'Another debug session is already active.'
-  # The snapshot's live root account must permit key authentication.
-  [[ $(awk -F: '$1 == "root" {print $2}' /etc/master.passwd) != '*' ]] || fail 'Live root account is locked.'
+  # A locked root account also prevents public-key authentication.
+  [[ $(awk -F: '$1 == "root" {print $2}' /etc/master.passwd) != '*' ]] || fail 'Root account is locked.'
   umask 077
   mkdir -p "$state/requests"
   trap stop_server EXIT
@@ -93,7 +92,7 @@ EOF
 }
 
 show_status() {
-  echo 'Installer remote debug mode'
+  echo 'Daemonarchy remote debug mode'
   echo
   echo 'No installation has been started. Pairing grants a root shell.'
   echo 'Tell your agent this IP address and port:'
@@ -139,7 +138,7 @@ debug_listen() {
 
 debug_help() {
   cat <<'HELP'
-Installer debug shell (root). Networking is not required to use this shell.
+Daemonarchy debug shell (root). Networking is not required to use this shell.
 No installation or remote listener has been started.
 
 Inspect hardware and networking:
@@ -165,7 +164,7 @@ The listener asks before enabling access and before pairing each new key.
 Press Enter or Ctrl-C in the listener to stop it and return to this shell.
 Run help (or remote-debug help) to show these debugging instructions again.
 Use help <builtin> for Bash help, for example: help cd.
-The exit command returns to the installer.
+The exit command returns to the invoking console or installer.
 HELP
 }
 
@@ -181,7 +180,7 @@ debug_shell() {
     fi
   }
   export -f help
-  PS1='installer-debug# ' /usr/local/bin/bash --noprofile --norc -i
+  PS1='daemonarchy-debug# ' /usr/local/bin/bash --noprofile --norc -i
 }
 
 case ${1:-shell} in

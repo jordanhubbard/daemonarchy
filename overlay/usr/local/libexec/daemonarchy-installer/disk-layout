@@ -183,3 +183,14 @@ write_efi_loader() {
     efi_loader="$esp/EFI/FreeBSD/loader.efi"
   fi
 }
+
+efi_root_environment() {
+  local pool=$1 bootfs
+  bootfs=$(zpool get -H -o value bootfs "$pool") || return
+  # A pool-only zfs:POOL: names the pool's top-level dataset, not bootfs.
+  # The installed /boot lives in the boot environment below ROOT.
+  [[ $bootfs == "$pool/ROOT/"* && $bootfs != *[[:space:]]* ]] || {
+    layout_error "Pool $pool has no valid boot environment: $bootfs"; return 1;
+  }
+  printf 'rootdev=zfs:%s:\n' "$bootfs"
+}

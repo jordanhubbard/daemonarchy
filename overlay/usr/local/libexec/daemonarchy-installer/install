@@ -33,6 +33,8 @@ source "$(dirname "$0")/disk-layout"
 source "$(dirname "$0")/gpu-config"
 source "$(dirname "$0")/checkout-options"
 source "$(dirname "$0")/cuda-options"
+source "$(dirname "$0")/install-diagnostics"
+source "$(dirname "$0")/rescue-setup"
 checkout_options_prepare "$ISO_SHARE/checkouts.json"
 
 log() { printf '\033[32m==>\033[0m %s\n' "$*"; }
@@ -56,17 +58,28 @@ wpa_network() {
 # Mark the start of a stage for the install screen (daemonarchy-installer/
 # dashboard), which follows this log.
 phase() {
+  diagnostics_phase "$1"
   printf '@@phase %s\n' "$1"
   log "$2"
 }
 
 cuda_setup_started=false
 cleanup() {
+  local status=$?
+  if $diagnostics_ready; then
+    if ((status != 0)); then
+      printf 'Installation exited with status %s.\n' "$status"
+      diagnostics_result failed "$status" || true
+    fi
+    diagnostics_stop || true
+  fi
   if $cuda_setup_started; then cuda_unmount_target "$TARGET" || true; fi
   umount "$TARGET/dev" 2>/dev/null || true
   umount "$TARGET/boot/efi" 2>/dev/null || true
 }
 trap cleanup EXIT
+trap 'exit 130' INT
+trap 'exit 143' TERM HUP
 
 # An account name FreeBSD or a package already uses would fail at the very end,
 # after the disk is erased; refuse it first (autoinstall configs skip the
@@ -129,6 +142,7 @@ done
 zfs create -o setuid=off "$POOL/var/tmp"
 zpool set bootfs="$POOL/ROOT/default" "$POOL"
 chmod 1777 "$TARGET/tmp" "$TARGET/var/tmp"
+diagnostics_begin "$TARGET" "$username" "${ssh_enable:-false}" /tmp/daemonarchy-install.log
 
 # ---------------------------------------------------------------- base system
 
@@ -136,6 +150,12 @@ phase base "Installing the FreeBSD base system"
 for set in base kernel; do
   tar -xpf "$DIST/$set.txz" -C "$TARGET"
 done
+
+# Recovery must work before the large desktop transaction. Create the selected
+# account with the base shell; switch it to bash after packages are installed.
+create_recovery_accounts "$TARGET" "$username" "${full_name:-$username}" <<<"$password_hash"
+install_rescue_support "$TARGET" "$(dirname "$0")" /usr/local/sbin
+sync
 
 phase loader "Installing the boot loader"
 if ! $shared_install; then
@@ -146,8 +166,10 @@ mkdir -p "$TARGET/boot/efi"
 mount -t msdosfs "$efi_dev" "$TARGET/boot/efi"
 write_efi_loader "$TARGET" "$POOL" "$shared_install"
 if [[ $(sysctl -n machdep.bootmethod) == UEFI ]]; then
-  # rootdev selects this pool even when another FreeBSD installation exists.
-  if ! efibootmgr -a -c -l "$efi_loader" -L Daemonarchy -e "rootdev=zfs:$POOL:"; then
+  # Select the installed boot environment, including on shared disks with
+  # another FreeBSD pool. A pool-only rootdev cannot find its /boot files.
+  efi_environment=$(efi_root_environment "$POOL")
+  if ! efibootmgr -a -c -l "$efi_loader" -L Daemonarchy -e "$efi_environment"; then
     if $shared_install; then
       echo "Could not register the Daemonarchy EFI entry. Existing boot loaders are preserved; installation cannot finish." >&2
       exit 1
@@ -282,6 +304,10 @@ pkg_target() {
 packages=(pkg bash sudo daemonarchy wifi-firmware-kmod "${gpu_exact_packages[@]}" "${gpu_userspace_packages[@]}")
 pkg_target update -f
 
+# A small first transaction makes console-approved remote rescue available
+# even if the later desktop fetch/install is interrupted.
+pkg_target install -y bash
+
 # A thousand downloads over a home connection will see the odd one fail.
 # Fetch everything first, retrying: packages already in the cache are kept, so
 # each attempt picks up where the last one stopped. Then install from the cache.
@@ -363,11 +389,8 @@ EOF
 
 # ---------------------------------------------------------------- users
 
-phase user "Creating $username"
-printf '%s\n' "$password_hash" | pw -R "$TARGET" usermod root -H 0
-printf '%s\n' "$password_hash" | pw -R "$TARGET" useradd -n "$username" \
-  -c "${full_name:-$username}" -m -G wheel,operator,video,audio \
-  -s /usr/local/bin/bash -H 0
+phase user "Configuring $username"
+pw -R "$TARGET" usermod "$username" -s /usr/local/bin/bash
 
 mkdir -p "$TARGET/usr/local/etc/sudoers.d"
 echo '%wheel ALL=(ALL:ALL) ALL' >"$TARGET/usr/local/etc/sudoers.d/wheel"
@@ -441,7 +464,16 @@ fi
 # ---------------------------------------------------------------- done
 
 phase finish "Finishing up"
+chroot "$TARGET" pw usershow "$username" >/dev/null
+for package in daemonarchy omarchy sddm hyprland; do
+  pkg_target info -e "$package" || { echo "Missing required desktop package: $package" >&2; exit 1; }
+done
+[[ -f $TARGET/var/lib/sddm/state.conf && -x $TARGET/usr/local/bin/bash ]]
+diagnostics_result complete 0
+log "Installation configuration complete; exporting the target pool."
+diagnostics_stop
 umount "$TARGET/dev"
 umount "$TARGET/boot/efi"
 zpool export "$POOL"
+diagnostics_ready=false
 log "Daemonarchy is installed."

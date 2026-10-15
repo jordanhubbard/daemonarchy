@@ -30,7 +30,7 @@ for device in 2182 1e04 2204 2684 2b85; do
   select_gpu "vgapci0@pci0:1:0:0: class=0x030000 vendor=0x10de device=0x$device"
   check "$kld_list" 'linux nvidia-drm'
   check "$gpu_vulkan" true
-  check "${gpu_packages[*]}" 'nvidia-driver nvidia-kmod nvidia-drm-66-kmod linux-nvidia-libs'
+  check "${gpu_packages[*]}" 'nvidia-driver nvidia-kmod nvidia-drm-612-kmod linux-nvidia-libs'
   check "${gpu_userspace_packages[*]}" 'vulkan-loader mesa-dri'
 done
 mkdir -p "$work/nvidia/boot" "$work/nvidia/etc"
@@ -67,12 +67,20 @@ check "$gpu_nvidia" false
 # Missing/malformed payload fails before installation; no fallback to remote kmods.
 select_gpu 'vgapci0@pci0:1:0:0: class=0x030000 vendor=0x10de device=0x2684'
 mkdir -p "$work/repo/All"
-for name in drm-66-kmod gpu-firmware-kmod nvidia-driver nvidia-kmod nvidia-drm-66-kmod linux-nvidia-libs; do
+for name in drm-612-kmod gpu-firmware-kmod nvidia-driver nvidia-kmod nvidia-drm-612-kmod linux-nvidia-libs; do
   printf '%s 1.0\n' "$name" >>"$work/manifest"
   touch "$work/repo/All/$name-1.0.pkg"
 done
 gpu_resolve_packages "$work/manifest" "$work/repo"
 check "${#gpu_exact_packages[@]}" 6
+# The same image on AMD selects the shared 6.12 core without NVIDIA packages.
+select_gpu 'vgapci0@pci0:1:0:0: class=0x030000 vendor=0x1002 device=0x67ef'
+gpu_resolve_packages "$work/manifest" "$work/repo"
+check "${gpu_lock_packages[*]}" 'drm-612-kmod gpu-firmware-kmod'
+# A stale image manifest must not silently select the conflicting 6.6 core.
+sed 's/^drm-612-kmod /drm-66-kmod /' "$work/manifest" >"$work/stale-manifest"
+if gpu_resolve_packages "$work/stale-manifest" "$work/repo"; then echo 'Accepted stale DRM family' >&2; exit 1; fi
+select_gpu 'vgapci0@pci0:1:0:0: class=0x030000 vendor=0x10de device=0x2684'
 rm "$work/repo/All/nvidia-kmod-1.0.pkg"
 if gpu_resolve_packages "$work/manifest" "$work/repo"; then echo 'Accepted missing kmod' >&2; exit 1; fi
 if gpu_select "$work/pci" "$work/missing-ids"; then echo 'Accepted missing table' >&2; exit 1; fi

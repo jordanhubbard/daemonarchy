@@ -1,0 +1,3 @@
+#!/bin/sh
+# Explicit console invocation only; this is not an enabled system service.
+exec /usr/local/libexec/daemonarchy-installer/remote-debug "$@"

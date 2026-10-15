@@ -1,0 +1,40 @@
+#!/usr/local/bin/bash
+# Install recovery before the desktop package transaction begins.
+create_recovery_accounts() {
+  local target=$1 username=$2 full_name=$3 recovery_hash
+  IFS= read -r recovery_hash || return
+  printf '%s\n' "$recovery_hash" | pw -R "$target" usermod root -H 0 || return
+  printf '%s\n' "$recovery_hash" | pw -R "$target" useradd -n "$username" \
+    -c "$full_name" -m -G wheel,operator,video,audio -s /bin/sh -H 0
+}
+
+install_rescue_support() {
+  local target=$1 helpers=$2 commands=$3
+  install -d "$target/usr/local/libexec/daemonarchy-installer" "$target/usr/local/sbin"
+  install -m 755 "$helpers/remote-debug" "$helpers/network-addresses" \
+    "$target/usr/local/libexec/daemonarchy-installer/"
+  install -m 755 "$commands/daemonarchy-debug" "$commands/daemonarchy-rescue" "$target/usr/local/sbin/"
+  if ! grep -q '^daemonarchy.Pc|' "$target/etc/gettytab"; then
+    cat >>"$target/etc/gettytab" <<'EOF'
+
+# The menu itself is public; its actions authenticate through login.
+daemonarchy.Pc|Daemonarchy recovery console:\
+  :al=root:tc=Pc:
+EOF
+  fi
+  sed -i '' -E 's|^ttyv0[[:space:]].*|ttyv0 "/usr/libexec/getty daemonarchy.Pc" xterm onifexists secure|' "$target/etc/ttys"
+  if ! grep -q '# Daemonarchy rescue console' "$target/root/.profile"; then
+    cat >>"$target/root/.profile" <<'EOF'
+
+# Daemonarchy rescue console: login authenticates actions selected by the menu.
+if [ "$(tty)" = /dev/ttyv0 ]; then
+  if [ -n "${DAEMONARCHY_RESCUE_ACTION-}" ]; then
+    rescue_action=$DAEMONARCHY_RESCUE_ACTION
+    unset DAEMONARCHY_RESCUE_ACTION
+    exec /usr/local/sbin/daemonarchy-rescue authenticated "$rescue_action"
+  fi
+  exec /usr/local/sbin/daemonarchy-rescue monitor
+fi
+EOF
+  fi
+}

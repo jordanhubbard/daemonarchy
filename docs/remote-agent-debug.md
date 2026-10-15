@@ -64,9 +64,23 @@ debug mode is stopped and restarted.
 Start with read-only inventory such as `pciconf -lv`, `camcontrol devlist`,
 `gpart show -lp`, and `ifconfig`. The installer entry point is
 `/usr/local/libexec/daemonarchy-installer/launch`; use an interactive SSH
-terminal (`ssh -t`) when running its forms. Remote debug is live-environment
-access only: it does not automatically enable SSH or copy pairing keys into
-the installed system.
+terminal (`ssh -t`) when running its forms. Debug pairing does not automatically
+enable normal SSH or copy approved keys into the installed system.
+
+## On an installed system
+
+New installations also include `daemonarchy-debug`. At the root console, run
+`daemonarchy-debug listen` to enable the same temporary-key pairing on port
+2222, or `daemonarchy-debug listen 2207` to choose another port. It requires
+FreeBSD, an unlocked root account and a usable network address. Confirm the
+listener and the agent fingerprint at the console as above. This listener
+uses its own SSH configuration; it does not enable the normal SSH service or
+change password authentication in `/etc/ssh/sshd_config`.
+
+The root shell is available through `daemonarchy-debug shell`. Press Enter
+or Ctrl-C in the listener's console to close debug connections and discard
+the temporary keys and approvals. No debug listener starts automatically at
+boot. Older installed images need these tools copied in separately.
 
 ## Implementation
 
@@ -74,7 +88,7 @@ The SSH server is FreeBSD's base-system OpenSSH. It listens only while debug
 mode is active, accepts public-key authentication only, and consults the
 console pairing helper before accepting a new key. There is no shared
 password, anonymous root login, or permanently installed agent service.
-Server keys, requests and approvals live in the ISO's memory-backed `/var`.
-The helper refuses to run on an installed system rather than an ISO root.
+Server keys, requests and approvals live under `/var/run/daemonarchy-remote-debug`
+and are removed when the listener stops. On the live ISO, `/var` is memory-backed.
 Unattended `CIDATA` installation keeps its existing behavior and does not
 enable debug mode.
