@@ -127,6 +127,8 @@ when this rescue system shuts down; they are not installed on the target disk.
 Native boot/authentication testing is a separate gate from the helper's key and
 file-validation tests. A rescue boot with drivers blocked does not qualify those
 drivers or the graphical desktop.
+The [QEMU rescue check record](testing-1.1-headless-rescue.md) covers key
+authentication, ignored unattended media and a target disk with zero writes.
 
 ## Keeping recovery ahead of graphics
 
