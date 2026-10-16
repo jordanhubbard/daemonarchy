@@ -91,7 +91,10 @@ materialization checks. The signed three-package repository passed a real
 fetch/install transaction; a different valid public key rejected catalogue
 queries and installation. `pkg update` alone can exit zero after reporting a
 signature failure, so the negative check also verifies queries and installation.
-Public checkout-repository verification remains pending.
+The [published checkout repository](https://github.com/jordanhubbard/daemonarchy/releases/tag/checkouts-16-3ceb5f150bc1-28d8f145fbec-v1)
+then passed signature verification and a fresh FreeBSD `pkg` download/install of
+all three payloads. All nine GitHub assets match the retained local sizes and
+SHA-256 digests. The installer catalogue now selects these pinned checkouts.
 
 The original bulk run was stopped with SIGINT after 267 successful builds;
 poudriere retained its uncommitted package repository for reuse. After cleanup,
