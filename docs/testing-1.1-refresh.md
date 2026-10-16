@@ -146,3 +146,20 @@ The physical X570 machine booted preview.13 and exposed its RTX 4090 and AX200
 Wi-Fi device. Installed graphics, suspend and Windows preservation remain
 unqualified. The bounded DNS-probe fix committed after this build is not in
 preview.13. See the [hardware observations](testing-1.1-hardware-observations.md).
+
+## Release package integration and checkout refresh (2026-10-16)
+
+The combined desktop 1.1.0/core revision 20 candidate is ports commit
+`21e4640582d0f14f74605981c7485ac78c480611`. It includes the desktop source tag
+and compatibility revision `aab8d9c385d23ca2ede9b6efd20855fc26682341`, which
+removes the Linux-only browser-policy elevation during theme setup. Native
+desktop `testport` is still running; this is a source integration checkpoint,
+not a claim that its final package set or image passed.
+
+Its new ports seed passed native package installation, part/archive checksums,
+materialization, clean one-commit shallow Git state, ownership and tracking,
+self-contained objects, and preservation after removing the seed package.
+The unchanged source seed packages are reused at `3ceb5f150bc1`. The refreshed
+three-package catalogue was signed on the protected host and passed a real
+native `pkg` signature verification and catalogue query. It uses a separate
+release-specific download URL; no checkout payload is added to the ISO.

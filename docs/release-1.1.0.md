@@ -30,6 +30,12 @@ kernel modules and protects its enforcement controls; ordinary application
 packages remain installable. Signed boot updates use a retained boot environment
 and explicit validation/activation. See [the enrollment guide](secure-boot.md).
 
+Existing 1.0.1 systems receive desktop application updates through `pkg upgrade`.
+That transaction does not upgrade the FreeBSD base/kernel, replace its drivers,
+or convert an existing installation to verified boot. Kernel modules must match
+the running snapshot. The verified maintenance path currently covers the pinned
+snapshot and loader protocol; a base/ABI migration needs separate qualification.
+
 ## Hardware limitations and open qualification
 
 - The ASRock X570 Taichi/RTX 4090 test system became unable to visibly boot any
