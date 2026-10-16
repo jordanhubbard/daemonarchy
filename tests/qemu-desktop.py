@@ -106,6 +106,9 @@ def complete_theme_authorization():
     # Its Quickshell prompt is a layer surface, absent from activewindow.
     query = "pgrep -f '^pkexec /usr/local/bin/omarchy-theme-set-browser-policy [0-9a-fA-F]{6}$' || true"
     if guest(query):
+        if os.environ.get("ALLOW_LEGACY_THEME_AUTH") != "true":
+            screenshot("desktop-unexpected-theme-authorization.png")
+            raise RuntimeError("FreeBSD theme setup unexpectedly requested administrator authorization")
         time.sleep(1)
         screenshot("desktop-theme-authorization.png")
         for character in "daemonarchy":
@@ -136,8 +139,18 @@ screenshot("desktop-ready.png")
 before = json.loads(hypr("-j clients"))
 addresses = {client["address"] for client in before}
 key("meta_l-ret")
-wait_for(lambda: any("foot" in client.get("class", "").lower() and client["address"] not in addresses
-                     for client in json.loads(hypr("-j clients"))), "terminal opened by keyboard")
+def terminal_focused():
+    window = json.loads(hypr("-j activewindow"))
+    return "foot" in window.get("class", "").lower() and window.get("address") not in addresses
+
+
+wait_for(terminal_focused, "terminal opened and focused by keyboard")
+# Let the compositor finish mapping/focus cursor warps before testing the tablet.
+time.sleep(1)
+# QEMU suppresses an unchanged absolute sample on repeated callbacks, even if
+# the compositor has since warped its own cursor while focusing a new window.
+pointer(0, 0)
+time.sleep(0.2)
 pointer(400, 300)
 time.sleep(1)
 position = json.loads(hypr("-j cursorpos"))
