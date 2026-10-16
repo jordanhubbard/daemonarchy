@@ -67,12 +67,19 @@ sudo make reinstall clean
 
 You need a FreeBSD 16.0-CURRENT machine (bare metal or a VM with about 8 GB of memory and 100 GB of disk) with poudriere, git, and the ports tree, as root.
 
-1. **A jail from the snapshot the image installs.** Before the next release, re-sync system sources with [FreeBSD CURRENT (`main`)](https://github.com/freebsd/freebsd-src/tree/main), select the image snapshot, and record its exact source revision. `/usr/src` offered by the installer must match that snapshot; do not fetch a moving branch at install time. Recreate/update the build jail and rebuild the selected kernel modules when moving snapshots. Poudriere's `url` method fetches no kernel, and the image needs one, so add it:
+1. **A jail from the snapshot the image installs.** Before the next release, re-sync system sources with [FreeBSD CURRENT (`main`)](https://github.com/freebsd/freebsd-src/tree/main), select the image snapshot, and record its exact source revision. `/usr/src` offered by the installer must match that snapshot; do not fetch a moving branch at install time. Recreate/update the build jail and rebuild the selected kernel modules when moving snapshots. Cache the verified release sets first, then use those same files for the jail and ISO:
 
    ```
-   poudriere jail -c -j 16amd64 -a amd64 -v 16.0-CURRENT -m url=https://download.freebsd.org/snapshots/amd64/16.0-CURRENT/
-   fetch -o - https://download.freebsd.org/snapshots/amd64/16.0-CURRENT/kernel.txz | tar -xJf - -C /usr/local/poudriere/jails/16amd64
+   sh scripts/cache-release-sets.sh
+   poudriere jail -c -j 16amd64 -a amd64 -v 16.0-CURRENT -m tar=/var/cache/daemonarchy-iso/base.txz
+   tar -xpf /var/cache/daemonarchy-iso/kernel.txz -C /usr/local/poudriere/jails/16amd64
+   tar -xpf /var/cache/daemonarchy-iso/lib32.txz -C /usr/local/poudriere/jails/16amd64
    ```
+
+   Populate the jail's `/usr/src` from that same source revision before building
+   kernel modules. Include `lib32` before the first bulk run: dependencies such
+   as LLVM need its 32-bit libraries, and adding it later changes GCC's default
+   multilib option and invalidates cached compiler/dependency packages.
 
 2. **A ports tree pinned to the official package set.** Before the next release, refresh [the fork's `omarchy` branch](https://github.com/jordanhubbard/freebsd-ports/tree/omarchy) from [upstream FreeBSD ports](https://github.com/freebsd/freebsd-ports), preserving and testing the Daemonarchy changes. The installer takes most packages from pkg.FreeBSD.org's `latest` set, so the Omarchy ports must be built against the same ports commit. That commit is the newest `ports_top_git_hash` annotation across the set's packages. Builds are incremental, so one package's annotation can be older than the set:
 
@@ -101,6 +108,7 @@ You need a FreeBSD 16.0-CURRENT machine (bare metal or a VM with about 8 GB of m
    ```
    PACKAGE_FETCH_BLACKLIST="drm-*-kmod gpu-firmware-* wifi-firmware-* nvidia-* linux-nvidia-libs"
    PACKAGE_FETCH_URL="http://pkg.FreeBSD.org/\${ABI}"
+   DISTFILES_CACHE=/usr/ports/distfiles
    ```
 
 4. **Build the packages.** List the origins in `ISO_ORIGINS` at the top of `build-iso.sh` in a file, and bulk-build with `-b latest`, so every other dependency is fetched as the official binary:
@@ -139,6 +147,58 @@ You need a FreeBSD 16.0-CURRENT machine (bare metal or a VM with about 8 GB of m
    For development images, set `NAME` to a distinct preview filename and
    `PREVIEW_LABEL` to a short description. The installer welcome screen shows
    that label alongside the actual desktop package version.
+
+### Persistent authoring caches
+
+Keep the following directories on persistent storage on the ISO build host.
+They are reused by anyone following this build workflow, including authors
+running it inside a VM; retain its disk or mount persistent cache storage when
+replacing the VM.
+
+| Build input | Persistent location | Reuse |
+| --- | --- | --- |
+| Port source archives | `DISTFILES_CACHE`, above `/usr/ports/distfiles` | Ports reuse downloaded distfiles and verify them against `distinfo`. |
+| Official dependency packages | `/usr/local/poudriere/data/packages/$JAIL-$PTREE/.pkg-cache` and the package repository | With `-b latest`, poudriere fetches eligible packages into its cache and links them into the repository. |
+| Built packages | `/usr/local/poudriere/data/packages/$JAIL-$PTREE` | Poudriere checks existing packages and builds only missing or invalidated ones. |
+| FreeBSD release sets | `SET_CACHE_DIR`, default `/var/cache/daemonarchy-iso` | `cache-release-sets.sh` and `build-iso.sh` share `MANIFEST`, `base.txz`, `kernel.txz`, and `lib32.txz`. |
+
+Repeat the bulk and image commands with the same jail, ports-tree name and cache
+paths. An installer-only change normally needs just `build-iso.sh`; it reuses
+the package repository and release sets. Poudriere invalidates packages when
+versions, options or dependencies change. Kernel-bound packages must be rebuilt
+for a new snapshot even when a cached package has a compatible-looking ABI.
+
+The release-set helper hashes each cached archive against the retained
+`MANIFEST`. A valid archive is reused without contacting the snapshot server.
+A missing or damaged archive is downloaded to a temporary file and replaces
+the cache entry only after its checksum passes. A failed or partial download
+does not replace the previous file. The image build also checks the jail's
+FreeBSD version and the catalogue's source revision against the kernel set.
+
+To put sets on another volume or retain separate snapshots, use the same
+override for cache preparation and image construction:
+
+```sh
+export SET_CACHE_DIR=/build-cache/daemonarchy/sets/3ceb5f150bc1
+export SNAPSHOT_URL=https://download.freebsd.org/snapshots/amd64/16.0-CURRENT
+sh scripts/cache-release-sets.sh
+# Create the jail from "$SET_CACHE_DIR/base.txz" and extract its kernel/lib32.
+JAIL=16amd64 PTREE=omarchyiso sh build-iso.sh
+```
+
+The moving snapshot URL is consulted only for missing inputs. Select a new
+cache directory for a new snapshot so an older retained `MANIFEST` cannot be
+mistaken for the new selection. Preserve poudriere's repository structure,
+including `.latest` and any `.building` directory left by an interrupted bulk
+run; poudriere can resume using its completed packages. Its cache management
+may prune obsolete entries, so these directories are caches rather than release
+archives. Retain final ISOs, checksums and published checkout payloads separately.
+
+Fresh installer test VMs currently have independent package caches. The
+authoring caches above speed package and ISO construction; sharing downloads
+between those fresh test installations is a separate harness improvement.
+Run `sh tests/release-set-cache.sh` on FreeBSD to exercise initial fetching,
+offline reuse, damaged-entry repair and rejection of a corrupt replacement.
 
 ## Changing things
 
@@ -281,7 +341,7 @@ Package-only fixes between images bump `PORTREVISION` instead and ship through t
 - **Sound needs the `audio` group** on FreeBSD 16.
 - **pkg pads its install counter** (`[ 119/1184]`); anything parsing it must allow the space.
 - **Boot code goes stale after ZFS upgrades.** A pool that gains new features (after `zpool upgrade`) needs current boot code, or the machine stops at `boot:` with "unsupported feature". Run `gpart bootcode -p /boot/gptzfsboot -i 1 <disk>` (or the EFI loader update) after upgrading a pool.
-- **The snapshot directory moves.** `download.freebsd.org/snapshots/.../16.0-CURRENT` always holds the newest snapshot, but the image's sets must be the one the jail was made from, or the kernel modules on the image will not match its kernel. `build-iso.sh` keeps the sets it fetched in `/var/cache/daemonarchy-iso` and refuses sets whose `__FreeBSD_version` differs from the jail's. Empty that directory only after moving the jail to a new snapshot and rebuilding the packages.
+- **The snapshot directory moves.** `download.freebsd.org/snapshots/.../16.0-CURRENT` always holds the newest snapshot, but the image's sets must be the ones the jail was made from, or the kernel modules on the image will not match its kernel. The authoring cache retains those verified inputs. Select a separate `SET_CACHE_DIR` when moving snapshots, then create the matching jail and rebuild its modules. The image build refuses a different jail version or a source catalogue that does not match its kernel.
 - **pkg -r resolves accounts on the running system.** Installing into `$TARGET` from the live system gave every file owned by an account a package creates (`messagebus`, `polkitd`, `cups`, `colord`) to `root:wheel`, which broke D-Bus service activation and with it polkit prompts. `fix-ownership` re-applies each package's recorded owners, groups and modes inside the target after the install.
 - **pkg -r runs triggers on the running system.** The packages' triggers (`/usr/local/share/pkg/triggers`) call tools such as `glib-compile-schemas` by absolute path, which the live installer does not have, so an install was left without compiled GSettings schemas and GTK applications such as Files aborted at start. `rebuild-caches` runs them inside the target.
 - **The session's PATH is GNU first.** Omarchy's commands put GNU coreutils (`libexec/omarchy/gnubin`) ahead of FreeBSD's, so a FreeBSD-only flag such as `tail -r` fails when the command runs from the desktop even though it works in a plain shell. Test Daemonarchy's commands from a desktop terminal, or avoid the flags.

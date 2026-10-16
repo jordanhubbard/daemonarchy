@@ -19,6 +19,7 @@ set -eu
 JAIL=${JAIL:-16amd64}
 PTREE=${PTREE:-omarchyiso}
 SNAPSHOT_URL=${SNAPSHOT_URL:-https://download.freebsd.org/snapshots/amd64/16.0-CURRENT}
+SET_CACHE_DIR=${SET_CACHE_DIR:-/var/cache/daemonarchy-iso}
 OUTDIR=${OUTDIR:-/usr/local/poudriere/data/images}
 ABI=${ABI:-FreeBSD:16:amd64}
 ARCH=${ARCH:-amd64}
@@ -32,7 +33,7 @@ packages=/usr/local/poudriere/data/packages/$JAIL-$PTREE
 }
 jq -e '.schema == 1 and (.trees.ports.depth >= 1) and (.trees.src.depth >= 1)' "$CHECKOUT_CATALOG" >/dev/null
 stage=/var/tmp/daemonarchy-iso-stage
-cache=/var/cache/daemonarchy-iso
+cache=$SET_CACHE_DIR
 
 . "$here/origins.sh"
 
@@ -100,19 +101,14 @@ case "$live_python" in python3[0-9][0-9]) ;; *) echo 'Need one Python interprete
 chmod 0755 "$share/omarchy-wifi-enterprise"
 rm -rf "$extract"
 
-echo "==> Fetching the FreeBSD base and kernel sets"
+echo "==> Collecting the cached FreeBSD release sets"
 # The sets must be the snapshot the jail was made from, since the packages and
 # kernel modules on the image are built against it. $SNAPSHOT_URL always has
-# the newest snapshot, so the sets are fetched once and kept: after updating
-# the jail to a new snapshot, empty $cache to fetch that one.
-[ -f "$cache/MANIFEST" ] || fetch -q -o "$cache/MANIFEST" "$SNAPSHOT_URL/MANIFEST"
+# the newest snapshot, so the sets are fetched once and kept. Use a separate
+# SET_CACHE_DIR when moving to a new snapshot, retaining the older inputs.
+SET_CACHE_DIR="$cache" SNAPSHOT_URL="$SNAPSHOT_URL" sh "$here/scripts/cache-release-sets.sh"
 mkdir -p "$stage/overlay/usr/freebsd-dist"
 for set in base kernel lib32; do
-	want=$(awk -v f="$set.txz" '$1 == f { print $2 }' "$cache/MANIFEST")
-	if [ ! -f "$cache/$set.txz" ] || [ "$(sha256 -q "$cache/$set.txz")" != "$want" ]; then
-		fetch -q -o "$cache/$set.txz" "$SNAPSHOT_URL/$set.txz"
-	fi
-	[ "$(sha256 -q "$cache/$set.txz")" = "$want" ] || { echo "$set.txz checksum mismatch" >&2; exit 1; }
 	cp "$cache/$set.txz" "$stage/overlay/usr/freebsd-dist/"
 done
 cp "$cache/MANIFEST" "$stage/overlay/usr/freebsd-dist/"
