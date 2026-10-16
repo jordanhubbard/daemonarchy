@@ -299,6 +299,151 @@ space allowance, launcher/menu inclusion, and mount cleanup. Run
 These portable tests do not replace an installation and desktop launch on
 supported NVIDIA hardware.
 
+## Remote debugging on a test machine
+
+The development installer provides a root debug shell and a separately enabled,
+console-approved SSH listener. Opening either does not start installation or
+choose a target disk. See the [remote debug guide](docs/remote-agent-debug.md)
+for the full operator handoff and the [rescue console guide](docs/rescue-console.md)
+for recovery after an interrupted installation or failed graphical startup.
+
+### Open the shell and establish networking
+
+At the USB welcome screen, choose **Remote agent debug**. The network screen
+also offers **Open debug shell**. Both open a local shell even without a working
+network. `help` or `remote-debug help` prints the available commands; `exit`
+returns to the screen that opened it.
+
+Start by identifying the hardware and network interfaces:
+
+```sh
+kenv smbios.system.product
+pciconf -lv
+usbconfig
+ifconfig -a
+sysctl net.wlan.devices
+route -n get default
+```
+
+Use Ethernet initially when available. `dhclient ue0` requests an address on
+that interface; substitute the name actually shown by `ifconfig`. Wi-Fi can be
+configured through the installer's network form or with FreeBSD's
+`wpa_supplicant` and `dhclient`. An associated wireless interface, a DHCP address,
+a default route and working DNS are separate checks. `wpa_cli -i wlan0 status`
+shows authentication state without printing the configured password. Do not
+print or attach the supplicant configuration, which contains credentials.
+
+Check package-server access with a bounded probe:
+
+```sh
+timeout 8 fetch -T 5 -o /dev/null https://pkg.FreeBSD.org/
+```
+
+The outer timeout also bounds DNS resolution. A usable LAN address allows
+remote debugging even when internet access, DNS or HTTPS is failing. Inspect
+`/etc/resolv.conf`, the DHCP lease and the system date before changing network
+settings. If the debug connection itself uses Wi-Fi, restarting that interface
+interrupts access; arrange a local operator or an alternate connection first.
+
+### Enable access and pair the agent
+
+At the physical console, run `remote-debug listen` for port 2222, or
+`remote-debug listen 2207` for another port. Confirm the enable prompt. The
+screen shows usable IPv4 addresses and a freshly generated server fingerprint.
+The listener requires FreeBSD, an unlocked root account and a usable address.
+The shell alone does not enable it.
+
+On the agent's machine, create a temporary session key and show its fingerprint
+to the operator:
+
+```sh
+pair_dir=$(mktemp -d)
+ssh-keygen -q -t ed25519 -N '' -f "$pair_dir/operator"
+ssh-keygen -l -f "$pair_dir/operator.pub"
+ssh -i "$pair_dir/operator" -o IdentitiesOnly=yes \
+  -o UserKnownHostsFile="$pair_dir/known_hosts" \
+  -p 2222 root@MACHINE_IP
+```
+
+Replace `MACHINE_IP` and the port with the displayed values. Compare the server
+fingerprint before accepting its host key. The operator then compares the
+agent-key fingerprint on the local console and types `y` only for that key.
+Authentication can wait up to two minutes for this approval. A rejected key
+stays rejected until the listener is stopped and restarted. Reuse the approved
+key for subsequent SSH and SCP commands in this session (`scp` uses uppercase
+`-P` for the port).
+
+The approved connection is a root shell. Start with read-only hardware, network
+and disk inventory. Installation remains a separate action requiring an agreed
+target disk or partition. To operate the installer forms remotely, use
+`ssh -t` and `/usr/local/libexec/daemonarchy-installer/launch`.
+
+### Collect evidence and keep the console readable
+
+Capture `dmesg -a` before changing verbosity. A diagnostic preview can enable
+verbose boot for filming early probes; kernel and driver messages can then
+overwrite an interactive screen. For the current boot, use:
+
+```sh
+dmesg -a > /tmp/daemonarchy-debug-kernel.log
+sysctl debug.bootverbose=0
+sysctl kern.consmute=1
+```
+
+Kernel messages remain available through `dmesg`. Restore console output with
+`sysctl kern.consmute=0` before trying to capture a panic on screen. These are
+runtime settings; they do not change the installed system's loader settings.
+Some driver warnings are independent of verbose boot, so reducing
+`debug.bootverbose` alone may not stop them.
+
+Installation output is `/tmp/daemonarchy-install.log` on the live system when
+an installation has started. Development installations also retain
+`/var/log/daemonarchy-install.log` and `/var/db/daemonarchy/install` on the
+target. The active debug server's log is
+`/var/run/daemonarchy-remote-debug/sshd.log`; retrieve it before stopping the
+listener. Keep passwords, private keys and wireless credential files out of
+shared reports.
+
+### Finish or reconnect
+
+The current console shows pairing information but does not yet show reliable
+connection, activity or completion feedback. The [1.1 roadmap](ROADMAP.md)
+requires those states. Until implemented, the agent should tell the operator
+when connected, give brief activity updates and explicitly say when the work is
+finished. A short SSH command closing its connection does not mean the overall
+debugging task has finished.
+
+Once the agent reports completion, press **Enter** or **Ctrl-C** in the local
+listener console. This closes its listener and SSH connections, deletes session
+host keys and approvals, and returns to the debug shell. Rebooting also clears
+them. A new listener session requires pairing again. Stopping access does not
+undo changes already made by the agent.
+
+New installed systems expose the same commands through `daemonarchy-debug`
+(`daemonarchy-debug shell`, `listen`, or `help`). No debug listener starts
+automatically, and temporary pairing does not enable the normal SSH service or
+copy approved keys into the installed system.
+
+### When the screen or keyboard is unusable
+
+Use the guide's [private headless rescue procedure](docs/remote-agent-debug.md#keyboard-free-rescue-image)
+to build a separate USB image with one preauthorized operator public key.
+That mode uses Ethernet DHCP and a dedicated SSH server on port 2222, blocks
+T2 BCE and desktop GPU autoloading, and ignores unattended installation media.
+Keep the overlay and image private: they contain a rescue server private key.
+The operator's private key stays on the agent's machine. This mode provides
+access for diagnosis; it does not qualify blocked drivers or the desktop.
+
+On an installed system, the loader setting `set daemonarchy_rescue=YES` followed
+by `boot` skips the desktop GPU service and SDDM. Configured networking and SSH
+can start first. This does not enable normal SSH if it was declined at install
+time, or prevent unrelated device-driver panics.
+
+Portable prompt/address tests are `bash tests/remote-debug-cli.sh` and
+`bash tests/remote-debug-network.sh`. Native connection, approval, rejection,
+custom-port, reconnect and shutdown evidence belongs in the
+[remote debug validation record](docs/testing-1.1-remote-debug.md).
+
 ## Releasing
 
 ### Packages
