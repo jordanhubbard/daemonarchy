@@ -1,0 +1,68 @@
+# shellcheck shell=bash
+# Read firmware state and admit the public payload before partition writes.
+secureboot_detect_enforcement() {
+  local state byte
+  if [[ $(sysctl -n machdep.bootmethod) != UEFI ]]; then
+    printf 'false\n'; return
+  fi
+  state=$(kenv daemonarchy_secureboot 2>/dev/null) || state=''
+  case "$state" in
+    1) printf 'true\n'; return ;;
+    0) printf 'false\n'; return ;;
+  esac
+  byte=$(efivar -p -N -b -n 8be4df61-93ca-11d2-aa0d-00e098032b8c-SecureBoot 2>/dev/null |
+    od -An -tu1 | tr -d ' \n') || return 1
+  case "$byte" in
+    1) printf 'true\n' ;;
+    0) printf 'false\n' ;;
+    *) echo 'Cannot determine firmware Secure Boot state; installation has not changed any disks.' >&2; return 1 ;;
+  esac
+}
+
+secureboot_payload_prepare() {
+  secureboot_enforced=$(secureboot_detect_enforcement) || return
+  secureboot_payload="$ISO_SHARE/secureboot"
+  efi_pool_selector=false
+  if [[ ! -d $secureboot_payload ]]; then
+    if $secureboot_enforced; then
+      echo 'Firmware Secure Boot is enabled but the signed installer payload is missing.' >&2
+      return 1
+    fi
+    return 0
+  fi
+  # This validates both the signed archive and the boot files on the live ISO.
+  /usr/local/bin/python3.12 "$secureboot_payload/maintenance.py" verify \
+    "$secureboot_payload/bundle.txz" --signature "$secureboot_payload/bundle.txz.sig" \
+    --certificate "$secureboot_payload/certificate.pem" --root / || return
+  efi_pool_selector=true
+}
+
+secureboot_install_profile() {
+  local target=$1
+  $efi_pool_selector || return 0
+  /usr/local/bin/python3.12 "$secureboot_payload/maintenance.py" install \
+    "$secureboot_payload/bundle.txz" --signature "$secureboot_payload/bundle.txz.sig" \
+    --certificate "$secureboot_payload/certificate.pem" --root "$target" || return
+  mkdir -p "$target/usr/local/sbin" "$target/usr/local/share/daemonarchy-secureboot"
+  cp "$secureboot_payload/certificate.pem" "$target/usr/local/share/daemonarchy-secureboot/certificate.pem"
+}
+
+secureboot_verify_target() {
+  $efi_pool_selector || return 0
+  /usr/local/bin/python3.12 "$secureboot_payload/maintenance.py" verify \
+    "$secureboot_payload/bundle.txz" --signature "$secureboot_payload/bundle.txz.sig" \
+    --certificate "$secureboot_payload/certificate.pem" --root "$1"
+}
+
+secureboot_lock_modules() {
+  $efi_pool_selector || return 0
+  local packages package
+  # A moving pkg repository must not independently replace files covered by the
+  # signed release inventory. New module bytes need a matching staged bundle.
+  packages=$(pkg_target query -a '%n %Fp' |
+    awk '$2 ~ /^\/boot\/(kernel|modules)\/.*\.ko$/ { print $1 }' | sort -u) || return
+  while IFS= read -r package; do
+    [[ -n $package ]] || continue
+    pkg_target lock -y "$package" || return
+  done <<<"$packages"
+}

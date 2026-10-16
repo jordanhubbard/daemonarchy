@@ -30,18 +30,35 @@ fi
 ISO=$(realpath "${1:?usage: test-qemu.sh daemonarchy.iso}")
 WORK=${WORK:-$PWD/daemonarchy-qemu}
 OVMF=${OVMF:-/usr/share/ovmf/OVMF.fd}
+UEFI_CODE=${UEFI_CODE:-}
+UEFI_VARS_TEMPLATE=${UEFI_VARS_TEMPLATE:-}
+UEFI_SECUREBOOT=${UEFI_SECUREBOOT:-false}
+VIRGL_RENDER_NODE=${VIRGL_RENDER_NODE:-}
+VNC_LISTEN=${VNC_LISTEN:-127.0.0.1:11}
 BOOT_MODE=${BOOT_MODE:-uefi}
 SSH_PORT=${SSH_PORT:-2222}
+MEM=${MEM:-4G}
 PASSWORD=daemonarchy
 VM_TIMEOUT=${VM_TIMEOUT:-7200}
 case "$VM_TIMEOUT" in ''|*[!0-9]*) echo 'VM_TIMEOUT must be positive seconds' >&2; exit 1 ;; esac
 [ "$VM_TIMEOUT" -gt 0 ] || { echo 'VM_TIMEOUT must be positive seconds' >&2; exit 1; }
 
 case "$BOOT_MODE" in
-	uefi) [ -r "$OVMF" ] || { echo "UEFI firmware not found: $OVMF" >&2; exit 1; } ;;
+	uefi)
+		if [ -n "$UEFI_CODE$UEFI_VARS_TEMPLATE" ]; then
+			[ -r "$UEFI_CODE" ] && [ -r "$UEFI_VARS_TEMPLATE" ] || {
+				echo 'UEFI_CODE and UEFI_VARS_TEMPLATE must both name readable pflash inputs' >&2; exit 1;
+			}
+		else
+			[ -r "$OVMF" ] || { echo "UEFI firmware not found: $OVMF" >&2; exit 1; }
+		fi ;;
 	bios) ;; # QEMU's default SeaBIOS firmware.
 	*) echo "BOOT_MODE must be uefi or bios" >&2; exit 1 ;;
 esac
+case "$UEFI_SECUREBOOT" in true|false) ;; *) echo 'UEFI_SECUREBOOT must be true or false' >&2; exit 1 ;; esac
+if [ "$UEFI_SECUREBOOT" = true ] && { [ "$BOOT_MODE" != uefi ] || [ -z "$UEFI_CODE" ]; }; then
+	echo 'Enforced Secure Boot tests require UEFI pflash code and enrolled variables' >&2; exit 1
+fi
 
 # Emulated guests get a CPU model without AVX: QEMU's emulation of AVX2 has
 # faulted inside ZFS's SHA-256 routines. With KVM, use the host's CPU.
@@ -68,6 +85,7 @@ trap cleanup EXIT
 trap 'exit 130' INT
 trap 'exit 143' TERM HUP
 truncate -s 40G disk.img
+if [ -n "$UEFI_CODE" ]; then cp "$UEFI_VARS_TEMPLATE" OVMF_VARS.fd; fi
 
 cat >daemonarchy-install.conf <<EOF
 disk=vtbd0
@@ -103,11 +121,24 @@ vm() {
 	log=$1
 	shift
 	if [ "$BOOT_MODE" = uefi ]; then
-		set -- -bios "$OVMF" "$@"
+		if [ -n "$UEFI_CODE" ]; then
+			set -- -global driver=cfi.pflash01,property=secure,value=on \
+				-drive "if=pflash,format=raw,unit=0,readonly=on,file=$UEFI_CODE" \
+				-drive if=pflash,format=raw,unit=1,file=OVMF_VARS.fd "$@"
+		else
+			set -- -bios "$OVMF" "$@"
+		fi
+	fi
+	if [ -n "$VIRGL_RENDER_NODE" ]; then
+		set -- -device virtio-vga-gl -display "egl-headless,rendernode=$VIRGL_RENDER_NODE" \
+			-vnc "$VNC_LISTEN" -device qemu-xhci,id=desktop-usb \
+			-device usb-tablet,bus=desktop-usb.0 "$@"
+	else
+		set -- -display none "$@"
 	fi
 	# shellcheck disable=SC2086
-	qemu-system-x86_64 -machine q35 $accel -smp 4 -m 4G \
-		-display none -no-reboot -monitor none -qmp "unix:$log.qmp.sock,server=on,wait=off" \
+	qemu-system-x86_64 -machine q35,smm=on $accel -smp 4 -m "$MEM" \
+		-no-reboot -monitor none -qmp "unix:$log.qmp.sock,server=on,wait=off" \
 		-serial "file:$log" \
 		-drive file=disk.img,if=virtio,format=raw,cache=unsafe "$@" >"$log.qemu" 2>&1 &
 	pid=$!
@@ -188,6 +219,13 @@ as_root() { echo $PASSWORD | sudo -S -p "" "\$@"; }
 check "sudo works for tester" "as_root true"
 check "booted using $BOOT_MODE firmware" "sysctl -n machdep.bootmethod | grep -ix $BOOT_MODE"
 check "BIOS boot partition present" "gpart show vtbd0 | grep -q freebsd-boot"
+if [ "$UEFI_SECUREBOOT" = true ]; then
+	check "firmware Secure Boot enabled" "test \$(as_root efivar -p -N -b -n 8be4df61-93ca-11d2-aa0d-00e098032b8c-SecureBoot | od -An -tu1 | tr -d '[:space:]') = 1"
+	check "verified kernel selected" "kenv kernelname | grep -q '/boot/kernel.secure/kernel'"
+	check "verified policy loaded, active, enforcing and locked" "sysctl -n security.mac.veriexec.state | grep -q 'loaded active enforce locked'"
+else
+	check "normal kernel has no module policy" "! sysctl -n security.mac.veriexec.state 2>/dev/null"
+fi
 if [ "$ENCRYPT_INSTALLATION" = true ]; then
 	check "ZFS boots from the GELI provider" "as_root zpool status -P | grep -q '/dev/vtbd0p3.eli'"
 fi
@@ -213,6 +251,9 @@ exit \$failures
 EOF
 guest "sh -s" <"$SCRIPT_DIR/tests/installed-desktop.sh" || status=1
 guest "sh -s -- $INSTALL_PORTS $INSTALL_SRC" <"$SCRIPT_DIR/tests/installed-checkouts.sh" || status=1
+if [ -n "${POST_INSTALL_CHECK:-}" ]; then
+	"$POST_INSTALL_CHECK" "$WORK" "$SSH_PORT" || status=1
+fi
 guest "echo $PASSWORD | sudo -S -p '' shutdown -p now" >/dev/null 2>&1 || true
 wait "$booter" 2>/dev/null || true
 if [ "$status" -ne 0 ]; then

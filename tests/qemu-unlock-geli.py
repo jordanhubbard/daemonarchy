@@ -7,6 +7,7 @@ The fixed test password is read from stdin and is never logged.
 """
 import errno
 import json
+import os
 from pathlib import Path
 import re
 import socket
@@ -25,7 +26,13 @@ def unlock(socket_path, mode, serial_log, password):
         return 2
     with socket.socket(socket.AF_UNIX) as connection:
         connection.settimeout(5)
-        connection.connect(socket_path)
+        path = Path(socket_path).resolve()
+        previous = Path.cwd()
+        try:
+            os.chdir(path.parent)
+            connection.connect(path.name)
+        finally:
+            os.chdir(previous)
         stream = connection.makefile("rwb", buffering=0)
         json.loads(stream.readline())
 

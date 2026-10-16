@@ -286,6 +286,15 @@ snapshots under `/var/db/daemonarchy/install`, and install recovery before
 the desktop package transaction. See the [rescue console guide](docs/rescue-console.md)
 for the password gate, boot monitor, interrupted-install behavior and tests.
 
+NVIDIA installation enables both `linux` and `linux64` in the live kernel
+before disk writes. The `linux_base` pre-install script checks
+`kern.features.linux64` on that running kernel, including when using `pkg -r`.
+Deferring Linux compatibility until the installed system boots is too late.
+The cache repair step also repeats Linux ldconfig/GIO setup inside the target.
+On an older installer, `kldload linux64` from its root shell enables the missing
+ABI; do not rerun the whole installer over an existing target merely to retry
+the package transaction.
+
 The installer offers CUDA and cudalab only when the detected display GPU is
 supported by the image's NVIDIA driver table (including mixed-GPU machines).
 The option defaults to Skip; unattended installs must set `install_cuda=true`
@@ -529,6 +538,72 @@ Secure Boot development is documented separately in
 [native development evidence](docs/testing-1.1-secureboot.md). Current published
 images do not implement that production path. Its private signing key must stay
 off build payloads and public images.
+
+The integration build accepts **public artifacts only**:
+
+```sh
+sudo env SECUREBOOT_BUNDLE=/path/to/signed-boot.txz \
+  SECUREBOOT_SIGNATURE=/path/to/signed-boot.txz.sig \
+  SECUREBOOT_CERTIFICATE=/path/to/public-certificate.pem \
+  ./build-iso.sh
+```
+
+Prepare and sign those artifacts using the separate boot-tree workflow in
+`secureboot/README.md`. The signing key is not an input to `build-iso.sh` and
+must stay on its protected signing host. Keep disposable development keys and
+images private; only the production public certificate belongs in a release.
+The post-build hook validates the archive, stock kernel and actual live boot
+files before ISO creation. The installer repeats validation before partition
+writes, installs the profile after the base/rescue setup, and checks the target
+again after package installation. It preserves other EFI loaders and never
+changes firmware PK, KEK, db or dbx.
+
+With the payload present, firmware-enforced UEFI selects the verified kernel;
+UEFI with enforcement off and BIOS use the stock kernel. The signed EFI loader
+also follows the installed pool's active boot environment through its numeric
+GUID. Builds without this payload retain the older loader/explicit dataset
+selection and cannot qualify Secure Boot. Packages owning boot modules are
+locked to the signed inventory; ordinary applications remain upgradeable.
+
+For an installed verified profile, same-snapshot maintenance is explicit:
+
+```sh
+sudo daemonarchy-secureboot stage update.txz --signature update.txz.sig \
+  --certificate /usr/local/share/daemonarchy-secureboot/certificate.pem \
+  --environment update-1.1-test
+sudo daemonarchy-secureboot activate update.txz --signature update.txz.sig \
+  --certificate /usr/local/share/daemonarchy-secureboot/certificate.pem \
+  --environment update-1.1-test
+```
+
+Staging never activates or reboots. Activation rechecks the candidate, then
+selects it for the next manual reboot; the previous environment is retained.
+A failed stage stays unactivated and is retained for diagnosis. Changing a
+driver needs the matching signed inventory and native package in that candidate;
+do not overwrite pkg-owned driver files or unlock them in the running profile.
+Base/ABI transitions, certificate rotation and an EFI loader-protocol change
+need a separately qualified migration. These integration commands are still
+under native installation/update qualification; they are not in preview.13.
+
+For enforced QEMU installation tests, use separate fresh work directories and
+persistent variables cloned from an already enrolled disposable template:
+
+```sh
+BOOT_MODE=uefi UEFI_SECUREBOOT=true \
+  UEFI_CODE=/path/to/OVMF_CODE_4M.secboot.fd \
+  UEFI_VARS_TEMPLATE=/path/to/enrolled-test-vars.fd \
+  WORK=/path/to/fresh-test SSH_PORT=22461 sh test-qemu.sh private-test.iso
+```
+
+The harness keeps one private variable store across installation and reboot,
+then checks real firmware state, verified kernel selection and locked policy.
+Add `ENCRYPT_INSTALLATION=true` for GELI. For actual graphical checks, set
+`VIRGL_RENDER_NODE=/dev/dri/renderD128`, an unused loopback `VNC_LISTEN`, and
+`POST_INSTALL_CHECK="$PWD/tests/qemu-desktop.py"` on a qualified Linux/VirGL
+worker; the callback performs password login (or encrypted-install autologin),
+keyboard and pointer input, retaining screenshots and a JSON receipt. Services
+running over SSH alone do not qualify graphics. `MEM=8G` can give that guest
+more memory. Native firmware/graphics test results must still be recorded.
 
 ### Building live checkout packages
 

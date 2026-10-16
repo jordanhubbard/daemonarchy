@@ -66,3 +66,10 @@ kern.panic_reboot_wait_time="-1"
 debug.trace_on_panic="1"
 EOF
 cp "$world/usr/local/share/daemonarchy-installer/brand-daemonarchy.lua" "$world/boot/lua/"
+
+secureboot_payload="$world/usr/local/share/daemonarchy-installer/secureboot"
+if [ -d "$secureboot_payload" ]; then
+    /usr/local/bin/python3.12 "$secureboot_payload/maintenance.py" install \
+        "$secureboot_payload/bundle.txz" --signature "$secureboot_payload/bundle.txz.sig" \
+        --certificate "$secureboot_payload/certificate.pem" --root "$world" || exit 1
+fi

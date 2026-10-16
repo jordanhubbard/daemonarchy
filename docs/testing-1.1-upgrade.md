@@ -62,3 +62,32 @@ Final acceptance still requires the exact final 1.1 packages and the Secure
 Boot signed-update/recovery path, including an injected failure on that path.
 This preliminary application-package transaction does not qualify a base/kernel
 upgrade, physical hardware or graphics.
+
+## Enforced same-snapshot boot-maintenance checks, 2026-10-16
+
+These checks used a separate private integration installation on the October
+12 snapshot, not the older 1.0.1 base above. The installed firmware entry uses
+the numeric pool selector. Its original policy kernel had a real desktop
+process-inspection panic; the signed v8 bundle contains the fix described in
+[the Secure Boot record](testing-1.1-secureboot.md).
+
+| Actual native installed-guest check | Result |
+| --- | --- |
+| Stage authenticated v8 bundle into `qa-process-fixed-v8` | All present boot/module fingerprints validated; candidate unmounted; original selection retained |
+| Validate/activate candidate and reboot | Candidate ZFS root and fixed kernel selected, actual firmware enforcement and locked policy confirmed |
+| Automatic graphical startup after reboot | SDDM password login, Hyprland input, native Chromium rendering and OctoPkg UI passed |
+| Stage correctly signed bundle with deliberately incorrect VirtIO module fingerprint | Failed with `Signed fingerprint mismatch: boot/modules/virtio_gpu_drm.ko`; failed candidate unmounted and retained, healthy bootfs unchanged |
+| Activate previous `default` environment and reboot | Original kernel hash and rescue setting restored; locked policy remained active and SSH recovery worked |
+| Re-activate v8 and reboot | Fixed environment, enforced policy and automatic greeter restored |
+| Shared home sentinel through rollback and return | Retained unchanged |
+
+The positive v8 bundle SHA-256 is
+`c78c09a9eda0701eef28fe71e24a5130fbe159df1c1ee751acac5c43e82a1a64`.
+It includes the authenticated maintenance helper as well as the managed boot
+files. The negative bundle was intentionally signed with the development
+authority, so rejection exercised installed driver validation rather than an
+invalid outer signature. The failed candidate was never activated.
+
+These results qualify the tested development-key same-snapshot transaction.
+They do not qualify production enrollment, a base/ABI migration, the exact
+final image, or the missing physical display/upgrade matrix.

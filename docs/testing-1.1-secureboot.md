@@ -194,3 +194,51 @@ check against a mismatched older snapshot.
 These are still development-key and disposable UFS/VM checks. Production
 signing, installer integration, enforced ZFS/GELI installation and signed
 update/recovery qualification remain open.
+
+## Installed ZFS profile and desktop regression, 2026-10-16
+
+A private development-key integration ISO reached installed ZFS roots with
+enforcement enabled, both unencrypted and GELI-encrypted. The latter required
+the real unlock prompt. These first runs failed the desktop check: ordered
+graphics startup omitted VirtIO from its allowlist. After correcting that
+service in a disposable copy, SDDM exposed a kernel panic in the upstream
+userland-label process-debug hook when a desktop helper read another process
+environment. These failures are retained; neither installation run is a fully
+passing final-image test.
+
+The module-only profile now leaves ordinary process inspection to FreeBSD's
+base permissions instead of invoking that unrelated userland-label hook.
+Kernel/module verification and the explicit protected-memory/policy-control
+checks remain enforced. The full upstream policy is unchanged. A native
+child-process environment-read regression was added to `runtime-probe.c`.
+
+The v8 policy kernel SHA-256 is
+`2c8af43f2663e4e434e4eae605002868e1c8cc24a60dd0f21c79e98a283f21cb`.
+Its signed UFS test image SHA-256 is
+`a21bd14bd4d366fbec2345041bec401488679629082fb0d685033a0c36402cdc`.
+Actual enforced UEFI, disabled UEFI and BIOS boots passed again, including
+the process-environment regression and all earlier enforcement probes.
+
+The signed v8 maintenance bundle was staged, validated and activated in the
+disposable installed plain-ZFS guest. Reboot selected the new environment and
+kernel with firmware enforcement and `loaded active enforce locked` policy.
+Trusted module load/unload and all five runtime probes passed there too.
+With the service correction retained in that candidate, a subsequent reboot
+automatically started SDDM. QEMU keyboard input authenticated the tester user;
+the callback verified Hyprland's 1280x800 monitor, no nonempty configuration
+errors, desktop panel, a terminal opened by keyboard, absolute pointer input,
+Chromium rendering the requested data page, and the OctoPkg graphical UI.
+Screenshots were captured inside the actual Wayland compositor because QMP
+has no CPU screenshot surface for this EGL/GL scanout.
+
+The signed-CD path also needed a loader filesystem fix: ISO dot records without
+Rock Ridge alternate names must resolve `.` and `..`, and stat fields must be
+initialized. Otherwise verified Lua cannot locate the adjacent manifest. A
+private diagnostic ISO with the corrected EFI loader booted the installations
+above. Its untrusted-loader and altered-kernel negative tests both rejected
+the affected component before userland. This diagnostic ISO mixed test builds;
+a coherent fresh integration image remains required.
+
+The update, injected-driver-failure and rollback observations are recorded in
+[the upgrade record](testing-1.1-upgrade.md). Production-authority signing,
+fresh complete image tests and physical enrollment remain separate gates.

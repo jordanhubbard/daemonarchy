@@ -21,6 +21,7 @@ MANAGED = {
     "boot/manifest", "boot/manifest.sig", "boot/manifest.certs",
     "boot/runtime.manifest", "boot/runtime.manifest.sig", "boot/runtime.manifest.certs",
     "boot/lua/local.lua", "boot/lua/brand-daemonarchy.lua", "boot/daemonarchy-secureboot.conf",
+    "usr/local/sbin/daemonarchy-secureboot",
 }
 
 
@@ -145,7 +146,7 @@ def install(root, staged, metadata):
         if temporary.exists() or temporary.is_symlink():
             raise ValueError(f"Pending temporary file already exists: {temporary}")
         shutil.copyfile(staged / name, temporary)
-        temporary.chmod(0o644)
+        temporary.chmod(0o755 if name == "usr/local/sbin/daemonarchy-secureboot" else 0o644)
         os.replace(temporary, target)
     verify_tree(root, metadata)
 
@@ -156,10 +157,45 @@ def output(*command):
 
 def native_root():
     if os.uname().sysname != "FreeBSD" or os.geteuid() != 0:
-        raise ValueError("Boot environment operations require root on native FreeBSD")
+        raise ValueError("This command requires root on native FreeBSD")
+
+
+def status():
+    native_root()
+    method = output("sysctl", "-n", "machdep.bootmethod")
+    kernel = output("kenv", "kernelname")
+    try:
+        policy = subprocess.check_output(
+            ["sysctl", "-n", "security.mac.veriexec.state"], text=True,
+            stderr=subprocess.DEVNULL).strip()
+    except subprocess.CalledProcessError:
+        policy = "absent"
+    firmware = "unavailable (BIOS)"
+    if method == "UEFI":
+        probe = subprocess.run([
+            "efivar", "-p", "-N", "-b", "-n",
+            "8be4df61-93ca-11d2-aa0d-00e098032b8c-SecureBoot"],
+            stdout=subprocess.PIPE, stderr=subprocess.PIPE,
+            env=dict(os.environ, LC_ALL="C"))
+        if probe.returncode != 0:
+            if b"No such file or directory" not in probe.stderr:
+                raise ValueError("Cannot read firmware Secure Boot state")
+            firmware = "unavailable (no SecureBoot variable)"
+        else:
+            if probe.stdout not in (b"\x00", b"\x01"):
+                raise ValueError("Firmware returned an unknown Secure Boot state")
+            firmware = "enforced" if probe.stdout == b"\x01" else "disabled"
+    print(f"Firmware Secure Boot: {firmware}\nKernel: {kernel}\nModule policy: {policy}")
+    if firmware == "enforced" and (
+            not {"loaded", "active", "enforce", "locked"}.issubset(policy.split()) or
+            not kernel.endswith("/boot/kernel.secure/kernel")):
+        raise ValueError("Enforced firmware did not boot the complete verified profile")
 
 
 def main(args):
+    if args.command == "status":
+        status()
+        return
     with tempfile.TemporaryDirectory(prefix="daemonarchy-bundle-") as name:
         staged = Path(name)
         metadata = unpack(args.bundle.resolve(strict=True), args.signature.resolve(strict=True),
@@ -200,14 +236,16 @@ def main(args):
 
 if __name__ == "__main__":
     parser = argparse.ArgumentParser(description=__doc__)
-    parser.add_argument("command", choices=("verify", "install", "stage", "activate"))
-    parser.add_argument("bundle", type=Path)
-    parser.add_argument("--signature", required=True, type=Path)
-    parser.add_argument("--certificate", required=True, type=Path,
+    parser.add_argument("command", choices=("status", "verify", "install", "stage", "activate"))
+    parser.add_argument("bundle", type=Path, nargs="?")
+    parser.add_argument("--signature", type=Path)
+    parser.add_argument("--certificate", type=Path,
                         help="trusted public certificate obtained independently of the bundle")
     parser.add_argument("--root", type=Path, default=Path("/"))
     parser.add_argument("--environment")
     args = parser.parse_args()
+    if args.command != "status" and not all((args.bundle, args.signature, args.certificate)):
+        parser.error("A bundle, --signature and --certificate are required")
     if args.command in ("stage", "activate") and not args.environment:
         parser.error("--environment is required")
     try:

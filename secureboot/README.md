@@ -21,6 +21,10 @@ control, including for root. Updates must use another boot environment rather
 than overriding the running policy.
 The kernel also refuses to start userland without a verified manifest handoff.
 Without this option, upstream behavior is retained.
+Process inspection also retains base FreeBSD permissions: this profile has
+kernel/module fingerprints, not user-program TRUSTED/NOTRACE labels. Its
+regression probe reads a child process environment, matching the desktop path
+that exposed an unlocked-vnode panic in the upstream userland-label hook.
 
 The EFI loader must enable `WITH_LOADER_VERIEXEC_PASS_MANIFEST` and verify a
 signed runtime manifest before passing its digest to the kernel. Lua's module
@@ -147,7 +151,8 @@ the separate native serial-log checks cover those cases.
 ## Maintenance bundle development
 
 `bundle.py` creates an authoring-side archive and detached RSA/SHA-256 signature
-from an already signed boot tree. The archive contains only managed boot files;
+from an already signed boot tree. The archive contains managed boot files and
+the authenticated maintenance helper;
 the stock kernel and pkg-owned drivers stay in their original payloads.
 `prepare-boot-tree.sh SET_CACHE BUILD_DIRECTORY FRESH_STAGING_ROOT` prepares
 that tree from MANIFEST-checked release sets, the matching build and the
@@ -165,6 +170,10 @@ It never changes the active environment. Activation revalidates the mounted
 environment and requires the EFI pool selector before calling `bectl activate`.
 Neither command reboots. Failed staging retains the candidate for diagnosis
 and leaves the original boot selection unchanged.
+
+`daemonarchy-secureboot status` takes no archive arguments. It reads the actual
+firmware SecureBoot variable, selected kernel and policy state; enforced
+firmware with an incomplete profile is an error. It requires root on FreeBSD.
 
 These tools are not installed or exposed to users yet. Native signed update,
 injected failure and rollback tests remain required. This format covers

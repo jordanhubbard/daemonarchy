@@ -105,7 +105,29 @@
  	manifest_prefix = kern_getenv("veriexec.manifest_prefix");
 --- a/sys/security/mac_veriexec/mac_veriexec.c
 +++ b/sys/security/mac_veriexec/mac_veriexec.c
-@@ -397,6 +397,9 @@
+@@ -323,6 +323,13 @@
+ static int
+ mac_veriexec_proc_check_debug(struct ucred *cred, struct proc *p)
+ {
++#ifdef DAEMONARCHY_MODULE_POLICY
++	/* Only kernel files have fingerprints in this profile. Ordinary process
++	 * inspection retains the base system's permission checks. */
++	(void)cred;
++	(void)p;
++	return (0);
++#else
+ 	int error, flags;
+ 
+ 	/* If we are not enforcing veriexec, nothing for us to check */
+@@ -337,6 +344,7 @@
+ 	MAC_VERIEXEC_DBG(4, "%s flags=%#x error=%d", __func__, flags, error);
+ 
+ 	return (error);
++#endif
+ }
+ 
+ /**
+@@ -397,6 +405,9 @@
  		MAC_VERIEXEC_DBG(2, "fingerprint status is %d for dev %ju, "
  		    "file %ju.%ju\n", status, (uintmax_t)va.va_fsid,
  		    (uintmax_t)va.va_fileid, (uintmax_t)va.va_gen);
@@ -115,7 +137,7 @@
  		return (EAUTH);
  	}
  
-@@ -439,9 +442,14 @@
+@@ -439,9 +450,14 @@
  		 * Do not allow writing to memory or manipulating veriexec,
  		 * unless trusted
  		 */
@@ -130,7 +152,7 @@
  		MAC_VERIEXEC_DBG(4, "%s priv=%d error=%d", __func__, priv,
  		    error);
  		break;
-@@ -608,6 +616,20 @@
+@@ -608,6 +624,20 @@
  		return (0);
  
  	error = mac_veriexec_check_vp(cred, vp, accmode);

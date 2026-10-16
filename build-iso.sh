@@ -78,6 +78,10 @@ echo "==> Taking the setup form from the omarchy package"
 daemonarchy_pkg=$(ls "$share"/repo/All/daemonarchy-[0-9]*.pkg | head -n 1)
 VERSION=$(pkg query -F "$daemonarchy_pkg" '%v' | sed -e 's/,[0-9]*$//' -e 's/_[0-9]*$//')
 NAME=${NAME:-daemonarchy-$VERSION-$ARCH}
+image=$(printf '%s' "$NAME" | tr -cd '[:alnum:]')
+[ -n "$image" ] && [ "${#image}" -le 32 ] || {
+    echo 'NAME must produce an alphanumeric ISO volume label of 1..32 characters' >&2; exit 1;
+}
 echo "$VERSION${PREVIEW_LABEL:+ ($PREVIEW_LABEL)}" >"$share/version"
 echo "    Daemonarchy $VERSION"
 
@@ -100,6 +104,23 @@ live_python=$(pkg query -F "$omarchy_pkg" '%dn' | awk '/^python3[0-9]+$/ { print
 case "$live_python" in python3[0-9][0-9]) ;; *) echo 'Need one Python interpreter dependency for enterprise Wi-Fi' >&2; exit 1 ;; esac
 chmod 0755 "$share/omarchy-wifi-enterprise"
 rm -rf "$extract"
+
+# Only public, already signed artifacts belong on the authoring worker/image.
+# The private release key is never an input to this script.
+if [ -n "${SECUREBOOT_BUNDLE:-}${SECUREBOOT_SIGNATURE:-}${SECUREBOOT_CERTIFICATE:-}" ]; then
+    [ "$live_python" = python312 ] || { echo 'The verified boot helper requires Python 3.12' >&2; exit 1; }
+    for input in "${SECUREBOOT_BUNDLE:-}" "${SECUREBOOT_SIGNATURE:-}" "${SECUREBOOT_CERTIFICATE:-}"; do
+        [ -n "$input" ] && [ -s "$input" ] || { echo 'Set all three SECUREBOOT public artifact paths' >&2; exit 1; }
+    done
+    if grep -q 'PRIVATE KEY' "$SECUREBOOT_CERTIFICATE"; then
+        echo 'SECUREBOOT_CERTIFICATE must contain public material only' >&2; exit 1
+    fi
+    mkdir -p "$share/secureboot"
+    cp "$SECUREBOOT_BUNDLE" "$share/secureboot/bundle.txz"
+    cp "$SECUREBOOT_SIGNATURE" "$share/secureboot/bundle.txz.sig"
+    cp "$SECUREBOOT_CERTIFICATE" "$share/secureboot/certificate.pem"
+    cp "$here/secureboot/maintenance.py" "$share/secureboot/maintenance.py"
+fi
 
 echo "==> Collecting the cached FreeBSD release sets"
 # The sets must be the snapshot the jail was made from, since the packages and
@@ -146,7 +167,6 @@ printf '%s\n' "$live_python" >>"$stage/live-packages"
 cp "$here/scripts/live-image-excludes" "$stage/exclude"
 
 # poudriere image names (also the ISO volume label) are alphanumeric only.
-image=$(echo "$NAME" | tr -cd '[:alnum:]')
 rm -f "$OUTDIR/$NAME.iso.sha256"
 poudriere image -t hybridiso -j "$JAIL" -p "$PTREE" -n "$image" \
 	-h daemonarchy-installer -c "$stage/overlay" -f "$stage/live-packages" \

@@ -16,6 +16,7 @@ MANAGED = (
     "boot/manifest", "boot/manifest.sig", "boot/manifest.certs",
     "boot/runtime.manifest", "boot/runtime.manifest.sig", "boot/runtime.manifest.certs",
     "boot/lua/local.lua", "boot/lua/brand-daemonarchy.lua", "boot/daemonarchy-secureboot.conf",
+    "usr/local/sbin/daemonarchy-secureboot",
 )
 
 
@@ -49,6 +50,7 @@ def main(args):
         files[name] = digest(path)
     metadata = dict(schema=1, loader_protocol=1, release=args.release,
                     base_source=receipt["base_source"], osversion=1600027,
+                    build=receipt,
                     stock_kernel_sha256=digest(root / "boot/kernel/kernel"),
                     files=files)
     with tarfile.open(args.out, "w:xz") as archive:
@@ -60,7 +62,8 @@ def main(args):
         def normalize(member):
             member.uid, member.gid = 0, 0
             member.uname, member.gname = "root", "wheel"
-            member.mode, member.mtime = 0o644, receipt["build_epoch"]
+            member.mode = 0o755 if member.name == "usr/local/sbin/daemonarchy-secureboot" else 0o644
+            member.mtime = receipt["build_epoch"]
             return member
 
         for name in MANAGED:

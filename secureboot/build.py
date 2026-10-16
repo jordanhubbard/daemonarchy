@@ -55,7 +55,8 @@ def build(args):
     patch = Path(__file__).resolve().parent / "patches/module-policy.patch"
     loader_patch = patch.parent / "loader-rootpool.patch"
     optional_patch = patch.parent / "efi-optional-verification.patch"
-    patches = (patch, loader_patch, optional_patch)
+    cd9660_patch = patch.parent / "cd9660-verification.patch"
+    patches = (patch, loader_patch, optional_patch, cd9660_patch)
     for candidate in patches:
         subprocess.run(["git", "apply", "--numstat", str(candidate)],
                        check=True, stdout=subprocess.DEVNULL)
@@ -130,6 +131,7 @@ def build(args):
     receipt = dict(schema=1, base_source=BASE, source_patch_sha256=sha(patch),
                    loader_patch_sha256=sha(loader_patch),
                    optional_verification_patch_sha256=sha(optional_patch),
+                   cd9660_patch_sha256=sha(cd9660_patch),
                    recipe_sha256=sha(Path(__file__).resolve()), build_epoch=epoch,
                    kernel_config_sha256=sha(config), loader_options=OPTIONS,
                    trust_anchor_sha256=sha(ta), selftest_certificate_sha256=sha(vc),

@@ -35,7 +35,9 @@ source "$(dirname "$0")/checkout-options"
 source "$(dirname "$0")/cuda-options"
 source "$(dirname "$0")/install-diagnostics"
 source "$(dirname "$0")/rescue-setup"
+source "$(dirname "$0")/secureboot-options"
 checkout_options_prepare "$ISO_SHARE/checkouts.json"
+secureboot_payload_prepare
 if [[ -n ${wifi_enterprise_profile:-} ]]; then
   [[ ${net_mode:-} == wifi ]] || { echo 'An enterprise profile requires Wi-Fi mode' >&2; exit 1; }
   "$ISO_SHARE/omarchy-wifi-enterprise" --validate "$wifi_enterprise_profile"
@@ -160,6 +162,7 @@ done
 # account with the base shell; switch it to bash after packages are installed.
 create_recovery_accounts "$TARGET" "$username" "${full_name:-$username}" <<<"$password_hash"
 install_rescue_support "$TARGET" "$(dirname "$0")" /usr/local/sbin
+secureboot_install_profile "$TARGET"
 sync
 
 phase loader "Installing the boot loader"
@@ -171,9 +174,9 @@ mkdir -p "$TARGET/boot/efi"
 mount -t msdosfs "$efi_dev" "$TARGET/boot/efi"
 write_efi_loader "$TARGET" "$POOL" "$shared_install"
 if [[ $(sysctl -n machdep.bootmethod) == UEFI ]]; then
-  # Select the installed boot environment, including on shared disks with
-  # another FreeBSD pool. A pool-only rootdev cannot find its /boot files.
-  efi_environment=$(efi_root_environment "$POOL")
+  # The qualified loader follows the pool's active BE; older loaders need the
+  # existing explicit dataset selection, including on shared disks.
+  efi_environment=$(efi_root_environment "$POOL" "$efi_pool_selector")
   if ! efibootmgr -a -c -l "$efi_loader" -L Daemonarchy -e "$efi_environment"; then
     if $shared_install; then
       echo "Could not register the Daemonarchy EFI entry. Existing boot loaders are preserved; installation cannot finish." >&2
@@ -340,6 +343,7 @@ for gpu_package in "${gpu_exact_packages[@]}"; do
   pkg_target info -e "$gpu_package" || { echo "GPU package mismatch: $gpu_package" >&2; exit 1; }
 done
 pkg_target lock -y "${gpu_lock_packages[@]}"
+secureboot_lock_modules
 gpu_write_config "$TARGET"
 
 # Scripts written for Omarchy (and most found online) start with #!/bin/bash.
@@ -479,6 +483,7 @@ for package in daemonarchy omarchy sddm hyprland; do
   pkg_target info -e "$package" || { echo "Missing required desktop package: $package" >&2; exit 1; }
 done
 [[ -f $TARGET/var/lib/sddm/state.conf && -x $TARGET/usr/local/bin/bash ]]
+secureboot_verify_target "$TARGET"
 diagnostics_result complete 0
 log "Installation configuration complete; exporting the target pool."
 diagnostics_stop

@@ -136,7 +136,9 @@ def sign(args):
             build.get("loader_patch_sha256") != digest(
                 Path(__file__).resolve().parent / "patches/loader-rootpool.patch") or
             build.get("optional_verification_patch_sha256") != digest(
-                Path(__file__).resolve().parent / "patches/efi-optional-verification.patch")):
+                Path(__file__).resolve().parent / "patches/efi-optional-verification.patch") or
+            build.get("cd9660_patch_sha256") != digest(
+                Path(__file__).resolve().parent / "patches/cd9660-verification.patch")):
         raise ValueError("Boot inputs do not match the required verified build receipt")
     if args.module_inventory is not None and receipt.get("source_revision") != build.get("base_source"):
         raise ValueError("Module inventory and kernel source revisions differ")

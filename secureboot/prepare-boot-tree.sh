@@ -30,4 +30,7 @@ cp "$build/loader_normal.efi" "$root/boot/loader_normal.efi"
 cp "$here/boot/local.lua" "$root/boot/lua/local.lua"
 cp "$here/boot/daemonarchy-secureboot.conf" "$root/boot/"
 cp "$here/../overlay/usr/local/share/daemonarchy-installer/brand-daemonarchy.lua" "$root/boot/lua/"
-echo 'Prepared clean boot tree; no QA probes, userland or signing key included'
+mkdir -p "$root/usr/local/sbin"
+cp "$here/maintenance.py" "$root/usr/local/sbin/daemonarchy-secureboot"
+chmod 0755 "$root/usr/local/sbin/daemonarchy-secureboot"
+echo 'Prepared clean boot payload and maintenance helper; no QA probes or signing key included'
