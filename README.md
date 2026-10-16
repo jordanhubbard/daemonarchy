@@ -19,6 +19,9 @@ Write it to a USB stick with `dd if=daemonarchy-1.0.1-amd64.iso of=/dev/<usb-dev
 
 New to Daemonarchy? [Getting started](docs/getting-started.md) walks through writing the stick, installing, and your first hour on the desktop: Wi-Fi, sound, Bluetooth, updates, and what FreeBSD adds. To build an image yourself or work on Daemonarchy, see [HACKING.md](HACKING.md).
 
+Check the [hardware quirks](docs/hardware-quirks.md) for known boot blockers and
+diagnostic notes, including the MSI Raider 18 HX AI A2XWIG early installer reset.
+
 ## What FreeBSD adds
 
 Daemonarchy is the Omarchy desktop with FreeBSD underneath, and it puts FreeBSD's strengths in the Omarchy menu under **System > FreeBSD**:
