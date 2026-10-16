@@ -61,5 +61,8 @@ autoboot_delay="3"
 loader_logo="none"
 loader_brand="daemonarchy"
 kern.vty="vt"
+# Keep ordinary panic evidence visible during hardware qualification.
+kern.panic_reboot_wait_time="-1"
+debug.trace_on_panic="1"
 EOF
 cp "$world/usr/local/share/daemonarchy-installer/brand-daemonarchy.lua" "$world/boot/lua/"

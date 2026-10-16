@@ -127,6 +127,10 @@ when this rescue system shuts down; they are not installed on the target disk.
 Native boot/authentication testing is a separate gate from the helper's key and
 file-validation tests. A rescue boot with drivers blocked does not qualify those
 drivers or the graphical desktop.
+New live images retain ordinary panic output with
+`kern.panic_reboot_wait_time=-1` and `debug.trace_on_panic=1`. Firmware resets
+and faults before panic handling can still reboot immediately. Older images
+need these settings entered at the loader prompt when collecting a trace.
 The [QEMU rescue check record](testing-1.1-headless-rescue.md) covers key
 authentication, ignored unattended media and a target disk with zero writes.
 Audit private images with `tests/live-image-runtime.sh image.iso headless`;
