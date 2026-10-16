@@ -25,6 +25,9 @@ The native image and transferred authoring/test copies matched. It is
 - Published optional checkout feed:
   `checkouts-16-3ceb5f150bc1-08a6370a019a-v1`.
 
+The published optional checkout repository also passed native signature
+verification and actual download/installation of all three payload packages.
+
 The ISO uses public signed artifacts only. Signing keys remained on the
 protected authoring host. Post-build live-file, signature, stock-kernel and
 image-size audits passed. Both changed desktop ports passed native
@@ -43,11 +46,13 @@ the real loader passphrase. A launched test is not a passing result.
 | Firmware | Root | Optional checkouts | Result |
 | --- | --- | --- | --- |
 | Enforced UEFI | ZFS | Ports and source | Running |
-| Enforced UEFI | GELI/ZFS | Neither | Running |
-| BIOS | ZFS | Neither | Running |
-| BIOS | GELI/ZFS | Neither | Running |
+| Enforced UEFI | GELI/ZFS | Neither | Passed: installed boot, enforcement, native desktop policy and GUI |
+| BIOS | ZFS | Neither | Passed: installed boot, native desktop policy and GUI |
+| BIOS | GELI/ZFS | Neither | Passed: loader unlock, installed boot, native desktop policy and GUI |
 
-Production-key installed maintenance remains under test. See the
+Production-key installed GELI/ZFS maintenance passed: distinct rebuilt kernel,
+altered inactive-candidate rejection, update, rollback and return, with
+enforcement, shared home data and actual GUI checks at each boot. See the
 [boot-chain evidence](testing-1.1-secureboot.md),
 [upgrade evidence](testing-1.1-upgrade.md), and
 [physical limitations](testing-1.1-hardware-observations.md).

@@ -1,8 +1,9 @@
-# Secure Boot development
+# Secure Boot authoring
 
-This directory contains work toward the 1.1 manual-enrollment boot path. It is
-not an installer option yet. No release signing key or firmware-enrollment
-operation belongs in this directory. See
+This directory implements the 1.1 manual-enrollment boot profile and its
+authoring tools. The candidate integrates public signed artifacts into the
+installer; private keys and firmware-enrollment operations do not belong in
+this directory. See
 [the evidence record](../docs/testing-1.1-secureboot.md) for qualification limits.
 
 `patches/module-policy.patch` applies to FreeBSD source revision
@@ -53,8 +54,9 @@ require positive firmware, loader, policy and ordinary-program results, and
 reject a panic or failed assertion. `missing-handoff` checks the corresponding
 negative boot case and requires the specific kernel panic before userland.
 
-Production enrollment, signed installation/update transactions, recovery and
-ZFS/GELI qualification remain required before exposing this path to users.
+Qualification is specific to the signing authority, image and boot layout.
+Development-key results do not substitute for production-certificate checks;
+the evidence record distinguishes those tests and physical enrollment limits.
 
 ## Kernel and loader build
 
@@ -94,9 +96,9 @@ Both EFI loaders support `daemonarchy_rootpool=<decimal ZFS pool GUID>` in
 their firmware load options. They resolve that pool's active boot environment
 using the standard ZFS loader path, so `bectl activate` and rollback are not
 bypassed by a permanently pinned dataset. A configured but unavailable pool
-fails instead of selecting another pool. The existing installer still uses
-the snapshot loader; this option must not be emitted until the matching loader
-is integrated.
+fails instead of selecting another pool. The installer emits this selector only when its validated signed payload
+supplies the matching loaders. Builds without that payload retain the snapshot
+loader and its explicit dataset selection.
 
 The verified loader exports `daemonarchy_secureboot` from firmware state.
 The signed `boot/local.lua` hook selects `kernel.secure` and its required
@@ -175,8 +177,9 @@ and leaves the original boot selection unchanged.
 firmware SecureBoot variable, selected kernel and policy state; enforced
 firmware with an incomplete profile is an error. It requires root on FreeBSD.
 
-These tools are not installed or exposed to users yet. Native signed update,
-injected failure and rollback tests remain required. This format covers
+The installed profile includes the maintenance helper when a validated signed
+payload is supplied. Native update, failure and rollback results are recorded
+with the exact candidate, rather than inferred from authoring tests. This format covers
 maintenance of the pinned snapshot and loader protocol; a base/ABI transition,
 EFI protocol change or certificate rotation requires a separately qualified
 migration. Do not replace pkg-owned drivers behind pkg's back to force a match.

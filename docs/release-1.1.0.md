@@ -24,6 +24,8 @@ complete. Recovery/debug tools are also installed on disk.
 
 Secure Boot requires manual enrollment of the published project certificate.
 Firmware with only factory Microsoft/OEM keys will reject the project loader.
+The production certificate asset is `daemonarchy-1.1.der`; its SHA-256 is
+`111539a7fb7178cea65f3e2fc50ea00839d045324a4272ce190e4733a9c118dd`.
 Enrollment must append the certificate to db while preserving existing trust
 entries. The installer does not enroll keys. The signed profile admits matching
 kernel modules and protects its enforcement controls; ordinary application

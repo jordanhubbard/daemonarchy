@@ -1,4 +1,9 @@
-# Secure Boot prototype evidence
+# Secure Boot development and production evidence
+
+Current production-candidate outcomes and exact ISO inputs are summarized in
+[the final image record](testing-1.1-final-image.md). The sections below retain
+chronological development failures and successes; an older pending-status
+statement describes that iteration, not a later candidate.
 
 Development checks on 2026-10-15; this is not an installer feature or a claim
 that the release supports Secure Boot yet.

@@ -535,8 +535,8 @@ ports integration and the installed FreeBSD snapshot.
 Secure Boot development is documented separately in
 [`secureboot/README.md`](secureboot/README.md), with the
 [manual-enrollment contract](docs/secure-boot.md) and
-[native development evidence](docs/testing-1.1-secureboot.md). Current published
-images do not implement that production path. Its private signing key must stay
+[native development evidence](docs/testing-1.1-secureboot.md). Stable 1.0.1 and preview.1 do not implement that production path; the 1.1
+candidate integrates it using public signed artifacts. Its private signing key must stay
 off build payloads and public images.
 
 The integration build accepts **public artifacts only**:

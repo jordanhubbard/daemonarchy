@@ -112,3 +112,41 @@ This qualifies the final application-package upgrade and ZFS rollback on the
 retained 1.0.1 base. It does not qualify a FreeBSD base/kernel migration or usable
 graphics on that older base. Production-authority signed boot maintenance is
 recorded separately.
+
+## Production-authority GELI/ZFS maintenance, 2026-10-16
+
+The exact production candidate ISO from the
+[final image record](testing-1.1-final-image.md) passed fresh enforced UEFI/GELI
+installation and actual graphical checks. A separate QEMU copy-on-write disk
+preserved that original test disk for the maintenance sequence.
+
+A full native rebuild of the same pinned source and four policy/loader patches
+used a later recorded build epoch, producing genuinely different kernel bytes.
+The original production kernel SHA-256 was
+`a2e3a6e1e73b09b22da646febb9949390d9ff9da56cf8c6980e462c67308a220`;
+the maintenance kernel SHA-256 was
+`287ca8d24cb5182adeecdaffb0799f9ab482a2ac48033a7f8d37abe9faea9f11`.
+The maintenance bundle SHA-256 was
+`1ee019115bc55f9439748a4a8de80c6b1f4d4f78ab6a4e8bd3e4773d5293a6c4`.
+The protected production authority signed the new tree and maintenance bundle;
+only public artifacts went to the guest.
+
+| Actual installed production-key test | Result |
+| --- | --- |
+| Stage new signed bundle into `qa-production-update-v10` | Validated, unmounted, original boot selection unchanged |
+| Stage a second valid candidate, then alter its inactive kernel | Activation rejected with `Managed boot file mismatch: boot/kernel.secure/kernel`; candidate retained and unmounted, original boot selection unchanged |
+| Activate valid candidate and reboot through real GELI unlock | Updated ZFS environment and exact new kernel hash confirmed |
+| Enforcement after update | Actual firmware Secure Boot enforced, verified kernel selected, all four locked policy states present |
+| Graphical update check | Hyprland, keyboard/pointer, Chromium rendering and OctoPkg UI passed |
+| Activate retained `default` and reboot through GELI unlock | Original kernel hash/environment restored; firmware and locked policy retained; graphical checks passed again |
+| Return to updated environment and reboot through GELI unlock | New kernel hash/environment restored; enforcement and graphical checks passed again |
+| Shared home sentinel throughout | Preserved unchanged |
+
+This qualifies the tested production-key same-snapshot maintenance transaction,
+failed activation and recovery on the candidate's encrypted ZFS layout. It does
+not qualify a source/ABI transition, driver revision change, certificate
+rotation, physical firmware enrollment or retained Windows boot. The rebuild
+changes the kernel bytes/build epoch while retaining the already qualified
+code and ABI; compatibility of a future code update still requires its own
+native checks. The maintenance fixture is retained separately from the shipped
+original boot bundle.
