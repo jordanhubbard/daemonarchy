@@ -5,6 +5,11 @@ pkg info -e chromium
 pkg info -e octopkg
 command -v daemonarchy >/dev/null
 command -v octopkg >/dev/null
+# Packages such as LLVM/Mesa require the snapshot's 32-bit base libraries.
+[ -s /usr/lib32/libc++.so.1 ]
+[ -x /libexec/ld-elf32.so.1 ]
+lib32_deps=$(ldd /usr/lib32/libc++.so.1)
+case "$lib32_deps" in *'not found'*) printf '%s\n' "$lib32_deps" >&2; exit 1 ;; esac
 daemonarchy --help | grep -q 'Daemonarchy command center'
 daemonarchy checkouts --help | grep -q 'daemonarchy checkouts'
 interpreter=$(head -n 1 /usr/local/bin/omarchy-launch-browser)

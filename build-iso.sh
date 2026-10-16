@@ -4,7 +4,7 @@
 #
 # Prerequisites on the build host (run as root):
 #   - a poudriere jail ($JAIL) made from the FreeBSD snapshot the ISO installs,
-#     with its kernel (kernel.txz) extracted into it
+#     with its kernel and 32-bit libraries (kernel.txz/lib32.txz) extracted
 #   - a ports tree ($PTREE) pinned to the commit of the official package set
 #     plus the Omarchy ports, bulk-built with -b latest so only the Omarchy
 #     ports and the GPU and Wi-Fi kernel modules are built locally
@@ -107,7 +107,7 @@ echo "==> Fetching the FreeBSD base and kernel sets"
 # the jail to a new snapshot, empty $cache to fetch that one.
 [ -f "$cache/MANIFEST" ] || fetch -q -o "$cache/MANIFEST" "$SNAPSHOT_URL/MANIFEST"
 mkdir -p "$stage/overlay/usr/freebsd-dist"
-for set in base kernel; do
+for set in base kernel lib32; do
 	want=$(awk -v f="$set.txz" '$1 == f { print $2 }' "$cache/MANIFEST")
 	if [ ! -f "$cache/$set.txz" ] || [ "$(sha256 -q "$cache/$set.txz")" != "$want" ]; then
 		fetch -q -o "$cache/$set.txz" "$SNAPSHOT_URL/$set.txz"

@@ -8,12 +8,13 @@ mkdir -p "$work/root"
 for path in usr/include/sys/param.h usr/lib/libc.a usr/lib/clang/21/include/stddef.h \
   usr/lib/libprivateclang.so.21 usr/lib/libprivatellvm.so.21 usr/lib/libprivatelldb.so.21 \
   usr/bin/cc usr/bin/clang usr/bin/lldb usr/bin/llvm-objcopy usr/bin/strip \
+  usr/lib32/libc++.so.1 libexec/ld-elf32.so.1 usr/bin/ldd32 \
   boot/kernel/kernel boot/kernel/zfs.ko boot/loader.efi lib/libc.so.7 \
   usr/lib/libssl.so.35 usr/bin/fetch usr/bin/ssh usr/bin/tar usr/sbin/gpart \
   usr/local/bin/bash usr/local/bin/gum usr/local/sbin/pkg-static \
   usr/local/share/daemonarchy-installer/checkouts.json \
   usr/local/share/daemonarchy-installer/repo/All/nvidia-kmod.pkg \
-  usr/freebsd-dist/base.txz usr/freebsd-dist/kernel.txz; do
+  usr/freebsd-dist/base.txz usr/freebsd-dist/kernel.txz usr/freebsd-dist/lib32.txz; do
   mkdir -p "$work/root/$(dirname "$path")"
   printf 'fixture\n' >"$work/root/$path"
 done
@@ -21,7 +22,8 @@ tar -C "$work/root" -X "$here/scripts/live-image-excludes" -cf "$work/live.tar" 
 tar -tf "$work/live.tar" >"$work/contents"
 for path in usr/include/sys/param.h usr/lib/libc.a usr/lib/clang/21/include/stddef.h \
   usr/lib/libprivateclang.so.21 usr/lib/libprivatellvm.so.21 usr/lib/libprivatelldb.so.21 \
-  usr/bin/cc usr/bin/clang usr/bin/lldb usr/bin/llvm-objcopy usr/bin/strip; do
+  usr/bin/cc usr/bin/clang usr/bin/lldb usr/bin/llvm-objcopy usr/bin/strip \
+  usr/lib32/libc++.so.1 libexec/ld-elf32.so.1 usr/bin/ldd32; do
   if grep -qxF "./$path" "$work/contents"; then echo "Retained development file: $path" >&2; exit 1; fi
 done
 for path in boot/kernel/kernel boot/kernel/zfs.ko boot/loader.efi lib/libc.so.7 \
@@ -29,7 +31,7 @@ for path in boot/kernel/kernel boot/kernel/zfs.ko boot/loader.efi lib/libc.so.7 
   usr/local/bin/bash usr/local/bin/gum usr/local/sbin/pkg-static \
   usr/local/share/daemonarchy-installer/checkouts.json \
   usr/local/share/daemonarchy-installer/repo/All/nvidia-kmod.pkg \
-  usr/freebsd-dist/base.txz usr/freebsd-dist/kernel.txz; do
+  usr/freebsd-dist/base.txz usr/freebsd-dist/kernel.txz usr/freebsd-dist/lib32.txz; do
   grep -qxF "./$path" "$work/contents"
 done
 # Apply the real post-install Python pruning block to a disposable live root.

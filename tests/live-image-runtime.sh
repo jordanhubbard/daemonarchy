@@ -52,7 +52,7 @@ for tool in sh bash gum jq pkg pkg-static fetch ssh sshd tar xz zpool zfs gpart 
   wpa_cli dhclient ntpd date file ldd; do
   command -v "$tool" >/dev/null || { echo "Missing live tool: $tool" >&2; exit 1; }
 done
-for path in /usr/freebsd-dist/base.txz /usr/freebsd-dist/kernel.txz \
+for path in /usr/freebsd-dist/base.txz /usr/freebsd-dist/kernel.txz /usr/freebsd-dist/lib32.txz \
   /boot/kernel/kernel /boot/kernel/zfs.ko /boot/loader.efi \
   /usr/local/share/daemonarchy-installer/omarchy-wifi-enterprise \
   /usr/local/share/daemonarchy-installer/checkouts.json; do

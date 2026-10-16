@@ -151,7 +151,7 @@ diagnostics_begin "$TARGET" "$username" "${ssh_enable:-false}" /tmp/daemonarchy-
 # ---------------------------------------------------------------- base system
 
 phase base "Installing the FreeBSD base system"
-for set in base kernel; do
+for set in base kernel lib32; do
   tar -xpf "$DIST/$set.txz" -C "$TARGET"
 done
 

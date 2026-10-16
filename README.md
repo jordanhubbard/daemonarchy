@@ -42,7 +42,7 @@ Install software from FreeBSD's package collection through OctoPkg (**Install > 
 
 - A live FreeBSD system (from the snapshot) that logs root in on the first console and starts the installer.
 - The installer: `configurator` asks the questions, `install` installs, `dashboard` shows its progress, `launch` ties them together.
-- The snapshot's `base.txz` and `kernel.txz`, which become the installed system.
+- The snapshot's `base.txz`, `kernel.txz` and `lib32.txz`, which become the installed system. The 32-bit compatibility libraries also satisfy native package dependencies such as LLVM/Mesa.
 - A package repository with what pkg.FreeBSD.org does not publish: the Omarchy ports from [jordanhubbard/freebsd-ports, branch `omarchy`](https://github.com/jordanhubbard/freebsd-ports/tree/omarchy), and the GPU and Wi-Fi kernel modules (`drm-612-kmod`, `gpu-firmware-*-kmod`, `wifi-firmware-*-kmod`) built for the snapshot kernel.
 
 Everything else the desktop needs (Hyprland, Qt, browsers, ...) is downloaded from pkg.FreeBSD.org during the install, so the machine needs network access. That keeps the image well under GitHub's 2 GiB release asset limit; a fully offline image would be 7-8 GB.

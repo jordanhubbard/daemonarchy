@@ -56,3 +56,31 @@ from the isolated cache, and module downloads are blocked so modules rebuild
 against the selected snapshot. Downloaded source and ordinary dependency
 package caches were reused. Native package QA, new checkout payloads, the
 refreshed ISO and its installation/hardware checks remain pending.
+
+## Build compatibility fixes
+
+The first matching-snapshot build exposed two blockers; that run is not green.
+
+- DRM 6.12.110 omitted the generated `opt_linuxkpi.h` and the common kernel
+  LinuxKPI configuration include now required by the snapshot's headers. The
+  failed `dmabuf` build was reproduced outside poudriere. Adding the generated
+  header and configuration include to its module Makefiles passed both that
+  component and the complete native DRM build. The port revision is now 4 at
+  fork checkpoint `2417b7c55c8ef8d8cae312382babaecfffe272b5`; package QA and the
+  dependent NVIDIA DRM build still need a clean retry.
+- The base-only jail lacked the optional 32-bit compatibility libraries.
+  Installing the published LLVM 19 package failed because it requires
+  `libc++.so.1:32`. In a fresh, isolated root populated from the selected base
+  set, the real package transaction reproduced this failure and then passed
+  after extracting the matching `lib32.txz`. The 32-bit C++ library's dynamic
+  dependencies resolved in that root. Its SHA-256 matches the cached snapshot
+  manifest: `cd331179a555041a91d3d821fe8afb8c39167d1cbc963227db72e24cbd29dc41`.
+  The archive is 64 MiB. The ISO builder and installer now carry/extract this
+  set; expanded 32-bit libraries remain excluded from the live root. The next
+  image's full size and installation still require validation.
+
+The newly generated source seed packages also passed native `pkg add`, checksum
+validation and materialization into a clean, self-contained, one-commit Git
+checkout at `3ceb5f150bc121f5e6a3e0cc8b289279338405a1`, with only the public
+FreeBSD source remote. The ports seed must be regenerated after the compatibility
+fixes are finalized; no refreshed checkout repository has been published yet.
