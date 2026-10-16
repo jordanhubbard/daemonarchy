@@ -32,6 +32,18 @@ for path in boot/kernel/kernel boot/kernel/zfs.ko boot/loader.efi lib/libc.so.7 
   usr/freebsd-dist/base.txz usr/freebsd-dist/kernel.txz; do
   grep -qxF "./$path" "$work/contents"
 done
+# Apply the real post-install Python pruning block to a disposable live root.
+world=$work/python-live
+python_lib=$world/usr/local/lib/python3.12
+mkdir -p "$python_lib/test/support" "$python_lib/config-3.12" "$python_lib/lib-dynload" "$python_lib/json/__pycache__"
+for path in test/support/data config-3.12/libpython3.12.a lib-dynload/_ssl.so json/__init__.py \
+  json/__pycache__/__init__.pyc json/__pycache__/__init__.opt-1.pyc json/__pycache__/__init__.opt-2.pyc; do
+  printf 'fixture\n' >"$python_lib/$path"
+done
+eval "$(sed -n '/^for python_lib in /,/^done$/p' "$here/live-post.sh")"
+[[ ! -e $python_lib/test && ! -e $python_lib/config-3.12/libpython3.12.a ]]
+[[ ! -e $python_lib/json/__pycache__/__init__.opt-1.pyc && ! -e $python_lib/json/__pycache__/__init__.opt-2.pyc ]]
+[[ -f $python_lib/lib-dynload/_ssl.so && -f $python_lib/json/__init__.py && -f $python_lib/json/__pycache__/__init__.pyc ]]
 # Sparse files exercise the real 2 GiB boundary without allocating that space.
 truncate -s 2147483647 "$work/budget.iso"
 sh "$here/scripts/check-image-size.sh" "$work/budget.iso"

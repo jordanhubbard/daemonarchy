@@ -32,13 +32,7 @@ for hardware in intel amd nvidia mixed legacy audio unknown; do
     : >"$work/prompts"
     cuda_step >"$work/messages" 2>&1
     expected=false
-    if [[ $hardware == nvidia || $hardware == mixed ]]; then
-      grep -q -- '--default=false' "$work/prompts"
-      [[ $answer != 0 ]] || expected=true
-    else
-      [[ ! -s $work/prompts ]]
-      ! grep -Ei 'nvidia|cuda' "$work/messages"
-    fi
+    [[ ! -s $work/prompts ]]
     [[ $install_cuda == "$expected" ]]
     checkout_options_prepare "$work/absent"
     bytes=21474836480
@@ -84,4 +78,4 @@ umount() { echo "$1" >>"$work/unmounted"; }
 cuda_unmount_target /mnt
 printf '%s\n' /mnt/compat/linux/home /mnt/compat/linux/dev/shm /mnt/compat/linux/dev >"$work/expected"
 cmp "$work/expected" "$work/unmounted"
-echo 'PASS: GPU-gated opt-in, defaults, space, installed launchers/menu, and mount cleanup'
+echo 'PASS: unqualified compute selection withheld, default menu, space and mount cleanup'

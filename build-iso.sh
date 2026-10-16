@@ -80,13 +80,20 @@ omarchy_pkg=$(ls "$share"/repo/All/omarchy-[0-9]*.pkg | head -n 1)
 extract=$(mktemp -d)
 tar -xf "$omarchy_pkg" -C "$extract" \
 	/usr/local/share/omarchy/install/provisioning/setup-form.sh \
-	/usr/local/libexec/omarchy/compat/timedatectl
+	/usr/local/libexec/omarchy/compat/timedatectl \
+	/usr/local/bin/omarchy-wifi-enterprise
 # Same questions as the Omarchy ISO; only the suggested hostname differs.
 sed -e "s/OMARCHY_HOSTNAME_DEFAULT='omarchy'/OMARCHY_HOSTNAME_DEFAULT='daemonarchy'/" \
 	-e "s/(or return for 'omarchy')/(or return for 'daemonarchy')/" \
 	"$extract/usr/local/share/omarchy/install/provisioning/setup-form.sh" >"$share/setup-form.sh"
 mkdir -p "$share/compat"
 cp "$extract/usr/local/libexec/omarchy/compat/timedatectl" "$share/compat/"
+cp "$extract/usr/local/bin/omarchy-wifi-enterprise" "$share/omarchy-wifi-enterprise"
+# Use the helper's actual interpreter dependency, rather than a moving Python
+# default that could disagree with its package's rewritten shebang.
+live_python=$(pkg query -F "$omarchy_pkg" '%dn' | awk '/^python3[0-9]+$/ { print }')
+case "$live_python" in python3[0-9][0-9]) ;; *) echo 'Need one Python interpreter dependency for enterprise Wi-Fi' >&2; exit 1 ;; esac
+chmod 0755 "$share/omarchy-wifi-enterprise"
 rm -rf "$extract"
 
 echo "==> Fetching the FreeBSD base and kernel sets"
@@ -133,6 +140,7 @@ chmod 0755 "$stage"/overlay/usr/local/libexec/daemonarchy-installer/* \
 
 echo "==> Building the image"
 printf '%s\n' bash gum jq ttfx tzupdate pkg wifi-firmware-kmod >"$stage/live-packages"
+printf '%s\n' "$live_python" >>"$stage/live-packages"
 # Trim only the live root. The untouched base.txz still installs a complete
 # development system, and optional source/ports checkouts remain downloadable.
 cp "$here/scripts/live-image-excludes" "$stage/exclude"

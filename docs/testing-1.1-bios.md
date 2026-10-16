@@ -30,3 +30,30 @@ SHA-256: `728e1e7bf49da1c8f53afd5428fd6b15079fb63ea9186d5217900665faadb6f1`
 The development filename does not change the desktop package version or
 constitute a published 1.1.0 release. The [roadmap](../ROADMAP.md) retains the
 full installation, hardware, upgrade, and publication gates.
+
+
+## Complete QEMU checks, 2026-10-15
+
+Preview.11 passed unattended installation and installed-system reboot checks
+under both SeaBIOS and OVMF UEFI, using QEMU 10.2.1 with KVM, q35, four virtual
+CPUs, 4 GiB RAM and a disposable 40 GiB virtio disk. BIOS selected neither
+checkout; UEFI selected `/usr/src` and verified its clean, user-owned, depth-one
+Git checkout at `a52c50b4b7c2652954ef1bd34710a4b1fc8ef391`, matching the kernel.
+
+Both runs verified the firmware boot method, BIOS partition, account/groups,
+sudo, SDDM configuration and running service, networking, mDNS, packaged file
+ownership, GSettings schemas, signed package repository access and staged
+desktop defaults. Both ended with `All checks passed` and guest shutdown.
+The UEFI installer shutdown logged a WITNESS lock-order warning involving
+ISO/tmpfs unmounts; it did not prevent the installed system from booting.
+
+Image SHA-256: `7a52f5c2e463fcd82ff224c4c4e5350ee4e5c98377344ffcba2d3f63b9f50653`.
+Serial install/boot logs and check outputs are retained in the local
+`2026-10-15-preview11/qemu-bios` and `qemu-uefi` evidence directories.
+The corrected harness uses ATAPI CD media for xorriso CIDATA, bounds each VM
+phase, preserves existing disks/logs, and stops its own VM on timeout or failure.
+Its timeout cleanup was exercised with an actual one-second KVM run.
+
+These are unencrypted, console/SSH checks of preview.11. They do not qualify
+graphical VM rendering, hardware, later desktop package changes or encrypted
+boot; those gates remain open.

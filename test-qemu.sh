@@ -2,8 +2,8 @@
 
 # Install-test a Daemonarchy ISO under QEMU, for hosts without bhyve (Linux,
 # macOS, or a non-x86 machine, where the x86 guest is emulated; expect two to
-# three hours there). Needs qemu-system-x86_64, x86 OVMF firmware, mkfs.fat
-# and mtools, and an OpenSSH client; no root.
+# three hours there). Needs qemu-system-x86_64, x86 OVMF firmware, an
+# OpenSSH client, and either mkfs.fat/mtools or xorriso for CIDATA; no root.
 #
 #   1. boot the ISO with a blank 40 GB disk and a CIDATA drive holding an
 #      unattended daemonarchy-install.conf; the installer powers off when done
@@ -29,6 +29,9 @@ OVMF=${OVMF:-/usr/share/ovmf/OVMF.fd}
 BOOT_MODE=${BOOT_MODE:-uefi}
 SSH_PORT=${SSH_PORT:-2222}
 PASSWORD=daemonarchy
+VM_TIMEOUT=${VM_TIMEOUT:-7200}
+case "$VM_TIMEOUT" in ''|*[!0-9]*) echo 'VM_TIMEOUT must be positive seconds' >&2; exit 1 ;; esac
+[ "$VM_TIMEOUT" -gt 0 ] || { echo 'VM_TIMEOUT must be positive seconds' >&2; exit 1; }
 
 case "$BOOT_MODE" in
 	uefi) [ -r "$OVMF" ] || { echo "UEFI firmware not found: $OVMF" >&2; exit 1; } ;;
@@ -46,7 +49,20 @@ fi
 
 mkdir -p "$WORK"
 cd "$WORK"
-rm -f disk.img cidata.img install.log boot.log qemu.pid
+WORK=$PWD
+[ ! -e disk.img ] && [ ! -e qemu.pid ] || {
+	echo "Use a fresh WORK directory; existing test evidence is preserved: $WORK" >&2
+	exit 1
+}
+cleanup() {
+	if [ -s qemu.pid ]; then
+		read -r cleanup_pid <qemu.pid
+		kill "$cleanup_pid" 2>/dev/null || true
+	fi
+}
+trap cleanup EXIT
+trap 'exit 130' INT
+trap 'exit 143' TERM HUP
 truncate -s 40G disk.img
 
 cat >daemonarchy-install.conf <<EOF
@@ -63,8 +79,21 @@ hostname=daemonarchy-test
 timezone=America/Los_Angeles
 ssh_enable=true
 EOF
-mkfs.fat -C -F 16 -n CIDATA cidata.img 32768 >/dev/null
-mcopy -i cidata.img daemonarchy-install.conf ::/
+if command -v mkfs.fat >/dev/null && command -v mcopy >/dev/null; then
+	cidata_drive=file=cidata.img,if=none,id=ci,format=raw
+	cidata_device=ide-hd
+	mkfs.fat -C -F 16 -n CIDATA cidata.img 32768 >/dev/null
+	mcopy -i cidata.img daemonarchy-install.conf ::/
+elif command -v xorriso >/dev/null; then
+	cidata_drive=file=cidata.img,if=none,id=ci,format=raw,media=cdrom,readonly=on
+	cidata_device=ide-cd
+	mkdir cidata
+	cp daemonarchy-install.conf cidata/
+	xorriso -as mkisofs -quiet -V CIDATA -o cidata.img cidata >cidata.log 2>&1
+else
+	echo 'Install mkfs.fat/mtools or xorriso to create CIDATA' >&2
+	exit 1
+fi
 
 vm() {
 	log=$1
@@ -74,18 +103,33 @@ vm() {
 	fi
 	# shellcheck disable=SC2086
 	qemu-system-x86_64 -machine q35 $accel -smp 4 -m 4G \
-		-display none -no-reboot -monitor none \
-		-serial "file:$log" -daemonize -pidfile qemu.pid \
-		-drive file=disk.img,if=virtio,format=raw,cache=unsafe "$@"
-	pid=$(cat qemu.pid)
+		-display none -no-reboot -monitor none -qmp "unix:$log.qmp.sock,server=on,wait=off" \
+		-serial "file:$log" \
+		-drive file=disk.img,if=virtio,format=raw,cache=unsafe "$@" >"$log.qemu" 2>&1 &
+	pid=$!
+	printf '%s\n' "$pid" >qemu.pid
+	vm_start=$(date +%s)
 	while kill -0 "$pid" 2>/dev/null; do
 		sleep 5
+		if [ "$(( $(date +%s) - vm_start ))" -ge "$VM_TIMEOUT" ]; then
+			kill "$pid" 2>/dev/null || true
+			wait "$pid" 2>/dev/null || true
+			: >qemu.pid
+			echo "VM timed out; see $WORK/$log" >&2
+			exit 1
+		fi
 		if [ "$log" = install.log ] && grep -aq 'FAILED\|panic:' install.log; then
 			kill "$pid"
+			wait "$pid" 2>/dev/null || true
+			: >qemu.pid
 			echo "the install failed; see $WORK/install.log" >&2
 			exit 1
 		fi
 	done
+	vm_status=0
+	wait "$pid" || vm_status=$?
+	: >qemu.pid
+	[ "$vm_status" -eq 0 ] || { echo "QEMU exited with status $vm_status; see $WORK/$log.qemu" >&2; return 1; }
 }
 
 echo "==> Installing from $ISO (log: $WORK/install.log)"
@@ -93,7 +137,7 @@ start=$(date +%s)
 vm install.log \
 	-device ahci,id=ahci0 \
 	-drive "file=$ISO,if=none,id=cd,media=cdrom,readonly=on" -device ide-cd,drive=cd,bus=ahci0.0,bootindex=1 \
-	-drive file=cidata.img,if=none,id=ci,format=raw -device ide-hd,drive=ci,bus=ahci0.1 \
+	-drive "$cidata_drive" -device "$cidata_device,drive=ci,bus=ahci0.1" \
 	-netdev user,id=n0 -device virtio-net-pci,netdev=n0
 grep -aq 'Daemonarchy is installed' install.log || { echo "the install did not finish; see $WORK/install.log" >&2; exit 1; }
 echo "    installed in $(( ($(date +%s) - start) / 60 )) minutes"
@@ -149,6 +193,7 @@ check "updates from the signed Daemonarchy repository" "test -s /usr/local/etc/p
 check "Daemonarchy defaults staged" "test -d /usr/local/share/omarchy/skel.d/daemonarchy"
 exit \$failures
 EOF
+guest "sh -s" <"$SCRIPT_DIR/tests/installed-desktop.sh" || status=1
 guest "sh -s -- $INSTALL_PORTS $INSTALL_SRC" <"$SCRIPT_DIR/tests/installed-checkouts.sh" || status=1
 guest "echo $PASSWORD | sudo -S -p '' shutdown -p now" >/dev/null 2>&1 || true
 wait "$booter" 2>/dev/null || true

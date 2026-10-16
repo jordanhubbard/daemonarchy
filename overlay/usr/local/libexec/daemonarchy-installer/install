@@ -36,6 +36,10 @@ source "$(dirname "$0")/cuda-options"
 source "$(dirname "$0")/install-diagnostics"
 source "$(dirname "$0")/rescue-setup"
 checkout_options_prepare "$ISO_SHARE/checkouts.json"
+if [[ -n ${wifi_enterprise_profile:-} ]]; then
+  [[ ${net_mode:-} == wifi ]] || { echo 'An enterprise profile requires Wi-Fi mode' >&2; exit 1; }
+  "$ISO_SHARE/omarchy-wifi-enterprise" --validate "$wifi_enterprise_profile"
+fi
 
 log() { printf '\033[32m==>\033[0m %s\n' "$*"; }
 
@@ -264,7 +268,11 @@ case ${net_mode:-dhcp} in
       echo 'ifconfig_wlan0="WPA DHCP"'
     } >>"$TARGET/etc/rc.conf"
     umask 077
-    wpa_network "$wifi_ssid" "${wifi_psk:-}" "${wifi_hidden:-false}" >"$TARGET/etc/wpa_supplicant.conf"
+    if [[ -n ${wifi_enterprise_profile:-} ]]; then
+      "$ISO_SHARE/omarchy-wifi-enterprise" --install "$TARGET" "$wifi_enterprise_profile"
+    else
+      wpa_network "$wifi_ssid" "${wifi_psk:-}" "${wifi_hidden:-false}" >"$TARGET/etc/wpa_supplicant.conf"
+    fi
     umask 022
     cp /etc/resolv.conf "$TARGET/etc/resolv.conf"
     ;;
@@ -301,7 +309,7 @@ pkg_target() {
   ASSUME_ALWAYS_YES=yes IGNORE_OSVERSION=yes \
     pkg -r "$TARGET" -o REPOS_DIR="$repos" -o ABI="$ABI" "$@"
 }
-packages=(pkg bash sudo daemonarchy wifi-firmware-kmod "${gpu_exact_packages[@]}" "${gpu_userspace_packages[@]}")
+packages=(pkg bash sudo daemonarchy chromium octopkg wifi-firmware-kmod "${gpu_exact_packages[@]}" "${gpu_userspace_packages[@]}")
 pkg_target update -f
 
 # A small first transaction makes console-approved remote rescue available

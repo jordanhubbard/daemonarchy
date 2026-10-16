@@ -11,12 +11,12 @@ installation path.
 
 | Work | Implementation scope | Required acceptance evidence | Status |
 | --- | --- | --- | --- |
-| NVIDIA graphics | Detect supported GPUs, package kernel-matched drivers, configure modesetting and the desktop session, and explain unsupported models. | Install and reboot on NVIDIA hardware; SDDM login, Hyprland rendering, external displays, and suspend/resume; Intel/AMD regression checks. | In progress: NVIDIA 595 and DRM 6.6 packages built; selection tests pass; physical desktop qualification pending |
+| NVIDIA graphics | Detect supported GPUs, package kernel-matched drivers, configure modesetting and the desktop session, and explain unsupported models. | Install and reboot on NVIDIA hardware; SDDM login, Hyprland rendering, external displays, and suspend/resume; Intel/AMD regression checks. | In progress: NVIDIA 595 and DRM 6.12 packages built; selection tests pass; operator hardware matrix pending |
 | Graphical VM desktops | Select a supported virtual graphics path and configure the compositor and login session for it. | Boot the installed image into a usable desktop in each advertised hypervisor; verify rendering, keyboard, pointer, resizing, and reboot. SSH-only checks do not qualify. | Planned |
 | Bluetooth beyond input devices | Add audio device pairing, connection, output selection, reconnect, and removal to the FreeBSD backend and panel. Document the supported audio profiles. | Real headset/speaker playback, volume, disconnect/reconnect, and reboot persistence; existing keyboard/mouse pairing still works. | Planned |
-| Enterprise Wi-Fi | Support certificate-validated 802.1X connections in the installer and desktop panel, including PEAP/MSCHAPv2 and EAP-TLS. Preserve credentials and certificate files securely across installation. | Join a test enterprise network with each supported EAP method, reject an untrusted server certificate, reconnect after reboot, and check that credentials stay out of logs. | Planned |
+| Enterprise Wi-Fi | Support certificate-validated 802.1X connections in the installer and desktop panel, including PEAP/MSCHAPv2 and EAP-TLS. Preserve credentials and certificate files securely across installation. | Join a test enterprise network with each supported EAP method, reject an untrusted server certificate, reconnect after reboot, and check that credentials stay out of logs. | In progress: profile helper, installer/panel integration, native parser and credential-transfer tests; real EAP exchanges and reboot qualification pending |
 | Dual boot and partition selection | Show existing partitions; replace only an explicitly selected OS/data partition or create one in selected free space; preserve existing EFI loaders and entries. Never resize an existing filesystem implicitly. | Disposable disks containing another OS survive installation with partition/data checks and both operating systems booting; insufficient space and invalid selections fail before writes. | In progress: native preservation tests pass for both selection modes; physical Windows boot tests pending |
-| Legacy BIOS boot | Add BIOS image boot and installed-system boot code, alongside the UEFI path. | Boot the ISO, install, and reboot in BIOS and UEFI VMs, including encrypted installations. | In progress: disk layout and bootcode tests pass; full boot tests pending |
+| Legacy BIOS boot | Add BIOS image boot and installed-system boot code, alongside the UEFI path. | Boot the ISO, install, and reboot in BIOS and UEFI VMs, including encrypted installations. | In progress: full unencrypted BIOS and UEFI QEMU installation/reboot checks pass; encrypted boot pending |
 | Secure Boot | Establish a signed FreeBSD boot chain and a documented key-enrollment/update process. | Install and boot with Secure Boot enabled; reject an untrusted boot component and verify signed updates. | Planned |
 | Ports and source refresh | Refresh the Daemonarchy ports fork from upstream FreeBSD ports and re-sync system sources with FreeBSD CURRENT before selecting the release snapshot. Preserve Daemonarchy changes and reconcile ports with the selected package set. | Record pinned ports/source revisions; rebuild the snapshot jail, packages, and kernel modules together; clean `poudriere testport` and installation against the selected package set. | Required before the release candidate |
 
@@ -75,13 +75,14 @@ any scope change before calling 1.1.0 complete.
   4 KiB sectors. A QEMU SeaBIOS smoke test reached the snapshot's FreeBSD loader
   and loaded its kernel from ZFS; the development ISO also built successfully.
   The QEMU installation harness accepts `BOOT_MODE=bios` or `BOOT_MODE=uefi`.
-  Full installation and encrypted-boot coverage remain open. See the
+  Full unencrypted BIOS and UEFI QEMU installation/reboot checks now pass;
+  encrypted-boot coverage remains open. See the
   [development check record](docs/testing-1.1-bios.md).
 - VM graphics: `graphics/virtio-gpu-qemu-kmod` in the current ports tree exposes
   a framebuffer for Xorg's `scfb` driver, not the DRM interface needed by
   Hyprland. Installing that port alone does not satisfy this feature.
-- NVIDIA: the image explicitly packages `nvidia-drm-66-kmod` alongside
-  `drm-66-kmod`, avoiding the default NVIDIA metaport's 6.12 family. NVIDIA
+- NVIDIA: the image explicitly packages `nvidia-drm-612-kmod` alongside
+  `drm-612-kmod`, keeping the NVIDIA and AMD/Intel payloads on one DRM core. NVIDIA
   595.104.02 userland and kernel packages are built for the selected snapshot.
   An NVIDIA install also loads `linux.ko`, enables the Linuxulator, and
   installs `linux-nvidia-libs` at that same driver version. After the first
@@ -89,17 +90,15 @@ any scope change before calling 1.1.0 complete.
   toolkit inside `/compat/linux` without a Linux kernel driver. CUDA 13.3 and
   later need a newer driver branch than 595.104.02. `daemonarchy-linux-cuda cudalab`
   builds and runs [cudalab](https://github.com/jordanhubbard/cudalab.git) as a
-  Linux program. An NVIDIA install adds a Cudalab application; its first
-  launch installs that toolkit and opens the studio, including pieces such
-  as `cuda-cosmos`. AMD firmware and Radeon/AMDGPU selection remain included.
+  Linux program for development qualification. Installer selection and application
+  menu entries remain disabled until version-specific native Linuxulator evidence
+  is recorded. AMD firmware and Radeon/AMDGPU selection remain included.
   Supported AMD (`amdgpu`), Intel (`i915kms`), and NVIDIA installs also
   install `vulkan-loader` and `mesa-dri`. That is the common Vulkan layer:
   RADV, ANV, and NVIDIA's ICD from `nvidia-driver`. Legacy `radeonkms` does
   not get it. CUDA stays a NVIDIA-only extra and does not replace Vulkan.
   Native package admission and policy tests do not replace physical display,
-  login, suspend, or cudalab qualification. An NVIDIA install also writes the
-  System > FreeBSD Cudalab menu entry from the image, so the entry is present
-  even when the packaged desktop menu is older.
+  login, suspend, or cudalab qualification.
 - Installer console: the live installer loads Terminus 16×32 (`terminus-b32`)
   when the console is wider than 200 columns. That is the face the Linux
   console selects on a HiDPI panel. The 16-inch MacBook's 3584×2240 EFI

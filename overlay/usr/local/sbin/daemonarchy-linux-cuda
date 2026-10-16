@@ -1,4 +1,6 @@
 #!/usr/local/bin/bash
+# omarchy:summary=Manage the optional Linuxulator CUDA toolkit
+# omarchy:args=<setup|prepare-cudalab user|cudalab [demo]>
 # Linuxulator CUDA for an installed Daemonarchy system with an NVIDIA GPU.
 #
 # The FreeBSD 595.104.02 driver remains the kernel driver. linux-nvidia-libs

@@ -1,8 +1,20 @@
+# shellcheck shell=sh
 # Sourced by poudriere image (-A) after the live system is populated in
 # ${WRKDIR}/world. Turns a plain FreeBSD image into the Daemonarchy installer:
 # root logs in on the first console and that login starts the installer.
 
 world=${WRKDIR}/world
+
+# Enterprise Wi-Fi needs Python's runtime on the live image. Its development
+# archive, regression suite and duplicate optimized caches are not used by the
+# installer. Prune only this disposable live root after package installation;
+# the downloaded Python package and the installed desktop remain complete.
+for python_lib in "$world"/usr/local/lib/python3.[0-9]*; do
+	[ -d "$python_lib" ] || continue
+	[ ! -L "$python_lib" ] || { echo 'Refusing a symlinked live Python library' >&2; exit 1; }
+	find "$python_lib" -type f \( -name '*.a' -o -name '*.opt-1.pyc' -o -name '*.opt-2.pyc' \) -delete
+	[ ! -d "$python_lib/test" ] || rm -r "$python_lib/test"
+done
 
 # Autologin on ttyv0. The installer runs from a login rather than rc.local so
 # it has a controlling terminal: gum draws on /dev/tty.

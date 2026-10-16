@@ -116,6 +116,18 @@ Open the menu (**Super + Space**) and choose **Update**. Daemonarchy updates Fre
 
 In a terminal, `sudo pkg upgrade` does the same for packages.
 
+The 1.1 desktop includes Chromium and the **OctoPkg** graphical package
+manager. Choose **Install > Packages** or **Remove > Packages** to search,
+install or remove FreeBSD packages; OctoPkg asks for administrator
+authentication when it needs it. The terminal package pickers remain
+available as `daemonarchy pkg install` and `daemonarchy pkg remove`.
+
+Use `daemonarchy --help` or `daemonarchy commands` to discover desktop
+commands. For example, `daemonarchy update` runs Daemonarchy's update flow.
+The desktop does not configure a local Docker engine, so it omits the stock
+Docker application and Docker database/setup entries. Docker needs a Linux
+VM or a separately configured remote engine on FreeBSD.
+
 ## 11. What FreeBSD adds
 
 Open the menu and go to **System > FreeBSD**.
@@ -131,7 +143,7 @@ Open the menu and go to **System > FreeBSD**.
 
 ## 12. AI coding tools
 
-Daemonarchy can set up Claude Code, Codex, Cursor and others for you: open the menu, go to **Setup > Defaults > Agent**, and pick one, or just type its name (`claude`, `codex`, `cursor-agent`, ...) in a terminal. Each is downloaded the first time you use it.
+Install available FreeBSD coding tools through **Install > Packages** or `pkg`. Daemonarchy does not offer upstream Omarchy’s automatic Linux agent downloads. Linux-only versions must pass version-specific Linuxulator testing before they can become release defaults.
 
 ## When something goes wrong
 

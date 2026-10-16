@@ -36,7 +36,7 @@ Omarchy's panels work on FreeBSD too. Wi-Fi runs through FreeBSD's `wpa_supplica
 
 ![The network panel: Ethernet status, DNS, and nearby Wi-Fi networks (names blurred)](docs/images/network.png)
 
-Omarchy's AI coding agents work here too: Claude Code, Codex, Crush, and the GitHub CLI come from FreeBSD's own packages, and Linux-only tools such as the Cursor CLI and OpenCode run under FreeBSD's Linux compatibility, each installed the first time you run it.
+Install software from FreeBSD's package collection through OctoPkg (**Install > Packages**) or `pkg`. Chromium is installed by default. Linux-only applications and automatic agent downloads are withheld until their exact versions pass native Linuxulator qualification; see the [application policy](docs/freebsd-application-policy.md).
 
 ## What the image contains
 

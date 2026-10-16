@@ -36,6 +36,7 @@ for tool in sh bash gum jq pkg pkg-static fetch ssh sshd tar xz zpool zfs gpart 
 done
 for path in /usr/freebsd-dist/base.txz /usr/freebsd-dist/kernel.txz \
   /boot/kernel/kernel /boot/kernel/zfs.ko /boot/loader.efi \
+  /usr/local/share/daemonarchy-installer/omarchy-wifi-enterprise \
   /usr/local/share/daemonarchy-installer/checkouts.json; do
   [ -s "$path" ] || { echo "Missing live payload: $path" >&2; exit 1; }
 done
@@ -43,6 +44,10 @@ bash --version
 gum --version
 jq --version
 pkg-static -v
+python_command=$(head -n 1 /usr/local/share/daemonarchy-installer/omarchy-wifi-enterprise)
+python_command=${python_command#\#!}
+case "$python_command" in /usr/local/bin/python3.[0-9]*) ;; *) echo 'Invalid enterprise helper interpreter' >&2; exit 1 ;; esac
+"$python_command" -c 'import runpy; runpy.run_path("/usr/local/share/daemonarchy-installer/omarchy-wifi-enterprise", run_name="audit"); print("Enterprise Wi-Fi runtime imports passed")'
 # A compiler-only library accidentally removed from a retained executable's
 # dependency chain must fail here, even if that command is not on our tool list.
 find /bin /sbin /lib /libexec /usr/bin /usr/sbin /usr/lib /usr/libexec \

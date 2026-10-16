@@ -5,8 +5,8 @@ cuda_options_prepare() {
   [[ $install_cuda == true || $install_cuda == false ]] || {
     echo 'install_cuda must be true or false' >&2; return 1;
   }
-  if [[ $install_cuda == true && ${gpu_nvidia:-false} != true ]]; then
-    echo 'The selected compute tools require a GPU supported by the bundled NVIDIA driver.' >&2
+  if [[ $install_cuda == true ]]; then
+    echo 'CUDA/Cudalab is awaiting version-specific native Linuxulator qualification; it is not included in this release.' >&2
     return 1
   fi
 }

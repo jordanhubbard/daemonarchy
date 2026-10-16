@@ -232,6 +232,7 @@ Keyboard,$keyboard_label" |
 
 net_mode=dhcp net_if="" net_addr="" net_gw="" net_dns=""
 wifi_ssid="" wifi_psk="" wifi_hidden=false
+wifi_enterprise_profile=""
 
 online() {
   # Preserve fetch's diagnostic: DNS, TLS, HTTP and timeouts all used to be
@@ -430,7 +431,7 @@ use_dhcp() {
   local ifc=$1
   gum spin --spinner pulse --title "Asking for an address on $ifc..." -- \
     bash -c "dhclient '$ifc' >/dev/null 2>&1; sleep 2"
-  net_mode=dhcp net_if=$ifc
+  net_mode=dhcp net_if=$ifc wifi_enterprise_profile=''
 }
 
 use_static() {
@@ -454,7 +455,7 @@ use_static() {
   route -q delete default >/dev/null 2>&1
   route -q add default "$gw" >/dev/null
   printf 'nameserver %s\n' ${dns//,/ } >/etc/resolv.conf
-  net_mode=static net_if=$ifc net_addr=$addr net_gw=$gw net_dns=$dns
+  net_mode=static net_if=$ifc net_addr=$addr net_gw=$gw net_dns=$dns wifi_enterprise_profile=''
 }
 
 # Scan for networks and print one SSID per line, strongest first. ifconfig's
@@ -495,7 +496,7 @@ wifi_connect() {
 }
 
 use_wifi() {
-  local dev=$1 ssid psk hidden=false status
+  local dev=$1 ssid psk hidden=false status authentication enterprise_args
   # wlan0 is the one wireless interface; move it to the adapter chosen.
   if [[ $(sysctl -n net.wlan.0.%parent 2>/dev/null) != "$dev" ]]; then
     ifconfig wlan0 destroy >/dev/null 2>&1
@@ -513,12 +514,26 @@ use_wifi() {
     hidden=true
   fi
 
+  authentication=$(gum choose --header 'Wi-Fi authentication' 'Personal or open network' 'Enterprise (802.1X)') || return 1
+  if [[ $authentication == 'Enterprise (802.1X)' ]]; then
+    enterprise_args=(--live wlan0 "$ssid")
+    [[ $hidden != true ]] || enterprise_args+=(--hidden)
+    if "$ISO_SHARE/omarchy-wifi-enterprise" "${enterprise_args[@]}"; then
+      net_mode=wifi net_if=$dev wifi_ssid=$ssid wifi_psk='' wifi_hidden=$hidden
+      wifi_enterprise_profile=/tmp/daemonarchy-enterprise-profile.json
+      return 0
+    fi
+    notice 'Enterprise Wi-Fi did not connect. Check the CA, server domain and credentials.' 3
+    return 1
+  fi
+
   psk=$(gum input --password --placeholder "Leave empty for an open network" \
     --prompt.foreground="#845DF9" --prompt "Password> ") || return 1
 
   if gum spin --spinner pulse --title "Connecting to $ssid..." -- \
     bash -c "$(declare -f port_address wifi_connect); wifi_connect \"\$1\" \"\$2\" \"\$3\"" _ "$ssid" "$psk" "$hidden"; then
     net_mode=wifi net_if=$dev wifi_ssid=$ssid wifi_psk=$psk wifi_hidden=$hidden
+    wifi_enterprise_profile=''
   else
     notice "Could not connect to $ssid" 3
     return 1
@@ -609,27 +624,9 @@ ssh_step() {
 # Optional development trees are downloaded only when selected.
 install_ports=false install_src=false install_cuda=false
 cuda_step() {
-  local inventory
+  # Keep the answer format stable while native Linuxulator qualification is
+  # pending. Do not offer an application that has not passed on FreeBSD.
   install_cuda=false
-  inventory=$(mktemp) || return 1
-  if ! pciconf -l >"$inventory"; then
-    rm -f "$inventory"
-    abort "Could not inspect graphics hardware"
-  fi
-  if ! gpu_select "$inventory" "$ISO_SHARE/gpu-ids"; then
-    rm -f "$inventory"
-    abort "Could not select a graphics driver"
-  fi
-  rm -f "$inventory"
-  [[ $gpu_nvidia == true ]] || return 0
-  step "Optional GPU applications"
-  say "A supported NVIDIA GPU was detected."
-  say "CUDA and the cudalab sample application are optional."
-  say "This downloads the toolkit and builds cudalab; allow 16 GiB extra and additional installation time."
-  if gum confirm --default=false --affirmative "Install" --negative "Skip" "Install CUDA and cudalab?"; then
-    install_cuda=true
-  fi
-  cuda_options_prepare
 }
 
 checkout_step() {
@@ -808,6 +805,7 @@ write_install_conf() {
     printf 'wifi_ssid=%q\n' "$wifi_ssid"
     printf 'wifi_psk=%q\n' "$wifi_psk"
     printf 'wifi_hidden=%q\n' "$wifi_hidden"
+    printf 'wifi_enterprise_profile=%q\n' "$wifi_enterprise_profile"
     printf 'ssh_enable=%q\n' "$ssh_enable"
     printf 'install_ports=%q\n' "$install_ports"
     printf 'install_src=%q\n' "$install_src"

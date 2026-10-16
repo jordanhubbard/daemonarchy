@@ -1,4 +1,6 @@
 #!/usr/local/bin/bash
+# omarchy:summary=Install pinned ports or source checkouts
+# omarchy:args=<ports|src> <owner>
 # Install a pinned shallow working checkout from signed pkg seed payloads.
 set -euo pipefail
 
