@@ -3,7 +3,12 @@
 ## 1.1.0
 
 The next release is **1.1.0**. All work below is in scope; an unchecked item
-is not a claim of working support. There is no release date yet.
+is not a claim of working support. There is no stable release date yet.
+
+[1.1.0-rc.1](https://github.com/jordanhubbard/daemonarchy/releases/tag/daemonarchy-1.1.0-rc.1)
+provides the installable candidate for community testing. All four final QEMU
+installation/desktop configurations and production-key maintenance/recovery
+passed. The unchecked physical Bluetooth, bhyve and hardware gates remain open.
 
 Existing 1.0 installations must remain upgradeable through `pkg upgrade`.
 New installation modes are optional and must preserve the existing whole-disk
@@ -61,7 +66,7 @@ validated packages can ship from the fork while these reviews remain open.
 - [ ] Existing installations upgrade successfully; failed updates remain recoverable. [Exact final application-package upgrade, reboot, ZFS rollback and return from 1.0.1 passed](docs/testing-1.1-upgrade.md), as did development-key signed boot maintenance, injected driver failure and rollback; production-authority GELI/ZFS signed maintenance, altered-candidate rejection, rollback and graphical return also passed; physical upgrade checks remain unqualified.
 - [x] Documentation states supported GPUs, hypervisors, Bluetooth profiles,
       EAP methods, and boot/install combinations precisely.
-- [ ] Package repository, ISO, checksum, and release notes are verified together.
+- [x] Candidate package repository, ISO, checksum, public certificate and release notes verified together; all 26 package-feed and six installer asset hashes/sizes match. Stable promotion remains subject to the open gates above.
 
 Feature status and evidence belong here as work progresses. If a platform
 dependency prevents a feature from shipping, record the blocker and agree on

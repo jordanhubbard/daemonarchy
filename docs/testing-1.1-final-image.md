@@ -3,7 +3,9 @@
 The production-signed candidate built on 2026-10-16 is
 `daemonarchy-1.1.0-amd64.iso`, 2,098,395,136 bytes. Its SHA-256 is
 `891fc6e6ee537bf92aecf035d4e855b8d526aeaf9c27be80166d689289c3acd9`.
-The native image and transferred authoring/test copies matched. It is
+The native image and transferred authoring/test copies matched. GitHub
+independently reports the same ISO digest and size; all six installer asset
+digests and sizes matched their local public inputs before publication. It is
 49,088,512 bytes below the 2 GiB image/release-asset limit.
 
 Published candidate tag: `daemonarchy-1.1.0-rc.1`. This is a prerelease;
