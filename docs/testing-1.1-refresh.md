@@ -131,8 +131,10 @@ BIOS installed and unlocked successfully, but its first installed boot failed
 the SDDM-running assertion. A second boot of that retained disk, using a
 temporary QEMU snapshot, passed every installed-system assertion without
 restarting SDDM manually. The first-boot failure remains unexplained; this is
-not an all-green matrix. Plain UEFI with both optional checkouts is still
-under validation. These checks do not qualify graphical Hyprland operation.
+not an all-green matrix. Plain UEFI with both optional checkouts also passed
+installation, reboot, and verification that each tree is a clean, owned,
+depth-1 Git checkout at its pinned revision. These checks do not qualify
+graphical Hyprland operation.
 
 The published signed checkout repository and all three payload installations
 passed native verification. A subsequent authoring-cache build also passed
