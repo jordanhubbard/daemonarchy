@@ -6,6 +6,7 @@ pkg info -e octopkg
 command -v daemonarchy >/dev/null
 command -v octopkg >/dev/null
 daemonarchy --help | grep -q 'Daemonarchy command center'
+daemonarchy checkouts --help | grep -q 'daemonarchy checkouts'
 /usr/local/bin/python3 - <<'PY'
 import json
 from pathlib import Path

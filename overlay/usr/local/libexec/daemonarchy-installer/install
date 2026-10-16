@@ -383,6 +383,7 @@ EOF
 mkdir -p "$TARGET/usr/local/share/daemonarchy-installer"
 cp "$ISO_SHARE/checkouts.json" "$TARGET/usr/local/share/daemonarchy-installer/checkouts.json"
 install -m 0755 /usr/local/sbin/daemonarchy-checkouts "$TARGET/usr/local/sbin/daemonarchy-checkouts"
+ln -sf ../sbin/daemonarchy-checkouts "$TARGET/usr/local/bin/daemonarchy-checkouts"
 cuda_install_support "$TARGET" "$ISO_SHARE"
 checkout_url=$(jq -er '.repository_url' "$ISO_SHARE/checkouts.json")
 [[ $checkout_url =~ ^https://github.com/jordanhubbard/daemonarchy/releases/download/[a-zA-Z0-9._-]+$ ]] || { echo 'Invalid checkout repository URL' >&2; exit 1; }
