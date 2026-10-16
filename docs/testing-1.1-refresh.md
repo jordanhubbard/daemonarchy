@@ -68,6 +68,10 @@ The first matching-snapshot build exposed two blockers; that run is not green.
   component and the complete native DRM build. The port revision is now 4 at
   fork checkpoint `2417b7c55c8ef8d8cae312382babaecfffe272b5`; package QA and the
   dependent NVIDIA DRM build still need a clean retry.
+  NVIDIA's DRM companion also omitted this generated header from its feature
+  probe prerequisites. Its native build reproduced the missing-header failure
+  and then passed with that prerequisite added. Its port revision is now 2 at
+  `28d8f145fbec62cb70f3d794975985a26a80484b`, which includes both fixes.
 - The base-only jail lacked the optional 32-bit compatibility libraries.
   Installing the published LLVM 19 package failed because it requires
   `libc++.so.1:32`. In a fresh, isolated root populated from the selected base
@@ -84,3 +88,9 @@ validation and materialization into a clean, self-contained, one-commit Git
 checkout at `3ceb5f150bc121f5e6a3e0cc8b289279338405a1`, with only the public
 FreeBSD source remote. The ports seed must be regenerated after the compatibility
 fixes are finalized; no refreshed checkout repository has been published yet.
+
+A finite continuation waits for the original bulk run to stop normally before
+updating the isolated ports tree to `28d8f145fbec`, extracting the verified
+`lib32` set into the builder and jail, and retrying package QA. It reuses finished
+packages; it does not publish packages or images. The original bulk failures
+remain recorded and are not overridden by the successful standalone builds.
