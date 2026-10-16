@@ -81,7 +81,7 @@ You need a FreeBSD 16.0-CURRENT machine (bare metal or a VM with about 8 GB of m
    as LLVM need its 32-bit libraries, and adding it later changes GCC's default
    multilib option and invalidates cached compiler/dependency packages.
 
-2. **A ports tree pinned to the official package set.** Before the next release, refresh [the fork's `omarchy` branch](https://github.com/jordanhubbard/freebsd-ports/tree/omarchy) from [upstream FreeBSD ports](https://github.com/freebsd/freebsd-ports), preserving and testing the Daemonarchy changes. The installer takes most packages from pkg.FreeBSD.org's `latest` set, so the Omarchy ports must be built against the same ports commit. That commit is the newest `ports_top_git_hash` annotation across the set's packages. Builds are incremental, so one package's annotation can be older than the set:
+2. **A ports tree pinned to the official package set.** Before the next release, refresh [the fork's `omarchy` branch](https://github.com/jordanhubbard/freebsd-ports/tree/omarchy) from [upstream FreeBSD ports](https://github.com/freebsd/freebsd-ports), preserving and testing the Daemonarchy changes. For the 1.1 integration, use `daemonarchy-1.1-package-baseline` and the exact revision recorded in [ROADMAP.md](ROADMAP.md). Its upstream baseline matches the published binaries; merging the moving `omarchy` or upstream HEAD into it can invalidate that match. The installer takes most packages from pkg.FreeBSD.org's `latest` set, so the Omarchy ports must be built against the same ports commit. That commit is the newest `ports_top_git_hash` annotation across the set's packages. Builds are incremental, so one package's annotation can be older than the set:
 
    ```
    mkdir -p /tmp/pq/db /tmp/pq/repos
