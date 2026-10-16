@@ -12,7 +12,7 @@ installation path.
 | Work | Implementation scope | Required acceptance evidence | Status |
 | --- | --- | --- | --- |
 | NVIDIA graphics | Detect supported GPUs, package kernel-matched drivers, configure modesetting and the desktop session, and explain unsupported models. | Install and reboot on NVIDIA hardware; SDDM login, Hyprland rendering, external displays, and suspend/resume; Intel/AMD regression checks. | In progress: NVIDIA 595 and DRM 6.12 packages built; selection tests pass; operator hardware matrix pending |
-| Graphical VM desktops | Provide Hyprland through a supported virtual graphics path and configure the login session for it. An alternate desktop does not satisfy this requirement. | Boot the installed image into usable Hyprland in each advertised hypervisor; verify rendering, keyboard, pointer, resizing, and reboot. SSH-only checks do not qualify. | Planned |
+| Graphical VM desktops | Provide Hyprland through a supported virtual graphics path and configure the login session for it. An alternate desktop does not satisfy this requirement. | Boot the installed image into usable Hyprland in each advertised hypervisor; verify rendering, keyboard, pointer, resizing, and reboot. SSH-only checks do not qualify. | In progress: isolated QEMU/VirGL Hyprland rendering, keyboard, pointer, mode switching and reboot passed; integrated DRM testport passed; packaged-image and interactive login qualification pending |
 | Bluetooth beyond input devices | Add audio device pairing, connection, output selection, reconnect, and removal to the FreeBSD backend and panel. Document the supported audio profiles. | Real headset/speaker playback, volume, disconnect/reconnect, and reboot persistence; existing keyboard/mouse pairing still works. | Planned |
 | Enterprise Wi-Fi | Support certificate-validated 802.1X connections in the installer and desktop panel, including PEAP/MSCHAPv2 and EAP-TLS. Preserve credentials and certificate files securely across installation. | Join a test enterprise network with each supported EAP method, reject an untrusted server certificate, reconnect after reboot, and check that credentials stay out of logs. | In progress: profile helper, installer/panel integration, native parser and credential-transfer tests; real EAP exchanges and reboot qualification pending |
 | Remote debug session feedback | Show when an approved agent actually connects, a short description of its current activity, and an explicit completion message telling the operator it is safe to stop the session. Keep the display readable without streaming every command or sensitive data. | Exercise pairing, successful connection, activity changes, reconnects and explicit completion on the local console. An SSH disconnect between commands must not be mistaken for completion; stopping access must still close connections and discard approvals. | Implemented: native SSH lifecycle and console feedback tests passed; inclusion in the final image remains pending |
@@ -86,7 +86,9 @@ any scope change before calling 1.1.0 complete.
   [development check record](docs/testing-1.1-bios.md).
 - VM graphics: `graphics/virtio-gpu-qemu-kmod` in the current ports tree exposes
   a framebuffer for Xorg's `scfb` driver, not the DRM interface needed by
-  Hyprland. Installing that port alone does not satisfy this feature.
+  Hyprland. Installing that port alone does not satisfy this feature. A separate
+  VirtIO DRM/VirGL integration now renders Hyprland in an isolated QEMU guest;
+  see the [development check record](docs/testing-1.1-vm-graphics.md).
 - NVIDIA: the image explicitly packages `nvidia-drm-612-kmod` alongside
   `drm-612-kmod`, keeping the NVIDIA and AMD/Intel payloads on one DRM core. NVIDIA
   595.104.02 userland and kernel packages are built for the selected snapshot.

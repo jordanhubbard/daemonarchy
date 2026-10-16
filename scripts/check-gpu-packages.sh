@@ -18,6 +18,12 @@ for file in "$packages"/*.pkg; do
     drm-612-kmod) case "$version" in 6.12.110.*) ;; *) echo "Refresh the DRM PCI table before changing DRM versions" >&2; exit 1 ;; esac ;;
     linux-nvidia-libs|nvidia-*) case "$version" in 595.104.02|595.104.02.*|595.104.02_*) ;; *) echo "Refresh the NVIDIA PCI table before changing driver versions" >&2; exit 1 ;; esac ;;
   esac
+  if [ "$name" = drm-612-kmod ]; then
+    pkg query -F "$file" '%Fp' | grep -qx '/boot/modules/virtio_gpu_drm.ko' || {
+      echo 'DRM package lacks the VirtIO module required by this installer' >&2
+      exit 1
+    }
+  fi
   abi=$(pkg query -F "$file" '%q')
   case "$name:$abi" in
     gpu-firmware-kmod:FreeBSD:16:\*) ;;

@@ -11,6 +11,18 @@ select_gpu() {
   printf '%s\n' "$@" >"$work/pci"
   gpu_select "$work/pci" "$ids"
 }
+select_gpu 'virtio_pci0@pci0:0:1:0: class=0x030000 vendor=0x1af4 device=0x1050'
+check "$kld_list" virtio_gpu_drm
+check "$gpu_virtio" true
+check "$gpu_vulkan" false
+check "${gpu_userspace_packages[*]}" mesa-dri
+mkdir -p "$work/virtio/boot" "$work/virtio/etc"
+gpu_write_config "$work/virtio"
+grep -qx 'daemonarchy_graphics_modules="virtio_gpu_drm"' "$work/virtio/etc/rc.conf"
+grep -q '^devmatch_blocklist=".* virtio_gpu_drm"$' "$work/virtio/etc/rc.conf"
+select_gpu 'virtio_pci1@pci0:0:2:0: class=0x020000 vendor=0x1af4 device=0x1000'
+check "$kld_list" ''
+check "$gpu_virtio" false
 select_gpu 'vgapci0@pci0:3:0:0: class=0x030000 vendor=0x1002 device=0x7340 subvendor=0x106b subdevice=0x021e'
 check "$kld_list" amdgpu
 check "$gpu_navi14" true

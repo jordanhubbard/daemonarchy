@@ -5,11 +5,12 @@ gpu_select() {
   local inventory=$1 ids=$2 vendor device subvendor subdevice module family
   [[ -r $inventory && -s $ids ]] || { echo 'Missing GPU inventory or selection table' >&2; return 1; }
   gpu_modules=() gpu_packages=() gpu_userspace_packages=()
-  gpu_nvidia=false gpu_other=false gpu_navi14=false gpu_vulkan=false
+  gpu_nvidia=false gpu_other=false gpu_navi14=false gpu_vulkan=false gpu_virtio=false
   while read -r vendor device subvendor subdevice; do
     module='' family=''
     case "$vendor" in
       8086) module=i915kms ;;
+      1af4) [[ $device != 1050 ]] || module=virtio_gpu_drm ;;
       1002|10de)
         read -r module family < <(awk -v v="$vendor" -v d="$device" -v sv="$subvendor" -v sd="$subdevice" '
           $1 == v && $2 == d && ($3 == "*" || $3 == sv) && ($4 == "*" || $4 == sd) { print $5, $6; exit }
@@ -24,6 +25,10 @@ gpu_select() {
       nvidia-drm) gpu_nvidia=true; gpu_vulkan=true ;;
       amdgpu|i915kms) gpu_other=true; gpu_vulkan=true ;;
       radeonkms) gpu_other=true ;;
+      virtio_gpu_drm)
+        gpu_other=true; gpu_virtio=true
+        printf 'VirtIO graphics: Hyprland requires a host display with VirGL 3D enabled.\n' >&2
+        ;;
       *) printf 'GPU %s:%s: no supported desktop driver in this image.\n' "$vendor" "$device" >&2; continue ;;
     esac
     if [[ $module == radeonkms ]]; then
@@ -58,6 +63,9 @@ gpu_select() {
   # Vulkan driver here. CUDA remains a separate NVIDIA extra.
   if $gpu_vulkan; then
     gpu_userspace_packages=(vulkan-loader mesa-dri)
+  elif $gpu_virtio; then
+    # Classic VirGL provides OpenGL; this driver does not implement Venus/Vulkan.
+    gpu_userspace_packages=(mesa-dri)
   fi
   kld_list="${gpu_modules[*]}"
 }
@@ -95,7 +103,7 @@ gpu_write_config() {
     printf '\ndaemonarchy_graphics_enable="YES"\n'
     printf 'daemonarchy_graphics_modules="%s"\n' "${gpu_modules[*]}"
     # Prevent automatic GPU attachment before the ordered graphics service.
-    printf 'devmatch_blocklist="amdgpu radeonkms i915kms nvidia nvidia-modeset nvidia-drm"\n'
+    printf 'devmatch_blocklist="amdgpu radeonkms i915kms nvidia nvidia-modeset nvidia-drm virtio_gpu_drm"\n'
   } >>"$target/etc/rc.conf"
   cat >"$target/etc/rc.conf.d/sddm" <<'EOF_SDDM'
 # Safe Mode and the recovery loader setting must preserve console/SSH access.
