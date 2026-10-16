@@ -101,6 +101,19 @@ def hypr(command):
     return guest("env XDG_RUNTIME_DIR=/var/run/xdg/tester hyprctl -i 0 " + command)
 
 
+def complete_theme_authorization():
+    # Only authorize this known first-run operation in the disposable guest.
+    # Its Quickshell prompt is a layer surface, absent from activewindow.
+    query = "pgrep -f '^pkexec /usr/local/bin/omarchy-theme-set-browser-policy [0-9a-fA-F]{6}$' || true"
+    if guest(query):
+        time.sleep(1)
+        screenshot("desktop-theme-authorization.png")
+        for character in "daemonarchy":
+            key(character)
+        key("ret")
+        wait_for(lambda: not guest(query), "first-run theme authorization", timeout=20)
+
+
 qmp("qmp_capabilities")
 autologin = os.environ.get("ENCRYPT_INSTALLATION") == "true"
 if not autologin and not guest("pgrep -u tester Hyprland || true"):
@@ -118,6 +131,7 @@ assert monitors and monitors[0]["width"] == 1280 and monitors[0]["height"] == 80
 errors = json.loads(hypr("-j configerrors"))
 assert not any(error.strip() for error in errors), errors
 time.sleep(3)
+complete_theme_authorization()
 screenshot("desktop-ready.png")
 before = json.loads(hypr("-j clients"))
 addresses = {client["address"] for client in before}
@@ -134,6 +148,7 @@ page = "data:text/html," + quote(
 browser_command = "omarchy-launch-browser " + shlex.quote(page)
 hypr("dispatch " + shlex.quote('hl.dsp.exec_cmd(' + json.dumps(browser_command) + ')'))
 def browser_ready():
+    complete_theme_authorization()
     window = json.loads(hypr("-j activewindow"))
     if window.get("title") == "Chromium Additional Terms of Service":
         # The upstream first-run dialog needs room for its Accept button.

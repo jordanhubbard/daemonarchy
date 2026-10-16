@@ -153,3 +153,23 @@ the tested driver API/compute path with the shim, not toolkit installation,
 cudalab rendering, every CUDA library, Unified Memory, or installed-system
 Hyprland/display/suspend behavior. NVIDIA WITNESS lock-order warnings remain
 in the kernel diagnostics; the test did not panic.
+
+### ASRock post-recovery boot failure, 2026-10-16
+
+After the recovered installation and live-session CUDA checks, the operator
+reported that the ASRock system no longer visibly boots any operating system.
+DEL, F2 and F11 did not bring up usable firmware setup or the boot menu. A brief
+message said `Screen Optimization is not complete`. Its source has not been
+established; display maintenance and GPU output selection are hypotheses, not
+diagnoses. No post-failure disk or EFI inspection is available.
+
+The recovery above resumed package/configuration work without repeating
+partitioning, base extraction or EFI loader registration. No firmware flash or
+Secure Boot key enrollment was performed on this machine. These facts do not
+establish the cause of the subsequent failure or qualify other-OS preservation.
+
+The operator requested that release work continue and community investigation
+track this unresolved platform failure. Installed Hyprland, display behavior,
+suspend/resume and physical Windows boot preservation remain unverified on this
+system. Release notes must retain this limitation; successful live CUDA testing
+must not be presented as successful installed-system boot qualification.

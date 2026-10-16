@@ -242,3 +242,38 @@ a coherent fresh integration image remains required.
 The update, injected-driver-failure and rollback observations are recorded in
 [the upgrade record](testing-1.1-upgrade.md). Production-authority signing,
 fresh complete image tests and physical enrollment remain separate gates.
+
+## Production authority: isolated firmware/runtime checks
+
+The production authority was created on the protected signing host. Its
+owner-readable private key never went to the authoring worker; only the public
+certificate, public self-test fixture and signed artifacts were exported.
+The self-test fixture's temporary private key was removed after issuance.
+Public material and the DER fingerprint are in
+[`secureboot/certificates`](../secureboot/certificates/README.md).
+
+Appending this certificate only to db in the isolated OVMF store preserved all
+previous entries and every other firmware variable. The authenticated db
+timestamp advanced, which is permitted; identity and attributes stayed intact.
+The checker also rejected a backwards timestamp, extra db entry and changed PK.
+
+The pinned source and same four patches were rebuilt against that public
+authority. The policy kernel SHA-256 is
+`a2e3a6e1e73b09b22da646febb9949390d9ff9da56cf8c6980e462c67308a220`.
+Signing occurred on the protected host. The returned bundle passed independent
+native signature, stock-kernel and boot-tree validation on the authoring worker.
+
+| Actual production-certificate UFS test | Result |
+| --- | --- |
+| Enrolled OVMF, SecureBoot 1 / SetupMode 0 | Verified loader/kernel/manifest, all four policy states, trusted module load/unload and all five runtime probes passed |
+| Same image, firmware enforcement disabled | Stock kernel booted, module policy absent |
+| Original OEM/Microsoft store without the project certificate | Firmware rejected the signed loader with Access Denied before FreeBSD started |
+| One kernel byte changed, original signed manifest retained | Verified loader reported unequal SHA-256 digests and refused the kernel before userland |
+
+The valid test image SHA-256 is
+`140a48782ef0d8ec97ec5440e21b31473aa376706472cd009c0b6eadf41b25c5`;
+the deliberately altered image SHA-256 is
+`d57f41f1f2ea512ef6cb0f48943f9b97bd1491363c85e3ea8ade3446d43f1b61`.
+These actual firmware/runtime checks do not substitute for production-certificate
+installer, installed ZFS/GELI, desktop, update and recovery qualification or
+physical firmware/retained-OS checks. Those release gates remain open.

@@ -24,6 +24,7 @@ User extensions remain user-controlled.
 | GPU screen recording, LocalSend sharing and crash capture | Removed until a native implementation is available |
 | Linux-only browser/editor defaults, dead app shortcuts and automatic agent selection/download | Removed; no implied Linuxulator qualification |
 | Browser web applications | Retained using the FreeBSD Chromium desktop entry through GIO |
+| Browser theme enterprise-policy writer | Disabled on FreeBSD; changing a user theme does not request root access or change administrator-managed browser policies |
 | Foot, imv, mpv, Disk Usage and ported Omarchy applications | Native FreeBSD packages |
 | Unknown new upstream bundled application entries | Excluded until reviewed |
 
