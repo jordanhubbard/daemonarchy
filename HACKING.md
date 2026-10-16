@@ -406,18 +406,32 @@ shared reports.
 
 ### Finish or reconnect
 
-The current console shows pairing information but does not yet show reliable
-connection, activity or completion feedback. The [1.1 roadmap](ROADMAP.md)
-requires those states. Until implemented, the agent should tell the operator
-when connected, give brief activity updates and explicitly say when the work is
-finished. A short SSH command closing its connection does not mean the overall
-debugging task has finished.
+The console announces the first authenticated connection. During the task, the
+agent should send brief, non-sensitive activity updates from its SSH connection:
+
+```sh
+daemonarchy-debug activity 'Checking Wi-Fi connectivity'
+daemonarchy-debug done
+```
+
+The first command updates the local console without streaming commands or their
+output. The second explicitly says that debugging is complete and it is OK to
+stop the session. A short SSH command closing its connection does not mean the
+overall task has finished. Completion itself leaves remote access enabled until
+the operator stops the listener. Older images, including preview.13, lack this
+feedback and require the agent to communicate these states directly.
 
 Once the agent reports completion, press **Enter** or **Ctrl-C** in the local
 listener console. This closes its listener and SSH connections, deletes session
 host keys and approvals, and returns to the debug shell. Rebooting also clears
 them. A new listener session requires pairing again. Stopping access does not
 undo changes already made by the agent.
+
+Run `bash tests/remote-debug-progress.sh` for portable state/command checks and
+`sudo bash tests/remote-debug-session.sh` on FreeBSD for real SSH rejection,
+approval, console feedback, reconnect, SFTP and stop/cleanup checks. The native
+test uses an isolated temporary server on port 23451 (`DEBUG_TEST_PORT` overrides
+it) and does not change the normal SSH configuration.
 
 New installed systems expose the same commands through `daemonarchy-debug`
 (`daemonarchy-debug shell`, `listen`, or `help`). No debug listener starts

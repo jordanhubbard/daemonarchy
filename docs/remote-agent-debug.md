@@ -67,6 +67,15 @@ Start with read-only inventory such as `pciconf -lv`, `camcontrol devlist`,
 terminal (`ssh -t`) when running its forms. Debug pairing does not automatically
 enable normal SSH or copy approved keys into the installed system.
 
+The console reports successful authentication. Keep the operator informed with
+`daemonarchy-debug activity 'Checking Wi-Fi connectivity'` from SSH, then run
+`daemonarchy-debug done` when the whole task is finished. Activity descriptions
+appear on the local console: keep them brief and omit credentials and private
+command output. Closing an individual SSH connection does not mark completion.
+The completion message says it is OK to stop, but leaves access enabled until
+the operator presses Enter or Ctrl-C. These feedback commands require an image
+newer than preview.13; on older images report the same states directly.
+
 ## On an installed system
 
 New installations also include `daemonarchy-debug`. At the root console, run

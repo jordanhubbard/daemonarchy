@@ -1,5 +1,24 @@
 # Remote agent debug preview checks
 
+## Session feedback (2026-10-16)
+
+The matching October 12 FreeBSD CURRENT builder passed a real, isolated SSH
+server lifecycle test using the new helper. It rejected one key without
+announcing a connection, approved a second key, announced authentication on
+the listener console, displayed an explicit activity update, and preserved it
+across subsequent SSH commands. Command output did not appear on that console.
+SFTP continued to work through the authenticated session wrapper. Explicit
+completion displayed the safe-to-stop message; stopping the listener then
+closed a live connection, removed approvals/state and refused reconnection.
+
+`tests/remote-debug-session.sh` retains this reproducible native check. Portable
+progress tests also cover terminal-control sanitization, duplicate-message
+suppression and rejection of updates after stopping. The native rescue-setup
+idempotence check passed as well. These changes are newer than preview.13 and
+still require final-image qualification.
+
+## Earlier preview checks
+
 Tested on 2026-10-13 in a bhyve guest on bare-metal AMD hardware. The guest
 had 2 CPUs, 2 GiB wired RAM and the live ISO only: `kern.disks` reported
 `cd0`, with no installation disk attached. The ISO root remained read-only.

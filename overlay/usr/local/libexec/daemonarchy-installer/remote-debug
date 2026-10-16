@@ -7,6 +7,46 @@ self=/usr/local/libexec/daemonarchy-installer/remote-debug
 
 fail() { echo "Remote debug: $*" >&2; exit 1; }
 
+write_progress() {
+  local message=$1 temporary
+  [[ $(id -u) == 0 && -f $state/active ]] || fail 'No active remote debug session.'
+  temporary=$(mktemp "$state/.progress.XXXXXX")
+  printf '%s\n' "$message" >"$temporary"
+  mv "$temporary" "$state/progress"
+}
+
+debug_activity() {
+  local message
+  # Keep terminal escapes, control characters and long command output off the console.
+  message=$(printf '%s' "$*" | LC_ALL=C tr '\n\r\t' '   ' | LC_ALL=C tr -cd '\040-\176' | cut -c 1-160)
+  [[ -n ${message// /} ]] || fail 'Describe the current activity.'
+  write_progress "Activity: $message"
+}
+
+debug_session() {
+  [[ -f $state/active ]] || fail 'Remote access has stopped.'
+  # ForceCommand runs only after successful authentication, including reconnects.
+  if mkdir "$state/connected" 2>/dev/null; then
+    write_progress 'Agent connected successfully. Remote debugging is under way.'
+  fi
+  case ${SSH_ORIGINAL_COMMAND:-} in
+    '') exec /bin/sh -l ;;
+    internal-sftp) exec /usr/libexec/sftp-server ;;
+    *) exec /bin/sh -c "$SSH_ORIGINAL_COMMAND" ;;
+  esac
+}
+
+show_progress() {
+  local progress
+  if [[ -f $state/progress ]]; then
+    progress=$(cat "$state/progress")
+    if [[ $progress != "${last_progress:-}" ]]; then
+      printf '\n%s\n' "$progress"
+      last_progress=$progress
+    fi
+  fi
+}
+
 authorize() {
   local type=$1 key=$2 fingerprint=$3 request temporary i
   [[ -d $state/requests && -f $state/active ]] || exit 1
@@ -79,6 +119,7 @@ AllowAgentForwarding no
 AllowTcpForwarding no
 X11Forwarding no
 Subsystem sftp internal-sftp
+ForceCommand $self session
 EOF
   /usr/sbin/sshd -t -f "$state/sshd_config"
   touch "$state/active"
@@ -103,11 +144,12 @@ show_status() {
   echo
   echo 'The agent should use a temporary SSH key and tell you its fingerprint.'
   echo 'Approve only the matching fingerprint when the pairing request appears.'
+  echo 'Waiting for an authenticated agent. Connection and progress will appear here.'
   echo 'Press Enter to stop remote access and return to the debug shell.'
 }
 
 debug_listen() {
-  local port=${1:-2222} request fingerprint answer
+  local port=${1:-2222} request fingerprint answer last_progress=''
   echo "Pairing grants the approved agent root access until you stop this listener."
   printf 'Enable remote access on port %s? [y/N] ' "$port"
   IFS= read -r answer || return 0
@@ -115,6 +157,7 @@ debug_listen() {
   start_server "$port"
   show_status
   while kill -0 "$server_pid" 2>/dev/null; do
+    show_progress
     for request in "$state"/requests/*; do
       [[ -f $request ]] || continue
       [[ ! -e $state/${request##*/}.approved && ! -e $state/${request##*/}.denied ]] || continue
@@ -160,6 +203,13 @@ Start console-approved remote access after networking works:
   remote-debug listen          # port 2222
   remote-debug listen 2207     # custom port
 
+From an approved SSH connection, report brief progress and explicit completion:
+  daemonarchy-debug activity 'Checking Wi-Fi connectivity'
+  daemonarchy-debug done
+
+Disconnecting SSH does not mark the debugging task complete. Completion leaves
+access enabled until the console operator stops the listener.
+
 The listener asks before enabling access and before pairing each new key.
 Press Enter or Ctrl-C in the listener to stop it and return to this shell.
 Run help (or remote-debug help) to show these debugging instructions again.
@@ -185,8 +235,11 @@ debug_shell() {
 
 case ${1:-shell} in
   authorize) [[ $# == 4 ]] || exit 1; authorize "$2" "$3" "$4" ;;
+  session) [[ $# == 1 ]] || exit 1; debug_session ;;
+  activity) shift; debug_activity "$@" ;;
+  done) [[ $# == 1 ]] || fail 'Usage: remote-debug done'; write_progress 'Remote debugging complete. It is OK to stop this session (press Enter).' ;;
   shell|menu) debug_shell ;;
   listen) [[ $# -le 2 ]] || fail 'Usage: remote-debug listen [port]'; debug_listen "${2:-2222}" ;;
   help) debug_help ;;
-  *) fail 'Usage: remote-debug [shell | listen [port] | help]' ;;
+  *) fail 'Usage: remote-debug [shell | listen [port] | activity DESCRIPTION | done | help]' ;;
 esac
