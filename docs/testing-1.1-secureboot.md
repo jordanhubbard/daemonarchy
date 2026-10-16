@@ -139,3 +139,58 @@ certificate input, key/certificate mismatch, file/directory symlink escapes,
 verification-control files and exclusion of another OS's ESP contents. These
 are authoring and development-image checks; the production release gates above
 remain open.
+
+## Reusable build, mode selection and enrollment checks
+
+Further native checks on 2026-10-16 used `secureboot/build.py` against the same
+pinned source and the current three downstream patches. The recipe built the
+policy kernel and verified/normal EFI loaders, retaining build receipts and
+logs. Verification testing mode was disabled; SHA-256, SHA-384 and certificate
+self-tests and the verified manifest handoff were enabled. Vector-context
+verification was disabled so raw boot-file loads use the strict verification
+path too. A prepared source retry was checked against exactly the pinned base
+plus all patches using a separate Git index before compiling.
+
+The external module inventory hashed 997 native relocatable modules from 186
+packages in the validated candidate repository. Optional absent modules are
+skipped at manifest registration; present files remain subject to their signed
+fingerprints. Symlink aliases use their canonical inode's runtime entry.
+
+For enrollment, a disposable OVMF store first contained existing PK, KEK, db,
+dbx and Microsoft trust entries. The development Daemonarchy certificate was
+then appended only to db. JSON exports proved every other variable unchanged
+and all prior db bytes retained, with the expected DER certificate appended.
+`tests/check-enrollment.py` passed that evidence and rejected a deliberately
+changed PK variable. This is an isolated firmware-store test, not physical
+firmware enrollment or a Windows boot test. No private key was transferred.
+
+The same signed image passed three actual boots:
+
+| Firmware mode | Result |
+| --- | --- |
+| Enforced UEFI using the appended certificate and preserved trust store | `SecureBoot: 1, SetupMode: 0`; untrusted stock kernel and raw module rejected; trusted policy kernel automatically selected; all handoff, module-admission, protected-interface and ordinary-user-program probes passed |
+| UEFI with Secure Boot disabled | Stock kernel booted; module policy absent |
+| Legacy BIOS | Stock kernel booted; module policy absent |
+
+The GPT image SHA-256 was
+`a93570ee69bfd6b2b8969e75e6d1331f1d4e5ce8688d89720aea5173a84bbab7`;
+its gzip SHA-256 was
+`fda69c30abec2aa5731b4682306326f28f0b0cf718e0f3a32a0df308c791cc19`.
+The policy kernel SHA-256 was
+`c9cb347915c7797b35c427937da7e95280826d2c981f3350f038897d3fe742e7`.
+Retained serial logs passed the `preload-rejection`, `uefi-off` and
+`bios-normal` checks. An earlier mode-selection build is retained as a failure:
+enforcement correctly rejected the untrusted stock kernel, but the EFI state
+hook had been compiled out. The corrected state hook lives in the EFI
+initializer and does not introduce EFI references into the other loaders.
+
+Separately, `prepare-boot-tree.sh` prepared a clean boot-only tree from verified
+cached sets, with no disposable test probes. Its signed maintenance bundle was
+approximately 10 MiB and passed the native bundle/tree validator. Twenty-three
+authoring/archive/offline-tree tests passed on both macOS and native FreeBSD.
+The [upgrade record](testing-1.1-upgrade.md) describes the native rejected-stage
+check against a mismatched older snapshot.
+
+These are still development-key and disposable UFS/VM checks. Production
+signing, installer integration, enforced ZFS/GELI installation and signed
+update/recovery qualification remain open.

@@ -521,6 +521,15 @@ See [the sizing report](docs/optional-source-sizing.md) for `/usr/ports` and
 These development installer options require archives pinned to the release
 ports integration and the installed FreeBSD snapshot.
 
+### Secure Boot development
+
+Secure Boot development is documented separately in
+[`secureboot/README.md`](secureboot/README.md), with the
+[manual-enrollment contract](docs/secure-boot.md) and
+[native development evidence](docs/testing-1.1-secureboot.md). Current published
+images do not implement that production path. Its private signing key must stay
+off build payloads and public images.
+
 ### Building live checkout packages
 
 The optional trees are **depth-1 shallow Git checkouts**, not full repository
@@ -536,7 +545,7 @@ printed in the selected kernel's build identity:
 ```sh
 python3 scripts/build-checkout-packages.py --kind ports \
   --repo /usr/local/poudriere/ports/omarchyiso --revision <ports-commit> \
-  --branch omarchy --remote https://github.com/jordanhubbard/freebsd-ports.git \
+  --branch daemonarchy-1.1-package-baseline --remote https://github.com/jordanhubbard/freebsd-ports.git \
   --out /path/to/checkout-repo
 python3 scripts/build-checkout-packages.py --kind src \
   --repo /usr/src --revision <kernel-source-commit> \
@@ -544,14 +553,14 @@ python3 scripts/build-checkout-packages.py --kind src \
   --out /path/to/checkout-repo
 python3 scripts/make-checkout-catalog.py /path/to/checkout-repo \
   --url https://github.com/jordanhubbard/daemonarchy/releases/download/<checkout-tag> \
-  --ports-tracking-branch daemonarchy-1.1-iso \
+  --ports-tracking-branch daemonarchy-1.1-package-baseline \
   > /path/to/checkout-repo/checkouts.json
 sudo pkg repo /path/to/checkout-repo /usr/local/etc/daemonarchy/pkg-repo.key
 ```
 
-`--depth` defaults to 1. The current image integration is published on the fork's
-`daemonarchy-1.1-iso` branch; the local ports branch is named `omarchy` and tracks
-that integration branch. Default fetches are restricted to one branch. Payloads are split into 512 MiB parts before packaging,
+`--depth` defaults to 1. The current candidate package integration is on the fork's
+`daemonarchy-1.1-package-baseline` branch; the checkout tracks that integration
+branch. Default fetches are restricted to one branch. Payloads are split into 512 MiB parts before packaging,
 keeping each asset below 2 GiB. Publish the signed repository at a dedicated,
 release-specific tag, packages first and catalogues last. Retain that tag for
 older installations. Pass `CHECKOUT_CATALOG=/path/to/checkout-repo/checkouts.json`

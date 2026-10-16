@@ -7,8 +7,10 @@ running system. Install/update callers must prepare a separate tree first.
 import argparse
 import base64
 import hashlib
+import json
 import os
-from pathlib import Path
+from pathlib import Path, PurePosixPath
+import re
 import subprocess
 import tempfile
 
@@ -67,7 +69,10 @@ def sign(args):
     if root == Path("/"):
         raise ValueError("Use a disposable staging tree, never the running root")
     boot = root / "boot"
-    if boot.is_symlink() or not (boot / "kernel/kernel").is_file():
+    kernel_path = args.kernel_path
+    if kernel_path not in ("kernel/kernel", "kernel.secure/kernel"):
+        raise ValueError("Unsupported policy kernel path")
+    if boot.is_symlink() or not (boot / kernel_path).is_file():
         raise ValueError("Expected a real /boot directory with a staged kernel")
     key = args.key.resolve(strict=True)
     certificate = args.certificate.resolve(strict=True)
@@ -90,9 +95,51 @@ def sign(args):
     for name, _ in entries:
         if Path(name).name.startswith("loader.ve."):
             raise ValueError("Verification-control files must not enter a release tree")
-    modules = [(name, path) for name, path in entries
-               if name == "kernel/kernel" or
-               (name.startswith(("kernel/", "modules/")) and name.endswith(".ko"))]
+    modules = {name: digest(path) for name, path in entries
+               if not path.is_symlink() and (name == kernel_path or
+               (name.startswith(("kernel/", "kernel.secure/", "modules/"))
+                and name.endswith(".ko")))}
+    additional = {}
+    if args.module_inventory is not None:
+        receipt = json.loads(args.module_inventory.read_text())
+        if (not isinstance(receipt, dict) or receipt.get("schema") != 1 or
+                receipt.get("osversion") != 1600027 or
+                not isinstance(receipt.get("modules"), dict)):
+            raise ValueError("Unsupported release module inventory")
+        for name, fingerprint in receipt["modules"].items():
+            if not isinstance(name, str) or not isinstance(fingerprint, str):
+                raise ValueError("Invalid signed module inventory entry")
+            path = PurePosixPath(name)
+            if (not name.startswith("/boot/modules/") or not name.endswith(".ko") or
+                    ".." in path.parts or any(c in name for c in "\r\n\0") or
+                    not re.fullmatch("[0-9a-f]{64}", fingerprint)):
+                raise ValueError("Invalid signed module inventory entry")
+            relative = name.removeprefix("/boot/")
+            if relative in modules and modules[relative] != fingerprint:
+                raise ValueError("Local and packaged module fingerprints conflict")
+            additional[relative] = fingerprint
+        modules.update(additional)
+    if args.build_receipt is None:
+        raise ValueError("A matching kernel/loader build receipt is required")
+    build = json.loads(args.build_receipt.read_text())
+    required_options = {"WITH_LOADER_VERIEXEC=yes", "WITH_LOADER_EFI_SECUREBOOT=yes",
+                        "WITH_LOADER_VERIEXEC_PASS_MANIFEST=yes", "VE_SELF_TESTS=yes",
+                        "WITHOUT_LOADER_VERIEXEC_TESTING=yes",
+                        "WITHOUT_LOADER_VERIEXEC_VECTX=yes"}
+    if (not isinstance(build, dict) or build.get("schema") != 1 or
+            not required_options.issubset(build.get("loader_options", [])) or
+            build.get("kernel_sha256") != digest(boot / kernel_path) or
+            build.get("unsigned_loader_sha256") != digest(args.loader.resolve(strict=True)) or
+            build.get("trust_anchor_sha256") != digest(certificate) or
+            build.get("source_patch_sha256") != digest(
+                Path(__file__).resolve().parent / "patches/module-policy.patch") or
+            build.get("loader_patch_sha256") != digest(
+                Path(__file__).resolve().parent / "patches/loader-rootpool.patch") or
+            build.get("optional_verification_patch_sha256") != digest(
+                Path(__file__).resolve().parent / "patches/efi-optional-verification.patch")):
+        raise ValueError("Boot inputs do not match the required verified build receipt")
+    if args.module_inventory is not None and receipt.get("source_revision") != build.get("base_source"):
+        raise ValueError("Module inventory and kernel source revisions differ")
     with tempfile.TemporaryDirectory(prefix="daemonarchy-sign-") as temp:
         temp = Path(temp)
         public = temp / "public.pem"
@@ -118,7 +165,8 @@ def sign(args):
             "-o", str(signed_loader), str(args.loader.resolve(strict=True)))
         replace(boot / "loader.efi", signed_loader.read_bytes())
         manifest("runtime.manifest", "".join(
-            f"/boot/{name} sha256={digest(path)}\n" for name, path in modules).encode())
+            f"/boot/{name} sha256={fingerprint}\n"
+            for name, fingerprint in sorted(modules.items())).encode())
 
         def mutable(name):
             # Configuration can select only code whose fingerprint the loader
@@ -127,10 +175,12 @@ def sign(args):
                     (name.startswith("loader.conf.d/") and name.endswith(".conf")) or
                     name.endswith((".hints", ".symbols")))
 
-        entries = sorted(inventory(root))
+        entries = {name: digest(path) for name, path in inventory(root)}
+        entries.update(additional)
         manifest("manifest", "".join(
-            f"{name} sha256={digest(path)}\n" for name, path in entries
+            f"{name} sha256={fingerprint}\n" for name, fingerprint in sorted(entries.items())
             if name not in ("manifest", "manifest.sig", "manifest.certs")
+            and (not name.endswith("/kernel") or name == kernel_path)
             and not mutable(name)).encode())
     print("Signed loader, boot manifest and kernel-module manifest; no private key copied.")
 
@@ -142,6 +192,12 @@ if __name__ == "__main__":
                         help="verified-loader build, before PE signing")
     parser.add_argument("--certificate", type=Path, required=True)
     parser.add_argument("--key", type=Path, required=True)
+    parser.add_argument("--kernel-path", default="kernel/kernel",
+                        choices=("kernel/kernel", "kernel.secure/kernel"))
+    parser.add_argument("--module-inventory", type=Path,
+                        help="native release module-inventory.py receipt")
+    parser.add_argument("--build-receipt", type=Path, required=True,
+                        help="build.py receipt matching kernel, loader and trust anchor")
     args = parser.parse_args()
     try:
         sign(args)

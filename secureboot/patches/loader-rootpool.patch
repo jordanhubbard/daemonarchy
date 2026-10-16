@@ -1,0 +1,28 @@
+--- a/stand/efi/loader/main.c
++++ b/stand/efi/loader/main.c
+@@ -612,6 +612,25 @@
+ 	uint64_t extra;
+ 	int rv;
+ 	char *rootdev;
++
++#ifdef EFI_ZFS_BOOT
++	/* Select this pool's active BE, rather than pinning a dataset forever. */
++	rootdev = getenv("daemonarchy_rootpool");
++	if (rootdev != NULL) {
++		char *end;
++		uint64_t pool_guid;
++
++		errno = 0;
++		pool_guid = strtoull(rootdev, &end, 10);
++		if (*rootdev < '0' || *rootdev > '9' || *end != '\0' ||
++		    errno == ERANGE || pool_guid == 0 ||
++		    !probe_zfs_currdev(pool_guid)) {
++			printf("Configured Daemonarchy ZFS boot pool is unavailable\n");
++			return (ENXIO);
++		}
++		return (0);
++	}
++#endif
+ 
+ 	/*
+ 	 * First choice: if rootdev is already set, use that, even if

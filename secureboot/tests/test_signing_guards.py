@@ -1,6 +1,7 @@
 """Authoring safety checks; real firmware/kernel checks use runtime serial logs."""
 import argparse
 import importlib.util
+import json
 from pathlib import Path
 import subprocess
 import tempfile
@@ -39,7 +40,8 @@ class SigningGuards(unittest.TestCase):
         (self.root / "boot/manifest").write_bytes(b"unchanged")
         self.args = argparse.Namespace(
             root=self.root, loader=self.keys / "not-a-loader",
-            key=self.keys / "first.key", certificate=self.keys / "first.pem")
+            key=self.keys / "first.key", certificate=self.keys / "first.pem",
+            kernel_path="kernel/kernel", module_inventory=None, build_receipt=None)
 
     def reject(self, reason):
         with self.assertRaisesRegex(ValueError, reason):
@@ -91,6 +93,28 @@ class SigningGuards(unittest.TestCase):
     def test_verification_disable_file(self):
         (self.root / "boot/loader.ve.off").touch()
         self.reject("Verification-control files")
+
+    def test_inventory_path_escape(self):
+        self.args.module_inventory = Path(self.temp.name) / "modules.json"
+        self.args.module_inventory.write_text(json.dumps(dict(
+            schema=1, osversion=1600027,
+            modules={"/boot/modules/../../escape.ko": "a" * 64})))
+        self.reject("Invalid signed module inventory entry")
+
+    def test_inventory_bad_fingerprint(self):
+        self.args.module_inventory = Path(self.temp.name) / "modules.json"
+        self.args.module_inventory.write_text(json.dumps(dict(
+            schema=1, osversion=1600027, modules={"/boot/modules/driver.ko": "invalid"})))
+        self.reject("Invalid signed module inventory entry")
+
+    def test_inventory_wrong_snapshot(self):
+        self.args.module_inventory = Path(self.temp.name) / "modules.json"
+        self.args.module_inventory.write_text(json.dumps(dict(
+            schema=1, osversion=1600026, modules={})))
+        self.reject("Unsupported release module inventory")
+
+    def test_build_receipt_required(self):
+        self.reject("matching kernel/loader build receipt is required")
 
     def test_esp_excluded(self):
         (self.root / "boot/efi/EFI/Microsoft").mkdir(parents=True)
