@@ -84,3 +84,36 @@ FreeBSD [bug 287342's initial report](https://lists.freebsd.org/archives/freebsd
 concerns Arrow Lake desktop I/O instability after boot on different hardware.
 It does not establish an explanation for this early installer reset. No exact
 FreeBSD Raider/285HX reset duplicate was identified in the searches so far.
+
+## ASRock X570 Taichi: preview.13 live boot and Wi-Fi
+
+Observed 2026-10-15/16 through the console-approved remote debug listener.
+
+- AMD Ryzen 9 3950X, 32 GiB RAM.
+- NVIDIA GeForce RTX 4090, PCI `10de:2684` (ASUS subsystem `1043:88ef`).
+- Intel Wi-Fi 6 AX200, PCI `8086:2723`, using `iwlwifi`.
+- The USB root identifies itself as preview.13; the running kernel is the
+  selected October 12 snapshot, `3ceb5f150bc1`.
+
+The image boots to its live installer and permits a root SSH session over Wi-Fi.
+WPA2 authentication completed and DHCP assigned an address and default route.
+The primary DHCP-provided resolver timed out on direct queries; the secondary
+resolver and gateway resolver answered. Reordering the existing DNS servers to
+put the responsive secondary first made bounded hostname lookup and package
+repository HTTPS probes pass. This was a live-session change; long-term Wi-Fi
+stability and persistence across an installed-system reboot are not qualified.
+
+The kernel log also contains an `iwlwifi0_com_lo -> ifnet_sx` lock-order warning,
+Bluetooth HCI timeouts and USB re-enumeration failures. These are recorded
+observations, not demonstrated causes of the DNS failures. The diagnostic image
+had verbose boot enabled. Capturing `dmesg`, then setting `debug.bootverbose=0`
+and `kern.consmute=1`, quieted console output while retaining the kernel log.
+
+NVIDIA modules were not loaded during this inventory. PCI detection and a live
+CLI boot do not qualify the NVIDIA driver, Hyprland, displays or suspend/resume.
+All internal disks were allocated; no disk or partition was selected for writing.
+
+The source installer now puts an eight-second outer timeout around its package
+probe, including DNS resolution. Portable error/recovery tests and a native
+FreeBSD test with a deliberately stalled fetch process passed. This fix is
+newer than the already-built preview.13 image and needs a subsequent image.

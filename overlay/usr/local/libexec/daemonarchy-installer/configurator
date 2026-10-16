@@ -235,9 +235,16 @@ wifi_ssid="" wifi_psk="" wifi_hidden=false
 wifi_enterprise_profile=""
 
 online() {
+  local status=0
   # Preserve fetch's diagnostic: DNS, TLS, HTTP and timeouts all used to be
   # flattened into "not connected", even with a working DHCP lease and route.
-  network_probe_error=$(LC_ALL=C fetch -q -T 5 -o /dev/null https://pkg.FreeBSD.org/ 2>&1)
+  # fetch's I/O timeout does not bound the resolver's retries against a dead DNS
+  # server. Keep the interactive form responsive even before fetch connects.
+  network_probe_error=$(LC_ALL=C timeout 8 fetch -q -T 5 -o /dev/null https://pkg.FreeBSD.org/ 2>&1) || status=$?
+  if ((status == 124)); then
+    network_probe_error='DNS lookup or package repository connection timed out after 8 seconds.'
+  fi
+  return "$status"
 }
 
 network_failure() {

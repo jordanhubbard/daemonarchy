@@ -14,6 +14,12 @@ fetch() {
   printf '%s\n' "$fetch_error" >&2
   return "$fetch_status"
 }
+timeout() {
+  [[ $1 == 8 ]]
+  shift
+  if [[ ${timeout_status:-0} != 0 ]]; then return "$timeout_status"; fi
+  "$@"
+}
 date() {
   if [[ $* == '-u +%Y' ]]; then echo "$mock_year"; else echo "$mock_year-01-04 14:07:53 UTC"; fi
 }
@@ -69,4 +75,25 @@ network_step >"$work/messages"
 grep -qx Continue "$work/options"
 grep -Fq 'Package repository reachable securely through ue0.' "$work/messages"
 ! grep -Fq 'request failed' "$work/messages"
+
+# A resolver stall must produce a useful bounded-probe error, even if fetch
+# never gets far enough to emit a diagnostic of its own.
+timeout_status=124
+network_step allow-offline >"$work/messages"
+grep -Fq 'DNS lookup or package repository connection timed out after 8 seconds.' "$work/messages"
+grep -Fq 'The package request timed out.' "$work/messages"
+timeout_status=0
+
+if [[ $(uname -s) == FreeBSD ]]; then
+  # Exercise the real native timer against a fetch process that never connects.
+  mkdir "$work/bin"
+  printf '#!/bin/sh\nexec sleep 30\n' >"$work/bin/fetch"
+  chmod 755 "$work/bin/fetch"
+  PATH="$work/bin:$PATH"
+  timeout() { command timeout "$@"; }
+  start=$SECONDS
+  ! online
+  ((SECONDS - start >= 7 && SECONDS - start < 15))
+  [[ $network_probe_error == *'timed out after 8 seconds.' ]]
+fi
 echo 'PASS: clock, TLS, DNS, route, timeout and unknown errors; install gate and recovery'

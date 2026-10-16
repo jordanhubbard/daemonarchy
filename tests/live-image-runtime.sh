@@ -47,7 +47,7 @@ else
   grep -q '^devmatch_blocklist=.*apple_bce.*amdgpu' /boot/loader.conf.local
   echo 'PASS: explicit private rescue image has protected authorization and blocked drivers'
 fi
-for tool in sh bash gum jq pkg pkg-static fetch ssh sshd tar xz zpool zfs gpart \
+for tool in sh bash gum jq pkg pkg-static fetch timeout ssh sshd tar xz zpool zfs gpart \
   geli efibootmgr mount umount pw sysrc ifconfig wpa_supplicant \
   wpa_cli dhclient ntpd date file ldd; do
   command -v "$tool" >/dev/null || { echo "Missing live tool: $tool" >&2; exit 1; }
