@@ -31,5 +31,14 @@ for theme in /usr/local/share/icons/*/; do
 	[ -f "$theme/index.theme" ] && run gtk-update-icon-cache -q -f "$theme"
 done
 run fc-cache -s
+# The linux_base scripts also use absolute paths. Run their cache setup inside
+# the target, after the installer has enabled its Linux ABI prerequisites.
+if [ -x /compat/linux/usr/sbin/ldconfig ]; then
+  mkdir -p /compat/linux/dev/shm /compat/linux/proc /compat/linux/sys
+  /compat/linux/usr/sbin/ldconfig || exit 1
+  if [ -x /compat/linux/usr/bin/gio-querymodules-64 ]; then
+    /compat/linux/usr/bin/gio-querymodules-64 /usr/lib64/gio/modules || exit 1
+  fi
+fi
 true
 '

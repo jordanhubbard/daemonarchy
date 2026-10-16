@@ -28,7 +28,7 @@ daemonarchy_graphics_start()
     fi
     for module in $daemonarchy_graphics_modules; do
         case "$module" in
-            linux|amdgpu|radeonkms|i915kms|nvidia-drm) ;;
+            linux|linux64|amdgpu|radeonkms|i915kms|nvidia-drm|virtio_gpu_drm) ;;
             *) echo "Unsupported graphics module: $module" >>"$log"; return 1 ;;
         esac
         echo "Loading $module after SSH startup" >>"$log"

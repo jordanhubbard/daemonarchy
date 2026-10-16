@@ -18,12 +18,17 @@ kldload() { echo "$1" >>"$work/loaded"; [[ $fail_module != "$1" ]]; }
 reset_case() {
   : >"$work/loaded"
   safe=NO ssh_ready=YES sddm_enable=YES sshd_enable=YES fail_module=''
-  daemonarchy_graphics_modules='linux nvidia-drm'
+  daemonarchy_graphics_modules='linux linux64 nvidia-drm'
 }
 reset_case
 daemonarchy_graphics_start
-printf 'linux\nnvidia-drm\n' >"$work/expected"
+printf 'linux\nlinux64\nnvidia-drm\n' >"$work/expected"
 cmp "$work/expected" "$work/loaded"
+[[ -f $work/ready ]]
+reset_case
+daemonarchy_graphics_modules=virtio_gpu_drm
+daemonarchy_graphics_start
+grep -qx virtio_gpu_drm "$work/loaded"
 [[ -f $work/ready ]]
 for disabled in safe sddm ssh; do
   reset_case

@@ -117,3 +117,39 @@ The source installer now puts an eight-second outer timeout around its package
 probe, including DNS resolution. Portable error/recovery tests and a native
 FreeBSD test with a deliberately stalled fetch process passed. This fix is
 newer than the already-built preview.13 image and needs a subsequent image.
+
+### RTX 4090 driver and CUDA follow-up, 2026-10-16
+
+The operator's subsequent preview.13 installation stopped at
+`linux_base-rl9-9.8` with `kernel missing 64-bit Linux support`. The live kernel
+had neither Linux ABI module loaded. Loading `linux` and `linux64` exposed
+`kern.features.linux64: 1`; resuming only the package/configuration stages
+completed the installation. Partitioning and base extraction were not repeated.
+The installed recovery commands and Bash were already present before recovery.
+Linux post-install caches were rebuilt inside the target, and its pool was
+cleanly exported after testing.
+
+The installed target has driver `595.104.02`, matching Linux NVIDIA libraries,
+NVIDIA DRM `595.104.02.1600027_2`, core `omarchy-4.0.4_16` and desktop
+`daemonarchy-1.0.1_2,1`. This is the recovered preview, not final 1.1 evidence.
+Testing loaded its matching `nvidia.ko` into the still-running stock live
+kernel; it did not reboot into the installed desktop.
+
+- Native `nvidia-smi` reported NVIDIA GeForce RTX 4090, PCI bus `0e:00.0`,
+  24,564 MiB VRAM, 49 C and driver 595.104.02. Its CUDA-version field was N/A.
+- The Linux `nvidia-smi` ran through the Linuxulator and reported the same GPU
+  and driver, with CUDA-version capability 13.2. That field alone does not
+  qualify a CUDA workload or mean the toolkit is installed.
+- The Linux executable built from `tests/cuda-probe.c` failed `cuInit` with
+  error 304 without interposition. With the repository's UVM shim preloaded,
+  it initialized CUDA, created a context, JIT-loaded an Ada PTX kernel,
+  allocated GPU memory, copied input to it, launched and synchronized the
+  kernel, and copied the correct result (42) back to the CPU. Cleanup passed.
+- Linux proc/sys mounts and the target devfs were unmounted after testing.
+  The target pool was exported again; the operator retains control of reboot.
+
+The optional toolkit was not selected (`install_cuda=false`). This qualifies
+the tested driver API/compute path with the shim, not toolkit installation,
+cudalab rendering, every CUDA library, Unified Memory, or installed-system
+Hyprland/display/suspend behavior. NVIDIA WITNESS lock-order warnings remain
+in the kernel diagnostics; the test did not panic.

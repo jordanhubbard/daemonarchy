@@ -40,7 +40,7 @@ select_gpu 'vgapci0@pci0:1:0:0: class=0x030000 vendor=0x1002 device=0x67ef'
 check "$kld_list" amdgpu
 for device in 2182 1e04 2204 2684 2b85; do
   select_gpu "vgapci0@pci0:1:0:0: class=0x030000 vendor=0x10de device=0x$device"
-  check "$kld_list" 'linux nvidia-drm'
+  check "$kld_list" 'linux linux64 nvidia-drm'
   check "$gpu_vulkan" true
   check "${gpu_packages[*]}" 'nvidia-driver nvidia-kmod nvidia-drm-612-kmod linux-nvidia-libs'
   check "${gpu_userspace_packages[*]}" 'vulkan-loader mesa-dri'
@@ -66,7 +66,7 @@ select_gpu \
   'vgapci0@pci0:0:2:0: class=0x030000 vendor=0x8086 device=0x3e9b' \
   'vgapci1@pci0:1:0:0: class=0x030200 vendor=0x10de device=0x2684' \
   'vgapci2@pci0:2:0:0: class=0x030000 vendor=0x10de device=0x2684'
-check "$kld_list" 'linux i915kms nvidia-drm'
+check "$kld_list" 'linux linux64 i915kms nvidia-drm'
 mkdir -p "$work/mixed/boot"
 gpu_write_config "$work/mixed"
 [[ ! -e $work/mixed/usr/local/share/uwsm/env.d/90-daemonarchy-nvidia ]]
@@ -96,4 +96,19 @@ select_gpu 'vgapci0@pci0:1:0:0: class=0x030000 vendor=0x10de device=0x2684'
 rm "$work/repo/All/nvidia-kmod-1.0.pkg"
 if gpu_resolve_packages "$work/manifest" "$work/repo"; then echo 'Accepted missing kmod' >&2; exit 1; fi
 if gpu_select "$work/pci" "$work/missing-ids"; then echo 'Accepted missing table' >&2; exit 1; fi
-echo 'PASS: GPU selection, legacy exclusion, mixed GPU environment, and payload admission'
+(
+  gpu_nvidia=true
+  kldstat() { return 1; }
+  kldload() { echo "$1" >>"$work/live-loaded"; }
+  sysctl() { echo 1; }
+  gpu_prepare_live_compat
+  printf 'linux\nlinux64\n' >"$work/live-expected"
+  cmp "$work/live-expected" "$work/live-loaded"
+  sysctl() { return 1; }
+  if gpu_prepare_live_compat; then echo 'Missing Linux64 support accepted' >&2; exit 1; fi
+  kldload() { return 1; }
+  if gpu_prepare_live_compat; then echo 'Failed compatibility load accepted' >&2; exit 1; fi
+  gpu_nvidia=false
+  gpu_prepare_live_compat
+)
+echo 'PASS: GPU selection, live Linux ABI prerequisites, mixed GPU environment, and payload admission'

@@ -102,6 +102,7 @@ pciconf -l >"$gpu_inventory"
 gpu_select "$gpu_inventory" "$ISO_SHARE/gpu-ids"
 rm -f "$gpu_inventory"
 gpu_resolve_packages "$ISO_SHARE/gpu-packages" "$REPO"
+gpu_prepare_live_compat
 cuda_options_prepare
 
 install_mode=${install_mode:-whole_disk}

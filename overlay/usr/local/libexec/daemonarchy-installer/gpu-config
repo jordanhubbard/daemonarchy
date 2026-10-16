@@ -53,7 +53,7 @@ gpu_select() {
   if $gpu_nvidia; then
     # linux.ko must be loaded before nvidia.ko so the Linuxulator can open the GPU.
     gpu_packages=(nvidia-driver nvidia-kmod nvidia-drm-612-kmod linux-nvidia-libs)
-    gpu_modules=(linux "${gpu_modules[@]}")
+    gpu_modules=(linux linux64 "${gpu_modules[@]}")
   fi
   if $gpu_navi14; then
     gpu_packages+=(gpu-firmware-amd-kmod-navi14)
@@ -92,6 +92,25 @@ gpu_resolve_packages() {
     gpu_exact_packages+=("$name-$version")
     gpu_lock_packages+=("$name")
   done <"$manifest"
+}
+
+gpu_prepare_live_compat() {
+  $gpu_nvidia || return 0
+  # linux_base's pre-install hook checks the running kernel, even with pkg -r.
+  # Load only ABI support here; GPU attachment remains deferred until boot.
+  local module
+  for module in linux linux64; do
+    if ! kldstat -q -n "$module.ko"; then
+      kldload "$module" || {
+        echo "Cannot enable $module compatibility for NVIDIA package installation." >&2
+        return 1
+      }
+    fi
+  done
+  [[ $(sysctl -n kern.features.linux64 2>/dev/null) == 1 ]] || {
+    echo 'The live kernel has no active 64-bit Linux support; installation has not changed any disks.' >&2
+    return 1
+  }
 }
 
 gpu_write_config() {

@@ -83,7 +83,7 @@ FILE *fopen(const char *path, const char *mode) {
   if (!libc_fopen)
     libc_fopen = dlsym(RTLD_NEXT, "fopen");
   if (strncmp(path, "/proc/self/task/", sizeof("/proc/self/task/") - 1) == 0) {
-    char *tail = strchr(path + sizeof("/proc/self/task/"), '/');
+    const char *tail = strchr(path + sizeof("/proc/self/task/"), '/');
     if (tail != NULL && strcmp(tail, "/comm") == 0) {
       assert(strcmp(mode, "wb") == 0);
       return libc_fopen("/dev/null", mode);
