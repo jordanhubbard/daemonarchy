@@ -57,3 +57,39 @@ Its timeout cleanup was exercised with an actual one-second KVM run.
 These are unencrypted, console/SSH checks of preview.11. They do not qualify
 graphical VM rendering, hardware, later desktop package changes or encrypted
 boot; those gates remain open.
+
+## Encrypted QEMU checks, 2026-10-15
+
+Preview.12 completed installation and installed-system boot under both SeaBIOS
+and OVMF UEFI with GELI encryption enabled. Both runs ended with `All checks
+passed`. They used the same QEMU/KVM configuration above and separate disposable
+40 GiB disks; neither selected optional source/ports checkouts.
+
+The checks verified the firmware mode and that ZFS was running on
+`/dev/vtbd0p3.eli`, followed by account/sudo, SSH, SDDM service/configuration,
+network/mDNS, signed package-repository access, public `daemonarchy` dispatch,
+installed Chromium/OctoPkg desktop entries and native menu policy. They do not
+verify Hyprland rendering. Installation took approximately 49–50 minutes,
+including fetching the native desktop dependencies.
+
+BIOS asks for the GELI password before loader.conf can enable serial output.
+Its initial unlock was performed using the new QMP helper after confirming the
+prompt on the VGA display. The helper reads the actual VGA text buffer for BIOS
+or serial output for UEFI and types the fixed disposable test password only
+after detecting the prompt. Both installed disks then passed a separate boot
+recheck with automatic prompt detection, provider/firmware checks, native desktop
+package checks and orderly shutdown. Those rechecks used `snapshot=on` and
+preserved the installed disks.
+
+`ENCRYPT_INSTALLATION=true` selects this path in `test-qemu.sh`. The host needs
+Python 3 for QMP; installed-system checks use the packaged browser helper's actual
+interpreter, since FreeBSD does not require an unversioned `python3` alias.
+BIOS serial output was empty; its VGA prompt capture and SSH checks are retained
+alongside the UEFI serial log. The earlier ISO/tmpfs lock-order warning also
+occurred during UEFI installer shutdown, without a panic or failed reboot.
+
+Image SHA-256: `991091b06dbac0a1f254be12627cee7ae338aba72ffc6935bb41c512a2301bc8`.
+Evidence is retained in `2026-10-15-preview12/{bios,uefi}-encrypted`, with the
+automatic boot recheck logs. The image uses the October 5 snapshot and desktop
+packages through core revision 15; repeat against the refreshed snapshot and
+later package changes before final release qualification.

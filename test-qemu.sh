@@ -20,9 +20,13 @@ set -eu
 SCRIPT_DIR=$(CDPATH='' cd -- "$(dirname -- "$0")" && pwd)
 INSTALL_PORTS=${INSTALL_PORTS:-false}
 INSTALL_SRC=${INSTALL_SRC:-false}
-for selected in "$INSTALL_PORTS" "$INSTALL_SRC"; do
-	case "$selected" in true|false) ;; *) echo 'Checkout selections must be true or false' >&2; exit 1 ;; esac
+ENCRYPT_INSTALLATION=${ENCRYPT_INSTALLATION:-false}
+for selected in "$INSTALL_PORTS" "$INSTALL_SRC" "$ENCRYPT_INSTALLATION"; do
+	case "$selected" in true|false) ;; *) echo 'Installation selections must be true or false' >&2; exit 1 ;; esac
 done
+if [ "$ENCRYPT_INSTALLATION" = true ]; then
+	command -v python3 >/dev/null || { echo 'Encrypted boot checks need host python3 for QMP input' >&2; exit 1; }
+fi
 ISO=$(realpath "${1:?usage: test-qemu.sh daemonarchy.iso}")
 WORK=${WORK:-$PWD/daemonarchy-qemu}
 OVMF=${OVMF:-/usr/share/ovmf/OVMF.fd}
@@ -67,7 +71,7 @@ truncate -s 40G disk.img
 
 cat >daemonarchy-install.conf <<EOF
 disk=vtbd0
-encrypt_installation=false
+encrypt_installation=$ENCRYPT_INSTALLATION
 install_ports=$INSTALL_PORTS
 install_src=$INSTALL_SRC
 keyboard=us
@@ -156,7 +160,18 @@ guest() {
 		-o PubkeyAuthentication=no -o ConnectTimeout=10 tester@127.0.0.1 "$@"
 }
 tries=0
+unlocked=false
 until guest true 2>/dev/null; do
+	if [ "$ENCRYPT_INSTALLATION" = true ] && [ "$unlocked" = false ]; then
+		if printf '%s\n' "$PASSWORD" | python3 "$SCRIPT_DIR/tests/qemu-unlock-geli.py" \
+		    "$WORK/boot.log.qmp.sock" "$BOOT_MODE" "$WORK/boot.log"; then
+			unlocked=true
+			echo '    entered the GELI passphrase at the loader prompt'
+		else
+			unlock_status=$?
+			[ "$unlock_status" -eq 2 ] || exit "$unlock_status"
+		fi
+	fi
 	tries=$((tries + 1))
 	[ "$tries" -lt 120 ] || { echo "no SSH login after boot; see $WORK/boot.log" >&2; exit 1; }
 	sleep 5
@@ -173,6 +188,9 @@ as_root() { echo $PASSWORD | sudo -S -p "" "\$@"; }
 check "sudo works for tester" "as_root true"
 check "booted using $BOOT_MODE firmware" "sysctl -n machdep.bootmethod | grep -ix $BOOT_MODE"
 check "BIOS boot partition present" "gpart show vtbd0 | grep -q freebsd-boot"
+if [ "$ENCRYPT_INSTALLATION" = true ]; then
+	check "ZFS boots from the GELI provider" "as_root zpool status -P | grep -q '/dev/vtbd0p3.eli'"
+fi
 for g in wheel operator video audio; do
 	check "tester in \$g" "id -Gn | grep -qw \$g"
 done

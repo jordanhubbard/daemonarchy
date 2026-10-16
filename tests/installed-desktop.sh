@@ -7,7 +7,13 @@ command -v daemonarchy >/dev/null
 command -v octopkg >/dev/null
 daemonarchy --help | grep -q 'Daemonarchy command center'
 daemonarchy checkouts --help | grep -q 'daemonarchy checkouts'
-/usr/local/bin/python3 - <<'PY'
+interpreter=$(head -n 1 /usr/local/bin/omarchy-launch-browser)
+interpreter=${interpreter#\#!}
+case "$interpreter" in
+  /usr/local/bin/python3.[0-9]*) ;;
+  *) echo 'Invalid packaged browser interpreter' >&2; exit 1 ;;
+esac
+"$interpreter" - <<'PY'
 import json
 from pathlib import Path
 import shutil

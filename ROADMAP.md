@@ -16,7 +16,7 @@ installation path.
 | Bluetooth beyond input devices | Add audio device pairing, connection, output selection, reconnect, and removal to the FreeBSD backend and panel. Document the supported audio profiles. | Real headset/speaker playback, volume, disconnect/reconnect, and reboot persistence; existing keyboard/mouse pairing still works. | Planned |
 | Enterprise Wi-Fi | Support certificate-validated 802.1X connections in the installer and desktop panel, including PEAP/MSCHAPv2 and EAP-TLS. Preserve credentials and certificate files securely across installation. | Join a test enterprise network with each supported EAP method, reject an untrusted server certificate, reconnect after reboot, and check that credentials stay out of logs. | In progress: profile helper, installer/panel integration, native parser and credential-transfer tests; real EAP exchanges and reboot qualification pending |
 | Dual boot and partition selection | Show existing partitions; replace only an explicitly selected OS/data partition or create one in selected free space; preserve existing EFI loaders and entries. Never resize an existing filesystem implicitly. | Disposable disks containing another OS survive installation with partition/data checks and both operating systems booting; insufficient space and invalid selections fail before writes. | In progress: native preservation tests pass for both selection modes; physical Windows boot tests pending |
-| Legacy BIOS boot | Add BIOS image boot and installed-system boot code, alongside the UEFI path. | Boot the ISO, install, and reboot in BIOS and UEFI VMs, including encrypted installations. | In progress: full unencrypted BIOS and UEFI QEMU installation/reboot checks pass; encrypted boot pending |
+| Legacy BIOS boot | Add BIOS image boot and installed-system boot code, alongside the UEFI path. | Boot the ISO, install, and reboot in BIOS and UEFI VMs, including encrypted installations. | Implemented: BIOS and UEFI QEMU installation/reboot checks pass with and without GELI encryption; refreshed-snapshot qualification pending |
 | Secure Boot | Establish a signed FreeBSD boot chain and a documented key-enrollment/update process. | Install and boot with Secure Boot enabled; reject an untrusted boot component and verify signed updates. | Planned |
 | Ports and source refresh | Refresh the Daemonarchy ports fork from upstream FreeBSD ports and re-sync system sources with FreeBSD CURRENT before selecting the release snapshot. Preserve Daemonarchy changes and reconcile ports with the selected package set. | Record pinned ports/source revisions; rebuild the snapshot jail, packages, and kernel modules together; clean `poudriere testport` and installation against the selected package set. | In progress: upstream ports merged at d88609924774 and source checkout refreshed to f4fe4c3d17f9; joint snapshot/jail/package rebuild pending |
 
@@ -49,7 +49,7 @@ validated packages can ship from the fork while these reviews remain open.
 - [ ] Ports fork refreshed from upstream and system sources re-synced with FreeBSD CURRENT; exact release revisions recorded.
 - [ ] Kernel modules match the image's exact FreeBSD snapshot.
 - [ ] Changed ports pass `poudriere testport`.
-- [ ] Unattended installation passes the existing QEMU and bhyve checks. Unencrypted UEFI bhyve installation and reboot passed with both shallow checkouts; remaining boot modes and QEMU coverage are pending.
+- [ ] Unattended installation passes the existing QEMU and bhyve checks. BIOS and UEFI QEMU installation/reboot passed with and without encryption. Unencrypted UEFI bhyve passed with both shallow checkouts; encrypted bhyve and repetition against the refreshed snapshot remain pending.
 - [ ] Graphical VM and physical-hardware checks pass.
 - [ ] Existing installations upgrade successfully; failed updates remain recoverable.
 - [ ] Documentation states supported GPUs, hypervisors, Bluetooth profiles,
@@ -75,8 +75,9 @@ any scope change before calling 1.1.0 complete.
   4 KiB sectors. A QEMU SeaBIOS smoke test reached the snapshot's FreeBSD loader
   and loaded its kernel from ZFS; the development ISO also built successfully.
   The QEMU installation harness accepts `BOOT_MODE=bios` or `BOOT_MODE=uefi`.
-  Full unencrypted BIOS and UEFI QEMU installation/reboot checks now pass;
-  encrypted-boot coverage remains open. See the
+  Full BIOS and UEFI QEMU installation/reboot checks now pass with and without
+  GELI encryption. The harness detects the BIOS bootcode's early VGA password
+  prompt as well as the UEFI loader's serial prompt. See the
   [development check record](docs/testing-1.1-bios.md).
 - VM graphics: `graphics/virtio-gpu-qemu-kmod` in the current ports tree exposes
   a framebuffer for Xorg's `scfb` driver, not the DRM interface needed by
