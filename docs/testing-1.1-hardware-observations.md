@@ -22,6 +22,12 @@ comparison alone does not exclude an image regression. Testing another ISO on
 the same machine and recording the failure point are still necessary. The
 desktop NVIDIA driver is not installed or initialized by the live installer.
 
+A subsequent recursive comparison of the complete `/boot` directories on the
+same read-only mounts reported no differences, including loader configuration,
+Lua scripts and kernel modules. Both temporary mounts and their memory-disk
+devices were released after comparison. This narrows the comparison to changes
+outside `/boot`; it does not substitute for booting both images on the MSI.
+
 For an ordinary kernel panic, these loader commands enable verbose probing and
 hold the panic output rather than automatically rebooting:
 
