@@ -7,7 +7,7 @@ work=$(mktemp -d /var/tmp/daemonarchy-checkout-test.XXXXXX)
 trap 'rm -rf "$work"' EXIT
 source "$here/overlay/usr/local/sbin/daemonarchy-checkouts"
 source "$here/overlay/usr/local/libexec/daemonarchy-installer/checkout-options"
-git init -q -b omarchy "$work/repo"
+git init -q -b daemonarchy-1.1-test "$work/repo"
 git -C "$work/repo" config user.name Test
 git -C "$work/repo" config user.email test@example.invalid
 for value in one two three; do
@@ -19,10 +19,15 @@ done
 dd if=/dev/urandom of="$work/repo/payload" bs=1m count=2 status=none
 git -C "$work/repo" add payload
 git -C "$work/repo" commit -qm payload
-python3 "$here/scripts/build-checkout-packages.py" --kind ports --repo "$work/repo" --revision HEAD --branch omarchy --remote https://github.com/jordanhubbard/freebsd-ports.git --out "$work/packages" --chunk-mib 1 >"$work/build.log"
+python3 "$here/scripts/build-checkout-packages.py" --kind ports --repo "$work/repo" --revision HEAD --branch daemonarchy-1.1-test --remote https://github.com/jordanhubbard/freebsd-ports.git --out "$work/packages" --chunk-mib 1 >"$work/build.log"
 jq '{schema:1,trees:{ports:.}}' "$work/packages/ports.json" >"$work/catalog.json"
 mkdir -p "$work/root"
 pkg -r "$work/root" -o ABI=FreeBSD:16:amd64 add "$work/packages"/*.pkg
+jq '.trees.ports.branch = "bad..branch"' "$work/catalog.json" >"$work/invalid-branch.json"
+if (checkout_materialize ports root "$work/invalid-branch.json" "$work/invalid" "$work/root"); then
+  echo 'Accepted invalid checkout branch' >&2; exit 1
+fi
+[[ ! -e $work/invalid ]]
 checkout_materialize ports root "$work/catalog.json" "$work/checkout" "$work/root"
 [[ $(git -C "$work/checkout" rev-list --count HEAD) == 1 ]]
 [[ $(git -C "$work/checkout" status --porcelain) == '' ]]
