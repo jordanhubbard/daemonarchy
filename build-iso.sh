@@ -133,16 +133,20 @@ chmod 0755 "$stage"/overlay/usr/local/libexec/daemonarchy-installer/* \
 
 echo "==> Building the image"
 printf '%s\n' bash gum jq ttfx tzupdate pkg wifi-firmware-kmod >"$stage/live-packages"
-printf '%s\n' usr/src usr/lib/debug usr/tests usr/lib32 usr/libexec/ld-elf32.so.1 >"$stage/exclude"
+# Trim only the live root. The untouched base.txz still installs a complete
+# development system, and optional source/ports checkouts remain downloadable.
+cp "$here/scripts/live-image-excludes" "$stage/exclude"
 
 # poudriere image names (also the ISO volume label) are alphanumeric only.
 image=$(echo "$NAME" | tr -cd '[:alnum:]')
+rm -f "$OUTDIR/$NAME.iso.sha256"
 poudriere image -t hybridiso -j "$JAIL" -p "$PTREE" -n "$image" \
 	-h daemonarchy-installer -c "$stage/overlay" -f "$stage/live-packages" \
 	-A "$here/live-post.sh" -X "$stage/exclude" -o "$OUTDIR"
 
 iso=$OUTDIR/$NAME.iso
 [ "$image" = "$NAME" ] || mv "$OUTDIR/$image.iso" "$iso"
+sh "$here/scripts/check-image-size.sh" "$iso"
 digest=$(sha256 -q "$iso")
 printf '%s  %s\n' "$digest" "$(basename "$iso")" >"$iso.sha256"
 ls -lh "$iso"

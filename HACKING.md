@@ -121,6 +121,21 @@ You need a FreeBSD 16.0-CURRENT machine (bare metal or a VM with about 8 GB of m
 
    The image and its `.sha256` land in `/usr/local/poudriere/data/images`.
 
+   The live installer omits the base development toolchain, C/C++ headers,
+   static libraries and compiler resources using `scripts/live-image-excludes`.
+   Its shells, networking, storage and rescue tools remain available. These
+   exclusions apply only to the live root: `base.txz` and `kernel.txz` remain
+   intact, so the installed system retains its compiler, headers and libraries.
+   Optional ports/source checkout packages are fetched separately; only their
+   small catalogue is on the ISO. The build rejects a final ISO at or above
+   GitHub's 2 GiB per-asset limit before generating its checksum. Run
+   `bash tests/live-image-budget.sh` to check the exclusions and size boundary.
+   On FreeBSD, `sudo sh tests/live-image-runtime.sh <iso>` mounts the image
+   read-only, checks required live commands and payloads, and resolves the
+   dynamic dependencies of every retained ELF program and library. It uses
+   and detaches its own temporary memory-disk device. Follow this with a VM
+   boot check; the dependency audit does not qualify installation or hardware.
+
    For development images, set `NAME` to a distinct preview filename and
    `PREVIEW_LABEL` to a short description. The installer welcome screen shows
    that label alongside the actual desktop package version.
