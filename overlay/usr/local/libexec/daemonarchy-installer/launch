@@ -12,6 +12,12 @@ set -o pipefail
 
 ISO_LIBEXEC=/usr/local/libexec/daemonarchy-installer
 export DAEMONARCHY_INSTALL_CONF=/tmp/daemonarchy-install.conf
+# A privately prepared rescue image never enters either installation path,
+# including when an old unattended-install CIDATA drive is still attached.
+if [[ -s /usr/local/share/daemonarchy-installer/headless/authorized_keys ]]; then
+  echo 'Headless rescue boot: installation is disabled; SSH listens on port 2222.'
+  exec /bin/sh
+fi
 log=/tmp/daemonarchy-install.log
 status_file=/tmp/daemonarchy-install.status
 

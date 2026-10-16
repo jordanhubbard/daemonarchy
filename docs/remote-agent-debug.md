@@ -92,3 +92,38 @@ Server keys, requests and approvals live under `/var/run/daemonarchy-remote-debu
 and are removed when the listener stops. On the live ISO, `/var` is memory-backed.
 Unattended `CIDATA` installation keeps its existing behavior and does not
 enable debug mode.
+
+## Keyboard-free rescue image
+
+For a machine that cannot provide a usable console, prepare a separate private
+rescue image with one preauthorized operator key. This mode is absent from the
+public image and does not use interactive pairing.
+
+```sh
+scripts/prepare-headless-rescue.sh operator.pub /path/to/new-rescue-overlay
+# On the FreeBSD image builder, using that overlay:
+LIVE_EXTRA_OVERLAY=/path/to/new-rescue-overlay \
+  NAME=daemonarchy-headless-rescue-amd64 \
+  PREVIEW_LABEL='private headless rescue' sh build-iso.sh
+```
+
+The helper accepts one plain Ed25519 public key and generates a separate server
+host key. It never copies the operator's private key. Keep the overlay and image
+private; they contain the rescue server's private host key. Record its printed
+fingerprint before writing the image to USB.
+
+The rescue boot uses DHCP on Ethernet, starts a dedicated root SSH listener on
+port 2222, and accepts only the selected key. Password login and forwarding are
+disabled. T2 `apple_bce` and desktop GPU module autoloading are blocked so those
+drivers can be investigated after establishing access. No installer path runs,
+even if an old autoinstall CIDATA drive remains attached. The installed system is
+not automatically mounted or changed. Console input is not needed.
+
+Connect with the operator key and verify the server against the host key from
+the overlay. Boot logs are `/var/log/daemonarchy-headless-boot.log` and
+`/var/log/daemonarchy-headless-sshd.log`. The listener and authorizations disappear
+when this rescue system shuts down; they are not installed on the target disk.
+
+Native boot/authentication testing is a separate gate from the helper's key and
+file-validation tests. A rescue boot with drivers blocked does not qualify those
+drivers or the graphical desktop.

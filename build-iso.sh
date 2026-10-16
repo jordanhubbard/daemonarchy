@@ -39,6 +39,10 @@ cache=/var/cache/daemonarchy-iso
 rm -rf "$stage"
 mkdir -p "$stage" "$cache" "$OUTDIR"
 cp -R "$here/overlay" "$stage/overlay"
+if [ -n "${LIVE_EXTRA_OVERLAY:-}" ]; then
+    [ -d "$LIVE_EXTRA_OVERLAY" ] || { echo 'LIVE_EXTRA_OVERLAY must be a directory' >&2; exit 1; }
+    cp -R "$LIVE_EXTRA_OVERLAY/." "$stage/overlay/"
+fi
 share=$stage/overlay/usr/local/share/daemonarchy-installer
 cp "$CHECKOUT_CATALOG" "$share/checkouts.json"
 
