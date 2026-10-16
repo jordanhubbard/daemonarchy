@@ -35,3 +35,12 @@ The snapshot's `kern_shutdown.c` exposes both settings as loader tunables.
 A firmware reset or a fault before panic handling may still reboot immediately;
 these commands are diagnostic settings, not a fix. Do not combine speculative
 device-disabling settings before identifying the last visible probe.
+
+For comparison, the official October 12 FreeBSD mini-memstick image was
+downloaded and checked against the project's SHA-256 list:
+
+`FreeBSD-16.0-CURRENT-amd64-20261012-3ceb5f150bc1-290063-mini-memstick.img`
+
+SHA-256: `9127c94970ca11e6e44c582a7cab928851f73fd2476e94471ee1456d63990e14`.
+The compressed download also matched its published checksum. This image is
+available for an operator boot comparison; no MSI result with it is recorded.
