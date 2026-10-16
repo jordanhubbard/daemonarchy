@@ -3,6 +3,10 @@
 Recorded on 2026-10-13. These are development checks, not full 1.1 release
 acceptance. Implementation checkpoint: `b6673ef`.
 
+The current production-candidate revisions and public repository checks are in
+[the final image record](testing-1.1-final-image.md); the revisions below describe
+the retained earlier checkpoint.
+
 ## Live checkout packages
 
 Both trees are depth-1 shallow Git checkouts. They contain working files and

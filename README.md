@@ -4,7 +4,7 @@
 
 Daemonarchy is the [Omarchy](https://omarchy.org) desktop on FreeBSD: DHH's opinionated Hyprland desktop, ported to FreeBSD and installed the way the Omarchy ISO installs it on Arch. The name is a homage: Omarchy's *-archy*, ruled by the BSD daemon.
 
-This repository builds a bootable FreeBSD 16.0-CURRENT image with the Daemonarchy installer: the same welcome screen, keyboard, account, hostname, and timezone questions as the Omarchy ISO, then a whole-disk install that boots into the desktop. Daemonarchy is not affiliated with Omarchy; the Omarchy software itself comes, unchanged apart from FreeBSD compatibility, from the `x11-wm/omarchy` port.
+This repository builds a bootable FreeBSD 16.0-CURRENT image with the Daemonarchy installer: the same welcome screen, keyboard, account, hostname, and timezone questions as the Omarchy ISO, then an installation onto a whole disk, a selected GPT partition, or existing free space that boots into the desktop (partition selection is new in 1.1). Daemonarchy is not affiliated with Omarchy; the Omarchy software itself comes, unchanged apart from FreeBSD compatibility, from the `x11-wm/omarchy` port.
 
 Each release is built from a FreeBSD 16.0-CURRENT snapshot. CURRENT moves daily, so an image is tied to the snapshot it was built from.
 
@@ -16,6 +16,13 @@ The current release is **[Daemonarchy 1.0.1](https://github.com/jordanhubbard/da
 - SHA-256: `937b0fc007824dad47f271ebeb8b5d41323afbc6d17b225e12735588de6f9d4d` ([checksum file](https://github.com/jordanhubbard/daemonarchy/releases/download/daemonarchy-1.0.1/daemonarchy-1.0.1-amd64.iso.sha256))
 
 Write it to a USB stick with `dd if=daemonarchy-1.0.1-amd64.iso of=/dev/<usb-device> bs=1m` (`bs=1M` on Linux), turn Secure Boot off, and boot from the stick. The install erases the disk you choose and downloads about 1,200 packages, so it needs a network connection. Every image, with its release notes, is on the [releases page](https://github.com/jordanhubbard/daemonarchy/releases).
+
+The **[1.1.0-rc.1 candidate](https://github.com/jordanhubbard/daemonarchy/releases/tag/daemonarchy-1.1.0-rc.1)** is available for community testing:
+
+- [ISO](https://github.com/jordanhubbard/daemonarchy/releases/download/daemonarchy-1.1.0-rc.1/daemonarchy-1.1.0-amd64.iso), 2,098,395,136 bytes, under 2 GiB.
+- [Checksum](https://github.com/jordanhubbard/daemonarchy/releases/download/daemonarchy-1.1.0-rc.1/daemonarchy-1.1.0-amd64.iso.sha256): `891fc6e6ee537bf92aecf035d4e855b8d526aeaf9c27be80166d689289c3acd9`.
+- Adds partition selection, BIOS boot, QEMU/VirGL Hyprland, native FreeBSD app menus, Chromium, OctoPkg, remote-debug progress, and [manual-enrollment Secure Boot](docs/secure-boot.md).
+- Read the [candidate results and limits](docs/testing-1.1-final-image.md) before installing. Physical graphics/firmware, Bluetooth audio, enterprise Wi-Fi and refreshed bhyve remain unqualified. The ASRock, MSI Raider and T2 MacBook failures are documented.
 
 New to Daemonarchy? [Getting started](docs/getting-started.md) walks through writing the stick, installing, and your first hour on the desktop: Wi-Fi, sound, Bluetooth, updates, and what FreeBSD adds. To build an image yourself or work on Daemonarchy, see [HACKING.md](HACKING.md).
 
@@ -46,7 +53,7 @@ Install software from FreeBSD's package collection through OctoPkg (**Install > 
 - A live FreeBSD system (from the snapshot) that logs root in on the first console and starts the installer.
 - The installer: `configurator` asks the questions, `install` installs, `dashboard` shows its progress, `launch` ties them together.
 - The snapshot's `base.txz`, `kernel.txz` and `lib32.txz`, which become the installed system. The 32-bit compatibility libraries also satisfy native package dependencies such as LLVM/Mesa.
-- A package repository with what pkg.FreeBSD.org does not publish: the Omarchy ports from [jordanhubbard/freebsd-ports, branch `omarchy`](https://github.com/jordanhubbard/freebsd-ports/tree/omarchy), and the GPU and Wi-Fi kernel modules (`drm-612-kmod`, `gpu-firmware-*-kmod`, `wifi-firmware-*-kmod`) built for the snapshot kernel.
+- A package repository with what pkg.FreeBSD.org does not publish: the Omarchy ports from [the pinned 1.1 ports integration](https://github.com/jordanhubbard/freebsd-ports/tree/daemonarchy-1.1-package-baseline), and the GPU and Wi-Fi kernel modules (`drm-612-kmod`, `gpu-firmware-*-kmod`, `wifi-firmware-*-kmod`) built for the snapshot kernel.
 
 Everything else the desktop needs (Hyprland, Qt, browsers, ...) is downloaded from pkg.FreeBSD.org during the install, so the machine needs network access. That keeps the image well under GitHub's 2 GiB release asset limit; a fully offline image would be 7-8 GB.
 
@@ -149,7 +156,7 @@ Daemonarchy is four repositories:
 - **[jordanhubbard/daemonarchy](https://github.com/jordanhubbard/daemonarchy)** (this one): the installer image, its build and test scripts, and these docs.
 - **[jordanhubbard/daemonarchy-desktop](https://github.com/jordanhubbard/daemonarchy-desktop)**: Daemonarchy's artwork and login theme, and the System > FreeBSD tools. Its tags are Daemonarchy's version numbers.
 - **[jordanhubbard/omarchy-freebsd](https://github.com/jordanhubbard/omarchy-freebsd)**: the FreeBSD compatibility layer that lets Omarchy run unchanged.
-- **[jordanhubbard/freebsd-ports](https://github.com/jordanhubbard/freebsd-ports/tree/omarchy)** (`omarchy` branch): the release ports fork that packages all of it. Upstream submissions continue independently of Daemonarchy releases.
+- **[jordanhubbard/freebsd-ports](https://github.com/jordanhubbard/freebsd-ports/tree/daemonarchy-1.1-package-baseline)** (`daemonarchy-1.1-package-baseline` branch): the pinned 1.1 release ports fork that packages all of it. Upstream submissions continue independently of Daemonarchy releases.
 
 ## Building
 

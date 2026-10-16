@@ -29,7 +29,7 @@ Daemonarchy is four repositories:
   - The SDDM theme that reuses Omarchy's with the Daemonarchy wordmark.
   - The System > FreeBSD menu (`omarchy-menu.jsonc`) and the `daemonarchy-*` commands behind it.
   - Its tags set Daemonarchy's version (see Releasing).
-- **[jordanhubbard/freebsd-ports](https://github.com/jordanhubbard/freebsd-ports/tree/omarchy)**, the `omarchy` branch, is the release ports fork. Upstream review does not block releases from this fork. It carries the ports:
+- **[jordanhubbard/freebsd-ports](https://github.com/jordanhubbard/freebsd-ports/tree/daemonarchy-1.1-package-baseline)** is the release ports fork; 1.1 uses the pinned `daemonarchy-1.1-package-baseline` branch. Upstream review does not block releases from this fork. It carries the ports:
   - `x11-wm/omarchy`: Omarchy itself, with omarchy-freebsd as a second distfile. Its `files/` holds only patches to Omarchy's own files, among them the ones that add the `FreeBSDWifi.qml` and `FreeBSDBluetooth.qml` stand-ins to the panels.
   - `x11-wm/daemonarchy`: the full desktop's dependencies, plus daemonarchy-desktop. Defaults for new users go to `share/omarchy/skel.d/daemonarchy`, which `seed-user` copies in ahead of Omarchy's.
   - The applications and tools Omarchy uses, one port each (`x11-themes/aether`, `graphics/tensaku`, `misc/ttfx`, ...), submitted upstream in [freebsd/freebsd-ports#630](https://github.com/freebsd/freebsd-ports/pull/630); `x11-wm/omarchy` and `x11-wm/daemonarchy` are in [#635](https://github.com/freebsd/freebsd-ports/pull/635).
@@ -212,13 +212,13 @@ The installer is plain bash and lives entirely in `overlay/`, so changing it onl
 
 ### The ports
 
-Work in a checkout of the fork's `omarchy` branch (the build host's `/usr/ports` works well).
+Work on a review branch based on the exact integration commit in [ROADMAP.md](ROADMAP.md). For 1.1 this is `daemonarchy-1.1-package-baseline`; verify that poudriere uses the matching tree and snapshot jail before rebuilding.
 
 - `poudriere testport -j 16amd64 -p <tree> -o <origin>` checks a port in a clean jail: stage-qa, the plist, install, and deinstall. Use it rather than `make stage-qa` as root on the host, which installs the port's dependencies onto the host.
 - To try a change on a running Daemonarchy desktop, `make reinstall` the port there; `seed-user --force` re-copies the defaults into the home (it never overwrites a file you have).
-- A change to omarchy-freebsd or daemonarchy-desktop ships as a new tag there: tag it, set the tag in the port (`GH_TUPLE` in `x11-wm/omarchy`, `DISTVERSION` in `x11-wm/daemonarchy`), and run `make makesum`.
+- Pin each reviewed omarchy-freebsd or daemonarchy-desktop source change to an immutable tag or full commit in its port (`GH_TUPLE` in `x11-wm/omarchy`, `DISTVERSION` in `x11-wm/daemonarchy`), and run `make makesum`.
 - Bump `PORTREVISION` whenever a package's contents change: poudriere rebuilds on version changes, not on file changes, so an unbumped port keeps its old package.
-- Commit each change on the `omarchy` branch, cherry-pick it onto the ISO tree, and rebuild the packages (step 4 above).
+- Review and merge against the selected integration branch, pin its merged commit, then run native `poudriere testport` and rebuild the combined packages (step 4 above). Keep the matching official-package baseline; do not merge a moving ports tip into the qualified tree.
 
 ### The artwork
 
@@ -497,8 +497,16 @@ Daemonarchy releases use [semantic versioning](https://semver.org), numbered on 
 
 Package-only fixes between images bump `PORTREVISION` instead and ship through the package repository.
 
+For a candidate, publish the signed application repository under a versioned
+tag (for example, `packages-16-amd64-1.1.0-candidate`) and verify it with a native
+client. Keep the default stable package feed unchanged until stable qualification
+is complete. Publish the installer as a prerelease with `--latest=false`, and
+retain the open hardware gates in its notes.
+
+
 1. Tag daemonarchy-desktop `v<version>`, set `DISTVERSION` in `x11-wm/daemonarchy` to it and run `make makesum`, then build the packages and the image as above, publish the packages, and run a test.
-2. Publish the image and its `.sha256` as a GitHub release tagged `daemonarchy-<version>`, marked as the latest:
+
+2. For a stable release, publish the image and its `.sha256` as a GitHub release tagged `daemonarchy-<version>`, marked as the latest:
 
    ```
    gh release create daemonarchy-<version> --latest --title "Daemonarchy <version>" --notes-file notes.md daemonarchy-<version>-amd64.iso daemonarchy-<version>-amd64.iso.sha256

@@ -1,8 +1,9 @@
-# Daemonarchy 1.1.0 release notes (draft)
+# Daemonarchy 1.1.0-rc.1
 
-This is release preparation, not a published image or a completed acceptance
-record. Exact assets, checksums and final package revisions will be filled in
-after the production image passes its release checks.
+This installable release candidate is for community testing. Stable 1.1 remains
+open for real Bluetooth headset/HID and refreshed bhyve qualification; enterprise
+Wi-Fi testing is also unavailable. The ASRock failure is retained for community
+investigation at the operator's request. See the limitations below.
 
 Daemonarchy 1.1 adds native FreeBSD desktop defaults, optional installation into
 selected GPT partitions/free space, BIOS boot, a QEMU/VirGL Hyprland path, and
@@ -32,8 +33,10 @@ kernel modules and protects its enforcement controls; ordinary application
 packages remain installable. Signed boot updates use a retained boot environment
 and explicit validation/activation. See [the enrollment guide](secure-boot.md).
 
-Existing 1.0.1 systems receive desktop application updates through `pkg upgrade`.
-That transaction does not upgrade the FreeBSD base/kernel, replace its drivers,
+The exact candidate application packages passed an isolated 1.0.1 `pkg upgrade`
+and rollback test. The default stable package feed remains unchanged; the
+versioned candidate feed is published separately. An application-package
+transaction does not upgrade the FreeBSD base/kernel, replace its drivers,
 or convert an existing installation to verified boot. Kernel modules must match
 the running snapshot. The verified maintenance path currently covers the pinned
 snapshot and loader protocol; a base/ABI migration needs separate qualification.
@@ -68,6 +71,10 @@ Exact final application-package upgrade, reboot, rollback and return from 1.0.1
 passed. Image inputs and fresh-install results are recorded in
 [the final image record](testing-1.1-final-image.md).
 
-Final image boot/install, signed update/recovery and hypervisor results
-must be reconciled with [the roadmap](../ROADMAP.md) before publication. Do not
-describe a pending check as a supported or tested configuration.
+All four fresh configurations passed installation, reboot, installed desktop
+and application-policy checks: production-key enforced UEFI and BIOS, each
+with plain ZFS and GELI/ZFS. The UEFI plain case also downloaded both optional
+checkouts and verified their revisions, cleanliness and ownership. Production-key signed maintenance also
+passed update, altered inactive-candidate rejection, rollback and return, with
+actual graphical checks at each boot. [The roadmap](../ROADMAP.md) retains the open
+stable-release gates; an untested configuration is not a support claim.

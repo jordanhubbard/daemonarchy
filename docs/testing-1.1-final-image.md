@@ -6,6 +6,9 @@ The production-signed candidate built on 2026-10-16 is
 The native image and transferred authoring/test copies matched. It is
 49,088,512 bytes below the 2 GiB image/release-asset limit.
 
+Published candidate tag: `daemonarchy-1.1.0-rc.1`. This is a prerelease;
+stable hardware gates remain open in [ROADMAP.md](../ROADMAP.md).
+
 ## Inputs
 
 - Installer source: `f00fa952f36b7125bf50666470085029461c4bd8`, with the explicit
@@ -28,6 +31,12 @@ The native image and transferred authoring/test copies matched. It is
 The published optional checkout repository also passed native signature
 verification and actual download/installation of all three payload packages.
 
+The versioned application feed `packages-16-amd64-1.1.0-candidate` contains
+22 packages. All 26 GitHub assets (packages and metadata) matched native/local
+hashes and sizes. A retained FreeBSD client independently verified its signature,
+exact final application versions and both application-package download hashes.
+The stable default feed is unchanged.
+
 The ISO uses public signed artifacts only. Signing keys remained on the
 protected authoring host. Post-build live-file, signature, stock-kernel and
 image-size audits passed. Both changed desktop ports passed native
@@ -45,7 +54,7 @@ the real loader passphrase. A launched test is not a passing result.
 
 | Firmware | Root | Optional checkouts | Result |
 | --- | --- | --- | --- |
-| Enforced UEFI | ZFS | Ports and source | Running |
+| Enforced UEFI | ZFS | Ports and source | Passed: enforcement, clean owned checkouts, native desktop policy and GUI |
 | Enforced UEFI | GELI/ZFS | Neither | Passed: installed boot, enforcement, native desktop policy and GUI |
 | BIOS | ZFS | Neither | Passed: installed boot, native desktop policy and GUI |
 | BIOS | GELI/ZFS | Neither | Passed: loader unlock, installed boot, native desktop policy and GUI |
