@@ -173,3 +173,9 @@ track this unresolved platform failure. Installed Hyprland, display behavior,
 suspend/resume and physical Windows boot preservation remain unverified on this
 system. Release notes must retain this limitation; successful live CUDA testing
 must not be presented as successful installed-system boot qualification.
+
+The operator also reports four DisplayPort connectors and one HDMI connector on
+the GPU. Changed output selection/order is an additional hypothesis for the
+missing display; it has not been demonstrated and does not explain the reported
+firmware hang by itself. The operator explicitly requested that release work
+continue while this platform is investigated by the community.

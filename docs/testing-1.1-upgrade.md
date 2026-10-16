@@ -91,3 +91,24 @@ invalid outer signature. The failed candidate was never activated.
 These results qualify the tested development-key same-snapshot transaction.
 They do not qualify production enrollment, a base/ABI migration, the exact
 final image, or the missing physical display/upgrade matrix.
+
+## Final application-package upgrade and rollback, 2026-10-16
+
+The retained original 1.0.1 environment was cloned to `qa-final-1.1-upgrade`.
+The private repository used the production package-repository signature and the
+final native-built packages, `daemonarchy-1.1.0,1` and `omarchy-4.0.4_22`.
+`pkg upgrade -y` upgraded both packages from the original versions without
+changing the stock kernel. After reboot, exact package versions, SDDM service,
+`daemonarchy --help`, the kernel hash and a shared home sentinel were checked.
+
+Activating `before-1.1-candidate` and rebooting restored
+`daemonarchy-1.0.1,1` and `omarchy-4.0.4_9`. Re-activating the final candidate
+and rebooting restored the exact final versions and running SDDM. Home data
+remained unchanged through both transitions. No EFI entry was rewritten during
+this sequence. The successful transaction is retained in the guest at
+`/tmp/daemonarchy-final-upgrade-transaction.log`.
+
+This qualifies the final application-package upgrade and ZFS rollback on the
+retained 1.0.1 base. It does not qualify a FreeBSD base/kernel migration or usable
+graphics on that older base. Production-authority signed boot maintenance is
+recorded separately.
