@@ -27,3 +27,20 @@ privilege-handoff result are retained in the local
 argument handling and first-run home preservation also have native automated
 coverage in `omarchy-freebsd`. Physical desktop integration, Hyprland VM
 rendering and an installation of the complete new ISO remain separate gates.
+
+## Hyprland integration follow-up, 2026-10-16
+
+The signed development-profile QEMU desktop and disposable copies of the fresh
+UEFI plain/GELI installs subsequently passed real Hyprland keyboard/pointer
+input, Chromium page rendering and the OctoPkg UI. Plain installation exercised
+SDDM password login; GELI exercised password unlock and the configured desktop
+autologin. These are development-authority results, not final production-image
+qualification.
+
+Fresh installs exposed a Linux-only browser enterprise-policy theme helper
+requesting administrator authorization despite having no applicable policy
+directories. Compatibility revision `aab8d9c385d23ca2ede9b6efd20855fc26682341`
+disables that unsupported write on FreeBSD and corrects the welcome menu label.
+All eight `test_desktop_defaults.py` checks passed natively on FreeBSD with this
+source, including all three native GIO browser-launch cases. Its new package
+still needs installation and first-run GUI qualification in the final image.
