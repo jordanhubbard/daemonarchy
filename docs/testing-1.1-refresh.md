@@ -1,6 +1,7 @@
 # 1.1 source and ports refresh preparation
 
-Prepared 2026-10-15; this is not a refreshed release-candidate build.
+Started 2026-10-15; the preparation checkpoints below are historical. The
+preview.13 build and its current qualification status are recorded at the end.
 
 - FreeBSD CURRENT source: `f4fe4c3d17f9bb523981b88a01d7c0f0c0f00c36`.
 - Upstream ports: `d886099247746bbd127776f779ffe5ea4d12a4e5`.
@@ -17,7 +18,7 @@ The source and refreshed ports use separate clean worktrees. The original source
 checkout, including its local untracked build log, and the active package-build
 tree were preserved.
 
-The current development image still uses snapshot source
+At this preparation checkpoint, the development image still used snapshot source
 `a52c50b4b7c2652954ef1bd34710a4b1fc8ef391` and its matching jail/modules. The new
 revisions are preparation only: selecting/building a new snapshot, matching jail
 and kernel modules, testing all changed ports, updating optional checkout payloads,
@@ -109,3 +110,37 @@ The GPU selection table was regenerated using DRM `drm_v6.12.110_1` and NVIDIA
 595.104.02. The upstream input hashes and all device selections are unchanged
 from the earlier table; only its DRM source revision label changed. The image
 preflight now requires DRM 6.12.110, and portable GPU selection tests passed.
+
+## Preview.13 build and qualification (2026-10-16)
+
+The final native bulk run completed with eight packages built, 68 fetched, and
+no failures or skips, following the successful 43-package hardware retry.
+The earlier failed runs above remain part of the record. The matching-module
+preflight and public live-image runtime/ELF audit passed.
+
+The image was built from installer commit
+`e164e725a62098ac567771a09277d01843f6bd94`, snapshot source `3ceb5f150bc1`,
+and ports `28d8f145fbec`:
+
+- Filename: `daemonarchy-1.1.0-preview.13-amd64.iso`.
+- Size: 2,054,404,096 bytes, 93,079,552 bytes below the 2 GiB limit.
+- SHA-256: `2337893aa30f92dbff41f7d18c2b663713e1ebe3bd64dcf8336cf8a321894c88`.
+
+Plain BIOS and encrypted UEFI QEMU installation/reboot checks passed. Encrypted
+BIOS installed and unlocked successfully, but its first installed boot failed
+the SDDM-running assertion. A second boot of that retained disk, using a
+temporary QEMU snapshot, passed every installed-system assertion without
+restarting SDDM manually. The first-boot failure remains unexplained; this is
+not an all-green matrix. Plain UEFI with both optional checkouts is still
+under validation. These checks do not qualify graphical Hyprland operation.
+
+The published signed checkout repository and all three payload installations
+passed native verification. A subsequent authoring-cache build also passed
+with the snapshot download server deliberately unreachable, reusing all three
+verified release sets; its image audit passed. That separate proof image is
+not the public preview.13 artifact.
+
+The physical X570 machine booted preview.13 and exposed its RTX 4090 and AX200
+Wi-Fi device. Installed graphics, suspend and Windows preservation remain
+unqualified. The bounded DNS-probe fix committed after this build is not in
+preview.13. See the [hardware observations](testing-1.1-hardware-observations.md).
