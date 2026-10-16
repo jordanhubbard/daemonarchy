@@ -219,7 +219,7 @@ dbus_enable="YES"
 seatd_enable="YES"
 sddm_enable="YES"
 EOF
-[[ -n ${kld_list// /} ]] && echo "kld_list=\"${kld_list% }\"" >>"$TARGET/etc/rc.conf"
+# GPU modules are loaded by daemonarchy-graphics after SSH, not early kld.
 [[ -n $vt_keymap ]] && echo "keymap=\"${vt_keymap%.kbd}\"" >>"$TARGET/etc/rc.conf"
 
 [[ -n $swap_dev && $encrypt_installation == true ]] && swap_dev=$swap_dev.eli

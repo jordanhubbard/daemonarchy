@@ -87,6 +87,9 @@ rescue_action() {
         echo 'Installation is incomplete. Inspect the logs before completing setup.'
         return 1
       fi
+      if [ -x /usr/local/etc/rc.d/daemonarchy-graphics ]; then
+        service daemonarchy-graphics start || return
+      fi
       service sddm restart || return
       monitor_desktop
       ;;

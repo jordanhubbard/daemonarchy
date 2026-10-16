@@ -87,7 +87,24 @@ gpu_resolve_packages() {
 }
 
 gpu_write_config() {
-  local target=$1
+  local target=$1 helper_dir
+  helper_dir=$(cd "$(dirname "${BASH_SOURCE[0]}")" && pwd)
+  mkdir -p "$target/usr/local/etc/rc.d" "$target/etc/rc.conf.d"
+  install -m 0755 "$helper_dir/graphics-service" "$target/usr/local/etc/rc.d/daemonarchy-graphics"
+  {
+    printf '\ndaemonarchy_graphics_enable="YES"\n'
+    printf 'daemonarchy_graphics_modules="%s"\n' "${gpu_modules[*]}"
+    # Prevent automatic GPU attachment before the ordered graphics service.
+    printf 'devmatch_blocklist="amdgpu radeonkms i915kms nvidia nvidia-modeset nvidia-drm"\n'
+  } >>"$target/etc/rc.conf"
+  cat >"$target/etc/rc.conf.d/sddm" <<'EOF_SDDM'
+# Safe Mode and the recovery loader setting must preserve console/SSH access.
+if [ "$(kenv -q boot_safe 2>/dev/null)" = YES ] ||
+    [ "$(kenv -q daemonarchy_rescue 2>/dev/null)" = YES ] ||
+    [ ! -e /var/run/daemonarchy-graphics.ready ]; then
+    sddm_enable=NO
+fi
+EOF_SDDM
   if $gpu_nvidia; then
     printf '\nhw.nvidiadrm.modeset="1"\n' >>"$target/boot/loader.conf"
     # The ports disable fbdev by default; do not copy Linux fbdev/GSP options.

@@ -127,3 +127,18 @@ when this rescue system shuts down; they are not installed on the target disk.
 Native boot/authentication testing is a separate gate from the helper's key and
 file-validation tests. A rescue boot with drivers blocked does not qualify those
 drivers or the graphical desktop.
+
+## Keeping recovery ahead of graphics
+
+New installations load their selected desktop GPU modules in
+`daemonarchy-graphics`, ordered after normal SSH startup and before SDDM. GPU
+modules are excluded from automatic devmatch loading and the early `kld_list`.
+If SSH was selected but did not start, graphical startup is withheld. Module
+errors go to `/var/log/daemonarchy-graphics.log`; SDDM requires the service's
+ready marker.
+
+FreeBSD Safe Mode (`boot_safe=YES`) and the loader setting
+`set daemonarchy_rescue=YES` skip this graphics service and SDDM. Normal network
+and configured SSH startup can still run. This does not enable SSH where the
+operator declined it, and does not prevent unrelated kernel or device-driver
+panics. The private headless USB mode additionally blocks T2 BCE autoloading.

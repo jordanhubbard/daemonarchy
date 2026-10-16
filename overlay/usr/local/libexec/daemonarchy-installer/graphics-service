@@ -1,0 +1,42 @@
+#!/bin/sh
+# PROVIDE: daemonarchy_graphics
+# REQUIRE: LOGIN sshd
+# BEFORE: sddm
+# KEYWORD: nojail
+# Desktop drivers load after an explicitly enabled SSH service, so a display
+# failure cannot prevent its startup merely through rc ordering.
+. /etc/rc.subr
+name=daemonarchy_graphics
+rcvar=daemonarchy_graphics_enable
+start_cmd=daemonarchy_graphics_start
+stop_cmd=:
+
+daemonarchy_graphics_start()
+{
+    ready=/var/run/daemonarchy-graphics.ready
+    log=/var/log/daemonarchy-graphics.log
+    rm -f "$ready"
+    if [ "$(kenv -q boot_safe 2>/dev/null)" = YES ] ||
+        [ "$(kenv -q daemonarchy_rescue 2>/dev/null)" = YES ] ||
+        ! checkyesno sddm_enable; then
+        echo 'Graphical startup disabled; desktop drivers were not loaded.' >>"$log"
+        return 0
+    fi
+    if checkyesno sshd_enable && ! service sshd onestatus >/dev/null 2>&1; then
+        echo 'SSH was requested but is unavailable; leaving graphical startup disabled.' >>"$log"
+        return 1
+    fi
+    for module in $daemonarchy_graphics_modules; do
+        case "$module" in
+            linux|amdgpu|radeonkms|i915kms|nvidia-drm) ;;
+            *) echo "Unsupported graphics module: $module" >>"$log"; return 1 ;;
+        esac
+        echo "Loading $module after SSH startup" >>"$log"
+        kldstat -q -n "$module.ko" || kldload "$module" >>"$log" 2>&1 || return 1
+    done
+    touch "$ready"
+}
+load_rc_config "$name"
+: "${daemonarchy_graphics_enable:=NO}"
+: "${daemonarchy_graphics_modules:=}"
+run_rc_command "$1"
