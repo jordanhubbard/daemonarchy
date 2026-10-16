@@ -18,7 +18,7 @@ Daemonarchy is four repositories:
   - `test-bhyve.sh` and `test-qemu.sh`: unattended install tests.
   - `docs/getting-started.md`: the beginner's guide; its screenshots are in `docs/images/`.
 - **[jordanhubbard/omarchy-freebsd](https://github.com/jordanhubbard/omarchy-freebsd)**: the FreeBSD layer that `x11-wm/omarchy` installs together with Omarchy:
-  - `freebsdize.in`: the adaptation of Omarchy's sources, run by the port and by `omarchy dev link`.
+  - `freebsdize.in`: the adaptation of Omarchy's sources, run by the port and by `daemonarchy dev link`.
   - `compat/`: stand-ins for the systemd and Linux tools Omarchy calls (`systemctl`, `uwsm`, `journalctl`, `timedatectl`, `brightnessctl`, ...).
   - `freebsd-bin/`: FreeBSD versions of commands built on pacman, `/sys`, NetworkManager or BlueZ, among them `omarchy-wifi` (wpa_supplicant) and `omarchy-bluetooth` (FreeBSD's Bluetooth stack), which feed the network and Bluetooth panels.
   - `systemd-user/`: the session's PipeWire and keyring units.
@@ -43,11 +43,11 @@ A Daemonarchy machine can be its own development machine, much as Omarchy's repo
 
 ### Omarchy from a checkout
 
-`omarchy dev link ~/src/omarchy` runs the desktop from your checkout after a reboot. A checkout of Omarchy is Arch-flavored, so on FreeBSD it is not run directly: the omarchy port's `freebsdize` builds the same FreeBSD tree the port installs (applying the port's patches, adding the FreeBSD versions of commands, rewriting paths and interpreters) into `~/.local/share/omarchy-dev`, and `OMARCHY_PATH` points there. While an Omarchy session runs, `omarchy dev sync --watch` rebuilds that tree a moment after each save; `omarchy dev sync` does it by hand. `omarchy dev unlink` goes back to the installed Omarchy.
+`daemonarchy dev link ~/src/omarchy` runs the desktop from your checkout after a reboot. A checkout of Omarchy is Arch-flavored, so on FreeBSD it is not run directly: the omarchy port's `freebsdize` builds the same FreeBSD tree the port installs (applying the port's patches, adding the FreeBSD versions of commands, rewriting paths and interpreters) into `~/.local/share/omarchy-dev`, and `OMARCHY_PATH` points there. While an Omarchy session runs, `daemonarchy dev sync --watch` rebuilds that tree a moment after each save; `daemonarchy dev sync` does it by hand. `daemonarchy dev unlink` goes back to the installed Omarchy.
 
 The link also points sudo at the tree's commands (a `secure_path` in `/usr/local/etc/sudoers.d/omarchy-dev-path` that keeps FreeBSD's `/sbin`, `/bin`, and `/usr/sbin`).
 
-If one of the port's patches stops applying to your checkout (you moved past the version the port packages), `omarchy dev link` and `sync` say so; refresh the patch in `~/src/freebsd-ports/x11-wm/omarchy/files`.
+If one of the port's patches stops applying to your checkout (you moved past the version the port packages), `daemonarchy dev link` and `sync` say so; refresh the patch in `~/src/freebsd-ports/x11-wm/omarchy/files`.
 
 ### The FreeBSD layer and the desktop layer
 
@@ -61,7 +61,7 @@ rsync -a --exclude .git ~/src/omarchy-freebsd/ "$(make -V WRKSRC_freebsd)/"
 sudo make reinstall clean
 ```
 
-`omarchy dev link` takes the FreeBSD commands and `freebsdize` from the installed port, so reinstall the omarchy port this way before linking to try changes to them.
+`daemonarchy dev link` takes the FreeBSD commands and `freebsdize` from the installed port, so reinstall the omarchy port this way before linking to try changes to them.
 
 ## Setting up a build host
 

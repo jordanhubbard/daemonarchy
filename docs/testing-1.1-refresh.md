@@ -163,3 +163,10 @@ The unchanged source seed packages are reused at `3ceb5f150bc1`. The refreshed
 three-package catalogue was signed on the protected host and passed a real
 native `pkg` signature verification and catalogue query. It uses a separate
 release-specific download URL; no checkout payload is added to the ISO.
+
+This supporting-data release remained unpublished. A subsequent command-help
+audit found two Linux-only development installers still exposed, so the final
+compatibility source/package pin must advance again. The ISO's default catalogue
+retains the existing published checkout repository until its replacement is
+qualified and available. The 21e464 checkout results above remain development
+evidence, not a published release input.

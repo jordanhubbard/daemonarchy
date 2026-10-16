@@ -46,9 +46,12 @@ for path in (root / 'default/omarchy/omarchy-menu.jsonc', root / 'vendor/omarchy
     if 'install.package' in entries:
         assert entries['install.package']['action'] == 'uwsm-app -- octopkg'
 print('    ok    native package menu and unqualified app exclusions')
+routes = subprocess.check_output(['daemonarchy', 'commands', '--json'], text=True)
+for route in ('daemonarchy dev install ydoo', 'daemonarchy dev pkg test'):
+    assert route not in routes, route
 for name in ('omarchy-network-band', 'omarchy-network-speedtest', 'omarchy-disk-speedtest',
-             'omarchy-network-password'):
+             'omarchy-network-password', 'omarchy-dev-install-ydoo', 'omarchy-dev-pkg-test'):
     result = subprocess.run([name], capture_output=True, text=True)
     assert result.returncode == 1 and 'not supported on FreeBSD' in result.stderr, (name, result)
-print('    ok    unsupported Linux network and benchmark commands fail before running')
+print('    ok    unsupported Linux network, benchmark and development installers are hidden and fail before running')
 PY

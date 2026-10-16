@@ -14,6 +14,7 @@ User extensions remain user-controlled.
 | AUR and individual browser/editor/service/game/AI/development installers | Removed; browse the FreeBSD repository in OctoPkg instead |
 | Docker application, database installer and passwordless Docker setup | Removed; no local Docker Engine is configured |
 | Docker buildx, Compose and lazydocker desktop dependencies | Removed from the default development bundle |
+| Arch development package-test and ydotool/uinput service installers | Hidden from command help and rejected before running; use native FreeBSD ports and input tools |
 | Arch documentation and Omarchy release/community links | FreeBSD Handbook and Daemonarchy documentation/issues |
 | Omarchy stable/RC/edge/dev selectors | Removed; system packages use the configured signed FreeBSD repositories |
 | Plymouth, direct boot, factory reset, firmware updater, LUKS password action | Removed; these upstream paths target Linux boot/storage tooling |
