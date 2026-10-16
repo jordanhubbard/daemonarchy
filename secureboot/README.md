@@ -51,3 +51,34 @@ negative boot case and requires the specific kernel panic before userland.
 
 Production enrollment, signed installation/update transactions, recovery and
 ZFS/GELI qualification remain required before exposing this path to users.
+
+## Boot-tree signing
+
+`sign-boot-tree.py` is an authoring utility, kept off the installer and installed
+desktop. On the protected FreeBSD signing host, prepare a separate staging root
+with the matching policy kernel and boot modules, then run:
+
+```
+python3 sign-boot-tree.py /path/to/staging-root \
+  --loader /path/to/verified-loader-build/loader_lua.efi \
+  --certificate /protected/release-public.pem \
+  --key /protected/release-private.key
+```
+
+The private key stays outside the image, readable only by its owner. The tool
+checks the certificate/key match, signs the PE loader, creates and signs the
+module manifest, and then signs the boot manifest that covers it. Each detached
+signature is also verified with the exported public key before installation in
+the staging tree. Copy the resulting `/boot/loader.efi` to the image's EFI
+system partition; firmware verification remains a required native test.
+
+The runtime manifest includes the kernel and `.ko` files, not user packages.
+The boot manifest leaves local loader configuration and generated linker hints
+mutable. It still requires fingerprints for code, including Lua scripts, kernels
+and modules. The policy kernel must require the verified manifest handoff even
+when local configuration changes. Another OS's files in `/boot/efi` are excluded.
+Verification-control files such as `loader.ve.off` cause signing to fail.
+
+Run `python3 -m unittest discover -s secureboot/tests -p 'test_*.py'` for the
+authoring guards. These checks do not qualify firmware boot or the kernel;
+the separate native serial-log checks cover those cases.

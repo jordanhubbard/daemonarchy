@@ -126,3 +126,16 @@ installer, production certificate enrollment, ZFS/GELI, a signed package
 update, or recovery. No production signing key has been created, no physical
 firmware variables changed, and no private key is in any image. Those release
 requirements remain open.
+
+The reusable `secureboot/sign-boot-tree.py` authoring utility was subsequently
+run against the disposable UFS tree. Its signed PE loader and boot/module
+manifests booted with enabled firmware Secure Boot and passed every `valid`
+serial-log check, including normal dynamic execution and all module/policy
+probes. That image SHA-256 is
+`154066e95089296d7f1799d2b96a0dc271c099d653788a9c1e02107e14f28c42`.
+Ten authoring guard tests also passed on macOS and native FreeBSD: running-root
+and symlink-root refusal, key location/permissions, private material in a
+certificate input, key/certificate mismatch, file/directory symlink escapes,
+verification-control files and exclusion of another OS's ESP contents. These
+are authoring and development-image checks; the production release gates above
+remain open.
