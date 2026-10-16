@@ -54,8 +54,20 @@ available for an operator boot comparison; no MSI result with it is recorded.
 ## MSI comparison reports
 
 The operator subsequently reproduced the early reset with Daemonarchy 1.0.1.
-The observed failure therefore predates preview.11. A stock FreeBSD boot result,
-exact machine/CPU and BIOS revision, and a final probe line remain missing.
+The observed failure therefore predates preview.11. A stock FreeBSD boot result
+and a final probe line remain missing.
+
+Windows System Information supplied by the operator identifies:
+
+- Model: Raider 18 HX AI A2XWIG, SKU 1824.3.
+- CPU: Intel Core Ultra 9 285HX, 24 cores / 24 logical processors.
+- Board: MS-1824, REV:1.0; RAM: 32 GiB.
+- UEFI BIOS: American Megatrends E1824IMS.312, dated 2025-08-28.
+- Secure Boot: off.
+
+Windows reports virtualization-based security running. This is a Windows-side
+observation; it does not establish a cause for a separately booted USB failure.
+Machine/account identifiers and unrelated Windows configuration were omitted.
 
 A closely matching first-person hardware report was found on 2026-10-15:
 [Slackware installer resets on MSI Raider 18 HX AI](https://www.linuxquestions.org/questions/slackware-installation-40/slackware-current-usb-boot-grub-hangs-msi-raider-18-hx-ai-4175764459/).
@@ -63,8 +75,10 @@ The May 22–27, 2026 thread identifies an A2XWIG, Core Ultra 9 285HX, RTX 5080
 and BIOS E1824IMS.316. Its installer hard-resets after about 15 seconds. The
 reporter says Debian, Manjaro and Void installer media boot, and disabling ACPI
 changes the reset into a hang. No working Slackware fix is recorded in those
-posts. This is Linux evidence, not a confirmed FreeBSD duplicate or a diagnosis
-of this operator's machine; its exact model and BIOS are not yet confirmed.
+posts. The model, CPU and motherboard match the operator's machine, while the
+reporter's BIOS is newer (.316 versus .312). This is Linux evidence, not a
+confirmed FreeBSD duplicate or a diagnosis of this operator's machine. The
+reset on .316 also means a newer BIOS is not by itself evidence of a fix.
 
 FreeBSD [bug 287342's initial report](https://lists.freebsd.org/archives/freebsd-bugs/2025-June/028114.html)
 concerns Arrow Lake desktop I/O instability after boot on different hardware.
