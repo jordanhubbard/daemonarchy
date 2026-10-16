@@ -3,6 +3,12 @@
 Development checks on 2026-10-15; this is not an installer feature or a claim
 that the release supports Secure Boot yet.
 
+On 2026-10-16 the operator selected manual certificate enrollment for 1.1.
+The production path must document adding the Daemonarchy certificate without
+replacing existing OEM/Windows trust entries, plus revocation and recovery.
+Booting under factory keys without enrollment is not the selected requirement.
+This decision does not qualify the prototype as an installer feature.
+
 A native FreeBSD loader was built from the selected October 12 source revision
 `3ceb5f150bc121f5e6a3e0cc8b289279338405a1`. The Lua EFI loader enables BearSSL,
 loader veriexec and EFI Secure Boot support. A disposable development certificate
