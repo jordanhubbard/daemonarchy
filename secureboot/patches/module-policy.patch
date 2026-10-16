@@ -1,0 +1,126 @@
+--- a/sys/conf/options
++++ b/sys/conf/options
+@@ -180,6 +180,7 @@
+ MAC_GRANTBYLABEL	opt_dontuse.h
+ MAC_VERIEXEC	opt_dontuse.h
+ MAC_VERIEXEC_DEBUG	opt_mac.h
++DAEMONARCHY_MODULE_POLICY	opt_mac.h
+ MAC_VERIEXEC_SHA1	opt_dontuse.h
+ MAC_VERIEXEC_SHA256	opt_dontuse.h
+ MAC_VERIEXEC_SHA384	opt_dontuse.h
+--- a/sys/security/mac_veriexec/veriexec_fingerprint.c
++++ b/sys/security/mac_veriexec/veriexec_fingerprint.c
+@@ -312,6 +312,18 @@
+ 			error = EAUTH;
+ 		break;
+ 
++#ifdef DAEMONARCHY_MODULE_POLICY
++	case FINGERPRINT_NOENTRY:
++	case FINGERPRINT_NODEV:
++		/*
++		 * Desktop packages and locally built programs need not appear in
++		 * the boot manifest. This exception is only for exec(2): the
++		 * independent kld_check_load hook still requires a fingerprint.
++		 * Registered files, including modules, retain integrity checks.
++		 */
++		error = 0;
++		break;
++#else
+ 	case FINGERPRINT_NOENTRY: /* no entry in the list, complain */
+ 		identify_error(imgp, td, "no fingerprint");
+ 		if (prison0.pr_securelevel > 1 ||
+@@ -325,6 +337,8 @@
+ 		    mac_veriexec_in_state(VERIEXEC_STATE_ENFORCE))
+ 			error = EAUTH;
+ 		break;
++
++#endif
+ 
+ 	default: /* this should never happen. */
+ 		identify_error(imgp, td, "invalid status field for vnode");
+--- a/sys/security/mac_veriexec_parser/mac_veriexec_parser.c
++++ b/sys/security/mac_veriexec_parser/mac_veriexec_parser.c
+@@ -24,6 +24,8 @@
+  * POSSIBILITY OF SUCH DAMAGE.
+  */
+ 
++#include "opt_mac.h"
++
+ #include <sys/param.h>
+ #include <sys/ctype.h>
+ #include <sys/eventhandler.h>
+@@ -431,15 +433,24 @@
+ 	unsigned char	*manifest_hash;
+ 	int		rc;
+ 
+-	/* If the envs are not set fail silently */
++	/* The module-only desktop profile requires a verified handoff. */
+ 	manifest_path = kern_getenv("veriexec.manifest_path");
+-	if (manifest_path == NULL)
++	if (manifest_path == NULL) {
++#ifdef DAEMONARCHY_MODULE_POLICY
++		panic("mac_veriexec: verified manifest handoff is required");
++#else
+ 		return;
++#endif
++	}
+ 
+ 	manifest_hash = kern_getenv("veriexec.manifest_hash");
+ 	if (manifest_hash == NULL) {
++#ifdef DAEMONARCHY_MODULE_POLICY
++		panic("mac_veriexec: verified manifest digest is required");
++#else
+ 		freeenv(manifest_path);
+ 		return;
++#endif
+ 	}
+ 
+ 	manifest_prefix = kern_getenv("veriexec.manifest_prefix");
+--- a/sys/security/mac_veriexec/mac_veriexec.c
++++ b/sys/security/mac_veriexec/mac_veriexec.c
+@@ -397,6 +397,9 @@
+ 		MAC_VERIEXEC_DBG(2, "fingerprint status is %d for dev %ju, "
+ 		    "file %ju.%ju\n", status, (uintmax_t)va.va_fsid,
+ 		    (uintmax_t)va.va_fileid, (uintmax_t)va.va_gen);
++#ifdef DAEMONARCHY_MODULE_POLICY
++		printf("mac_veriexec: rejected unverified kernel module\n");
++#endif
+ 		return (EAUTH);
+ 	}
+ 
+@@ -439,9 +442,14 @@
+ 		 * Do not allow writing to memory or manipulating veriexec,
+ 		 * unless trusted
+ 		 */
++#ifdef DAEMONARCHY_MODULE_POLICY
++		/* No live policy-control or kernel-memory override in this profile. */
++		error = EPERM;
++#else
+ 		if (mac_veriexec_proc_is_trusted(cred, curproc) == 0 &&
+ 		    mac_priv_grant(cred, priv) != 0)
+ 			error = EPERM;
++#endif
+ 		MAC_VERIEXEC_DBG(4, "%s priv=%d error=%d", __func__, priv,
+ 		    error);
+ 		break;
+@@ -608,6 +616,20 @@
+ 		return (0);
+ 
+ 	error = mac_veriexec_check_vp(cred, vp, accmode);
++#ifdef DAEMONARCHY_MODULE_POLICY
++	/* rtld uses O_VERIFY for shared libraries as well as executables. */
++	if (error == EAUTH && (accmode & VVERIFY) != 0 &&
++	    (accmode & VWRITE) == 0) {
++		switch (mac_veriexec_get_fingerprint_status(vp)) {
++		case FINGERPRINT_NOENTRY:
++		case FINGERPRINT_NODEV:
++			error = 0;
++			break;
++		default:
++			break;
++		}
++	}
++#endif
+ 	return (error);
+ }
+ 

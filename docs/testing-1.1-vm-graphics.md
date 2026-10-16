@@ -34,7 +34,7 @@ records the complete patch and provenance.
   `/dev/dri/renderD128`.
 - SDDM's Hyprland greeter rendered. A temporary SDDM autologin configuration
   then launched the actual tester account's Omarchy/Daemonarchy Hyprland
-  session. Interactive login itself was not exercised by this check.
+  session. This initial check did not exercise interactive login.
 - `grim` captured the desktop wallpaper, panel and application windows from
   the guest's real Wayland session. Hyprland reported backend `drm` and
   connector `Virtual-1` at 1280x800.
@@ -56,6 +56,23 @@ records the complete patch and provenance.
   lock and rebooting again produced a working Hyprland desktop and screenshot.
   The new image preflight accepted the complete GPU repository with this
   package and rejected the previous package because it lacks the VirtIO module.
+- A later check removed the temporary autologin configuration and restarted
+  SDDM with core package `omarchy-4.0.4_18`. The greeter's compositor update
+  popup obscured authentication. Setting `ecosystem.no_update_news` and
+  `ecosystem.no_donation_nag` in its separate Hyprland configuration removed
+  the popup with no configuration errors. A guest screenshot then showed the
+  Daemonarchy password field. Password input through QEMU authenticated the
+  tester account and launched its actual Hyprland session; SDDM's log and a
+  fresh desktop screenshot confirmed it.
+- Native `poudriere testport` for core `omarchy-4.0.4_19`, including the
+  [greeter fix](https://github.com/jordanhubbard/freebsd-ports/pull/4), passed
+  build, stage QA, plist, install/deinstall and package install/deinstall.
+  An initial bulk check caught a missing plist entry for the installed patch;
+  the corrected full testport passed. A subsequent bulk produced the actual
+  package, which was installed in the guest. After reboot, SDDM again accepted
+  keyboard password input without autologin and the desktop panel, wallpaper
+  and notifications rendered. Retained screenshots distinguish the short
+  session-start transition from the fully started desktop.
 
 The screenshots, keyboard result, source patch, build logs and reboot report
 are retained separately from the repository. No signing keys or operator SSH
@@ -63,8 +80,8 @@ keys are part of the patch or screenshots.
 
 ## Remaining qualification
 
-Test the packaged driver in a fresh installer image, including ordered GPU
-startup after SSH, an interactive SDDM login and reboot. Repeat physical
+Test the packaged driver and greeter fix in a fresh installer image, including
+ordered GPU startup after SSH, interactive SDDM login and reboot. Repeat physical
 Intel/AMD/NVIDIA regression checks because the shared DRM package changed.
 Final ISO integration remains separate from the successful package checks.
 

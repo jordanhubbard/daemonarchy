@@ -65,3 +65,64 @@ In particular, the stock GENERIC kernel does not ship `mac_veriexec.ko`; signing
 the EFI loader and checking boot-time files does not enforce integrity of kernel
 modules loaded later by userland. Embedding this development trust anchor is
 also not a production enrollment policy. Keep the release gate open.
+
+## Runtime verification development checks, 2026-10-16
+
+A GENERIC-derived kernel now includes `MAC_VERIEXEC`, `MAC_VERIEXEC_SHA256`
+and the built-in `mac_veriexec_parser` device. A second native loader build
+enabled `WITH_LOADER_VERIEXEC_PASS_MANIFEST` and the hash/certificate self-tests.
+The certificate self-test uses a separate short-lived leaf signed by the
+development CA; its private key stays on the isolated builder too.
+
+The signed boot manifest covers the signed runtime manifest and its public
+certificate. `load -t pass_manifest /boot/runtime.manifest` verifies it and
+passes its digest to the kernel. Absolute paths in that manifest avoid a Lua
+module-loader argument-order problem with the command's `-p` option. Setting
+the three handoff environment variables manually is not a replacement: the
+verified loader overwrites or clears them immediately before kernel entry.
+
+The upstream policy reached userland with state `loaded active enforce locked`,
+loaded the trusted test module, rejected an unregistered copy after unloading
+the original, blocked writes to the registered module and rejected an
+unregistered executable. That last restriction prevents ordinary desktop
+package installation without further policy work.
+
+The development [module policy](../secureboot/README.md) adds an opt-in kernel
+option, leaving upstream defaults unchanged. It allows unregistered user
+executables and runtime-linker library opens, retains independent strict module
+checks, denies live policy/memory-write overrides, and requires a verified
+manifest handoff before userland. Its runtime manifest registers kernel files
+only. This is downstream security policy work, not a production support claim.
+
+| Actual isolated QEMU/OVMF check | Result |
+| --- | --- |
+| Enabled firmware Secure Boot; enabled loader SHA-256, SHA-384 and certificate self-tests | Passed |
+| Verified handoff and locked kernel policy | Passed; all four state flags present |
+| Trusted `geom_nop.ko` load and unload | Passed |
+| Byte-for-byte unregistered copy of that unloaded module | Rejected; explicit policy diagnostic, linker syscall returned `ENOEXEC` |
+| Open registered module for writing | Rejected with `EPERM` |
+| Root open of `/dev/kmem` for writing | Rejected with `EPERM` |
+| Root attempt to add a fingerprint to the locked policy | Rejected with `EPERM` |
+| Copied user program absent from the runtime manifest | Executed successfully, including its normal dynamic linker/library path |
+| Signed boot configuration omits the handoff but supplies plausible manifest path/hash variables | Specific `verified manifest handoff is required` kernel panic; no userland marker |
+
+The passing runtime image SHA-256 is
+`864097ad7c109d8a9cae87a65742ad55f9f52da90e80b1a8262c52f0cf44a832`.
+The missing-handoff image SHA-256 is
+`a7bcf92f3c719f967cb14ae7a7cf42d64a5182009085079f68aaf0b0d43db819`.
+The retained serial logs pass `secureboot/tests/check-runtime-log.py` in their
+respective modes. The checker also rejects the retained failed run.
+
+Earlier iterations are retained as failures: a missing handoff left the first
+upstream policy inactive; the initial copied-module test only hit a duplicate
+module error; the first module-only policy blocked runtime-linker opens; and
+the memory-write probe exposed an unlocked-vnode assertion in upstream trusted
+process lookup. The final module-only profile denies those privilege overrides
+directly rather than invoking that lookup. None of those failed iterations
+qualifies the boot chain.
+
+These checks used a development certificate and UFS test root, not the
+installer, production certificate enrollment, ZFS/GELI, a signed package
+update, or recovery. No production signing key has been created, no physical
+firmware variables changed, and no private key is in any image. Those release
+requirements remain open.
