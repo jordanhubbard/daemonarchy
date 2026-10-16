@@ -58,7 +58,7 @@ validated packages can ship from the fork while these reviews remain open.
 - [x] Changed ports pass `poudriere testport`; final desktop and compatibility checks passed, followed by a clean combined bulk build.
 - [ ] Unattended installation passes the existing QEMU and bhyve checks. BIOS and UEFI QEMU installation/reboot passed with and without encryption. Unencrypted UEFI bhyve passed with both shallow checkouts; encrypted bhyve and repetition against the refreshed snapshot remain pending.
 - [ ] Graphical VM and physical-hardware checks pass.
-- [ ] Existing installations upgrade successfully; failed updates remain recoverable. [Preliminary application-package upgrade and ZFS rollback from 1.0.1 passed](docs/testing-1.1-upgrade.md), as did development-key signed boot maintenance, injected driver failure and rollback; exact final packages and production-authority qualification remain pending.
+- [ ] Existing installations upgrade successfully; failed updates remain recoverable. [Exact final application-package upgrade, reboot, ZFS rollback and return from 1.0.1 passed](docs/testing-1.1-upgrade.md), as did development-key signed boot maintenance, injected driver failure and rollback; production-authority installed maintenance qualification remains pending.
 - [ ] Documentation states supported GPUs, hypervisors, Bluetooth profiles,
       EAP methods, and boot/install combinations precisely.
 - [ ] Package repository, ISO, checksum, and release notes are verified together.

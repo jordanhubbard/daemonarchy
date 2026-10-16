@@ -52,12 +52,20 @@ snapshot and loader protocol; a base/ABI migration needs separate qualification.
   internal keyboard during recovery. It is not qualified for installation.
 - Enterprise Wi-Fi profile validation has native test coverage, but real
   enterprise authentication/reboot remains untested: no test network is available.
+- Refreshed bhyve and encrypted bhyve qualification remain pending; the tested
+  graphical VM path is QEMU with VirtIO/VirGL. No alternate desktop is used.
 - Bluetooth audio is limited to the implemented A2DP/SBC path. Real headset
   playback, reconnect/reboot and HID regression qualification remain pending.
 - CUDA toolkit installation and menu entries remain disabled. The successful
   RTX 4090 driver-API probe required the UVM shim and does not qualify Unified
   Memory, the complete toolkit, or every CUDA application.
 
-Final image boot/install, signed update/recovery, upgrade and hypervisor results
+The candidate ISO is 2,098,395,136 bytes (under 2 GiB), SHA-256
+`891fc6e6ee537bf92aecf035d4e855b8d526aeaf9c27be80166d689289c3acd9`.
+Exact final application-package upgrade, reboot, rollback and return from 1.0.1
+passed. Image inputs and fresh-install results are recorded in
+[the final image record](testing-1.1-final-image.md).
+
+Final image boot/install, signed update/recovery and hypervisor results
 must be reconciled with [the roadmap](../ROADMAP.md) before publication. Do not
 describe a pending check as a supported or tested configuration.
