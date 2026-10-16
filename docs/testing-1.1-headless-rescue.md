@@ -8,6 +8,10 @@ are private test inputs and are not included in the public image or repository.
 The image passed the native live-runtime audit and the size gate at
 1,922,768,896 bytes. Copies on the operator machine and QEMU worker matched
 SHA-256 `05a51255501dbfe38a5eed06a9be1c56c550717052e17eee0b12fac00e7d53b6`.
+The audit now takes an explicit `headless` role for private images. Its default
+`public` role rejects rescue authorization or an automatic rescue SSH service.
+Both role checks passed against the actual public preview.12 and private ISO;
+the private authorization files are root-owned with mode 0600.
 
 It then booted in a QEMU/KVM UEFI VM with a blank 40 GiB virtio disk and an
 existing CIDATA CD containing an unattended installation configuration.

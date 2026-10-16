@@ -129,6 +129,8 @@ file-validation tests. A rescue boot with drivers blocked does not qualify those
 drivers or the graphical desktop.
 The [QEMU rescue check record](testing-1.1-headless-rescue.md) covers key
 authentication, ignored unattended media and a target disk with zero writes.
+Audit private images with `tests/live-image-runtime.sh image.iso headless`;
+the default public-image audit rejects their preauthorized rescue payload.
 
 ## Keeping recovery ahead of graphics
 

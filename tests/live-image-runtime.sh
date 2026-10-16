@@ -4,7 +4,9 @@
 set -eu
 [ "$(uname -s)" = FreeBSD ] || { echo 'Run on FreeBSD' >&2; exit 1; }
 [ "$(id -u)" = 0 ] || { echo 'Run as root' >&2; exit 1; }
-iso=$(realpath "${1:?usage: live-image-runtime.sh image.iso}")
+iso=$(realpath "${1:?usage: live-image-runtime.sh image.iso [public|headless]}")
+mode=${2:-public}
+case "$mode" in public|headless) ;; *) echo 'Choose public or headless image role' >&2; exit 1 ;; esac
 [ -f "$iso" ] || { echo "Image not found: $iso" >&2; exit 1; }
 work=$(mktemp -d /var/tmp/daemonarchy-live-audit.XXXXXX)
 device=''
@@ -25,10 +27,26 @@ mount -t cd9660 -o ro "/dev/$device" "$work/root"
 mounted=true
 mount -t devfs devfs "$work/root/dev"
 devfs_mounted=true
-chroot "$work/root" /bin/sh -s <<'AUDIT'
+chroot "$work/root" /bin/sh -s -- "$mode" <<'AUDIT'
 set -eu
 PATH=/bin:/sbin:/usr/bin:/usr/sbin:/usr/local/bin:/usr/local/sbin
 export PATH
+payload=/usr/local/share/daemonarchy-installer/headless
+if [ "$1" = public ]; then
+  [ ! -e "$payload" ] && [ ! -e /usr/local/etc/rc.d/daemonarchy-headless ] || {
+    echo 'Private rescue authorization found in public image' >&2; exit 1;
+  }
+  echo 'PASS: public image contains no private rescue authorization or startup service'
+else
+  [ -x /usr/local/etc/rc.d/daemonarchy-headless ]
+  for key in authorized_keys host_key; do
+    [ "$(stat -f '%u:%Lp' "$payload/$key")" = 0:600 ] || {
+      echo 'Invalid private rescue key ownership or permissions' >&2; exit 1;
+    }
+  done
+  grep -q '^devmatch_blocklist=.*apple_bce.*amdgpu' /boot/loader.conf.local
+  echo 'PASS: explicit private rescue image has protected authorization and blocked drivers'
+fi
 for tool in sh bash gum jq pkg pkg-static fetch ssh sshd tar xz zpool zfs gpart \
   geli efibootmgr mount umount pw sysrc ifconfig wpa_supplicant \
   wpa_cli dhclient ntpd date file ldd; do
