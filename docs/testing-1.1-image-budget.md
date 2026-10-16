@@ -51,3 +51,24 @@ No full installation of preview.11, BIOS boot, graphical desktop or physical
 hardware check is claimed here. The build host's kernel remains older than
 the snapshot jail (1600026 versus 1600027); the prior host qualification
 limitation remains. This development image has not been published as a release.
+
+## Preview.12
+
+The next development image includes `omarchy-4.0.4_15`,
+`daemonarchy-1.0.1_2,1`, the enterprise Wi-Fi helper and its Python runtime,
+and installer revision `7399015575401c9d64cd2391db1c02517266b8f8`.
+Its ports checkpoint is `0b4e3743af34` on `daemonarchy-1.1-iso`.
+
+The ISO is **1,922,754,560 bytes**, leaving **224,729,088 bytes** below the
+2 GiB limit. SHA-256:
+
+```text
+991091b06dbac0a1f254be12627cee7ae338aba72ffc6935bb41c512a2301bc8
+```
+
+The native live-runtime audit passed, including enterprise helper imports and
+all scanned retained dynamic ELF dependencies. Copies on the operator machine
+and QEMU worker match this checksum. Python pruning removes its development
+archive, regression suite and duplicate optimized caches from the live root;
+the desktop Python package and installed FreeBSD development system remain
+complete. The snapshot and build-host qualification limitation are unchanged.
