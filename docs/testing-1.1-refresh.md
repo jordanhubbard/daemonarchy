@@ -86,11 +86,23 @@ The first matching-snapshot build exposed two blockers; that run is not green.
 The newly generated source seed packages also passed native `pkg add`, checksum
 validation and materialization into a clean, self-contained, one-commit Git
 checkout at `3ceb5f150bc121f5e6a3e0cc8b289279338405a1`, with only the public
-FreeBSD source remote. The ports seed must be regenerated after the compatibility
-fixes are finalized; no refreshed checkout repository has been published yet.
+FreeBSD source remote. The ports seed was regenerated at `28d8f145fbec`, and both trees passed native
+materialization checks. The signed three-package repository passed a real
+fetch/install transaction; a different valid public key rejected catalogue
+queries and installation. `pkg update` alone can exit zero after reporting a
+signature failure, so the negative check also verifies queries and installation.
+Public checkout-repository verification remains pending.
 
-A finite continuation waits for the original bulk run to stop normally before
-updating the isolated ports tree to `28d8f145fbec`, extracting the verified
-`lib32` set into the builder and jail, and retrying package QA. It reuses finished
-packages; it does not publish packages or images. The original bulk failures
-remain recorded and are not overridden by the successful standalone builds.
+The original bulk run was stopped with SIGINT after 267 successful builds;
+poudriere retained its uncommitted package repository for reuse. After cleanup,
+the isolated ports tree advanced to `28d8f145fbec`, the verified `lib32` set was
+extracted into the builder and jail, and native package QA restarted without a
+forced rebuild. The now-available 32-bit libraries enable GCC multilib options,
+requiring that compiler and its dependents to rebuild. The original bulk
+failures remain recorded; the retry must pass before the refreshed image is
+qualified.
+
+The GPU selection table was regenerated using DRM `drm_v6.12.110_1` and NVIDIA
+595.104.02. The upstream input hashes and all device selections are unchanged
+from the earlier table; only its DRM source revision label changed. The image
+preflight now requires DRM 6.12.110, and portable GPU selection tests passed.

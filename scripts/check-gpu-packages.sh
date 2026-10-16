@@ -15,7 +15,7 @@ for file in "$packages"/*.pkg; do
   esac
   version=$(pkg query -F "$file" '%v')
   case "$name" in
-    drm-612-kmod) case "$version" in 6.12.85.*) ;; *) echo "Refresh the DRM PCI table before changing DRM versions" >&2; exit 1 ;; esac ;;
+    drm-612-kmod) case "$version" in 6.12.110.*) ;; *) echo "Refresh the DRM PCI table before changing DRM versions" >&2; exit 1 ;; esac ;;
     linux-nvidia-libs|nvidia-*) case "$version" in 595.104.02|595.104.02.*|595.104.02_*) ;; *) echo "Refresh the NVIDIA PCI table before changing driver versions" >&2; exit 1 ;; esac ;;
   esac
   abi=$(pkg query -F "$file" '%q')
