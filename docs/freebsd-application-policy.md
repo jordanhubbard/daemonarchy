@@ -15,6 +15,9 @@ User extensions remain user-controlled.
 | Docker application, database installer and passwordless Docker setup | Removed; no local Docker Engine is configured |
 | Docker buildx, Compose and lazydocker desktop dependencies | Removed from the default development bundle |
 | Arch development package-test and ydotool/uinput service installers | Hidden from command help and rejected before running; use native FreeBSD ports and input tools |
+| AUR, Linux boot/hibernation, old Omarchy OS upgrade/reinstall and service subcommands | Hidden and rejected before package, service or disk operations; ordinary FreeBSD package updates remain available |
+| Unqualified agent/dictation setup and fingerprint invitations | Not offered at first login; native packaged CLI tools remain independently available |
+| Dictation and GPU screen-recording bar indicators | Removed from defaults/editor choices and filtered out of older layouts without changing saved user settings |
 | Arch documentation and Omarchy release/community links | FreeBSD Handbook and Daemonarchy documentation/issues |
 | Omarchy stable/RC/edge/dev selectors | Removed; system packages use the configured signed FreeBSD repositories |
 | Plymouth, direct boot, factory reset, firmware updater, LUKS password action | Removed; these upstream paths target Linux boot/storage tooling |

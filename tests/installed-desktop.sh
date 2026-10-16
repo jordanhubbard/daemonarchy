@@ -46,12 +46,25 @@ for path in (root / 'default/omarchy/omarchy-menu.jsonc', root / 'vendor/omarchy
     if 'install.package' in entries:
         assert entries['install.package']['action'] == 'uwsm-app -- octopkg'
 print('    ok    native package menu and unqualified app exclusions')
-routes = subprocess.check_output(['daemonarchy', 'commands', '--json'], text=True)
-for route in ('daemonarchy dev install ydoo', 'daemonarchy dev pkg test'):
-    assert route not in routes, route
-for name in ('omarchy-network-band', 'omarchy-network-speedtest', 'omarchy-disk-speedtest',
-             'omarchy-network-password', 'omarchy-dev-install-ydoo', 'omarchy-dev-pkg-test'):
+routes = json.loads(subprocess.check_output(['daemonarchy', 'commands', '--json'], text=True))
+visible = {row['binary'] for row in routes['commands']}
+unsupported = ('omarchy-network-band', 'omarchy-network-speedtest', 'omarchy-disk-speedtest',
+               'omarchy-network-password', 'omarchy-dev-install-ydoo', 'omarchy-dev-pkg-test',
+               'omarchy-pkg-aur-add', 'omarchy-update-aur-pkgs', 'omarchy-plymouth-set',
+               'omarchy-hibernation-setup', 'omarchy-reinstall-configs', 'omarchy-upgrade-to-quattro',
+               'omarchy-refresh-limine', 'omarchy-refresh-pacman', 'omarchy-install-hermes-cli',
+               'omarchy-launch-openclaw', 'omarchy-openclaw-onboard', 'omarchy-voxtype-install',
+               'omarchy-install-service-sunshine', 'omarchy-remove-service-1password',
+               'omarchy-install-gaming-gpu-lib32', 'omarchy-agent')
+assert not visible.intersection(unsupported), visible.intersection(unsupported)
+for name in ('omarchy-pkg-add', 'omarchy-refresh-hyprland', 'omarchy-battery-status',
+             'omarchy-hyprland-monitor-scaling'):
+    assert name in visible, name
+for name in unsupported:
     result = subprocess.run([name], capture_output=True, text=True)
     assert result.returncode == 1 and 'not supported on FreeBSD' in result.stderr, (name, result)
-print('    ok    unsupported Linux network, benchmark and development installers are hidden and fail before running')
+manifest = json.loads((root / 'shell/plugins/bar/widgets/Indicators.manifest.json').read_text())
+options = next(row['options'] for row in manifest['barWidget']['schema'] if row['key'] == 'items')
+assert not {'Dictation', 'ScreenRecording'}.intersection(row['value'] for row in options)
+print('    ok    unsupported Linux commands and bar choices excluded; portable commands retained')
 PY

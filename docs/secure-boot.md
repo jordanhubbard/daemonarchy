@@ -23,6 +23,10 @@ not require replacing the platform owner. See the
    `sha256 release-certificate.der` and
    `openssl x509 -inform DER -in release-certificate.der -noout -fingerprint -sha256`
    should report the same digest, apart from fingerprint punctuation.
+   If firmware selects certificate files from removable storage, copy the DER
+   file onto FAT32 media that it can browse. The installer ISO is read-only;
+   use separate certificate media rather than reformatting the installer or an
+   operating-system disk to add a file.
 2. Export or record the existing firmware trust databases using the machine's
    firmware interface. Retain the other operating system's recovery material
    if it uses disk encryption tied to firmware state.

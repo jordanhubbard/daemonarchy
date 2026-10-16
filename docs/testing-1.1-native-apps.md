@@ -44,3 +44,24 @@ disables that unsupported write on FreeBSD and corrects the welcome menu label.
 All eight `test_desktop_defaults.py` checks passed natively on FreeBSD with this
 source, including all three native GIO browser-launch cases. Its new package
 still needs installation and first-run GUI qualification in the final image.
+
+The subsequent command-help audit found Linux-only `dev install ydoo` and
+`dev pkg test` routes. Compatibility revision
+`59b5b191707c86ecf192920de0b714bb72f77fef` hides these routes and rejects direct
+invocation before running their udev/uinput, systemd or Arch package operations.
+All eight checks passed again natively, including real-router discovery and
+direct unsupported-command guards. The final installed-system check now verifies
+these exclusions before invoking the guarded commands.
+
+The complete command audit then excluded Linux boot/AUR/OS-reinstall tools,
+unqualified setup routes and raw sysfs-only probes from public discovery.
+Compatibility revision `535e44bb6fa3e9b9f4fc3a870591688526279124` also removes
+unsupported first-login invitations and dictation/screen-recording bar choices,
+including filtering older saved layouts while retaining user-defined entries.
+All nine native tests passed, including the actual QML settings functions.
+The complete adapted installed catalogue exposed 231 routes, retaining the
+portable battery, monitor-scaling, package and Hyprland helpers. A disposable
+FreeBSD desktop loaded the two changed bar files, restarted Quickshell, reported
+no Hyprland configuration errors and passed the graphical input/browser/package
+manager checks again; a hover screenshot confirmed the unsupported indicators
+were absent. This prototype precedes final production-image qualification.
