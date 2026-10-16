@@ -19,6 +19,8 @@ User extensions remain user-controlled.
 | Plymouth, direct boot, factory reset, firmware updater, LUKS password action | Removed; these upstream paths target Linux boot/storage tooling |
 | Upstream fingerprint/FIDO/SSH/security setup | Removed pending FreeBSD-specific implementation; use native system administration |
 | NetworkManager DNS/QR and Linux hardware restart actions | Removed pending native replacements; Wi-Fi uses Daemonarchy's FreeBSD backend |
+| Network panel DNS/band/QR controls and speed-test buttons | Hidden on FreeBSD; their NetworkManager and Linux-counter helpers are disabled |
+| Network and disk benchmark menu items | Removed; upstream implementations depend on `/sys`, `findmnt` and other Linux interfaces |
 | GPU screen recording, LocalSend sharing and crash capture | Removed until a native implementation is available |
 | Linux-only browser/editor defaults, dead app shortcuts and automatic agent selection/download | Removed; no implied Linuxulator qualification |
 | Browser web applications | Retained using the FreeBSD Chromium desktop entry through GIO |

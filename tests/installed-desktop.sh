@@ -28,10 +28,16 @@ for path in (root / 'default/omarchy/omarchy-menu.jsonc', root / 'vendor/omarchy
         if line.strip().startswith('"'):
             entries.update(json.loads('{' + line.strip().rstrip(',') + '}'))
     for key, row in entries.items():
-        assert not key.startswith(('install.aur', 'update.channel', 'setup.default.agent')), key
+        assert not key.startswith(('install.aur', 'update.channel', 'setup.default.agent',
+                                   'trigger.tests.network-speedtest', 'trigger.tests.disk-speedtest')), key
         assert 'cudalab' not in key, key
         assert not any(word in row.get('action', '') for word in ('plymouth', 'docker', 'windows-vm', 'install-dev-env')), key
     if 'install.package' in entries:
         assert entries['install.package']['action'] == 'uwsm-app -- octopkg'
 print('    ok    native package menu and unqualified app exclusions')
+for name in ('omarchy-network-band', 'omarchy-network-speedtest', 'omarchy-disk-speedtest',
+             'omarchy-network-password'):
+    result = subprocess.run([name], capture_output=True, text=True)
+    assert result.returncode == 1 and 'not supported on FreeBSD' in result.stderr, (name, result)
+print('    ok    unsupported Linux network and benchmark commands fail before running')
 PY
