@@ -4,24 +4,24 @@ This guide takes you from a download to a working desktop, and through the thing
 
 Daemonarchy is the [Omarchy](https://omarchy.org) desktop running on [FreeBSD](https://www.freebsd.org). If you are curious how it is put together, or want to change it, read the [hacking guide](../HACKING.md) when you are done here.
 
-This guide covers the 1.1 candidate. Stable 1.0.1 has whole-disk, UEFI-only
+This guide covers the 1.1 release. Earlier 1.0.1 has whole-disk, UEFI-only
 installation and needs Secure Boot off. See the [download page](../README.md#download)
-for both versions and the candidate
+and the release
 [qualification record](testing-1.1-final-image.md) before choosing hardware.
 
 ![The Daemonarchy desktop, with the System > FreeBSD menu open](images/desktop.png)
 
 ## What you need
 
-- A 64-bit x86 PC. The 1.1 candidate supports UEFI and legacy BIOS.
+- A 64-bit x86 PC. The 1.1 release supports UEFI and legacy BIOS.
 - A USB stick of 4 GB or more. Writing the image erases it.
 - A disk or installation region of 40 GB or more. Whole-disk mode erases the selected disk. In 1.1 you can instead replace a selected GPT partition or use existing free space. The installer does not shrink filesystems; create space from the other operating system first.
 - A network connection during installation. Wired Ethernet or personal Wi-Fi is the simplest path. The 1.1 [enterprise Wi-Fi configuration](enterprise-wifi.md) is implemented, but real enterprise authentication remains unqualified.
-- Graphics supported by the packaged FreeBSD drivers. The 1.1 candidate includes NVIDIA drivers; the RTX 4090 driver/compute probes passed, while its installed desktop remains unqualified. QEMU with VirtIO/VirGL passed actual Hyprland checks. Read the [hardware quirks](hardware-quirks.md), especially the ASRock, MSI Raider and T2 MacBook observations.
+- Graphics supported by the packaged FreeBSD drivers. The 1.1 release includes NVIDIA drivers; the RTX 4090 driver/compute probes passed, while its installed desktop remains unqualified. QEMU with VirtIO/VirGL passed actual Hyprland checks. Read the [hardware quirks](hardware-quirks.md), especially the ASRock, MSI Raider and T2 MacBook observations.
 
 ## 1. Download the image
 
-Get the `.iso` and matching `.sha256` from the [download page](../README.md#download). The GitHub **latest** link selects stable 1.0.1; choose the explicitly listed 1.1 candidate for the new features.
+Get the `.iso` and matching `.sha256` from the [download page](../README.md#download). The GitHub **latest** link selects 1.1.0.
 
 Checking the download is optional but quick. In a terminal, in the folder you saved both files to:
 
@@ -44,7 +44,7 @@ Be sure of the device name: `dd` overwrites whatever you point it at.
 ## 3. Boot from the stick
 
 1. Plug the stick in and turn the machine on, pressing its boot menu key (often F12, F11, F10 or Esc; on Macs hold Option).
-2. For stable 1.0.1, turn Secure Boot off. The 1.1 candidate can also boot with it off; enforced Secure Boot requires [manual enrollment of the project certificate](secure-boot.md), preserving existing OEM/Windows keys. Factory keys alone reject the project loader.
+2. For earlier 1.0.1, turn Secure Boot off. The 1.1 release can also boot with it off; enforced Secure Boot requires [manual enrollment of the project certificate](secure-boot.md), preserving existing OEM/Windows keys. Factory keys alone reject the project loader.
 3. Choose the USB stick. Use UEFI for Secure Boot; 1.1 also supports legacy BIOS boot.
 
 ## 4. Install
@@ -56,10 +56,10 @@ The installer asks a handful of questions, then installs on its own. Use the arr
 3. **Your account.** Your name, a user name, a password (you will log in with it, and give it when the system asks for your permission), a name for the computer, and your time zone.
 4. **Network.** The installer lists your network adapters. A plugged-in cable is usually already connected; otherwise pick **Join Wi-Fi**, choose your network and type its password. You can also set an address by hand if your network has no DHCP. If the clock is wrong, choose **Set date and time** and enter the current UTC date and time; this works offline. **Synchronize time over network** tries NTP for up to 30 seconds. After either action the installer checks package access again. Package downloads still require internet access.
 5. **Remote access.** Say yes only if you want to log in to this machine from another one over SSH.
-6. **Storage.** Pick the disk and installation mode, review the selected region, and choose whether to **encrypt** it. Encryption requires your password each time the machine starts. Stable 1.0.1 supports whole-disk mode only.
+6. **Storage.** Pick the disk and installation mode, review the selected region, and choose whether to **encrypt** it. Encryption requires your password each time the machine starts. Earlier 1.0.1 supports whole-disk mode only.
 7. **Ready.** Check the summary and confirm. Writes to the selected disk/partition/free region begin after confirmation.
 
-The 1.1 candidate also offers optional `/usr/ports` and `/usr/src` Git checkouts. They download separately when selected and use the release's pinned revisions. Leave them off if you only want to run the desktop.
+The 1.1 release also offers optional `/usr/ports` and `/usr/src` Git checkouts. They download separately when selected and use the release's pinned revisions. Leave them off if you only want to run the desktop.
 
 
 The install downloads about 1,200 packages, so it takes from 15 minutes to an hour depending on your connection. When it is done, remove the stick and restart.
@@ -115,7 +115,7 @@ Open the Bluetooth panel with **Super + Ctrl + B**, or click the Bluetooth icon.
 2. Put your keyboard or mouse into pairing mode (usually by holding its connect button until a light blinks).
 3. Pick it from the list of devices found. Once paired it reconnects by itself.
 
-Stable 1.0.1 supports classic Bluetooth input devices. The 1.1 candidate adds a native A2DP/SBC audio backend and output selection; real headset playback, reconnect/reboot and input-device regression checks remain unqualified. LE Audio and headset microphone profiles are outside this implementation. Use wired/USB audio while evaluating that support; see the [Bluetooth evidence](testing-1.1-bluetooth-audio.md).
+Earlier 1.0.1 supports classic Bluetooth input devices. The 1.1 release adds a native A2DP/SBC audio backend and output selection; real headset playback, reconnect/reboot and input-device regression checks remain unqualified. LE Audio and headset microphone profiles are outside this implementation. Use wired/USB audio while evaluating that support; see the [Bluetooth evidence](testing-1.1-bluetooth-audio.md).
 
 ## 10. Keep it up to date
 

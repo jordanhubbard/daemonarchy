@@ -10,19 +10,14 @@ Each release is built from a FreeBSD 16.0-CURRENT snapshot. CURRENT moves daily,
 
 ## Download
 
-The current release is **[Daemonarchy 1.0.1](https://github.com/jordanhubbard/daemonarchy/releases/tag/daemonarchy-1.0.1)** (UEFI, x86-64, 1.7 GB), with Omarchy 4.0.4 on FreeBSD 16.0-CURRENT of 2026-10-05:
+The current release is **[Daemonarchy 1.1.0](https://github.com/jordanhubbard/daemonarchy/releases/tag/daemonarchy-1.1.0)** (x86-64, BIOS or UEFI), with Omarchy 4.0.4 on the October 12 FreeBSD 16.0-CURRENT snapshot.
 
-- ISO: [daemonarchy-1.0.1-amd64.iso](https://github.com/jordanhubbard/daemonarchy/releases/download/daemonarchy-1.0.1/daemonarchy-1.0.1-amd64.iso)
-- SHA-256: `937b0fc007824dad47f271ebeb8b5d41323afbc6d17b225e12735588de6f9d4d` ([checksum file](https://github.com/jordanhubbard/daemonarchy/releases/download/daemonarchy-1.0.1/daemonarchy-1.0.1-amd64.iso.sha256))
-
-Write it to a USB stick with `dd if=daemonarchy-1.0.1-amd64.iso of=/dev/<usb-device> bs=1m` (`bs=1M` on Linux), turn Secure Boot off, and boot from the stick. The install erases the disk you choose and downloads about 1,200 packages, so it needs a network connection. Every image, with its release notes, is on the [releases page](https://github.com/jordanhubbard/daemonarchy/releases).
-
-The **[1.1.0-rc.1 candidate](https://github.com/jordanhubbard/daemonarchy/releases/tag/daemonarchy-1.1.0-rc.1)** is available for community testing:
-
-- [ISO](https://github.com/jordanhubbard/daemonarchy/releases/download/daemonarchy-1.1.0-rc.1/daemonarchy-1.1.0-amd64.iso), 2,098,395,136 bytes, under 2 GiB.
-- [Checksum](https://github.com/jordanhubbard/daemonarchy/releases/download/daemonarchy-1.1.0-rc.1/daemonarchy-1.1.0-amd64.iso.sha256): `891fc6e6ee537bf92aecf035d4e855b8d526aeaf9c27be80166d689289c3acd9`.
+- [ISO](https://github.com/jordanhubbard/daemonarchy/releases/download/daemonarchy-1.1.0/daemonarchy-1.1.0-amd64.iso): 2,098,395,136 bytes, under 2 GiB.
+- [Checksum](https://github.com/jordanhubbard/daemonarchy/releases/download/daemonarchy-1.1.0/daemonarchy-1.1.0-amd64.iso.sha256): `891fc6e6ee537bf92aecf035d4e855b8d526aeaf9c27be80166d689289c3acd9`.
 - Adds partition selection, BIOS boot, QEMU/VirGL Hyprland, native FreeBSD app menus, Chromium, OctoPkg, remote-debug progress, and [manual-enrollment Secure Boot](docs/secure-boot.md).
-- Read the [candidate results and limits](docs/testing-1.1-final-image.md) before installing. Physical graphics/firmware, Bluetooth audio, enterprise Wi-Fi and refreshed bhyve remain unqualified. The ASRock, MSI Raider and T2 MacBook failures are documented.
+- Read the [results and limits](docs/testing-1.1-final-image.md) before installing. Physical graphics/firmware, Bluetooth audio, enterprise Wi-Fi and refreshed bhyve remain unqualified. The ASRock, MSI Raider and T2 MacBook failures are documented.
+
+Write it to a USB stick with `dd if=daemonarchy-1.1.0-amd64.iso of=/dev/<usb-device> bs=1m` (`bs=1M` on Linux). Boot with Secure Boot off, or follow the manual enrollment guide to enable verified boot. The installer needs a network connection. Whole-disk installation erases the selected disk; partition mode replaces only the explicitly selected partition.
 
 New to Daemonarchy? [Getting started](docs/getting-started.md) walks through writing the stick, installing, and your first hour on the desktop: Wi-Fi, sound, Bluetooth, updates, and what FreeBSD adds. To build an image yourself or work on Daemonarchy, see [HACKING.md](HACKING.md).
 
@@ -86,7 +81,7 @@ pkg upgrade
 
 ## Roadmap
 
-The next release is **1.1.0**. See the [roadmap](ROADMAP.md) for planned
+**1.1.0 is released.** See the [roadmap](ROADMAP.md) for remaining
 graphics, Bluetooth, enterprise Wi-Fi, installation and boot support, upstream
 ports work, and the checks required before release. The
 [partition preview guide](docs/testing-1.1-partitions.md) covers installing into
@@ -162,7 +157,7 @@ Daemonarchy is four repositories:
 
 On a FreeBSD 16.0-CURRENT host with poudriere: build the ports, build the image with `./build-iso.sh`, test it with `./test-bhyve.sh` (or `./test-qemu.sh` on a host without bhyve), and publish it. [HACKING.md](HACKING.md) walks through each step, the faster loops for changing the installer, the ports, and the artwork, and the pitfalls met so far.
 
-## Limits of the current 1.0.1 release
+## Historical limits of 1.0.1
 
 - Whole-disk installs only; no dual boot.
 - UEFI machines only, with Secure Boot turned off: the FreeBSD loader is not signed, and the installed disk has no BIOS boot code.

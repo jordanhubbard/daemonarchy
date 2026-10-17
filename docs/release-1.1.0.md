@@ -1,9 +1,9 @@
-# Daemonarchy 1.1.0-rc.1
+# Daemonarchy 1.1.0
 
-This installable release candidate is for community testing. Stable 1.1 remains
-open for real Bluetooth headset/HID and refreshed bhyve qualification; enterprise
-Wi-Fi testing is also unavailable. The ASRock failure is retained for community
-investigation at the operator's request. See the limitations below.
+Daemonarchy 1.1.0 publishes the exact tested rc.1 artifacts. Publication was
+explicitly approved with the hardware and hypervisor limitations below.
+Outstanding qualification remains outstanding: publication does not turn an
+untested or failing configuration into supported hardware.
 
 Daemonarchy 1.1 adds native FreeBSD desktop defaults, optional installation into
 selected GPT partitions/free space, BIOS boot, a QEMU/VirGL Hyprland path, and
@@ -34,8 +34,8 @@ packages remain installable. Signed boot updates use a retained boot environment
 and explicit validation/activation. See [the enrollment guide](secure-boot.md).
 
 The exact candidate application packages passed an isolated 1.0.1 `pkg upgrade`
-and rollback test. The default stable package feed remains unchanged; the
-versioned candidate feed is published separately. An application-package
+and rollback test. The same signed application packages are available through the stable
+package feed; the versioned candidate feed remains available for provenance. An application-package
 transaction does not upgrade the FreeBSD base/kernel, replace its drivers,
 or convert an existing installation to verified boot. Kernel modules must match
 the running snapshot. The verified maintenance path currently covers the pinned
@@ -65,7 +65,7 @@ snapshot and loader protocol; a base/ABI migration needs separate qualification.
   RTX 4090 driver-API probe required the UVM shim and does not qualify Unified
   Memory, the complete toolkit, or every CUDA application.
 
-The candidate ISO is 2,098,395,136 bytes (under 2 GiB), SHA-256
+The release ISO is 2,098,395,136 bytes (under 2 GiB), SHA-256
 `891fc6e6ee537bf92aecf035d4e855b8d526aeaf9c27be80166d689289c3acd9`.
 Exact final application-package upgrade, reboot, rollback and return from 1.0.1
 passed. Image inputs and fresh-install results are recorded in
@@ -76,5 +76,5 @@ and application-policy checks: production-key enforced UEFI and BIOS, each
 with plain ZFS and GELI/ZFS. The UEFI plain case also downloaded both optional
 checkouts and verified their revisions, cleanliness and ownership. Production-key signed maintenance also
 passed update, altered inactive-candidate rejection, rollback and return, with
-actual graphical checks at each boot. [The roadmap](../ROADMAP.md) retains the open
-stable-release gates; an untested configuration is not a support claim.
+actual graphical checks at each boot. [The roadmap](../ROADMAP.md) retains the remaining
+qualification work; an untested configuration is not a support claim.

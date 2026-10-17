@@ -2,13 +2,12 @@
 
 ## 1.1.0
 
-The next release is **1.1.0**. All work below is in scope; an unchecked item
-is not a claim of working support. There is no stable release date yet.
-
-[1.1.0-rc.1](https://github.com/jordanhubbard/daemonarchy/releases/tag/daemonarchy-1.1.0-rc.1)
-provides the installable candidate for community testing. All four final QEMU
-installation/desktop configurations and production-key maintenance/recovery
-passed. The unchecked physical Bluetooth, bhyve and hardware gates remain open.
+Daemonarchy **1.1.0** is released using the exact tested 1.1.0-rc.1 artifacts.
+On October 16 the operator explicitly approved stable publication after the
+remaining hardware, Bluetooth, enterprise Wi-Fi and bhyve limitations were
+reported. Those gaps remain open qualification work, not passing results.
+All four final QEMU installation/desktop configurations and production-key
+maintenance/recovery passed.
 
 Existing 1.0 installations must remain upgradeable through `pkg upgrade`.
 New installation modes are optional and must preserve the existing whole-disk
@@ -32,7 +31,7 @@ the [hardware observations](docs/testing-1.1-hardware-observations.md).
 | Secure Boot | Establish a signed FreeBSD boot chain with manual certificate enrollment, preserving existing OEM/Windows trust entries, and a documented key-enrollment/update process. | Install and boot with Secure Boot enabled; reject an untrusted boot component and verify signed updates and recovery. | In progress: development-key ZFS/GELI enforcement, signed update, rejected driver update, rollback and installed QEMU desktop passed; production-authority UFS runtime, disabled-enforcement boot, unenrolled-loader rejection and tampered-kernel rejection passed; production enforced UEFI/GELI install, signed update, altered-candidate rejection, rollback and graphical return passed; final enforced plain-ZFS install and both optional checkouts also passed; physical enrollment remains unqualified |
 | Ports and source refresh | Refresh the Daemonarchy ports fork from upstream FreeBSD ports and re-sync system sources with FreeBSD CURRENT before selecting the release snapshot. Preserve Daemonarchy changes and reconcile ports with the selected package set. | Record pinned ports/source revisions; rebuild the snapshot jail, packages, and kernel modules together; clean `poudriere testport` and installation against the selected package set. | In progress: snapshot/source 3ceb5f150bc1 pinned; selected ports 08a6370a019a on daemonarchy-1.1-package-baseline; desktop 1.1.0 and core 4.0.4_22 passed native testport and final two-package bulk with no failures/skips; kernel-matched modules retained; all four final production ISO configurations passed, including both public optional checkout downloads |
 
-The current 1.1 candidate packages come from [jordanhubbard/freebsd-ports, branch `daemonarchy-1.1-package-baseline`](https://github.com/jordanhubbard/freebsd-ports/tree/daemonarchy-1.1-package-baseline), revision `08a6370a019a35ae791c549fa1da9a3ce9bd5b33`. The published preview.13 uses the earlier baseline recorded with that image.
+The released 1.1 packages come from [jordanhubbard/freebsd-ports, branch `daemonarchy-1.1-package-baseline`](https://github.com/jordanhubbard/freebsd-ports/tree/daemonarchy-1.1-package-baseline), revision `08a6370a019a35ae791c549fa1da9a3ce9bd5b33`. The published preview.13 uses the earlier baseline recorded with that image.
 System sources track [FreeBSD CURRENT (`freebsd-src`, branch `main`)](https://github.com/freebsd/freebsd-src/tree/main); pin the source revision that produced the selected image snapshot.
 Desktop sources live in [daemonarchy-desktop](https://github.com/jordanhubbard/daemonarchy-desktop)
 and [omarchy-freebsd](https://github.com/jordanhubbard/omarchy-freebsd).
@@ -40,8 +39,8 @@ Daemonarchy publishes its packages through its own [signed package repository](h
 
 Upstream reviews: [supporting ports #630](https://github.com/freebsd/freebsd-ports/pull/630)
 and [desktop ports #635](https://github.com/freebsd/freebsd-ports/pull/635).
-Their merge timing depends on FreeBSD maintainers and does not block 1.1.0:
-validated packages can ship from the fork while these reviews remain open.
+Both original submissions were closed without merging on October 15. Updated
+submissions are being prepared separately; 1.1 ships the qualified fork.
 
 ### Delivery order
 
@@ -134,7 +133,7 @@ any scope change before calling 1.1.0 complete.
   link to Daemonarchy releases/support, and check its own package catalog.
   FreeBSD dependency repositories remain identified separately.
 - The upstream ports review's request to move bundled files into source
-  repositories was addressed in 1.0.1. Both upstream PRs still await merge;
+  repositories was addressed in 1.0.1. Both original upstream PRs were closed unmerged;
   upstream acceptance is tracked separately from release qualification of the fork.
 
 ### Optional development trees

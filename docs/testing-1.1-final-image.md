@@ -8,8 +8,9 @@ independently reports the same ISO digest and size; all six installer asset
 digests and sizes matched their local public inputs before publication. It is
 49,088,512 bytes below the 2 GiB image/release-asset limit.
 
-Published candidate tag: `daemonarchy-1.1.0-rc.1`. This is a prerelease;
-stable hardware gates remain open in [ROADMAP.md](../ROADMAP.md).
+Published first as `daemonarchy-1.1.0-rc.1`, then promoted unchanged to
+`daemonarchy-1.1.0` with explicit operator approval of the documented gaps.
+Remaining hardware qualification stays open in [ROADMAP.md](../ROADMAP.md).
 
 ## Inputs
 
@@ -37,7 +38,7 @@ The versioned application feed `packages-16-amd64-1.1.0-candidate` contains
 22 packages. All 26 GitHub assets (packages and metadata) matched native/local
 hashes and sizes. A retained FreeBSD client independently verified its signature,
 exact final application versions and both application-package download hashes.
-The stable default feed is unchanged.
+The same signed packages are promoted to the stable default feed.
 
 The ISO uses public signed artifacts only. Signing keys remained on the
 protected authoring host. Post-build live-file, signature, stock-kernel and
