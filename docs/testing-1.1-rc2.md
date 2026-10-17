@@ -11,6 +11,9 @@ The upstream tips were resolved once at the start of this refresh:
 - FreeBSD source: `bdcfeac3e1cb8ce3f05c32d8a7ad3597deb48bdf`,
   OSVERSION `1600028` (previous image: `1600027`).
 - Upstream ports: `b1306594c4a601f98a3d28cbf6fc0569e218245f`.
+- Release ports integration: `f52fe9fa3757f360a2171a304c12865edfa533b6`,
+  branch `daemonarchy-1.1-rc2`; combines the refreshed submissions and retains
+  the existing 6.12 VirtIO backport for the release. Package QA remains pending.
 - Desktop source remains `v1.1.0`; compatibility source remains
   `535e44bb6fa3e9b9f4fc3a870591688526279124` until a tested change requires
   advancing them. The installer candidate is named `1.1-rc2`.
@@ -57,9 +60,14 @@ baseline in each description. They are not current-baseline passing results.
   `PACKAGE_REPOSITORY_TAG`, and installed systems retain that selection.
   Stable fallback, rc2 selection and malformed/multiline metadata rejection
   pass the portable helper test. Native image/install checks remain pending.
-- The new base world/GENERIC build and separate production-certificate policy
-  kernel/EFI-loader recipe are running in the isolated native builder. Their
-  completion and boot qualification remain pending.
+- The policy kernel and both EFI loaders built successfully from the selected
+  source using the production public certificates. The build receipt records
+  policy-kernel SHA-256
+  `5022ac4bbf1b1cef9f590bc4384fea554197f1d85bf35d690840780fbeebbe13`.
+  Signing and native firmware/kernel qualification remain pending; the build
+  receipt explicitly retains `native_boot_qualified: false`.
+- The new base world/GENERIC build is still running. A package dependency dry
+  run is estimating the current ports build before dispatching it.
 - Pending: world/kernel and release-set build; matching builder/jail; refreshed
   port parsing, checksums, testport and combined package build; native module
   inventory; newly signed boot payload and checkout repositories; ISO size and
