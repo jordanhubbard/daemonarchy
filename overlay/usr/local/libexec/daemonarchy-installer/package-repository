@@ -1,0 +1,19 @@
+# The image selects its signed application feed. Candidate installations must
+# keep using that feed without publishing over the stable repository.
+package_repository_tag_validate() {
+    case "$1" in
+        packages-16-amd64|packages-16-amd64-?*) ;;
+        *) echo 'Invalid Daemonarchy package repository tag' >&2; return 1 ;;
+    esac
+    case "$1" in
+        *[!A-Za-z0-9._-]*) echo 'Invalid Daemonarchy package repository tag' >&2; return 1 ;;
+    esac
+}
+
+package_repository_prepare() {
+    package_repository_tag=packages-16-amd64
+    if [ -e "$1/package-repository-tag" ]; then
+        package_repository_tag=$(cat "$1/package-repository-tag") || return 1
+    fi
+    package_repository_tag_validate "$package_repository_tag"
+}

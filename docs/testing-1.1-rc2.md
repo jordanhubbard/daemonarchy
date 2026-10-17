@@ -51,7 +51,12 @@ baseline in each description. They are not current-baseline passing results.
 - All 21 new-port Makefiles parse against the selected current ports framework.
   Native `portlint -AC` reports zero fatal errors for all 21 ports; advisory
   warnings remain. The preflight fixture uses the exact refreshed port files
-  and framework; it does not replace full-tree dependency or testport checks.
+  and framework; all 21 ports also passed distfile checksum checks. This
+  preflight does not replace full-tree dependency or testport checks.
+- The image can now select a release-specific signed application feed through
+  `PACKAGE_REPOSITORY_TAG`, and installed systems retain that selection.
+  Stable fallback, rc2 selection and malformed/multiline metadata rejection
+  pass the portable helper test. Native image/install checks remain pending.
 - The new base world/GENERIC build and separate production-certificate policy
   kernel/EFI-loader recipe are running in the isolated native builder. Their
   completion and boot qualification remain pending.

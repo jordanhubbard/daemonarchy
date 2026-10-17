@@ -25,6 +25,9 @@ ABI=${ABI:-FreeBSD:16:amd64}
 ARCH=${ARCH:-amd64}
 
 here=$(cd "$(dirname "$0")" && pwd)
+. "$here/overlay/usr/local/libexec/daemonarchy-installer/package-repository"
+PACKAGE_REPOSITORY_TAG=${PACKAGE_REPOSITORY_TAG:-packages-16-amd64}
+package_repository_tag_validate "$PACKAGE_REPOSITORY_TAG"
 CHECKOUT_CATALOG=${CHECKOUT_CATALOG:-$here/overlay/usr/local/share/daemonarchy-installer/checkouts.json}
 packages=/usr/local/poudriere/data/packages/$JAIL-$PTREE
 [ -n "$CHECKOUT_CATALOG" ] && [ -s "$CHECKOUT_CATALOG" ] || {
@@ -46,6 +49,7 @@ if [ -n "${LIVE_EXTRA_OVERLAY:-}" ]; then
 fi
 share=$stage/overlay/usr/local/share/daemonarchy-installer
 cp "$CHECKOUT_CATALOG" "$share/checkouts.json"
+printf '%s\n' "$PACKAGE_REPOSITORY_TAG" >"$share/package-repository-tag"
 
 echo "==> Collecting the Omarchy package repository"
 mkdir -p "$share/repo/All"

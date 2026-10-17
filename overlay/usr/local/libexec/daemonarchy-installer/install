@@ -36,6 +36,8 @@ source "$(dirname "$0")/cuda-options"
 source "$(dirname "$0")/install-diagnostics"
 source "$(dirname "$0")/rescue-setup"
 source "$(dirname "$0")/secureboot-options"
+source "$(dirname "$0")/package-repository"
+package_repository_prepare "$ISO_SHARE"
 checkout_options_prepare "$ISO_SHARE/checkouts.json"
 secureboot_payload_prepare
 if [[ -n ${wifi_enterprise_profile:-} ]]; then
@@ -370,7 +372,7 @@ cp -R "$REPO" "$TARGET/var/db/daemonarchy/repo"
 cp "$ISO_SHARE/daemonarchy.pub" "$TARGET/usr/local/etc/pkg/keys/daemonarchy.pub"
 cat >"$TARGET/usr/local/etc/pkg/repos/Daemonarchy.conf" <<EOF
 Daemonarchy: {
-  url: "https://github.com/jordanhubbard/daemonarchy/releases/download/packages-16-amd64",
+  url: "https://github.com/jordanhubbard/daemonarchy/releases/download/$package_repository_tag",
   signature_type: "pubkey",
   pubkey: "/usr/local/etc/pkg/keys/daemonarchy.pub",
   priority: 10,
