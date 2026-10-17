@@ -11,15 +11,15 @@ The upstream tips were resolved once at the start of this refresh:
 - FreeBSD source: `bdcfeac3e1cb8ce3f05c32d8a7ad3597deb48bdf`,
   OSVERSION `1600028` (previous image: `1600027`).
 - Upstream ports: `b1306594c4a601f98a3d28cbf6fc0569e218245f`.
-- Release ports integration: `84afb7141bd066711e0f45737b1705941380ee1a`,
+- Release ports integration: `f7d7ee897405dcb8ce87e674588a4e1b3bfba00e`,
   branch `daemonarchy-1.1.1`; combines the refreshed submissions and retains
   the existing 6.12 VirtIO backport for the release. Package QA remains pending.
 - Desktop source is tagged `v1.1.1` at the unchanged `ec2a00824ec95b342c0c095657ac725c56f0528b`; compatibility source remains
   `535e44bb6fa3e9b9f4fc3a870591688526279124` until a tested change requires
   advancing them. The requested release is named `1.1.1`. The original rc2
   preparation was renamed at the operator's request. The desktop port version
-  update is prepared separately from the active dependency build and will
-  advance the final integration pin.
+  update is integrated separately from the active dependency build; the final
+  package pass will use this selected integration.
 
 The requested source tip is newer than the October 12 binary snapshot. A fresh
 world, GENERIC kernel, release sets, jail and kernel modules must be produced
