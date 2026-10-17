@@ -11,6 +11,7 @@
 #
 #   pkg-repo.sh keygen          on the build host, as root, once
 #   pkg-repo.sh build           on the build host, as root: collect and sign
+#   pkg-repo.sh collect         collect public payloads without a signing key
 #   pkg-repo.sh upload <dir>    anywhere with gh: replace the release's assets
 #   pkg-repo.sh publish         from a workstation with gh: copy this
 #                               script to $BUILD_HOST, build there over
@@ -47,7 +48,7 @@ keygen() {
 	openssl rsa -in "$KEY" -pubout 2>/dev/null
 }
 
-build() {
+collect() {
 	built_packages=''
 	if [ -n "$BUILT_PACKAGES_FILE" ]; then
 		case "$TAG" in
@@ -68,6 +69,7 @@ build() {
 	fi
 	rm -rf "$OUT"
 	mkdir -p "$OUT"
+	collected=0
 	for pkgfile in "$packages"/All/*.pkg; do
 		origin=$(pkg query -F "$pkgfile" '%o')
 		include=false
@@ -96,8 +98,15 @@ build() {
 		fi
 		if [ "$include" = true ]; then
 			cp "$pkgfile" "$OUT/$(basename "$pkgfile" | tr -c 'A-Za-z0-9._\n-' '.')"
+			collected=$((collected + 1))
 		fi
 	done
+	[ "$collected" -gt 0 ] || { echo 'No application packages selected for publication' >&2; exit 1; }
+	echo "$OUT: collected $collected package payloads"
+}
+
+build() {
+	collect
 	pkg repo -q "$OUT" "$KEY" >/dev/null
 	echo "$OUT: $(ls "$OUT"/*.pkg | grep -cvE '/(packagesite|data|meta)\.pkg$') packages"
 }
@@ -142,11 +151,12 @@ publish() {
 
 case ${1:-} in
 keygen) keygen ;;
+collect) collect ;;
 build) build ;;
 upload) upload "${2:?usage: pkg-repo.sh upload <dir>}" ;;
 publish) publish ;;
 *)
-	echo "usage: pkg-repo.sh keygen | build | upload <dir> | publish" >&2
+	echo "usage: pkg-repo.sh keygen | collect | build | upload <dir> | publish" >&2
 	exit 1
 	;;
 esac

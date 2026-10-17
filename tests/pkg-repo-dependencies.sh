@@ -48,6 +48,10 @@ fi
 [[ -f $work/stable/sentinel ]]
 publish_fixture() {
   TAG=packages-16-amd64-test PACKAGES_DIR="$work/input" BUILT_PACKAGES_FILE="$work/built" \
+    OUT="$work/unsigned/All" KEY="$work/unavailable-key" sh "$here/pkg-repo.sh" collect
+  [[ -f $work/unsigned/All/omarchy-$1.pkg && -f $work/unsigned/All/candidate-runtime-$1.pkg ]]
+  [[ ! -f $work/unsigned/All/candidate-kernel-$1.pkg && ! -f $work/unsigned/All/candidate-fetched-$1.pkg ]]
+  TAG=packages-16-amd64-test PACKAGES_DIR="$work/unsigned" BUILT_PACKAGES_FILE="$work/built" \
     OUT="$work/feed" KEY="$work/key" sh "$here/pkg-repo.sh" build
   [[ -f $work/feed/omarchy-$1.pkg && -f $work/feed/candidate-runtime-$1.pkg ]]
   [[ ! -f $work/feed/candidate-kernel-$1.pkg && ! -f $work/feed/candidate-fetched-$1.pkg ]]

@@ -514,9 +514,11 @@ When the selected ports tip is ahead of the official binary collection, the
 candidate feed must include rebuilt ordinary dependencies as well as the
 Daemonarchy ports. Collect a union of the successful `.poudriere.ports.built`
 records from this candidate's build/test attempts into `BUILT_PACKAGES_FILE`.
-On the protected signing host, use `PACKAGES_DIR` for the staged package
-repository, `BUILT_PACKAGES_FILE` for that list, and the versioned `TAG` when
-running `pkg-repo.sh build`. Kernel-bound packages remain on the matching ISO.
+Use `pkg-repo.sh collect` on the builder with `BUILT_PACKAGES_FILE` and the
+versioned `TAG` to stage public payloads without a signing key. Transfer those
+payloads into an `All` directory on the protected signing host. There, use
+`PACKAGES_DIR` for the staged repository, `BUILT_PACKAGES_FILE` for that list,
+and the same versioned `TAG` when running `pkg-repo.sh build`. Kernel-bound packages remain on the matching ISO.
 The installer uses the signed candidate feed to resolve these dependencies,
 then records them under the normal Daemonarchy repository for later upgrades.
 The rebuilt-dependency option refuses the unversioned stable feed.
