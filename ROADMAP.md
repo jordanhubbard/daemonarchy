@@ -1,10 +1,10 @@
 # Daemonarchy roadmap
 
-## 1.1-rc2 refresh
+## 1.1.1 refresh
 
 A new candidate is being prepared from pinned current FreeBSD source and ports.
 Upstream submissions #640, #641 and #642 are drafts pending refreshed native
-validation. See [the rc2 preparation and qualification record](docs/testing-1.1-rc2.md).
+validation. See [the 1.1.1 preparation and qualification record](docs/testing-1.1.1.md).
 The new base and image are not yet qualified or published.
 
 ## 1.1.0

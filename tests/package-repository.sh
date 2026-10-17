@@ -9,17 +9,17 @@ package_repository_prepare "$work"
 [ "$package_repository_tag" = packages-16-amd64 ]
 package_repository_write_dependencies "$work/dependencies.conf" /public/key
 [ ! -e "$work/dependencies.conf" ]
-for tag in packages-16-amd64 packages-16-amd64-1.1-rc2 packages-16-amd64-1.1.0-rc.2; do
+for tag in packages-16-amd64 packages-16-amd64-1.1.1 packages-16-amd64-1.1.0-rc.2; do
     printf '%s\n' "$tag" >"$work/package-repository-tag"
     package_repository_prepare "$work"
     [ "$package_repository_tag" = "$tag" ]
 done
-printf '%s\n' packages-16-amd64-1.1-rc2 >"$work/package-repository-tag"
+printf '%s\n' packages-16-amd64-1.1.1 >"$work/package-repository-tag"
 package_repository_prepare "$work"
 package_repository_write_dependencies "$work/dependencies.conf" /public/key
 grep -qx 'Daemonarchy-Dependencies: {' "$work/dependencies.conf"
 grep -q 'signature_type: "pubkey"' "$work/dependencies.conf"
-grep -q 'packages-16-amd64-1.1-rc2' "$work/dependencies.conf"
+grep -q 'packages-16-amd64-1.1.1' "$work/dependencies.conf"
 grep -q 'pubkey: "/public/key"' "$work/dependencies.conf"
 grep -q 'priority: 9' "$work/dependencies.conf"
 for tag in '' packages-16-amd64- other-repository 'packages-16-amd64-../bad' 'packages-16-amd64-bad tag'; do

@@ -1,6 +1,6 @@
-# Daemonarchy 1.1-rc2 refresh
+# Daemonarchy 1.1.1 refresh
 
-Preparation started October 16, 2026. This record is in progress; rc2 has not
+Preparation started October 16, 2026. This record is in progress; 1.1.1 has not
 been built, qualified or published yet. Earlier release qualification does not
 qualify the new kernel, package set or image.
 
@@ -12,11 +12,14 @@ The upstream tips were resolved once at the start of this refresh:
   OSVERSION `1600028` (previous image: `1600027`).
 - Upstream ports: `b1306594c4a601f98a3d28cbf6fc0569e218245f`.
 - Release ports integration: `84afb7141bd066711e0f45737b1705941380ee1a`,
-  branch `daemonarchy-1.1-rc2`; combines the refreshed submissions and retains
+  branch `daemonarchy-1.1.1`; combines the refreshed submissions and retains
   the existing 6.12 VirtIO backport for the release. Package QA remains pending.
-- Desktop source remains `v1.1.0`; compatibility source remains
+- Desktop source is tagged `v1.1.1` at the unchanged `ec2a00824ec95b342c0c095657ac725c56f0528b`; compatibility source remains
   `535e44bb6fa3e9b9f4fc3a870591688526279124` until a tested change requires
-  advancing them. The installer candidate is named `1.1-rc2`.
+  advancing them. The requested release is named `1.1.1`. The original rc2
+  preparation was renamed at the operator's request. The desktop port version
+  update is prepared separately from the active dependency build and will
+  advance the final integration pin.
 
 The requested source tip is newer than the October 12 binary snapshot. A fresh
 world, GENERIC kernel, release sets, jail and kernel modules must be produced
@@ -60,7 +63,7 @@ baseline in each description. They are not current-baseline passing results.
   preflight does not replace full-tree dependency or testport checks.
 - The image can now select a release-specific signed application feed through
   `PACKAGE_REPOSITORY_TAG`, and installed systems retain that selection.
-  Stable fallback, rc2 selection and malformed/multiline metadata rejection
+  Stable fallback, versioned-feed selection and malformed/multiline metadata rejection
   pass on macOS and FreeBSD. Native image/install checks remain pending.
 - Current ports requires Python 3.12.15 while the selected official package
   collection provides 3.12.14. The candidate publisher can include rebuilt
@@ -83,9 +86,9 @@ baseline in each description. They are not current-baseline passing results.
 - Source checkout admission now recognizes full, shallow and detached kernel
   revision labels while still requiring the selected commit and rejecting dirty
   trees. Parser tests pass on macOS and FreeBSD. ISO construction uses the same
-  matcher: the actual rc2 kernel archive accepts its exact source and rejects
+  matcher: the actual new kernel archive accepts its exact source and rejects
   the previous snapshot revision. The previous stock kernel likewise accepts
-  its own source and rejects the rc2 revision.
+  its own source and rejects the 1.1.1 revision.
 - The new world and GENERIC kernel builds completed in 4,043 and 276 seconds.
   The base, kernel and lib32 release-set digests match their manifest. The
   builder booted this exact kernel and userland at OSVERSION `1600028` in a
