@@ -59,6 +59,9 @@ for path in /usr/freebsd-dist/base.txz /usr/freebsd-dist/kernel.txz /usr/freebsd
   /usr/local/share/daemonarchy-installer/checkouts.json; do
   [ -s "$path" ] || { echo "Missing live payload: $path" >&2; exit 1; }
 done
+. /usr/local/libexec/daemonarchy-installer/package-repository
+package_repository_prepare /usr/local/share/daemonarchy-installer
+echo "PASS: signed application feed selection: $package_repository_tag"
 bash --version
 gum --version
 jq --version

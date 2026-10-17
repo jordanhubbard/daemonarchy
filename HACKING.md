@@ -506,7 +506,9 @@ retain the open hardware gates in its notes.
 Build a candidate image with `PACKAGE_REPOSITORY_TAG` set to its versioned
 application-feed tag (for example, `packages-16-amd64-1.1-rc2`). The image
 records that selection and installed systems retain it as their signed
-Daemonarchy feed. Omitting the variable selects the stable feed.
+Daemonarchy feed. Omitting the variable selects the stable feed. Set
+`EXPECTED_PACKAGE_REPOSITORY_TAG` to the same tag when running `test-qemu.sh`;
+the installed-system check asserts the exact feed URL.
 
 
 1. Tag daemonarchy-desktop `v<version>`, set `DISTVERSION` in `x11-wm/daemonarchy` to it and run `make makesum`, then build the packages and the image as above, publish the packages, and run a test.

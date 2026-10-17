@@ -37,6 +37,10 @@ VIRGL_RENDER_NODE=${VIRGL_RENDER_NODE:-}
 VNC_LISTEN=${VNC_LISTEN:-127.0.0.1:11}
 BOOT_MODE=${BOOT_MODE:-uefi}
 SSH_PORT=${SSH_PORT:-2222}
+EXPECTED_PACKAGE_REPOSITORY_TAG=${EXPECTED_PACKAGE_REPOSITORY_TAG:-packages-16-amd64}
+case "$EXPECTED_PACKAGE_REPOSITORY_TAG" in
+    ''|*[!A-Za-z0-9._-]*) echo 'Invalid expected package repository tag' >&2; exit 1 ;;
+esac
 MEM=${MEM:-4G}
 PASSWORD=daemonarchy
 VM_TIMEOUT=${VM_TIMEOUT:-7200}
@@ -246,6 +250,7 @@ check "GSettings schemas compiled" "test -s /usr/local/share/glib-2.0/schemas/gs
 check "/bin/bash runs bash" "/bin/bash -c true && test \$(readlink /bin/bash) = /usr/local/bin/bash"
 check "no broken FreeBSD repository entry" "! grep -q '^FreeBSD:' /usr/local/etc/pkg/repos/Daemonarchy.conf"
 check "updates from the signed Daemonarchy repository" "test -s /usr/local/etc/pkg/keys/daemonarchy.pub && as_root pkg update -f -r Daemonarchy && pkg rquery -r Daemonarchy %n omarchy | grep -qx omarchy"
+check "selected signed application feed" "grep -Fqx '  url: \"https://github.com/jordanhubbard/daemonarchy/releases/download/$EXPECTED_PACKAGE_REPOSITORY_TAG\",' /usr/local/etc/pkg/repos/Daemonarchy.conf"
 check "Daemonarchy defaults staged" "test -d /usr/local/share/omarchy/skel.d/daemonarchy"
 exit \$failures
 EOF
