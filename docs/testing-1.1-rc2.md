@@ -20,7 +20,9 @@ The upstream tips were resolved once at the start of this refresh:
 
 The requested source tip is newer than the October 12 binary snapshot. A fresh
 world, GENERIC kernel, release sets, jail and kernel modules must be produced
-from this exact revision. The previous release sets, ports integration, signing
+from this exact revision. The OSVERSION increment changes the kernel packet-header layout, requiring
+[external drivers to be rebuilt](https://github.com/freebsd/freebsd-src/commit/83f5b5c2eeba2a2d66d87d4367ca5406322386a4).
+The previous release sets, ports integration, signing
 outputs and test evidence are retained separately. The stable package feed is
 not a candidate publication target.
 
