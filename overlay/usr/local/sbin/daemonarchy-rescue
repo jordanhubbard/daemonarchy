@@ -5,6 +5,8 @@ rescue_log=/var/log/daemonarchy-rescue.log
 startup_wait=60
 failure_wait=15
 poll_seconds=1
+boot_quiet_wait=15
+boot_quiet_seconds=2
 debug_state=/var/run/daemonarchy-remote-debug
 debug_command=/usr/local/sbin/daemonarchy-debug
 
@@ -26,6 +28,25 @@ rescue_font() {
   if [ "$columns" -gt 200 ] && [ -r /usr/share/vt/fonts/terminus-b32.fnt ]; then
     vidcontrol -f terminus-b32 </dev/tty >/dev/tty 2>&1 || true
   fi
+}
+
+rescue_wait_boot_output() {
+  [ "$(tty)" = /dev/ttyv0 ] || return 0
+  echo 'Preparing rescue menu; waiting for boot messages to finish.'
+  previous=$(dmesg -a 2>/dev/null | cksum)
+  remaining=$boot_quiet_wait
+  quiet=0
+  while [ "$remaining" -gt 0 ] && [ "$quiet" -lt "$boot_quiet_seconds" ]; do
+    sleep 1
+    current=$(dmesg -a 2>/dev/null | cksum)
+    if [ "$current" = "$previous" ]; then
+      quiet=$((quiet + 1))
+    else
+      quiet=0
+      previous=$current
+    fi
+    remaining=$((remaining - 1))
+  done
 }
 
 desktop_ready() {
@@ -102,7 +123,11 @@ rescue_action() {
 
 rescue_menu() {
   authenticated=$1
+  rescue_font
   while :; do
+    # Font changes and late device probes can leave the first menu offscreen.
+    # Position it explicitly instead of relying on a Return key to redraw it.
+    if [ "$(tty)" = /dev/ttyv0 ]; then printf '\033[2J\033[H'; fi
     remote_action=remote
     remote_label='Pair a remote debugging agent'
     if [ -e "$debug_state" ] || [ -L "$debug_state" ]; then
@@ -141,11 +166,11 @@ MENU
 
 rescue_main() {
   [ "$(id -u)" = 0 ] || { echo 'Run daemonarchy-rescue as root.' >&2; return 1; }
-  rescue_font
   case ${1:-monitor} in
     monitor)
       echo 'Waiting for graphical login; this console shows recovery options if it fails.'
       monitor_desktop
+      rescue_wait_boot_output
       rescue_record
       rescue_menu no
       ;;

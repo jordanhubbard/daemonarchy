@@ -67,4 +67,26 @@ grep -q '2. Pair a remote debugging agent' "$work/toggle-menu"
 rescue_action() { echo "$1" >"$work/action"; }
 rescue_menu yes <<<'3' >/dev/null
 [[ $(cat "$work/action") == logs ]]
-echo 'PASS: interrupted install, GUI timeout/crash, authenticated pairing/unpairing and menu toggle'
+# Late device probes must settle before the first console menu is drawn.
+# No input is supplied to either the settling step or the initial menu render.
+(
+  tty() { echo /dev/ttyv0; }
+  boot_quiet_wait=6 boot_quiet_seconds=2 ticks=0
+  dmesg() { if ((ticks < 3)); then echo "probe $ticks"; else echo 'probe 3'; fi; }
+  rescue_wait_boot_output </dev/null
+  [[ $ticks == 5 ]]
+  ticks=0
+  dmesg() { echo "probe $ticks"; }
+  rescue_wait_boot_output </dev/null
+  [[ $ticks == 6 ]] # Continuous logging cannot postpone recovery indefinitely.
+  ticks=0
+  tty() { echo /dev/pts/1; }
+  rescue_wait_boot_output </dev/null
+  [[ $ticks == 0 ]]
+  tty() { echo /dev/ttyv0; }
+  rescue_font() { echo 'font sized'; }
+  rescue_menu no </dev/null >"$work/first-menu"
+  grep -q $'\033\\[2J\033\\[H' "$work/first-menu"
+  grep -q 'Daemonarchy rescue' "$work/first-menu"
+)
+echo 'PASS: interrupted install, GUI timeout/crash, authenticated pairing/unpairing, menu toggle and boot-to-menu without input'

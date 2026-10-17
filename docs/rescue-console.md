@@ -41,7 +41,7 @@ shell use the base system and do not depend on bash, gum, SDDM or Hyprland.
 
 ## At the installed machine
 
-On the first text console, an incomplete installation immediately shows:
+On the first text console, an incomplete installation automatically shows:
 
 ```text
 Daemonarchy rescue
@@ -51,6 +51,11 @@ Daemonarchy rescue
   4. Try the graphical login again
   5. Reboot
 ```
+
+No Return key is needed to reveal the menu. Before its first display, the
+console waits for two seconds without new kernel messages, up to 15 seconds,
+then sizes the font and clears the screen so late device probes do not leave
+the menu scrolled out of view. Continued kernel logging cannot delay it longer.
 
 Choose an action, then log in as root with the password selected during
 installation. This authentication is required even though the menu is shown
