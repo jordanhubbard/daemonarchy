@@ -74,8 +74,10 @@ baseline in each description. They are not current-baseline passing results.
   source using the production public certificates. The build receipt records
   policy-kernel SHA-256
   `5022ac4bbf1b1cef9f590bc4384fea554197f1d85bf35d690840780fbeebbe13`.
-  Signing and native firmware/kernel qualification remain pending; the build
-  receipt explicitly retains `native_boot_qualified: false`.
+  The unsigned boot payload is assembled from the new release sets and policy
+  outputs. Signing awaits the matching module inventory; native firmware/kernel
+  qualification remains pending. The build receipt explicitly retains
+  `native_boot_qualified: false`.
 - Source checkout admission now recognizes full, shallow and detached kernel
   revision labels while still requiring the selected commit and rejecting dirty
   trees. Parser tests pass on macOS and FreeBSD. ISO construction uses the same
@@ -94,8 +96,8 @@ baseline in each description. They are not current-baseline passing results.
   including the package manager itself.
 - Both pinned checkout payloads passed actual native package installation and
   materialization: clean depth-1 trees owned by the selected user, expected
-  remotes/tracking, self-contained Git objects and preserved edits after seed
-  package removal. Their repository is signed and staged with the existing
+  remotes/tracking, self-contained Git objects and preserved working trees after
+  seed package removal. Their repository is signed and staged with the existing
   production package key. Native signed catalogue queries, all three payload
   installs and part/archive hash checks pass; an unrelated key causes signature
   failure and rejects catalogue access and installation. The feed is not public
