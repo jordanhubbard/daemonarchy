@@ -4,9 +4,10 @@ set -euo pipefail
 [[ $(uname -s) == FreeBSD && $(id -u) == 0 ]] || { echo 'Run as root on FreeBSD' >&2; exit 1; }
 here=$(cd "$(dirname "$0")/.." && pwd)
 source "$here/overlay/usr/local/libexec/daemonarchy-installer/package-repository"
+source "$here/scripts/adopt-candidate-packages.sh"
 work=$(mktemp -d /var/tmp/daemonarchy-feed-test.XXXXXX)
 trap 'rm -rf "$work"' EXIT
-mkdir -p "$work/input/All" "$work/iso" "$work/repos" "$work/root" "$work/stable"
+mkdir -p "$work/input/All" "$work/iso" "$work/official" "$work/repos" "$work/root" "$work/stable"
 echo preserve >"$work/stable/sentinel"
 openssl genrsa -out "$work/key" 2048 >/dev/null 2>&1
 chmod 0400 "$work/key"
@@ -40,6 +41,11 @@ for name, origin, path in specs:
 PY
   printf 'devel/candidate-runtime candidate-runtime-%s 1\nsysutils/candidate-kernel candidate-kernel-%s 1\n' "$1" "$1" >"$work/built"
 }
+create_packages 1.0
+mv "$work/input/All/candidate-runtime-1.0.pkg" "$work/official/"
+rm "$work/input/All/omarchy-1.0.pkg" "$work/input/All/candidate-kernel-1.0.pkg" \
+  "$work/input/All/candidate-fetched-1.0.pkg"
+pkg repo -q "$work/official"
 create_packages 2.0
 if TAG=packages-16-amd64 PACKAGES_DIR="$work/input" BUILT_PACKAGES_FILE="$work/built" \
     OUT="$work/stable" KEY="$work/key" sh "$here/pkg-repo.sh" build; then
@@ -65,8 +71,29 @@ EOF
 cat >"$work/repos/dependencies.conf" <<EOF
 Daemonarchy-Dependencies: {url:"file://$work/feed",signature_type:"pubkey",pubkey:"$work/public",priority:9,enabled:yes}
 EOF
+cat >"$work/repos/official.conf" <<EOF
+Official: {url:"file://$work/official",signature_type:"none",priority:0,enabled:yes}
+EOF
 target_pkg() { pkg -r "$work/root" -o ABI=FreeBSD:16:amd64 -o REPOS_DIR="$work/repos" "$@"; }
 target_pkg update -f
+# A pre-existing official dependency needs an explicit candidate transition.
+mkdir -p "$work/upgrade-root" "$work/upgrade-repos"
+cat >"$work/upgrade-repos/official.conf" <<EOF
+FreeBSD: {url:"file://$work/official",signature_type:"none",priority:0,enabled:yes}
+EOF
+cat >"$work/upgrade-repos/candidate.conf" <<EOF
+Daemonarchy: {url:"file://$work/feed",signature_type:"pubkey",pubkey:"$work/public",priority:10,enabled:yes}
+EOF
+upgrade_pkg() { pkg -r "$work/upgrade-root" -o ABI=FreeBSD:16:amd64 -o REPOS_DIR="$work/upgrade-repos" "$@"; }
+upgrade_pkg update -f
+upgrade_pkg install -y -r FreeBSD candidate-runtime
+[[ $(upgrade_pkg query '%v %R' candidate-runtime) == '1.0 FreeBSD' ]]
+candidate_adopt_installed_packages upgrade_pkg
+[[ $(upgrade_pkg query '%v %R' candidate-runtime) == '2.0 Daemonarchy' ]]
+if upgrade_pkg info -e omarchy; then echo 'Installed an unrelated feed package during adoption' >&2; exit 1; fi
+upgrade_pkg annotate -y -M candidate-runtime repository Private
+if candidate_adopt_installed_packages upgrade_pkg; then echo 'Replaced a private repository override' >&2; exit 1; fi
+[[ $(upgrade_pkg query '%v %R' candidate-runtime) == '2.0 Private' ]]
 target_pkg install -y omarchy
 [[ $(target_pkg query '%v' candidate-runtime) == 2.0 ]]
 [[ $(target_pkg query '%R' omarchy) == Daemonarchy ]]
@@ -85,4 +112,4 @@ target_pkg update -f
 target_pkg upgrade -y
 [[ $(target_pkg query '%v' omarchy) == 3.0 && $(target_pkg query '%v' candidate-runtime) == 3.0 ]]
 [[ $(cat "$work/root/usr/local/share/feed-test/runtime") == 3.0 ]]
-echo 'PASS: rebuilt dependency inclusion, kernel/fetched exclusion, stable guard, signed resolution and subsequent upgrades'
+echo 'PASS: rebuilt dependency inclusion, kernel/fetched exclusion, stable guard, older official dependency upgrade, signed resolution and subsequent upgrades'

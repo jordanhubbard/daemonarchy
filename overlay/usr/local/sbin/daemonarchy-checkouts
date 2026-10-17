@@ -6,6 +6,20 @@ set -euo pipefail
 
 fail() { echo "daemonarchy-checkouts: $*" >&2; exit 1; }
 
+checkout_kernel_identity_matches() {
+  local revision=$1 identity=$2 identifier
+  [[ $revision =~ ^[0-9a-f]{40}$ ]] || return 1
+  [[ $identity =~ ^FreeBSD[[:space:]]+[^[:space:]]+[[:space:]]+\#[0-9]+[[:space:]]+([^[:space:]]+):([[:space:]]|$) ]] || return 1
+  identifier=${BASH_REMATCH[1]}
+  [[ $identifier == "${revision:0:12}" || $identifier == *-"${revision:0:12}" ]]
+}
+
+checkout_kernel_matches() {
+  local revision=$1 kernel=$2 identity
+  identity=$(strings "$kernel" | awk '/^FreeBSD [^[:space:]]+ #[0-9]+ / { if (!found++) print }') || return 1
+  checkout_kernel_identity_matches "$revision" "$identity"
+}
+
 checkout_identity() {
   local kind=$1 catalog=$2
   [[ $kind == ports || $kind == src ]] || fail 'Choose ports or src'
@@ -67,9 +81,7 @@ checkout_install() (
   checkout_identity "$kind" "$catalog"
   checkout_empty_destination "$destination"
   if [[ $kind == src ]]; then
-    local kernel_identity
-    kernel_identity=$(strings /boot/kernel/kernel | awk '/^FreeBSD .*main-n[0-9]+-[0-9a-f]+:/ { if (!found++) print }')
-    [[ $kernel_identity == *"-${revision:0:12}:"* ]] || fail 'The source catalogue does not match the installed kernel; use the catalogue for this snapshot'
+    checkout_kernel_matches "$revision" /boot/kernel/kernel || fail 'The source catalogue does not match the installed kernel; use the catalogue for this snapshot'
   fi
   # Conservative peak allowance covers package cache, installed seed chunks,
   # archive staging and extracted files, even on separate datasets.

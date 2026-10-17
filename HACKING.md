@@ -526,6 +526,15 @@ The rebuilt-dependency option refuses the unversioned stable feed.
 `sudo bash tests/pkg-repo-dependencies.sh` exercises real signed repositories,
 dependency resolution and subsequent upgrades in disposable pkg roots.
 
+For an existing test installation, select the versioned candidate URL in
+`/usr/local/etc/pkg/repos/Daemonarchy.conf`, then run
+`sudo bash scripts/adopt-candidate-packages.sh` from this checkout. This
+reinstalls already-installed feed packages from Daemonarchy, including rebuilt
+dependencies that `pkg` can otherwise retain from their previous repository.
+It does not install unrelated build dependencies or replace private-repository
+overrides. Normal `pkg upgrade` follows that one-time transition; changing the
+FreeBSD base/kernel remains a separate coordinated operation.
+
 
 1. Tag daemonarchy-desktop `v<version>`, set `DISTVERSION` in `x11-wm/daemonarchy` to it and run `make makesum`, then build the packages and the image as above, publish the packages, and run a test.
 

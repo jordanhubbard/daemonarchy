@@ -67,12 +67,19 @@ baseline in each description. They are not current-baseline passing results.
   normal Daemonarchy update identity. A real native signed-pkg fixture passed
   dependency resolution, repository migration, a subsequent version upgrade,
   kernel/fetched-package exclusion and protection of the unversioned stable feed.
+  The explicit candidate adoption step also upgrades an older official
+  dependency without installing unrelated feed packages or replacing private
+  repository overrides.
 - The policy kernel and both EFI loaders built successfully from the selected
   source using the production public certificates. The build receipt records
   policy-kernel SHA-256
   `5022ac4bbf1b1cef9f590bc4384fea554197f1d85bf35d690840780fbeebbe13`.
   Signing and native firmware/kernel qualification remain pending; the build
   receipt explicitly retains `native_boot_qualified: false`.
+- Source checkout admission now recognizes full, shallow and detached kernel
+  revision labels while still requiring the selected commit and rejecting dirty
+  trees. Parser tests pass on macOS and FreeBSD; the actual current stock kernel
+  also matches its own source and rejects the rc2 revision.
 - The new base world/GENERIC build is still running. A package dependency dry
   run is estimating the current ports build before dispatching it.
 - Pending: world/kernel and release-set build; matching builder/jail; refreshed
