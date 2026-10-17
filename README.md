@@ -10,10 +10,10 @@ Each release is built from a FreeBSD 16.0-CURRENT snapshot. CURRENT moves daily,
 
 ## Download
 
-The current release is **[Daemonarchy 1.1.0](https://github.com/jordanhubbard/daemonarchy/releases/tag/daemonarchy-1.1.0)** (x86-64, BIOS or UEFI), with Omarchy 4.0.4 on the October 12 FreeBSD 16.0-CURRENT snapshot.
+The latest stable release is **[Daemonarchy 1.0.1](https://github.com/jordanhubbard/daemonarchy/releases/tag/daemonarchy-1.0.1)**. The current public candidate is **[Daemonarchy 1.1.0-rc.1](https://github.com/jordanhubbard/daemonarchy/releases/tag/daemonarchy-1.1.0-rc.1)** (x86-64, BIOS or UEFI), with Omarchy 4.0.4 on the October 12 FreeBSD 16.0-CURRENT snapshot. A refreshed [1.1-rc2 is being prepared](docs/testing-1.1-rc2.md).
 
-- [ISO](https://github.com/jordanhubbard/daemonarchy/releases/download/daemonarchy-1.1.0/daemonarchy-1.1.0-amd64.iso): 2,098,395,136 bytes, under 2 GiB.
-- [Checksum](https://github.com/jordanhubbard/daemonarchy/releases/download/daemonarchy-1.1.0/daemonarchy-1.1.0-amd64.iso.sha256): `891fc6e6ee537bf92aecf035d4e855b8d526aeaf9c27be80166d689289c3acd9`.
+- [ISO](https://github.com/jordanhubbard/daemonarchy/releases/download/daemonarchy-1.1.0-rc.1/daemonarchy-1.1.0-amd64.iso): 2,098,395,136 bytes, under 2 GiB.
+- [Checksum](https://github.com/jordanhubbard/daemonarchy/releases/download/daemonarchy-1.1.0-rc.1/daemonarchy-1.1.0-amd64.iso.sha256): `891fc6e6ee537bf92aecf035d4e855b8d526aeaf9c27be80166d689289c3acd9`.
 - Adds partition selection, BIOS boot, QEMU/VirGL Hyprland, native FreeBSD app menus, Chromium, OctoPkg, remote-debug progress, and [manual-enrollment Secure Boot](docs/secure-boot.md).
 - Read the [results and limits](docs/testing-1.1-final-image.md) before installing. Physical graphics/firmware, Bluetooth audio, enterprise Wi-Fi and refreshed bhyve remain unqualified. The ASRock, MSI Raider and T2 MacBook failures are documented.
 
@@ -81,7 +81,7 @@ pkg upgrade
 
 ## Roadmap
 
-**1.1.0 is released.** See the [roadmap](ROADMAP.md) for remaining
+**1.1.0-rc.1 is available for testing; 1.1-rc2 is in preparation.** See the [roadmap](ROADMAP.md) for remaining
 graphics, Bluetooth, enterprise Wi-Fi, installation and boot support, upstream
 ports work, and the checks required before release. The
 [partition preview guide](docs/testing-1.1-partitions.md) covers installing into

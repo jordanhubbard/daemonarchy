@@ -11,7 +11,7 @@ The upstream tips were resolved once at the start of this refresh:
 - FreeBSD source: `bdcfeac3e1cb8ce3f05c32d8a7ad3597deb48bdf`,
   OSVERSION `1600028` (previous image: `1600027`).
 - Upstream ports: `b1306594c4a601f98a3d28cbf6fc0569e218245f`.
-- Release ports integration: `f52fe9fa3757f360a2171a304c12865edfa533b6`,
+- Release ports integration: `84afb7141bd066711e0f45737b1705941380ee1a`,
   branch `daemonarchy-1.1-rc2`; combines the refreshed submissions and retains
   the existing 6.12 VirtIO backport for the release. Package QA remains pending.
 - Desktop source remains `v1.1.0`; compatibility source remains
@@ -80,8 +80,10 @@ baseline in each description. They are not current-baseline passing results.
   revision labels while still requiring the selected commit and rejecting dirty
   trees. Parser tests pass on macOS and FreeBSD; the actual current stock kernel
   also matches its own source and rejects the rc2 revision.
-- The new base world/GENERIC build is still running. A package dependency dry
-  run is estimating the current ports build before dispatching it.
+- The new world build completed in 4,043 seconds; the matching GENERIC kernel
+  is compiling. The completed dependency dry run queued 1,466 packages: 718
+  reusable official packages and 748 source builds. The builder will use a
+  separate boot environment and a matching fresh jail.
 - Pending: world/kernel and release-set build; matching builder/jail; refreshed
   port parsing, checksums, testport and combined package build; native module
   inventory; newly signed boot payload and checkout repositories; ISO size and

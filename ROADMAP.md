@@ -9,10 +9,11 @@ The new base and image are not yet qualified or published.
 
 ## 1.1.0
 
-Daemonarchy **1.1.0** is released using the exact tested 1.1.0-rc.1 artifacts.
-On October 16 the operator explicitly approved stable publication after the
+Daemonarchy **1.1.0-rc.1** is public; the **1.1.0** stable promotion remains a
+draft. On October 16 the operator approved stable publication after the
 remaining hardware, Bluetooth, enterprise Wi-Fi and bhyve limitations were
-reported. Those gaps remain open qualification work, not passing results.
+reported, but publication was not completed. Those gaps remain open
+qualification work, not passing results.
 All four final QEMU installation/desktop configurations and production-key
 maintenance/recovery passed.
 
