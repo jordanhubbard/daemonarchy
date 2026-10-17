@@ -92,6 +92,17 @@ baseline in each description. They are not current-baseline passing results.
   run queued 1,466 packages: 718 reusable official packages and 748 source builds.
   The fresh-jail run selected 717 reusable packages and 749 source builds,
   including the package manager itself.
+- Both pinned checkout payloads passed actual native package installation and
+  materialization: clean depth-1 trees owned by the selected user, expected
+  remotes/tracking, self-contained Git objects and preserved edits after seed
+  package removal. Their repository is signed and staged with the existing
+  production package key. Native signed catalogue queries, all three payload
+  installs and part/archive hash checks pass; an unrelated key causes signature
+  failure and rejects catalogue access and installation. The feed is not public
+  yet and must be regenerated if package QA advances the ports pin.
+- The candidate dependency-feed fixture also passes on the new OSVERSION
+  `1600028` base, including older official dependency adoption and preservation
+  of private repository overrides.
 - Pending: refreshed full-tree testport and combined package build; native module
   inventory; newly signed boot payload and checkout repositories; ISO size and
   runtime audit; fresh installation/desktop matrix and upgrade/recovery tests;
