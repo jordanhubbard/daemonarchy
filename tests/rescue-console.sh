@@ -5,6 +5,7 @@ source "$here/overlay/usr/local/sbin/daemonarchy-rescue" --library
 work=$(mktemp -d)
 trap 'rm -rf "$work"' EXIT
 state_dir=$work/state
+debug_state=$work/debug-session
 mkdir "$state_dir"
 echo in-progress >"$state_dir/status"
 echo install >"$state_dir/phase"
@@ -40,8 +41,30 @@ grep -q 'graphical login or desktop is not running' "$work/crashed"
   rescue_menu no <<<'2'
 ) >"$work/pairing"
 grep -q 'password chosen during installation' "$work/pairing"
+grep -q '2. Pair a remote debugging agent' "$work/pairing"
+# A stale session still offers a way to revoke it, with the same authentication.
+mkdir "$debug_state"
+(
+  rescue_action() { echo 'UNAUTHENTICATED ACTION' >&2; exit 99; }
+  exec() {
+    [[ $* == '/usr/bin/login -p root' ]]
+    [[ $DAEMONARCHY_RESCUE_ACTION == unpair ]]
+    exit 0
+  }
+  rescue_menu no <<<'2'
+) >"$work/unpairing"
+grep -q '2. Unpair remote debugging agent' "$work/unpairing"
+# Returning to the menu after unpairing offers pairing again.
+rescue_action() {
+  echo "$1" >>"$work/toggle-actions"
+  case $1 in unpair) rmdir "$debug_state" ;; remote) mkdir "$debug_state" ;; esac
+}
+rescue_menu yes <<<$'2\n2' >"$work/toggle-menu"
+[[ $(cat "$work/toggle-actions") == $'unpair\nremote' ]]
+grep -q '2. Unpair remote debugging agent' "$work/toggle-menu"
+grep -q '2. Pair a remote debugging agent' "$work/toggle-menu"
 # An authenticated root can use the menu directly.
 rescue_action() { echo "$1" >"$work/action"; }
 rescue_menu yes <<<'3' >/dev/null
 [[ $(cat "$work/action") == logs ]]
-echo 'PASS: interrupted install, GUI timeout/crash, and authentication before remote pairing'
+echo 'PASS: interrupted install, GUI timeout/crash, authenticated pairing/unpairing and menu toggle'

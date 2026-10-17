@@ -116,6 +116,12 @@ baseline in each description. They are not current-baseline passing results.
   of private repository overrides. It additionally verifies newly required
   official-only dependencies, replacement of different same-version payloads,
   and preservation of an older private dependency during a mixed transaction.
+- Rescue option 2 now toggles between pairing and unpairing a remote agent.
+  Unpairing clears stale state after a reset and revokes active connections.
+  Native SSH lifecycle tests pass on the new base, including unrelated PID
+  preservation, mandatory fresh approval and protection of a replacement
+  session from old cleanup. Portable menu tests preserve root authentication
+  for both actions; native rescue installation remains idempotent.
 - Pending: refreshed full-tree testport and combined package build; native module
   inventory and final signed boot payload; ISO size and
   runtime audit; fresh installation/desktop matrix and upgrade/recovery tests;
