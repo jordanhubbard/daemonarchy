@@ -54,8 +54,8 @@ baseline in each description. They are not current-baseline passing results.
 - The 23 signing/maintenance tests pass on macOS and on the native FreeBSD
   builder after updating the exact source and OSVERSION guards. The previous
   OSVERSION is explicitly rejected by the module-inventory regression test.
-  Native signing, enforcement, recovery and boot validation on the new base
-  are still required.
+  The isolated new-base boot checks below pass; final external-module,
+  installer, recovery and maintenance validation are still required.
 - All 21 new-port Makefiles parse against the selected current ports framework.
   Native `portlint -AC` reports zero fatal errors for all 21 ports; advisory
   warnings remain. The preflight fixture uses the exact refreshed port files
@@ -80,8 +80,8 @@ baseline in each description. They are not current-baseline passing results.
   policy-kernel SHA-256
   `5022ac4bbf1b1cef9f590bc4384fea554197f1d85bf35d690840780fbeebbe13`.
   The unsigned boot payload is assembled from the new release sets and policy
-  outputs. Signing awaits the matching module inventory; native firmware/kernel
-  qualification remains pending. The build receipt explicitly retains
+  outputs. Final signing awaits the matching external-module inventory; the
+  isolated native boot checks below cover the new kernel and loaders. The build receipt explicitly retains
   `native_boot_qualified: false`.
 - Source checkout admission now recognizes full, shallow and detached kernel
   revision labels while still requiring the selected commit and rejecting dirty
@@ -105,15 +105,19 @@ baseline in each description. They are not current-baseline passing results.
   seed package removal. Their repository is signed and staged with the existing
   production package key. Native signed catalogue queries, all three payload
   installs and part/archive hash checks pass; an unrelated key causes signature
-  failure and rejects catalogue access and installation. The feed is not public
-  yet and must be regenerated if package QA advances the ports pin.
+  failure and rejects catalogue access and installation. The [pinned checkout feed](https://github.com/jordanhubbard/daemonarchy/releases/tag/checkouts-16-bdcfeac3e1cb-f7d7ee897405-v1)
+  is public. All 11 GitHub asset sizes and SHA-256 digests match staging. A
+  fresh native client fetched and installed all three packages from GitHub,
+  verified every part and combined archive hash, and rejected an unrelated
+  signing key. The embedded catalogue now selects this feed. Regenerate the
+  feed if package QA advances the ports pin.
 - The candidate dependency-feed fixture also passes on the new OSVERSION
   `1600028` base, including older official dependency adoption and preservation
   of private repository overrides. It additionally verifies newly required
   official-only dependencies, replacement of different same-version payloads,
   and preservation of an older private dependency during a mixed transaction.
 - Pending: refreshed full-tree testport and combined package build; native module
-  inventory; newly signed boot payload and checkout repositories; ISO size and
+  inventory and final signed boot payload; ISO size and
   runtime audit; fresh installation/desktop matrix and upgrade/recovery tests;
   stable GitHub release publication and asset-hash verification.
 
