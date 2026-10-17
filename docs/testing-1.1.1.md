@@ -4,6 +4,23 @@ Preparation started October 16, 2026. This record is in progress; 1.1.1 has not
 been built, qualified or published yet. Earlier release qualification does not
 qualify the new kernel, package set or image.
 
+## Release authorization
+
+On October 17, the operator explicitly authorized publishing 1.1.1 without
+additional physical-hardware evidence so the refreshed release can be used
+for further debugging. Physical GPU/display/suspend, Apple T2, Bluetooth,
+enterprise Wi-Fi and physical dual-boot qualification are not publication
+gates for this release. Their documented failures and untested states remain
+unchanged; this authorization does not establish hardware support or fixes.
+
+Publication still requires completed release artifacts, matching kernel modules,
+signed package and boot payloads, and artifact integrity checks. At the latest
+native build inspection, 602 packages had built, 717 were fetched and 145
+remained. The one failure was an HTTP/2 transport error fetching cliamp's Go
+dependency `github.com/mewkiz/flac@v1.0.14`; it also skipped the dependent
+desktop package. Retry that package after the active bulk run and complete the
+final package pass with the selected 1.1.1 desktop port before image assembly.
+
 ## Selected inputs
 
 The upstream tips were resolved once at the start of this refresh:
