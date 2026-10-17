@@ -80,12 +80,15 @@ baseline in each description. They are not current-baseline passing results.
   revision labels while still requiring the selected commit and rejecting dirty
   trees. Parser tests pass on macOS and FreeBSD; the actual current stock kernel
   also matches its own source and rejects the rc2 revision.
-- The new world build completed in 4,043 seconds; the matching GENERIC kernel
-  is compiling. The completed dependency dry run queued 1,466 packages: 718
-  reusable official packages and 748 source builds. The builder will use a
-  separate boot environment and a matching fresh jail.
-- Pending: world/kernel and release-set build; matching builder/jail; refreshed
-  port parsing, checksums, testport and combined package build; native module
+- The new world and GENERIC kernel builds completed in 4,043 and 276 seconds.
+  The base, kernel and lib32 release-set digests match their manifest. The
+  builder booted this exact kernel and userland at OSVERSION `1600028` in a
+  separate boot environment; the previous environment is retained. The fresh
+  `16rc2` jail and its actual build clone contain the matching kernel, lib32 and
+  source. A full combined package build with QA enabled is running against
+  ports integration `84afb7141bd066711e0f45737b1705941380ee1a`. The earlier dry
+  run queued 1,466 packages: 718 reusable official packages and 748 source builds.
+- Pending: refreshed full-tree testport and combined package build; native module
   inventory; newly signed boot payload and checkout repositories; ISO size and
   runtime audit; fresh installation/desktop matrix and upgrade/recovery tests;
   public prerelease publication and asset-hash verification.

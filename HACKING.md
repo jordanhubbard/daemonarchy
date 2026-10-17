@@ -81,7 +81,14 @@ You need a FreeBSD 16.0-CURRENT machine (bare metal or a VM with about 8 GB of m
    as LLVM need its 32-bit libraries, and adding it later changes GCC's default
    multilib option and invalidates cached compiler/dependency packages.
 
-2. **A ports tree pinned to the official package set.** Before the next release, refresh [the fork's `omarchy` branch](https://github.com/jordanhubbard/freebsd-ports/tree/omarchy) from [upstream FreeBSD ports](https://github.com/freebsd/freebsd-ports), preserving and testing the Daemonarchy changes. For the 1.1 integration, use `daemonarchy-1.1-package-baseline` and the exact revision recorded in [ROADMAP.md](ROADMAP.md). Its upstream baseline matches the published binaries; merging the moving `omarchy` or upstream HEAD into it can invalidate that match. The installer takes most packages from pkg.FreeBSD.org's `latest` set, so the Omarchy ports must be built against the same ports commit. That commit is the newest `ports_top_git_hash` annotation across the set's packages. Builds are incremental, so one package's annotation can be older than the set:
+   On ZFS, Poudriere clones the jail's `@clean` snapshot, which jail creation
+   recorded before those additions. Retain that initial snapshot under another
+   name and recreate `@clean` from the completed jail before starting a build.
+   Verify that the snapshot itself contains `/boot/kernel/kernel`,
+   `/usr/lib32/libc.so.7` and the selected `/usr/src/sys/sys/param.h`; checking
+   only the live jail directory does not establish what its build clones use.
+
+2. **A ports tree pinned to the official package set.** Before the next release, refresh [the fork's `omarchy` branch](https://github.com/jordanhubbard/freebsd-ports/tree/omarchy) from [upstream FreeBSD ports](https://github.com/freebsd/freebsd-ports), preserving and testing the Daemonarchy changes. The earlier 1.1 candidate uses `daemonarchy-1.1-package-baseline`; the refreshed 1.1-rc2 uses `daemonarchy-1.1-rc2` and the exact revision in [its qualification record](docs/testing-1.1-rc2.md). The rc2 upstream tip is newer than the official binary baseline, so mismatched dependencies must also be rebuilt and published in its versioned candidate feed. Its upstream baseline matches the published binaries; merging the moving `omarchy` or upstream HEAD into it can invalidate that match. The installer takes most packages from pkg.FreeBSD.org's `latest` set, so the Omarchy ports must be built against the same ports commit. That commit is the newest `ports_top_git_hash` annotation across the set's packages. Builds are incremental, so one package's annotation can be older than the set:
 
    ```
    mkdir -p /tmp/pq/db /tmp/pq/repos
@@ -212,7 +219,7 @@ The installer is plain bash and lives entirely in `overlay/`, so changing it onl
 
 ### The ports
 
-Work on a review branch based on the exact integration commit in [ROADMAP.md](ROADMAP.md). For 1.1 this is `daemonarchy-1.1-package-baseline`; verify that poudriere uses the matching tree and snapshot jail before rebuilding.
+Work on a review branch based on the exact integration commit in [ROADMAP.md](ROADMAP.md). For 1.1-rc2 this is `daemonarchy-1.1-rc2`, pinned in [its qualification record](docs/testing-1.1-rc2.md); verify that poudriere uses the matching tree and snapshot jail before rebuilding.
 
 - `poudriere testport -j 16amd64 -p <tree> -o <origin>` checks a port in a clean jail: stage-qa, the plist, install, and deinstall. Use it rather than `make stage-qa` as root on the host, which installs the port's dependencies onto the host.
 - To try a change on a running Daemonarchy desktop, `make reinstall` the port there; `seed-user --force` re-copies the defaults into the home (it never overwrites a file you have).
