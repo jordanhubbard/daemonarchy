@@ -43,9 +43,18 @@ baseline in each description. They are not current-baseline passing results.
 ## Checks and remaining work
 
 - All four Secure Boot source patches apply cleanly to the selected source tip.
-- The 23 portable signing/maintenance tests pass after updating the exact source
-  and OSVERSION guards. Native signing, enforcement, recovery and boot validation
-  on the new base are still required.
+- The 23 signing/maintenance tests pass on macOS and on the native FreeBSD
+  builder after updating the exact source and OSVERSION guards. The previous
+  OSVERSION is explicitly rejected by the module-inventory regression test.
+  Native signing, enforcement, recovery and boot validation on the new base
+  are still required.
+- All 21 new-port Makefiles parse against the selected current ports framework.
+  Native `portlint -AC` reports zero fatal errors for all 21 ports; advisory
+  warnings remain. The preflight fixture uses the exact refreshed port files
+  and framework; it does not replace full-tree dependency or testport checks.
+- The new base world/GENERIC build and separate production-certificate policy
+  kernel/EFI-loader recipe are running in the isolated native builder. Their
+  completion and boot qualification remain pending.
 - Pending: world/kernel and release-set build; matching builder/jail; refreshed
   port parsing, checksums, testport and combined package build; native module
   inventory; newly signed boot payload and checkout repositories; ISO size and
