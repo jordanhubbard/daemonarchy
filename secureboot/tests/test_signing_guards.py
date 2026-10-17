@@ -110,7 +110,7 @@ class SigningGuards(unittest.TestCase):
     def test_inventory_wrong_snapshot(self):
         self.args.module_inventory = Path(self.temp.name) / "modules.json"
         self.args.module_inventory.write_text(json.dumps(dict(
-            schema=1, osversion=1600026, modules={})))
+            schema=1, osversion=1600027, modules={})))
         self.reject("Unsupported release module inventory")
 
     def test_build_receipt_required(self):
