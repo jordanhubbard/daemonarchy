@@ -78,8 +78,10 @@ baseline in each description. They are not current-baseline passing results.
   receipt explicitly retains `native_boot_qualified: false`.
 - Source checkout admission now recognizes full, shallow and detached kernel
   revision labels while still requiring the selected commit and rejecting dirty
-  trees. Parser tests pass on macOS and FreeBSD; the actual current stock kernel
-  also matches its own source and rejects the rc2 revision.
+  trees. Parser tests pass on macOS and FreeBSD. ISO construction uses the same
+  matcher: the actual rc2 kernel archive accepts its exact source and rejects
+  the previous snapshot revision. The previous stock kernel likewise accepts
+  its own source and rejects the rc2 revision.
 - The new world and GENERIC kernel builds completed in 4,043 and 276 seconds.
   The base, kernel and lib32 release-set digests match their manifest. The
   builder booted this exact kernel and userland at OSVERSION `1600028` in a
@@ -88,6 +90,8 @@ baseline in each description. They are not current-baseline passing results.
   source. A full combined package build with QA enabled is running against
   ports integration `84afb7141bd066711e0f45737b1705941380ee1a`. The earlier dry
   run queued 1,466 packages: 718 reusable official packages and 748 source builds.
+  The fresh-jail run selected 717 reusable packages and 749 source builds,
+  including the package manager itself.
 - Pending: refreshed full-tree testport and combined package build; native module
   inventory; newly signed boot payload and checkout repositories; ISO size and
   runtime audit; fresh installation/desktop matrix and upgrade/recovery tests;
