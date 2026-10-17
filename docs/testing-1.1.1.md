@@ -124,3 +124,29 @@ for network debugging in this release.
 
 Physical GPU/display/suspend, Bluetooth headset/HID, enterprise EAP and physical
 Windows preservation limitations remain open until new evidence closes them.
+
+## New-base boot checks, October 17
+
+An isolated UFS test image uses the new base and stock kernel sets, the rebuilt
+policy kernel and EFI loaders, and the existing production certificate. Its
+kernel-only qualification bundle is separate from the final release bundle;
+the latter still needs the completed external-module inventory. The runtime
+probe was compiled on the new base. All successful userland boots independently
+asserted OSVERSION `1600028` and printed the selected `bdcfeac3e1cb` identity.
+The policy build's `-dirty` suffix identifies the existing downstream patches.
+
+| Actual isolated QEMU check | Result |
+| --- | --- |
+| Enforced UEFI, production certificate enrolled | Passed loader self-tests, signed boot/runtime manifests, locked module policy, trusted module load/unload, unsigned-module rejection, protected-write rejection, process-environment reads and ordinary user execution |
+| UEFI with Secure Boot disabled | Passed; selected the new stock kernel with no module policy |
+| BIOS with the new base's boot blocks | Passed; selected the new stock kernel with no module policy |
+| Unsigned verified EFI loader under enforced firmware | Rejected by firmware before the FreeBSD loader |
+| One changed byte in the policy kernel, original signed manifest retained | Rejected by the loader with distinct actual/expected fingerprints before userland |
+
+The valid image SHA-256 is
+`61fd1e6297f28cb781156f2e44caa463b1f34eaf1f670aacdadb6be5e9311af7`.
+Its kernel-only qualification bundle SHA-256 is
+`8b4a663c8a6fe1e6d2028e7e0a72958fd9882a126495a045b05f882c63949488`.
+Retained serial logs pass the repository's runtime and media-rejection checkers.
+These checks qualify the new boot components in the isolated fixture; final
+installer, external-module, ZFS/GELI and maintenance checks remain pending.
