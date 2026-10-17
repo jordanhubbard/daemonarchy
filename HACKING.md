@@ -510,6 +510,20 @@ Daemonarchy feed. Omitting the variable selects the stable feed. Set
 `EXPECTED_PACKAGE_REPOSITORY_TAG` to the same tag when running `test-qemu.sh`;
 the installed-system check asserts the exact feed URL.
 
+When the selected ports tip is ahead of the official binary collection, the
+candidate feed must include rebuilt ordinary dependencies as well as the
+Daemonarchy ports. Collect a union of the successful `.poudriere.ports.built`
+records from this candidate's build/test attempts into `BUILT_PACKAGES_FILE`.
+On the protected signing host, use `PACKAGES_DIR` for the staged package
+repository, `BUILT_PACKAGES_FILE` for that list, and the versioned `TAG` when
+running `pkg-repo.sh build`. Kernel-bound packages remain on the matching ISO.
+The installer uses the signed candidate feed to resolve these dependencies,
+then records them under the normal Daemonarchy repository for later upgrades.
+The rebuilt-dependency option refuses the unversioned stable feed.
+
+`sudo bash tests/pkg-repo-dependencies.sh` exercises real signed repositories,
+dependency resolution and subsequent upgrades in disposable pkg roots.
+
 
 1. Tag daemonarchy-desktop `v<version>`, set `DISTVERSION` in `x11-wm/daemonarchy` to it and run `make makesum`, then build the packages and the image as above, publish the packages, and run a test.
 

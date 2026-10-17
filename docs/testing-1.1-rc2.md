@@ -59,7 +59,14 @@ baseline in each description. They are not current-baseline passing results.
 - The image can now select a release-specific signed application feed through
   `PACKAGE_REPOSITORY_TAG`, and installed systems retain that selection.
   Stable fallback, rc2 selection and malformed/multiline metadata rejection
-  pass the portable helper test. Native image/install checks remain pending.
+  pass on macOS and FreeBSD. Native image/install checks remain pending.
+- Current ports requires Python 3.12.15 while the selected official package
+  collection provides 3.12.14. The candidate publisher can include rebuilt
+  ordinary dependencies, excluding kernel-bound and unrelated fetched packages.
+  The installer resolves dependencies from this signed feed and retains their
+  normal Daemonarchy update identity. A real native signed-pkg fixture passed
+  dependency resolution, repository migration, a subsequent version upgrade,
+  kernel/fetched-package exclusion and protection of the unversioned stable feed.
 - The policy kernel and both EFI loaders built successfully from the selected
   source using the production public certificates. The build receipt records
   policy-kernel SHA-256

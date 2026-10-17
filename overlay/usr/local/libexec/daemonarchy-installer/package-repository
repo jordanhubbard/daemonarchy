@@ -17,3 +17,27 @@ package_repository_prepare() {
     fi
     package_repository_tag_validate "$package_repository_tag"
 }
+
+package_repository_write_dependencies() {
+    package_repository_tag_validate "$package_repository_tag" || return 1
+    [ "$package_repository_tag" != packages-16-amd64 ] || return 0
+    cat >"$1" <<EOF
+Daemonarchy-Dependencies: {
+  url: "https://github.com/jordanhubbard/daemonarchy/releases/download/$package_repository_tag",
+  signature_type: "pubkey",
+  pubkey: "$2",
+  priority: 9,
+  enabled: yes
+}
+EOF
+}
+
+package_repository_finalize_dependencies() {
+    package_repository_installed=$("$@" query '%n %R') || return 1
+    printf '%s\n' "$package_repository_installed" |
+    while read -r package repository; do
+        if [ "$repository" = Daemonarchy-Dependencies ]; then
+            "$@" annotate -y -M "$package" repository Daemonarchy || exit 1
+        fi
+    done
+}
