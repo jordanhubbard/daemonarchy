@@ -47,7 +47,7 @@ else
   grep -q '^devmatch_blocklist=.*apple_bce.*amdgpu' /boot/loader.conf.local
   echo 'PASS: explicit private rescue image has protected authorization and blocked drivers'
 fi
-for tool in sh bash gum jq pkg pkg-static fetch timeout ssh sshd tar xz zpool zfs gpart \
+for tool in sh bash gum jq pkg pkg-static fetch timeout lockf ssh sshd tar xz zpool zfs gpart \
   geli efibootmgr mount umount pw sysrc ifconfig wpa_supplicant \
   wpa_cli dhclient ntpd date file ldd; do
   command -v "$tool" >/dev/null || { echo "Missing live tool: $tool" >&2; exit 1; }
@@ -55,9 +55,13 @@ done
 for path in /usr/freebsd-dist/base.txz /usr/freebsd-dist/kernel.txz /usr/freebsd-dist/lib32.txz \
   /boot/kernel/kernel /boot/kernel/zfs.ko /boot/loader.efi \
   /usr/local/share/daemonarchy-installer/omarchy-wifi-enterprise \
+  /usr/local/share/daemonarchy-installer/package-repository-tag \
   /usr/local/share/daemonarchy-installer/checkouts.json; do
   [ -s "$path" ] || { echo "Missing live payload: $path" >&2; exit 1; }
 done
+. /usr/local/libexec/daemonarchy-installer/package-repository
+package_repository_prepare /usr/local/share/daemonarchy-installer
+echo "PASS: signed application feed selection: $package_repository_tag"
 bash --version
 gum --version
 jq --version

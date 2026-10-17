@@ -15,7 +15,7 @@ import subprocess
 import tarfile
 import tempfile
 
-BASE = "3ceb5f150bc121f5e6a3e0cc8b289279338405a1"
+BASE = "bdcfeac3e1cb8ce3f05c32d8a7ad3597deb48bdf"
 MANAGED = {
     "boot/kernel.secure/kernel", "boot/loader.efi", "boot/loader_normal.efi",
     "boot/manifest", "boot/manifest.sig", "boot/manifest.certs",
@@ -73,7 +73,7 @@ def unpack_snapshot(bundle, signature, certificate, destination):
         if (not isinstance(metadata, dict) or
                 not isinstance(metadata.get("files"), dict) or
                 metadata.get("schema") != 1 or metadata.get("loader_protocol") != 1 or
-                metadata.get("base_source") != BASE or metadata.get("osversion") != 1600027 or
+                metadata.get("base_source") != BASE or metadata.get("osversion") != 1600028 or
                 set(metadata.get("files", {})) != MANAGED or
                 not isinstance(metadata.get("stock_kernel_sha256"), str) or
                 not re.fullmatch("[0-9a-f]{64}", metadata["stock_kernel_sha256"]) or

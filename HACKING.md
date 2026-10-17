@@ -81,7 +81,14 @@ You need a FreeBSD 16.0-CURRENT machine (bare metal or a VM with about 8 GB of m
    as LLVM need its 32-bit libraries, and adding it later changes GCC's default
    multilib option and invalidates cached compiler/dependency packages.
 
-2. **A ports tree pinned to the official package set.** Before the next release, refresh [the fork's `omarchy` branch](https://github.com/jordanhubbard/freebsd-ports/tree/omarchy) from [upstream FreeBSD ports](https://github.com/freebsd/freebsd-ports), preserving and testing the Daemonarchy changes. For the 1.1 integration, use `daemonarchy-1.1-package-baseline` and the exact revision recorded in [ROADMAP.md](ROADMAP.md). Its upstream baseline matches the published binaries; merging the moving `omarchy` or upstream HEAD into it can invalidate that match. The installer takes most packages from pkg.FreeBSD.org's `latest` set, so the Omarchy ports must be built against the same ports commit. That commit is the newest `ports_top_git_hash` annotation across the set's packages. Builds are incremental, so one package's annotation can be older than the set:
+   On ZFS, Poudriere clones the jail's `@clean` snapshot, which jail creation
+   recorded before those additions. Retain that initial snapshot under another
+   name and recreate `@clean` from the completed jail before starting a build.
+   Verify that the snapshot itself contains `/boot/kernel/kernel`,
+   `/usr/lib32/libc.so.7` and the selected `/usr/src/sys/sys/param.h`; checking
+   only the live jail directory does not establish what its build clones use.
+
+2. **A ports tree pinned to the official package set.** Before the next release, refresh [the fork's `omarchy` branch](https://github.com/jordanhubbard/freebsd-ports/tree/omarchy) from [upstream FreeBSD ports](https://github.com/freebsd/freebsd-ports), preserving and testing the Daemonarchy changes. The earlier 1.1 candidate uses `daemonarchy-1.1-package-baseline`; the refreshed 1.1.1 uses `daemonarchy-1.1.1` and the exact revision in [its qualification record](docs/testing-1.1.1.md). The 1.1.1 upstream tip is newer than the official binary baseline, so mismatched dependencies must also be rebuilt and published in its versioned candidate feed. Keep the selected integration fixed during qualification. Matching pkg.FreeBSD.org's `latest` baseline avoids rebuilding large dependency stacks; moving beyond it requires the versioned rebuilt-dependency publication procedure below. The official baseline is the newest `ports_top_git_hash` annotation across the set's packages. Builds are incremental, so one package's annotation can be older than the set:
 
    ```
    mkdir -p /tmp/pq/db /tmp/pq/repos
@@ -212,7 +219,7 @@ The installer is plain bash and lives entirely in `overlay/`, so changing it onl
 
 ### The ports
 
-Work on a review branch based on the exact integration commit in [ROADMAP.md](ROADMAP.md). For 1.1 this is `daemonarchy-1.1-package-baseline`; verify that poudriere uses the matching tree and snapshot jail before rebuilding.
+Work on a review branch based on the exact integration commit in [ROADMAP.md](ROADMAP.md). For 1.1.1 this is `daemonarchy-1.1.1`, pinned in [its qualification record](docs/testing-1.1.1.md); verify that poudriere uses the matching tree and snapshot jail before rebuilding.
 
 - `poudriere testport -j 16amd64 -p <tree> -o <origin>` checks a port in a clean jail: stage-qa, the plist, install, and deinstall. Use it rather than `make stage-qa` as root on the host, which installs the port's dependencies onto the host.
 - To try a change on a running Daemonarchy desktop, `make reinstall` the port there; `seed-user --force` re-copies the defaults into the home (it never overwrites a file you have).
@@ -502,6 +509,42 @@ tag (for example, `packages-16-amd64-1.1.0-candidate`) and verify it with a nati
 client. Keep the default stable package feed unchanged until stable qualification
 is complete. Publish the installer as a prerelease with `--latest=false`, and
 retain the open hardware gates in its notes.
+
+Build a candidate image with `PACKAGE_REPOSITORY_TAG` set to its versioned
+application-feed tag (for example, `packages-16-amd64-1.1.1`). The image
+records that selection and installed systems retain it as their signed
+Daemonarchy feed. Omitting the variable selects the stable feed. Set
+`EXPECTED_PACKAGE_REPOSITORY_TAG` to the same tag when running `test-qemu.sh`;
+the installed-system check asserts the exact feed URL.
+
+When the selected ports tip is ahead of the official binary collection, the
+candidate feed must include rebuilt ordinary dependencies as well as the
+Daemonarchy ports. Collect a union of the successful `.poudriere.ports.built`
+records from this candidate's build/test attempts into `BUILT_PACKAGES_FILE`.
+Use `pkg-repo.sh collect` on the builder with `BUILT_PACKAGES_FILE` and the
+versioned `TAG` to stage public payloads without a signing key. Transfer those
+payloads into an `All` directory on the protected signing host. There, use
+`PACKAGES_DIR` for the staged repository, `BUILT_PACKAGES_FILE` for that list,
+and the same versioned `TAG` when running `pkg-repo.sh build`. Kernel-bound packages remain on the matching ISO.
+The installer uses the signed candidate feed to resolve these dependencies,
+then records them under the normal Daemonarchy repository for later upgrades.
+The rebuilt-dependency option refuses the unversioned stable feed.
+
+`sudo bash tests/pkg-repo-dependencies.sh` exercises real signed repositories,
+dependency resolution and subsequent upgrades in disposable pkg roots.
+
+For an existing test installation, select the versioned candidate URL in
+`/usr/local/etc/pkg/repos/Daemonarchy.conf`, then run
+`sudo bash scripts/adopt-candidate-packages.sh` from this checkout. This
+reinstalls already-installed feed packages from Daemonarchy, including rebuilt
+dependencies that `pkg` can otherwise retain from their previous repository.
+It first assigns those public packages to Daemonarchy, then uses normal
+dependency resolution so newly required official packages remain available.
+Unrelated build dependencies and private-repository overrides are preserved.
+The feed choice takes effect before installation; after a failed transaction,
+resolve the package error and rerun the helper. Normal `pkg upgrade` follows
+that one-time transition; changing the FreeBSD base/kernel remains a separate
+coordinated operation.
 
 
 1. Tag daemonarchy-desktop `v<version>`, set `DISTVERSION` in `x11-wm/daemonarchy` to it and run `make makesum`, then build the packages and the image as above, publish the packages, and run a test.

@@ -25,6 +25,9 @@ ABI=${ABI:-FreeBSD:16:amd64}
 ARCH=${ARCH:-amd64}
 
 here=$(cd "$(dirname "$0")" && pwd)
+. "$here/overlay/usr/local/libexec/daemonarchy-installer/package-repository"
+PACKAGE_REPOSITORY_TAG=${PACKAGE_REPOSITORY_TAG:-packages-16-amd64}
+package_repository_tag_validate "$PACKAGE_REPOSITORY_TAG"
 CHECKOUT_CATALOG=${CHECKOUT_CATALOG:-$here/overlay/usr/local/share/daemonarchy-installer/checkouts.json}
 packages=/usr/local/poudriere/data/packages/$JAIL-$PTREE
 [ -n "$CHECKOUT_CATALOG" ] && [ -s "$CHECKOUT_CATALOG" ] || {
@@ -46,6 +49,7 @@ if [ -n "${LIVE_EXTRA_OVERLAY:-}" ]; then
 fi
 share=$stage/overlay/usr/local/share/daemonarchy-installer
 cp "$CHECKOUT_CATALOG" "$share/checkouts.json"
+printf '%s\n' "$PACKAGE_REPOSITORY_TAG" >"$share/package-repository-tag"
 
 echo "==> Collecting the Omarchy package repository"
 mkdir -p "$share/repo/All"
@@ -145,11 +149,12 @@ fi
 # The optional source checkout must describe the kernel in these release sets.
 source_revision=$(jq -er '.trees.src.revision' "$CHECKOUT_CATALOG")
 # Extract only the embedded build identity, not the build worker's running kernel.
-kernel_identity=$(tar -xOf "$cache/kernel.txz" ./boot/kernel/kernel | strings | awk '/^FreeBSD .*main-n[0-9]+-[0-9a-f]+:/ { if (!found++) print }')
-case "$kernel_identity" in
-  *"-$(printf '%.12s' "$source_revision"):"*) ;;
-  *) echo "Source checkout $source_revision does not match image kernel: $kernel_identity" >&2; exit 1 ;;
-esac
+kernel_identity=$(tar -xOf "$cache/kernel.txz" ./boot/kernel/kernel | strings | awk '/^FreeBSD [^[:space:]]+ #[0-9]+ / { if (!found++) print }')
+if ! bash -c 'source "$1"; checkout_kernel_identity_matches "$2" "$3"' \
+    kernel-check "$here/overlay/usr/local/sbin/daemonarchy-checkouts" "$source_revision" "$kernel_identity"; then
+  echo "Source checkout $source_revision does not match image kernel: $kernel_identity" >&2
+  exit 1
+fi
 
 # Keep NVIDIA and AMD/Intel on the same explicit DRM family. Validate every
 # kernel module against the snapshot ABI before generating the image.

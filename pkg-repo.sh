@@ -11,6 +11,7 @@
 #
 #   pkg-repo.sh keygen          on the build host, as root, once
 #   pkg-repo.sh build           on the build host, as root: collect and sign
+#   pkg-repo.sh collect         collect public payloads without a signing key
 #   pkg-repo.sh upload <dir>    anywhere with gh: replace the release's assets
 #   pkg-repo.sh publish         from a workstation with gh: copy this
 #                               script to $BUILD_HOST, build there over
@@ -32,7 +33,8 @@ KEY=${KEY:-/usr/local/etc/daemonarchy/pkg-repo.key}
 OUT=${OUT:-/usr/local/poudriere/data/daemonarchy-repo/$TAG}
 
 here=$(cd "$(dirname "$0")" && pwd)
-packages=/usr/local/poudriere/data/packages/$JAIL-$PTREE
+packages=${PACKAGES_DIR:-/usr/local/poudriere/data/packages/$JAIL-$PTREE}
+BUILT_PACKAGES_FILE=${BUILT_PACKAGES_FILE:-}
 . "$here/origins.sh"
 
 keygen() {
@@ -46,19 +48,65 @@ keygen() {
 	openssl rsa -in "$KEY" -pubout 2>/dev/null
 }
 
-build() {
+collect() {
+	built_packages=''
+	if [ -n "$BUILT_PACKAGES_FILE" ]; then
+		case "$TAG" in
+		packages-16-amd64-?*) ;;
+		*) echo 'Rebuilt dependencies require a versioned package-feed tag' >&2; exit 1 ;;
+		esac
+		case "$TAG" in
+		*[!A-Za-z0-9._-]*) echo 'Invalid versioned package-feed tag' >&2; exit 1 ;;
+		esac
+		[ -s "$BUILT_PACKAGES_FILE" ] || { echo 'Missing successful-build package list' >&2; exit 1; }
+		while read -r origin package rest; do
+			[ -n "$origin" ] || continue
+			case "$package" in
+			''|*[!A-Za-z0-9._,+-]*) echo 'Invalid built package name' >&2; exit 1 ;;
+			esac
+			built_packages="$built_packages $package"
+		done <"$BUILT_PACKAGES_FILE"
+	fi
 	rm -rf "$OUT"
 	mkdir -p "$OUT"
+	collected=0
 	for pkgfile in "$packages"/All/*.pkg; do
 		origin=$(pkg query -F "$pkgfile" '%o')
+		include=false
 		case " $(echo $OMARCHY_ORIGINS) " in
 		# GitHub renames assets with characters outside [A-Za-z0-9._-],
 		# such as the comma of an epoch (daemonarchy-1.0.0,1). pkg finds a
 		# package by the path the catalogue records, not by its name, so
 		# give the file a name GitHub keeps.
-		*" $origin "*) cp "$pkgfile" "$OUT/$(basename "$pkgfile" | tr -c 'A-Za-z0-9._\n-' '.')" ;;
+		*" $origin "*) include=true ;;
 		esac
+		if [ "$include" = false ] && [ -n "$BUILT_PACKAGES_FILE" ]; then
+			package=$(pkg query -F "$pkgfile" '%n-%v')
+			case " $built_packages " in
+			*" $package "*)
+				# Kernel-bound packages stay with the image's exact kernel.
+				case "$origin" in
+				*kmod*|x11/nvidia-*|x11/linux-nvidia-libs*|graphics/nvidia-drm*) continue ;;
+				esac
+				paths=$(pkg query -F "$pkgfile" '%Fp')
+				if printf '%s\n' "$paths" | grep -q '^/boot/modules/'; then
+					continue
+				fi
+				include=true
+				;;
+			esac
+		fi
+		if [ "$include" = true ]; then
+			cp "$pkgfile" "$OUT/$(basename "$pkgfile" | tr -c 'A-Za-z0-9._\n-' '.')"
+			collected=$((collected + 1))
+		fi
 	done
+	[ "$collected" -gt 0 ] || { echo 'No application packages selected for publication' >&2; exit 1; }
+	echo "$OUT: collected $collected package payloads"
+}
+
+build() {
+	collect
 	pkg repo -q "$OUT" "$KEY" >/dev/null
 	echo "$OUT: $(ls "$OUT"/*.pkg | grep -cvE '/(packagesite|data|meta)\.pkg$') packages"
 }
@@ -103,11 +151,12 @@ publish() {
 
 case ${1:-} in
 keygen) keygen ;;
+collect) collect ;;
 build) build ;;
 upload) upload "${2:?usage: pkg-repo.sh upload <dir>}" ;;
 publish) publish ;;
 *)
-	echo "usage: pkg-repo.sh keygen | build | upload <dir> | publish" >&2
+	echo "usage: pkg-repo.sh keygen | collect | build | upload <dir> | publish" >&2
 	exit 1
 	;;
 esac

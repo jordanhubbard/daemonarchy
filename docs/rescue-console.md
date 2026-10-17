@@ -63,6 +63,15 @@ port and server fingerprint, and approve the matching client-key fingerprint.
 Press Enter or Ctrl-C in the listener to stop access. This does not enable
 normal sshd or grant anonymous/password-free root access.
 
+Option 2 changes to **Unpair remote debugging agent** while pairing state
+exists, including stale state left by an unexpected reboot. Selecting it
+requires the same root authentication, closes the listener and its SSH
+connections, and removes approved keys and session state. The option then
+returns to **Pair a remote debugging agent**; a new session requires fresh
+approval. This also clears the “Another debug session is already active”
+condition without manual file cleanup. An authenticated shell can run
+`daemonarchy-debug unpair` for the same operation.
+
 For a completed installation, the console waits up to 60 seconds for SDDM
 and either its greeter or a Hyprland session process. It keeps monitoring while
 those processes run. If they disappear for 15 seconds, the rescue menu appears.
@@ -85,8 +94,12 @@ original installation log cannot be recovered by adding these tools later.
 
 Run `bash tests/install-diagnostics.sh` and `bash tests/rescue-console.sh` for
 log streaming/drain, interrupted-state handling, GUI startup/crash timeout and
-the authentication gate before remote pairing. On FreeBSD as root,
+the authentication gate before remote pairing and unpairing, including the
+option-2 toggle. On FreeBSD as root,
 `bash tests/rescue-setup.sh` checks the actual getty/profile installation.
+`bash tests/remote-debug-session.sh` exercises actual SSH revocation, fresh
+pairing approval, stale-PID safety and protection of a replacement session from
+an older listener's cleanup.
 
 `tests/rescue-boot-image.sh /new/output /path/base.txz /snapshot/root` builds
 a disposable FreeBSD boot image using the production recovery/account/logging

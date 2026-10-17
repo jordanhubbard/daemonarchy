@@ -36,6 +36,8 @@ source "$(dirname "$0")/cuda-options"
 source "$(dirname "$0")/install-diagnostics"
 source "$(dirname "$0")/rescue-setup"
 source "$(dirname "$0")/secureboot-options"
+source "$(dirname "$0")/package-repository"
+package_repository_prepare "$ISO_SHARE"
 checkout_options_prepare "$ISO_SHARE/checkouts.json"
 secureboot_payload_prepare
 if [[ -n ${wifi_enterprise_profile:-} ]]; then
@@ -309,12 +311,19 @@ Daemonarchy: {
   enabled: yes
 }
 EOF
+package_repository_write_dependencies "$repos/dependencies.conf" "$ISO_SHARE/daemonarchy.pub"
 pkg_target() {
   ASSUME_ALWAYS_YES=yes IGNORE_OSVERSION=yes \
     pkg -r "$TARGET" -o REPOS_DIR="$repos" -o ABI="$ABI" "$@"
 }
 packages=(pkg bash sudo daemonarchy chromium octopkg wifi-firmware-kmod "${gpu_exact_packages[@]}" "${gpu_userspace_packages[@]}")
 pkg_target update -f
+if [[ $package_repository_tag != packages-16-amd64 ]]; then
+  pkg_target rquery -r Daemonarchy-Dependencies '%n' omarchy | grep -qx omarchy || {
+    echo 'The signed candidate package repository is unavailable or invalid.' >&2
+    exit 1
+  }
+fi
 
 # A small first transaction makes console-approved remote rescue available
 # even if the later desktop fetch/install is interrupted.
@@ -336,6 +345,9 @@ for attempt in 1 2 3 4 5; do
 done
 phase install "Installing Daemonarchy packages"
 pkg_target install -y "${packages[@]}"
+if [[ $package_repository_tag != packages-16-amd64 ]]; then
+  package_repository_finalize_dependencies pkg_target
+fi
 
 # Refuse resolver drift and keep kernel-bound packages together until a
 # coordinated kernel/driver update, rather than taking a moving CURRENT kmod.
@@ -370,7 +382,7 @@ cp -R "$REPO" "$TARGET/var/db/daemonarchy/repo"
 cp "$ISO_SHARE/daemonarchy.pub" "$TARGET/usr/local/etc/pkg/keys/daemonarchy.pub"
 cat >"$TARGET/usr/local/etc/pkg/repos/Daemonarchy.conf" <<EOF
 Daemonarchy: {
-  url: "https://github.com/jordanhubbard/daemonarchy/releases/download/packages-16-amd64",
+  url: "https://github.com/jordanhubbard/daemonarchy/releases/download/$package_repository_tag",
   signature_type: "pubkey",
   pubkey: "/usr/local/etc/pkg/keys/daemonarchy.pub",
   priority: 10,

@@ -1,0 +1,43 @@
+# The image selects its signed application feed. Candidate installations must
+# keep using that feed without publishing over the stable repository.
+package_repository_tag_validate() {
+    case "$1" in
+        packages-16-amd64|packages-16-amd64-?*) ;;
+        *) echo 'Invalid Daemonarchy package repository tag' >&2; return 1 ;;
+    esac
+    case "$1" in
+        *[!A-Za-z0-9._-]*) echo 'Invalid Daemonarchy package repository tag' >&2; return 1 ;;
+    esac
+}
+
+package_repository_prepare() {
+    package_repository_tag=packages-16-amd64
+    if [ -e "$1/package-repository-tag" ]; then
+        package_repository_tag=$(cat "$1/package-repository-tag") || return 1
+    fi
+    package_repository_tag_validate "$package_repository_tag"
+}
+
+package_repository_write_dependencies() {
+    package_repository_tag_validate "$package_repository_tag" || return 1
+    [ "$package_repository_tag" != packages-16-amd64 ] || return 0
+    cat >"$1" <<EOF
+Daemonarchy-Dependencies: {
+  url: "https://github.com/jordanhubbard/daemonarchy/releases/download/$package_repository_tag",
+  signature_type: "pubkey",
+  pubkey: "$2",
+  priority: 9,
+  enabled: yes
+}
+EOF
+}
+
+package_repository_finalize_dependencies() {
+    package_repository_installed=$("$@" query '%n %R') || return 1
+    printf '%s\n' "$package_repository_installed" |
+    while read -r package repository; do
+        if [ "$repository" = Daemonarchy-Dependencies ]; then
+            "$@" annotate -y -M "$package" repository Daemonarchy || exit 1
+        fi
+    done
+}

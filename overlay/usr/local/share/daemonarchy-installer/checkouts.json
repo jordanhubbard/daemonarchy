@@ -1,50 +1,50 @@
 {
   "schema": 1,
-  "repository_url": "https://github.com/jordanhubbard/daemonarchy/releases/download/checkouts-16-3ceb5f150bc1-08a6370a019a-v1",
+  "repository_url": "https://github.com/jordanhubbard/daemonarchy/releases/download/checkouts-16-bdcfeac3e1cb-f7d7ee897405-v1",
   "trees": {
     "ports": {
-      "revision": "08a6370a019a35ae791c549fa1da9a3ce9bd5b33",
-      "branch": "daemonarchy-1.1-package-baseline",
+      "revision": "f7d7ee897405dcb8ce87e674588a4e1b3bfba00e",
+      "branch": "daemonarchy-1.1.1",
       "remote": "https://github.com/jordanhubbard/freebsd-ports.git",
       "depth": 1,
-      "archive_sha256": "76cb7e560b81c3c593933ee01ed92cad3ecdc0774836bcf4960697f2f4d94fed",
-      "archive_bytes": 234862453,
-      "expanded_bytes": 723107423,
-      "required_bytes": 3876394174,
+      "archive_sha256": "d7487297db4f9a3e536bd509c5096b1cbbc7dac9f40bdde8a5f8d0e8682b9dc5",
+      "archive_bytes": 237721536,
+      "expanded_bytes": 728629485,
+      "required_bytes": 3906574381,
       "parts": [
         {
-          "package": "daemonarchy-ports-checkout-000-20261016.g08a6370a019a",
-          "file": "/usr/local/share/daemonarchy/checkouts/ports/08a6370a019a35ae791c549fa1da9a3ce9bd5b33/part-000",
-          "sha256": "76cb7e560b81c3c593933ee01ed92cad3ecdc0774836bcf4960697f2f4d94fed",
-          "bytes": 234862453,
-          "download_bytes": 234685703
+          "package": "daemonarchy-ports-checkout-000-20261016.gf7d7ee897405",
+          "file": "/usr/local/share/daemonarchy/checkouts/ports/f7d7ee897405dcb8ce87e674588a4e1b3bfba00e/part-000",
+          "sha256": "d7487297db4f9a3e536bd509c5096b1cbbc7dac9f40bdde8a5f8d0e8682b9dc5",
+          "bytes": 237721536,
+          "download_bytes": 237513943
         }
       ],
-      "tracking_branch": "daemonarchy-1.1-package-baseline"
+      "tracking_branch": "daemonarchy-1.1.1"
     },
     "src": {
-      "revision": "3ceb5f150bc121f5e6a3e0cc8b289279338405a1",
+      "revision": "bdcfeac3e1cb8ce3f05c32d8a7ad3597deb48bdf",
       "branch": "main",
       "remote": "https://github.com/freebsd/freebsd-src.git",
       "depth": 1,
-      "archive_sha256": "28ba9936d5cffc52184c5810865ce8f2ea01cedfff6d735d19c3dfa169d0c09e",
-      "archive_bytes": 722068934,
-      "expanded_bytes": 1930674481,
-      "required_bytes": 6923256451,
+      "archive_sha256": "c8fe128bb83986ae8934f39d7fd91a45f525a8d01f7dd543f16868d4bf4e23af",
+      "archive_bytes": 722093349,
+      "expanded_bytes": 1930848921,
+      "required_bytes": 6923737608,
       "parts": [
         {
-          "package": "daemonarchy-src-checkout-000-20261012.g3ceb5f150bc1",
-          "file": "/usr/local/share/daemonarchy/checkouts/src/3ceb5f150bc121f5e6a3e0cc8b289279338405a1/part-000",
-          "sha256": "477f831094cc36970fe978f2f0f5f578f32d3f7796b90eaa02d216730c738f5b",
+          "package": "daemonarchy-src-checkout-000-20261017.gbdcfeac3e1cb",
+          "file": "/usr/local/share/daemonarchy/checkouts/src/bdcfeac3e1cb8ce3f05c32d8a7ad3597deb48bdf/part-000",
+          "sha256": "8e0a6dff14bfd7ee6bb7537349931c12d36332a568c38d0574a46d7bc578637f",
           "bytes": 536870912,
-          "download_bytes": 536727495
+          "download_bytes": 536740435
         },
         {
-          "package": "daemonarchy-src-checkout-001-20261012.g3ceb5f150bc1",
-          "file": "/usr/local/share/daemonarchy/checkouts/src/3ceb5f150bc121f5e6a3e0cc8b289279338405a1/part-001",
-          "sha256": "27ab7abff2746d99bcc1e83b056f7b806edb477f114156e1e293cfe5fd6ad11a",
-          "bytes": 185198022,
-          "download_bytes": 179984786
+          "package": "daemonarchy-src-checkout-001-20261017.gbdcfeac3e1cb",
+          "file": "/usr/local/share/daemonarchy/checkouts/src/bdcfeac3e1cb8ce3f05c32d8a7ad3597deb48bdf/part-001",
+          "sha256": "bcd5640eb5330ed7aff98dc5a5b059c704d450a9a2fcedfcdefaacb5c22fb3bb",
+          "bytes": 185222437,
+          "download_bytes": 180031416
         }
       ]
     }

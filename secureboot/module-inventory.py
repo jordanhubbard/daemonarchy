@@ -69,8 +69,8 @@ if __name__ == "__main__":
     parser.add_argument("--source-revision", required=True)
     parser.add_argument("--osversion", type=int, required=True)
     args = parser.parse_args()
-    if not re.fullmatch("[0-9a-f]{40}", args.source_revision) or args.osversion != 1600027:
-        parser.error("Use the selected full source revision and qualified osversion 1600027")
+    if not re.fullmatch("[0-9a-f]{40}", args.source_revision) or args.osversion != 1600028:
+        parser.error("Use the selected full source revision and qualified osversion 1600028")
     try:
         print(json.dumps(inventory(args), indent=2))
     except (ValueError, OSError, subprocess.CalledProcessError) as error:

@@ -38,8 +38,15 @@ identify the replaceable partition or free space explicitly.
 
 Press **Enter** on the debug screen to stop access and return to the debug shell.
 This closes the listener and its SSH connections and discards pairing
-approvals. Rebooting also discards them. Starting another debug session
-requires pairing again. Stopping access does not undo work the agent performed.
+approvals. From another local console, `daemonarchy-debug unpair` performs the
+same revocation, including terminating the listener's SSH connections.
+Rebooting stops the listener, but an unexpected reset can leave its session
+directory behind. Rescue option 2 then reads **Unpair remote debugging agent**:
+choose it to clear that stale state, then choose **Pair a remote debugging
+agent** to start again. Pairing again requires fresh approval. Unpairing checks
+the recorded process identity before signaling it, so a reused PID cannot
+terminate an unrelated process. Stopping access does not undo work the agent
+performed.
 
 ## For the agent
 

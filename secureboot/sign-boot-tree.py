@@ -103,7 +103,7 @@ def sign(args):
     if args.module_inventory is not None:
         receipt = json.loads(args.module_inventory.read_text())
         if (not isinstance(receipt, dict) or receipt.get("schema") != 1 or
-                receipt.get("osversion") != 1600027 or
+                receipt.get("osversion") != 1600028 or
                 not isinstance(receipt.get("modules"), dict)):
             raise ValueError("Unsupported release module inventory")
         for name, fingerprint in receipt["modules"].items():
