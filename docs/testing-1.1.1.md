@@ -115,7 +115,12 @@ baseline in each description. They are not current-baseline passing results.
 - Pending: refreshed full-tree testport and combined package build; native module
   inventory; newly signed boot payload and checkout repositories; ISO size and
   runtime audit; fresh installation/desktop matrix and upgrade/recovery tests;
-  public prerelease publication and asset-hash verification.
+  stable GitHub release publication and asset-hash verification.
+
+Loader and early-kernel network-debugging changes are deferred to 1.2. The
+1.1.1 kernel retains the selected upstream GENERIC configuration, including
+its existing NetGDB and network-dump support; no new source changes are made
+for network debugging in this release.
 
 Physical GPU/display/suspend, Bluetooth headset/HID, enterprise EAP and physical
 Windows preservation limitations remain open until new evidence closes them.
