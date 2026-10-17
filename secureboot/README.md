@@ -7,7 +7,7 @@ this directory. See
 [the evidence record](../docs/testing-1.1-secureboot.md) for qualification limits.
 
 `patches/module-policy.patch` applies to FreeBSD source revision
-`3ceb5f150bc121f5e6a3e0cc8b289279338405a1`. It adds the opt-in kernel option
+`bdcfeac3e1cb8ce3f05c32d8a7ad3597deb48bdf`. for the 1.1-rc2 refresh (native qualification pending). It adds the opt-in kernel option
 `DAEMONARCHY_MODULE_POLICY`, used together with `MAC_VERIEXEC`,
 `MAC_VERIEXEC_SHA256` and the `mac_veriexec_parser` device in a GENERIC-derived
 kernel. Build this from a separate source worktree; do not change the builder's

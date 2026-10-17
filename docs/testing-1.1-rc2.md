@@ -1,0 +1,56 @@
+# Daemonarchy 1.1-rc2 refresh
+
+Preparation started October 16, 2026. This record is in progress; rc2 has not
+been built, qualified or published yet. Earlier release qualification does not
+qualify the new kernel, package set or image.
+
+## Selected inputs
+
+The upstream tips were resolved once at the start of this refresh:
+
+- FreeBSD source: `bdcfeac3e1cb8ce3f05c32d8a7ad3597deb48bdf`,
+  OSVERSION `1600028` (previous image: `1600027`).
+- Upstream ports: `b1306594c4a601f98a3d28cbf6fc0569e218245f`.
+- Desktop source remains `v1.1.0`; compatibility source remains
+  `535e44bb6fa3e9b9f4fc3a870591688526279124` until a tested change requires
+  advancing them. The installer candidate is named `1.1-rc2`.
+
+The requested source tip is newer than the October 12 binary snapshot. A fresh
+world, GENERIC kernel, release sets, jail and kernel modules must be produced
+from this exact revision. The previous release sets, ports integration, signing
+outputs and test evidence are retained separately. The stable package feed is
+not a candidate publication target.
+
+## Upstream submissions
+
+All three branches start at the selected current upstream ports revision;
+previous fork merge history is excluded.
+
+- [PR #640](https://github.com/freebsd/freebsd-ports/pull/640): 19 supporting
+  ports, one commit per port, replacing closed #630.
+- [PR #641](https://github.com/freebsd/freebsd-ports/pull/641): current Omarchy
+  and Daemonarchy ports, replacing closed #635. Scripts and desktop content
+  are fetched from their source repositories as requested in the earlier review.
+- [PR #642](https://github.com/freebsd/freebsd-ports/pull/642): separate DRM
+  and NVIDIA DRM LinuxKPI configuration-header fixes. The downstream VirtIO
+  backport is excluded; upstream driver review remains
+  [drm-kmod #517](https://github.com/freebsd/drm-kmod/pull/517).
+
+These submissions start as drafts pending refreshed native validation. Historical
+native testport results are identified as results from the earlier package
+baseline in each description. They are not current-baseline passing results.
+
+## Checks and remaining work
+
+- All four Secure Boot source patches apply cleanly to the selected source tip.
+- The 23 portable signing/maintenance tests pass after updating the exact source
+  and OSVERSION guards. Native signing, enforcement, recovery and boot validation
+  on the new base are still required.
+- Pending: world/kernel and release-set build; matching builder/jail; refreshed
+  port parsing, checksums, testport and combined package build; native module
+  inventory; newly signed boot payload and checkout repositories; ISO size and
+  runtime audit; fresh installation/desktop matrix and upgrade/recovery tests;
+  public prerelease publication and asset-hash verification.
+
+Physical GPU/display/suspend, Bluetooth headset/HID, enterprise EAP and physical
+Windows preservation limitations remain open until new evidence closes them.

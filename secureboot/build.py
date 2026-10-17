@@ -15,7 +15,7 @@ import subprocess
 import tempfile
 import time
 
-BASE = "3ceb5f150bc121f5e6a3e0cc8b289279338405a1"
+BASE = "bdcfeac3e1cb8ce3f05c32d8a7ad3597deb48bdf"
 OPTIONS = [
     "WITH_BEARSSL=yes", "WITH_LOADER_VERIEXEC=yes",
     "WITH_LOADER_EFI_SECUREBOOT=yes", "WITHOUT_LOADER_VERIEXEC_VECTX=yes",

@@ -41,7 +41,7 @@ class Maintenance(unittest.TestCase):
         self.contents["boot/runtime.manifest"] = b"/boot/kernel.secure/kernel sha256=" + hashlib.sha256(
             self.contents["boot/kernel.secure/kernel"]).hexdigest().encode() + b"\n"
         self.metadata = dict(schema=1, loader_protocol=1, base_source=maintenance.BASE,
-                             osversion=1600027, stock_kernel_sha256=hashlib.sha256(b"stock").hexdigest(),
+                             osversion=1600028, stock_kernel_sha256=hashlib.sha256(b"stock").hexdigest(),
                              files={name: hashlib.sha256(data).hexdigest()
                                     for name, data in self.contents.items()})
 
