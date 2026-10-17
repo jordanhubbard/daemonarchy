@@ -538,9 +538,13 @@ For an existing test installation, select the versioned candidate URL in
 `sudo bash scripts/adopt-candidate-packages.sh` from this checkout. This
 reinstalls already-installed feed packages from Daemonarchy, including rebuilt
 dependencies that `pkg` can otherwise retain from their previous repository.
-It does not install unrelated build dependencies or replace private-repository
-overrides. Normal `pkg upgrade` follows that one-time transition; changing the
-FreeBSD base/kernel remains a separate coordinated operation.
+It first assigns those public packages to Daemonarchy, then uses normal
+dependency resolution so newly required official packages remain available.
+Unrelated build dependencies and private-repository overrides are preserved.
+The feed choice takes effect before installation; after a failed transaction,
+resolve the package error and rerun the helper. Normal `pkg upgrade` follows
+that one-time transition; changing the FreeBSD base/kernel remains a separate
+coordinated operation.
 
 
 1. Tag daemonarchy-desktop `v<version>`, set `DISTVERSION` in `x11-wm/daemonarchy` to it and run `make makesum`, then build the packages and the image as above, publish the packages, and run a test.

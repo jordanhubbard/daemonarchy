@@ -35,7 +35,9 @@ for name, origin, path in specs:
                     arch='freebsd:16:x86:64', files={path: {'sum':'1', 'uname':'root', 'gname':'wheel', 'perm':'0644'}})
     if name == 'omarchy':
         manifest['deps'] = {'candidate-runtime': {'origin':'devel/candidate-runtime', 'version':version}}
-    file = root / 'manifest.json'
+    if name == 'candidate-runtime' and version != '1.0':
+        manifest['deps'] = {'candidate-fetched': {'origin':'devel/candidate-fetched', 'version':'1.0'}}
+    file = root / ('manifest-' + name + '.json')
     file.write_text(json.dumps(manifest))
     subprocess.run(['pkg','create','-M',str(file),'-r',str(stage),'-o',str(root/'input/All')],check=True)
 PY
@@ -43,8 +45,8 @@ PY
 }
 create_packages 1.0
 mv "$work/input/All/candidate-runtime-1.0.pkg" "$work/official/"
-rm "$work/input/All/omarchy-1.0.pkg" "$work/input/All/candidate-kernel-1.0.pkg" \
-  "$work/input/All/candidate-fetched-1.0.pkg"
+mv "$work/input/All/candidate-fetched-1.0.pkg" "$work/official/"
+rm "$work/input/All/omarchy-1.0.pkg" "$work/input/All/candidate-kernel-1.0.pkg"
 pkg repo -q "$work/official"
 create_packages 2.0
 if TAG=packages-16-amd64 PACKAGES_DIR="$work/input" BUILT_PACKAGES_FILE="$work/built" \
@@ -90,10 +92,32 @@ upgrade_pkg install -y -r FreeBSD candidate-runtime
 [[ $(upgrade_pkg query '%v %R' candidate-runtime) == '1.0 FreeBSD' ]]
 candidate_adopt_installed_packages upgrade_pkg
 [[ $(upgrade_pkg query '%v %R' candidate-runtime) == '2.0 Daemonarchy' ]]
+[[ $(upgrade_pkg query '%v %R' candidate-fetched) == '1.0 FreeBSD' ]]
 if upgrade_pkg info -e omarchy; then echo 'Installed an unrelated feed package during adoption' >&2; exit 1; fi
+# Rebuilt metadata can retain the official package's version. Force the
+# candidate identity even when both repositories offer the same version.
+mkdir "$work/old-official"
+mv "$work/official/candidate-runtime-1.0.pkg" "$work/old-official/"
+printf official-2.0 >"$work/stage-candidate-runtime/usr/local/share/feed-test/runtime"
+pkg create -M "$work/manifest-candidate-runtime.json" -r "$work/stage-candidate-runtime" -o "$work/official"
+pkg repo -q "$work/official"
+upgrade_pkg update -f -r FreeBSD
+upgrade_pkg install -f -y -r FreeBSD candidate-runtime
+[[ $(upgrade_pkg query '%v %R' candidate-runtime) == '2.0 FreeBSD' ]]
+[[ $(cat "$work/upgrade-root/usr/local/share/feed-test/runtime") == official-2.0 ]]
+candidate_adopt_installed_packages upgrade_pkg
+[[ $(upgrade_pkg query '%v %R' candidate-runtime) == '2.0 Daemonarchy' ]]
+[[ $(cat "$work/upgrade-root/usr/local/share/feed-test/runtime") == 2.0 ]]
 upgrade_pkg annotate -y -M candidate-runtime repository Private
 if candidate_adopt_installed_packages upgrade_pkg; then echo 'Replaced a private repository override' >&2; exit 1; fi
 [[ $(upgrade_pkg query '%v %R' candidate-runtime) == '2.0 Private' ]]
+upgrade_pkg install -y -r Daemonarchy -r FreeBSD omarchy
+upgrade_pkg add -f "$work/old-official/candidate-runtime-1.0.pkg"
+upgrade_pkg annotate -y -M candidate-runtime repository Private
+candidate_adopt_installed_packages upgrade_pkg
+[[ $(upgrade_pkg query '%v %R' candidate-runtime) == '1.0 Private' ]]
+[[ $(cat "$work/upgrade-root/usr/local/share/feed-test/runtime") == 1.0 ]]
+[[ $(upgrade_pkg query '%v %R' omarchy) == '2.0 Daemonarchy' ]]
 target_pkg install -y omarchy
 [[ $(target_pkg query '%v' candidate-runtime) == 2.0 ]]
 [[ $(target_pkg query '%R' omarchy) == Daemonarchy ]]
@@ -112,4 +136,4 @@ target_pkg update -f
 target_pkg upgrade -y
 [[ $(target_pkg query '%v' omarchy) == 3.0 && $(target_pkg query '%v' candidate-runtime) == 3.0 ]]
 [[ $(cat "$work/root/usr/local/share/feed-test/runtime") == 3.0 ]]
-echo 'PASS: rebuilt dependency inclusion, kernel/fetched exclusion, stable guard, older official dependency upgrade, signed resolution and subsequent upgrades'
+echo 'PASS: rebuilt dependency inclusion, kernel/fetched exclusion, stable guard, official-only dependency resolution, same-version payload adoption, private override preservation and subsequent upgrades'

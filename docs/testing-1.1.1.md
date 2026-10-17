@@ -109,7 +109,9 @@ baseline in each description. They are not current-baseline passing results.
   yet and must be regenerated if package QA advances the ports pin.
 - The candidate dependency-feed fixture also passes on the new OSVERSION
   `1600028` base, including older official dependency adoption and preservation
-  of private repository overrides.
+  of private repository overrides. It additionally verifies newly required
+  official-only dependencies, replacement of different same-version payloads,
+  and preservation of an older private dependency during a mixed transaction.
 - Pending: refreshed full-tree testport and combined package build; native module
   inventory; newly signed boot payload and checkout repositories; ISO size and
   runtime audit; fresh installation/desktop matrix and upgrade/recovery tests;
