@@ -87,9 +87,18 @@ integrity checks passed; outstanding qualification is not claimed as passing. Th
   enforced UEFI boot plus its embedded boot-environment mount-policy fixture.
 - The physical HP passed a coordinated base/kernel/package upgrade, rollback to
   its original base, return to 1.1.1, and AMD Wayland greeter rendering. An
-  authenticated user desktop remains pending. Four full VM installation/desktop
-  runs use the preceding image and are component evidence, not full installations
-  of the final ISO; see the qualification record for their current results.
+  authenticated user desktop remains pending. All four preceding-image VM
+  installation/desktop configurations passed, including actual Chromium and
+  OctoPkg UI checks, matching boot/module profiles and optional source/ports
+  checkouts in the UEFI plain case. A controller-only module-alias assertion was
+  corrected and the affected installed system passed its actual profile/GUI
+  recheck; the original failure remains recorded.
+- All four disposable VMs also passed actual one-time clone boots and GUI checks
+  after explicitly correcting their original root to `canmount=noauto`.
+  The original root stayed inactive, devfs remained visible and the persistent
+  original boot fallback remained unchanged. These preceding-image component and
+  corrected-property results are not full installations from the final ISO; see
+  [the exact scopes and receipts](docs/testing-1.1.1.md#actual-installation-desktop-and-corrected-root-clone-results).
 - The operator authorized publication without further physical-hardware evidence.
   Existing hardware failures and untested behavior remain limitations, including
   the MacBook Pro's repeated resets during package installation and its missing

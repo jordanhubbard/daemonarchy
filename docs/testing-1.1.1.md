@@ -1,11 +1,14 @@
 # Daemonarchy 1.1.1 refresh
 
-Preparation started October 16, 2026. The corrected final ISO has passed its
-native audit; verified asset publication and installation qualification continue. The selected
-world, kernels, release sets and source packages have built and passed package QA.
-Signed application and checkout feeds are public and verified. The final image passed its native payload audit and asset integrity checks;
-final installation/desktop qualification remains in progress. Earlier release qualification does not qualify
-the new kernel, package set or image.
+Preparation started October 16, 2026. The corrected final `25c3354` ISO passed
+its native audit, artifact integrity checks and actual BIOS/enforced-UEFI live
+boot with the embedded storage fixture. The selected world, kernels, release sets
+and source packages built and passed package QA; signed application and checkout
+feeds are public and verified. All four full installation/desktop component
+configurations and subsequent corrected-root clone boots passed using the
+preceding `250db6f` image. Full fresh installations from the final `25c3354` ISO
+were not rerun; the operator waived that publication gate. Earlier release
+qualification does not qualify this new kernel, package set or image.
 
 ## Release authorization
 
@@ -25,9 +28,11 @@ retry had no failed or skipped ports. All 24 isolated native testport checks
 then passed, followed by the final combined repository pass and actual external
 module inventory generation. The qualification exit status is zero and its
 recorded ports revision matches `f7d7ee897405dcb8ce87e674588a4e1b3bfba00e`.
-The signed application feed is published and independently verified from GitHub;
-final image installation/desktop qualification remains outstanding. The operator
-subsequently authorized production publication without waiting for that matrix.
+The signed application feed is published and independently verified from GitHub.
+The four-mode full installation/desktop matrix uses the preceding `250db6f`
+image, followed by actual clone boots with the corrected root property. It was
+not repeated from the final `25c3354` ISO; the operator authorized production
+publication without requiring that additional matrix.
 
 ## Recovery and diagnostics changes
 
@@ -201,9 +206,11 @@ It excludes the release's VirtIO patch. None of these submissions is claimed mer
   GitHub asset names, sizes and SHA-256 digests match staging. Native clients
   verified the signed catalogue, fetched all 22 selected root archives from
   GitHub, and rejected an unrelated signing key. The old stable feed is unchanged.
-- Outstanding: final installation/desktop matrix and complete upgrade/recovery evidence.
-  The operator authorized publication without waiting for these results; they are
-  not counted as passing checks.
+- Not run: a complete four-mode installation/desktop matrix from the final
+  `25c3354` ISO. The completed `250db6f` component matrix and corrected-property
+  clone boots, final-ISO live/storage tests and physical HP upgrade/rollback
+  results below retain their separate scopes. Publication was authorized without
+  another full final-ISO matrix; that missing matrix is not counted as passing.
 - Published: stable installer release with all six asset sizes and SHA-256 digests
   checked against the audited payloads.
 
@@ -232,13 +239,13 @@ with firmware-only output was retired and retained separately. Both successful
 VMs powered off cleanly. The four longer installation/desktop runs below use
 the preceding image and qualify their actual image and unchanged components.
 
-## Superseded image and continuing tests, October 18 UTC
+## Superseded image: completed component matrix, October 18 UTC
 
-The image below is superseded before publication by the boot-environment fix
-described next. Its ongoing VM results qualify these particular components and
-image, not the forthcoming corrected installer ISO.
+The image below was superseded before publication by the boot-environment fix
+described next. Its completed VM results qualify this particular image and its
+unchanged components, not a full installation from the corrected final ISO.
 
-The corrected image was built from installer commit
+This earlier image was built from installer commit
 `250db6f2b586c74e80d3c3ebf27e4b28793ce731`, including the graphics attachment
 guard. Its native public-image audit passed: required tools and installation
 payloads, versioned signed-feed selection, Python runtime imports, no private
@@ -255,7 +262,83 @@ The signed boot bundle SHA-256 is
 The four fresh BIOS/enforced-UEFI, plain/encrypted installation and desktop
 runs use this exact ISO. The earlier `ee422ce` image and partial runs were
 superseded before publication when the MacBook exposed false graphics readiness;
-they are retained as partial evidence and do not qualify this final image.
+they are retained as partial evidence, separate from both the completed
+`250db6f` component results and the final `25c3354` ISO checks.
+
+### Actual installation, desktop and corrected-root clone results
+
+All four configurations completed package installation, installed-file integrity
+verification, pool export, reboot and native installed-system checks. Actual
+Hyprland login, keyboard and absolute-pointer input, a Chromium-rendered test page
+and the OctoPkg interface passed in all four configurations. Plain installations
+used SDDM password login; encrypted installations used the tested GELI unlock and
+autologin path.
+
+| Configuration | Initial installation/check duration | Actual desktop/profile result | Corrected-root clone boot and desktop |
+| --- | --- | --- | --- |
+| Production-enforced UEFI, plain ZFS | 3,583 s | PASS, including both optional checkouts | PASS, 51 s |
+| Production-enforced UEFI, GELI/ZFS | 3,387 s, plus 69 s installed-system recheck | PASS after correcting the controller-only module-alias assertion described below | PASS, 67 s |
+| BIOS, plain ZFS | 3,382 s | PASS | PASS, 50 s |
+| BIOS, GELI/ZFS | 3,407 s | PASS | PASS, 67 s |
+
+The initial durations include roughly 5 GiB of dependency downloads per guest.
+Every configuration verified kernel and userland OSVERSION `1600028`, kernel
+identity `bdcfeac3e1cb`, desktop package `1.1.1,1`, the exact source/ports catalogue
+pins and the signed `packages-16-amd64-1.1.1` feed. The UEFI plain installation
+also materialized both optional checkouts and verified their full revisions,
+depth-one history, cleanliness, ownership and tracking configuration. Enforced
+UEFI verified the active protected kernel, loaded/active/enforce/locked module
+policy, all 13 managed boot-file hashes and 1,879 installed module paths against
+the production bundle and signed runtime manifest. Three module paths are
+aliases; their resolved regular targets must remain within `/boot`, appear in
+the signed manifest and match its hashes. BIOS boots used the normal GENERIC
+kernel without the enforced module policy.
+
+The first UEFI encrypted controller run returned one failed check before its GUI
+exercise: its additional module-coverage assertion treated
+`/boot/kernel/if_igbv.ko` as an unsigned regular file. The exact release kernel set
+contains it as a symlink to `if_em.ko`; the signing inventory intentionally records
+regular files rather than duplicate alias names. Installation, reboot and the
+main installed-system checks had already passed. The controller was corrected
+to verify each alias's protected target and bytes, then the same installed system
+passed the full additional profile and actual GUI checks in 69 seconds. No image,
+package or signing-policy change was required. The original failed assertion and
+its diagnostic rerun remain retained alongside the successful corrected receipt.
+
+After each initial desktop/profile pass, a separate authorized test explicitly
+changed only that disposable VM's original `ROOT/default` to `canmount=noauto`,
+matching the final installer policy. It recorded the original properties,
+created a distinct `qa-noauto-250-<mode>` boot environment and activated it for one
+boot. Each actual clone boot verified both roots retained `noauto`, the original
+root was not mounted, `/dev/null` was visible, kernel/userland identities still
+matched, and enforced policy remained active where applicable. All four clones
+then passed the actual keyboard/pointer/Chromium/OctoPkg GUI exercise again.
+The persistent original `bootfs` fallback remained unchanged; this test did not
+perform an additional boot back into that fallback. Both GELI clone boots used
+the known disposable-test passphrase through the loader's actual prompt.
+
+These are actual installed-system and corrected-property clone results from the
+`250db6f` image. They do not assert that all four configurations installed from
+the final `25c3354` ISO. The exact final ISO's separate live-boot/storage-fixture
+results above and the physical HP upgrade/rollback results below retain their
+own scopes. All successful VM runs powered off, and their disks, firmware state,
+serial logs, fixtures and screenshots remain retained.
+
+The release QA workspace contains the following receipts:
+
+- `matrix-250db6f/component-qualification.json` combines the four component
+  results without overwriting the UEFI encrypted run's original exit status.
+- `matrix-250db6f/matrix-orchestration/` retains the original per-mode results;
+  `matrix-250db6f/initial-recheck-uefi-geli/` and
+  `matrix-250db6f/initial-recheck-uefi-geli-v2/` retain the
+  diagnostic failure and successful additional-profile/GUI recheck.
+- `matrix-250db6f/be-policy/results.json` records all four actual clone passes;
+  each mode retains `clone-boot-proof.txt`, `desktop-evidence.json`, serial/QEMU
+  logs and `desktop-ready.png`, `desktop-input.png`, `desktop-browser.png` and
+  `desktop-packages.png` captured from the actual compositor.
+- `final-iso-storage-proof-25c3354.json` records the final ISO, embedded installer,
+  native fixture, private CIDATA and serial-log hashes for the separate BIOS and
+  enforced-UEFI live-boot/storage tests.
 
 Loader and early-kernel network-debugging changes are deferred to 1.2. The
 1.1.1 kernel retains the selected upstream GENERIC configuration, including
