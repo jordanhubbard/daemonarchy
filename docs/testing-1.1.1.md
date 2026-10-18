@@ -261,10 +261,13 @@ stays inactive and devfs remains visible. All disposable datasets and devices
 were cleaned; no global mount-all command or unrelated pool was modified.
 
 The HP recovered its original OS1600026 default after the operator power-cycled
-it. Its candidate remains intact. Correcting the original root's mount policy
-and obtaining actual new-system boot evidence are separate from the offline
-package/signature checks already passed. No EFI-loader replacement is justified
-by the current evidence.
+it. Changing only that original root's mount policy left the mounted system
+intact. A second instrumented trial then reached SSH in 37 seconds with both
+kernel and userland at OS1600028, source `bdcfeac3e1cb`, and the intended candidate
+root. Checkpoints before ZFS mounting, after it and after SSH all confirmed that
+root and intact devfs. The old default remains the persistent fallback. Native
+desktop finalization and graphics acceptance are separate checks; no EFI-loader
+replacement was needed.
 
 ## Known dependency advisories
 

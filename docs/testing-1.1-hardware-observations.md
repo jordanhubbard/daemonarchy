@@ -212,5 +212,15 @@ evidence was requested. Neither successful new-system boot nor a boot/rollback
 cause is established. Native desktop and actual rollback tests remain pending;
 offline preparation is not a physical-upgrade pass.
 
+After the operator power-cycled the apparent hang, the HP returned to its
+original OS1600026 default. Inspection and a native isolated fixture exposed
+the original root's automatic-mount policy, which can cover a selected clone
+and its devfs. After setting that original root to `canmount=noauto`, an
+instrumented second trial booted the actual OS1600028 kernel and userland in
+the intended 1.1.1 environment. Before/after-ZFS and after-SSH checkpoints
+confirmed root continuity and intact devfs; networking and SSH returned within
+37 seconds. EFI loaders and firmware settings remained unchanged. Native
+desktop finalization, rendering and subsequent rollback checks remain separate.
+
 The operator permits release publication with physical qualification limitations
 retained in the notes. That authorization does not mark these tests as passed.
