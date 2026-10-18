@@ -1,7 +1,12 @@
 # 1.1 source and ports refresh preparation
 
+Historical 1.1 development/candidate evidence. Revisions, checksums and results
+below apply to the named artifact and date; they do not qualify the new
+[1.1.1 source/package set](testing-1.1.1.md). Follow that record for current
+preparation and publication status.
+
 Started 2026-10-15; the preparation checkpoints below are historical. The
-preview.13 build and its current qualification status are recorded at the end.
+preview.13 build and later October 16 integration checkpoints are recorded at the end.
 
 - FreeBSD CURRENT source: `f4fe4c3d17f9bb523981b88a01d7c0f0c0f00c36`.
 - Upstream ports: `d886099247746bbd127776f779ffe5ea4d12a4e5`.

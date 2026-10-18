@@ -60,3 +60,11 @@ FreeBSD GIO process launches with quoted options and URLs containing percent,
 quote, dollar and backtick characters. Package manifests and full installed desktop
 checks are separate release gates; passing these tests alone is not a GUI or
 Linuxulator acceptance claim.
+
+
+The 1.1.1 source/ports refresh retains this policy. Its installer verifies
+package-file integrity and dependencies before recording installation success;
+its adoption helper checks the actual base and kernel against candidate
+OSVERSION metadata before changing repository identities. These checks do not
+convert an older base to the new snapshot. See [the qualification record](testing-1.1.1.md)
+for that release's exact package, image and runtime results.

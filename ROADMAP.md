@@ -2,12 +2,40 @@
 
 ## 1.1.1 refresh
 
-A new candidate is being prepared from pinned current FreeBSD source and ports.
-Upstream submissions #640, #641 and #642 are drafts pending refreshed native
-validation. See [the 1.1.1 preparation and qualification record](docs/testing-1.1.1.md).
-The new base and image are not yet qualified or published.
+The next requested stable release is **1.1.1**. Its source is
+`bdcfeac3e1cb8ce3f05c32d8a7ad3597deb48bdf` (OSVERSION `1600028`), with ports
+`f7d7ee897405dcb8ce87e674588a4e1b3bfba00e` on `daemonarchy-1.1.1`.
+Matching world, kernel, jail and driver builds replace the older OSVERSION
+`1600027` set. The new versioned application feed is
+`packages-16-amd64-1.1.1`; the unversioned stable feed stays unchanged.
+The [preparation and qualification record](docs/testing-1.1.1.md) is the authority
+for completed checks and publication status. Component boot results alone do
+not qualify the final ISO.
 
-## 1.1.0
+The installer work includes Pair/Unpair for live or stale remote sessions,
+automatic rescue-menu redraw after late boot probes, package-file integrity
+checking before success, and bounded [continuous diagnostics](docs/remote-agent-debug.md#continuous-diagnostics).
+The adoption helper independently checks both kernel and userland versions
+before selecting rebuilt packages; `pkg install -y` itself accepts a newer-OS
+package and is not that guard. Existing base migrations must preserve a rollback
+boot environment and keep drivers on the new snapshot.
+
+Upstream [#640](https://github.com/freebsd/freebsd-ports/pull/640),
+[#641](https://github.com/freebsd/freebsd-ports/pull/641) and
+[#642](https://github.com/freebsd/freebsd-ports/pull/642) remain draft reviews
+pending refreshed native validation. Upstream merge is separate from shipping
+the qualified fork.
+
+The operator authorized release publication with the remaining physical,
+Bluetooth, enterprise Wi-Fi and bhyve limitations disclosed. Those limitations
+remain open qualification work. The requested physical `daemon.local` upgrade
+and MacBook investigation continue in parallel; neither is a passing result
+until its actual evidence is recorded.
+
+## 1.1.0 candidate: retained scope and evidence
+
+The table and checks below describe the October 16 candidate, not the new
+1.1.1 source/package set. Their outstanding qualification work carries forward.
 
 Daemonarchy **1.1.0-rc.1** is public; the **1.1.0** stable promotion remains a
 draft. On October 16 the operator approved stable publication after the
@@ -17,7 +45,7 @@ qualification work, not passing results.
 All four final QEMU installation/desktop configurations and production-key
 maintenance/recovery passed.
 
-Existing 1.0 installations must remain upgradeable through `pkg upgrade`.
+Existing 1.0 application packages remain upgradeable through their compatible feed. `pkg upgrade` does not migrate the FreeBSD base/kernel; 1.1.1 requires its matching base and drivers before changing to the new feed.
 New installation modes are optional and must preserve the existing whole-disk
 installation path.
 
@@ -47,8 +75,7 @@ Daemonarchy publishes its packages through its own [signed package repository](h
 
 Upstream reviews: [supporting ports #630](https://github.com/freebsd/freebsd-ports/pull/630)
 and [desktop ports #635](https://github.com/freebsd/freebsd-ports/pull/635).
-Both original submissions were closed without merging on October 15. Updated
-submissions are being prepared separately; 1.1 ships the qualified fork.
+Both original submissions were closed without merging on October 15. Their refreshed replacements are #640 and #641, with the LinuxKPI header fix in #642; 1.1 ships the qualified fork.
 
 ### Delivery order
 
@@ -73,7 +100,7 @@ submissions are being prepared separately; 1.1 ships the qualified fork.
 - [ ] Existing installations upgrade successfully; failed updates remain recoverable. [Exact final application-package upgrade, reboot, ZFS rollback and return from 1.0.1 passed](docs/testing-1.1-upgrade.md), as did development-key signed boot maintenance, injected driver failure and rollback; production-authority GELI/ZFS signed maintenance, altered-candidate rejection, rollback and graphical return also passed; physical upgrade checks remain unqualified.
 - [x] Documentation states supported GPUs, hypervisors, Bluetooth profiles,
       EAP methods, and boot/install combinations precisely.
-- [x] Candidate package repository, ISO, checksum, public certificate and release notes verified together; all 26 package-feed and six installer asset hashes/sizes match. Stable promotion remains subject to the open gates above.
+- [x] Candidate package repository, ISO, checksum, public certificate and release notes verified together; all 26 package-feed and six installer asset hashes/sizes match. The stable 1.1.0 promotion remains a draft. Operator-approved publication deferrals do not close the unchecked qualification items above.
 
 Feature status and evidence belong here as work progresses. If a platform
 dependency prevents a feature from shipping, record the blocker and agree on
@@ -154,5 +181,16 @@ source-only estimate. Separate installer selections and the runtime
 pass. A complete unencrypted UEFI bhyve ISO installation and reboot with both
 options selected also passed on bare metal, including post-boot checkout
 verification; see the [test record](docs/testing-1.1-live-checkouts.md).
-Other boot modes and runtime-only installation remain pending. Repeat sizing
-after the ports refresh and FreeBSD CURRENT source sync.
+Later 1.1 QEMU results are recorded in [the final candidate record](docs/testing-1.1-final-image.md). The refreshed 1.1.1 sizes and public catalogue are recorded in [the sizing report](docs/optional-source-sizing.md); its final-image checks remain separate.
+
+
+## 1.2: earlier network debugging
+
+Loader and early-kernel network-debugging changes are deferred to **1.2**.
+The selected GENERIC already includes DEBUGNET, NETDUMP and NETGDB; those
+facilities require a supported, initialized wired NIC and do not provide a
+loader-to-early-kernel transport. A future source fork and explicitly selected
+debug profile need separate design, privacy/trust boundaries, matching symbols,
+and native transport/crash qualification. None of those new source changes is
+part of 1.1.1. Its approved-session SSH diagnostics retain evidence while
+userland/networking works and explicitly report the limits after a hard reset.

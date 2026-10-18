@@ -1,5 +1,10 @@
 # Native desktop application checks, 2026-10-15
 
+Historical 1.1 development/candidate evidence. Revisions, checksums and results
+below apply to the named artifact and date; they do not qualify the new
+[1.1.1 source/package set](testing-1.1.1.md). Follow that record for current
+preparation and publication status.
+
 These checks used a disposable snapshot of the preview.11 UEFI installation,
 upgraded to `omarchy-4.0.4_14`. A temporary Xorg/scfb/Xfce session provided a
 visible test surface in QEMU. Xfce is not a Daemonarchy session or a proposed

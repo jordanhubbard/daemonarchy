@@ -25,6 +25,7 @@ debug_activity() {
 
 debug_session() {
   [[ -f $state/active ]] || fail 'Remote access has stopped.'
+  start_observer
   # ForceCommand runs only after successful authentication, including reconnects.
   if mkdir "$state/connected" 2>/dev/null; then
     write_progress 'Agent connected successfully. Remote debugging is under way.'
@@ -34,6 +35,34 @@ debug_session() {
     internal-sftp) exec /usr/libexec/sftp-server ;;
     *) exec /bin/sh -c "$SSH_ORIGINAL_COMMAND" ;;
   esac
+}
+
+start_observer() {
+  local observer=${self%/*}/debug-observe generation
+  [[ -x $observer ]] || return 0
+  generation=$(cat "$state/generation")
+  if ! lockf -k -s -t 5 "$state/observer.lock" "$self" _observe-start "$generation"; then
+    echo 'Remote debug: diagnostics collector failed; inspect observer-startup.log or run snapshot.' >&2
+  fi
+}
+
+create_observer() {
+  local expected=$1 observer=${self%/*}/debug-observe pid='' command=''
+  [[ -f $state/active && -f $state/generation && $(cat "$state/generation") == "$expected" ]] || return 1
+  if [[ -f $state/observer.pid ]]; then IFS= read -r pid <"$state/observer.pid" || true; fi
+  if [[ $pid =~ ^[0-9]+$ ]] && ((pid > 1)); then
+    command=$(ps -p "$pid" -o command= 2>/dev/null) || command=''
+    if [[ $command == *"$observer collect $state $expected" ]] && kill -0 "$pid" 2>/dev/null; then
+      return 0
+    fi
+  fi
+  # A dead collector can be restarted; a reused PID is never signaled.
+  umask 077
+  nohup "$observer" collect "$state" "$expected" </dev/null >>"$state/observer-startup.log" 2>&1 &
+  pid=$!
+  printf '%s\n' "$pid" >"$state/observer.pid"
+  sleep 1
+  kill -0 "$pid" 2>/dev/null
 }
 
 show_progress() {
@@ -265,6 +294,8 @@ Start console-approved remote access after networking works:
 
 From an approved SSH connection, report brief progress and explicit completion:
   daemonarchy-debug activity 'Checking Wi-Fi connectivity'
+  daemonarchy-debug observe    # stream kernel, process and system diagnostics
+  daemonarchy-debug snapshot   # one bounded read-only system snapshot
   daemonarchy-debug done
 
 Disconnecting SSH does not mark the debugging task complete. Completion leaves
@@ -294,15 +325,21 @@ debug_shell() {
 }
 
 case ${1:-shell} in
+  _observe-start) [[ $# == 2 && $(id -u) == 0 ]] || exit 1; create_observer "$2" ;;
   _start) [[ $# == 2 ]] || exit 1; create_server "$2" ;;
   _stop) [[ $# == 2 && $(id -u) == 0 ]] || exit 1; stop_session "$2" ;;
   authorize) [[ $# == 4 ]] || exit 1; authorize "$2" "$3" "$4" ;;
   session) [[ $# == 1 ]] || exit 1; debug_session ;;
   activity) shift; debug_activity "$@" ;;
+  observe|snapshot)
+    [[ $# == 1 && $(id -u) == 0 && -f $state/active ]] || fail 'Requires an active root debug session.'
+    start_observer
+    action=stream; [[ $1 != snapshot ]] || action=snapshot
+    exec "${self%/*}/debug-observe" "$action" "$state" ;;
   done) [[ $# == 1 ]] || fail 'Usage: remote-debug done'; write_progress 'Remote debugging complete. It is OK to stop this session (press Enter).' ;;
   shell|menu) debug_shell ;;
   listen) [[ $# -le 2 ]] || fail 'Usage: remote-debug listen [port]'; debug_listen "${2:-2222}" ;;
   unpair) [[ $# == 1 ]] || fail 'Usage: remote-debug unpair'; debug_unpair ;;
   help) debug_help ;;
-  *) fail 'Usage: remote-debug [shell | listen [port] | unpair | activity DESCRIPTION | done | help]' ;;
+  *) fail 'Usage: remote-debug [shell | listen [port] | unpair | observe | snapshot | activity DESCRIPTION | done | help]' ;;
 esac

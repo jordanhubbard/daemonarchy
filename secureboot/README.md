@@ -4,10 +4,15 @@ This directory implements the 1.1 manual-enrollment boot profile and its
 authoring tools. The candidate integrates public signed artifacts into the
 installer; private keys and firmware-enrollment operations do not belong in
 this directory. See
-[the evidence record](../docs/testing-1.1-secureboot.md) for qualification limits.
+[the retained 1.1 evidence](../docs/testing-1.1-secureboot.md) and
+[current 1.1.1 qualification record](../docs/testing-1.1.1.md) for separate
+snapshot results and limits.
 
 `patches/module-policy.patch` applies to FreeBSD source revision
-`bdcfeac3e1cb8ce3f05c32d8a7ad3597deb48bdf`. for the 1.1-rc2 refresh (native qualification pending). It adds the opt-in kernel option
+`bdcfeac3e1cb8ce3f05c32d8a7ad3597deb48bdf` for the **1.1.1** refresh
+(OSVERSION `1600028`). The existing four Secure Boot patches are retained;
+new loader/early-kernel network debugging is deferred to 1.2.
+The module-policy patch adds the opt-in kernel option
 `DAEMONARCHY_MODULE_POLICY`, used together with `MAC_VERIEXEC`,
 `MAC_VERIEXEC_SHA256` and the `mac_veriexec_parser` device in a GENERIC-derived
 kernel. Build this from a separate source worktree; do not change the builder's

@@ -1,5 +1,10 @@
 # Final 1.1 image qualification
 
+Historical 1.1 development/candidate evidence. Revisions, checksums and results
+below apply to the named artifact and date; they do not qualify the new
+[1.1.1 source/package set](testing-1.1.1.md). Follow that record for current
+preparation and publication status.
+
 The production-signed candidate built on 2026-10-16 is
 `daemonarchy-1.1.0-amd64.iso`, 2,098,395,136 bytes. Its SHA-256 is
 `891fc6e6ee537bf92aecf035d4e855b8d526aeaf9c27be80166d689289c3acd9`.
@@ -8,8 +13,9 @@ independently reports the same ISO digest and size; all six installer asset
 digests and sizes matched their local public inputs before publication. It is
 49,088,512 bytes below the 2 GiB image/release-asset limit.
 
-Published first as `daemonarchy-1.1.0-rc.1`, then promoted unchanged to
-`daemonarchy-1.1.0` with explicit operator approval of the documented gaps.
+Published as `daemonarchy-1.1.0-rc.1`. Stable promotion to
+`daemonarchy-1.1.0` was approved but remains a GitHub draft at the 1.1.1
+preparation checkpoint; it was not completed.
 Remaining hardware qualification stays open in [ROADMAP.md](../ROADMAP.md).
 
 ## Inputs
@@ -38,7 +44,7 @@ The versioned application feed `packages-16-amd64-1.1.0-candidate` contains
 22 packages. All 26 GitHub assets (packages and metadata) matched native/local
 hashes and sizes. A retained FreeBSD client independently verified its signature,
 exact final application versions and both application-package download hashes.
-The same signed packages are promoted to the stable default feed.
+This verifies the versioned candidate feed, not promotion of the unversioned stable feed.
 
 The ISO uses public signed artifacts only. Signing keys remained on the
 protected authoring host. Post-build live-file, signature, stock-kernel and

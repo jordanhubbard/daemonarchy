@@ -5,14 +5,18 @@ to an agent running on another computer. Boot the Daemonarchy live USB,
 enable debug mode, and approve the agent's temporary SSH key. No installation
 starts automatically and debug mode does not select or format a target disk.
 
-This feature is in the 1.1 development installer; the published 1.0.1 image
-and preview.2 do not contain the menu option.
+The 1.1 installer introduced pairing. The 1.1.1 refresh adds Pair/Unpair recovery
+and continuous diagnostics. Older images need the matching helpers copied in
+before these newer commands are available; installing a newer kernel is not
+required for these debugging tools.
 
 ## At the machine
 
-1. Write the remote-debug preview ISO to a USB stick and boot it using the
-   firmware's one-time boot menu. The preview currently requires Secure Boot
-   to be disabled. Use Ethernet initially where possible.
+1. Write the selected release ISO to a USB stick and boot it using the
+   firmware's one-time boot menu. Follow that release's
+   [Secure Boot instructions](secure-boot.md); do not assume an old preview's
+   firmware requirements apply to a newer signed image. Use Ethernet initially
+   where possible.
 2. Press Return at the welcome screen and choose **Remote agent debug**.
    This opens a root CLI immediately, even with no network connection. The
    network configuration screen also offers **Open debug shell**.
@@ -82,6 +86,85 @@ command output. Closing an individual SSH connection does not mark completion.
 The completion message says it is OK to stop, but leaves access enabled until
 the operator presses Enter or Ctrl-C. These feedback commands require an image
 newer than preview.13; on older images report the same states directly.
+
+## Continuous diagnostics
+
+In 1.1.1, the first approved SSH connection starts a read-only diagnostics
+collector for that pairing. It captures an initial kernel-message snapshot,
+then kernel-message differences and recent `/var/log/messages` output at roughly
+two-second intervals. Every fifth cycle also records process IDs, parent IDs,
+owners, elapsed times, states and wait channels; memory counters, ZFS cache and
+pool state, storage activity, loaded modules, named CPU temperature sensors,
+AC/battery state, and the agent's current activity. Where Python 3 and the devd broadcast socket
+are available, a separate passive reader also records device/ACPI events; it
+does not replace devd or take events away from other clients. Otherwise the
+missing event capability is recorded explicitly. Process command arguments,
+environment variables, key material and password databases are not collected.
+Unavailable sensors and failed probes are recorded with their exit status.
+Individual external probes have a three-second timeout; a slow probe can delay
+the next sample. This is periodic observation, not an instruction-level trace.
+
+The collector starts only after approved authentication, not at boot or when
+the console merely opens a shell. Its private target logs are
+`/var/log/daemonarchy-debug/observer.log` and `observer.previous.log`, each at
+most 4 MiB. Passive device events use `events.log` and
+`events.previous.log`, also at most 4 MiB each. An individual sample is capped at 1 MiB with an explicit truncation
+record. Logs survive an ordinary installed-system reboot; the live ISO's
+memory-backed logs do not. Unpairing ends collection after its current bounded
+cycle; a previous collector cannot attach to a newly paired session. Reconnecting
+restarts a failed collector. Startup errors remain in
+`/var/run/daemonarchy-remote-debug/observer-startup.log` until unpairing.
+
+Before any operation that could reset the target, retain a stream **on the
+controlling computer**. From an approved shell, these commands are available:
+
+```sh
+daemonarchy-debug snapshot    # one read-only state snapshot
+daemonarchy-debug observe     # initial state and continuously followed logs
+```
+
+For a retained capture, create an executable SSH wrapper on the controller
+using the approved temporary key, strict host-key checking and the verified
+`known_hosts` file. The wrapper must forward its arguments to SSH, for example:
+
+```sh
+#!/bin/sh
+exec ssh -i /PRIVATE/PAIR/key -o IdentitiesOnly=yes -o BatchMode=yes \
+  -o StrictHostKeyChecking=yes -o UserKnownHostsFile=/PRIVATE/PAIR/known_hosts \
+  -o ConnectTimeout=10 -o ServerAliveInterval=5 -o ServerAliveCountMax=2 \
+  -p 2222 root@MACHINE_IP "$@"
+```
+
+Run the repository's receiver on the controller (Python 3 standard library):
+
+```sh
+python3 scripts/capture-remote-debug.py \
+  --ssh-wrapper /PRIVATE/PAIR/ssh-wrapper \
+  --output /PRIVATE/PAIR/evidence --duration 1800
+```
+
+It writes private capture parts and timestamped connection/idle/exit events,
+flushes received bytes to controller storage about once per second, and records
+the SSH exit status. Each invocation stops after the requested duration or
+128 MiB; it does not delete previous captures. It also stops on connection loss
+and does not trust replacement host keys automatically. Verify a new pairing's
+displayed fingerprint before restarting capture. Keep this connection running
+alongside the shell doing the work. Target log rotation remains bounded even
+if no controller is connected. Inspect the capture and last durable repair
+checkpoint after a reset before starting another package transaction.
+
+Kernel output in the message buffer is available independently of verbose boot.
+The current `vt` console has no supported text-buffer dump through `vidcontrol`;
+the snapshot explicitly records this limit. On supported `syscons` consoles,
+the collector can capture the visible text buffer. It never reads console input.
+The stream cannot capture firmware output, a hard reset, or panic messages emitted
+after the kernel/network stops responding. Empty crash-dump records do not prove
+that no kernel fault occurred. Serial/BMC capture or kernel network-debug support
+is needed for that boundary; source/loader work is planned for 1.2.
+
+Validate changes with `tests/remote-debug-observe.sh` as root on FreeBSD and
+`python3 tests/remote-debug-capture.py` on the controller. The existing pairing
+and unpairing lifecycle checks remain separate from these diagnostics checks.
 
 ## On an installed system
 

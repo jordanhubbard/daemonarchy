@@ -1,5 +1,10 @@
 # Physical hardware observations
 
+Historical 1.1 development/candidate evidence. Revisions, checksums and results
+below apply to the named artifact and date; they do not qualify the new
+[1.1.1 source/package set](testing-1.1.1.md). Follow that record for current
+preparation and publication status.
+
 These are operator-reported development results, not a completed acceptance
 matrix. Record the exact image and last visible boot message when available.
 
@@ -179,3 +184,25 @@ the GPU. Changed output selection/order is an additional hypothesis for the
 missing display; it has not been demonstrated and does not explain the reported
 firmware hang by itself. The operator explicitly requested that release work
 continue while this platform is investigated by the community.
+
+
+## Later 1.1 candidate / 1.1.1 preparation, 2026-10-17/18
+
+The MacBook later reached a newer OSVERSION `1600027` installation but reset
+repeatedly during userland package repair, before any desktop GPU startup.
+No saved panic dump or confirmed reset cause is available. Repaired installed
+files passed a full checksum check after a later reset, but the remaining
+package transaction and desktop have not completed. See the detailed
+[MacBook follow-up](testing-macbookpro16-1.md#11-candidate-recovery-follow-up-2026-10-1718).
+This does not supersede the earlier BCE, GPU or sysctl failure evidence.
+
+The requested HP All-in-One 24-cb1xxx upgrade began from OSVERSION `1600026`
+with AMD Barcelo graphics. A separate rollback environment was preserved and
+an inactive candidate received the matching 1.1.1 base/kernel/lib32 plus a
+conflict-free configuration merge. Its current system, EFI loaders, Windows
+NVMe disk and boot selection were unchanged during staging. Matched new
+modules, signed artifacts, actual new-system boot and rollback remain pending;
+o 1.1.1 physical-upgrade pass is claimed from offline preparation.
+
+The operator permits release publication with physical qualification limitations
+retained in the notes. That authorization does not mark these tests as passed.

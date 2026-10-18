@@ -1,0 +1,150 @@
+#!/usr/local/bin/bash
+# Bounded, read-only diagnostics for a console-approved debugging session.
+set -euo pipefail
+umask 077
+state=${2:-/var/run/daemonarchy-remote-debug}
+generation=${3:-}
+logs=/var/log/daemonarchy-debug
+limit=$((4 * 1024 * 1024))
+
+probe() {
+  local label=$1 result=0
+  shift
+  printf '\n--- %s ---\n' "$label"
+  timeout 3 "$@" </dev/null 2>&1 || result=$?
+  printf '\n--- %s exit=%s ---\n' "$label" "$result"
+}
+
+snapshot() {
+  local n cores
+  printf '=== SNAPSHOT %s ===\n' "$(date -u +%Y-%m-%dT%H:%M:%SZ)"
+  probe identity uname -a
+  probe boot sysctl kern.boottime kern.osreldate debug.bootverbose
+  probe kernel dmesg -a
+  probe console sysctl kern.vty
+  # vt(4), used on current images, has no supported text-buffer dump ioctl.
+  # Never read /dev/console: doing so can consume the operator's input.
+  if [[ $(sysctl -n kern.vty 2>/dev/null || true) == sc && -c /dev/ttyv0 ]]; then
+    probe console-text sh -c 'exec vidcontrol -P </dev/ttyv0'
+  else
+    echo 'Console text-buffer capture unavailable; kernel output is captured separately.'
+  fi
+  probe processes ps -axo pid,ppid,uid,etime,stat,wchan,pcpu,pmem,comm
+  probe memory vmstat -s
+  probe storage iostat -x
+  probe pools zpool status -x
+  probe pool-io zpool iostat -Hp
+  # Only named, known probes: broad sysctl enumeration can enter unsafe drivers.
+  local -a names=(hw.acpi.acline hw.acpi.battery.life hw.acpi.thermal.tz0.temperature
+    vm.stats.vm.v_free_count vm.stats.vm.v_inactive_count
+    kstat.zfs.misc.arcstats.size kstat.zfs.misc.arcstats.c kstat.zfs.misc.arcstats.c_max)
+  cores=$(sysctl -n hw.ncpu 2>/dev/null) || cores=0
+  [[ $cores =~ ^[0-9]+$ ]] || cores=0
+  ((cores <= 64)) || cores=64
+  for ((n=0; n<cores; n++)); do names+=("dev.cpu.$n.temperature"); done
+  probe sensors sysctl "${names[@]}"
+  probe modules kldstat
+  printf '=== END SNAPSHOT ===\n'
+}
+
+same_session() {
+  [[ -f $state/active && -f $state/generation &&
+     $(cat "$state/generation" 2>/dev/null) == "$generation" ]]
+}
+
+rotate_append() {
+  local sample=$1 size=0 incoming
+  incoming=$(stat -f %z "$sample")
+  [[ ! -f $logs/observer.log ]] || size=$(stat -f %z "$logs/observer.log")
+  # A pathological kernel buffer/process list cannot defeat the retention cap.
+  if ((incoming > 1024 * 1024)); then
+    head -c $((1024 * 1024 - 100)) "$sample" >"$sample.limited"
+    printf '\n=== SAMPLE TRUNCATED: original bytes=%s ===\n' "$incoming" >>"$sample.limited"
+    sample=$sample.limited
+    incoming=$(stat -f %z "$sample")
+  fi
+  if [[ -f $logs/observer.log ]] && ((size + incoming > limit)); then
+    mv -f "$logs/observer.log" "$logs/observer.previous.log"
+  fi
+  cat "$sample" >>"$logs/observer.log"
+}
+
+collect() {
+  local work count=0 result=0 path python='' candidate parent=$BASHPID events=${BASH_SOURCE[0]%/*}/debug-events.py
+  [[ $(id -u) == 0 && $(uname -s) == FreeBSD && -n $generation ]] || exit 1
+  same_session || exit 1
+  [[ ! -L $logs ]] || exit 1
+  mkdir -m 700 -p "$logs"
+  [[ -O $logs ]] || exit 1
+  chmod 700 "$logs"
+  for path in "$logs/observer.log" "$logs/observer.previous.log"; do
+    [[ ! -L $path && ( ! -e $path || -O $path ) ]] || exit 1
+  done
+  work=$(mktemp -d "$state/observer.XXXXXX")
+  trap 'rm -rf "$work"' EXIT
+  printf '=== SESSION %s START %s ===\n' "$generation" "$(date -u +%Y-%m-%dT%H:%M:%SZ)" >"$work/sample"
+  for candidate in /usr/local/bin/python3 /usr/local/bin/python3.{11,12,13,14}; do
+    if [[ -x $candidate ]]; then python=$candidate; break; fi
+  done
+  if [[ -n $python && -f $events ]]; then
+    "$python" "$events" "$state" "$generation" "$logs" "$parent" >>"$logs/events-startup.log" 2>&1 &
+    printf 'Passive devd event reader started; see events.log for availability/events.\n' >>"$work/sample"
+  else
+    echo 'Passive devd events unavailable: Python 3 or event helper missing.' >>"$work/sample"
+  fi
+  rotate_append "$work/sample"
+  while same_session; do
+    printf '\n=== HEARTBEAT %s session=%s ===\n' "$(date -u +%Y-%m-%dT%H:%M:%SZ)" "$generation" >"$work/sample"
+    result=0
+    timeout 3 dmesg -a >"$work/kernel.new" 2>&1 || result=$?
+    printf '\n--- kernel exit=%s (initial snapshot, then unified deltas) ---\n' "$result" >>"$work/sample"
+    if [[ -f $work/kernel.old ]]; then
+      diff -u "$work/kernel.old" "$work/kernel.new" >>"$work/sample" || true
+    else
+      cat "$work/kernel.new" >>"$work/sample"
+    fi
+    mv "$work/kernel.new" "$work/kernel.old"
+    # Include recent userspace/syslog output, retaining repeats as snapshots.
+    probe messages tail -n 60 /var/log/messages >>"$work/sample"
+    if ((count % 5 == 0)); then snapshot >>"$work/sample"; fi
+    if [[ -f $state/progress ]]; then
+      printf '\n--- agent activity ---\n' >>"$work/sample"
+      cat "$state/progress" >>"$work/sample"
+    fi
+    same_session || break
+    rotate_append "$work/sample"
+    ((count+=1))
+    sleep 2
+  done
+}
+
+stream() {
+  [[ -f $state/active && -f $state/generation ]] || { echo 'No active debug session.' >&2; exit 1; }
+  local expected pid
+  expected=$(cat "$state/generation")
+  printf '=== DAEMONARCHY OBSERVER STREAM session=%s ===\n' "$expected"
+  # The SSH receiver gets a fresh state snapshot, not only later changes.
+  snapshot
+  printf '\n=== RETAINED SESSION LOG (follow) ===\n'
+  [[ ! -f $logs/observer.previous.log ]] || tail -n 200 "$logs/observer.previous.log"
+  tail -n 400 -F "$logs/observer.log" "$logs/events.log" &
+  pid=$!
+  trap 'kill "$pid" 2>/dev/null || true; wait "$pid" 2>/dev/null || true' EXIT
+  trap 'exit 130' INT
+  trap 'exit 143' HUP TERM
+  generation=$expected
+  while same_session && kill -0 "$pid" 2>/dev/null; do
+    if [[ ! -f $state/observer.pid ]] || ! kill -0 "$(cat "$state/observer.pid")" 2>/dev/null; then
+      echo 'Diagnostics collector stopped; reconnect to restart it. Inspect observer-startup.log.' >&2
+      return 75
+    fi
+    sleep 1
+  done
+}
+
+case ${1:-snapshot} in
+  snapshot) snapshot ;;
+  collect) collect ;;
+  stream) stream ;;
+  *) echo 'Usage: debug-observe [snapshot | stream | collect STATE GENERATION]' >&2; exit 1 ;;
+esac

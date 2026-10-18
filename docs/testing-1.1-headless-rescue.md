@@ -1,5 +1,10 @@
 # Private headless rescue checks, 2026-10-15
 
+Historical 1.1 development/candidate evidence. Revisions, checksums and results
+below apply to the named artifact and date; they do not qualify the new
+[1.1.1 source/package set](testing-1.1.1.md). Follow that record for current
+preparation and publication status.
+
 A separately prepared rescue overlay was built into an unpublished development
 ISO using installer revision `7399015575401c9d64cd2391db1c02517266b8f8` and
 the same kernel/package set as preview.12. Its host key and operator public key

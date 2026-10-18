@@ -28,6 +28,10 @@ sed -e "s|^state=.*|state=$work/state|" \
     -e "s|^self=.*|self=$work/remote-debug|" \
     "$here/overlay/usr/local/libexec/daemonarchy-installer/remote-debug" >"$work/remote-debug"
 cp "$here/overlay/usr/local/libexec/daemonarchy-installer/network-addresses" "$work/"
+sed "s|^logs=.*|logs=$work/diagnostics|" \
+  "$here/overlay/usr/local/libexec/daemonarchy-installer/debug-observe" >"$work/debug-observe"
+cp "$here/overlay/usr/local/libexec/daemonarchy-installer/debug-events.py" "$work/"
+chmod 700 "$work/debug-observe"
 chmod 700 "$work/remote-debug"
 ssh-keygen -q -t ed25519 -N '' -f "$work/client"
 ssh-keygen -q -t ed25519 -N '' -f "$work/rejected"
@@ -62,6 +66,19 @@ wait "$client"
 client=''
 [[ $(cat "$work/result") == PRIVATE_COMMAND_RESULT ]] || fail 'forced command changed output'
 wait_for 'Agent connected successfully' "$work/console"
+wait_for 'HEARTBEAT' "$work/diagnostics/observer.log"
+observer_pid=$(cat "$work/state/observer.pid")
+kill -0 "$observer_pid" || fail 'automatic diagnostics collector not running'
+# Collector failure must be repaired by the next approved connection.
+kill -TERM "$observer_pid"
+for ((tries=0; tries<100; tries++)); do
+  kill -0 "$observer_pid" 2>/dev/null || break
+  sleep .1
+done
+ssh_client client true
+[[ $(cat "$work/state/observer.pid") != "$observer_pid" ]] || fail 'collector did not restart'
+ssh_client client "$work/remote-debug snapshot" >"$work/snapshot"
+grep -q '=== END SNAPSHOT ===' "$work/snapshot" || fail 'snapshot command failed'
 ssh_client client "$work/remote-debug activity 'Checking Wi-Fi connectivity'"
 wait_for 'Activity: Checking Wi-Fi connectivity' "$work/console"
 ssh_client client true

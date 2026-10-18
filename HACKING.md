@@ -2,12 +2,20 @@
 
 How to build a Daemonarchy image yourself, change the installer, the ports, or the artwork, and test and release the result. [README.md](README.md) says what Daemonarchy is; this is for working on it.
 
+Current refresh: **1.1.1**, FreeBSD source `bdcfeac3e1cb8ce3f05c32d8a7ad3597deb48bdf`
+(OSVERSION `1600028`), ports `f7d7ee897405dcb8ce87e674588a4e1b3bfba00e`
+on `daemonarchy-1.1.1`. Keep base, kernel, jail, drivers, optional source checkout
+and signed manifests on that selection. The [qualification record](docs/testing-1.1.1.md)
+tracks publication readiness. Older image examples below must use their own
+retained inputs; a package update is not a base/ABI migration.
+
 ## Where things live
 
 Daemonarchy is four repositories:
 
 - **This one** builds the installer image:
   - `overlay/usr/local/libexec/daemonarchy-installer/`: the installer. `launch` runs from root's login on the live system; `configurator` asks the questions (it vendors Omarchy's own setup form); `install` partitions, installs, and configures; `dashboard` draws the install screen from the install log.
+  - `overlay/usr/local/libexec/daemonarchy-installer/install-integrity`: checks installed package files and dependencies before the installer records success. A nonzero result retains a failed installation and its rescue evidence.
   - `overlay/usr/local/libexec/daemonarchy-installer/rebuild-caches`: rebuilds the caches the packages' pkg triggers maintain (GSettings schemas, GIO modules, icon and MIME caches), which `pkg -r` cannot (see Pitfalls).
   - `overlay/usr/local/libexec/daemonarchy-installer/fix-ownership`: restores the owners, groups and modes packages record, which `pkg -r` loses when installing into the target (see Pitfalls).
   - `overlay/usr/local/share/daemonarchy-installer/`: the installer's logo, the loader brand, the keymap table, and the package repository's public key (`daemonarchy.pub`).
@@ -29,10 +37,10 @@ Daemonarchy is four repositories:
   - The SDDM theme that reuses Omarchy's with the Daemonarchy wordmark.
   - The System > FreeBSD menu (`omarchy-menu.jsonc`) and the `daemonarchy-*` commands behind it.
   - Its tags set Daemonarchy's version (see Releasing).
-- **[jordanhubbard/freebsd-ports](https://github.com/jordanhubbard/freebsd-ports/tree/daemonarchy-1.1-package-baseline)** is the release ports fork; 1.1 uses the pinned `daemonarchy-1.1-package-baseline` branch. Upstream review does not block releases from this fork. It carries the ports:
+- **[jordanhubbard/freebsd-ports](https://github.com/jordanhubbard/freebsd-ports/tree/daemonarchy-1.1.1)** is the release ports fork; 1.1.1 uses `daemonarchy-1.1.1`, while the older 1.1 candidate uses `daemonarchy-1.1-package-baseline`. Upstream review does not block releases from this fork. It carries the ports:
   - `x11-wm/omarchy`: Omarchy itself, with omarchy-freebsd as a second distfile. Its `files/` holds only patches to Omarchy's own files, among them the ones that add the `FreeBSDWifi.qml` and `FreeBSDBluetooth.qml` stand-ins to the panels.
   - `x11-wm/daemonarchy`: the full desktop's dependencies, plus daemonarchy-desktop. Defaults for new users go to `share/omarchy/skel.d/daemonarchy`, which `seed-user` copies in ahead of Omarchy's.
-  - The applications and tools Omarchy uses, one port each (`x11-themes/aether`, `graphics/tensaku`, `misc/ttfx`, ...), submitted upstream in [freebsd/freebsd-ports#630](https://github.com/freebsd/freebsd-ports/pull/630); `x11-wm/omarchy` and `x11-wm/daemonarchy` are in [#635](https://github.com/freebsd/freebsd-ports/pull/635).
+  - The applications and tools Omarchy uses, one port each (`x11-themes/aether`, `graphics/tensaku`, `misc/ttfx`, ...), resubmitted upstream in [freebsd/freebsd-ports#640](https://github.com/freebsd/freebsd-ports/pull/640); `x11-wm/omarchy` and `x11-wm/daemonarchy` are in [#641](https://github.com/freebsd/freebsd-ports/pull/641). The earlier #630/#635 submissions were closed unmerged. The LinuxKPI header fix is [#642](https://github.com/freebsd/freebsd-ports/pull/642); review status is independent of fork qualification.
   - `x11/quickshell` carries a fix for a use-after-free in its Hyprland IPC, which is now committed upstream ([#634](https://github.com/freebsd/freebsd-ports/pull/634)).
 
 ## Working on Daemonarchy from Daemonarchy
@@ -65,7 +73,12 @@ sudo make reinstall clean
 
 ## Setting up a build host
 
-You need a FreeBSD 16.0-CURRENT machine (bare metal or a VM with about 8 GB of memory and 100 GB of disk) with poudriere, git, and the ports tree, as root.
+You need a FreeBSD 16.0-CURRENT machine (bare metal or a VM with capacity for the selected build) with poudriere, git, and the ports tree, as root.
+
+The 1.1.1 dependency rebuild used an isolated 20-CPU, 80-GiB VM with a 400-GiB
+disk and two package builders. Smaller hosts may work with lower concurrency;
+the full Chromium/CEF/LLVM dependency stack needs substantially more time and
+space than a cached installer-only rebuild. Check resources before dispatching.
 
 1. **A jail from the snapshot the image installs.** Before the next release, re-sync system sources with [FreeBSD CURRENT (`main`)](https://github.com/freebsd/freebsd-src/tree/main), select the image snapshot, and record its exact source revision. `/usr/src` offered by the installer must match that snapshot; do not fetch a moving branch at install time. Recreate/update the build jail and rebuild the selected kernel modules when moving snapshots. Cache the verified release sets first, then use those same files for the jail and ISO:
 
@@ -118,13 +131,13 @@ You need a FreeBSD 16.0-CURRENT machine (bare metal or a VM with about 8 GB of m
    DISTFILES_CACHE=/usr/ports/distfiles
    ```
 
-4. **Build the packages.** List the origins in `ISO_ORIGINS` at the top of `build-iso.sh` in a file, and bulk-build with `-b latest`, so every other dependency is fetched as the official binary:
+4. **Build the packages.** List the origins in `ISO_ORIGINS` in `origins.sh` in a file, and bulk-build with `-b latest`. Poudriere fetches eligible official dependencies and builds incompatible or missing ones against the selected jail:
 
    ```
    poudriere bulk -j 16amd64 -p omarchyiso -b latest -t -f omarchyiso-ports.list
    ```
 
-   The first build takes a few hours, mostly the GPU modules and anything not in the official set. Rebuilds take minutes.
+   A refresh ahead of the official binary baseline can require hundreds of builds, including compilers and browsers. Preserve caches and logs; elapsed time alone is not evidence that a build stalled. An installer-only rebuild can reuse the qualified package set.
 
 5. **Build the image:**
 
@@ -186,14 +199,14 @@ To put sets on another volume or retain separate snapshots, use the same
 override for cache preparation and image construction:
 
 ```sh
-export SET_CACHE_DIR=/build-cache/daemonarchy/sets/3ceb5f150bc1
+export SET_CACHE_DIR=/build-cache/daemonarchy/sets/<selected-source-revision>
 export SNAPSHOT_URL=https://download.freebsd.org/snapshots/amd64/16.0-CURRENT
 sh scripts/cache-release-sets.sh
 # Create the jail from "$SET_CACHE_DIR/base.txz" and extract its kernel/lib32.
 JAIL=16amd64 PTREE=omarchyiso sh build-iso.sh
 ```
 
-The moving snapshot URL is consulted only for missing inputs. Select a new
+For source-built sets such as 1.1.1, populate this directory from the exact qualified build, including its MANIFEST, rather than fetching a newer daily snapshot. The moving snapshot URL is consulted only for missing inputs. Select a new
 cache directory for a new snapshot so an older retained `MANIFEST` cannot be
 mistaken for the new selection. Preserve poudriere's repository structure,
 including `.latest` and any `.building` directory left by an interrupted bulk
@@ -211,7 +224,7 @@ offline reuse, damaged-entry repair and rejection of a corrupt replacement.
 
 ### The installer
 
-The installer is plain bash and lives entirely in `overlay/`, so changing it only needs a new image (`./build-iso.sh`, about 20 minutes); the packages stay as they are.
+The installer flow lives in `overlay/`, primarily as Bash helpers. An installer-only change needs a new image (`./build-iso.sh`) and runtime validation; it can reuse the already qualified package set.
 
 - **The install screen** can be tried without an install: `dashboard` draws from a log file, so feed it one. Run it in a 160x50 terminal (the console's size) with `ISO_SHARE` pointing at a directory holding `logo.txt`, and append `@@phase <name>` lines, `Number of packages to be fetched: N`, `Fetching <pkg>: ... done`, and `[ n/N] Installing <pkg>...` lines to the log; it exits with the number written to the status file.
 - **`install`** reads its answers from `$DAEMONARCHY_INSTALL_CONF`; the keys are what `configurator`'s `write_install_conf` writes. An unattended install takes the same file from a FAT drive labelled `CIDATA`, which is how both test scripts run.
@@ -302,24 +315,13 @@ On an older installer, `kldload linux64` from its root shell enables the missing
 ABI; do not rerun the whole installer over an existing target merely to retry
 the package transaction.
 
-The installer offers CUDA and cudalab only when the detected display GPU is
-supported by the image's NVIDIA driver table (including mixed-GPU machines).
-The option defaults to Skip; unattended installs must set `install_cuda=true`
-to select it. Unsupported hardware and invalid values are rejected before disk
-writes. Desktop driver installation does not depend on this option.
-
-Selecting it reserves an additional 16 GiB in the disk-space checks, downloads
-the CUDA toolkit into the target's Linuxulator, and clones/builds cudalab for
-the new user without opening a graphical session. The launcher and menu entry
-are included only when selected. Linuxulator mounts are released before the
-target pool is exported, including on failure. The allowance is a budget, not
-a measured download size; the toolkit and build dependencies need internet.
-
-`bash tests/cuda-options.sh` covers hardware gating, opt-in/default behavior,
-space allowance, launcher/menu inclusion, and mount cleanup. Run
-`bash tests/linux-cuda.sh` for toolkit policy and the headless build script.
-These portable tests do not replace an installation and desktop launch on
-supported NVIDIA hardware.
+CUDA/toolkit and cudalab installation are withheld in the current release.
+`cuda_options_prepare` rejects `install_cuda=true` before disk writes, including
+unattended installation. Their development scripts and portable tests remain
+in the tree, but the earlier RTX 4090 driver-API result does not qualify the
+complete toolkit, Unified Memory or cudalab. See the [application policy](docs/freebsd-application-policy.md)
+and [retained hardware results](docs/testing-1.1-hardware-observations.md).
+Desktop NVIDIA driver installation remains separate from this disabled option.
 
 ## Remote debugging on a test machine
 
@@ -445,8 +447,7 @@ feedback and require the agent to communicate these states directly.
 
 Once the agent reports completion, press **Enter** or **Ctrl-C** in the local
 listener console. This closes its listener and SSH connections, deletes session
-host keys and approvals, and returns to the debug shell. Rebooting also clears
-them. A new listener session requires pairing again. Stopping access does not
+host keys and approvals, and returns to the debug shell. A reboot stops the listener but can leave stale pairing state. In 1.1.1, choose **Unpair remote debugging agent** in rescue option 2, then **Pair** for a fresh session; `daemonarchy-debug unpair` provides the shell equivalent. A new listener session requires pairing again. Stopping access does not
 undo changes already made by the agent.
 
 Run `bash tests/remote-debug-progress.sh` for portable state/command checks and
@@ -459,6 +460,18 @@ New installed systems expose the same commands through `daemonarchy-debug`
 (`daemonarchy-debug shell`, `listen`, or `help`). No debug listener starts
 automatically, and temporary pairing does not enable the normal SSH service or
 copy approved keys into the installed system.
+
+### Continuous diagnostics
+
+The 1.1.1 diagnostics path provides bounded read-only `daemonarchy-debug snapshot`
+and `observe` output, with private, size-limited target logs. An approved
+controller can retain the stream off-target using `scripts/capture-remote-debug.py`
+and its existing host-key-pinned SSH wrapper. See the [continuous diagnostics
+contract](docs/remote-agent-debug.md#continuous-diagnostics) for exact commands,
+retention and privacy limits. It reports when console-buffer access is unavailable;
+SSH diagnostics cannot reconstruct probes from before networking or survive a
+hard reset as a live connection. Loader/early-kernel network debugging remains
+1.2 work; no new src debugging patches are part of 1.1.1.
 
 ### When the screen or keyboard is unusable
 
@@ -484,7 +497,7 @@ custom-port, reconnect and shutdown evidence belongs in the
 
 ### Packages
 
-A fix to a port reaches installed systems through the online repository; no new image is needed. After rebuilding the packages (step 4 of the build host setup), run this from a workstation with `gh`:
+A compatible application fix can reach existing installations through their online repository without a new image. The unversioned publication command below is only for packages compatible with that feed's retained base. For 1.1.1 use the versioned rebuilt-dependency procedure below and leave the unversioned feed unchanged. After rebuilding the compatible packages (step 4 of the build host setup), run this from a workstation with `gh`:
 
 ```
 ./pkg-repo.sh publish
@@ -556,11 +569,22 @@ coordinated operation.
 
 1. Tag daemonarchy-desktop `v<version>`, set `DISTVERSION` in `x11-wm/daemonarchy` to it and run `make makesum`, then build the packages and the image as above, publish the packages, and run a test.
 
-2. For a stable release, publish the image and its `.sha256` as a GitHub release tagged `daemonarchy-<version>`, marked as the latest:
+2. Finish required review/checks, merge and synchronize the installer source,
+   then tag the exact reviewed commit. Publish a normal stable GitHub release
+   `daemonarchy-<version>`, marked latest. Standard public assets are the ISO,
+   its `.sha256`, `daemonarchy-<version>-boot.txz`, its detached `.sig`, and
+   `daemonarchy-1.1.pem` / `.der`. Certificate filenames identify the retained
+   signing authority and do not change to 1.1.1. For example:
 
    ```
-   gh release create daemonarchy-<version> --latest --title "Daemonarchy <version>" --notes-file notes.md daemonarchy-<version>-amd64.iso daemonarchy-<version>-amd64.iso.sha256
+   gh release create daemonarchy-<version> --target <exact-reviewed-commit> --latest --title "Daemonarchy <version>" --notes-file notes.md daemonarchy-<version>-amd64.iso daemonarchy-<version>-amd64.iso.sha256 daemonarchy-<version>-boot.txz daemonarchy-<version>-boot.txz.sig daemonarchy-1.1.pem daemonarchy-1.1.der
    ```
+
+   Verify the exact uploaded asset names, sizes and SHA-256 digests. Keep
+   release-specific application and checkout feeds non-latest. Operator-approved
+   physical qualification deferrals must remain explicit limitations in the
+   release notes; they never become passing results. For 1.1.1 retain the existing
+   1.1.0 draft and leave the unversioned stable application feed unchanged.
 
 3. Point the Download section at the top of README.md to the new release: release name, ISO and checksum links, SHA-256, and the `dd` example.
 4. If the release replaces one with a serious bug, say so at the top of the old release's notes.
@@ -572,13 +596,13 @@ coordinated operation.
 - **SDDM matches sessions by full path.** Omarchy's login theme has no user list; it signs in as SDDM's last user and session from `/var/lib/sddm/state.conf`. FreeBSD's SDDM needs the session as `/usr/local/share/wayland-sessions/omarchy.desktop`; a bare name falls back to plain Hyprland.
 - **Sound needs the `audio` group** on FreeBSD 16.
 - **pkg pads its install counter** (`[ 119/1184]`); anything parsing it must allow the space.
-- **Boot code goes stale after ZFS upgrades.** A pool that gains new features (after `zpool upgrade`) needs current boot code, or the machine stops at `boot:` with "unsupported feature". Run `gpart bootcode -p /boot/gptzfsboot -i 1 <disk>` (or the EFI loader update) after upgrading a pool.
+- **Boot code goes stale after ZFS upgrades.** A pool that gains new features (after `zpool upgrade`) needs current boot code, or the machine stops at `boot:` with "unsupported feature". Inspect `gpart show` before updating matching boot files: the 1.1 whole-disk layout uses **p4** for BIOS `freebsd-boot`, while **p1 is the EFI filesystem**. Update only the verified boot partition or project EFI loader; shared-disk installs preserve other operating-system loaders. Do not apply an old p1 BIOS recipe to this layout.
 - **The snapshot directory moves.** `download.freebsd.org/snapshots/.../16.0-CURRENT` always holds the newest snapshot, but the image's sets must be the ones the jail was made from, or the kernel modules on the image will not match its kernel. The authoring cache retains those verified inputs. Select a separate `SET_CACHE_DIR` when moving snapshots, then create the matching jail and rebuild its modules. The image build refuses a different jail version or a source catalogue that does not match its kernel.
 - **pkg -r resolves accounts on the running system.** Installing into `$TARGET` from the live system gave every file owned by an account a package creates (`messagebus`, `polkitd`, `cups`, `colord`) to `root:wheel`, which broke D-Bus service activation and with it polkit prompts. `fix-ownership` re-applies each package's recorded owners, groups and modes inside the target after the install.
 - **pkg -r runs triggers on the running system.** The packages' triggers (`/usr/local/share/pkg/triggers`) call tools such as `glib-compile-schemas` by absolute path, which the live installer does not have, so an install was left without compiled GSettings schemas and GTK applications such as Files aborted at start. `rebuild-caches` runs them inside the target.
 - **The session's PATH is GNU first.** Omarchy's commands put GNU coreutils (`libexec/omarchy/gnubin`) ahead of FreeBSD's, so a FreeBSD-only flag such as `tail -r` fails when the command runs from the desktop even though it works in a plain shell. Test Daemonarchy's commands from a desktop terminal, or avoid the flags.
 - **The package mirrors disagree.** poudriere's default `pkg+http://pkg.FreeBSD.org` hands each run a random mirror, and a mirror partway through a sync gives it a partial catalogue: one run fetched 56 packages where the next fetched 1,178, and built the rest from source. Pin `PACKAGE_FETCH_URL` to `http://pkg.FreeBSD.org/${ABI}` (step 3). The mirrors can also be slow from a given host (100 to 400 KB/s here); a faster machine can download the packages and copy them into the repository's `.pkg-cache`.
-- **The official set's dependency versions lag.** pkg.FreeBSD.org builds incrementally, so some of its packages record older versions of their dependencies than the set now holds (chromium recorded `dbus-glib-0.114` while the set had 0.116). poudriere then refuses or deletes them and builds them, chromium and LibreOffice included, which takes most of a day. Only the ISO's own ports need building here; the others come from pkg.FreeBSD.org at install time.
+- **The official set's dependency versions lag.** pkg.FreeBSD.org builds incrementally, so some of its packages record older versions of their dependencies than the set now holds (chromium recorded `dbus-glib-0.114` while the set had 0.116). poudriere then refuses or deletes them and builds them, chromium and LibreOffice included, which takes most of a day. At a matching official baseline those dependencies can be fetched. A newer integration such as 1.1.1 instead needs the incompatible dependencies rebuilt and retained in its separate versioned feed; don't silently substitute older packages or overwrite the stable feed.
 - **Quoting through ssh.** Don't pass code containing apostrophes inside `ssh host '...'`: a stray quote ends the remote command early and runs the rest locally. Write the file locally and copy it with scp instead.
 
 ## Optional installed ports and source trees
@@ -640,8 +664,9 @@ A failed stage stays unactivated and is retained for diagnosis. Changing a
 driver needs the matching signed inventory and native package in that candidate;
 do not overwrite pkg-owned driver files or unlock them in the running profile.
 Base/ABI transitions, certificate rotation and an EFI loader-protocol change
-need a separately qualified migration. These integration commands are still
-under native installation/update qualification; they are not in preview.13.
+need a separately qualified migration. The [1.1 record](docs/testing-1.1-upgrade.md)
+contains native same-snapshot maintenance evidence; the [1.1.1 record](docs/testing-1.1.1.md)
+tracks the new snapshot separately. Preview.13 lacks these integration commands.
 
 For enforced QEMU installation tests, use separate fresh work directories and
 persistent variables cloned from an already enrolled disposable template:
@@ -678,7 +703,7 @@ printed in the selected kernel's build identity:
 ```sh
 python3 scripts/build-checkout-packages.py --kind ports \
   --repo /usr/local/poudriere/ports/omarchyiso --revision <ports-commit> \
-  --branch daemonarchy-1.1-package-baseline --remote https://github.com/jordanhubbard/freebsd-ports.git \
+  --branch daemonarchy-1.1.1 --remote https://github.com/jordanhubbard/freebsd-ports.git \
   --out /path/to/checkout-repo
 python3 scripts/build-checkout-packages.py --kind src \
   --repo /usr/src --revision <kernel-source-commit> \
@@ -686,14 +711,14 @@ python3 scripts/build-checkout-packages.py --kind src \
   --out /path/to/checkout-repo
 python3 scripts/make-checkout-catalog.py /path/to/checkout-repo \
   --url https://github.com/jordanhubbard/daemonarchy/releases/download/<checkout-tag> \
-  --ports-tracking-branch daemonarchy-1.1-package-baseline \
+  --ports-tracking-branch daemonarchy-1.1.1 \
   > /path/to/checkout-repo/checkouts.json
 sudo pkg repo /path/to/checkout-repo /usr/local/etc/daemonarchy/pkg-repo.key
 ```
 
-`--depth` defaults to 1. The current candidate package integration is on the fork's
-`daemonarchy-1.1-package-baseline` branch; the checkout tracks that integration
-branch. Default fetches are restricted to one branch. Payloads are split into 512 MiB parts before packaging,
+`--depth` defaults to 1. The 1.1.1 package integration is on the fork's
+`daemonarchy-1.1.1` branch; older 1.1 images retain their pinned
+`daemonarchy-1.1-package-baseline` catalogue and feed. Default fetches are restricted to one branch. Payloads are split into 512 MiB parts before packaging,
 keeping each asset below 2 GiB. Publish the signed repository at a dedicated,
 release-specific tag, packages first and catalogues last. Retain that tag for
 older installations. Pass `CHECKOUT_CATALOG=/path/to/checkout-repo/checkouts.json`

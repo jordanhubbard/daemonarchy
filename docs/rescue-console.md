@@ -46,6 +46,15 @@ shell use the base system and do not depend on bash, gum, SDDM or Hyprland.
 
 ## At the installed machine
 
+For continuous remote evidence, 1.1.1 starts a bounded diagnostics collector
+after an agent authenticates. Use `daemonarchy-debug snapshot` for current
+state or `daemonarchy-debug observe` for a stream, and retain that stream on the
+controlling computer before package repair or other reset-prone work. See
+[continuous diagnostics](remote-agent-debug.md#continuous-diagnostics) for the
+receiver, private log locations, retention limits and console-capture boundaries.
+These tools work with the existing kernel; they cannot capture output after a
+hard reset has stopped SSH.
+
 On the first text console, an incomplete installation automatically shows:
 
 ```text

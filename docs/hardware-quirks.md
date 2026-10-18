@@ -66,3 +66,21 @@ a useful comparison, but does not establish a shared cause or a FreeBSD fix.
 See the [hardware investigation record](testing-1.1-hardware-observations.md)
 for image comparisons and source-image checksums. Append new firmware/image
 results rather than replacing the configuration that reproduced this failure.
+
+
+## Apple T2 MacBook Pro: incomplete installation and resets
+
+The MacBookPro16,1 investigation includes earlier BCE/GPU failures and a later
+1.1 candidate that repeatedly restarted or powered off during ordinary package
+installation, before desktop graphics startup. A missing desktop after that
+reset is not proof that installation finished. The retained state and package
+integrity must be inspected before retrying; do not repeat partitioning over
+the existing installation merely to resume packages. No reset cause or
+successful 1.1.1 desktop result is established.
+
+Use named sysctl keys on this machine: broad `sysctl -a` enumeration previously
+triggered a confirmed LinuxKPI `sysctl_handle_attr()` general-protection fault.
+The [dated investigation](testing-macbookpro16-1.md) records what was repaired
+and what remains unqualified. The [rescue guide](rescue-console.md) covers stale
+pairing cleanup, and the [continuous diagnostics guide](remote-agent-debug.md#continuous-diagnostics)
+explains what can be retained while approved SSH access is available.

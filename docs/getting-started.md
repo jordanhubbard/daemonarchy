@@ -4,7 +4,7 @@ This guide takes you from a download to a working desktop, and through the thing
 
 Daemonarchy is the [Omarchy](https://omarchy.org) desktop running on [FreeBSD](https://www.freebsd.org). If you are curious how it is put together, or want to change it, read the [hacking guide](../HACKING.md) when you are done here.
 
-This guide covers the 1.1 release. Earlier 1.0.1 has whole-disk, UEFI-only
+This guide covers the public 1.1 candidate and the 1.1.1 refresh in preparation. The [download page](../README.md#download) identifies what is published; [the 1.1.1 record](testing-1.1.1.md) tracks the new image separately. Earlier 1.0.1 has whole-disk, UEFI-only
 installation and needs Secure Boot off. See the [download page](../README.md#download)
 and the release
 [qualification record](testing-1.1-final-image.md) before choosing hardware.
@@ -21,7 +21,7 @@ and the release
 
 ## 1. Download the image
 
-Get the `.iso` and matching `.sha256` from the [download page](../README.md#download). The GitHub **latest** link selects 1.1.0.
+Get the `.iso` and matching `.sha256` from the [download page](../README.md#download). At this preparation checkpoint GitHub **latest** selects stable 1.0.1; choose the explicit 1.1 candidate link for its added features. The 1.1.0 stable promotion remains a draft, and 1.1.1 is not yet published.
 
 Checking the download is optional but quick. In a terminal, in the folder you saved both files to:
 
@@ -62,7 +62,7 @@ The installer asks a handful of questions, then installs on its own. Use the arr
 The 1.1 release also offers optional `/usr/ports` and `/usr/src` Git checkouts. They download separately when selected and use the release's pinned revisions. Leave them off if you only want to run the desktop.
 
 
-The install downloads about 1,200 packages, so it takes from 15 minutes to an hour depending on your connection. When it is done, remove the stick and restart.
+The desktop has roughly 1,200 packages; download and installation time depend on the selected release and connection. Wait for the explicit successful completion screen before removing the stick and restarting. An unexpected reboot is not that completion signal.
 
 ## 5. Log in
 
@@ -125,7 +125,7 @@ In a terminal, `daemonarchy update` uses the desktop update flow.
 `sudo pkg upgrade` updates packages directly and does not create a boot
 environment for you. Application-package upgrades do not migrate the FreeBSD
 base/kernel or convert an old installation to Secure Boot. Verified installations
-keep kernel-module packages locked to their signed snapshot; use the documented
+keep kernel-module packages locked to their signed snapshot. The 1.1.1 feed requires OSVERSION `1600028` in both the base system and kernel, with matching drivers; changing the feed URL alone does not perform that upgrade. Use the documented
 [signed maintenance workflow](secure-boot.md#update-and-recovery-contract) for protected boot updates.
 
 The 1.1 desktop includes Chromium and the **OctoPkg** graphical package
@@ -160,7 +160,8 @@ Install available FreeBSD coding tools through **Install > Packages** or `pkg`. 
 ## When something goes wrong
 
 - **The machine will not boot the stick:** check the image/firmware mode and the [Secure Boot enrollment requirements](secure-boot.md). Check [known hardware blockers](hardware-quirks.md) before trying speculative loader changes.
-- **The install stopped:** the screen shows the end of the install log. Most stops are network trouble; restart and try again, or use a cable. The full log is `/tmp/daemonarchy-install.log` on the installer system.
+- **The install stopped or restarted itself:** use the [rescue menu](rescue-console.md) to inspect the retained log and installation status before retrying. The live log is `/tmp/daemonarchy-install.log`; retained target evidence is `/var/log/daemonarchy-install.log` and `/var/db/daemonarchy/install`. The 1.1.1 integrity check refuses success when package files are missing or damaged. An unexpected reset is not evidence of completed installation; do not restart disk partitioning over the existing target to resume packages.
+- **No rescue menu after boot messages:** 1.1.1 waits briefly for late probes and redraws the menu automatically. On an older image, pressing Return may redraw a menu that boot messages obscured. If pairing says another session is active, use **Unpair remote debugging agent** in rescue option 2, then **Pair** again on 1.1.1.
 - **A black screen after login in a VM:** the tested 1.1 desktop path is QEMU with VirtIO/VirGL. Other virtual graphics configurations, including refreshed bhyve, remain unqualified. See the [VM graphics record](testing-1.1-vm-graphics.md).
 - **An update broke something:** restart, choose an earlier boot environment in the boot menu, and you are back where you were.
 - **Anything else:** [open an issue](https://github.com/jordanhubbard/daemonarchy/issues) with what you did and what you saw.

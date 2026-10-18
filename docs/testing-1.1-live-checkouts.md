@@ -1,11 +1,16 @@
 # 1.1 shallow checkout and driver development checks
 
+Historical 1.1 development/candidate evidence. Revisions, checksums and results
+below apply to the named artifact and date; they do not qualify the new
+[1.1.1 source/package set](testing-1.1.1.md). Follow that record for current
+preparation and publication status.
+
 Recorded on 2026-10-13. These are development checks, not full 1.1 release
 acceptance. Implementation checkpoint: `b6673ef`.
 
-The current production-candidate revisions and public repository checks are in
-[the final image record](testing-1.1-final-image.md); the revisions below describe
-the retained earlier checkpoint.
+The final October 16 candidate revisions and public repository checks are in
+[the 1.1 image record](testing-1.1-final-image.md); the revisions below describe
+the retained earlier checkpoint. Current 1.1.1 inputs are recorded separately.
 
 ## Live checkout packages
 

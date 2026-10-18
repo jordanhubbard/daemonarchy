@@ -1,8 +1,10 @@
 # Daemonarchy 1.1.1 refresh
 
-Preparation started October 16, 2026. This record is in progress; 1.1.1 has not
-been built, qualified or published yet. Earlier release qualification does not
-qualify the new kernel, package set or image.
+Preparation started October 16, 2026. This record is in progress. The selected
+world, kernels, release sets and source packages have built; final package QA,
+signed application/module payloads and the final image remain in preparation.
+1.1.1 has not been published. Earlier release qualification does not qualify
+the new kernel, package set or image.
 
 ## Release authorization
 
@@ -14,12 +16,47 @@ gates for this release. Their documented failures and untested states remain
 unchanged; this authorization does not establish hardware support or fixes.
 
 Publication still requires completed release artifacts, matching kernel modules,
-signed package and boot payloads, and artifact integrity checks. At the latest
-native build inspection, 602 packages had built, 717 were fetched and 145
-remained. The one failure was an HTTP/2 transport error fetching cliamp's Go
-dependency `github.com/mewkiz/flac@v1.0.14`; it also skipped the dependent
-desktop package. Retry that package after the active bulk run and complete the
-final package pass with the selected 1.1.1 desktop port before image assembly.
+signed package and boot payloads, and artifact integrity checks. All 749 source
+package builds completed, including the 1.1.1 desktop package. One transient
+HTTP/2 error fetching cliamp's Go dependency
+`github.com/mewkiz/flac@v1.0.14` succeeded on a targeted retry; the completed
+retry had no failed or skipped ports. All 24 isolated native testport checks
+then passed, followed by the final combined repository pass and actual external
+module inventory generation. The qualification exit status is zero and its
+recorded ports revision matches `f7d7ee897405dcb8ce87e674588a4e1b3bfba00e`.
+Signed-feed publication and final image qualification remain separate gates.
+
+## Recovery and diagnostics changes
+
+- Rescue option 2 pairs or unpairs an agent, including stale state left after
+  a reset. The menu waits briefly for late boot messages and redraws without
+  requiring an unexplained Return keypress.
+- Installer completion requires dependency and all-file package checksum
+  verification, a target-pool flush before the completion marker, and another
+  flush afterwards. Portable checks and a native real-package fixture passed:
+  truncating an installed payload prevents completion.
+- Candidate adoption compares the signed feed's package OS requirements with
+  both the actual kernel and userland before changing package identities.
+  Native signed-feed tests and an actual OS1600027 VM rejected the OS1600028
+  payload with automatic yes, `IGNORE_OSVERSION` and spoofed `UNAME_*` values.
+  Architecture-independent packages retain their supported metadata exception.
+- Continuous debug observation and a controller-side receiver are included in
+  this refresh. See [the operating guide](remote-agent-debug.md#continuous-diagnostics).
+  Native tests passed actual snapshots, bounded samples and rotation,
+  generation-based collector exit, automatic collection after SSH approval,
+  collector restart, snapshot dispatch, SFTP, live-access revocation and
+  stale-PID safety. Controller tests passed retention of the last remote output
+  after abrupt transport death, private file permissions, finite duration and
+  transport cleanup when the receiver receives SIGTERM. These checks do not
+  establish the cause of the MacBook's repeated resets or qualify its desktop.
+  A private native broadcast-socket fixture also passed event delivery,
+  reconnection after a devd-like disconnect, file permissions and generation
+  exit. On October 18 UTC the helpers were hot-deployed on the existing OS1600027
+  MacBook without restarting its approved listener; the off-target receiver
+  retained actual kernel/process/storage/sensor output, heartbeats and a passive
+  `devd-connected` record. Unsupported `vt` text capture and thermal sensors were
+  reported explicitly. That live evidence does not qualify the new OS1600028
+  image or establish the cause of any reset.
 
 ## Selected inputs
 

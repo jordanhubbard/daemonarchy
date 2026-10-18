@@ -1,5 +1,9 @@
 # MacBookPro16,1 first-boot investigation
 
+This is a dated investigation log. The October 17/18 follow-up at the end
+describes the later 1.1 candidate installation; [1.1.1 qualification](testing-1.1.1.md)
+is separate. Earlier driver results below remain historical evidence.
+
 Collected on 2026-10-15 through console-approved SSH pairing, after manually
 correcting the loader's `currdev`. This is an investigation of a partial
 installation, not desktop acceptance. No reboot, package installation, GPU
@@ -177,3 +181,37 @@ including the matching `nvidia-drm-612-kmod` for NVIDIA 595.104.02. These
 share the same DRM core; retaining the NVIDIA 6.6 package would pull in the
 conflicting older core. The legacy Radeon selection table is regenerated
 from the pinned 6.12 source. Physical AMD and NVIDIA acceptance is pending.
+
+
+## 1.1 candidate recovery follow-up, 2026-10-17/18
+
+A later installation reached the October 12 `3ceb5f150bc1` base, still
+OSVERSION `1600027`. Its desktop transaction was incomplete, and the operator
+reported repeated spontaneous restart or power-off while ordinary userland
+packages were being installed. No desktop GPU startup had occurred during
+those interrupted transactions, so these resets do not establish an AMD
+initialization failure. The desktop remains unqualified.
+
+A recovery boot environment and private logs were retained. Same-version cached
+package repair corrected 104 damaged packages; later small checkpointed package
+batches used durable pool barriers. Following another reset, the full installed
+package-file checksum check passed, while approximately 42 packages were still
+missing from the planned desktop. This distinguishes durable repaired files
+from a completed installation; successful extraction of some packages is not
+completion of the desktop transaction.
+
+Crash capture was enabled before retries, but no saved panic dump or orderly
+shutdown evidence was recovered. Samples showed temperatures of 59–71 C, no
+armed FreeBSD watchdog and no observed ACPI power event. None of those negative
+observations identifies the reset's cause. Named sysctls remain necessary;
+the earlier `sysctl -a` panic above is a separate, confirmed observation.
+
+The rescue menu could be hidden by late probe output and reappear after Return.
+The 1.1.1 source now waits briefly for probe activity to settle and redraws the
+menu automatically. Its Pair/Unpair option also clears stale remote-agent state
+after a reset. These helpers were installed on the investigation target;
+physical next-boot validation is separate from their passing native fixtures.
+Bounded [continuous SSH diagnostics](remote-agent-debug.md#continuous-diagnostics)
+are being added for off-target retention. They cannot capture an early panic
+before networking or continue a live stream through a hard reset. New src-based
+loader/early-kernel transport work remains deferred to 1.2.

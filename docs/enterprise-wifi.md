@@ -1,4 +1,4 @@
-# Enterprise Wi-Fi (1.1 development)
+# Enterprise Wi-Fi (1.1 / 1.1.1)
 
 The installer and desktop support profiles for **PEAP/MSCHAPv2** and
 **EAP-TLS**. Both require a trusted CA certificate and the DNS domain of the
@@ -40,8 +40,7 @@ failures. Form tests cover enterprise selection, hidden networks and failed
 joins. These checks do not establish a successful association or an EAP
 exchange against a real access point.
 
-Release qualification still needs both EAP methods on a test network,
+The implementation carries forward into 1.1.1; a source/package refresh does not supply new radio evidence. Native qualification still needs both EAP methods on a test network,
 rejection of an untrusted server certificate and wrong server domain,
 reconnection after reboot, and inspection of native logs for credential
-disclosure. Do not mark the enterprise Wi-Fi release gate complete from the
-configuration tests alone.
+disclosure. The operator has approved publication with this limitation disclosed; configuration tests alone do not complete enterprise Wi-Fi qualification. See [the current release record](testing-1.1.1.md).

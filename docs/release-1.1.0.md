@@ -1,7 +1,10 @@
 # Daemonarchy 1.1.0
 
-Daemonarchy 1.1.0 publishes the exact tested rc.1 artifacts. Publication was
-explicitly approved with the hardware and hypervisor limitations below.
+Historical proposed stable-release notes. The public artifacts remain
+`daemonarchy-1.1.0-rc.1`; the `daemonarchy-1.1.0` stable promotion is still a
+GitHub draft at the 1.1.1 preparation checkpoint. Publication was explicitly
+approved with the hardware and hypervisor limitations below, but approval is
+not evidence of publication. The next requested release is [1.1.1](testing-1.1.1.md).
 Outstanding qualification remains outstanding: publication does not turn an
 untested or failing configuration into supported hardware.
 
@@ -34,8 +37,9 @@ packages remain installable. Signed boot updates use a retained boot environment
 and explicit validation/activation. See [the enrollment guide](secure-boot.md).
 
 The exact candidate application packages passed an isolated 1.0.1 `pkg upgrade`
-and rollback test. The same signed application packages are available through the stable
-package feed; the versioned candidate feed remains available for provenance. An application-package
+and rollback test. The signed application packages are available through the versioned
+`packages-16-amd64-1.1.0-candidate` feed. That result does not establish that
+the unversioned stable feed was promoted. An application-package
 transaction does not upgrade the FreeBSD base/kernel, replace its drivers,
 or convert an existing installation to verified boot. Kernel modules must match
 the running snapshot. The verified maintenance path currently covers the pinned

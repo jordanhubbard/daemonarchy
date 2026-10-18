@@ -24,6 +24,29 @@ New to Daemonarchy? [Getting started](docs/getting-started.md) walks through wri
 Check the [hardware quirks](docs/hardware-quirks.md) for known boot blockers and
 diagnostic notes, including the MSI Raider 18 HX AI A2XWIG early installer reset.
 
+## 1.1.1 preparation
+
+The requested next stable release is **1.1.1**. Its new base is FreeBSD CURRENT
+`bdcfeac3e1cb` (OSVERSION `1600028`), paired with ports `f7d7ee897405` on
+`daemonarchy-1.1.1`. The [qualification record](docs/testing-1.1.1.md) tracks
+what has passed and what remains before publication; the download links above
+continue to identify the available artifacts.
+
+The refresh adds an explicit **Pair / Unpair remote debugging agent** toggle,
+rescue-menu redraw after boot probes, and an installation integrity check that
+refuses to report success with missing or damaged package files. Bounded
+[continuous diagnostics](docs/remote-agent-debug.md#continuous-diagnostics)
+retain evidence on the controller while SSH works. These tools do not observe
+an early boot failure or recover networking after a hard reset. Loader and
+early-kernel network debugging are deferred to **1.2**; 1.1.1 adds no new
+source patches for that work.
+
+The new application feed is versioned `packages-16-amd64-1.1.1`. Moving an older
+installation to it requires a coordinated base, kernel and driver upgrade;
+changing the package URL alone is insufficient. Existing stable-feed users
+remain on their current feed. Physical GPU, firmware, radio and retained-OS
+qualification remains explicitly recorded, rather than inferred from VM tests.
+
 ## What FreeBSD adds
 
 Daemonarchy is the Omarchy desktop with FreeBSD underneath, and it puts FreeBSD's strengths in the Omarchy menu under **System > FreeBSD**:
@@ -48,13 +71,13 @@ Install software from FreeBSD's package collection through OctoPkg (**Install > 
 - A live FreeBSD system (from the snapshot) that logs root in on the first console and starts the installer.
 - The installer: `configurator` asks the questions, `install` installs, `dashboard` shows its progress, `launch` ties them together.
 - The snapshot's `base.txz`, `kernel.txz` and `lib32.txz`, which become the installed system. The 32-bit compatibility libraries also satisfy native package dependencies such as LLVM/Mesa.
-- A package repository with what pkg.FreeBSD.org does not publish: the Omarchy ports from [the pinned 1.1 ports integration](https://github.com/jordanhubbard/freebsd-ports/tree/daemonarchy-1.1-package-baseline), and the GPU and Wi-Fi kernel modules (`drm-612-kmod`, `gpu-firmware-*-kmod`, `wifi-firmware-*-kmod`) built for the snapshot kernel.
+- A package repository with what pkg.FreeBSD.org does not publish: the Omarchy ports from the release-specific ports integration ([1.1 candidate](https://github.com/jordanhubbard/freebsd-ports/tree/daemonarchy-1.1-package-baseline), [1.1.1 refresh](https://github.com/jordanhubbard/freebsd-ports/tree/daemonarchy-1.1.1)), and the GPU and Wi-Fi kernel modules (`drm-612-kmod`, `gpu-firmware-*-kmod`, `wifi-firmware-*-kmod`) built for the snapshot kernel.
 
-Everything else the desktop needs (Hyprland, Qt, browsers, ...) is downloaded from pkg.FreeBSD.org during the install, so the machine needs network access. That keeps the image well under GitHub's 2 GiB release asset limit; a fully offline image would be 7-8 GB.
+Other desktop dependencies are downloaded during installation. Compatible official packages come from pkg.FreeBSD.org; the 1.1.1 versioned feed also supplies ordinary dependencies rebuilt for its newer ports/base selection. Network access is required. Keeping those downloads off the ISO keeps each release asset below GitHub's 2 GiB limit; a complete offline desktop payload would exceed that budget.
 
 ## Updates
 
-An installed system keeps itself current with `pkg upgrade` (which Omarchy's update runs). FreeBSD's packages come from pkg.FreeBSD.org. Daemonarchy's own packages (the Omarchy ports and the patched Quickshell) come from a signed repository published as the assets of the [`packages-16-amd64`](https://github.com/jordanhubbard/daemonarchy/releases/tag/packages-16-amd64) release. The installer adds its key as `/usr/local/etc/pkg/keys/daemonarchy.pub`, so fixes reach you without a new ISO. The image's own packages stay on the disk as a fallback repository, `Daemonarchy-ISO`, since the GPU and Wi-Fi modules built for its kernel are only there.
+Application packages update with `pkg upgrade` (which Omarchy's update runs). This does not update the FreeBSD base/kernel or make kernel modules compatible with another snapshot. FreeBSD's packages come from pkg.FreeBSD.org. Daemonarchy's own packages (the Omarchy ports and the patched Quickshell) come from a signed repository published as the assets of the [`packages-16-amd64`](https://github.com/jordanhubbard/daemonarchy/releases/tag/packages-16-amd64) release. The installer adds its key as `/usr/local/etc/pkg/keys/daemonarchy.pub`, so fixes reach you without a new ISO. The image's own packages stay on the disk as a fallback repository, `Daemonarchy-ISO`, since the GPU and Wi-Fi modules built for its kernel are only there.
 
 A system installed from an image dated 2026-10-02 or earlier has only the on-disk repository. To move it to the online one, run as root:
 
@@ -89,11 +112,11 @@ an existing OS/data partition or creating a new one in free space.
 
 ## The installer
 
-Development installers retain installation output on the target disk and
+The 1.1 installer retains installation output on the target disk and
 provide a [console rescue menu](docs/rescue-console.md) when installation is
 interrupted or graphical login fails. It offers logs, a local shell, and the
 same console-approved remote debugging used by the installer. Recovery actions
-require the password selected during installation.
+require the password selected during installation. In the 1.1.1 refresh, option 2 toggles pairing and unpairing, including removal of stale pairing state after a reset; see the [rescue guide](docs/rescue-console.md).
 
 The 1.1 development installer includes **Remote agent debug** in its welcome
 menu. It displays an IP address and configurable SSH port (default 2222), then
@@ -124,7 +147,7 @@ timezone=America/Los_Angeles
 
 The machine powers off when the install finishes.
 
-### Optional live checkouts (1.1 development)
+### Optional live checkouts
 
 The development installer offers `/usr/ports` and `/usr/src` separately, both off
 by default. These are shallow Git checkouts (depth 1), pinned to the release
@@ -151,7 +174,7 @@ Daemonarchy is four repositories:
 - **[jordanhubbard/daemonarchy](https://github.com/jordanhubbard/daemonarchy)** (this one): the installer image, its build and test scripts, and these docs.
 - **[jordanhubbard/daemonarchy-desktop](https://github.com/jordanhubbard/daemonarchy-desktop)**: Daemonarchy's artwork and login theme, and the System > FreeBSD tools. Its tags are Daemonarchy's version numbers.
 - **[jordanhubbard/omarchy-freebsd](https://github.com/jordanhubbard/omarchy-freebsd)**: the FreeBSD compatibility layer that lets Omarchy run unchanged.
-- **[jordanhubbard/freebsd-ports](https://github.com/jordanhubbard/freebsd-ports/tree/daemonarchy-1.1-package-baseline)** (`daemonarchy-1.1-package-baseline` branch): the pinned 1.1 release ports fork that packages all of it. Upstream submissions continue independently of Daemonarchy releases.
+- **[jordanhubbard/freebsd-ports](https://github.com/jordanhubbard/freebsd-ports/tree/daemonarchy-1.1.1)**: the ports fork that packages all of it. The 1.1.1 refresh uses `daemonarchy-1.1.1`; the public 1.1 candidate retains `daemonarchy-1.1-package-baseline`. Upstream submissions continue independently of Daemonarchy releases.
 
 ## Building
 
