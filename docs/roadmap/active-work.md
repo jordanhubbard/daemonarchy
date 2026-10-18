@@ -98,6 +98,7 @@ Next action: demonstrate a supported installed retained-project execution path o
 - **Owner:** desktop, compatibility and diagnostics Components
 - **Direction:** Keep unresolved GPU, radio, boot and restart behavior explicit while extending physical acceptance.
 - **Conclusion:** HP desktop/application acceptance passed; MacBook GPU/Wi-Fi and earlier restart causes, other platform boot failures and radio/suspend checks remain open.
+- **ASRock availability:** The operator reports the RTX system still hangs in firmware and cannot enter setup or the boot menu, even with other USB devices disconnected and the keyboard directly attached. Firmware recovery is pending; no current Daemonarchy boot or physical acceptance result can be obtained from it. Keep R12-11 open.
 - **Depends on:** none
 - **Implementation:**
   - [ ] Retain exact hardware and artifact scope; investigate known failures without conflating transport loss and reboot; qualify actual rendering, wireless and recovery.
