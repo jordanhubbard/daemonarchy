@@ -22,8 +22,10 @@ boot environment and keep drivers on the new snapshot.
 
 Upstream [#640](https://github.com/freebsd/freebsd-ports/pull/640),
 [#641](https://github.com/freebsd/freebsd-ports/pull/641) and
-[#642](https://github.com/freebsd/freebsd-ports/pull/642) remain draft reviews
-pending refreshed native validation. Upstream merge is separate from shipping
+[#642](https://github.com/freebsd/freebsd-ports/pull/642) are ready for upstream
+review after refreshed native validation. The first two submissions match the
+qualified release port files; #642 passed separate native DRM and NVIDIA DRM
+testports at its exact head without the downstream VirtIO patch. Upstream merge is separate from shipping
 the qualified fork.
 
 The operator authorized release publication with the remaining physical,

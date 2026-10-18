@@ -495,6 +495,18 @@ custom-port, reconnect and shutdown evidence belongs in the
 
 ## Releasing
 
+### Maintaining the release history
+
+Update [CHANGELOG.md](CHANGELOG.md) with every release change. Keep the current
+release under an explicit unreleased heading until publication; backfill missed
+changes from the actual commit/tag and GitHub release history. Record concrete
+behavior, source/ports or ABI migrations, validation and material limitations.
+Distinguish published releases, prereleases, drafts and supporting feeds; an
+approval or release commit does not establish publication. Use UTC publication
+dates and link the corresponding qualification record so both humans and agents
+can follow the evidence. Final publication updates the changelog, download links
+and current-status documentation together.
+
 ### Packages
 
 A compatible application fix can reach existing installations through their online repository without a new image. The unversioned publication command below is only for packages compatible with that feed's retained base. For 1.1.1 use the versioned rebuilt-dependency procedure below and leave the unversioned feed unchanged. After rebuilding the compatible packages (step 4 of the build host setup), run this from a workstation with `gh`:

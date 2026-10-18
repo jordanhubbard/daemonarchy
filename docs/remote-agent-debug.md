@@ -135,7 +135,8 @@ exec ssh -i /PRIVATE/PAIR/key -o IdentitiesOnly=yes -o BatchMode=yes \
   -p 2222 root@MACHINE_IP "$@"
 ```
 
-Run the repository's receiver on the controller (Python 3 standard library):
+Run the repository's receiver on a Linux or macOS controller (Python 3 standard
+library; native Windows process-group handling is not implemented):
 
 ```sh
 python3 scripts/capture-remote-debug.py \
@@ -242,7 +243,12 @@ New installations load their selected desktop GPU modules in
 modules are excluded from automatic devmatch loading and the early `kld_list`.
 If SSH was selected but did not start, graphical startup is withheld. Module
 errors go to `/var/log/daemonarchy-graphics.log`; SDDM requires the service's
-ready marker.
+ready marker. A requested DRM driver must have an attached active device in
+non-verbose `devinfo` and DRM card/render character nodes before that marker is
+written. Module-load success and device nodes alone can survive a failed GPU
+attach. These checks establish startup prerequisites; they do not prove that
+Xorg, a greeter or a compositor can render. NVIDIA's attached-device check covers
+its parent driver and does not independently test DRM ioctls.
 
 FreeBSD Safe Mode (`boot_safe=YES`) and the loader setting
 `set daemonarchy_rescue=YES` skip this graphics service and SDDM. Normal network

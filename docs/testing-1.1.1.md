@@ -1,8 +1,9 @@
 # Daemonarchy 1.1.1 refresh
 
 Preparation started October 16, 2026. This record is in progress. The selected
-world, kernels, release sets and source packages have built; final package QA,
-signed application/module payloads and the final image remain in preparation.
+world, kernels, release sets and source packages have built and passed package QA.
+Signed application and checkout feeds are public and verified. Final image
+installation qualification and product publication remain in progress.
 1.1.1 has not been published. Earlier release qualification does not qualify
 the new kernel, package set or image.
 
@@ -24,7 +25,8 @@ retry had no failed or skipped ports. All 24 isolated native testport checks
 then passed, followed by the final combined repository pass and actual external
 module inventory generation. The qualification exit status is zero and its
 recorded ports revision matches `f7d7ee897405dcb8ce87e674588a4e1b3bfba00e`.
-Signed-feed publication and final image qualification remain separate gates.
+The signed application feed is published and independently verified from GitHub;
+final image qualification remains a separate gate.
 
 ## Recovery and diagnostics changes
 
@@ -57,6 +59,16 @@ Signed-feed publication and final image qualification remain separate gates.
   `devd-connected` record. Unsupported `vt` text capture and thermal sensors were
   reported explicitly. That live evidence does not qualify the new OS1600028
   image or establish the cause of any reset.
+- After repairing and verifying the MacBook's installed package files and
+  dependencies on its existing OS1600027 base, controlled AMD initialization
+  reported `KGQ enable failed`, `gfx_v10_0 hw_init failed -60` and failed device
+  attachment. Module loading nevertheless returned success and left DRM nodes,
+  exposing a false graphics-ready result. The refreshed service requires an
+  attached active driver and DRM card/render character devices. Regression tests
+  cover failed attachment with surviving nodes; the actual MacBook now rejects
+  that state and clears a stale marker without reloading its driver. This fixes
+  startup reporting and SDDM gating, not the underlying GPU failure. The MacBook
+  remains on its old base with graphics disabled and its desktop unqualified.
 
 ## Selected inputs
 
@@ -67,13 +79,12 @@ The upstream tips were resolved once at the start of this refresh:
 - Upstream ports: `b1306594c4a601f98a3d28cbf6fc0569e218245f`.
 - Release ports integration: `f7d7ee897405dcb8ce87e674588a4e1b3bfba00e`,
   branch `daemonarchy-1.1.1`; combines the refreshed submissions and retains
-  the existing 6.12 VirtIO backport for the release. Package QA remains pending.
+  the existing 6.12 VirtIO backport for the release. Package QA passed.
 - Desktop source is tagged `v1.1.1` at the unchanged `ec2a00824ec95b342c0c095657ac725c56f0528b`; compatibility source remains
   `535e44bb6fa3e9b9f4fc3a870591688526279124` until a tested change requires
   advancing them. The requested release is named `1.1.1`. The original rc2
-  preparation was renamed at the operator's request. The desktop port version
-  update is integrated separately from the active dependency build; the final
-  package pass will use this selected integration.
+  preparation was renamed at the operator's request. The final combined package
+  pass includes the desktop version update at this selected integration.
 
 The requested source tip is newer than the October 12 binary snapshot. A fresh
 world, GENERIC kernel, release sets, jail and kernel modules must be produced
@@ -98,9 +109,12 @@ previous fork merge history is excluded.
   backport is excluded; upstream driver review remains
   [drm-kmod #517](https://github.com/freebsd/drm-kmod/pull/517).
 
-These submissions start as drafts pending refreshed native validation. Historical
-native testport results are identified as results from the earlier package
-baseline in each description. They are not current-baseline passing results.
+All three submissions are ready for review. The 19 supporting ports and both
+desktop ports passed refreshed native testport checks with port files identical
+to the release integration. The separate header-only #642 head
+`c3acbaca77647f4661b5b0177c861880aeb7b2f2` passed its own isolated DRM and
+NVIDIA DRM testports, including stage, plist, install/deinstall and package QA.
+It excludes the release's VirtIO patch. None of these submissions is claimed merged.
 
 ## Checks and remaining work
 
@@ -134,8 +148,8 @@ baseline in each description. They are not current-baseline passing results.
   policy-kernel SHA-256
   `5022ac4bbf1b1cef9f590bc4384fea554197f1d85bf35d690840780fbeebbe13`.
   The unsigned boot payload is assembled from the new release sets and policy
-  outputs. Final signing awaits the matching external-module inventory; the
-  isolated native boot checks below cover the new kernel and loaders. The build receipt explicitly retains
+  outputs. Final signing completed with the matching inventory of 186 packages
+  and 997 external modules. The isolated native boot checks below cover the new kernel and loaders. The build receipt explicitly retains
   `native_boot_qualified: false`.
 - Source checkout admission now recognizes full, shallow and detached kernel
   revision labels while still requiring the selected commit and rejecting dirty
@@ -148,8 +162,8 @@ baseline in each description. They are not current-baseline passing results.
   builder booted this exact kernel and userland at OSVERSION `1600028` in a
   separate boot environment; the previous environment is retained. The fresh
   `16rc2` jail and its actual build clone contain the matching kernel, lib32 and
-  source. A full combined package build with QA enabled is running against
-  ports integration `84afb7141bd066711e0f45737b1705941380ee1a`. The earlier dry
+  source. The full combined package build with QA enabled completed against
+  final ports integration `f7d7ee897405dcb8ce87e674588a4e1b3bfba00e`. The earlier dry
   run queued 1,466 packages: 718 reusable official packages and 748 source builds.
   The fresh-jail run selected 717 reusable packages and 749 source builds,
   including the package manager itself.
@@ -176,10 +190,13 @@ baseline in each description. They are not current-baseline passing results.
   preservation, mandatory fresh approval and protection of a replacement
   session from old cleanup. Portable menu tests preserve root authentication
   for both actions; native rescue installation remains idempotent.
-- Pending: refreshed full-tree testport and combined package build; native module
-  inventory and final signed boot payload; ISO size and
-  runtime audit; fresh installation/desktop matrix and upgrade/recovery tests;
-  stable GitHub release publication and asset-hash verification.
+- The [versioned application feed](https://github.com/jordanhubbard/daemonarchy/releases/tag/packages-16-amd64-1.1.1)
+  contains 510 application/dependency packages and five metadata assets. All 515
+  GitHub asset names, sizes and SHA-256 digests match staging. Native clients
+  verified the signed catalogue, fetched all 22 selected root archives from
+  GitHub, and rejected an unrelated signing key. The old stable feed is unchanged.
+- Pending: final installation/desktop matrix and upgrade/recovery evidence;
+  stable installer GitHub publication and final asset-hash verification.
 
 Loader and early-kernel network-debugging changes are deferred to 1.2. The
 1.1.1 kernel retains the selected upstream GENERIC configuration, including
@@ -188,6 +205,25 @@ for network debugging in this release.
 
 Physical GPU/display/suspend, Bluetooth headset/HID, enterprise EAP and physical
 Windows preservation limitations remain open until new evidence closes them.
+
+## Known dependency advisories
+
+An actual `pkg audit` on the staged physical upgrade reports three advisories
+in two selected dependencies: `python312-3.12.15` has
+[CVE-2025-15366](https://www.vuxml.org/freebsd/0be929a5-2e0f-11f1-88c7-00a098b42aeb.html)
+and [CVE-2025-15367](https://www.vuxml.org/freebsd/6d3488ae-2e0f-11f1-88c7-00a098b42aeb.html),
+and `py312-setuptools-63.1.0_3` has
+[CVE-2025-47273](https://www.vuxml.org/freebsd/690144e9-4f88-11f1-982e-00a098b42aeb.html).
+The Python issues concern application-controlled IMAP/POP commands containing
+newlines. The setuptools issue concerns path traversal through `PackageIndex`
+downloads; upstream fixes it in 78.1.1. The current VuXML entries still list
+Python 3.12 as affected. A repository search found no direct use of `imaplib`,
+`poplib` or `PackageIndex` in the installer scripts; this does not establish that
+all installed applications avoid those paths. This release does not remediate
+these dependency advisories and is not a zero-advisory package set. Avoid passing
+untrusted commands to the affected mail APIs or using the vulnerable setuptools
+download path with untrusted sources. Package QA and signatures establish build
+and integrity results, not absence of vulnerabilities.
 
 ## New-base boot checks, October 17
 

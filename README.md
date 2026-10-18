@@ -8,6 +8,9 @@ This repository builds a bootable FreeBSD 16.0-CURRENT image with the Daemonarch
 
 Each release is built from a FreeBSD 16.0-CURRENT snapshot. CURRENT moves daily, so an image is tied to the snapshot it was built from.
 
+[CHANGELOG.md](CHANGELOG.md) records the changes, publication state and migration
+limits for every release, including the initial installer snapshots.
+
 ## Download
 
 The latest stable release is **[Daemonarchy 1.0.1](https://github.com/jordanhubbard/daemonarchy/releases/tag/daemonarchy-1.0.1)**. The current public candidate is **[Daemonarchy 1.1.0-rc.1](https://github.com/jordanhubbard/daemonarchy/releases/tag/daemonarchy-1.1.0-rc.1)** (x86-64, BIOS or UEFI), with Omarchy 4.0.4 on the October 12 FreeBSD 16.0-CURRENT snapshot. A refreshed [1.1.1 is being prepared](docs/testing-1.1.1.md).

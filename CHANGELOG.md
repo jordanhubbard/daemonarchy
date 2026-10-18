@@ -50,6 +50,10 @@ qualification is implied by this entry. The intended tag is
   fresh pairing session.
 - Draw the rescue menu after late boot output settles, without requiring the
   user to press Return to reveal it.
+- Leave graphics unready when a requested DRM driver fails device attachment,
+  even if module loading succeeds and DRM character nodes survive the failure.
+  Check attached active devices and card/render nodes before permitting SDDM.
+  These prerequisites do not certify compositor rendering.
 
 ### Debugging observability
 
@@ -80,6 +84,9 @@ qualification is implied by this entry. The intended tag is
   Existing hardware failures and untested behavior remain limitations, including
   the MacBook Pro's repeated resets during package installation and its missing
   desktop. Authorization is not a passing hardware test.
+- Record known Python IMAP/POP command-injection and setuptools path-traversal
+  dependency advisories in the qualification record; build QA and signatures
+  do not establish a vulnerability-free package set.
 
 ## 1.1.0 — Draft, not published
 
