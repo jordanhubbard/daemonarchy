@@ -39,6 +39,113 @@ The MacBook investigation remains open. Final-ISO BIOS and enforced UEFI boot
 and embedded root-mount-policy checks passed; the four full VM runs use the
 preceding image and have their scope recorded separately.
 
+## Planned: Winamp-inspired visuals and parallel package management
+
+Bring Omarchy's 1980s visual character—screensavers, wallpapers and the
+Omarchy/Daemonarchy logos—into installation and package management. The goal
+is useful, creative, colorful feedback with the energy of a Winamp visualizer.
+This is planned work for a future release, not functionality shipped in 1.1.1.
+
+### ANSI installer visualizers
+
+Use ANSI color and terminal graphics to animate real installation activity at
+each stage, with a consistent Daemonarchy palette and recognizable logo motifs.
+Explore several visualizer styles rather than one repeating progress spinner:
+
+- **Disk skyline:** neon blocks rise as files fill the target, with actual used,
+  free and required space alongside the animation. Change the scene for disk
+  preparation, base extraction, packages and final verification.
+- **Package equalizer:** Winamp-style bars and falling peaks respond to active
+  downloads and package work. A dependency constellation lights up as packages
+  become ready, install and complete; identify the current packages in text.
+- **Network waveform:** scrolling ANSI scopes, spectrum-like bars or a neon
+  tunnel respond to measured transfer rates, showing received bytes, active
+  transfers, retries and genuine idle periods.
+- **Stage transitions:** short logo reveals, pixel trails and distinct palettes
+  celebrate completed stages. Failed or stalled work stays clearly visible and
+  never receives a success animation.
+
+Every animation must correspond to measured state; decorative motion must not
+masquerade as progress. Keep stage names, counts, errors and available estimates
+readable. Mark uncertain totals or estimates explicitly, and distinguish
+network waiting, verification and installation from a hung process. Preserve
+ordinary diagnostic logs independently of screen redraws.
+
+Support the physical FreeBSD console, small terminals and SSH/serial sessions.
+Provide 16-color and 256-color rendering as available, restrained refresh rates,
+resize handling and a reduced-motion/plain-text option. Animation must not
+consume input, hide an approval prompt or meaningfully slow installation.
+
+### Complete package DAG and safe parallel execution
+
+For each release, generate and retain the complete package dependency DAG for
+every supported installation selection, including all transitive dependencies,
+GPU-specific packages and optional components. Record exact package identities,
+versions, origins/flavors, repository provenance, hashes, dependency edges,
+download sizes and installed-space estimates. Include dependencies supplied by
+official repositories as well as Daemonarchy's own feed. Missing, conflicting or
+changed catalogue inputs must trigger an explicit re-plan or rejection rather
+than silently making the recorded graph incomplete.
+
+Before writes, resolve the user's selections into a concrete install plan from
+that release graph. Make the graph and structured progress events available to
+both humans and agents, and use them as the source for progress totals, space
+planning and the visualizers.
+
+Pursue parallel **downloads and installation of independent leaf-node packages**.
+Define readiness by completed prerequisites: the scheduler's ready frontier may
+run independent work together while preserving dependency order. Bound workers
+by memory, CPU, network and free-space budgets; prioritize work that unblocks
+other packages and avoid downloading or installing shared dependencies twice.
+
+Design one transaction coordinator for package-database changes, file ownership,
+shared directories, install scripts, triggers and service/cache updates. Package
+independence in the dependency graph alone does not establish that those side
+effects can run concurrently. Investigate the required native pkg interfaces or
+upstream extensions; do not implement parallel installation by starting competing
+pkg transactions against the same database. Parallel fetch and verified staging
+can proceed while unsafe commit/script operations remain serialized. Actual
+parallel installation remains an explicit goal requiring evidence of safe
+concurrency, rather than relabeling parallel downloads as parallel installation.
+
+Retain signature/hash verification, installed-file checks, automatic/manual
+package identities, actionable failures and boot-environment recovery. Failed
+workers must stop dependent work, retain useful logs and permit a well-defined
+retry without reporting partial completion as success.
+
+### Colorful, fast graphical package manager
+
+Apply the same visual identity and DAG-based engine to graphical package
+management: clear dependency previews, meaningful download/install animations,
+parallel ready-work scheduling, live disk/network activity and readable errors.
+Support install, update and removal plans, with explicit effects on dependencies
+and recoverable failures. Keep the interface responsive and offer reduced motion.
+
+Evaluate extending the current graphical package manager first. If it cannot
+support the intended experience and execution model, build a suitable application
+and contribute it as a FreeBSD port, with source, licensing, packaging and native
+validation ready for upstream review. Share the planner, scheduler and structured
+progress protocol with the installer so the GUI and terminal report the same
+transaction and completion state.
+
+### Acceptance and delivery
+
+1. Prototype several ANSI styles using recorded progress events, then demonstrate
+   them on a real FreeBSD console and SSH/serial terminals. Review creativity,
+   legibility, resize behavior and animation cost with real installation stages.
+2. Produce the complete release graph and test every supported selection for
+   dependency closure, exact package identity, conflict detection and space
+   planning before enabling concurrent execution.
+3. Measure serial and parallel runs on the same package set. Report download,
+   staging, actual install/commit and total elapsed time separately, plus peak
+   resource use; establish speed improvements without weakening integrity.
+4. Exercise shared dependencies, conflicting files, script/trigger side effects,
+   low disk space, network interruption, worker failure and retry on native
+   FreeBSD. Verify package/file integrity and boot-environment recovery afterward.
+5. Qualify the shared engine and graphical application, contribute any needed
+   pkg changes and the application port upstream, and retain terminal/GUI evidence
+   that actual parallel installation and accurate progress work as claimed.
+
 ## 1.1.0 candidate: retained scope and evidence
 
 The table and checks below describe the October 16 candidate, not the new
