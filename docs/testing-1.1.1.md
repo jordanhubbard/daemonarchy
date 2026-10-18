@@ -1,10 +1,10 @@
 # Daemonarchy 1.1.1 refresh
 
-Preparation started October 16, 2026. This record is in progress. The selected
+Preparation started October 16, 2026. The release is published with the outstanding
+qualification work recorded below. The selected
 world, kernels, release sets and source packages have built and passed package QA.
-Signed application and checkout feeds are public and verified. Final image
-installation qualification and product publication remain in progress.
-1.1.1 has not been published. Earlier release qualification does not qualify
+Signed application and checkout feeds are public and verified. The final image passed its native payload audit and asset integrity checks;
+final installation/desktop qualification remains in progress. Earlier release qualification does not qualify
 the new kernel, package set or image.
 
 ## Release authorization
@@ -26,7 +26,8 @@ then passed, followed by the final combined repository pass and actual external
 module inventory generation. The qualification exit status is zero and its
 recorded ports revision matches `f7d7ee897405dcb8ce87e674588a4e1b3bfba00e`.
 The signed application feed is published and independently verified from GitHub;
-final image qualification remains a separate gate.
+final image installation/desktop qualification remains outstanding. The operator
+subsequently authorized production publication without waiting for that matrix.
 
 ## Recovery and diagnostics changes
 
@@ -87,7 +88,7 @@ The upstream tips were resolved once at the start of this refresh:
   pass includes the desktop version update at this selected integration.
 
 The requested source tip is newer than the October 12 binary snapshot. A fresh
-world, GENERIC kernel, release sets, jail and kernel modules must be produced
+world, GENERIC kernel, release sets, jail and kernel modules were produced
 from this exact revision. The OSVERSION increment changes the kernel packet-header layout, requiring
 [external drivers to be rebuilt](https://github.com/freebsd/freebsd-src/commit/83f5b5c2eeba2a2d66d87d4367ca5406322386a4).
 The previous release sets, ports integration, signing
@@ -195,8 +196,32 @@ It excludes the release's VirtIO patch. None of these submissions is claimed mer
   GitHub asset names, sizes and SHA-256 digests match staging. Native clients
   verified the signed catalogue, fetched all 22 selected root archives from
   GitHub, and rejected an unrelated signing key. The old stable feed is unchanged.
-- Pending: final installation/desktop matrix and upgrade/recovery evidence;
-  stable installer GitHub publication and final asset-hash verification.
+- Outstanding: final installation/desktop matrix and complete upgrade/recovery evidence.
+  The operator authorized publication without waiting for these results; they are
+  not counted as passing checks.
+- Published: stable installer release with all six asset sizes and SHA-256 digests
+  checked against the audited payloads.
+
+## Published image and continuing tests, October 18 UTC
+
+The corrected image was built from installer commit
+`250db6f2b586c74e80d3c3ebf27e4b28793ce731`, including the graphics attachment
+guard. Its native public-image audit passed: required tools and installation
+payloads, versioned signed-feed selection, Python runtime imports, no private
+rescue authorization, and dependency resolution for every retained dynamically
+linked executable. The ISO is 1,912,215,552 bytes, below the 2 GiB asset limit:
+
+```text
+daemonarchy-1.1.1-amd64.iso
+79e90ec36cfff3f4875dc6bc2bc710265e1e04710ec2527909aa623935f179dc
+```
+
+The signed boot bundle SHA-256 is
+`c02a72244bf676869c0ca73afbe70507fb328bcb4331ef4343dce393e9a1ae4d`.
+The four fresh BIOS/enforced-UEFI, plain/encrypted installation and desktop
+runs use this exact ISO. The earlier `ee422ce` image and partial runs were
+superseded before publication when the MacBook exposed false graphics readiness;
+they are retained as partial evidence and do not qualify this final image.
 
 Loader and early-kernel network-debugging changes are deferred to 1.2. The
 1.1.1 kernel retains the selected upstream GENERIC configuration, including
@@ -229,8 +254,8 @@ and integrity results, not absence of vulnerabilities.
 
 An isolated UFS test image uses the new base and stock kernel sets, the rebuilt
 policy kernel and EFI loaders, and the existing production certificate. Its
-kernel-only qualification bundle is separate from the final release bundle;
-the latter still needs the completed external-module inventory. The runtime
+kernel-only qualification bundle is separate from the final release bundle,
+which was subsequently signed with the completed external-module inventory. The runtime
 probe was compiled on the new base. All successful userland boots independently
 asserted OSVERSION `1600028` and printed the selected `bdcfeac3e1cb` identity.
 The policy build's `-dirty` suffix identifies the existing downstream patches.

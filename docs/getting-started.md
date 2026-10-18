@@ -4,7 +4,7 @@ This guide takes you from a download to a working desktop, and through the thing
 
 Daemonarchy is the [Omarchy](https://omarchy.org) desktop running on [FreeBSD](https://www.freebsd.org). If you are curious how it is put together, or want to change it, read the [hacking guide](../HACKING.md) when you are done here.
 
-This guide covers the public 1.1 candidate and the 1.1.1 refresh in preparation. The [download page](../README.md#download) identifies what is published; [the 1.1.1 record](testing-1.1.1.md) tracks the new image separately. Earlier 1.0.1 has whole-disk, UEFI-only
+This guide covers Daemonarchy 1.1.1. The [download page](../README.md#download) identifies what is published; [the 1.1.1 record](testing-1.1.1.md) records the image and outstanding qualification. Earlier 1.0.1 has whole-disk, UEFI-only
 installation and needs Secure Boot off. See the [download page](../README.md#download)
 and the release
 [qualification record](testing-1.1-final-image.md) before choosing hardware.
@@ -21,7 +21,7 @@ and the release
 
 ## 1. Download the image
 
-Get the `.iso` and matching `.sha256` from the [download page](../README.md#download). At this preparation checkpoint GitHub **latest** selects stable 1.0.1; choose the explicit 1.1 candidate link for its added features. The 1.1.0 stable promotion remains a draft, and 1.1.1 is not yet published.
+Get the `.iso` and matching `.sha256` from the [download page](../README.md#download). GitHub **latest** selects stable 1.1.1. Read its qualification record before installing: publication does not establish physical-hardware compatibility or completion of the final installation matrix.
 
 Checking the download is optional but quick. In a terminal, in the folder you saved both files to:
 

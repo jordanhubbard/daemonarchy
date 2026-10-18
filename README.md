@@ -13,27 +13,27 @@ limits for every release, including the initial installer snapshots.
 
 ## Download
 
-The latest stable release is **[Daemonarchy 1.0.1](https://github.com/jordanhubbard/daemonarchy/releases/tag/daemonarchy-1.0.1)**. The current public candidate is **[Daemonarchy 1.1.0-rc.1](https://github.com/jordanhubbard/daemonarchy/releases/tag/daemonarchy-1.1.0-rc.1)** (x86-64, BIOS or UEFI), with Omarchy 4.0.4 on the October 12 FreeBSD 16.0-CURRENT snapshot. A refreshed [1.1.1 is being prepared](docs/testing-1.1.1.md).
+The latest stable release is **[Daemonarchy 1.1.1](https://github.com/jordanhubbard/daemonarchy/releases/tag/daemonarchy-1.1.1)** (x86-64, BIOS or UEFI), with Omarchy 4.0.4 on FreeBSD 16.0-CURRENT, OSVERSION `1600028`.
 
-- [ISO](https://github.com/jordanhubbard/daemonarchy/releases/download/daemonarchy-1.1.0-rc.1/daemonarchy-1.1.0-amd64.iso): 2,098,395,136 bytes, under 2 GiB.
-- [Checksum](https://github.com/jordanhubbard/daemonarchy/releases/download/daemonarchy-1.1.0-rc.1/daemonarchy-1.1.0-amd64.iso.sha256): `891fc6e6ee537bf92aecf035d4e855b8d526aeaf9c27be80166d689289c3acd9`.
+- [ISO](https://github.com/jordanhubbard/daemonarchy/releases/download/daemonarchy-1.1.1/daemonarchy-1.1.1-amd64.iso): 1,912,215,552 bytes, under 2 GiB.
+- [Checksum](https://github.com/jordanhubbard/daemonarchy/releases/download/daemonarchy-1.1.1/daemonarchy-1.1.1-amd64.iso.sha256): `79e90ec36cfff3f4875dc6bc2bc710265e1e04710ec2527909aa623935f179dc`.
 - Adds partition selection, BIOS boot, QEMU/VirGL Hyprland, native FreeBSD app menus, Chromium, OctoPkg, remote-debug progress, and [manual-enrollment Secure Boot](docs/secure-boot.md).
-- Read the [results and limits](docs/testing-1.1-final-image.md) before installing. Physical graphics/firmware, Bluetooth audio, enterprise Wi-Fi and refreshed bhyve remain unqualified. The ASRock, MSI Raider and T2 MacBook failures are documented.
+- Read the [results and limits](docs/testing-1.1.1.md) before installing. Physical graphics/firmware, Bluetooth audio, enterprise Wi-Fi and refreshed bhyve remain unqualified. The ASRock, MSI Raider and T2 MacBook failures are documented.
 
-Write it to a USB stick with `dd if=daemonarchy-1.1.0-amd64.iso of=/dev/<usb-device> bs=1m` (`bs=1M` on Linux). Boot with Secure Boot off, or follow the manual enrollment guide to enable verified boot. The installer needs a network connection. Whole-disk installation erases the selected disk; partition mode replaces only the explicitly selected partition.
+Write it to a USB stick with `dd if=daemonarchy-1.1.1-amd64.iso of=/dev/<usb-device> bs=1m` (`bs=1M` on Linux). Boot with Secure Boot off, or follow the manual enrollment guide to enable verified boot. The installer needs a network connection. Whole-disk installation erases the selected disk; partition mode replaces only the explicitly selected partition.
 
 New to Daemonarchy? [Getting started](docs/getting-started.md) walks through writing the stick, installing, and your first hour on the desktop: Wi-Fi, sound, Bluetooth, updates, and what FreeBSD adds. To build an image yourself or work on Daemonarchy, see [HACKING.md](HACKING.md).
 
 Check the [hardware quirks](docs/hardware-quirks.md) for known boot blockers and
 diagnostic notes, including the MSI Raider 18 HX AI A2XWIG early installer reset.
 
-## 1.1.1 preparation
+## 1.1.1 release
 
-The requested next stable release is **1.1.1**. Its new base is FreeBSD CURRENT
+The current stable release is **1.1.1**. Its new base is FreeBSD CURRENT
 `bdcfeac3e1cb` (OSVERSION `1600028`), paired with ports `f7d7ee897405` on
 `daemonarchy-1.1.1`. The [qualification record](docs/testing-1.1.1.md) tracks
-what has passed and what remains before publication; the download links above
-continue to identify the available artifacts.
+what has passed and what remains unqualified. The operator authorized publication
+without further hardware or final installation-matrix evidence; those gaps remain open.
 
 The refresh adds an explicit **Pair / Unpair remote debugging agent** toggle,
 rescue-menu redraw after boot probes, and an installation integrity check that
@@ -107,7 +107,7 @@ pkg upgrade
 
 ## Roadmap
 
-**1.1.0-rc.1 is available for testing; 1.1.1 is in preparation.** See the [roadmap](ROADMAP.md) for remaining
+**1.1.1 is available with documented qualification gaps.** See the [roadmap](ROADMAP.md) for remaining
 graphics, Bluetooth, enterprise Wi-Fi, installation and boot support, upstream
 ports work, and the checks required before release. The
 [partition preview guide](docs/testing-1.1-partitions.md) covers installing into
@@ -177,7 +177,7 @@ Daemonarchy is four repositories:
 - **[jordanhubbard/daemonarchy](https://github.com/jordanhubbard/daemonarchy)** (this one): the installer image, its build and test scripts, and these docs.
 - **[jordanhubbard/daemonarchy-desktop](https://github.com/jordanhubbard/daemonarchy-desktop)**: Daemonarchy's artwork and login theme, and the System > FreeBSD tools. Its tags are Daemonarchy's version numbers.
 - **[jordanhubbard/omarchy-freebsd](https://github.com/jordanhubbard/omarchy-freebsd)**: the FreeBSD compatibility layer that lets Omarchy run unchanged.
-- **[jordanhubbard/freebsd-ports](https://github.com/jordanhubbard/freebsd-ports/tree/daemonarchy-1.1.1)**: the ports fork that packages all of it. The 1.1.1 refresh uses `daemonarchy-1.1.1`; the public 1.1 candidate retains `daemonarchy-1.1-package-baseline`. Upstream submissions continue independently of Daemonarchy releases.
+- **[jordanhubbard/freebsd-ports](https://github.com/jordanhubbard/freebsd-ports/tree/daemonarchy-1.1.1)**: the ports fork that packages all of it. The 1.1.1 refresh uses `daemonarchy-1.1.1`; the historical 1.1 candidate used `daemonarchy-1.1-package-baseline`. Upstream submissions continue independently of Daemonarchy releases.
 
 ## Building
 

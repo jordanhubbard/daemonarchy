@@ -2,7 +2,7 @@
 
 ## 1.1.1 refresh
 
-The next requested stable release is **1.1.1**. Its source is
+The current stable release is **1.1.1**. Its source is
 `bdcfeac3e1cb8ce3f05c32d8a7ad3597deb48bdf` (OSVERSION `1600028`), with ports
 `f7d7ee897405dcb8ce87e674588a4e1b3bfba00e` on `daemonarchy-1.1.1`.
 Matching world, kernel, jail and driver builds replace the older OSVERSION
@@ -28,7 +28,8 @@ qualified release port files; #642 passed separate native DRM and NVIDIA DRM
 testports at its exact head without the downstream VirtIO patch. Upstream merge is separate from shipping
 the qualified fork.
 
-The operator authorized release publication with the remaining physical,
+The operator authorized release publication without further final installation-matrix
+evidence and with the remaining physical,
 Bluetooth, enterprise Wi-Fi and bhyve limitations disclosed. Those limitations
 remain open qualification work. The requested physical `daemon.local` upgrade
 and MacBook investigation continue in parallel; neither is a passing result
@@ -39,8 +40,8 @@ until its actual evidence is recorded.
 The table and checks below describe the October 16 candidate, not the new
 1.1.1 source/package set. Their outstanding qualification work carries forward.
 
-Daemonarchy **1.1.0-rc.1** is public; the **1.1.0** stable promotion remains a
-draft. On October 16 the operator approved stable publication after the
+Daemonarchy **1.1.0-rc.1** was published; its release assets and the unpublished
+**1.1.0** stable draft were removed when superseded by 1.1.1. On October 16 the operator approved stable publication after the
 remaining hardware, Bluetooth, enterprise Wi-Fi and bhyve limitations were
 reported, but publication was not completed. Those gaps remain open
 qualification work, not passing results.
@@ -102,7 +103,7 @@ Both original submissions were closed without merging on October 15. Their refre
 - [ ] Existing installations upgrade successfully; failed updates remain recoverable. [Exact final application-package upgrade, reboot, ZFS rollback and return from 1.0.1 passed](docs/testing-1.1-upgrade.md), as did development-key signed boot maintenance, injected driver failure and rollback; production-authority GELI/ZFS signed maintenance, altered-candidate rejection, rollback and graphical return also passed; physical upgrade checks remain unqualified.
 - [x] Documentation states supported GPUs, hypervisors, Bluetooth profiles,
       EAP methods, and boot/install combinations precisely.
-- [x] Candidate package repository, ISO, checksum, public certificate and release notes verified together; all 26 package-feed and six installer asset hashes/sizes match. The stable 1.1.0 promotion remains a draft. Operator-approved publication deferrals do not close the unchecked qualification items above.
+- [x] Candidate package repository, ISO, checksum, public certificate and release notes verified together; all 26 package-feed and six installer asset hashes/sizes match. The unpublished stable 1.1.0 draft was later removed. Operator-approved publication deferrals do not close the unchecked qualification items above.
 
 Feature status and evidence belong here as work progresses. If a platform
 dependency prevents a feature from shipping, record the blocker and agree on

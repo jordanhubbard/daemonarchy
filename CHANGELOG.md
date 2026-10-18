@@ -7,16 +7,18 @@ date. Entries describe the behavior and evidence recorded for that release, not
 support guarantees for every machine. Related desktop and compatibility changes
 are included where the corresponding release notes identify them.
 
-**Current publication state:** 1.0.1 is the latest published stable installer;
-1.1.0-rc.1 is a published prerelease. The GitHub record named 1.1.0 remains a draft.
-1.1.1 is being prepared. “1.1-release” in testing discussions refers to the 1.1
+**Current publication state:** 1.1.1 is the latest published stable installer. The superseded 1.1.0 and preview.13 drafts and the
+previously published 1.1.0-rc.1 release assets were removed at the operator's
+request on October 18 to avoid download confusion and reclaim storage.
+Their historical entries and source tags are preserved. “1.1-release” in testing discussions refers to the 1.1
 work; it is not a separate published tag in this repository. The proposed name
 1.1-rc2 was replaced by 1.1.1 before publication.
 
-## 1.1.1 — Unreleased
+## 1.1.1 — 2026-10-18
 
-Status: release preparation; no published installer release or final image
-qualification is implied by this entry. The intended tag is
+Status: published with operator-authorized deferral of further physical-hardware
+and final installation-matrix evidence. The native ISO audit and release asset
+integrity checks passed; outstanding qualification is not claimed as passing. The tag is
 `daemonarchy-1.1.1`, with a versioned application feed
 `packages-16-amd64-1.1.1`. See [the current evidence](docs/testing-1.1.1.md).
 
@@ -88,18 +90,18 @@ qualification is implied by this entry. The intended tag is
   dependency advisories in the qualification record; build QA and signatures
   do not establish a vulnerability-free package set.
 
-## 1.1.0 — Draft, not published
+## 1.1.0 — Unpublished draft, removed
 
-GitHub record: [`daemonarchy-1.1.0`](https://github.com/jordanhubbard/daemonarchy/releases/tag/daemonarchy-1.1.0).
+Former GitHub draft: `daemonarchy-1.1.0`.
 The draft was created on 2026-10-17 and describes reusing the tested rc.1
 artifacts. Commit `f69ac50` records that intended release, but neither a commit
-message nor draft release notes establish publication. The draft is retained;
-1.1.1 is the next requested stable release.
+message nor draft release notes establish publication. The draft and its assets were removed on October 18;
+1.1.1 supersedes that unpublished promotion.
 
 ## 1.1.0-rc.1 — 2026-10-16
 
-Status: published prerelease.
-[Release notes and assets](https://github.com/jordanhubbard/daemonarchy/releases/tag/daemonarchy-1.1.0-rc.1).
+Status: published October 16; release record and assets removed October 18
+at the operator's request. The source tag and this change history are retained.
 
 ### Added
 
@@ -141,10 +143,10 @@ Status: published prerelease.
   Bluetooth headset/HID regressions and refreshed bhyve qualification remained
   open. The release notes retain the detailed scope of each result.
 
-## 1.1.0-preview.13 — Draft, not published
+## 1.1.0-preview.13 — Unpublished draft, removed
 
-GitHub record: `daemonarchy-1.1.0-preview.13`, created 2026-10-16. This retained
-hardware-testing draft selected the October 12 snapshot, matching drivers,
+Former GitHub draft: `daemonarchy-1.1.0-preview.13`, created 2026-10-16 and
+removed with its assets on October 18. This hardware-testing draft selected the October 12 snapshot, matching drivers,
 Chromium/OctoPkg, lib32 and signed downloadable checkouts. Its notes explicitly
 left VM graphics, production Secure Boot and physical acceptance incomplete at
 that point. It is not an additional published installer release.
@@ -277,6 +279,7 @@ artifact provenance.
 
 | Published (UTC) | Tag | Purpose |
 | --- | --- | --- |
+| 2026-10-18 | [`packages-16-amd64-1.1.1`](https://github.com/jordanhubbard/daemonarchy/releases/tag/packages-16-amd64-1.1.1) | 510 signed application/dependency packages for OSVERSION `1600028`; all 515 asset names, sizes and digests verified, with native public-catalogue/root-download and wrong-key checks. This feed does not upgrade an older base/kernel. |
 | 2026-10-17 | [`checkouts-16-bdcfeac3e1cb-f7d7ee897405-v1`](https://github.com/jordanhubbard/daemonarchy/releases/tag/checkouts-16-bdcfeac3e1cb-f7d7ee897405-v1) | 1.1.1 source `bdcfeac3e1cb` (`1600028`) and ports `f7d7ee897405`; signed-catalogue, install, materialization, integrity and wrong-key checks recorded before publication. |
 | 2026-10-16 | [`packages-16-amd64-1.1.0-candidate`](https://github.com/jordanhubbard/daemonarchy/releases/tag/packages-16-amd64-1.1.0-candidate) | Versioned signed application feed for 1.1 candidate provenance. |
 | 2026-10-16 | [`checkouts-16-3ceb5f150bc1-08a6370a019a-v1`](https://github.com/jordanhubbard/daemonarchy/releases/tag/checkouts-16-3ceb5f150bc1-08a6370a019a-v1) | October 12 source plus the combined final 1.1 ports baseline. |

@@ -198,7 +198,8 @@ batches used durable pool barriers. Following another reset, the full installed
 package-file checksum check passed, while approximately 42 packages were still
 missing from the planned desktop. This distinguishes durable repaired files
 from a completed installation; successful extraction of some packages is not
-completion of the desktop transaction.
+completion of the desktop transaction. This was an intermediate checkpoint;
+the remaining repair completed later, as recorded below.
 
 Crash capture was enabled before retries, but no saved panic dump or orderly
 shutdown evidence was recovered. Samples showed temperatures of 59–71 C, no
@@ -212,6 +213,31 @@ menu automatically. Its Pair/Unpair option also clears stale remote-agent state
 after a reset. These helpers were installed on the investigation target;
 physical next-boot validation is separate from their passing native fixtures.
 Bounded [continuous SSH diagnostics](remote-agent-debug.md#continuous-diagnostics)
-are being added for off-target retention. They cannot capture an early panic
+were hot-deployed and retained live kernel, process, storage, sensor and passive
+device-event output on the controller. They cannot capture an early panic
 before networking or continue a live stream through a hard reset. New src-based
 loader/early-kernel transport work remains deferred to 1.2.
+
+### Completed package repair and controlled graphics test, October 18 UTC
+
+The remaining desktop packages and missing `sudo` dependency were installed from
+matching cached OS1600027 packages. All installed package files and dependencies
+passed verification, a new recovery boot environment was retained, and desktop
+postconfiguration completed. This machine was not upgraded to the new 1.1.1
+kernel or its OS1600028 package feed.
+
+SDDM had autostarted earlier in this boot without a working Xorg, greeter or
+Hyprland session. It was explicitly stopped before the first controlled AMD
+initialization. That test loaded Navi14 firmware and initialized SMU/Display Core,
+then reported `KGQ enable failed`, `gfx_v10_0 hw_init failed -60`, fatal GPU
+initialization failure and `drmn0` attachment error 60. The module-load operation
+still returned success and left DRM card/render character nodes behind.
+
+This exposed a graphics-service reporting bug fixed for 1.1.1: readiness now
+requires an attached active device and DRM character nodes, rather than module
+loading alone. The new guard rejected the actual failed MacBook state and removed
+a seeded stale readiness marker. Before/after module lists and kernel logs were
+identical, confirming this validation did not reload or reinitialize the GPU.
+Graphics remains disabled and SDDM stopped. The AMD failure remains unresolved;
+no desktop acceptance or explanation for the earlier package-phase resets is
+claimed.
