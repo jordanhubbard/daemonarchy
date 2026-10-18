@@ -33,7 +33,8 @@ The operator authorized release publication without further final installation-m
 evidence and with the remaining physical,
 Bluetooth, enterprise Wi-Fi and bhyve limitations disclosed. Those limitations
 remain open qualification work. The physical HP at `daemon.local` passed coordinated upgrade, rollback, return
-boot and AMD Wayland greeter rendering; authenticated user login remains pending.
+boot and AMD Wayland greeter rendering. The operator confirmed that normal
+authenticated `jkh` login opens the desktop.
 The MacBook investigation remains open. Final-ISO BIOS and enforced UEFI boot
 and embedded root-mount-policy checks passed; the four full VM runs use the
 preceding image and have their scope recorded separately.
