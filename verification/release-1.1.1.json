@@ -1,0 +1,43 @@
+{
+  "schema": "daemonarchy/release-inputs@1",
+  "version": "1.1.1",
+  "tag": "daemonarchy-1.1.1",
+  "installer_commit": "ef8d1e1f046a3f2b314959258619fc24396c1699",
+  "iso_installer_commit": "25c3354d2dc693311f599ed4f36b6ff233d9060b",
+  "source_commit": "bdcfeac3e1cb8ce3f05c32d8a7ad3597deb48bdf",
+  "osversion": 1600028,
+  "ports_commit": "f7d7ee897405dcb8ce87e674588a4e1b3bfba00e",
+  "ports_upstream_commit": "b1306594c4a601f98a3d28cbf6fc0569e218245f",
+  "desktop_commit": "ec2a00824ec95b342c0c095657ac725c56f0528b",
+  "application_feed": "packages-16-amd64-1.1.1",
+  "checkout_feed": "checkouts-16-bdcfeac3e1cb-f7d7ee897405-v1",
+  "qualification": "docs/testing-1.1.1.md",
+  "evidence_status": "historical published release; not a current framework receipt",
+  "assets": {
+    "daemonarchy-1.1.pem": [
+      1935,
+      "sha256:6dc1e08c5de432009311fc431e694d911c8f5da5f4dedfe3ad5ab5ba6074d251"
+    ],
+    "daemonarchy-1.1.1-amd64.iso": [
+      1912215552,
+      "sha256:c1bc6e3a0d30e6806a324aa3abd76eb70f1593f9f22e7aab6d222491fc1eb956"
+    ],
+    "daemonarchy-1.1.1-amd64.iso.sha256": [
+      94,
+      "sha256:f48eff38f790d5fbb9dc573511cadc8dbe7114d7974960bcbfeabc3c39916c0e"
+    ],
+    "daemonarchy-1.1.1-boot.txz": [
+      10468680,
+      "sha256:c02a72244bf676869c0ca73afbe70507fb328bcb4331ef4343dce393e9a1ae4d"
+    ],
+    "daemonarchy-1.1.1-boot.txz.sig": [
+      512,
+      "sha256:a4ca9cf48e962a3828ed9a44e156a711fa6c46f0492922c77cef7dc934690821"
+    ],
+    "daemonarchy-1.1.der": [
+      1389,
+      "sha256:111539a7fb7178cea65f3e2fc50ea00839d045324a4272ce190e4733a9c118dd"
+    ]
+  },
+  "compatibility_commit": "535e44bb6fa3e9b9f4fc3a870591688526279124"
+}

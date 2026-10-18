@@ -1,0 +1,294 @@
+{
+  "schema": "daemonarchy/acceptance-inventory@1",
+  "authority": "original-source",
+  "framework_execution_qualified": false,
+  "components": {
+    "installer": {
+      "goals": [
+        "G1",
+        "G7"
+      ],
+      "state": "retained-implementation",
+      "requires": [
+        "package-engine",
+        "desktop",
+        "diagnostics",
+        "verified-boot"
+      ],
+      "tests": [
+        {
+          "path": "tests/disk-layout.sh",
+          "execution": "native-freebsd-or-explicit-harness",
+          "current_framework_receipt": false
+        },
+        {
+          "path": "tests/shared-disk.sh",
+          "execution": "native-freebsd-or-explicit-harness",
+          "current_framework_receipt": false
+        },
+        {
+          "path": "tests/install-integrity.sh",
+          "execution": "native-freebsd-or-explicit-harness",
+          "current_framework_receipt": false
+        },
+        {
+          "path": "tests/boot-environment-mounts.sh",
+          "execution": "native-freebsd-or-explicit-harness",
+          "current_framework_receipt": false
+        },
+        {
+          "path": "tests/installed-desktop.sh",
+          "execution": "native-freebsd-or-explicit-harness",
+          "current_framework_receipt": false
+        }
+      ]
+    },
+    "desktop": {
+      "goals": [
+        "G2",
+        "G7"
+      ],
+      "state": "retained-implementation",
+      "requires": [
+        "compatibility"
+      ],
+      "tests": [
+        {
+          "path": "tests/graphics-startup.sh",
+          "execution": "native-freebsd-or-explicit-harness",
+          "current_framework_receipt": false
+        },
+        {
+          "path": "tests/qemu-desktop.py",
+          "execution": "native-freebsd-or-explicit-harness",
+          "current_framework_receipt": false
+        },
+        {
+          "path": "tests/installed-desktop.sh",
+          "execution": "native-freebsd-or-explicit-harness",
+          "current_framework_receipt": false
+        }
+      ]
+    },
+    "compatibility": {
+      "goals": [
+        "G2"
+      ],
+      "state": "retained-implementation",
+      "requires": [],
+      "tests": [
+        {
+          "path": "tests/enterprise-wifi-options.sh",
+          "execution": "native-freebsd-or-explicit-harness",
+          "current_framework_receipt": false
+        },
+        {
+          "path": "tests/installed-desktop.sh",
+          "execution": "native-freebsd-or-explicit-harness",
+          "current_framework_receipt": false
+        }
+      ]
+    },
+    "updates": {
+      "goals": [
+        "G3"
+      ],
+      "state": "retained-implementation",
+      "requires": [
+        "package-engine",
+        "verified-boot"
+      ],
+      "tests": [
+        {
+          "path": "tests/pkg-repo-dependencies.sh",
+          "execution": "native-freebsd-or-explicit-harness",
+          "current_framework_receipt": false
+        },
+        {
+          "path": "tests/package-repository.sh",
+          "execution": "native-freebsd-or-explicit-harness",
+          "current_framework_receipt": false
+        },
+        {
+          "path": "tests/installed-checkouts.sh",
+          "execution": "native-freebsd-or-explicit-harness",
+          "current_framework_receipt": false
+        }
+      ]
+    },
+    "diagnostics": {
+      "goals": [
+        "G4"
+      ],
+      "state": "retained-implementation",
+      "requires": [],
+      "tests": [
+        {
+          "path": "tests/remote-debug-session.sh",
+          "execution": "native-freebsd-or-explicit-harness",
+          "current_framework_receipt": false
+        },
+        {
+          "path": "tests/remote-debug-observe.sh",
+          "execution": "native-freebsd-or-explicit-harness",
+          "current_framework_receipt": false
+        },
+        {
+          "path": "tests/remote-debug-capture.py",
+          "execution": "native-freebsd-or-explicit-harness",
+          "current_framework_receipt": false
+        },
+        {
+          "path": "tests/remote-debug-events.py",
+          "execution": "native-freebsd-or-explicit-harness",
+          "current_framework_receipt": false
+        },
+        {
+          "path": "tests/rescue-console.sh",
+          "execution": "native-freebsd-or-explicit-harness",
+          "current_framework_receipt": false
+        }
+      ]
+    },
+    "verified-boot": {
+      "goals": [
+        "G5"
+      ],
+      "state": "retained-implementation",
+      "requires": [],
+      "tests": [
+        {
+          "path": "secureboot/tests/test_maintenance.py",
+          "execution": "native-freebsd-or-explicit-harness",
+          "current_framework_receipt": false
+        },
+        {
+          "path": "secureboot/tests/test_signing_guards.py",
+          "execution": "native-freebsd-or-explicit-harness",
+          "current_framework_receipt": false
+        },
+        {
+          "path": "secureboot/tests/check-runtime-log.py",
+          "execution": "native-freebsd-or-explicit-harness",
+          "current_framework_receipt": false
+        },
+        {
+          "path": "secureboot/tests/check-media-log.py",
+          "execution": "native-freebsd-or-explicit-harness",
+          "current_framework_receipt": false
+        }
+      ]
+    },
+    "release": {
+      "goals": [
+        "G6"
+      ],
+      "state": "retained-implementation",
+      "requires": [
+        "installer",
+        "desktop",
+        "compatibility",
+        "updates",
+        "diagnostics",
+        "verified-boot"
+      ],
+      "tests": [
+        {
+          "path": "tests/live-image-runtime.sh",
+          "execution": "native-freebsd-or-explicit-harness",
+          "current_framework_receipt": false
+        },
+        {
+          "path": "tests/live-image-budget.sh",
+          "execution": "native-freebsd-or-explicit-harness",
+          "current_framework_receipt": false
+        },
+        {
+          "path": "tests/checkout-kernel-identity.sh",
+          "execution": "native-freebsd-or-explicit-harness",
+          "current_framework_receipt": false
+        },
+        {
+          "path": "test-qemu.sh",
+          "execution": "native-freebsd-or-explicit-harness",
+          "current_framework_receipt": false
+        },
+        {
+          "path": "test-bhyve.sh",
+          "execution": "native-freebsd-or-explicit-harness",
+          "current_framework_receipt": false
+        }
+      ]
+    },
+    "package-engine": {
+      "goals": [
+        "G3",
+        "G7"
+      ],
+      "state": "planned",
+      "requires": [],
+      "tests": []
+    }
+  },
+  "external_repositories": {
+    "desktop": "jordanhubbard/daemonarchy-desktop",
+    "compatibility": "jordanhubbard/omarchy-freebsd"
+  },
+  "required_integration": [
+    "native FreeBSD worker and privilege/cleanup contracts",
+    "mixed source and binary input admission",
+    "current receipt and exact artifact binding",
+    "operator hardware evidence and waiver policy",
+    "protected signing authority and publication coordination"
+  ],
+  "all_retained_test_files": [
+    "secureboot/tests/check-enrollment.py",
+    "secureboot/tests/check-media-log.py",
+    "secureboot/tests/check-runtime-log.py",
+    "secureboot/tests/preload-probes.lua",
+    "secureboot/tests/runtime-probe.c",
+    "secureboot/tests/test_maintenance.py",
+    "secureboot/tests/test_signing_guards.py",
+    "tests/bios-boot-image.sh",
+    "tests/boot-environment-mounts.sh",
+    "tests/checkout-kernel-identity.sh",
+    "tests/checkout-options.sh",
+    "tests/checkout-packages.sh",
+    "tests/console-font.sh",
+    "tests/cuda-options.sh",
+    "tests/cuda-probe.c",
+    "tests/disk-layout.sh",
+    "tests/efi-boot-image.sh",
+    "tests/efi-root.sh",
+    "tests/enterprise-wifi-options.sh",
+    "tests/gpu-config.sh",
+    "tests/graphics-startup.sh",
+    "tests/headless-rescue.sh",
+    "tests/install-diagnostics.sh",
+    "tests/install-integrity.sh",
+    "tests/installed-checkouts.sh",
+    "tests/installed-desktop.sh",
+    "tests/installer-clock.sh",
+    "tests/linux-cuda.sh",
+    "tests/live-image-budget.sh",
+    "tests/live-image-runtime.sh",
+    "tests/network-diagnostics.sh",
+    "tests/package-repository.sh",
+    "tests/pkg-repo-dependencies.sh",
+    "tests/qemu-desktop.py",
+    "tests/qemu-unlock-geli.py",
+    "tests/release-set-cache.sh",
+    "tests/remote-debug-capture.py",
+    "tests/remote-debug-cli.sh",
+    "tests/remote-debug-events.py",
+    "tests/remote-debug-network.sh",
+    "tests/remote-debug-observe.sh",
+    "tests/remote-debug-progress.sh",
+    "tests/remote-debug-session.sh",
+    "tests/rescue-boot-image.sh",
+    "tests/rescue-console.sh",
+    "tests/rescue-setup.sh",
+    "tests/secureboot-options.sh",
+    "tests/shared-disk.sh"
+  ]
+}

@@ -80,5 +80,5 @@ and application-policy checks: production-key enforced UEFI and BIOS, each
 with plain ZFS and GELI/ZFS. The UEFI plain case also downloaded both optional
 checkouts and verified their revisions, cleanliness and ownership. Production-key signed maintenance also
 passed update, altered inactive-candidate rejection, rollback and return, with
-actual graphical checks at each boot. [The roadmap](../ROADMAP.md) retains the remaining
+actual graphical checks at each boot. [The roadmap](https://github.com/jordanhubbard/daemonarchy/blob/main/ROADMAP.md) retains the remaining
 qualification work; an untested configuration is not a support claim.

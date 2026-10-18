@@ -97,7 +97,7 @@ the original, blocked writes to the registered module and rejected an
 unregistered executable. That last restriction prevents ordinary desktop
 package installation without further policy work.
 
-The development [module policy](../secureboot/README.md) adds an opt-in kernel
+The development [module policy](https://github.com/jordanhubbard/daemonarchy/blob/main/secureboot/README.md) adds an opt-in kernel
 option, leaving upstream defaults unchanged. It allows unregistered user
 executables and runtime-linker library opens, retains independent strict module
 checks, denies live policy/memory-write overrides, and requires a verified
@@ -260,7 +260,7 @@ owner-readable private key never went to the authoring worker; only the public
 certificate, public self-test fixture and signed artifacts were exported.
 The self-test fixture's temporary private key was removed after issuance.
 Public material and the DER fingerprint are in
-[`secureboot/certificates`](../secureboot/certificates/README.md).
+[`secureboot/certificates`](https://github.com/jordanhubbard/daemonarchy/blob/main/secureboot/certificates/README.md).
 
 Appending this certificate only to db in the isolated OVMF store preserved all
 previous entries and every other firmware variable. The authenticated db

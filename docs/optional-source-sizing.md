@@ -3,7 +3,7 @@
 **Superseded by shallow live checkout packages (2026-10-13).** The original
 measurements below exclude Git metadata. The installer now uses depth-1 Git
 checkouts, with download and peak-space sizes from the generated `checkouts.json`
-catalogue. See [the build and runtime instructions](../HACKING.md#building-live-checkout-packages).
+catalogue. See [the build and runtime instructions](https://github.com/jordanhubbard/daemonarchy/blob/main/HACKING.md#building-live-checkout-packages).
 The seed packages contain no full historical repository; users can deepen
 history explicitly with Git.
 

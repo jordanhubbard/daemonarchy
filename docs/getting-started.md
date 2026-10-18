@@ -2,10 +2,10 @@
 
 This guide takes you from a download to a working desktop, and through the things you will do in your first hour: get online, play sound, pair a keyboard, keep the system up to date, and use what FreeBSD adds. You do not need to know FreeBSD or Omarchy already.
 
-Daemonarchy is the [Omarchy](https://omarchy.org) desktop running on [FreeBSD](https://www.freebsd.org). If you are curious how it is put together, or want to change it, read the [hacking guide](../HACKING.md) when you are done here.
+Daemonarchy is the [Omarchy](https://omarchy.org) desktop running on [FreeBSD](https://www.freebsd.org). If you are curious how it is put together, or want to change it, read the [hacking guide](https://github.com/jordanhubbard/daemonarchy/blob/main/HACKING.md) when you are done here.
 
-This guide covers Daemonarchy 1.1.1. The [download page](../README.md#download) identifies what is published; [the 1.1.1 record](testing-1.1.1.md) records the image and outstanding qualification. Earlier 1.0.1 has whole-disk, UEFI-only
-installation and needs Secure Boot off. See the [download page](../README.md#download)
+This guide covers Daemonarchy 1.1.1. The [download page](https://github.com/jordanhubbard/daemonarchy/blob/main/README.md#download) identifies what is published; [the 1.1.1 record](testing-1.1.1.md) records the image and outstanding qualification. Earlier 1.0.1 has whole-disk, UEFI-only
+installation and needs Secure Boot off. See the [download page](https://github.com/jordanhubbard/daemonarchy/blob/main/README.md#download)
 and the release
 [qualification record](testing-1.1-final-image.md) before choosing hardware.
 
@@ -21,7 +21,7 @@ and the release
 
 ## 1. Download the image
 
-Get the `.iso` and matching `.sha256` from the [download page](../README.md#download). GitHub **latest** selects stable 1.1.1. Read its qualification record before installing: publication does not establish physical-hardware compatibility or completion of the final installation matrix.
+Get the `.iso` and matching `.sha256` from the [download page](https://github.com/jordanhubbard/daemonarchy/blob/main/README.md#download). GitHub **latest** selects stable 1.1.1. Read its qualification record before installing: publication does not establish physical-hardware compatibility or completion of the final installation matrix.
 
 Checking the download is optional but quick. In a terminal, in the folder you saved both files to:
 
@@ -129,7 +129,7 @@ keep kernel-module packages locked to their signed snapshot. The 1.1.1 feed requ
 [signed maintenance workflow](secure-boot.md#update-and-recovery-contract) for protected boot updates.
 
 Installations made with an older image need a one-time
-[boot-root mount-policy check](../HACKING.md#boot-environment-mount-policy)
+[boot-root mount-policy check](https://github.com/jordanhubbard/daemonarchy/blob/main/HACKING.md#boot-environment-mount-policy)
 before switching boot environments. New 1.1.1 installations set the correct
 policy; an application-package update alone does not repair existing ZFS
 dataset properties.
@@ -155,7 +155,7 @@ Open the menu and go to **System > FreeBSD**.
 - **Jails:** lightweight FreeBSD containers, each with its own packages, for trying things out without touching your system.
 - **Virtual Machines:** run Linux, Windows or another BSD in a window, with bhyve.
 - **Trace the System:** live views of what programs, files, disks and the network are doing, with DTrace.
-- **Hack on Daemonarchy:** run the desktop from your own copy of its source code (see the [hacking guide](../HACKING.md)).
+- **Hack on Daemonarchy:** run the desktop from your own copy of its source code (see the [hacking guide](https://github.com/jordanhubbard/daemonarchy/blob/main/HACKING.md)).
 
 ![Hourly snapshots of your home in Files, a live DTrace view, the ZFS pool, and the sound panel](images/freebsd.png)
 
@@ -174,7 +174,7 @@ Install available FreeBSD coding tools through **Install > Packages** or `pkg`. 
 
 ## Going further
 
-- [The hacking guide](../HACKING.md): how Daemonarchy is built, how to change it, and how to build your own image.
+- [The hacking guide](https://github.com/jordanhubbard/daemonarchy/blob/main/HACKING.md): how Daemonarchy is built, how to change it, and how to build your own image.
 - The source: [daemonarchy](https://github.com/jordanhubbard/daemonarchy) (the installer), [daemonarchy-desktop](https://github.com/jordanhubbard/daemonarchy-desktop) (Daemonarchy's look and FreeBSD tools) and [omarchy-freebsd](https://github.com/jordanhubbard/omarchy-freebsd) (what lets Omarchy run on FreeBSD).
 - [Omarchy's manual](https://learn.omacom.io/2/the-omarchy-manual) for desktop concepts and shortcuts. Use Daemonarchy's [FreeBSD application policy](freebsd-application-policy.md) for platform-specific software and commands.
 - [The FreeBSD Handbook](https://docs.freebsd.org/en/books/handbook/) for the operating system underneath.

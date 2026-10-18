@@ -1,0 +1,926 @@
+{
+  "schema": "daemonarchy/retained-input-baseline@1",
+  "source_commit": "a02ed2a545f3e11d6ea22539565498a29ca420f1",
+  "authority": "original-source",
+  "meaning": "Adoption-time source preservation inventory, not a Literate AI lifecycle receipt. Refresh deliberately when implementation changes.",
+  "files": [
+    {
+      "path": ".gitattributes",
+      "owner": "release",
+      "sha256": "81f195638626c6050bd85b607fcff076ae62b8820fef14ac1a0464632901e361",
+      "executable": false
+    },
+    {
+      "path": ".gitignore",
+      "owner": "release",
+      "sha256": "32dae3052f331ee34d628ef535709b301259a45df7c7522c4d35dcf49873f00b",
+      "executable": false
+    },
+    {
+      "path": "CHANGELOG.md",
+      "owner": "release",
+      "sha256": "c4d4654f8ada5bf3e5fda4f6de78b9d75d4261ccd30f42e1cd9d8f9ec26e08e7",
+      "executable": false
+    },
+    {
+      "path": "HACKING.md",
+      "owner": "release",
+      "sha256": "4911098dfaa7b15f68d822c9d8b4092a66cdb4536263509254a97052bd6038ce",
+      "executable": false
+    },
+    {
+      "path": "README.md",
+      "owner": "release",
+      "sha256": "4eae17f3b15b9759131f0dc68f1e05db3769799561e5d1fa64e95f9eea9a1ca2",
+      "executable": false
+    },
+    {
+      "path": "ROADMAP.md",
+      "owner": "release",
+      "sha256": "01e2a0a659c2e6b2e71204311ec505d228f5f2caefd697b57bbbfb12a4a9b97a",
+      "executable": false
+    },
+    {
+      "path": "build-iso.sh",
+      "owner": "release",
+      "sha256": "01e04c6181c3313f5c89fa0408ddbcd39a11bb5593092e273d2aa6722031d970",
+      "executable": true
+    },
+    {
+      "path": "docs/application-note-macbookpro16-1.md",
+      "owner": "release",
+      "sha256": "3293b6829652373b51233b7d5bfce96035b0009966f0ba80b348758fb33e4fb9",
+      "executable": false
+    },
+    {
+      "path": "docs/enterprise-wifi.md",
+      "owner": "release",
+      "sha256": "bc60dfc25258c264afb35f51e629b1cc46e0047822b4c72e339d738f2afa91d1",
+      "executable": false
+    },
+    {
+      "path": "docs/freebsd-application-policy.md",
+      "owner": "release",
+      "sha256": "615948f7cec932727d752894d68b0eda145a04a9765fc0b42cb90e19f02c7f5f",
+      "executable": false
+    },
+    {
+      "path": "docs/getting-started.md",
+      "owner": "release",
+      "sha256": "0c2d17d23a2de50ca8b4e455c6df25854aeda127919599ad373254dd908e621c",
+      "executable": false
+    },
+    {
+      "path": "docs/hardware-quirks.md",
+      "owner": "release",
+      "sha256": "a03ab225e434f6f19ea2b67e00dd6e6ed3bf4a0fb40fa10d8a36625242a9e1b1",
+      "executable": false
+    },
+    {
+      "path": "docs/images/desktop.png",
+      "owner": "release",
+      "sha256": "ee66a7d367d90a28d13e776ebdc10b3f6189b3c95536b44c24dfc59053034c69",
+      "executable": false
+    },
+    {
+      "path": "docs/images/freebsd.png",
+      "owner": "release",
+      "sha256": "ec8fdaf0929a13bca041d07e29351083e0014a84645af74ad820c3ba4340a7fa",
+      "executable": false
+    },
+    {
+      "path": "docs/images/network.png",
+      "owner": "release",
+      "sha256": "1143c50dfd154be7dd1837af6fd2551e0ef61ce6ad7ad99d9e5b276085438dc8",
+      "executable": false
+    },
+    {
+      "path": "docs/optional-source-sizing.md",
+      "owner": "release",
+      "sha256": "8b7a859b993af2826ded77ca3be29fb7b85eb965519834b92ba951c5d5411c58",
+      "executable": false
+    },
+    {
+      "path": "docs/release-1.1.0.md",
+      "owner": "release",
+      "sha256": "aaacaa63cd0abee01190b7aaf5e0253c1b80caa8be18154687cd48be8b4fbc71",
+      "executable": false
+    },
+    {
+      "path": "docs/remote-agent-debug.md",
+      "owner": "release",
+      "sha256": "b8fd976ee92cff8378f08b2e34878518ff2afcfb10216171928e2667beb25919",
+      "executable": false
+    },
+    {
+      "path": "docs/repair-efi-root.md",
+      "owner": "release",
+      "sha256": "d10483f9a9c071b7d4041e9db07a0d2c1ee1f161936f8837ad26a39a35e8652f",
+      "executable": false
+    },
+    {
+      "path": "docs/rescue-console.md",
+      "owner": "diagnostics",
+      "sha256": "434396059bc872571706b653690b5be347a40dbcea8087cd92107ad2445be845",
+      "executable": false
+    },
+    {
+      "path": "docs/secure-boot.md",
+      "owner": "release",
+      "sha256": "e63bd2db646d98acabe0898ecdf4572ad67122c86eb4f3b28550620861eb4ab9",
+      "executable": false
+    },
+    {
+      "path": "docs/testing-1.1-bios.md",
+      "owner": "release",
+      "sha256": "1d2840960804660f681ba4a974ee3c541ad1702165f0e7b9c44fdd4dbbd09a05",
+      "executable": false
+    },
+    {
+      "path": "docs/testing-1.1-bluetooth-audio.md",
+      "owner": "release",
+      "sha256": "812eeef36477ac378425035c49b353935487ab39a62a858a310f54b035472cdf",
+      "executable": false
+    },
+    {
+      "path": "docs/testing-1.1-final-image.md",
+      "owner": "release",
+      "sha256": "2b29c02c5fcd347fb3553bda231215b0f9d91e80b1ff65bdd873fef6beb3d79a",
+      "executable": false
+    },
+    {
+      "path": "docs/testing-1.1-hardware-observations.md",
+      "owner": "release",
+      "sha256": "5d7410841389db133f5065a7960d3c73b0908b5719a1ecbbba8cd7eaf5e868dd",
+      "executable": false
+    },
+    {
+      "path": "docs/testing-1.1-headless-rescue.md",
+      "owner": "diagnostics",
+      "sha256": "1cc96fe42d471cac266766454d695b77930646f0f9740be86ff90e61559929fe",
+      "executable": false
+    },
+    {
+      "path": "docs/testing-1.1-image-budget.md",
+      "owner": "release",
+      "sha256": "57948a405d542c3245035a10e2a90364b104340dabe4b4aa62235aeccdb2c7bd",
+      "executable": false
+    },
+    {
+      "path": "docs/testing-1.1-live-checkouts.md",
+      "owner": "release",
+      "sha256": "e3e99d29282604bc862ea9b3a6b16378727616a0bde4d0d834c0a3e8bb034413",
+      "executable": false
+    },
+    {
+      "path": "docs/testing-1.1-native-apps.md",
+      "owner": "release",
+      "sha256": "f2bd772f4caac13910ebb9aa8268ae34dfdf040d0aaf4ed3f954d3fb50d27304",
+      "executable": false
+    },
+    {
+      "path": "docs/testing-1.1-partitions.md",
+      "owner": "release",
+      "sha256": "34023638296031cf66612d35da8cb0b682cb02f548c86b5e2f4287d464efe1a9",
+      "executable": false
+    },
+    {
+      "path": "docs/testing-1.1-refresh.md",
+      "owner": "release",
+      "sha256": "41532db5a41cce115188d777b37d59e5fcc692764ee5c814163ddfa477fab07e",
+      "executable": false
+    },
+    {
+      "path": "docs/testing-1.1-remote-debug.md",
+      "owner": "diagnostics",
+      "sha256": "3bd83493025b961db89090b60871757fedef9f7fd572629c97d15c4b13484f05",
+      "executable": false
+    },
+    {
+      "path": "docs/testing-1.1-secureboot.md",
+      "owner": "release",
+      "sha256": "8daa7bd0a187be265a0b87c07fe750f2a6d19a61f9e65893f85d4cafaeb865c6",
+      "executable": false
+    },
+    {
+      "path": "docs/testing-1.1-upgrade.md",
+      "owner": "release",
+      "sha256": "20ee9cf811f6790ce2682216b4e39688039741b7ae53af7c09febbcc2a505056",
+      "executable": false
+    },
+    {
+      "path": "docs/testing-1.1-vm-graphics.md",
+      "owner": "release",
+      "sha256": "1dc1c31965e8f457368027c855652162463e42b6dafab35ce80d60ae80814c2d",
+      "executable": false
+    },
+    {
+      "path": "docs/testing-1.1.1.md",
+      "owner": "release",
+      "sha256": "70306c827fff6487030efb9a94b54fe09d6e168eb25949fa07bcc90f8098d185",
+      "executable": false
+    },
+    {
+      "path": "docs/testing-macbookpro16-1.md",
+      "owner": "release",
+      "sha256": "d4c531edc33a5e26c1425834132d5a4e7b28f54cf0c70e1ae4e92a9e3e24f17a",
+      "executable": false
+    },
+    {
+      "path": "live-post.sh",
+      "owner": "release",
+      "sha256": "6d11d6158ead57e611c0f132e8663cccd35c33f9b3bb232437918a70724d4199",
+      "executable": false
+    },
+    {
+      "path": "origins.sh",
+      "owner": "release",
+      "sha256": "3a57c343b77de741cddc6437d21f4b2e72f4366ccda4aee814e2a23e14e3ca64",
+      "executable": false
+    },
+    {
+      "path": "overlay/usr/local/bin/daemonarchy-cudalab",
+      "owner": "release",
+      "sha256": "5d46d251b4de4682ae40aa46b4ba6bf4a01d996efd7b3fb1f64a0104bedb5b87",
+      "executable": true
+    },
+    {
+      "path": "overlay/usr/local/libexec/daemonarchy-installer/checkout-options",
+      "owner": "installer",
+      "sha256": "5cb4a6ca2809a9124c1b360e2aeec312d5df541b3dd8d327711b6a907beffba7",
+      "executable": false
+    },
+    {
+      "path": "overlay/usr/local/libexec/daemonarchy-installer/configurator",
+      "owner": "installer",
+      "sha256": "d8ccd62108205bb4dee0a98860529584d134ee936b47e5a850e5a94b66c522a2",
+      "executable": true
+    },
+    {
+      "path": "overlay/usr/local/libexec/daemonarchy-installer/cuda-options",
+      "owner": "installer",
+      "sha256": "31174a035fab1802019cb298d646f28b402c701482f56e64e72ed8475d9e79bd",
+      "executable": false
+    },
+    {
+      "path": "overlay/usr/local/libexec/daemonarchy-installer/dashboard",
+      "owner": "installer",
+      "sha256": "fbd702ace484a086bcb46378880d3333ba71888c6f97f2ec166e06367bb33c1a",
+      "executable": true
+    },
+    {
+      "path": "overlay/usr/local/libexec/daemonarchy-installer/debug-events.py",
+      "owner": "diagnostics",
+      "sha256": "cafa588abc8cd66d4882301ad0d704ed150157e1ea4b6fde5ffda21ef2833083",
+      "executable": false
+    },
+    {
+      "path": "overlay/usr/local/libexec/daemonarchy-installer/debug-observe",
+      "owner": "diagnostics",
+      "sha256": "799ca44a7c98abf2f34e1387efea44f4fbb6fe15ae96aecf743cd377675a8ea5",
+      "executable": true
+    },
+    {
+      "path": "overlay/usr/local/libexec/daemonarchy-installer/disk-layout",
+      "owner": "installer",
+      "sha256": "f92cd0b369ef7e6a8f89f9d634ce4a706d91841e37313e1abf4361f0fc48eb92",
+      "executable": false
+    },
+    {
+      "path": "overlay/usr/local/libexec/daemonarchy-installer/fix-ownership",
+      "owner": "installer",
+      "sha256": "8239ce2223b22473216ebb4a38de63c4df6764deadd83ef17af8b32318ab459d",
+      "executable": false
+    },
+    {
+      "path": "overlay/usr/local/libexec/daemonarchy-installer/gpu-config",
+      "owner": "installer",
+      "sha256": "8a56d9fb9b7c12c94ff17a0dc8df966abdb7c81fc4f37e06d30e88161bf1e9ff",
+      "executable": false
+    },
+    {
+      "path": "overlay/usr/local/libexec/daemonarchy-installer/graphics-service",
+      "owner": "installer",
+      "sha256": "0ae6643e6d1c2f47b5d595adf3d401d2fd399006f0734b955c88cbb33c6e8031",
+      "executable": false
+    },
+    {
+      "path": "overlay/usr/local/libexec/daemonarchy-installer/install",
+      "owner": "installer",
+      "sha256": "62604c6c465ecae20c4efa2aca6dbcb06c355028f565ca3bf4fd59c7d69500e0",
+      "executable": true
+    },
+    {
+      "path": "overlay/usr/local/libexec/daemonarchy-installer/install-diagnostics",
+      "owner": "installer",
+      "sha256": "20b376225b1e920820fadd80112dd1893cbcada245f386e108ec29f0f000f4ba",
+      "executable": true
+    },
+    {
+      "path": "overlay/usr/local/libexec/daemonarchy-installer/install-integrity",
+      "owner": "installer",
+      "sha256": "5f7756747fb99edb875d4fd69850d2a1dcff5c4a329989144ca6f87337c31bd7",
+      "executable": false
+    },
+    {
+      "path": "overlay/usr/local/libexec/daemonarchy-installer/launch",
+      "owner": "installer",
+      "sha256": "42a106a7afa26ac50e0d13ac8a85dd453952d4a755cf08a23fc0c943d9a051c0",
+      "executable": true
+    },
+    {
+      "path": "overlay/usr/local/libexec/daemonarchy-installer/network-addresses",
+      "owner": "installer",
+      "sha256": "031ad312a7b988ebca7d25c918e4cde02eb22d9a4555b72658438e36f434b6c0",
+      "executable": false
+    },
+    {
+      "path": "overlay/usr/local/libexec/daemonarchy-installer/package-repository",
+      "owner": "installer",
+      "sha256": "c639fed145d0da776c7c4e936d1308305f6402e8ed23bdee5fa9bf049b96db82",
+      "executable": false
+    },
+    {
+      "path": "overlay/usr/local/libexec/daemonarchy-installer/rebuild-caches",
+      "owner": "installer",
+      "sha256": "d4ceb51a9955f0010eb0131a33a575d10628a08d8c0b2d00bdec2c7197eee9b0",
+      "executable": false
+    },
+    {
+      "path": "overlay/usr/local/libexec/daemonarchy-installer/remote-debug",
+      "owner": "diagnostics",
+      "sha256": "7406dcf6644719513e22810c92cf93376b128e1e5f8e5f6912bb4c456012baa3",
+      "executable": true
+    },
+    {
+      "path": "overlay/usr/local/libexec/daemonarchy-installer/rescue-setup",
+      "owner": "diagnostics",
+      "sha256": "612915de57ea12e96d6de5cfb50eb1b6d444a0b5c17b7a3eccbbc48d5258c1d0",
+      "executable": true
+    },
+    {
+      "path": "overlay/usr/local/libexec/daemonarchy-installer/secureboot-options",
+      "owner": "installer",
+      "sha256": "2a87d9f5a00fc350c37aa37b7687a4534d0ffb781ce418912c2a1fbe93a160c2",
+      "executable": false
+    },
+    {
+      "path": "overlay/usr/local/sbin/daemonarchy-checkouts",
+      "owner": "updates",
+      "sha256": "f740fefedfb07a615d5f41c0ec0cfa059f602c2f893337268290e0652bbcf8e0",
+      "executable": true
+    },
+    {
+      "path": "overlay/usr/local/sbin/daemonarchy-debug",
+      "owner": "diagnostics",
+      "sha256": "9e93fcd0a0cb4419f1366737175749115b9b0fa33001283f70055f47efa03e19",
+      "executable": true
+    },
+    {
+      "path": "overlay/usr/local/sbin/daemonarchy-linux-cuda",
+      "owner": "release",
+      "sha256": "5d3b0dd12f90c8d0c451eebcfbfc8c534d00fe10a56312fab49f2e4aae73fdb5",
+      "executable": true
+    },
+    {
+      "path": "overlay/usr/local/sbin/daemonarchy-rescue",
+      "owner": "diagnostics",
+      "sha256": "f1f8bc69090589b21f88940e673f2d29029326dff28b4d1619d37ee7bc3b6859",
+      "executable": true
+    },
+    {
+      "path": "overlay/usr/local/share/daemonarchy-installer/brand-daemonarchy.lua",
+      "owner": "desktop",
+      "sha256": "f20c08562ca4f351a10555aaa3c02286137c2d5346ad2bb54ab161067f47dd37",
+      "executable": false
+    },
+    {
+      "path": "overlay/usr/local/share/daemonarchy-installer/checkouts.json",
+      "owner": "installer",
+      "sha256": "3ebd31031d89562fe81d3faee1cbba82ff86a686888d26477ecbd98cca5e7d45",
+      "executable": false
+    },
+    {
+      "path": "overlay/usr/local/share/daemonarchy-installer/cudalab.desktop",
+      "owner": "installer",
+      "sha256": "3bc5aecf16df20eedbb8fc2cf2c0d91aac9e14cc11fed6b502ca671e2de07c67",
+      "executable": false
+    },
+    {
+      "path": "overlay/usr/local/share/daemonarchy-installer/daemonarchy.pub",
+      "owner": "installer",
+      "sha256": "c71497ae3906e0e8d7dd423e0bfffe07ad3fa4a9a38b82dd7be7cb18be8b23c3",
+      "executable": false
+    },
+    {
+      "path": "overlay/usr/local/share/daemonarchy-installer/gpu-ids",
+      "owner": "installer",
+      "sha256": "2cb99b6a25b52f5d83e441b679565bf134ccb2a720b6a2f0187b1f8a53d7638b",
+      "executable": false
+    },
+    {
+      "path": "overlay/usr/local/share/daemonarchy-installer/keymap",
+      "owner": "installer",
+      "sha256": "019b395b969cf8716b364c3ce3cccb5f6619359042d535afc77fbdfad37ca46c",
+      "executable": true
+    },
+    {
+      "path": "overlay/usr/local/share/daemonarchy-installer/logo.txt",
+      "owner": "desktop",
+      "sha256": "c909b3f958cb1fbf043fe886a26324a9177673a4dbb25b58b4bc056faa452f1c",
+      "executable": false
+    },
+    {
+      "path": "overlay/usr/local/share/daemonarchy-installer/omarchy-menu.jsonc",
+      "owner": "desktop",
+      "sha256": "983e8c7a9456bc00091bc1ebd8dbe837ce6902586543c14bba08c0f805134254",
+      "executable": false
+    },
+    {
+      "path": "overlay/usr/local/share/daemonarchy-installer/uvm_ioctl_override.c",
+      "owner": "installer",
+      "sha256": "2d4fe33f45ca591830686f7dda042bd7623b143831844bf4103ecd5474d9f450",
+      "executable": false
+    },
+    {
+      "path": "pkg-repo.sh",
+      "owner": "release",
+      "sha256": "4e197f4cf05501bb5f8c41ec8c289a8594ef0c15c49ff47211519251cf1c344a",
+      "executable": true
+    },
+    {
+      "path": "scripts/adopt-candidate-packages.sh",
+      "owner": "updates",
+      "sha256": "0b85b16e26d8112c9e481890c52ac2606d7812c79fd6ba233c3b27ebd073de23",
+      "executable": false
+    },
+    {
+      "path": "scripts/build-checkout-packages.py",
+      "owner": "release",
+      "sha256": "b160d1298cc78b80db58e18e483d4cbaa579839d1d164f2ecafaea9ad7fdcd1a",
+      "executable": true
+    },
+    {
+      "path": "scripts/cache-release-sets.sh",
+      "owner": "release",
+      "sha256": "bb0bbafa4eb4714a44da0a7c08c35f30e97a5415d139e8be4dd13040e4e3659a",
+      "executable": false
+    },
+    {
+      "path": "scripts/capture-remote-debug.py",
+      "owner": "diagnostics",
+      "sha256": "5a25a529bd75f58f6f014e8592f5b32fc5092c14618abb310c17f90019b76ccc",
+      "executable": true
+    },
+    {
+      "path": "scripts/check-gpu-packages.sh",
+      "owner": "release",
+      "sha256": "9f7a7a57e19f82f7bfb59692a2aca10f906e3eaf78f24d4e38d7790bdd9e50ae",
+      "executable": false
+    },
+    {
+      "path": "scripts/check-image-size.sh",
+      "owner": "release",
+      "sha256": "c33a6113dd2a44d01d4a80637f2c31b18db6ec9efdf3d5de4e5a895eccb81060",
+      "executable": false
+    },
+    {
+      "path": "scripts/generate-gpu-ids.py",
+      "owner": "release",
+      "sha256": "8bd7c2e10b3110f99d6037fc9ca20da17e3a2c5a864181ae6afcb2def8f3776b",
+      "executable": false
+    },
+    {
+      "path": "scripts/headless-rescue-rc.sh",
+      "owner": "diagnostics",
+      "sha256": "5d322d705804f1bac6f9a2b2e49607a9fd6387774f0e47ff476ef29d303117c6",
+      "executable": true
+    },
+    {
+      "path": "scripts/live-image-excludes",
+      "owner": "release",
+      "sha256": "0d1ffd5ff631278b5fbd00d7d8361c463221389edb418bbafe341b6696f2bb35",
+      "executable": false
+    },
+    {
+      "path": "scripts/make-checkout-catalog.py",
+      "owner": "release",
+      "sha256": "26e46a12ac223bd6a71685b0923466f72a2e5505c97eb4117e081752df789ce1",
+      "executable": false
+    },
+    {
+      "path": "scripts/prepare-headless-rescue.sh",
+      "owner": "diagnostics",
+      "sha256": "9e76281ef7ab5f0b30eb7e0b7908bbb378d4e3f900654602ce828c0768743a2c",
+      "executable": true
+    },
+    {
+      "path": "secureboot/README.md",
+      "owner": "verified-boot",
+      "sha256": "90010059ddbd36296d250b90d037b582d75351d9c9985828c45fc172da7e3ab9",
+      "executable": false
+    },
+    {
+      "path": "secureboot/boot/daemonarchy-secureboot.conf",
+      "owner": "verified-boot",
+      "sha256": "d4f2bc2e9dcebc21ea0b73f0b3a8cc06c8d6b6f654890c2d2d3e350d5257a325",
+      "executable": false
+    },
+    {
+      "path": "secureboot/boot/local.lua",
+      "owner": "verified-boot",
+      "sha256": "89f597f87eec8960fbfe8d08e78c52658aece8ba7e77b880caa81efec61cfa82",
+      "executable": false
+    },
+    {
+      "path": "secureboot/build.py",
+      "owner": "verified-boot",
+      "sha256": "69e912e8291e4fca86858f2a2884aa3cf7d5f2e4ed44c07835ce5dd3b89eefcc",
+      "executable": false
+    },
+    {
+      "path": "secureboot/bundle.py",
+      "owner": "verified-boot",
+      "sha256": "b7bbdd9505d4a09c24bab3d53475b5aaa200eab71bea1a816eca641d1424041e",
+      "executable": false
+    },
+    {
+      "path": "secureboot/certificates/README.md",
+      "owner": "verified-boot",
+      "sha256": "43f779fff3f92c918ac250f4825adb8b58b2b2c22cc954ee642fd9af8bf6ddd9",
+      "executable": false
+    },
+    {
+      "path": "secureboot/certificates/SHA256SUMS",
+      "owner": "verified-boot",
+      "sha256": "b3e450f2f3726a4b93453faeed18d404521c0a1b115a0b2d1470a25730bd0517",
+      "executable": false
+    },
+    {
+      "path": "secureboot/certificates/daemonarchy-1.1-selftest.pem",
+      "owner": "verified-boot",
+      "sha256": "70a60fc0db7becf96ec7c8c430b38de742a20bd201fd4446694d128404d4342e",
+      "executable": false
+    },
+    {
+      "path": "secureboot/certificates/daemonarchy-1.1.der",
+      "owner": "verified-boot",
+      "sha256": "111539a7fb7178cea65f3e2fc50ea00839d045324a4272ce190e4733a9c118dd",
+      "executable": false
+    },
+    {
+      "path": "secureboot/certificates/daemonarchy-1.1.pem",
+      "owner": "verified-boot",
+      "sha256": "6dc1e08c5de432009311fc431e694d911c8f5da5f4dedfe3ad5ab5ba6074d251",
+      "executable": false
+    },
+    {
+      "path": "secureboot/maintenance.py",
+      "owner": "verified-boot",
+      "sha256": "ec786010793e49f1f74bc41d3071ab79ffa5494a00b24112ec413b12f9fcbb03",
+      "executable": false
+    },
+    {
+      "path": "secureboot/module-inventory.py",
+      "owner": "verified-boot",
+      "sha256": "bf2cb6e94e8dd3cf56ce812483fa6768f2f6701512bb0b9449bb9d1be7ad4d72",
+      "executable": false
+    },
+    {
+      "path": "secureboot/patches/cd9660-verification.patch",
+      "owner": "verified-boot",
+      "sha256": "3158ee70c0b37e6393f5edbb37c6573f06adcf653245ab85b1bf3939c62158c1",
+      "executable": false
+    },
+    {
+      "path": "secureboot/patches/efi-optional-verification.patch",
+      "owner": "verified-boot",
+      "sha256": "76145cb99c517ae01660a3ec90baa5c759f08ee2149abc5a794e80a23b636c7f",
+      "executable": false
+    },
+    {
+      "path": "secureboot/patches/loader-rootpool.patch",
+      "owner": "verified-boot",
+      "sha256": "378dc060700d372676f9a4e02ad4d466119d6a07b33a42821b14135c04e1aa9d",
+      "executable": false
+    },
+    {
+      "path": "secureboot/patches/module-policy.patch",
+      "owner": "verified-boot",
+      "sha256": "338d91502d68388572af61502f244c183aefaf241edffdd17ce30aaeda1f37d8",
+      "executable": false
+    },
+    {
+      "path": "secureboot/prepare-boot-tree.sh",
+      "owner": "verified-boot",
+      "sha256": "9155c5786abbf127adc7de9527e01b25328c52f9efd846e1613985b66f44dd07",
+      "executable": false
+    },
+    {
+      "path": "secureboot/sign-boot-tree.py",
+      "owner": "verified-boot",
+      "sha256": "44b25d95f7a8ac3707a4ab67998790e69d0cd4655ee0c8f0fdcc609fae49ce2a",
+      "executable": false
+    },
+    {
+      "path": "secureboot/tests/check-enrollment.py",
+      "owner": "verified-boot",
+      "sha256": "53f4b8ffdeec11ff92f7c7e4f897eeb30a9208302324f70cb5161b8fcaedd60d",
+      "executable": false
+    },
+    {
+      "path": "secureboot/tests/check-media-log.py",
+      "owner": "verified-boot",
+      "sha256": "794389de98f68c644d1fd41df647654bf78225aa6439e4c2b1ee77ad58b7167d",
+      "executable": false
+    },
+    {
+      "path": "secureboot/tests/check-runtime-log.py",
+      "owner": "verified-boot",
+      "sha256": "6005ce566e9de4cd5e347fc066556a54a6c3af07ed8f15013e007d061d32083e",
+      "executable": false
+    },
+    {
+      "path": "secureboot/tests/preload-probes.lua",
+      "owner": "verified-boot",
+      "sha256": "33c89410b81ccd6476c1d6aebf23f5fabbb7b3c7defdb864c37b4c754dfc4052",
+      "executable": false
+    },
+    {
+      "path": "secureboot/tests/runtime-probe.c",
+      "owner": "verified-boot",
+      "sha256": "10092c7adf03acf223c554b62c028d187f3f9f01b6e8634ae74cdf12a026fd46",
+      "executable": false
+    },
+    {
+      "path": "secureboot/tests/test_maintenance.py",
+      "owner": "verified-boot",
+      "sha256": "a3abc9c276e2b3fbaecf8cbbd776c5fee1c5bf24b60d0831964e73a1d052e319",
+      "executable": false
+    },
+    {
+      "path": "secureboot/tests/test_signing_guards.py",
+      "owner": "verified-boot",
+      "sha256": "95d4fd89073ff25e91131ab420a54546cb8813224ced8341e1285a1fb50c98c8",
+      "executable": false
+    },
+    {
+      "path": "test-bhyve.sh",
+      "owner": "release",
+      "sha256": "9386d9e1222ddada73ea575e75c8586ccfd340ac8a8820e5062528660a450e7a",
+      "executable": true
+    },
+    {
+      "path": "test-qemu.sh",
+      "owner": "release",
+      "sha256": "bf8c2c4f9081ef7e6b4dd7bd77beeb444558bc57983de938045bfbeb2ce80104",
+      "executable": true
+    },
+    {
+      "path": "tests/bios-boot-image.sh",
+      "owner": "installer",
+      "sha256": "9a05bd31049e113234bd18f23f5d9a03466b3abc82a3b1417ca4b4f01d4c3230",
+      "executable": false
+    },
+    {
+      "path": "tests/boot-environment-mounts.sh",
+      "owner": "installer",
+      "sha256": "9b8f0aa921a91674f5d660d90d4a9babef1cb877cf8ee1cd4793386d2acb70a4",
+      "executable": true
+    },
+    {
+      "path": "tests/checkout-kernel-identity.sh",
+      "owner": "installer",
+      "sha256": "13b3f0461cf13c055f034ca80ad8ad6b08843f73ca7440726c678c7610bd53de",
+      "executable": false
+    },
+    {
+      "path": "tests/checkout-options.sh",
+      "owner": "installer",
+      "sha256": "f2b28e005df0cfc15e383b80658fa284692695a65509115785e89fd0116204f4",
+      "executable": false
+    },
+    {
+      "path": "tests/checkout-packages.sh",
+      "owner": "installer",
+      "sha256": "5035bbcf0aacb5216cf9de2dbc8d378682cd07645c6b6799e08ef1c6112fc708",
+      "executable": false
+    },
+    {
+      "path": "tests/console-font.sh",
+      "owner": "installer",
+      "sha256": "a8141886b69b7da84ac9896bdd78da12378b113871e1dc7e41d010c68c1360a2",
+      "executable": false
+    },
+    {
+      "path": "tests/cuda-options.sh",
+      "owner": "installer",
+      "sha256": "c678cbb8353e4be79e2d378c9fcedc05d503f0c5589f2f1863b63e347320cd62",
+      "executable": false
+    },
+    {
+      "path": "tests/cuda-probe.c",
+      "owner": "installer",
+      "sha256": "947f1afeaf289b56a2cc74cf255a44da62357fa6eca7c3b69b1763bfdb9125b8",
+      "executable": false
+    },
+    {
+      "path": "tests/disk-layout.sh",
+      "owner": "installer",
+      "sha256": "c21cf16e50bf8857675e34796920aae3f661f7b9ad8890f1779173725253745c",
+      "executable": false
+    },
+    {
+      "path": "tests/efi-boot-image.sh",
+      "owner": "installer",
+      "sha256": "b61398d68aec27c1838f1aae038aa87b871a5e116e96546d4b3d47a6ae0d2ff0",
+      "executable": true
+    },
+    {
+      "path": "tests/efi-root.sh",
+      "owner": "installer",
+      "sha256": "710d330e45c30786bd023ccfe380af91a21b09e1a98c756697856e1590172e32",
+      "executable": true
+    },
+    {
+      "path": "tests/enterprise-wifi-options.sh",
+      "owner": "installer",
+      "sha256": "5530be5dc00097372d12cbbcf92d8698c82a34a2e5be70ca6de609429f84369d",
+      "executable": false
+    },
+    {
+      "path": "tests/gpu-config.sh",
+      "owner": "installer",
+      "sha256": "69d6164c7cac7ffa22ecc158c4358614aa51fcadcf77495ace8fcbe0a53a026a",
+      "executable": false
+    },
+    {
+      "path": "tests/graphics-startup.sh",
+      "owner": "installer",
+      "sha256": "c3c2a9feee5fed90be0dc8eb698b657f5964047975ec7167785e32ef41e009e7",
+      "executable": true
+    },
+    {
+      "path": "tests/headless-rescue.sh",
+      "owner": "diagnostics",
+      "sha256": "b5f4704c8d555ffe65708c6b4c8bcc6ee553f1dfe8e07cd06c35fcc4e19cd016",
+      "executable": true
+    },
+    {
+      "path": "tests/install-diagnostics.sh",
+      "owner": "installer",
+      "sha256": "fe65901fbd0000f13660ff9cdd93b9b5999b4038be41d6f7f58a1eea2ace9140",
+      "executable": true
+    },
+    {
+      "path": "tests/install-integrity.sh",
+      "owner": "installer",
+      "sha256": "8cf9ba7ab8663c57ad59e3d0d7d8ad9e1f5d8a9ecc9a5e4926a45c9eda86d287",
+      "executable": false
+    },
+    {
+      "path": "tests/installed-checkouts.sh",
+      "owner": "installer",
+      "sha256": "a53427ff9be55a43e24f48c66d7c1d8521cb53539c97471cd4e89655d3552b35",
+      "executable": false
+    },
+    {
+      "path": "tests/installed-desktop.sh",
+      "owner": "installer",
+      "sha256": "082b46bf673d62246b6b91c7c63ecdf7955558a64490cd8d8501e364e572f386",
+      "executable": false
+    },
+    {
+      "path": "tests/installer-clock.sh",
+      "owner": "installer",
+      "sha256": "0648547ea3ed87673edd2ccdc1f0a2b6057ee3191bb40d5e4daf0c242883b7e8",
+      "executable": false
+    },
+    {
+      "path": "tests/linux-cuda.sh",
+      "owner": "installer",
+      "sha256": "4b92aafc289568206a6bffbd446b2462c3d412b7be946d20de65f13f72d27c76",
+      "executable": false
+    },
+    {
+      "path": "tests/live-image-budget.sh",
+      "owner": "installer",
+      "sha256": "9b33062940413ccf17517b0fab53e2e8150bb4cbeb90fc2d54678a0230da7c53",
+      "executable": false
+    },
+    {
+      "path": "tests/live-image-runtime.sh",
+      "owner": "installer",
+      "sha256": "f73edc751e6801c990ad43d785f17eb596253feb216302c65ac780d494c87698",
+      "executable": false
+    },
+    {
+      "path": "tests/network-diagnostics.sh",
+      "owner": "installer",
+      "sha256": "71f4a85b989dced36c5f7f212761c0e332bdac52a31a3a113a4a53bcfb96d45a",
+      "executable": false
+    },
+    {
+      "path": "tests/package-repository.sh",
+      "owner": "installer",
+      "sha256": "2377d3bd5149c1a79350607abce27d930e25d14adc509184d2a0d0023a3c9d86",
+      "executable": false
+    },
+    {
+      "path": "tests/pkg-repo-dependencies.sh",
+      "owner": "installer",
+      "sha256": "704b27a0e00458af0b28839a9963c14c65260c9112df308be806168168471de6",
+      "executable": false
+    },
+    {
+      "path": "tests/qemu-desktop.py",
+      "owner": "installer",
+      "sha256": "c599b6a58b555f678b9af32b3a5b0b6b262d77a6ba907651c2b8769d2ecd9793",
+      "executable": true
+    },
+    {
+      "path": "tests/qemu-unlock-geli.py",
+      "owner": "installer",
+      "sha256": "b0a40c21de481758ab87aee81f225a2f741218676d58c66e85a665c3b811f62b",
+      "executable": false
+    },
+    {
+      "path": "tests/release-set-cache.sh",
+      "owner": "installer",
+      "sha256": "9960f992791fd217ace2ade12f2266c784309f13fecc06689fa1577c3b4d5089",
+      "executable": false
+    },
+    {
+      "path": "tests/remote-debug-capture.py",
+      "owner": "diagnostics",
+      "sha256": "94d985d453bd256480967f90e3823a36fc77a9ddfe0df6367ee6a61cf030ced8",
+      "executable": false
+    },
+    {
+      "path": "tests/remote-debug-cli.sh",
+      "owner": "diagnostics",
+      "sha256": "c0826a2a46797c7b2f8592ba6f7d899b0ac618932be59a03b994bb4937cc6751",
+      "executable": false
+    },
+    {
+      "path": "tests/remote-debug-events.py",
+      "owner": "diagnostics",
+      "sha256": "2fb264d972d02e7fad3b6da22363a8fd91ecb29054b2edb05e6491fcb166cb76",
+      "executable": false
+    },
+    {
+      "path": "tests/remote-debug-network.sh",
+      "owner": "diagnostics",
+      "sha256": "6e552ac2429d8eb8f29278c6f0f9f3597353484d35a4de6ace285175485a0263",
+      "executable": false
+    },
+    {
+      "path": "tests/remote-debug-observe.sh",
+      "owner": "diagnostics",
+      "sha256": "a4d44198ec8e629da2e2b1a566fe91eb2125a8546fdc394012ebc6036d488c91",
+      "executable": false
+    },
+    {
+      "path": "tests/remote-debug-progress.sh",
+      "owner": "diagnostics",
+      "sha256": "57f8681ed9cee88708e66215ca26164e1ec82ab60af27aec5901a2deae8a179b",
+      "executable": false
+    },
+    {
+      "path": "tests/remote-debug-session.sh",
+      "owner": "diagnostics",
+      "sha256": "05ac3481e3bce7276e1ec4f2642b5ebe09382f76fa81b89d6788ebbb7b788c2f",
+      "executable": false
+    },
+    {
+      "path": "tests/rescue-boot-image.sh",
+      "owner": "diagnostics",
+      "sha256": "300866643622247408e399ab21e109a9aa36d6692ab8027c069b94dcbf0d4c60",
+      "executable": true
+    },
+    {
+      "path": "tests/rescue-console.sh",
+      "owner": "diagnostics",
+      "sha256": "cebbbfa0b4ac9294461315fd8a9c2c4ddffbf73bc8f939eaefed060ce601ec29",
+      "executable": true
+    },
+    {
+      "path": "tests/rescue-setup.sh",
+      "owner": "diagnostics",
+      "sha256": "856de63a3779e21d3f2b2829dd145721e33ccefb718ee70d72e0756b431e9332",
+      "executable": true
+    },
+    {
+      "path": "tests/secureboot-options.sh",
+      "owner": "installer",
+      "sha256": "35fc473409c5d14f3d7e21d13c73209d5a172a69dc9f018c0bfa962b8327368a",
+      "executable": false
+    },
+    {
+      "path": "tests/shared-disk.sh",
+      "owner": "installer",
+      "sha256": "dc6d1a4b9f7c670df3e8a3ec2d74fb676b65abe3149df3610b74357772f47b4a",
+      "executable": false
+    }
+  ]
+}

@@ -14,6 +14,14 @@ Their historical entries and source tags are preserved. “1.1-release” in tes
 work; it is not a separate published tag in this repository. The proposed name
 1.1-rc2 was replaced by 1.1.1 before publication.
 
+## Unreleased
+
+- Adopt in-place Literate AI product goals, eight logical Component contracts,
+  public integration boundaries, stable work IDs, documentation reachability and
+  an acceptance inventory. Retain original source, native commands and published
+  release identities. Native lifecycle execution and release enforcement remain
+  separate, unqualified follow-up work; no current passing receipt is claimed.
+
 ## 1.1.1 — 2026-10-18
 
 Status: published with operator-authorized deferral of further physical-hardware

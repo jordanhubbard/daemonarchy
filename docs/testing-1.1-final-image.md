@@ -16,7 +16,7 @@ digests and sizes matched their local public inputs before publication. It is
 Published as `daemonarchy-1.1.0-rc.1`. Stable promotion to
 `daemonarchy-1.1.0` was approved but remains a GitHub draft at the 1.1.1
 preparation checkpoint; it was not completed.
-Remaining hardware qualification stays open in [ROADMAP.md](../ROADMAP.md).
+Remaining hardware qualification stays open in [ROADMAP.md](https://github.com/jordanhubbard/daemonarchy/blob/main/ROADMAP.md).
 
 ## Inputs
 

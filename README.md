@@ -8,6 +8,11 @@ This repository builds a bootable FreeBSD 16.0-CURRENT image with the Daemonarch
 
 Each release is built from a FreeBSD 16.0-CURRENT snapshot. CURRENT moves daily, so an image is tied to the snapshot it was built from.
 
+Product goals and adoption status are in [PROJECT.md](PROJECT.md). The
+[active work queue](docs/roadmap/active-work.md) tracks stable tasks and evidence;
+[the architecture](docs/architecture/design-traceability.md) maps Component contracts
+to the retained implementation.
+
 [CHANGELOG.md](CHANGELOG.md) records the changes, publication state and migration
 limits for every release, including the initial installer snapshots.
 
