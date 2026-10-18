@@ -14,7 +14,8 @@ not qualify the final ISO.
 
 The installer work includes Pair/Unpair for live or stale remote sessions,
 automatic rescue-menu redraw after late boot probes, package-file integrity
-checking before success, and bounded [continuous diagnostics](docs/remote-agent-debug.md#continuous-diagnostics).
+checking before success, original-root `canmount=noauto` with explicit installer
+mounting to protect selected boot environments, and bounded [continuous diagnostics](docs/remote-agent-debug.md#continuous-diagnostics).
 The adoption helper independently checks both kernel and userland versions
 before selecting rebuilt packages; `pkg install -y` itself accepts a newer-OS
 package and is not that guard. Existing base migrations must preserve a rollback
@@ -31,9 +32,11 @@ the qualified fork.
 The operator authorized release publication without further final installation-matrix
 evidence and with the remaining physical,
 Bluetooth, enterprise Wi-Fi and bhyve limitations disclosed. Those limitations
-remain open qualification work. The requested physical `daemon.local` upgrade
-and MacBook investigation continue in parallel; neither is a passing result
-until its actual evidence is recorded.
+remain open qualification work. The physical HP at `daemon.local` passed coordinated upgrade, rollback, return
+boot and AMD Wayland greeter rendering; authenticated user login remains pending.
+The MacBook investigation remains open. Final-ISO BIOS and enforced UEFI boot
+and embedded root-mount-policy checks passed; the four full VM runs use the
+preceding image and have their scope recorded separately.
 
 ## 1.1.0 candidate: retained scope and evidence
 

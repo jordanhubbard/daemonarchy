@@ -139,7 +139,9 @@ fi
 log "Creating the ZFS pool"
 zpool create -f -o altroot="$TARGET" -O compress=lz4 -O atime=off -m none "$POOL" "$zfs_dev"
 zfs create -o mountpoint=none "$POOL/ROOT"
-zfs create -o mountpoint=/ "$POOL/ROOT/default"
+# Inactive boot environments must never auto-mount over the selected root.
+zfs create -o mountpoint=/ -o canmount=noauto "$POOL/ROOT/default"
+zfs mount "$POOL/ROOT/default"
 zfs create -o mountpoint=/home "$POOL/home"
 zfs create -o mountpoint=/tmp -o exec=on -o setuid=off "$POOL/tmp"
 zfs create -o mountpoint=/usr -o canmount=off "$POOL/usr"

@@ -1,7 +1,7 @@
 # Physical hardware observations
 
-Historical 1.1 development/candidate evidence. Revisions, checksums and results
-below apply to the named artifact and date; they do not qualify the new
+Historical 1.1 development/candidate evidence and a scoped 1.1.1 upgrade result.
+Revisions, checksums and results below apply to the named artifact and date; earlier results do not qualify the new
 [1.1.1 source/package set](testing-1.1.1.md). Follow that record for current
 preparation and publication status.
 
@@ -10,6 +10,7 @@ matrix. Record the exact image and last visible boot message when available.
 
 | Platform | Image / test | Observation | Qualification |
 | --- | --- | --- | --- |
+| HP All-in-One 24-cb1xxx, AMD Barcelo | Coordinated 1.1.1 upgrade to `bdcfeac3e1cb` / OS1600028, 2026-10-18 UTC | Original-root mount policy corrected; actual old-system rollback and return passed; AMD-rendered Hyprland/SDDM greeter captured at 1920×1080 | Full base/apps upgrade, rollback/return and greeter/renderer passed; authenticated user desktop login and suspend remain separate checks; this is not fresh-ISO acceptance |
 | MSI Raider 18 HX, RTX 5080 | preview.11 and 1.0.1 USB boot, reported 2026-10-15 | Both images reset very early during kernel startup/probing and return to Windows; exact last message not yet captured | Failure predates preview.11; installer boot failed and NVIDIA driver/session tests were not reached |
 | T2 MacBook Pro | Development USB / installed-system investigation, 2026-10-15 | Black screen; internal keyboard unavailable in single-user mode; explicitly preloading `apple_bce` produced a queue-registration panic | Unqualified; original black-screen cause and exact panic backtrace unresolved |
 
@@ -211,6 +212,20 @@ persistent default; the target did not return to the network and console
 evidence was requested. Neither successful new-system boot nor a boot/rollback
 cause is established. Native desktop and actual rollback tests remain pending;
 offline preparation is not a physical-upgrade pass.
+
+After the operator power-cycled the apparent hang, the HP returned to its
+original OS1600026 default. Inspection and a native isolated fixture exposed
+the original root's automatic-mount policy, which can cover a selected clone
+and its devfs. After setting that original root to `canmount=noauto`, an
+instrumented second trial booted the actual OS1600028 kernel and userland in
+the intended 1.1.1 environment. Before/after-ZFS and after-SSH checkpoints
+confirmed root continuity and intact devfs; networking and SSH returned within
+37 seconds. EFI loaders and firmware settings remained unchanged. Native
+desktop finalization and AMD rendering then passed, including an actual branded
+1920×1080 Wayland greeter and native AMD EGL renderer. A controlled old-OS1600026
+rollback and new-OS1600028 return both passed; 1.1.1 is now persistently active
+with the original environment retained. The authenticated user's desktop login
+is still separate from the verified greeter.
 
 The operator permits release publication with physical qualification limitations
 retained in the notes. That authorization does not mark these tests as passed.

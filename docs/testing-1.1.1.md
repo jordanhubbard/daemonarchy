@@ -1,7 +1,7 @@
 # Daemonarchy 1.1.1 refresh
 
-Preparation started October 16, 2026. The release is published with the outstanding
-qualification work recorded below. The selected
+Preparation started October 16, 2026. The corrected final ISO has passed its
+native audit; verified asset publication and installation qualification continue. The selected
 world, kernels, release sets and source packages have built and passed package QA.
 Signed application and checkout feeds are public and verified. The final image passed its native payload audit and asset integrity checks;
 final installation/desktop qualification remains in progress. Earlier release qualification does not qualify
@@ -70,6 +70,11 @@ subsequently authorized production publication without waiting for that matrix.
   that state and clears a stale marker without reloading its driver. This fixes
   startup reporting and SDDM gating, not the underlying GPU failure. The MacBook
   remains on its old base with graphics disabled and its desktop unqualified.
+  Source inspection confirms NVIDIA 595.104.02 and the selected VirtIO driver
+  advertise `DRIVER_RENDER`; their shared DRM core allocates and registers both
+  render and primary minors. Requiring card/render nodes therefore matches
+  those drivers' successful registration paths. This is a compatibility check,
+  not a new physical NVIDIA desktop result.
 
 ## Selected inputs
 
@@ -202,7 +207,36 @@ It excludes the release's VirtIO patch. None of these submissions is claimed mer
 - Published: stable installer release with all six asset sizes and SHA-256 digests
   checked against the audited payloads.
 
-## Published image and continuing tests, October 18 UTC
+## Corrected final image, October 18 UTC
+
+The final ISO is built from installer commit
+`25c3354d2dc693311f599ed4f36b6ff233d9060b`, including both the graphics guard
+and original-root mount-policy correction. Its native regression and full
+public-image audit passed at 05:33:57 UTC. It contains the same qualified
+base, kernel, package feeds and signed boot bundle. The image is 1,912,215,552
+bytes, below the 2 GiB asset limit:
+
+```text
+daemonarchy-1.1.1-amd64.iso
+c1bc6e3a0d30e6806a324aa3abd76eb70f1593f9f22e7aab6d222491fc1eb956
+```
+
+BIOS and enforced-UEFI live-boot checks of this exact ISO passed in 18 seconds
+each. Both verified OS1600028, source `bdcfeac3e1cb`, the embedded installer's
+SHA-256 and the boot-environment fixture. Enforced UEFI also verified the
+production-signed loader/kernel/runtime manifest and loaded/active/enforce/locked
+module policy. The private test-input disk did not change the public ISO. These
+checks do not download packages or perform a complete installation. Enforced
+UEFI uses the established VirtIO/VirGL QA adapter; an initial default-VGA attempt
+with firmware-only output was retired and retained separately. Both successful
+VMs powered off cleanly. The four longer installation/desktop runs below use
+the preceding image and qualify their actual image and unchanged components.
+
+## Superseded image and continuing tests, October 18 UTC
+
+The image below is superseded before publication by the boot-environment fix
+described next. Its ongoing VM results qualify these particular components and
+image, not the forthcoming corrected installer ISO.
 
 The corrected image was built from installer commit
 `250db6f2b586c74e80d3c3ebf27e4b28793ce731`, including the graphics attachment
@@ -231,6 +265,42 @@ for network debugging in this release.
 Physical GPU/display/suspend, Bluetooth headset/HID, enterprise EAP and physical
 Windows preservation limitations remain open until new evidence closes them.
 
+## Boot-environment mounting correction, October 18 UTC
+
+The HP trial exposed a root-mounting defect in the earlier installer. Its
+original `ROOT/default` had `canmount=on`, while the trial clone had
+`canmount=noauto`. The retained shared log shows userspace services starting
+during the failed attempt; the clone's runtime files were never updated.
+This is stronger evidence than the console's apparent kernel-load hang, but
+does not alone prove which root or kernel ran during that attempt.
+
+A native OS1600028 isolated test demonstrated the mechanism: mounting only an
+owned sibling root with overlay enabled replaced the selected root's marker
+and hid its already mounted devfs. Unmounting the sibling restored both. FreeBSD's
+ZFS startup mounts eligible datasets automatically, and OpenZFS enables overlay
+mounts by default. The installer now creates its original root with
+`canmount=noauto` and explicitly mounts it before installation. The native
+memory-pool regression executes those actual installer commands, checks that
+the first root is mounted, and switches to a clone while verifying the original
+stays inactive and devfs remains visible. All disposable datasets and devices
+were cleaned; no global mount-all command or unrelated pool was modified.
+
+The HP recovered its original OS1600026 default after the operator power-cycled
+it. Changing only that original root's mount policy left the mounted system
+intact. A second instrumented trial then reached SSH in 37 seconds with both
+kernel and userland at OS1600028, source `bdcfeac3e1cb`, and the intended candidate
+root. Checkpoints before ZFS mounting, after it and after SSH all confirmed that
+root and intact devfs. Native ownership/caches, all installed package checksums,
+dependencies, desktop commands and signed profile passed. AMD attached and
+rendered the actual branded Hyprland/SDDM greeter at 1920×1080; native EGL reports
+AMD/radeonsi Renoir, DRM 3.61 and Mesa 26.2.2. A controlled normal reboot then
+verified the original OS1600026 environment and its original drivers, followed
+by a successful return to OS1600028 with automatic graphics/greeter startup.
+The 1.1.1 environment is persistently active (`NR` and pool `bootfs` verified),
+with the original environment retained for rollback. EFI loaders and Windows
+firmware settings are unchanged. An authenticated `jkh` desktop login remains
+a separate operator check; greeter rendering is not that result.
+
 ## Known dependency advisories
 
 An actual `pkg audit` on the staged physical upgrade reports three advisories
@@ -249,6 +319,13 @@ these dependency advisories and is not a zero-advisory package set. Avoid passin
 untrusted commands to the affected mail APIs or using the vulnerable setuptools
 download path with untrusted sources. Package QA and signatures establish build
 and integrity results, not absence of vulnerabilities.
+
+The upgraded HP's complete host audit reports eight advisories in seven
+packages. In addition to the two dependencies above, its retained official
+`libXrender`, `libXpm`, `libXtst`, `expat` and `curl` packages carry advisories
+outside the signed 510-package feed. No broad official-package transaction was
+mixed into graphics qualification. The physical-upgrade pass is not a clean
+security audit or evidence about every fresh install's official dependency set.
 
 ## New-base boot checks, October 17
 

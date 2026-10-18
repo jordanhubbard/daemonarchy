@@ -241,3 +241,22 @@ identical, confirming this validation did not reload or reinitialize the GPU.
 Graphics remains disabled and SDDM stopped. The AMD failure remains unresolved;
 no desktop acceptance or explanation for the earlier package-phase resets is
 claimed.
+
+### Spontaneous idle restart and retained shutdown records, October 18 UTC
+
+The operator confirmed another spontaneous restart during the bounded passive
+observation period, after package work had finished. The failed AMD module had
+remained loaded; no new GPU initialization was attempted. The controller retained
+the final heartbeat at 05:08:33 UTC and a remote-close/SSH-255 record at 05:08:34.
+Its final samples showed ordinary temperatures, external power and no new panic
+or kernel shutdown output. The reopened session reached a new OS1600027 boot,
+with graphics disabled, no AMD module loaded, and repaired-package status intact.
+
+Recovered target logs differ from the earlier failures: `ntpd` and `syslogd`
+record SIGTERM and the shutdown database records a shutdown. This establishes
+that a shutdown path ran; it does not identify its initiator or establish a
+kernel panic. No saved crash dump was found. No ACPI event in the passive devd
+log does not exclude the fixed power button: the selected kernel's fixed-button
+path can request shutdown before emitting a devd notification. A bounded,
+reversible power-button diagnostic is separate from the release defaults and
+does not establish a cause or fix.
