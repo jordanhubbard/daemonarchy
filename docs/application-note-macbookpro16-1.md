@@ -31,7 +31,9 @@ has been established. No working accelerated desktop is claimed on this machine.
 
 The detected wireless controller is **Broadcom BCM4364 revision 4**, PCI
 `14e4:4464`, Apple subsystem `106b:07bf`. The recorded inventory found it
-unattached, with no `net.wlan.devices` entry. The operator also reports no Wi-Fi.
+unattached, with no `net.wlan.devices` entry. A subsequent live recheck on
+October 18 confirmed the same state, with only loopback and USB Ethernet
+interfaces available. The operator also reports no Wi-Fi.
 Without an attached wireless device, the desktop cannot scan for or join networks;
 entering credentials or changing panel settings cannot supply the missing driver.
 

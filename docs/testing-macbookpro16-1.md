@@ -262,3 +262,35 @@ log does not exclude the fixed power button: the selected kernel's fixed-button
 path can request shutdown before emitting a devd notification. A bounded,
 reversible power-button diagnostic is separate from the release defaults and
 does not establish a cause or fix.
+
+
+### Recovered shutdown trace and wireless check, October 18 UTC
+
+A finite 30-minute diagnostic temporarily changed only the ACPI fixed power
+button action from `poweroff` to `NONE`. No restart occurred during that window.
+At 05:47:49 UTC the action was restored to `poweroff`; independent property and
+helper-exit checks confirmed cleanup. This short stability window does not
+establish that the power button caused the earlier restarts.
+
+A separate, explicitly bounded DTrace session then watched ACPI button and sleep
+requests, `shutdown_nice`, reboot system calls and selected shutdown-related
+signals to init. The four minimal provider modules matched the installed
+OS1600027 kernel's trusted manifest. A harmless, exact-child `kill(1, 0)` test
+verified caller/stack capture and off-target delivery before the real trace.
+No GPU startup or package changes were performed during this observation.
+
+Both SSH observation streams disconnected at 06:09:14 UTC. Reconnection later
+confirmed the same boot, with more than 1 hour 40 minutes of uptime: this
+particular transport loss was not a reboot. The target-side trace continued to
+its full 1,800-second deadline, finished successfully at 06:19:58 UTC and unloaded
+all four owned provider modules. No real matching shutdown event was captured;
+this leaves the earlier spontaneous restart's initiator unresolved. Normal
+power-button behavior remained restored. A lost SSH connection alone must not
+be counted as another spontaneous restart.
+
+The current wireless inventory independently confirmed the BCM4364 revision 4
+controller, PCI `14e4:4464` / subsystem `106b:07bf`, remained unattached (`none8`).
+`net.wlan.devices` was empty; only `lo0`, `ue0` and `ue1` were exposed as network
+interfaces. No wireless driver was loaded or network configuration changed for
+this check. See the [application note](application-note-macbookpro16-1.md) for
+the built-in Wi-Fi limitation and verified wired Ethernet path.
