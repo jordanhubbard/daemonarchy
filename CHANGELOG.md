@@ -86,8 +86,8 @@ integrity checks passed; outstanding qualification is not claimed as passing. Th
   combined repository pass completed successfully. The final ISO passed BIOS and
   enforced UEFI boot plus its embedded boot-environment mount-policy fixture.
 - The physical HP passed a coordinated base/kernel/package upgrade, rollback to
-  its original base, return to 1.1.1, and AMD Wayland greeter rendering. An
-  authenticated user desktop remains pending. All four preceding-image VM
+  its original base, return to 1.1.1, and AMD Wayland greeter rendering. The operator also confirmed that normal authenticated `jkh` login opens the
+  desktop and that its applications work. All four preceding-image VM
   installation/desktop configurations passed, including actual Chromium and
   OctoPkg UI checks, matching boot/module profiles and optional source/ports
   checkouts in the UEFI plain case. A controller-only module-alias assertion was
