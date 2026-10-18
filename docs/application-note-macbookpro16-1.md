@@ -1,0 +1,58 @@
+# Application note: MacBook Pro 16-inch (2019)
+
+Updated October 18, 2026. Model: **MacBookPro16,1**, Apple T2, Intel Core
+i9-9880H. This note describes the observed 1.1 candidate installation on
+OSVERSION `1600027`; the released 1.1.1 uses `1600028`. It does not qualify a
+fresh 1.1.1 installation or claim that the newer base fixes these failures.
+
+## Radeon Pro 5500M graphics
+
+The operator identifies the GPU as a Radeon Pro 5500M. Its detected identity is
+AMD Navi14, PCI `1002:7340`, Apple subsystem `106b:020f`, with 4 GiB VRAM.
+Apple lists this GPU in the [2019 model specifications](https://support.apple.com/en-us/111932).
+The [FreeBSD 6.12 AMD driver](https://github.com/freebsd/drm-kmod/blob/6.12-lts/drivers/gpu/drm/amd/amdgpu/amdgpu_drv.c)
+explicitly recognizes this PCI ID as Navi14. GPU age alone does not establish
+that the hardware is unsupported; recognition also does not guarantee a working
+MacBook display or desktop.
+
+The installed matching driver and firmware packages passed integrity checks.
+An earlier 6.6 driver attempt failed during PSP/SDMA firmware initialization.
+The later controlled 6.12 attempt read Navi14 firmware and initialized SMU and
+Display Core, then reported `KGQ enable failed`, `gfx_v10_0 hw_init failed -60`
+and device-attachment error 60. Surviving DRM device nodes did not represent
+successful initialization. The 1.1.1 graphics guard rejects that false-ready
+state; it does not repair the underlying GPU failure.
+
+A driver or platform-specific initialization problem remains a working
+hypothesis. Neither a specific Apple firmware defect nor physical GPU failure
+has been established. No working accelerated desktop is claimed on this machine.
+
+## Built-in Wi-Fi is unavailable in the observed installation
+
+The detected wireless controller is **Broadcom BCM4364 revision 4**, PCI
+`14e4:4464`, Apple subsystem `106b:07bf`. The recorded inventory found it
+unattached, with no `net.wlan.devices` entry. The operator also reports no Wi-Fi.
+Without an attached wireless device, the desktop cannot scan for or join networks;
+entering credentials or changing panel settings cannot supply the missing driver.
+
+This controller needs suitable FullMAC driver support and board-specific firmware.
+FreeBSD's existing [bwn driver](https://man.freebsd.org/cgi/man.cgi?query=bwn&sektion=4)
+is a SoftMAC driver; its firmware package is not a demonstrated fix for this
+BCM4364 device. Experimental external driver work mentioned in the investigation
+has not been validated on this MacBook or shipped as a working solution in 1.1.1.
+
+Use the wired USB Ethernet connection already verified on this machine for
+installation, package access and remote debugging. Built-in Wi-Fi remains an
+open hardware compatibility limitation. Do not treat unrelated USB Wi-Fi adapters
+as qualified without testing their exact chipset and driver.
+
+## Other limits and investigation
+
+Spontaneous restarts remain under investigation separately from graphics and
+Wi-Fi. A retained shutdown sequence does not identify its initiator. Bluetooth
+and native trackpad behavior also remain unqualified.
+
+See the [dated investigation](testing-macbookpro16-1.md),
+[hardware observations](testing-1.1-hardware-observations.md), and
+[1.1.1 qualification record](testing-1.1.1.md) for the exact configurations,
+repaired package state and test boundaries.
