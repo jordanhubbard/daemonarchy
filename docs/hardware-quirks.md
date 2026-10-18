@@ -68,7 +68,13 @@ for image comparisons and source-image checksums. Append new firmware/image
 results rather than replacing the configuration that reproduced this failure.
 
 
-## Apple T2 MacBook Pro: incomplete installation and resets
+## Apple T2 MacBook Pro: graphics, Wi-Fi and resets
+
+Read the [MacBook application note](application-note-macbookpro16-1.md) for the
+Radeon Pro 5500M initialization failure and unavailable BCM4364 Wi-Fi. The AMD
+driver recognizes the GPU; age alone does not explain its failure. The wireless
+controller was detected without an attached driver or wireless interface; use
+the verified wired USB Ethernet connection.
 
 The MacBookPro16,1 investigation includes earlier BCE/GPU failures and a later
 1.1 candidate that repeatedly restarted or powered off during ordinary package

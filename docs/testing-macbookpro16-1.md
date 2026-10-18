@@ -2,7 +2,9 @@
 
 This is a dated investigation log. The October 17/18 follow-up at the end
 describes the later 1.1 candidate installation; [1.1.1 qualification](testing-1.1.1.md)
-is separate. Earlier driver results below remain historical evidence.
+is separate. Earlier driver results below remain historical evidence. For a
+concise description of graphics and missing Wi-Fi, read the
+[MacBook application note](application-note-macbookpro16-1.md).
 
 Collected on 2026-10-15 through console-approved SSH pairing, after manually
 correcting the loader's `currdev`. This is an investigation of a partial

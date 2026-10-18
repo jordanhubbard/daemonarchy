@@ -79,6 +79,10 @@ integrity checks passed; outstanding qualification is not claimed as passing. Th
 
 ### Validation and limits
 
+- Add a [MacBook Pro application note](docs/application-note-macbookpro16-1.md)
+  separating recognized Navi14 GPU hardware from failed initialization and
+  documenting the unattached BCM4364 wireless controller and wired workaround.
+
 - Refreshed native base and policy-kernel builds and isolated normal, enforced,
   unsigned-loader and altered-kernel boot checks are recorded. These component
   checks do not substitute for the final ISO installation matrix.
