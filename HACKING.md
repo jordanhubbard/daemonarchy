@@ -268,6 +268,22 @@ memory disks with 512-byte and 4 KiB sectors; it does not prove bootability.
 The added BIOS partition is p4, in the alignment gap before the EFI partition,
 so the existing EFI, swap, and ZFS partition numbers remain unchanged.
 
+Boot-environment roots, including the original `ROOT/default`, must use
+`canmount=noauto`. The installer explicitly mounts that first root before
+writing into it. An inactive sibling with automatic mounting enabled can cover
+the selected boot environment at `/`, including its mounted `/dev`. A cloned
+environment's own `noauto` property does not protect it from that sibling.
+For an older installation, inspect `zfs list -o name,canmount,mounted,mountpoint`
+for the pool's boot environments before migration and correct each boot root
+with mountpoint `/` to `canmount=noauto`; preserve unrelated datasets. Changing
+that property does not unmount an already mounted root.
+
+Run `sudo bash tests/boot-environment-mounts.sh` on FreeBSD. It executes the
+actual installer root-creation commands in its own temporary memory-disk pool,
+checks the initial explicit mount, and switches to a cloned root while keeping
+the original inactive and devfs visible. It never runs global `zfs mount -a`
+or changes another pool.
+
 For a faster BIOS boot-chain check, run
 `sudo bash tests/bios-boot-image.sh /new/test-directory /usr/local/poudriere/jails/16amd64`
 on FreeBSD. It creates a disposable ZFS disk containing that snapshot's boot

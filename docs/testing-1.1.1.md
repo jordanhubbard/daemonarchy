@@ -1,7 +1,7 @@
 # Daemonarchy 1.1.1 refresh
 
-Preparation started October 16, 2026. The release is published with the outstanding
-qualification work recorded below. The selected
+Preparation started October 16, 2026. Publication is held while a confirmed
+boot-environment mounting defect is corrected and the ISO rebuilt. The selected
 world, kernels, release sets and source packages have built and passed package QA.
 Signed application and checkout feeds are public and verified. The final image passed its native payload audit and asset integrity checks;
 final installation/desktop qualification remains in progress. Earlier release qualification does not qualify
@@ -70,6 +70,11 @@ subsequently authorized production publication without waiting for that matrix.
   that state and clears a stale marker without reloading its driver. This fixes
   startup reporting and SDDM gating, not the underlying GPU failure. The MacBook
   remains on its old base with graphics disabled and its desktop unqualified.
+  Source inspection confirms NVIDIA 595.104.02 and the selected VirtIO driver
+  advertise `DRIVER_RENDER`; their shared DRM core allocates and registers both
+  render and primary minors. Requiring card/render nodes therefore matches
+  those drivers' successful registration paths. This is a compatibility check,
+  not a new physical NVIDIA desktop result.
 
 ## Selected inputs
 
@@ -202,7 +207,11 @@ It excludes the release's VirtIO patch. None of these submissions is claimed mer
 - Published: stable installer release with all six asset sizes and SHA-256 digests
   checked against the audited payloads.
 
-## Published image and continuing tests, October 18 UTC
+## Superseded image and continuing tests, October 18 UTC
+
+The image below is superseded before publication by the boot-environment fix
+described next. Its ongoing VM results qualify these particular components and
+image, not the forthcoming corrected installer ISO.
 
 The corrected image was built from installer commit
 `250db6f2b586c74e80d3c3ebf27e4b28793ce731`, including the graphics attachment
@@ -230,6 +239,32 @@ for network debugging in this release.
 
 Physical GPU/display/suspend, Bluetooth headset/HID, enterprise EAP and physical
 Windows preservation limitations remain open until new evidence closes them.
+
+## Boot-environment mounting correction, October 18 UTC
+
+The HP trial exposed a root-mounting defect in the earlier installer. Its
+original `ROOT/default` had `canmount=on`, while the trial clone had
+`canmount=noauto`. The retained shared log shows userspace services starting
+during the failed attempt; the clone's runtime files were never updated.
+This is stronger evidence than the console's apparent kernel-load hang, but
+does not alone prove which root or kernel ran during that attempt.
+
+A native OS1600028 isolated test demonstrated the mechanism: mounting only an
+owned sibling root with overlay enabled replaced the selected root's marker
+and hid its already mounted devfs. Unmounting the sibling restored both. FreeBSD's
+ZFS startup mounts eligible datasets automatically, and OpenZFS enables overlay
+mounts by default. The installer now creates its original root with
+`canmount=noauto` and explicitly mounts it before installation. The native
+memory-pool regression executes those actual installer commands, checks that
+the first root is mounted, and switches to a clone while verifying the original
+stays inactive and devfs remains visible. All disposable datasets and devices
+were cleaned; no global mount-all command or unrelated pool was modified.
+
+The HP recovered its original OS1600026 default after the operator power-cycled
+it. Its candidate remains intact. Correcting the original root's mount policy
+and obtaining actual new-system boot evidence are separate from the offline
+package/signature checks already passed. No EFI-loader replacement is justified
+by the current evidence.
 
 ## Known dependency advisories
 

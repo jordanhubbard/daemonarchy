@@ -47,6 +47,9 @@ integrity checks passed; outstanding qualification is not claimed as passing. Th
 
 ### Fixed
 
+- Create the original ZFS boot environment with `canmount=noauto` and explicitly
+  mount it for installation. An inactive original root must not automatically
+  cover a selected replacement environment or hide its `/dev` during boot.
 - Rescue option 2 switches between pairing and unpairing a remote debugging
   agent. Unpairing disconnects active access, clears stale state, and permits a
   fresh pairing session.
