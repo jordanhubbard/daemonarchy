@@ -14,6 +14,10 @@ matrix. Record the exact image and last visible boot message when available.
 | MSI Raider 18 HX, RTX 5080 | preview.11 and 1.0.1 USB boot, reported 2026-10-15 | Both images reset very early during kernel startup/probing and return to Windows; exact last message not yet captured | Failure predates preview.11; installer boot failed and NVIDIA driver/session tests were not reached |
 | T2 MacBook Pro | Development USB / installed-system investigation, 2026-10-15 | Black screen; internal keyboard unavailable in single-user mode; explicitly preloading `apple_bce` produced a queue-registration panic | Unqualified; original black-screen cause and exact panic backtrace unresolved |
 
+The later [MSI startup video](#msi-startup-video-reviewed-2026-10-18) supplies a
+last visible probe line for a boot whose exact image is still unidentified. It
+does not retroactively identify the final line of either October 15 test.
+
 For the MSI comparison, the preview.10 and preview.11 ISO payloads were mounted
 read-only on FreeBSD and the following files compared byte for byte by SHA-256:
 
@@ -57,11 +61,47 @@ SHA-256: `9127c94970ca11e6e44c582a7cab928851f73fd2476e94471ee1456d63990e14`.
 The compressed download also matched its published checksum. This image is
 available for an operator boot comparison; no MSI result with it is recorded.
 
+## MSI startup video reviewed 2026-10-18
+
+The operator supplied `IMG_2155.MOV`, a 12.2-second, 1920×1080 recording.
+Its SHA-256 is
+`ed681d0b4ff7f41a34f732d733423ce0dfc30c7b67c7f3035da5da62aacec8d0`.
+The original movie and extracted frames remain private; no raw media is committed.
+The image/version and any loader overrides used for this recording are pending
+operator identification.
+
+Readable output shows 24 CPUs, the AP launch list, EFI real-time clock
+registration, and HPET counter/event-timer registration. The last visible lines
+are:
+
+```text
+atrtc0: <AT realtime clock> port 0x70-0x77 irq 8 on acpi0
+atrtc0: Warning: Couldn't map I/O.
+```
+
+Frame inspection around the transition shows the same warning followed by a
+blank display at approximately 7.6 seconds. No panic, trap, backtrace, subsequent
+probe, firmware logo or Windows boot is visible before the recording ends. This
+establishes the last captured console output; the movie alone cannot distinguish
+a reset, power loss or loss of video. Earlier operator reports of a reset remain
+separate evidence.
+
+The inspected upstream `atrtc.c` is byte-identical between current main and its
+[last-changing commit df615735](https://github.com/freebsd/freebsd-src/blob/df615735960370255d3acc4ac2a6f4fd297b7461/sys/x86/isa/atrtc.c).
+`atrtc_attach()` prints the warning when its I/O resource allocation fails, then
+calls `atrtc_start()`, which writes RTC control registers through legacy I/O.
+This makes RTC attachment a focused diagnostic candidate, not a confirmed cause.
+`hw.atrtc.enabled=0` makes `atrtc_probe()` refuse attachment. The
+[one-boot comparison](hardware-quirks.md#rtc-comparison-prompted-by-the-video)
+uses that existing tunable without changing the kernel or installing a default
+workaround. A successful or failing comparison has not yet been reported.
+
 ## MSI comparison reports
 
 The operator subsequently reproduced the early reset with Daemonarchy 1.0.1.
-The observed failure therefore predates preview.11. A stock FreeBSD boot result
-and a final probe line remain missing.
+The observed failure therefore predates preview.11. At that checkpoint, a stock
+FreeBSD boot result and a final probe line were missing; the later video above
+adds console evidence for its separately scoped boot.
 
 Windows System Information supplied by the operator identifies:
 

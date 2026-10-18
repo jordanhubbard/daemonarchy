@@ -16,6 +16,10 @@ work; it is not a separate published tag in this repository. The proposed name
 
 ## Unreleased
 
+- Record the MSI startup video's last visible legacy-RTC warning and document a
+  targeted one-boot RTC-disable comparison. The reset cause and workaround remain
+  unconfirmed; no automatic boot setting changes.
+
 - Adopt in-place Literate AI product goals, eight logical Component contracts,
   public integration boundaries, stable work IDs, documentation reachability and
   an acceptance inventory. Retain original source, native commands and published
