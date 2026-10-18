@@ -16,7 +16,7 @@ limits for every release, including the initial installer snapshots.
 The latest stable release is **[Daemonarchy 1.1.1](https://github.com/jordanhubbard/daemonarchy/releases/tag/daemonarchy-1.1.1)** (x86-64, BIOS or UEFI), with Omarchy 4.0.4 on FreeBSD 16.0-CURRENT, OSVERSION `1600028`.
 
 - [ISO](https://github.com/jordanhubbard/daemonarchy/releases/download/daemonarchy-1.1.1/daemonarchy-1.1.1-amd64.iso): 1,912,215,552 bytes, under 2 GiB.
-- [Checksum](https://github.com/jordanhubbard/daemonarchy/releases/download/daemonarchy-1.1.1/daemonarchy-1.1.1-amd64.iso.sha256): `79e90ec36cfff3f4875dc6bc2bc710265e1e04710ec2527909aa623935f179dc`.
+- [Checksum](https://github.com/jordanhubbard/daemonarchy/releases/download/daemonarchy-1.1.1/daemonarchy-1.1.1-amd64.iso.sha256): `c1bc6e3a0d30e6806a324aa3abd76eb70f1593f9f22e7aab6d222491fc1eb956`.
 - Adds partition selection, BIOS boot, QEMU/VirGL Hyprland, native FreeBSD app menus, Chromium, OctoPkg, remote-debug progress, and [manual-enrollment Secure Boot](docs/secure-boot.md).
 - Read the [results and limits](docs/testing-1.1.1.md) before installing. Physical graphics/firmware, Bluetooth audio, enterprise Wi-Fi and refreshed bhyve remain unqualified. The ASRock, MSI Raider and T2 MacBook failures are documented.
 
@@ -36,13 +36,16 @@ what has passed and what remains unqualified. The operator authorized publicatio
 without further hardware or final installation-matrix evidence; those gaps remain open.
 
 The refresh adds an explicit **Pair / Unpair remote debugging agent** toggle,
-rescue-menu redraw after boot probes, and an installation integrity check that
+rescue-menu redraw after boot probes, safe initial boot-environment mounting,
+and an installation integrity check that
 refuses to report success with missing or damaged package files. Bounded
 [continuous diagnostics](docs/remote-agent-debug.md#continuous-diagnostics)
 retain evidence on the controller while SSH works. These tools do not observe
 an early boot failure or recover networking after a hard reset. Loader and
 early-kernel network debugging are deferred to **1.2**; 1.1.1 adds no new
-source patches for that work.
+source patches for that work. Older installations should also check their
+[boot-environment mount policy](HACKING.md#boot-environment-mount-policy);
+an application package update alone does not repair existing ZFS properties.
 
 The new application feed is versioned `packages-16-amd64-1.1.1`. Moving an older
 installation to it requires a coordinated base, kernel and driver upgrade;

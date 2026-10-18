@@ -128,6 +128,12 @@ base/kernel or convert an old installation to Secure Boot. Verified installation
 keep kernel-module packages locked to their signed snapshot. The 1.1.1 feed requires OSVERSION `1600028` in both the base system and kernel, with matching drivers; changing the feed URL alone does not perform that upgrade. Use the documented
 [signed maintenance workflow](secure-boot.md#update-and-recovery-contract) for protected boot updates.
 
+Installations made with an older image need a one-time
+[boot-root mount-policy check](../HACKING.md#boot-environment-mount-policy)
+before switching boot environments. New 1.1.1 installations set the correct
+policy; an application-package update alone does not repair existing ZFS
+dataset properties.
+
 The 1.1 desktop includes Chromium and the **OctoPkg** graphical package
 manager. Choose **Install > Packages** or **Remove > Packages** to search,
 install or remove FreeBSD packages; OctoPkg asks for administrator

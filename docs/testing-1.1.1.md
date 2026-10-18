@@ -1,7 +1,7 @@
 # Daemonarchy 1.1.1 refresh
 
-Preparation started October 16, 2026. Publication is held while a confirmed
-boot-environment mounting defect is corrected and the ISO rebuilt. The selected
+Preparation started October 16, 2026. The corrected final ISO has passed its
+native audit; verified asset publication and installation qualification continue. The selected
 world, kernels, release sets and source packages have built and passed package QA.
 Signed application and checkout feeds are public and verified. The final image passed its native payload audit and asset integrity checks;
 final installation/desktop qualification remains in progress. Earlier release qualification does not qualify
@@ -207,6 +207,31 @@ It excludes the release's VirtIO patch. None of these submissions is claimed mer
 - Published: stable installer release with all six asset sizes and SHA-256 digests
   checked against the audited payloads.
 
+## Corrected final image, October 18 UTC
+
+The final ISO is built from installer commit
+`25c3354d2dc693311f599ed4f36b6ff233d9060b`, including both the graphics guard
+and original-root mount-policy correction. Its native regression and full
+public-image audit passed at 05:33:57 UTC. It contains the same qualified
+base, kernel, package feeds and signed boot bundle. The image is 1,912,215,552
+bytes, below the 2 GiB asset limit:
+
+```text
+daemonarchy-1.1.1-amd64.iso
+c1bc6e3a0d30e6806a324aa3abd76eb70f1593f9f22e7aab6d222491fc1eb956
+```
+
+BIOS and enforced-UEFI live-boot checks of this exact ISO passed in 18 seconds
+each. Both verified OS1600028, source `bdcfeac3e1cb`, the embedded installer's
+SHA-256 and the boot-environment fixture. Enforced UEFI also verified the
+production-signed loader/kernel/runtime manifest and loaded/active/enforce/locked
+module policy. The private test-input disk did not change the public ISO. These
+checks do not download packages or perform a complete installation. Enforced
+UEFI uses the established VirtIO/VirGL QA adapter; an initial default-VGA attempt
+with firmware-only output was retired and retained separately. Both successful
+VMs powered off cleanly. The four longer installation/desktop runs below use
+the preceding image and qualify their actual image and unchanged components.
+
 ## Superseded image and continuing tests, October 18 UTC
 
 The image below is superseded before publication by the boot-environment fix
@@ -265,9 +290,16 @@ it. Changing only that original root's mount policy left the mounted system
 intact. A second instrumented trial then reached SSH in 37 seconds with both
 kernel and userland at OS1600028, source `bdcfeac3e1cb`, and the intended candidate
 root. Checkpoints before ZFS mounting, after it and after SSH all confirmed that
-root and intact devfs. The old default remains the persistent fallback. Native
-desktop finalization and graphics acceptance are separate checks; no EFI-loader
-replacement was needed.
+root and intact devfs. Native ownership/caches, all installed package checksums,
+dependencies, desktop commands and signed profile passed. AMD attached and
+rendered the actual branded Hyprland/SDDM greeter at 1920×1080; native EGL reports
+AMD/radeonsi Renoir, DRM 3.61 and Mesa 26.2.2. A controlled normal reboot then
+verified the original OS1600026 environment and its original drivers, followed
+by a successful return to OS1600028 with automatic graphics/greeter startup.
+The 1.1.1 environment is persistently active (`NR` and pool `bootfs` verified),
+with the original environment retained for rollback. EFI loaders and Windows
+firmware settings are unchanged. An authenticated `jkh` desktop login remains
+a separate operator check; greeter rendering is not that result.
 
 ## Known dependency advisories
 
@@ -287,6 +319,13 @@ these dependency advisories and is not a zero-advisory package set. Avoid passin
 untrusted commands to the affected mail APIs or using the vulnerable setuptools
 download path with untrusted sources. Package QA and signatures establish build
 and integrity results, not absence of vulnerabilities.
+
+The upgraded HP's complete host audit reports eight advisories in seven
+packages. In addition to the two dependencies above, its retained official
+`libXrender`, `libXpm`, `libXtst`, `expat` and `curl` packages carry advisories
+outside the signed 510-package feed. No broad official-package transaction was
+mixed into graphics qualification. The physical-upgrade pass is not a clean
+security audit or evidence about every fresh install's official dependency set.
 
 ## New-base boot checks, October 17
 

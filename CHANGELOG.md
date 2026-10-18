@@ -83,8 +83,13 @@ integrity checks passed; outstanding qualification is not claimed as passing. Th
   unsigned-loader and altered-kernel boot checks are recorded. These component
   checks do not substitute for the final ISO installation matrix.
 - All 749 source-package builds, 24 isolated native port checks and the final
-  combined repository pass completed successfully. Final-image tests, upgrade
-  evidence and artifact publication remain tracked in the evidence document.
+  combined repository pass completed successfully. The final ISO passed BIOS and
+  enforced UEFI boot plus its embedded boot-environment mount-policy fixture.
+- The physical HP passed a coordinated base/kernel/package upgrade, rollback to
+  its original base, return to 1.1.1, and AMD Wayland greeter rendering. An
+  authenticated user desktop remains pending. Four full VM installation/desktop
+  runs use the preceding image and are component evidence, not full installations
+  of the final ISO; see the qualification record for their current results.
 - The operator authorized publication without further physical-hardware evidence.
   Existing hardware failures and untested behavior remain limitations, including
   the MacBook Pro's repeated resets during package installation and its missing

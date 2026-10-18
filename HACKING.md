@@ -268,6 +268,8 @@ memory disks with 512-byte and 4 KiB sectors; it does not prove bootability.
 The added BIOS partition is p4, in the alignment gap before the EFI partition,
 so the existing EFI, swap, and ZFS partition numbers remain unchanged.
 
+### Boot-environment mount policy
+
 Boot-environment roots, including the original `ROOT/default`, must use
 `canmount=noauto`. The installer explicitly mounts that first root before
 writing into it. An inactive sibling with automatic mounting enabled can cover
@@ -283,6 +285,8 @@ actual installer root-creation commands in its own temporary memory-disk pool,
 checks the initial explicit mount, and switches to a cloned root while keeping
 the original inactive and devfs visible. It never runs global `zfs mount -a`
 or changes another pool.
+
+### BIOS and shared-disk fixtures
 
 For a faster BIOS boot-chain check, run
 `sudo bash tests/bios-boot-image.sh /new/test-directory /usr/local/poudriere/jails/16amd64`
