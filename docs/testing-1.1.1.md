@@ -1,11 +1,14 @@
 # Daemonarchy 1.1.1 refresh
 
-Preparation started October 16, 2026. The corrected final ISO has passed its
-native audit; verified asset publication and installation qualification continue. The selected
-world, kernels, release sets and source packages have built and passed package QA.
-Signed application and checkout feeds are public and verified. The final image passed its native payload audit and asset integrity checks;
-final installation/desktop qualification remains in progress. Earlier release qualification does not qualify
-the new kernel, package set or image.
+Preparation started October 16, 2026. The corrected final `25c3354` ISO passed
+its native audit, artifact integrity checks and actual BIOS/enforced-UEFI live
+boot with the embedded storage fixture. The selected world, kernels, release sets
+and source packages built and passed package QA; signed application and checkout
+feeds are public and verified. All four full installation/desktop component
+configurations and subsequent corrected-root clone boots passed using the
+preceding `250db6f` image. Full fresh installations from the final `25c3354` ISO
+were not rerun; the operator waived that publication gate. Earlier release
+qualification does not qualify this new kernel, package set or image.
 
 ## Release authorization
 
@@ -25,9 +28,11 @@ retry had no failed or skipped ports. All 24 isolated native testport checks
 then passed, followed by the final combined repository pass and actual external
 module inventory generation. The qualification exit status is zero and its
 recorded ports revision matches `f7d7ee897405dcb8ce87e674588a4e1b3bfba00e`.
-The signed application feed is published and independently verified from GitHub;
-final image installation/desktop qualification remains outstanding. The operator
-subsequently authorized production publication without waiting for that matrix.
+The signed application feed is published and independently verified from GitHub.
+The four-mode full installation/desktop matrix uses the preceding `250db6f`
+image, followed by actual clone boots with the corrected root property. It was
+not repeated from the final `25c3354` ISO; the operator authorized production
+publication without requiring that additional matrix.
 
 ## Recovery and diagnostics changes
 
@@ -201,9 +206,11 @@ It excludes the release's VirtIO patch. None of these submissions is claimed mer
   GitHub asset names, sizes and SHA-256 digests match staging. Native clients
   verified the signed catalogue, fetched all 22 selected root archives from
   GitHub, and rejected an unrelated signing key. The old stable feed is unchanged.
-- Outstanding: final installation/desktop matrix and complete upgrade/recovery evidence.
-  The operator authorized publication without waiting for these results; they are
-  not counted as passing checks.
+- Not run: a complete four-mode installation/desktop matrix from the final
+  `25c3354` ISO. The completed `250db6f` component matrix and corrected-property
+  clone boots, final-ISO live/storage tests and physical HP upgrade/rollback
+  results below retain their separate scopes. Publication was authorized without
+  another full final-ISO matrix; that missing matrix is not counted as passing.
 - Published: stable installer release with all six asset sizes and SHA-256 digests
   checked against the audited payloads.
 
@@ -255,7 +262,8 @@ The signed boot bundle SHA-256 is
 The four fresh BIOS/enforced-UEFI, plain/encrypted installation and desktop
 runs use this exact ISO. The earlier `ee422ce` image and partial runs were
 superseded before publication when the MacBook exposed false graphics readiness;
-they are retained as partial evidence and do not qualify this final image.
+they are retained as partial evidence, separate from both the completed
+`250db6f` component results and the final `25c3354` ISO checks.
 
 ### Actual installation, desktop and corrected-root clone results
 
