@@ -68,7 +68,7 @@ ZFS boot environment, validated against its signed manifests, and activated
 only after every check succeeds. The running environment and a previously
 verified recovery environment must remain bootable. A failed update must leave
 the original boot selection usable. The installed `daemonarchy-secureboot` helper supports explicit staging and
-activation; [HACKING.md](../HACKING.md#secure-boot-development) shows the commands.
+activation; [HACKING.md](https://github.com/jordanhubbard/daemonarchy/blob/main/HACKING.md#secure-boot-development) shows the commands.
 The [upgrade record](testing-1.1-upgrade.md) distinguishes development and
 production-authority tests. These tools cover maintenance of the pinned
 snapshot and loader protocol, not a base/ABI migration. In particular, a 1.1.1 maintenance bundle does not replace an older system's base/kernel or make older driver bytes compatible. The application-feed adoption helper checks actual kernel and userland versions before identity changes; automatic `pkg install -y` alone does not reject newer-OS packages.

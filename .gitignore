@@ -1,1 +1,14 @@
 __pycache__/
+
+# Local tooling output and retained private evidence
+_build/
+.worktrees/
+
+# Runtime mutex; authored lineage and Component locks remain tracked
+.literate/repository-lineage.lock
+
+# Local skill evaluation reports
+reports/skillevaluator-*
+
+# Runtime mutexes; component.lock.json and audits remain tracked
+components/**/.*.lock

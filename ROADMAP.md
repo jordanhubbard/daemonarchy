@@ -1,5 +1,10 @@
 # Daemonarchy roadmap
 
+Product goals and completeness are owned by [PROJECT.md](PROJECT.md).
+Use [the active queue](docs/roadmap/active-work.md) for stable work IDs and
+acceptance status, and [the architecture](docs/architecture/design-traceability.md)
+for Component ownership. This file remains the release and feature overview.
+
 ## 1.1.1 refresh
 
 The current stable release is **1.1.1**. Its source is

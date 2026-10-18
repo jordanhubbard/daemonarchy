@@ -1,0 +1,65 @@
+{
+  "schema": "urn:literate-ai:schema:v2:project-definition",
+  "project_id": "daemonarchy",
+  "version": "1.1.1",
+  "profile": "canonical",
+  "agent_skill": "SKILL.md",
+  "component_roots": [
+    "components"
+  ],
+  "flavor_roots": [],
+  "skill_roots": [
+    "skills"
+  ],
+  "workflow_roots": [
+    "workflows"
+  ],
+  "routing_roots": [
+    "routing"
+  ],
+  "documentation_roots": [
+    "docs"
+  ],
+  "source_intelligence": {
+    "schema": "urn:literate-ai:schema:v1:project-source-intelligence-policy",
+    "provider_id": "none",
+    "command": null,
+    "minimum_version": null,
+    "artifact_path": null,
+    "stages": {
+      "project-maintenance": "off",
+      "source-generation": "off",
+      "cache-consumption": "off",
+      "source-to-specification": "off",
+      "repository-source-admission": "off",
+      "structural-review": "off"
+    },
+    "artifact_publication": "metadata-only"
+  },
+  "agent_development_workflow": "dev",
+  "repository_policy": {
+    "default_branch": "main",
+    "schema": "literate-ai/repository-policy@1"
+  },
+  "test_receipt": "verification/current.json",
+  "test_receipt_policy": {
+    "schema": "urn:literate-ai:schema:v1:project-test-receipt-policy",
+    "suite_id": "daemonarchy-retained-native",
+    "suite_version": "1.0.0",
+    "runner_identity": {
+      "schema": "urn:literate-ai:schema:v1:content-identity",
+      "algorithm": "sha256",
+      "digest": "bf8c2c4f9081ef7e6b4dd7bd77beeb444558bc57983de938045bfbeb2ce80104"
+    },
+    "required_evidence_kinds": [
+      "acceptance-result",
+      "build-result",
+      "resolved-sbom",
+      "source-sbom",
+      "test-report",
+      "test-runner",
+      "workspace-admission"
+    ],
+    "minimum_test_count": 1
+  }
+}

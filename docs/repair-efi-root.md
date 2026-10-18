@@ -44,7 +44,7 @@ The explicit-dataset repair above is for the older loader. Current signed
 follow the pool's active boot environment, including `bectl activate` and
 rollback. The installer selects that path only with a validated matching signed
 payload. Do not replace a current pool selector with a fixed dataset merely
-to copy the historical workaround. See [Secure Boot authoring](../secureboot/README.md)
+to copy the historical workaround. See [Secure Boot authoring](https://github.com/jordanhubbard/daemonarchy/blob/main/secureboot/README.md)
 and [the maintenance record](testing-1.1-upgrade.md).
 
 ## Regression checks

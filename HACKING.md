@@ -9,6 +9,27 @@ and signed manifests on that selection. The [qualification record](docs/testing-
 tracks publication readiness. Older image examples below must use their own
 retained inputs; a package update is not a base/ABI migration.
 
+## Literate AI project authority
+
+Read [PROJECT.md](PROJECT.md), [the active queue](docs/roadmap/active-work.md) and
+[the architecture](docs/architecture/design-traceability.md) before changing
+cross-component behavior. Literate AI 1.3.0 currently validates the in-place
+contracts; original source and the native commands below retain implementation
+and release authority. Automatic quarantine conversion was not applied.
+
+Run `litai project validate .` for authority checks and `litai verify` for the
+complete declared gate report. The latter must continue to report a missing
+current native receipt until ADOPT-002 qualifies native execution and release custody.
+No generated source, native qualification or publication permission follows from
+a metadata check. Keep signing keys and private worker evidence outside Git.
+
+Use `litai work record` for new stable work IDs. Update the owning requirements,
+acceptance evidence and changelog together. A prospective implementation change
+must explicitly refresh its retained source baseline; metadata-only adoption
+checks must preserve original implementation bytes. Native commands and platform
+requirements remain in this runbook rather than being replaced with generated
+wrapper commands.
+
 ## Where things live
 
 Daemonarchy is four repositories:

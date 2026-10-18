@@ -33,7 +33,7 @@ Development image: `daemonarchy-1.1.0-dev-bios-amd64.iso`
 SHA-256: `728e1e7bf49da1c8f53afd5428fd6b15079fb63ea9186d5217900665faadb6f1`
 
 The development filename does not change the desktop package version or
-constitute a published 1.1.0 release. The [roadmap](../ROADMAP.md) retains the
+constitute a published 1.1.0 release. The [roadmap](https://github.com/jordanhubbard/daemonarchy/blob/main/ROADMAP.md) retains the
 full installation, hardware, upgrade, and publication gates.
 
 

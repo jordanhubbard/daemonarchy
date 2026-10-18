@@ -1,0 +1,34 @@
+{
+  "schema": "daemonarchy/adoption-checks@1",
+  "date": "2026-10-18",
+  "scope": "In-place product authority and contract adoption; not native lifecycle qualification",
+  "source_baseline_commit": "a02ed2a545f3e11d6ea22539565498a29ca420f1",
+  "original_non_markdown_files_preserved": 119,
+  "authority_validation": "pass",
+  "component_locks": {
+    "count": 8,
+    "state": "current",
+    "target": "host",
+    "meaning": "Controller contract resolution only; no FreeBSD runtime qualification"
+  },
+  "skills_validation": "pass: root onboarding and retained-boundaries; static schema/security/license/quality checks",
+  "native_receipt_gate": {
+    "state": "fail",
+    "detail": "project.test_receipt_missing: configured project test receipt has not been committed"
+  },
+  "native_execution_qualified": false,
+  "release_enforcement_bound": false,
+  "automatic_quarantine_conversion_applied": false,
+  "framework": {
+    "reported_version": "1.3.0",
+    "reported_source_revision": "77fcd03923723d9d8e98f02890169b504afc7db0",
+    "publication_status": "unverified as reported by installed CLI"
+  },
+  "historical_release_manifest": "verification/release-1.1.1.json",
+  "review": {
+    "url": "https://github.com/jordanhubbard/daemonarchy/pull/10",
+    "checked_head": "c517c4c11e7e3c1f2431582bdb039b1cbf052386",
+    "GitGuardian": "pass",
+    "actions_workflows": "none configured"
+  }
+}
