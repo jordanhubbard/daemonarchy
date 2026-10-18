@@ -36,7 +36,7 @@ Evidence: `verification/adoption-checks.json`. Native execution and release enfo
 - **Conclusion:** Do not enable framework execution or publication until exact mixed source/assets, worker/toolchain, privileged cleanup, artifact custody and current receipt paths are demonstrated; the installed retained execution handler currently refuses qualification.
 - **Depends on:** ADOPT-001
 - **Implementation:**
-  - [ ] Reconcile installed retained execution refusal with [framework issue #22](https://github.com/jordanhubbard/literate-ai/issues/22), which is closed; tracker status alone is insufficient.
+  - [x] Audit the retained execution handler on current framework main and reconcile [framework issue #22](https://github.com/jordanhubbard/literate-ai/issues/22): the issue was reopened because authorized execution still unconditionally refuses. Actual execution qualification remains open below.
   - [ ] Bind the actual FreeBSD target, action inventory, external inputs, privileged cleanup and protected signer.
   - [ ] Qualify current native receipts, artifact custody and release enforcement.
 

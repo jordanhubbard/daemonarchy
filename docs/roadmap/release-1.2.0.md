@@ -67,4 +67,7 @@ an explicit operator decision; this ledger does not make one implicitly.
 
 The next execution dependency is R12-01/R12-02. Framework work is tracked by
 [issue 67](https://github.com/jordanhubbard/literate-ai/issues/67) and
-[draft PR 68](https://github.com/jordanhubbard/literate-ai/pull/68).
+[draft PR 68](https://github.com/jordanhubbard/literate-ai/pull/68). The retained
+Standard execution route remains unqualified under reopened
+[issue 22](https://github.com/jordanhubbard/literate-ai/issues/22); receiver and
+wheel-bootstrap success cannot close R12-02.
