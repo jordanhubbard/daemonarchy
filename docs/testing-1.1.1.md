@@ -382,7 +382,8 @@ by a successful return to OS1600028 with automatic graphics/greeter startup.
 The 1.1.1 environment is persistently active (`NR` and pool `bootfs` verified),
 with the original environment retained for rollback. EFI loaders and Windows
 firmware settings are unchanged. At 06:07 UTC on October 18, the operator
-confirmed that normal authenticated `jkh` login opens the desktop. This is
+confirmed that normal authenticated `jkh` login opens the desktop, and then
+confirmed that its applications work. This is
 operator-confirmed desktop acceptance in addition to the captured greeter and
 native renderer checks; suspend and fresh-ISO installation remain separate.
 

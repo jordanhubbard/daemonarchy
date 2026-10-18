@@ -225,7 +225,8 @@ desktop finalization and AMD rendering then passed, including an actual branded
 1920×1080 Wayland greeter and native AMD EGL renderer. A controlled old-OS1600026
 rollback and new-OS1600028 return both passed; 1.1.1 is now persistently active
 with the original environment retained. At 06:07 UTC on October 18 the operator
-confirmed that normal authenticated `jkh` login opens the desktop. Suspend and
+confirmed that normal authenticated `jkh` login opens the desktop and that its
+applications work. Suspend and
 fresh-ISO installation remain separate qualification work.
 
 The operator permits release publication with physical qualification limitations
