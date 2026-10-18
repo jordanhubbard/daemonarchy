@@ -127,14 +127,20 @@ to the release integration. The separate header-only #642 head
 NVIDIA DRM testports, including stage, plist, install/deinstall and package QA.
 It excludes the release's VirtIO patch. None of these submissions is claimed merged.
 
-## Checks and remaining work
+## Preparation checks and subsequent qualification
+
+These preparation checkpoints are followed by the final-image and component
+results below. The current release status and waived qualification limits are
+recorded at the start of this document.
 
 - All four Secure Boot source patches apply cleanly to the selected source tip.
 - The 23 signing/maintenance tests pass on macOS and on the native FreeBSD
   builder after updating the exact source and OSVERSION guards. The previous
   OSVERSION is explicitly rejected by the module-inventory regression test.
-  The isolated new-base boot checks below pass; final external-module,
-  installer, recovery and maintenance validation are still required.
+  The isolated new-base boot checks below pass. Later sections record the
+  completed external-module profile, preceding-image installation/clone tests
+  and physical HP upgrade/rollback. A full final-ISO installation matrix and
+  additional recovery/maintenance coverage are not claimed.
 - All 21 new-port Makefiles parse against the selected current ports framework.
   Native `portlint -AC` reports zero fatal errors for all 21 ports; advisory
   warnings remain. The preflight fixture uses the exact refreshed port files
@@ -143,7 +149,8 @@ It excludes the release's VirtIO patch. None of these submissions is claimed mer
 - The image can now select a release-specific signed application feed through
   `PACKAGE_REPOSITORY_TAG`, and installed systems retain that selection.
   Stable fallback, versioned-feed selection and malformed/multiline metadata rejection
-  pass on macOS and FreeBSD. Native image/install checks remain pending.
+  pass on macOS and FreeBSD. The final native image audit and preceding-image
+  installation checks subsequently passed, with their distinct scopes below.
 - Current ports requires Python 3.12.15 while the selected official package
   collection provides 3.12.14. The candidate publisher can include rebuilt
   ordinary dependencies, excluding kernel-bound and unrelated fetched packages.
@@ -436,5 +443,8 @@ The valid image SHA-256 is
 Its kernel-only qualification bundle SHA-256 is
 `8b4a663c8a6fe1e6d2028e7e0a72958fd9882a126495a045b05f882c63949488`.
 Retained serial logs pass the repository's runtime and media-rejection checkers.
-These checks qualify the new boot components in the isolated fixture; final
-installer, external-module, ZFS/GELI and maintenance checks remain pending.
+These October 17 checks qualify the new boot components in the isolated fixture.
+Subsequent external-module, ZFS/GELI installation and clone-boot results appear
+above. They do not establish a full fresh-install matrix for the final ISO or
+complete maintenance/recovery coverage; the operator waived further evidence
+as a publication gate.
