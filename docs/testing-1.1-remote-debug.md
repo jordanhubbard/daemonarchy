@@ -1,5 +1,10 @@
 # Remote agent debug preview checks
 
+Historical 1.1 development/candidate evidence. Revisions, checksums and results
+below apply to the named artifact and date; they do not qualify the new
+[1.1.1 source/package set](testing-1.1.1.md). Follow that record for current
+preparation and publication status.
+
 ## Session feedback (2026-10-16)
 
 The matching October 12 FreeBSD CURRENT builder passed a real, isolated SSH

@@ -1,5 +1,10 @@
 # Preliminary 1.0.1 upgrade and rollback checks
 
+Historical 1.1 development/candidate evidence. Revisions, checksums and results
+below apply to the named artifact and date; they do not qualify the new
+[1.1.1 source/package set](testing-1.1.1.md). Follow that record for current
+preparation and publication status.
+
 Native checks on 2026-10-16 used an installation made from the published
 `daemonarchy-1.0.1-amd64.iso`, whose published SHA-256 was verified before boot.
 The digest was

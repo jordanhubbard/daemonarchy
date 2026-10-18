@@ -20,7 +20,7 @@ done
 mkdir -p "$root"
 tar --no-same-owner -xpf "$cache/base.txz" -C "$root" ./boot
 tar --no-same-owner -xpf "$cache/kernel.txz" -C "$root" ./boot
-if ! strings "$root/boot/kernel/kernel" | grep -q '3ceb5f150'; then
+if ! strings "$root/boot/kernel/kernel" | grep -q 'bdcfeac3e'; then
     echo 'Stock kernel does not match the qualified source snapshot' >&2
     exit 1
 fi

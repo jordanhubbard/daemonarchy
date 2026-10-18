@@ -34,7 +34,7 @@ for kind in ports src; do
 	test ! -e "$tree/.git/objects/info/alternates"
 	git -C "$tree" fsck --connectivity-only
 	if [ "$kind" = src ]; then
-		strings /boot/kernel/kernel | grep -q -- "-$(printf '%.12s' "$revision"):"
+		/usr/local/bin/bash -c 'source /usr/local/sbin/daemonarchy-checkouts; checkout_kernel_matches "$1" /boot/kernel/kernel' checkout-test "$revision"
 	fi
 	echo "    ok    $kind is a clean, owned, depth-1 checkout at $revision"
 done

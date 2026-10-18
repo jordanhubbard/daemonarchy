@@ -28,7 +28,12 @@ completion marker as `in-progress` unless configuration had already finished.
 An ordinary failure records its exit status. A reset or power loss cannot
 record an exit status, so `in-progress` on the next boot identifies an
 interrupted installation without inventing a cause. The completion marker is
-written only after account, desktop package and SDDM state checks pass.
+written only after account, desktop package and SDDM state checks pass, together
+with a dependency check and checksum verification of every installed package.
+The target pool is flushed before recording completion and again afterwards.
+Package verification logs are retained as `package-integrity.log` and
+`package-integrity.log.dependencies` in the diagnostics directory. These checks
+detect incomplete package files; they do not prevent unexpected hardware resets.
 It describes installation configuration, not a verified successful GUI boot.
 Before exporting the target ZFS pool, the installer closes and waits for its
 log writer, so logging does not keep the pool busy.
@@ -41,7 +46,16 @@ shell use the base system and do not depend on bash, gum, SDDM or Hyprland.
 
 ## At the installed machine
 
-On the first text console, an incomplete installation immediately shows:
+For continuous remote evidence, 1.1.1 starts a bounded diagnostics collector
+after an agent authenticates. Use `daemonarchy-debug snapshot` for current
+state or `daemonarchy-debug observe` for a stream, and retain that stream on the
+controlling computer before package repair or other reset-prone work. See
+[continuous diagnostics](remote-agent-debug.md#continuous-diagnostics) for the
+receiver, private log locations, retention limits and console-capture boundaries.
+These tools work with the existing kernel; they cannot capture output after a
+hard reset has stopped SSH.
+
+On the first text console, an incomplete installation automatically shows:
 
 ```text
 Daemonarchy rescue
@@ -51,6 +65,11 @@ Daemonarchy rescue
   4. Try the graphical login again
   5. Reboot
 ```
+
+No Return key is needed to reveal the menu. Before its first display, the
+console waits for two seconds without new kernel messages, up to 15 seconds,
+then sizes the font and clears the screen so late device probes do not leave
+the menu scrolled out of view. Continued kernel logging cannot delay it longer.
 
 Choose an action, then log in as root with the password selected during
 installation. This authentication is required even though the menu is shown
@@ -62,6 +81,15 @@ confirm that the listener should start, tell the agent the displayed address,
 port and server fingerprint, and approve the matching client-key fingerprint.
 Press Enter or Ctrl-C in the listener to stop access. This does not enable
 normal sshd or grant anonymous/password-free root access.
+
+Option 2 changes to **Unpair remote debugging agent** while pairing state
+exists, including stale state left by an unexpected reboot. Selecting it
+requires the same root authentication, closes the listener and its SSH
+connections, and removes approved keys and session state. The option then
+returns to **Pair a remote debugging agent**; a new session requires fresh
+approval. This also clears the “Another debug session is already active”
+condition without manual file cleanup. An authenticated shell can run
+`daemonarchy-debug unpair` for the same operation.
 
 For a completed installation, the console waits up to 60 seconds for SDDM
 and either its greeter or a Hyprland session process. It keeps monitoring while
@@ -85,8 +113,12 @@ original installation log cannot be recovered by adding these tools later.
 
 Run `bash tests/install-diagnostics.sh` and `bash tests/rescue-console.sh` for
 log streaming/drain, interrupted-state handling, GUI startup/crash timeout and
-the authentication gate before remote pairing. On FreeBSD as root,
+the authentication gate before remote pairing and unpairing, including the
+option-2 toggle. On FreeBSD as root,
 `bash tests/rescue-setup.sh` checks the actual getty/profile installation.
+`bash tests/remote-debug-session.sh` exercises actual SSH revocation, fresh
+pairing approval, stale-PID safety and protection of a replacement session from
+an older listener's cleanup.
 
 `tests/rescue-boot-image.sh /new/output /path/base.txz /snapshot/root` builds
 a disposable FreeBSD boot image using the production recovery/account/logging

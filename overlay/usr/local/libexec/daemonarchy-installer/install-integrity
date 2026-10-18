@@ -1,0 +1,33 @@
+# Final completion requires actual package files, not just pkg registrations.
+install_verify_package_integrity() {
+  local log=$1
+  shift
+  if ! LC_ALL=C "$@" check -d -n -a >"$log.dependencies" 2>&1; then
+    tail -n 80 "$log.dependencies" >&2
+    echo 'Installed package dependencies are incomplete.' >&2
+    return 1
+  fi
+  if ! LC_ALL=C "$@" check -s -a >"$log" 2>&1; then
+    tail -n 80 "$log" >&2
+    echo 'Installed package files failed integrity verification.' >&2
+    return 1
+  fi
+  # Retain the diagnostics even if a pkg version reports discrepancies with
+  # a successful exit status. Never turn verification into an automatic repair.
+  if grep -Eq 'checksum mismatch|not found' "$log"; then
+    tail -n 80 "$log" >&2
+    echo 'Installed package files failed integrity verification.' >&2
+    return 1
+  fi
+}
+
+install_record_verified_completion() {
+  local pool=$1 log=$2
+  shift 2
+  install_verify_package_integrity "$log" "$@" || return 1
+  # Commit target data to primary pool storage before recording completion.
+  # A reset must not leave a complete marker ahead of the package payloads.
+  zpool sync "$pool" || return 1
+  diagnostics_result complete 0 || return 1
+  zpool sync "$pool"
+}

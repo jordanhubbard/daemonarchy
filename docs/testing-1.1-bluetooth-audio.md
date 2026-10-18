@@ -1,5 +1,10 @@
 # Bluetooth audio development checks
 
+Historical 1.1 development/candidate evidence. Revisions, checksums and results
+below apply to the named artifact and date; they do not qualify the new
+[1.1.1 source/package set](testing-1.1.1.md). Follow that record for current
+preparation and publication status.
+
 Checked 2026-10-16 against the October 12 snapshot, source
 `3ceb5f150bc121f5e6a3e0cc8b289279338405a1`, in the installed QEMU graphics
 fixture. This is audio plumbing evidence, not a successful Bluetooth exchange.

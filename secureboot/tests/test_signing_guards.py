@@ -97,20 +97,20 @@ class SigningGuards(unittest.TestCase):
     def test_inventory_path_escape(self):
         self.args.module_inventory = Path(self.temp.name) / "modules.json"
         self.args.module_inventory.write_text(json.dumps(dict(
-            schema=1, osversion=1600027,
+            schema=1, osversion=1600028,
             modules={"/boot/modules/../../escape.ko": "a" * 64})))
         self.reject("Invalid signed module inventory entry")
 
     def test_inventory_bad_fingerprint(self):
         self.args.module_inventory = Path(self.temp.name) / "modules.json"
         self.args.module_inventory.write_text(json.dumps(dict(
-            schema=1, osversion=1600027, modules={"/boot/modules/driver.ko": "invalid"})))
+            schema=1, osversion=1600028, modules={"/boot/modules/driver.ko": "invalid"})))
         self.reject("Invalid signed module inventory entry")
 
     def test_inventory_wrong_snapshot(self):
         self.args.module_inventory = Path(self.temp.name) / "modules.json"
         self.args.module_inventory.write_text(json.dumps(dict(
-            schema=1, osversion=1600026, modules={})))
+            schema=1, osversion=1600027, modules={})))
         self.reject("Unsupported release module inventory")
 
     def test_build_receipt_required(self):

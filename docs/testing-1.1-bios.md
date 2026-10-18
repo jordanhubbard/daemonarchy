@@ -1,5 +1,10 @@
 # 1.1 BIOS development checks
 
+Historical 1.1 development/candidate evidence. Revisions, checksums and results
+below apply to the named artifact and date; they do not qualify the new
+[1.1.1 source/package set](testing-1.1.1.md). Follow that record for current
+preparation and publication status.
+
 Recorded on 2026-10-12. These checks cover the first BIOS implementation;
 they are not release acceptance for 1.1.0.
 

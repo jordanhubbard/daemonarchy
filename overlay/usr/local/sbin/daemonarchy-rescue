@@ -5,6 +5,10 @@ rescue_log=/var/log/daemonarchy-rescue.log
 startup_wait=60
 failure_wait=15
 poll_seconds=1
+boot_quiet_wait=15
+boot_quiet_seconds=2
+debug_state=/var/run/daemonarchy-remote-debug
+debug_command=/usr/local/sbin/daemonarchy-debug
 
 rescue_record() {
   umask 077
@@ -24,6 +28,25 @@ rescue_font() {
   if [ "$columns" -gt 200 ] && [ -r /usr/share/vt/fonts/terminus-b32.fnt ]; then
     vidcontrol -f terminus-b32 </dev/tty >/dev/tty 2>&1 || true
   fi
+}
+
+rescue_wait_boot_output() {
+  [ "$(tty)" = /dev/ttyv0 ] || return 0
+  echo 'Preparing rescue menu; waiting for boot messages to finish.'
+  previous=$(dmesg -a 2>/dev/null | cksum)
+  remaining=$boot_quiet_wait
+  quiet=0
+  while [ "$remaining" -gt 0 ] && [ "$quiet" -lt "$boot_quiet_seconds" ]; do
+    sleep 1
+    current=$(dmesg -a 2>/dev/null | cksum)
+    if [ "$current" = "$previous" ]; then
+      quiet=$((quiet + 1))
+    else
+      quiet=0
+      previous=$current
+    fi
+    remaining=$((remaining - 1))
+  done
 }
 
 desktop_ready() {
@@ -73,13 +96,13 @@ rescue_logs() {
 rescue_action() {
   case $1 in
     shell) exec /bin/sh -i ;;
-    remote)
+    remote|unpair)
       if [ ! -x /usr/local/bin/bash ]; then
         echo 'Remote pairing needs bash, which was not installed before the interruption.'
         echo 'Use the local shell or boot the installer USB for remote debugging.'
         return 1
       fi
-      /usr/local/sbin/daemonarchy-debug listen
+      if [ "$1" = unpair ]; then "$debug_command" unpair; else "$debug_command" listen; fi
       ;;
     logs) rescue_logs; printf '\nPress Return for the rescue menu. '; read -r unused ;;
     desktop)
@@ -100,12 +123,22 @@ rescue_action() {
 
 rescue_menu() {
   authenticated=$1
+  rescue_font
   while :; do
-    cat <<'MENU'
+    # Font changes and late device probes can leave the first menu offscreen.
+    # Position it explicitly instead of relying on a Return key to redraw it.
+    if [ "$(tty)" = /dev/ttyv0 ]; then printf '\033[2J\033[H'; fi
+    remote_action=remote
+    remote_label='Pair a remote debugging agent'
+    if [ -e "$debug_state" ] || [ -L "$debug_state" ]; then
+      remote_action=unpair
+      remote_label='Unpair remote debugging agent'
+    fi
+    cat <<MENU
 
 Daemonarchy rescue
   1. Open a local debugging shell
-  2. Pair a remote debugging agent
+  2. $remote_label
   3. View installation and boot logs
   4. Try the graphical login again
   5. Reboot
@@ -116,7 +149,7 @@ MENU
     printf 'Choose [1-5]: '
     read -r choice || return 0
     case $choice in
-      1) action=shell ;; 2) action=remote ;; 3) action=logs ;;
+      1) action=shell ;; 2) action=$remote_action ;; 3) action=logs ;;
       4) action=desktop ;; 5) action=reboot ;; *) continue ;;
     esac
     if [ "$authenticated" = yes ]; then
@@ -133,11 +166,11 @@ MENU
 
 rescue_main() {
   [ "$(id -u)" = 0 ] || { echo 'Run daemonarchy-rescue as root.' >&2; return 1; }
-  rescue_font
   case ${1:-monitor} in
     monitor)
       echo 'Waiting for graphical login; this console shows recovery options if it fails.'
       monitor_desktop
+      rescue_wait_boot_output
       rescue_record
       rescue_menu no
       ;;

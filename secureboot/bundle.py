@@ -49,7 +49,7 @@ def main(args):
             raise ValueError("Bundle files must be regular files inside the staging root")
         files[name] = digest(path)
     metadata = dict(schema=1, loader_protocol=1, release=args.release,
-                    base_source=receipt["base_source"], osversion=1600027,
+                    base_source=receipt["base_source"], osversion=1600028,
                     build=receipt,
                     stock_kernel_sha256=digest(root / "boot/kernel/kernel"),
                     files=files)

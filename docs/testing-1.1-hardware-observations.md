@@ -1,5 +1,10 @@
 # Physical hardware observations
 
+Historical 1.1 development/candidate evidence. Revisions, checksums and results
+below apply to the named artifact and date; they do not qualify the new
+[1.1.1 source/package set](testing-1.1.1.md). Follow that record for current
+preparation and publication status.
+
 These are operator-reported development results, not a completed acceptance
 matrix. Record the exact image and last visible boot message when available.
 
@@ -179,3 +184,33 @@ the GPU. Changed output selection/order is an additional hypothesis for the
 missing display; it has not been demonstrated and does not explain the reported
 firmware hang by itself. The operator explicitly requested that release work
 continue while this platform is investigated by the community.
+
+
+## Later 1.1 candidate / 1.1.1 preparation, 2026-10-17/18
+
+The MacBook later reached a newer OSVERSION `1600027` installation but reset
+repeatedly during userland package repair, before any desktop GPU startup.
+No saved panic dump or confirmed reset cause is available. Repaired installed
+files passed a full checksum check after a later reset. The package transaction
+and postconfiguration subsequently completed and passed dependency/file checks.
+A controlled AMD test then failed KGQ initialization and device attachment.
+The 1.1.1 startup guard correctly rejects that state despite surviving DRM nodes;
+the underlying GPU failure and desktop remain unresolved. See the detailed
+[MacBook follow-up](testing-macbookpro16-1.md#11-candidate-recovery-follow-up-2026-10-1718).
+This does not supersede the earlier BCE, GPU or sysctl failure evidence.
+
+The requested HP All-in-One 24-cb1xxx upgrade began from OSVERSION `1600026`
+with AMD Barcelo graphics. A separate rollback environment was preserved and
+an inactive candidate received the matching 1.1.1 base/kernel/lib32 plus a
+conflict-free configuration merge. Offline validation passed the signed boot
+profile, all installed package checksums and dependencies, 376 selected
+application identities/versions/automatic flags, account preservation and 184
+kernel-module locks. Original EFI loaders and Windows firmware settings were
+preserved. A one-shot candidate boot was selected while retaining the old
+persistent default; the target did not return to the network and console
+evidence was requested. Neither successful new-system boot nor a boot/rollback
+cause is established. Native desktop and actual rollback tests remain pending;
+offline preparation is not a physical-upgrade pass.
+
+The operator permits release publication with physical qualification limitations
+retained in the notes. That authorization does not mark these tests as passed.

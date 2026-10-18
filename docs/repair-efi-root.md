@@ -37,6 +37,16 @@ EFI entry and records that complete dataset. This explicit entry selects the
 dataset recorded at installation time; automatic tracking of subsequent
 `bectl activate` changes and boot-once selection needs separate validation.
 
+## Current signed-loader path
+
+The explicit-dataset repair above is for the older loader. Current signed
+1.1/1.1.1 payloads support `daemonarchy_rootpool=<decimal ZFS pool GUID>` and
+follow the pool's active boot environment, including `bectl activate` and
+rollback. The installer selects that path only with a validated matching signed
+payload. Do not replace a current pool selector with a fixed dataset merely
+to copy the historical workaround. See [Secure Boot authoring](../secureboot/README.md)
+and [the maintenance record](testing-1.1-upgrade.md).
+
 ## Regression checks
 
 `bash tests/efi-root.sh` checks construction and validation of the EFI

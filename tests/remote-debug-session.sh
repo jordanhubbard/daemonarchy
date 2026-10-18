@@ -5,8 +5,10 @@ set -euo pipefail
 here=$(cd "$(dirname "$0")/.." && pwd)
 work=$(mktemp -d /root/daemonarchy-debug-qa.XXXXXX)
 port=${DEBUG_TEST_PORT:-23451}
-listener='' client=''
+listener='' client='' unrelated=''
 cleanup() {
+  if [[ -x $work/remote-debug ]]; then "$work/remote-debug" unpair >/dev/null 2>&1 || true; fi
+  [[ -z $unrelated ]] || kill "$unrelated" 2>/dev/null || true
   [[ -z $client ]] || kill "$client" 2>/dev/null || true
   [[ -z $listener ]] || kill "$listener" 2>/dev/null || true
   [[ -z $listener ]] || wait "$listener" 2>/dev/null || true
@@ -26,6 +28,10 @@ sed -e "s|^state=.*|state=$work/state|" \
     -e "s|^self=.*|self=$work/remote-debug|" \
     "$here/overlay/usr/local/libexec/daemonarchy-installer/remote-debug" >"$work/remote-debug"
 cp "$here/overlay/usr/local/libexec/daemonarchy-installer/network-addresses" "$work/"
+sed "s|^logs=.*|logs=$work/diagnostics|" \
+  "$here/overlay/usr/local/libexec/daemonarchy-installer/debug-observe" >"$work/debug-observe"
+cp "$here/overlay/usr/local/libexec/daemonarchy-installer/debug-events.py" "$work/"
+chmod 700 "$work/debug-observe"
 chmod 700 "$work/remote-debug"
 ssh-keygen -q -t ed25519 -N '' -f "$work/client"
 ssh-keygen -q -t ed25519 -N '' -f "$work/rejected"
@@ -60,6 +66,19 @@ wait "$client"
 client=''
 [[ $(cat "$work/result") == PRIVATE_COMMAND_RESULT ]] || fail 'forced command changed output'
 wait_for 'Agent connected successfully' "$work/console"
+wait_for 'HEARTBEAT' "$work/diagnostics/observer.log"
+observer_pid=$(cat "$work/state/observer.pid")
+kill -0 "$observer_pid" || fail 'automatic diagnostics collector not running'
+# Collector failure must be repaired by the next approved connection.
+kill -TERM "$observer_pid"
+for ((tries=0; tries<100; tries++)); do
+  kill -0 "$observer_pid" 2>/dev/null || break
+  sleep .1
+done
+ssh_client client true
+[[ $(cat "$work/state/observer.pid") != "$observer_pid" ]] || fail 'collector did not restart'
+ssh_client client "$work/remote-debug snapshot" >"$work/snapshot"
+grep -q '=== END SNAPSHOT ===' "$work/snapshot" || fail 'snapshot command failed'
 ssh_client client "$work/remote-debug activity 'Checking Wi-Fi connectivity'"
 wait_for 'Activity: Checking Wi-Fi connectivity' "$work/console"
 ssh_client client true
@@ -78,6 +97,7 @@ wait_for 'It is OK to stop this session' "$work/console"
 ssh_client client 'sleep 60' >"$work/active-result" 2>&1 &
 client=$!
 sleep 1
+old_generation=$(cat "$work/state/generation")
 printf '\n' >&9
 wait "$listener"
 listener=''
@@ -85,4 +105,44 @@ if wait "$client"; then fail 'stopping did not close an active connection'; fi
 client=''
 [[ ! -e $work/state ]] || fail 'pairing state survived stopping'
 if ssh_client client true 2>/dev/null; then fail 'listener still accepts connections'; fi
-echo 'PASS: native SSH rejection/approval, connection/activity/completion console feedback, reconnect, SFTP and stop cleanup'
+# A stale PID must not grant permission to kill another process after a reboot.
+sleep 60 &
+unrelated=$!
+mkdir "$work/state"
+printf '%s\n' "$unrelated" >"$work/state/sshd.pid"
+touch "$work/state/active" "$work/state/old.approved"
+"$work/remote-debug" unpair >"$work/stale-unpair-result"
+kill -0 "$unrelated" || fail 'stale PID terminated an unrelated process'
+[[ ! -e $work/state ]] || fail 'stale pairing state survived unpairing'
+kill "$unrelated"
+wait "$unrelated" || true
+unrelated=''
+"$work/remote-debug" unpair >/dev/null
+# Pair again, require fresh approval, then revoke an actual live SSH session.
+"$work/remote-debug" listen "$port" <"$work/input" >"$work/console-again" 2>&1 &
+listener=$!
+printf 'y\n' >&9
+wait_for 'Waiting for an authenticated agent' "$work/console-again"
+if "$work/remote-debug" listen "$port" <<<'y' >"$work/duplicate" 2>&1; then
+  fail 'duplicate listener started'
+fi
+grep -q 'Another debug session is already active' "$work/duplicate" || fail 'missing active-session diagnostic'
+ssh_client client true >"$work/repaired-result" 2>&1 &
+client=$!
+wait_for 'Does this match' "$work/console-again"
+printf 'y\n' >&9
+wait "$client"
+client=''
+"$work/remote-debug" _stop "$old_generation"
+ssh_client client true
+ssh_client client 'sleep 60' >"$work/unpair-active-result" 2>&1 &
+client=$!
+sleep 1
+ssh_client client "$work/remote-debug unpair" >"$work/live-unpair-result" 2>&1 || true
+wait "$listener"
+listener=''
+if wait "$client"; then fail 'unpairing did not terminate an active connection'; fi
+client=''
+[[ ! -e $work/state ]] || fail 'live pairing state survived unpairing'
+if ssh_client client true 2>/dev/null; then fail 'unpaired listener still accepts connections'; fi
+echo 'PASS: native SSH lifecycle, stale-PID safety, fresh pairing approval and live connection revocation'

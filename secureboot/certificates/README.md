@@ -13,9 +13,10 @@ it is not an authoring-worker input or an image/package/repository file.
 `daemonarchy-1.1-selftest.pem` is the public loader certificate-test fixture.
 Its temporary private key was destroyed after issuance.
 
+The 1.1.1 refresh uses this same authority and retains the `daemonarchy-1.1` certificate filenames; do not generate a replacement authority for a patch release. Source/driver manifests and bundles remain snapshot-specific. See [the current qualification record](../../docs/testing-1.1.1.md).
+
 These files do not themselves qualify an image. Production firmware boot,
 installation, rejection, update and recovery checks remain release gates.
-Published previews use other boot paths; do not enroll a certificate merely
-to try one of those images. Follow the final release's verified artifact and
+Earlier previews use other boot paths; the public 1.1.0-rc.1 candidate includes the production manual-enrollment profile. Obtain a certificate only from the exact verified artifact set; do not infer a matching boot path from the certificate file alone. Follow the final release's verified artifact and
 [manual enrollment instructions](../../docs/secure-boot.md), appending only
 to db and preserving existing OEM/Microsoft trust.

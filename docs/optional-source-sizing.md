@@ -7,7 +7,26 @@ catalogue. See [the build and runtime instructions](../HACKING.md#building-live-
 The seed packages contain no full historical repository; users can deepen
 history explicitly with Git.
 
-## Shallow live packages
+## Current 1.1.1 shallow packages
+
+The checked-in [catalogue](../overlay/usr/local/share/daemonarchy-installer/checkouts.json)
+selects ports `f7d7ee897405dcb8ce87e674588a4e1b3bfba00e` on
+`daemonarchy-1.1.1` and source `bdcfeac3e1cb8ce3f05c32d8a7ad3597deb48bdf`.
+The [versioned checkout feed](https://github.com/jordanhubbard/daemonarchy/releases/tag/checkouts-16-bdcfeac3e1cb-f7d7ee897405-v1)
+is public and its signed catalogue, payloads and materialization have native
+verification recorded in [the 1.1.1 record](testing-1.1.1.md).
+
+| Selection | Package download, bytes | Extracted content including `.git`, bytes | Peak free-space allowance, bytes |
+| --- | ---: | ---: | ---: |
+| Ports | 237,513,943 | 728,629,485 | 3,906,574,381 |
+| System source | 716,771,851 | 1,930,848,921 | 6,923,737,608 |
+
+The allowances cover seed packages, assembly, extraction and allocation
+headroom; they are additional to the desktop target minimum and exclude build
+output. Existing working trees are preserved. These inputs supersede the dated
+measurements below, which remain provenance rather than current package sizes.
+
+## October 13 shallow live packages (historical)
 
 Built on 2026-10-13. These figures include a depth-1 `.git` directory and a
 complete working tree. Package seed archives and temporary extraction files are
@@ -26,17 +45,16 @@ per-file allocation and metadata headroom. The installer adds it to the base
 any additional space for building software. Seed packages may be removed after
 creation without touching the working checkouts.
 
-The [pinned catalogue](../overlay/usr/local/share/daemonarchy-installer/checkouts.json)
-records exact revisions, sizes and payload hashes. Ports use integration commit
-`6fb491f4c73a49b71b4843bbe2fd267953a59bc1`; system sources use the image kernel's
+The October 13 catalogue recorded exact revisions, sizes and payload hashes. Its ports used integration commit
+`6fb491f4c73a49b71b4843bbe2fd267953a59bc1`; system sources used that image kernel's
 `a52c50b4b7c2652954ef1bd34710a4b1fc8ef391`. Updating to a new release snapshot
 requires rebuilding these packages and regenerating the catalogue.
 
 ## Original source-only estimate
 
-Measured on 2026-10-12 for planning installer selections. These options are not
-implemented yet. Refresh both inputs before the 1.1 release and repeat these
-measurements; they are not fixed budgets for a future FreeBSD CURRENT snapshot.
+Measured on 2026-10-12 for planning installer selections. The options were not
+implemented at that planning checkpoint. They have since shipped as shallow
+checkouts; these measurements are not fixed budgets for another CURRENT snapshot.
 
 ## Inputs and locations
 
@@ -49,7 +67,7 @@ measurements; they are not fixed budgets for a future FreeBSD CURRENT snapshot.
 - `/usr/src`: sources matching the installed FreeBSD snapshot, following
   [FreeBSD CURRENT (`main`)](https://github.com/freebsd/freebsd-src/tree/main).
   This estimate uses the 2026-10-05 snapshot's source tree in the image build
-  jail. The snapshot download endpoint currently reports `src.txz` as
+  jail. At the measurement checkpoint the snapshot download endpoint reported `src.txz` as
   230,837,504 bytes. The cached snapshot MANIFEST records SHA-256
   `681c8a77d8ecd15ecdcc2e160e459adc2311e7457f0f5a81652c1cfce24d59f3`.
   The archive download was not completed or checksum-verified for this sizing
@@ -59,7 +77,7 @@ The snapshot endpoint is mutable. Release artifacts must retain the matching
 source archive, revision and checksum alongside the base/kernel sets. Do not
 resolve a moving source or ports branch when the user installs an older image.
 
-The table uses the current image integration tree, measured at
+That historical table uses the image integration tree measured at
 `6fb491f4c73a49b71b4843bbe2fd267953a59bc1`, rather than the slightly smaller
 published fork tree.
 
@@ -99,7 +117,7 @@ The resulting archive is 103,677,791 bytes, SHA-256
 Its 176,129 regular files contain 580,284,721 bytes, or 1,185,525,760
 bytes after rounding each file to 4 KiB; there are 47,584 directories.
 
-The current image integration tree produces a 104,378,040-byte gzip archive,
+The measured historical image integration tree produced a 104,378,040-byte gzip archive,
 SHA-256 `8b44685ccaef5ea256277764886787cfd88c66c17e55f20f84323e91a3a1f624`,
 with 175,670 regular files, 582,023,043 content bytes, 1,185,865,728
 bytes rounded per file to 4 KiB, and 47,613 directories. It was measured using

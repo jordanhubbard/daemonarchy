@@ -1,5 +1,10 @@
 # 1.1 live image size qualification
 
+Historical 1.1 development/candidate evidence. Revisions, checksums and results
+below apply to the named artifact and date; they do not qualify the new
+[1.1.1 source/package set](testing-1.1.1.md). Follow that record for current
+preparation and publication status.
+
 Recorded on 2026-10-15. This qualifies the live-image trimming change, not
 the complete 1.1.0 release or its outstanding feature requirements.
 

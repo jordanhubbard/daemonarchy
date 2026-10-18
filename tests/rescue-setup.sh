@@ -17,6 +17,8 @@ done
 grep -q '^ttyv0.*getty daemonarchy.Pc.*onifexists secure' "$work/etc/ttys"
 for command in daemonarchy-debug daemonarchy-rescue; do [[ -x $work/usr/local/sbin/$command ]]; done
 [[ -x $work/usr/local/libexec/daemonarchy-installer/remote-debug ]]
+[[ -x $work/usr/local/libexec/daemonarchy-installer/debug-observe ]]
+[[ -r $work/usr/local/libexec/daemonarchy-installer/debug-events.py ]]
 [[ -r $work/usr/local/libexec/daemonarchy-installer/network-addresses ]]
 sh -n "$work/root/.profile"
 echo 'PASS: native rescue installation, ttyv0 configuration and idempotent profile/getty setup'

@@ -26,14 +26,48 @@ daemonarchy_graphics_start()
         echo 'SSH was requested but is unavailable; leaving graphical startup disabled.' >>"$log"
         return 1
     fi
+    drm_drivers=
     for module in $daemonarchy_graphics_modules; do
         case "$module" in
-            linux|linux64|amdgpu|radeonkms|i915kms|nvidia-drm|virtio_gpu_drm) ;;
+            linux|linux64) ;;
+            amdgpu|radeonkms|i915kms) drm_drivers="$drm_drivers drmn" ;;
+            nvidia-drm) drm_drivers="$drm_drivers nvidia" ;;
+            virtio_gpu_drm) drm_drivers="$drm_drivers virtio_gpu_drm" ;;
             *) echo "Unsupported graphics module: $module" >>"$log"; return 1 ;;
         esac
         echo "Loading $module after SSH startup" >>"$log"
         kldstat -q -n "$module.ko" || kldload "$module" >>"$log" 2>&1 || return 1
     done
+    if [ -n "$drm_drivers" ]; then
+        # kldload can succeed after device_attach failed. DRM may even leave
+        # character nodes behind. Non-verbose devinfo lists attached devices;
+        # reject disabled/suspended devices too. Do not query DRM sysctls here.
+        if ! devices=$(/usr/sbin/devinfo 2>>"$log"); then
+            echo 'Cannot inspect attached graphics devices; leaving graphics unready.' >>"$log"
+            return 1
+        fi
+        for driver in $drm_drivers; do
+            if ! printf '%s\n' "$devices" | /usr/bin/awk -v driver="$driver" '
+                $1 ~ "^" driver "[0-9]+$" && NF == 1 { attached = 1 }
+                END { exit !attached }
+            '; then
+                echo "No attached active $driver device after graphics module loading; leaving graphics unready." >>"$log"
+                return 1
+            fi
+        done
+        card=NO render=NO
+        for node in /dev/dri/card[0-9]*; do
+            [ ! -c "$node" ] || card=YES
+        done
+        for node in /dev/dri/renderD[0-9]*; do
+            [ ! -c "$node" ] || render=YES
+        done
+        if [ "$card" != YES ] || [ "$render" != YES ]; then
+            echo 'Missing DRM card/render character devices; leaving graphics unready.' >>"$log"
+            return 1
+        fi
+    fi
+    # These are startup prerequisites, not proof that a compositor can render.
     touch "$ready"
 }
 load_rc_config "$name"

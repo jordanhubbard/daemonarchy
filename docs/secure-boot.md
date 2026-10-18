@@ -1,4 +1,4 @@
-# Manual certificate enrollment for 1.1
+# Manual certificate enrollment for 1.1 and 1.1.1
 
 The 1.1 candidate includes the production manual-enrollment profile. Stable
 1.0.1 requires Secure Boot to be disabled. Use only the production certificate
@@ -17,6 +17,8 @@ and the revocation database (dbx) must be preserved. UEFI authenticates boot
 images using these signature databases; adding a Daemonarchy certificate does
 not require replacing the platform owner. See the
 [UEFI Secure Boot specification](https://uefi.org/specs/UEFI/2.11/32_Secure_Boot_and_Driver_Signing.html).
+
+The 1.1.1 refresh retains the same production signing authority and certificate filenames; an already trusted matching certificate does not require a new enrollment merely because the release number changes. New OSVERSION `1600028` boot bundles and drivers must still match their own snapshot. See [the 1.1.1 record](testing-1.1.1.md).
 
 The production `daemonarchy-1.1.der` SHA-256 is
 `111539a7fb7178cea65f3e2fc50ea00839d045324a4272ce190e4733a9c118dd`.
@@ -69,7 +71,7 @@ the original boot selection usable. The installed `daemonarchy-secureboot` helpe
 activation; [HACKING.md](../HACKING.md#secure-boot-development) shows the commands.
 The [upgrade record](testing-1.1-upgrade.md) distinguishes development and
 production-authority tests. These tools cover maintenance of the pinned
-snapshot and loader protocol, not a base/ABI migration.
+snapshot and loader protocol, not a base/ABI migration. In particular, a 1.1.1 maintenance bundle does not replace an older system's base/kernel or make older driver bytes compatible. The application-feed adoption helper checks actual kernel and userland versions before identity changes; automatic `pkg install -y` alone does not reject newer-OS packages.
 
 Certificate rotation must add the replacement certificate before switching to
 artifacts signed with it. Keep the previous certificate until the replacement
