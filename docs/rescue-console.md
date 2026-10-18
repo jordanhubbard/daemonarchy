@@ -28,7 +28,12 @@ completion marker as `in-progress` unless configuration had already finished.
 An ordinary failure records its exit status. A reset or power loss cannot
 record an exit status, so `in-progress` on the next boot identifies an
 interrupted installation without inventing a cause. The completion marker is
-written only after account, desktop package and SDDM state checks pass.
+written only after account, desktop package and SDDM state checks pass, together
+with a dependency check and checksum verification of every installed package.
+The target pool is flushed before recording completion and again afterwards.
+Package verification logs are retained as `package-integrity.log` and
+`package-integrity.log.dependencies` in the diagnostics directory. These checks
+detect incomplete package files; they do not prevent unexpected hardware resets.
 It describes installation configuration, not a verified successful GUI boot.
 Before exporting the target ZFS pool, the installer closes and waits for its
 log writer, so logging does not keep the pool busy.

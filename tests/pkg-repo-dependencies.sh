@@ -32,8 +32,12 @@ for name, origin, path in specs:
     manifest = dict(name=name, version=version, origin=origin, comment='Disposable feed test',
                     desc='Disposable signed dependency test fixture', maintainer='test@example.invalid',
                     www='https://example.invalid', prefix='/', abi='FreeBSD:16:amd64',
+                    annotations={'FreeBSD_version':subprocess.check_output(['uname','-U'],text=True).strip()},
                     arch='freebsd:16:x86:64', files={path: {'sum':'1', 'uname':'root', 'gname':'wheel', 'perm':'0644'}})
     if name == 'omarchy':
+        # A real NO_ARCH catalogue entry need not declare an OSVERSION.
+        manifest.update(abi='FreeBSD:16:*', arch='freebsd:16:*')
+        manifest.pop('annotations')
         manifest['deps'] = {'candidate-runtime': {'origin':'devel/candidate-runtime', 'version':version}}
     if name == 'candidate-runtime' and version != '1.0':
         manifest['deps'] = {'candidate-fetched': {'origin':'devel/candidate-fetched', 'version':'1.0'}}
@@ -76,7 +80,7 @@ EOF
 cat >"$work/repos/official.conf" <<EOF
 Official: {url:"file://$work/official",signature_type:"none",priority:0,enabled:yes}
 EOF
-target_pkg() { pkg -r "$work/root" -o ABI=FreeBSD:16:amd64 -o REPOS_DIR="$work/repos" "$@"; }
+target_pkg() { pkg -r "$work/root" -o ABI=FreeBSD:16:amd64 -o "OSVERSION=$(uname -U)" -o REPOS_DIR="$work/repos" "$@"; }
 target_pkg update -f
 # A pre-existing official dependency needs an explicit candidate transition.
 mkdir -p "$work/upgrade-root" "$work/upgrade-repos"
@@ -86,10 +90,45 @@ EOF
 cat >"$work/upgrade-repos/candidate.conf" <<EOF
 Daemonarchy: {url:"file://$work/feed",signature_type:"pubkey",pubkey:"$work/public",priority:10,enabled:yes}
 EOF
-upgrade_pkg() { pkg -r "$work/upgrade-root" -o ABI=FreeBSD:16:amd64 -o REPOS_DIR="$work/upgrade-repos" "$@"; }
+upgrade_pkg() { pkg -r "$work/upgrade-root" -o ABI=FreeBSD:16:amd64 -o "OSVERSION=$(/usr/bin/env -u UNAME_U /usr/bin/uname -U)" -o REPOS_DIR="$work/upgrade-repos" "$@"; }
 upgrade_pkg update -f
 upgrade_pkg install -y -r FreeBSD candidate-runtime
 [[ $(upgrade_pkg query '%v %R' candidate-runtime) == '1.0 FreeBSD' ]]
+# The actual signed catalogue must stop adoption before repository annotations,
+# even though pkg's automatic yes and OS overrides permit the same packages.
+mkdir "$work/incompatible"
+for requirement in newer missing malformed; do
+  python3.12 - "$work" "$requirement" <<'PY'
+import json,subprocess,sys
+from pathlib import Path
+w,mode=Path(sys.argv[1]),sys.argv[2]
+m=json.loads((w/'manifest-candidate-runtime.json').read_text())
+if mode=='newer':
+    versions=[int(subprocess.check_output(['uname',flag],text=True)) for flag in ('-K','-U')]
+    m['annotations']['FreeBSD_version']=str(max(versions)+1)
+elif mode=='missing':
+    m.pop('annotations')
+else:
+    m['annotations']['FreeBSD_version']='invalid'
+(w/'incompatible-manifest.json').write_text(json.dumps(m))
+subprocess.run(['pkg','create','-M',str(w/'incompatible-manifest.json'),'-r',str(w/'stage-candidate-runtime'),'-o',str(w/'incompatible')],check=True)
+PY
+  pkg repo -q "$work/incompatible" "$work/key"
+  cat >"$work/upgrade-repos/candidate.conf" <<EOF
+Daemonarchy: {url:"file://$work/incompatible",signature_type:"pubkey",pubkey:"$work/public",priority:10,enabled:yes}
+EOF
+  if IGNORE_OSVERSION=yes ASSUME_ALWAYS_YES=yes UNAME_K=99999999 UNAME_U=99999999 \
+      candidate_adopt_installed_packages upgrade_pkg >"$work/refusal-$requirement.log" 2>&1; then
+    echo "Adopted $requirement OS metadata despite incompatible/unknown base" >&2; exit 1
+  fi
+  grep -q 'Candidate adoption refused:' "$work/refusal-$requirement.log"
+  grep -q 'Upgrade the FreeBSD base and kernel together' "$work/refusal-$requirement.log"
+  [[ $(upgrade_pkg query '%v %R' candidate-runtime) == '1.0 FreeBSD' ]]
+  [[ $(cat "$work/upgrade-root/usr/local/share/feed-test/runtime") == 1.0 ]]
+done
+cat >"$work/upgrade-repos/candidate.conf" <<EOF
+Daemonarchy: {url:"file://$work/feed",signature_type:"pubkey",pubkey:"$work/public",priority:10,enabled:yes}
+EOF
 candidate_adopt_installed_packages upgrade_pkg
 [[ $(upgrade_pkg query '%v %R' candidate-runtime) == '2.0 Daemonarchy' ]]
 [[ $(upgrade_pkg query '%v %R' candidate-fetched) == '1.0 FreeBSD' ]]
@@ -136,4 +175,4 @@ target_pkg update -f
 target_pkg upgrade -y
 [[ $(target_pkg query '%v' omarchy) == 3.0 && $(target_pkg query '%v' candidate-runtime) == 3.0 ]]
 [[ $(cat "$work/root/usr/local/share/feed-test/runtime") == 3.0 ]]
-echo 'PASS: rebuilt dependency inclusion, kernel/fetched exclusion, stable guard, official-only dependency resolution, same-version payload adoption, private override preservation and subsequent upgrades'
+echo 'PASS: signed OS metadata guards, override resistance, rebuilt dependencies, kernel/fetched exclusion, stable guard, official-only dependencies, same-version adoption, private overrides and subsequent upgrades'

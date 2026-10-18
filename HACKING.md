@@ -538,7 +538,14 @@ For an existing test installation, select the versioned candidate URL in
 `sudo bash scripts/adopt-candidate-packages.sh` from this checkout. This
 reinstalls already-installed feed packages from Daemonarchy, including rebuilt
 dependencies that `pkg` can otherwise retain from their previous repository.
-It first assigns those public packages to Daemonarchy, then uses normal
+Before changing any package identities, the helper compares the actual kernel
+and userland OSVERSION values with the candidate catalogue's
+`FreeBSD_version` requirements. Missing or malformed requirements on native
+packages are refused; architecture-independent packages may omit them. A newer
+feed requires a coordinated base, kernel and driver upgrade first. This check
+also applies when pkg's automatic yes or OS-version overrides are enabled:
+`pkg install -y` alone accepts newer-OS packages and does not provide this guard.
+After that check it assigns those public packages to Daemonarchy, then uses normal
 dependency resolution so newly required official packages remain available.
 Unrelated build dependencies and private-repository overrides are preserved.
 The feed choice takes effect before installation; after a failed transaction,

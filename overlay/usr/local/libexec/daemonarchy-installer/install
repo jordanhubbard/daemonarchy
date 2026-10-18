@@ -34,6 +34,7 @@ source "$(dirname "$0")/gpu-config"
 source "$(dirname "$0")/checkout-options"
 source "$(dirname "$0")/cuda-options"
 source "$(dirname "$0")/install-diagnostics"
+source "$(dirname "$0")/install-integrity"
 source "$(dirname "$0")/rescue-setup"
 source "$(dirname "$0")/secureboot-options"
 source "$(dirname "$0")/package-repository"
@@ -496,7 +497,8 @@ for package in daemonarchy omarchy sddm hyprland; do
 done
 [[ -f $TARGET/var/lib/sddm/state.conf && -x $TARGET/usr/local/bin/bash ]]
 secureboot_verify_target "$TARGET"
-diagnostics_result complete 0
+log "Checking installed package files and committing the target pool."
+install_record_verified_completion "$POOL" "$diagnostics_dir/package-integrity.log" pkg_target
 log "Installation configuration complete; exporting the target pool."
 diagnostics_stop
 umount "$TARGET/dev"

@@ -54,6 +54,7 @@ for tool in sh bash gum jq pkg pkg-static fetch timeout lockf ssh sshd tar xz zp
 done
 for path in /usr/freebsd-dist/base.txz /usr/freebsd-dist/kernel.txz /usr/freebsd-dist/lib32.txz \
   /boot/kernel/kernel /boot/kernel/zfs.ko /boot/loader.efi \
+  /usr/local/libexec/daemonarchy-installer/install-integrity \
   /usr/local/share/daemonarchy-installer/omarchy-wifi-enterprise \
   /usr/local/share/daemonarchy-installer/package-repository-tag \
   /usr/local/share/daemonarchy-installer/checkouts.json; do
