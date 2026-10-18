@@ -20,7 +20,10 @@
 
 ## Dependencies
 
-No blocking dependency on another repository's PROJECT.md. Runtime/build inputs
+The next release depends on a qualified Literate AI revision/wheel providing
+first-class FreeBSD workers and retained native lifecycle/release evidence.
+The framework owns that capability under FREEBSD-001; authority-only metadata
+does not satisfy it. Runtime/build inputs
 include upstream FreeBSD sources and ports, Omarchy, firmware and toolchains.
 The Daemonarchy-owned desktop and compatibility repositories remain separately
 maintained source inputs. Their exact release identities and integration
@@ -45,6 +48,15 @@ Product responsibilities and current acceptance coverage are mapped in
 parallel installer, visualizers and new graphical manager remain planned work.
 
 ## Current work
+
+RELEASE-001 is the directing operator's end-to-end goal: finish all existing
+backlog work and publish a new release entirely through the qualified Literate AI
+method. The planned minor release is 1.2.0, consistent with the existing early
+network-debugging roadmap. The completion audit includes all open queue and
+roadmap acceptance, not just implementation code or a worker proof. The
+[completion ledger](docs/roadmap/release-1.2.0.md) expands those obligations and
+defines the native/VM/physical worker and evidence model.
+
 
 ADOPT-001 establishes the project-wide authority layer. ADOPT-002 remains open
 for retained native execution, source/assets admission and release enforcement.

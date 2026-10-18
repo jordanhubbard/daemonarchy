@@ -103,3 +103,18 @@ Next action: demonstrate a supported installed retained-project execution path o
   - [ ] Retain exact hardware and artifact scope; investigate known failures without conflating transport loss and reboot; qualify actual rendering, wireless and recovery.
 - **Evidence:**
   - [ ] Native/operator results identify exact hardware and build, with unresolved or unrun cases remaining open rather than waived into passing.
+
+### [ ] RELEASE-001 — Deliver 1.2.0 through first-class FreeBSD Literate AI execution
+
+- **GitHub issue:** [#11](https://github.com/jordanhubbard/daemonarchy/issues/11)
+
+- **Priority:** P1
+- **Owner:** whole product, release and acceptance
+- **Direction:** Finish all existing Daemonarchy backlog work and publish a new release entirely through the qualified Literate AI method.
+- **Conclusion:** The existence proof must include actual native build, complete declared testing, artifact custody and publication; authority-only adoption, waived backlog, or an external manual release is insufficient.
+- **Depends on:** ADOPT-002,UI-001,PKG-001,GUI-001,DEBUG-001,HW-001
+- **Implementation:**
+  - [x] Inventory current roadmap and queue obligations in [the 1.2.0 completion ledger](release-1.2.0.md), including inherited Bluetooth, enterprise Wi-Fi, dual-boot, bhyve and physical trust/graphics gaps.
+  - [ ] Contribute and qualify upstream FreeBSD platform and retained execution support; bind private native workers and VM supervision; complete backlog implementations and acceptance; run the exact final release through Literate AI and verify publication.
+- **Evidence:**
+  - [ ] Every inherited backlog obligation has direct completion evidence; native and virtual/physical acceptance match exact final artifacts; full LitAI verification and release gates pass; published new release and immutable assets are verified.
