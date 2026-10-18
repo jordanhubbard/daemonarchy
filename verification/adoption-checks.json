@@ -24,5 +24,11 @@
     "reported_source_revision": "77fcd03923723d9d8e98f02890169b504afc7db0",
     "publication_status": "unverified as reported by installed CLI"
   },
-  "historical_release_manifest": "verification/release-1.1.1.json"
+  "historical_release_manifest": "verification/release-1.1.1.json",
+  "review": {
+    "url": "https://github.com/jordanhubbard/daemonarchy/pull/10",
+    "checked_head": "c517c4c11e7e3c1f2431582bdb039b1cbf052386",
+    "GitGuardian": "pass",
+    "actions_workflows": "none configured"
+  }
 }

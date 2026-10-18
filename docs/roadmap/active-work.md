@@ -8,7 +8,7 @@ Checkboxes below are execution status, not substitutes for test receipts.
 No open issues or reviews were found in the initial GitHub survey. Existing
 release/test worktrees are retained; adoption does not authorize their deletion.
 
-### [ ] ADOPT-001 — Establish product-wide Literate AI authority
+### [x] ADOPT-001 — Establish product-wide Literate AI authority
 
 - **Priority:** P1
 - **Owner:** project requirements and Component contracts
@@ -24,7 +24,7 @@ release/test worktrees are retained; adoption does not authorize their deletion.
   - [x] Root and retained-boundaries skills pass static schema/security/license/quality evaluation.
   - [x] All 119 original non-Markdown files except the deliberately updated ignore policy retain their original bytes and executable modes.
   - [x] `litai verify` reports authority/locks passing and the expected missing native receipt; no acceptance is fabricated.
-  - [ ] Adoption PR checks pass before landing.
+  - [x] [Adoption PR #10](https://github.com/jordanhubbard/daemonarchy/pull/10) security check passed on c517c4c; the final closure commit must pass again before merge.
 
 Evidence: `verification/adoption-checks.json`. Native execution and release enforcement belong to ADOPT-002, not this completed-authority scope.
 

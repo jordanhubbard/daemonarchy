@@ -46,6 +46,8 @@ parallel installer, visualizers and new graphical manager remain planned work.
 
 ## Current work
 
+ADOPT-001 establishes the project-wide authority layer. ADOPT-002 remains open
+for retained native execution, source/assets admission and release enforcement.
 Use [the active queue](docs/roadmap/active-work.md) for stable work IDs, owners,
 dependencies and acceptance checklists. [ROADMAP.md](ROADMAP.md) is the human
 release/feature overview; it does not independently override completion status.
