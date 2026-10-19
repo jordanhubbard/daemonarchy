@@ -145,8 +145,13 @@ an isolated native workspace. Its ten custody/refusal checks pass on FreeBSD;
 the [checkpoint](../../verification/bootstrap-seed-capture.json) binds the
 producer, inventory and capture log identities. The helper retains relative
 links and verifies linker-script references without executing installed tools.
-Framework input capture, SDK admission and relocated compilation remain
-separate gates; the installed seed still has unknown source-build provenance.
+Framework input capture now also passes, binding 4,129 file/link members and
+279 directories to manifest identity
+`sha256:5219f23b38a181354c13eb88bffb7cfb9407d5f50ab9e060c2b37de54572e377`.
+Original and promoted snapshot trees both reverify. The checkpoint retains an
+earlier observation timeout and a timing-record serialization failure separately
+from the successful re-verification. SDK admission and relocated compilation
+remain open; the installed seed still has unknown source-build provenance.
 
 ### Original-source candidate and remaining test boundaries
 
@@ -173,6 +178,18 @@ the test framework needs installation. Capture exact tool/support/library
 inputs and their bootstrap provenance. The retained ATF implementation supports
 explicit shell, helper and data-directory selection; bind those selections to
 the captured closure and test relocation instead of using ambient absolute paths.
+
+Kyua is also present on the initial native worker and enforces ATF's original
+user prerequisites. Preserve its schema-v3 SQLite results rather than inferring
+test state from its lossy JUnit export: that exporter omits failure nodes for
+expected failures and places skip reasons in diagnostic text. The source-fork
+report producer now binds exact program/case inventories, preserves non-passes
+and skip reasons, and retains database/inventory/report hashes. All thirteen
+[native reporting checks](../../verification/original-test-reporting.json) pass,
+including actual Kyua and ATF expected-failure/root-skip runs. Those fixtures
+qualify translation, not the original parser/utility tests or source compilation.
+Bind the producer/runtime, inventory, raw results and reports to the actual
+locked source-unit lifecycle before using them as evidence.
 
 Independent acceptance must observe the newly built utility's actual file
 effects, including size and content preservation. Exit/stdout/stderr checks alone

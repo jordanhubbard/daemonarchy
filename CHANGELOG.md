@@ -16,6 +16,11 @@ work; it is not a separate published tag in this repository. The proposed name
 
 ## Unreleased
 
+- Preserve exact original Kyua result states in retained test reports, including
+  expected failures and root-required skips. Thirteen checks pass on FreeBSD,
+  including actual Kyua/ATF fixtures. Complete original-unit compilation, tests
+  and lifecycle admission remain open.
+
 - Acquire the reviewed native compiler bootstrap seed with bounded byte, mode,
   link and linker-script custody. Ten refusal/capture checks pass on FreeBSD.
   The helper and documentation are available in the operator source checkout;

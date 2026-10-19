@@ -6,7 +6,7 @@
     {
       "path": "/usr/src",
       "repository": "https://github.com/jordanhubbard/daemonarchy-src",
-      "revision": "ed5050835b9c5f2c918666228f36ac1fee2e5c42",
+      "revision": "0ece875bdea68df7aae5574905b25125ad0871ba",
       "branch": "feat/source-build-pipeline",
       "clean": true,
       "upstream_base": "bdaddb76ef1b9d5537f4a76cff01cdb4795804a4"
@@ -49,5 +49,6 @@
     "doctor reports missing Git LFS and unauthenticated coding CLI; no credentials copied",
     "running 1.1.1 system unchanged by development checkouts and CLI installation"
   ],
-  "bootstrap_seed_checkpoint": "verification/bootstrap-seed-capture.json"
+  "bootstrap_seed_checkpoint": "verification/bootstrap-seed-capture.json",
+  "original_test_reporting_checkpoint": "verification/original-test-reporting.json"
 }
