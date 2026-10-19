@@ -92,6 +92,19 @@ configuration is unchanged. The build controller itself never loads modules or
 changes permissions. Full traced-build qualification remains pending. The
 completed development build remains frozen at `92276fc76c65`, without tracing.
 
+A [native compile probe](../verification/native-filemon-compile-probe.json)
+records the actual header read, reuses the unchanged object, rebuilds after a
+header edit and verifies both immutable trace snapshots. This is one C
+translation unit, not a full world/kernel traced build or Component receipt.
+
+The [pkgbase catalog audit](../verification/native-pkgbase-catalog-audit.json)
+binds all 524 catalog packages to recorded artifact sizes and resolves their
+1,082 runtime dependency edges to exact names, origins and versions without
+cycles. All packages target `FreeBSD:16:amd64`. Their native annotations contain
+FreeBSD version/set data; complete per-unit source/build provenance and a
+compilation dependency graph remain unqualified. Runtime package closure is a
+separate observation from the complete source/ports Component model.
+
 Actual observations will inform [canonical Component and build-performance
 work](roadmap/build-performance.md). They do not automatically produce canonical
 Component contracts, package provenance, acceptance or an ISO speedup.

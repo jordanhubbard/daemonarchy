@@ -122,6 +122,12 @@ configuration change. All 26 current source-controller/bootstrap checks pass
 on FreeBSD; exact-revision CI remains pending. Full native traced-build
 qualification remains pending. Do not silently fall back to command-only traces. Reconcile observed compilation/linking/generated inputs
 with canonical Component ownership, variants and selected action/package locks.
+The [native single-unit probe](../../verification/native-filemon-compile-probe.json)
+now verifies actual header reads, unchanged reuse, changed-header invalidation
+and preserved snapshots. The [524-package catalog audit](../../verification/native-pkgbase-catalog-audit.json)
+resolves 1,082 runtime edges without cycles and binds every catalog package to
+recorded artifact sizes. Neither observation supplies the missing complete
+canonical compilation graph or per-unit provenance/pkg products.
 
 ## Compare equivalent workloads
 

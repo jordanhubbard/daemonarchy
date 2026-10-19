@@ -35,6 +35,11 @@ work; it is not a separate published tag in this repository. The proposed name
   with nine refusal/identity tests and CI. Record 4,620 source/support candidates
   and 35,204 ports origins; native dependency resolution, canonical Component
   registration and per-unit pkg qualification remain open.
+- Validate native filemon header-read capture, unchanged object reuse and
+  changed-header invalidation with preserved trace snapshots. Audit the actual
+  524-package pkgbase catalog and its 1,082 runtime dependency edges. Complete
+  canonical compilation graphs and per-unit provenance remain open.
+
 - Establish PERF-001 for measured native Component execution and faster ISO
   builds, permitting Bazel, Buck2 or another executor after correctness and
   end-to-end measurements. The recovered development build finished; no speedup is claimed.

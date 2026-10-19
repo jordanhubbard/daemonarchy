@@ -1,0 +1,48 @@
+{
+  "acceptance": "not-qualified",
+  "actual_header_read_observed": true,
+  "changed_header_invalidated_object": true,
+  "changed_header_seconds": 0.098672,
+  "cold_seconds": 0.043762,
+  "compiler_sha256": "31b74e2344065afb96689b09c5cf9358801e996336c10f23ec43765a2384ea49",
+  "complete_action_graph": false,
+  "controller_revision": "76a523613db4d25d3c1702f32b21d1f07d11ee1e",
+  "controller_sha256": "344478ce80a0de467f5d08c77accedd07fa63a93efb337b3a975a111ba956ced",
+  "make_sha256": "499fdad479abdc4203b911c7f2bd8ae94704e5d7a9d6172b1893822bcf8ad31e",
+  "observations": [
+    {
+      "acceptance": "not-qualified",
+      "action_graph_complete": false,
+      "compiled_targets_with_filemon": 1,
+      "metadata": [
+        {
+          "filemon": true,
+          "path": "obj/unit.o.meta",
+          "sha256": "c8de9f15d127fb9116b97f29aeaf116915bb0746a329be3e329e7f5ce76333d3",
+          "size": 1283
+        }
+      ],
+      "phase": "initial-compile"
+    },
+    {
+      "acceptance": "not-qualified",
+      "action_graph_complete": false,
+      "compiled_targets_with_filemon": 1,
+      "metadata": [
+        {
+          "filemon": true,
+          "path": "obj/unit.o.meta",
+          "sha256": "a53213e45dd7ca240e0a38bf1a0ad63a9ba88d0a89102c2676dbc777c4014417",
+          "size": 1283
+        }
+      ],
+      "phase": "changed-header"
+    }
+  ],
+  "prior_trace_blobs_verified": true,
+  "probe_producer_sha256": "65034929fa43299faf1d95216f4e30d30eb26aaed8c0c8930efd00bf95e881af",
+  "probe_scope": "one native C translation unit; native make filemon inputs, unchanged reuse and changed-header invalidation; not full-tree Component execution",
+  "schema": "daemonarchy/native-filemon-compile-probe@1",
+  "unchanged_object_reused": true,
+  "warm_seconds": 0.027602
+}
