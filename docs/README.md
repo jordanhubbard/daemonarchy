@@ -16,6 +16,7 @@ reachable without changing its historical scope.
 - [EFI loader cannot find loader.lua](repair-efi-root.md)
 - [Installation logs and the rescue console](rescue-console.md)
 - [Active work](roadmap/active-work.md)
+- [Owned FreeBSD source builds](source-builds.md)
 - [Manual certificate enrollment for 1.1 and 1.1.1](secure-boot.md)
 - [1.1 BIOS development checks](testing-1.1-bios.md)
 - [Bluetooth audio development checks](testing-1.1-bluetooth-audio.md)

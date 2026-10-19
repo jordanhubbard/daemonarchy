@@ -94,6 +94,13 @@ sudo make reinstall clean
 
 ## Setting up a build host
 
+For builds from our owned FreeBSD-CURRENT fork, start with
+[owned source builds](docs/source-builds.md) and the versioned daemonarchy-src
+runbook. That workflow produces development pkgbase packages and installer sets
+from an exact source commit. The snapshot-based procedure below remains the
+current release input path until the owned outputs pass admission, signing,
+matching jail/module and VM/hardware qualification.
+
 You need a FreeBSD 16.0-CURRENT machine (bare metal or a VM with capacity for the selected build) with poudriere, git, and the ports tree, as root.
 
 The 1.1.1 dependency rebuild used an isolated 20-CPU, 80-GiB VM with a 400-GiB

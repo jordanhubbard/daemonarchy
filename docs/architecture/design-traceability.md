@@ -37,6 +37,12 @@ inputs. Keep their normal upstream synchronization and contribution procedures.
 Do not subject their complete histories to generated-source authority or silently
 convert a moving branch into a qualified dependency.
 
+The owned [daemonarchy-src build workflow](../source-builds.md) prepares pinned
+FreeBSD world/kernel/source packages and installer sets on the native build
+worker. Its unsigned build records and controller tests do not qualify framework
+execution, installation, VM boot, module compatibility, signing or hardware.
+SRC-001 owns preparation; ADOPT-002 and RELEASE-001 retain their acceptance gates.
+
 ## Cross-component invariants
 
 - **Installation success:** selected storage + installed payload integrity +
@@ -107,7 +113,7 @@ the public repository paths so mutable resolver mutexes are not documentation
 assets. Source
 indexing is disabled. Future framework updates must preserve these boundaries.
 
-<!-- literate-ai:authority-reviewed sha256:256843fd5285e38e61b053757b069bdbd87bc4b79acb5e9983628fcdb5a0718d -->
+<!-- literate-ai:authority-reviewed sha256:ec94abb2f951b3f61e8ff5ec3db647b069959e7447144c1ce1cb9c7bd5925d27 -->
 
 
 ## Rechecking preservation

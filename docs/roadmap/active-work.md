@@ -80,6 +80,21 @@ Next action: demonstrate a supported installed retained-project execution path o
 - **Evidence:**
   - [ ] Actual native UI, input, shared plan identity, accurate progress, failure/retry and packaging tests pass.
 
+### [ ] SRC-001 — Establish owned FreeBSD source builds and packages
+
+- **Priority:** P1
+- **Owner:** release and diagnostics Components; daemonarchy-src fork
+- **Direction:** Build modified FreeBSD-CURRENT from the owned source fork, retaining upstream provenance and coherent kernel/world/source package selections.
+- **Conclusion:** Introduce clean exact-commit native builds with isolated objects/staging, GENERIC and diagnostic profiles, pkgbase and installer-set outputs, bounded jobs and verifiable build records. Do not install on build workers or publish unsigned development outputs as releases.
+- **Depends on:** ADOPT-002 for framework execution and release qualification
+- **Implementation:**
+  - [x] Author the native plan/build/verify controller in [source PR #4](https://github.com/jordanhubbard/daemonarchy-src/pull/4); 11 refusal/custody tests pass locally, in CI and on FreeBSD.
+  - [ ] Complete native end-to-end build/package/verify qualification.
+  - [ ] Produce the first baseline world/kernel/package/set build and retain identities. The 12-job GENERIC build started at `92276fc76c65`; its [plan and scope](../source-builds.md) are retained.
+  - [ ] Qualify VM boot, installer set admission, matching jail/external modules, signing and rollback before production selection.
+- **Evidence:**
+  - [ ] Exact source/config/toolchain/log/artifact identities and failure refusal checks; native package output; VM/hardware results remain separate.
+
 ### [ ] DEBUG-001 — Qualify earlier wired network debugging for 1.2
 
 - **Priority:** P1
