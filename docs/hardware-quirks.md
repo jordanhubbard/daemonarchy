@@ -55,6 +55,26 @@ resets again; preserve any new final line. Keep the image and other settings the
 same so the comparison tests RTC attachment. See the
 [dated video analysis](testing-1.1-hardware-observations.md#msi-startup-video-reviewed-2026-10-18).
 
+### RTC-disabled result and next comparison
+
+The follow-up `IMG_2157.MOV` visibly uses the RTC-disable and panic settings
+above. It advances to non-PnP ISA probing, ending at `sc0 failed to probe on isa1`
+before the display blanks; no panic or backtrace is visible. RTC exclusion
+changes progress but does not fix boot. Repeated Intel SPMC power-state constraint
+format warnings supply another investigation lead; deferred ACPI task messages
+and the final unmatched syscons probe do not establish fatal errors.
+
+For a separate boot of that same artifact, retain the three settings above and
+add this single subsystem exclusion before `boot -v`:
+
+```text
+set debug.acpi.disabled="spmc"
+```
+
+This bypasses the System Power Management Controller driver, leaving other ACPI
+subsystems enabled. It is a pending diagnostic, not a default or demonstrated
+fix. See the [follow-up analysis](testing-1.1-hardware-observations.md#msi-rtc-disabled-follow-up-video-2026-10-18).
+
 ### Other pending diagnostic comparisons
 
 1. Boot the checksum-verified stock October 12 FreeBSD mini-memstick image;

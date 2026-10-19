@@ -94,7 +94,49 @@ This makes RTC attachment a focused diagnostic candidate, not a confirmed cause.
 `hw.atrtc.enabled=0` makes `atrtc_probe()` refuse attachment. The
 [one-boot comparison](hardware-quirks.md#rtc-comparison-prompted-by-the-video)
 uses that existing tunable without changing the kernel or installing a default
-workaround. A successful or failing comparison has not yet been reported.
+workaround. The follow-up below records the RTC-disabled comparison; it still fails to reach the installer.
+
+## MSI RTC-disabled follow-up video, 2026-10-18
+
+`IMG_2157.MOV` is a 14.5-second, 1920x1080 recording, 16,139,826 bytes,
+SHA-256 `ccb9f6f3a04fd66af93da47feb13143f24352ec13c01b9a982de68c7eec1d275`.
+The loader visibly sets `hw.atrtc.enabled=0`,
+`kern.panic_reboot_wait_time=-1`, `debug.trace_on_panic=1`, then uses `boot -v`.
+The exact installer artifact/version remains unidentified. Raw media and frames
+remain private in the controller's temporary evidence directory.
+
+This boot advances beyond the earlier RTC stopping point. It enumerates PCI and
+ACPI devices, reports repeated `acpi_spmc0: Intel: Wrong package length` messages
+for power-state constraint packages, enables ACPI GPEs and reaches non-PnP ISA
+probing. The last readable lines are:
+
+```text
+isa_probe_children: probing non-PnP devices
+sc0 failed to probe on isa1
+```
+
+The display subsequently blanks around 12.8 seconds, without a visible panic,
+backtrace, firmware logo or Windows startup. The operator reports another boot
+failure; the movie alone does not distinguish reset, power loss and video loss.
+Disabling RTC attachment changes observed progress but does not qualify a fix or
+establish RTC as the sole cause.
+
+Source inspection at FreeBSD `bdaddb76ef1b9d5537f4a76cff01cdb4795804a4`
+shows that `isa_probe_nomatch()` merely reports an unmatched device. The final
+`sc0` line does not establish a syscons crash or identify the next child.
+`AcpiOsExecute: task queue not started` is a verbose deferred-work message that
+returns success. The Intel SPMC constraint parser skips packages whose element
+count differs from its expected three; this is evidence of a firmware/driver
+format mismatch, not proof that parsing caused the later failure.
+
+The next targeted one-boot comparison retains the three visible settings above
+and adds `set debug.acpi.disabled="spmc"` before `boot -v`. The driver explicitly
+honors this subsystem exclusion. Its result is pending. This does not disable
+all ACPI or qualify a permanent workaround. If failure persists, per-child probe
+entry/exit instrumentation can identify the unreported operation after the final
+ISA message. Relevant source: [ISA probes](https://github.com/freebsd/freebsd-src/blob/bdaddb76ef1b9d5537f4a76cff01cdb4795804a4/sys/isa/isa_common.c),
+[ACPI deferred work](https://github.com/freebsd/freebsd-src/blob/bdaddb76ef1b9d5537f4a76cff01cdb4795804a4/sys/dev/acpica/Osd/OsdSchedule.c),
+and [SPMC](https://github.com/freebsd/freebsd-src/blob/bdaddb76ef1b9d5537f4a76cff01cdb4795804a4/sys/dev/acpica/acpi_spmc.c).
 
 ## MSI comparison reports
 
