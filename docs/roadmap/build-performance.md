@@ -119,7 +119,7 @@ snapshots. The original seventeen controller checks pass locally and in CI.
 The dedicated worker now passes normal alignment and the separately declared
 filemon feature bootstrap/inspection, with owner-only device access and no boot
 configuration change. All 26 current source-controller/bootstrap checks pass
-on FreeBSD; exact-revision CI remains pending. Full native traced-build
+on FreeBSD and the exact-revision controller CI passes. Full native traced-build
 qualification remains pending. Do not silently fall back to command-only traces. Reconcile observed compilation/linking/generated inputs
 with canonical Component ownership, variants and selected action/package locks.
 The [native single-unit probe](../../verification/native-filemon-compile-probe.json)

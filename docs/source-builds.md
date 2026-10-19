@@ -84,7 +84,8 @@ Tracing/capture cost is included in phase timing. Require 100 GiB free.
 The initial seventeen controller checks pass locally and in source-controller
 CI. Source revision `76a523613db4` adds an explicit, separate worker-feature
 bootstrap; all 26 current checks pass on FreeBSD (26.107 s), with one native
-archive check skipped on macOS. Standard worker alignment passes with a 100 GiB
+archive check skipped on macOS. The [exact-revision controller CI](https://github.com/jordanhubbard/daemonarchy-src/actions/runs/39225164970)
+also passes; its archive check requires FreeBSD. Standard worker alignment passes with a 100 GiB
 free-space requirement. The declared bootstrap loaded the installed filemon
 module on the dedicated worker and granted device access only to its build
 account (mode 0600). A subsequent unprivileged inspection reports ready. Boot
