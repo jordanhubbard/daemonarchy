@@ -94,6 +94,27 @@ sudo make reinstall clean
 
 `daemonarchy dev link` takes the FreeBSD commands and `freebsdize` from the installed port, so reinstall the omarchy port this way before linking to try changes to them.
 
+### Observe native source dependencies
+
+After pinned-tree discovery, use the native collector from this repository with
+Python 3.11 or later on an unprivileged amd64 FreeBSD worker. Keep the output
+outside the source tree and use a new directory for every observation:
+
+```sh
+python3 /path/to/daemonarchy/scripts/resolve-freebsd-dirdeps.py \
+  --repo /path/to/daemonarchy-src --revision <full-source-commit> \
+  --output /path/to/new-observation --unit bin/ls --acknowledge-evaluation
+```
+
+This evaluates trusted Makefiles, including parse-time commands, while requesting
+only variables; it is not a sandbox or a build/acceptance pass. It rejects dirty
+or ignored source inputs, bounds each query and the total run, retains partial
+records on failure and refuses existing output directories. Omit `--unit` to seed
+all amd64 dependency declarations and follow supported host/common contexts.
+Missing declarations, unsupported contexts and cycles cause a nonzero result.
+Run `PYTHONDONTWRITEBYTECODE=1 python3 tests/native-dirdeps.py -v` for ten portable
+refusal/graph/process checks; native observation remains a separate result.
+
 ## Setting up a build host
 
 For builds from our owned FreeBSD-CURRENT fork, start with

@@ -224,6 +224,11 @@
           "path": "tests/native-tree-discovery.py",
           "execution": "portable-controller-discovery-only",
           "current_framework_receipt": false
+        },
+        {
+          "path": "tests/native-dirdeps.py",
+          "execution": "portable-controller-discovery-only",
+          "current_framework_receipt": false
         }
       ]
     },
@@ -279,6 +284,7 @@
     "tests/linux-cuda.sh",
     "tests/live-image-budget.sh",
     "tests/live-image-runtime.sh",
+    "tests/native-dirdeps.py",
     "tests/native-tree-discovery.py",
     "tests/network-diagnostics.sh",
     "tests/package-repository.sh",

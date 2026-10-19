@@ -18,8 +18,8 @@
     "target": "amd64",
     "unit": "bin/ls"
   },
+  "producer_revision": "be5ce96ce44493bc590c272479fd771c6c119894",
   "producer_sha256": {
-    ".github/workflows/native-graph.yml": "d79575ad81be7a929cf54e1f960ae4d93da70d3e4a02cb4414ad09543c9572e0",
     "scripts/inspect-freebsd-graph.py": "0686b8117b3c9abcb5b5543635e4ae0b6bc0dcebc5d4caa0b548f3b7324cb6be",
     "tests/native-tree-discovery.py": "7197b8d3e895ab03a65974dad8a1daa79d224081b2678870a057e4b0df76c1f1"
   },
@@ -76,5 +76,6 @@
     "native_execution_acceptance": false,
     "passed": 9,
     "platform": "macos"
-  }
+  },
+  "validation_note": "Historical discovery producer/test identities retained; current native metadata checks are recorded separately in native-dirdeps-observation.json."
 }

@@ -941,9 +941,23 @@
     {
       "path": ".github/workflows/native-graph.yml",
       "owner": "release",
-      "sha256": "d79575ad81be7a929cf54e1f960ae4d93da70d3e4a02cb4414ad09543c9572e0",
+      "sha256": "f82760f1d56d568a8a5e05cd5e0b676e5916492fefe521d44e19d9ca933bb4fd",
       "executable": false,
-      "reason": "PERF-001/COMP-001 pinned tree discovery and refusal tests; not native lifecycle qualification"
+      "reason": "PERF-001/COMP-001 pinned discovery and native directory observation checks; not native lifecycle qualification"
+    },
+    {
+      "path": "scripts/resolve-freebsd-dirdeps.py",
+      "owner": "release",
+      "sha256": "2754beaa97856e88c21a901a24a032db071c8e07ac84498b7b42c9c53a4a7db7",
+      "executable": false,
+      "reason": "PERF-001/COMP-001 bounded native directory dependency observation; no build or acceptance qualification"
+    },
+    {
+      "path": "tests/native-dirdeps.py",
+      "owner": "release",
+      "sha256": "b113fae7f828336efa83949df7bb2f51c6161867f82c2871817cf8437d934b55",
+      "executable": false,
+      "reason": "PERF-001/COMP-001 bounded native directory dependency observation; no build or acceptance qualification"
     }
   ]
 }

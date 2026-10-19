@@ -149,6 +149,7 @@ Next action: demonstrate a supported installed retained-project execution path o
 - **Implementation:**
   - [x] Record complete-tree coverage, component granularity, variant and dependency requirements in G8 and the release Component contract; file framework issue #74.
   - [x] Retain pinned-tree diagnostic inventories and nine portable discovery checks; [producer/result identities](../../verification/native-tree-discovery.json) record candidate ownership separately from canonical admission.
+  - [x] Observe the native `bin/ls` directory closure with explicit amd64/host contexts, shared Makefile inputs and cycle/failure refusal; [scope and identities](../../verification/native-dirdeps-observation.json) retain its diagnostic limits. Full native catalog/action resolution remains open.
   - [ ] Admit every source/build/support input and ports origin through canonical Component catalogs and locks; reject missing or ambiguous ownership.
   - [ ] Connect native actions and conditional dependencies to retained execution, receipts and the exact release closure.
 - **Evidence:**

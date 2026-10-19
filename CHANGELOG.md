@@ -16,6 +16,11 @@ work; it is not a separate published tag in this repository. The proposed name
 
 ## Unreleased
 
+- Add bounded native directory-dependency observation with explicit target/host
+  contexts, shared Makefile inputs, dependency ordering and failure/cycle refusal.
+  Ten portable checks pass; the native `bin/ls` observation resolves 19 directory
+  nodes and 52 edges. Complete native action/Component/package admission remains open.
+
 - Add pinned Git-tree discovery for complete source and ports input inventories,
   with nine refusal/identity tests and CI. Record 4,620 source/support candidates
   and 35,204 ports origins; native dependency resolution, canonical Component

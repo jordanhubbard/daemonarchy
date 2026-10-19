@@ -39,6 +39,29 @@ Native context, option controls, implicit rules and bootstrap relationships must
 therefore be captured before canonical locks or an alternative build executor
 can rely on these edges.
 
+## Native directory closure observation
+
+`scripts/resolve-freebsd-dirdeps.py` evaluates reviewed dependency Makefiles on an
+unprivileged native amd64 worker. It requests variables without a build target,
+isolates temporary/object paths outside the source, requires a clean exact pin,
+rejects external or redirected Makefile inputs, and bounds time, output and node
+counts. Makefile evaluation can run parse-time shell commands, so it requires
+explicit acknowledgement and a trusted source selection. It is not a sandbox.
+
+The first native `bin/ls` observation resolves 19 directory/context nodes and 52
+non-self edges with a dependency-first order and no unresolved declarations in
+that selected directory closure. It includes host `bin/sh`, `usr.bin/yacc` and
+`lib/ncurses/tinfo`, plus amd64 headers, startup objects and libraries. Forty
+consulted Makefiles are retained as shared dependency inputs. Compact identities
+and scope are in [the observation evidence](../../verification/native-dirdeps-observation.json).
+
+This is a real native metadata result, not a complete compilation/action graph
+or a Component receipt. The helper preserves missing declarations, unsupported
+contexts, query failures and cycles; it never converts them into a successful
+DAG. The full tree, kernel composition, generated-file/toolchain admission,
+ports variants and canonical Component/package binding remain open. Run full
+catalog observation after the current baseline frees the worker slot.
+
 ## Performance baseline and candidate changes
 
 The native GENERIC build at `92276fc76c65` uses 12 jobs and isolated staging. Its

@@ -5,11 +5,15 @@ on:
     paths:
       - 'scripts/inspect-freebsd-graph.py'
       - 'tests/native-tree-discovery.py'
+      - 'scripts/resolve-freebsd-dirdeps.py'
+      - 'tests/native-dirdeps.py'
       - '.github/workflows/native-graph.yml'
   pull_request:
     paths:
       - 'scripts/inspect-freebsd-graph.py'
       - 'tests/native-tree-discovery.py'
+      - 'scripts/resolve-freebsd-dirdeps.py'
+      - 'tests/native-dirdeps.py'
       - '.github/workflows/native-graph.yml'
   workflow_dispatch:
 
@@ -24,4 +28,6 @@ jobs:
       - name: Discovery refusal and pinned-object tests
         env:
           PYTHONDONTWRITEBYTECODE: '1'
-        run: python3 tests/native-tree-discovery.py -v
+        run: |
+          python3 tests/native-tree-discovery.py -v
+          python3 tests/native-dirdeps.py -v
