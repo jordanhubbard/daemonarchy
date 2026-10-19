@@ -129,7 +129,11 @@ resolves 1,082 runtime edges without cycles and binds every catalog package to
 recorded artifact sizes. Neither observation supplies the missing complete
 canonical compilation graph or per-unit provenance/pkg products.
 The [new full tracing attempt](../../verification/native-traced-build-start.json)
-is isolated from the earlier build and retains its own exact plan. Source changes
+is isolated from the earlier build and retains its own exact plan. Its first
+world phase [failed in crunchgen](../../verification/native-traced-build-failure.json)
+because meta verbosity contaminated structured query output. The corrected
+quiet mode passes all 27 native controller checks; a [separate corrected attempt](../../verification/native-traced-build-quiet-start.json)
+has started. No successful full tracing result is claimed. Source changes
 between those revisions affect only release archive handling and controller/worker
 preparation; native compiler and OS source regions are unchanged. Component/action
 keys should bind consumed inputs, toolchain, flags and generated inputs, while

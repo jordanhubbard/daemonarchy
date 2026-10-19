@@ -101,7 +101,12 @@ authoring identities to complete retained file/directory coverage and revalidate
 the actual catalog during planning. Its full local Python gate passes 1,684 tests
 with 36 skips. It preserves public execution refusal; the configured framework
 lifecycle receipt remains stale. No full native catalog is registered by this
-foundation.
+foundation. Framework revision `545c4ae6` additionally preserves explicit internal
+POSIX source symlinks. Its actual source corpus validates all 114,644 files and
+138 link targets; the full local framework suite passes 1,696 tests with 37 skips.
+[Input-custody evidence](../../verification/native-source-input-custody.json)
+keeps complete source snapshots, native execution and per-unit packages unqualified.
+
 
 Next action: establish complete pinned-tree coverage and reviewed build-unit
 boundaries, then connect a real multi-component native fixture to the canonical

@@ -35,6 +35,10 @@ work; it is not a separate published tag in this repository. The proposed name
   with nine refusal/identity tests and CI. Record 4,620 source/support candidates
   and 35,204 ports origins; native dependency resolution, canonical Component
   registration and per-unit pkg qualification remain open.
+- Keep filemon meta-mode progress output quiet so crunchgen's structured make
+  queries retain their original protocol. Preserve the failed full tracing
+  attempt; all 27 controller/bootstrap checks pass on FreeBSD after the fix.
+
 - Validate native filemon header-read capture, unchanged object reuse and
   changed-header invalidation with preserved trace snapshots. Audit the actual
   524-package pkgbase catalog and its 1,082 runtime dependency edges. Complete

@@ -106,6 +106,17 @@ source tree, configuration and development package version. It uses a clean
 separate checkout/output; the prior build remains frozen. A started build and
 live metadata are not successful immutable phase snapshots or acceptance.
 
+That [first traced attempt failed](../verification/native-traced-build-failure.json)
+after 4,218.257 seconds in `buildworld`: meta-mode's `verbose` output contaminated
+crunchgen's structured `OBJS=` query. The first error was rescue generation; later
+directory stops were cancellation cascades. Source revision `7d93dff0e80a` removes
+that verbosity. All 27 controller/bootstrap checks pass on FreeBSD, including a
+query regression with a verbose control; macOS skips the two native cases.
+A [new isolated quiet-mode attempt](../verification/native-traced-build-quiet-start.json)
+has started from `7d93dff0e80a`. The failed checkout, plan, log and
+outputs remain unchanged; no successful full tracing result is implied.
+
+
 
 The [pkgbase catalog audit](../verification/native-pkgbase-catalog-audit.json)
 binds all 524 catalog packages to recorded artifact sizes and resolves their
@@ -118,3 +129,16 @@ separate observation from the complete source/ports Component model.
 Actual observations will inform [canonical Component and build-performance
 work](roadmap/build-performance.md). They do not automatically produce canonical
 Component contracts, package provenance, acceptance or an ISO speedup.
+
+## Complete source input custody checkpoint
+
+Framework revision `545c4ae6` adds explicit internal POSIX symlink custody while
+preserving default refusal, legacy identities and the public execution guard.
+Its [actual source corpus probe](../verification/native-source-input-custody.json)
+validates 114,644 files, 9,856 directories and all 138 Git link targets at source
+`76a523613db4`. All 83 focused checks and the full 1,696-test local framework
+suite pass (37 skips). The probe runs on macOS and checks input discovery and
+validation; small fixtures check snapshot copying. A complete native source
+snapshot, canonical unit/action registration, per-unit packages and native
+lifecycle execution remain unqualified. Exact framework CI and installed/native
+renewal retain their own gates.

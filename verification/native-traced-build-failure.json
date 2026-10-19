@@ -1,0 +1,37 @@
+{
+  "acceptance": "not-qualified",
+  "canonical_component_execution_qualified": false,
+  "complete_action_graph": false,
+  "correction": "remove meta verbose while retaining filemon and missing-meta/missing-filemon settings",
+  "correction_revision": "7d93dff0e80a96734f5c0ebe1a48fe378bc3b876",
+  "correction_tests": {
+    "local_native_skipped": 2,
+    "local_run": 27,
+    "native_passed": 27,
+    "native_seconds": 27.201,
+    "structured_stdout_case": "quiet mode exactly OBJS= main.o; verbose control prints Building and violates the protocol"
+  },
+  "elapsed_seconds": 4218.257,
+  "event": "failed",
+  "exit": 2,
+  "first_error": "rescue.mk generation: meta verbose progress output contaminates crunchgen OBJS= stdout protocol",
+  "later_stops": "parallel make cancellation cascades, including share/examples/tests",
+  "log_sha256": "34b3200c606c13971af4d34ab1801407917f01380aceee546ddf31321b10062d",
+  "original_failed_attempt_preserved": true,
+  "performance_gain_qualified": false,
+  "phase": "buildworld",
+  "plan_identity": "b564633fec495be21cc2ce6b550689560a25450c601888398ab0a252fdc37b34",
+  "preservation_scope": "Failed-phase diagnostic observations only; not a successful buildworld phase or complete action graph",
+  "preserved_failed_phase_observation": {
+    "acceptance": "not-qualified",
+    "compiled_targets_with_filemon": 34117,
+    "metadata_bytes": 1088784452,
+    "metadata_entries": 45263,
+    "observation_sha256": "5d851199552bd445c50c814bcb904e549f04b4b093bcce41a7090798d19559c0",
+    "state": "failed-phase-observations-only",
+    "with_filemon": 45263
+  },
+  "schema": "daemonarchy/native-traced-build-failure@1",
+  "source_revision": "76a523613db4d25d3c1702f32b21d1f07d11ee1e",
+  "successful_traced_build": false
+}

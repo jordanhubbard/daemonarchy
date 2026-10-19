@@ -1,0 +1,28 @@
+{
+  "acceptance": "input-custody-only",
+  "canonical_source_components_registered": 0,
+  "directories": 9856,
+  "focused_checks_passed": 83,
+  "framework_full_python": {
+    "passed": true,
+    "run": 1696,
+    "seconds": 3666.215,
+    "skipped": 37
+  },
+  "framework_revision": "545c4ae6c4571253c7b299a444eac059e623f765",
+  "full_source_tree_snapshot_qualified": false,
+  "manifest_identity": "sha256:ec88abe4c9ca60865255eaf39922385193c83829b688c809001e8a6332110a7a",
+  "member_bytes": 1539529061,
+  "members": 114644,
+  "native_cli_execution_qualified": false,
+  "per_unit_pkg_qualified": false,
+  "performance_gain_qualified": false,
+  "private_report_sha256": "158a9454f7f16f3098767c22f72d68d3306be0b782dd9a315f3d8ee7179e21f9",
+  "probe_host_platform": "macos",
+  "probe_seconds": 226.888,
+  "schema": "daemonarchy/native-source-input-custody@1",
+  "source_revision": "76a523613db4d25d3c1702f32b21d1f07d11ee1e",
+  "state": "selected-source-inputs-validated",
+  "symlinks": 138,
+  "tracked_paths_modes_and_link_targets_match": true
+}
