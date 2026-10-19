@@ -68,9 +68,14 @@ paths and retains returned stdout/stderr plus command arguments. Eleven portable
 checks pass. A native two-seed probe observes 20 nodes and 59 edges, retaining the
 unqualified `gnu/lib/csu` reference from `bin/timeout`; it correctly exits nonzero
 rather than calling that closure resolved. [Refinement evidence](../../verification/native-dirdeps-refinement.json)
-binds the current producer and preserved query bytes. Re-observe the full sweep
-and reconcile stale declarations against actual build actions before canonical
-target binding. Directory metadata alone is insufficient for this admission.
+binds the current producer and preserved query bytes. The corrected full sweep
+retains 1,799 records: 1,766 observed, six query refusals and 27 missing or
+unsupported records. Its 12,542 directory edges include 336 unqualified targets;
+closure remains incomplete. [Full-sweep evidence](../../verification/native-dirdeps-full-sweep.json)
+binds these counts to the producer and report hashes. Reconcile stale declarations and unsupported
+variants against actual build actions before canonical target binding. Actual
+compiler `.depend.*` files include compilation inputs absent from this directory
+metadata, which alone is insufficient for admission.
 
 ## Performance baseline and candidate changes
 
@@ -80,11 +85,18 @@ The first set-staging attempt failed after 220.836 s while installing Clang
 headers. The exact captured install tool/flags subsequently copied all 219
 headers successfully in an isolated directory; three system-install copies also
 matched source bytes. The failure is retained and its cause remains unproven.
-An exact-plan resume retries only the failed set phase, retaining all previous
-phase logs. This recovered workflow is not a clean successful performance
-baseline. Full set and ISO measurements remain incomplete. Keep its checkout and
-outputs frozen while the resumed job runs; observation timeouts do not justify
-restarts.
+The exact-plan resume completed sets in 1,344.623 s, retaining all previous
+phase logs. The controller byte-verified 533 artifacts and an independent audit
+verified all eight MANIFEST set hashes. This recovered workflow is not a clean
+successful performance baseline. The source archive audit found all 138 Git
+symlinks dereferenced and build-user ownership throughout; archive fidelity and
+complete optional-set inventory were corrected separately in source revision
+`50594349f547`. Its isolated full source archive matches all 114,642 Git files,
+including the 138 symlinks, with root ownership throughout; all 21 controller
+checks pass on FreeBSD. [Build/audit evidence](../../verification/native-development-build.json)
+retains both outcomes and the exact identities. Keep the
+original checkout, outputs and negative audit frozen. ISO assembly and native
+boot/install/update/rollback measurements remain incomplete.
 
 | Candidate | Required evaluation |
 | --- | --- |
@@ -98,6 +110,18 @@ Sources: [FreeBSD directory-dependency mechanism](https://github.com/freebsd/fre
 [FreeBSD meta-mode](https://github.com/freebsd/freebsd-src/blob/bdaddb76ef1b9d5537f4a76cff01cdb4795804a4/share/mk/meta.sys.mk),
 [Bazel installation support](https://bazel.build/install),
 and [Buck2 documentation](https://buck2.build/docs/getting_started/).
+
+## Actual action tracing preparation
+
+The [owned source controller](../source-builds.md#optional-actual-action-observations)
+now has an optional filemon/meta-mode plan with immutable per-phase metadata
+snapshots. The original seventeen controller checks pass locally and in CI.
+The dedicated worker now passes normal alignment and the separately declared
+filemon feature bootstrap/inspection, with owner-only device access and no boot
+configuration change. All 26 current source-controller/bootstrap checks pass
+on FreeBSD; exact-revision CI remains pending. Full native traced-build
+qualification remains pending. Do not silently fall back to command-only traces. Reconcile observed compilation/linking/generated inputs
+with canonical Component ownership, variants and selected action/package locks.
 
 ## Compare equivalent workloads
 
@@ -121,5 +145,5 @@ can select the composed system packages. [COMP-001](freebsd-components.md) and
 the release Component contract retain those invariants.
 
 Next action: complete native dependency/variant admission and canonical
-Component/pkg binding, while finishing the live baseline measurements. Choose
+Component/pkg binding, while completing the native baseline and archive-fidelity measurements. Choose
 and implement the optimized executor/caching/packaging path using those results.

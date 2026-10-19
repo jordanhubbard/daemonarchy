@@ -1,0 +1,194 @@
+{
+  "acceptance": "not-qualified",
+  "boot_install_update_rollback_qualified": false,
+  "controller_tests": {
+    "local_run": 21,
+    "local_skipped": 1,
+    "native_passed": 21,
+    "native_seconds": 30.097
+  },
+  "corrected_release_makefile_sha256": "26b357c4d79e4041979a45f6c09414b746a5b8c9a317dcb20ff1484725545f8d",
+  "corrected_source_archive_comparison": "native and separate macOS archive/Git comparison agree",
+  "correction_revision": "50594349f547f650bbcf0e2e945676c91c20be4b",
+  "framework_receipt": false,
+  "iso_qualified": false,
+  "jobs": 12,
+  "kernel": "GENERIC",
+  "per_unit_component_packages_qualified": false,
+  "phases": [
+    {
+      "elapsed_seconds": 4195.318,
+      "exit": 0,
+      "log_sha256": "197c7fc99eab184b82c773c20b1d7854b4346bab76ca469875b250e8d7c32fb1",
+      "name": "buildworld"
+    },
+    {
+      "elapsed_seconds": 210.84,
+      "exit": 0,
+      "log_sha256": "35c793fb76e6de65265c178f65deea6a0f0a0869fdbbd9dab76769a6fc8244c1",
+      "name": "buildkernel"
+    },
+    {
+      "elapsed_seconds": 597.429,
+      "exit": 0,
+      "log_sha256": "d50548641c9c5134622433aebf191ac52e9845f0198e5c02c4473ef8f55c9354",
+      "name": "packages"
+    },
+    {
+      "elapsed_seconds": 0.976,
+      "exit": 0,
+      "log_sha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855",
+      "name": "release-obj"
+    },
+    {
+      "elapsed_seconds": 220.836,
+      "exit": 1,
+      "log_sha256": "91e654560318f6cd48003d9f254e83dcb5a60bf8bc32949411a89e5a8da5b9e2",
+      "name": "sets"
+    },
+    {
+      "elapsed_seconds": 1344.623,
+      "exit": 0,
+      "log_sha256": "8f6d91eb831c72341c0d143af9b31a722e98bd101757ae12319fb2b3fc750cc8",
+      "name": "sets"
+    }
+  ],
+  "plan_identity": "2e783baa18b29ca2e62ce122a1ef4f94748a124bc3af797561d5120529622b95",
+  "publication": "unsigned-development",
+  "recorded_artifact_bytes": 1503160792,
+  "recorded_artifacts": 533,
+  "schema": "daemonarchy/native-development-build@1",
+  "set_audit": {
+    "acceptance": "not-qualified",
+    "archive_extraction_performed": false,
+    "archives": [
+      {
+        "expected_members": 1802,
+        "name": "base-dbg.txz",
+        "sha256": "087958078e34788a15334a660ee845494bf0533b2989c77b820c9ae67e5b3de2",
+        "size": 165976408
+      },
+      {
+        "expected_members": 31503,
+        "name": "base.txz",
+        "observed_members": 31503,
+        "required_members_present": [
+          "bin/ls",
+          "bin/sh",
+          "boot/loader.efi",
+          "sbin/init",
+          "usr/bin/cc",
+          "usr/sbin/sshd"
+        ],
+        "sha256": "510d1085af63a85c3ed941036919eca4e022c0c05684696a59e5ae6ccc383b4d",
+        "size": 175960984,
+        "uids": {
+          "0": 31503
+        }
+      },
+      {
+        "expected_members": 885,
+        "name": "kernel-dbg.txz",
+        "sha256": "800b0da60ce2e03ed65ecda6114b6f44d59d6c7863d303f90ca511488dbc59eb",
+        "size": 120050024
+      },
+      {
+        "expected_members": 896,
+        "name": "kernel.txz",
+        "observed_members": 896,
+        "required_members_present": [
+          "boot/kernel/kernel"
+        ],
+        "sha256": "d96e681394bec2eb51fef70d857be0ce6af0d684f5b13d9da57e92b4d4682124",
+        "size": 47487196,
+        "uids": {
+          "0": 896
+        }
+      },
+      {
+        "expected_members": 243,
+        "name": "lib32-dbg.txz",
+        "sha256": "1ad8c92604284e061830c294c6ff1c322da466d1438d163d8f25eeae8b35ff76",
+        "size": 23961444
+      },
+      {
+        "expected_members": 733,
+        "name": "lib32.txz",
+        "observed_members": 733,
+        "required_members_present": [
+          "usr/lib32/libc.so.7"
+        ],
+        "sha256": "df70c614f9bae12b38a872154a8e52ba6d9e92c5887cc43c2f88333e37e9d8f3",
+        "size": 68013768,
+        "uids": {
+          "0": 733
+        }
+      },
+      {
+        "expected_members": 124499,
+        "name": "src.txz",
+        "observed_members": 124499,
+        "required_members_present": [
+          "usr/src/sys/conf/newvers.sh",
+          "usr/src/tools/daemonarchy/build.py"
+        ],
+        "sha256": "d055dd82bf8ca3f793227995dd42e5c0b6ca7d332f858f2a03ffa364bb918324",
+        "size": 232279372,
+        "uids": {
+          "1001": 124499
+        }
+      },
+      {
+        "expected_members": 8408,
+        "name": "tests.txz",
+        "sha256": "94d3b549943c2351c4a417d3a1350c8c5c0b9009c8a5bfa4b963ce181ef237c9",
+        "size": 20103384
+      }
+    ],
+    "elapsed_seconds": 16.94,
+    "source_revision": "92276fc76c65f3ca31552d2e1833a6063361ff64",
+    "state": "manifest-and-selected-archive-audited",
+    "vm_boot_qualified": false
+  },
+  "source_archive_before": {
+    "archive_extracted": false,
+    "archive_sha256": "d055dd82bf8ca3f793227995dd42e5c0b6ca7d332f858f2a03ffa364bb918324",
+    "counts": {
+      "exact_git_members": 114504,
+      "mismatched_members": 138
+    },
+    "expected_files": 114642,
+    "observed_files": 114642,
+    "qualification": "not-qualified",
+    "source_commit": "92276fc76c65f3ca31552d2e1833a6063361ff64",
+    "uids": {
+      "1001": 114642
+    }
+  },
+  "source_archive_corrected": {
+    "archive_extracted": false,
+    "archive_members": 124499,
+    "archive_sha256": "3fbdda34438676df138a929c01ed14b119bd7d2ebec027ea3e06271bf7cc9b39",
+    "archive_size": 231835824,
+    "counts": {
+      "exact_git_members": 114642,
+      "mismatched_members": 0
+    },
+    "expected_files": 114642,
+    "gids": {
+      "0": 124499
+    },
+    "observed_files": 114642,
+    "qualification": "source-archive-fidelity-only",
+    "source_commit": "92276fc76c65f3ca31552d2e1833a6063361ff64",
+    "symlinks": 138,
+    "uids": {
+      "0": 124499
+    }
+  },
+  "source_revision": "92276fc76c65f3ca31552d2e1833a6063361ff64",
+  "speedup_qualified": false,
+  "state": "recovered-development-build-audited",
+  "successful_clean_performance_baseline": false,
+  "trace_mode": "off"
+}

@@ -86,12 +86,22 @@ that a custom inventory JSON is equivalent to those contracts.
 
 ## Execution order and current state
 
-SRC-001 has supplied a pinned native build controller and started its first
-GENERIC build. Its eleven controller checks passed on macOS, GitHub CI and
-FreeBSD. That proves controller behavior only. The current eight Daemonarchy
+SRC-001 has supplied a pinned native build controller. The first GENERIC build
+completed after a retained set-phase failure and exact-plan resume. Byte and
+MANIFEST audits pass; an archive-fidelity defect was found and fixed in an
+isolated source-archive build. All 21 current controller checks pass on FreeBSD;
+macOS skips the native archive check. These results do not establish native
+Component execution or boot acceptance. The current eight Daemonarchy
 contracts still describe product integration, not full source/ports membership.
 No complete base/ports Component catalog, current per-unit native receipt or
 full-tree coverage pass is claimed.
+
+The framework ownership foundation at `3badbdb7` binds exact canonical Component
+authoring identities to complete retained file/directory coverage and revalidates
+the actual catalog during planning. Its full local Python gate passes 1,684 tests
+with 36 skips. It preserves public execution refusal; the configured framework
+lifecycle receipt remains stale. No full native catalog is registered by this
+foundation.
 
 Next action: establish complete pinned-tree coverage and reviewed build-unit
 boundaries, then connect a real multi-component native fixture to the canonical

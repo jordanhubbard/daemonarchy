@@ -16,6 +16,11 @@ work; it is not a separate published tag in this repository. The proposed name
 
 ## Unreleased
 
+- Prepare optional native filemon/meta-mode tracing in the source controller,
+  preserving source dependency files and retaining immutable phase observations.
+  Seventeen controller checks pass locally and in controller CI; native tracing
+  setup/execution and canonical action/package qualification remain pending.
+
 - Preserve unqualified native directory references without treating dots inside
   source paths as machine contexts. Retain returned query output for diagnosis;
   unresolved references still refuse closure admission. Eleven portable checks
@@ -32,13 +37,18 @@ work; it is not a separate published tag in this repository. The proposed name
   registration and per-unit pkg qualification remain open.
 - Establish PERF-001 for measured native Component execution and faster ISO
   builds, permitting Bazel, Buck2 or another executor after correctness and
-  end-to-end measurements. The baseline is running; no speedup is claimed.
+  end-to-end measurements. The recovered development build finished; no speedup is claimed.
 
 - Add the owned FreeBSD source-build controller and GENERIC/diagnostic profiles
   in daemonarchy-src, with native pkgbase/installer-set preparation, isolated
   staging, resumable bounded phases and byte-verification records. Eleven
   controller checks pass locally, in CI and on FreeBSD; the first native baseline
-  build is running. Package, boot and release qualification remain pending.
+  build finished after a retained set-phase failure and exact-plan resume. Its
+  533 recorded artifacts and eight MANIFEST set hashes verify. Fix source/ports
+  archive symlink handling and root ownership, and bind all MANIFEST-listed sets
+  into artifact verification. The corrected full source archive matches all
+  114,642 Git files; all 21 controller checks pass on FreeBSD. Package, boot and
+  release qualification remain pending.
 - Require the complete source and ports trees to be modeled as canonical Literate
   AI Components, including shared inputs, variants and selected native dependency
   closures. Full-tree Component registration and lifecycle acceptance are open
