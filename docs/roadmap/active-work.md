@@ -90,7 +90,7 @@ Next action: demonstrate a supported installed retained-project execution path o
 - **Implementation:**
   - [x] Author the native plan/build/verify controller in [source PR #4](https://github.com/jordanhubbard/daemonarchy-src/pull/4); 11 refusal/custody tests pass locally, in CI and on FreeBSD.
   - [ ] Complete native end-to-end build/package/verify qualification.
-  - [ ] Produce the first baseline world/kernel/package/set build and retain identities. The 12-job GENERIC build started at `92276fc76c65`; its [plan and scope](../source-builds.md) are retained.
+  - [ ] Produce the first baseline world/kernel/package/set build and retain identities. The 12-job GENERIC build at `92276fc76c65` passed world, kernel and pkgbase, then failed its first set-staging attempt. An isolated replay of the exact 219-header install passed; the root cause remains unproven. An exact-plan resume retains the failure and retries the set phase. Its [plan and scope](../source-builds.md) are retained.
   - [ ] Qualify VM boot, installer set admission, matching jail/external modules, signing and rollback before production selection.
 - **Evidence:**
   - [ ] Exact source/config/toolchain/log/artifact identities and failure refusal checks; native package output; VM/hardware results remain separate.
@@ -149,7 +149,7 @@ Next action: demonstrate a supported installed retained-project execution path o
 - **Implementation:**
   - [x] Record complete-tree coverage, component granularity, variant and dependency requirements in G8 and the release Component contract; file framework issue #74.
   - [x] Retain pinned-tree diagnostic inventories and nine portable discovery checks; [producer/result identities](../../verification/native-tree-discovery.json) record candidate ownership separately from canonical admission.
-  - [x] Observe the native `bin/ls` directory closure with explicit amd64/host contexts, shared Makefile inputs and cycle/failure refusal; [scope and identities](../../verification/native-dirdeps-observation.json) retain its diagnostic limits. Full native catalog/action resolution remains open.
+  - [x] Observe the native `bin/ls` directory closure with explicit amd64/host contexts, shared Makefile inputs and cycle/failure refusal; [scope and identities](../../verification/native-dirdeps-observation.json) retain its diagnostic limits. The first full sweep exposed unqualified extra-directory/context parsing errors. The corrected collector preserves those paths and returned query output; eleven portable checks and a native two-seed probe pass their observation/refusal expectations. Re-observe full coverage and reconcile stale declarations with actual build actions before canonical binding. Full native catalog/action resolution remains open.
   - [ ] Admit every source/build/support input and ports origin through canonical Component catalogs and locks; reject missing or ambiguous ownership.
   - [ ] Connect native actions and conditional dependencies to retained execution, receipts and the exact release closure.
 - **Evidence:**

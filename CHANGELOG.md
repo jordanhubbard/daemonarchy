@@ -16,6 +16,11 @@ work; it is not a separate published tag in this repository. The proposed name
 
 ## Unreleased
 
+- Preserve unqualified native directory references without treating dots inside
+  source paths as machine contexts. Retain returned query output for diagnosis;
+  unresolved references still refuse closure admission. Eleven portable checks
+  pass and a native two-seed probe retains an unresolved legacy CSU reference.
+
 - Add bounded native directory-dependency observation with explicit target/host
   contexts, shared Makefile inputs, dependency ordering and failure/cycle refusal.
   Ten portable checks pass; the native `bin/ls` observation resolves 19 directory

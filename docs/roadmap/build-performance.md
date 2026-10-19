@@ -59,16 +59,32 @@ This is a real native metadata result, not a complete compilation/action graph
 or a Component receipt. The helper preserves missing declarations, unsupported
 contexts, query failures and cycles; it never converts them into a successful
 DAG. The full tree, kernel composition, generated-file/toolchain admission,
-ports variants and canonical Component/package binding remain open. Run full
-catalog observation after the current baseline frees the worker slot.
+ports variants and canonical Component/package binding remain open. The first full directory sweep completed after the baseline stopped. Its 1,790
+query records include 154 parser refusals and 19 unresolved declaration records.
+Inspection found a parser defect: unqualified extra-directory targets can be
+mistaken for dotted context names, and rejection loses otherwise valid edges.
+The collector now preserves unqualified targets without splitting dots inside
+paths and retains returned stdout/stderr plus command arguments. Eleven portable
+checks pass. A native two-seed probe observes 20 nodes and 59 edges, retaining the
+unqualified `gnu/lib/csu` reference from `bin/timeout`; it correctly exits nonzero
+rather than calling that closure resolved. [Refinement evidence](../../verification/native-dirdeps-refinement.json)
+binds the current producer and preserved query bytes. Re-observe the full sweep
+and reconcile stale declarations against actual build actions before canonical
+target binding. Directory metadata alone is insufficient for this admission.
 
 ## Performance baseline and candidate changes
 
 The native GENERIC build at `92276fc76c65` uses 12 jobs and isolated staging. Its
-controller records each completed phase's elapsed time and logs. Full world,
-kernel, package, set and ISO measurements are still incomplete. Keep its checkout
-and outputs frozen until that job is terminal; never restart because a status
-observation times out.
+controller records each completed phase's elapsed time and logs. World (4,195.318 s), kernel (210.840 s) and pkgbase (597.429 s) completed.
+The first set-staging attempt failed after 220.836 s while installing Clang
+headers. The exact captured install tool/flags subsequently copied all 219
+headers successfully in an isolated directory; three system-install copies also
+matched source bytes. The failure is retained and its cause remains unproven.
+An exact-plan resume retries only the failed set phase, retaining all previous
+phase logs. This recovered workflow is not a clean successful performance
+baseline. Full set and ISO measurements remain incomplete. Keep its checkout and
+outputs frozen while the resumed job runs; observation timeouts do not justify
+restarts.
 
 | Candidate | Required evaluation |
 | --- | --- |

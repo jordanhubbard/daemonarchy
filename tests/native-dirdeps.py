@@ -54,6 +54,19 @@ class NativeDirectoryTests(unittest.TestCase):
         self.assertIsNone(missing["declaration"])
         self.assertIsNone(native.declaration(self.names, "lib/libc", "unsupported"))
 
+    def test_dots_in_unqualified_extra_directories_are_not_machine_contexts(self):
+        target = str(self.repo / "gnu/usr.bin/cc/cc")
+        result = native.parse_observation(self.observation(extra=[target]), self.repo, "bin/ls", self.names)
+        self.assertEqual(result["unqualified_targets"], [{
+            "target": "gnu/usr.bin/cc/cc", "reason": "no-established-target-context"}])
+        self.assertFalse(any(t["context"] == "bin/cc/cc" for t in result["qualified_targets"]))
+        # A valid qualified reference in the same query must survive.
+        self.assertTrue(any(t["unit"] == "lib/libc" for t in result["qualified_targets"]))
+        record = {"unit": "bin/ls", "context": "amd64", "status": "observed",
+                  "qualified_targets": [], "unqualified_targets": result["unqualified_targets"]}
+        self.assertFalse(native.directory_graph({("bin/ls", "amd64"): record})[
+            "observed_directory_closure_resolved"])
+
     def test_external_and_untracked_make_inputs_refuse(self):
         for includes in (["/etc/make.conf"], ["unknown.mk"]):
             with self.assertRaises(ValueError):
@@ -142,6 +155,9 @@ class NativeDirectoryTests(unittest.TestCase):
             self.assertFalse(report["directory_graph"]["observed_directory_closure_resolved"])
             self.assertEqual(report["canonical_components_registered"], 0)
             self.assertEqual(report["records"][1]["status"], "query-failed")
+            for record in report["records"]:
+                for name in ("stdout", "stderr"):
+                    self.assertTrue((output / record["query_output"][name]).is_file())
             retained = (output / "observation.json").read_bytes()
             self.assertEqual(json.loads(retained)["state"], "observation-only")
             with self.assertRaises(FileExistsError):

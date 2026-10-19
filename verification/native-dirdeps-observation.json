@@ -98,6 +98,7 @@
   ],
   "make_sha256": "499fdad479abdc4203b911c7f2bd8ae94704e5d7a9d6172b1893822bcf8ad31e",
   "platform": "FreeBSD-16.0-CURRENT-amd64-64bit-ELF",
+  "producer_revision": "eb58622a8b26bb2cd6064ee70a97c79b14351187",
   "producer_sha256": "2754beaa97856e88c21a901a24a032db071c8e07ac84498b7b42c9c53a4a7db7",
   "qualified_packages": 0,
   "records": 19,

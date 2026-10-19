@@ -23,6 +23,9 @@ import time
 
 VARIABLES = ("DIRDEPS", "_build_dirs", "_build_all_dirs", ".MAKE.MAKEFILES", "TARGET_SPEC")
 SUPPORTED_CONTEXTS = {"amd64", "host", "host32", "common"}
+KNOWN_CONTEXTS = SUPPORTED_CONTEXTS | {
+    "arm", "arm64", "aarch64", "i386", "riscv", "riscv64", "powerpc", "powerpc64",
+}
 MAX_QUERY_BYTES = 4 * 1024 * 1024
 
 
@@ -70,7 +73,17 @@ def declaration(names, unit, context):
     return None
 
 
-def parse_observation(stdout, repo, unit, names, expected_context="amd64"):
+def source_directories(names):
+    directories = set()
+    for name in names:
+        parent = PurePosixPath(name).parent
+        while parent.parts and parent.as_posix() not in directories:
+            directories.add(parent.as_posix())
+            parent = parent.parent
+    return directories
+
+
+def parse_observation(stdout, repo, unit, names, expected_context="amd64", directories=None):
     lines = stdout.decode("utf-8", errors="strict").splitlines()
     if len(lines) != len(VARIABLES):
         raise ValueError("native variable query returned ambiguous framing")
@@ -78,15 +91,23 @@ def parse_observation(stdout, repo, unit, names, expected_context="amd64"):
     if values["TARGET_SPEC"] != expected_context:
         raise ValueError("native query selected another target context")
     targets = []
+    unqualified = []
+    if directories is None:
+        directories = source_directories(names)
     direct_targets = set(values["_build_dirs"].split())
     for token in sorted(direct_targets | set(values["_build_all_dirs"].split())):
         prefix = str(repo) + "/"
         if not token.startswith(prefix):
             raise ValueError("native dependency target escaped source tree")
         target = token[len(prefix):]
+        relative(target)
         path, separator, context = target.rpartition(".")
-        if not separator:
-            raise ValueError("native dependency lacks target context")
+        # Extra-directory targets need not be target-qualified. A dot in a
+        # directory such as gnu/usr.bin/cc/cc is not a machine separator.
+        if (target in directories or not separator or "/" in context
+                or context.split(",")[0] not in KNOWN_CONTEXTS):
+            unqualified.append({"target": target, "reason": "no-established-target-context"})
+            continue
         relative(path)
         relative(context)
         targets.append({"unit": path, "context": context,
@@ -112,6 +133,7 @@ def parse_observation(stdout, repo, unit, names, expected_context="amd64"):
             "qualified_targets": sorted(targets, key=lambda x: (x["unit"], x["context"])),
             "all_directory_targets": values["_build_all_dirs"].split(),
             "consulted_makefiles": sorted(set(includes)),
+            "unqualified_targets": unqualified,
             "target_spec": values["TARGET_SPEC"]}
 
 
@@ -141,9 +163,12 @@ def directory_graph(records):
             if remaining[consumer] == 0:
                 heapq.heappush(ready, consumer)
     unresolved = sorted(node for node, record in records.items() if record["status"] != "observed")
+    unqualified = [{"consumer": node, **target} for node, record in sorted(records.items())
+                   for target in record.get("unqualified_targets", [])]
     return {"directory_edges": len(edges), "acyclic": len(order) == len(records),
             "unresolved_nodes": unresolved, "cyclic_or_cycle_dependent_nodes": sorted(set(records) - set(order)),
-            "observed_directory_closure_resolved": not unresolved and len(order) == len(records),
+            "unqualified_targets": unqualified,
+            "observed_directory_closure_resolved": not unresolved and not unqualified and len(order) == len(records),
             "dependency_first_order": order}
 
 
@@ -200,6 +225,7 @@ def collect(repo, revision, units, output, *, acknowledged, timeout=20, maximum=
     if output.parent.resolve(strict=True) != output.parent:
         raise ValueError("observation output parent must be direct")
     names = clean_source(repo, revision)
+    directories = source_directories(names)
     config = "tools/daemonarchy/src.conf"
     if config not in names:
         raise ValueError("selected source omits reviewed native configuration")
@@ -208,7 +234,7 @@ def collect(repo, revision, units, output, *, acknowledged, timeout=20, maximum=
         pending = {(str(PurePosixPath(n).parent), "amd64") for n in names
                    if PurePosixPath(n).name in ("Makefile.depend", "Makefile.depend.amd64")}
     output.mkdir(mode=0o700)  # Exclusive; never overwrite prior evidence.
-    for name in ("home", "tmp", "obj"):
+    for name in ("home", "tmp", "obj", "queries"):
         (output / name).mkdir()
     env = {"PATH": "/sbin:/bin:/usr/sbin:/usr/bin:/usr/local/sbin:/usr/local/bin",
            "HOME": str(output / "home"), "TMPDIR": str(output / "tmp"),
@@ -241,13 +267,19 @@ def collect(repo, revision, units, output, *, acknowledged, timeout=20, maximum=
                  "__MAKE_CONF=/dev/null", "SRC_ENV_CONF=/dev/null", f"SRCCONF={repo / config}"]
         try:
             code, stdout, stderr = bounded_query(argv, env, timeout)
+            key = hashlib.sha256(json.dumps([unit, context]).encode()).hexdigest()
+            query_paths = {"stdout": f"queries/{key}.stdout", "stderr": f"queries/{key}.stderr"}
+            for kind, content in (("stdout", stdout), ("stderr", stderr)):
+                with (output / query_paths[kind]).open("xb") as stream:
+                    stream.write(content)
             record.update(exit=code, stdout_sha256=hashlib.sha256(stdout).hexdigest(),
                           stderr_sha256=hashlib.sha256(stderr).hexdigest(),
-                          stderr=stderr.decode(errors="replace"))
+                          stderr=stderr.decode(errors="replace"), query_argv=argv,
+                          query_output=query_paths)
             if code:
                 record["status"] = "query-failed"
             else:
-                record.update(parse_observation(stdout, repo, unit, names, context), status="observed")
+                record.update(parse_observation(stdout, repo, unit, names, context, directories), status="observed")
                 pending.update((t["unit"], t["context"]) for t in record["qualified_targets"]
                                if (t["unit"], t["context"]) not in records)
         except InterruptedError:
@@ -273,6 +305,8 @@ def collect(repo, revision, units, output, *, acknowledged, timeout=20, maximum=
     encoded = (json.dumps(report, sort_keys=True, separators=(",", ":")) + "\n").encode()
     (output / "observation.json").write_bytes(encoded)
     print(json.dumps({"records": len(records), "unresolved": sum(r["status"] != "observed" for r in records.values()),
+                      "unqualified_targets": len(report["directory_graph"]["unqualified_targets"]),
+                      "directory_closure_resolved": report["directory_graph"]["observed_directory_closure_resolved"],
                       "sha256": hashlib.sha256(encoded).hexdigest(), "state": report["state"]}), flush=True)
     return report
 

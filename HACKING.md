@@ -112,7 +112,7 @@ or ignored source inputs, bounds each query and the total run, retains partial
 records on failure and refuses existing output directories. Omit `--unit` to seed
 all amd64 dependency declarations and follow supported host/common contexts.
 Missing declarations, unsupported contexts and cycles cause a nonzero result.
-Run `PYTHONDONTWRITEBYTECODE=1 python3 tests/native-dirdeps.py -v` for ten portable
+Run `PYTHONDONTWRITEBYTECODE=1 python3 tests/native-dirdeps.py -v` for eleven portable
 refusal/graph/process checks; native observation remains a separate result.
 
 ## Setting up a build host
