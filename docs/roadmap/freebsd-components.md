@@ -110,6 +110,36 @@ acceptance. Grow the same canonical path to real source units and port origins,
 including target/options variants, then to the selected ISO closure. Keep
 unselected, unsupported and unqualified units visible throughout that expansion.
 
+### Bootstrap compiler closure
+
+A read-only native probe of the initial C compiler seed found Clang 21.1.8,
+target `x86_64-unknown-freebsd16.0`, resource directory `/usr/lib/clang/21`,
+system headers `/usr/include` and startup/link inputs under `/usr/lib`.
+Both `cc` and `ld.lld` also depend on shared LLVM and system libraries. Their
+installed bytes are bootstrap inputs with unknown source-build provenance;
+they must not be attributed to the selected source fork or represented as
+newly built LLVM Components.
+
+The seed inventory includes linker-script references, not only ELF `NEEDED`
+entries. On this worker `/usr/lib/libc.so` is a `GROUP` script referencing
+`/lib/libc.so.7` and `/usr/lib/libc_nonshared.a`; `/usr/lib/libgcc_s.so` references
+`/lib/libgcc_s.so.1` and `/usr/lib/libgcc.a`. The latter archive is a relative
+symlink to `libcompiler_rt.a`. Omitting those inputs would leave linking
+dependent on ambient host files despite capturing the compiler and headers.
+
+The diagnostic inventory contains 4,114 regular files (237,147,193 bytes),
+273 directories and 15 symlinks, with SHA-256
+`74e7e4ba1241de799e24296633644b8ac1a67b7196ce8e3cd65d7b2506bb1864`.
+It records observed paths, modes, file hashes, link text and linker-script
+references; it does not capture file bytes, establish complete compiler
+provenance or admit an SDK. The execution fixture must acquire and revalidate
+the actual seed bytes, bind its resource/sysroot/linker selection explicitly,
+and prove that linker scripts resolve inside the declared sysroot after
+relocation. Set bounded input budgets from the actual closure and reject
+unexpected growth; do not reuse the smaller helper fixture's limits or weaken
+custody to fit them. This initial inventory covers the C proof, not every
+compiler language, target or ports toolchain.
+
 ## Execution order and current state
 
 SRC-001 has supplied a pinned native build controller. The first GENERIC build

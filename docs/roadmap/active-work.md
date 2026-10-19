@@ -156,6 +156,7 @@ Next action: demonstrate a supported installed retained-project execution path o
   - [ ] Admit every source/build/support input and ports origin through canonical Component catalogs and locks; reject missing or ambiguous ownership.
   - [ ] Connect native actions and conditional dependencies to retained execution, receipts and the exact release closure.
   - [ ] Qualify the [first native source composition proof](freebsd-components.md#first-native-source-composition-proof): compile original application/library source with admitted compiler resources, headers and sysroot; run original tests and independent cases; produce per-unit pkg products; observe actual invalidation and relocated VM installation/recovery. Exported precompiled-helper and package-format fixtures retain their narrower custody/integration scope.
+  - [ ] Acquire the [observed bootstrap compiler closure](freebsd-components.md#bootstrap-compiler-closure), including native linker-script references, with explicit seed provenance and input budgets; prove relocated sysroot resolution before treating it as an admitted compiler SDK. The retained read-only inventory is diagnostic evidence only.
 - **Evidence:**
   - [ ] Full selected trees have zero unowned inputs, all origins are represented, and catalogued/admitted/built/accepted states remain distinct.
   - [ ] Changed source, options, dependencies, toolchain or artifact invalidates the applicable receipts; exact native release closure passes installed framework and runtime qualification.
