@@ -84,6 +84,32 @@ evidence that native dependency or behavioral contracts are complete. Reuse the
 framework's canonical catalog/Component/Flavor/lock owners instead of claiming
 that a custom inventory JSON is equivalent to those contracts.
 
+## First native source composition proof
+
+The first executable fixture must build an original-source application and its
+library dependency during the recorded retained run. Existing retained
+export/receipt fixtures copy an already compiled helper; those tests exercise
+custody, observers, independent cases, SDK integration and archive consumers.
+They do not establish that application source is compiled with an admitted
+compiler, resource directory, headers and sysroot. Keep that distinction when
+reporting framework acceptance or moving the system onto the operator workstation.
+
+| Boundary | Required evidence before calling the fixture qualified |
+| --- | --- |
+| Canonical composition | Application, library and shared support inputs resolve through actual authored Component contracts, selected locks and explicit dependency edges. A separate inventory or two opaque tree wrappers cannot replace them. |
+| Original-source compilation | Recorded commands compile the retained source and link the actual dependency. Bind compiler/linker binaries, resource files, standard headers, sysroot and libraries to exact SDK/toolchain provenance. Exercise normal native headers and runtime libraries; a freestanding example alone cannot qualify the source/ports build path. |
+| Original tests | Tests run the newly built products and derive reports from their observed outcomes. Prewritten success reports or exporting a precompiled executable do not prove compilation of the admitted source. |
+| Independent acceptance | Separate verifier authority exercises sealed products and their library closure. A successful compiler exit or successful original test run cannot stand in for this acceptance. |
+| Per-unit packages | Actual versioned pkg products bind each selected unit's source/build provenance, both BOMs and typed dependencies. Inspect native package metadata and reopened payloads; a project-wide archive does not establish per-unit package coverage. |
+| Incremental invalidation | Measure clean and unchanged runs, then change application source, a dependency implementation, a shared header, build options and the toolchain separately. Observe the actual affected action closure and outputs; stale plans, receipts and package reuse must refuse. |
+| Relocation and installation | Retire scratch and original build paths, reopen retained products, then test installation, update and rollback in a disposable VM. Compilation and loading must use declared resources rather than an ambient compiler installation or library search path. |
+
+This fixture is the first integration proof, not a replacement for complete
+source/ports catalogs, native conditional dependency resolution or whole-system
+acceptance. Grow the same canonical path to real source units and port origins,
+including target/options variants, then to the selected ISO closure. Keep
+unselected, unsupported and unqualified units visible throughout that expansion.
+
 ## Execution order and current state
 
 SRC-001 has supplied a pinned native build controller. The first GENERIC build
