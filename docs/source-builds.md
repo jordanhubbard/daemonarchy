@@ -142,3 +142,46 @@ validation; small fixtures check snapshot copying. A complete native source
 snapshot, canonical unit/action registration, per-unit packages and native
 lifecycle execution remain unqualified. Exact framework CI and installed/native
 renewal retain their own gates.
+
+## Operator development workstation
+
+DEV-001 extends this program to an editable native workstation. The conventional
+`/usr/src` checkout selects the `daemonarchy-src` development branch; `/usr/ports`
+selects the owned `daemonarchy-ports` fork, initially based on the published
+`daemonarchy-1.1.1` ports selection. Both have explicit upstream remotes.
+The ports fork was renamed from `freebsd-ports`, retaining its branches and history.
+The development ports branch is `feat/litai-native-components`.
+
+Product authority lives at `~/src/daemonarchy`; framework development lives at
+`~/src/literate-ai`. Native object, staging, package, trace and ISO outputs belong
+outside both source trees. Record exact revisions, options, toolchains and artifact
+identities for every result. The installed 1.1.1 base, kernel, drivers and package
+feed remain the running system until a separately verified installation is chosen.
+
+Provisioning these checkouts does not implement the complete Component lifecycle.
+DEV-001 remains open until the installed Literate AI entry points actually manage
+source and ports build/test/package/ISO creation and installation, including
+unchanged and changed-input invalidation and recoverable installation evidence.
+Do not present direct aggregate make invocations as completed Component execution.
+
+The first [native provisioning checkpoint](../verification/operator-development.json)
+records clean source/ports selections, a verified offline framework dependency
+closure, successful installed CLI/project validation and 27 passing native
+controller tests. Use the development CLI from a normal shell:
+
+```sh
+cd ~/src/daemonarchy
+litai --version
+litai project validate .
+litai verify
+```
+
+`litai verify` currently reports the missing native lifecycle receipt. This is an
+open implementation gate, not a qualified build or a reason to fabricate a receipt.
+The native aggregate controller can create a pinned plan from `/usr/src`, but its
+8 GiB available-memory minimum exceeds this workstation's currently available
+memory. Keep expensive full-world qualification on the dedicated worker.
+The framework checkout is editable; the installed CLI is a separately pinned
+non-editable development wheel. Changes there require a new verified installation.
+`litai doctor` also reports an unauthenticated coding CLI and missing Git LFS; no
+agent credentials were copied during this provisioning.

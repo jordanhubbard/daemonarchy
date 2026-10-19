@@ -66,9 +66,13 @@ performance improvement or canonical per-unit Component execution result.
 
 ## Current work
 
-The current directing goal is PERF-001: establish the source/ports graph, execute
-literal Components through Literate AI and substantially improve native ISO
-build/packaging time. The [performance plan](docs/roadmap/build-performance.md)
+The current directing goal is DEV-001: provide an operator-ready development
+system using editable `/usr/src` and `/usr/ports` checkouts from the owned forks,
+with build, incremental rebuild, test, package, ISO creation and installation
+managed by Literate AI. Preserve the usable installed desktop while qualifying
+new outputs in isolated workspaces. PERF-001 establishes the source/ports graph,
+executes literal Components and measures native ISO build/packaging improvement.
+The [performance plan](docs/roadmap/build-performance.md)
 owns its measurements and executor decision.
 
 RELEASE-001 remains the broader release program: finish the existing backlog and

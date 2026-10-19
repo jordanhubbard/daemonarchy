@@ -16,6 +16,12 @@ work; it is not a separate published tag in this repository. The proposed name
 
 ## Unreleased
 
+- Establish the operator-development work item for conventional `/usr/src` and
+  `/usr/ports` checkouts, isolated native outputs and a complete Literate AI
+  incremental build/test/package/ISO/installation workflow. Rename the owned ports
+  fork to `daemonarchy-ports`, preserving its branches and history. Full native
+  Component lifecycle qualification remains open.
+
 - Prepare optional native filemon/meta-mode tracing in the source controller,
   preserving source dependency files and retaining immutable phase observations.
   Seventeen controller checks pass locally and in controller CI; native tracing

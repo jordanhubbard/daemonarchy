@@ -5,8 +5,10 @@ Checkboxes below are execution status, not substitutes for test receipts.
 
 ## Open pull-request landing queue
 
-No open issues or reviews were found in the initial GitHub survey. Existing
-release/test worktrees are retained; adoption does not authorize their deletion.
+[Draft PR #12](https://github.com/jordanhubbard/daemonarchy/pull/12) carries native
+Component discovery, build-performance and operator-development work.
+[Issue #11](https://github.com/jordanhubbard/daemonarchy/issues/11) tracks the broader
+1.2.0 release. Existing release/test worktrees remain retained.
 
 ### [x] ADOPT-001 — Establish product-wide Literate AI authority
 
@@ -174,3 +176,19 @@ Next action: demonstrate a supported installed retained-project execution path o
 - **Evidence:**
   - [ ] Same-target baseline/optimized measurements retain source, configuration, toolchain, cache/resource state, action counts, output hashes and test results.
   - [ ] Native Component invalidation, per-unit pkg provenance, complete dependency closure, packaging, ISO installation and rollback remain correct.
+
+### [ ] DEV-001 — Provide an operator-ready native Component development system
+
+- **Priority:** P1
+- **Owner:** release Component, source and ports forks, native framework lifecycle
+- **Direction:** Make the complete source and ports Component build, test, package, ISO creation and installation system available on the operator development workstation at /usr/src and /usr/ports, managed by Literate AI.
+- **Conclusion:** Preserve the running desktop and existing data; deploy editable fork checkouts and the qualified framework, then prove unchanged and changed-input incremental builds, tests, package provenance, ISO creation and installation against exact native inputs. Checkout availability alone does not complete this work.
+- **Depends on:** COMP-001, PERF-001
+- **Implementation:**
+  - [x] Prepare conventional editable source and ports checkouts, framework tooling and a documented operator entry point. [Native checkpoint](../../verification/operator-development.json): installed CLI/project validation and 27 controller tests pass; complete lifecycle remains open.
+  - [ ] Admit native source and ports units, dependencies and versioned packages into the installed Literate AI lifecycle.
+  - [ ] Run clean, unchanged and changed-input build/test/package/ISO workflows with isolated outputs and demonstrate installation and recovery.
+- **Evidence:**
+  - [x] Native checkout identities and cleanliness, installed CLI and discoverable commands are verified on the operator workstation.
+  - [ ] Complete Component ownership and dependency closure, exact provenance, correct incremental invalidation, actual tests and package outputs pass.
+  - [ ] Measured ISO creation and actual installation/recovery evidence match the exact source and ports selections.

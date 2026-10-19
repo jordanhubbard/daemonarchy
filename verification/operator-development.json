@@ -1,0 +1,50 @@
+{
+  "schema": "daemonarchy/operator-development-checkpoint@1",
+  "status": "partial",
+  "work_item": "DEV-001",
+  "checkouts": [
+    {
+      "path": "/usr/src",
+      "repository": "https://github.com/jordanhubbard/daemonarchy-src",
+      "revision": "7d93dff0e80a96734f5c0ebe1a48fe378bc3b876",
+      "branch": "feat/source-build-pipeline",
+      "clean": true,
+      "upstream_base": "bdaddb76ef1b9d5537f4a76cff01cdb4795804a4"
+    },
+    {
+      "path": "/usr/ports",
+      "repository": "https://github.com/jordanhubbard/daemonarchy-ports",
+      "revision": "f7d7ee897405dcb8ce87e674588a4e1b3bfba00e",
+      "branch": "feat/litai-native-components",
+      "clean": true
+    }
+  ],
+  "framework": {
+    "revision": "545c4ae6c4571253c7b299a444eac059e623f765",
+    "wheel_sha256": "db5efd4a956a0eafddb7179bda8860bf2b3293366e4c3956671d366f85555a05",
+    "distribution_identity": "sha256:2d341b74f6fd76351f50d31595184a953c0d74966fb109dcae82bc32a3aa2004",
+    "dependency_closure_identity": "sha256:69b53555e24b133efded373ad9d0077ac646c39f88f63151cbc4476ac4d280ed",
+    "launcher": "/usr/local/bin/litai",
+    "native_version_and_project_validation": "passed",
+    "publication": "unverified development distribution"
+  },
+  "native_controller_tests": {
+    "count": 27,
+    "elapsed_seconds": 5.615,
+    "failures": 0,
+    "skips": 0
+  },
+  "aggregate_plan": {
+    "source_path": "/usr/src",
+    "jobs": 2,
+    "creation": "passed",
+    "execution": "not run; current available memory below controller minimum"
+  },
+  "limits": [
+    "complete canonical native source/ports Component execution remains unimplemented",
+    "per-unit package provenance and dependency closure remain unqualified",
+    "no workstation ISO build, installation or rollback acceptance",
+    "doctor reports missing Git LFS and unauthenticated coding CLI; no credentials copied",
+    "running 1.1.1 system unchanged by development checkouts and CLI installation"
+  ]
+}
