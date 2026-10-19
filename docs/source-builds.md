@@ -204,3 +204,22 @@ refusal. A separate native probe preserves and hash-verifies the complete actual
 archive trace in immutable custody. The workstation's `/usr/src` now contains
 that fix. [Compact evidence](../verification/native-traced-build-quiet-result.json)
 retains exact revisions, failure, hashes and qualification limits.
+
+## Retained executable acceptance checkpoint
+
+Framework checkpoint `567e0f8a4092` adds an opt-in withheld verifier policy for
+sealed retained build exports. All 69 selected retained-project checks pass on
+actual FreeBSD, including executable cases with exact binary input/output and
+exit-status comparison, stale-policy/lock rejection, native dependency drift
+and failed-result custody. Fourteen focused controller checks also pass.
+[The checkpoint](../verification/native-retained-acceptance.json) records the
+revision and log hashes. Its complete framework regression remains running
+before publication of this local commit. The installed CLI remains at `545c4ae6`.
+
+This does not enable public retained execution: SDK/source and resolved BOM
+admission, retained-origin receipts, package/release consumers and installed
+qualification are still required. Preflight also found that the installed-wheel
+smoke harness expects a Linux Flavor on FreeBSD even though production
+initialization has an explicit FreeBSD selector. Correct that harness under
+framework issue #67 and qualify actual wheel bytes; a source test pass cannot
+substitute for that installation gate.
