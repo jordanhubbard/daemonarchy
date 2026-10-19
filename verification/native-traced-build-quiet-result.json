@@ -1,0 +1,78 @@
+{
+  "schema": "daemonarchy/native-traced-build-checkpoint@1",
+  "original_run": {
+    "schema": "daemonarchy/native-traced-artifact-observation@1",
+    "plan_identity": "14513628ca7e81d797fd9cab7879a3cbbb06fbd10cc713f1873eb463148e7bab",
+    "source_revision": "7d93dff0e80a96734f5c0ebe1a48fe378bc3b876",
+    "status": "failed",
+    "error": "ValueError: trace metadata exceeds the per-file budget",
+    "phases": [
+      {
+        "name": "buildworld",
+        "exit": 0,
+        "elapsed_seconds": 5786.789,
+        "log_sha256": "6d9e5c2c3536cc42a4361bbd39d5c532f1c7f8e5b317903ff317d61608010e4d"
+      },
+      {
+        "name": "buildkernel",
+        "exit": 0,
+        "elapsed_seconds": 1442.698,
+        "log_sha256": "c0b92c67fb1adcf2983967276742bbdb0c06973c6d97191b1295c920d846c7c4"
+      },
+      {
+        "name": "packages",
+        "exit": 0,
+        "elapsed_seconds": 2569.764,
+        "log_sha256": "abad318c4629ad4094a7727b4f0fe3938c135c1c1635b80bfc1145f4c37e7afe"
+      },
+      {
+        "name": "release-obj",
+        "exit": 0,
+        "elapsed_seconds": 1563.07,
+        "log_sha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855"
+      },
+      {
+        "name": "sets",
+        "exit": -1,
+        "elapsed_seconds": 2584.744,
+        "log_sha256": "a1844ca1d85e773c8f1050533410a4ee662304ecbdd8050f2c30d9f023cd4142"
+      }
+    ],
+    "trace_snapshots": 4,
+    "artifact_count": 537,
+    "artifact_bytes": 1833076586,
+    "manifest_sets": 8,
+    "verification_seconds": 10.573,
+    "original_result_sha256": "8d952693f8aaccbe62dc751a9091a089f6ed2f55c6774584019267f1af3a5222",
+    "original_result_unchanged": true,
+    "native_lifecycle_acceptance": false
+  },
+  "streamed_capture_probe": {
+    "schema": "daemonarchy/native-streamed-trace-probe@1",
+    "producer_sha256": "262a2b0e46fc3f5e6b79c255a79e79fc42e9b07fbf47baca8717f8c11dc8c2a7",
+    "record": {
+      "size": 39097413,
+      "sha256": "47cf89b077b4142479518c46535d95f8635e0fd46a40888d8f0dcd175fc947e1",
+      "filemon": true,
+      "has_input": true
+    },
+    "elapsed_seconds": 0.137,
+    "full_build_acceptance": false,
+    "original_failed_result_unchanged": true
+  },
+  "fix_revision": "f5e2473a68dbb8a14347c706f420101149967749",
+  "native_controller_tests": {
+    "tests": 30,
+    "skips": 0,
+    "failures": 0,
+    "elapsed_seconds": 3.928
+  },
+  "operator_source_checkout_revision": "f5e2473a68dbb8a14347c706f420101149967749",
+  "acceptance": "not-qualified",
+  "limits": [
+    "original controller run remains failed and unchanged",
+    "independent artifact byte verification is not a successful current controller run or lifecycle receipt",
+    "no full per-unit native Component registration or provenance qualification",
+    "no ISO build, installation, update, rollback or speedup acceptance"
+  ]
+}

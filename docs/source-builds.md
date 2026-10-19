@@ -185,3 +185,22 @@ The framework checkout is editable; the installed CLI is a separately pinned
 non-editable development wheel. Changes there require a new verified installation.
 `litai doctor` also reports an unauthenticated coding CLI and missing Git LFS; no
 agent credentials were copied during this provisioning.
+
+## Quiet traced-build outcome and streaming correction
+
+The quiet attempt at `7d93dff0e80a` passed world, kernel, pkgbase and release-object
+phases and reached the end of release-set generation. Its evidence capture then
+refused the 39,097,413-byte `src.txz.meta` record under the old 16 MiB limit, so
+the overall controller result remains failed. The original result and phase logs
+remain unchanged. An independent byte audit verifies 537 artifacts totaling
+1,833,076,586 bytes and all eight MANIFEST-listed sets. This does not convert the
+failed run into successful native lifecycle evidence.
+
+Source revision `f5e2473a68db` streams trace records with bounded in-memory
+spooling, a 64 MiB per-file limit and unchanged 16 GiB/500,000-entry aggregate
+bounds. Thirty controller/bootstrap checks pass on the native workstation,
+including a record exceeding the old limit, split filemon markers and changing-file
+refusal. A separate native probe preserves and hash-verifies the complete actual
+archive trace in immutable custody. The workstation's `/usr/src` now contains
+that fix. [Compact evidence](../verification/native-traced-build-quiet-result.json)
+retains exact revisions, failure, hashes and qualification limits.

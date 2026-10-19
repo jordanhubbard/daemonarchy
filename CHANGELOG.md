@@ -16,6 +16,13 @@ work; it is not a separate published tag in this repository. The proposed name
 
 ## Unreleased
 
+- Stream large filemon records without loading the whole record into memory;
+  retain finite per-file and aggregate bounds, stable-file checks and immutable
+  custody. Thirty tests pass on native FreeBSD, and the actual 39 MB source
+  archive trace passes capture and hash verification. Preserve the full traced
+  run as failed after its old collector limit; independently verify its 537
+  artifacts and all eight release sets without claiming lifecycle acceptance.
+
 - Establish the operator-development work item for conventional `/usr/src` and
   `/usr/ports` checkouts, isolated native outputs and a complete Literate AI
   incremental build/test/package/ISO/installation workflow. Rename the owned ports
