@@ -97,6 +97,15 @@ records the actual header read, reuses the unchanged object, rebuilds after a
 header edit and verifies both immutable trace snapshots. This is one C
 translation unit, not a full world/kernel traced build or Component receipt.
 
+A separate 12-job GENERIC traced build has started from source
+`76a523613db4d25d3c1702f32b21d1f07d11ee1e` with plan
+`b564633fec495be21cc2ce6b550689560a25450c601888398ab0a252fdc37b34`.
+The [start record](../verification/native-traced-build-start.json) binds its exact
+source tree, configuration and development package version. It uses a clean
+separate checkout/output; the prior build remains frozen. A started build and
+live metadata are not successful immutable phase snapshots or acceptance.
+
+
 The [pkgbase catalog audit](../verification/native-pkgbase-catalog-audit.json)
 binds all 524 catalog packages to recorded artifact sizes and resolves their
 1,082 runtime dependency edges to exact names, origins and versions without

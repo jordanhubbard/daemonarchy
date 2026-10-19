@@ -128,6 +128,21 @@ and preserved snapshots. The [524-package catalog audit](../../verification/nati
 resolves 1,082 runtime edges without cycles and binds every catalog package to
 recorded artifact sizes. Neither observation supplies the missing complete
 canonical compilation graph or per-unit provenance/pkg products.
+The [new full tracing attempt](../../verification/native-traced-build-start.json)
+is isolated from the earlier build and retains its own exact plan. Source changes
+between those revisions affect only release archive handling and controller/worker
+preparation; native compiler and OS source regions are unchanged. Component/action
+keys should bind consumed inputs, toolchain, flags and generated inputs, while
+retaining repository-origin provenance separately. Do not invalidate every native
+unit solely because an unrelated controller file changed. Measure this reuse;
+source similarity alone does not prove equivalent generated inputs or artifacts.
+
+The current set phase invokes `packagesystem` serially. Before parallelizing its
+world/kernel/source branches, separate archive publication: the base target's
+`mv dist/*.txz` overlaps the kernel target's output names. Bind compression thread
+budgets as well as make jobs; native defaults can choose compressor threads
+automatically. Qualify both archive contents and phase/total timings.
+
 
 ## Compare equivalent workloads
 

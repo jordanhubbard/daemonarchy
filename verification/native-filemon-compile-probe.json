@@ -4,6 +4,7 @@
   "changed_header_invalidated_object": true,
   "changed_header_seconds": 0.098672,
   "cold_seconds": 0.043762,
+  "compiler_command_echo_present_on_cold_and_changed_only": true,
   "compiler_sha256": "31b74e2344065afb96689b09c5cf9358801e996336c10f23ec43765a2384ea49",
   "complete_action_graph": false,
   "controller_revision": "76a523613db4d25d3c1702f32b21d1f07d11ee1e",
@@ -44,5 +45,7 @@
   "probe_scope": "one native C translation unit; native make filemon inputs, unchanged reuse and changed-header invalidation; not full-tree Component execution",
   "schema": "daemonarchy/native-filemon-compile-probe@1",
   "unchanged_object_reused": true,
+  "warm_command_log_sha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855",
+  "warm_make_output_bytes": 0,
   "warm_seconds": 0.027602
 }
