@@ -140,6 +140,40 @@ unexpected growth; do not reuse the smaller helper fixture's limits or weaken
 custody to fit them. This initial inventory covers the C proof, not every
 compiler language, target or ports toolchain.
 
+### Original-source candidate and remaining test boundaries
+
+The pinned source tree supplies a useful initial application/library pair:
+`usr.bin/truncate/truncate.c` calls the number parser in
+`lib/libutil/expand_number.c` through the original `libutil.h`. The utility's
+Makefile declares `LIBADD=util`. A parser-only compositional unit must expose
+its precise signed/unsigned public surface and source/header ownership; building
+that file alone must not be represented as a complete libutil build. Retain the
+original source, Makefiles, manual pages and test definitions in the input closure.
+
+The original parser suite registers four ATF-C cases. The utility suite registers
+20 ATF shell cases, including size changes, reference files, rounding, refusal
+and deallocation. Its `deallocate` case explicitly requires root. Execute the
+complete selected inventory with its actual prerequisites; an unprivileged
+worker cannot silently drop that case or bypass ATF's declared user requirement.
+Qualify the privileged case in the disposable acceptance environment before
+claiming complete original-suite coverage.
+
+The initial native worker already supplies `/usr/libexec/atf-sh`,
+`/usr/libexec/atf-check`, `/usr/share/atf/libatf-sh.subr`, ATF headers and private
+ATF libraries. Their absence from the default command search path does not mean
+the test framework needs installation. Capture exact tool/support/library
+inputs and their bootstrap provenance. The retained ATF implementation supports
+explicit shell, helper and data-directory selection; bind those selections to
+the captured closure and test relocation instead of using ambient absolute paths.
+
+Independent acceptance must observe the newly built utility's actual file
+effects, including size and content preservation. Exit/stdout/stderr checks alone
+cannot establish those properties. Establish a verifier-owned filesystem oracle
+or an equivalent separately admitted verifier through the existing lifecycle;
+do not relabel original tests or a zero-exit invocation as independent file-effect
+acceptance. This candidate is preparation for the same canonical composition
+proof above, not an admitted source unit or a qualified replacement for libutil.
+
 ## Execution order and current state
 
 SRC-001 has supplied a pinned native build controller. The first GENERIC build
