@@ -1,0 +1,40 @@
+{
+  "schema": "daemonarchy/bootstrap-seed-checkpoint@1",
+  "work_item": "COMP-001",
+  "status": "byte-acquisition-only",
+  "source_repository": "https://github.com/jordanhubbard/daemonarchy-src",
+  "source_revision": "ed5050835b9c5f2c918666228f36ac1fee2e5c42",
+  "producer": "tools/daemonarchy/capture-seed.py",
+  "producer_sha256": "8556b43f532b89f15bc1f2adcf3c9def3691e08fdb1f7b219882249d9879eddb",
+  "reviewed_inventory_sha256": "74e7e4ba1241de799e24296633644b8ac1a67b7196ce8e3cd65d7b2506bb1864",
+  "native_capture": {
+    "status": "copied-seed",
+    "inventory_entries": 4402,
+    "regular_files": 4114,
+    "regular_file_bytes": 237147193,
+    "symlinks": 15,
+    "log_sha256": "7d1ada01630e20f9739107fa2cb42ec832e7348412558ac218ebe0a195242ca8",
+    "native_refusal_checks": 10,
+    "native_refusal_check_seconds": 1.234,
+    "native_refusal_check_failures": 0,
+    "native_refusal_check_skips": 0
+  },
+  "framework_input_custody": {
+    "status": "observation-timeout",
+    "framework_revision": "d833ebd0fadced1bd1648f10f25004f3454e32dc",
+    "deadline_seconds": 300,
+    "exit_code": 124,
+    "qualified": false,
+    "next": "Repeat with stage timings and a longer bounded observation; retain the failed attempt."
+  },
+  "source_build_provenance": "unknown-host-bootstrap",
+  "sdk_admitted": false,
+  "canonical_units_admitted": 0,
+  "limitations": [
+    "Copied installed compiler bytes do not establish original compiler build provenance.",
+    "The seed is not a newly built LLVM Component or admitted native SDK.",
+    "Relocated compiler resources, sysroot and linker-script resolution remain unqualified.",
+    "Original-source per-unit build, tests, pkg and incremental lifecycle remain open.",
+    "This unsigned checkpoint is not a lifecycle receipt or release acceptance."
+  ]
+}

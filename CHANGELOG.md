@@ -16,6 +16,12 @@ work; it is not a separate published tag in this repository. The proposed name
 
 ## Unreleased
 
+- Acquire the reviewed native compiler bootstrap seed with bounded byte, mode,
+  link and linker-script custody. Ten refusal/capture checks pass on FreeBSD.
+  The helper and documentation are available in the operator source checkout;
+  SDK admission, original-source compilation and full Component lifecycle remain
+  unqualified.
+
 - Stream large filemon records without loading the whole record into memory;
   retain finite per-file and aggregate bounds, stable-file checks and immutable
   custody. Thirty tests pass on native FreeBSD, and the actual 39 MB source

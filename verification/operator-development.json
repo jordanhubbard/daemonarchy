@@ -6,7 +6,7 @@
     {
       "path": "/usr/src",
       "repository": "https://github.com/jordanhubbard/daemonarchy-src",
-      "revision": "7d93dff0e80a96734f5c0ebe1a48fe378bc3b876",
+      "revision": "ed5050835b9c5f2c918666228f36ac1fee2e5c42",
       "branch": "feat/source-build-pipeline",
       "clean": true,
       "upstream_base": "bdaddb76ef1b9d5537f4a76cff01cdb4795804a4"
@@ -32,7 +32,9 @@
     "count": 27,
     "elapsed_seconds": 5.615,
     "failures": 0,
-    "skips": 0
+    "skips": 0,
+    "revision": "7d93dff0e80a96734f5c0ebe1a48fe378bc3b876",
+    "scope": "historical controller checkpoint; not qualification of later source changes"
   },
   "aggregate_plan": {
     "source_path": "/usr/src",
@@ -46,5 +48,6 @@
     "no workstation ISO build, installation or rollback acceptance",
     "doctor reports missing Git LFS and unauthenticated coding CLI; no credentials copied",
     "running 1.1.1 system unchanged by development checkouts and CLI installation"
-  ]
+  ],
+  "bootstrap_seed_checkpoint": "verification/bootstrap-seed-capture.json"
 }

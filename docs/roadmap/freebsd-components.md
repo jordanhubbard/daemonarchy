@@ -140,6 +140,14 @@ unexpected growth; do not reuse the smaller helper fixture's limits or weaken
 custody to fit them. This initial inventory covers the C proof, not every
 compiler language, target or ports toolchain.
 
+The source-fork seed-capture helper now acquires these exact reviewed bytes in
+an isolated native workspace. Its ten custody/refusal checks pass on FreeBSD;
+the [checkpoint](../../verification/bootstrap-seed-capture.json) binds the
+producer, inventory and capture log identities. The helper retains relative
+links and verifies linker-script references without executing installed tools.
+Framework input capture, SDK admission and relocated compilation remain
+separate gates; the installed seed still has unknown source-build provenance.
+
 ### Original-source candidate and remaining test boundaries
 
 The pinned source tree supplies a useful initial application/library pair:
