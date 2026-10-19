@@ -35,6 +35,9 @@ compilation is not evidence that either machine boots successfully.
 SRC-001 tracks this setup in the [active queue](roadmap/active-work.md).
 ADOPT-002 and RELEASE-001 retain framework execution and release enforcement;
 running this native controller directly does not close those gates.
+COMP-001 additionally requires [complete source and ports Component coverage](roadmap/freebsd-components.md).
+The aggregate world/kernel build does not account for every native unit or
+ports origin as a canonical Component.
 
 Initial controller implementation: [source PR #4](https://github.com/jordanhubbard/daemonarchy-src/pull/4),
 commit `92276fc76c65f3ca31552d2e1833a6063361ff64`, based on upstream

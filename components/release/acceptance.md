@@ -17,6 +17,12 @@ complete declarations and external/native gaps are in [the acceptance inventory]
 
 ## Required scenarios
 
+- **Complete source and ports Component coverage:** retain complete pinned-tree
+  enumeration and canonical contracts for all native build units and ports
+  origins; demonstrate zero unowned inputs and explicit shared relationships.
+  Select target/options-specific dependency closures and reject missing owners,
+  unresolved edges and stale locks. Unselected catalog entries remain visible;
+  aggregate build success cannot replace per-component acceptance evidence.
 - **Coherent immutable inputs:** demonstrate the stated requirement on its actual supported
   target, and retain a negative/failure case where applicable.
 - **Artifact-bound evidence:** demonstrate the stated requirement on its actual supported

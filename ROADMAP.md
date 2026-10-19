@@ -5,6 +5,17 @@ Use [the active queue](docs/roadmap/active-work.md) for stable work IDs and
 acceptance status, and [the architecture](docs/architecture/design-traceability.md)
 for Component ownership. This file remains the release and feature overview.
 
+## 1.2.0: owned source builds and complete Component coverage
+
+Build our pinned FreeBSD-CURRENT fork through the [owned source workflow](docs/source-builds.md),
+then represent all selected `/usr/src` and `/usr/ports` inputs and native units as
+canonical Literate AI Components. Ports origins, source programs/libraries,
+kernel/loader units and shared build/support inputs need explicit ownership,
+target/options variants and dependencies. Whole-tree build wrappers are preparation;
+full catalog coverage and qualification of the selected release closure remain
+open under [COMP-001](docs/roadmap/freebsd-components.md). The
+[1.2.0 ledger](docs/roadmap/release-1.2.0.md) retains the complete release scope.
+
 ## 1.1.1 refresh
 
 The current stable release is **1.1.1**. Its source is

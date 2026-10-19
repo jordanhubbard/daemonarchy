@@ -16,6 +16,16 @@ work; it is not a separate published tag in this repository. The proposed name
 
 ## Unreleased
 
+- Add the owned FreeBSD source-build controller and GENERIC/diagnostic profiles
+  in daemonarchy-src, with native pkgbase/installer-set preparation, isolated
+  staging, resumable bounded phases and byte-verification records. Eleven
+  controller checks pass locally, in CI and on FreeBSD; the first native baseline
+  build is running. Package, boot and release qualification remain pending.
+- Require the complete source and ports trees to be modeled as canonical Literate
+  AI Components, including shared inputs, variants and selected native dependency
+  closures. Full-tree Component registration and lifecycle acceptance are open
+  work under COMP-001; two aggregate build wrappers do not satisfy this scope.
+
 - Record the MSI startup video's last visible legacy-RTC warning and document a
   targeted one-boot RTC-disable comparison. The reset cause and workaround remain
   unconfirmed; no automatic boot setting changes.

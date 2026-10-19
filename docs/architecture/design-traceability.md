@@ -12,7 +12,7 @@ buildable or generated artifacts. Existing source remains implementation authori
 | G3 | [Updates](https://github.com/jordanhubbard/daemonarchy/blob/main/components/updates/component.md) | Adoption/checkouts helpers and external desktop boot-environment tools | ABI refusal, preserved package/user choices, actual update/rollback/return |
 | G4 | [Diagnostics](https://github.com/jordanhubbard/daemonarchy/blob/main/components/diagnostics/component.md) | Pairing/rescue tools, observers and controller receiver | Approval, revocation, bounds, identity, abrupt loss and owned cleanup |
 | G5 | [Verified boot](https://github.com/jordanhubbard/daemonarchy/blob/main/components/verified-boot/component.md) | secureboot build/sign/bundle/maintenance tools and retained source patches | Exact trust closure, actual enforcement/rejection and maintenance/recovery |
-| G6 | [Release](https://github.com/jordanhubbard/daemonarchy/blob/main/components/release/component.md) | ISO/feed/checkouts assembly and publication scripts | Exact commit/artifacts, scoped native/VM/hardware evidence and explicit exceptions |
+| G6, G8 | [Release](https://github.com/jordanhubbard/daemonarchy/blob/main/components/release/component.md) | ISO/feed/checkouts assembly and publication scripts; planned complete source/ports Component integration | Full-tree ownership and variant-aware selected closures; exact commit/artifacts, scoped native/VM/hardware evidence and explicit exceptions |
 | G3, G7 | [Package engine](https://github.com/jordanhubbard/daemonarchy/blob/main/components/package-engine/component.md) | Planned; current installer still uses its existing package operations | Complete DAG, coordinated parallel installation, failure/retry/recovery and measured performance |
 
 ## Source custody and repository boundaries
@@ -32,10 +32,13 @@ compatibility identity is also recorded from the qualified release selection;
 none of these identities is inferred from an ambient checkout. Complete native
 input admission, including toolchains and firmware, remains unfinished work.
 
-FreeBSD sources/ports, Omarchy, firmware and native toolchains remain external
-inputs. Keep their normal upstream synchronization and contribution procedures.
-Do not subject their complete histories to generated-source authority or silently
-convert a moving branch into a qualified dependency.
+FreeBSD source and ports implementations remain upstream-maintained retained
+inputs with their normal synchronization and contribution procedures. Their
+complete selected trees must be represented as canonical Components under G8
+and [COMP-001](../roadmap/freebsd-components.md), including shared/support inputs
+and unselected origins; opaque whole-tree wrappers are insufficient. Preserve
+source authority and pin actual selections. Neither catalog registration nor
+a moving branch is a qualified dependency or native acceptance result.
 
 The owned [daemonarchy-src build workflow](../source-builds.md) prepares pinned
 FreeBSD world/kernel/source packages and installer sets on the native build
@@ -113,7 +116,7 @@ the public repository paths so mutable resolver mutexes are not documentation
 assets. Source
 indexing is disabled. Future framework updates must preserve these boundaries.
 
-<!-- literate-ai:authority-reviewed sha256:ec94abb2f951b3f61e8ff5ec3db647b069959e7447144c1ce1cb9c7bd5925d27 -->
+<!-- literate-ai:authority-reviewed sha256:b791960fb6cbb3654c056c08b12c8d13e96f129918c73cddfad780d1ff870f0b -->
 
 
 ## Rechecking preservation

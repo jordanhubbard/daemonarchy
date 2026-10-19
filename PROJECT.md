@@ -17,6 +17,10 @@
 - **G7 — Make progress useful and engaging:** deliver Winamp-inspired visuals,
   complete package dependency planning, safe parallel execution and a responsive
   graphical package manager.
+- **G8 — Account for the complete operating system:** represent all selected
+  `/usr/src` and `/usr/ports` inputs and build units as Literate AI Components,
+  with explicit dependencies, configuration variants and per-component evidence.
+  Preserve upstream source authority and contribution workflows.
 
 ## Dependencies
 
@@ -25,6 +29,10 @@ first-class FreeBSD workers and retained native lifecycle/release evidence.
 The framework owns that capability under FREEBSD-001; authority-only metadata
 does not satisfy it. Runtime/build inputs
 include upstream FreeBSD sources and ports, Omarchy, firmware and toolchains.
+FreeBSD source and ports remain retained upstream implementations, but their
+complete trees must be represented through canonical Component catalogs and
+selected native locks; treating either tree as one opaque external input is
+insufficient. The native build controller does not establish that integration.
 The Daemonarchy-owned desktop and compatibility repositories remain separately
 maintained source inputs. Their exact release identities and integration
 contracts belong to this project's release plan; ambient neighboring checkouts
@@ -32,7 +40,7 @@ are not admitted build evidence.
 
 ## Completeness
 
-The in-place Literate AI authority layer defines seven product goals, eight
+The in-place Literate AI authority layer defines eight product goals, eight
 Component contracts, interface ownership and acceptance mapping. Authority
 validation, all eight contract locks and static skill checks pass. Existing source remains implementation
 and release authority; it has not been relocated, regenerated or qualified as
@@ -46,6 +54,9 @@ qualification scope remain in the [release record](docs/testing-1.1.1.md).
 Product responsibilities and current acceptance coverage are mapped in
 [the architecture](docs/architecture/design-traceability.md). G7's planner,
 parallel installer, visualizers and new graphical manager remain planned work.
+G8's complete source/ports Component coverage is also unfinished. Existing eight
+product integration contracts and a whole-system source build are not a catalog
+of every base build unit or ports origin. COMP-001 owns that additional work.
 
 ## Current work
 
@@ -56,6 +67,12 @@ network-debugging roadmap. The completion audit includes all open queue and
 roadmap acceptance, not just implementation code or a worker proof. The
 [completion ledger](docs/roadmap/release-1.2.0.md) expands those obligations and
 defines the native/VM/physical worker and evidence model.
+
+COMP-001 adds complete source/ports Component coverage to that release program.
+The [component model](docs/roadmap/freebsd-components.md) defines full-tree
+ownership, target/options variants, native dependency composition and evidence
+states. Catalog coverage includes units outside the installed release selection;
+native execution and acceptance apply to each explicitly selected closure.
 
 
 ADOPT-001 establishes the project-wide authority layer. ADOPT-002 remains open

@@ -63,13 +63,17 @@ source_dependencies: []
 ---
 # Release assembly and qualification
 
-Goals: G6. This is a retained product contract, not an
+Goals: G6, G8. This is a retained product contract, not an
 independently executable or regeneratively qualified Component. Existing source
 and the native acceptance inventory remain authoritative for implementation status.
 
 ## Requirement: Coherent immutable inputs
 
 Record exact source, ports, desktop, compatibility, package catalogue, firmware and toolchain inputs. Keep kernel, world, jail and external drivers on compatible selections.
+
+## Requirement: Complete source and ports Component coverage
+
+Represent the complete pinned source and ports trees through canonical Component contracts and input ownership, including shared support inputs and unselected origins. Bind target/options variants and native dependencies explicitly. Reject missing or ambiguous ownership. Keep catalog, admission, selected locks, build, test and independent acceptance states distinct; qualify the exact selected release closure.
 
 ## Requirement: Artifact-bound evidence
 

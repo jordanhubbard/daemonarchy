@@ -55,6 +55,7 @@ results cannot substitute for current installed-wheel receipts.
 | R12-20 | RELEASE-001 | Final image/feed/checkouts checks bind kernel/driver/package identities, signatures, hashes, sizes, selected optional sources and artifact budgets; no preliminary-image result is relabeled as a final-image result. |
 | R12-21 | RELEASE-001 | Review all documentation and release-by-release CHANGELOG, support tables, install/update/debug instructions and upstream links against final behavior and direct evidence. |
 | R12-22 | RELEASE-001 | Full declared LitAI verification and release gates pass for exact final revision; publish the new GitHub release through the qualified method, verify immutable tag/assets independently and close each ledger row with its retained receipt. |
+| R12-23 | COMP-001 | Represent the complete pinned `/usr/src` and `/usr/ports` trees through canonical Component catalogs with zero unowned inputs, explicit shared relationships and target/options variants; admit and qualify the exact selected native dependency closure without relabeling catalog membership as build/acceptance. |
 
 ## Closure rule
 

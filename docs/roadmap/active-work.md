@@ -129,9 +129,27 @@ Next action: demonstrate a supported installed retained-project execution path o
 - **Owner:** whole product, release and acceptance
 - **Direction:** Finish all existing Daemonarchy backlog work and publish a new release entirely through the qualified Literate AI method.
 - **Conclusion:** The existence proof must include actual native build, complete declared testing, artifact custody and publication; authority-only adoption, waived backlog, or an external manual release is insufficient.
-- **Depends on:** ADOPT-002,UI-001,PKG-001,GUI-001,DEBUG-001,HW-001
+- **Depends on:** ADOPT-002,UI-001,PKG-001,GUI-001,DEBUG-001,HW-001,SRC-001,COMP-001
 - **Implementation:**
   - [x] Inventory current roadmap and queue obligations in [the 1.2.0 completion ledger](release-1.2.0.md), including inherited Bluetooth, enterprise Wi-Fi, dual-boot, bhyve and physical trust/graphics gaps.
   - [ ] Contribute and qualify upstream FreeBSD platform and retained execution support; bind private native workers and VM supervision; complete backlog implementations and acceptance; run the exact final release through Literate AI and verify publication.
 - **Evidence:**
   - [ ] Every inherited backlog obligation has direct completion evidence; native and virtual/physical acceptance match exact final artifacts; full LitAI verification and release gates pass; published new release and immutable assets are verified.
+
+### [ ] COMP-001 — Model complete FreeBSD source and ports trees as Components
+
+- **Framework issue:** [#74](https://github.com/jordanhubbard/literate-ai/issues/74)
+- **Detailed plan:** [Complete source/ports Component coverage](freebsd-components.md)
+
+- **Priority:** P1
+- **Owner:** source and ports Component inventories; framework retained native lifecycle
+- **Direction:** Represent all of /usr/src and all of /usr/ports as Literate AI Components, not opaque external trees.
+- **Conclusion:** Require complete pinned tree ownership, native build-unit and port-origin contracts, target/options variants, dependency composition and honest per-component evidence while preserving upstream implementation authority.
+- **Depends on:** SRC-001, ADOPT-002
+- **Implementation:**
+  - [x] Record complete-tree coverage, component granularity, variant and dependency requirements in G8 and the release Component contract; file framework issue #74.
+  - [ ] Admit every source/build/support input and ports origin through canonical Component catalogs and locks; reject missing or ambiguous ownership.
+  - [ ] Connect native actions and conditional dependencies to retained execution, receipts and the exact release closure.
+- **Evidence:**
+  - [ ] Full selected trees have zero unowned inputs, all origins are represented, and catalogued/admitted/built/accepted states remain distinct.
+  - [ ] Changed source, options, dependencies, toolchain or artifact invalidates the applicable receipts; exact native release closure passes installed framework and runtime qualification.
