@@ -16,6 +16,11 @@ work; it is not a separate published tag in this repository. The proposed name
 
 ## Unreleased
 
+- Register and lock the first original source header/parser/utility contracts
+  without moving the FreeBSD tree. Record explicit original authority and
+  separate three authored units from zero admitted units or qualified packages.
+  Native lifecycle and operator framework deployment remain open.
+
 - Preserve exact original Kyua result states in retained test reports, including
   expected failures and root-required skips. Thirteen checks pass on FreeBSD,
   including actual Kyua/ATF fixtures. Complete original-unit compilation, tests

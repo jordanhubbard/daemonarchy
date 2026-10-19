@@ -201,6 +201,23 @@ proof above, not an admitted source unit or a qualified replacement for libutil.
 
 ## Execution order and current state
 
+The source fork now contains three actual canonical contracts for the shared
+libutil header, parser slice and truncate utility, each with a current `freebsd`
+target lock. Its reviewed in-place adoption preserves original source authority
+and hierarchy. The [metadata checkpoint](../../verification/original-source-authority.json)
+binds the source revision, exact locks and initial authority evidence. These
+contract-only locks select no native Flavors yet. Registered/locked units are
+three; admitted units and qualified per-unit packages remain zero. This does
+not establish complete source or ports coverage or native source compilation.
+
+The owned source integration branch is `daemonarchy`, separate from the
+upstream-tracking `main`; its source-development PR remains a draft. The
+operator checkout still uses the prior source revision and installed framework
+until the new framework candidate finishes native/installed qualification.
+The next executable step is the actual Standard/native profile, complete
+selected input ownership and compiler/test-runtime admission, followed by
+original compilation, original suites, independent acceptance and pkg products.
+
 SRC-001 has supplied a pinned native build controller. The first GENERIC build
 completed after a retained set-phase failure and exact-plan resume. Byte and
 MANIFEST audits pass; an archive-fidelity defect was found and fixed in an

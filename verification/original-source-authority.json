@@ -1,0 +1,92 @@
+{
+  "schema": "daemonarchy/original-source-authority-checkpoint@1",
+  "work_item": "COMP-001",
+  "status": "initial-contracts-and-original-authority",
+  "source_repository": "https://github.com/jordanhubbard/daemonarchy-src",
+  "source_revision": "fa961d2f5e20003faa47772b648eb6010b9e6da7",
+  "source_review": "https://github.com/jordanhubbard/daemonarchy-src/pull/4",
+  "integration_branch": "daemonarchy",
+  "upstream_tracking_branch": "main",
+  "framework_candidate_revision": "e24acb791eec7cf76004496ecb3dc1b9a21349ef",
+  "adoption_producer_revision": "1e38070260d856669fb6ab48a3bafbf74641de98",
+  "framework_native_qualified": false,
+  "operator_framework_updated": false,
+  "initial_adoption": {
+    "git_commit": "4b9bb347c132f537fb612e266c880f1b9b3e5439",
+    "git_tree": "a1e9fc98e04ebe79b949d74ea18d5c02dedb5492",
+    "project_authority": "sha256:600429722e43c29af4a9475c00399087e87b667d402f30f793787fd860262031",
+    "plan_identity": "sha256:c1960a595185a5ad26d82d2bb93bb442fa870080112fc8e79f7700556d7f62ac",
+    "authority_file_sha256": "c126207d61fe3b28733b8d7ffbface0d36c430770f3ba79d8b473e919dd326ee",
+    "stage": "original",
+    "release_authority": "original-source",
+    "source_moved": false,
+    "execution_qualified": false
+  },
+  "units": [
+    {
+      "unit": "libutil-header",
+      "coordinate": "component://daemonarchy-src/libutil-header",
+      "authoring_identity": "sha256:d3009f780200dd6f12cafe705bdafca35c63e7d4f781bb9ad877312791372297",
+      "lock_identity": "sha256:601a8b2e97cc3a5723d2a0d5c9919b3c913ee2992c98019b557dde2adfb3b44d",
+      "target": "freebsd",
+      "native_flavors_selected": false
+    },
+    {
+      "unit": "expand-number",
+      "coordinate": "component://daemonarchy-src/expand-number",
+      "authoring_identity": "sha256:9374331a3ba3cb3f09ffbc6a83a62a5c84fd699edca0377ec745ff7cc676589e",
+      "lock_identity": "sha256:7821c7c94bc6826006fa7e81f0eb9a6245c8cfcfbee6ce5956b796dae5f809f3",
+      "target": "freebsd",
+      "native_flavors_selected": false
+    },
+    {
+      "unit": "truncate",
+      "coordinate": "component://daemonarchy-src/truncate",
+      "authoring_identity": "sha256:1b090e6e1f346087bb1101a06f81059080894aeccba539580ea65e6881e76508",
+      "lock_identity": "sha256:45172048afe49af981374704b326c37b5ff5e86d95fee6f84831296a09b0d8ae",
+      "target": "freebsd",
+      "native_flavors_selected": false
+    }
+  ],
+  "verification": {
+    "authority": "pass",
+    "locks": "pass",
+    "receipt": "skipped-no-policy",
+    "log_sha256": "8d7b5d0c6e631e50459894ffc0865794804276b8064a570f7c8928330360d0a5"
+  },
+  "skill_evaluation": {
+    "tool_revision": "0827e0fab5ca93d525cb8ff1ec2af3d7dfcf6d5d",
+    "skills": 2,
+    "checks": [
+      "schema",
+      "pii",
+      "license",
+      "quality",
+      "unicode",
+      "lint"
+    ],
+    "passed": true,
+    "log_sha256": "3748b5ea7b51d182551b31e72326acb97dfaadff4dde5c3e04e6696526d6ae8c"
+  },
+  "dependency_metadata_invalidation": {
+    "shared_contract_change_invalidates_all_three": true,
+    "exact_restoration_reestablishes_current_locks": true,
+    "log_sha256": "c8c4f9fb13df412501c0f36c974dd02c130313c517f64b2c97a5daab685f159d"
+  },
+  "counts": {
+    "canonical_contracts_registered": 3,
+    "current_contract_locks": 3,
+    "canonical_units_admitted": 0,
+    "original_units_compiled_through_retained_lifecycle": 0,
+    "qualified_per_unit_packages": 0
+  },
+  "limitations": [
+    "Contract-only locks select no native Flavors, toolchain or package provider.",
+    "Complete source/ports input ownership and conditional dependency coverage remain open.",
+    "Standard binding, compiler/test runtime admission, original compilation and independent acceptance remain open.",
+    "Metadata invalidation is not measured native build-action invalidation or performance evidence.",
+    "ISO creation and disposable VM installation, update and rollback remain unqualified.",
+    "The operator retains the prior source checkout and installed framework until native/installed candidate qualification.",
+    "This unsigned metadata checkpoint is not a lifecycle or package acceptance receipt."
+  ]
+}
