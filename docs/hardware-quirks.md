@@ -72,8 +72,11 @@ set debug.acpi.disabled="spmc"
 ```
 
 This bypasses the System Power Management Controller driver, leaving other ACPI
-subsystems enabled. It is a pending diagnostic, not a default or demonstrated
-fix. See the [follow-up analysis](testing-1.1-hardware-observations.md#msi-rtc-disabled-follow-up-video-2026-10-18).
+subsystems enabled. The operator reports no difference with this exclusion; no
+new video/log independently verifies the exact stopping point. It is not a
+default or demonstrated fix. A separate pending single-CPU comparison removes
+`debug.acpi.disabled`, retains RTC exclusion and the panic flags, and sets
+`kern.smp.disabled=1`. See the [follow-up analysis](testing-1.1-hardware-observations.md#msi-rtc-disabled-follow-up-video-2026-10-18).
 
 ### Other pending diagnostic comparisons
 

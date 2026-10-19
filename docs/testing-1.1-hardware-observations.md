@@ -131,10 +131,19 @@ format mismatch, not proof that parsing caused the later failure.
 
 The next targeted one-boot comparison retains the three visible settings above
 and adds `set debug.acpi.disabled="spmc"` before `boot -v`. The driver explicitly
-honors this subsystem exclusion. Its result is pending. This does not disable
-all ACPI or qualify a permanent workaround. If failure persists, per-child probe
+honors this subsystem exclusion. The operator subsequently reports no difference
+with the exclusion. No follow-up movie or kernel log was supplied, so the exact
+last line and effective driver exclusion are not independently verified. This
+negative comparison weakens SPMC attachment as the immediate failure trigger; it
+does not validate the rejected power-state constraints. It does not disable all
+ACPI or qualify a permanent workaround. If failure persists, per-child probe
 entry/exit instrumentation can identify the unreported operation after the final
-ISA message. Relevant source: [ISA probes](https://github.com/freebsd/freebsd-src/blob/bdaddb76ef1b9d5537f4a76cff01cdb4795804a4/sys/isa/isa_common.c),
+ISA message. A separate pending comparison returns to the RTC-disabled baseline,
+removes `debug.acpi.disabled`, and adds `kern.smp.disabled=1` to test the
+multiprocessor configuration. A changed result would implicate CPU/interrupt or
+concurrency-dependent behavior without identifying a particular driver; an
+unchanged result would motivate probe entry/exit and SYSINIT instrumentation.
+No single-CPU result or instrumented-kernel build is claimed. Relevant source: [ISA probes](https://github.com/freebsd/freebsd-src/blob/bdaddb76ef1b9d5537f4a76cff01cdb4795804a4/sys/isa/isa_common.c),
 [ACPI deferred work](https://github.com/freebsd/freebsd-src/blob/bdaddb76ef1b9d5537f4a76cff01cdb4795804a4/sys/dev/acpica/Osd/OsdSchedule.c),
 and [SPMC](https://github.com/freebsd/freebsd-src/blob/bdaddb76ef1b9d5537f4a76cff01cdb4795804a4/sys/dev/acpica/acpi_spmc.c).
 
