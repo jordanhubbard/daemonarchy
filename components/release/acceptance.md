@@ -17,6 +17,12 @@ complete declarations and external/native gaps are in [the acceptance inventory]
 
 ## Required scenarios
 
+- **Per-unit packages and measured build improvement:** every unit has a real
+  versioned pkg product and bound source/build/dependency provenance. Compare
+  native baseline and optimized clean, unchanged and changed-unit ISO workflows
+  with pinned inputs, toolchains, resources and cache state. Retain actual timings,
+  action counts, artifact identities and independent installation/rollback tests;
+  executor replacement alone is not a performance result.
 - **Complete source and ports Component coverage:** retain complete pinned-tree
   enumeration and canonical contracts for all native build units and ports
   origins; demonstrate zero unowned inputs and explicit shared relationships.

@@ -1,0 +1,80 @@
+{
+  "canonical_components_registered": 0,
+  "complete_dependency_graph": false,
+  "native_probe": {
+    "meaning": "Read-only native make query resolves variables and adds implicit inputs; not complete build admission or package qualification.",
+    "observed_dirdeps": [
+      "include",
+      "include/xlocale",
+      "lib/csu/amd64",
+      "lib/libc",
+      "lib/libcompiler_rt",
+      "lib/libutil",
+      "lib/ncurses/tinfo",
+      "lib/libgcc_eh",
+      "lib/libgcc_s"
+    ],
+    "source_revision": "92276fc76c65f3ca31552d2e1833a6063361ff64",
+    "target": "amd64",
+    "unit": "bin/ls"
+  },
+  "producer_sha256": {
+    ".github/workflows/native-graph.yml": "d79575ad81be7a929cf54e1f960ae4d93da70d3e4a02cb4414ad09543c9572e0",
+    "scripts/inspect-freebsd-graph.py": "0686b8117b3c9abcb5b5543635e4ae0b6bc0dcebc5d4caa0b548f3b7324cb6be",
+    "tests/native-tree-discovery.py": "7197b8d3e895ab03a65974dad8a1daa79d224081b2678870a057e4b0df76c1f1"
+  },
+  "qualified_packages": 0,
+  "reports": [
+    {
+      "counts": {
+        "candidate_units": 4620,
+        "canonical_components": 0,
+        "declared_directory_references": 10823,
+        "native_control_statements": 72,
+        "native_evaluated_contexts": 0,
+        "origins_needing_native_dependency_resolution": 0,
+        "port_origins": 0,
+        "qualified_packages": 0,
+        "reviewed_input_owners": 0,
+        "tracked_inputs": 114642,
+        "unresolved_reference_tokens": 1504
+      },
+      "git_tree": "943f38e0b84b86951711fa03c3db2787a29bf2af",
+      "kind": "source",
+      "regenerate_with": "python3 scripts/inspect-freebsd-graph.py --kind source --repo <matching-git-object-store> --revision 92276fc76c65f3ca31552d2e1833a6063361ff64 --output <new-report-path>",
+      "report_sha256": "dfdd0aee8228bed69fec353260610d4924ccc1793120d4c444beae654cdb0aae",
+      "revision": "92276fc76c65f3ca31552d2e1833a6063361ff64",
+      "state": "discovery-only"
+    },
+    {
+      "counts": {
+        "candidate_units": 35272,
+        "canonical_components": 0,
+        "declared_directory_references": 0,
+        "native_control_statements": 0,
+        "native_evaluated_contexts": 0,
+        "origins_needing_native_dependency_resolution": 35204,
+        "port_origins": 35204,
+        "qualified_packages": 0,
+        "reviewed_input_owners": 0,
+        "tracked_inputs": 176131,
+        "unresolved_reference_tokens": 0
+      },
+      "git_tree": "fbdc1e2d06e45c5ecb80a9ea3a39d7f627f690bc",
+      "kind": "ports",
+      "regenerate_with": "python3 scripts/inspect-freebsd-graph.py --kind ports --repo <matching-git-object-store> --revision e1b7bf55b85788d1ba3f7f4eb845c103bfe6f2c6 --output <new-report-path>",
+      "report_sha256": "a86b87eea76b0626079fd99603b59f345a0432c77378500011ece1e716cbbc8b",
+      "revision": "e1b7bf55b85788d1ba3f7f4eb845c103bfe6f2c6",
+      "state": "discovery-only"
+    }
+  ],
+  "schema": "daemonarchy/native-tree-discovery-evidence@1",
+  "scope": "Pinned Git object inventory and lexical native directory declarations only",
+  "state": "discovery-only",
+  "tests": {
+    "command": "PYTHONDONTWRITEBYTECODE=1 python3 tests/native-tree-discovery.py -v",
+    "native_execution_acceptance": false,
+    "passed": 9,
+    "platform": "macos"
+  }
+}

@@ -922,5 +922,28 @@
       "sha256": "dc6d1a4b9f7c670df3e8a3ec2d74fb676b65abe3149df3610b74357772f47b4a",
       "executable": false
     }
+  ],
+  "implementation_additions": [
+    {
+      "path": "scripts/inspect-freebsd-graph.py",
+      "owner": "release",
+      "sha256": "0686b8117b3c9abcb5b5543635e4ae0b6bc0dcebc5d4caa0b548f3b7324cb6be",
+      "executable": false,
+      "reason": "PERF-001/COMP-001 pinned tree discovery and refusal tests; not native lifecycle qualification"
+    },
+    {
+      "path": "tests/native-tree-discovery.py",
+      "owner": "release",
+      "sha256": "7197b8d3e895ab03a65974dad8a1daa79d224081b2678870a057e4b0df76c1f1",
+      "executable": false,
+      "reason": "PERF-001/COMP-001 pinned tree discovery and refusal tests; not native lifecycle qualification"
+    },
+    {
+      "path": ".github/workflows/native-graph.yml",
+      "owner": "release",
+      "sha256": "d79575ad81be7a929cf54e1f960ae4d93da70d3e4a02cb4414ad09543c9572e0",
+      "executable": false,
+      "reason": "PERF-001/COMP-001 pinned tree discovery and refusal tests; not native lifecycle qualification"
+    }
   ]
 }

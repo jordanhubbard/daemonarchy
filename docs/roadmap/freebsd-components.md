@@ -29,6 +29,13 @@ overlapping build inputs need reviewed ownership. Source identity, license,
 content/mode/symlink treatment and external downloads belong to admission; a
 directory label or Git object inventory alone is not a Component qualification.
 
+Every compositional unit must produce a versioned pkg artifact with complete
+source/build provenance and typed dependency information. Source/build packages
+account for units linked into larger artifacts; runtime installation may select
+the composed kernel or system packages. Canonical Component registration or an
+upstream pkgbase grouping does not by itself satisfy this invariant. It remains
+unimplemented for the complete trees.
+
 ## Native dependencies and execution
 
 Resolve conditional dependency edges for the exact target, options and source
@@ -45,7 +52,9 @@ The selected package graph also supplies PKG-001's installer/UI planning; its
 runtime installation dependencies do not replace the broader build dependency
 graph.
 
-Keep native FreeBSD make/pkgbase and ports/poudriere build semantics. Literate AI
+Preserve FreeBSD source, target/ABI, dependency and installation semantics.
+Make/pkgbase and ports/poudriere are the baseline, but replacing the build
+executor with Bazel, Buck2 or another suitable system is authorized. Literate AI
 must bind their actions, inputs, output products, source/resolved BOMs, tests,
 independent acceptance and packaging through its actual retained lifecycle.
 The source-build controller is preparation for that binding, not a substitute

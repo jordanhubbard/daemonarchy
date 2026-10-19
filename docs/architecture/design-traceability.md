@@ -12,7 +12,7 @@ buildable or generated artifacts. Existing source remains implementation authori
 | G3 | [Updates](https://github.com/jordanhubbard/daemonarchy/blob/main/components/updates/component.md) | Adoption/checkouts helpers and external desktop boot-environment tools | ABI refusal, preserved package/user choices, actual update/rollback/return |
 | G4 | [Diagnostics](https://github.com/jordanhubbard/daemonarchy/blob/main/components/diagnostics/component.md) | Pairing/rescue tools, observers and controller receiver | Approval, revocation, bounds, identity, abrupt loss and owned cleanup |
 | G5 | [Verified boot](https://github.com/jordanhubbard/daemonarchy/blob/main/components/verified-boot/component.md) | secureboot build/sign/bundle/maintenance tools and retained source patches | Exact trust closure, actual enforcement/rejection and maintenance/recovery |
-| G6, G8 | [Release](https://github.com/jordanhubbard/daemonarchy/blob/main/components/release/component.md) | ISO/feed/checkouts assembly and publication scripts; planned complete source/ports Component integration | Full-tree ownership and variant-aware selected closures; exact commit/artifacts, scoped native/VM/hardware evidence and explicit exceptions |
+| G6, G8, G9 | [Release](https://github.com/jordanhubbard/daemonarchy/blob/main/components/release/component.md) | ISO/feed/checkouts assembly, pinned-tree discovery and publication scripts; planned complete source/ports Component execution | Full-tree ownership, per-unit pkg provenance, variant-aware selected closures and measured build/packaging improvement; exact artifacts and native/VM/hardware evidence |
 | G3, G7 | [Package engine](https://github.com/jordanhubbard/daemonarchy/blob/main/components/package-engine/component.md) | Planned; current installer still uses its existing package operations | Complete DAG, coordinated parallel installation, failure/retry/recovery and measured performance |
 
 ## Source custody and repository boundaries
@@ -45,6 +45,10 @@ FreeBSD world/kernel/source packages and installer sets on the native build
 worker. Its unsigned build records and controller tests do not qualify framework
 execution, installation, VM boot, module compatibility, signing or hardware.
 SRC-001 owns preparation; ADOPT-002 and RELEASE-001 retain their acceptance gates.
+PERF-001 permits a replacement build system while preserving source/ABI and
+dependency correctness. The pinned-tree discovery helper supplies diagnostic
+inputs, with [producer/result identities](../../verification/native-tree-discovery.json);
+it does not fabricate canonical contracts, package products or receipts.
 
 ## Cross-component invariants
 
@@ -116,7 +120,7 @@ the public repository paths so mutable resolver mutexes are not documentation
 assets. Source
 indexing is disabled. Future framework updates must preserve these boundaries.
 
-<!-- literate-ai:authority-reviewed sha256:b791960fb6cbb3654c056c08b12c8d13e96f129918c73cddfad780d1ff870f0b -->
+<!-- literate-ai:authority-reviewed sha256:017fd1170b31c9f6d2f9b82d78d256a8cfc9de0f634629bde264909c9b96ec46 -->
 
 
 ## Rechecking preservation

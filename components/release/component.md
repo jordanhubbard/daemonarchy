@@ -63,7 +63,7 @@ source_dependencies: []
 ---
 # Release assembly and qualification
 
-Goals: G6, G8. This is a retained product contract, not an
+Goals: G6, G8, G9. This is a retained product contract, not an
 independently executable or regeneratively qualified Component. Existing source
 and the native acceptance inventory remain authoritative for implementation status.
 
@@ -78,6 +78,10 @@ Represent the complete pinned source and ports trees through canonical Component
 ## Requirement: Artifact-bound evidence
 
 Bind test results to exact image, source, target/firmware mode and scope. Earlier-image or component results cannot silently qualify a rebuilt final ISO.
+
+## Requirement: Per-unit packages and measured build improvement
+
+Produce a versioned pkg artifact for every compositional unit with exact source/build provenance and typed dependencies. Qualify source/build products separately from composed runtime installation. Use the Component graph through the native lifecycle and demonstrate materially faster end-to-end build and ISO packaging against the same-target baseline. Replacing make with another build system is permitted; correct invalidation, output and acceptance remain required.
 
 ## Requirement: Publication consistency
 

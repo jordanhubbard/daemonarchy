@@ -21,6 +21,10 @@
   `/usr/src` and `/usr/ports` inputs and build units as Literate AI Components,
   with explicit dependencies, configuration variants and per-component evidence.
   Preserve upstream source authority and contribution workflows.
+- **G9 — Build and package substantially faster:** use the established component
+  graph through Literate AI to improve native build and ISO packaging time with
+  complete per-unit pkg provenance. Build-system replacement, including Bazel or
+  Buck2, is permitted when correctness and measured end-to-end improvement pass.
 
 ## Dependencies
 
@@ -40,7 +44,7 @@ are not admitted build evidence.
 
 ## Completeness
 
-The in-place Literate AI authority layer defines eight product goals, eight
+The in-place Literate AI authority layer defines nine product goals, eight
 Component contracts, interface ownership and acceptance mapping. Authority
 validation, all eight contract locks and static skill checks pass. Existing source remains implementation
 and release authority; it has not been relocated, regenerated or qualified as
@@ -57,12 +61,19 @@ parallel installer, visualizers and new graphical manager remain planned work.
 G8's complete source/ports Component coverage is also unfinished. Existing eight
 product integration contracts and a whole-system source build are not a catalog
 of every base build unit or ports origin. COMP-001 owns that additional work.
+G9 is unfinished: the first native aggregate build is a baseline, not a
+performance improvement or canonical per-unit Component execution result.
 
 ## Current work
 
-RELEASE-001 is the directing operator's end-to-end goal: finish all existing
-backlog work and publish a new release entirely through the qualified Literate AI
-method. The planned minor release is 1.2.0, consistent with the existing early
+The current directing goal is PERF-001: establish the source/ports graph, execute
+literal Components through Literate AI and substantially improve native ISO
+build/packaging time. The [performance plan](docs/roadmap/build-performance.md)
+owns its measurements and executor decision.
+
+RELEASE-001 remains the broader release program: finish the existing backlog and
+publish through the qualified Literate AI method. The planned minor release is
+1.2.0, consistent with the existing early
 network-debugging roadmap. The completion audit includes all open queue and
 roadmap acceptance, not just implementation code or a worker proof. The
 [completion ledger](docs/roadmap/release-1.2.0.md) expands those obligations and
@@ -73,6 +84,10 @@ The [component model](docs/roadmap/freebsd-components.md) defines full-tree
 ownership, target/options variants, native dependency composition and evidence
 states. Catalog coverage includes units outside the installed release selection;
 native execution and acceptance apply to each explicitly selected closure.
+PERF-001 owns actual native Component execution and measured build/packaging
+acceleration. The existing make/poudriere execution is a baseline; replacement
+executors and caching are eligible once their inputs and dependency semantics
+are explicit and verified.
 
 
 ADOPT-001 establishes the project-wide authority layer. ADOPT-002 remains open

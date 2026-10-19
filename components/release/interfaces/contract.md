@@ -12,7 +12,11 @@ Dependencies: `daemonarchy.installer`, `daemonarchy.desktop`, `daemonarchy.compa
 Release admission must account for the complete pinned source and ports trees as
 canonical Components with explicit ownership and variant-aware dependencies.
 Catalog coverage and qualification of the selected native release closure are
-separate results. Whole-tree build logs do not establish per-component acceptance.
+separate results. Each compositional unit requires versioned pkg products with
+source/build provenance and typed dependencies; linked units may use source/build
+packages while runtime packages contain their composition. Executor changes must
+preserve correctness and demonstrate measured end-to-end ISO improvement.
+Whole-tree build logs do not establish per-component acceptance.
 
 Return or record a distinct failure when the required operation fails; absent
 capabilities and missing evidence cannot be encoded as success. Changes to this

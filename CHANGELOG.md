@@ -16,6 +16,14 @@ work; it is not a separate published tag in this repository. The proposed name
 
 ## Unreleased
 
+- Add pinned Git-tree discovery for complete source and ports input inventories,
+  with nine refusal/identity tests and CI. Record 4,620 source/support candidates
+  and 35,204 ports origins; native dependency resolution, canonical Component
+  registration and per-unit pkg qualification remain open.
+- Establish PERF-001 for measured native Component execution and faster ISO
+  builds, permitting Bazel, Buck2 or another executor after correctness and
+  end-to-end measurements. The baseline is running; no speedup is claimed.
+
 - Add the owned FreeBSD source-build controller and GENERIC/diagnostic profiles
   in daemonarchy-src, with native pkgbase/installer-set preparation, isolated
   staging, resumable bounded phases and byte-verification records. Eleven

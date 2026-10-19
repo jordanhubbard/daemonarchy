@@ -148,8 +148,27 @@ Next action: demonstrate a supported installed retained-project execution path o
 - **Depends on:** SRC-001, ADOPT-002
 - **Implementation:**
   - [x] Record complete-tree coverage, component granularity, variant and dependency requirements in G8 and the release Component contract; file framework issue #74.
+  - [x] Retain pinned-tree diagnostic inventories and nine portable discovery checks; [producer/result identities](../../verification/native-tree-discovery.json) record candidate ownership separately from canonical admission.
   - [ ] Admit every source/build/support input and ports origin through canonical Component catalogs and locks; reject missing or ambiguous ownership.
   - [ ] Connect native actions and conditional dependencies to retained execution, receipts and the exact release closure.
 - **Evidence:**
   - [ ] Full selected trees have zero unowned inputs, all origins are represented, and catalogued/admitted/built/accepted states remain distinct.
   - [ ] Changed source, options, dependencies, toolchain or artifact invalidates the applicable receipts; exact native release closure passes installed framework and runtime qualification.
+
+### [ ] PERF-001 — Execute native Components and substantially accelerate ISO builds
+
+- **Detailed plan:** [Native Component execution and build performance](build-performance.md)
+
+- **Priority:** P1
+- **Owner:** release build graph, native Component lifecycle and build-system Flavors
+- **Direction:** After establishing the source/ports graph, use LitAI to execute literal Components and substantially improve FreeBSD ISO build and packaging time; replacing make with Bazel, Buck2 or another suitable system is authorized.
+- **Conclusion:** Measure the current native baseline, establish complete package/provenance/dependency coverage, and choose execution, caching, incremental and packaging changes from evidence. Preserve exact output correctness and native acceptance; a wrapper or renamed executor is insufficient.
+- **Depends on:** COMP-001
+- **Implementation:**
+  - [ ] Capture baseline phase, action, packaging and end-to-end timings with exact inputs and resource limits.
+  - [ ] Admit source/ports graph units as canonical executable Components with versioned pkg products and full provenance/dependency information.
+  - [ ] Compare and implement supported native or alternative build execution, caching, parallelism and packaging strategies.
+  - [ ] Demonstrate materially faster clean, unchanged and changed-component ISO workflows without missing rebuilds or weakening acceptance.
+- **Evidence:**
+  - [ ] Same-target baseline/optimized measurements retain source, configuration, toolchain, cache/resource state, action counts, output hashes and test results.
+  - [ ] Native Component invalidation, per-unit pkg provenance, complete dependency closure, packaging, ISO installation and rollback remain correct.

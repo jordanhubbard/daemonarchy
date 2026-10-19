@@ -27,12 +27,13 @@ Use `litai work record` for new stable work IDs. Update the owning requirements,
 acceptance evidence and changelog together. A prospective implementation change
 must explicitly refresh its retained source baseline; metadata-only adoption
 checks must preserve original implementation bytes. Native commands and platform
-requirements remain in this runbook rather than being replaced with generated
-wrapper commands.
+requirements remain in this runbook. PERF-001 permits replacing the build
+executor after equivalent correctness and measured performance are demonstrated;
+generated wrapper commands alone do not establish that qualification.
 
 ## Where things live
 
-Daemonarchy is four repositories:
+Daemonarchy spans the installer, desktop, compatibility, source and ports repositories:
 
 - **This one** builds the installer image:
   - `overlay/usr/local/libexec/daemonarchy-installer/`: the installer. `launch` runs from root's login on the live system; `configurator` asks the questions (it vendors Omarchy's own setup form); `install` partitions, installs, and configures; `dashboard` draws the install screen from the install log.
@@ -58,6 +59,7 @@ Daemonarchy is four repositories:
   - The SDDM theme that reuses Omarchy's with the Daemonarchy wordmark.
   - The System > FreeBSD menu (`omarchy-menu.jsonc`) and the `daemonarchy-*` commands behind it.
   - Its tags set Daemonarchy's version (see Releasing).
+- **[jordanhubbard/daemonarchy-src](https://github.com/jordanhubbard/daemonarchy-src)**: the owned FreeBSD source fork. [Owned source builds](docs/source-builds.md) describes exact-commit world/kernel/pkgbase and installer-set preparation; [the performance plan](docs/roadmap/build-performance.md) tracks complete Component execution and build-system evaluation. Development outputs do not change the published 1.1.1 selection.
 - **[jordanhubbard/freebsd-ports](https://github.com/jordanhubbard/freebsd-ports/tree/daemonarchy-1.1.1)** is the release ports fork; 1.1.1 uses `daemonarchy-1.1.1`, while the older 1.1 candidate uses `daemonarchy-1.1-package-baseline`. Upstream review does not block releases from this fork. It carries the ports:
   - `x11-wm/omarchy`: Omarchy itself, with omarchy-freebsd as a second distfile. Its `files/` holds only patches to Omarchy's own files, among them the ones that add the `FreeBSDWifi.qml` and `FreeBSDBluetooth.qml` stand-ins to the panels.
   - `x11-wm/daemonarchy`: the full desktop's dependencies, plus daemonarchy-desktop. Defaults for new users go to `share/omarchy/skel.d/daemonarchy`, which `seed-user` copies in ahead of Omarchy's.
@@ -100,6 +102,15 @@ runbook. That workflow produces development pkgbase packages and installer sets
 from an exact source commit. The snapshot-based procedure below remains the
 current release input path until the owned outputs pass admission, signing,
 matching jail/module and VM/hardware qualification.
+
+For pinned Git-tree discovery, run `python3 scripts/inspect-freebsd-graph.py`
+with `--kind source` or `--kind ports`, `--repo`, an exact `--revision`, and a new
+`--output` path outside the inspected repository. A ports object store can be
+cloned with `--filter=blob:none --no-checkout`; discovery needs its tree objects,
+not Makefile evaluation. Run `PYTHONDONTWRITEBYTECODE=1 python3 tests/native-tree-discovery.py -v`
+for the portable refusal tests. Discovery outputs are not canonical catalogs,
+complete dependency graphs, pkg provenance or framework receipts. See the
+[Component/performance plan](docs/roadmap/build-performance.md).
 
 You need a FreeBSD 16.0-CURRENT machine (bare metal or a VM with capacity for the selected build) with poudriere, git, and the ports tree, as root.
 

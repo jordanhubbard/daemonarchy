@@ -181,7 +181,9 @@
     },
     "release": {
       "goals": [
-        "G6"
+        "G6",
+        "G8",
+        "G9"
       ],
       "state": "retained-implementation",
       "requires": [
@@ -216,6 +218,11 @@
         {
           "path": "test-bhyve.sh",
           "execution": "native-freebsd-or-explicit-harness",
+          "current_framework_receipt": false
+        },
+        {
+          "path": "tests/native-tree-discovery.py",
+          "execution": "portable-controller-discovery-only",
           "current_framework_receipt": false
         }
       ]
@@ -272,6 +279,7 @@
     "tests/linux-cuda.sh",
     "tests/live-image-budget.sh",
     "tests/live-image-runtime.sh",
+    "tests/native-tree-discovery.py",
     "tests/network-diagnostics.sh",
     "tests/package-repository.sh",
     "tests/pkg-repo-dependencies.sh",

@@ -16,6 +16,12 @@ full catalog coverage and qualification of the selected release closure remain
 open under [COMP-001](docs/roadmap/freebsd-components.md). The
 [1.2.0 ledger](docs/roadmap/release-1.2.0.md) retains the complete release scope.
 
+The current [build-performance program](docs/roadmap/build-performance.md) will
+execute the established graph as literal Literate AI Components, producing
+per-unit pkg products with provenance and dependencies. Make is the baseline;
+Bazel, Buck2 or another suitable executor may replace it when measurements and
+native correctness demonstrate substantial improvement.
+
 ## 1.1.1 refresh
 
 The current stable release is **1.1.1**. Its source is
