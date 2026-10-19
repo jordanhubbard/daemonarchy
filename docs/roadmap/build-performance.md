@@ -144,6 +144,25 @@ budgets as well as make jobs; native defaults can choose compressor threads
 automatically. Qualify both archive contents and phase/total timings.
 
 
+## Granular lifecycle execution constraints
+
+The current framework command workspace executes the reviewed action order
+sequentially and verifies complete original/snapshot manifests around each
+command (`RetainedProjectExecutionWorkspace.execute_next` and `_require_current`).
+That is useful custody for the existing bounded fixtures, but assigning the full
+source tree to every compilation would multiply full-tree scans. The real source
+input probe already takes 226.888 seconds for discovery/validation on this host;
+this is input-custody evidence, not a native build-performance comparison.
+
+Per-unit execution must select exact source/shared/generated/SDK input closures,
+retain their complete ownership and dependency edges, and qualify bounded shared
+custody and independent output publication before introducing parallel scheduling.
+Require dependency-ready action dispatch and independent output publication to
+qualify parallel Component execution.
+The public retained-project CLI still refuses execution under framework issue #22;
+canonical unit/action/package integration remains open in issue #74. Preserve
+those gates while connecting the actual native observations to existing owners.
+
 ## Compare equivalent workloads
 
 Retain exact source/ports, Component/Flavor locks, native toolchain and worker
