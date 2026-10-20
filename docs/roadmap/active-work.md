@@ -235,6 +235,17 @@ Next action: bind the actual source/ports compiler, sysroot and input closure to
   inside writable fixtures; the second scopes writable inheritance to that
   subtree and restores all pre-existing ACLs exactly. This remains a manual
   capability probe, not installed framework grants or lifecycle admission.
+- **Secondary access development:** [Framework PR #87](https://github.com/jordanhubbard/literate-ai/pull/87)
+  now contains the numeric identity and descriptor ACL backend; full local
+  regression passes (1,879 passed, 51 skipped). A live allocation-bound source
+  prototype passes all 24 original cases and restores permissions and account
+  state. The captured SDK has 352 directories and 28 links, so a separate
+  read-only-view capability probe is being evaluated for integration. Its kernel
+  flags, rejected writes, alias reads and cleanup pass. The complete SDK archive
+  is byte-verified in the guest; full SDK view execution, installed lifecycle
+  integration and receipt/package admission remain open.
+  [Development evidence](../../verification/native-secondary-access-development.json)
+  separates published backend code from the private source probes.
 - **Current framework evidence:** [69 native retained-project checks pass](../../verification/native-retained-acceptance.json) at local checkpoint `567e0f8a4092`; full framework regression, installed-wheel qualification and public runtime/receipt integration remain open. The installed-wheel smoke harness still uses Linux expectations on FreeBSD; production initialization already has a FreeBSD selector.
 - **Implementation:**
   - [x] Prepare conventional editable source and ports checkouts, framework tooling and a documented operator entry point. [Native checkpoint](../../verification/operator-development.json): `/usr/src` is current at the reviewed source-fork commit, and isolated `litai-dev` validates it with the exact bound framework wheel. The stable CLI remains installed; complete lifecycle remains open.

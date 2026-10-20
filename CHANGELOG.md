@@ -16,6 +16,10 @@ work; it is not a separate published tag in this repository. The proposed name
 
 ## Unreleased
 
+- Add tested numeric secondary identities and FreeBSD descriptor ACL custody
+  in framework PR #87. Record live allocated-guest scope and read-only-view
+  probes, preserving pending full SDK, installed lifecycle and package admission.
+
 - Verify all 24 original parser/utility cases in a disposable FreeBSD guest,
   including root and explicitly unprivileged cases, with no skips. Preserve the
   failed fixture-inheritance probe and exact ACL/account/payload restoration.
