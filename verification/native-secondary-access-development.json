@@ -1,6 +1,6 @@
 {
   "schema": "daemonarchy/secondary-access-development@1",
-  "status": "backend-tested-full-captured-sdk-readonly-original-suite-source-probe",
+  "status": "source-level-local-orchestration-and-cleanup-admission-tested-installed-qualification-pending",
   "installed_feature_qualified": false,
   "lifecycle_acceptance": false,
   "source_sdk_admitted": false,
@@ -167,9 +167,87 @@
     }
   },
   "remaining": [
-    "Integrate declared readonly test views through existing workspace, allocation and lifecycle owners, using the full-SDK source probe as the selected direction.",
+    "Qualify the reviewed readonly-view workspace/admission integration in an installed distribution and a reusable real allocation inspector; existing native fixture lifecycle and actual QEMU allocation-owner probes are separate source-level evidence.",
     "Bind complete alias closure and actual root/unprivileged runtime dependency observations in the reviewed profile and retained receipt.",
     "Run installed framework original tests and independent acceptance before receipt or package admission.",
     "Complete source/ports canonical catalogs, source-built SDK provenance, per-unit packages and equivalent whole-build/invalidation/ISO/recovery qualification."
-  ]
+  ],
+  "framework_local_orchestration_source_checks": {
+    "actual_provisioner_qualified": false,
+    "allocation_inspector_protocol_fixture": true,
+    "duration_seconds": 797.989,
+    "failed": 0,
+    "fixture_lifecycle_admission_exercised": true,
+    "fixture_local_orchestration_exercised": true,
+    "installed_framework_qualified": false,
+    "log_sha256": "6ce8039d4aa231c08cede6950531c618255b2ab4882141ba52ed46775bb00ddf",
+    "module_sha256": {
+      "adapters/retained_project_completion.py": "c1c4c56176984670b72579b5ea8225f410390d67a77ffeadea9e1586c329a419",
+      "adapters/retained_project_execution.py": "f05055a906d57d8baa19dca87a06b770e09814b4e9e2d9702c55728538b54c71",
+      "adapters/retained_project_receipt.py": "302d3c972bee5ca5c508e41e04a4de322c8f514c3dff0b74651305a322f86af1",
+      "adapters/retained_project_runtime.py": "797ec6ecc9b7cf5351b873d77c5c482f698d65df5771c731204262b1ed66b3f6",
+      "adapters/retained_readonly_views.py": "d87111f613a0884e56ad8eefe824c2167d9c7be665160107c0e22526f588715b",
+      "contracts/retained_secondary_evidence.py": "ac2f48bf6e305d6f6028f13dae009c221338b877c6100c20136b003e9cf085ee"
+    },
+    "native_test_sha256": "92bf1b98a6cd6e206cea84d1dfbe8abe16bcc8f208ecce3e1896da9fd6233a70",
+    "original_source_suite_executed": false,
+    "passed": 11,
+    "post_test_audit": {
+      "accounts": {
+        "litaitest": {
+          "gid": 2001,
+          "groups": [
+            2001
+          ],
+          "uid": 2001
+        },
+        "tests": {
+          "gid": 977,
+          "groups": [
+            977
+          ],
+          "uid": 977
+        }
+      },
+      "remaining_nullfs_mounts": [],
+      "root_free_bytes": 13776449536,
+      "schema": "daemonarchy/native-orchestration-post-test-audit@1"
+    },
+    "product_lifecycle_acceptance": false,
+    "public_cli_lifecycle_executed": false,
+    "schema": "daemonarchy/native-secondary-orchestration-source-tests@1",
+    "selected": 11,
+    "skipped": 0,
+    "source_archive_sha256": "fe3f9fb1d87afb9a0d535fcc55df03d99aa6334bb4b02853ebf56c84c98096d8",
+    "source_commit": "d3b8c278044ef14c776af216b9a4fc333d4d18d8",
+    "source_probe_only": true,
+    "source_sdk_admitted": false,
+    "record_sha256": "7260c2663cd95b479a5515c3f4f9ad5b81135f4adfb03517b8beee32c913e023"
+  },
+  "actual_qemu_framework_owner_probe": {
+    "framework_revision": "e456f4a1",
+    "record_sha256": "f6f6b104cd7ab7641972d350e3dbe41a0e924a50aa5e0e9207c6cd1ef36d9f78",
+    "source_probe_only": true,
+    "fresh_owner_inspections": 2,
+    "same_live_instance": true,
+    "fresh_process_and_qmp_checks": true,
+    "private_root_socket_transport": true,
+    "insufficient_lifetime_refused": true,
+    "permanent_revocation": true,
+    "temporary_socket_and_configuration_removed": true,
+    "reusable_provisioner_qualified": false,
+    "installed_distribution_qualified": false,
+    "retained_lifecycle_executed": false,
+    "source_sdk_admitted": false
+  },
+  "source_harness_preparation": {
+    "source_revision": "dcac180c84477e9e084635526ed7d406d63eba7d",
+    "selected": 66,
+    "passed": 62,
+    "skipped": 4,
+    "failed": 0,
+    "log_sha256": "d815f342344b78a07de498cfd11d2467ad54428f6ec695d0abb7460379077866",
+    "new_selected_native_profile_executed": false,
+    "scope": "Reviewed optional secondary account, named runtime/product views, writable fixture and original Kyua user selection; upstream tests and five source Component locks unchanged."
+  }
 }

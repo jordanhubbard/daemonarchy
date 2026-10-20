@@ -249,6 +249,17 @@ Next action: bind the actual source/ports compiler, sysroot and input closure to
   installed lifecycle integration and receipt/package admission remain open.
   [Development evidence](../../verification/native-secondary-access-development.json)
   separates published backend code from the private source probes.
+  The later local framework checkpoint `d3b8c278` passes eleven native source-level
+  checks without skips in 797.989 seconds, including local orchestration,
+  secondary-account access, independent acceptance, cleanup-bound admission and
+  payload use after run retirement. That lifecycle fixture uses a protocol-peer
+  inspector. A separate allocation-owner probe now uses fresh process and QMP
+  observations of the actual supervised guest, verifies two inspections of the
+  same instance and refuses insufficient lifetime with permanent revocation.
+  Neither result qualifies an installed distribution or reusable provisioner.
+  Source checkpoint `dcac180c844` prepares the original suite for reviewed runtime
+  and product views and explicit unprivileged-user selection; 62 controller checks
+  pass with four native-only skips. Its selected native profile is not yet run.
 - **Current framework evidence:** [69 native retained-project checks pass](../../verification/native-retained-acceptance.json) at local checkpoint `567e0f8a4092`; full framework regression, installed-wheel qualification and public runtime/receipt integration remain open. The installed-wheel smoke harness still uses Linux expectations on FreeBSD; production initialization already has a FreeBSD selector.
 - **Implementation:**
   - [x] Prepare conventional editable source and ports checkouts, framework tooling and a documented operator entry point. [Native checkpoint](../../verification/operator-development.json): `/usr/src` is current at the reviewed source-fork commit, and isolated `litai-dev` validates it with the exact bound framework wheel. The stable CLI remains installed; complete lifecycle remains open.

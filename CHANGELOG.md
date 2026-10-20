@@ -16,6 +16,12 @@ work; it is not a separate published tag in this repository. The proposed name
 
 ## Unreleased
 
+- Record eleven passing native framework source checks for local orchestration,
+  secondary-account access and cleanup-bound receipt admission. A separate live
+  QEMU allocation-owner probe verifies fresh inspection and lifetime revocation.
+  Prepare the source harness to use reviewed test views and the existing secondary
+  account. Installed qualification and the complete source lifecycle remain open.
+
 - Add tested numeric secondary identities and FreeBSD descriptor ACL custody
   in framework PR #87. Record live allocated-guest scope and read-only-view
   probes, preserving pending full SDK, installed lifecycle and package admission.
