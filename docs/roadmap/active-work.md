@@ -228,6 +228,13 @@ Next action: bind the actual source/ports compiler, sysroot and input closure to
   native ACL checks cover selected reads, denied unrelated/new-file access,
   denied writes, revocation and exact original ACL restoration. This backend
   probe does not implement framework grants or complete original acceptance.
+  A subsequent [original-suite guest probe](../../verification/original-native-suite-guest-probe.json)
+  passes all 24 reviewed cases with no skips, including privileged deallocation
+  and both unprivileged cases. It transfers the retained native products and
+  uses guest base tools. The failed first probe exposed default-deny inheritance
+  inside writable fixtures; the second scopes writable inheritance to that
+  subtree and restores all pre-existing ACLs exactly. This remains a manual
+  capability probe, not installed framework grants or lifecycle admission.
 - **Current framework evidence:** [69 native retained-project checks pass](../../verification/native-retained-acceptance.json) at local checkpoint `567e0f8a4092`; full framework regression, installed-wheel qualification and public runtime/receipt integration remain open. The installed-wheel smoke harness still uses Linux expectations on FreeBSD; production initialization already has a FreeBSD selector.
 - **Implementation:**
   - [x] Prepare conventional editable source and ports checkouts, framework tooling and a documented operator entry point. [Native checkpoint](../../verification/operator-development.json): `/usr/src` is current at the reviewed source-fork commit, and isolated `litai-dev` validates it with the exact bound framework wheel. The stable CLI remains installed; complete lifecycle remains open.

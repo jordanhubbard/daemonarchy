@@ -16,6 +16,11 @@ work; it is not a separate published tag in this repository. The proposed name
 
 ## Unreleased
 
+- Verify all 24 original parser/utility cases in a disposable FreeBSD guest,
+  including root and explicitly unprivileged cases, with no skips. Preserve the
+  failed fixture-inheritance probe and exact ACL/account/payload restoration.
+  Installed framework permission management and lifecycle admission remain open.
+
 - Record the qualified controller wheel and verified dependency bootstrap,
   reviewed source rebind, disposable native guest and isolated ACL-capability
   checks. Native dependency production and verified installation now pass on the
