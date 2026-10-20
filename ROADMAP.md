@@ -325,8 +325,23 @@ Later 1.1 QEMU results are recorded in [the final candidate record](docs/testing
 Loader and early-kernel network-debugging changes are deferred to **1.2**.
 The selected GENERIC already includes DEBUGNET, NETDUMP and NETGDB; those
 facilities require a supported, initialized wired NIC and do not provide a
-loader-to-early-kernel transport. A future source fork and explicitly selected
+loader-to-early-kernel transport. The owned source fork and an explicitly selected
 debug profile need separate design, privacy/trust boundaries, matching symbols,
 and native transport/crash qualification. None of those new source changes is
 part of 1.1.1. Its approved-session SSH diagnostics retain evidence while
 userland/networking works and explicitly report the limits after a hard reset.
+
+Source inspection confirms two distinct foundations. The EFI loader uses firmware
+Simple Network Protocol with the standalone UDP stack for network boot; a remote
+loader command/console stub is not implemented. Kernel NetGDB uses UDP through a
+proxy and currently refuses activation before a panic. Boot `-d` or `-g` flags do
+not select a NIC or turn it into an early-boot network listener. See the
+[NetGDB contract](https://man.freebsd.org/cgi/man.cgi?query=netgdb&sektion=4).
+
+Qualify loader variable/console/boot control first, then supported kernel
+NetGDB/netdump operation, then early-kernel transport. UEFI networking ends at
+`ExitBootServices`; the kernel must initialize its own driver. Carrying the same
+NIC identity and addresses across that boundary does not by itself cover failures
+before driver initialization. The latter phase needs explicit early-driver and
+debugger work, with retained traffic and matching symbols rather than inferred
+coverage from a successful network boot.

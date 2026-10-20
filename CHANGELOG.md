@@ -16,6 +16,10 @@ work; it is not a separate published tag in this repository. The proposed name
 
 ## Unreleased
 
+- Clarify the 1.2 wired-debugging roadmap: existing loader UDP networking and
+  panic-only kernel NetGDB require separate loader control, kernel debugging and
+  early-driver qualification across the firmware handoff.
+
 - Add a finite QEMU worker supervisor and FreeBSD inspection relay. Bind fresh
   read-only inspections to an operator-selected plan and actual owned process,
   QMP state, disk and seed. Preserve console/session records and enforce request

@@ -106,6 +106,10 @@ Next action: bind the actual source/ports compiler, sysroot and input closure to
 - **Conclusion:** Existing GENERIC networking facilities do not establish loader-to-early-kernel transport; design source-fork, trust and crash coverage before claiming support.
 - **Depends on:** none
 - **Implementation:**
+  - [x] Inspect loader/kernel transport foundations: EFI Simple Network Protocol and standalone UDP exist; an interactive loader network stub does not. Current NetGDB explicitly requires a panic and an initialized supported NIC. Firmware networking stops at `ExitBootServices`; boot flags do not establish an early network debugger. This is source-backed scope discovery, not runtime qualification.
+  - [ ] Qualify an explicitly selected loader command/console stub, including environment inspection/update and kernel boot over the reviewed wired transport.
+  - [ ] Qualify existing NetGDB/netdump operation with the selected native NIC and exact symbols, preserving the panic-only limitation until separately resolved.
+  - [ ] Implement and qualify early-kernel driver/transport activation and debugger entry; retain the loader handoff identity and document the remaining pre-driver gap.
   - [ ] Define transport and authorization boundaries; select supported NICs and matching symbols; implement and qualify the explicit debug profile.
 - **Evidence:**
   - [ ] Actual early boot and crash traffic is retained on a controller with documented unsupported phases and protected private state.
