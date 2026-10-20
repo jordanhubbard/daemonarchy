@@ -260,7 +260,7 @@ Next action: bind the actual source/ports compiler, sysroot and input closure to
   Source checkpoint `dcac180c844` prepares the original suite for reviewed runtime
   and product views and explicit unprivileged-user selection; 62 controller checks
   pass with four native-only skips. Its selected native profile is not yet run.
-- **Current framework evidence:** [69 native retained-project checks pass](../../verification/native-retained-acceptance.json) at local checkpoint `567e0f8a4092`; full framework regression, installed-wheel qualification and public runtime/receipt integration remain open. The installed-wheel smoke harness still uses Linux expectations on FreeBSD; production initialization already has a FreeBSD selector.
+- **Historical framework evidence:** [69 native retained-project checks pass](../../verification/native-retained-acceptance.json) at checkpoint `567e0f8a4092`. Its full regression, installed-wheel qualification and public runtime/receipt integration were pending at that checkpoint. The newer runtime and source-level results above retain their separate scopes; complete native wheel-smoke and product lifecycle qualification remain open.
 - **Implementation:**
   - [x] Prepare conventional editable source and ports checkouts, framework tooling and a documented operator entry point. [Native checkpoint](../../verification/operator-development.json): `/usr/src` is current at the reviewed source-fork commit, and isolated `litai-dev` validates it with the exact bound framework wheel. The stable CLI remains installed; complete lifecycle remains open.
   - [x] Deploy independent source/ports checkouts, control, objects, staging,

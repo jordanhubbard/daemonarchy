@@ -195,9 +195,12 @@ per implementation have medians of 19.794351 seconds before and 7.926676 seconds
 after the final source-level correction, using the same 5,270-member native
 manifest. The [performance record](../../verification/native-input-verification-performance.json)
 binds adapter bytes, exact inventories, raw sample hashes and the passing full
-framework regression (1,865 passed, 42 skipped). Installed-wheel and native
-renewal remain required; these measurements do not establish whole-build
-improvement or select an executor.
+framework regression (1,865 passed, 42 skipped). The subsequent
+[runtime renewal](../../verification/native-development-preview-d6070ba5.json)
+records controller wheel qualification and the verified native dependency
+bootstrap. Its three warm installed input-verification samples have a median of
+9.227105 seconds; complete native lifecycle acceptance remains open. These
+measurements do not establish whole-build improvement or select an executor.
 
 ## Compare equivalent workloads
 
