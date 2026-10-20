@@ -16,6 +16,13 @@ work; it is not a separate published tag in this repository. The proposed name
 
 ## Unreleased
 
+- Add a finite QEMU worker supervisor and FreeBSD inspection relay. Bind fresh
+  read-only inspections to an operator-selected plan and actual owned process,
+  QMP state, disk and seed. Preserve console/session records and enforce request
+  deadlines and shutdown cleanup. Twelve controller checks and actual FreeBSD
+  boot/root-relay inspection pass. Native expiry/final shutdown and installed
+  lifecycle qualification remain open.
+
 - Record eleven passing native framework source checks for local orchestration,
   secondary-account access and cleanup-bound receipt admission. A separate live
   QEMU allocation-owner probe verifies fresh inspection and lifetime revocation.

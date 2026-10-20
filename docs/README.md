@@ -17,6 +17,7 @@ reachable without changing its historical scope.
 - [Installation logs and the rescue console](rescue-console.md)
 - [Active work](roadmap/active-work.md)
 - [Owned FreeBSD source builds](source-builds.md)
+- [Disposable QEMU worker ownership](native-qemu-worker.md)
 - [Complete FreeBSD source and ports Component coverage](roadmap/freebsd-components.md)
 - [Native Component execution and build performance](roadmap/build-performance.md)
 - [Parallel native workspace and executor selection](roadmap/native-workspace.md)

@@ -182,6 +182,17 @@ Next action: bind the actual source/ports compiler, sysroot and input closure to
 
 ### [ ] DEV-001 — Provide an operator-ready native Component development system
 
+- **Disposable worker implementation:** The versioned QEMU supervisor owns its
+  child and finite lifetime and exposes only fresh, context-bound read-only
+  inspections through a private socket. Its FreeBSD root relay keeps QMP on the
+  controller. Twelve controller checks pass. The separate
+  [native checkpoint](../../verification/native-qemu-worker-development.json)
+  boots the actual FreeBSD guest, verifies three fresh root-relay inspections
+  and refuses replay, wrong-plan and control-field requests. It uses an operator
+  fixture context; native expiry/shutdown and installed lifecycle qualification
+  remain required. See the
+  [worker runbook](../native-qemu-worker.md).
+
 - **Priority:** P1
 - **Owner:** release Component, source and ports forks, native framework lifecycle
 - **Direction:** Make the complete source and ports Component build, test, package, ISO creation and installation system available on the operator development workstation at /usr/src and /usr/ports, managed by Literate AI.

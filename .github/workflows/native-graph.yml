@@ -11,6 +11,9 @@ on:
       - 'tests/native-workspace.py'
       - 'native/workspace.json'
       - 'native/worker-template.json'
+      - 'native/qemu-worker.py'
+      - 'native/inspect-worker-allocation.py'
+      - 'tests/qemu-worker.py'
       - '.github/workflows/native-graph.yml'
   pull_request:
     paths:
@@ -22,6 +25,9 @@ on:
       - 'tests/native-workspace.py'
       - 'native/workspace.json'
       - 'native/worker-template.json'
+      - 'native/qemu-worker.py'
+      - 'native/inspect-worker-allocation.py'
+      - 'tests/qemu-worker.py'
       - '.github/workflows/native-graph.yml'
   workflow_dispatch:
 
@@ -40,3 +46,4 @@ jobs:
           python3 tests/native-tree-discovery.py -v
           python3 tests/native-dirdeps.py -v
           python3 tests/native-workspace.py -v
+          python3 tests/qemu-worker.py -v
