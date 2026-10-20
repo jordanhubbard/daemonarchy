@@ -1,6 +1,6 @@
 {
   "schema": "daemonarchy/native-prefix-search-development@1",
-  "scope": "Preserved installed original-suite failure and source-level repair probe; not installed candidate qualification.",
+  "scope": "Preserved preceding installed failure, source-level repair probe and admitted installed retained local-runtime run; not canonical SDK, pkg or release qualification.",
   "source_revision": "d98e6c2da7571295bb3c70236afe637a987370e0",
   "installed_framework_revision": "587ad3f1cf39279081a967c87f63cc39a93db07f",
   "original_execution": {
@@ -108,7 +108,22 @@
     "native_probe_seconds": 64.729,
     "native_probe_log_sha256": "eb1bc716bb6e2ab38c893873a9c99cd9e428099e6ed1ecc73126e43e879d357e",
     "fixture_allocation": "protocol-peer",
-    "installed_candidate_qualified": false
+    "installed_candidate_qualified": true,
+    "qualified_framework_commit": "6e3700337f2ff2be61b5b86390059878093fc1bd",
+    "qualification_scope": "retained local runtime only",
+    "installed_retained_run": {
+      "checkpoint": "native-development-cli-6e370033.json",
+      "original_cases_passed": 24,
+      "original_cases_skipped": 0,
+      "independent_cases_matched": 11,
+      "cleanup_ok": true,
+      "receipt_identity": "sha256:924264d401159e317059b69c80087ec3a9cd047ca4652a53ca7903fa6c29f559",
+      "verified_records": 34,
+      "package_qualified": false,
+      "canonical_lifecycle_receipt": false,
+      "sdk_admitted": false,
+      "release_authorized": false
+    }
   },
   "canonical_source_sdk_admitted": false,
   "release_acceptance": false

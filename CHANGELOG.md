@@ -22,9 +22,9 @@ work; it is not a separate published tag in this repository. The proposed name
 
 - Qualify the `6e370033` development wheel and its isolated FreeBSD installation,
   including 37 verified distributions, signing and SQLite. All 24 original
-  source tests now report passes without skips; final lifecycle acceptance is
-  still pending. Keep installed-runtime qualification separate from source-built
-  SDK admission.
+  source tests and 11 independent acceptance cases pass. Cleanup succeeds and a
+  retained local-runtime receipt is admitted, with all 34 records verified.
+  Canonical SDK, pkg and release qualification remain open.
 
 - Reconcile the preceding traversal candidate's retained evidence: full controller
   regression and its exact wheel pass. Native installed lifecycle qualification
@@ -33,7 +33,7 @@ work; it is not a separate published tag in this repository. The proposed name
 - Preserve the preceding `587ad3f1` native lifecycle failure: compilation and documentation
   pass, but two of 24 original cases cannot launch through the private allocation
   directory. Record 16 passing native source-level checks of the scoped access
-  repair separately; installed repair qualification remains pending.
+  repair separately from the subsequent successful installed retained run.
 
 - Record native input-custody checks for all 114,710 tracked source-fork paths,
   including modes and 138 symlinks. Keep this evidence separate from complete

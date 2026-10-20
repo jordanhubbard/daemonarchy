@@ -42,12 +42,108 @@
     "skipped": 0,
     "complete_inventory_matched": true,
     "report_sha256": "d5de391a49f80e0cdb060938632bd90d7686e2b1e46e3086912ca5ed5e3b0ace",
-    "lifecycle_terminal_observed": false
+    "lifecycle_terminal_observed": true
   },
   "preserved_preceding_failure": "native-prefix-search-development.json",
   "hosted_matrix_complete": false,
-  "installed_original_source_lifecycle_complete": false,
+  "installed_original_source_lifecycle_complete": true,
   "source_sdk_admitted": false,
   "physical_worker_cutover": false,
-  "release_acceptance": false
+  "release_acceptance": false,
+  "qualification_scope": "Installed original-source retained local-runtime execution; not canonical Standard lifecycle, SDK, pkg or release qualification.",
+  "canonical_standard_lifecycle_receipt": false,
+  "native_run_seconds": 1717.496,
+  "plan_identity": "sha256:b06c0a4678cc4264538eb1f42a25426a937b0a2092ce0f36c6ce2f4b7b9e1d16",
+  "retained_receipt_identity": "sha256:924264d401159e317059b69c80087ec3a9cd047ca4652a53ca7903fa6c29f559",
+  "retained_receipt_admitted": true,
+  "retained_receipt_summary": {
+    "failed": 0,
+    "passed": 24,
+    "skipped": 0
+  },
+  "retained_receipt_roots": {
+    "acceptance-policy-bytes": {
+      "algorithm": "sha256",
+      "digest": "874cf058d2ffd67bf058277838c431275c1755693143e53f40258dcde93332ff",
+      "media_type": "application/octet-stream",
+      "size": 6829
+    },
+    "completed-run": {
+      "algorithm": "sha256",
+      "digest": "38965324b5ae46c60423ed9a13172df40d440918c969df1dc9cf2be4c8b36140",
+      "media_type": "application/json",
+      "size": 2386
+    },
+    "input-manifest": {
+      "algorithm": "sha256",
+      "digest": "1da8dd58529fd50dd10a2404f98243ff4a8f271b706c7e183c3bfc97332505e4",
+      "media_type": "application/json",
+      "size": 1079588
+    },
+    "output-manifest": {
+      "algorithm": "sha256",
+      "digest": "206d05c85093123cef0729491e78ba192d6e0826ea70f71e17345551cefe8693",
+      "media_type": "application/json",
+      "size": 1805
+    },
+    "payload-manifest": {
+      "algorithm": "sha256",
+      "digest": "d0931c0b11f0464df711381fa84d2741283ca8f341ceb0dcd8f01ffa2323887d",
+      "media_type": "application/json",
+      "size": 1107
+    },
+    "plan": {
+      "algorithm": "sha256",
+      "digest": "b06c0a4678cc4264538eb1f42a25426a937b0a2092ce0f36c6ce2f4b7b9e1d16",
+      "media_type": "application/json",
+      "size": 6578
+    },
+    "resolved-bom": {
+      "algorithm": "sha256",
+      "digest": "070c85934a5cadcb388f2a6fd1105eb443a16965f134b8d86487e9352fb47cde",
+      "media_type": "application/vnd.cyclonedx+json",
+      "size": 4846021
+    },
+    "source-bom": {
+      "algorithm": "sha256",
+      "digest": "3e5ec9b4b2c2c5e41eb218050e6d7f8b04ca4d9e2ca3a1b87ab85d96ac995ae5",
+      "media_type": "application/vnd.cyclonedx+json",
+      "size": 4400990
+    }
+  },
+  "verified_retained_records": 34,
+  "independent_acceptance": {
+    "cases": 11,
+    "declared_exits_and_stream_hashes_matched": true,
+    "expected_nonzero_exit_cases": 1,
+    "policy_identity": "sha256:874cf058d2ffd67bf058277838c431275c1755693143e53f40258dcde93332ff",
+    "observation_identities": [
+      "sha256:951a29c09a64141caf6525278e354d404546a055d1f26f63ae6055a001030d58",
+      "sha256:914c113e397d4b825301ef5de6ecd1f9485fd57eb65100d41dc05a2d236b7eb8",
+      "sha256:ae6c45bf8cf625f871e1fdfd05737e47726ba7bbe89bc62030ba705828d2a718",
+      "sha256:56f797a0f3adef51b943dfcc42f093ffc6fa179eb9f9ab5b94d5d2c8807df543",
+      "sha256:15540a2ce4ba6c30f1f97f4e5d0fe67d712af5c22197b4f0709a53bcac39f01f",
+      "sha256:eefb794cba43d2da8efa2e4fd8346900449a482b0dc27d9d186093886b73a527",
+      "sha256:351a8bf6f6305119d0851a224908b954c46a7d8f983b4574e69a1269d5e55ef0",
+      "sha256:d1eddddfface7273fe5ce52a4f99cb9b6362ce55904a8726dff785f73c6b58ab",
+      "sha256:13c89c23ab52ebd2904459dd0d7e975a9f333d1b14c0db62be7d22271942585b",
+      "sha256:3f46dd1a8539f42a7cf2a44ab653a2f39d0d9f5495d83968669ae61737c6d376",
+      "sha256:dfe7c7c8d5b71e06a7a2c20cb6dea0bd9ad253c98e75e43f5fc4a2d45fc8d1d9"
+    ]
+  },
+  "cleanup": {
+    "completed_run_bound": true,
+    "cleanup_ok": true,
+    "prefix_mode": "0700",
+    "prefix_access_acl": [
+      "user::rwx",
+      "group::---",
+      "other::---"
+    ],
+    "remaining_nullfs_mounts": 0,
+    "allocation_observations": 51,
+    "distinct_allocations": 1
+  },
+  "retained_custody_verification_sha256": "ddcc9411e9a374ad130e5121070a7a86cd7cf254959dc0e696d611a599dab036",
+  "retained_acceptance_verification_sha256": "d866d58a0f56280493cb6eb5e34d0c24952c5a2ca949add9d0843987bdd74988"
 }

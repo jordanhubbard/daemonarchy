@@ -278,8 +278,12 @@ Next action: bind the actual source/ports compiler, sysroot and input closure to
   controller regression (1,912 passes, 86 skips), exact clean-commit wheel gate
   and isolated native installation with 37 verified distributions. Native module
   bytes, Standard policy, signing and SQLite match. All 24 original source cases
-  report passes with no skips, including both previously denied launchers; final
-  independent acceptance and cleanup-bound admission remain pending. The
+  pass with no skips, including both previously denied launchers. All 11
+  independent acceptance observations match their declared exits and exact stream
+  hashes, including the expected invalid-input failure. Cleanup succeeds, the
+  prefix ACL is root-only again and no nullfs mounts remain. The retained
+  local-runtime receipt is admitted and all 34 records verify. This is not a
+  canonical Standard lifecycle receipt, SDK, pkg or release qualification. The
   [checkpoint](../../verification/native-development-cli-6e370033.json) preserves
   that boundary. No physical workstation selection changes.
 - **Installed prefix access gap:** The preceding `587ad3f1` framework run compiles
@@ -289,7 +293,8 @@ Next action: bind the actual source/ports compiler, sysroot and input closure to
   acceptance and admission are not reached. The scoped upstream repair passes
   16 native source-level checks, including integrated receipt handling with a
   protocol-peer allocation. The renewed installed candidate now reports all 24
-  original cases passed; final lifecycle acceptance and admission remain open.
+  original cases and all 11 independent checks passed, with successful cleanup
+  and retained local-runtime admission. Canonical SDK and package admission remain open.
   [Development evidence](../../verification/native-prefix-search-development.json)
   preserves the failed command identities and distinguishes the repair probe
   from actual installed qualification.
