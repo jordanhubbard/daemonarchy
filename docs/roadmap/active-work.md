@@ -204,6 +204,13 @@ Next action: bind the actual source/ports compiler, sysroot and input closure to
   per-unit packages remain open. Preserve the running build-worker overlay and
   the operator's preceding preview selection. Framework #84 owns the separately
   measured strict-SBOM overhead; its repair needs full and installed/native renewal.
+- **Subsequent build-worker preview:** framework `ca604c00` passes the complete
+  local regression (1,855 passed, 42 skipped) and seven installed native SBOM
+  checks. The [preview record](../../verification/native-development-preview-ca604c00.json)
+  binds its canonical wheel, reviewed source rebind and corrected native profile.
+  All 62 source-controller checks pass on FreeBSD. The source lifecycle is
+  running with remote terminal capture; source/ports package admission and
+  cut-over remain open. Framework #85 owns scoped secondary-test-user access.
 - **Current framework evidence:** [69 native retained-project checks pass](../../verification/native-retained-acceptance.json) at local checkpoint `567e0f8a4092`; full framework regression, installed-wheel qualification and public runtime/receipt integration remain open. The installed-wheel smoke harness still uses Linux expectations on FreeBSD; production initialization already has a FreeBSD selector.
 - **Implementation:**
   - [x] Prepare conventional editable source and ports checkouts, framework tooling and a documented operator entry point. [Native checkpoint](../../verification/operator-development.json): `/usr/src` is current at the reviewed source-fork commit, and isolated `litai-dev` validates it with the exact bound framework wheel. The stable CLI remains installed; complete lifecycle remains open.

@@ -82,7 +82,11 @@ projects and all five source/ports locks on both native roles. Their receipts
 remain missing and the active workspace selection is preserved. The subsequent
 source prototype adds two support/bootstrap contracts for five source locks;
 its installed native build-worker run has produced the selected compiled products
-but has not completed acceptance. The operator preview retains its earlier
+but has not completed acceptance. The first run reports 23 original passes and
+one unauthorized root-required skip. The subsequent
+[framework preview](verification/native-development-preview-ca604c00.json)
+passes seven installed native SBOM checks and 62 source-controller checks;
+its corrected native source run is in progress. The operator preview retains its earlier
 three-source-lock selection. See the [source profile checkpoint](verification/native-source-profile.json).
 Direct native make probes
 compile the parser/utility and build/test/package the LZ4 port; these are

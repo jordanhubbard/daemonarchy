@@ -1,0 +1,58 @@
+{
+  "schema": "daemonarchy/native-development-preview@1",
+  "status": "installed-and-native-run-in-progress",
+  "admitted": false,
+  "framework_revision": "ca604c000d6a2eae1906fe10a6f7f1156bab2b43",
+  "framework_review": "https://github.com/jordanhubbard/literate-ai/pull/82",
+  "framework_ci_run": 39404396139,
+  "framework_ci_complete": false,
+  "wheel_sha256": "db7df86194a04164aab6e4936f91eda63ba62e679ae43a6069bee1c2779d1ede",
+  "distribution_identity": "sha256:95ff863c311e475172efbca8a7a2fd012d727974368ce84293503804462b8fe0",
+  "distribution_members": 1204,
+  "local_regression": {
+    "selected": 1897,
+    "passed": 1855,
+    "skipped": 42,
+    "failed": 0,
+    "seconds": 1044.628,
+    "report_sha256": "95b14ef1ed69a5c656e39d55e77627ca586a34e047f53fd57d7c939e0c1ea97f",
+    "log_sha256": "90ff8bbc8b73c400188fbf90799094d8bd728907508dac0c95b52cddcfde68e8"
+  },
+  "native_preview": {
+    "role": "native-build-worker",
+    "dependency_check": "pass",
+    "native_crypto_smoke": true,
+    "installed_bom_tests_passed": 7,
+    "installed_bom_tests_skipped": 0,
+    "source_controller_tests_passed": 62,
+    "source_controller_tests_skipped": 0,
+    "default_cli_changed": false,
+    "development_alias_changed": false,
+    "operator_preview_upgraded": false
+  },
+  "source_review": {
+    "checkout_base": "949a40c88544a6a64bca0f8877f38ed77f71e656",
+    "checkout_state": "source commit plus reviewed Standard rebind metadata",
+    "published_binding_metadata": "https://github.com/jordanhubbard/daemonarchy-src/blob/640e2402009de4df83e2d5933cf878f4e64b9f63/verification/standard-ca604c00.json",
+    "rebind_plan_identity": "sha256:7d14cf0557dd281087dca3d34cabdf41ce44aab7d37fa7f3fbe9f533b5651108",
+    "required_evidence_kinds_preserved": 16,
+    "source_authority": "pass",
+    "locks_current": 5,
+    "receipt": "missing",
+    "profile_input_members": 5270,
+    "owned_input_nodes": 5622,
+    "canonical_units": 5,
+    "managed_components_including_project": 6,
+    "manifest_identity": "sha256:b3b95f194a006f04e98fe84394a7be53ef620cd9f1c075145889f16f952d9761",
+    "authorization_identity": "sha256:6f5fea016007308a753aaec4e7c7dc345350c27adaabd5f60831bd1083c741ae",
+    "terminal_result": null
+  },
+  "active_workspace_selection_changed": false,
+  "cut_over_complete": false,
+  "limitations": [
+    "Complete original privileged/unprivileged tests and independent acceptance remain open.",
+    "Per-unit pkg construction, complete source/ports catalog coverage and measured end-to-end build/package/ISO qualification remain open.",
+    "The copied bootstrap and Python dependency bundle retain explicit provenance and independent-qualification gaps.",
+    "A subsequent local profile adds authored package specifications; it does not change the running native profile."
+  ]
+}

@@ -16,6 +16,10 @@ work; it is not a separate published tag in this repository. The proposed name
 
 ## Unreleased
 
+- Add an isolated build-worker framework preview with the tested strict-SBOM
+  optimization and corrected source-version/linker inputs. Retain the first
+  native run's 23-pass/one-root-skip result without awarding acceptance.
+
 - Document the five-owner original-source retained build prototype and observed
   native products, preserving explicit missing acceptance, package and whole-tree
   qualification. Link the exact reviewed source entry point and CI evidence.

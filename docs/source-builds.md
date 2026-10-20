@@ -27,6 +27,16 @@ retained build. The isolated CLI dependencies were copied from the stable
 installation, so their independent native package qualification also remains
 open.
 
+The subsequent [build-worker preview](../verification/native-development-preview-ca604c00.json)
+uses framework `ca604c000d6a2eae1906fe10a6f7f1156bab2b43`, including the
+strict-SBOM performance repair. Its isolated prefix is
+`~/.local/libexec/litai-dev-ca604c00`; the operator preview and default aliases
+retain their preceding selections. The installed native SBOM fixtures and all
+62 source-controller checks pass. A fresh source review at `949a40c88544`
+has a reviewed Standard rebind and a 5,270-input profile with corrected source
+version inputs and explicit linker selection. Its managed run is in progress;
+no receipt, complete privileged acceptance or per-unit pkg qualification is claimed.
+
 ## Candidate common CLI before cut-over
 
 The next isolated framework wheel is installed on both native roles at
