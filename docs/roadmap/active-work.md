@@ -215,8 +215,13 @@ Next action: bind the actual source/ports compiler, sysroot and input closure to
   seconds, with its retained log hash independently checked and the pinned source
   worktree still clean. Kernel compilation then passes in 600.195 seconds,
   package generation in 352.074 seconds and release object preparation in 0.471
-  seconds. All four retained log hashes independently verify. Installer sets,
-  package payload acceptance, SDK admission and performance qualification remain
+  seconds. Installer-set staging then passes in 469.502 seconds. The complete
+  producer exits zero in 9,357.606 seconds and records 537 artifacts; an independent
+  unprivileged verification rechecks every artifact, phase log and installer
+  manifest reference. A separate streaming archive audit matches all 114,710
+  tracked members and 138 symlinks against exact Git blob identities, executable
+  modes and root ownership, without extracting the archive. Package payload
+  acceptance, SDK admission, ISO creation, boot testing and performance qualification remain
   open. The installed source lifecycle attempt separately exposed disabled
   UFS ACL support; the verified mount correction and retry retain the failed
   attempt. [Checkpoint](../../verification/native-sdk-build-development.json).

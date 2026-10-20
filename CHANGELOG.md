@@ -16,9 +16,11 @@ work; it is not a separate published tag in this repository. The proposed name
 
 ## Unreleased
 
-- Record successful source kernel compilation and package generation after the
-  completed world build, with independently checked phase logs. Installer-set
-  staging is active; package payload acceptance and SDK admission remain open.
+- Complete the unprivileged source world, kernel, package and installer-set build.
+  All 537 recorded artifact hashes, phase logs and installer-manifest references
+  independently verify. The source archive matches all 114,710 Git members and
+  138 symlinks with root ownership and matching modes/bytes. Payload acceptance,
+  SDK admission, ISO creation and boot testing remain open.
 
 - Qualify the `6e370033` development wheel and its isolated FreeBSD installation,
   including 37 verified distributions, signing and SQLite. All 24 original
