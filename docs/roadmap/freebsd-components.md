@@ -84,6 +84,26 @@ evidence that native dependency or behavioral contracts are complete. Reuse the
 framework's canonical catalog/Component/Flavor/lock owners instead of claiming
 that a custom inventory JSON is equivalent to those contracts.
 
+## Full source input custody checkpoint
+
+The [native traversal checkpoint](../../verification/native-input-traversal-development.json)
+checks every tracked path in source fork `d98e6c2da7571295bb3c70236afe637a987370e0`
+on FreeBSD: 114,710 members, 9,887 directories and 138 symlinks. The observed
+inventory matches tracked paths, executable modes and link-target text, with
+manifest identity `sha256:6bcececf720ac6a21c12e5ebf3f04eedbc2c22438bf04c28be1ae38ce770a406`.
+All 27 source-level input checks pass without skips, including actual replacement,
+mutation, descriptor-limit, alias and snapshot-cleanup cases. The first harness
+attempt omitted a shared test fixture and is preserved separately.
+
+This extends the bounded traversal candidate through discovery and copying. A
+balanced four-sample native SDK comparison preserves the same 5,141-member
+manifest. Median discovery is 4.776245 versus 4.471518 seconds; median capture is
+12.602876 versus 10.549773 seconds. A separate native world build was running, so
+these are operation-level development observations with shared resource load.
+The candidate's full regression and installed-wheel renewal remain open. Full
+input custody does not register or admit the complete Component catalog, resolve
+its build graph, qualify every unit's pkg, or demonstrate whole-build acceleration.
+
 ## First native source composition proof
 
 The first executable fixture must build an original-source application and its

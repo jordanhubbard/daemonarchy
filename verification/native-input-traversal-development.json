@@ -1,0 +1,82 @@
+{
+  "schema": "daemonarchy/native-input-traversal-development@1",
+  "scope": "FreeBSD source-level candidate adapter checks and full pinned source input custody; not installed candidate or package admission.",
+  "framework_base_commit": "587ad3f1cf39279081a967c87f63cc39a93db07f",
+  "candidate_adapter_sha256": "c85358e3cf873e7a101431d257cd33eccb007e681a4979f960261c85a815b674",
+  "reviewed_driver_identity": "sha256:f879726aff9679bd8263c4ae2d11126233257bf41bb079ff26ed71918e5d0c80",
+  "source_corpus": {
+    "revision": "d98e6c2da7571295bb3c70236afe637a987370e0",
+    "manifest_identity": "sha256:6bcececf720ac6a21c12e5ebf3f04eedbc2c22438bf04c28be1ae38ce770a406",
+    "members": 114710,
+    "directories": 9887,
+    "symlinks": 138,
+    "tracked_paths_modes_and_link_targets_match": true,
+    "acceptance": "input-custody-only"
+  },
+  "tests": {
+    "selected": 27,
+    "failed": 0,
+    "errors": 0,
+    "skipped": 0,
+    "successful": true,
+    "source_level_probe": true,
+    "installed_wheel_qualified": false
+  },
+  "test_seconds": 127.286,
+  "native_operation_measurement": {
+    "schema": "literate-ai/native-input-traversal-development@1",
+    "platform": "FreeBSD-16.0-CURRENT-amd64-64bit-ELF",
+    "python": "3.12.15",
+    "samples": [
+      {
+        "implementation": "baseline",
+        "discovery_seconds": 4.830154,
+        "capture_seconds": 13.101051,
+        "manifest_identity": "sha256:90768a489e8cad42df4be7fcd4c7ef61ac11befbe4bccf7bcc6d2494eedcb8e2",
+        "members": 5141,
+        "directories": 350,
+        "bytes": 306736551
+      },
+      {
+        "implementation": "candidate",
+        "discovery_seconds": 3.964572,
+        "capture_seconds": 9.810308,
+        "manifest_identity": "sha256:90768a489e8cad42df4be7fcd4c7ef61ac11befbe4bccf7bcc6d2494eedcb8e2",
+        "members": 5141,
+        "directories": 350,
+        "bytes": 306736551
+      },
+      {
+        "implementation": "candidate",
+        "discovery_seconds": 4.978464,
+        "capture_seconds": 11.289237,
+        "manifest_identity": "sha256:90768a489e8cad42df4be7fcd4c7ef61ac11befbe4bccf7bcc6d2494eedcb8e2",
+        "members": 5141,
+        "directories": 350,
+        "bytes": 306736551
+      },
+      {
+        "implementation": "baseline",
+        "discovery_seconds": 4.722335,
+        "capture_seconds": 12.104701,
+        "manifest_identity": "sha256:90768a489e8cad42df4be7fcd4c7ef61ac11befbe4bccf7bcc6d2494eedcb8e2",
+        "members": 5141,
+        "directories": 350,
+        "bytes": 306736551
+      }
+    ],
+    "manifest_equal": true,
+    "whole_build_measurement": false,
+    "candidate_adapter_sha256": "c85358e3cf873e7a101431d257cd33eccb007e681a4979f960261c85a815b674"
+  },
+  "raw_source_corpus_sha256": "ad4bd6c37cbfaf03805c27fd2ec226a9095ee4dd9359c37a471fd94cd8dcf223",
+  "native_test_log_sha256": "092aed558870d4dcc965c4ab68b44ae869bcd80edcc97b74feaf729a4369c267",
+  "preserved_first_probe_failure": "Missing transferred shared test fixture caused module import failure; corrected staged harness passes all selected checks.",
+  "concurrent_native_world_build": true,
+  "full_framework_regression_complete": false,
+  "installed_candidate_wheel_qualified": false,
+  "canonical_full_tree_components_admitted": false,
+  "per_unit_pkg_provenance_complete": false,
+  "whole_build_speedup_demonstrated": false,
+  "release_acceptance": false
+}
