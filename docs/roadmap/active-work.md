@@ -199,6 +199,15 @@ Next action: bind the actual source/ports compiler, sysroot and input closure to
   lifecycle qualification remain required. See the
   [worker runbook](../native-qemu-worker.md).
 
+- **Candidate renewal:** Framework `587ad3f1` passes a fresh Python 3.11 full
+  regression and its exact committed installed-wheel gate. The isolated native
+  FreeBSD installation verifies all 37 distributions, the 1,212-member framework
+  identity, unchanged Standard policy, Ed25519, SQLite and the numeric secondary
+  account. The [checkpoint](../../verification/native-development-cli-587ad3f1.json)
+  preserves the refused manifest-less invocation and successful explicit-manifest
+  retry. Hosted CI, installed original-source lifecycle, SDK admission and physical
+  workspace cut-over remain open.
+
 - **Source SDK baseline:** A separate owned KVM FreeBSD guest now runs the pinned
   native make build as an unprivileged account with four jobs, eight guest CPUs,
   16 GiB RAM and a 160 GiB disk. World compilation is observed; completed world,

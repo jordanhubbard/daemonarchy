@@ -1,0 +1,50 @@
+{
+  "schema": "daemonarchy/native-development-cli-checkpoint@1",
+  "framework_commit": "587ad3f1cf39279081a967c87f63cc39a93db07f",
+  "wheel_identity": "sha256:d3cfb1977fb864f8d8176346ed86b6864c8f9b08482139430ae4888edbc46c3b",
+  "distribution_identity": "sha256:713570aff6c0c2df4b4c73a4eadea0547bb29f853b1c5993501443d8833bf443",
+  "distribution_members": 1212,
+  "standard_policy_identity": "sha256:a5ca0d6d13daff0199f218c5e4af723a2cec87b927e75dd3a731c511b5d85ac7",
+  "dependency_closure_identity": "sha256:853c27198db22a8af01fbd41d73bdabba91eb5255876732829b1cc6d6d2ccb2b",
+  "native_verified_distributions": 37,
+  "native_platform": "FreeBSD-16.0-CURRENT-amd64-64bit-ELF",
+  "ed25519": true,
+  "sqlite": true,
+  "secondary_account": {
+    "uid": 2001,
+    "gid": 2001
+  },
+  "native_bootstrap_seconds": 7.935,
+  "installed_wheel_gate": true,
+  "controller_full_regression": {
+    "schema": "literate-ai/development-full-regression@1",
+    "python": "3.11.14",
+    "workers": 4,
+    "seconds": 1021.195,
+    "terminal_exit_code": 0,
+    "summary": {
+      "executed": 1910,
+      "failed": 0,
+      "known_failed": 0,
+      "passed": 1910,
+      "selected": 1991,
+      "skipped": 81
+    },
+    "report_sha256": "d770be5e04081dfe8fa59374a3e3b6a9b988b2390347f6dbe459ab3cd466d24d",
+    "log_sha256": "13969000d45edfbf9443089b50f1f25ee7e119032c62c85527b409d175989617",
+    "release_evidence": false
+  },
+  "native_bootstrap_record_sha256": "ec81155df2d3cc5293636b7162b217b729bd90eb181db2a0414b8e8ac2f8394a",
+  "native_smoke_record_sha256": "da3c5ff60bdc2aa9d06a9aa3dd8e4c3c32e4942f7c4b12b3cb823adef86551d7",
+  "preserved_first_native_attempt": {
+    "exit_code": 2,
+    "error": "worker.bootstrap_manifest_required",
+    "installation_ran": false,
+    "corrected_retry_qualified": true
+  },
+  "hosted_matrix_complete": false,
+  "installed_original_source_lifecycle_complete": false,
+  "source_sdk_admitted": false,
+  "physical_worker_cutover": false,
+  "release_acceptance": false
+}

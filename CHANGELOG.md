@@ -16,6 +16,11 @@ work; it is not a separate published tag in this repository. The proposed name
 
 ## Unreleased
 
+- Renew the framework development candidate to `587ad3f1` in an isolated native
+  environment after full Python 3.11 and exact installed-wheel checks. Verify
+  offline dependencies, installed bytes, signing and SQLite; native source
+  lifecycle, SDK admission and physical cut-over remain pending.
+
 - Document POSIX ACL readiness for disposable retained-build workers and record
   the start of an unprivileged, KVM-backed source SDK baseline. Completed SDK
   admission, packaging and performance qualification remain pending.
