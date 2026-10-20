@@ -1,6 +1,6 @@
 {
   "schema": "daemonarchy/secondary-access-development@1",
-  "status": "backend-tested-live-scope-and-readonly-view-source-probes",
+  "status": "backend-tested-full-captured-sdk-readonly-original-suite-source-probe",
   "installed_feature_qualified": false,
   "lifecycle_acceptance": false,
   "source_sdk_admitted": false,
@@ -140,11 +140,35 @@
       "ownership_and_permission_projection": "Python tar data filter into a fresh root-owned private directory",
       "source_sdk_admitted": false
     },
-    "full_sdk_view_execution_complete": false
+    "original_suite_in_full_sdk_view": {
+      "passed": 24,
+      "skipped": 0,
+      "failed": 0,
+      "checks": {
+        "both_readonly_nosuid": true,
+        "captured_sdk_runtime_used": true,
+        "exact_acl_cleanup": true,
+        "mounts_removed": true,
+        "accounts_unchanged": true,
+        "compiled_programs_and_body_unchanged": true,
+        "all_owned_descriptors_closed": true,
+        "fixture_children_empty": true
+      },
+      "acl_resources_mutated": 2,
+      "readonly_nosuid_mounts": 2,
+      "database_sha256": "2df24464fb50475732b073171a03b7cd4987c678b40e2007ca03657c7a92878b",
+      "report_sha256": "d5de391a49f80e0cdb060938632bd90d7686e2b1e46e3086912ca5ed5e3b0ace",
+      "inventory_sha256": "f27b4e827b42b0d553a8603ad2842a0dd8e95f0f2448890e2eaa89d322f5146e",
+      "probe_launcher_generated": true,
+      "commands": "Captured bootstrap-v6 Kyua, ATF, shell and utility paths selected through readonly views; target VM supplies kernel and ELF interpreter. Full runtime-dependency admission remains open.",
+      "script_sha256": "c0a360d130f3444026e89920d6a94fc2e760c8a89c7417cad7f220b59cc09841",
+      "source_probe_only": true,
+      "installed_framework_integration": false
+    }
   },
   "remaining": [
-    "Select and integrate a declared read-only test view through the existing workspace, allocation and lifecycle owners.",
-    "Qualify complete captured SDK aliases and preserve exact original test/runtime dependency observations.",
+    "Integrate declared readonly test views through existing workspace, allocation and lifecycle owners, using the full-SDK source probe as the selected direction.",
+    "Bind complete alias closure and actual root/unprivileged runtime dependency observations in the reviewed profile and retained receipt.",
     "Run installed framework original tests and independent acceptance before receipt or package admission.",
     "Complete source/ports canonical catalogs, source-built SDK provenance, per-unit packages and equivalent whole-build/invalidation/ISO/recovery qualification."
   ]

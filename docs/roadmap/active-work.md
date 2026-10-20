@@ -240,10 +240,13 @@ Next action: bind the actual source/ports compiler, sysroot and input closure to
   regression passes (1,879 passed, 51 skipped). A live allocation-bound source
   prototype passes all 24 original cases and restores permissions and account
   state. The captured SDK has 352 directories and 28 links, so a separate
-  read-only-view capability probe is being evaluated for integration. Its kernel
-  flags, rejected writes, alias reads and cleanup pass. The complete SDK archive
-  is byte-verified in the guest; full SDK view execution, installed lifecycle
-  integration and receipt/package admission remain open.
+  read-only-view capability probe now supplies the selected integration direction.
+  Its kernel flags, rejected writes, alias reads and cleanup pass. With the
+  complete byte-verified SDK mounted readonly, all 24 original cases also pass
+  with no skips, using two permission resources and two readonly/nosuid mounts.
+  Original compiled programs/body, accounts and cleanup remain verified. The
+  launcher is probe-generated; reviewed root/unprivileged dependency observations,
+  installed lifecycle integration and receipt/package admission remain open.
   [Development evidence](../../verification/native-secondary-access-development.json)
   separates published backend code from the private source probes.
 - **Current framework evidence:** [69 native retained-project checks pass](../../verification/native-retained-acceptance.json) at local checkpoint `567e0f8a4092`; full framework regression, installed-wheel qualification and public runtime/receipt integration remain open. The installed-wheel smoke harness still uses Linux expectations on FreeBSD; production initialization already has a FreeBSD selector.
