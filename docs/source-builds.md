@@ -6,6 +6,27 @@ Its `main` tracks the selected upstream baseline. Changes and build tooling live
 on review branches; generally useful kernel fixes should also be contributed to
 FreeBSD. The local development checkout is `~/Src/daemonarchy-src`.
 
+## Operator development preview on the HP
+
+The HP at `daemon.local` has the reviewed source fork at `/usr/src` (commit
+`978fed917ba2b391c3eace661c21a7a65549cb23`) and the owned ports fork at
+`/usr/ports`. Its isolated `/home/jkh/bin/litai-dev` uses the wheel from
+framework revision `cffef3238ba48f2c0876270aa4a1aeacce4c86e1`. The
+source project's reviewed Standard binding pins that wheel's installed
+distribution identity. The normal `/usr/local/bin/litai` remains the stable
+1.1.1 installation.
+
+From an HP shell, run `cd /usr/src && litai-dev project validate .` to inspect
+the current project. `litai-dev verify .` currently reports passing authority
+and three current locks, then exits unsuccessfully because
+`verification/current.json` has not been earned. That failure is expected; it
+must not be replaced with an invented receipt. The current three contracts are
+metadata and target locks. Use the [native composition plan](roadmap/freebsd-components.md)
+to admit the compiler/test closure and executable profile before authorizing a
+retained build. The isolated CLI dependencies were copied from the stable
+installation, so their independent native package qualification also remains
+open.
+
 The initial [versioned build runbook](https://github.com/jordanhubbard/daemonarchy-src/blob/92276fc76c65f3ca31552d2e1833a6063361ff64/tools/daemonarchy/README.md)
 owns the native commands and resource requirements. Its controller plans and
 executes an exact clean source commit with isolated object, staging, repository
