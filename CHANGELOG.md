@@ -16,6 +16,11 @@ work; it is not a separate published tag in this repository. The proposed name
 
 ## Unreleased
 
+- Inspect source-built compiler/sysroot package provenance and dependencies:
+  verify 524 pkgbase manifests and locate compiler resources, C++ headers/runtime,
+  startup objects and linker in a six-package candidate closure. Record both
+  symbolic and hard-link custody requirements; SDK admission remains pending.
+
 - Complete the unprivileged source world, kernel, package and installer-set build.
   All 537 recorded artifact hashes, phase logs and installer-manifest references
   independently verify. The source archive matches all 114,710 Git members and

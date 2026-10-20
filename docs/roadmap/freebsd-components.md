@@ -188,6 +188,25 @@ materialization and consumer scopes. Preserve existing SDK identities and
 refusals until that integration is qualified. Passing retained source/input link
 checks does not admit these compiler SDK products.
 
+Read-only inspection of the completed source-built pkgbase artifacts now verifies
+524 package manifests against their recorded artifact hashes. The candidate
+compiler/sysroot package dependency closure is `FreeBSD-clang`,
+`FreeBSD-clang-dev`, `FreeBSD-clibs`, `FreeBSD-clibs-dev`,
+`FreeBSD-libcompiler_rt-dev` and `FreeBSD-lld`. Archive listings locate the compiler
+resource headers, C++ headers and runtime, startup objects and linker within this
+closure. These observations identify candidate inputs; they do not establish that
+those inputs are sufficient for every compiler language, target or ports build.
+
+The actual clang package has 15 hard links for executable aliases. The clang
+development package has two library symlinks; the C-library development package
+has 22 symlinks and 1,820 hard links. Faithful SDK custody therefore needs both
+symbolic alias text and hard-link equivalence with canonical physical ownership.
+Original archive target text remains package provenance, distinct from an observed
+filesystem hard-link group. Do not silently duplicate those files to bypass this
+boundary. The [development record](../../verification/native-sdk-build-development.json)
+binds the package and observation identities. No packages were installed and no
+source-built SDK admission or relocated compilation is claimed.
+
 ### Original-source candidate and remaining test boundaries
 
 The pinned source tree supplies a useful initial application/library pair:

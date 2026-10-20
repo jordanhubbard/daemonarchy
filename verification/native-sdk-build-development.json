@@ -148,5 +148,144 @@
     "release_acceptance": false
   },
   "source_archive_audit_seconds": 34.132,
-  "source_archive_audit_observation_sha256": "d28d85b1a5ff5eb865c3adbbb4bc68e151e364dff7dd19233647db736d3be38f"
+  "source_archive_audit_observation_sha256": "d28d85b1a5ff5eb865c3adbbb4bc68e151e364dff7dd19233647db736d3be38f",
+  "sdk_package_inspection": {
+    "scope": "Read-only metadata and role inspection of source-built pkgbase artifacts; not SDK or payload admission",
+    "package_manifests_verified": 524,
+    "artifact_hashes_match_build_result": true,
+    "candidate_dependency_closure": [
+      {
+        "name": "FreeBSD-clang",
+        "sha256": "70e33a60291a950eafc08fea2c4ec7cc385c9c86b205181842530accbe54060e",
+        "size": 43887675,
+        "observed_roles": {
+          "compiler_resources": {
+            "count": 6,
+            "sample": [
+              "/usr/lib/clang/21/lib/freebsd/libclang_rt.asan-i386.so",
+              "/usr/lib/clang/21/lib/freebsd/libclang_rt.asan-x86_64.so",
+              "/usr/lib/clang/21/share/asan_ignorelist.txt",
+              "/usr/lib/clang/21/share/cfi_ignorelist.txt",
+              "/usr/lib/clang/21/share/msan_ignorelist.txt",
+              "/usr/lib/clang/21/share/"
+            ]
+          }
+        },
+        "observed_links": {
+          "symlinks": 0,
+          "hardlinks": 15
+        }
+      },
+      {
+        "name": "FreeBSD-clang-dev",
+        "sha256": "ca25ba17694f72eb0fb52dff443e9c89e2994359b5f8329135ea12b80a941ef5",
+        "size": 15481492,
+        "observed_roles": {
+          "compiler_resources": {
+            "count": 316,
+            "sample": [
+              "/usr/lib/clang/21/include/__clang_cuda_builtin_vars.h",
+              "/usr/lib/clang/21/include/__clang_cuda_cmath.h",
+              "/usr/lib/clang/21/include/__clang_cuda_complex_builtins.h",
+              "/usr/lib/clang/21/include/__clang_cuda_device_functions.h",
+              "/usr/lib/clang/21/include/__clang_cuda_intrinsics.h",
+              "/usr/lib/clang/21/include/__clang_cuda_libdevice_declares.h"
+            ]
+          }
+        },
+        "observed_links": {
+          "symlinks": 2,
+          "hardlinks": 0
+        }
+      },
+      {
+        "name": "FreeBSD-clibs",
+        "sha256": "20a431fa0df793b794a462f06f6d24a85f15a54ae3470ec04e007fd892b69cf5",
+        "size": 1468762,
+        "observed_roles": {
+          "cxx_runtime": {
+            "count": 2,
+            "sample": [
+              "/lib/libc++.so.1",
+              "/lib/libcxxrt.so.1"
+            ]
+          }
+        },
+        "observed_links": {
+          "symlinks": 3,
+          "hardlinks": 3
+        }
+      },
+      {
+        "name": "FreeBSD-clibs-dev",
+        "sha256": "30256f0fce5741b80dd8c0dd51aa933001ed04d8315e13ddcba1da79ad56ee36",
+        "size": 18822479,
+        "observed_roles": {
+          "cxx_headers": {
+            "count": 1752,
+            "sample": [
+              "/usr/include/c++/v1/__algorithm/adjacent_find.h",
+              "/usr/include/c++/v1/__algorithm/all_of.h",
+              "/usr/include/c++/v1/__algorithm/any_of.h",
+              "/usr/include/c++/v1/__algorithm/binary_search.h",
+              "/usr/include/c++/v1/__algorithm/clamp.h",
+              "/usr/include/c++/v1/__algorithm/comp.h"
+            ]
+          },
+          "cxx_runtime": {
+            "count": 2,
+            "sample": [
+              "/usr/lib/libc++.so",
+              "/usr/lib/libcxxrt.so"
+            ]
+          },
+          "startup": {
+            "count": 3,
+            "sample": [
+              "/usr/lib/crt1.o",
+              "/usr/lib/crti.o",
+              "/usr/lib/crtn.o"
+            ]
+          }
+        },
+        "observed_links": {
+          "symlinks": 22,
+          "hardlinks": 1820
+        }
+      },
+      {
+        "name": "FreeBSD-libcompiler_rt-dev",
+        "sha256": "2311cd3e44b57aec969731e98de5cd9fe87359e9c7617835940fc8f2acee78b4",
+        "size": 247588,
+        "observed_roles": {},
+        "observed_links": {
+          "symlinks": 1,
+          "hardlinks": 0
+        }
+      },
+      {
+        "name": "FreeBSD-lld",
+        "sha256": "237e87300f37719bdf9b6e44ab33f0a7357ff43226c54429301112a9d7c7a189",
+        "size": 866777,
+        "observed_roles": {
+          "linker": {
+            "count": 2,
+            "sample": [
+              "/usr/bin/ld.lld",
+              "/usr/share/man/man1/ld.lld.1.gz"
+            ]
+          }
+        }
+      }
+    ],
+    "private_observation_sha256": {
+      "source-pkgbase-manifests-v1.json": "567e6254e4b06a50efed3c4e0cf57f111e82f6d249c49ac401dcfb179dd113d2",
+      "source-sdk-package-roles-v1.json": "7793773c2887a0b4e4fe1bf4e382fcc100637d1f4bda049bd653fd6eb02b47a2",
+      "source-sdk-package-inspection-v1.json": "07885a45785c60b258525935aa3550aa06a53533c52a9e7fdf882cd5fccb5eab"
+    },
+    "hardlink_equivalence_custody_required": true,
+    "source_sdk_admitted": false,
+    "relocated_compilation_verified": false,
+    "package_acceptance": false
+  }
 }
