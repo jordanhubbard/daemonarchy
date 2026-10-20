@@ -38,7 +38,41 @@
     "errno": 45,
     "cause": "Guest UFS POSIX ACL support disabled",
     "remediation": "Enable POSIX ACL mount support on disposable UFS and verify a real named-user grant and removal before retry.",
-    "retry_complete": false
+    "retry_complete": true,
+    "retry": {
+      "scope": "Older installed emulated-VM retained run, preserved separately from the later successful KVM run",
+      "exit_code": 2,
+      "seconds": 7216.432,
+      "error": "retained.execution.command-failed",
+      "original_tests_observed": {
+        "selected": 24,
+        "passed": 22,
+        "broken": 2,
+        "failed": 0,
+        "skipped": 0,
+        "broken_cases": [
+          "truncate.bad_truncate",
+          "truncate.cannot_open"
+        ],
+        "observed_reason": "Premature exit; test case received signal 6"
+      },
+      "command_exit_codes": [
+        0,
+        0,
+        1
+      ],
+      "cleanup": {
+        "prefix_mode": "0700",
+        "remaining_nullfs_mounts": 0
+      },
+      "admitted": false,
+      "observation_sha256": {
+        "lifecycle-command-acls-terminal-observation.txt": "784d930f9e565580c91b2d07ed5c19e161493c61b3b6b07cf9397f869e33a3a4",
+        "lifecycle-command-acls-diagnostics.json": "c29952579301caef20eb3380f5f27caf255030628ea67504a73138179cdee1e9",
+        "lifecycle-command-acls-cas-verification.json": "04e7821c39cef56ed0002c0c1be9c3a327de4181a39356d4f4a60101f35acf35"
+      },
+      "later_successful_run": "native-development-cli-6e370033.json"
+    }
   },
   "observation_utc": "2026-10-20T21:50:35.946559+00:00",
   "completed_phases": [
