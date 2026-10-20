@@ -320,6 +320,39 @@
     "hardlink_equivalence_custody_required": true,
     "source_sdk_admitted": false,
     "relocated_compilation_verified": false,
-    "package_acceptance": false
+    "package_acceptance": false,
+    "retained_archive_corpus": {
+      "package_count": 6,
+      "verified_archive_bytes": 80774773,
+      "manifest_sha256": "729d394230ca4e9a8ddc2cd56e2cbbcd97a127ac9e952fb24f9deda9ba03094d",
+      "diagnostic_sha256": "d23e07ef19b7750d308b51d527242f2d1f9e9e0a63b7958f651f910f71db96e7",
+      "archive_members": 6485,
+      "regular_file_entries": 4396,
+      "regular_payload_bytes": 323195997,
+      "symlinks": 29,
+      "hardlinks": 1839,
+      "explicit_directories": 221,
+      "complete_ancestor_directory_count": 247,
+      "relative_alias_target_closure_refusals": 0,
+      "members_beneath_non_directories": 0,
+      "case_variant_name_groups": [
+        [
+          "usr/bin/CC",
+          "usr/bin/cc"
+        ],
+        [
+          "usr/share/man/man1/CC.1.gz",
+          "usr/share/man/man1/cc.1.gz"
+        ],
+        [
+          "usr/share/man/man3/execvP.3.gz",
+          "usr/share/man/man3/execvp.3.gz"
+        ]
+      ],
+      "case_sensitive_materialization_required": true,
+      "archive_extracted": false,
+      "sdk_captured": false,
+      "producer_admitted": false
+    }
   }
 }

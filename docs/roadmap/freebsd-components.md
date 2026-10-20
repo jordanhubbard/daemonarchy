@@ -207,6 +207,17 @@ boundary. The [development record](../../verification/native-sdk-build-developme
 binds the package and observation identities. No packages were installed and no
 source-built SDK admission or relocated compilation is claimed.
 
+The six exact package archives are also retained as an 80,774,773-byte diagnostic
+corpus. Read-only archive inspection finds 4,396 regular file entries, 29 symlinks,
+1,839 hard links and 221 explicit directories; the full ancestor closure needs
+247 directories. Relative alias targets close within the selected inventory.
+This does not capture or admit a filesystem SDK. Three name groups differ only
+by case: `CC`/`cc`, their manual pages, and `execvP`/`execvp` manual pages. Faithful
+SDK materialization must explicitly require a case-sensitive filesystem and
+preserve these names. The portable default's case-fold collision refusal remains
+appropriate unless the new target capability is selected; do not remove aliases
+or flatten hard-link groups to bypass it.
+
 ### Original-source candidate and remaining test boundaries
 
 The pinned source tree supplies a useful initial application/library pair:
