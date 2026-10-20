@@ -16,6 +16,10 @@ work; it is not a separate published tag in this repository. The proposed name
 
 ## Unreleased
 
+- Run the original parser/utility ATF inventory against native probe products:
+  23 cases pass and the root-required deallocation case remains explicitly
+  skipped. Privileged and independent acceptance remain open.
+
 - Establish reviewed original ports authority and two FreeBSD/pkg locks in
   [ports PR #7](https://github.com/jordanhubbard/daemonarchy-ports/pull/7), using
   the complete installed Standard evidence policy. Original implementations

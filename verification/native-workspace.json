@@ -153,7 +153,30 @@
       "symbols_stdout_sha256": "258256d6a3c5c30d0fd24905a52a54b628a48a059df93749616df653edc581af",
       "system_libutil_linked": false
     },
-    "original_source_atf_tests_run": false
+    "original_source_atf_tests_run": true,
+    "original_source_tests": {
+      "record": "verification/native-source-original-tests.json",
+      "record_sha256": "38a0012cc3f8349b9ac3d1d996a05b663343874c5f588c79f57ba931d3a368c7",
+      "selected": 24,
+      "passed": 23,
+      "failed": 0,
+      "skipped": 1,
+      "skip_case": "truncate.deallocate",
+      "skip_reason": "Requires root privileges",
+      "privileged_acceptance_complete": false,
+      "parser_dynamic_dependencies": [
+        "libprivateatf-c.so.1",
+        "libc.so.7"
+      ],
+      "parser_symbols": [
+        "expand_number",
+        "expand_unsigned"
+      ],
+      "system_libutil_linked": false,
+      "kyua_database_sha256": "e03980b9e0af74763c36baa9cebef07339693b0c87d50c1aa83742eaab29011e",
+      "original_report_sha256": "0249faeb0927551904bda4d52466979983c757db87c89a621a24553f0aaf90f0",
+      "original_provenance_sha256": "872becab1d4ebfed9c9ec4d3a04d6395dba1e7ad0bfa5a3237d0c6dacbc16a5c"
+    }
   },
   "port_make_probe": {
     "ports_revision": "f7d7ee897405dcb8ce87e674588a4e1b3bfba00e",
@@ -217,7 +240,7 @@
   "limitations": [
     "Diagnostic direct-make commands are not installed Literate AI target execution.",
     "Complete compiler/sysroot/bootstrap source provenance and canonical input ownership remain unqualified.",
-    "The source original ATF suites and independent sealed-product acceptance were not run.",
+    "The source original ATF inventory passes 23 cases and retains one root-required skip; privileged and independent sealed-product acceptance remain open.",
     "The port produced an ordinary native pkg; canonical BOM/provenance and installed product acceptance remain open.",
     "Unchanged timings may include make/ports completion-cookie reuse; changed-input and flags invalidation are not proven.",
     "No equivalent full source/ports/ISO speedup, VM installation/recovery or designated cut-over has been qualified."

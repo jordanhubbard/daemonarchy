@@ -1,0 +1,214 @@
+{
+  "schema": "daemonarchy/source-original-test-probe@1",
+  "source_revision": "978fed917ba2b391c3eace661c21a7a65549cb23",
+  "execution_qualified": false,
+  "lifecycle_receipt": false,
+  "privileged_acceptance_complete": false,
+  "phases": [
+    {
+      "phase": "parser-suite-build",
+      "argv": [
+        "/usr/bin/make",
+        "-m",
+        "/usr/daemonarchy/src/share/mk",
+        "__MAKE_CONF=/dev/null",
+        "SRCCONF=/dev/null",
+        "SRC_ENV_CONF=/dev/null",
+        "WITHOUT_MAN=yes",
+        "-C",
+        "/usr/daemonarchy/src/lib/libutil/tests",
+        "ATF_TESTS_C=expand_number_test",
+        "TAP_TESTS_C=",
+        "LIBADD=",
+        "LDADD=/usr/daemonarchy/obj/probes/truncate-make-v2/parser/libdaemonarchy_expand_number_pie.a -lprivateatf-c",
+        "CFLAGS=-O2 -pipe -I/usr/daemonarchy/src/lib/libutil",
+        "all"
+      ],
+      "exit": 0,
+      "elapsed_seconds": 1.509276,
+      "stdout_sha256": "07221f8fcde3343ecc69ae27275fadfd02aedc8b63f9e41da055140cc926b36c",
+      "stderr_sha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855"
+    },
+    {
+      "phase": "utility-suite-build",
+      "argv": [
+        "/usr/bin/make",
+        "-m",
+        "/usr/daemonarchy/src/share/mk",
+        "__MAKE_CONF=/dev/null",
+        "SRCCONF=/dev/null",
+        "SRC_ENV_CONF=/dev/null",
+        "WITHOUT_MAN=yes",
+        "-C",
+        "/usr/daemonarchy/src/usr.bin/truncate/tests",
+        "all"
+      ],
+      "exit": 0,
+      "elapsed_seconds": 0.57965,
+      "stdout_sha256": "43194323d55f86bbb2f149a2dbca20bfb0986b644aa247a1db5a445159048a0b",
+      "stderr_sha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855"
+    },
+    {
+      "phase": "original-tests",
+      "argv": [
+        "/usr/bin/kyua",
+        "-c",
+        "none",
+        "test",
+        "--kyuafile=/usr/daemonarchy/obj/probes/source-original-v1/suite/Kyuafile",
+        "--results-file=/usr/daemonarchy/evidence/probes/source-original-v1/original.db"
+      ],
+      "exit": 0,
+      "elapsed_seconds": 2.111755,
+      "stdout_sha256": "f99c5ad5f61744d08aa433504d1f81cee3c73bc4ed1dcfc9dbc76468734e3ed7",
+      "stderr_sha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855"
+    },
+    {
+      "phase": "original-report",
+      "argv": [
+        "/usr/local/bin/python3.12",
+        "/usr/daemonarchy/src/tools/daemonarchy/report-kyua.py",
+        "--results",
+        "/usr/daemonarchy/evidence/probes/source-original-v1/original.db",
+        "--inventory",
+        "/usr/daemonarchy/src/tools/daemonarchy/retained/original-cases.json",
+        "--action",
+        "original-tests",
+        "--output",
+        "/usr/daemonarchy/evidence/probes/source-original-v1/original-report.json",
+        "--provenance",
+        "/usr/daemonarchy/evidence/probes/source-original-v1/original-provenance.json"
+      ],
+      "exit": 0,
+      "elapsed_seconds": 0.226203,
+      "stdout_sha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855",
+      "stderr_sha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855"
+    }
+  ],
+  "report": {
+    "action": "original-tests",
+    "cases": [
+      {
+        "id": "parser.expand_generic",
+        "outcome": "passed",
+        "reason": null
+      },
+      {
+        "id": "parser.expand_number__bad",
+        "outcome": "passed",
+        "reason": null
+      },
+      {
+        "id": "parser.expand_number__ok",
+        "outcome": "passed",
+        "reason": null
+      },
+      {
+        "id": "parser.expand_unsigned",
+        "outcome": "passed",
+        "reason": null
+      },
+      {
+        "id": "truncate.bad_refer",
+        "outcome": "passed",
+        "reason": null
+      },
+      {
+        "id": "truncate.bad_truncate",
+        "outcome": "passed",
+        "reason": null
+      },
+      {
+        "id": "truncate.cannot_open",
+        "outcome": "passed",
+        "reason": null
+      },
+      {
+        "id": "truncate.deallocate",
+        "outcome": "skipped",
+        "reason": "Requires root privileges"
+      },
+      {
+        "id": "truncate.illegal_option",
+        "outcome": "passed",
+        "reason": null
+      },
+      {
+        "id": "truncate.illegal_size",
+        "outcome": "passed",
+        "reason": null
+      },
+      {
+        "id": "truncate.negative",
+        "outcome": "passed",
+        "reason": null
+      },
+      {
+        "id": "truncate.new_absolute_grow",
+        "outcome": "passed",
+        "reason": null
+      },
+      {
+        "id": "truncate.new_absolute_shrink",
+        "outcome": "passed",
+        "reason": null
+      },
+      {
+        "id": "truncate.new_relative_grow",
+        "outcome": "passed",
+        "reason": null
+      },
+      {
+        "id": "truncate.new_relative_shrink",
+        "outcome": "passed",
+        "reason": null
+      },
+      {
+        "id": "truncate.new_zero",
+        "outcome": "passed",
+        "reason": null
+      },
+      {
+        "id": "truncate.no_files",
+        "outcome": "passed",
+        "reason": null
+      },
+      {
+        "id": "truncate.opt_c",
+        "outcome": "passed",
+        "reason": null
+      },
+      {
+        "id": "truncate.opt_rs",
+        "outcome": "passed",
+        "reason": null
+      },
+      {
+        "id": "truncate.reference",
+        "outcome": "passed",
+        "reason": null
+      },
+      {
+        "id": "truncate.rounddown",
+        "outcome": "passed",
+        "reason": null
+      },
+      {
+        "id": "truncate.rounddown_zero",
+        "outcome": "passed",
+        "reason": null
+      },
+      {
+        "id": "truncate.roundup",
+        "outcome": "passed",
+        "reason": null
+      },
+      {
+        "id": "truncate.too_large_size",
+        "outcome": "passed",
+        "reason": null
+      }
+    ],
+    "schema": "literate-ai/retained-project-test-report@1"
+  }
+}

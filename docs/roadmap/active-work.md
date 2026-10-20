@@ -211,6 +211,8 @@ Next action: demonstrate a supported installed retained-project execution path o
   - [x] Probe actual make targets for the original parser/utility and the LZ4 port
     in isolated outputs. The PIE library variant links correctly; default upstream
     port checks and native pkg creation pass. Preserve the first link failure.
+    The original 24-case source ATF inventory now records 23 passes and one
+    root-required skip; privileged and independent acceptance remain open.
     These direct-make diagnostics are not installed LitAI target qualification.
   - [ ] Expose selected source and ports targets through the same installed
     `litai-dev` build/test/package interface; retain native make as the first

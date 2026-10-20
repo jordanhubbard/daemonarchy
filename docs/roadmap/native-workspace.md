@@ -108,9 +108,13 @@ The isolated native make probes now compile the original parser slice and
 ordinary static archive and failed PIE linking; that failure is retained rather
 than disabling PIE. The corrected first parser/utility build took 2.090319
 seconds and its unchanged repeat took 1.029382 seconds on the observed worker.
-Source ATF suites, independent acceptance and per-unit source packages remain
-pending. ELF inspection observes the parser symbols in the built program and
-only libc as its dynamic dependency.
+The [original ATF probe](../../verification/native-source-original-tests.json)
+now builds the original test programs and records 23 passes plus one retained
+root-required skip (`truncate.deallocate`) from the complete 24-case inventory.
+The parser tests link the private parser archive; inspection shows the parser
+symbols and only libc/ATF as dynamic dependencies. Privileged acceptance,
+independent acceptance and per-unit source packages remain pending. The utility
+itself retains only libc as its dynamic dependency.
 
 The `archivers/liblz4` probe verified the pinned distfile, built in 26.547052
 seconds, ran the port's default upstream `check` target in 29.464662 seconds and
