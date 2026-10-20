@@ -16,6 +16,10 @@ work; it is not a separate published tag in this repository. The proposed name
 
 ## Unreleased
 
+- Document POSIX ACL readiness for disposable retained-build workers and record
+  the start of an unprivileged, KVM-backed source SDK baseline. Completed SDK
+  admission, packaging and performance qualification remain pending.
+
 - Clarify the 1.2 wired-debugging roadmap: existing loader UDP networking and
   panic-only kernel NetGDB require separate loader control, kernel debugging and
   early-driver qualification across the firmware handoff.

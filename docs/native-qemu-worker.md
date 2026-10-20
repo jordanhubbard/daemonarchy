@@ -55,6 +55,25 @@ and acceleration are operator selections; this example makes no performance
 claim. The guest seed must provide the approved SSH identity and network setup.
 Create the selected private workspace inside the guest before retained execution.
 
+For the retained secondary-account backend, verify that the actual workspace
+filesystem supports POSIX.1e ACLs before capturing inputs or starting a build.
+The first installed source lifecycle attempt reached ACL setup after 860.693
+seconds, then refused with errno 45 because the disposable UFS image had ACLs
+disabled. On a dedicated disposable UFS guest, enable the `acls` mount option
+while retaining the other selected mount options; verify an actual named-user
+`setfacl` grant, read it back, and remove it. A successful `getfacl` of ordinary
+mode bits alone does not prove support. This backend requires POSIX ACLs; an
+NFSv4 ACL filesystem needs a separately qualified backend or a dedicated supported
+workspace volume. Do not change a physical worker's filesystem policy implicitly.
+
+The [source SDK build checkpoint](../verification/native-sdk-build-development.json)
+boots a separate owned KVM guest with eight CPUs, 16 GiB RAM and a 160 GiB disk.
+An unprivileged four-job native make baseline has started from the pinned source
+fork, requesting world, kernel, pkgbase packages and installer sets. The original
+cold image remains unchanged. Completion, source-built SDK admission and equivalent
+clean/warm/change performance measurements remain required. This guest does not
+replace the separately running installed lifecycle check.
+
 Start the supervisor as a finite foreground job whose process handle and logs
 the controller retains:
 

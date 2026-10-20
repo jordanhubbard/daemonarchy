@@ -1,0 +1,43 @@
+{
+  "schema": "daemonarchy/native-sdk-build-development@1",
+  "scope": "Owned KVM FreeBSD guest boot and start of unprivileged native make baseline; no completed build or admitted SDK.",
+  "guest": {
+    "os": "FreeBSD 16.0-CURRENT amd64",
+    "cpus": 8,
+    "memory_mib": 16384,
+    "virtual_disk_gib": 160,
+    "available_root_gib_at_boot": 135
+  },
+  "supervisor_sha256": "331bce88dddb6b7471adb7db0946bd79fb53ea3654f89ed813125411651de336",
+  "cold_source_disk_sha256": "d2e19227ead6d42cf975f55d5b1ed4ea811b7654c11901dc572bf4969e237a60",
+  "cold_input_unchanged": true,
+  "source_revision": "d98e6c2da7571295bb3c70236afe637a987370e0",
+  "source_tree": "c3cc1a001e635b0907df8e5e0e10f6dd456263e5",
+  "upstream_base": "bdaddb76ef1b9d5537f4a76cff01cdb4795804a4",
+  "build_plan_identity": "fd3e6497036ad9494e5dbf519b4a93e12751ccf9fd0f468409a00482d3ba935f",
+  "build_jobs": 4,
+  "requested_phases": [
+    "buildkernel",
+    "buildworld",
+    "packages",
+    "release-obj",
+    "sets"
+  ],
+  "observed_phase": "buildworld",
+  "actual_compiler_invocation_observed": true,
+  "unprivileged_build": true,
+  "private_live_observation_sha256": "17d3966077d2ac14c2f9a09e1925f03502d5b736cbcb1f9657f57c562dbc7200",
+  "build_complete": false,
+  "source_sdk_admitted": false,
+  "package_acceptance": false,
+  "whole_build_speedup_demonstrated": false,
+  "separate_installed_lifecycle_attempt": {
+    "exit_code": 2,
+    "seconds": 860.693,
+    "error": "retained.acl.native-operation-refused",
+    "errno": 45,
+    "cause": "Guest UFS POSIX ACL support disabled",
+    "remediation": "Enable POSIX ACL mount support on disposable UFS and verify a real named-user grant and removal before retry.",
+    "retry_complete": false
+  }
+}

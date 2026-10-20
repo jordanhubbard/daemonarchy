@@ -199,6 +199,14 @@ Next action: bind the actual source/ports compiler, sysroot and input closure to
   lifecycle qualification remain required. See the
   [worker runbook](../native-qemu-worker.md).
 
+- **Source SDK baseline:** A separate owned KVM FreeBSD guest now runs the pinned
+  native make build as an unprivileged account with four jobs, eight guest CPUs,
+  16 GiB RAM and a 160 GiB disk. World compilation is observed; completed world,
+  kernel, pkgbase and installer sets, SDK admission and performance qualification
+  remain open. The installed source lifecycle attempt separately exposed disabled
+  UFS ACL support; the verified mount correction and retry retain the failed
+  attempt. [Checkpoint](../../verification/native-sdk-build-development.json).
+
 - **Priority:** P1
 - **Owner:** release Component, source and ports forks, native framework lifecycle
 - **Direction:** Make the complete source and ports Component build, test, package, ISO creation and installation system available on the operator development workstation at /usr/src and /usr/ports, managed by Literate AI.
