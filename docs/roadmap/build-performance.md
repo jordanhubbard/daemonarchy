@@ -180,6 +180,14 @@ after the proposed repair, producing the exact same 4,661,185-byte source BOM.
 This is a measured SBOM step; full regression and native installed renewal are
 pending. It is not a whole-build speedup or evidence for selecting Bazel.
 
+Framework [#86](https://github.com/jordanhubbard/literate-ai/issues/86) separately
+bounds retained input ancestor traversal while retaining byte hashes and current
+filesystem-name checks. A warm portable comparison of the same 5,310-member
+manifest takes 7.281015 seconds before and 2.888239 seconds after the proposed
+repair; profiled open calls fall from 711,962 to 7,108. This is one input
+verification measurement. Full regression and installed/native renewal remain
+required; no whole-build improvement or executor selection follows from it.
+
 ## Compare equivalent workloads
 
 Retain exact source/ports, Component/Flavor locks, native toolchain and worker

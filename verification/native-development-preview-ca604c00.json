@@ -1,6 +1,6 @@
 {
   "schema": "daemonarchy/native-development-preview@1",
-  "status": "installed-and-native-run-in-progress",
+  "status": "native-run-refused-required-privileged-test",
   "admitted": false,
   "framework_revision": "ca604c000d6a2eae1906fe10a6f7f1156bab2b43",
   "framework_review": "https://github.com/jordanhubbard/literate-ai/pull/82",
@@ -45,7 +45,16 @@
     "managed_components_including_project": 6,
     "manifest_identity": "sha256:b3b95f194a006f04e98fe84394a7be53ef620cd9f1c075145889f16f952d9761",
     "authorization_identity": "sha256:6f5fea016007308a753aaec4e7c7dc345350c27adaabd5f60831bd1083c741ae",
-    "terminal_result": null
+    "terminal_result": {
+      "exit_code": 2,
+      "seconds": 2037.584,
+      "original_tests_passed": 23,
+      "original_tests_skipped": 1,
+      "policy_refusal": "retained.tests.skip-not-authorized: truncate.deallocate",
+      "observations": "https://github.com/jordanhubbard/daemonarchy-src/blob/c813a0b5fbc0ae6164db17323a6113e21ca37b8c/verification/retained-run-v3.json",
+      "stdout_sha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855",
+      "stderr_sha256": "736441de4afe844cb658cbd517d5e47820383bf54a74982d236f966da0d219d4"
+    }
   },
   "active_workspace_selection_changed": false,
   "cut_over_complete": false,

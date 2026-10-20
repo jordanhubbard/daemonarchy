@@ -16,6 +16,11 @@ work; it is not a separate published tag in this repository. The proposed name
 
 ## Unreleased
 
+- Retain the renewed native source lifecycle's supervised exit and original
+  test result: 23 pass, one required privileged skip, correctly refused before
+  acceptance. Record the separate input-verification performance experiment
+  without claiming full build or release qualification.
+
 - Add an isolated build-worker framework preview with the tested strict-SBOM
   optimization and corrected source-version/linker inputs. Retain the first
   native run's 23-pass/one-root-skip result without awarding acceptance.
