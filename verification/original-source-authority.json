@@ -1,13 +1,13 @@
 {
   "schema": "daemonarchy/original-source-authority-checkpoint@1",
   "work_item": "COMP-001",
-  "status": "original-authority-and-native-package-intent",
+  "status": "original-authority-and-installed-standard-binding",
   "source_repository": "https://github.com/jordanhubbard/daemonarchy-src",
-  "source_revision": "dfe25d2ad44521e01992f6f4fbfe18c6c8b0af51",
+  "source_revision": "978fed917ba2b391c3eace661c21a7a65549cb23",
   "source_review": "https://github.com/jordanhubbard/daemonarchy-src/pull/4",
   "integration_branch": "daemonarchy",
   "upstream_tracking_branch": "main",
-  "framework_candidate_revision": "4bf47c45f79f8e4c3180f955ad13bc67b8949ad1",
+  "framework_candidate_revision": "cffef3238ba48f2c0876270aa4a1aeacce4c86e1",
   "adoption_producer_revision": "1e38070260d856669fb6ab48a3bafbf74641de98",
   "framework_native_qualified": false,
   "operator_framework_updated": false,
@@ -57,8 +57,8 @@
   "verification": {
     "authority": "pass",
     "locks": "pass",
-    "receipt": "skipped-no-policy",
-    "log_sha256": "0364fcce6451abc962ab4194340195dbe916f8d3dbcc6519804ff4e17043f441"
+    "receipt": "fail-missing-unbuilt-standard-receipt",
+    "prior_prebinding_log_sha256": "0364fcce6451abc962ab4194340195dbe916f8d3dbcc6519804ff4e17043f441"
   },
   "skill_evaluation": {
     "tool_revision": "0827e0fab5ca93d525cb8ff1ec2af3d7dfcf6d5d",
@@ -88,34 +88,35 @@
     "qualified_per_unit_packages": 0
   },
   "limitations": [
-    "OS and pkg Flavors are selected; compiler/runtime admission and the executable Standard profile remain absent.",
+    "The Standard binding is current but compiler/runtime admission and the executable retained profile remain absent.",
     "Complete source/ports input ownership and conditional dependency coverage remain open.",
-    "Standard binding, compiler/test runtime admission, original compilation and independent acceptance remain open.",
+    "The retained test receipt is absent because no native original-source build and test lifecycle has completed.",
     "Metadata invalidation is not measured native build-action invalidation or performance evidence.",
     "ISO creation and disposable VM installation, update and rollback remain unqualified.",
-    "The operator retains the prior source checkout and installed framework until native/installed candidate qualification.",
+    "The stable 1.1.1 system and its default CLI are unchanged; the isolated development CLI uses dependencies copied from the stable environment.",
     "This unsigned metadata checkpoint is not a lifecycle or package acceptance receipt.",
-    "The selected framework candidate still refuses public retained execution; newer runtime integration has no installed/native qualification."
+    "The framework candidate requires native execution, package and release qualification before operator promotion."
   ],
   "framework_local_qualification": {
-    "selected": 1851,
-    "passed": 1809,
+    "selected": 1878,
+    "passed": 1836,
     "skipped": 42,
     "failed": 0,
-    "elapsed_seconds": 682.902,
-    "log_sha256": "4f02307799e89cd624473fc4ac51f0441803faec4e7639b1f0c67204ddbce909",
-    "report_sha256": "7e9295bab9ad4c46078567af2cfb49380006df3161d4c31d438c9c9707c44b44"
+    "elapsed_seconds": 788.241,
+    "log_sha256": "927c0e587dfba70adfc8b138e0051a0e994bc0b7176ecfc368ba799f75674160",
+    "report_sha256": "a42bb14e781ba2308c3ad5d3b5c885d765c5c11f67d272e0b549b159794b7125"
   },
   "package_policy_import": {
     "source_revision": "ab15e04e9fb6aadadf26c9a8085640eec275edcc",
     "imports_manifest_sha256": "7afdbd1bfc78097917cf997d9625b2f0ceeba232b9373454153bafef722ad0d0",
     "copied_file_identities_verified": true
   },
-  "framework_review": "https://github.com/jordanhubbard/literate-ai/pull/81",
+  "framework_review": "https://github.com/jordanhubbard/literate-ai/pull/82",
   "framework_candidate_wheel": {
-    "sha256": "8de5594204879f777bc8990f986740198f255890053200e73ee1098dcbee1f69",
-    "size": 3688439,
-    "embedded_revision": "4bf47c45f79f8e4c3180f955ad13bc67b8949ad1",
+    "sha256": "e7d82a5035ce991f56ea45e2085bc9f91d81e71e25da9f7023897c6442e8391e",
+    "size": 3693557,
+    "embedded_revision": "cffef3238ba48f2c0876270aa4a1aeacce4c86e1",
+    "installed_distribution_identity": "sha256:ed899116420edda0c803acf424067f102b6face4870e180104add4da431cb534",
     "native_staged": true,
     "native_qualified": false,
     "installed_qualified": false,
@@ -140,5 +141,26 @@
     "native_listing_compared": false,
     "executed": false,
     "skip_authorizations": 0
+  },
+  "standard_binding": {
+    "source_revision": "978fed917ba2b391c3eace661c21a7a65549cb23",
+    "reviewed_rebind_plan_identity": "sha256:094d62225fb9729c981f26def2f1122de9e9e5c1a0759d5e78ac9c4da7ffb501",
+    "installed_distribution_identity": "sha256:ed899116420edda0c803acf424067f102b6face4870e180104add4da431cb534",
+    "test_receipt_path": "verification/current.json",
+    "test_receipt_state": "missing",
+    "native_execution_admitted": false
+  },
+  "operator_development": {
+    "source_path": "/usr/src",
+    "source_revision": "978fed917ba2b391c3eace661c21a7a65549cb23",
+    "ports_path": "/usr/ports",
+    "isolated_cli": "/home/jkh/bin/litai-dev",
+    "isolated_framework_revision": "cffef3238ba48f2c0876270aa4a1aeacce4c86e1",
+    "isolated_dependency_source": "copied from stable installed environment; independent native dependency qualification pending",
+    "project_validate": "pass",
+    "authority": "pass",
+    "locks": "pass",
+    "receipt": "fail-missing",
+    "stable_cli_unchanged": true
   }
 }

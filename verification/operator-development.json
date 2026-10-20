@@ -6,7 +6,7 @@
     {
       "path": "/usr/src",
       "repository": "https://github.com/jordanhubbard/daemonarchy-src",
-      "revision": "0ece875bdea68df7aae5574905b25125ad0871ba",
+      "revision": "978fed917ba2b391c3eace661c21a7a65549cb23",
       "branch": "feat/source-build-pipeline",
       "clean": true,
       "upstream_base": "bdaddb76ef1b9d5537f4a76cff01cdb4795804a4"
@@ -50,5 +50,15 @@
     "running 1.1.1 system unchanged by development checkouts and CLI installation"
   ],
   "bootstrap_seed_checkpoint": "verification/bootstrap-seed-capture.json",
-  "original_test_reporting_checkpoint": "verification/original-test-reporting.json"
+  "original_test_reporting_checkpoint": "verification/original-test-reporting.json",
+  "isolated_development_cli": {
+    "launcher": "/home/jkh/bin/litai-dev",
+    "framework_revision": "cffef3238ba48f2c0876270aa4a1aeacce4c86e1",
+    "wheel_sha256": "e7d82a5035ce991f56ea45e2085bc9f91d81e71e25da9f7023897c6442e8391e",
+    "installed_distribution_identity": "sha256:ed899116420edda0c803acf424067f102b6face4870e180104add4da431cb534",
+    "project_validation": "pass",
+    "authority_and_locks": "pass",
+    "receipt": "fail-missing",
+    "dependency_source": "copied stable installed environment; native dependency qualification pending"
+  }
 }

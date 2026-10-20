@@ -207,8 +207,8 @@ verifier expectations remain outside build inputs and bind the current three
 locks. Actual newly built ATF listings, original test execution and independent
 acceptance are still pending. The framework's reviewed build-output command-path
 selection passes the full local regression, allowing original-style test commands
-to select built exports by name. Its pinned wheel is staged for native checks;
-no operator framework update or native execution qualification is claimed by the
+to select built exports by name. The current framework wheel is installed in an
+isolated development CLI on the HP; native execution qualification is not claimed by the
 [current checkpoint](../../verification/original-source-authority.json).
 
 The source fork now contains three actual canonical contracts for the shared
@@ -223,8 +223,10 @@ not establish complete source or ports coverage or native source compilation.
 
 The owned source integration branch is `daemonarchy`, separate from the
 upstream-tracking `main`; its source-development PR remains a draft. The
-operator checkout still uses the prior source revision and installed framework
-until the new framework candidate finishes native/installed qualification.
+operator's `/usr/src` checkout now uses source revision
+`978fed917ba2b391c3eace661c21a7a65549cb23`; isolated `litai-dev` validates
+its current Standard binding and three locks. The receipt is missing because no
+retained native lifecycle has run. The stable 1.1.1 framework remains unchanged.
 The next executable step is the actual Standard/native profile, complete
 selected input ownership and compiler/test-runtime admission, followed by
 original compilation, original suites, independent acceptance and pkg products.
