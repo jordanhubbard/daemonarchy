@@ -1,0 +1,51 @@
+{
+  "schema": "daemonarchy/native-port-payload-probe@1",
+  "origin": "archivers/liblz4",
+  "package_version": "1.10.0_2,1",
+  "package_sha256": "8c68e01c0b9b971f05cf2e071f69f8d0a88369f471c5d3b2613c22f097e01b5f",
+  "cli_sha256": "c38ad0150caa4cc112ae30dbb2b42cd302799a857a1d83ad68912f00e1d294e4",
+  "library_sha256": "992485c14baaa68fa68c3092f79d389cf7e410511a0ca4bfc855de1a91b50b1a",
+  "cases": [
+    {
+      "id": "cli-roundtrip-empty",
+      "passed": true,
+      "input_sha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855",
+      "input_bytes": 0,
+      "compressed_bytes": 15
+    },
+    {
+      "id": "cli-roundtrip-text",
+      "passed": true,
+      "input_sha256": "0a0375deb5d36139b0fb492dd6db39b6b09142fcee68cf11888907124720be13",
+      "input_bytes": 27648,
+      "compressed_bytes": 165
+    },
+    {
+      "id": "cli-roundtrip-binary",
+      "passed": true,
+      "input_sha256": "120c518a83325c66464701a6ee080302f332bc768ea3f60473b209f1bfb091df",
+      "input_bytes": 65792,
+      "compressed_bytes": 542
+    },
+    {
+      "id": "cli-reject-malformed-frame",
+      "passed": true,
+      "exit": 44
+    },
+    {
+      "id": "shared-library-roundtrip",
+      "passed": true,
+      "library_version_number": 11000,
+      "input_bytes": 1048576,
+      "input_sha256": "fbbab289f7f94b25736c58be46a994c441fd02552cc6022352e3d86d2fab7c83"
+    }
+  ],
+  "elapsed_seconds": 0.585522,
+  "execution_qualified": false,
+  "lifecycle_receipt": false,
+  "installed_on_host": false,
+  "limitations": [
+    "Direct private payload checks, not canonical retained admission.",
+    "Native VM installation/update/rollback, complete provenance and canonical independent acceptance remain open."
+  ]
+}

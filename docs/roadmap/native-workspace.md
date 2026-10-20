@@ -124,7 +124,12 @@ ports build phase took 0.177630 seconds, with no command output; completion-cook
 reuse is not a changed-input correctness proof. The same requirement therefore
 applies to any make or Bazel bridge: source, patches, shared Mk files, options,
 toolchain and build flags must invalidate stale work and test/package state.
-These are bounded diagnostic timings, not a full release speedup, canonical
+A [private extraction probe](../../verification/native-port-payload.json)
+reopens that exact pkg and passes five CLI/library checks: empty/text/binary
+round trips, malformed-frame rejection and a shared-library round trip. The
+CLI has no dynamic liblz4 dependency; the library check loads the extracted
+shared object explicitly. No package is installed on the host. These are bounded
+diagnostic timings and payload checks, not a full release speedup, canonical
 provenance receipt or completed executor comparison.
 
 Sources: [Bazel remote action caching](https://bazel.build/remote/caching),

@@ -16,6 +16,10 @@ work; it is not a separate published tag in this repository. The proposed name
 
 ## Unreleased
 
+- Reopen the native LZ4 probe package in private staging and pass five CLI/library
+  checks against its payload, without installing it on the worker. Canonical
+  package admission and VM installation/recovery remain open.
+
 - Run the original parser/utility ATF inventory against native probe products:
   23 cases pass and the root-required deallocation case remains explicitly
   skipped. Privileged and independent acceptance remain open.

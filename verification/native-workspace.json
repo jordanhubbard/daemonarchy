@@ -260,5 +260,13 @@
     "current_receipt": "missing",
     "native_execution_qualified": false,
     "implementation_changes": false
+  },
+  "port_payload_probe": {
+    "record": "verification/native-port-payload.json",
+    "record_sha256": "c40e7daba5d05068d63ddba92599f21c7fbc2ef5dbbd6872a241aec58d88ca23",
+    "package_sha256": "8c68e01c0b9b971f05cf2e071f69f8d0a88369f471c5d3b2613c22f097e01b5f",
+    "cases_passed": 5,
+    "installed_on_host": false,
+    "canonical_admission": false
   }
 }
