@@ -183,10 +183,16 @@ pending. It is not a whole-build speedup or evidence for selecting Bazel.
 Framework [#86](https://github.com/jordanhubbard/literate-ai/issues/86) separately
 bounds retained input ancestor traversal while retaining byte hashes and current
 filesystem-name checks. A warm portable comparison of the same 5,310-member
-manifest takes 7.281015 seconds before and 2.888239 seconds after the proposed
-repair; profiled open calls fall from 711,962 to 7,108. This is one input
-verification measurement. Full regression and installed/native renewal remain
-required; no whole-build improvement or executor selection follows from it.
+manifest takes 7.281015 seconds before and 1.938397 seconds after the proposed
+repair; profiled open calls fall from 711,962 to 7,108. Native profiling then
+identified additional Python 3.12 lexical-path overhead. Three FreeBSD samples
+per implementation have medians of 19.794351 seconds before and 7.926676 seconds
+after the final source-level correction, using the same 5,270-member native
+manifest. The [performance record](../../verification/native-input-verification-performance.json)
+binds adapter bytes, exact inventories, raw sample hashes and the passing full
+framework regression (1,865 passed, 42 skipped). Installed-wheel and native
+renewal remain required; these measurements do not establish whole-build
+improvement or select an executor.
 
 ## Compare equivalent workloads
 

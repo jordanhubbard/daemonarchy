@@ -1,0 +1,104 @@
+{
+  "schema": "daemonarchy/native-input-verification-performance@1",
+  "status": "source-probe-only",
+  "installed_candidate_qualified": false,
+  "acceptance_qualified": false,
+  "whole_build_measurement": false,
+  "baseline_framework_revision": "ca604c000d6a2eae1906fe10a6f7f1156bab2b43",
+  "baseline": {
+    "schema": "daemonarchy/retained-input-verification-comparison@1",
+    "manifest_identity": "sha256:b3b95f194a006f04e98fe84394a7be53ef620cd9f1c075145889f16f952d9761",
+    "members": 5270,
+    "adapter_sha256": "6665508999ee6a72d4f84cfe64fb62f7681823165e3b5ebfe5b4f0fcca01cbde",
+    "platform": "FreeBSD",
+    "python": "3.12.14",
+    "samples": [
+      {
+        "seconds": 19.794351,
+        "cpu_seconds": 19.69443
+      },
+      {
+        "seconds": 19.762316,
+        "cpu_seconds": 19.662557
+      },
+      {
+        "seconds": 19.948092,
+        "cpu_seconds": 19.847387
+      }
+    ],
+    "median_seconds": 19.794351,
+    "whole_build_measurement": false
+  },
+  "optimized": {
+    "schema": "daemonarchy/retained-input-verification-comparison@1",
+    "manifest_identity": "sha256:b3b95f194a006f04e98fe84394a7be53ef620cd9f1c075145889f16f952d9761",
+    "members": 5270,
+    "adapter_sha256": "6811499e92de9342cd8e316ae65dc2f4316acb5610b9072392ada6e7b5245e02",
+    "platform": "FreeBSD",
+    "python": "3.12.14",
+    "samples": [
+      {
+        "seconds": 7.926676,
+        "cpu_seconds": 7.886673
+      },
+      {
+        "seconds": 7.777398,
+        "cpu_seconds": 7.738146
+      },
+      {
+        "seconds": 8.336089,
+        "cpu_seconds": 8.294035
+      }
+    ],
+    "median_seconds": 7.926676,
+    "whole_build_measurement": false
+  },
+  "worker": {
+    "role": "native-build-worker",
+    "os": "FreeBSD 16.0-CURRENT",
+    "architecture": "amd64",
+    "logical_cpus": 8,
+    "physical_memory_bytes": 8541151232
+  },
+  "measurement": {
+    "samples_per_implementation": 3,
+    "order": "baseline samples followed by optimized samples",
+    "cache_state": "warm uncontrolled filesystem cache",
+    "processes_per_sample": 1,
+    "source_inputs_unchanged": true,
+    "elapsed_reduction_percent": 59.955
+  },
+  "logs": [
+    {
+      "name": "native-input-baseline-repeat.json",
+      "sha256": "b57a0ac066bab1be40ad915ccdbe7201460405b3c76f55b385ad819ed99fd439"
+    },
+    {
+      "name": "native-input-source-optimized-v2-repeat.json",
+      "sha256": "d74eaa6119cd7462a9b5ce778549421e1b3c1bdaa5429ad78523641600726d36"
+    }
+  ],
+  "source_probe_tests": {
+    "selected": 25,
+    "passed": 24,
+    "skipped": 1,
+    "skip": "optional explicitly selected Git source corpus",
+    "log_sha256": "1e05b07e13f823a7a44b884e96cfa5dde0ef6560fef6a5b120b334f4eb518b47"
+  },
+  "remaining": [
+    "canonical installed wheel and reviewed native binding",
+    "installed native renewal",
+    "equivalent clean/warm/changed-input complete build, package and ISO measurements"
+  ],
+  "optimized_framework_revision": "d6070ba530a743f323e12e23b37b2c7840d49a3b",
+  "framework_review": "https://github.com/jordanhubbard/literate-ai/pull/82",
+  "local_regression": {
+    "selected": 1907,
+    "passed": 1865,
+    "skipped": 42,
+    "failed": 0,
+    "seconds": 1043.891,
+    "report_sha256": "aeba051ec5d0a178f3a5451c75b4220e360efa9c7a4ba1de4483e6945f9a0277",
+    "log_sha256": "81aae3d3b81d09691cf5cf879a76d207bda549b0d399a0344f62c976d4851c83"
+  }
+}
