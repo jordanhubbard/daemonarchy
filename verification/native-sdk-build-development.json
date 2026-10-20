@@ -1,6 +1,6 @@
 {
   "schema": "daemonarchy/native-sdk-build-development@1",
-  "scope": "Owned KVM FreeBSD unprivileged make baseline: buildworld completed; later kernel/package/set phases and SDK admission remain incomplete.",
+  "scope": "Owned KVM FreeBSD unprivileged make baseline: world, kernel, packages and release object preparation completed; installer sets and SDK admission remain incomplete.",
   "guest": {
     "os": "FreeBSD 16.0-CURRENT amd64",
     "cpus": 8,
@@ -23,7 +23,7 @@
     "release-obj",
     "sets"
   ],
-  "observed_phase": "buildkernel",
+  "observed_phase": "sets",
   "actual_compiler_invocation_observed": true,
   "unprivileged_build": true,
   "private_live_observation_sha256": "17d3966077d2ac14c2f9a09e1925f03502d5b736cbcb1f9657f57c562dbc7200",
@@ -40,7 +40,7 @@
     "remediation": "Enable POSIX ACL mount support on disposable UFS and verify a real named-user grant and removal before retry.",
     "retry_complete": false
   },
-  "observation_utc": "2026-10-20T21:18:59.822526+00:00",
+  "observation_utc": "2026-10-20T21:32:15.184254+00:00",
   "completed_phases": [
     {
       "elapsed_seconds": 7930.977,
@@ -48,9 +48,53 @@
       "log": "logs/buildworld-1.log",
       "log_sha256": "2e6ced1671a1bf29d6331cd271ba7320333eb27a06c5c649e74ca1644c4de0c5",
       "name": "buildworld"
+    },
+    {
+      "elapsed_seconds": 600.195,
+      "exit": 0,
+      "log": "logs/buildkernel-1.log",
+      "log_sha256": "817dad901fbf8687402119b317a5ee87c328f242af43b8f6b8e1fa7f69196f1e",
+      "name": "buildkernel"
+    },
+    {
+      "elapsed_seconds": 352.074,
+      "exit": 0,
+      "log": "logs/packages-1.log",
+      "log_sha256": "b9c437b700bd57e1015bfc3c1848430c1d8601f7b727231f8fb4168d24fde15a",
+      "name": "packages"
+    },
+    {
+      "elapsed_seconds": 0.471,
+      "exit": 0,
+      "log": "logs/release-obj-1.log",
+      "log_sha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855",
+      "name": "release-obj"
     }
   ],
   "source_clean_at_world_completion": true,
   "world_log_bytes": 90613977,
-  "world_completion_observation_sha256": "2082ebcdb0ad29e1e8d8c385706190ba1f61272bb266968eb04d95dd647a873a"
+  "world_completion_observation_sha256": "2082ebcdb0ad29e1e8d8c385706190ba1f61272bb266968eb04d95dd647a873a",
+  "verified_phase_logs": [
+    {
+      "name": "buildworld",
+      "log_bytes": 90613977,
+      "log_sha256": "2e6ced1671a1bf29d6331cd271ba7320333eb27a06c5c649e74ca1644c4de0c5"
+    },
+    {
+      "name": "buildkernel",
+      "log_bytes": 13573849,
+      "log_sha256": "817dad901fbf8687402119b317a5ee87c328f242af43b8f6b8e1fa7f69196f1e"
+    },
+    {
+      "name": "packages",
+      "log_bytes": 18003442,
+      "log_sha256": "b9c437b700bd57e1015bfc3c1848430c1d8601f7b727231f8fb4168d24fde15a"
+    },
+    {
+      "name": "release-obj",
+      "log_bytes": 0,
+      "log_sha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855"
+    }
+  ],
+  "completed_phase_observation_sha256": "e0001f40cbce5cf63be61104261dcb66cf7db421d5fb38d8e360a6ce825ec41f"
 }

@@ -200,7 +200,7 @@ Next action: bind the actual source/ports compiler, sysroot and input closure to
   lifecycle qualification remain required. See the
   [worker runbook](../native-qemu-worker.md).
 
-- **Candidate renewal:** Framework `587ad3f1` passes a fresh Python 3.11 full
+- **Preceding candidate renewal:** Framework `587ad3f1` passes a fresh Python 3.11 full
   regression and its exact committed installed-wheel gate. The isolated native
   FreeBSD installation verifies all 37 distributions, the 1,212-member framework
   identity, unchanged Standard policy, Ed25519, SQLite and the numeric secondary
@@ -213,8 +213,11 @@ Next action: bind the actual source/ports compiler, sysroot and input closure to
   native make build as an unprivileged account with four jobs, eight guest CPUs,
   16 GiB RAM and a 160 GiB disk. `buildworld` completes with exit 0 in 7,930.977
   seconds, with its retained log hash independently checked and the pinned source
-  worktree still clean. Kernel, pkgbase and installer sets, SDK admission and
-  performance qualification remain open. The installed source lifecycle attempt separately exposed disabled
+  worktree still clean. Kernel compilation then passes in 600.195 seconds,
+  package generation in 352.074 seconds and release object preparation in 0.471
+  seconds. All four retained log hashes independently verify. Installer sets,
+  package payload acceptance, SDK admission and performance qualification remain
+  open. The installed source lifecycle attempt separately exposed disabled
   UFS ACL support; the verified mount correction and retry retain the failed
   attempt. [Checkpoint](../../verification/native-sdk-build-development.json).
 
@@ -285,8 +288,9 @@ Next action: bind the actual source/ports compiler, sysroot and input closure to
   allocation prefix remains private mode 0700. Mount cleanup succeeds; independent
   acceptance and admission are not reached. The scoped upstream repair passes
   16 native source-level checks, including integrated receipt handling with a
-  protocol-peer allocation. Full regression and installed-wheel original-suite
-  renewal remain open. [Development evidence](../../verification/native-prefix-search-development.json)
+  protocol-peer allocation. The renewed installed candidate now reports all 24
+  original cases passed; final lifecycle acceptance and admission remain open.
+  [Development evidence](../../verification/native-prefix-search-development.json)
   preserves the failed command identities and distinguishes the repair probe
   from actual installed qualification.
 - **Secondary access development:** [Framework PR #87](https://github.com/jordanhubbard/literate-ai/pull/87)

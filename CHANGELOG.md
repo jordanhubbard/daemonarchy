@@ -16,17 +16,21 @@ work; it is not a separate published tag in this repository. The proposed name
 
 ## Unreleased
 
+- Record successful source kernel compilation and package generation after the
+  completed world build, with independently checked phase logs. Installer-set
+  staging is active; package payload acceptance and SDK admission remain open.
+
 - Qualify the `6e370033` development wheel and its isolated FreeBSD installation,
   including 37 verified distributions, signing and SQLite. All 24 original
   source tests now report passes without skips; final lifecycle acceptance is
-  still pending. Record successful unprivileged `buildworld` separately from
-  unfinished kernel, package, set and SDK admission work.
+  still pending. Keep installed-runtime qualification separate from source-built
+  SDK admission.
 
 - Reconcile the preceding traversal candidate's retained evidence: full controller
   regression and its exact wheel pass. Native installed lifecycle qualification
   and the subsequent private-prefix repair retain separate pending states.
 
-- Preserve an installed native lifecycle failure: compilation and documentation
+- Preserve the preceding `587ad3f1` native lifecycle failure: compilation and documentation
   pass, but two of 24 original cases cannot launch through the private allocation
   directory. Record 16 passing native source-level checks of the scoped access
   repair separately; installed repair qualification remains pending.
