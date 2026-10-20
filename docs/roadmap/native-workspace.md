@@ -74,8 +74,12 @@ CLI validates the relocated source project and three locks. Its test receipt is
 missing. [Ports PR #7](https://github.com/jordanhubbard/daemonarchy-ports/pull/7)
 now authors two original-source contracts, reviewed adoption, both FreeBSD/pkg
 locks and the complete installed Standard binding. Installed-wheel authority
-and lock validation pass; the receipt remains missing. This review has not
-changed the deployed ports selection, which still needs that metadata.
+and lock validation pass; the receipt remains missing. The [candidate CLI checkpoint](../../verification/native-development-cli.json)
+now validates source and ports review checkouts and all five native locks on
+both roles. The active ports selection still lacks this metadata; it has not
+changed. The [candidate commands](../source-builds.md#candidate-common-cli-before-cut-over)
+inspect the reviewed projects while executable profiles and admission remain
+unfinished.
 
 ## Executor decision
 

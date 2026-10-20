@@ -16,6 +16,11 @@ work; it is not a separate published tag in this repository. The proposed name
 
 ## Unreleased
 
+- Install the exact candidate common CLI on both native roles and validate the
+  reviewed source/ports projects and all five native locks. Retain the preceding
+  CLI aliases and active workspace selection; executable native profiles and
+  current lifecycle receipts remain unfinished.
+
 - Reopen the native LZ4 probe package in private staging and pass five CLI/library
   checks against its payload, without installing it on the worker. Canonical
   package admission and VM installation/recovery remain open.

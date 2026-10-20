@@ -27,6 +27,37 @@ retained build. The isolated CLI dependencies were copied from the stable
 installation, so their independent native package qualification also remains
 open.
 
+## Candidate common CLI before cut-over
+
+The next isolated framework wheel is installed on both native roles at
+`~/.local/libexec/litai-dev-5b9afcd7/bin/litai`. Its exact framework revision is
+`5b9afcd7c9016341620695b9110ec073809d239c`; the
+[native checkpoint](../verification/native-development-cli.json) records wheel
+and installed-distribution identities, preserved evidence policy and qualification
+limits. The existing development alias and stable CLI keep their preceding
+selections.
+
+The new source and ports metadata are available in review checkouts below the
+parallel repositories. Each native role passes project authority and all five
+native locks with this installed wheel:
+
+```sh
+DAEMONARCHY_DEV_CLI="$HOME/.local/libexec/litai-dev-5b9afcd7/bin/litai"
+"$DAEMONARCHY_DEV_CLI" build --help
+"$DAEMONARCHY_DEV_CLI" project validate /usr/daemonarchy/src/.worktrees/dev-5b9afcd7
+"$DAEMONARCHY_DEV_CLI" lock /usr/daemonarchy/ports/.worktrees/dev-5b9afcd7 --target freebsd --check
+```
+
+`verify` reports the missing lifecycle receipt for each review project. Executable
+native profiles, compiler/sysroot custody and independent acceptance remain
+unfinished; the common build/test protocol is installed, but an admitted source
+or ports build is not available yet. The review checkouts share their respective
+parallel Git stores, keeping the active revisions and legacy trees intact.
+Selection refresh and designated cut-over remain separate requirements. The
+Python import bundle comes from the preceding native development environment;
+its independent native qualification and dependency command entrypoints remain
+open.
+
 ## Parallel workspace migration
 
 The next build-system deployment uses `/usr/daemonarchy` alongside the existing

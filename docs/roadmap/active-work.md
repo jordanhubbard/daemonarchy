@@ -35,14 +35,14 @@ Evidence: `verification/adoption-checks.json`. Native execution and release enfo
 - **Priority:** P1
 - **Owner:** native lifecycle integration and framework boundary
 - **Direction:** Integrate existing FreeBSD build, test, signing and release procedures without transferring source authority.
-- **Conclusion:** Do not enable framework execution or publication until exact mixed source/assets, worker/toolchain, privileged cleanup, artifact custody and current receipt paths are demonstrated; the installed retained execution handler currently refuses qualification.
+- **Conclusion:** Do not enable framework execution or publication until exact mixed source/assets, worker/toolchain, privileged cleanup, artifact custody and current receipt paths are demonstrated; the installed candidate provides the retained handler, while the actual product profile and native acceptance remain unfinished.
 - **Depends on:** ADOPT-001
 - **Implementation:**
   - [x] Audit the retained execution handler on current framework main and reconcile [framework issue #22](https://github.com/jordanhubbard/literate-ai/issues/22): the issue was reopened because authorized execution still unconditionally refuses. Actual execution qualification remains open below.
   - [ ] Bind the actual FreeBSD target, action inventory, external inputs, privileged cleanup and protected signer.
   - [ ] Qualify current native receipts, artifact custody and release enforcement.
 
-Next action: demonstrate a supported installed retained-project execution path on a bounded mixed-source/binary fixture before connecting Daemonarchy production workers. Do not bypass `retained_project.execution_not_qualified`.
+Next action: bind the actual source/ports compiler, sysroot and input closure to executable retained profiles and earn installed native admission. The product controller also retains a receipt policy without a lifecycle driver; the reviewed Standard first-binding command refuses that partial configuration with `standard_rebind.binding_required`. Qualify an explicit product-policy migration through the owning framework before product execution; do not remove existing policy to force initial binding.
 - **Evidence:**
   - [ ] Actual installed CLI accepts retained native execution; source and binary invalidation works; native tests and artifact hashes are current; failed or omitted evidence blocks publication; existing release workflow is reproduced.
 
@@ -214,6 +214,11 @@ Next action: demonstrate a supported installed retained-project execution path o
     The original 24-case source ATF inventory now records 23 passes and one
     root-required skip; privileged and independent acceptance remain open.
     These direct-make diagnostics are not installed LitAI target qualification.
+  - [x] Install the exact candidate wheel on both native roles and validate
+    both reviewed projects and all five native locks in separate review checkouts.
+    The [candidate checkpoint](../../verification/native-development-cli.json)
+    records dependency/import smoke checks, preserved active selection and
+    missing receipts. This qualifies metadata availability, not target execution.
   - [ ] Expose selected source and ports targets through the same installed
     `litai-dev` build/test/package interface; retain native make as the first
     execution bridge and compare candidate action executors honestly.

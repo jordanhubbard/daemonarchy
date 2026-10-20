@@ -75,9 +75,11 @@ managed by Literate AI. Preserve the usable installed desktop while qualifying
 new outputs in isolated workspaces. The parallel `/usr/daemonarchy` workspace
 is now deployed on the operator workstation and native build host, with
 independent source/ports checkouts and isolated output roots. The common
-`litai-dev` target entrypoint remains unfinished. Ports PR #7 now provides
+`litai-dev` target entrypoint remains unfinished. Ports PR #7 provides
 reviewed original authority and two current native locks with the complete
-installed Standard binding; that draft is not yet deployed or executed. Direct native make probes
+installed Standard binding. The candidate wheel now validates both review
+projects and all five source/ports locks on both native roles. Their receipts
+remain missing and the active workspace selection is preserved. Direct native make probes
 compile the parser/utility and build/test/package the LZ4 port; these are
 diagnostics, not admitted Component lifecycles. Unification takes priority over preserving old
 build interfaces, while upstream pulls must remain practical. Existing make

@@ -82,7 +82,7 @@
     "source_authority": "pass",
     "source_locks": 3,
     "source_receipt": "missing",
-    "ports_project": "not-yet-authored",
+    "ports_project": "active selection lacks metadata; reviewed native preview is separate",
     "common_build_entrypoint": "pending"
   },
   "toolchain_observation": {
@@ -248,11 +248,11 @@
   "ports_project_review": {
     "repository": "https://github.com/jordanhubbard/daemonarchy-ports",
     "pull_request": "https://github.com/jordanhubbard/daemonarchy-ports/pull/7",
-    "revision": "08a25c8ce6ede043b4433a916da424830b7de4cb",
-    "status": "draft-not-deployed",
+    "revision": "1349a0230986c182f25da3c66bf4cdf819eef9b0",
+    "status": "draft-native-preview-active-selection-unchanged",
     "original_authority": "reviewed-original-source-adoption",
-    "framework_revision": "cffef3238ba48f2c0876270aa4a1aeacce4c86e1",
-    "framework_distribution_identity": "sha256:ed899116420edda0c803acf424067f102b6face4870e180104add4da431cb534",
+    "framework_revision": "5b9afcd7c9016341620695b9110ec073809d239c",
+    "framework_distribution_identity": "sha256:01c193fa8e09bfd5c38eee2d5aaa71594421c1e67840fad46d40b1740c4a8bc9",
     "required_evidence_kinds": 16,
     "project_authority": "pass",
     "native_locks": 2,
@@ -268,5 +268,6 @@
     "cases_passed": 5,
     "installed_on_host": false,
     "canonical_admission": false
-  }
+  },
+  "candidate_cli_checkpoint": "verification/native-development-cli.json"
 }

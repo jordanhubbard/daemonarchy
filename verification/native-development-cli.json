@@ -1,0 +1,130 @@
+{
+  "schema": "daemonarchy/native-development-cli-checkpoint@1",
+  "status": "installed-native-authority-preview",
+  "framework_revision": "5b9afcd7c9016341620695b9110ec073809d239c",
+  "framework_review": "https://github.com/jordanhubbard/literate-ai/pull/82",
+  "wheel_sha256": "efca269037653a90ddefad2d0b6f21905b759fee79756146a324e20de17e87cc",
+  "distribution_identity": "sha256:01c193fa8e09bfd5c38eee2d5aaa71594421c1e67840fad46d40b1740c4a8bc9",
+  "standard_policy_identity": "sha256:a5ca0d6d13daff0199f218c5e4af723a2cec87b927e75dd3a731c511b5d85ac7",
+  "local_regression": {
+    "selected": 1892,
+    "passed": 1850,
+    "skipped": 42,
+    "failed": 0,
+    "seconds": 1063.469,
+    "report_sha256": "d4885099d94eba41785a4b7795af11a10f20869fe0eca69aa6e8730799e1d5d6",
+    "log_sha256": "7fc7ae0393d46d09ca5561950edcf298438682e9aa6ef55fc9dd8d00de7bb255"
+  },
+  "installed_catalog_import": {
+    "state": "pass",
+    "source_revision": "978fed917ba2b391c3eace661c21a7a65549cb23",
+    "files": 5,
+    "selected_policy_bytes_match": true
+  },
+  "bootstrap_dependencies": {
+    "distributions": 36,
+    "files": 1930,
+    "archive_sha256": "7a26b79e29fd088631a0849a6f12a688735a3d965f25ebd2608f3361cd9ebb79",
+    "scope": "Python library files copied from existing native development environment; dependency command entrypoints not provisioned",
+    "independent_native_qualification": false
+  },
+  "reviewed_projects": {
+    "src": {
+      "revision": "dbe8c17c831d20659d7d0ee74afbeaaf0df4fa73",
+      "locks": 3,
+      "rebind_plan_identity": "sha256:d8788377ad6f684e11d9b0db310c66d1172ad1399532a07efad12db595c7e771"
+    },
+    "ports": {
+      "revision": "1349a0230986c182f25da3c66bf4cdf819eef9b0",
+      "locks": 2,
+      "rebind_plan_identity": "sha256:633d5a210fbf887155ffb855b6dab5c242bbbf78b29054bcc3a77e1f94fb8f5e"
+    }
+  },
+  "required_evidence_kinds_preserved": 16,
+  "roles": [
+    {
+      "role": "native-build-worker",
+      "installed": true,
+      "distribution_identity": "sha256:01c193fa8e09bfd5c38eee2d5aaa71594421c1e67840fad46d40b1740c4a8bc9",
+      "members": 1203,
+      "native_crypto_smoke": true,
+      "dependency_check": "pass",
+      "installed_build_help": "pass",
+      "installation_log_sha256": "6ce99fe2793bd10f58575f85af9a10be3059c16b2a3b918da9a4595dd343acac",
+      "development_alias_changed": false,
+      "default_cli_changed": false,
+      "review_checkouts": [
+        {
+          "tree": "src",
+          "review_revision": "dbe8c17c831d20659d7d0ee74afbeaaf0df4fa73",
+          "review_path": "/usr/daemonarchy/src/.worktrees/dev-5b9afcd7",
+          "active_revision_preserved": "978fed917ba2b391c3eace661c21a7a65549cb23",
+          "authority": "pass",
+          "locks": "current",
+          "receipt": "missing",
+          "native_execution_qualified": false
+        },
+        {
+          "tree": "ports",
+          "review_revision": "1349a0230986c182f25da3c66bf4cdf819eef9b0",
+          "review_path": "/usr/daemonarchy/ports/.worktrees/dev-5b9afcd7",
+          "active_revision_preserved": "f7d7ee897405dcb8ce87e674588a4e1b3bfba00e",
+          "authority": "pass",
+          "locks": "current",
+          "receipt": "missing",
+          "native_execution_qualified": false
+        }
+      ],
+      "preview_log_sha256": "7f9b983be46cb5022b4f9b178f4b7488b8a227fcf99442fd9af8a2d5e3a3ef48",
+      "active_workspace_inspection": "pass",
+      "active_selection_identity": "sha256:170a3bceebfe42746a3750c01b98caf599cf5f6703edde26e3e964a0a4da46df",
+      "inspection_sha256": "874e8eed5bc0357038b549c0d13a359d6f9af57ed78c2de9520228cfa26a178c"
+    },
+    {
+      "role": "operator-workstation",
+      "installed": true,
+      "distribution_identity": "sha256:01c193fa8e09bfd5c38eee2d5aaa71594421c1e67840fad46d40b1740c4a8bc9",
+      "members": 1203,
+      "native_crypto_smoke": true,
+      "dependency_check": "pass",
+      "installed_build_help": "pass",
+      "installation_log_sha256": "6ce99fe2793bd10f58575f85af9a10be3059c16b2a3b918da9a4595dd343acac",
+      "development_alias_changed": false,
+      "default_cli_changed": false,
+      "review_checkouts": [
+        {
+          "tree": "src",
+          "review_revision": "dbe8c17c831d20659d7d0ee74afbeaaf0df4fa73",
+          "review_path": "/usr/daemonarchy/src/.worktrees/dev-5b9afcd7",
+          "active_revision_preserved": "978fed917ba2b391c3eace661c21a7a65549cb23",
+          "authority": "pass",
+          "locks": "current",
+          "receipt": "missing",
+          "native_execution_qualified": false
+        },
+        {
+          "tree": "ports",
+          "review_revision": "1349a0230986c182f25da3c66bf4cdf819eef9b0",
+          "review_path": "/usr/daemonarchy/ports/.worktrees/dev-5b9afcd7",
+          "active_revision_preserved": "f7d7ee897405dcb8ce87e674588a4e1b3bfba00e",
+          "authority": "pass",
+          "locks": "current",
+          "receipt": "missing",
+          "native_execution_qualified": false
+        }
+      ],
+      "preview_log_sha256": "7f9b983be46cb5022b4f9b178f4b7488b8a227fcf99442fd9af8a2d5e3a3ef48",
+      "active_workspace_inspection": "pass",
+      "active_selection_identity": "sha256:170a3bceebfe42746a3750c01b98caf599cf5f6703edde26e3e964a0a4da46df",
+      "inspection_sha256": "874e8eed5bc0357038b549c0d13a359d6f9af57ed78c2de9520228cfa26a178c"
+    }
+  ],
+  "active_workspace_selection_changed": false,
+  "cut_over_complete": false,
+  "native_component_execution_qualified": false,
+  "limitations": [
+    "Native compiler/sysroot input custody and executable source/ports profiles remain unfinished.",
+    "Independent dependency qualification, original privileged and sealed-product acceptance, per-unit packages, changed-input performance and VM recovery remain open.",
+    "The product controller has a legacy receipt policy without a lifecycle driver; Standard first-binding correctly refuses this partial configuration. Reviewed migration is required."
+  ]
+}
