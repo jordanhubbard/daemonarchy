@@ -6,6 +6,34 @@ Its `main` tracks the selected upstream baseline. Changes and build tooling live
 on review branches; generally useful kernel fixes should also be contributed to
 FreeBSD. The local development checkout is `~/Src/daemonarchy-src`.
 
+## Current build-worker development entry point
+
+On `freebsd.local`, the newest qualified runtime preview is
+`~/.local/libexec/litai-dev-d6070ba5/bin/litai`. Its separate source review is
+`/usr/daemonarchy/src/.worktrees/dev-d6070ba5`; earlier reviews, the active
+workspace selection and the HP development alias are preserved.
+
+```sh
+DAEMONARCHY_DEV_CLI="$HOME/.local/libexec/litai-dev-d6070ba5/bin/litai"
+DAEMONARCHY_SOURCE_REVIEW=/usr/daemonarchy/src/.worktrees/dev-d6070ba5
+"$DAEMONARCHY_DEV_CLI" project validate "$DAEMONARCHY_SOURCE_REVIEW"
+"$DAEMONARCHY_DEV_CLI" verify "$DAEMONARCHY_SOURCE_REVIEW"
+```
+
+Authority and all five source locks pass; verification still refuses the missing
+lifecycle receipt. The [runtime renewal record](../verification/native-development-preview-d6070ba5.json)
+binds the installed native dependency closure and reviewed rebind. Use the
+[source runbook](https://github.com/jordanhubbard/daemonarchy-src/blob/feat/source-build-pipeline/tools/daemonarchy/README.md#selected-unit-retained-entry-point)
+for preparing a fresh profile, inspecting its plan and separately authorizing a
+build. An older profile or authorization is not reusable after a rebind.
+
+All 24 original cases now pass in an isolated
+[disposable guest capability probe](../verification/original-native-suite-guest-probe.json)
+against the previously retained native products, including the root and
+unprivileged cases. The probe uses guest base tools and manually scoped ACLs;
+installed framework grants, compiler SDK admission, independent acceptance,
+per-unit packages and the complete source/ports build remain unfinished.
+
 ## Operator development preview on the HP
 
 The HP at `daemon.local` has the reviewed source fork at `/usr/src` (commit
@@ -34,12 +62,14 @@ strict-SBOM performance repair. Its isolated prefix is
 retain their preceding selections. The installed native SBOM fixtures and all
 62 source-controller checks pass. A fresh source review at `949a40c88544`
 has a reviewed Standard rebind and a 5,270-input profile with corrected source
-version inputs and explicit linker selection. Its managed run is in progress;
-no receipt, complete privileged acceptance or per-unit pkg qualification is claimed.
+version inputs and explicit linker selection. Its managed run ended with exit 2
+after 2,037.584 seconds: 23 original cases passed and required privileged
+deallocation skipped, correctly refusing lifecycle acceptance. The failed run
+is retained; the later manual guest result above does not turn it into a pass.
 
-## Candidate common CLI before cut-over
+## Preceding common CLI preview before cut-over
 
-The next isolated framework wheel is installed on both native roles at
+The preceding isolated framework wheel remains installed on both native roles at
 `~/.local/libexec/litai-dev-5b9afcd7/bin/litai`. Its exact framework revision is
 `5b9afcd7c9016341620695b9110ec073809d239c`; the
 [native checkpoint](../verification/native-development-cli.json) records wheel
@@ -291,11 +321,11 @@ spooling, a 64 MiB per-file limit and unchanged 16 GiB/500,000-entry aggregate
 bounds. Thirty controller/bootstrap checks pass on the native workstation,
 including a record exceeding the old limit, split filemon markers and changing-file
 refusal. A separate native probe preserves and hash-verifies the complete actual
-archive trace in immutable custody. The workstation's `/usr/src` now contains
-that fix. [Compact evidence](../verification/native-traced-build-quiet-result.json)
+archive trace in immutable custody. The workstation's `/usr/src` received
+that fix at the recorded checkpoint. [Compact evidence](../verification/native-traced-build-quiet-result.json)
 retains exact revisions, failure, hashes and qualification limits.
 
-## Retained executable acceptance checkpoint
+## Historical retained executable acceptance checkpoint
 
 Framework checkpoint `567e0f8a4092` adds an opt-in withheld verifier policy for
 sealed retained build exports. All 69 selected retained-project checks pass on
@@ -303,13 +333,15 @@ actual FreeBSD, including executable cases with exact binary input/output and
 exit-status comparison, stale-policy/lock rejection, native dependency drift
 and failed-result custody. Fourteen focused controller checks also pass.
 [The checkpoint](../verification/native-retained-acceptance.json) records the
-revision and log hashes. Its complete framework regression remains running
-before publication of this local commit. The installed CLI remains at `545c4ae6`.
+revision and log hashes. At that checkpoint, full regression and wheel
+qualification were pending and the installed CLI was still `545c4ae6`. The
+current build-worker runtime and its narrower native evidence are recorded at
+the start of this document.
 
-This does not enable public retained execution: SDK/source and resolved BOM
-admission, retained-origin receipts, package/release consumers and installed
-qualification are still required. Preflight also found that the installed-wheel
-smoke harness expects a Linux Flavor on FreeBSD even though production
-initialization has an explicit FreeBSD selector. Correct that harness under
-framework issue #67 and qualify actual wheel bytes; a source test pass cannot
-substitute for that installation gate.
+That checkpoint alone did not qualify public retained execution. Later previews
+expose the retained build/test commands, while compiler SDK admission, complete
+source/resolved BOMs, independent acceptance and per-unit package/receipt
+admission remain open. Its preflight also found a Linux expectation in the
+FreeBSD installed-wheel smoke harness. The current native focused runtime
+checks are not a complete native wheel-smoke or platform acceptance result;
+keep that qualification under framework issue #67.

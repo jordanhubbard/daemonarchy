@@ -136,8 +136,13 @@ The [new full tracing attempt](../../verification/native-traced-build-start.json
 is isolated from the earlier build and retains its own exact plan. Its first
 world phase [failed in crunchgen](../../verification/native-traced-build-failure.json)
 because meta verbosity contaminated structured query output. The corrected
-quiet mode passes all 27 native controller checks; a [separate corrected attempt](../../verification/native-traced-build-quiet-start.json)
-has started. No successful full tracing result is claimed. Source changes
+quiet mode passed all 27 native controller checks. The [separate corrected attempt](../../verification/native-traced-build-quiet-result.json)
+completed world, kernel and package commands, then failed while capturing a
+39 MB set trace above the old per-file limit. The bounded streaming repair
+passes 30 native checks and captures that same trace; an independent audit
+verifies 537 artifacts and all eight installer-set hashes. The original failed
+result remains unchanged. This recovered workflow is not a clean successful
+performance baseline or full lifecycle acceptance. Source changes
 between those revisions affect only release archive handling and controller/worker
 preparation; native compiler and OS source regions are unchanged. Component/action
 keys should bind consumed inputs, toolchain, flags and generated inputs, while
