@@ -1,6 +1,6 @@
 {
   "schema": "daemonarchy/native-sdk-build-development@1",
-  "scope": "Owned KVM FreeBSD guest boot and start of unprivileged native make baseline; no completed build or admitted SDK.",
+  "scope": "Owned KVM FreeBSD unprivileged make baseline: buildworld completed; later kernel/package/set phases and SDK admission remain incomplete.",
   "guest": {
     "os": "FreeBSD 16.0-CURRENT amd64",
     "cpus": 8,
@@ -23,7 +23,7 @@
     "release-obj",
     "sets"
   ],
-  "observed_phase": "buildworld",
+  "observed_phase": "buildkernel",
   "actual_compiler_invocation_observed": true,
   "unprivileged_build": true,
   "private_live_observation_sha256": "17d3966077d2ac14c2f9a09e1925f03502d5b736cbcb1f9657f57c562dbc7200",
@@ -39,5 +39,18 @@
     "cause": "Guest UFS POSIX ACL support disabled",
     "remediation": "Enable POSIX ACL mount support on disposable UFS and verify a real named-user grant and removal before retry.",
     "retry_complete": false
-  }
+  },
+  "observation_utc": "2026-10-20T21:18:59.822526+00:00",
+  "completed_phases": [
+    {
+      "elapsed_seconds": 7930.977,
+      "exit": 0,
+      "log": "logs/buildworld-1.log",
+      "log_sha256": "2e6ced1671a1bf29d6331cd271ba7320333eb27a06c5c649e74ca1644c4de0c5",
+      "name": "buildworld"
+    }
+  ],
+  "source_clean_at_world_completion": true,
+  "world_log_bytes": 90613977,
+  "world_completion_observation_sha256": "2082ebcdb0ad29e1e8d8c385706190ba1f61272bb266968eb04d95dd647a873a"
 }

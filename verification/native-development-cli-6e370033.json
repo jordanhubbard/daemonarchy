@@ -1,0 +1,53 @@
+{
+  "schema": "daemonarchy/native-development-cli-checkpoint@1",
+  "framework_commit": "6e3700337f2ff2be61b5b86390059878093fc1bd",
+  "wheel_identity": "sha256:34e7801e802d8324eaf3857fe49c18cf5989436dac80b63222833f3ed28eef58",
+  "distribution_identity": "sha256:5b07e1c258d5ce77bf7755d1686d80ef84145c122c4c8cede618ca09968531bb",
+  "distribution_members": 1213,
+  "standard_policy_identity": "sha256:a5ca0d6d13daff0199f218c5e4af723a2cec87b927e75dd3a731c511b5d85ac7",
+  "dependency_closure_identity": "sha256:1af3f6e635c71f638e77bd7339c8cd3d53152b41dbea0dd45c09398117499b53",
+  "native_verified_distributions": 37,
+  "native_platform": "FreeBSD-16.0-CURRENT-amd64-64bit-ELF",
+  "native_python": "3.12.15",
+  "ed25519": true,
+  "sqlite": true,
+  "secondary_uid": 2001,
+  "native_bootstrap_seconds": 9.935,
+  "installed_wheel_gate": true,
+  "controller_full_regression": {
+    "schema": "literate-ai/development-full-regression@1",
+    "python": "3.11.14",
+    "workers": 4,
+    "terminal_exit_code": 0,
+    "summary": {
+      "executed": 1912,
+      "failed": 0,
+      "known_failed": 0,
+      "passed": 1912,
+      "selected": 1998,
+      "skipped": 86
+    },
+    "report_sha256": "626e5e1bd1130a0dcce4cdc27dd3ea337ccc15dad9307181cc6e03cc338e051c",
+    "log_sha256": "312352efea8f3b9cfcc9ba655160caab89e0c0469b0effd6b8d29e24e5d5af87",
+    "reviewed_tree": "553bbdce4cac01a0efd5e9ff7d38ccba7aecc068",
+    "release_evidence": false,
+    "seconds": 967.164
+  },
+  "native_bootstrap_record_sha256": "9b29abf1e8aea50b9a207ab85576c7f919c113c0bf8984eb0265e8c8879fadf5",
+  "native_smoke_record_sha256": "db5340168a16a8e3d4842c1997a1d8f54d778329eb860cdf4407e35244af70a6",
+  "original_tests": {
+    "selected": 24,
+    "passed": 24,
+    "failed": 0,
+    "skipped": 0,
+    "complete_inventory_matched": true,
+    "report_sha256": "d5de391a49f80e0cdb060938632bd90d7686e2b1e46e3086912ca5ed5e3b0ace",
+    "lifecycle_terminal_observed": false
+  },
+  "preserved_preceding_failure": "native-prefix-search-development.json",
+  "hosted_matrix_complete": false,
+  "installed_original_source_lifecycle_complete": false,
+  "source_sdk_admitted": false,
+  "physical_worker_cutover": false,
+  "release_acceptance": false
+}

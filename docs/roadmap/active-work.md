@@ -211,9 +211,10 @@ Next action: bind the actual source/ports compiler, sysroot and input closure to
 
 - **Source SDK baseline:** A separate owned KVM FreeBSD guest now runs the pinned
   native make build as an unprivileged account with four jobs, eight guest CPUs,
-  16 GiB RAM and a 160 GiB disk. World compilation is observed; completed world,
-  kernel, pkgbase and installer sets, SDK admission and performance qualification
-  remain open. The installed source lifecycle attempt separately exposed disabled
+  16 GiB RAM and a 160 GiB disk. `buildworld` completes with exit 0 in 7,930.977
+  seconds, with its retained log hash independently checked and the pinned source
+  worktree still clean. Kernel, pkgbase and installer sets, SDK admission and
+  performance qualification remain open. The installed source lifecycle attempt separately exposed disabled
   UFS ACL support; the verified mount correction and retry retain the failed
   attempt. [Checkpoint](../../verification/native-sdk-build-development.json).
 
@@ -270,7 +271,15 @@ Next action: bind the actual source/ports compiler, sysroot and input closure to
   inside writable fixtures; the second scopes writable inheritance to that
   subtree and restores all pre-existing ACLs exactly. This remains a manual
   capability probe, not installed framework grants or lifecycle admission.
-- **Installed prefix access gap:** The actual installed framework run compiles
+- **Installed candidate renewal:** Framework `6e370033` passes the complete
+  controller regression (1,912 passes, 86 skips), exact clean-commit wheel gate
+  and isolated native installation with 37 verified distributions. Native module
+  bytes, Standard policy, signing and SQLite match. All 24 original source cases
+  report passes with no skips, including both previously denied launchers; final
+  independent acceptance and cleanup-bound admission remain pending. The
+  [checkpoint](../../verification/native-development-cli-6e370033.json) preserves
+  that boundary. No physical workstation selection changes.
+- **Installed prefix access gap:** The preceding `587ad3f1` framework run compiles
   the reviewed source and builds its documentation, then passes 22 of 24 original
   cases. Two unprivileged launchers fail before their test bodies because the
   allocation prefix remains private mode 0700. Mount cleanup succeeds; independent
