@@ -27,12 +27,16 @@ binds the installed native dependency closure and reviewed rebind. Use the
 for preparing a fresh profile, inspecting its plan and separately authorizing a
 build. An older profile or authorization is not reusable after a rebind.
 
-All 24 original cases now pass in an isolated
-[disposable guest capability probe](../verification/original-native-suite-guest-probe.json)
-against the previously retained native products, including the root and
-unprivileged cases. The probe uses guest base tools and manually scoped ACLs;
-installed framework grants, compiler SDK admission, independent acceptance,
-per-unit packages and the complete source/ports build remain unfinished.
+All 24 original cases pass, including root and unprivileged cases, in the
+[full captured-SDK read-only view probe](../verification/native-secondary-access-development.json).
+It uses previously retained compiled products and a probe-local launcher, with
+captured Kyua/ATF/shell paths exposed through read-only, nosuid views. The guest
+supplies its kernel and ELF interpreter. Mounts are removed and the two changed
+ACL resources are restored after execution. This extends the earlier
+[guest-base-tool probe](../verification/original-native-suite-guest-probe.json);
+neither result is an installed framework run. Runtime dependency admission,
+compiler SDK provenance, independent acceptance, per-unit packages and the
+complete source/ports build remain unfinished.
 
 ## Operator development preview on the HP
 
