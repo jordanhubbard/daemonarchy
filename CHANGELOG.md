@@ -16,6 +16,10 @@ work; it is not a separate published tag in this repository. The proposed name
 
 ## Unreleased
 
+- Select explicit FreeBSD and pinned native-pkg policies for the initial source
+  units. The framework candidate passes 1,805 local checks with 42 skips;
+  native/installed renewal and original unit compilation remain open.
+
 - Register and lock the first original source header/parser/utility contracts
   without moving the FreeBSD tree. Record explicit original authority and
   separate three authored units from zero admitted units or qualified packages.

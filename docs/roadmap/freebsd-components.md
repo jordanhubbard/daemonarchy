@@ -206,7 +206,8 @@ libutil header, parser slice and truncate utility, each with a current `freebsd`
 target lock. Its reviewed in-place adoption preserves original source authority
 and hierarchy. The [metadata checkpoint](../../verification/original-source-authority.json)
 binds the source revision, exact locks and initial authority evidence. These
-contract-only locks select no native Flavors yet. Registered/locked units are
+locks now select explicit FreeBSD and pinned native-pkg Flavors. They still
+qualify no compiler/runtime or executable Standard profile. Registered/locked units are
 three; admitted units and qualified per-unit packages remain zero. This does
 not establish complete source or ports coverage or native source compilation.
 

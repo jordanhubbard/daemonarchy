@@ -1,13 +1,13 @@
 {
   "schema": "daemonarchy/original-source-authority-checkpoint@1",
   "work_item": "COMP-001",
-  "status": "initial-contracts-and-original-authority",
+  "status": "original-authority-and-native-package-intent",
   "source_repository": "https://github.com/jordanhubbard/daemonarchy-src",
-  "source_revision": "fa961d2f5e20003faa47772b648eb6010b9e6da7",
+  "source_revision": "569ba40b2b566ec2eaeedc4be980c97f99d3e5f8",
   "source_review": "https://github.com/jordanhubbard/daemonarchy-src/pull/4",
   "integration_branch": "daemonarchy",
   "upstream_tracking_branch": "main",
-  "framework_candidate_revision": "e24acb791eec7cf76004496ecb3dc1b9a21349ef",
+  "framework_candidate_revision": "7c5cbd29ed539d6b8f0a0a07fe971661b3696b34",
   "adoption_producer_revision": "1e38070260d856669fb6ab48a3bafbf74641de98",
   "framework_native_qualified": false,
   "operator_framework_updated": false,
@@ -26,37 +26,43 @@
     {
       "unit": "libutil-header",
       "coordinate": "component://daemonarchy-src/libutil-header",
-      "authoring_identity": "sha256:d3009f780200dd6f12cafe705bdafca35c63e7d4f781bb9ad877312791372297",
-      "lock_identity": "sha256:601a8b2e97cc3a5723d2a0d5c9919b3c913ee2992c98019b557dde2adfb3b44d",
+      "authoring_identity": "sha256:06c7c11e0f06df716ead082b6a7abad9b2bed96c2fee52f4975c65ad298d0a2f",
+      "lock_identity": "sha256:929b02916955e56f028a26c6e6d20c7f42fb7061666b2ba8285475f9a5f1a977",
       "target": "freebsd",
-      "native_flavors_selected": false
+      "native_flavors_selected": true,
+      "selected_os": "freebsd",
+      "selected_package": "pkg"
     },
     {
       "unit": "expand-number",
       "coordinate": "component://daemonarchy-src/expand-number",
-      "authoring_identity": "sha256:9374331a3ba3cb3f09ffbc6a83a62a5c84fd699edca0377ec745ff7cc676589e",
-      "lock_identity": "sha256:7821c7c94bc6826006fa7e81f0eb9a6245c8cfcfbee6ce5956b796dae5f809f3",
+      "authoring_identity": "sha256:21680b0be9b166e1905fcc320def3ac9e7b05b4a48a3a33577466dbee75fd5c7",
+      "lock_identity": "sha256:1f9c5e96d965ccc0a04586a16fe79a04722226cad8b001956ad7da2dc8b630ff",
       "target": "freebsd",
-      "native_flavors_selected": false
+      "native_flavors_selected": true,
+      "selected_os": "freebsd",
+      "selected_package": "pkg"
     },
     {
       "unit": "truncate",
       "coordinate": "component://daemonarchy-src/truncate",
-      "authoring_identity": "sha256:1b090e6e1f346087bb1101a06f81059080894aeccba539580ea65e6881e76508",
-      "lock_identity": "sha256:45172048afe49af981374704b326c37b5ff5e86d95fee6f84831296a09b0d8ae",
+      "authoring_identity": "sha256:d100a77f689b5e91d086687eca94e56dccedb8d5844385b52a9acfa5b4cfece8",
+      "lock_identity": "sha256:5ceddccaefd828be6a8ddf3a5d18999c49e8f9b9cef3f61c05d5a3876540fc63",
       "target": "freebsd",
-      "native_flavors_selected": false
+      "native_flavors_selected": true,
+      "selected_os": "freebsd",
+      "selected_package": "pkg"
     }
   ],
   "verification": {
     "authority": "pass",
     "locks": "pass",
     "receipt": "skipped-no-policy",
-    "log_sha256": "8d7b5d0c6e631e50459894ffc0865794804276b8064a570f7c8928330360d0a5"
+    "log_sha256": "0364fcce6451abc962ab4194340195dbe916f8d3dbcc6519804ff4e17043f441"
   },
   "skill_evaluation": {
     "tool_revision": "0827e0fab5ca93d525cb8ff1ec2af3d7dfcf6d5d",
-    "skills": 2,
+    "skills": 3,
     "checks": [
       "schema",
       "pii",
@@ -66,12 +72,13 @@
       "lint"
     ],
     "passed": true,
-    "log_sha256": "3748b5ea7b51d182551b31e72326acb97dfaadff4dde5c3e04e6696526d6ae8c"
+    "log_sha256": "ee3e51cb185eda09f163beee8beeac5221469796ed793925f3e96ad261c0ecd7"
   },
   "dependency_metadata_invalidation": {
     "shared_contract_change_invalidates_all_three": true,
     "exact_restoration_reestablishes_current_locks": true,
-    "log_sha256": "c8c4f9fb13df412501c0f36c974dd02c130313c517f64b2c97a5daab685f159d"
+    "log_sha256": "c8c4f9fb13df412501c0f36c974dd02c130313c517f64b2c97a5daab685f159d",
+    "scope": "Initial contract graph at fa961d2f5e2; native action reuse/performance is not established."
   },
   "counts": {
     "canonical_contracts_registered": 3,
@@ -81,12 +88,26 @@
     "qualified_per_unit_packages": 0
   },
   "limitations": [
-    "Contract-only locks select no native Flavors, toolchain or package provider.",
+    "OS and pkg Flavors are selected; compiler/runtime admission and the executable Standard profile remain absent.",
     "Complete source/ports input ownership and conditional dependency coverage remain open.",
     "Standard binding, compiler/test runtime admission, original compilation and independent acceptance remain open.",
     "Metadata invalidation is not measured native build-action invalidation or performance evidence.",
     "ISO creation and disposable VM installation, update and rollback remain unqualified.",
     "The operator retains the prior source checkout and installed framework until native/installed candidate qualification.",
     "This unsigned metadata checkpoint is not a lifecycle or package acceptance receipt."
-  ]
+  ],
+  "framework_local_qualification": {
+    "selected": 1847,
+    "passed": 1805,
+    "skipped": 42,
+    "failed": 0,
+    "elapsed_seconds": 772.705,
+    "log_sha256": "753bd7d88c8affd755868ef63910ab42c8fe73974fcd81feb392b4caa82b9966",
+    "report_sha256": "214b47d8873f0f6916320377e2f00721453238155b4b9406d9980def53bf812c"
+  },
+  "package_policy_import": {
+    "source_revision": "ab15e04e9fb6aadadf26c9a8085640eec275edcc",
+    "imports_manifest_sha256": "7afdbd1bfc78097917cf997d9625b2f0ceeba232b9373454153bafef722ad0d0",
+    "copied_file_identities_verified": true
+  }
 }
