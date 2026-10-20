@@ -192,8 +192,10 @@ Next action: demonstrate a supported installed retained-project execution path o
   time reduction over preserving old build interfaces. Establish an independent
   `/usr/daemonarchy` hierarchy and wrap selected native make targets first;
   choose Bazel or another executor using equivalent native measurements.
-  **Next action in progress:** author the missing ports project/target authority
-  and connect source/ports retained build profiles to the installed common CLI;
+  **Next action in progress:** deploy the reviewed ports metadata from
+  [ports PR #7](https://github.com/jordanhubbard/daemonarchy-ports/pull/7) through
+  a new exact workspace selection, then connect source/ports retained build
+  profiles to the installed common CLI;
   qualify real target execution before selecting the cut-over.
 - **Current framework evidence:** [69 native retained-project checks pass](../../verification/native-retained-acceptance.json) at local checkpoint `567e0f8a4092`; full framework regression, installed-wheel qualification and public runtime/receipt integration remain open. The installed-wheel smoke harness still uses Linux expectations on FreeBSD; production initialization already has a FreeBSD selector.
 - **Implementation:**

@@ -71,7 +71,11 @@ on the operator workstation and native build host, with control commit
 `327ab93eae21f36ed569974c224f55042bbd9b79`. Both use separate ZFS storage and
 pass all eight real-Git workspace checks. The operator's installed development
 CLI validates the relocated source project and three locks. Its test receipt is
-missing; the ports checkout still needs project/target authority.
+missing. [Ports PR #7](https://github.com/jordanhubbard/daemonarchy-ports/pull/7)
+now authors two original-source contracts, reviewed adoption, both FreeBSD/pkg
+locks and the complete installed Standard binding. Installed-wheel authority
+and lock validation pass; the receipt remains missing. This review has not
+changed the deployed ports selection, which still needs that metadata.
 
 ## Executor decision
 

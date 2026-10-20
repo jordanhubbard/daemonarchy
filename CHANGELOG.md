@@ -16,6 +16,12 @@ work; it is not a separate published tag in this repository. The proposed name
 
 ## Unreleased
 
+- Establish reviewed original ports authority and two FreeBSD/pkg locks in
+  [ports PR #7](https://github.com/jordanhubbard/daemonarchy-ports/pull/7), using
+  the complete installed Standard evidence policy. Original implementations
+  remain in place; deployment, native execution and per-unit qualification
+  remain open.
+
 - Add deployment and inspection for a parallel native workspace with independent
   pinned source/ports checkouts, upstream remotes and isolated output roots.
   Eight real-Git checks cover preserved local/failed state, independent object

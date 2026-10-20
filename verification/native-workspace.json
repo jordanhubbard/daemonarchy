@@ -221,5 +221,21 @@
     "The port produced an ordinary native pkg; canonical BOM/provenance and installed product acceptance remain open.",
     "Unchanged timings may include make/ports completion-cookie reuse; changed-input and flags invalidation are not proven.",
     "No equivalent full source/ports/ISO speedup, VM installation/recovery or designated cut-over has been qualified."
-  ]
+  ],
+  "ports_project_review": {
+    "repository": "https://github.com/jordanhubbard/daemonarchy-ports",
+    "pull_request": "https://github.com/jordanhubbard/daemonarchy-ports/pull/7",
+    "revision": "08a25c8ce6ede043b4433a916da424830b7de4cb",
+    "status": "draft-not-deployed",
+    "original_authority": "reviewed-original-source-adoption",
+    "framework_revision": "cffef3238ba48f2c0876270aa4a1aeacce4c86e1",
+    "framework_distribution_identity": "sha256:ed899116420edda0c803acf424067f102b6face4870e180104add4da431cb534",
+    "required_evidence_kinds": 16,
+    "project_authority": "pass",
+    "native_locks": 2,
+    "locks_state": "current",
+    "current_receipt": "missing",
+    "native_execution_qualified": false,
+    "implementation_changes": false
+  }
 }
