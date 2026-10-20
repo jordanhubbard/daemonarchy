@@ -16,6 +16,11 @@ work; it is not a separate published tag in this repository. The proposed name
 
 ## Unreleased
 
+- Preserve an installed native lifecycle failure: compilation and documentation
+  pass, but two of 24 original cases cannot launch through the private allocation
+  directory. Record 16 passing native source-level checks of the scoped access
+  repair separately; installed repair qualification remains pending.
+
 - Record native input-custody checks for all 114,710 tracked source-fork paths,
   including modes and 138 symlinks. Keep this evidence separate from complete
   Component registration, dependency resolution and package admission.

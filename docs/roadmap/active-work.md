@@ -270,6 +270,16 @@ Next action: bind the actual source/ports compiler, sysroot and input closure to
   inside writable fixtures; the second scopes writable inheritance to that
   subtree and restores all pre-existing ACLs exactly. This remains a manual
   capability probe, not installed framework grants or lifecycle admission.
+- **Installed prefix access gap:** The actual installed framework run compiles
+  the reviewed source and builds its documentation, then passes 22 of 24 original
+  cases. Two unprivileged launchers fail before their test bodies because the
+  allocation prefix remains private mode 0700. Mount cleanup succeeds; independent
+  acceptance and admission are not reached. The scoped upstream repair passes
+  16 native source-level checks, including integrated receipt handling with a
+  protocol-peer allocation. Full regression and installed-wheel original-suite
+  renewal remain open. [Development evidence](../../verification/native-prefix-search-development.json)
+  preserves the failed command identities and distinguishes the repair probe
+  from actual installed qualification.
 - **Secondary access development:** [Framework PR #87](https://github.com/jordanhubbard/literate-ai/pull/87)
   now contains the numeric identity and descriptor ACL backend; full local
   regression passes (1,879 passed, 51 skipped). A live allocation-bound source
