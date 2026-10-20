@@ -19,6 +19,7 @@ work; it is not a separate published tag in this repository. The proposed name
 - Record native input-custody checks for all 114,710 tracked source-fork paths,
   including modes and 138 symlinks. Keep this evidence separate from complete
   Component registration, dependency resolution and package admission.
+  Track the 28 toolchain aliases through the separate native SDK admission work.
 
 - Renew the framework development candidate to `587ad3f1` in an isolated native
   environment after full Python 3.11 and exact installed-wheel checks. Verify

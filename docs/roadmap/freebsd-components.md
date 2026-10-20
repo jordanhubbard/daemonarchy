@@ -173,6 +173,16 @@ earlier observation timeout and a timing-record serialization failure separately
 from the successful re-verification. SDK admission and relocated compilation
 remain open; the installed seed still has unknown source-build provenance.
 
+There is also a distinct typed SDK boundary to complete. The selected toolchain
+inventory has 28 internal links, including `ar -> llvm-ar` and header aliases.
+Current native SDK capture requires links to be materialized first; its snapshot
+and retained SDK placement represent regular files only. Framework
+[issue #93](https://github.com/jordanhubbard/literate-ai/issues/93) owns faithful
+alias provenance through source-built SDK capture, producer admission,
+materialization and consumer scopes. Preserve existing SDK identities and
+refusals until that integration is qualified. Passing retained source/input link
+checks does not admit these compiler SDK products.
+
 ### Original-source candidate and remaining test boundaries
 
 The pinned source tree supplies a useful initial application/library pair:
