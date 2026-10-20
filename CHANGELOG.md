@@ -16,6 +16,12 @@ work; it is not a separate published tag in this repository. The proposed name
 
 ## Unreleased
 
+- Prepare exact original-suite reporting and independent utility file-effect
+  expectations in the source fork: 24 original cases and eleven verifier cases.
+  Framework build-output command lookup passes its full local regression
+  (1,809 passes, 42 skips); native/installed execution and actual source-unit
+  qualification remain open in [framework PR #81](https://github.com/jordanhubbard/literate-ai/pull/81).
+
 - Select explicit FreeBSD and pinned native-pkg policies for the initial source
   units. The framework candidate passes 1,805 local checks with 42 skips;
   native/installed renewal and original unit compilation remain open.

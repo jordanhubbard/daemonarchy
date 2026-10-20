@@ -3,11 +3,11 @@
   "work_item": "COMP-001",
   "status": "original-authority-and-native-package-intent",
   "source_repository": "https://github.com/jordanhubbard/daemonarchy-src",
-  "source_revision": "569ba40b2b566ec2eaeedc4be980c97f99d3e5f8",
+  "source_revision": "dfe25d2ad44521e01992f6f4fbfe18c6c8b0af51",
   "source_review": "https://github.com/jordanhubbard/daemonarchy-src/pull/4",
   "integration_branch": "daemonarchy",
   "upstream_tracking_branch": "main",
-  "framework_candidate_revision": "7c5cbd29ed539d6b8f0a0a07fe971661b3696b34",
+  "framework_candidate_revision": "4bf47c45f79f8e4c3180f955ad13bc67b8949ad1",
   "adoption_producer_revision": "1e38070260d856669fb6ab48a3bafbf74641de98",
   "framework_native_qualified": false,
   "operator_framework_updated": false,
@@ -94,20 +94,51 @@
     "Metadata invalidation is not measured native build-action invalidation or performance evidence.",
     "ISO creation and disposable VM installation, update and rollback remain unqualified.",
     "The operator retains the prior source checkout and installed framework until native/installed candidate qualification.",
-    "This unsigned metadata checkpoint is not a lifecycle or package acceptance receipt."
+    "This unsigned metadata checkpoint is not a lifecycle or package acceptance receipt.",
+    "The selected framework candidate still refuses public retained execution; newer runtime integration has no installed/native qualification."
   ],
   "framework_local_qualification": {
-    "selected": 1847,
-    "passed": 1805,
+    "selected": 1851,
+    "passed": 1809,
     "skipped": 42,
     "failed": 0,
-    "elapsed_seconds": 772.705,
-    "log_sha256": "753bd7d88c8affd755868ef63910ab42c8fe73974fcd81feb392b4caa82b9966",
-    "report_sha256": "214b47d8873f0f6916320377e2f00721453238155b4b9406d9980def53bf812c"
+    "elapsed_seconds": 682.902,
+    "log_sha256": "4f02307799e89cd624473fc4ac51f0441803faec4e7639b1f0c67204ddbce909",
+    "report_sha256": "7e9295bab9ad4c46078567af2cfb49380006df3161d4c31d438c9c9707c44b44"
   },
   "package_policy_import": {
     "source_revision": "ab15e04e9fb6aadadf26c9a8085640eec275edcc",
     "imports_manifest_sha256": "7afdbd1bfc78097917cf997d9625b2f0ceeba232b9373454153bafef722ad0d0",
     "copied_file_identities_verified": true
+  },
+  "framework_review": "https://github.com/jordanhubbard/literate-ai/pull/81",
+  "framework_candidate_wheel": {
+    "sha256": "8de5594204879f777bc8990f986740198f255890053200e73ee1098dcbee1f69",
+    "size": 3688439,
+    "embedded_revision": "4bf47c45f79f8e4c3180f955ad13bc67b8949ad1",
+    "native_staged": true,
+    "native_qualified": false,
+    "installed_qualified": false,
+    "operator_installed": false
+  },
+  "prepared_independent_acceptance": {
+    "path": "verification/retained-project-acceptance.json",
+    "sha256": "dbc7d47c9f28254328adc91ddb9b528e8a64381ec0bed879918538e730aa834d",
+    "cases": 11,
+    "bound_current_locks": 3,
+    "typed_round_trip": "pass",
+    "profile_bound": false,
+    "executed": false
+  },
+  "prepared_original_tests": {
+    "path": "tools/daemonarchy/retained/original-cases.json",
+    "sha256": "f27b4e827b42b0d553a8603ad2842a0dd8e95f0f2448890e2eaa89d322f5146e",
+    "parser_cases": 4,
+    "utility_cases": 20,
+    "source_registrations_checked": true,
+    "reporter_inventory_parse": "pass",
+    "native_listing_compared": false,
+    "executed": false,
+    "skip_authorizations": 0
   }
 }

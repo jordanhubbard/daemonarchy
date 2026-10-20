@@ -201,6 +201,16 @@ proof above, not an admitted source unit or a qualified replacement for libutil.
 
 ## Execution order and current state
 
+The source fork now declares the exact 24 original case bindings for the existing
+Kyua report producer and eleven typed independent utility filesystem cases. The
+verifier expectations remain outside build inputs and bind the current three
+locks. Actual newly built ATF listings, original test execution and independent
+acceptance are still pending. The framework's reviewed build-output command-path
+selection passes the full local regression, allowing original-style test commands
+to select built exports by name. Its pinned wheel is staged for native checks;
+no operator framework update or native execution qualification is claimed by the
+[current checkpoint](../../verification/original-source-authority.json).
+
 The source fork now contains three actual canonical contracts for the shared
 libutil header, parser slice and truncate utility, each with a current `freebsd`
 target lock. Its reviewed in-place adoption preserves original source authority
