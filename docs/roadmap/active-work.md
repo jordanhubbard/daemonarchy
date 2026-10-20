@@ -189,8 +189,10 @@ Next action: bind the actual source/ports compiler, sysroot and input closure to
   [native checkpoint](../../verification/native-qemu-worker-development.json)
   boots the actual FreeBSD guest, verifies three fresh root-relay inspections
   and refuses replay, wrong-plan and control-field requests. It uses an operator
-  fixture context; native expiry/shutdown and installed lifecycle qualification
-  remain required. See the
+  fixture context. A subsequent supervisor interruption cleanly powers off the
+  guest, syncs buffers, records QEMU exit zero and removes the inspection socket;
+  both owned processes are confirmed gone. Native automatic expiry and installed
+  lifecycle qualification remain required. See the
   [worker runbook](../native-qemu-worker.md).
 
 - **Priority:** P1

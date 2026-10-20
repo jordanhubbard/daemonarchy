@@ -38,5 +38,24 @@
   "actual_expiry_and_shutdown_qualified": false,
   "installed_framework_integration": false,
   "source_sdk_admitted": false,
-  "product_lifecycle_acceptance": false
+  "product_lifecycle_acceptance": false,
+  "native_interruption_shutdown": {
+    "terminal": {
+      "exit_code": 0,
+      "inspection_revoked": false,
+      "reason": "supervisor-interrupted",
+      "schema": "daemonarchy/owned-qemu-worker-terminal@1",
+      "seconds": 1821.234,
+      "successful_inspections": 3
+    },
+    "supervisor_process_gone": true,
+    "qemu_process_gone": true,
+    "inspection_endpoint_removed": true,
+    "guest_buffers_synced": true,
+    "terminal_sha256": "7184360281c190e90fac6f312186de78200354fbc92f8b4b7b99ef5dce7c7111",
+    "console_sha256": "bc48d23ffada05cf5f0f698d788f5112befb915fc24f56a94302585b146f3e00",
+    "automatic_expiry_tested": false,
+    "installed_framework_lifecycle_qualified": false,
+    "private_record_sha256": "480ed97dec7d59eb4fd1afad4c5da1542fbd63ff42cb2db52ef303fcc9b2c1d8"
+  }
 }

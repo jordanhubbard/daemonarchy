@@ -12,7 +12,10 @@ The [first native checkpoint](../verification/native-qemu-worker-development.jso
 boots FreeBSD 16.0-CURRENT through the versioned supervisor. Three fresh root-relay
 inspections identify the same owned VM; replayed, wrong-plan and control-field
 requests refuse while the worker stays live. The 12 controller checks also pass.
-This native check uses an operator fixture context. Actual expiry/final shutdown,
+This native check uses an operator fixture context. A later actual interruption
+check shuts the guest down through the supervisor: buffers sync, QEMU exits zero,
+both owned processes terminate and the inspection socket is removed. The input
+disk is preserved before preparing a larger cold copy. Automatic expiry,
 installed framework integration and the original-source lifecycle remain open.
 
 ## Prepare a private case

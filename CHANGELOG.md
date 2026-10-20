@@ -20,8 +20,9 @@ work; it is not a separate published tag in this repository. The proposed name
   read-only inspections to an operator-selected plan and actual owned process,
   QMP state, disk and seed. Preserve console/session records and enforce request
   deadlines and shutdown cleanup. Twelve controller checks and actual FreeBSD
-  boot/root-relay inspection pass. Native expiry/final shutdown and installed
-  lifecycle qualification remain open.
+  boot/root-relay inspection pass. Actual supervisor interruption also powers off
+  the guest cleanly and removes its inspection socket while retaining evidence.
+  Native automatic expiry and installed lifecycle qualification remain open.
 
 - Record eleven passing native framework source checks for local orchestration,
   secondary-account access and cleanup-bound receipt admission. A separate live
