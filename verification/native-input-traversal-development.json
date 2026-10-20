@@ -73,10 +73,35 @@
   "native_test_log_sha256": "092aed558870d4dcc965c4ab68b44ae869bcd80edcc97b74feaf729a4369c267",
   "preserved_first_probe_failure": "Missing transferred shared test fixture caused module import failure; corrected staged harness passes all selected checks.",
   "concurrent_native_world_build": true,
-  "full_framework_regression_complete": false,
+  "full_framework_regression_complete": true,
   "installed_candidate_wheel_qualified": false,
   "canonical_full_tree_components_admitted": false,
   "per_unit_pkg_provenance_complete": false,
   "whole_build_speedup_demonstrated": false,
-  "release_acceptance": false
+  "release_acceptance": false,
+  "qualified_framework_commit": "bfc5bcb5cb3f8ba93c13e2ba36bb757f6e850bf8",
+  "controller_full_regression": {
+    "python": "3.11.14",
+    "workers": 4,
+    "seconds": 956.811,
+    "terminal_exit_code": 0,
+    "summary": {
+      "executed": 1912,
+      "failed": 0,
+      "known_failed": 0,
+      "passed": 1912,
+      "selected": 1993,
+      "skipped": 81
+    },
+    "report_sha256": "9f987f35edcbb91d7abd079e67c5853c518cde22bbce8dccc8991bbe9ee1adc4",
+    "log_sha256": "ecee9b70e0af25d4455721b8698d445f560d5faab82647ef3aa4fcf8e4f48c2d"
+  },
+  "controller_exact_wheel": {
+    "qualified": true,
+    "wheel_identity": "sha256:17b4f8cda304b6f13146a8e8071b398c76c3ae43d49b6b457ab8a030ec785794",
+    "distribution_identity": "sha256:c1e9b8cb66bf42332e98336354ffe18f4dc61edf0ae67e90b94ea44683e38e2c",
+    "members": 1212,
+    "native_installed_qualification": false
+  },
+  "qualification_boundary": "Controller regression and exact wheel checks qualify the preceding traversal commit only; the later private-prefix repair and native installed lifecycle remain unqualified."
 }

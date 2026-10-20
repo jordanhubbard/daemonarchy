@@ -16,6 +16,10 @@ work; it is not a separate published tag in this repository. The proposed name
 
 ## Unreleased
 
+- Reconcile the preceding traversal candidate's retained evidence: full controller
+  regression and its exact wheel pass. Native installed lifecycle qualification
+  and the subsequent private-prefix repair retain separate pending states.
+
 - Preserve an installed native lifecycle failure: compilation and documentation
   pass, but two of 24 original cases cannot launch through the private allocation
   directory. Record 16 passing native source-level checks of the scoped access

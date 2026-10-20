@@ -100,8 +100,13 @@ balanced four-sample native SDK comparison preserves the same 5,141-member
 manifest. Median discovery is 4.776245 versus 4.471518 seconds; median capture is
 12.602876 versus 10.549773 seconds. A separate native world build was running, so
 these are operation-level development observations with shared resource load.
-The candidate's full regression and installed-wheel renewal remain open. Full
-input custody does not register or admit the complete Component catalog, resolve
+The preceding traversal commit `bfc5bcb5` now passes its complete Python 3.11
+regression (1,912 passes, 81 skips) and exact controller wheel qualification;
+the wheel embeds that commit and binds distribution identity
+`sha256:c1e9b8cb66bf42332e98336354ffe18f4dc61edf0ae67e90b94ea44683e38e2c`.
+Native installed lifecycle renewal remains open, as does qualification of the
+later private-prefix access repair. Full input custody does not register or admit
+the complete Component catalog, resolve
 its build graph, qualify every unit's pkg, or demonstrate whole-build acceleration.
 
 ## First native source composition proof
