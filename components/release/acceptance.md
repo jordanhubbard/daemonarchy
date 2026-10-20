@@ -17,6 +17,14 @@ complete declarations and external/native gaps are in [the acceptance inventory]
 
 ## Required scenarios
 
+- **Unified development and cut-over:** execute real source and ports closures
+  through the same installed Literate AI entrypoint in the parallel hierarchy.
+  Refresh upstream inputs without changing wrapper files in upstream directories;
+  retain exact selection, invalidation and build/test/pkg evidence. Compare
+  equivalent clean/warm/change workloads before executor selection, then exercise
+  the designated cut-over and rollback. Checkouts or validation-only commands do
+  not satisfy actual build execution.
+
 - **Per-unit packages and measured build improvement:** every unit has a real
   versioned pkg product and bound source/build/dependency provenance. Compare
   native baseline and optimized clean, unchanged and changed-unit ISO workflows

@@ -19,6 +19,7 @@ reachable without changing its historical scope.
 - [Owned FreeBSD source builds](source-builds.md)
 - [Complete FreeBSD source and ports Component coverage](roadmap/freebsd-components.md)
 - [Native Component execution and build performance](roadmap/build-performance.md)
+- [Parallel native workspace and executor selection](roadmap/native-workspace.md)
 - [Manual certificate enrollment for 1.1 and 1.1.1](secure-boot.md)
 - [1.1 BIOS development checks](testing-1.1-bios.md)
 - [Bluetooth audio development checks](testing-1.1-bluetooth-audio.md)

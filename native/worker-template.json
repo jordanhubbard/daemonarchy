@@ -1,0 +1,10 @@
+{
+  "schema": "literate-ai/worker-template@1",
+  "platforms": {
+    "freebsd": {
+      "commands": ["git", "make", "cc", "readelf", "pkg"],
+      "python": {"commands": ["python3.12"], "minimum": "3.12"},
+      "minimum_free_gib": 10
+    }
+  }
+}

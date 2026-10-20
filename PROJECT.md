@@ -25,6 +25,8 @@
   graph through Literate AI to improve native build and ISO packaging time with
   complete per-unit pkg provenance. Build-system replacement, including Bazel or
   Buck2, is permitted when correctness and measured end-to-end improvement pass.
+  Select the executor from equivalent native measurements; wrapping opaque make
+  targets in a new scheduler is not itself a performance result.
 
 ## Dependencies
 
@@ -70,7 +72,14 @@ The current directing goal is DEV-001: provide an operator-ready development
 system using editable `/usr/src` and `/usr/ports` checkouts from the owned forks,
 with build, incremental rebuild, test, package, ISO creation and installation
 managed by Literate AI. Preserve the usable installed desktop while qualifying
-new outputs in isolated workspaces. PERF-001 establishes the source/ports graph,
+new outputs in isolated workspaces. The next deployment adds the parallel
+`/usr/daemonarchy` workspace, independent source/ports checkouts and a common
+`litai-dev` target entrypoint. Unification takes priority over preserving old
+build interfaces, while upstream pulls must remain practical. Existing make
+targets form the initial execution bridge; Bazel is a candidate subject to native
+timing and invalidation evidence. A designated cut-over follows equivalent
+source/ports, package and ISO acceptance. The [workspace migration plan](docs/roadmap/native-workspace.md)
+records this transition. PERF-001 establishes the source/ports graph,
 executes literal Components and measures native ISO build/packaging improvement.
 The [performance plan](docs/roadmap/build-performance.md)
 owns its measurements and executor decision.

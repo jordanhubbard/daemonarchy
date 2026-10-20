@@ -7,6 +7,10 @@ on:
       - 'tests/native-tree-discovery.py'
       - 'scripts/resolve-freebsd-dirdeps.py'
       - 'tests/native-dirdeps.py'
+      - 'scripts/native-workspace.py'
+      - 'tests/native-workspace.py'
+      - 'native/workspace.json'
+      - 'native/worker-template.json'
       - '.github/workflows/native-graph.yml'
   pull_request:
     paths:
@@ -14,6 +18,10 @@ on:
       - 'tests/native-tree-discovery.py'
       - 'scripts/resolve-freebsd-dirdeps.py'
       - 'tests/native-dirdeps.py'
+      - 'scripts/native-workspace.py'
+      - 'tests/native-workspace.py'
+      - 'native/workspace.json'
+      - 'native/worker-template.json'
       - '.github/workflows/native-graph.yml'
   workflow_dispatch:
 
@@ -31,3 +39,4 @@ jobs:
         run: |
           python3 tests/native-tree-discovery.py -v
           python3 tests/native-dirdeps.py -v
+          python3 tests/native-workspace.py -v

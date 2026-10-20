@@ -9,6 +9,10 @@ execute its units as literal Literate AI Components, and substantially improve
 FreeBSD installer build and packaging time. Replacing make with Bazel, Buck2 or
 another suitable system is authorized. A change of executor, graph inventory or
 whole-system wrapper alone does not achieve this goal.
+The operator has explicitly asked that executor choices be challenged. Bazel is
+a candidate, while the required result is a faster common `litai-dev` interface
+for both trees. The [parallel workspace and cut-over plan](native-workspace.md)
+keeps that interface and upstream import process independent of executor choice.
 
 ## Establish the graph before qualifying execution
 

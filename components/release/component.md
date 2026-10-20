@@ -83,6 +83,10 @@ Bind test results to exact image, source, target/firmware mode and scope. Earlie
 
 Produce a versioned pkg artifact for every compositional unit with exact source/build provenance and typed dependencies. Qualify source/build products separately from composed runtime installation. Use the Component graph through the native lifecycle and demonstrate materially faster end-to-end build and ISO packaging against the same-target baseline. Replacing make with another build system is permitted; correct invalidation, output and acceptance remain required.
 
+## Requirement: Unified native development and cut-over
+
+Provide one installed Literate AI build/test/package interface for selected source and ports targets in a parallel workspace. Keep independent editable upstream-derived checkouts, control definitions, object/staging/package outputs and evidence discoverable. Preserve regular upstream imports without copying wrappers throughout upstream directories. Use native make targets as an initial bridge and select the executor by equivalent elapsed-time and correctness evidence. Record a designated cut-over and prove selection rollback before retiring preceding build entrypoints.
+
 ## Requirement: Publication consistency
 
 Publish only the approved commit and verified bytes, with matching checksums, feed selection, public certificates, documentation and changelog. Keep published tags immutable.
