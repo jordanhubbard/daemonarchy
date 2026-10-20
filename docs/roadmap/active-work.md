@@ -192,14 +192,24 @@ Next action: demonstrate a supported installed retained-project execution path o
   time reduction over preserving old build interfaces. Establish an independent
   `/usr/daemonarchy` hierarchy and wrap selected native make targets first;
   choose Bazel or another executor using equivalent native measurements.
-  **Next action in progress:** deploy the pinned parallel workspace and qualify
-  real source and ports target execution before selecting the cut-over.
+  **Next action in progress:** author the missing ports project/target authority
+  and connect source/ports retained build profiles to the installed common CLI;
+  qualify real target execution before selecting the cut-over.
 - **Current framework evidence:** [69 native retained-project checks pass](../../verification/native-retained-acceptance.json) at local checkpoint `567e0f8a4092`; full framework regression, installed-wheel qualification and public runtime/receipt integration remain open. The installed-wheel smoke harness still uses Linux expectations on FreeBSD; production initialization already has a FreeBSD selector.
 - **Implementation:**
   - [x] Prepare conventional editable source and ports checkouts, framework tooling and a documented operator entry point. [Native checkpoint](../../verification/operator-development.json): `/usr/src` is current at the reviewed source-fork commit, and isolated `litai-dev` validates it with the exact bound framework wheel. The stable CLI remains installed; complete lifecycle remains open.
-  - [ ] Deploy independent source/ports checkouts, control, objects, staging,
-    packages, cache and evidence below `/usr/daemonarchy`; prove normal upstream
-    refreshes do not require wrapper edits in upstream source directories.
+  - [x] Deploy independent source/ports checkouts, control, objects, staging,
+    packages, cache and evidence below `/usr/daemonarchy`. The
+    [workspace checkpoint](../../verification/native-workspace.json) verifies the
+    same exact selection on both native roles and separate ZFS storage outside
+    boot environments; all eight workspace checks pass on each FreeBSD host.
+  - [ ] Qualify regular upstream imports without wrapper edits throughout upstream
+    source directories. The independent-Git fixture passes fetch/pin preservation;
+    full native refresh and selection/cut-over acceptance remain open.
+  - [x] Probe actual make targets for the original parser/utility and the LZ4 port
+    in isolated outputs. The PIE library variant links correctly; default upstream
+    port checks and native pkg creation pass. Preserve the first link failure.
+    These direct-make diagnostics are not installed LitAI target qualification.
   - [ ] Expose selected source and ports targets through the same installed
     `litai-dev` build/test/package interface; retain native make as the first
     execution bridge and compare candidate action executors honestly.

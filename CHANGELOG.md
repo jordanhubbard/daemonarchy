@@ -19,8 +19,11 @@ work; it is not a separate published tag in this repository. The proposed name
 - Add deployment and inspection for a parallel native workspace with independent
   pinned source/ports checkouts, upstream remotes and isolated output roots.
   Eight real-Git checks cover preserved local/failed state, independent object
-  storage, upstream refresh and selection drift. Native Component execution and
-  measured executor selection remain open.
+  storage, upstream refresh and selection drift and pass on both FreeBSD roles.
+  Both deployed workspaces use separate ZFS storage. Diagnostic make probes build
+  the original parser/utility and build/test/package the LZ4 port. Installed
+  Component execution, complete provenance and measured executor selection remain
+  open.
 
 - Prepare exact original-suite reporting and independent utility file-effect
   expectations in the source fork: 24 original cases and eleven verifier cases.

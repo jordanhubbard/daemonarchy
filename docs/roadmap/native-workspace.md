@@ -1,6 +1,6 @@
 # Parallel native workspace and executor selection
 
-- **Status:** active
+- **Status:** partial
 - **Owning queue item:** [DEV-001](active-work.md#dev-001-provide-an-operator-ready-native-component-development-system)
 - **Completion / archival evidence:** pending deployed source/ports execution, measured executor selection and cut-over
 
@@ -65,6 +65,14 @@ packages or issue a lifecycle receipt. The native worker prerequisite template
 is `native/worker-template.json`; worker endpoints remain in private user
 configuration.
 
+The [deployment and probe checkpoint](../../verification/native-workspace.json)
+records identical selection `sha256:170a3bceebfe42746a3750c01b98caf599cf5f6703edde26e3e964a0a4da46df`
+on the operator workstation and native build host, with control commit
+`327ab93eae21f36ed569974c224f55042bbd9b79`. Both use separate ZFS storage and
+pass all eight real-Git workspace checks. The operator's installed development
+CLI validates the relocated source project and three locks. Its test receipt is
+missing; the ports checkout still needs project/target authority.
+
 ## Executor decision
 
 Bazel's cache operates on explicitly declared action inputs, commands,
@@ -90,6 +98,26 @@ The current retained command owner also revalidates complete input inventories
 around commands, so full-tree scanning must not be multiplied by every leaf
 compilation. Bound custody to the actual selected closures and preserve its
 invalidation guarantees.
+
+The isolated native make probes now compile the original parser slice and
+`truncate` against its private static PIE archive. The first probe selected the
+ordinary static archive and failed PIE linking; that failure is retained rather
+than disabling PIE. The corrected first parser/utility build took 2.090319
+seconds and its unchanged repeat took 1.029382 seconds on the observed worker.
+Source ATF suites, independent acceptance and per-unit source packages remain
+pending. ELF inspection observes the parser symbols in the built program and
+only libc as its dynamic dependency.
+
+The `archivers/liblz4` probe verified the pinned distfile, built in 26.547052
+seconds, ran the port's default upstream `check` target in 29.464662 seconds and
+produced an ordinary native pkg in a further 1.432787 seconds. The upstream test
+Makefile selects the newly built programs directory in its PATH. The unchanged
+ports build phase took 0.177630 seconds, with no command output; completion-cookie
+reuse is not a changed-input correctness proof. The same requirement therefore
+applies to any make or Bazel bridge: source, patches, shared Mk files, options,
+toolchain and build flags must invalidate stale work and test/package state.
+These are bounded diagnostic timings, not a full release speedup, canonical
+provenance receipt or completed executor comparison.
 
 Sources: [Bazel remote action caching](https://bazel.build/remote/caching),
 [Bazel hermeticity](https://bazel.build/basics/hermeticity),

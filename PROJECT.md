@@ -72,9 +72,12 @@ The current directing goal is DEV-001: provide an operator-ready development
 system using editable `/usr/src` and `/usr/ports` checkouts from the owned forks,
 with build, incremental rebuild, test, package, ISO creation and installation
 managed by Literate AI. Preserve the usable installed desktop while qualifying
-new outputs in isolated workspaces. The next deployment adds the parallel
-`/usr/daemonarchy` workspace, independent source/ports checkouts and a common
-`litai-dev` target entrypoint. Unification takes priority over preserving old
+new outputs in isolated workspaces. The parallel `/usr/daemonarchy` workspace
+is now deployed on the operator workstation and native build host, with
+independent source/ports checkouts and isolated output roots. The common
+`litai-dev` target entrypoint remains unfinished. Direct native make probes
+compile the parser/utility and build/test/package the LZ4 port; these are
+diagnostics, not admitted Component lifecycles. Unification takes priority over preserving old
 build interfaces, while upstream pulls must remain practical. Existing make
 targets form the initial execution bridge; Bazel is a candidate subject to native
 timing and invalidation evidence. A designated cut-over follows equivalent

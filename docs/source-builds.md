@@ -27,6 +27,21 @@ retained build. The isolated CLI dependencies were copied from the stable
 installation, so their independent native package qualification also remains
 open.
 
+## Parallel workspace migration
+
+The next build-system deployment uses `/usr/daemonarchy` alongside the existing
+source and ports locations. It has independent `src`, `ports` and `control`
+checkouts, plus `obj`, `stage`, `packages`, `cache` and `evidence` roots. On ZFS,
+keep that hierarchy in its own dataset outside the operating-system boot
+environment. The [workspace plan and deployment commands](roadmap/native-workspace.md)
+record the pinned selection, upstream refresh process, executor comparison and
+designated `native-build-v1` cut-over.
+
+Bazel is under evaluation. The initial bridge uses the existing native make
+targets behind the common Literate AI interface; compare correct clean, warm and
+changed-input runs before choosing an action executor. Workspace deployment
+alone does not provide that interface or qualify build speed.
+
 The initial [versioned build runbook](https://github.com/jordanhubbard/daemonarchy-src/blob/92276fc76c65f3ca31552d2e1833a6063361ff64/tools/daemonarchy/README.md)
 owns the native commands and resource requirements. Its controller plans and
 executes an exact clean source commit with isolated object, staging, repository

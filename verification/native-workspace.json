@@ -1,0 +1,225 @@
+{
+  "schema": "daemonarchy/parallel-native-workspace-checkpoint@1",
+  "work_items": [
+    "DEV-001",
+    "PERF-001",
+    "COMP-001"
+  ],
+  "status": "deployed-with-diagnostic-native-make-probes",
+  "observed_utc": "2026-10-20T07:36:01.404243+00:00",
+  "root": "/usr/daemonarchy",
+  "control_revision": "327ab93eae21f36ed569974c224f55042bbd9b79",
+  "selection_identity": "sha256:170a3bceebfe42746a3750c01b98caf599cf5f6703edde26e3e964a0a4da46df",
+  "selection": {
+    "execution_qualified": false,
+    "lifecycle_receipt": false,
+    "outputs": [
+      "obj",
+      "stage",
+      "packages",
+      "cache",
+      "evidence"
+    ],
+    "repositories": {
+      "control": {
+        "repository": "https://github.com/jordanhubbard/daemonarchy.git",
+        "revision": "327ab93eae21f36ed569974c224f55042bbd9b79",
+        "upstream": null
+      },
+      "ports": {
+        "repository": "https://github.com/jordanhubbard/daemonarchy-ports.git",
+        "revision": "f7d7ee897405dcb8ce87e674588a4e1b3bfba00e",
+        "upstream": "https://github.com/freebsd/freebsd-ports.git"
+      },
+      "src": {
+        "repository": "https://github.com/jordanhubbard/daemonarchy-src.git",
+        "revision": "978fed917ba2b391c3eace661c21a7a65549cb23",
+        "upstream": "https://github.com/freebsd/freebsd-src.git"
+      }
+    },
+    "schema": "daemonarchy/native-workspace@1"
+  },
+  "deployment_helper_sha256": "85204dafbeefb13d58bbf8fcaf9e60997d5881fafcb547e14d327f13a7d439ff",
+  "local_checks": {
+    "workspace_tests": 8,
+    "existing_graph_tests": 20,
+    "passed": true
+  },
+  "ci_runs": [
+    {
+      "id": 39385839944,
+      "conclusion": "success"
+    },
+    {
+      "id": 39385834722,
+      "conclusion": "success"
+    }
+  ],
+  "deployments": [
+    {
+      "role": "native-build-worker",
+      "independent_checkouts_and_output_roots": "pass",
+      "separate_boot_filesystem": true,
+      "native_workspace_tests": 8,
+      "native_test_log_sha256": "b3855c4277c08108a39c66c8988f1d70d12989e85d1d5cbfd775fb0fa1f4b2ce"
+    },
+    {
+      "role": "operator-workstation",
+      "independent_checkouts_and_output_roots": "pass",
+      "separate_boot_filesystem": true,
+      "native_workspace_tests": 8,
+      "native_test_log_sha256": "02caeada08a38e04eb1893491dd051e57b6e3d08859b44b24ce785f96adbb063"
+    }
+  ],
+  "worker_alignment": {
+    "scope": "native build commands only; no coding-agent model or credential synchronization",
+    "aligned": true,
+    "template_sha256": "784c1601bba1146c54103213a4c05524bcf56511aa1fef75c1b79f46508a9e76"
+  },
+  "operator_cli": {
+    "framework_revision": "cffef3238ba48f2c0876270aa4a1aeacce4c86e1",
+    "source_project_validate": "pass",
+    "source_authority": "pass",
+    "source_locks": 3,
+    "source_receipt": "missing",
+    "ports_project": "not-yet-authored",
+    "common_build_entrypoint": "pending"
+  },
+  "toolchain_observation": {
+    "architecture": "amd64",
+    "compiler_version": "FreeBSD clang version 21.1.8 (https://github.com/llvm/llvm-project.git llvmorg-21.1.8-0-g2078da43e25a)\nTarget: x86_64-unknown-freebsd16.0\nThread model: posix\nInstalledDir: /usr/bin\nBuild config: +assertions",
+    "files": {
+      "/usr/bin/cc": "192bd5c4b10c61ae9de01760faf6e4cfc13a398d7037d91b5c55ab8cad335d82",
+      "/usr/bin/ld.lld": "9cad3b6668a51efbc3c873fb44f7d92ececb9eb66a449624f7fd72602594ca30",
+      "/usr/bin/make": "735183f1b09d0a48670080cc0bfd5964cd3b5a4a67a9c87400af01ea28348677"
+    },
+    "make_version": "20260704",
+    "os": "16.0-CURRENT",
+    "provenance": "installed host bootstrap; complete SDK/source-build provenance not established"
+  },
+  "source_make_probe": {
+    "source_revision": "978fed917ba2b391c3eace661c21a7a65549cb23",
+    "failed_non_pie_link_record_sha256": "b7390a4f2c8e6b904f2cf940fc77bc652eaadbc179eaa4f3f17f2cadbd8e33b0",
+    "corrected_record_sha256": "5b3aea9c9b9bfd2434cfab9feca0b9559ac9cf1311875e51a607309530fb3c53",
+    "phases": [
+      {
+        "phase": "first-parser",
+        "exit": 0,
+        "elapsed_seconds": 1.050187,
+        "stdout_sha256": "7bb84524a80143ed322367a6e76eb718358d246a36dd51e09a933f84978e50fc",
+        "stderr_sha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855"
+      },
+      {
+        "phase": "first-truncate",
+        "exit": 0,
+        "elapsed_seconds": 1.040132,
+        "stdout_sha256": "4e59437c185e773ff947c2b2fa03fba0d5716378e74cebfd2ec99f95e5f6463f",
+        "stderr_sha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855"
+      },
+      {
+        "phase": "unchanged-parser",
+        "exit": 0,
+        "elapsed_seconds": 0.524707,
+        "stdout_sha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855",
+        "stderr_sha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855"
+      },
+      {
+        "phase": "unchanged-truncate",
+        "exit": 0,
+        "elapsed_seconds": 0.504675,
+        "stdout_sha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855",
+        "stderr_sha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855"
+      }
+    ],
+    "artifacts": [
+      {
+        "path": "obj/probes/truncate-make-v2/parser/libdaemonarchy_expand_number_pie.a",
+        "sha256": "c9c27ad56af883a032111489bd004315aa602955b13aada529d81d9c0a3a8a05",
+        "size": 9754
+      },
+      {
+        "path": "obj/probes/truncate-make-v2/truncate/truncate",
+        "sha256": "6b52e3872ee06ec3078fcb64d8fd0ac3aef8c053907d7246da71610fd95f9a9d",
+        "size": 11344
+      }
+    ],
+    "binary_inspection": {
+      "dynamic_stdout_sha256": "11d8d7f21b0d8ac40560d2eeaa932ec614f64a954d11a7887c0aaf0c126fb714",
+      "parser_symbols": [
+        "expand_number",
+        "expand_unsigned"
+      ],
+      "pie": true,
+      "symbols_stdout_sha256": "258256d6a3c5c30d0fd24905a52a54b628a48a059df93749616df653edc581af",
+      "system_libutil_linked": false
+    },
+    "original_source_atf_tests_run": false
+  },
+  "port_make_probe": {
+    "ports_revision": "f7d7ee897405dcb8ce87e674588a4e1b3bfba00e",
+    "origin": "archivers/liblz4",
+    "record_sha256": "afd309b8e5f11385b3862405f3316606a33c5ea28dec3339a821528dd0d0dbe4",
+    "phases": [
+      {
+        "phase": "fetch-checksum",
+        "exit": 0,
+        "elapsed_seconds": 1.134449,
+        "stdout_sha256": "e3a3d753da01bfd9560959a09105dd808dc9f281c8fceb10283b2b31189e007f",
+        "stderr_sha256": "ad8450e7cee8458acba5d48b4f81768a7e51ce355f773e12e42a08860d3f81b8"
+      },
+      {
+        "phase": "first-build",
+        "exit": 0,
+        "elapsed_seconds": 26.547052,
+        "stdout_sha256": "fea12af9bee10d33cf687d814085f1a66b20ecc4471f7f26dcbc8079d2e614af",
+        "stderr_sha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855"
+      },
+      {
+        "phase": "original-tests",
+        "exit": 0,
+        "elapsed_seconds": 29.464662,
+        "stdout_sha256": "8e923c7653d6b3b12915e4a56215663e4fc466e77b65a4cfce6da953fcf5ee7a",
+        "stderr_sha256": "5da5d3d2aaf79a0b708ca8fe464a64b809f397377389c932fde80da98268190c"
+      },
+      {
+        "phase": "package",
+        "exit": 0,
+        "elapsed_seconds": 1.432787,
+        "stdout_sha256": "942f70453ca30fde93b79dbf24fdea967aa720f1765de358b88f372d84076c55",
+        "stderr_sha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855"
+      },
+      {
+        "phase": "unchanged-build",
+        "exit": 0,
+        "elapsed_seconds": 0.17763,
+        "stdout_sha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855",
+        "stderr_sha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855"
+      }
+    ],
+    "artifacts": [
+      {
+        "path": "packages/probes/liblz4-make-v1/All/liblz4-1.10.0_2,1.pkg",
+        "sha256": "8c68e01c0b9b971f05cf2e071f69f8d0a88369f471c5d3b2613c22f097e01b5f",
+        "size": 182615
+      }
+    ],
+    "package_inspection": {
+      "metadata": "liblz4 1.10.0_2,1 archivers/liblz4 FreeBSD:16:amd64",
+      "payload_listing_sha256": "37d4ca283dc62dee91671c4839d958a3d143f9154209af04692a958839b9e7a7",
+      "payload_sanity": "cli, header and shared library present"
+    },
+    "upstream_tests": "default port check target passed; newly built programs directory selected by upstream test PATH"
+  },
+  "executor_decision": "native make is the initial bridge; Bazel remains a candidate pending equivalent measurements",
+  "qualified_component_packages": 0,
+  "retained_lifecycle_executed": false,
+  "lifecycle_receipt": false,
+  "limitations": [
+    "Diagnostic direct-make commands are not installed Literate AI target execution.",
+    "Complete compiler/sysroot/bootstrap source provenance and canonical input ownership remain unqualified.",
+    "The source original ATF suites and independent sealed-product acceptance were not run.",
+    "The port produced an ordinary native pkg; canonical BOM/provenance and installed product acceptance remain open.",
+    "Unchanged timings may include make/ports completion-cookie reuse; changed-input and flags invalidation are not proven.",
+    "No equivalent full source/ports/ISO speedup, VM installation/recovery or designated cut-over has been qualified."
+  ]
+}
