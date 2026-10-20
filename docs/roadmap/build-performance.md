@@ -167,9 +167,18 @@ retain their complete ownership and dependency edges, and qualify bounded shared
 custody and independent output publication before introducing parallel scheduling.
 Require dependency-ready action dispatch and independent output publication to
 qualify parallel Component execution.
-The public retained-project CLI still refuses execution under framework issue #22;
-canonical unit/action/package integration remains open in issue #74. Preserve
+The installed candidate now exposes retained execution; the selected native
+source profile has produced compiled products but no complete accepted receipt.
+Canonical unit/action/package integration remains open in issues #22 and #74. Preserve
 those gates while connecting the actual native observations to existing owners.
+
+The real 5,266-member source inventory also exposed evidence-construction cost
+before and after compilation. Framework [#84](https://github.com/jordanhubbard/literate-ai/issues/84)
+owns quadratic strict-schema object uniqueness checks. A portable comparison in
+the same Python environment takes 20.251011 seconds before and 1.417537 seconds
+after the proposed repair, producing the exact same 4,661,185-byte source BOM.
+This is a measured SBOM step; full regression and native installed renewal are
+pending. It is not a whole-build speedup or evidence for selecting Bazel.
 
 ## Compare equivalent workloads
 

@@ -1,0 +1,43 @@
+{
+  "schema": "daemonarchy/native-source-profile-checkpoint@1",
+  "status": "compiled-products-observed-managed-run-incomplete",
+  "admitted": false,
+  "prototype_revision": "0d7583758a2f9eadc83fd5077ec2957522cbc9ab",
+  "prototype_review": "https://github.com/jordanhubbard/daemonarchy-src/pull/4",
+  "prototype_ci": [39401549623, 39401554550],
+  "prototype_ci_conclusion": "success",
+  "native_checkout": {
+    "base_revision": "dbe8c17c831d20659d7d0ee74afbeaaf0df4fa73",
+    "state": "reviewed-metadata-and-helper-overlay",
+    "role": "native-build-worker",
+    "operator_workstation_preview_changed": false
+  },
+  "framework_revision": "5b9afcd7c9016341620695b9110ec073809d239c",
+  "contracts": 5,
+  "input_members": 5266,
+  "managed_graph_nodes": 5618,
+  "authorization_identity": "sha256:d2f31487a23a2a807160f0678cc0247d6c049e04ea7ddcde51c365bbb4cdb0ab",
+  "stale_helper_plan_refusal_observed": true,
+  "bootstrap_capture": "https://github.com/jordanhubbard/daemonarchy-src/blob/0d7583758a2f9eadc83fd5077ec2957522cbc9ab/verification/bootstrap-capture.json",
+  "controller_checks": {
+    "macos": {"passed": 56, "native_only_skipped": 4},
+    "freebsd": {"passed": 60, "skipped": 0},
+    "scope": "helper custody and refusal; not product acceptance"
+  },
+  "observed_products": [
+    {"path": "products/bin/truncate", "bytes": 11344, "sha256": "42bbb82abf7591d723fb246e71773806861262cfd68d9c3ee9fcc70c82e3645f"},
+    {"path": "products/lib/libdaemonarchy_expand_number_pie.a", "bytes": 9858, "sha256": "bf470f630aa00cb80a2e182519b361a49b2ea96a941b44e67fb5ed886d725b2e"},
+    {"path": "products/include/libutil.h", "bytes": 9060, "sha256": "b863b0819f30a4bbc55e1005fc82337e62bb30eb5fa26f02e31ffbc60078478c"},
+    {"path": "products/tests/expand_number_test", "bytes": 26168, "sha256": "3c775ab9cfee3098edd05e735fb8ed6720c420a5fa051f16a6131b1a74b6531c"},
+    {"path": "products/tests/truncate_test.body", "bytes": 15173, "sha256": "2d88c97184e274a8acbcb9bc2d56eb26a590ae8fe1205e3bb1be3d34841e7ca0"},
+    {"path": "products/tests/truncate_test", "bytes": 1673, "sha256": "0726f5f397b03938eaefd3daee3a563f97dc313789310b80eea18c76dd000ede"}
+  ],
+  "terminal_run_result": null,
+  "acceptance_qualified": false,
+  "packages_qualified": false,
+  "limitations": [
+    "The SSH observation wrapper expired while the native process remained live; this is not a terminal run result.",
+    "Observed products are not a passing lifecycle receipt or sealed-product acceptance.",
+    "Original privileged tests, independent acceptance, toolchain provenance, per-unit packages and complete-tree coverage remain open."
+  ]
+}

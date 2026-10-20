@@ -79,7 +79,12 @@ independent source/ports checkouts and isolated output roots. The common
 reviewed original authority and two current native locks with the complete
 installed Standard binding. The candidate wheel now validates both review
 projects and all five source/ports locks on both native roles. Their receipts
-remain missing and the active workspace selection is preserved. Direct native make probes
+remain missing and the active workspace selection is preserved. The subsequent
+source prototype adds two support/bootstrap contracts for five source locks;
+its installed native build-worker run has produced the selected compiled products
+but has not completed acceptance. The operator preview retains its earlier
+three-source-lock selection. See the [source profile checkpoint](verification/native-source-profile.json).
+Direct native make probes
 compile the parser/utility and build/test/package the LZ4 port; these are
 diagnostics, not admitted Component lifecycles. Unification takes priority over preserving old
 build interfaces, while upstream pulls must remain practical. Existing make

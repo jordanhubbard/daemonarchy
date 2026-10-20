@@ -16,6 +16,10 @@ work; it is not a separate published tag in this repository. The proposed name
 
 ## Unreleased
 
+- Document the five-owner original-source retained build prototype and observed
+  native products, preserving explicit missing acceptance, package and whole-tree
+  qualification. Link the exact reviewed source entry point and CI evidence.
+
 - Install the exact candidate common CLI on both native roles and validate the
   reviewed source/ports projects and all five native locks. Retain the preceding
   CLI aliases and active workspace selection; executable native profiles and

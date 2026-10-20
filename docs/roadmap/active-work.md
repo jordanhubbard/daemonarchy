@@ -197,6 +197,13 @@ Next action: bind the actual source/ports compiler, sysroot and input closure to
   a new exact workspace selection, then connect source/ports retained build
   profiles to the installed common CLI;
   qualify real target execution before selecting the cut-over.
+- **Source prototype:** [Five-owner retained profile](../../verification/native-source-profile.json)
+  at source commit `0d7583758a2f9eadc83fd5077ec2957522cbc9ab` passes both source CI
+  runs. Installed native execution has produced selected compiled products;
+  terminal run evidence, original privileged tests, independent acceptance and
+  per-unit packages remain open. Preserve the running build-worker overlay and
+  the operator's preceding preview selection. Framework #84 owns the separately
+  measured strict-SBOM overhead; its repair needs full and installed/native renewal.
 - **Current framework evidence:** [69 native retained-project checks pass](../../verification/native-retained-acceptance.json) at local checkpoint `567e0f8a4092`; full framework regression, installed-wheel qualification and public runtime/receipt integration remain open. The installed-wheel smoke harness still uses Linux expectations on FreeBSD; production initialization already has a FreeBSD selector.
 - **Implementation:**
   - [x] Prepare conventional editable source and ports checkouts, framework tooling and a documented operator entry point. [Native checkpoint](../../verification/operator-development.json): `/usr/src` is current at the reviewed source-fork commit, and isolated `litai-dev` validates it with the exact bound framework wheel. The stable CLI remains installed; complete lifecycle remains open.

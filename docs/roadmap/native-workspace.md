@@ -81,6 +81,14 @@ changed. The [candidate commands](../source-builds.md#candidate-common-cli-befor
 inspect the reviewed projects while executable profiles and admission remain
 unfinished.
 
+The subsequent [source profile prototype](../../verification/native-source-profile.json)
+adds explicit build-support/bootstrap owners for five source locks and exposes
+the selected make targets through installed retained planning/execution. Its
+source-fork CI passes and compiled products are observed in the native run;
+complete original tests, sealed acceptance and pkg qualification remain open.
+This build-worker overlay does not advance the operator preview or active
+workspace selection. Use the source runbook linked from the candidate commands.
+
 ## Executor decision
 
 Bazel's cache operates on explicitly declared action inputs, commands,

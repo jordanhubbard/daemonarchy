@@ -48,9 +48,22 @@ DAEMONARCHY_DEV_CLI="$HOME/.local/libexec/litai-dev-5b9afcd7/bin/litai"
 "$DAEMONARCHY_DEV_CLI" lock /usr/daemonarchy/ports/.worktrees/dev-5b9afcd7 --target freebsd --check
 ```
 
+The subsequent source prototype at `0d7583758a2f9eadc83fd5077ec2957522cbc9ab`
+has five source locks, including explicit shared build-support and bootstrap
+owners. Both exact-head source CI runs pass. Its
+[selected-unit retained runbook](https://github.com/jordanhubbard/daemonarchy-src/blob/0d7583758a2f9eadc83fd5077ec2957522cbc9ab/tools/daemonarchy/README.md#selected-unit-retained-entry-point)
+documents bootstrap inventory/capture, profile preparation, read-only planning
+and separately authorized installed `litai build` execution. Use the Python and
+CLI from the same exact candidate prefix. The
+[profile checkpoint](../verification/native-source-profile.json) distinguishes
+that published prototype from the native build-worker's metadata/helper overlay.
+The operator preview still has its preceding three source locks.
+
 `verify` reports the missing lifecycle receipt for each review project. Executable
-native profiles, compiler/sysroot custody and independent acceptance remain
-unfinished; the common build/test protocol is installed, but an admitted source
+native profiles and explicit compiler/sysroot capture are now prototyped; original
+privileged tests, bootstrap admission and independent acceptance remain
+unfinished. The first native managed run has produced the selected binaries,
+but an admitted source
 or ports build is not available yet. The review checkouts share their respective
 parallel Git stores, keeping the active revisions and legacy trees intact.
 Selection refresh and designated cut-over remain separate requirements. The
