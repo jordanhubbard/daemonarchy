@@ -16,6 +16,10 @@ work; it is not a separate published tag in this repository. The proposed name
 
 ## Unreleased
 
+- Record the qualified controller wheel and verified dependency bootstrap,
+  reviewed source rebind, disposable native guest and isolated ACL-capability
+  checks. Native renewal, scoped grants and package acceptance remain pending.
+
 - Retain the renewed native source lifecycle's supervised exit and original
   test result: 23 pass, one required privileged skip, correctly refused before
   acceptance. Record the separate input-verification performance experiment

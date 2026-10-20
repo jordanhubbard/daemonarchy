@@ -1,0 +1,106 @@
+{
+  "schema": "daemonarchy/native-development-preview@1",
+  "status": "controller-qualified-native-dependency-wheels-building",
+  "admitted": false,
+  "framework_revision": "d6070ba530a743f323e12e23b37b2c7840d49a3b",
+  "framework_review": "https://github.com/jordanhubbard/literate-ai/pull/82",
+  "framework_ci_run": 39415313837,
+  "framework_ci_complete": false,
+  "wheel_sha256": "c36be2bb76cfd41ca0e5e185eeb95e3f73e6c4f2fd327e28e9c53241e59d7d7a",
+  "wheel_bytes": 3698108,
+  "distribution_identity": "sha256:45a9c62db237a2b5facee35f992b33fde07b8643c44eccf94f6a654debb633e4",
+  "distribution_members": 1204,
+  "standard_policy_identity": "sha256:a5ca0d6d13daff0199f218c5e4af723a2cec87b927e75dd3a731c511b5d85ac7",
+  "local_regression": {
+    "selected": 1907,
+    "passed": 1865,
+    "skipped": 42,
+    "failed": 0,
+    "seconds": 1043.891,
+    "report_sha256": "aeba051ec5d0a178f3a5451c75b4220e360efa9c7a4ba1de4483e6945f9a0277",
+    "log_sha256": "81aae3d3b81d09691cf5cf879a76d207bda549b0d399a0344f62c976d4851c83"
+  },
+  "installed_wheel_qualification": {
+    "passed": true,
+    "wheel_manifest_identity": "sha256:5893aaec223de2727f7e09c5e54c71dab77921367a745f50d9d91914e04cc09e",
+    "log_sha256": "5b8e39dac36cde6cabe68aaebd6690070a0315235b2d55ee950272c0b6362927"
+  },
+  "controller_bootstrap": {
+    "dependency_closure_identity": "sha256:62fc4bfb7a1c6f4ea6699ea87abb7e1520aae8d3b10cca1af43ca0b37c3ab687",
+    "installed_distributions": 36,
+    "verified_wheelhouse": true,
+    "source_review_rebind_plan": "sha256:f274b56021aa1800589687b631fe41349fdff5ebf12a058c8dab0fc153bb95a0",
+    "evidence_kinds_preserved": 16,
+    "native_rebind_applied": false
+  },
+  "native_dependency_production": {
+    "status": "source wheels building on dedicated native build worker",
+    "framework_wheel_verified": true,
+    "rust": "1.98.1",
+    "compiler": "FreeBSD Clang 21.1.8",
+    "cargo_build_jobs": 2,
+    "source_built_toolchain_admitted": false,
+    "wheelhouse_qualified": false
+  },
+  "disposable_acceptance_guest": {
+    "booted": true,
+    "tools_aligned": true,
+    "root_uid": 0,
+    "secondary_uid": 2001,
+    "secondary_gid": 2001,
+    "image_sha256": "96fc03aa32be69a406c50db17927019af1f755b3074de44f8aabcb55c5330428",
+    "decompressed_base_sha256": "a0967586dfd3027d41b94807e1a4b7e86f57169c65757b0d70a467ff43613f32",
+    "base_image_url": "https://download.freebsd.org/snapshots/VM-IMAGES/16.0-CURRENT/amd64/20261019/FreeBSD-16.0-CURRENT-amd64-BASIC-CLOUDINIT-20261019-041802b362aa-290219-ufs.qcow2.xz",
+    "physical_acceptance": false,
+    "firstboot_updates_disabled": true,
+    "disk_virtual_gib": 20,
+    "backend_probe": {
+      "schema": "daemonarchy/native-scoped-acl-capability@1",
+      "status": "isolated-backend-probe-only",
+      "framework_feature_implemented": false,
+      "acceptance_qualified": false,
+      "identity": {
+        "name": "litaitest",
+        "uid": 2001,
+        "gid": 2001
+      },
+      "backend": "FreeBSD UFS POSIX.1e ACLs explicitly enabled on disposable guest",
+      "checks": {
+        "private_default_denied": true,
+        "selected_read_allowed": true,
+        "unrelated_read_denied": true,
+        "ungranted_write_denied": true,
+        "new_unrelated_read_denied": true,
+        "revoked_read_denied": true,
+        "restored_private_default_denied": true
+      },
+      "preexisting_resource_acls_restored_exactly": true,
+      "resources_compared": 4,
+      "payload_unchanged": true,
+      "log_sha256": "1fe74c98cf9f200bbdb871cccc80f6be92b644667479ebf97e1f7ab0fae45d7e",
+      "script_sha256": "8106f45daad1915f299b76be7f9a511b16ed530e3a698ab34e4691756b05a49b",
+      "default_backend_refusal_retained": true,
+      "failed_probes_retained": true,
+      "remaining": [
+        "typed worker and disposable-allocation authority",
+        "descriptor-based custody and permission/identity currentness",
+        "retained workspace and receipt integration",
+        "complete original native suite and independent acceptance"
+      ]
+    },
+    "framework_workspace_grants_implemented": false,
+    "original_privileged_suite_complete": false,
+    "system_tests_uid": 977,
+    "system_tests_account_changed": false
+  },
+  "default_cli_changed": false,
+  "development_alias_changed": false,
+  "active_workspace_selection_changed": false,
+  "cut_over_complete": false,
+  "limitations": [
+    "Native installed-wheel renewal and exact CI remain pending.",
+    "Disposable allocation authority, descriptor-based ACL custody and lifecycle/receipt integration remain unimplemented.",
+    "Original privileged/unprivileged tests, independent acceptance and per-unit package products remain open.",
+    "Complete source/ports catalogs, compiler SDK provenance and equivalent full build/package/ISO qualification remain open."
+  ]
+}
