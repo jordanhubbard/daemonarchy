@@ -18,7 +18,12 @@ work; it is not a separate published tag in this repository. The proposed name
 
 - Record the qualified controller wheel and verified dependency bootstrap,
   reviewed source rebind, disposable native guest and isolated ACL-capability
-  checks. Native renewal, scoped grants and package acceptance remain pending.
+  checks. Native dependency production and verified installation now pass on the
+  build worker and disposable guest, including real cryptographic operations.
+  Native focused checks pass (29 passed, one optional skip); installed input
+  verification has a median of 9.23 seconds versus 19.79 seconds in three warm
+  samples. Whole-build performance, scoped grants and package acceptance remain
+  pending.
 
 - Retain the renewed native source lifecycle's supervised exit and original
   test result: 23 pass, one required privileged skip, correctly refused before

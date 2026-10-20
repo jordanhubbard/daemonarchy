@@ -1,6 +1,6 @@
 {
   "schema": "daemonarchy/native-development-preview@1",
-  "status": "controller-qualified-native-dependency-wheels-building",
+  "status": "installed-native-runtime-qualified-project-acceptance-pending",
   "admitted": false,
   "framework_revision": "d6070ba530a743f323e12e23b37b2c7840d49a3b",
   "framework_review": "https://github.com/jordanhubbard/literate-ai/pull/82",
@@ -31,16 +31,22 @@
     "verified_wheelhouse": true,
     "source_review_rebind_plan": "sha256:f274b56021aa1800589687b631fe41349fdff5ebf12a058c8dab0fc153bb95a0",
     "evidence_kinds_preserved": 16,
-    "native_rebind_applied": false
+    "native_rebind_applied": true
   },
   "native_dependency_production": {
-    "status": "source wheels building on dedicated native build worker",
+    "status": "source wheels built and verified wheelhouse bootstrapped",
     "framework_wheel_verified": true,
     "rust": "1.98.1",
     "compiler": "FreeBSD Clang 21.1.8",
     "cargo_build_jobs": 2,
     "source_built_toolchain_admitted": false,
-    "wheelhouse_qualified": false
+    "wheelhouse_qualified": true,
+    "exit_code": 0,
+    "seconds": 991.19,
+    "stdout_sha256": "a961454058651432102892da6b6b0bf181a48d8552bb10e2f119b25083e75650",
+    "stderr_sha256": "8a1bf2b2349ced0f9a56930a29385aa7e21b37e72de379c8d1e1232eb1069bd7",
+    "dependency_closure_identity": "sha256:76baaf5f2c670b5178b7896866d2a157de2730e2443ba279bde1b46e832372c7",
+    "installed_distributions": 37
   },
   "disposable_acceptance_guest": {
     "booted": true,
@@ -91,16 +97,86 @@
     "framework_workspace_grants_implemented": false,
     "original_privileged_suite_complete": false,
     "system_tests_uid": 977,
-    "system_tests_account_changed": false
+    "system_tests_account_changed": false,
+    "installed_runtime": {
+      "verified_wheelhouse": true,
+      "dependency_closure_identity": "sha256:76baaf5f2c670b5178b7896866d2a157de2730e2443ba279bde1b46e832372c7",
+      "installed_distributions": 37,
+      "runtime_probe": {
+        "schema": "daemonarchy/installed-runtime-probe@1",
+        "passed": true,
+        "python": "3.12.15 (main, Oct 15 2026, 01:08:57) [Clang 21.1.8 (https://github.com/llvm/llvm-project.git llvmorg-21.1.8-0-g2078da",
+        "adapter_sha256": "6811499e92de9342cd8e316ae65dc2f4316acb5610b9072392ada6e7b5245e02",
+        "ed25519_sign_verify": true
+      },
+      "runtime_probe_sha256": "cdeaf9dd1dbf0ba9a7a7dcd2475b42a13af9069c681bc7530d94359250513d32"
+    }
   },
   "default_cli_changed": false,
   "development_alias_changed": false,
   "active_workspace_selection_changed": false,
   "cut_over_complete": false,
   "limitations": [
-    "Native installed-wheel renewal and exact CI remain pending.",
+    "Exact framework CI remains queued; installed native focused checks do not establish full FreeBSD platform or retained-project acceptance.",
     "Disposable allocation authority, descriptor-based ACL custody and lifecycle/receipt integration remain unimplemented.",
     "Original privileged/unprivileged tests, independent acceptance and per-unit package products remain open.",
     "Complete source/ports catalogs, compiler SDK provenance and equivalent full build/package/ISO qualification remain open."
-  ]
+  ],
+  "native_installed_checks": {
+    "schema": "daemonarchy/native-installed-framework-checks@1",
+    "framework_revision": "d6070ba530a743f323e12e23b37b2c7840d49a3b",
+    "distribution_identity": "sha256:45a9c62db237a2b5facee35f992b33fde07b8643c44eccf94f6a654debb633e4",
+    "distribution_members": 1204,
+    "native_crypto_signature_verified": true,
+    "imported_installed_runtime": true,
+    "selected": 30,
+    "failed": 0,
+    "errors": 0,
+    "skipped": 1,
+    "passed": 29,
+    "seconds": 6.101,
+    "log_sha256": "fff4b8079d473ba6c5fe888c2f3be789238ec7923dfa9b91ed2615d73e242dc6",
+    "skip_reasons": [
+      "requires an explicitly selected Git source corpus"
+    ],
+    "ok": true,
+    "retained_project_acceptance": false
+  },
+  "native_installed_input_verification": {
+    "schema": "daemonarchy/retained-input-verification-comparison@1",
+    "manifest_identity": "sha256:b3b95f194a006f04e98fe84394a7be53ef620cd9f1c075145889f16f952d9761",
+    "members": 5270,
+    "adapter_sha256": "6811499e92de9342cd8e316ae65dc2f4316acb5610b9072392ada6e7b5245e02",
+    "platform": "FreeBSD",
+    "python": "3.12.14",
+    "samples": [
+      {
+        "seconds": 10.240401,
+        "cpu_seconds": 9.959551
+      },
+      {
+        "seconds": 8.303648,
+        "cpu_seconds": 8.261736
+      },
+      {
+        "seconds": 9.227105,
+        "cpu_seconds": 9.180532
+      }
+    ],
+    "median_seconds": 9.227105,
+    "whole_build_measurement": false,
+    "baseline_median_seconds": 19.794351,
+    "conditions": "Three warm samples per implementation; host and filesystem cache state not controlled."
+  },
+  "native_source_rebind": {
+    "source_revision": "949a40c88544a6a64bca0f8877f38ed77f71e656",
+    "plan_identity": "sha256:518ae5edd39c6deddcef78a0a7dffa2d25a7878a06e2c41d735dbbc4569d2e77",
+    "required_evidence_kinds_preserved": 16,
+    "policy_changed": false,
+    "previous_workspaces_preserved": true,
+    "receipt": "missing",
+    "authority_passed": true,
+    "locks_passed": 5,
+    "check_record_sha256": "14adc966fa923677020c41069f88910cb19586c4aa8524675b670bffea34bb1f"
+  }
 }

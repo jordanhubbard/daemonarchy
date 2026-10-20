@@ -218,8 +218,13 @@ Next action: bind the actual source/ports compiler, sysroot and input closure to
   regression (1,865 passed, 42 skipped) and installed-wheel qualification. Its
   [renewal record](../../verification/native-development-preview-d6070ba5.json)
   binds the verified controller dependency wheelhouse and reviewed source
-  rebind. Native dependency wheels are being built with retained tool/log
-  identities. A new disposable FreeBSD guest boots and aligns; seven isolated
+  rebind. Native dependency production completed with exit 0 in 991.19 seconds;
+  the verified 37-distribution closure bootstraps on the native worker and the
+  disposable guest. Installed native checks report 29 passes, one optional
+  source-corpus skip and no failures. Three warm input verifications have a
+  median of 9.227105 seconds versus 19.794351 seconds for the baseline; this
+  is not a whole-build comparison. The guest also verifies installed module
+  bytes and real Ed25519 signing. Seven isolated
   native ACL checks cover selected reads, denied unrelated/new-file access,
   denied writes, revocation and exact original ACL restoration. This backend
   probe does not implement framework grants or complete original acceptance.
