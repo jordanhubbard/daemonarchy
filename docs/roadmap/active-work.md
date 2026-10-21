@@ -66,11 +66,20 @@ The reviewed Standard rebind is now applied: only the driver changes, with all
 seven receipt requirements, 44 evidence files and the default CLI preserved.
 Current authority and all eight host contract locks pass with the new binding;
 full verification still reports the missing native receipt. No lock mutation was
-needed. Next select original authority with the public reviewed plan/apply flow on
-a clean product revision. [Framework PR #109](https://github.com/jordanhubbard/literate-ai/pull/109)
-retains the combined candidate and its pending exact-head hosted matrix. This remains preparation for executable
-profiles; no native lifecycle receipt or ISO follows from metadata-only adoption.
-Preserve original source placement and leave lifecycle acceptance unclaimed until earned.
+needed. The public reviewed original-adoption plan is now applied at source
+revision `dbd3420`: all 272 tracked source entries preserve their bytes/modes;
+only original-adoption evidence, authority metadata and its runtime mutex are
+added. The mutex is explicitly ignored afterward; authored authority JSON remains
+tracked. [Framework PR #109](https://github.com/jordanhubbard/literate-ai/pull/109)
+retains the combined candidate and its pending exact-head hosted matrix.
+
+Next author the real FreeBSD source/binary/toolchain action inventory as a complete
+retained manifest/profile and use the public `build`/`test --retained-project`
+route. The legacy `project retained-harness readmit` command now reports missing
+`.literate/legacy-lift-shift.json`; it is not an original-project initializer and
+no legacy conversion metadata will be synthesized. Metadata-only original
+adoption does not grant execution or acceptance; native receipt and ISO remain
+missing. Preserve original source placement and earn lifecycle admission.
 
 - **Evidence:**
   - [ ] Actual installed CLI accepts retained native execution; source and binary invalidation works; native tests and artifact hashes are current; failed or omitted evidence blocks publication; existing release workflow is reproduced.

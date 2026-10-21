@@ -101,3 +101,15 @@ versioned interpreter discovery and preserving structured CLI refusals. No
 compilation, passing receipt, Daemonarchy lifecycle qualification or release
 readiness is claimed from this attempt; the complete native positive and
 changed-input/failed-test checks remain required.
+
+The current combined framework checkpoint at `e90cbadb` passes the full controller
+regression (2,035 passes, 70 skips, no failures), exact installed wheel checks,
+18 installed FreeBSD binding cases and real controller/FreeBSD binding plus
+metadata-only original-adoption probes. The product now has the reviewed Standard
+rebind and in-place original authority, with its existing receipt contract and
+source layout preserved. [The checkpoint](../../verification/native-first-binding-integration-development.json)
+keeps these preparation results separate from native execution. Authority and all
+eight host contract locks pass; the native receipt and ISO remain missing.
+R12-01/R12-02 still require complete native profiles, input/toolchain admission,
+actual lifecycle execution and rejection/receipt/publication evidence. No ledger
+row closes from metadata-only adoption.

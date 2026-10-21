@@ -99,7 +99,12 @@ locks; no retained test receipt or native execution qualification exists.
 Framework issue [#22](https://github.com/jordanhubbard/literate-ai/issues/22)
 tracks the remaining executable capability and evidence gates. ADOPT-002 must
 qualify native FreeBSD execution and mixed-input custody before release
-enforcement changes. This adoption does not release a new product version.
+enforcement changes. This adoption does not release a new product version. The reviewed public
+`project adopt-original` operation now selects original source authority in place
+on the product, preserving 272 tracked entries and adding only authority metadata
+and its evidence/mutex. This is neither retained lifecycle admission nor
+regenerative conversion authority. Explicit complete native manifests/profiles
+remain required for executable work.
 
 
 ## Current tooling and gate interpretation
@@ -121,7 +126,7 @@ the public repository paths so mutable resolver mutexes are not documentation
 assets. Source
 indexing is disabled. Future framework updates must preserve these boundaries.
 
-<!-- literate-ai:authority-reviewed sha256:476d820bb1fe98da00152ae92874a3aee2c5d6f4ed16e03d4e6ebaad8bff9595 -->
+<!-- literate-ai:authority-reviewed sha256:85d12dfe8a90f02e169fe294db9523435358c49f779582fa60fa4fec8b94c9cf -->
 
 
 ## Rechecking preservation

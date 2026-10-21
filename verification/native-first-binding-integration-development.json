@@ -106,7 +106,7 @@
     "source_archive_sha256": "0d27c80d067d30678e69008d3cb85f609d5aca295c3314b91797d572af8fd6a5",
     "historical_evidence_files_preserved": 42,
     "actual_product_rebind_applied": true,
-    "actual_product_original_adoption_applied": false
+    "actual_product_original_adoption_applied": true
   },
   "framework_review_branch": "work/native-first-binding-integration",
   "actual_product_binding": {
@@ -128,5 +128,34 @@
     "remaining_gate": "project.test_receipt_missing",
     "verification_report_sha256": "c3491bfa96b671b93abc11514bc24df0c162c21ce143c628b66662df33d26e8f"
   },
-  "framework_review": "https://github.com/jordanhubbard/literate-ai/pull/109"
+  "framework_review": "https://github.com/jordanhubbard/literate-ai/pull/109",
+  "actual_product_original_adoption": {
+    "schema": "daemonarchy/original-authority-development@1",
+    "framework_revision": "e90cbadb3b396af3821c6164ea1d1ad4fa13f5eb",
+    "reviewed_plan_identity": "sha256:5719f19e3bfea97566f146ac612d59b9027793dd19d7c451ae5fcbfd4f9dfae2",
+    "original_git_commit": "dbd3420b52822e93ee4f52f74eb0741b902bb16c",
+    "source_entries_preserved": 272,
+    "metadata_files_added": [
+      ".literate/conversion-authority.json",
+      ".literate/conversion-authority.lock",
+      ".literate/original-adoption.json"
+    ],
+    "stage": "original",
+    "release_authority": "original-source",
+    "admitted": false,
+    "receipt_present": false,
+    "iso_created": false,
+    "retained_profile_authored": false
+  },
+  "next_execution_route": {
+    "legacy_readmission_refusal": "retained_harness.metadata_missing: .literate/legacy-lift-shift.json",
+    "interpretation": "Legacy readmission requires legacy conversion metadata. Do not synthesize it for an original project.",
+    "supported_route": "build/test --retained-project MANIFEST --retained-project-profile PROFILE",
+    "manifest_and_profile_authored": false
+  },
+  "post_adoption_bookkeeping": {
+    "ignored_runtime_mutex": ".literate/conversion-authority.lock",
+    "authored_authority_files_tracked": true,
+    "source_preservation_verified_before_documentation_and_ignore_updates": true
+  }
 }

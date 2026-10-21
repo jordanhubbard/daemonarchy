@@ -16,6 +16,11 @@ work; it is not a separate published tag in this repository. The proposed name
 
 ## Unreleased
 
+- Build tooling: select original source authority in place through a reviewed
+  metadata-only plan and qualified combined Standard distribution. Preserve
+  original source layout and receipt requirements; native execution profiles,
+  current receipts and image qualification remain unfinished.
+
 - Select an exact EFI/Lua pair for a loader-only live test image, verify both
   identities before image assembly and reject conflicting Secure Boot bundles.
   Controller/native staging controls pass; no new ISO or boot result is claimed.

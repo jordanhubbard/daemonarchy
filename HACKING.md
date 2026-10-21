@@ -137,7 +137,11 @@ Select the matching isolated installation as `FRAMEWORK_CLI` in private operator
 configuration and use `"$FRAMEWORK_CLI"` for lifecycle planning and verification.
 The default installed CLI and active source/ports workspace are preserved. This
 configuration binding does not qualify a retained native build or produce its
-missing receipt. Actual action/input profiles and native admission remain required.
+missing receipt. Original-source authority is now selected through the reviewed
+metadata-only `project adopt-original` flow. Actual action/input profiles and
+native admission remain required. Use the explicit retained manifest/profile
+`build` or `test` interface for that work; legacy harness readmission expects
+legacy conversion metadata and is not an original-project initializer.
 
 For a loader-only hardware test medium, follow
 [the 1.2 test-ISO checklist](docs/testing-1.2-test-iso.md). `TEST_LOADER_BUNDLE`

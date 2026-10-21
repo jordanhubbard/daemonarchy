@@ -60,8 +60,10 @@ validation, all eight contract locks and static skill checks pass. Existing sour
 and release authority; it has not been relocated, regenerated or qualified as
 fungible source. The automatic adoption plan reports `blocked-no-driver` for the
 current shell-script build entrypoints, so its quarantine conversion was not
-applied. Native retained-project execution and release enforcement require
-separate demonstrated integration.
+applied. The reviewed metadata-only `project adopt-original` flow now selects
+original source authority in place, preserving all 272 tracked source entries at
+its reviewed commit. Native retained-project execution and release enforcement
+require separate demonstrated integration.
 
 The current product release is 1.1.1. Its published artifact identity and actual
 qualification scope remain in the [release record](docs/testing-1.1.1.md).
