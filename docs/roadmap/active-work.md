@@ -100,11 +100,12 @@ Next action: bind the actual source/ports compiler, sysroot and input closure to
 
 ### [ ] DEBUG-001 — Qualify earlier wired network debugging for 1.2
 
-- **Priority:** P1
+- **Priority:** P0 — next-release blocker
 - **Owner:** diagnostics and verified-boot Components
-- **Direction:** Investigate loader and early-kernel network debugging using a supported hard-wired NIC.
+- **Direction:** Implement and qualify loader and early-kernel network debugging using a supported hard-wired NIC. The product and its runtime qualification are FreeBSD-only; implementation proceeds while parent CI is pending.
 - **Conclusion:** Existing GENERIC networking facilities do not establish loader-to-early-kernel transport; design source-fork, trust and crash coverage before claiming support.
 - **Depends on:** none
+- **Source implementation:** [daemonarchy-src issue #6](https://github.com/jordanhubbard/daemonarchy-src/issues/6), owned by SRC-DEBUG-001. The first phase provides an authenticated, bounded UEFI console and controller; ordinary loader input retains show/set/boot semantics. It must preserve local recovery and explicitly report the firmware-to-kernel coverage gap.
 - **Implementation:**
   - [x] Inspect loader/kernel transport foundations: EFI Simple Network Protocol and standalone UDP exist; an interactive loader network stub does not. Current NetGDB explicitly requires a panic and an initialized supported NIC. Firmware networking stops at `ExitBootServices`; boot flags do not establish an early network debugger. This is source-backed scope discovery, not runtime qualification.
   - [ ] Qualify an explicitly selected loader command/console stub, including environment inspection/update and kernel boot over the reviewed wired transport.

@@ -14,6 +14,10 @@ There is no inherited waiver, current receipt or claim of release readiness here
 
 ## Worker and evidence model
 
+Daemonarchy is FreeBSD-only. No other OS Flavor or product runtime matrix is a
+release requirement. Parent-framework portability CI remains upstream work;
+it does not delay implementation of the release-blocking loader debugger.
+
 The controller may run on any qualified Literate AI host OS. Native FreeBSD build
 and test actions run in FreeBSD; a VM's host OS never supplies its guest identity.
 Use a dedicated native build worker for source/packages/images and reusable
@@ -33,7 +37,7 @@ results cannot substitute for current installed-wheel receipts.
 
 | ID | Queue owner | Required completion and direct evidence |
 | --- | --- | --- |
-| R12-01 | ADOPT-002 | Qualified upstream FreeBSD contracts, OS Flavor, registration, alignment, native toolchain realization, paths, health, isolated execution and exact installed-wheel regression evidence; existing OS behavior remains qualified. |
+| R12-01 | ADOPT-002 | Qualified upstream FreeBSD contracts, FreeBSD OS Flavor, registration, alignment, native toolchain realization, paths, health, isolated execution and exact installed-wheel regression evidence. |
 | R12-02 | ADOPT-002 | Retained mixed source/binary admission, invalidation, current native receipts, artifact custody and release enforcement; changed input, failed test, missing evidence and unauthorized publication are rejected. |
 | R12-03 | UI-001 | Multiple creative ANSI visualizer styles use actual disk, package, transfer and stage events; console, SSH/serial, small terminals, 16/256 colors, resize, reduced motion and plain logs pass; waits/failures never animate as success. |
 | R12-04 | PKG-001 | Retain complete exact release package DAGs for every selection, including transitive/official/GPU/optional packages, provenance, hashes, sizes, edges and space estimates; reject stale or conflicting catalogues. |
@@ -67,7 +71,9 @@ maintainer acceptance. A platform limitation, unavailable physical device, stale
 receipt or deferred implementation stays open. Any proposed scope change must be
 an explicit operator decision; this ledger does not make one implicitly.
 
-The next execution dependency is R12-01/R12-02. Framework work is tracked by
+R12-08 is the immediate implementation priority and a release blocker. R12-01/R12-02
+remain final lifecycle admission requirements; they do not prevent original-source
+loader development or native qualification. Framework work is tracked by
 [issue 67](https://github.com/jordanhubbard/literate-ai/issues/67) and
 [draft PR 68](https://github.com/jordanhubbard/literate-ai/pull/68). The retained
 Standard execution route remains unqualified under reopened

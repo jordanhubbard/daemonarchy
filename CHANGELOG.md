@@ -16,6 +16,11 @@ work; it is not a separate published tag in this repository. The proposed name
 
 ## Unreleased
 
+- Make wired UEFI loader debugging a release blocker and state FreeBSD-only
+  product acceptance explicitly. The source fork's packet core and native EFI
+  build are initial development evidence; remote console operation and laptop
+  qualification remain open.
+
 - Inspect source-built compiler/sysroot package provenance and dependencies:
   verify 524 pkgbase manifests and locate compiler resources, C++ headers/runtime,
   startup objects and linker in a six-package candidate closure. Record both

@@ -28,6 +28,14 @@
   Select the executor from equivalent native measurements; wrapping opaque make
   targets in a new scheduler is not itself a performance result.
 
+Daemonarchy is a FreeBSD-only product. Its OS Flavors and runtime release
+qualification select FreeBSD; no Linux, macOS or Windows product qualification
+is required. A build controller may run elsewhere without changing the target.
+Independent portability gates in the parent framework are not product OS gates.
+
+Wired UEFI loader remote console/control is an immediate next-release blocker
+under DEBUG-001. Implementation proceeds while framework CI is pending.
+
 ## Dependencies
 
 The next release depends on a qualified Literate AI revision/wheel providing
