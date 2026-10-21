@@ -16,6 +16,12 @@ work; it is not a separate published tag in this repository. The proposed name
 
 ## Unreleased
 
+- Harden the source fork's UEFI console against invalid firmware mode/frame
+  sizes and refuse native kernel handoff when the debug NIC did not quiesce.
+  The actual driver passes native scripted failure checks with address/undefined
+  behavior sanitizers and explicit RX allocation balance; physical firmware,
+  broader boot-failure propagation and release acceptance remain pending.
+
 - Make wired UEFI loader debugging a release blocker and state FreeBSD-only
   product acceptance explicitly. The source fork now passes a native EFI build
   and initial real UEFI console tests, including remote show/set/boot, replay
