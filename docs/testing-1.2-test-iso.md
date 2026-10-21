@@ -104,3 +104,16 @@ Project authority validation passes after the explicit documentation review.
 Full `litai verify` still refuses stale contract locks and the missing native
 receipt, matching the unchanged control revision's result under the installed
 CLI. Those pre-existing gates remain open; no lock or receipt was fabricated.
+
+## Reviewed first-binding checkpoint
+
+[Framework PR #108](https://github.com/jordanhubbard/literate-ai/pull/108) repairs
+the receipt-only migration path without deleting policy. Its exact qualified wheel
+at `73311c69` installs offline on FreeBSD with 37 verified distributions. Five
+real CLI checks pass on a disposable copy of product revision `aadfa33f`, preserving
+all receipt requirements and 42 historical evidence files. Thirteen installed
+contract tests also pass. The [checkpoint](../verification/standard-first-binding-development.json)
+retains both earlier probe-harness failures and the successful scope. The actual
+product binding, active workspace/default CLI, native lifecycle receipt and ISO
+remain unchanged. Qualify and apply the reviewed binding with its actual retained
+profiles before dispatching assembly; hosted framework CI remains pending.
