@@ -1,0 +1,20 @@
+{
+  "schema": "daemonarchy/test-loader-controls@1",
+  "scope": "Selection and staging controls only; not ISO assembly or lifecycle admission",
+  "exit_code": 0,
+  "seconds": 2.904,
+  "stdout_sha256": "fcb006457624c08527549fe90636c2cfa09a67ae8c91e1d851e3ad56d72e5da9",
+  "stderr_sha256": "1e841da39ea05885c659ae952cc20c7b8e79841f8a9904c5de0fbe8378410f25",
+  "platform": "FreeBSD 16.0-CURRENT amd64",
+  "native_tests": 8,
+  "controller_tests": 8,
+  "exact_candidate_prepare_passed": true,
+  "iso_created": false,
+  "lifecycle_receipt": false,
+  "source_sha256": {
+    "scripts/test-loader.py": "1f88ffe152132f9ccc54402ac7a946d748fb25662d1ab54ab31ea5cd90f0d840",
+    "tests/test-loader.py": "09c685ad7e3bc420d416fceb1d3a23598626537ed5b1ef19d9e561f95c317c2f",
+    "scripts/iso-stage.sh": "98db71c1cae5dff07aaaa1366bdd0a79a2c2f975efa38124c39f1c2787229a5e",
+    "tests/iso-stage.py": "18009e7589f0e9556aa371d61c85bb033a9f775e20d69496d463e1b3c0854c95"
+  }
+}

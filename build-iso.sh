@@ -111,6 +111,14 @@ case "$live_python" in python3[0-9][0-9]) ;; *) echo 'Need one Python interprete
 chmod 0755 "$share/omarchy-wifi-enterprise"
 rm -rf "$extract"
 
+if [ -n "${TEST_LOADER_BUNDLE:-}" ]; then
+    [ -z "${SECUREBOOT_BUNDLE:-}${SECUREBOOT_SIGNATURE:-}${SECUREBOOT_CERTIFICATE:-}" ] || {
+        echo 'TEST_LOADER_BUNDLE cannot be combined with Secure Boot artifacts' >&2; exit 1;
+    }
+    /usr/local/bin/python3.12 "$here/scripts/test-loader.py" prepare \
+        --bundle "$TEST_LOADER_BUNDLE" --destination "$share/test-loader"
+fi
+
 # Only public, already signed artifacts belong on the authoring worker/image.
 # The private release key is never an input to this script.
 if [ -n "${SECUREBOOT_BUNDLE:-}${SECUREBOOT_SIGNATURE:-}${SECUREBOOT_CERTIFICATE:-}" ]; then

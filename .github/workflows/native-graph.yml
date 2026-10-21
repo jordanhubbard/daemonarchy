@@ -17,6 +17,9 @@ on:
       - 'build-iso.sh'
       - 'scripts/iso-stage.sh'
       - 'tests/iso-stage.py'
+      - 'scripts/test-loader.py'
+      - 'tests/test-loader.py'
+      - 'live-post.sh'
       - '.github/workflows/native-graph.yml'
   pull_request:
     paths:
@@ -34,6 +37,9 @@ on:
       - 'build-iso.sh'
       - 'scripts/iso-stage.sh'
       - 'tests/iso-stage.py'
+      - 'scripts/test-loader.py'
+      - 'tests/test-loader.py'
+      - 'live-post.sh'
       - '.github/workflows/native-graph.yml'
   workflow_dispatch:
 
@@ -57,3 +63,4 @@ jobs:
         run: |
           sh -n build-iso.sh scripts/iso-stage.sh
           python3 tests/iso-stage.py -v
+          python3 tests/test-loader.py -v

@@ -23,6 +23,11 @@ complete declarations and external/native gaps are in [the acceptance inventory]
 
 ## Required scenarios
 
+- **Loader-only test media:** bind exact EFI/Lua identities and source revision;
+  reject tampering and conflicting signed payloads before assembly. Keep debug
+  keys/activation explicit, installer sets unchanged and installed loader coverage
+  separate. Inspect and boot the final ISO before requesting hardware acceptance.
+
 - **Unified development and cut-over:** execute real source and ports closures
   through the same installed Literate AI entrypoint in the parallel hierarchy.
   Refresh upstream inputs without changing wrapper files in upstream directories;

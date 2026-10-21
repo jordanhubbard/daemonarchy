@@ -14,6 +14,50 @@ native worker has a 1600027 jail. These are distinct selections, not interchange
 inputs. The release authoring worker is also running an existing framework
 qualification job; do not dispatch a competing bulk or image job into that run.
 
+The live-only loader selection is now pinned separately in
+[`verification/test-loader-selection.json`](../verification/test-loader-selection.json).
+It selects source `848c4bc16f3e757c6c3179f1fed5fcb6cd7503c0` and the exact
+732,672-byte EFI already exercised by the retained UEFI TFTP/NFS checks. All nine
+compiled source identities were rechecked against that committed revision;
+later uncommitted source work is not part of this selection. This changes neither
+the selected kernel/world nor the installed system's loader.
+
+## Explicit live loader selection
+
+Prepare a private bundle directory containing `selection.json` (the exact public
+selection above), `loader.efi`, and `loader.lua`. Both files must match the recorded
+sizes and SHA256 identities. Set `TEST_LOADER_BUNDLE` to that directory when running
+the selected build. The builder validates and copies the bundle into a fresh
+stage. The final image hook checks it again and replaces only the live root's
+`/boot/loader.efi` and `/boot/lua/loader.lua`, before poudriere creates its EFI
+boot image. Native final-ISO inspection and UEFI boot must still prove that ordering
+on the actual authoring toolchain.
+
+Combining this unsigned development loader with a Secure Boot bundle refuses;
+neither an old signed payload nor an arbitrary overlay may silently replace the
+selected loader. Debugging remains disabled: no key or activation configuration
+is created. Provision an explicitly selected private wired profile separately
+using the source fork's loader-console runbook. This path does not qualify
+Secure Boot or change the untouched installer sets and installed-system loader.
+
+Six selection/refusal controls pass on the controller and native FreeBSD:
+exact live payload and unchanged installer sets; changed Lua bytes; signed-bundle
+conflict; input/destination aliases; invalid source/scope/extra destinations;
+and preservation of read-only hardlinked jail inputs. Replacement creates a new
+inode and preserves boot-file modes, rather than writing through shared links.
+The two existing staging controls also pass natively. See
+[`verification/test-loader-controls.json`](../verification/test-loader-controls.json).
+The exact retained EFI/Lua bundle also prepares successfully on FreeBSD, with
+matching output hashes. These eight controls are not assembly, boot, hardware
+or lifecycle acceptance.
+
+The installed controller's read-only Standard rebind plan still refuses with
+`standard_rebind.binding_required`: the product retains a receipt policy without
+a Standard lifecycle driver. This reproduces ADOPT-002's product migration gate.
+The policy was preserved, and no manual assembly was substituted for the required
+admitted lifecycle. Qualify the product binding migration through the framework
+before dispatching assembly.
+
 The loader-debugging owner must provide the exact reviewed loader artifact,
 source revision, compatibility scope and native/VM result. A loader-only test
 image may retain an explicitly verified base/package selection; a changed

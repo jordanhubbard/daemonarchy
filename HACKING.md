@@ -129,6 +129,14 @@ qualification and is separate from final release publication.
 
 ## Setting up a build host
 
+For a loader-only hardware test medium, follow
+[the 1.2 test-ISO checklist](docs/testing-1.2-test-iso.md). `TEST_LOADER_BUNDLE`
+selects a hash-checked EFI/Lua bundle for the live medium only. It refuses a
+Secure Boot bundle and does not provision debugging keys, enable the console,
+change installer sets or select the installed-system loader. Run
+`python3 tests/test-loader.py -v` for its selection/refusal controls; actual image
+assembly, boot and native lifecycle admission remain separate requirements.
+
 For builds from our owned FreeBSD-CURRENT fork, start with
 [owned source builds](docs/source-builds.md) and the versioned daemonarchy-src
 runbook. That workflow produces development pkgbase packages and installer sets

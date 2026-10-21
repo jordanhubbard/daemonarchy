@@ -73,3 +73,11 @@ if [ -d "$secureboot_payload" ]; then
         "$secureboot_payload/bundle.txz" --signature "$secureboot_payload/bundle.txz.sig" \
         --certificate "$secureboot_payload/certificate.pem" --root "$world" || exit 1
 fi
+
+# Poudriere creates the EFI boot image from this live root after this hook.
+# The selected loader and Lua entrypoint affect only the live medium, not sets.
+test_loader="$world/usr/local/share/daemonarchy-installer/test-loader"
+if [ -d "$test_loader" ]; then
+    /usr/local/bin/python3.12 "$test_loader/install.py" install \
+        --bundle "$test_loader" --root "$world" || exit 1
+fi

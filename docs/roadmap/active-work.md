@@ -372,6 +372,13 @@ Next action: bind the actual source/ports compiler, sysroot and input closure to
 - **Direction:** Produce an isolated exact-input test ISO carrying the reviewed fixes before asking the operator to run hardware qualification.
 - **Conclusion:** Prepare and qualify assembly independently of final release publication; physical acceptance is downstream of the test artifact.
 - **Depends on:** DEBUG-001
+- **Loader selection:** [Exact live-only EFI/Lua selection](../../verification/test-loader-selection.json)
+  is prepared and hash-checked against committed source and native development
+  evidence. Eight controller/native staging and selection controls pass, including
+  hardlinked jail preservation and signed-payload conflict refusal. Native exact
+  bundle preparation passes. No ISO exists from this work. The installed product
+  Standard rebind plan still refuses `standard_rebind.binding_required`; preserve
+  its receipt policy and qualify the ADOPT-002 migration before admitted assembly.
 - **Implementation:**
   - [ ] Allocate a private per-run ISO staging directory; preserve preceding artifacts; bind exact loader, kernel/world sets, jail, ports, modules and checkout selections; coordinate native dispatch with active worker ownership.
 - **Evidence:**
