@@ -42,7 +42,7 @@
     "framework_distribution_identity": {
       "schema": "urn:literate-ai:schema:v1:content-identity",
       "algorithm": "sha256",
-      "digest": "9b5562d72116ecd644e6fdb4ced2895bc37123d5e6af01bfb3440f9efadc942f"
+      "digest": "a720a1bea3a4130162ce38773e21ea3b42e435cf41d31c44357d34f4633ea12f"
     },
     "policy_identity": {
       "schema": "urn:literate-ai:schema:v1:content-identity",

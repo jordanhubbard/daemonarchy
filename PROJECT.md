@@ -130,9 +130,12 @@ are explicit and verified.
 ADOPT-001 establishes the project-wide authority layer. ADOPT-002 remains open
 for retained native execution, source/assets admission and release enforcement. The
 controller now has a reviewed exact-wheel Standard binding with the existing
-receipt contract preserved. Its native migration probes and installed contract
-checks pass; executable product profiles and native lifecycle receipts remain
-open. See the [binding checkpoint](verification/standard-first-binding-development.json).
+receipt contract preserved. The combined `e90cbadb` wheel passes full controller
+regression, wheel qualification and installed FreeBSD/controller binding and
+metadata-only original-adoption probes. Executable product profiles and native
+lifecycle receipts remain open. See the
+[combined checkpoint](verification/native-first-binding-integration-development.json)
+and preceding [binding checkpoint](verification/standard-first-binding-development.json).
 Use [the active queue](docs/roadmap/active-work.md) for stable work IDs, owners,
 dependencies and acceptance checklists. [ROADMAP.md](ROADMAP.md) is the human
 release/feature overview; it does not independently override completion status.

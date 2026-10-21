@@ -56,8 +56,21 @@ qualification. Current authority and all eight host contract locks pass after an
 `retained_harness.not_adopted`; this first-binding wheel does not expose
 `project adopt-original`. Next qualify a candidate combining this repair with
 in-place native admission from [framework PR #87](https://github.com/jordanhubbard/literate-ai/pull/87),
-then author/admit the actual product profiles. Preserve original source placement
-and leave conversion/lifecycle acceptance unclaimed until earned.
+then author/admit the actual product profiles. The combined `e90cbadb` candidate
+now passes full controller regression (2,035 passes, 70 skips, no failures), clean
+wheel qualification, 18 installed FreeBSD binding cases and real installed
+controller/FreeBSD binding plus metadata-only original-adoption probes. The
+[combined checkpoint](../../verification/native-first-binding-integration-development.json)
+preserves the first probe's documentation-review refusal and its corrected result.
+The reviewed Standard rebind is now applied: only the driver changes, with all
+seven receipt requirements, 44 evidence files and the default CLI preserved.
+Current authority and all eight host contract locks pass with the new binding;
+full verification still reports the missing native receipt. No lock mutation was
+needed. Next select original authority with the public reviewed plan/apply flow on
+a clean product revision. [Framework PR #109](https://github.com/jordanhubbard/literate-ai/pull/109)
+retains the combined candidate and its pending exact-head hosted matrix. This remains preparation for executable
+profiles; no native lifecycle receipt or ISO follows from metadata-only adoption.
+Preserve original source placement and leave lifecycle acceptance unclaimed until earned.
 
 - **Evidence:**
   - [ ] Actual installed CLI accepts retained native execution; source and binary invalidation works; native tests and artifact hashes are current; failed or omitted evidence blocks publication; existing release workflow is reproduced.

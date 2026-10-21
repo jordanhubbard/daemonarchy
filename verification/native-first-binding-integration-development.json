@@ -1,0 +1,132 @@
+{
+  "schema": "daemonarchy/native-first-binding-integration-development@1",
+  "scope": "Combined candidate installed binding and metadata-only original adoption; no retained execution admission",
+  "framework_revision": "e90cbadb3b396af3821c6164ea1d1ad4fa13f5eb",
+  "composition": {
+    "first_binding_parent": "c32737a602dce58cdb62d2487b79691af5cb149f",
+    "native_parent": "1fb6679a0fa67968fd2039ebded420a3818598df",
+    "parent_reviews_preserved": true,
+    "prior_work_items_missing": 0
+  },
+  "full_controller_regression": {
+    "target": "macOS arm64 / Python 3.14.7",
+    "raw_tests": 2105,
+    "seconds": 1081.363,
+    "executed": 2035,
+    "failed": 0,
+    "known_failed": 0,
+    "passed": 2035,
+    "selected": 2105,
+    "skipped": 70,
+    "report_sha256": "7f267e738ae1b619c58c244d03e4c513d3cb1abbcc51955b923438de40527ce6",
+    "release_evidence": false
+  },
+  "focused_controller": {
+    "binding": 18,
+    "original_adoption": 10,
+    "receiver_custody": 10,
+    "skipped": 0
+  },
+  "static_gates_passed": [
+    "lint",
+    "format-check",
+    "repository-layout-check",
+    "public-export-check",
+    "documentation-check",
+    "openspec-check",
+    "driver-review"
+  ],
+  "wheel": {
+    "version": "1.3.0",
+    "identity": "sha256:358c0cad41325648b7b891996ec7e2e2dd6ea19ecbbefff1159a2b9fed33138a",
+    "standard_binding": {
+      "distribution": "sha256:a720a1bea3a4130162ce38773e21ea3b42e435cf41d31c44357d34f4633ea12f",
+      "members": 1230,
+      "policy": "sha256:a5ca0d6d13daff0199f218c5e4af723a2cec87b927e75dd3a731c511b5d85ac7"
+    },
+    "qualification_passed": true,
+    "source_checkout_clean": true
+  },
+  "installed_controller": {
+    "target": {
+      "sys_platform": "darwin",
+      "machine": "arm64",
+      "release": "27.0.0",
+      "python": "3.14.8"
+    },
+    "distributions_verified": 36,
+    "dependency_closure_identity": "sha256:70f1e19e94d81fe155f79d267abfdfe9359e47c8e4c2cba781772f03d225fae5",
+    "probe_seconds": 18.522
+  },
+  "installed_native": {
+    "target": {
+      "sys_platform": "freebsd16",
+      "machine": "amd64",
+      "release": "16.0-CURRENT",
+      "python": "3.12.14"
+    },
+    "distributions_verified": 37,
+    "dependency_closure_identity": "sha256:ab90b43922b87582fc8c8659b37047486b04ced68a21ab0252a0f69ab958bbbf",
+    "bootstrap_seconds": 91.471,
+    "probe_seconds": 161.017,
+    "binding_contract_cases": 18,
+    "binding_contract_skips": 0,
+    "binding_contract_seconds": 6.986,
+    "evidence_archive": {
+      "sha256": "3b018f91ba544e11aa70c369eabd5ed978dac1f1c0c7b4f05c8eaef5d4dcf469",
+      "bytes": 2887680,
+      "native_commands_terminal": true
+    }
+  },
+  "public_cli_checks": {
+    "receipt_only_checks": 5,
+    "same_receipt_only_plan_across_targets": true,
+    "complete_existing_receipt_policy_preserved": true,
+    "fully_unbound_complete_standard_policy": true,
+    "explicit_documentation_review": true,
+    "original_adoption_metadata_only": true,
+    "original_tree_entries_preserved": 270,
+    "dirty_source_and_missing_acknowledgement_refused": true,
+    "original_regeneration_refused": true
+  },
+  "retained_probe_failure": {
+    "target": "controller",
+    "first_attempt": "Original adoption refused stale documentation authority after first binding; probe omitted the explicit documentation review.",
+    "correction": "Retained failed attempt; used a fresh source copy and public documentation-review command before planning original authority.",
+    "production_guard_changed": false
+  },
+  "hosted_ci": "Framework exact-head matrix pending; development binding does not waive release gates",
+  "retained_lifecycle_admitted": false,
+  "compiler_sdk_admitted": false,
+  "current_product_receipt": false,
+  "iso_created": false,
+  "release_acceptance": false,
+  "fixture": {
+    "product_revision": "aadfa33f2e7412f888afd601e821fad3bdb2723e",
+    "source_archive_sha256": "0d27c80d067d30678e69008d3cb85f609d5aca295c3314b91797d572af8fd6a5",
+    "historical_evidence_files_preserved": 42,
+    "actual_product_rebind_applied": true,
+    "actual_product_original_adoption_applied": false
+  },
+  "framework_review_branch": "work/native-first-binding-integration",
+  "actual_product_binding": {
+    "schema": "daemonarchy/combined-standard-rebind-development@1",
+    "framework_revision": "e90cbadb3b396af3821c6164ea1d1ad4fa13f5eb",
+    "plan_identity": "sha256:692ab0fc6577574fd665fa0d8e740e3c8dbdf158502e6c5341326d724495d5ca",
+    "changed_fields": [
+      "lifecycle_driver"
+    ],
+    "historical_files_preserved": 44,
+    "receipt_policy_preserved": true,
+    "receipt_requirements_preserved": 7,
+    "default_cli_unchanged": true,
+    "manifest_sha256": "16f92ca27a5436668ad2f8c16e126e08c88bf47001ad2a94bd2b4ebbcbf2a0bb",
+    "receipt_present": false,
+    "authority": "pass",
+    "host_contract_locks_current": 8,
+    "lock_mutation_required": false,
+    "remaining_gate": "project.test_receipt_missing",
+    "verification_report_sha256": "c3491bfa96b671b93abc11514bc24df0c162c21ce143c628b66662df33d26e8f"
+  },
+  "framework_review": "https://github.com/jordanhubbard/literate-ai/pull/109"
+}

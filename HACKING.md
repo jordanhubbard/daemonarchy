@@ -129,8 +129,10 @@ qualification and is separate from final release publication.
 
 ## Setting up a build host
 
-The product controller now pins the exact qualified framework wheel from source
-`73311c69`, recorded in `verification/standard-first-binding-development.json`.
+The product controller now pins the exact combined framework wheel from source
+`e90cbadb`, recorded in `verification/native-first-binding-integration-development.json`.
+It combines reviewed Standard binding with metadata-only original-source adoption;
+the preceding `73311c69` checkpoint remains historical migration evidence.
 Select the matching isolated installation as `FRAMEWORK_CLI` in private operator
 configuration and use `"$FRAMEWORK_CLI"` for lifecycle planning and verification.
 The default installed CLI and active source/ports workspace are preserved. This
