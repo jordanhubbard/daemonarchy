@@ -16,11 +16,18 @@ work; it is not a separate published tag in this repository. The proposed name
 
 ## Unreleased
 
+- Repair fastfetch's OS Age on FreeBSD: replace the GNU stat invocation with an
+  explicit native stat/date calculation and report `Unknown` for unusable times.
+  Verified on the installed 1.1.1 desktop; [ports PR #8](https://github.com/jordanhubbard/daemonarchy-ports/pull/8) carries the package fix.
+- Fix ignored EFI handoff errors and shared-NIC IPv4 fragment loss in the source
+  fork. Native sanitizer checks and actual UEFI fragmented NFS/TFTP regressions
+  pass; physical firmware and continuous kernel debugging remain release work.
+
 - Harden the source fork's UEFI console against invalid firmware mode/frame
   sizes and refuse native kernel handoff when the debug NIC did not quiesce.
   The actual driver passes native scripted failure checks with address/undefined
   behavior sanitizers and explicit RX allocation balance; physical firmware,
-  broader boot-failure propagation and release acceptance remain pending.
+  alternate handoffs and release acceptance remain pending.
 
 - Make wired UEFI loader debugging a release blocker and state FreeBSD-only
   product acceptance explicitly. The source fork now passes a native EFI build
