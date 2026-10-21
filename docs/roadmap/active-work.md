@@ -42,7 +42,7 @@ Evidence: `verification/adoption-checks.json`. Native execution and release enfo
   - [ ] Bind the actual FreeBSD target, action inventory, external inputs, privileged cleanup and protected signer.
   - [ ] Qualify current native receipts, artifact custody and release enforcement.
 
-Next action: bind the actual source/ports compiler, sysroot and input closure to executable retained profiles and earn installed native admission. The product controller also retains a receipt policy without a lifecycle driver; the reviewed Standard first-binding command refuses that partial configuration with `standard_rebind.binding_required`. Qualify an explicit product-policy migration through the owning framework before product execution; do not remove existing policy to force initial binding.
+Next action: bind the actual source/ports compiler, sysroot and input closure to executable retained profiles and earn installed native admission. The product controller also retains a receipt policy without a lifecycle driver; the reviewed Standard first-binding command refuses that partial configuration with `standard_rebind.binding_required`. [Framework issue #107](https://github.com/jordanhubbard/literate-ai/issues/107) owns the explicit reviewed migration. Qualify it before product execution; do not remove existing policy to force initial binding.
 - **Evidence:**
   - [ ] Actual installed CLI accepts retained native execution; source and binary invalidation works; native tests and artifact hashes are current; failed or omitted evidence blocks publication; existing release workflow is reproduced.
 

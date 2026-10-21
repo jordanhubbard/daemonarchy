@@ -11,8 +11,8 @@ pins source `978fed917ba2b391c3eace661c21a7a65549cb23` and ports
 `f7d7ee897405dcb8ce87e674588a4e1b3bfba00e`. The retained 1.1.1 authoring worker
 has a matching 1600028 jail and existing package/set caches; a separate older
 native worker has a 1600027 jail. These are distinct selections, not interchangeable
-inputs. The release authoring worker is also running an existing framework
-qualification job; do not dispatch a competing bulk or image job into that run.
+inputs. Inspect current worker allocation and host-volume headroom before dispatch;
+do not overlap an existing framework qualification or bulk job.
 
 The live-only loader selection is now pinned separately in
 [`verification/test-loader-selection.json`](../verification/test-loader-selection.json).
@@ -48,7 +48,10 @@ inode and preserves boot-file modes, rather than writing through shared links.
 The two existing staging controls also pass natively. See
 [`verification/test-loader-controls.json`](../verification/test-loader-controls.json).
 The exact retained EFI/Lua bundle also prepares successfully on FreeBSD, with
-matching output hashes. These eight controls are not assembly, boot, hardware
+matching output hashes. Inspection of the installed poudriere scripts confirms
+that the post hook precedes hybrid-image build/generation, whose EFI image uses
+the live root's loader. The inspected script identities are retained with the
+controls. These eight controls are not assembly, boot, hardware
 or lifecycle acceptance.
 
 The installed controller's read-only Standard rebind plan still refuses with
@@ -56,7 +59,8 @@ The installed controller's read-only Standard rebind plan still refuses with
 a Standard lifecycle driver. This reproduces ADOPT-002's product migration gate.
 The policy was preserved, and no manual assembly was substituted for the required
 admitted lifecycle. Qualify the product binding migration through the framework
-before dispatching assembly.
+before dispatching assembly. The portable upstream migration is tracked in
+[framework issue #107](https://github.com/jordanhubbard/literate-ai/issues/107).
 
 The loader-debugging owner must provide the exact reviewed loader artifact,
 source revision, compatibility scope and native/VM result. A loader-only test

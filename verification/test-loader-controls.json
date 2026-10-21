@@ -16,5 +16,14 @@
     "tests/test-loader.py": "09c685ad7e3bc420d416fceb1d3a23598626537ed5b1ef19d9e561f95c317c2f",
     "scripts/iso-stage.sh": "98db71c1cae5dff07aaaa1366bdd0a79a2c2f975efa38124c39f1c2787229a5e",
     "tests/iso-stage.py": "18009e7589f0e9556aa371d61c85bb033a9f775e20d69496d463e1b3c0854c95"
+  },
+  "native_image_hook_inspection": {
+    "post_hook_precedes_hybrid_build": true,
+    "hybrid_efi_input": "world/boot/loader.efi",
+    "script_sha256": {
+      "image.sh": "5fab53b61cb9982fd5155ff9a6b1fc317ebe01f117e5ffcd34331ee6426bf46d",
+      "image_hybridiso.sh": "ba31336e52fe281e8b317c7f7940ff9509e37a8e68bdc970da1db4539a541ce4"
+    },
+    "actual_iso_inspected": false
   }
 }
