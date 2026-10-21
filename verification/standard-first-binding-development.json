@@ -87,5 +87,13 @@
     "native_target_execution_claimed": false,
     "logical_dependency_requirements_preserved": true,
     "lock_check_sha256": "9b3fa9606cc0d8c389f47571c6d47a3820ee1bff9c22c2271b24452fc4938325"
+  },
+  "next_lifecycle_preflight": {
+    "retained_harness_plan_error": "retained_harness.not_adopted",
+    "adopt_original_available_in_this_wheel": false,
+    "native_admission_upstream_pr": "https://github.com/jordanhubbard/literate-ai/pull/87",
+    "native_admission_upstream_revision": "1fb6679a0fa67968fd2039ebded420a3818598df",
+    "next_action": "Qualify a combined candidate with reviewed first binding and in-place original-source native admission, then author actual product profiles without relocating retained source.",
+    "conversion_authority_synthesized": false
   }
 }

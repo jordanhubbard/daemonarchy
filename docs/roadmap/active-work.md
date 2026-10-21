@@ -52,7 +52,12 @@ same plan identity passed five real installed CLI operations on a disposable
 FreeBSD product copy, and all 13 installed contract cases pass. [Framework PR #108](https://github.com/jordanhubbard/literate-ai/pull/108)
 remains draft pending exact hosted CI. Use its matching isolated CLI for lifecycle
 planning. This binding is not native execution, SDK/pkg/ISO admission or release
-qualification. Current authority and all eight host contract locks pass after an explicit lock/audit refresh; the configured project receipt remains missing.
+qualification. Current authority and all eight host contract locks pass after an explicit lock/audit refresh; the configured project receipt remains missing. A read-only retained-harness plan now reports
+`retained_harness.not_adopted`; this first-binding wheel does not expose
+`project adopt-original`. Next qualify a candidate combining this repair with
+in-place native admission from [framework PR #87](https://github.com/jordanhubbard/literate-ai/pull/87),
+then author/admit the actual product profiles. Preserve original source placement
+and leave conversion/lifecycle acceptance unclaimed until earned.
 
 - **Evidence:**
   - [ ] Actual installed CLI accepts retained native execution; source and binary invalidation works; native tests and artifact hashes are current; failed or omitted evidence blocks publication; existing release workflow is reproduced.
