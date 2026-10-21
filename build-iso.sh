@@ -35,13 +35,15 @@ packages=/usr/local/poudriere/data/packages/$JAIL-$PTREE
   exit 1
 }
 jq -e '.schema == 1 and (.trees.ports.depth >= 1) and (.trees.src.depth >= 1)' "$CHECKOUT_CATALOG" >/dev/null
-stage=/var/tmp/daemonarchy-iso-stage
+# I keep each attempt private and retain its staging for inspection on failure.
+. "$here/scripts/iso-stage.sh"
+stage=$(iso_stage_create)
+echo "==> ISO staging: $stage"
 cache=$SET_CACHE_DIR
 
 . "$here/origins.sh"
 
-rm -rf "$stage"
-mkdir -p "$stage" "$cache" "$OUTDIR"
+mkdir -p "$cache" "$OUTDIR"
 cp -R "$here/overlay" "$stage/overlay"
 if [ -n "${LIVE_EXTRA_OVERLAY:-}" ]; then
     [ -d "$LIVE_EXTRA_OVERLAY" ] || { echo 'LIVE_EXTRA_OVERLAY must be a directory' >&2; exit 1; }
@@ -108,6 +110,14 @@ live_python=$(pkg query -F "$omarchy_pkg" '%dn' | awk '/^python3[0-9]+$/ { print
 case "$live_python" in python3[0-9][0-9]) ;; *) echo 'Need one Python interpreter dependency for enterprise Wi-Fi' >&2; exit 1 ;; esac
 chmod 0755 "$share/omarchy-wifi-enterprise"
 rm -rf "$extract"
+
+if [ -n "${TEST_LOADER_BUNDLE:-}" ]; then
+    [ -z "${SECUREBOOT_BUNDLE:-}${SECUREBOOT_SIGNATURE:-}${SECUREBOOT_CERTIFICATE:-}" ] || {
+        echo 'TEST_LOADER_BUNDLE cannot be combined with Secure Boot artifacts' >&2; exit 1;
+    }
+    /usr/local/bin/python3.12 "$here/scripts/test-loader.py" prepare \
+        --bundle "$TEST_LOADER_BUNDLE" --destination "$share/test-loader"
+fi
 
 # Only public, already signed artifacts belong on the authoring worker/image.
 # The private release key is never an input to this script.

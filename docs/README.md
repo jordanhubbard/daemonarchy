@@ -40,3 +40,5 @@ reachable without changing its historical scope.
 - [MacBookPro16,1 first-boot investigation](testing-macbookpro16-1.md)
 
 - [1.2.0 completion obligations and worker model](roadmap/release-1.2.0.md)
+
+- [1.2 hardware test ISO preparation](testing-1.2-test-iso.md)

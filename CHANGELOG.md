@@ -16,6 +16,13 @@ work; it is not a separate published tag in this repository. The proposed name
 
 ## Unreleased
 
+- Select an exact EFI/Lua pair for a loader-only live test image, verify both
+  identities before image assembly and reject conflicting Secure Boot bundles.
+  Controller/native staging controls pass; no new ISO or boot result is claimed.
+
+- Allocate a fresh private staging directory for each installer ISO build, retaining
+  preceding and failed attempts. This prepares parallel test-image authoring;
+  it does not publish or qualify a new ISO.
 - Repair fastfetch's OS Age on FreeBSD: replace the GNU stat invocation with an
   explicit native stat/date calculation and report `Unknown` for unusable times.
   Verified on the installed 1.1.1 desktop; [ports PR #8](https://github.com/jordanhubbard/daemonarchy-ports/pull/8) carries the package fix.

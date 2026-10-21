@@ -42,7 +42,7 @@ Evidence: `verification/adoption-checks.json`. Native execution and release enfo
   - [ ] Bind the actual FreeBSD target, action inventory, external inputs, privileged cleanup and protected signer.
   - [ ] Qualify current native receipts, artifact custody and release enforcement.
 
-Next action: bind the actual source/ports compiler, sysroot and input closure to executable retained profiles and earn installed native admission. The product controller also retains a receipt policy without a lifecycle driver; the reviewed Standard first-binding command refuses that partial configuration with `standard_rebind.binding_required`. Qualify an explicit product-policy migration through the owning framework before product execution; do not remove existing policy to force initial binding.
+Next action: bind the actual source/ports compiler, sysroot and input closure to executable retained profiles and earn installed native admission. The product controller also retains a receipt policy without a lifecycle driver; the reviewed Standard first-binding command refuses that partial configuration with `standard_rebind.binding_required`. [Framework issue #107](https://github.com/jordanhubbard/literate-ai/issues/107) owns the explicit reviewed migration. Qualify it before product execution; do not remove existing policy to force initial binding.
 - **Evidence:**
   - [ ] Actual installed CLI accepts retained native execution; source and binary invalidation works; native tests and artifact hashes are current; failed or omitted evidence blocks publication; existing release workflow is reproduced.
 
@@ -364,3 +364,22 @@ Next action: bind the actual source/ports compiler, sysroot and input closure to
   - [x] Native checkout identities and cleanliness, installed CLI and discoverable commands are verified on the operator workstation.
   - [ ] Complete Component ownership and dependency closure, exact provenance, correct incremental invalidation, actual tests and package outputs pass.
   - [ ] Measured ISO creation and actual installation/recovery evidence match the exact source and ports selections.
+
+### [ ] TESTISO-001 — Prepare the 1.2 hardware test ISO before physical qualification
+
+- **Priority:** P1
+- **Owner:** release assembly and source/ports integration
+- **Direction:** Produce an isolated exact-input test ISO carrying the reviewed fixes before asking the operator to run hardware qualification.
+- **Conclusion:** Prepare and qualify assembly independently of final release publication; physical acceptance is downstream of the test artifact.
+- **Depends on:** DEBUG-001
+- **Loader selection:** [Exact live-only EFI/Lua selection](../../verification/test-loader-selection.json)
+  is prepared and hash-checked against committed source and native development
+  evidence. Eight controller/native staging and selection controls pass, including
+  hardlinked jail preservation and signed-payload conflict refusal. Native exact
+  bundle preparation passes. No ISO exists from this work. The installed product
+  Standard rebind plan still refuses `standard_rebind.binding_required`; preserve
+  its receipt policy and qualify the ADOPT-002 migration before admitted assembly.
+- **Implementation:**
+  - [ ] Allocate a private per-run ISO staging directory; preserve preceding artifacts; bind exact loader, kernel/world sets, jail, ports, modules and checkout selections; coordinate native dispatch with active worker ownership.
+- **Evidence:**
+  - [ ] Retain staging isolation/refusal controls, input identities, native assembly results and ISO hash; announce readiness only after a real test artifact exists. Keep hardware and final 1.2 release obligations open.

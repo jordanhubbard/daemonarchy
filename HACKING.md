@@ -115,7 +115,27 @@ Missing declarations, unsupported contexts and cycles cause a nonzero result.
 Run `PYTHONDONTWRITEBYTECODE=1 python3 tests/native-dirdeps.py -v` for eleven portable
 refusal/graph/process checks; native observation remains a separate result.
 
+## Isolated test-image staging
+
+Every `build-iso.sh` invocation allocates a new private directory beneath
+`ISO_STAGE_PARENT` (default `/var/tmp`) and prints its path. The parent must
+already exist and be an absolute, nonsymlink directory. Failed and completed
+staging trees remain for inspection; a later invocation never deletes them.
+Use separate output names, output directories and native build selections too:
+private staging alone does not make concurrent mutation of a poudriere jail safe.
+
+The [1.2 test-ISO preparation](docs/testing-1.2-test-iso.md) precedes physical
+qualification and is separate from final release publication.
+
 ## Setting up a build host
+
+For a loader-only hardware test medium, follow
+[the 1.2 test-ISO checklist](docs/testing-1.2-test-iso.md). `TEST_LOADER_BUNDLE`
+selects a hash-checked EFI/Lua bundle for the live medium only. It refuses a
+Secure Boot bundle and does not provision debugging keys, enable the console,
+change installer sets or select the installed-system loader. Run
+`python3 tests/test-loader.py -v` for its selection/refusal controls; actual image
+assembly, boot and native lifecycle admission remain separate requirements.
 
 For builds from our owned FreeBSD-CURRENT fork, start with
 [owned source builds](docs/source-builds.md) and the versioned daemonarchy-src
