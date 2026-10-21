@@ -19,11 +19,24 @@ work; it is not a separate published tag in this repository. The proposed name
 - Allocate a fresh private staging directory for each installer ISO build, retaining
   preceding and failed attempts. This prepares parallel test-image authoring;
   it does not publish or qualify a new ISO.
+- Repair fastfetch's OS Age on FreeBSD: replace the GNU stat invocation with an
+  explicit native stat/date calculation and report `Unknown` for unusable times.
+  Verified on the installed 1.1.1 desktop; [ports PR #8](https://github.com/jordanhubbard/daemonarchy-ports/pull/8) carries the package fix.
+- Fix ignored EFI handoff errors and shared-NIC IPv4 fragment loss in the source
+  fork. Native sanitizer checks and actual UEFI fragmented NFS/TFTP regressions
+  pass; physical firmware and continuous kernel debugging remain release work.
+
+- Harden the source fork's UEFI console against invalid firmware mode/frame
+  sizes and refuse native kernel handoff when the debug NIC did not quiesce.
+  The actual driver passes native scripted failure checks with address/undefined
+  behavior sanitizers and explicit RX allocation balance; physical firmware,
+  alternate handoffs and release acceptance remain pending.
 
 - Make wired UEFI loader debugging a release blocker and state FreeBSD-only
-  product acceptance explicitly. The source fork's packet core and native EFI
-  build are initial development evidence; remote console operation and laptop
-  qualification remain open.
+  product acceptance explicitly. The source fork now passes a native EFI build
+  and initial real UEFI console tests, including remote show/set/boot, replay
+  refusal, reconnect and local recovery without a peer or NIC. Physical
+  firmware/NIC and remaining netboot/fault checks still block acceptance.
 
 - Inspect source-built compiler/sysroot package provenance and dependencies:
   verify 524 pkgbase manifests and locate compiler resources, C++ headers/runtime,
