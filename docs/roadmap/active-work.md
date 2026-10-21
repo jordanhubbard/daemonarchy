@@ -42,7 +42,18 @@ Evidence: `verification/adoption-checks.json`. Native execution and release enfo
   - [ ] Bind the actual FreeBSD target, action inventory, external inputs, privileged cleanup and protected signer.
   - [ ] Qualify current native receipts, artifact custody and release enforcement.
 
-Next action: bind the actual source/ports compiler, sysroot and input closure to executable retained profiles and earn installed native admission. The product controller also retains a receipt policy without a lifecycle driver; the reviewed Standard first-binding command refuses that partial configuration with `standard_rebind.binding_required`. [Framework issue #107](https://github.com/jordanhubbard/literate-ai/issues/107) owns the explicit reviewed migration. Its [draft PR #108](https://github.com/jordanhubbard/literate-ai/pull/108) now has full controller and exact-wheel qualification plus five real installed CLI checks on a disposable FreeBSD product copy. All receipt requirements and 42 historical evidence files are preserved; 13 installed native contract cases also pass. See the [migration checkpoint](../../verification/standard-first-binding-development.json). The actual product manifest and default CLI remain unchanged. Next qualify the reviewed product binding and actual retained compiler/sysroot/input profiles before execution; do not remove existing policy to force initial binding.
+Next action: bind the actual source/ports compiler, sysroot, input closure and
+native action inventory to executable retained profiles and earn installed native
+admission. The [first-binding checkpoint](../../verification/standard-first-binding-development.json)
+now records an exact reviewed Standard configuration apply on the controller using
+qualified framework `73311c69`; all seven existing receipt requirements, 43 historical
+evidence files, the default CLI and active workspace selection are preserved. The
+same plan identity passed five real installed CLI operations on a disposable
+FreeBSD product copy, and all 13 installed contract cases pass. [Framework PR #108](https://github.com/jordanhubbard/literate-ai/pull/108)
+remains draft pending exact hosted CI. Use its matching isolated CLI for lifecycle
+planning. This binding is not native execution, SDK/pkg/ISO admission or release
+qualification. Current authority and all eight host contract locks pass after an explicit lock/audit refresh; the configured project receipt remains missing.
+
 - **Evidence:**
   - [ ] Actual installed CLI accepts retained native execution; source and binary invalidation works; native tests and artifact hashes are current; failed or omitted evidence blocks publication; existing release workflow is reproduced.
 
@@ -376,9 +387,9 @@ Next action: bind the actual source/ports compiler, sysroot and input closure to
   is prepared and hash-checked against committed source and native development
   evidence. Eight controller/native staging and selection controls pass, including
   hardlinked jail preservation and signed-payload conflict refusal. Native exact
-  bundle preparation passes. No ISO exists from this work. The installed product
-  Standard rebind plan still refuses `standard_rebind.binding_required`; preserve
-  its receipt policy and qualify the ADOPT-002 migration before admitted assembly.
+  bundle preparation passes. No ISO exists from this work. The reviewed ADOPT-002 first-binding migration is
+  now applied with receipt policy preserved. Actual retained profiles, native input
+  admission and assembly remain required before image readiness.
 - **Implementation:**
   - [ ] Allocate a private per-run ISO staging directory; preserve preceding artifacts; bind exact loader, kernel/world sets, jail, ports, modules and checkout selections; coordinate native dispatch with active worker ownership.
 - **Evidence:**

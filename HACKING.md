@@ -129,6 +129,14 @@ qualification and is separate from final release publication.
 
 ## Setting up a build host
 
+The product controller now pins the exact qualified framework wheel from source
+`73311c69`, recorded in `verification/standard-first-binding-development.json`.
+Select the matching isolated installation as `FRAMEWORK_CLI` in private operator
+configuration and use `"$FRAMEWORK_CLI"` for lifecycle planning and verification.
+The default installed CLI and active source/ports workspace are preserved. This
+configuration binding does not qualify a retained native build or produce its
+missing receipt. Actual action/input profiles and native admission remain required.
+
 For a loader-only hardware test medium, follow
 [the 1.2 test-ISO checklist](docs/testing-1.2-test-iso.md). `TEST_LOADER_BUNDLE`
 selects a hash-checked EFI/Lua bundle for the live medium only. It refuses a

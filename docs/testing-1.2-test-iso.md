@@ -54,13 +54,12 @@ the live root's loader. The inspected script identities are retained with the
 controls. These eight controls are not assembly, boot, hardware
 or lifecycle acceptance.
 
-The installed controller's read-only Standard rebind plan still refuses with
-`standard_rebind.binding_required`: the product retains a receipt policy without
-a Standard lifecycle driver. This reproduces ADOPT-002's product migration gate.
-The policy was preserved, and no manual assembly was substituted for the required
-admitted lifecycle. Qualify the product binding migration through the framework
-before dispatching assembly. The portable upstream migration is tracked in
-[framework issue #107](https://github.com/jordanhubbard/literate-ai/issues/107).
+The preceding controller's read-only Standard rebind plan refused with
+`standard_rebind.binding_required` for the receipt-only configuration. The reviewed
+[framework repair](https://github.com/jordanhubbard/literate-ai/pull/108) now supplies
+and qualifies the exact migration described below. No manual assembly was substituted
+for the required admitted lifecycle. Actual retained profiles and input admission
+remain required before dispatching assembly.
 
 The loader-debugging owner must provide the exact reviewed loader artifact,
 source revision, compatibility scope and native/VM result. A loader-only test
@@ -113,7 +112,14 @@ at `73311c69` installs offline on FreeBSD with 37 verified distributions. Five
 real CLI checks pass on a disposable copy of product revision `aadfa33f`, preserving
 all receipt requirements and 42 historical evidence files. Thirteen installed
 contract tests also pass. The [checkpoint](../verification/standard-first-binding-development.json)
-retains both earlier probe-harness failures and the successful scope. The actual
-product binding, active workspace/default CLI, native lifecycle receipt and ISO
-remain unchanged. Qualify and apply the reviewed binding with its actual retained
-profiles before dispatching assembly; hosted framework CI remains pending.
+retains both earlier probe-harness failures and the successful scope. The exact same plan is now applied to the actual controller project through its
+matching isolated CLI, preserving all seven receipt requirements and 43 historical
+evidence files. The active workspace/default CLI remain unchanged. Native lifecycle
+receipt and ISO remain missing. Bind and qualify actual retained profiles and
+inputs before dispatching assembly; hosted framework CI remains pending.
+
+The qualified controller now passes project authority and all eight `host` contract
+locks after their current specification/resolution audit refresh. Logical graph
+requirements and node/edge counts are preserved. Full verification still fails
+with `project.test_receipt_missing`; metadata locks are not FreeBSD input or
+execution receipts. No ISO or hardware readiness is inferred.
