@@ -4,6 +4,12 @@ Acceptance binds exact input/source identities, test command, worker/OS, artifac
 hash, result and limitations. Historical results are evidence only for their
 recorded scope; these requirements are not a current execution receipt.
 
+## Test-image assembly isolation
+
+`tests/iso-stage.py` exercises concurrent private staging, preserved prior/failed
+artifacts and invalid-parent refusal. Each test ISO also needs exact inputs and
+actual native assembly/boot evidence; physical results follow artifact readiness.
+
 ## Existing candidate checks
 
 - [tests/live-image-runtime.sh](../../tests/live-image-runtime.sh)

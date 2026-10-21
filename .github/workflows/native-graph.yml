@@ -14,6 +14,9 @@ on:
       - 'native/qemu-worker.py'
       - 'native/inspect-worker-allocation.py'
       - 'tests/qemu-worker.py'
+      - 'build-iso.sh'
+      - 'scripts/iso-stage.sh'
+      - 'tests/iso-stage.py'
       - '.github/workflows/native-graph.yml'
   pull_request:
     paths:
@@ -28,6 +31,9 @@ on:
       - 'native/qemu-worker.py'
       - 'native/inspect-worker-allocation.py'
       - 'tests/qemu-worker.py'
+      - 'build-iso.sh'
+      - 'scripts/iso-stage.sh'
+      - 'tests/iso-stage.py'
       - '.github/workflows/native-graph.yml'
   workflow_dispatch:
 
@@ -47,3 +53,7 @@ jobs:
           python3 tests/native-dirdeps.py -v
           python3 tests/native-workspace.py -v
           python3 tests/qemu-worker.py -v
+      - name: Isolated ISO staging controls
+        run: |
+          sh -n build-iso.sh scripts/iso-stage.sh
+          python3 tests/iso-stage.py -v

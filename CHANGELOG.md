@@ -16,6 +16,10 @@ work; it is not a separate published tag in this repository. The proposed name
 
 ## Unreleased
 
+- Allocate a fresh private staging directory for each installer ISO build, retaining
+  preceding and failed attempts. This prepares parallel test-image authoring;
+  it does not publish or qualify a new ISO.
+
 - Make wired UEFI loader debugging a release blocker and state FreeBSD-only
   product acceptance explicitly. The source fork's packet core and native EFI
   build are initial development evidence; remote console operation and laptop

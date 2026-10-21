@@ -115,6 +115,18 @@ Missing declarations, unsupported contexts and cycles cause a nonzero result.
 Run `PYTHONDONTWRITEBYTECODE=1 python3 tests/native-dirdeps.py -v` for eleven portable
 refusal/graph/process checks; native observation remains a separate result.
 
+## Isolated test-image staging
+
+Every `build-iso.sh` invocation allocates a new private directory beneath
+`ISO_STAGE_PARENT` (default `/var/tmp`) and prints its path. The parent must
+already exist and be an absolute, nonsymlink directory. Failed and completed
+staging trees remain for inspection; a later invocation never deletes them.
+Use separate output names, output directories and native build selections too:
+private staging alone does not make concurrent mutation of a poudriere jail safe.
+
+The [1.2 test-ISO preparation](docs/testing-1.2-test-iso.md) precedes physical
+qualification and is separate from final release publication.
+
 ## Setting up a build host
 
 For builds from our owned FreeBSD-CURRENT fork, start with

@@ -362,3 +362,15 @@ Next action: bind the actual source/ports compiler, sysroot and input closure to
   - [x] Native checkout identities and cleanliness, installed CLI and discoverable commands are verified on the operator workstation.
   - [ ] Complete Component ownership and dependency closure, exact provenance, correct incremental invalidation, actual tests and package outputs pass.
   - [ ] Measured ISO creation and actual installation/recovery evidence match the exact source and ports selections.
+
+### [ ] TESTISO-001 — Prepare the 1.2 hardware test ISO before physical qualification
+
+- **Priority:** P1
+- **Owner:** release assembly and source/ports integration
+- **Direction:** Produce an isolated exact-input test ISO carrying the reviewed fixes before asking the operator to run hardware qualification.
+- **Conclusion:** Prepare and qualify assembly independently of final release publication; physical acceptance is downstream of the test artifact.
+- **Depends on:** DEBUG-001
+- **Implementation:**
+  - [ ] Allocate a private per-run ISO staging directory; preserve preceding artifacts; bind exact loader, kernel/world sets, jail, ports, modules and checkout selections; coordinate native dispatch with active worker ownership.
+- **Evidence:**
+  - [ ] Retain staging isolation/refusal controls, input identities, native assembly results and ISO hash; announce readiness only after a real test artifact exists. Keep hardware and final 1.2 release obligations open.
