@@ -264,6 +264,16 @@ remains pending. Active workspace selections are unchanged. Native changed-port
 tests, clean bulk builds, coherent final input admission and the remaining R12-18
 requirements stay open.
 
+The [observer performance checkpoint](../../verification/native-sdk-observation-performance-development.json)
+records the exact `760bfa09` wheel, 2,131 controller passes with 70 declared
+skips, clean Linux wheel qualification and a complete 233-case configured host
+lifecycle with a current framework receipt. The subsequent installed FreeBSD
+canonical public SDK build still times out at the unchanged 3,600-second
+execution budget (4,162.132 seconds total), despite passing its preparation and
+authorization refusal controls. Its owned source server exits successfully.
+Canonical native admission remains unearned; profile actual authorized execution
+before claiming the observer optimization resolves that release blocker.
+
 ### [ ] COMP-001 — Model complete FreeBSD source and ports trees as Components
 
 - **Framework issue:** [#74](https://github.com/jordanhubbard/literate-ai/issues/74)
