@@ -272,7 +272,22 @@ preserved. No performance fix or lifecycle pass is claimed.
 - **Evidence:**
   - [ ] Every inherited backlog obligation has direct completion evidence; native and virtual/physical acceptance match exact final artifacts; full LitAI verification and release gates pass; published new release and immutable assets are verified.
 
-The [latest October 22 refresh](../../verification/upstream-refresh-2026-10-22-followup.json)
+The [evening October 22 refresh](../../verification/upstream-refresh-2026-10-22-evening.json)
+adds three source commits through `775e421dc38f` and 14 ports commits through
+`ca96d11f77ad`. The owned source mirror matches upstream exactly. [Source PR #9](https://github.com/jordanhubbard/daemonarchy-src/pull/9)
+now retains 98 upstream commits plus the existing mandoc/libz bootstrap repair
+at `b051901b0ff1`. Fresh exact-head [cross-build run 39818544271](https://github.com/jordanhubbard/daemonarchy-src/actions/runs/39818544271)
+is pending; the preceding head's four passing Linux cells and two queued macOS
+cells do not qualify this new head. [Ports PR #15](https://github.com/jordanhubbard/daemonarchy-ports/pull/15)
+is merged at `17bebe849ef2`, updating 586 upstream paths, including Unbound
+security fixes and Chromium. All 64 downstream blobs and modes, the complete
+downstream binary delta and the exact upstream import are preserved. Ports has
+211 whitespace warnings identical to upstream; patch bytes remain unchanged.
+Source whitespace checks pass. Native world/kernel, changed-port and clean bulk
+qualification remain open. Active development workspace selections and published
+release inputs are unchanged.
+
+The [preceding October 22 refresh](../../verification/upstream-refresh-2026-10-22-followup.json)
 adds one source commit through `c7523e8cfbd0` and 15 ports commits through
 `9517a531083e`. The source mirror is current; [source PR #9](https://github.com/jordanhubbard/daemonarchy-src/pull/9)
 now retains 95 upstream commits and the existing mandoc bootstrap dependency
