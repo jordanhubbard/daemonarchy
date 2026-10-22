@@ -162,10 +162,10 @@
     }
   },
   "hosted_ci": {
-    "head_revision": "e842b40b18ef494ef170b72bcadad8f119c21d6c",
-    "run": "https://github.com/jordanhubbard/daemonarchy/actions/runs/39840105392",
+    "head_revision": "ef6ebcf27439dae9745d1002c8c9bf50a8723f98",
+    "run": "https://github.com/jordanhubbard/daemonarchy/actions/runs/39842206287",
     "conclusion": "success",
-    "scope": "Ubuntu controller progress/PTY and completion controls plus existing graph and ISO control tests; not a native installation"
+    "scope": "Ubuntu controller twelve-case progress/PTY and completion controls plus existing graph and ISO controls; not native installation"
   },
   "preceding_eleven_case_observation": {
     "controller": {
@@ -230,6 +230,11 @@
     "preceding_implementation_accepts_all_three_invalid_observations": true,
     "preceding_regression_stderr_sha256": "7b24cdba9992e4a2579c4b69edc05ee5c6bde5ce0bd431dbb28c6d65ff366a45",
     "native_suite_passed": true,
-    "hosted_ci": "pending exact guard commit"
+    "hosted_ci": {
+      "head_revision": "ef6ebcf27439dae9745d1002c8c9bf50a8723f98",
+      "run": "https://github.com/jordanhubbard/daemonarchy/actions/runs/39842206287",
+      "conclusion": "success",
+      "scope": "Ubuntu controller twelve-case progress/PTY and completion controls plus existing graph and ISO controls; not native installation"
+    }
   }
 }
