@@ -97,7 +97,7 @@
   "product_receipt": false,
   "iso_created": false,
   "release_authorized": false,
-  "next_action": "Retain per-operation timing through the existing wheel-smoke timing-report option, then identify the expensive native stages before a complete new qualification",
+  "next_action": "Observe exact 46c14963 configured host lifecycle to terminal; promote only its canonical passing candidate, then qualify the resulting final receipt revision on Windows with retained timing spans",
   "observed_utc": "2026-10-22T22:18:00.021448+00:00",
   "product_verify": {
     "authority": "pass",
@@ -153,5 +153,6 @@
     "conclusion": null
   },
   "reviewed_framework_receipt_revision": "bd76625f0ee63da98dc29792768e5c837d72de9e",
-  "native_validation_diagnostic": "verification/framework-windows-validation-diagnostic.json"
+  "native_validation_diagnostic": "verification/framework-windows-validation-diagnostic.json",
+  "wheel_timing_followup": "verification/framework-windows-wheel-timing-development.json"
 }

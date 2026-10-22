@@ -856,3 +856,12 @@ validation in 9.187 seconds (6.206 seconds inside the operation). Manifests and
 installed module bytes stay unchanged. These single ordered observations do not
 identify the full gate bottleneck or qualify its wheel. Next: retain per-operation
 wheel-smoke timings and investigate the expensive native stages.
+
+The [Windows wheel timing follow-up](../../verification/framework-windows-wheel-timing-development.json)
+is implemented in [framework PR #124](https://github.com/jordanhubbard/literate-ai/pull/124):
+each native gate attempt selects a unique report, and completed spans replace
+atomically. Partial-write integrity fails against the original writer and passes
+on macOS and real Windows. Eight focused tests and driver review pass. Exact
+`46c14963` now runs complete configured host lifecycle renewal under its existing
+3600-second bound. Its receipt is not promoted, and final full native qualification
+remains open; report files do not establish a passing gate.
