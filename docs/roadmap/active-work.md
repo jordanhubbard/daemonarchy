@@ -96,6 +96,30 @@ canonical build/test acceptance remains open. These preparation checks do not
 admit the actual compiler/sysroot, product lifecycle or ISO. Next bind the complete
 actual retained profiles and earn native admission; all 24 release rows remain open.
 
+A subsequent real installed FreeBSD/KVM attempt now completes native library-SDK
+production, project validation, reviewed original-source adoption and retained
+planning with the default 16-kind receipt policy preserved. Separate checks refuse
+missing host-execution acknowledgement and missing exact retained-plan
+authorization. Earlier authored capability, ignored-output and unsorted-case
+refusals remain retained; their corrections do not relax the framework guards.
+The supervised preparation and execution attempt ended after 951.990 seconds with
+`retained_project.execution_failed`: the SDK command scope rejects an import or
+loader override. The retained runner projects `LD_LIBRARY_PATH` from its reviewed
+captured runtime directory, while the SDK scope rejects that key unconditionally;
+the current framework review still has both behaviors.
+[Framework issue #118](https://github.com/jordanhubbard/literate-ai/issues/118)
+owns their fail-closed composition. Fix that boundary without dropping declared
+runtime dependencies or relaxing the ambient-injection guard, then rerun installed
+native build/tests and independent acceptance. No consumer lifecycle admission,
+compiler/sysroot admission, product receipt or release acceptance is earned.
+
+A separate successful read-only plan under cProfile took 68.762 seconds and
+recorded 41,930 stat calls plus four installed-distribution observations. This is
+diagnostic evidence with profiling overhead, not a release performance benchmark.
+[Framework issue #117](https://github.com/jordanhubbard/literate-ai/issues/117)
+owns bounded observation/revalidation work with tamper and revocation guards
+preserved. No performance fix or lifecycle pass is claimed.
+
 - **Evidence:**
   - [ ] Actual installed CLI accepts retained native execution; source and binary invalidation works; native tests and artifact hashes are current; failed or omitted evidence blocks publication; existing release workflow is reproduced.
 
