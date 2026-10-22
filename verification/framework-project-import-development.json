@@ -67,15 +67,20 @@
     }
   },
   "candidate_native_gate": {
-    "status": "running; live wrapper and gate process observed",
+    "status": "running; live wrapper and gate processes observed",
     "maximum_seconds": 5400,
     "test_workers": 2,
     "previous_failed_workspace_preserved": true,
     "native_gate_passed": false,
-    "phase": "preflight passed; creating dedicated environment",
+    "phase": "wheel qualification after documentation checks passed",
     "missing_git_objects": 0,
     "git_connectivity_passed": true,
-    "primary_checkout_unchanged": true
+    "primary_checkout_unchanged": true,
+    "documentation_tests": 21,
+    "documentation_test_failures": 0,
+    "rendered_mermaid_diagrams": 121,
+    "markdown_files_scanned": 625,
+    "last_observed_free_bytes": 36066041856
   },
   "compiler_sdk_admitted": false,
   "product_receipt": false,

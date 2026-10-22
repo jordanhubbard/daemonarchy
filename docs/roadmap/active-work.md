@@ -240,6 +240,9 @@ preserved. No performance fix or lifecycle pass is claimed.
   - [x] Inspect loader/kernel transport foundations: EFI Simple Network Protocol and standalone UDP exist; an interactive loader network stub does not. Current NetGDB explicitly requires a panic and an initialized supported NIC. Firmware networking stops at `ExitBootServices`; boot flags do not establish an early network debugger. This is source-backed scope discovery, not runtime qualification.
   - [ ] Qualify an explicitly selected loader command/console stub, including environment inspection/update and kernel boot over the reviewed wired transport.
   - [ ] Qualify existing NetGDB/netdump operation with the selected native NIC and exact symbols, preserving the panic-only limitation until separately resolved.
+    The linked native Netdump baseline now passes for the private e1000 VM and
+    exact kernel. Next: inspect driver-ready activation and the pre-driver coverage
+    boundary; retain the separate physical NIC and authenticated transport gates.
   - [ ] Implement and qualify early-kernel driver/transport activation and debugger entry; retain the loader handoff identity and document the remaining pre-driver gap.
   - [ ] Define transport and authorization boundaries; select supported NICs and matching symbols; implement and qualify the explicit debug profile.
 - **Evidence:**
@@ -369,6 +372,20 @@ before deadline and all disks are retained. [Source issue #12](https://github.co
 is implemented and natively qualified on draft PR #7, pending integration.
 Physical NICs, Netdump, authenticated kernel sessions, continuous early-kernel
 transport, compiler/SDK admission and release acceptance remain open.
+
+
+The [native Netdump baseline](../../verification/netdump-native-baseline-development.json)
+now passes on the same exact `791ac20a21ad` kernel with matching full symbols.
+A pinned upstream `netdumpd` receiver builds natively in 0.93 seconds; the owned
+VM's controlled panic sends a 165,371,904-byte minidump with valid header parity.
+Native `kgdb` reads the full kernel version, panic pointer/string and backtrace,
+and enumerates 100 threads. Independent reconstruction of all 116,076 data
+messages from the packet capture reproduces the received core's SHA-256 exactly,
+with no gaps or overlapping unique data. The receiver exits zero and both bounded
+guests stop before deadline with all backing disks read-only. Initial CLI-option
+and driver-text harness failures remain retained. This is a private-wire VM
+baseline: physical NICs, authenticated kernel sessions, continuous early-kernel
+activation, compiler/SDK admission and final release acceptance remain open.
 
 The [standalone NetGDB contribution patch](../contributions/netgdb-peer-close.md)
 applies to current upstream and passes its style checker. It remains unsubmitted
