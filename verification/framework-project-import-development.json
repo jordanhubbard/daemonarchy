@@ -80,7 +80,8 @@
     "documentation_test_failures": 0,
     "rendered_mermaid_diagrams": 121,
     "markdown_files_scanned": 625,
-    "last_observed_free_bytes": 36066041856
+    "last_observed_free_bytes": 36066041856,
+    "metadata_scope": "The running Windows gate remains exact 8f1b7df6; it cannot qualify later TCB/authority metadata."
   },
   "compiler_sdk_admitted": false,
   "product_receipt": false,
@@ -99,6 +100,38 @@
   },
   "candidate_hosted_ci": {
     "run": "https://github.com/jordanhubbard/literate-ai/actions/runs/39854078138",
+    "status": "queued",
+    "conclusion": null
+  },
+  "reviewed_framework_candidate_revision": "191887c0a57f1f68b6c8e64150dd8264d94efb6f",
+  "lifecycle_driver_review": {
+    "ci_failure_run": "https://github.com/jordanhubbard/literate-ai/actions/runs/39854078138",
+    "gate": "driver-review",
+    "changed_tcb_files": [
+      "src/literate_ai/cli/project.py"
+    ],
+    "ci_unit_tests": {
+      "selected": 2179,
+      "passed": 2090,
+      "skipped": 89,
+      "failed": 0
+    },
+    "reviewed_identity": "sha256:4ec3013bae99656c0a63b581b8b0e489d93d327aaac94de30106cc635473fe28",
+    "canonical_review_recorded": true,
+    "subsequent_driver_review": "pass",
+    "documentation_authority": "pass",
+    "receipt": "stale; full configured lifecycle renewal is running"
+  },
+  "reviewed_candidate_host_lifecycle": {
+    "state": "running; supervisor and CLI child observed live",
+    "maximum_seconds": 3600,
+    "source_revision": "191887c0a57f1f68b6c8e64150dd8264d94efb6f",
+    "force_regeneration": true,
+    "project_configured_cli_and_model": true,
+    "candidate_receipt_admitted": false
+  },
+  "reviewed_candidate_ci": {
+    "run": "https://github.com/jordanhubbard/literate-ai/actions/runs/39859120438",
     "status": "queued",
     "conclusion": null
   }

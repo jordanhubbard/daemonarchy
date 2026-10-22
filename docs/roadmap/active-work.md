@@ -396,12 +396,15 @@ pass in sanitized controller and native FreeBSD function fixtures. The controlle
 suite passes 62 cases with four native-only skips; style checks and hosted controller
 CI pass. [Source issue #14](https://github.com/jordanhubbard/daemonarchy-src/issues/14)
 and [draft PR #15](https://github.com/jordanhubbard/daemonarchy-src/pull/15) retain this
-repair. Exact `7a4b58c717bc` kernel qualification is preparing a fresh canonical
-native checkout, with 600-second setup and 2400-second build supervision, a 3 GiB
-write budget and a 40 GiB physical host reserve. The first setup failure exposed
-the primary repository's bare mode; its evidence is preserved. The changed kernel
-is not built or runtime-qualified yet. Driver-ready activation, authentication and
-physical acceptance remain open.
+repair. A fresh native checkout reached its 300-second bound; its remaining owned
+Git child is stopped and all partial files/logs are retained. A clean, unused cold
+canonical checkout then reaches exact `7a4b58c717bc` in 2.13 seconds after process,
+cwd, mount/export and Git audits, preserving its old revision and index. Primary
+refs/HEAD are unchanged. The full native kernel now builds in fresh objects with
+four jobs and unchanged 2400-second supervision, within the 3 GiB write budget
+and 40 GiB physical host reserve. Earlier bare-repository and checkout failures
+remain retained. The changed kernel is not built or runtime-qualified yet.
+Driver-ready activation, authentication and physical acceptance remain open.
 
 The [standalone NetGDB contribution patch](../contributions/netgdb-peer-close.md)
 applies to current upstream and passes its style checker. It remains unsubmitted
@@ -479,6 +482,15 @@ admission and complete per-unit package provenance remain open.
 
 No compiler SDK, product receipt, ISO or release admission follows from these
 partial checks.
+
+The optional-import framework CI passes 2179 selected unit cases (2090 passes,
+89 declared skips) and documentation checks, then correctly refuses the stale
+lifecycle-driver pin. Reviewing the sole changed TCB import location through the
+canonical command records `4ec3013bae99`; documentation authority passes and the
+old receipt becomes stale. Exact framework `191887c0` now has a complete fresh
+configured host lifecycle running with its unchanged 3600-second bound, and new
+hosted CI is queued. The Windows gate remains bound to preceding `8f1b7df6`;
+its result cannot qualify later project metadata.
 
 The [native worker investigation](../../verification/native-sdk-worker-investigation-development.json)
 now profiles the installed descriptor candidate for a deliberate 300-second

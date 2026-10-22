@@ -1,6 +1,6 @@
 {
   "schema": "daemonarchy/debugnet-pool-readiness-development@1",
-  "observed_utc": "2026-10-22T21:32:05.332386+00:00",
+  "observed_utc": "2026-10-22T21:42:31.709383+00:00",
   "issue": "https://github.com/jordanhubbard/daemonarchy-src/issues/14",
   "base_revision": "b40c75c264dfddfb43906a31054db132f8695849",
   "scope": "Verbatim production mbuf activation and restoration functions in sanitized user-space fixtures; fake zone objects; no linked kernel or real driver execution",
@@ -205,16 +205,45 @@
     "conclusion": "success"
   },
   "clean_native_kernel_preparation": {
-    "state": "live worktree checkout observed",
+    "state": "complete; cold dedicated checkout reused after process/cwd/mount/export and clean-status audits",
     "source_revision": "7a4b58c717bc423e6a8575e27e5b60d409e10725",
     "setup_supervision_seconds": 600,
     "checkout_subprocess_seconds": 300,
     "build_supervision_seconds": 2400,
-    "build_started": false,
+    "build_started": true,
     "primary_repository_mode": "bare; primary refs and HEAD are snapshotted",
     "first_setup_failure_retained": "Working-tree status command rejected by the bare primary before checkout or fetch",
     "planned_total_write_budget_bytes": 3221225472,
     "host_reserve_bytes": 42949672960,
-    "previous_kernel_build_allocated_bytes": 349478912
+    "previous_kernel_build_allocated_bytes": 349478912,
+    "setup_seconds": 2.13,
+    "previous_source_revision": "791ac20a21ad112ace96fb3bb030ed33a5297278",
+    "previous_revision_and_index_preserved": true,
+    "primary_refs_and_head_unchanged": true,
+    "partial_fresh_checkout_preserved": true,
+    "fresh_checkout_attempt": {
+      "exit_code": 1,
+      "seconds": 301.667,
+      "owned_descendant_stopped": true,
+      "deadline_unchanged": true
+    }
+  },
+  "native_kernel_build": {
+    "state": "running; live supervisor and compiler output observed",
+    "source_revision": "7a4b58c717bc423e6a8575e27e5b60d409e10725",
+    "source_tree": "db475e9dc7df8371476ed7ff85326040438e91b0",
+    "jobs": 4,
+    "maximum_seconds": 2400,
+    "fresh_object_directory": true,
+    "install_performed": false,
+    "linked_kernel_qualified": false
+  },
+  "planned_early_native_control": {
+    "state": "not yet run",
+    "entry": "boot-time DDB before network-driver initialization",
+    "operation": "Call the actual debugnet_mbuf_start function, require ENXIO with saved/global zones unchanged, then continue boot",
+    "panic_guard_bypass": false,
+    "normal_panic_netgdb_and_netdump_renewal_required": true,
+    "scope": "Allocator readiness only; no continuous early-kernel network transport claim"
   }
 }
