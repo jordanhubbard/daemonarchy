@@ -538,7 +538,7 @@ Installation output is `/tmp/daemonarchy-install.log` on the live system when
 an installation has started. Development installations also retain
 `/var/log/daemonarchy-install.log` and `/var/db/daemonarchy/install` on the
 target. The active debug server's log is
-`/var/run/daemonarchy-remote-debug/sshd.log`; retrieve it before stopping the
+`/var/db/daemonarchy/remote-debug/sshd.log`; retrieve it before stopping the
 listener. Keep passwords, private keys and wireless credential files out of
 shared reports.
 
@@ -561,8 +561,13 @@ feedback and require the agent to communicate these states directly.
 
 Once the agent reports completion, press **Enter** or **Ctrl-C** in the local
 listener console. This closes its listener and SSH connections, deletes session
-host keys and approvals, and returns to the debug shell. A reboot stops the listener but can leave stale pairing state. In 1.1.1, choose **Unpair remote debugging agent** in rescue option 2, then **Pair** for a fresh session; `daemonarchy-debug unpair` provides the shell equivalent. A new listener session requires pairing again. Stopping access does not
-undo changes already made by the agent.
+host keys and approvals, and returns to the debug shell. In current development
+helpers, reboot preserves an installed-system grant and its host fingerprint.
+The recovery console resumes that approved listener without fresh confirmation;
+its background mode accepts only previously approved keys. A stale listener can
+be resumed directly without Unpair. Explicit `daemonarchy-debug unpair` revokes
+both active and stale grants. Older 1.1.1 helpers used volatile approvals and
+required a new pairing after reboot. Stopping access does not undo agent changes.
 
 Run `bash tests/remote-debug-progress.sh` for portable state/command checks and
 `sudo bash tests/remote-debug-session.sh` on FreeBSD for real SSH rejection,
@@ -571,9 +576,12 @@ test uses an isolated temporary server on port 23451 (`DEBUG_TEST_PORT` override
 it) and does not change the normal SSH configuration.
 
 New installed systems expose the same commands through `daemonarchy-debug`
-(`daemonarchy-debug shell`, `listen`, or `help`). No debug listener starts
-automatically, and temporary pairing does not enable the normal SSH service or
-copy approved keys into the installed system.
+(`daemonarchy-debug shell`, `listen`, `resume`, or `help`). No listener starts
+without prior console opt-in. A retained debugging grant resumes across reboots;
+normal SSH configuration and live-USB-to-target key isolation remain separate.
+`sudo bash tests/remote-debug-reboot.sh` exercises retained approval, stable host
+pinning, legacy listener adoption, reused PIDs, repeated resumption and revocation
+on an isolated server (default port 23452).
 
 ### Continuous diagnostics
 

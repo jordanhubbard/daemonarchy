@@ -6,6 +6,9 @@ work=$(mktemp -d)
 trap 'rm -rf "$work"' EXIT
 state_dir=$work/state
 debug_state=$work/debug-session
+debug_command=$work/debug-command
+printf '#!/bin/sh\ncase "$1" in\nstatus) [ -f "$0.live" ] ;;\nresume) echo resume >>"$0.calls" ;;\n*) exit 1 ;;\nesac\n' >"$debug_command"
+chmod +x "$debug_command"
 mkdir "$state_dir"
 echo in-progress >"$state_dir/status"
 echo install >"$state_dir/phase"
@@ -42,8 +45,19 @@ grep -q 'graphical login or desktop is not running' "$work/crashed"
 ) >"$work/pairing"
 grep -q 'password chosen during installation' "$work/pairing"
 grep -q '2. Pair a remote debugging agent' "$work/pairing"
-# A stale session still offers a way to revoke it, with the same authentication.
+# A stale session resumes without deleting the previous approval.
 mkdir "$debug_state"
+(
+  exec() {
+    [[ $* == '/usr/bin/login -p root' ]]
+    [[ $DAEMONARCHY_RESCUE_ACTION == remote ]]
+    exit 0
+  }
+  rescue_menu no <<<'2'
+) >"$work/resuming"
+grep -q '2. Resume remote debugging agent' "$work/resuming"
+# A running listener still offers explicit revocation.
+touch "$debug_command.live"
 (
   rescue_action() { echo 'UNAUTHENTICATED ACTION' >&2; exit 99; }
   exec() {
@@ -57,7 +71,10 @@ grep -q '2. Unpair remote debugging agent' "$work/unpairing"
 # Returning to the menu after unpairing offers pairing again.
 rescue_action() {
   echo "$1" >>"$work/toggle-actions"
-  case $1 in unpair) rmdir "$debug_state" ;; remote) mkdir "$debug_state" ;; esac
+  case $1 in
+    unpair) rmdir "$debug_state"; rm -f "$debug_command.live" ;;
+    remote) mkdir "$debug_state"; touch "$debug_command.live" ;;
+  esac
 }
 rescue_menu yes <<<$'2\n2' >"$work/toggle-menu"
 [[ $(cat "$work/toggle-actions") == $'unpair\nremote' ]]
@@ -88,5 +105,14 @@ rescue_menu yes <<<'3' >/dev/null
   rescue_menu no </dev/null >"$work/first-menu"
   grep -q $'\033\\[2J\033\\[H' "$work/first-menu"
   grep -q 'Daemonarchy rescue' "$work/first-menu"
+)
+# Boot resumption happens before desktop monitoring, including a healthy desktop.
+(
+  id() { echo 0; }
+  monitor_desktop() { grep -qx resume "$debug_command.calls"; }
+  rescue_wait_boot_output() { :; }
+  rescue_record() { :; }
+  rescue_menu() { :; }
+  rescue_main monitor
 )
 echo 'PASS: interrupted install, GUI timeout/crash, authenticated pairing/unpairing, menu toggle and boot-to-menu without input'

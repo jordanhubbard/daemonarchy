@@ -1,5 +1,14 @@
 # Changelog
 
+## Unreleased hardware debugging
+
+- Preserve approved installed-system debugging keys, server identity and private
+  state across reboot. Resume the existing session without Unpair or fresh
+  confirmation; retain explicit revocation and unknown-key refusal.
+- Record the MacBook Pro 16 fatal NVMe event reproduced during installer package
+  extraction. Storage correction and full physical acceptance remain open.
+
+
 This history covers the installer repository from its first commit and all GitHub
 release records. Dates below are GitHub publication dates in UTC; a date embedded
 in a snapshot tag is the image's identifier and can differ from its publication

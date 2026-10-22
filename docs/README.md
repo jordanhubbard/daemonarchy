@@ -41,6 +41,7 @@ reachable without changing its historical scope.
 - [Hyprland in QEMU: VirtIO DRM development checks](testing-1.1-vm-graphics.md)
 - [Daemonarchy 1.1.1 refresh](testing-1.1.1.md)
 - [MacBookPro16,1 first-boot investigation](testing-macbookpro16-1.md)
+- [MacBook installer fatal NVMe investigation, October 22](testing-macbookpro16-1-installer-20261022.md)
 
 - [1.2.0 completion obligations and worker model](roadmap/release-1.2.0.md)
 

@@ -147,6 +147,11 @@
           "path": "tests/rescue-console.sh",
           "execution": "native-freebsd-or-explicit-harness",
           "current_framework_receipt": false
+        },
+        {
+          "path": "tests/remote-debug-reboot.sh",
+          "execution": "native-freebsd-root-isolated-ssh",
+          "current_framework_receipt": false
         }
       ]
     },

@@ -33,7 +33,7 @@ and the native acceptance inventory remain authoritative for implementation stat
 
 ## Requirement: Approval and revocation
 
-Require console-approved client access. Pair/Unpair must revoke active access and stale generation state, and permit a new pairing. Never treat an ordinary SSH disconnect as task completion.
+Require console approval for a new agent. Preserve an installed-system hardware-debugging grant, approved keys, server identity and private evidence across reboot; resume safely without fresh confirmation or deleting stale state. Resumed background listeners refuse unknown keys. Explicit Unpair or interactive stop revokes active connections and the retained grant. Refresh runtime generations and verify listener identity before signaling a retained PID. Never treat an ordinary SSH disconnect as task completion.
 
 ## Requirement: Bounded evidence
 

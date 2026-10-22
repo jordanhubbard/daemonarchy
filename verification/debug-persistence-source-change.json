@@ -1,0 +1,93 @@
+{
+  "schema": "daemonarchy/retained-source-change@1",
+  "work_id": "DEBUG-002",
+  "basis_revision": "0374c961aef25ed1d684be99f51c66c7470e8c7e",
+  "historical_baseline": "verification/retained-inputs.json",
+  "historical_baseline_sha256": "444ddd323ad1e6574278302c1dd4f6204b27f8fe8e8ebb7390d3747df583d279",
+  "reason": "Explicit operator request to preserve approved hardware-debugging sessions across reboots without Unpair; preserve original source and publication authority.",
+  "replaced": [
+    {
+      "path": "overlay/usr/local/libexec/daemonarchy-installer/remote-debug",
+      "owner": "diagnostics",
+      "sha256": "7406dcf6644719513e22810c92cf93376b128e1e5f8e5f6912bb4c456012baa3",
+      "executable": true
+    },
+    {
+      "path": "overlay/usr/local/sbin/daemonarchy-rescue",
+      "owner": "diagnostics",
+      "sha256": "f1f8bc69090589b21f88940e673f2d29029326dff28b4d1619d37ee7bc3b6859",
+      "executable": true
+    },
+    {
+      "path": "tests/remote-debug-cli.sh",
+      "owner": "diagnostics",
+      "sha256": "c0826a2a46797c7b2f8592ba6f7d899b0ac618932be59a03b994bb4937cc6751",
+      "executable": false
+    },
+    {
+      "path": "tests/rescue-console.sh",
+      "owner": "diagnostics",
+      "sha256": "cebbbfa0b4ac9294461315fd8a9c2c4ddffbf73bc8f939eaefed060ce601ec29",
+      "executable": true
+    },
+    {
+      "path": "tests/live-image-runtime.sh",
+      "owner": "installer",
+      "sha256": "f73edc751e6801c990ad43d785f17eb596253feb216302c65ac780d494c87698",
+      "executable": false
+    },
+    {
+      "path": "tests/remote-debug-session.sh",
+      "owner": "diagnostics",
+      "sha256": "05ac3481e3bce7276e1ec4f2642b5ebe09382f76fa81b89d6788ebbb7b788c2f",
+      "executable": false
+    }
+  ],
+  "candidate_files": [
+    {
+      "path": "overlay/usr/local/libexec/daemonarchy-installer/remote-debug",
+      "owner": "diagnostics",
+      "sha256": "3fae0b1e525a2afa248e0c570fa8be783edf21bf251f0eb6ac2c609a89b1ebb8",
+      "executable": true
+    },
+    {
+      "path": "overlay/usr/local/sbin/daemonarchy-rescue",
+      "owner": "diagnostics",
+      "sha256": "892e2c0e85ae5aaf5e24a5252cc705d101deb2237a6ec378b9e8d27b701b5d0a",
+      "executable": true
+    },
+    {
+      "path": "tests/remote-debug-cli.sh",
+      "owner": "diagnostics",
+      "sha256": "cc4aabbe90608d7363cb7d1b0b448eed009c9b2c3d52a8929e788597526fcba8",
+      "executable": false
+    },
+    {
+      "path": "tests/rescue-console.sh",
+      "owner": "diagnostics",
+      "sha256": "bcdec3728f835a364879326e089c2f0ca5028c97530fd366b5666d56cc02d2ef",
+      "executable": true
+    },
+    {
+      "path": "tests/remote-debug-reboot.sh",
+      "owner": "diagnostics",
+      "sha256": "5bf46c883e055d9a6ad96e5a35c30a6783634534743f31b30a53c68ecf6ab455",
+      "executable": true,
+      "reason": "DEBUG-002 native reboot/resumption and explicit revocation controls; no final hardware or lifecycle qualification"
+    },
+    {
+      "path": "tests/live-image-runtime.sh",
+      "owner": "release",
+      "sha256": "c9b0902c4895ae988904267c615e6ee06896ddf88920b61f621c45cc0efdd994",
+      "executable": false
+    },
+    {
+      "path": "tests/remote-debug-session.sh",
+      "owner": "diagnostics",
+      "sha256": "7e96a83e4e05689812a0d653441095eb4e9cc093ca619c42a40b0f679a4816cd",
+      "executable": false
+    }
+  ],
+  "authority": "original-source",
+  "lifecycle_receipt": false
+}

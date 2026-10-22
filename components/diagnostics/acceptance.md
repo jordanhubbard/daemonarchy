@@ -7,6 +7,7 @@ recorded scope; these requirements are not a current execution receipt.
 ## Existing candidate checks
 
 - [tests/remote-debug-session.sh](../../tests/remote-debug-session.sh)
+- [tests/remote-debug-reboot.sh](../../tests/remote-debug-reboot.sh)
 - [tests/remote-debug-observe.sh](../../tests/remote-debug-observe.sh)
 - [tests/remote-debug-capture.py](../../tests/remote-debug-capture.py)
 - [tests/remote-debug-events.py](../../tests/remote-debug-events.py)
@@ -17,8 +18,10 @@ complete declarations and external/native gaps are in [the acceptance inventory]
 
 ## Required scenarios
 
-- **Approval and revocation:** demonstrate the stated requirement on its actual supported
-  target, and retain a negative/failure case where applicable.
+- **Approval and revocation:** test first approval, legacy listener adoption,
+  shutdown/stale-state resumption with stable host pin and existing agent key,
+  unknown-key refusal, reused-PID/generation safety and explicit revocation.
+  Qualify actual physical reboot separately from the native process fixture.
 - **Bounded evidence:** demonstrate the stated requirement on its actual supported
   target, and retain a negative/failure case where applicable.
 - **Observation identity:** demonstrate the stated requirement on its actual supported

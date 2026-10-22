@@ -690,3 +690,27 @@ before claiming the observer optimization resolves that release blocker.
   - [x] Allocate a private per-run ISO staging directory; preserve preceding artifacts; bind exact loader, kernel/world sets, jail, ports, modules and checkout selections; coordinate native dispatch with active worker ownership.
 - **Evidence:**
   - [x] Retain staging isolation/refusal controls, input identities, native assembly results and ISO hash; announce readiness only after a real test artifact exists. Keep hardware and final 1.2 release obligations open.
+
+### [ ] HW-002 — Diagnose MacBook installer interruption and qualify storage recovery
+
+- **Priority:** P1
+- **Owner:** installer and diagnostics Components with native FreeBSD storage
+- **Direction:** Resolve the reproduced Apple ANS2 fatal storage event before MacBook hardware acceptance for the next release.
+- **Conclusion:** Package registration and progress do not establish completion; preserve the interrupted target and controller evidence, then qualify a storage correction and complete native installation and desktop acceptance.
+- **Depends on:** none
+- **Implementation:**
+  - [ ] Reproduce and isolate ANS2 fatal I/O, preserve exact input and recovery identities, implement an independently tested correction, then repeat fresh-image installation and hardware checks.
+- **Evidence:**
+  - [ ] 2026-10-22 physical reproduction and exact cached package repair are recorded in docs/testing-macbookpro16-1-installer-20261022.md; storage correction, false-success explanation and complete hardware acceptance remain open.
+
+### [ ] DEBUG-002 — Preserve approved hardware-debugging sessions across reboot
+
+- **Priority:** P1
+- **Owner:** diagnostics and installer Components
+- **Direction:** Support repeated hardware bring-up cycles without deleting the previous grant or requiring fresh approval of the same agent.
+- **Conclusion:** Retain private approval and host identity on installed storage; refresh runtime generation, refuse unknown keys on background resume and preserve explicit revocation.
+- **Depends on:** none
+- **Implementation:**
+  - [ ] Implement and natively exercise durable resumption, legacy adoption, boot-console startup and explicit Unpair; verify on the physical MacBook.
+- **Evidence:**
+  - [ ] Native real-SSH persistence and existing lifecycle fixtures pass; physical reboot qualification is pending.

@@ -7,7 +7,7 @@ failure_wait=15
 poll_seconds=1
 boot_quiet_wait=15
 boot_quiet_seconds=2
-debug_state=/var/run/daemonarchy-remote-debug
+debug_state=/var/db/daemonarchy/remote-debug
 debug_command=/usr/local/sbin/daemonarchy-debug
 
 rescue_record() {
@@ -131,8 +131,11 @@ rescue_menu() {
     remote_action=remote
     remote_label='Pair a remote debugging agent'
     if [ -e "$debug_state" ] || [ -L "$debug_state" ]; then
-      remote_action=unpair
-      remote_label='Unpair remote debugging agent'
+      remote_label='Resume remote debugging agent'
+      if "$debug_command" status >/dev/null 2>&1; then
+        remote_action=unpair
+        remote_label='Unpair remote debugging agent'
+      fi
     fi
     cat <<MENU
 
@@ -168,6 +171,9 @@ rescue_main() {
   [ "$(id -u)" = 0 ] || { echo 'Run daemonarchy-rescue as root.' >&2; return 1; }
   case ${1:-monitor} in
     monitor)
+      # This grant was approved at the root console before the preceding reboot.
+      # Resume it before waiting for a desktop, without deleting crash evidence.
+      if [ -x "$debug_command" ]; then "$debug_command" resume || true; fi
       echo 'Waiting for graphical login; this console shows recovery options if it fails.'
       monitor_desktop
       rescue_wait_boot_output
