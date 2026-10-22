@@ -1,6 +1,6 @@
 {
   "schema": "daemonarchy/composed-framework-qualification-development@1",
-  "observed_utc": "2026-10-22T18:21:54.844853+00:00",
+  "observed_utc": "2026-10-22T18:24:01.450685+00:00",
   "framework_revision": "c058695048a3a1980e45db977c316a68ee4c868d",
   "scope": "Exact Windows and descriptor framework composition; native development qualification in progress",
   "controller_regression": {
@@ -90,11 +90,16 @@
     }
   },
   "windows_native_gate": {
-    "result": "staged; canonical checkout setup requested; no passing result claimed",
+    "result": "running; native wrapper and gate processes verified live",
     "preflight_refusal": "Existing primary origin differs; preserved without mutation",
     "transport_retry": "Input transfer timed out before files arrived; explicit line-based transfer then succeeded",
     "test_workers": 2,
-    "maximum_gate_seconds": 5400
+    "maximum_gate_seconds": 5400,
+    "source_revision": "c058695048a3a1980e45db977c316a68ee4c868d",
+    "started_utc": "2026-10-22T18:23:17.850267+00:00",
+    "free_bytes_at_observation": 41678442496,
+    "canonical_worktree_created": true,
+    "full_gate": true
   },
   "historical_descriptor_native_evidence": "verification/native-sdk-isolated-cli-development.json",
   "compiler_sdk_admitted": false,
