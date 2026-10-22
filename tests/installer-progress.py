@@ -1,6 +1,7 @@
 #!/usr/bin/env python3
 """Exercise measured progress and real viewer lifecycle without installing anything."""
 import fcntl
+import hashlib
 import importlib.util
 import json
 import os
@@ -143,6 +144,56 @@ class MeasuredProgressTests(unittest.TestCase):
             status.write_text('corrupt')
             result = subprocess.run([sys.executable, str(SCRIPT), str(log), str(status), '--style', 'plain'], capture_output=True, timeout=10)
             self.assertEqual(result.returncode, 1)
+
+    def test_recorded_native_acquisition_replays_all_styles_without_installation_success(self):
+        fixture = ROOT/'tests/fixtures/installer-progress/native-acquisition.jsonl'
+        provenance = json.loads(fixture.with_name('native-acquisition-provenance.json').read_text())
+        self.assertEqual(hashlib.sha256(fixture.read_bytes()).hexdigest(), provenance['journal_sha256'])
+        rows = fixture.read_text().splitlines()
+        self.assertEqual(len(rows), 16)
+        state = ui.Progress((provenance['input_sha256'], provenance['repository_database_sha256']))
+        for row in rows:
+            state.line(row, True)
+            self.assertFalse(state.warning)
+        self.assertEqual(state.sequence, 16)
+        self.assertEqual(state.meter[1:3], (29831, 29831))
+        self.assertEqual(state.item, '8 of 8 archives verified')
+        for style in ('bars', 'spectrum', 'scope'):
+            with self.subTest(style=style), tempfile.TemporaryDirectory() as directory:
+                log, status = Path(directory)/'log', Path(directory)/'status'
+                log.touch()
+                master, slave = pty.openpty()
+                fcntl.ioctl(slave, termios.TIOCSWINSZ, struct.pack('HHHH', 15, 100, 0, 0))
+                env = dict(os.environ, TERM='xterm-256color')
+                argv = [sys.executable, str(SCRIPT), str(log), str(status), '--style', style,
+                        '--events', str(fixture), '--input-pin', provenance['input_sha256'],
+                        '--repository-pin', provenance['repository_database_sha256']]
+                child = subprocess.Popen(argv, env=env, stdout=slave, stderr=slave)
+                captured = bytearray()
+                try:
+                    deadline = time.monotonic()+5
+                    while b'8 of 8 archives verified' not in captured and time.monotonic() < deadline:
+                        if select.select([master], [], [], 0.1)[0]:
+                            captured.extend(os.read(master, 65536))
+                    self.assertIsNone(child.poll())
+                    self.assertIn(b'29,831 / 29,831 bytes', captured)
+                    self.assertIn(b'8 of 8 archives verified', captured)
+                    self.assertNotIn(b'Daemonarchy is installed.', captured)
+                    # Acquisition has no installer result. Stop only the viewer.
+                    child.send_signal(signal.SIGTERM)
+                    deadline = time.monotonic()+5
+                    while b'\033[?25h' not in captured and time.monotonic() < deadline:
+                        if select.select([master], [], [], 0.1)[0]:
+                            captured.extend(os.read(master, 65536))
+                    self.assertEqual(child.wait(timeout=5), 143)
+                    self.assertIn(b'\033[?25h', captured)
+                    self.assertFalse(status.exists())
+                finally:
+                    if child.poll() is None:
+                        child.kill()
+                        child.wait(timeout=5)
+                    os.close(master)
+                    os.close(slave)
 
     def test_completed_owner_is_reported_after_incremental_backlog_drains(self):
         with tempfile.TemporaryDirectory() as directory:

@@ -35,3 +35,10 @@ physical-console installation remain open under UI-001 and PKG-001.
 read-only observer, bounded log backlog, failure handling and real kernel PTYs,
 including resize, reduced motion, all styles/color modes and signal cleanup. It
 does not partition storage, run pkg, or qualify a final installed system.
+
+The replay fixture retains all 16 events from the native eight-archive regression
+acquisition. Its journal SHA-256 is bound to the native fetch result; the selected
+input and imported database pins are retained in its provenance. Each style
+reaches 29,831 verified bytes and eight archives without producing an installer
+result. Replaying those bytes is a consumer compatibility check, not a new signed
+fetch, installation, or final-release qualification.

@@ -755,6 +755,18 @@
       "executable": false
     },
     {
+      "path": "tests/fixtures/installer-progress/native-acquisition-provenance.json",
+      "owner": "installer",
+      "sha256": "3cbc0f8d1e51f11afe2baa59a54883b54432d50c5d1f373a28919e8f5a99a0f9",
+      "executable": false
+    },
+    {
+      "path": "tests/fixtures/installer-progress/native-acquisition.jsonl",
+      "owner": "installer",
+      "sha256": "e0c703bccb73be95218afe5fc2cbc07ca23afd3c9f93bb9fe2ce75d341468fb3",
+      "executable": false
+    },
+    {
       "path": "tests/gpu-config.sh",
       "owner": "installer",
       "sha256": "69d6164c7cac7ffa22ecc158c4358614aa51fcadcf77495ace8fcbe0a53a026a",
@@ -805,7 +817,7 @@
     {
       "path": "tests/installer-progress.py",
       "owner": "installer",
-      "sha256": "0c8c29be156d8c31c05c127942b52b34309a593a694cc3479bf962dc9a71a23b",
+      "sha256": "9faf4de88494e1144b055efeae6326c31d29fd485ebaa926887e5781e3c9a8ab",
       "executable": false
     },
     {
@@ -1000,6 +1012,31 @@
           "path": "tests/installer-progress.py",
           "preceding_source_sha256": null,
           "current_sha256": "0c8c29be156d8c31c05c127942b52b34309a593a694cc3479bf962dc9a71a23b",
+          "preceding_baseline_sha256": null
+        }
+      ]
+    },
+    {
+      "work_item": "UI-001",
+      "preceding_commit": "b15f69a5d37b853b9a9d98f69dc8b0815fe53ba8",
+      "reason": "Add a verbatim retained native acquisition fixture and exact consumer replay without changing production renderer or claiming live installation",
+      "files": [
+        {
+          "path": "tests/installer-progress.py",
+          "preceding_source_sha256": "0c8c29be156d8c31c05c127942b52b34309a593a694cc3479bf962dc9a71a23b",
+          "current_sha256": "9faf4de88494e1144b055efeae6326c31d29fd485ebaa926887e5781e3c9a8ab",
+          "preceding_baseline_sha256": "0c8c29be156d8c31c05c127942b52b34309a593a694cc3479bf962dc9a71a23b"
+        },
+        {
+          "path": "tests/fixtures/installer-progress/native-acquisition.jsonl",
+          "preceding_source_sha256": null,
+          "current_sha256": "e0c703bccb73be95218afe5fc2cbc07ca23afd3c9f93bb9fe2ce75d341468fb3",
+          "preceding_baseline_sha256": null
+        },
+        {
+          "path": "tests/fixtures/installer-progress/native-acquisition-provenance.json",
+          "preceding_source_sha256": null,
+          "current_sha256": "3cbc0f8d1e51f11afe2baa59a54883b54432d50c5d1f373a28919e8f5a99a0f9",
           "preceding_baseline_sha256": null
         }
       ]

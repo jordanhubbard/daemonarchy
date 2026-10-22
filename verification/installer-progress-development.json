@@ -66,5 +66,46 @@
     "Physical console and serial display acceptance",
     "Complete final release planner/GUI event integration"
   ],
-  "installer_completion_invariant_regression": "tests/install-integrity.sh passed with declared native-pkg and pool command protocol fixtures; not real package installation"
+  "installer_completion_invariant_regression": "tests/install-integrity.sh passed with declared native-pkg and pool command protocol fixtures; not real package installation",
+  "recorded_native_acquisition_replay": {
+    "schema": "daemonarchy/installer-progress-recorded-fixture@1",
+    "source_revision": "8902832a35521dc26d1741fec558b60adce41692",
+    "source_evidence": "verification/parallel-package-fetch-development.json",
+    "source_result_sha256": "52cc1f1c310f6e725d8dff7138e2ee5fb5c5ca3f81636d7dbd69c316e8fe17d1",
+    "journal_sha256": "e0c703bccb73be95218afe5fc2cbc07ca23afd3c9f93bb9fe2ce75d341468fb3",
+    "input_sha256": "55d8f92e8d03164ca39cab3b2712faae04cd57623271fe767023b83b69ea4865",
+    "repository_database_sha256": "1e2a9168cbd7f12d796fb9e6d3ecef8e5ce0d47a5366148cf14bbe0fd6a13101",
+    "events": 16,
+    "packages": 8,
+    "verified_bytes": 29831,
+    "native_pkg_version": "2.8.4",
+    "historical_feed": "packages-16-amd64-1.1.1",
+    "scope": "Exact expanded suite exits zero on FreeBSD; verbatim historical acquisition journal replay. Existing ten-case raw evidence retains its preceding scope; expanded raw test output is retained on the cold guest.",
+    "live_fetch_performed_by_replay": false,
+    "installation_authorized": false,
+    "release_qualified": false,
+    "controller_tests": 11,
+    "controller_tests_passed": 11,
+    "controller_seconds": 8.494,
+    "native_command_terminal": {
+      "exit_code": 0,
+      "schema": "daemonarchy/native-command-terminal@1",
+      "seconds": 8.383
+    },
+    "native_suite_source_sha256": "9faf4de88494e1144b055efeae6326c31d29fd485ebaa926887e5781e3c9a8ab",
+    "native_source_files_verified_before_execution": {
+      "overlay/usr/local/libexec/daemonarchy-installer/progress-dashboard.py": "c0b7aa0da0f92540d6b93d1338ed86dabd0a5184913b0b989275ffb93aab6533",
+      "overlay/usr/local/libexec/daemonarchy-installer/dashboard": "86fc2ba69196a0d92a5cb3f90029295afab22969f8f0aba21c6d02428fe15f79",
+      "tests/installer-progress.py": "9faf4de88494e1144b055efeae6326c31d29fd485ebaa926887e5781e3c9a8ab",
+      "tests/fixtures/installer-progress/native-acquisition.jsonl": "e0c703bccb73be95218afe5fc2cbc07ca23afd3c9f93bb9fe2ce75d341468fb3",
+      "tests/fixtures/installer-progress/native-acquisition-provenance.json": "3cbc0f8d1e51f11afe2baa59a54883b54432d50c5d1f373a28919e8f5a99a0f9"
+    },
+    "native_test_output_retained_on_cold_guest": true,
+    "styles_replayed": [
+      "bars",
+      "spectrum",
+      "scope"
+    ],
+    "installer_result_produced": false
+  }
 }
