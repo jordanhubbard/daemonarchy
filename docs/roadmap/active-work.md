@@ -277,6 +277,20 @@ remains pending. Active workspace selections are unchanged. Native changed-port
 tests, clean bulk builds, coherent final input admission and the remaining R12-18
 requirements stay open.
 
+The [ordinary network context checkpoint](../../verification/loader-network-context-development.json)
+adds source `17872b0d6b4`: failed DHCP/RARP setup now refuses stale parameters
+from another interface, and a new configuration without MTU removes the stale
+published value. Both failures are reproduced before repair. The production
+native sanitizer fixture passes, and a complete verified `983b4315ec01` source
+baseline plus the pinned change builds the new EFI. Actual cross-NIC TFTP,
+same-NIC revocation/restart and small/fragmented NFS with kernel loading pass.
+Three independent kernel observations match boot IDs and NIC identities; the
+NFS debug IP remains metadata only. All four owned guests shut down normally.
+The controller passes 62 cases with four native-only skips; authority and all
+five explicit FreeBSD locks pass. Source PR #7 remains a draft, and native SDK,
+compiler admission, physical firmware, early-kernel transport and final release
+qualification remain open.
+
 The [observer performance checkpoint](../../verification/native-sdk-observation-performance-development.json)
 records the exact `760bfa09` wheel, 2,131 controller passes with 70 declared
 skips, clean Linux wheel qualification and a complete 233-case configured host
