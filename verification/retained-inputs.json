@@ -11,6 +11,12 @@
       "executable": false
     },
     {
+      "path": ".github/workflows/native-graph.yml",
+      "owner": "release",
+      "sha256": "cc879b6fb54df68e1f7679d0106bcf7fa9bcbb2c6a99280e147ffeb8813a44d2",
+      "executable": false
+    },
+    {
       "path": ".gitignore",
       "owner": "release",
       "sha256": "32dae3052f331ee34d628ef535709b301259a45df7c7522c4d35dcf49873f00b",
@@ -1037,6 +1043,19 @@
           "path": "tests/fixtures/installer-progress/native-acquisition-provenance.json",
           "preceding_source_sha256": null,
           "current_sha256": "3cbc0f8d1e51f11afe2baa59a54883b54432d50c5d1f373a28919e8f5a99a0f9",
+          "preceding_baseline_sha256": null
+        }
+      ]
+    },
+    {
+      "work_item": "UI-001",
+      "preceding_commit": "57e37f1c257c1744abd92fce785925a4a9d9b08c",
+      "reason": "Run portable measured progress and completion controls for renderer, installer hook and fixture changes in the existing controller workflow",
+      "files": [
+        {
+          "path": ".github/workflows/native-graph.yml",
+          "preceding_source_sha256": "741cd4f3dcf1993a3ff2019b655a79dbb60f7fae185d232f18e46edff4341f9c",
+          "current_sha256": "cc879b6fb54df68e1f7679d0106bcf7fa9bcbb2c6a99280e147ffeb8813a44d2",
           "preceding_baseline_sha256": null
         }
       ]
