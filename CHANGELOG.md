@@ -21,6 +21,12 @@ work; it is not a separate published tag in this repository. The proposed name
   evidence before returning an interrupted status. Controller regression checks
   cover the reproduced orphan-child defect; actual VM renewal remains separate.
 
+- Authenticate frozen package catalogues with a pinned public key and verify
+  fetched archives through native pkg, retaining exact payload inventories and
+  independent SHA-256 hashes. Support read-only offline replay and reject
+  diagnostics even when a native command exits zero. Installation and final
+  release admission remain separate requirements.
+
 - Compare native pkg dry-run proposals and imported package/dependency records
   with pinned selection graphs in fresh private databases. Keep metadata and
   partial failures, enforce internal process deadlines and reject mismatched

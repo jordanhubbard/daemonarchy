@@ -10,6 +10,7 @@ reachable without changing its historical scope.
 - [FreeBSD application and menu policy](freebsd-application-policy.md)
 - [Pinned package dependency graphs](package-dag.md)
 - [Native package resolution checks](native-package-plan.md)
+- [Signed catalogue and package payload checks](signed-package-snapshot.md)
 - [Getting started with Daemonarchy](getting-started.md)
 - [Hardware quirks](hardware-quirks.md)
 - [Optional ports and system source: space estimate](optional-source-sizing.md)

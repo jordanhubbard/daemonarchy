@@ -1,0 +1,104 @@
+{
+  "schema": "daemonarchy/signed-package-snapshot-development@1",
+  "queue_item": "PKG-001",
+  "recorded_at": "2026-10-22T07:48:08.859587+00:00",
+  "scope": "Signed metadata and payload integrity regression using an immutable historical release; no final 1.2 admission",
+  "release_fixture": {
+    "repository": "jordanhubbard/daemonarchy",
+    "tag": "packages-16-amd64-1.1.1",
+    "url": "https://github.com/jordanhubbard/daemonarchy/releases/tag/packages-16-amd64-1.1.1"
+  },
+  "native": {
+    "os": "FreeBSD",
+    "release": "16.0-CURRENT",
+    "python": "3.12.14",
+    "pkg_version": "2.8.4",
+    "pkg_sha256": "6007606eeadc511c8ca22ddc03b71e8bda653ac034a57b291c1ba6785ceee36d"
+  },
+  "final_source_sha256": {
+    "scripts/signed-package-snapshot.py": "f29fbc742bb722eb861e53773696794078cddb6bf1d352616877dff262ad6935",
+    "scripts/native-package-plan.py": "5ce3732c96e7744657d309b66306c21b3e31fdc181f6d071bcff1af3328fc7dc",
+    "scripts/package-dag.py": "1b99e5ba0a574d8a0a78445e9814685ed6e640629d32ffd324cb6440626b3e7c",
+    "tests/signed-package-snapshot.py": "6999f22151c528086643087f5de8cc8359743908ce0eca8cb2d1d0a6ef6ced73"
+  },
+  "controller_checks_passed": 100,
+  "native_snapshot_controls_passed": 12,
+  "cold_https_capture": {
+    "source_sha256": {
+      "scripts/signed-package-snapshot.py": "de095eadda3dbae3a72c5dd2b1c11a65028b389039d981f25247a9f7d2a26eda",
+      "scripts/native-package-plan.py": "5ce3732c96e7744657d309b66306c21b3e31fdc181f6d071bcff1af3328fc7dc",
+      "scripts/package-dag.py": "1b99e5ba0a574d8a0a78445e9814685ed6e640629d32ffd324cb6440626b3e7c"
+    },
+    "packages": 510,
+    "download_bytes": 3020892622,
+    "seconds": {
+      "authentication": 0.7581563210114837,
+      "fetch_verify": 1103.6305775509682,
+      "total": 1119.8359653960215
+    },
+    "host_database_unchanged": true
+  },
+  "final_source_replay": {
+    "packages": 510,
+    "download_bytes": 3020892622,
+    "transfer_requests": {
+      "https_redirects": 0,
+      "offline_requests": 510
+    },
+    "seconds": {
+      "authentication": 0.7697128369472921,
+      "fetch_verify": 39.59849062701687,
+      "total": 55.42928043298889
+    },
+    "repository_signature_verified": true,
+    "payload_checksums_verified": true,
+    "installed_packages_after": 0,
+    "private_cache_empty": true,
+    "host_database_unchanged": true
+  },
+  "crypto_refusals": [
+    {
+      "name": "wrong-key",
+      "checker_exit_code": 1,
+      "native_stage": "authenticate",
+      "native_exit_code": 1,
+      "diagnostic_sha256": "1abea867e1f88412ca98affe4b685e4d0b727abbd228234e2a309168b2a40500",
+      "passing_result_present": false
+    },
+    {
+      "name": "bad-payload",
+      "checker_exit_code": 1,
+      "native_stage": "fetch-verify",
+      "native_exit_code": 1,
+      "diagnostic_sha256": "cbbfd585333bb5ac41ec63510d1956b7096a07a666d47607c19458acb7dd7169",
+      "passing_result_present": false
+    },
+    {
+      "name": "tampered-signature",
+      "checker_exit_code": 1,
+      "native_stage": "authenticate",
+      "native_exit_code": 0,
+      "diagnostic_sha256": "0d96abf7bc116bbdec6709badfac1d179d29470c31bcfb41084540d6d743301e",
+      "passing_result_present": false
+    }
+  ],
+  "https_seed_fallback_observed": true,
+  "logs_retained_privately": true,
+  "payload_inventory": {
+    "path": "verification/signed-snapshot-1.1.1-payloads.json",
+    "sha256": "ea11b78a991254c6a81f0703857941fd8ac07079dbfaff094c1239d341b47620"
+  },
+  "native_catalogue_format_scope": "pkg 2.8.4 active data.pkg import; auxiliary legacy archive/client compatibility not separately qualified",
+  "retained_preparation_refusal": "Changing the imported repository URL invalidated the native database; the final controller preserves one finite loopback origin",
+  "dependency_plan_qualified": false,
+  "installation_authorized": false,
+  "lifecycle_receipt": "missing",
+  "release_qualified": false,
+  "remaining": [
+    "Exact signed final 1.2 repository inputs and every supported selection, including official-repository trust",
+    "Compose authenticated snapshots with complete native dependency plans",
+    "Actual installation, script/trigger/file integrity and rollback",
+    "Coordinated safe parallel installation and measured performance",
+    "Canonical native lifecycle and release receipts"
+  ]
+}
