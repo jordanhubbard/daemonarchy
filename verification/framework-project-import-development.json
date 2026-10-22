@@ -67,18 +67,22 @@
     }
   },
   "candidate_native_gate": {
-    "status": "fresh canonical checkout setup in progress; live native setup supervisor observed",
+    "status": "running; live wrapper and gate process observed",
     "maximum_seconds": 5400,
     "test_workers": 2,
     "previous_failed_workspace_preserved": true,
-    "native_gate_passed": false
+    "native_gate_passed": false,
+    "phase": "preflight passed; creating dedicated environment",
+    "missing_git_objects": 0,
+    "git_connectivity_passed": true,
+    "primary_checkout_unchanged": true
   },
   "compiler_sdk_admitted": false,
   "product_receipt": false,
   "iso_created": false,
   "release_authorized": false,
   "next_action": "Observe the same exact-candidate Windows setup/gate handle to terminal; preserve all failed temporary evidence and do not widen its deadline.",
-  "observed_utc": "2026-10-22T21:04:55.511635+00:00",
+  "observed_utc": "2026-10-22T21:05:25.597671+00:00",
   "product_verify": {
     "authority": "pass",
     "committed_locks": 8,

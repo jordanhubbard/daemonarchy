@@ -425,7 +425,9 @@ A single unprofiled Windows baseline/deferred import pair takes 7.48/2.91 second
 with installed bytes unchanged. Profile times include substantial overhead; neither
 measurement proves complete wheel qualification. Exact candidate `8f1b7df6` is staged
 for a fresh canonical Windows checkout with its original 5400-second gate bound;
-the setup supervisor is live, and the failed preceding workspace remains retained.
+Git hydration and connectivity now pass with zero missing objects, preflight passes,
+and the live gate is creating its dedicated environment. The primary checkout and
+failed preceding workspace remain preserved.
 The [patched-wheel public CLI renewal](../../verification/native-sdk-postaudit-cli-development.json)
 also passes on a fresh FreeBSD allocation with exact framework `23d0b678`:
 536.095 supervised seconds, three original tests, two independent acceptance
