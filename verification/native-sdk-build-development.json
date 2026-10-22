@@ -367,9 +367,11 @@
       "archive_bytes": 86885560,
       "unique_providers": true,
       "archives_collected": true,
-      "native_loader_observation_complete": false,
+      "native_loader_observation_complete": true,
       "source_sdk_admitted": false,
-      "resource_selection_alias_targets_closed": true
+      "resource_selection_alias_targets_closed": true,
+      "relocated_c_compilation_verified": true,
+      "relocation_record": "verification/source-compiler-relocation-development.json"
     }
   }
 }

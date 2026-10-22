@@ -420,8 +420,13 @@ is unchanged. A separate tree-alias case now observes real hard-link inode equiv
 exact symbolic-link text from its live producer. Its [public CLI tree lifecycle](../../verification/native-sdk-tree-public-cli-development.json)
 now passes in 535.622 seconds: three original tests, two independent acceptance
 cases, all 28 receipt records reverified and a clean owned-server exit. Its scope
-is local-runtime; the completed run reports SDK admission false. Exact patched
-installed context controls are running separately.
+is local-runtime; the completed run reports SDK admission false. All ten exact patched installed context controls also pass in 592.634 seconds,
+with zero skips and 469 installed production modules verified. The separate
+[real source-package C diagnostic](../../verification/source-compiler-relocation-development.json)
+now preserves 28 symbolic aliases and nine hard links and compiles/runs after
+retiring its initial compiler/sysroot path. Actual loader and linker-input
+observations remain within the declared resources. Live source-producer/SDK
+admission and complete per-unit package provenance remain open.
 
 No compiler SDK, product receipt, ISO or release admission follows from these
 partial checks.

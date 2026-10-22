@@ -1,6 +1,6 @@
 {
   "schema": "daemonarchy/composed-framework-qualification-development@1",
-  "observed_utc": "2026-10-22T19:50:20.872419+00:00",
+  "observed_utc": "2026-10-22T20:12:36.589905+00:00",
   "framework_revision": "c058695048a3a1980e45db977c316a68ee4c868d",
   "scope": "Exact Windows and descriptor framework composition; native development qualification in progress",
   "controller_regression": {
@@ -208,7 +208,7 @@
   "product_receipt": false,
   "iso_created": false,
   "release_authorized": false,
-  "next_action": "Complete exact patched native Windows and FreeBSD lifecycle qualification, exercise the real SDK tree aliases through public CLI, then admit actual compiler SDK and product lifecycle",
+  "next_action": "Complete native Windows gate and actual live source-producer/SDK admission, then full source/ports, package, ISO and hardware release acceptance",
   "patched_wheel_renewal": {
     "source_revision": "23d0b678dc63eedbae673d2603dfad5e13ef09bb",
     "target": "Linux x86_64 / Python 3.14",
@@ -353,6 +353,58 @@
       "source_server_terminal": 0,
       "completed_run_sdk_admitted": false
     },
-    "installed_context_controls": "running separately after tree success; no terminal result claimed"
+    "installed_context_controls": {
+      "tests": 10,
+      "passed": 10,
+      "failed": 0,
+      "skipped": 0,
+      "supervised_seconds": 592.634,
+      "production_modules_verified": 469,
+      "imports_sha256": "69eb7159fc5fee777b64b02ad7db63ef28f8986d54cb2bc67137dcf135c3c1d0",
+      "scope": "Fixture-supplied project discovery and local Git routing; real source build, grants, custody and acceptance. Not canonical public CLI or actual compiler SDK qualification.",
+      "raw_evidence": {
+        "installed-context-command/started.json": {
+          "sha256": "9131d0282237d86fda2630acfc6484364a2b3c480ef9f6071590a673f49822b4",
+          "bytes": 614
+        },
+        "installed-context-command/terminal.json": {
+          "sha256": "c0087b3e5627e4d8c247057d39b0e6ab4ca75949b8fb02b8558695d7094c01d2",
+          "bytes": 88
+        },
+        "installed-context-command/stdout.log": {
+          "sha256": "00319b220557023f314cc1030a9cf1680e1b708a485a0e3e37493ac99fdfad05",
+          "bytes": 885
+        },
+        "installed-context-command/stderr.log": {
+          "sha256": "631805325a8b039ecb190945d4db3a45a55f0cd7d7635f91bfa377422375009c",
+          "bytes": 2149
+        },
+        "installed-context-tests/result.json": {
+          "sha256": "92e7d0f707dade64a149b1fa2f5d16e663baaa3c8c87d9f48c751d2700a0af5b",
+          "bytes": 941
+        },
+        "installed-context-tests/production-imports.json": {
+          "sha256": "e7fa67177b02fe92572ecff17957ada263e9393216c8c0ea7dd72c43c110649c",
+          "bytes": 53162
+        }
+      }
+    },
+    "source_compiler_diagnostic": {
+      "record": "verification/source-compiler-relocation-development.json",
+      "physical_materialization_verified": true,
+      "retired_path_c_compilation_verified": true,
+      "observed_link_inputs_restricted_to_sdk_and_retained_object": true,
+      "source_sdk_admitted": false
+    },
+    "completed_guest_retirement": {
+      "terminal": {
+        "exit_code": 0,
+        "expired": false,
+        "seconds": 2964.023698416073
+      },
+      "normal_shutdown_requested": true,
+      "qemu_absent": true,
+      "retained_runtime_sdk_data_and_evidence_preserved": true
+    }
   }
 }

@@ -215,9 +215,16 @@ compiler-resource selection covers headers, libraries, resource files and the
 compiler/linker-owned executable roots while excluding OS configuration and
 manual pages. It retains `CC` and `cc`, 28 symbolic aliases and nine hard links;
 all selected alias targets close within the inventory. Its 3,563 regular files
-contain 333,420,987 bytes. No alias is flattened. Physical materialization, actual
-native loader resolution, relocated compilation and live SDK admission remain
-unqualified.
+contain 333,420,987 bytes. No alias is flattened. The [native C diagnostic](../../verification/source-compiler-relocation-development.json)
+now revalidates all selected file bytes, symbolic target text and hard-link
+inodes, then compiles and runs before and after retiring the initial SDK path.
+Compiler/linker/application loader observations stay inside that tree; the linker
+trace uses its startup objects and libraries plus a retained owned object. Both
+runs produce the expected C result. The guest kernel and ELF interpreter remain
+platform dependencies. The uppercase `CC` wrapper and other language/target
+entrypoints are not exercised. This is unprivileged diagnostic evidence, not live
+source-producer or SDK admission, complete license qualification, per-unit package
+provenance or a product receipt.
 
 The actual clang package has 15 hard links for executable aliases. The clang
 development package has two library symlinks; the C-library development package
@@ -226,8 +233,8 @@ symbolic alias text and hard-link equivalence with canonical physical ownership.
 Original archive target text remains package provenance, distinct from an observed
 filesystem hard-link group. Do not silently duplicate those files to bypass this
 boundary. The [development record](../../verification/native-sdk-build-development.json)
-binds the package and observation identities. No packages were installed and no
-source-built SDK admission or relocated compilation is claimed.
+binds the package and observation identities. No packages were installed. Those initial inspection results do not establish
+SDK admission; the subsequent C relocation diagnostic below has separate evidence.
 
 The six exact package archives are also retained as an 80,774,773-byte diagnostic
 corpus. Read-only archive inspection finds 4,396 regular file entries, 29 symlinks,

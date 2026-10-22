@@ -794,10 +794,10 @@
   ],
   "unique_providers": true,
   "package_and_runtime_metadata_closed": true,
-  "native_loader_observation_complete": false,
+  "native_loader_observation_complete": true,
   "archives_collected": true,
   "source_sdk_admitted": false,
-  "relocated_compilation_verified": false,
+  "relocated_compilation_verified": true,
   "release_qualified": false,
   "observed_utc": "2026-10-22T19:56:53.001688+00:00",
   "scope": "Read-only exact source-built pkgbase package and SONAME metadata closure; not native loader, compiler relocation or SDK admission",
@@ -866,18 +866,19 @@
     "symlinks": 28,
     "hardlinks": 9,
     "all_selected_alias_targets_present": true,
-    "physical_materialization_verified": false,
-    "native_loader_observation_complete": false,
-    "relocated_compilation_verified": false,
+    "physical_materialization_verified": true,
+    "native_loader_observation_complete": true,
+    "relocated_compilation_verified": true,
     "source_sdk_admitted": false,
     "release_qualified": false,
     "remaining": [
-      "Verify native materialization preserves bytes, symbolic target text and hard-link equivalence",
-      "Reobserve actual compiler/linker runtime library resolution without ambient fallback",
-      "Compile and run with the declared resources after retiring the initial materialization path",
-      "Admit actual live source producer and SDK through canonical lifecycle; diagnostic metadata is not admission"
+      "Actual live source-producer and canonical SDK admission",
+      "Complete SDK license closure and other entrypoint/language/target qualification",
+      "Per-unit package and final product acceptance"
     ],
     "selection_file_sha256": "f4a36655339ced2877c3ab16e0843fbe270d88a60271670fcc16b3e93dd64d34",
     "directory_count": 239
-  }
+  },
+  "native_loader_scope": "Observed source C compiler, linker and probe application; other entrypoints and targets remain unqualified",
+  "relocation_record": "verification/source-compiler-relocation-development.json"
 }
