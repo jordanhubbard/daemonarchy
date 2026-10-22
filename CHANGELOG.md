@@ -16,6 +16,11 @@ work; it is not a separate published tag in this repository. The proposed name
 
 ## Unreleased
 
+- Compare native pkg dry-run proposals and imported package/dependency records
+  with pinned selection graphs in fresh private databases. Keep metadata and
+  partial failures, enforce internal process deadlines and reject mismatched
+  plans. This development check does not install or authorize packages.
+
 - Add read-only package dependency graphs from pinned repository catalogues,
   with exact archive identities, per-selection closure and space estimates,
   repository conflict and ABI/OSVERSION refusal checks. Native solver acceptance,

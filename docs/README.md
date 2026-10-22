@@ -9,6 +9,7 @@ reachable without changing its historical scope.
 - [Enterprise Wi-Fi (1.1 / 1.1.1)](enterprise-wifi.md)
 - [FreeBSD application and menu policy](freebsd-application-policy.md)
 - [Pinned package dependency graphs](package-dag.md)
+- [Native package resolution checks](native-package-plan.md)
 - [Getting started with Daemonarchy](getting-started.md)
 - [Hardware quirks](hardware-quirks.md)
 - [Optional ports and system source: space estimate](optional-source-sizing.md)

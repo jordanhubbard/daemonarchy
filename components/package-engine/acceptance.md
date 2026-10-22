@@ -13,6 +13,15 @@ graphs from native solver acceptance and installation permission. Keep PKG-001
 open until actual release catalogues, native resolution, the scheduler, integrity
 and failure/performance cases are exercised on native FreeBSD.
 
+The [native resolution checker](../../scripts/native-package-plan.py) compares
+pkg's imported package identities and dependency records and complete dry-run
+proposals with the pinned graph. Its [controller checks](../../tests/native-package-plan.py)
+cover missing/changed/extra proposals, repository attribution, changed imported
+metadata, retained command failures, hung-child deadlines and owned interruption
+cleanup. [The native procedure](../../docs/native-package-plan.md) uses an empty
+private database and frozen local metadata; it grants no installation permission
+or signed-repository/lifecycle acceptance.
+
 ## Required scenarios
 
 - **Complete dependency plan:** demonstrate the stated requirement on its actual supported
