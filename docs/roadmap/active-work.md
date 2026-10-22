@@ -387,6 +387,22 @@ and driver-text harness failures remain retained. This is a private-wire VM
 baseline: physical NICs, authenticated kernel sessions, continuous early-kernel
 activation, compiler/SDK admission and final release acceptance remain open.
 
+The [debugnet pool-readiness repair](../../verification/debugnet-pool-readiness-development.json)
+now reproduces an earlier-panic safety defect: the original allocator activation
+replaces global mbuf pointers even when its reserved pools are absent. The candidate
+returns `ENXIO` before changing ownership and propagates refusal without finishing
+an inactive pool. All seven absent/partial combinations, retry and complete cycles
+pass in sanitized controller and native FreeBSD function fixtures. The controller
+suite passes 62 cases with four native-only skips; style checks and hosted controller
+CI pass. [Source issue #14](https://github.com/jordanhubbard/daemonarchy-src/issues/14)
+and [draft PR #15](https://github.com/jordanhubbard/daemonarchy-src/pull/15) retain this
+repair. Exact `7a4b58c717bc` kernel qualification is preparing a fresh canonical
+native checkout, with 600-second setup and 2400-second build supervision, a 3 GiB
+write budget and a 40 GiB physical host reserve. The first setup failure exposed
+the primary repository's bare mode; its evidence is preserved. The changed kernel
+is not built or runtime-qualified yet. Driver-ready activation, authentication and
+physical acceptance remain open.
+
 The [standalone NetGDB contribution patch](../contributions/netgdb-peer-close.md)
 applies to current upstream and passes its style checker. It remains unsubmitted
 pending human review and native qualification on that exact upstream base;
