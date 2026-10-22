@@ -78,15 +78,18 @@ retained manifest/profile and use the public `build`/`test --retained-project`
 route. The legacy `project retained-harness readmit` command now reports missing
 `.literate/legacy-lift-shift.json`; it is not an original-project initializer and
 no legacy conversion metadata will be synthesized. Metadata-only original
-adoption does not grant execution or acceptance; native receipt and ISO remain
-missing. Preserve original source placement and earn lifecycle admission.
+adoption does not grant execution or acceptance; the native lifecycle receipt
+remains missing. A separate original-source loader test ISO now passes native
+payload/runtime audits and disposable UEFI installation/reboot; see TESTISO-001.
+Preserve original source placement and earn lifecycle admission.
 
 The [SDK runtime candidate](../../verification/native-sdk-public-development.json)
 now has a separate [draft framework contribution #110](https://github.com/jordanhubbard/literate-ai/pull/110).
 Exact code `f65e0c62` passes 2,046 controller tests with 70 skips and no failures,
 clean wheel qualification and offline FreeBSD installation of 37 distributions.
 Its source fixtures supply project discovery and local Git routing; installed
-native fixture checks remain running. A separate real SSH source acquisition and
+native fixture checks ended at their 1,800-second deadline after nine observed
+passes; the 40-case batch is incomplete. A separate real SSH source acquisition and
 capture check passes without routing mocks. A real canonical project now passes
 installed FreeBSD CLI validation with its 16-kind default receipt policy preserved;
 canonical build/test acceptance remains open. These preparation checks do not
@@ -426,10 +429,16 @@ actual retained profiles and earn native admission; all 24 release rows remain o
   is prepared and hash-checked against committed source and native development
   evidence. Eight controller/native staging and selection controls pass, including
   hardlinked jail preservation and signed-payload conflict refusal. Native exact
-  bundle preparation passes. No ISO exists from this work. The reviewed ADOPT-002 first-binding migration is
-  now applied with receipt policy preserved. Actual retained profiles, native input
-  admission and assembly remain required before image readiness.
+  bundle preparation passes. Native assembly now produced `daemonarchy-1.2-test1-amd64.iso`
+  (SHA256 `146d0a7127472f1d2e8c05cedc2d54e6c91c1aa0988c5cc8506b03d12fbc7aaa`).
+  Actual EFI boot payload, installer sets, live kernel, embedded packages and full
+  live-runtime audit pass. Disposable UEFI install/reboot qualification passed,
+  including exact installed ABI/kernel and all three stock loader copies. The
+  live-shutdown WITNESS lock-order warning remains an explicit known observation.
+  [Artifact record](../../verification/test-iso-1.2-test1.json) binds these results.
+  This explicitly requested preview uses retained original-source assembly;
+  canonical native lifecycle admission and final release qualification remain open.
 - **Implementation:**
-  - [ ] Allocate a private per-run ISO staging directory; preserve preceding artifacts; bind exact loader, kernel/world sets, jail, ports, modules and checkout selections; coordinate native dispatch with active worker ownership.
+  - [x] Allocate a private per-run ISO staging directory; preserve preceding artifacts; bind exact loader, kernel/world sets, jail, ports, modules and checkout selections; coordinate native dispatch with active worker ownership.
 - **Evidence:**
-  - [ ] Retain staging isolation/refusal controls, input identities, native assembly results and ISO hash; announce readiness only after a real test artifact exists. Keep hardware and final 1.2 release obligations open.
+  - [x] Retain staging isolation/refusal controls, input identities, native assembly results and ISO hash; announce readiness only after a real test artifact exists. Keep hardware and final 1.2 release obligations open.

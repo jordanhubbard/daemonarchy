@@ -41,4 +41,4 @@ reachable without changing its historical scope.
 
 - [1.2.0 completion obligations and worker model](roadmap/release-1.2.0.md)
 
-- [1.2 hardware test ISO preparation](testing-1.2-test-iso.md)
+- [1.2 loader test ISO and qualification](testing-1.2-test-iso.md)

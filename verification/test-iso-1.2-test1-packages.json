@@ -1,0 +1,1312 @@
+{
+  "schema": "daemonarchy/test-iso-packages@1",
+  "iso_sha256": "146d0a7127472f1d2e8c05cedc2d54e6c91c1aa0988c5cc8506b03d12fbc7aaa",
+  "scope": "Embedded installer packages verified against captured native package inputs",
+  "packages": [
+    {
+      "name": "aether-4.30.0.pkg",
+      "sha256": "33209b9b223d2a57c10341f306df6f3aa6f57d848374463e944ea18f296689ea",
+      "bytes": 12532458
+    },
+    {
+      "name": "cliamp-2.2.0.pkg",
+      "sha256": "04248aeba9131d6f9e9430faaebfc464fabf62642064d0c79b76413389950b75",
+      "bytes": 10441666
+    },
+    {
+      "name": "daemonarchy-1.1.1,1.pkg",
+      "sha256": "936eb67fb4b379ef4654acbcccab66fa7949387d5062ae3b226fcbe320f01cb3",
+      "bytes": 301574
+    },
+    {
+      "name": "drm-612-kmod-6.12.110.1600028_5.pkg",
+      "sha256": "1d5d9944aef5fa4614d1885da55306fe601369ae2db1d67c43424b0db64388e2",
+      "bytes": 4666205
+    },
+    {
+      "name": "gpu-firmware-amd-kmod-aldebaran-20260519.1600028.pkg",
+      "sha256": "83ce728ab89eba055075d1d48545f39154642a9b120b525cd29fdccd3bdf1ca6",
+      "bytes": 607940
+    },
+    {
+      "name": "gpu-firmware-amd-kmod-aldebaran-ip-discovery-20260519.1600028.pkg",
+      "sha256": "eace4cddd3047ddb9684ccc0ce90de3efe857f46dc0623aac3321250090092f3",
+      "bytes": 4311
+    },
+    {
+      "name": "gpu-firmware-amd-kmod-arcturus-20260519.1600028.pkg",
+      "sha256": "b52793d2259eb27fd05a0ffed0a4a94d3a8ac21b8fb2ca96e8dfa9bf5694c00f",
+      "bytes": 593476
+    },
+    {
+      "name": "gpu-firmware-amd-kmod-arcturus-ip-discovery-20260519.1600028.pkg",
+      "sha256": "353a68742775231fa4fe039f0825c780aef9769d477b8457bd7d0a449443f1ca",
+      "bytes": 4397
+    },
+    {
+      "name": "gpu-firmware-amd-kmod-banks-20260519.1600028.pkg",
+      "sha256": "e30f93cec2870f83114e33c4985ad4b2db6c8d834fc8ced7775f0826e922d702",
+      "bytes": 29515
+    },
+    {
+      "name": "gpu-firmware-amd-kmod-beige-goby-20260519.1600028.pkg",
+      "sha256": "39c41d82ebbe4d68e51e4d705c55acffa6958ce3aed36554c63929540808edaf",
+      "bytes": 882879
+    },
+    {
+      "name": "gpu-firmware-amd-kmod-bonaire-20260519.1600028.pkg",
+      "sha256": "b5e4fe215cb1b7f4f4ba84b8e46911261411da11bd6477d4d92da26137a8cd78",
+      "bytes": 297095
+    },
+    {
+      "name": "gpu-firmware-amd-kmod-carrizo-20260519.1600028.pkg",
+      "sha256": "194d79f518997844f6ea3b7c1fd62ea2e4c8513a3aab12bf467cc78e2a439edf",
+      "bytes": 314146
+    },
+    {
+      "name": "gpu-firmware-amd-kmod-cyan-skillfish2-20260519.1600028.pkg",
+      "sha256": "61ef92d42742bb88b284834845da9ebc0641fa89baf70d208798e36706626e7e",
+      "bytes": 82148
+    },
+    {
+      "name": "gpu-firmware-amd-kmod-dcn-3-1-4-20260519.1600028.pkg",
+      "sha256": "8afbcae3d9daa9df080e70727712efbdae063bbecaa9531ed1d26f744678a03e",
+      "bytes": 221875
+    },
+    {
+      "name": "gpu-firmware-amd-kmod-dcn-3-1-5-20260519.1600028.pkg",
+      "sha256": "565fd7abc5f6801c92495b1eefb8b00244034589b5a1d09070f9e4474104d854",
+      "bytes": 159979
+    },
+    {
+      "name": "gpu-firmware-amd-kmod-dcn-3-1-6-20260519.1600028.pkg",
+      "sha256": "f2b61905dc9a2ed8e5c9f02b3ac2a43e5a21bca61b20c6091cc02251e84b61a6",
+      "bytes": 144112
+    },
+    {
+      "name": "gpu-firmware-amd-kmod-dcn-3-2-0-20260519.1600028.pkg",
+      "sha256": "84aba57639deb8e7c31c5218a907632ef483fa12127b7d900350b71fc57c1974",
+      "bytes": 150009
+    },
+    {
+      "name": "gpu-firmware-amd-kmod-dcn-3-2-1-20260519.1600028.pkg",
+      "sha256": "5b9127e7e7bb12241f103410553cd74853f2c79deab38d4b4fe98d120554f652",
+      "bytes": 142820
+    },
+    {
+      "name": "gpu-firmware-amd-kmod-dcn-3-5-1-20260519.1600028.pkg",
+      "sha256": "328c6612b0e0de9c7a04501aeb39269c0881cf5cbea9dd1b0edd71949eb14836",
+      "bytes": 313704
+    },
+    {
+      "name": "gpu-firmware-amd-kmod-dcn-3-5-20260519.1600028.pkg",
+      "sha256": "5215f7ad91aa7ccd14c98f0104cdd569287749be271b997c752755018fc0bd94",
+      "bytes": 313711
+    },
+    {
+      "name": "gpu-firmware-amd-kmod-dcn-3-6-20260519.1600028.pkg",
+      "sha256": "6a7368115f8a84e65526a032d119c30c016d066f41a0eec1ebb4075d3fe69480",
+      "bytes": 290295
+    },
+    {
+      "name": "gpu-firmware-amd-kmod-dcn-4-0-1-20260519.1600028.pkg",
+      "sha256": "1b04e7798941068fbd8b1337646ab026c79102314a466f1f711459b525e795d0",
+      "bytes": 229595
+    },
+    {
+      "name": "gpu-firmware-amd-kmod-dimgrey-cavefish-20260519.1600028.pkg",
+      "sha256": "e7b691d125ff4c193bec31b6b0b7561c69d666dbd0a5cfe15c2716051cb5a434",
+      "bytes": 883967
+    },
+    {
+      "name": "gpu-firmware-amd-kmod-fiji-20260519.1600028.pkg",
+      "sha256": "3e89bc11540b196a59b8ff47ff0522e0ecc9920d7e3d3ad500575d64d6f77a11",
+      "bytes": 360194
+    },
+    {
+      "name": "gpu-firmware-amd-kmod-gc-10-3-6-20260519.1600028.pkg",
+      "sha256": "c1d25ff626bcfd0b8f10654093a8ba84929e5823d7e79c85852ff3801124ebfe",
+      "bytes": 113368
+    },
+    {
+      "name": "gpu-firmware-amd-kmod-gc-10-3-7-20260519.1600028.pkg",
+      "sha256": "4d4c3ec989319f0f35d85c3cab30757e5a28047459d6a5c94507962dec33d5a9",
+      "bytes": 113465
+    },
+    {
+      "name": "gpu-firmware-amd-kmod-gc-11-0-0-20260519.1600028.pkg",
+      "sha256": "e15227c271f85ed566b96a54c074fed8bec92379ad0ff7bc76a65fa8241b3a4b",
+      "bytes": 373820
+    },
+    {
+      "name": "gpu-firmware-amd-kmod-gc-11-0-1-20260519.1600028.pkg",
+      "sha256": "ac3e27520d5daa6a724eeb4a4541809dabbcfdb69b57e0bd7a058d7b0afba7da",
+      "bytes": 256847
+    },
+    {
+      "name": "gpu-firmware-amd-kmod-gc-11-0-2-20260519.1600028.pkg",
+      "sha256": "51d48c016b1e45dad2d8b7cdb31ce5cb516705af1b816c81e1d5f1db9b19a873",
+      "bytes": 347849
+    },
+    {
+      "name": "gpu-firmware-amd-kmod-gc-11-0-3-20260519.1600028.pkg",
+      "sha256": "99611690d241be1d09338d72ea1f88f774f7ca17eca1a4bc09bd06f73377d68c",
+      "bytes": 330982
+    },
+    {
+      "name": "gpu-firmware-amd-kmod-gc-11-0-4-20260519.1600028.pkg",
+      "sha256": "accdfa2bf6b02c1a5f95479665dbfae5a8b3e6d2c45eb4834acdb527f269eba3",
+      "bytes": 257029
+    },
+    {
+      "name": "gpu-firmware-amd-kmod-gc-11-5-0-20260519.1600028.pkg",
+      "sha256": "09355abf90f8222df1ae0b7b7f19064dc44e320ad5b8f8767fbcfd955f522922",
+      "bytes": 233129
+    },
+    {
+      "name": "gpu-firmware-amd-kmod-gc-11-5-1-20260519.1600028.pkg",
+      "sha256": "9cc414f4787994fcda28e349c6030754e81b84e289a4f23f064e1aa93a9ecc52",
+      "bytes": 234663
+    },
+    {
+      "name": "gpu-firmware-amd-kmod-gc-11-5-2-20260519.1600028.pkg",
+      "sha256": "2154ca28bdb0fd9bd06961a78333d07a4685da493400043d0112caf0708cf6b9",
+      "bytes": 232441
+    },
+    {
+      "name": "gpu-firmware-amd-kmod-gc-11-5-3-20260519.1600028.pkg",
+      "sha256": "05849c1a4f9f31a56b9b6d6b7e5813ecd5760d61a091a4042738cdc14bd9c27b",
+      "bytes": 227131
+    },
+    {
+      "name": "gpu-firmware-amd-kmod-gc-12-0-0-20260519.1600028.pkg",
+      "sha256": "775542c0174f19b09cc11ef7eb7055c52257fe5a625b588662dc77d96db73fba",
+      "bytes": 387158
+    },
+    {
+      "name": "gpu-firmware-amd-kmod-gc-12-0-1-20260519.1600028.pkg",
+      "sha256": "a05543042f29aac7b71b48e0ff9e390e28634a7abaca86abacf7b171c5880ded",
+      "bytes": 388383
+    },
+    {
+      "name": "gpu-firmware-amd-kmod-gc-9-4-3-20260519.1600028.pkg",
+      "sha256": "87549e1669830eb721db9d4792b11af1c5e8408ca13737c575fa0963602d0864",
+      "bytes": 56793
+    },
+    {
+      "name": "gpu-firmware-amd-kmod-gc-9-4-4-20260519.1600028.pkg",
+      "sha256": "94935c95bb2bae2887d52003e868c9dd203d97354bfabf18634caa6f3df9eb47",
+      "bytes": 57496
+    },
+    {
+      "name": "gpu-firmware-amd-kmod-gc-9-5-0-20260519.1600028.pkg",
+      "sha256": "4a3df8223a3126a68ec1013b0e93074e465bf7614835a356a42219bf237be43b",
+      "bytes": 56775
+    },
+    {
+      "name": "gpu-firmware-amd-kmod-green-sardine-20260519.1600028.pkg",
+      "sha256": "9ad4531072e152fd59dacbc1438462470a686e45b4a3b0df5fcf6648493ea1b4",
+      "bytes": 491779
+    },
+    {
+      "name": "gpu-firmware-amd-kmod-hainan-20260519.1600028.pkg",
+      "sha256": "a5eee431d38d27f8acdb3cccd025465e86d43e9e3712c93080cbaf937e1a3bb0",
+      "bytes": 55393
+    },
+    {
+      "name": "gpu-firmware-amd-kmod-hawaii-20260519.1600028.pkg",
+      "sha256": "9cbda6fb42778138b831eb1a7038768addfceab51611ed5fb8bfba9139e06d6e",
+      "bytes": 297147
+    },
+    {
+      "name": "gpu-firmware-amd-kmod-isp-4-1-1-20260519.1600028.pkg",
+      "sha256": "4f6ee4ab0f150661a45b676b94728539ee20ad732e1fcf0fd7bcc7340c1bfe81",
+      "bytes": 1517822
+    },
+    {
+      "name": "gpu-firmware-amd-kmod-kabini-20260519.1600028.pkg",
+      "sha256": "43216e554c7e4e0d3ce6387041ee595326fb32e2214667aa947cd489f534e327",
+      "bytes": 240158
+    },
+    {
+      "name": "gpu-firmware-amd-kmod-kaveri-20260519.1600028.pkg",
+      "sha256": "d31480fe4ba263cd6e399f916fd534fa64979bab529c641b32833b83d8a4f19d",
+      "bytes": 243063
+    },
+    {
+      "name": "gpu-firmware-amd-kmod-mullins-20260519.1600028.pkg",
+      "sha256": "40f618a310371115a4fe4ff9882a87d4432204d2d38985ead19176873ba33f51",
+      "bytes": 240215
+    },
+    {
+      "name": "gpu-firmware-amd-kmod-navi10-20260519.1600028.pkg",
+      "sha256": "ec0d9ff423b8acb16f912ff21e63a0ea458d3ae9942449aa69e87d6b88305070",
+      "bytes": 628359
+    },
+    {
+      "name": "gpu-firmware-amd-kmod-navi12-20260519.1600028.pkg",
+      "sha256": "4e788b92e92ac0c6d1ed781de95377127cf679099169ff4c5b3840d60c75eec2",
+      "bytes": 655485
+    },
+    {
+      "name": "gpu-firmware-amd-kmod-navi14-20260519.1600028.pkg",
+      "sha256": "e1c784bffe9574c0af9ad6872124f4ac3c6fcdf63712df5a9d03827da316c33a",
+      "bytes": 632847
+    },
+    {
+      "name": "gpu-firmware-amd-kmod-navy-flounder-20260519.1600028.pkg",
+      "sha256": "fe00bace232134166461592dc7f94800b0773215c3a8d846e0b961a25c5ed209",
+      "bytes": 902814
+    },
+    {
+      "name": "gpu-firmware-amd-kmod-oland-20260519.1600028.pkg",
+      "sha256": "86ff90acef79c054ac9e9a0340214bbd44a2650802ed9f9c68af7aa115f5fc2b",
+      "bytes": 197398
+    },
+    {
+      "name": "gpu-firmware-amd-kmod-picasso-20260519.1600028.pkg",
+      "sha256": "6d29435294a74eee05b6f775930d2ee6d39013125f7bae84302f7eb422ab893f",
+      "bytes": 388877
+    },
+    {
+      "name": "gpu-firmware-amd-kmod-picasso-ip-discovery-20260519.1600028.pkg",
+      "sha256": "86605e6cbb5bf1e0d973e2d6331d9b206ba8fed54177998f32faf12c2e6d4018",
+      "bytes": 4220
+    },
+    {
+      "name": "gpu-firmware-amd-kmod-pitcairn-20260519.1600028.pkg",
+      "sha256": "a81316b1247ce8f292b8c1046f7e94f6570a1dd4ceacadbe5d446164aeebf1e3",
+      "bytes": 197103
+    },
+    {
+      "name": "gpu-firmware-amd-kmod-polaris10-20260519.1600028.pkg",
+      "sha256": "81f6129ba012098acecd294e39a18998ba4009a7f88e54c9438df996e11a5558",
+      "bytes": 483239
+    },
+    {
+      "name": "gpu-firmware-amd-kmod-polaris11-20260519.1600028.pkg",
+      "sha256": "8b5449ff0d786b9c1c38d78541b2e18be9a545906cab546159b2b909f44ff79c",
+      "bytes": 482393
+    },
+    {
+      "name": "gpu-firmware-amd-kmod-polaris12-20260519.1600028.pkg",
+      "sha256": "28ae499432542176637436dadd16e3925fd6cc899e1e6e2734d8cbc1b536e27e",
+      "bytes": 457391
+    },
+    {
+      "name": "gpu-firmware-amd-kmod-psp-13-0-0-20260519.1600028.pkg",
+      "sha256": "acf951ce41067529754da9b857672c6b53a5fb1aeeace22622dc0a39b4caf77d",
+      "bytes": 257085
+    },
+    {
+      "name": "gpu-firmware-amd-kmod-psp-13-0-10-20260519.1600028.pkg",
+      "sha256": "99c491bc233a39d6d298da299abd16bdc4fe8e215599e5d0624080a3584a85fb",
+      "bytes": 248796
+    },
+    {
+      "name": "gpu-firmware-amd-kmod-psp-13-0-11-20260519.1600028.pkg",
+      "sha256": "4e1e5a60a806ece064678caa4423a7469bd31dba20c31ec6ef9f77ce77d2af95",
+      "bytes": 81907
+    },
+    {
+      "name": "gpu-firmware-amd-kmod-psp-13-0-12-20260519.1600028.pkg",
+      "sha256": "80faa390bd01cc489b27672322489be20e53c0dacf24ba73195dd29a8203cdc9",
+      "bytes": 480002
+    },
+    {
+      "name": "gpu-firmware-amd-kmod-psp-13-0-14-20260519.1600028.pkg",
+      "sha256": "cd0534ab5500799aa9f1d93ef9c963f4d133bc03b1800e18501ba6d793c19449",
+      "bytes": 477718
+    },
+    {
+      "name": "gpu-firmware-amd-kmod-psp-13-0-4-20260519.1600028.pkg",
+      "sha256": "a3465f2eb4d93f1d1b6d733a39f628e0cfdd3d386c412a09c536813762a773a9",
+      "bytes": 82006
+    },
+    {
+      "name": "gpu-firmware-amd-kmod-psp-13-0-5-20260519.1600028.pkg",
+      "sha256": "c51047965b6334d108534b8bdf3f484d88461c94528a0acb9eee4aa5db6646eb",
+      "bytes": 99295
+    },
+    {
+      "name": "gpu-firmware-amd-kmod-psp-13-0-6-20260519.1600028.pkg",
+      "sha256": "27d75c497dd3e0c2ece5081907e84792746b96e3d35fb754706924bac2ff7046",
+      "bytes": 868375
+    },
+    {
+      "name": "gpu-firmware-amd-kmod-psp-13-0-7-20260519.1600028.pkg",
+      "sha256": "95fd360dbcd2d0a30d163f39dae74b5ad6343633ca229e4c60ab6dd343ec4797",
+      "bytes": 210157
+    },
+    {
+      "name": "gpu-firmware-amd-kmod-psp-13-0-8-20260519.1600028.pkg",
+      "sha256": "7ed97a215f474b1604377d9d1b73074828ed963faa4adfb457a43cd6f258e849",
+      "bytes": 96982
+    },
+    {
+      "name": "gpu-firmware-amd-kmod-psp-14-0-0-20260519.1600028.pkg",
+      "sha256": "fb93ef8bb7b61d3eb54b1c8c63000b67b5c2143b55430000e72b68eb06590e28",
+      "bytes": 82174
+    },
+    {
+      "name": "gpu-firmware-amd-kmod-psp-14-0-1-20260519.1600028.pkg",
+      "sha256": "513c626ab4c77ddf1fcb3507e5d96be5d36639834de313d520e96d70df3231d8",
+      "bytes": 82165
+    },
+    {
+      "name": "gpu-firmware-amd-kmod-psp-14-0-2-20260519.1600028.pkg",
+      "sha256": "195f086ea580ddbcf0f3cfa2ff3570780ba3e944153d6a0fa244d6c1defbf21e",
+      "bytes": 272664
+    },
+    {
+      "name": "gpu-firmware-amd-kmod-psp-14-0-3-20260519.1600028.pkg",
+      "sha256": "bc1d3fe84ba9ba645b15f23c0f2a8d94cb620003d5b4013ab0c964675650dd2a",
+      "bytes": 279754
+    },
+    {
+      "name": "gpu-firmware-amd-kmod-psp-14-0-4-20260519.1600028.pkg",
+      "sha256": "371e59d1c65eb49af1051ef14f8bbf5acfcdd80faf40ada3192a87e7bd369941",
+      "bytes": 82026
+    },
+    {
+      "name": "gpu-firmware-amd-kmod-psp-14-0-5-20260519.1600028.pkg",
+      "sha256": "36ccd574c6ec66b61eca8281707023c73cf6fe60ad02f988c3228fa20ae473d5",
+      "bytes": 75966
+    },
+    {
+      "name": "gpu-firmware-amd-kmod-raven-20260519.1600028.pkg",
+      "sha256": "b1dfc0a5791bf61e32922508db7d3465cdb0f9b8529cf8c3d0ec84a5f0d294eb",
+      "bytes": 399488
+    },
+    {
+      "name": "gpu-firmware-amd-kmod-raven-ip-discovery-20260519.1600028.pkg",
+      "sha256": "fff4d36be3a9c99c67db6fcf2a9003122b27cd772724fc07d589d2ebc1b66ec8",
+      "bytes": 4214
+    },
+    {
+      "name": "gpu-firmware-amd-kmod-raven2-20260519.1600028.pkg",
+      "sha256": "635543cc7e9576a2d045399b3182597679bba670e40bdfe5654f17c66156cd99",
+      "bytes": 381721
+    },
+    {
+      "name": "gpu-firmware-amd-kmod-raven2-ip-discovery-20260519.1600028.pkg",
+      "sha256": "c96d3f6d09ce4da6d9670802a6dc0e5bddd9f4810c3fba7d22ef593aea64bdf7",
+      "bytes": 4215
+    },
+    {
+      "name": "gpu-firmware-amd-kmod-renoir-20260519.1600028.pkg",
+      "sha256": "4157544fedda312b6f45dd149316777079e70a4dba6584401fc0de02624547d7",
+      "bytes": 497137
+    },
+    {
+      "name": "gpu-firmware-amd-kmod-sdma-4-4-2-20260519.1600028.pkg",
+      "sha256": "358436494d62209d6f4263b080f618a919ac54dc030a4ddf4150e7e5e47a7c55",
+      "bytes": 15354
+    },
+    {
+      "name": "gpu-firmware-amd-kmod-sdma-4-4-4-20260519.1600028.pkg",
+      "sha256": "eba6ee85e2acafd9df408cdd8ae88073773de447e43755b682637ca2c7ee8bc1",
+      "bytes": 15385
+    },
+    {
+      "name": "gpu-firmware-amd-kmod-sdma-4-4-5-20260519.1600028.pkg",
+      "sha256": "2149a2e519ff6e12097d9952dc1bc32956b3fec3cc4b89ef7cf3c0877992d08a",
+      "bytes": 15355
+    },
+    {
+      "name": "gpu-firmware-amd-kmod-sdma-5-2-6-20260519.1600028.pkg",
+      "sha256": "db70eaea1412a9739403f6397c8e8686c5d8ac07da9069a36849cfddda5171aa",
+      "bytes": 15514
+    },
+    {
+      "name": "gpu-firmware-amd-kmod-sdma-5-2-7-20260519.1600028.pkg",
+      "sha256": "0e550368332e3db6c1261890a257e1f04fb114af47f257ab3c9820d06aaf7cdb",
+      "bytes": 15517
+    },
+    {
+      "name": "gpu-firmware-amd-kmod-sdma-6-0-0-20260519.1600028.pkg",
+      "sha256": "5c4da875dcbb9f980e94ed1b32225bc44881294920206f9de04de41dc2e13b0b",
+      "bytes": 16544
+    },
+    {
+      "name": "gpu-firmware-amd-kmod-sdma-6-0-1-20260519.1600028.pkg",
+      "sha256": "2a788318c51d09d418caf520ca30d16bb15835915612fd743f5a52c3d635e5cd",
+      "bytes": 16429
+    },
+    {
+      "name": "gpu-firmware-amd-kmod-sdma-6-0-2-20260519.1600028.pkg",
+      "sha256": "4985f59eabe868dce9a178d189294229288645c35be3564211db4024b29917d1",
+      "bytes": 16559
+    },
+    {
+      "name": "gpu-firmware-amd-kmod-sdma-6-0-3-20260519.1600028.pkg",
+      "sha256": "fbb9e6f05eb62ebb1c3e307c20a6707e4e9318666fa4e0405d2c57aa164a3e1d",
+      "bytes": 16647
+    },
+    {
+      "name": "gpu-firmware-amd-kmod-sdma-6-1-0-20260519.1600028.pkg",
+      "sha256": "52abb6d5ed6b5f346fd343a16a1d59ce153c8cbd8a736354af292425ae1a2a8d",
+      "bytes": 16555
+    },
+    {
+      "name": "gpu-firmware-amd-kmod-sdma-6-1-1-20260519.1600028.pkg",
+      "sha256": "7d636e1c9232e326a37166a3d7c908c7b6e0751c1a9af90b057beae4e65af190",
+      "bytes": 16550
+    },
+    {
+      "name": "gpu-firmware-amd-kmod-sdma-6-1-2-20260519.1600028.pkg",
+      "sha256": "e244e7e66e7054c8a9191e3fceaa2a9260ee4129e0981d9a264d70286dd1c722",
+      "bytes": 16546
+    },
+    {
+      "name": "gpu-firmware-amd-kmod-sdma-6-1-3-20260519.1600028.pkg",
+      "sha256": "7e759561687d631a17cfc7d83663d2a229f987bc92be313142e38f74b4f5e139",
+      "bytes": 16142
+    },
+    {
+      "name": "gpu-firmware-amd-kmod-sdma-7-0-0-20260519.1600028.pkg",
+      "sha256": "d86a72a628c5048e5b9cb0a9a10916aa1973e777d4d426db496d2f4dd86fbeb3",
+      "bytes": 22528
+    },
+    {
+      "name": "gpu-firmware-amd-kmod-sdma-7-0-1-20260519.1600028.pkg",
+      "sha256": "0bfc27d4a6720481cb238a06ee95c751a339b5d8bb41fb6668e326894834a66c",
+      "bytes": 22016
+    },
+    {
+      "name": "gpu-firmware-amd-kmod-si58-20260519.1600028.pkg",
+      "sha256": "af61b6560e15d761df4f73c2ad23c0228199557ec3f2966b2d854e915204ed37",
+      "bytes": 16433
+    },
+    {
+      "name": "gpu-firmware-amd-kmod-sienna-cichlid-20260519.1600028.pkg",
+      "sha256": "f56b201fbdf3a1a63bf5eea94e79dbcddf948d30a0233d0433d9647346853a98",
+      "bytes": 945341
+    },
+    {
+      "name": "gpu-firmware-amd-kmod-smu-13-0-0-20260519.1600028.pkg",
+      "sha256": "2169ac1dc5a6aa9a6095f4375cd4897d8a5682cfa918c7e57f9865a2b57637c4",
+      "bytes": 142389
+    },
+    {
+      "name": "gpu-firmware-amd-kmod-smu-13-0-10-20260519.1600028.pkg",
+      "sha256": "1272b1d54f6187ca282d2ffa9387c0b1afd2816ca732b90d5942fd4d98214815",
+      "bytes": 139393
+    },
+    {
+      "name": "gpu-firmware-amd-kmod-smu-13-0-14-20260519.1600028.pkg",
+      "sha256": "283ab08ea93756d8a346628b14ea5d425632ff672a3b6e2f530e311d9c70b020",
+      "bytes": 4720
+    },
+    {
+      "name": "gpu-firmware-amd-kmod-smu-13-0-6-20260519.1600028.pkg",
+      "sha256": "2aeeb564236591e678bf8f6fc3280c356b78769feceaf332e7c1816b15b47b22",
+      "bytes": 5999
+    },
+    {
+      "name": "gpu-firmware-amd-kmod-smu-13-0-7-20260519.1600028.pkg",
+      "sha256": "dc317a4c29038df5b756a4775cff7e202c70685f380daf015f2a1d52677f83da",
+      "bytes": 122690
+    },
+    {
+      "name": "gpu-firmware-amd-kmod-smu-14-0-2-20260519.1600028.pkg",
+      "sha256": "27181580170c97c246d9f86cac43fac6be32b27875ec85823a1ff505c444420e",
+      "bytes": 141458
+    },
+    {
+      "name": "gpu-firmware-amd-kmod-smu-14-0-3-20260519.1600028.pkg",
+      "sha256": "7a0294f90aac60e59acbd47e184277b540a64141d07971d0b38cbc382d4969b4",
+      "bytes": 141736
+    },
+    {
+      "name": "gpu-firmware-amd-kmod-stoney-20260519.1600028.pkg",
+      "sha256": "f731b0645570436e0cbfea263e762b3ebedfe5781b3c21b55f81a2234b626244",
+      "bytes": 301591
+    },
+    {
+      "name": "gpu-firmware-amd-kmod-tahiti-20260519.1600028.pkg",
+      "sha256": "5800595722b0d1ca13f293fcbda7ddccfd348ebad943fbeb552ea575c1588ad2",
+      "bytes": 197641
+    },
+    {
+      "name": "gpu-firmware-amd-kmod-tonga-20260519.1600028.pkg",
+      "sha256": "c1963523578b58f70dda70a91b488bd2c17ff1afaa73b23a03144a89870443e3",
+      "bytes": 419986
+    },
+    {
+      "name": "gpu-firmware-amd-kmod-topaz-20260519.1600028.pkg",
+      "sha256": "1daeaf85dd9f8cd0c01af8e0a6d585c97c381f33a1b3f98673c5db3ea1a9e595",
+      "bytes": 96332
+    },
+    {
+      "name": "gpu-firmware-amd-kmod-umsch-mm-4-0-0-20260519.1600028.pkg",
+      "sha256": "60ec87ce9927a6d15d9d58bf4db3046ae1bb0ebf02282529fd23f81d5c67fd68",
+      "bytes": 33878
+    },
+    {
+      "name": "gpu-firmware-amd-kmod-vangogh-20260519.1600028.pkg",
+      "sha256": "22172cd02650a2fcb6469391ba2ae5005fb97b2847a4b77cc0e9f2f62030e1aa",
+      "bytes": 600746
+    },
+    {
+      "name": "gpu-firmware-amd-kmod-vcn-3-1-2-20260519.1600028.pkg",
+      "sha256": "f944be27404b74fb467d62075bc63c585edb44554ee4928e2a6d210b49446e70",
+      "bytes": 393383
+    },
+    {
+      "name": "gpu-firmware-amd-kmod-vcn-4-0-0-20260519.1600028.pkg",
+      "sha256": "827bc43156287768519e63a3c64458bb7556c26ff3c10e4d85710c66b1f01ae8",
+      "bytes": 286266
+    },
+    {
+      "name": "gpu-firmware-amd-kmod-vcn-4-0-2-20260519.1600028.pkg",
+      "sha256": "8065c53153060311dd0a512edfbf0f4100b7bb55f9af9c1826b99d19507d4270",
+      "bytes": 286277
+    },
+    {
+      "name": "gpu-firmware-amd-kmod-vcn-4-0-3-20260519.1600028.pkg",
+      "sha256": "781f069d425e0825b196dce0b97418672160d689fbca1f57b0f970d0c8470e62",
+      "bytes": 256289
+    },
+    {
+      "name": "gpu-firmware-amd-kmod-vcn-4-0-4-20260519.1600028.pkg",
+      "sha256": "f35c41cac376f6262255f7c501d2ce459b787086194d70c23e9b5a38e683f559",
+      "bytes": 286279
+    },
+    {
+      "name": "gpu-firmware-amd-kmod-vcn-4-0-5-20260519.1600028.pkg",
+      "sha256": "63f35fdf2be6bf54360e7be0c573c420f6ac7e670d634e5652317836893e2ed1",
+      "bytes": 285424
+    },
+    {
+      "name": "gpu-firmware-amd-kmod-vcn-4-0-6-1-20260519.1600028.pkg",
+      "sha256": "2cf360c1718e3b4b0e4f9cda27e9d9585ce79c4c7edc104b3716bc249f950f89",
+      "bytes": 285427
+    },
+    {
+      "name": "gpu-firmware-amd-kmod-vcn-4-0-6-20260519.1600028.pkg",
+      "sha256": "4f0ee4258fa06a98ecc2fa9e3f028eeec1eee9fcdc9c8cf1d201aca0c30854b1",
+      "bytes": 285429
+    },
+    {
+      "name": "gpu-firmware-amd-kmod-vcn-5-0-0-20260519.1600028.pkg",
+      "sha256": "723b39576853a70e604bb3f30f8e74d1053d3cd93dd34c6cd981886ea621ac75",
+      "bytes": 306573
+    },
+    {
+      "name": "gpu-firmware-amd-kmod-vcn-5-0-1-20260519.1600028.pkg",
+      "sha256": "d8014298ab97f31e4d05fc8ff601ef4eca7fdf635ec3e053209f551ba4cd47ad",
+      "bytes": 153228
+    },
+    {
+      "name": "gpu-firmware-amd-kmod-vega10-20260519.1600028.pkg",
+      "sha256": "6a6317f0d883ebc678071b46fb00bf8211bed4e4f1d51538b961e1d3d939a8a3",
+      "bytes": 710622
+    },
+    {
+      "name": "gpu-firmware-amd-kmod-vega10-ip-discovery-20260519.1600028.pkg",
+      "sha256": "285c119e133b660542875fbe39cbf0dcb131683be42789097e58155901dc390a",
+      "bytes": 4235
+    },
+    {
+      "name": "gpu-firmware-amd-kmod-vega12-20260519.1600028.pkg",
+      "sha256": "a7faebfdcdc041af74a12623feb4474e7f3628ef51948617cbdfd37555652dad",
+      "bytes": 713255
+    },
+    {
+      "name": "gpu-firmware-amd-kmod-vega12-ip-discovery-20260519.1600028.pkg",
+      "sha256": "ee26cb2f20238c9f900cc2be661d2c6a87ac51bec31c97a55a0be54886646dba",
+      "bytes": 4241
+    },
+    {
+      "name": "gpu-firmware-amd-kmod-vega20-20260519.1600028.pkg",
+      "sha256": "88f57c3397d4236b8594eef78277db37cd597ac7d8df30251da8917cd071845a",
+      "bytes": 665186
+    },
+    {
+      "name": "gpu-firmware-amd-kmod-vega20-ip-discovery-20260519.1600028.pkg",
+      "sha256": "63eef60599a50a95bc256b0f87da601637579c4ca003554257d71863849299b0",
+      "bytes": 4196
+    },
+    {
+      "name": "gpu-firmware-amd-kmod-vegam-20260519.1600028.pkg",
+      "sha256": "a1fa64f170d4665c90315335de73909f6b7a160c22a0f87a1e5aa318949c63e5",
+      "bytes": 426284
+    },
+    {
+      "name": "gpu-firmware-amd-kmod-verde-20260519.1600028.pkg",
+      "sha256": "14e9776d740810a29c30bf8ac99195b5cd4a804d078a59fe9dd200afb9e75d27",
+      "bytes": 201195
+    },
+    {
+      "name": "gpu-firmware-amd-kmod-vpe-6-1-0-20260519.1600028.pkg",
+      "sha256": "d639f0b389036ac042e70a1412bafd46009b7f83e91ce008ed4dd3e45add555b",
+      "bytes": 13452
+    },
+    {
+      "name": "gpu-firmware-amd-kmod-vpe-6-1-1-20260519.1600028.pkg",
+      "sha256": "88fd21f2d4adc401103337a0c11c4180202a56b7b7ac596c651a62bc74c02bd3",
+      "bytes": 14490
+    },
+    {
+      "name": "gpu-firmware-amd-kmod-vpe-6-1-3-20260519.1600028.pkg",
+      "sha256": "893d0f45fe97f8fc3783536d124e20237add38db2d400f67547bb611df7d72bc",
+      "bytes": 13486
+    },
+    {
+      "name": "gpu-firmware-amd-kmod-yellow-carp-20260519.1600028.pkg",
+      "sha256": "2e17c0f9bc7ee2a5336aa6902e7abc62d40bc26f926456919f9b480d321a8e66",
+      "bytes": 767892
+    },
+    {
+      "name": "gpu-firmware-intel-kmod-alderlake-20260519.1600028.pkg",
+      "sha256": "051bcd13c791890149ace3dcf5d095172f81fced8f1b3961af2fd40fe966b6cb",
+      "bytes": 453210
+    },
+    {
+      "name": "gpu-firmware-intel-kmod-battlemage-20260519.1600028.pkg",
+      "sha256": "30140b46d7682eabf554bb917ae26bd3246ce9fceb6a832ff2f5eaf8128c7e7b",
+      "bytes": 14389
+    },
+    {
+      "name": "gpu-firmware-intel-kmod-broxton-20260519.1600028.pkg",
+      "sha256": "4b58d0bf9a72cf9fbbe6ab34dccc33a39d431a515d8886632af7754d899f94b4",
+      "bytes": 288345
+    },
+    {
+      "name": "gpu-firmware-intel-kmod-cannonlake-20260519.1600028.pkg",
+      "sha256": "860e0c8aa2aca9d31a5dfe62672f57cd4f0aea6f1904d6d586acae3b7edfcbb7",
+      "bytes": 6999
+    },
+    {
+      "name": "gpu-firmware-intel-kmod-dg1-20260519.1600028.pkg",
+      "sha256": "4fe3d6f2157f0d886cf26304c63d85ae20ce867e7155bb6366e6e9b9d4ed117b",
+      "bytes": 392916
+    },
+    {
+      "name": "gpu-firmware-intel-kmod-dg2-20260519.1600028.pkg",
+      "sha256": "6d32d18c8b8a49abfdf9de2e09c2c6d1ae060f5b63ca10fd2acab4a2a2b9eaf2",
+      "bytes": 576814
+    },
+    {
+      "name": "gpu-firmware-intel-kmod-elkhartlake-20260519.1600028.pkg",
+      "sha256": "e901b447dfe25e845041f030364719d778a583242add9ee36dcf9385422f843f",
+      "bytes": 420102
+    },
+    {
+      "name": "gpu-firmware-intel-kmod-geminilake-20260519.1600028.pkg",
+      "sha256": "b438da8fc0b7506fb5cd4d63460c078a4eb63f3a68bdfff0ee4bed84f4e03e5f",
+      "bytes": 302234
+    },
+    {
+      "name": "gpu-firmware-intel-kmod-icelake-20260519.1600028.pkg",
+      "sha256": "90e2f0e695bfbfcb02dceae9dda9a50cd2115d05490cd8395cae18e3b49e6dc8",
+      "bytes": 424275
+    },
+    {
+      "name": "gpu-firmware-intel-kmod-kabylake-20260519.1600028.pkg",
+      "sha256": "d2075998fa565562f0c614596cf574911204e046c151cc9e34f5d836f1f52c11",
+      "bytes": 331956
+    },
+    {
+      "name": "gpu-firmware-intel-kmod-meteorlake-20260519.1600028.pkg",
+      "sha256": "6491ca3ca873ecd770d7d08ea5db64de4152f0b6eab4997fac63998cfe5eb78c",
+      "bytes": 1053238
+    },
+    {
+      "name": "gpu-firmware-intel-kmod-rocketlake-20260519.1600028.pkg",
+      "sha256": "5f146afb58b9c5295ff6c1e2070fb51ab3b87ab0b23b6673fab1918d548ec9c0",
+      "bytes": 10510
+    },
+    {
+      "name": "gpu-firmware-intel-kmod-skylake-20260519.1600028.pkg",
+      "sha256": "0614c59008e59a8f0b24c17c14a3090d05d23fe8de8cba7f5e2f38e62e9bd8b3",
+      "bytes": 285462
+    },
+    {
+      "name": "gpu-firmware-intel-kmod-tigerlake-20260519.1600028.pkg",
+      "sha256": "cc9ad042936a7f55b0fadc13d030194c33c4cd472ad5cf5e386429d5e60ea07a",
+      "bytes": 718714
+    },
+    {
+      "name": "gpu-firmware-kmod-20260519,1.pkg",
+      "sha256": "a20db65496247058cb8ab6600f20d2fa2db9713ea3d972cef9a9943151244e07",
+      "bytes": 1945
+    },
+    {
+      "name": "gpu-firmware-radeon-kmod-aruba-20260519.1600028.pkg",
+      "sha256": "ecf1de6e891f4a28045f1ef409b6b953932fc5807fd216006173832f89433c7d",
+      "bytes": 13194
+    },
+    {
+      "name": "gpu-firmware-radeon-kmod-barts-20260519.1600028.pkg",
+      "sha256": "0c8478e14d50e2c23f609d328d3fb32e7a628e406eab8206f18e7e159988d19e",
+      "bytes": 29009
+    },
+    {
+      "name": "gpu-firmware-radeon-kmod-bonaire-20260519.1600028.pkg",
+      "sha256": "8955df311e121e7381802d65cdaea958d8bdf4101465af57077b5f38d23a25f4",
+      "bytes": 379851
+    },
+    {
+      "name": "gpu-firmware-radeon-kmod-btc-20260519.1600028.pkg",
+      "sha256": "bdcb946d0c73ad700ab2f4824d82f6a69d7b251936d9a9b26a0d36ee3fe90bfd",
+      "bytes": 4783
+    },
+    {
+      "name": "gpu-firmware-radeon-kmod-caicos-20260519.1600028.pkg",
+      "sha256": "fcce30d32cd6d3abf1137c48d10b1cc8ac4f62d6fecc68fa4ed337742c0fbc2a",
+      "bytes": 28908
+    },
+    {
+      "name": "gpu-firmware-radeon-kmod-cayman-20260519.1600028.pkg",
+      "sha256": "232d5939e9670d80bb57a169e0a94180895788256778d60eddd9ee5c58f9a7cd",
+      "bytes": 34607
+    },
+    {
+      "name": "gpu-firmware-radeon-kmod-cedar-20260519.1600028.pkg",
+      "sha256": "e2c6fce3f56c1c6173e1402af2cad30cd3ad1541794879f5877c2b3cc6c71fc9",
+      "bytes": 20871
+    },
+    {
+      "name": "gpu-firmware-radeon-kmod-cypress-20260519.1600028.pkg",
+      "sha256": "36eaa171816054fcedcaefe1b8cb098827e85d42b99071141361037c02df8787",
+      "bytes": 98138
+    },
+    {
+      "name": "gpu-firmware-radeon-kmod-hainan-20260519.1600028.pkg",
+      "sha256": "b568a7982f2ce693bb89cde99858fed7cf2fe60f8b21c99ba6a6539b7afdd86f",
+      "bytes": 80500
+    },
+    {
+      "name": "gpu-firmware-radeon-kmod-hawaii-20260519.1600028.pkg",
+      "sha256": "96864f57d3bedab16fbe7e7393ac97b38d24e0228a60ad344d1c73482ebd06e5",
+      "bytes": 344466
+    },
+    {
+      "name": "gpu-firmware-radeon-kmod-juniper-20260519.1600028.pkg",
+      "sha256": "4fa5b3f86e3129d1729efa3851061d17d48d7fc61da8fc01a20639ccc9b201b6",
+      "bytes": 21231
+    },
+    {
+      "name": "gpu-firmware-radeon-kmod-kabini-20260519.1600028.pkg",
+      "sha256": "ddcd4da149fd999195a723389c958ca05deee7da1c1b1c9d341d7f205bbbedfb",
+      "bytes": 263908
+    },
+    {
+      "name": "gpu-firmware-radeon-kmod-kaveri-20260519.1600028.pkg",
+      "sha256": "45eaeaa93a2a5ef841f99563fb09a4feffbb07f2359d1e7d17241f4ebbb71c56",
+      "bytes": 268418
+    },
+    {
+      "name": "gpu-firmware-radeon-kmod-mullins-20260519.1600028.pkg",
+      "sha256": "7d8b1db4dad70ceabf8650c677af4336fcb9896315265dcbb64c1d4e794b64d6",
+      "bytes": 264078
+    },
+    {
+      "name": "gpu-firmware-radeon-kmod-oland-20260519.1600028.pkg",
+      "sha256": "538e2510c4a54485796135c7fa8f0c484ee991222162e44361300501304ed8ec",
+      "bytes": 80871
+    },
+    {
+      "name": "gpu-firmware-radeon-kmod-palm-20260519.1600028.pkg",
+      "sha256": "8f07039f9c2a822f8c539c86b72d9be6f1de4bfb1bdbb9d2326f55e481051d49",
+      "bytes": 9442
+    },
+    {
+      "name": "gpu-firmware-radeon-kmod-pitcairn-20260519.1600028.pkg",
+      "sha256": "0e79b659af19b4877618711a2e5f6cbeaa9a3fc19e486258e3de769d5daba8b0",
+      "bytes": 81869
+    },
+    {
+      "name": "gpu-firmware-radeon-kmod-r100-20260519.1600028.pkg",
+      "sha256": "d2bb1d645d67aa98f46d420f934789789918e0be3c53f759042e840947f515ac",
+      "bytes": 4654
+    },
+    {
+      "name": "gpu-firmware-radeon-kmod-r200-20260519.1600028.pkg",
+      "sha256": "fcd1a0bed4f0e5a01fb1079d680c588c278c126f53bbfdd16185899fe2baf22a",
+      "bytes": 4725
+    },
+    {
+      "name": "gpu-firmware-radeon-kmod-r300-20260519.1600028.pkg",
+      "sha256": "147c8635210b71b89237770c1b9b73b5ce5bdcc7fb6f632706a2b3666bc09218",
+      "bytes": 4714
+    },
+    {
+      "name": "gpu-firmware-radeon-kmod-r420-20260519.1600028.pkg",
+      "sha256": "eef9a09108a20531100d2c77f56842d980c7604bf493ff58ae4fe28fd47bf81a",
+      "bytes": 4662
+    },
+    {
+      "name": "gpu-firmware-radeon-kmod-r520-20260519.1600028.pkg",
+      "sha256": "9304ca932fa603ccbbafaa2d9402c150d32f7852b54a43cbc33da48b5eaeda2d",
+      "bytes": 4683
+    },
+    {
+      "name": "gpu-firmware-radeon-kmod-r600-20260519.1600028.pkg",
+      "sha256": "dc8c77ce35c04a58df8cfe45aa99864bf579099c230b49e04d7a19db47049685",
+      "bytes": 64029
+    },
+    {
+      "name": "gpu-firmware-radeon-kmod-r700-20260519.1600028.pkg",
+      "sha256": "bc65b7c6b1e0c962bb5e37f5391f919d20cc59d382567f73a13f212d3c61642d",
+      "bytes": 6032
+    },
+    {
+      "name": "gpu-firmware-radeon-kmod-redwood-20260519.1600028.pkg",
+      "sha256": "d65be016f68cc21decac779ec25ae78cbcf2123d08e1701bbc871c5ec270c4b5",
+      "bytes": 21044
+    },
+    {
+      "name": "gpu-firmware-radeon-kmod-rs600-20260519.1600028.pkg",
+      "sha256": "a8eda542a3edbdb6bcb6499fdeeacc68903708a2a40d9bb9d7e07a1ddd19561d",
+      "bytes": 4709
+    },
+    {
+      "name": "gpu-firmware-radeon-kmod-rs690-20260519.1600028.pkg",
+      "sha256": "7982509e09ce478c5078210e5528aba260e73d932d2974613947b5d49cb612e0",
+      "bytes": 4702
+    },
+    {
+      "name": "gpu-firmware-radeon-kmod-rs780-20260519.1600028.pkg",
+      "sha256": "a9437be4336b83bc2a67febc3fa070520014deeffb62574bcd44c3205becac2d",
+      "bytes": 73840
+    },
+    {
+      "name": "gpu-firmware-radeon-kmod-rv610-20260519.1600028.pkg",
+      "sha256": "59fa8befa2a5001a08017ee9b823e59cb36afe3ce830586ead475fe1f9a3fe6d",
+      "bytes": 10098
+    },
+    {
+      "name": "gpu-firmware-radeon-kmod-rv620-20260519.1600028.pkg",
+      "sha256": "81f0a2de1167c69c576950423ca68e37fb3dda701e5420b4bf376b19249efc59",
+      "bytes": 10107
+    },
+    {
+      "name": "gpu-firmware-radeon-kmod-rv630-20260519.1600028.pkg",
+      "sha256": "b67f748c159f041f6539e1bee1de1204e2ff91ede372a62bb0586de6febe4164",
+      "bytes": 10094
+    },
+    {
+      "name": "gpu-firmware-radeon-kmod-rv635-20260519.1600028.pkg",
+      "sha256": "6365764c991a1dc30549a7d514cb549c550db7975e728388d69a3118ec1b8fd6",
+      "bytes": 10087
+    },
+    {
+      "name": "gpu-firmware-radeon-kmod-rv670-20260519.1600028.pkg",
+      "sha256": "5aeb57a63b91eaa6ca92334bc7209fd4eebed6431c1b15b282ed432823612d24",
+      "bytes": 10091
+    },
+    {
+      "name": "gpu-firmware-radeon-kmod-rv710-20260519.1600028.pkg",
+      "sha256": "281f98abe62546cc33903c12491b952be50a699306536dd2a69069f6d83874d3",
+      "bytes": 91655
+    },
+    {
+      "name": "gpu-firmware-radeon-kmod-rv730-20260519.1600028.pkg",
+      "sha256": "98d5137f8b1cf2f31e56b6500726f81a62e6388836225ede6f5e6fad95b0bbf1",
+      "bytes": 15067
+    },
+    {
+      "name": "gpu-firmware-radeon-kmod-rv740-20260519.1600028.pkg",
+      "sha256": "d0c2c115e6e7ffc81aecb3c2b16bf03eb9dc0f3884472e959e371372b498f5b7",
+      "bytes": 10745
+    },
+    {
+      "name": "gpu-firmware-radeon-kmod-rv770-20260519.1600028.pkg",
+      "sha256": "fea71f525ed5af15fb4a79380a007f3f015127ca2ae2c7dbf51f5cded6a68246",
+      "bytes": 78942
+    },
+    {
+      "name": "gpu-firmware-radeon-kmod-sumo-20260519.1600028.pkg",
+      "sha256": "8675d7f35c43a8913db49bfa85d20de3e296cd242cb75e30eddcce973f7e7629",
+      "bytes": 141189
+    },
+    {
+      "name": "gpu-firmware-radeon-kmod-sumo2-20260519.1600028.pkg",
+      "sha256": "fb1a83ffd6185efc3e4000aa9330300636c5fd88a83a8d9119351466cc099ba3",
+      "bytes": 9378
+    },
+    {
+      "name": "gpu-firmware-radeon-kmod-tahiti-20260519.1600028.pkg",
+      "sha256": "85c55980fe2b87f15b449f5a67636bb966cea22c08fe5777ae45f2e6e31e6f3f",
+      "bytes": 260551
+    },
+    {
+      "name": "gpu-firmware-radeon-kmod-turks-20260519.1600028.pkg",
+      "sha256": "2a6c17bf9b908a3b56dd5022d5f32b783d9502684f454fdb7657148e0032668e",
+      "bytes": 28999
+    },
+    {
+      "name": "gpu-firmware-radeon-kmod-verde-20260519.1600028.pkg",
+      "sha256": "a2e60c5e4e9909e79adf6a5f81907a416ab440df53a914dfbc7bb43662a2dfc4",
+      "bytes": 88675
+    },
+    {
+      "name": "herdr-0.9.1.pkg",
+      "sha256": "5f8b42fe1a43e113179b0ca928fe4c5010ddb98d2c9e2116a3cc3575df973948",
+      "bytes": 5016250
+    },
+    {
+      "name": "hyprland-preview-share-picker-0.2.1.pkg",
+      "sha256": "ff77d04adff7200c8a218fe3cd3779e05989d33663e4c29ee5bcab62f2bf7c74",
+      "bytes": 1433801
+    },
+    {
+      "name": "ia-writer-fonts-20230616.pkg",
+      "sha256": "0901089c5344a2d619239e1fcbe5b6d06d6a47ef040d668ff9c1de898af0d734",
+      "bytes": 343061
+    },
+    {
+      "name": "lazydocker-0.25.2.pkg",
+      "sha256": "ed3616465a13414a4cb9002d76cc63743f3518c4b45e6e8382fab4b9908f4956",
+      "bytes": 4371196
+    },
+    {
+      "name": "linux-nvidia-libs-595.104.02.pkg",
+      "sha256": "6e9c6f23f61d22a39d37f506089d78299d70c9a551f5a892c1fb611c90d94ff4",
+      "bytes": 290832044
+    },
+    {
+      "name": "nvidia-driver-595.104.02.pkg",
+      "sha256": "637c62c7ec7f9660419c46534d82630398a38000a42d56673e24ce096b505c75",
+      "bytes": 92015362
+    },
+    {
+      "name": "nvidia-drm-612-kmod-595.104.02.1600028_2.pkg",
+      "sha256": "198ed201cde310761efd07d6c82f52cafd0daf34b9c1d53fc516db9ce7aea5b5",
+      "bytes": 56832
+    },
+    {
+      "name": "nvidia-kmod-595.104.02.1600028.pkg",
+      "sha256": "30b615ee79127eeb24e26b8446497a7456731671b3f05b14756c0e7fc083d851",
+      "bytes": 153347123
+    },
+    {
+      "name": "omacalc-0.2.2.pkg",
+      "sha256": "afa7e7a21123d367f49ec95864f818e63a5266134fdfd0dc9d597b8240a8786e",
+      "bytes": 110390
+    },
+    {
+      "name": "omacut-0.4.0.pkg",
+      "sha256": "7b3c037712e3ffd306e7df84fd9736b7c4b044cfe3e6ab3bffec0d73905fbdfc",
+      "bytes": 68256
+    },
+    {
+      "name": "omarchy-4.0.4_23.pkg",
+      "sha256": "6a59433e20f5ba6743dbfca654d2c9aa3d86deadd4cfa7d581b11516dd75d398",
+      "bytes": 118944746
+    },
+    {
+      "name": "omarchy-nvim-2026.9.21.pkg",
+      "sha256": "870d0d0b4d831606789112edde6bdaefe1f6322fa7f2f14ccfe15e808abcfbab",
+      "bytes": 13777
+    },
+    {
+      "name": "omasnap-1.21.0.pkg",
+      "sha256": "c7a9877f108ef6abb20c448bc53500ddbadb534097d9751a8d9be5d24d74af42",
+      "bytes": 741485
+    },
+    {
+      "name": "omawrite-0.5.0.pkg",
+      "sha256": "8ec9b67d1880687d55303e84fd15db34a85bec723a25aea57e07a3cd7d214308",
+      "bytes": 197129
+    },
+    {
+      "name": "owe-0.2.7.pkg",
+      "sha256": "2b5a081b32f30a416e3f7a3f86f22c3db9f9e79a3ab8e9954a56b4d481f5bb4b",
+      "bytes": 190497
+    },
+    {
+      "name": "owe-lockfeed-0.2.7.pkg",
+      "sha256": "b11276f15f9c95e774b6d3ee66960f7b42f5f3fc60f3ed4a4bec752ff5519b1c",
+      "bytes": 24546
+    },
+    {
+      "name": "quickshell-0.3.2.pkg",
+      "sha256": "10314722764b369024ca8ec767d09dc68fac443af7e81e4d59577fcc02964cdc",
+      "bytes": 1462670
+    },
+    {
+      "name": "tensaku-0.29.0.pkg",
+      "sha256": "2017171beeabe043f27fd24d47c1862360af76543c746a774412ebbf966570ad",
+      "bytes": 2301879
+    },
+    {
+      "name": "tobi-try-1.10.1.pkg",
+      "sha256": "52516582789b936c3a69b7e24f423d33697ba67d9b6255e4e1ac8c501ee1744c",
+      "bytes": 22294
+    },
+    {
+      "name": "ttfx-0.5.0.pkg",
+      "sha256": "1091413f0b2835b5dd097c662e4a4faed1e11bc8cad1b1aab9a8c0a9c05c2678",
+      "bytes": 1036517
+    },
+    {
+      "name": "tzupdate-3.1.0.pkg",
+      "sha256": "aefea654fe8a91a31ba1172479c2edd5fd44cb59ada7ee355417d1eb606fefba",
+      "bytes": 919885
+    },
+    {
+      "name": "udiskie-2.7.0.pkg",
+      "sha256": "09200899c2f2bb2047d05fb47e673b23551f57530f160d4e5545dbcd6ae8b075",
+      "bytes": 164390
+    },
+    {
+      "name": "usage-6.12.0.pkg",
+      "sha256": "a1654fcace289e5941482c97c19892c660f6a1d27a6fac9cac4103f0a13c81fe",
+      "bytes": 2412415
+    },
+    {
+      "name": "wifi-firmware-ath10k-kmod-qca4019_hw10-20260410.pkg",
+      "sha256": "a3b0d4100a4dc02e2fa4e2c6bb10b7bef93f8477a6c420d487537879564c8944",
+      "bytes": 478539
+    },
+    {
+      "name": "wifi-firmware-ath10k-kmod-qca6174_hw21-20260410.pkg",
+      "sha256": "9b21ee45e0a6f4dd56d90f913b6f14a51db8a5bd4bec56a0f335d3aacb9e53c7",
+      "bytes": 321741
+    },
+    {
+      "name": "wifi-firmware-ath10k-kmod-qca6174_hw30-20260410.pkg",
+      "sha256": "abf2127f9643ea225809a6893daae446a0f0dbe2bbff07d06a6e2dd115946797",
+      "bytes": 959045
+    },
+    {
+      "name": "wifi-firmware-ath10k-kmod-qca9377_hw10-20260410.pkg",
+      "sha256": "3ddcc15994d16fbe4a18a5b6e2a5e72f4761b5a1c31bd2731970fdca9685f031",
+      "bytes": 1012652
+    },
+    {
+      "name": "wifi-firmware-ath10k-kmod-qca9887_hw10-20260410.pkg",
+      "sha256": "a2df3a30a76f7f794e9f4b38f64148b87171221c5c9bc84a8c1009410d85a07f",
+      "bytes": 211659
+    },
+    {
+      "name": "wifi-firmware-ath10k-kmod-qca9888_hw20-20260410.pkg",
+      "sha256": "667600c75dbc4eae4b6db6663e6644f8d3902ec73086cbe8807c57fc38756118",
+      "bytes": 521116
+    },
+    {
+      "name": "wifi-firmware-ath10k-kmod-qca988x_hw20-20260410.pkg",
+      "sha256": "e2bc1267aafba5b38819bcb799fef57bdadfbd50dc0843f7207207f9168deec5",
+      "bytes": 291300
+    },
+    {
+      "name": "wifi-firmware-ath10k-kmod-qca9984_hw10-20260410.pkg",
+      "sha256": "27defdb7143a7446d6eb6542f5693cc5aab232836453eb2f70eb9f78accde4b1",
+      "bytes": 514297
+    },
+    {
+      "name": "wifi-firmware-ath10k-kmod-qca99x0_hw20-20260410.pkg",
+      "sha256": "e678fb57f0a35110bcbbcd714a8190c3ec04910734fa8c945d5feeab1b0d1b36",
+      "bytes": 371241
+    },
+    {
+      "name": "wifi-firmware-ath10k-kmod-wcn3990_hw10-20260410.pkg",
+      "sha256": "47665c69d6637ca13e664fd0b89fff8cc8afdee45fec364d1742b7a2cf21efc7",
+      "bytes": 3450225
+    },
+    {
+      "name": "wifi-firmware-ath11k-kmod-ipq5018_hw10-20260410.pkg",
+      "sha256": "9055012ea45d10cc1bd7b69d2a9790367c51531ada534e3ae9e69bfbbbb68105",
+      "bytes": 2001941
+    },
+    {
+      "name": "wifi-firmware-ath11k-kmod-ipq6018_hw10-20260410.pkg",
+      "sha256": "d03da169e75191b27c9eb9ae5ef786427b407a7a583e97a205ea5e5090bedf94",
+      "bytes": 2093230
+    },
+    {
+      "name": "wifi-firmware-ath11k-kmod-ipq8074_hw20-20260410.pkg",
+      "sha256": "a2d5f2a8555e1473b9679389b21a9c61f9b8fc7ad3045b08e564e3aff87704a7",
+      "bytes": 2556817
+    },
+    {
+      "name": "wifi-firmware-ath11k-kmod-qca2066_hw21-20260410.pkg",
+      "sha256": "ab7b98f633df5e6da321d7136b9bf986bd9147140ae4a707d864905030c77761",
+      "bytes": 2296415
+    },
+    {
+      "name": "wifi-firmware-ath11k-kmod-qca6390_hw20-20260410.pkg",
+      "sha256": "a6bee6f2a1d5559c5f797d98e6b5a1a6026aae1ae96eb899ec7557f7d91d5077",
+      "bytes": 1608244
+    },
+    {
+      "name": "wifi-firmware-ath11k-kmod-qca6698aq_hw21-20260410.pkg",
+      "sha256": "6ad2af94f0c49c8da20de5179fca218911ab9ec010b72a016ce6488b030bbbc6",
+      "bytes": 2229372
+    },
+    {
+      "name": "wifi-firmware-ath11k-kmod-qcn9074_hw10-20260410.pkg",
+      "sha256": "58a27935c4f91b9059cc898e2c0c65eefa0db73e7e381b6c7e2f66c0923344c8",
+      "bytes": 2087662
+    },
+    {
+      "name": "wifi-firmware-ath11k-kmod-wcn6750_hw10-20260410.pkg",
+      "sha256": "b47963e6f8fd7a4f83b6d3febdadf800bad4d0f9e142249f881c477053b65aef",
+      "bytes": 5589116
+    },
+    {
+      "name": "wifi-firmware-ath11k-kmod-wcn6855_hw20-20260410.pkg",
+      "sha256": "af8c74309f311a10de4fc8dc3d05e7f35469b1825fca30e73bd7dfff78e641f9",
+      "bytes": 4204023
+    },
+    {
+      "name": "wifi-firmware-ath12k-kmod-qcn9274_hw20-20260410.pkg",
+      "sha256": "768e71d7e17e4bba1dd1fd2833da2bb56bcccb81755542e7596fd0632ea336c4",
+      "bytes": 4095294
+    },
+    {
+      "name": "wifi-firmware-ath12k-kmod-wcn7850_hw20-20260410.pkg",
+      "sha256": "7ff9ddac218fff28143e1e4164a5eaf2e6d016fef10cacd15df47948df46c3ec",
+      "bytes": 4437384
+    },
+    {
+      "name": "wifi-firmware-iwlwifi-kmod-22000-20260410.pkg",
+      "sha256": "cf8491b0503fc92230ba2a8f693b7ea55a1342339d09c2fd87d55907c8893c81",
+      "bytes": 798094
+    },
+    {
+      "name": "wifi-firmware-iwlwifi-kmod-7000-20260410.pkg",
+      "sha256": "cc741ee790b832e5a649fd65563653bbf36bf543832c06a197793dbe5aa69d18",
+      "bytes": 852487
+    },
+    {
+      "name": "wifi-firmware-iwlwifi-kmod-8000-20260410.pkg",
+      "sha256": "933ef24c713d23be6a6d92e56af0063c6d8dfaf6a6a72430187ddea7c93c7370",
+      "bytes": 534836
+    },
+    {
+      "name": "wifi-firmware-iwlwifi-kmod-9000-20260410.pkg",
+      "sha256": "9ff01ba32f3e3dff2dc03aae9386b3e4f7b90cd99ab65e0b6903dc738da5741e",
+      "bytes": 565308
+    },
+    {
+      "name": "wifi-firmware-iwlwifi-kmod-ax210-20260410.pkg",
+      "sha256": "0bdbc9245eba5d6043437d628f712209904fb092369c3534d806e575ce7ad01c",
+      "bytes": 2334642
+    },
+    {
+      "name": "wifi-firmware-iwlwifi-kmod-bz-20260410.pkg",
+      "sha256": "1dbbad24ee381d464cc7352df010671e32529e6ef6e4ee80ebb6a1f4376851bf",
+      "bytes": 1879998
+    },
+    {
+      "name": "wifi-firmware-iwlwifi-kmod-sc-20260410.pkg",
+      "sha256": "e38bba096314d065fd37abafb0ba033d11378b569c8c3697288bc4efbdc357b3",
+      "bytes": 1158191
+    },
+    {
+      "name": "wifi-firmware-kmod-20260410.pkg",
+      "sha256": "9bbbaded0267ee8335c930585d1856b56fcf663da796c6a62f1ed0aa66d006d8",
+      "bytes": 1431
+    },
+    {
+      "name": "wifi-firmware-mt76-kmod-mt7615-20260410.pkg",
+      "sha256": "c19f95905014e4f307a862f0e716af863d187134f40d76b2fbbfece1313a68c8",
+      "bytes": 552559
+    },
+    {
+      "name": "wifi-firmware-mt76-kmod-mt7915-20260410.pkg",
+      "sha256": "cc6c926b0050d1da3035632817d1bb90cf0db516ab7123be8ac000acad557808",
+      "bytes": 1621548
+    },
+    {
+      "name": "wifi-firmware-mt76-kmod-mt7921-20260410.pkg",
+      "sha256": "6a3eebe1877752587ba6bec1a604553d993ca104ddbb251264074b9a618e50f2",
+      "bytes": 1456114
+    },
+    {
+      "name": "wifi-firmware-mt76-kmod-mt7925-20260410.pkg",
+      "sha256": "39f9d122fc31d41868dfcfebe8d99e964ffecb3b8d08c2fc2f31440c08dafafc",
+      "bytes": 1353736
+    },
+    {
+      "name": "wifi-firmware-mt76-kmod-mt7996-20260410.pkg",
+      "sha256": "cf028288b685ce74bbc639f979389f79dd9eddf8a206c5dbf751fe0ef3faf5bd",
+      "bytes": 11544713
+    },
+    {
+      "name": "wifi-firmware-mt76-kmod-mtk_wed-20260410.pkg",
+      "sha256": "085fac536e851558c00e93f57a7fdd3a3b99a95e8e6aa1bb6efc0d0019496c41",
+      "bytes": 51276
+    },
+    {
+      "name": "wifi-firmware-mt7601u-kmod-20260410.pkg",
+      "sha256": "a13c70a7d981f4a93d204b232300d887c686d3112acb589f6082af7557b341c9",
+      "bytes": 28669
+    },
+    {
+      "name": "wifi-firmware-rtw88-kmod-rtw8703b-20260410.pkg",
+      "sha256": "e9971101b1983379fe5e267110b94c58ddb66b306fc31d7a8805a6f0ebfb653e",
+      "bytes": 28608
+    },
+    {
+      "name": "wifi-firmware-rtw88-kmod-rtw8723d-20260410.pkg",
+      "sha256": "d6ca1b81c69a849b86eda061ccb2414194b107e084158c467b8d29e989df4868",
+      "bytes": 21723
+    },
+    {
+      "name": "wifi-firmware-rtw88-kmod-rtw8812a-20260410.pkg",
+      "sha256": "cc750c7bbf61affd8b43ba0c5ba8ad7750de174532fa09d540dd9c99c0420a4e",
+      "bytes": 20554
+    },
+    {
+      "name": "wifi-firmware-rtw88-kmod-rtw8814a-20260410.pkg",
+      "sha256": "5da810b0e314c354398dfeabcb9c0d22bc52437d456a1d75fcb9433ccbdb5874",
+      "bytes": 39916
+    },
+    {
+      "name": "wifi-firmware-rtw88-kmod-rtw8821a-20260410.pkg",
+      "sha256": "dc87c0e039e713c8278e56fa0ff5634136e7079e6b9a3c2009707f1b440acbd6",
+      "bytes": 23400
+    },
+    {
+      "name": "wifi-firmware-rtw88-kmod-rtw8821c-20260410.pkg",
+      "sha256": "6a8453b0cce0090e833981c5a5706a84dffccf1ce3be45f6b43bda9d34cdc9ce",
+      "bytes": 57611
+    },
+    {
+      "name": "wifi-firmware-rtw88-kmod-rtw8822b-20260410.pkg",
+      "sha256": "1238ebddb1c3088988b518c99076ddaf0930815b3a18132ee9784aa076a041bc",
+      "bytes": 85890
+    },
+    {
+      "name": "wifi-firmware-rtw88-kmod-rtw8822c-20260410.pkg",
+      "sha256": "66c2ffd9cb9e710abf5df018e0660bd0a9a12bc2a76617be9e2aa2ec2d91bc90",
+      "bytes": 128875
+    },
+    {
+      "name": "wifi-firmware-rtw89-kmod-rtw8851b-20260410.pkg",
+      "sha256": "bc5ae8d351f556a51f9c9961a1a378e836688a85415b5e961237f04d82f30d5a",
+      "bytes": 245177
+    },
+    {
+      "name": "wifi-firmware-rtw89-kmod-rtw8852a-20260410.pkg",
+      "sha256": "dcf01427cfa66bda4792095cd321a0ccea2a95b07cbc1cc0905702a13e057aa9",
+      "bytes": 259943
+    },
+    {
+      "name": "wifi-firmware-rtw89-kmod-rtw8852b-20260410.pkg",
+      "sha256": "51ca663c14746f5f9bcf7204002c624eab04f60b2311d40c574e280eb11834fc",
+      "bytes": 354541
+    },
+    {
+      "name": "wifi-firmware-rtw89-kmod-rtw8852bt-20260410.pkg",
+      "sha256": "312346104194be70cd9de370d980ddb0988649083beef9b3b49f9ad765d9ef71",
+      "bytes": 306593
+    },
+    {
+      "name": "wifi-firmware-rtw89-kmod-rtw8852c-20260410.pkg",
+      "sha256": "cd3b1b90b88989401acb0523af85006bed63c0755df6e3a9144709c9786d8b09",
+      "bytes": 567288
+    },
+    {
+      "name": "wifi-firmware-rtw89-kmod-rtw8922a-20260410.pkg",
+      "sha256": "14d9051eae974e81dc4aa4022ce35f8dd2f71ff21d3bdbabadb0ba1dab5f67b1",
+      "bytes": 800083
+    }
+  ]
+}

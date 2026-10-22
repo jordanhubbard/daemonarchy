@@ -31,9 +31,17 @@
     "seconds": 88.753
   },
   "installed_freebsd_fixture_batch": {
-    "status": "running",
-    "terminal_result_claimed": false,
-    "canonical_cli_acceptance": false
+    "status": "timed-out",
+    "terminal_result_claimed": true,
+    "canonical_cli_acceptance": false,
+    "exit_code": -15,
+    "timeout": true,
+    "seconds": 1800.047,
+    "selected": 40,
+    "public_runtime_cases_passed": 7,
+    "additional_custody_cases_passed": 2,
+    "batch_complete": false,
+    "stopped_in": "test_private_filesystem_case_preserves_live_sdk_command_scope"
   },
   "real_source_transport": {
     "passed": true,
@@ -50,11 +58,18 @@
     "installed_public_cli_validate_passed": true,
     "default_receipt_policy_preserved": true,
     "required_evidence_kinds": 16,
-    "build_test_acceptance": false
+    "build_test_acceptance": false,
+    "build_test_attempt": {
+      "status": "refused",
+      "stage": "component-lock",
+      "seconds": 33.083,
+      "diagnostic": "component_lock.flavor_cardinality: private fixture language slot has zero eligible selections",
+      "product_language_requirement": false,
+      "flavor_added": false
+    }
   },
   "compiler_sdk_admitted": false,
   "product_receipt": false,
-  "iso_created": false,
   "release_acceptance": false,
   "ledger_rows_closed": 0,
   "product_verification": {
@@ -63,5 +78,33 @@
     "failure": "project.test_receipt_missing",
     "source_intelligence": "disabled skip",
     "html_observability": "undeclared skip"
+  },
+  "iso_created_by_framework_qualification": false,
+  "separate_original_source_test_iso": "verification/test-iso-1.2-test1.json",
+  "hosted_ci_snapshot": {
+    "conclusion": "",
+    "failures": [],
+    "headSha": "c39ac88cc76830defbf6a34503989f6109020904",
+    "status": "queued",
+    "unfinished": [
+      {
+        "name": "Elixir 1.18.0 / OTP 27.0 / macos-15",
+        "status": "queued"
+      },
+      {
+        "name": "Sample composition / macos-latest",
+        "status": "queued"
+      },
+      {
+        "name": "macOS / Python 3.14 / PR smoke (not release qualification)",
+        "status": "queued"
+      },
+      {
+        "name": "Elixir 1.20.4 / OTP 29.1.1 / macos-15",
+        "status": "queued"
+      }
+    ],
+    "url": "https://github.com/jordanhubbard/literate-ai/actions/runs/39699663402",
+    "observed_utc": "2026-10-22T06:24:07.358732+00:00"
   }
 }
