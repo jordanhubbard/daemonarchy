@@ -202,3 +202,22 @@ Desktop acceptance therefore remains blocked. The selected upstream source
 exposes a default-enabled asynchronous graphics-ring path and a supported
 `compat.linuxkpi.amdgpu_async_gfx_ring=0` alternative; a fresh-boot single-variable
 comparison is the next diagnostic, rather than treating module load as success.
+
+
+The fresh-boot comparison confirmed the alternative graphics-ring parameter was
+zero, with the NVMe tracker setting unchanged. Graphics initialization still
+returned -60. Cleanup then repeatedly timed out writing GPU registers. The
+independent receiver recorded last GPU register messages through 21:59:18 UTC
+and SSH timeout at 21:59:37 UTC; independent ICMP probes also failed. No NVMe
+reset event was captured by its separate trace. No reboot was requested during
+this graphics attempt. Physical console state and a new boot must establish
+whether the system hung, panicked or reset. Automatic graphics loading remains
+suppressed for the next recovery boot. The failed alternative is not a workaround.
+
+A diagnostic build passed against the exact stock kernel source
+`bdcfeac3e1cb8ce3f05c32d8a7ad3597deb48bdf` and the selected
+`drm_v6.12.110_1` archive (SHA256
+`9c99c05c3269271ca6ea19ccdca53b27517b1d6b679065fc5c3dfc2682ddfaef`).
+Its additional ring-test diagnostics are investigative only. The separate module
+remains staged outside the installed package; target execution is pending recovery
+and is not implied by native build success. This does not qualify a release.
