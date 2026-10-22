@@ -713,4 +713,4 @@ before claiming the observer optimization resolves that release blocker.
 - **Implementation:**
   - [ ] Implement and natively exercise durable resumption, legacy adoption, boot-console startup and explicit Unpair; verify on the physical MacBook.
 - **Evidence:**
-  - [ ] Native real-SSH persistence and existing lifecycle fixtures pass; physical reboot qualification is pending.
+  - [ ] Native real-SSH persistence, existing lifecycle and delayed-network console fixtures pass. Physical reboot retains the same agent approval and host identity; manual Resume works. The DHCP-race correction then resumes unattended SSH about fifteen seconds into a further physical reboot, with unchanged approved client and host identity. Review/image integration remain pending.

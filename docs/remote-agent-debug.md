@@ -269,3 +269,7 @@ FreeBSD Safe Mode (`boot_safe=YES`) and the loader setting
 and configured SSH startup can still run. This does not enable SSH where the
 operator declined it, and does not prevent unrelated kernel or device-driver
 panics. The private headless USB mode additionally blocks T2 BCE autoloading.
+
+At boot, resumption retries for up to 60 seconds in the background while USB
+Ethernet/DHCP becomes ready. The recovery menu remains usable throughout. If
+networking becomes available later, choose Resume to retry the retained grant.

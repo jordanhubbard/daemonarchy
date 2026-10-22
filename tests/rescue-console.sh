@@ -106,10 +106,30 @@ rescue_menu yes <<<'3' >/dev/null
   grep -q $'\033\\[2J\033\\[H' "$work/first-menu"
   grep -q 'Daemonarchy rescue' "$work/first-menu"
 )
+# Late DHCP readiness is retried without input; an absent grant does nothing.
+(
+  touch "$debug_state/active"
+  rm -f "$debug_command.live" "$debug_command.calls"
+  cat >"$debug_command" <<'MOCK'
+#!/bin/sh
+case $1 in
+  resume) echo resume >>"$0.calls" ;;
+  status) [ "$(wc -l <"$0.calls")" -ge 3 ] ;;
+esac
+MOCK
+  ticks=0
+  rescue_resume_debug </dev/null
+  [[ $(wc -l <"$debug_command.calls") -eq 3 && $ticks == 2 ]]
+  rm "$debug_state/active" "$debug_command.calls"
+  rescue_resume_debug </dev/null
+  [[ ! -e $debug_command.calls ]]
+)
+printf '#!/bin/sh\ncase "$1" in\nstatus) exit 0 ;;\nresume) echo resume >>"$0.calls" ;;\nesac\n' >"$debug_command"
+touch "$debug_state/active"
 # Boot resumption happens before desktop monitoring, including a healthy desktop.
 (
   id() { echo 0; }
-  monitor_desktop() { grep -qx resume "$debug_command.calls"; }
+  monitor_desktop() { wait "$!"; grep -qx resume "$debug_command.calls"; }
   rescue_wait_boot_output() { :; }
   rescue_record() { :; }
   rescue_menu() { :; }

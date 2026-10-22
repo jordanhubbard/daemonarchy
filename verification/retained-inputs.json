@@ -385,7 +385,7 @@
     {
       "path": "overlay/usr/local/sbin/daemonarchy-rescue",
       "owner": "diagnostics",
-      "sha256": "892e2c0e85ae5aaf5e24a5252cc705d101deb2237a6ec378b9e8d27b701b5d0a",
+      "sha256": "9dcb3e4cbdb606040a51c60c9e90d8a0b699b2b9b7fb220e597b7833bf37c69e",
       "executable": true
     },
     {
@@ -901,7 +901,7 @@
     {
       "path": "tests/rescue-console.sh",
       "owner": "diagnostics",
-      "sha256": "bcdec3728f835a364879326e089c2f0ca5028c97530fd366b5666d56cc02d2ef",
+      "sha256": "fe23b1ec1199f7545e1b1c8e019545fa6981c244c48a02135031252c7428fcb2",
       "executable": true
     },
     {

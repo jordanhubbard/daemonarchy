@@ -64,6 +64,19 @@ rescue_reason() {
   return 1
 }
 
+rescue_resume_debug() {
+  [ -x "$debug_command" ] || return 0
+  remaining=60
+  # USB Ethernet and DHCP can become ready after the recovery console starts.
+  # Retry in the background so a retained grant resumes without console input.
+  while [ -f "$debug_state/active" ] && [ "$remaining" -gt 0 ]; do
+    "$debug_command" resume || true
+    "$debug_command" status >/dev/null 2>&1 && return 0
+    remaining=$((remaining - 1))
+    sleep 1
+  done
+}
+
 monitor_desktop() {
   rescue_reason && return 0
   remaining=$startup_wait
@@ -173,7 +186,7 @@ rescue_main() {
     monitor)
       # This grant was approved at the root console before the preceding reboot.
       # Resume it before waiting for a desktop, without deleting crash evidence.
-      if [ -x "$debug_command" ]; then "$debug_command" resume || true; fi
+      rescue_resume_debug </dev/null >>"$rescue_log" 2>&1 &
       echo 'Waiting for graphical login; this console shows recovery options if it fails.'
       monitor_desktop
       rescue_wait_boot_output

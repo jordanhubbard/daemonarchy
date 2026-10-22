@@ -63,13 +63,13 @@ At **19:12:05 UTC**, while installing `qt6-networkauth`, the independent control
 receiver retained the kernel's fatal-timeout/reset message, then a controller
 start event and repeated reset-wait messages. The receiver retained heartbeats
 through **19:12:18 UTC**, then recorded SSH exit 255 at **19:12:33 UTC**. Subsequent
-SSH and independent native-worker ping probes failed. A new boot has not been
-confirmed; transport loss alone is not counted as a reboot.
+SSH and independent native-worker ping probes failed. At that point a new boot had not been
+confirmed; transport loss alone was not counted as a reboot.
 
 Twenty-nine additional packages reached verified durable checkpoints. The last
 was `qt6-imageformats`, leaving 122 planned packages. `qt6-networkauth` extraction
 printed completion, but it did not reach its verification/barrier checkpoint.
-Its integrity must be checked after recovery rather than assumed.
+Its integrity required checking after recovery rather than assuming success.
 
 A separate bounded DTrace session watched ACPI button/sleep paths, shutdown
 requests, reboot syscalls and signals to init. A harmless `kill(1, 0)` verified
@@ -142,3 +142,63 @@ corrected migration gives the grant new ownership before retiring the old
 collector; a native regression verifies that old cleanup cannot revoke it and
 that explicit Unpair cannot reimport the retired grant. Physical automatic
 reconnection must be verified after deploying this correction.
+
+
+## Controlled retry with four outstanding requests
+
+The corrected pairing helper was deployed and a controlled reboot completed.
+The operator reported reaching the rescue selection menu without intervening at
+the loader countdown, then selected Resume. SSH admitted the previously approved
+agent with the identical retained host-key digest. This verifies approval and
+server-identity persistence and manual resumption; it does not verify unattended
+listener startup. The boot clock initially returned to 1970 before NTP corrected
+it; boot identity was distinguished by its changed value and short uptime,
+without assuming wall-clock values must increase.
+
+The first resumption attempt can precede DHCP readiness. A correction retries
+for up to 60 seconds in the background without blocking the recovery menu. A
+native FreeBSD console test covers delayed readiness and absence of a grant;
+a subsequent physical reboot reconnects without console selection about fifteen
+seconds into the new boot, with the same approved client and server identity.
+The unattended listener has no console-approval marker. The diagnostic GPU
+service remains suppressed during that resumption test.
+
+The running NVMe queue reported four trackers. The interrupted
+`qt6-networkauth` payload was reinstalled from its exact cached archive and
+verified. The other 121 pending archives passed version/ABI/dependency preflight,
+then installed individually with file verification and two pool barriers per
+checkpoint. All reached durable checkpoints. A bounded native DTrace session
+watched controller reset, disable and failure paths, with an independent
+controller-side observation stream; no reset event was captured during this
+package run. Installer postconfiguration was then restored from the on-media helpers, including
+ordered GPU configuration, kernel-module locks, ownership/caches, signed package
+feeds and ISO fallback, checkout catalogue, user shell/sudoers, and SDDM state.
+The requested ordinary SSH service received fresh host keys; the debugging
+listener retained its existing separate host identity. Full installed dependency
+and file verification passed, followed by a pool barrier and healthy ZFS status.
+The original incomplete installer state was preserved before recording recovered
+completion, and a pre-GPU recovery boot environment was retained. This recovery
+does not explain the originally reported success screen.
+
+The current SSD health report gives no critical warnings, 100 percent spare,
+2 percent estimated wear and zero reported media errors. The generic error-log
+page is rejected as unsupported, and Identify reports no NVMe device self-test
+support. These limits are recorded rather than counted as successful hardware
+tests. The cause of the earlier fatal controller status remains unresolved;
+completion under this diagnostic tunable does not establish a release fix or
+exclude intermittent hardware failure.
+
+
+## Separate Navi14 graphics initialization failure
+
+After package integrity and recovery were verified, a separately captured
+manual graphics start loaded the exact DRM 6.12.110 module and Navi14 firmware.
+Firmware loading and SMU initialization succeeded, but
+`amdgpu_gfx_enable_kgq` reported `KGQ enable failed` and `gfx_v10_0` initialization
+returned -60. Device attachment failed. The ordered graphics service correctly
+refused its readiness marker, despite the module remaining loaded. SSH remained
+available and the bounded NVMe trace recorded no reset during this attempt.
+Desktop acceptance therefore remains blocked. The selected upstream source
+exposes a default-enabled asynchronous graphics-ring path and a supported
+`compat.linuxkpi.amdgpu_async_gfx_ring=0` alternative; a fresh-boot single-variable
+comparison is the next diagnostic, rather than treating module load as success.
