@@ -378,8 +378,12 @@ The [Windows/descriptor composition](../../verification/composed-framework-quali
 now passes the complete controller regression (2,206 selected, 2,135 passing,
 71 declared skips) and exact installed Linux wheel qualification, including
 changed-payload refusal. Its fresh FreeBSD prefix installs offline, initializes,
-and passes six binding controls. The real public CLI exercise is running;
-installed context controls and native Windows qualification remain pending.
+and passes six binding controls. Its [real public CLI renewal](../../verification/native-sdk-composed-cli-development.json)
+now passes in 573.597 supervised seconds: three original tests and two independent
+acceptance cases pass, the local-runtime receipt is admitted, all 28 retained
+records reverify from current bytes, and the owned source server exits zero.
+Installed context controls are running; native Windows qualification remains
+pending.
 The first complete host lifecycle refuses a generated frontend BigInt error
 without a candidate receipt. A fresh complete regeneration is running with the
 same configured model and unchanged 3,600-second limit; the failure is retained.

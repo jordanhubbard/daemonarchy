@@ -1,0 +1,207 @@
+{
+  "schema": "daemonarchy/native-sdk-isolated-cli-development@1",
+  "observed_utc": "2026-10-22T18:30:56.735003+00:00",
+  "scope": "Real installed public CLI original-source SDK microfixture on isolated FreeBSD; local-runtime consumer admission only",
+  "framework_source_revision": "c058695048a3a1980e45db977c316a68ee4c868d",
+  "wheel_identity": "sha256:9002feed89c6d23d22a75ed9cfd3b980a6aee0d346a061aea37c0ee4b42ce953",
+  "distribution_identity": "sha256:36a08d8a67ac21e15d7fb746f2cb7eff842aeb4d177e4d38a1f6a7a176ee8d66",
+  "native_role": {
+    "os": "FreeBSD 16.0-CURRENT",
+    "kernel_revision": "041802b362aa",
+    "architecture": "amd64",
+    "filesystem": "UFS",
+    "hypervisor": "KVM",
+    "vcpus": 4,
+    "memory_mib": 4096,
+    "unprivileged": true,
+    "alignment_passed": true,
+    "original_disk_preserved": true
+  },
+  "preparation": {
+    "offline_bootstrap_seconds": 6.427,
+    "project_initialization_seconds": 96.883,
+    "fixture_archive_sha256": "0e4ebec8302dfe1743d0b152e26fe261635b924198ecce40d2da913b7b9fde9e"
+  },
+  "canonical_cli": {
+    "passed": true,
+    "supervised_total_seconds": 573.597,
+    "exit_code": 0,
+    "authorized_execution_limit_seconds": 3600,
+    "deadline_unchanged": true,
+    "authority_mode": "retained-project",
+    "source_authority": "original",
+    "conversion_advanced": false,
+    "no_discovery_transport_or_producer_mocks": true,
+    "source_files": 9,
+    "source_commit": "5c20dabacf7c03a43ed7b2f9a194c165f3ac0d6d",
+    "source_tree": "sha256:d0115b5cb6226b3c597212668cbb60ef13247800e4dfdadaeb5fd14e7c46bcd2",
+    "source_snapshot": "sha256:cfc84636c065545f0ee25df00d750e7b5bffdcfe824e5794b0d5c163095f1bf8",
+    "authorization_refusals": {
+      "missing-authorization": "rebuild.host_execution_not_acknowledged",
+      "missing-retained-authorization": "retained_project.admission_invalid"
+    },
+    "receipt_identity": "sha256:fb4445f32bbef56cd6716597ac31a4bba9e03a3da21e6376d119d8e92ceda6b0",
+    "receipt_scope": "local-runtime",
+    "original_tests": {
+      "failed": 0,
+      "passed": 3,
+      "skipped": 0
+    },
+    "command_stages": [
+      "build",
+      "test",
+      "docs",
+      "accept"
+    ],
+    "independent_acceptance_cases": 2,
+    "independent_acceptance_exit_codes": [
+      0,
+      2
+    ],
+    "withheld_product_stdout": "10.0\n",
+    "records_reverified": 28,
+    "record_verification_is_inspection_not_reconstructed_live_admission": true,
+    "source_server_terminal": 0,
+    "completed_run_sdk_admitted": false
+  },
+  "loader_control": {
+    "consumer_rpath": false,
+    "reviewed_loader_required": true,
+    "without_loader_exit_code": 1
+  },
+  "installed_binding_controls": {
+    "selected": 6,
+    "passed": 6,
+    "failed": 0,
+    "skipped": 0,
+    "module_from_installed_prefix": true,
+    "module_sha256": "118eaf712600436acccd83ac2b69b68cce71c486405ea473330cbe5d50d744ac"
+  },
+  "installed_context_controls": "running separately; not yet qualified",
+  "transport_wrapper_note": "The transport-only summary conservatively retains canonical_installed_cli_qualified false; actual public CLI admission and qualification progress are separately inspected above",
+  "source_built_compiler_admitted": false,
+  "actual_freebsd_source_sdk_admitted": false,
+  "consumer_project_current_receipt": false,
+  "daemonarchy_product_receipt": false,
+  "package_qualified": false,
+  "iso_created": false,
+  "release_acceptance": false,
+  "raw_evidence": {
+    "canonical-sdk-command/started.json": {
+      "sha256": "46338b2f4ce14d88c2b5e0aa73995261ea500a4bd500c18c5647b26b015326eb",
+      "bytes": 774
+    },
+    "canonical-sdk-command/terminal.json": {
+      "sha256": "e892325066aedd41ddc55f462ffb19afaa76a395685b5961705ca76df16bae16",
+      "bytes": 88
+    },
+    "canonical-sdk-command/stdout.log": {
+      "sha256": "8764969308913eb83d68874eeee7940b6a0654c8e6c2f8a5344424874b14dd0a",
+      "bytes": 812
+    },
+    "canonical-sdk-command/stderr.log": {
+      "sha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855",
+      "bytes": 0
+    },
+    "canonical-sdk-transport/result.json": {
+      "sha256": "c2ad59a4eabaf9977701289eba978225064766d95b87635cf616e2b4cf8e6824",
+      "bytes": 519
+    },
+    "canonical-sdk-transport/qualification/authorized-execution.stderr": {
+      "sha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855",
+      "bytes": 0
+    },
+    "canonical-sdk-transport/qualification/authorized-execution.stdout": {
+      "sha256": "151e12bffe557760e865d3e377118e24087a93f42d0ad889424c5b25a3262e83",
+      "bytes": 6532
+    },
+    "canonical-sdk-transport/qualification/component-lock.stderr": {
+      "sha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855",
+      "bytes": 0
+    },
+    "canonical-sdk-transport/qualification/component-lock.stdout": {
+      "sha256": "3d56c13aee45ebd69cec1c30fee69d7bdeb2f8367b7676418fac7352cc5e316d",
+      "bytes": 1506
+    },
+    "canonical-sdk-transport/qualification/documentation-review.stderr": {
+      "sha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855",
+      "bytes": 0
+    },
+    "canonical-sdk-transport/qualification/documentation-review.stdout": {
+      "sha256": "b95f25a5b99a647a547b545103f9ec6a8c72ee147251db1ecd863da0845edde3",
+      "bytes": 457
+    },
+    "canonical-sdk-transport/qualification/final-documentation-review.stderr": {
+      "sha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855",
+      "bytes": 0
+    },
+    "canonical-sdk-transport/qualification/final-documentation-review.stdout": {
+      "sha256": "24ac962d29f97e98447c203fb3b78fc7b47b27fbd5884cd3ebb5f712f2075099",
+      "bytes": 458
+    },
+    "canonical-sdk-transport/qualification/final-validate.stderr": {
+      "sha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855",
+      "bytes": 0
+    },
+    "canonical-sdk-transport/qualification/final-validate.stdout": {
+      "sha256": "a4887b69b3a99bcdc647e78908941d352a2b0bfc9866fe5522202de12b97c959",
+      "bytes": 95873
+    },
+    "canonical-sdk-transport/qualification/missing-authorization.stderr": {
+      "sha256": "f012093aa9149555d8a5e3d64873c85666c7a9f58450299dda16e98c1791bc86",
+      "bytes": 303
+    },
+    "canonical-sdk-transport/qualification/missing-authorization.stdout": {
+      "sha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855",
+      "bytes": 0
+    },
+    "canonical-sdk-transport/qualification/missing-retained-authorization.stderr": {
+      "sha256": "eb99887c0de598b4450e5be4c180ef798cd9d028e7fc3514b1f127b196f3ff77",
+      "bytes": 191
+    },
+    "canonical-sdk-transport/qualification/missing-retained-authorization.stdout": {
+      "sha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855",
+      "bytes": 0
+    },
+    "canonical-sdk-transport/qualification/original-apply.stderr": {
+      "sha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855",
+      "bytes": 0
+    },
+    "canonical-sdk-transport/qualification/original-apply.stdout": {
+      "sha256": "030519bf56c0dbe7f73133e25883c42e6738eebd257f87c68bd0367007e067c3",
+      "bytes": 970
+    },
+    "canonical-sdk-transport/qualification/original-plan.stderr": {
+      "sha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855",
+      "bytes": 0
+    },
+    "canonical-sdk-transport/qualification/original-plan.stdout": {
+      "sha256": "a855dfcf809c8b697c9f42cf7fe17387ed404cc579176a23a50a98743bbd1208",
+      "bytes": 686
+    },
+    "canonical-sdk-transport/qualification/progress.json": {
+      "sha256": "a49ce9f7062b5aba26bdb18c58badbe925b9c2017565719cdb9c1502e55bda55",
+      "bytes": 395
+    },
+    "canonical-sdk-transport/qualification/retained-plan.stderr": {
+      "sha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855",
+      "bytes": 0
+    },
+    "canonical-sdk-transport/qualification/retained-plan.stdout": {
+      "sha256": "25352308d8ef9b73b2456b517603762f1454720abfb8a6c0c29cac1d43ac535c",
+      "bytes": 6018
+    },
+    "canonical-sdk-transport/qualification/without-loader.stderr": {
+      "sha256": "fc8ff40654bf392c3147eeae4077a557bdc65c9ab88a8f0eaff26253ff78a86e",
+      "bytes": 73
+    },
+    "canonical-sdk-transport/qualification/without-loader.stdout": {
+      "sha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855",
+      "bytes": 0
+    }
+  },
+  "record_inspection_sha256": "3ff214e5ede22621fbe9c02093ae34f30cc3de1c805e83275a52f7d6b3f52bc9",
+  "preceding_worker_investigation": "verification/native-sdk-worker-investigation-development.json",
+  "primary_worker_timeout_retained": true,
+  "composed_windows_descriptor_qualification": "Exact composed code c0586950; native Windows and full host lifecycle qualification remain open"
+}

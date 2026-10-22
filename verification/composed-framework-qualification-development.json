@@ -1,6 +1,6 @@
 {
   "schema": "daemonarchy/composed-framework-qualification-development@1",
-  "observed_utc": "2026-10-22T18:24:01.450685+00:00",
+  "observed_utc": "2026-10-22T18:31:17.435974+00:00",
   "framework_revision": "c058695048a3a1980e45db977c316a68ee4c868d",
   "scope": "Exact Windows and descriptor framework composition; native development qualification in progress",
   "controller_regression": {
@@ -59,8 +59,22 @@
       "test_sha256": "4a73cbf9bbdd1cecb4e1f59e68cdd0b702efe5e596bcf8229e049d3aee5c39b6",
       "module_from_installed_prefix": true
     },
-    "public_cli_exercise": "running; no terminal qualification claimed",
-    "context_controls": "not yet run for this composition"
+    "public_cli_exercise": {
+      "passed": true,
+      "record": "verification/native-sdk-composed-cli-development.json",
+      "supervised_seconds": 573.597,
+      "receipt_identity": "sha256:fb4445f32bbef56cd6716597ac31a4bba9e03a3da21e6376d119d8e92ceda6b0",
+      "receipt_scope": "local-runtime",
+      "original_tests": {
+        "failed": 0,
+        "passed": 3,
+        "skipped": 0
+      },
+      "independent_acceptance_cases": 2,
+      "records_reverified": 28,
+      "source_server_terminal": 0
+    },
+    "context_controls": "running separately; no terminal result claimed"
   },
   "host_lifecycle": {
     "first_attempt": {
@@ -106,5 +120,5 @@
   "product_receipt": false,
   "iso_created": false,
   "release_authorized": false,
-  "next_action": "Complete exact composed native FreeBSD public CLI and context controls, Windows gate, and fresh full host lifecycle before supported receipt promotion or integration"
+  "next_action": "Complete exact composed installed context controls, Windows gate and fresh full host lifecycle before supported receipt promotion or integration"
 }
