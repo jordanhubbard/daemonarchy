@@ -116,11 +116,14 @@ wheel qualification and the complete 223-test framework host lifecycle with
 independent acceptance and a current framework receipt. Published review head
 `cb648dc9` has the same source/test trees; its exact CI remains pending. Offline
 FreeBSD installation verifies all 37 distributions. Ten installed context cases
-and a fresh canonical native CLI replay are running. The latter has completed
-native library-SDK production and reached final documentation review while
-preserving the default 16-kind receipt policy. Its authored consumer has no RPATH
-and must use the captured loader path; host and plan authorization controls are
-separate. The [renewal checkpoint](../../verification/native-sdk-runtime-context-development.json)
+and a fresh canonical native CLI replay are now terminal. All ten installed
+context cases pass with 469 production modules verified from the installed prefix.
+The real public CLI replay passes native SDK production, original-source adoption,
+retained planning and both separate authorization refusals, then times out during
+authorized execution at its unchanged 3,600-second deadline. Partial compiled
+products and three original test results do not establish a completed receipt or
+independent admission. Framework issue #117 owns the performance repair.
+The [renewal checkpoint](../../verification/native-sdk-runtime-context-development.json)
 keeps that preparation separate from unearned consumer, compiler/sysroot, product
 and release admission. All 24 release obligations remain open.
 
