@@ -245,20 +245,22 @@ preserved. No performance fix or lifecycle pass is claimed.
   - [ ] Every inherited backlog obligation has direct completion evidence; native and virtual/physical acceptance match exact final artifacts; full LitAI verification and release gates pass; published new release and immutable assets are verified.
 
 The [October 22 upstream checkpoint](../../verification/upstream-refresh-2026-10-22.json)
-records the latest conflict-free ports import: six further commits through `3b2ed35c240b`,
-merged in [ports PR #12](https://github.com/jordanhubbard/daemonarchy-ports/pull/12),
-with all 64 downstream paths and the complete downstream delta preserved. Nine
-whitespace warnings inside one verbatim upstream patch are retained. Source
-tracking is current at `ad0f86694157`; [source PR #9](https://github.com/jordanhubbard/daemonarchy-src/pull/9)
+records the latest conflict-free ports import: 21 further commits through
+`38ef2e0cd3e6`, merged in [ports PR #13](https://github.com/jordanhubbard/daemonarchy-ports/pull/13)
+at `bb2dac41b789`. All 64 downstream paths retain their blobs and modes, the
+complete downstream delta is preserved, and the imported delta exactly matches
+upstream. Fifteen whitespace warnings inside verbatim upstream patch files are
+retained; no hosted workflows are configured for the ports repository. The
+preceding six-commit import remains recorded separately. Source tracking is
+current at `ad0f86694157`; [source PR #9](https://github.com/jordanhubbard/daemonarchy-src/pull/9)
 retains 94 commits pending integration plus a scoped bootstrap repair at
-`883295fb6aa`. The earlier exact-upstream run passed nine checks but failed its
-ARM64 Ubuntu 24.04 `mandoc` link while zlib was still compiling; two macOS cells
-remained queued. [Source issue #10](https://github.com/jordanhubbard/daemonarchy-src/issues/10)
-records the missing graph edge. The repair adds `mandoc` to the existing zlib
-prerequisite inside `BOOTSTRAP_ALL_TOOLS`; exact-head cross-build qualification
-is now pending in run `39776145660`. Active workspace selections are unchanged.
-Native changed-port tests, clean bulk builds, coherent final input admission and
-the remaining R12-18 requirements stay open.
+`883295fb6aa`. The earlier exact-upstream run failed its ARM64 Ubuntu 24.04
+`mandoc` link while zlib was still compiling. [Source issue #10](https://github.com/jordanhubbard/daemonarchy-src/issues/10)
+records the missing graph edge. All four Linux cross-build cells now pass on the
+repair in run `39776145660`; both macOS cells remain queued, so source integration
+remains pending. Active workspace selections are unchanged. Native changed-port
+tests, clean bulk builds, coherent final input admission and the remaining R12-18
+requirements stay open.
 
 ### [ ] COMP-001 — Model complete FreeBSD source and ports trees as Components
 

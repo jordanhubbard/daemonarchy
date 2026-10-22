@@ -1,6 +1,6 @@
 {
   "schema": "daemonarchy/upstream-refresh-development@1",
-  "observed_utc": "2026-10-22T12:10:44.085221+00:00",
+  "observed_utc": "2026-10-22T13:18:24.746572+00:00",
   "scope": "R12-18 source/ports reconciliation preparation; no native release input admission or acceptance",
   "sources": {
     "repository": "https://github.com/jordanhubbard/daemonarchy-src",
@@ -16,13 +16,13 @@
       "cells": [
         {
           "name": "amd64 ubuntu-22.04 (clang-15)",
-          "status": "in_progress",
-          "conclusion": ""
+          "status": "completed",
+          "conclusion": "success"
         },
         {
           "name": "aarch64 ubuntu-24.04 (clang-18)",
-          "status": "in_progress",
-          "conclusion": ""
+          "status": "completed",
+          "conclusion": "success"
         },
         {
           "name": "amd64 macos-latest (clang-18)",
@@ -36,16 +36,16 @@
         },
         {
           "name": "amd64 ubuntu-24.04 (clang-18)",
-          "status": "in_progress",
-          "conclusion": ""
+          "status": "completed",
+          "conclusion": "success"
         },
         {
           "name": "aarch64 ubuntu-22.04 (clang-15)",
-          "status": "in_progress",
-          "conclusion": ""
+          "status": "completed",
+          "conclusion": "success"
         }
       ],
-      "scope": "Fresh exact-head validation of the actual bootstrap-order repair; no passing integration result claimed."
+      "scope": "Exact repair head: all four Linux cross-build cells pass; two macOS cells remain queued. Integration is pending; no native release qualification claimed."
     },
     "previous_exact_upstream_checks": {
       "success": 9,
@@ -75,20 +75,32 @@
   },
   "ports": {
     "repository": "https://github.com/jordanhubbard/daemonarchy-ports",
-    "previous_integration_revision": "589c62dfa380e4f9fd339f07766736a6668672aa",
-    "upstream_revision": "3b2ed35c240b82d4f1bda5e8c0cc1ff38ae9e8f5",
-    "integration_revision": "23732a1e1922e842e5027202a03f2dfea9e09297",
-    "integration_review": "https://github.com/jordanhubbard/daemonarchy-ports/pull/12",
+    "previous_integration_revision": "23732a1e1922e842e5027202a03f2dfea9e09297",
+    "upstream_revision": "38ef2e0cd3e662b26692ff2eab9bc9a97a5a499a",
+    "integration_revision": "bb2dac41b7892ff548d0ab4da5b833b826388708",
+    "integration_review": "https://github.com/jordanhubbard/daemonarchy-ports/pull/13",
     "integration_status": "merged",
-    "upstream_commits_imported": 6,
+    "upstream_commits_imported": 21,
     "conflicts": 0,
     "preserved_downstream_paths": 64,
     "preserved_git_blobs_and_modes": true,
     "complete_downstream_delta_preserved": true,
-    "whitespace_check": "Nine warnings in verbatim upstream net/telemt/files/patch-src_util_secure__fs_path.rs patch; preserved unchanged",
+    "whitespace_check": "15 warnings in verbatim upstream patch files; identical to upstream delta, retained unchanged",
     "native_changed_port_tests": false,
     "native_clean_bulk": false,
-    "changed_upstream_paths": 19
+    "changed_upstream_paths": 33,
+    "preceding_refresh": {
+      "previous_integration_revision": "589c62dfa380e4f9fd339f07766736a6668672aa",
+      "upstream_revision": "3b2ed35c240b82d4f1bda5e8c0cc1ff38ae9e8f5",
+      "integration_revision": "23732a1e1922e842e5027202a03f2dfea9e09297",
+      "integration_review": "https://github.com/jordanhubbard/daemonarchy-ports/pull/12",
+      "upstream_commits_imported": 6,
+      "changed_upstream_paths": 19,
+      "whitespace_check": "Nine warnings in verbatim upstream net/telemt/files/patch-src_util_secure__fs_path.rs patch; preserved unchanged"
+    },
+    "integration_review_head": "cf85c3f63f5b6862a287ffb97ce5b664260d2371",
+    "exact_upstream_delta_imported": true,
+    "hosted_workflows_configured": false
   },
   "active_workspace_selection_sha256": "4e79295002b67899e66b4665f43848b73288a26df5037d7d859f0b2c25c1a3fd",
   "active_workspace_selection_changed": false,
