@@ -1,0 +1,105 @@
+{
+  "schema": "daemonarchy/composed-framework-qualification-development@1",
+  "observed_utc": "2026-10-22T18:21:54.844853+00:00",
+  "framework_revision": "c058695048a3a1980e45db977c316a68ee4c868d",
+  "scope": "Exact Windows and descriptor framework composition; native development qualification in progress",
+  "controller_regression": {
+    "summary": {
+      "executed": 2135,
+      "failed": 0,
+      "known_failed": 0,
+      "passed": 2135,
+      "selected": 2206,
+      "skipped": 71
+    },
+    "report_identity": "sha256:519ec9503c35f4fa133fd499e1ed722ecae76281ca622b4a1ee20e9c0fb99c62",
+    "release_evidence": false
+  },
+  "linux_installed_wheel": {
+    "ok": true,
+    "wheel_identity": "sha256:9002feed89c6d23d22a75ed9cfd3b980a6aee0d346a061aea37c0ee4b42ce953",
+    "standard_binding": {
+      "distribution": "sha256:36a08d8a67ac21e15d7fb746f2cb7eff842aeb4d177e4d38a1f6a7a176ee8d66",
+      "members": 1235,
+      "policy": "sha256:a5ca0d6d13daff0199f218c5e4af723a2cec87b927e75dd3a731c511b5d85ac7"
+    },
+    "tamper_refusal": "standard_binding.changed",
+    "report_identity": "sha256:b04e5925be728554f2d6a29d2815a2ca15a800ae652fb7a15fa7fb3f9511e08c"
+  },
+  "freebsd_installed_prefix": {
+    "carrier": {
+      "schema": "daemonarchy/qualified-native-carrier-development@1",
+      "framework_commit": "c058695048a3a1980e45db977c316a68ee4c868d",
+      "wheel_identity": "sha256:9002feed89c6d23d22a75ed9cfd3b980a6aee0d346a061aea37c0ee4b42ce953",
+      "distribution_identity": "sha256:36a08d8a67ac21e15d7fb746f2cb7eff842aeb4d177e4d38a1f6a7a176ee8d66",
+      "dependency_closure_identity": "sha256:cf27f5f9047f06973bd8e6c2a45c404be74362d98af412742c3ed31e66400e29",
+      "seed_closure_identity": "sha256:44e2614cff8ed87e80b2ab6b7129fa8ee9d8ae90835187f15bf47f57b5bd3783",
+      "carrier_sha256": "23096649de18184f30be1b13be7ba94612fe74fc551579c8ec281492cf7bc2cf",
+      "bootstrap_sha256": "29fa4f5b517d222dfe9b0402fd77cb0d97e341b8b672081921311132434d04b8",
+      "native_installed_qualified": false,
+      "source_sdk_admitted": false,
+      "release_acceptance": false
+    },
+    "bootstrap": {
+      "exit_code": 0,
+      "schema": "daemonarchy/native-command-terminal@1",
+      "seconds": 6.427
+    },
+    "initialization": {
+      "exit_code": 0,
+      "schema": "daemonarchy/native-command-terminal@1",
+      "seconds": 96.883
+    },
+    "binding_controls": {
+      "selected": 6,
+      "failures": 0,
+      "errors": 0,
+      "skipped": 0,
+      "module_sha256": "118eaf712600436acccd83ac2b69b68cce71c486405ea473330cbe5d50d744ac",
+      "test_sha256": "4a73cbf9bbdd1cecb4e1f59e68cdd0b702efe5e596bcf8229e049d3aee5c39b6",
+      "module_from_installed_prefix": true
+    },
+    "public_cli_exercise": "running; no terminal qualification claimed",
+    "context_controls": "not yet run for this composition"
+  },
+  "host_lifecycle": {
+    "first_attempt": {
+      "exit_code": 2,
+      "seconds": 704.794,
+      "candidate_exists": false,
+      "timeout": false
+    },
+    "failure_analysis": {
+      "source_revision": "c058695048a3a1980e45db977c316a68ee4c868d",
+      "phase": "full-stack-rust-js/test-generated",
+      "error_class": "Generated frontend passes a BigInt quotient to Math.floor",
+      "reproduction_exit_code": 1,
+      "reproduction_stderr": "Cannot convert a BigInt value to a number\n",
+      "generated_frontend_sha256": "4160b885f709dbfc1a5bdb46d038440e65332d6a622356de75d3029517c337c8",
+      "generated_test_sha256": "fb90159553a28625dccf9dd19daa449eafd1706d27ed9ea846ab68a89d15184c",
+      "candidate_receipt_produced": false,
+      "production_source_modified": false,
+      "next_action": "Fresh complete lifecycle regeneration; preserve original failed evidence"
+    },
+    "fresh_attempt": {
+      "live_process_verified": true,
+      "source_revision": "c058695048a3a1980e45db977c316a68ee4c868d",
+      "maximum_seconds": 3600,
+      "candidate_produced": false,
+      "result": "running; no qualification claimed"
+    }
+  },
+  "windows_native_gate": {
+    "result": "staged; canonical checkout setup requested; no passing result claimed",
+    "preflight_refusal": "Existing primary origin differs; preserved without mutation",
+    "transport_retry": "Input transfer timed out before files arrived; explicit line-based transfer then succeeded",
+    "test_workers": 2,
+    "maximum_gate_seconds": 5400
+  },
+  "historical_descriptor_native_evidence": "verification/native-sdk-isolated-cli-development.json",
+  "compiler_sdk_admitted": false,
+  "product_receipt": false,
+  "iso_created": false,
+  "release_authorized": false,
+  "next_action": "Complete exact composed native FreeBSD public CLI and context controls, Windows gate, and fresh full host lifecycle before supported receipt promotion or integration"
+}

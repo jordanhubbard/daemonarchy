@@ -368,7 +368,17 @@ server exits zero, and six binding controls pass in this new prefix. All ten ins
 context controls pass with zero skips; all 469 production modules resolve from
 the installed prefix. This does not admit the source-built
 compiler, actual FreeBSD source SDK, packages, product receipt, ISO or release.
-The separate Windows/descriptor composition still requires exact qualification.
+The [Windows/descriptor composition](../../verification/composed-framework-qualification-development.json)
+now passes the complete controller regression (2,206 selected, 2,135 passing,
+71 declared skips) and exact installed Linux wheel qualification, including
+changed-payload refusal. Its fresh FreeBSD prefix installs offline, initializes,
+and passes six binding controls. The real public CLI exercise is running;
+installed context controls and native Windows qualification remain pending.
+The first complete host lifecycle refuses a generated frontend BigInt error
+without a candidate receipt. A fresh complete regeneration is running with the
+same configured model and unchanged 3,600-second limit; the failure is retained.
+No compiler SDK, product receipt, ISO or release admission follows from these
+partial checks.
 
 The [native worker investigation](../../verification/native-sdk-worker-investigation-development.json)
 now profiles the installed descriptor candidate for a deliberate 300-second
