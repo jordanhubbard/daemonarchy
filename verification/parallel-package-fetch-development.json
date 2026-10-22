@@ -1,0 +1,156 @@
+{
+  "schema": "daemonarchy/parallel-package-fetch-development@1",
+  "recorded_at": "2026-10-22T11:57:19.074437+00:00",
+  "queue_item": "PKG-001",
+  "scope": "Bounded authenticated package acquisition: controller and native FreeBSD qualification on an eight-package immutable historical subset; no installation or final release acceptance",
+  "input_schema": "daemonarchy/signed-package-snapshot-inputs@2",
+  "result_schema": "daemonarchy/signed-package-snapshot@2",
+  "event_schema": "daemonarchy/package-progress-event@1",
+  "legacy_serial_schema_preserved": true,
+  "controller_checks_passed": 112,
+  "controller_groups": {
+    "native-tree-discovery": 9,
+    "native-dirdeps": 11,
+    "native-workspace": 8,
+    "qemu-worker": 13,
+    "package-dag": 23,
+    "native-package-plan": 23,
+    "signed-package-snapshot": 17,
+    "iso-stage": 2,
+    "test-loader": 6
+  },
+  "source_sha256": {
+    "scripts/native-package-plan.py": "a007222266e0ac79bb9ee12911c0876e4aae547d409a47834d79c50f0dd1c4c2",
+    "scripts/signed-package-snapshot.py": "78e93c25a3a5513f79d378c752fa8bdee73dcfbd8e8176a69e3c2ca4e5db6675",
+    "scripts/package-dag.py": "1b99e5ba0a574d8a0a78445e9814685ed6e640629d32ffd324cb6440626b3e7c",
+    "tests/native-package-plan.py": "daeeb13b43f2c9ee07a452315e57463aadaf4ff84f38c71218a12a1190a38e0f",
+    "tests/signed-package-snapshot.py": "a70b3d69363baec16903113830a583398b5333ce753e12e57d52da2880cdc284"
+  },
+  "controller_fetch_peer_scope": "Actual child processes using a command-protocol fixture; not native pkg signature or checksum qualification",
+  "process_controls": [
+    "actual overlapping children and bounded peak",
+    "failure stops queued work and reaps peers",
+    "post-command verifier refusal precedes queued work",
+    "common deadline reaps active children",
+    "signal cleanup reaps both children",
+    "invalid bounds refuse before command logs"
+  ],
+  "fetch_controls": [
+    "private database clone per batch",
+    "exact promoted inventory and measured verified-byte progress",
+    "catalogue, installed-database and cache changes refuse",
+    "stderr diagnostic refuses even with exit zero",
+    "published batch mutation refuses final inventory"
+  ],
+  "retained_development_failures": [
+    "Failure-path cleanup initially signalled an already terminating process group twice and skipped reaping after a signal error. The owner now signals once and waits even when signalling raises; the first failed test and focused diagnostic remain retained."
+  ],
+  "project_authority_valid": true,
+  "component_locks_current": 8,
+  "product_lifecycle_receipt": "missing",
+  "native_qualification": "passed on the exact corrected source; eight-package regression subset only",
+  "native_pkg_observed_version": "2.8.4",
+  "native_pkg_observed_sha256": "5fb7f228998089b65b06f3586428241330e9e86f4b8b3833c02637de358e6273",
+  "native_signed_snapshot_qualified": true,
+  "actual_parallel_installation": false,
+  "installation_authorized": false,
+  "performance_gain_qualified": false,
+  "release_qualified": false,
+  "initial_native_probe": {
+    "source_revision": "be5c455e8b82fa555bdf6f2aeee7b55bcd1ee417",
+    "selected": 8,
+    "serial_passed": true,
+    "parallel_batches_verified": 8,
+    "parallel_passing_result": false,
+    "host_database_unchanged": true,
+    "refusal": "no such table: packages in the unused zero-byte source template",
+    "correction": "Only the explicit source template accepts a regular zero-byte file. Every executed worker still requires the native schema and zero installed packages."
+  },
+  "native_probe": {
+    "schema": "daemonarchy/parallel-package-native-development@1",
+    "source_revision": "8902832a35521dc26d1741fec558b60adce41692",
+    "pkg_sha256": "5fb7f228998089b65b06f3586428241330e9e86f4b8b3833c02637de358e6273",
+    "packages": 8,
+    "download_bytes": 29831,
+    "serial_parallel_inventory_identical": true,
+    "peak_active": 4,
+    "serial_seconds": {
+      "authentication": 0.6070102630183101,
+      "fetch_verify": 3.8565189969958737,
+      "total": 5.089664717030246
+    },
+    "parallel_seconds": {
+      "authentication": 0.401980199967511,
+      "fetch_verify": 2.2548455630312674,
+      "total": 3.1442204479826614
+    },
+    "crypto_refusals": [
+      "corrupt-payload",
+      "wrong-key",
+      "tampered-signature"
+    ],
+    "fresh_retry_passed": true,
+    "host_database_unchanged": true,
+    "results": [
+      {
+        "name": "serial",
+        "exit_code": 0,
+        "seconds": 7.13,
+        "result_exists": true
+      },
+      {
+        "name": "parallel",
+        "exit_code": 0,
+        "seconds": 5.177,
+        "result_exists": true
+      },
+      {
+        "name": "corrupt-payload",
+        "exit_code": 1,
+        "seconds": 4.976,
+        "result_exists": false
+      },
+      {
+        "name": "fresh-retry",
+        "exit_code": 0,
+        "seconds": 4.424,
+        "result_exists": true
+      },
+      {
+        "name": "wrong-key",
+        "exit_code": 1,
+        "seconds": 2.772,
+        "result_exists": false
+      },
+      {
+        "name": "tampered-signature",
+        "exit_code": 1,
+        "seconds": 2.871,
+        "result_exists": false
+      }
+    ],
+    "installation_authorized": false,
+    "performance_gain_qualified": false,
+    "release_qualified": false,
+    "platform": "FreeBSD 16.0-CURRENT amd64 / Python 3.12.14",
+    "fixture": "packages-16-amd64-1.1.1",
+    "whole_fixture_selected": false,
+    "supervised_seconds": 29.422,
+    "command_controls": [
+      {
+        "name": "native-package-plan",
+        "exit_code": 0,
+        "seconds": 7.364
+      },
+      {
+        "name": "signed-package-snapshot",
+        "exit_code": 0,
+        "seconds": 15.299
+      }
+    ],
+    "command_control_cases_passed": 40,
+    "command_control_scope": "Real native child processes with command-protocol fixtures for deadline, signal and state controls; native cryptographic checks are the separate real pkg cases above",
+    "observation_sha256": "3ede77e172587a2c1bd196ae7e71f8bcb00459deae18e4944c079b0ad6a4a537",
+    "staging_archive_sha256": "1cf3c8316f29c92d9e7ef46b0f124a27e59a6b950807d1bc3ac00a6f0a8614cc"
+  }
+}

@@ -86,6 +86,52 @@ every completed payload. Never reuse a still-running attempt's output directory.
 Results distinguish offline requests from HTTPS redirects; those counts are
 transport observations, not proof of parallel installation or a performance gain.
 
+## Bounded parallel acquisition
+
+The explicit input schema `daemonarchy/signed-package-snapshot-inputs@2` adds
+`fetch_workers` (one to sixteen) and optional `fetch_batch_packages` (one to 128,
+default 32). Keep every trust, executable, metadata, selection, budget and timeout
+field from version 1. Version 1 retains its serial operation and result shape;
+parallel options on version 1 refuse instead of silently selecting another mode.
+
+After native authentication and selection, one coordinator schedules bounded
+batches against separate private copies of the native database and cache. Every
+fetch keeps the same frozen repository URL and uses native pkg's checksum
+verification. Each completed batch must also pass exact file inventory, size,
+independent SHA-256, unchanged catalogue and empty installed-database/cache checks
+before its files become available in the case's shared payload directory.
+The untouched source template may remain the zero-byte file created by native
+`pkg shell`; only that explicit template accepts this pristine state. Every
+executed worker must have the real native schema and zero installed packages.
+Nonempty unsupported databases and nonzero installed counts still refuse.
+Retained batch copies use exclusive hard links to avoid duplicating payload
+bytes. Database copies and retained command-log limits are included in the disk
+reserve check. All fetch children share one deadline; failure, diagnostic,
+deadline or interruption stops queued work and reaps the owned children.
+
+The case's `events.jsonl` is an ordered
+`daemonarchy/package-progress-event@1` journal, bound to the exact input and
+authenticated database pins. It records actual started, verified, failed and
+cancelled batches. Verified-byte counts include seed reads and describe archive
+verification, rather than network throughput. Consumers continue to show a
+waiting/finalization state after the last batch until the final result exists.
+The atomically published `daemonarchy/signed-package-snapshot@2` result binds the
+closed journal and records actual peak concurrency. The journal alone never
+establishes completed acquisition or installation permission.
+
+Failed batches, partial payloads and logs remain in their original private case.
+Retry into a new case, optionally selecting a terminal attempt's `payloads`
+directory as a read-only seed. The new run still authenticates the catalogue and
+reverifies every selected archive through native pkg. Do not reuse a live case.
+Parallel acquisition does not establish parallel installation, final-release
+selection, an installer/GUI integration, a lifecycle receipt or a performance gain.
+Controller command-protocol fixtures exercise scheduling and failure guards.
+The [native development checkpoint](../verification/parallel-package-fetch-development.json)
+now passes real pkg signature, corruption, concurrency, serial parity and fresh
+retry on eight packages from the immutable 1.1.1 feed, with peak four active
+fetches. All 40 process/snapshot controls also pass on FreeBSD. Full final-release
+selection and performance qualification remain required.
+
 Pin the completed input file and run from reviewed source:
 
 ```sh
