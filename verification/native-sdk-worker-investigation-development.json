@@ -1,0 +1,125 @@
+{
+  "schema": "daemonarchy/native-sdk-worker-investigation-development@1",
+  "observed_utc": "2026-10-22T17:36:34.589519+00:00",
+  "issue": "https://github.com/jordanhubbard/literate-ai/issues/117",
+  "framework_source_revision": "4ed7e5a1024b513a497f3608e053d759f7bce952",
+  "wheel_identity": "sha256:359cbf0f25a9b22f1dc5e276c42030b8a539ae17878c1db374f3b23dd73a81db",
+  "distribution_identity": "sha256:196504b9d858d877009293736ddcfef0bd28c68fdcb1dcc3c6ffbd9784fb02e7",
+  "scope": "Diagnostic native execution profile and worker comparison; not a controlled platform benchmark or canonical SDK qualification",
+  "diagnostic_profile": {
+    "seconds": 300.436,
+    "supervised_total_seconds": 918.098,
+    "deliberate_execution_bound_seconds": 300,
+    "outer_exit_code": 1,
+    "canonical_installed_cli_qualified": false,
+    "owned_source_server_terminal": 0,
+    "file_close_calls": 41441,
+    "file_close_self_seconds": 134.537113607,
+    "stat_calls": 111857,
+    "stat_self_seconds": 109.699277452,
+    "distribution_observations": 18
+  },
+  "syscall_trace": {
+    "bounded_seconds": 1,
+    "syscall_only": true,
+    "trace_cleared": true,
+    "close": {
+      "calls": 96,
+      "seconds": 0.890265675,
+      "median": 6.424e-06,
+      "maximum": 0.249245203
+    }
+  },
+  "kernel_stack_observation": {
+    "samples": 6,
+    "vnode_batch_mutex_samples": 2,
+    "path": [
+      "__mtx_lock_flags",
+      "vdbatch_process",
+      "vdropl",
+      "vput_final",
+      "kern_statat",
+      "sys_fstatat"
+    ]
+  },
+  "concurrent_system_scan": {
+    "program": "find",
+    "owner_uid": 0,
+    "periodic_script": "/etc/periodic/security/110.neggrpperm",
+    "observed_elapsed": "03:14:39",
+    "observed_cpu_percent": 98.9,
+    "interrupted": false,
+    "kernel_settings_changed": false
+  },
+  "worker_comparison": {
+    "samples": [
+      {
+        "seconds": 8.381758043018635,
+        "user_seconds": 0.25099,
+        "system_seconds": 8.095651,
+        "identity": "sha256:196504b9d858d877009293736ddcfef0bd28c68fdcb1dcc3c6ffbd9784fb02e7",
+        "members": 1235,
+        "uname": "16.0-CURRENT",
+        "worker_role": "primary",
+        "index": 0
+      },
+      {
+        "seconds": 0.1976172890000072,
+        "user_seconds": 0.165914,
+        "system_seconds": 0.03168699999999999,
+        "identity": "sha256:196504b9d858d877009293736ddcfef0bd28c68fdcb1dcc3c6ffbd9784fb02e7",
+        "members": 1235,
+        "uname": "16.0-CURRENT",
+        "worker_role": "isolated",
+        "index": 0
+      },
+      {
+        "seconds": 7.730476743017789,
+        "user_seconds": 0.17232399999999992,
+        "system_seconds": 7.525765999999999,
+        "identity": "sha256:196504b9d858d877009293736ddcfef0bd28c68fdcb1dcc3c6ffbd9784fb02e7",
+        "members": 1235,
+        "uname": "16.0-CURRENT",
+        "worker_role": "primary",
+        "index": 1
+      },
+      {
+        "seconds": 0.1843355369999813,
+        "user_seconds": 0.176151,
+        "system_seconds": 0.00811,
+        "identity": "sha256:196504b9d858d877009293736ddcfef0bd28c68fdcb1dcc3c6ffbd9784fb02e7",
+        "members": 1235,
+        "uname": "16.0-CURRENT",
+        "worker_role": "isolated",
+        "index": 1
+      }
+    ],
+    "members_per_fresh_observation": 1235,
+    "identities_equal": true,
+    "primary_filesystem": "ZFS",
+    "isolated_filesystem": "UFS",
+    "primary_vcpus": 20,
+    "isolated_vcpus": 4,
+    "isolated_memory_mib": 4096,
+    "note": "Different kernels, filesystems, memory and load; isolated initialization overlapped this read-only probe. Supports a worker bottleneck, without proving a single causal variable or an application speedup."
+  },
+  "isolated_preparation": {
+    "alignment_passed": true,
+    "offline_bootstrap_seconds": 9.015,
+    "project_initialization_seconds": 120.362,
+    "original_disk_preserved": true,
+    "unprivileged_execution": true
+  },
+  "next_action": "Complete the unchanged-budget canonical SDK command and ten installed context controls on the isolated role; qualify the composed Windows/descriptor source separately",
+  "canonical_native_sdk_qualified": false,
+  "source_built_compiler_admitted": false,
+  "release_acceptance": false,
+  "raw_evidence_sha256": {
+    "sdkperf-execution-profile-v2-current.json": "15d5eacc8baf239ca0ed780e51b1214a1088a7f00d0ccb16c3b18607881c8c2b",
+    "sdkperf-execution-profile-v2-syscalls.json": "e30dfd90b4c6668135d8bdff2bf387b291754477c951f7985b38ae82b9338b91",
+    "sdkperf-execution-profile-v2-syscall-summary.json": "c2e0dbac48605b45d747e3b5b0d46eccfe06e3ed461db5811d9caa5fe024d99a",
+    "sdkperf-execution-profile-v2-kernel-samples.json": "c63a28f68583c7b79bf3e7636121c8aef375c13e748a25e82e0e4723c2f06258",
+    "native-find-37305-ownership.json": "644f62be4f36371568dff0f2cc32a7ac436da5eddbab78bb72de848b4f6c9ef8",
+    "sdk-isolated-v1/distribution-worker-comparison.json": "2badbc7329dbfb0f65f0f7898b7cdf4b49919a51b0bc60dee2c93cc6d3827ab9"
+  }
+}

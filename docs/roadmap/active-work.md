@@ -346,6 +346,23 @@ is implemented and natively qualified on draft PR #7, pending integration.
 Physical NICs, Netdump, authenticated kernel sessions, continuous early-kernel
 transport, compiler/SDK admission and release acceptance remain open.
 
+The [native worker investigation](../../verification/native-sdk-worker-investigation-development.json)
+now profiles the installed descriptor candidate for a deliberate 300-second
+execution window. File closes consume 134.537 self seconds and stat calls
+109.699 seconds. A bounded syscall trace sees some closes take up to 249 ms;
+read-only kernel samples identify the vnode batch/mutex path. A root-owned
+periodic security scan is concurrently traversing the worker filesystems; it is
+left running and kernel settings are unchanged. The same 1,235 current wheel
+members yield identical identities in fresh observations: 7.7–8.4 seconds on the
+primary role and 0.18–0.20 seconds in a disposable aligned FreeBSD VM. The
+kernels, filesystems and load differ; this is diagnostic evidence of a worker
+bottleneck, not a controlled speedup attribution. The isolated offline install
+and project initialization pass. Its unchanged-budget canonical SDK command
+is live; complete it and the ten installed context controls before qualification.
+Windows/descriptor composition is isolated for fresh full regression and later
+exact-wheel/lifecycle renewal. The missing product receipt and release gates
+remain open.
+
 The [descriptor-read checkpoint](../../verification/native-sdk-descriptor-read-development.json)
 records framework code `4ed7e5a1`, published with qualification at `9b834cde`.
 Its uninterrupted regression passes 2,132 cases with 70 declared skips; the exact
