@@ -85,6 +85,24 @@ class MeasuredProgressTests(unittest.TestCase):
         invalid.line(json.dumps(package()), True)
         self.assertEqual(invalid.warning, 'Unbound package progress')
 
+    def test_recorded_journal_rejects_package_count_drift_without_advancing(self):
+        fixture = ROOT/'tests/fixtures/installer-progress/native-acquisition.jsonl'
+        rows = [json.loads(line) for line in fixture.read_text().splitlines()]
+        first_verified = next(i for i, row in enumerate(rows) if row['verified_packages'] == 1)
+        for change in ({'verified_packages': 0}, {'total_packages': 9},
+                       {'total_packages': 0, 'verified_packages': 0}):
+            with self.subTest(change=change):
+                state = ui.Progress((rows[0]['input_sha256'], rows[0]['repository_database_sha256']))
+                for row in rows[:first_verified + 1]:
+                    state.event(row)
+                self.assertEqual(state.item, '1 of 8 archives verified')
+                before = state.key(), state.sequence
+                with self.assertRaisesRegex(ValueError, 'counters'):
+                    state.event(dict(rows[first_verified + 1], **change))
+                self.assertEqual((state.key(), state.sequence), before)
+                state.event(rows[first_verified + 1])
+                self.assertEqual(state.sequence, rows[first_verified + 1]['sequence'])
+
     def test_journal_cannot_rewind_install_phase_or_turn_failure_into_success(self):
         state = ui.Progress(('a'*64, 'b'*64))
         state.phase_changed('install')

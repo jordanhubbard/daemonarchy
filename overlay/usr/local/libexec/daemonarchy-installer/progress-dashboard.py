@@ -40,6 +40,7 @@ class Progress:
         self.downloads = set()
         self.download_total = 0
         self.archive_bytes, self.archive_total = 0, None
+        self.archive_packages, self.archive_count = 0, None
         self.recent = deque(maxlen=8)
 
     def phase_changed(self, phase):
@@ -92,11 +93,13 @@ class Progress:
         current, total = row['verified_bytes'], row['total_bytes']
         packages, count = row['verified_packages'], row['total_packages']
         if (not all(integer(x) for x in (current, total, packages, count))
-                or current > total or packages > count or total == 0
-                or current < self.archive_bytes
-                or self.archive_total not in (None, total)):
+                or current > total or packages > count or total == 0 or count == 0
+                or current < self.archive_bytes or packages < self.archive_packages
+                or self.archive_total not in (None, total)
+                or self.archive_count not in (None, count)):
             raise ValueError('Invalid package acquisition counters')
         self.sequence, self.archive_bytes, self.archive_total = sequence, current, total
+        self.archive_packages, self.archive_count = packages, count
         if self.phase == 'start':
             self.phase_changed('fetch')
         if self.phase == 'fetch':
@@ -155,6 +158,7 @@ class Tail:
                     state.history.clear()
                     state.downloads.clear()
                     state.archive_bytes, state.archive_total = 0, None
+                    state.archive_packages, state.archive_count = 0, None
                     self.offset, self.pending, self.discard = 0, b'', False
                 self.identity = identity
                 stream.seek(self.offset)

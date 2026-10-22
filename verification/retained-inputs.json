@@ -1059,6 +1059,25 @@
           "preceding_baseline_sha256": null
         }
       ]
+    },
+    {
+      "work_item": "UI-001",
+      "preceding_commit": "78dbc47d6189f1925ba1960b78f7c5d62027791d",
+      "reason": "Reject backward verified archive counts and changed package totals without advancing the accepted journal observation; recorded native journal regression",
+      "files": [
+        {
+          "path": "overlay/usr/local/libexec/daemonarchy-installer/progress-dashboard.py",
+          "preceding_source_sha256": "c0b7aa0da0f92540d6b93d1338ed86dabd0a5184913b0b989275ffb93aab6533",
+          "current_sha256": "c37d6714cea9485ca7f65f68cd8b6d18da06be1e45d354cba5ab2e8df0a302df",
+          "preceding_baseline_sha256": "c0b7aa0da0f92540d6b93d1338ed86dabd0a5184913b0b989275ffb93aab6533"
+        },
+        {
+          "path": "tests/installer-progress.py",
+          "preceding_source_sha256": "9faf4de88494e1144b055efeae6326c31d29fd485ebaa926887e5781e3c9a8ab",
+          "current_sha256": "2879828220c1cc1bef7d7454b9107d70ba4fb8f671baf7aa3883a1149d8bb43e",
+          "preceding_baseline_sha256": "9faf4de88494e1144b055efeae6326c31d29fd485ebaa926887e5781e3c9a8ab"
+        }
+      ]
     }
   ]
 }
