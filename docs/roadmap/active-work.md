@@ -353,8 +353,9 @@ builds the original consumer, passes three tests, documentation and two withheld
 acceptance cases, and admits a local-runtime receipt. All 28 retained records
 reverify from current CAS bytes. The accepted app fails without the reviewed
 loader context; both authorization refusals remain intact. The owned source
-server exits zero, and six binding controls pass in this new prefix. Ten installed
-context controls remain live separately. This does not admit the source-built
+server exits zero, and six binding controls pass in this new prefix. All ten installed
+context controls pass with zero skips; all 469 production modules resolve from
+the installed prefix. This does not admit the source-built
 compiler, actual FreeBSD source SDK, packages, product receipt, ISO or release.
 The separate Windows/descriptor composition still requires exact qualification.
 
@@ -370,8 +371,8 @@ primary role and 0.18–0.20 seconds in a disposable aligned FreeBSD VM. The
 kernels, filesystems and load differ; this is diagnostic evidence of a worker
 bottleneck, not a controlled speedup attribution. The isolated offline install
 and project initialization pass. Its unchanged-budget canonical SDK command
-was live at that checkpoint and has now passed as recorded above. Complete the
-ten installed context controls before closing the context qualification.
+was live at that checkpoint and has now passed as recorded above. The ten installed
+context controls have now passed as recorded above.
 Windows/descriptor composition is isolated for fresh full regression and later
 exact-wheel/lifecycle renewal. The missing product receipt and release gates
 remain open.

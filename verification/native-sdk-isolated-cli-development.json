@@ -1,6 +1,6 @@
 {
   "schema": "daemonarchy/native-sdk-isolated-cli-development@1",
-  "observed_utc": "2026-10-22T17:45:08.239678+00:00",
+  "observed_utc": "2026-10-22T18:03:10.612944+00:00",
   "scope": "Real installed public CLI original-source SDK microfixture on isolated FreeBSD; local-runtime consumer admission only",
   "framework_source_revision": "4ed7e5a1024b513a497f3608e053d759f7bce952",
   "wheel_identity": "sha256:359cbf0f25a9b22f1dc5e276c42030b8a539ae17878c1db374f3b23dd73a81db",
@@ -76,7 +76,42 @@
     "module_from_installed_prefix": true,
     "module_sha256": "118eaf712600436acccd83ac2b69b68cce71c486405ea473330cbe5d50d744ac"
   },
-  "installed_context_controls": "running separately; not yet qualified",
+  "installed_context_controls": {
+    "tests": 10,
+    "passed": 10,
+    "failed": 0,
+    "skipped": 0,
+    "supervised_seconds": 640.921,
+    "production_modules_verified": 469,
+    "imports_sha256": "39cc30a00e16ba730591946b777e01a4f644591da0558c0e091538a001cd15a7",
+    "scope": "Fixture-supplied project discovery and local Git routing; real source build, grants, custody and acceptance. Not canonical public CLI or actual compiler SDK qualification.",
+    "raw_evidence": {
+      "installed-context-command/started.json": {
+        "sha256": "4242d14db9df620add2e65b21adc34302ea93cf50801ba3a1729552ed30bc945",
+        "bytes": 607
+      },
+      "installed-context-command/terminal.json": {
+        "sha256": "eaaf8e34a787e0d2867f349caa3d853586ca936610658496fff7667cb6a9da9f",
+        "bytes": 88
+      },
+      "installed-context-command/stdout.log": {
+        "sha256": "e8617ff0a6a995574683f68770bff1ccc3244e4f17ff2904780f44e14be4edd6",
+        "bytes": 885
+      },
+      "installed-context-command/stderr.log": {
+        "sha256": "e38a42a27fc8d8853dd1e3771e7a24ccee41a93f81ae725c1d25ee8b3a9e596d",
+        "bytes": 2149
+      },
+      "installed-context-tests/result.json": {
+        "sha256": "a13c2f415269b7965d1dbf7e4c35635a3db2514abd1110f17f59247d84a546a0",
+        "bytes": 941
+      },
+      "installed-context-tests/production-imports.json": {
+        "sha256": "0249e026fc6705c1fd1e7c1541b915acdf960ef9c0856a5826bd6f0ae2ad4306",
+        "bytes": 53162
+      }
+    }
+  },
   "transport_wrapper_note": "The transport-only summary conservatively retains canonical_installed_cli_qualified false; actual public CLI admission and qualification progress are separately inspected above",
   "source_built_compiler_admitted": false,
   "actual_freebsd_source_sdk_admitted": false,
