@@ -1,6 +1,6 @@
 {
   "schema": "daemonarchy/composed-framework-qualification-development@1",
-  "observed_utc": "2026-10-22T18:31:17.435974+00:00",
+  "observed_utc": "2026-10-22T18:37:26.669421+00:00",
   "framework_revision": "c058695048a3a1980e45db977c316a68ee4c868d",
   "scope": "Exact Windows and descriptor framework composition; native development qualification in progress",
   "controller_regression": {
@@ -104,16 +104,43 @@
     }
   },
   "windows_native_gate": {
-    "result": "running; native wrapper and gate processes verified live",
+    "result": "Full native gate running again after repository hydration; wrapper and gate processes verified live",
     "preflight_refusal": "Existing primary origin differs; preserved without mutation",
     "transport_retry": "Input transfer timed out before files arrived; explicit line-based transfer then succeeded",
     "test_workers": 2,
     "maximum_gate_seconds": 5400,
     "source_revision": "c058695048a3a1980e45db977c316a68ee4c868d",
-    "started_utc": "2026-10-22T18:23:17.850267+00:00",
-    "free_bytes_at_observation": 41678442496,
+    "started_utc": "2026-10-22T18:35:16.797682+00:00",
+    "free_bytes_at_observation": 41101733888,
     "canonical_worktree_created": true,
-    "full_gate": true
+    "full_gate": true,
+    "first_full_attempt": {
+      "exit_code": 1,
+      "seconds": 461.531,
+      "timeout": false,
+      "completed": [
+        "preflight",
+        "environment",
+        "compile",
+        "lint",
+        "openspec",
+        "documentation-tool-tests",
+        "documentation-rendering"
+      ],
+      "documentation_tests": 21,
+      "rendered_diagrams": 121,
+      "markdown_files": 625,
+      "failed_phase": "wheel",
+      "diagnostic": "Partial qualification clone lacks promised Git objects required by the wheel test local bare clone; test suite not started",
+      "production_source_change": false
+    },
+    "repository_hydration": {
+      "missing_objects_before": 4142,
+      "missing_objects_after": 0,
+      "connectivity_passed": true,
+      "source_revision": "c058695048a3a1980e45db977c316a68ee4c868d",
+      "tracked_source_changed": false
+    }
   },
   "historical_descriptor_native_evidence": "verification/native-sdk-isolated-cli-development.json",
   "compiler_sdk_admitted": false,

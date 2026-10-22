@@ -382,8 +382,12 @@ and passes six binding controls. Its [real public CLI renewal](../../verificatio
 now passes in 573.597 supervised seconds: three original tests and two independent
 acceptance cases pass, the local-runtime receipt is admitted, all 28 retained
 records reverify from current bytes, and the owned source server exits zero.
-Installed context controls are running; native Windows qualification remains
-pending.
+Installed context controls are running. Native Windows passes preflight,
+environment, compile, lint, OpenSpec and documentation checks, then its wheel
+check refuses missing Git objects in the qualification partial clone before unit
+testing. The failed run is retained. Fetching the complete Git object closure
+reduces 4,142 missing objects to zero, and connectivity verification passes.
+The full native gate is running again; production source is unchanged.
 The first complete host lifecycle refuses a generated frontend BigInt error
 without a candidate receipt. A fresh complete regeneration is running with the
 same configured model and unchanged 3,600-second limit; the failure is retained.
