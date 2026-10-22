@@ -67,12 +67,12 @@
     }
   },
   "candidate_native_gate": {
-    "status": "running; live wrapper and gate processes observed",
+    "status": "terminal; timed out in wheel qualification",
     "maximum_seconds": 5400,
     "test_workers": 2,
     "previous_failed_workspace_preserved": true,
     "native_gate_passed": false,
-    "phase": "wheel qualification after documentation checks passed",
+    "phase": "wheel qualification; unit tests never started",
     "missing_git_objects": 0,
     "git_connectivity_passed": true,
     "primary_checkout_unchanged": true,
@@ -80,14 +80,24 @@
     "documentation_test_failures": 0,
     "rendered_mermaid_diagrams": 121,
     "markdown_files_scanned": 625,
-    "last_observed_free_bytes": 34918088704,
-    "metadata_scope": "The running Windows gate remains exact 8f1b7df6; it cannot qualify later TCB/authority metadata."
+    "last_observed_free_bytes": 34577215488,
+    "metadata_scope": "The running Windows gate remains exact 8f1b7df6; it cannot qualify later TCB/authority metadata.",
+    "terminal": {
+      "exit_code": 1,
+      "timeout": true,
+      "seconds": 5400.328,
+      "source_revision": "8f1b7df634e0c34ccd55bba1486f2c7e4b2539ad",
+      "native_windows": true,
+      "release_authorized": false
+    },
+    "unit_tests_started": false,
+    "owned_process_tree_terminated": true
   },
   "compiler_sdk_admitted": false,
   "product_receipt": false,
   "iso_created": false,
   "release_authorized": false,
-  "next_action": "Observe existing exact 8f1b7df6 Windows gate and exact current framework CI; native final installed-wheel and source SDK admission remain open",
+  "next_action": "Inspect retained wheel-smoke stage evidence and catalog/import costs before another full native gate; renew exact final inputs without widening the deadline",
   "observed_utc": "2026-10-22T22:18:00.021448+00:00",
   "product_verify": {
     "authority": "pass",

@@ -819,6 +819,24 @@ fails three sanitizer controls on macOS and FreeBSD. The candidate passes exact
 pointer/batching restoration across repeated sessions and every receive list.
 Exact kernel/recovery renewal, ring-buffer provenance and non-panic resume remain
 open; no panic-only guard is removed. Source issue #16 owns this correction.
-The exact `4f46a741fb2` candidate kernel build is live in fresh objects on the
-native worker with four jobs and a 2400-second limit. Before/during/after live
-allocator inspection and ordinary recovery renewal remain required.
+The exact `4f46a741fb2` candidate kernel passes its clean GENERIC build in
+526.747 supervised seconds with four jobs and unchanged 2400-second supervision.
+All three products share build ID `0a71d6f0677d45edf987fbd288d58febd07a949a`;
+build evidence and transfers reverify by hash. A new bounded private-wire pair
+has handed off through the loader. Before/during/after live allocator inspection
+and ordinary recovery renewal remain required.
+
+The optional-import Windows full gate on preceding `8f1b7df6` is now terminal:
+it times out in wheel qualification after 5400.328 seconds, before unit tests.
+Its supervisor terminates the owned process tree and preserves all temporary
+evidence. Earlier compile, lint and documentation checks passed. This is a failed
+qualification, not a later-metadata or release result; inspect retained wheel
+stages before another complete attempt without widening the bound.
+
+The [live iflib recovery check](../../verification/iflib-debugnet-live-recovery-development.json)
+now passes three native sessions on the exact repaired kernel: two detachments
+and one abrupt client exit. Before/during/after memory reads prove allocator
+restoration, cleared saved/active state and the original batching setting;
+registers and reset work after peer closure. Native GDB sees 104 threads. Both
+owned VMs stop normally within their original bounds. Real-NIC coverage is one
+2048-byte receive list; Netdump renewal and non-panic resume remain unqualified.
