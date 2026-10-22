@@ -339,9 +339,12 @@ clean Linux wheel passes. Six binding controls pass from the installed FreeBSD
 prefix, including open-boundary symlink refusal. The complete configured host
 lifecycle passes 228 tests and independent acceptance; its receipt is promoted
 through the supported command and verifies current. The real installed FreeBSD
-SDK replay is still executing with its unchanged 3,600-second command budget.
-This does not admit the actual compiler/sysroot or Daemonarchy lifecycle. Complete
-that replay, the installed context controls and Windows composition before landing
+SDK replay timed out at its unchanged 3,600-second command budget
+(4,103.472 seconds supervised total). The owned source server exited zero;
+no native SDK admission was earned. Profile the installed descriptor candidate
+before another canonical replay.
+This does not admit the actual compiler/sysroot or Daemonarchy lifecycle. A new
+passing public replay, installed context controls and Windows composition are required before landing
 the parent contribution. The preceding checkpoint retains its older artifact and
 233-test receipt scope.
 

@@ -1,9 +1,9 @@
 {
   "schema": "daemonarchy/native-sdk-descriptor-read-development@1",
-  "observed_utc": "2026-10-22T16:28:41.636959+00:00",
-  "scope": "Framework descriptor-read qualification and native SDK replay preparation; no native compiler or product receipt admission",
+  "observed_utc": "2026-10-22T17:02:51.948029+00:00",
+  "scope": "Framework descriptor-read qualification and failed native SDK replay; no native compiler or product receipt admission",
   "framework_code_revision": "4ed7e5a1024b513a497f3608e053d759f7bce952",
-  "framework_review_branch_head": "9b834cde",
+  "framework_review_branch_head": "442e34d2",
   "issue": "https://github.com/jordanhubbard/literate-ai/issues/117",
   "descriptor_read_candidate": {
     "source_sha256": "118eaf712600436acccd83ac2b69b68cce71c486405ea473330cbe5d50d744ac",
@@ -93,7 +93,16 @@
     },
     "offline_freebsd_bootstrap_seconds": 113.05,
     "native_project_initialization_seconds": 97.78,
-    "canonical_native_cli_status": "running; actual authorized execution; unchanged 3600-second public command budget"
+    "canonical_native_cli_status": {
+      "status": "failed",
+      "reason": "Authorized public build timed out after 3600 seconds",
+      "authorized_execution_budget_seconds": 3600,
+      "supervised_total_seconds": 4103.472,
+      "exit_code": 1,
+      "owned_source_server_terminal": 0,
+      "admission_earned": false,
+      "bootstrap_compiler_source_admitted": false
+    }
   },
   "framework_current_lifecycle_receipt": {
     "state": "current",
