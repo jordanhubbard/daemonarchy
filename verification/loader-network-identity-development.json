@@ -4,15 +4,18 @@
   "source_revision": "f45d86b2114356e81205166b89a5191a23d40a87",
   "source_review": "https://github.com/jordanhubbard/daemonarchy-src/pull/7",
   "source_evidence": {
-    "url": "https://github.com/jordanhubbard/daemonarchy-src/blob/f45d86b2114356e81205166b89a5191a23d40a87/verification/loader-network-identity-development.json",
-    "sha256": "1edd0f59d9da88343d9f53b983013255f04253441ef6777a70e70260c7cc7417"
+    "url": "https://github.com/jordanhubbard/daemonarchy-src/blob/0509b3e10895693830eff34200f36e141ceaeaf4/verification/loader-network-identity-development.json",
+    "sha256": "fc9c9a70f24e0336d12397ef435a1d252b0f3ada9d65a675515a1630dd1c8e61"
   },
   "scope": "Native export controls and actual two-NIC firmware/kernel identity only; failed cross-interface netboot remains required",
   "native_stand_build": {
     "passed": true,
     "seconds": 84.147,
     "platform": "FreeBSD amd64",
-    "bootstrap_toolchain_admitted": false
+    "bootstrap_toolchain_admitted": false,
+    "input_scope": "Retained native source seed with nine byte-pinned loader overrides; no complete source/compiler admission is claimed",
+    "native_seed_revision_attested": false,
+    "complete_source_tree_admitted": false
   },
   "native_export_controls": {
     "passed": true,
@@ -79,5 +82,6 @@
   "early_kernel_transport_qualified": false,
   "native_lifecycle_receipt": false,
   "release_acceptance": false,
-  "ledger_rows_closed": 0
+  "ledger_rows_closed": 0,
+  "source_evidence_revision": "0509b3e10895693830eff34200f36e141ceaeaf4"
 }
