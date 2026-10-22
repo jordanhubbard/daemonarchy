@@ -45,3 +45,5 @@ reachable without changing its historical scope.
 - [1.2.0 completion obligations and worker model](roadmap/release-1.2.0.md)
 
 - [1.2 loader test ISO and qualification](testing-1.2-test-iso.md)
+
+- [NetGDB peer-close patch for human review](contributions/netgdb-peer-close.md)

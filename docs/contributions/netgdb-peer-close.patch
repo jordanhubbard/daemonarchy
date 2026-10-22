@@ -1,0 +1,41 @@
+From 791ac20a21ad112ace96fb3bb030ed33a5297278 Mon Sep 17 00:00:00 2001
+From: Jordan Hubbard <jordanhubbard@gmail.com>
+Date: Thu, 22 Oct 2026 09:28:41 -0700
+Subject: [PATCH] Wire debugnet peer closure through the GDB teardown owner
+
+---
+ sys/gdb/netgdb.c   | 5 +----
+ sys/net/debugnet.c | 1 +
+ 2 files changed, 2 insertions(+), 4 deletions(-)
+
+diff --git a/sys/gdb/netgdb.c b/sys/gdb/netgdb.c
+index 918176aafdd..82c2235b9ba 100644
+--- a/sys/gdb/netgdb.c
++++ b/sys/gdb/netgdb.c
+@@ -184,10 +184,7 @@ netgdb_dbg_getc(void)
+ 		debugnet_network_poll(netgdb_conn);
+ 	}
+ 
+-	if (c == CTRL('C')) {
+-		netgdb_fini();
+-		/* Caller gdb_getc() will print that we got ^C. */
+-	}
++	/* gdb_getc() owns port termination and the return to DDB on ^C. */
+ 	return (c);
+ }
+ 
+diff --git a/sys/net/debugnet.c b/sys/net/debugnet.c
+index 178aefafc6b..fd5022da4b2 100644
+--- a/sys/net/debugnet.c
++++ b/sys/net/debugnet.c
+@@ -685,6 +685,7 @@ debugnet_connect(const struct debugnet_conn_params *dcp,
+ 		.dp_seqno = 1,
+ 		.dp_ifp = dcp->dc_ifp,
+ 		.dp_rx_handler = dcp->dc_rx_handler,
++		.dp_finish_handler = dcp->dc_finish_handler,
+ 		.dp_drv_input = NULL,
+ 	};
+ 
+-- 
+2.54.0 (Apple Git-157)
+

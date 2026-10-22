@@ -357,6 +357,12 @@ is implemented and natively qualified on draft PR #7, pending integration.
 Physical NICs, Netdump, authenticated kernel sessions, continuous early-kernel
 transport, compiler/SDK admission and release acceptance remain open.
 
+The [standalone NetGDB contribution patch](../contributions/netgdb-peer-close.md)
+applies to current upstream and passes its style checker. It remains unsubmitted
+pending human review and native qualification on that exact upstream base;
+the downstream runtime also contains three guarded mbuf pullup calls absent
+upstream. Preserve this distinction when contributing or refreshing source.
+
 The [isolated native public SDK checkpoint](../../verification/native-sdk-isolated-cli-development.json)
 now passes exact framework wheel `4ed7e5a1` in 575.845 supervised seconds, within
 the unchanged 3,600-second authorized execution budget. The real public CLI
