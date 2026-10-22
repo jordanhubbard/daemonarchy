@@ -228,12 +228,14 @@ preserved. No performance fix or lifecycle pass is claimed.
   - [ ] Every inherited backlog obligation has direct completion evidence; native and virtual/physical acceptance match exact final artifacts; full LitAI verification and release gates pass; published new release and immutable assets are verified.
 
 The [October 22 upstream checkpoint](../../verification/upstream-refresh-2026-10-22.json)
-records the latest conflict-free ports import: 44 commits through `418670e02`,
-merged in [ports PR #10](https://github.com/jordanhubbard/daemonarchy-ports/pull/10),
-with all 64 downstream paths and the complete downstream delta preserved. Source
-tracking is current at `9c67d6ed963`; [source PR #9](https://github.com/jordanhubbard/daemonarchy-src/pull/9)
-retains 93 commits pending integration, with ten successful checks and two queued
-macOS cross-build cells at observation. Active workspace selections are unchanged.
+records the latest conflict-free ports import: 12 further commits through `0c418eb55443`,
+merged in [ports PR #11](https://github.com/jordanhubbard/daemonarchy-ports/pull/11),
+with all 64 downstream paths and the complete downstream delta preserved. Nine
+whitespace warnings inside one verbatim upstream patch are retained. Source
+tracking is current at `ad0f86694157`; [source PR #9](https://github.com/jordanhubbard/daemonarchy-src/pull/9)
+retains 94 commits pending integration. Its fresh exact-head run has ten checks
+in progress and two queued macOS cross-build cells at observation. Active workspace
+selections are unchanged.
 Native changed-port tests, clean bulk builds, coherent final input admission and
 the remaining R12-18 requirements stay open.
 
