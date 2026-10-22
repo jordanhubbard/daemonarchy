@@ -1,0 +1,84 @@
+{
+  "schema": "daemonarchy/upstream-refresh-development@1",
+  "observed_utc": "2026-10-22T15:14:14.583303+00:00",
+  "scope": "Source and ports upstream refresh; native builds and release input admission remain open",
+  "sources": {
+    "repository": "https://github.com/jordanhubbard/daemonarchy-src",
+    "upstream_revision": "c7523e8cfbd0fa8f8a9dc6c8864bf138b7cffde8",
+    "owned_main_revision": "c7523e8cfbd0fa8f8a9dc6c8864bf138b7cffde8",
+    "integration_review": "https://github.com/jordanhubbard/daemonarchy-src/pull/9",
+    "integration_review_head": "4b64fb49d22e6516e9f2b8904bfdc7587ab49385",
+    "integration_status": "open; exact-head CI pending",
+    "upstream_commits_added_this_refresh": 1,
+    "upstream_commits_pending_integration": 95,
+    "changed_upstream_paths_this_refresh": 1,
+    "preserved_downstream_paths": 1,
+    "complete_downstream_delta_preserved": true,
+    "exact_upstream_delta_imported": true,
+    "whitespace_check": "passed",
+    "checks": {
+      "run": "https://github.com/jordanhubbard/daemonarchy-src/actions/runs/39802806112",
+      "head": "4b64fb49d22e6516e9f2b8904bfdc7587ab49385",
+      "status": "queued",
+      "conclusion": "",
+      "cells": [
+        {
+          "name": "aarch64 macos-latest (clang-18)",
+          "status": "queued",
+          "conclusion": ""
+        },
+        {
+          "name": "aarch64 ubuntu-22.04 (clang-15)",
+          "status": "in_progress",
+          "conclusion": ""
+        },
+        {
+          "name": "amd64 ubuntu-22.04 (clang-15)",
+          "status": "in_progress",
+          "conclusion": ""
+        },
+        {
+          "name": "amd64 macos-latest (clang-18)",
+          "status": "queued",
+          "conclusion": ""
+        },
+        {
+          "name": "aarch64 ubuntu-24.04 (clang-18)",
+          "status": "in_progress",
+          "conclusion": ""
+        },
+        {
+          "name": "amd64 ubuntu-24.04 (clang-18)",
+          "status": "in_progress",
+          "conclusion": ""
+        }
+      ]
+    },
+    "downstream_bootstrap_repair": "Existing mandoc/libz prerequisite preserved; only Makefile.inc1 differs from upstream",
+    "native_world_kernel_qualification": false
+  },
+  "ports": {
+    "repository": "https://github.com/jordanhubbard/daemonarchy-ports",
+    "previous_integration_revision": "bb2dac41b7892ff548d0ab4da5b833b826388708",
+    "upstream_revision": "9517a531083e50d70db5e857669e9b85630eb04e",
+    "integration_review": "https://github.com/jordanhubbard/daemonarchy-ports/pull/14",
+    "integration_review_head": "a5583b4b992d064fe41e9491aaa0bcdeea45df85",
+    "integration_revision": "f389557ea4627497447191ff74eab32f05059bdd",
+    "integration_status": "merged",
+    "upstream_commits_imported": 15,
+    "changed_upstream_paths": 41,
+    "conflicts": 0,
+    "preserved_downstream_paths": 64,
+    "preserved_git_blobs_and_modes": true,
+    "complete_downstream_delta_preserved": true,
+    "exact_upstream_delta_imported": true,
+    "whitespace_check": "passed",
+    "hosted_workflows_configured": false,
+    "native_changed_port_tests": false,
+    "native_clean_bulk": false
+  },
+  "preceding_checkpoint": "verification/upstream-refresh-2026-10-22.json",
+  "active_workspace_selection_changed": false,
+  "published_artifacts_changed": false,
+  "native_release_inputs_admitted": false
+}

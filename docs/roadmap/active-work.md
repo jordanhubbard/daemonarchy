@@ -246,6 +246,19 @@ preserved. No performance fix or lifecycle pass is claimed.
 - **Evidence:**
   - [ ] Every inherited backlog obligation has direct completion evidence; native and virtual/physical acceptance match exact final artifacts; full LitAI verification and release gates pass; published new release and immutable assets are verified.
 
+The [latest October 22 refresh](../../verification/upstream-refresh-2026-10-22-followup.json)
+adds one source commit through `c7523e8cfbd0` and 15 ports commits through
+`9517a531083e`. The source mirror is current; [source PR #9](https://github.com/jordanhubbard/daemonarchy-src/pull/9)
+now retains 95 upstream commits and the existing mandoc bootstrap dependency
+repair at `4b64fb49d22e`. Exact-head [cross-build run 39802806112](https://github.com/jordanhubbard/daemonarchy-src/actions/runs/39802806112)
+is pending, so source integration remains open. [Ports PR #14](https://github.com/jordanhubbard/daemonarchy-ports/pull/14)
+is merged: 41 upstream paths changed, all 64 downstream blobs and modes and the
+complete downstream delta are preserved. Both imports match their upstream
+deltas exactly and pass whitespace checks. Ports has no hosted workflows;
+native changed-port and clean bulk builds remain unrun. Active workspace and
+published release selections are unchanged. The preceding checkpoint below
+retains its historical revision and test scope.
+
 The [October 22 upstream checkpoint](../../verification/upstream-refresh-2026-10-22.json)
 records the latest conflict-free ports import: 21 further commits through
 `38ef2e0cd3e6`, merged in [ports PR #13](https://github.com/jordanhubbard/daemonarchy-ports/pull/13)
