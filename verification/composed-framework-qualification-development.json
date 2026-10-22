@@ -1,6 +1,6 @@
 {
   "schema": "daemonarchy/composed-framework-qualification-development@1",
-  "observed_utc": "2026-10-22T18:37:26.669421+00:00",
+  "observed_utc": "2026-10-22T19:41:31.454144+00:00",
   "framework_revision": "c058695048a3a1980e45db977c316a68ee4c868d",
   "scope": "Exact Windows and descriptor framework composition; native development qualification in progress",
   "controller_regression": {
@@ -74,7 +74,42 @@
       "records_reverified": 28,
       "source_server_terminal": 0
     },
-    "context_controls": "running separately; no terminal result claimed"
+    "context_controls": {
+      "tests": 10,
+      "passed": 10,
+      "failed": 0,
+      "skipped": 0,
+      "supervised_seconds": 625.485,
+      "production_modules_verified": 469,
+      "imports_sha256": "69eb7159fc5fee777b64b02ad7db63ef28f8986d54cb2bc67137dcf135c3c1d0",
+      "scope": "Fixture-supplied project discovery and local Git routing; real source build, grants, custody and acceptance. Not canonical public CLI or actual compiler SDK qualification.",
+      "raw_evidence": {
+        "installed-context-command/started.json": {
+          "sha256": "ad82a5f8d18fd031997f5e9740ecf2ebfde8d052e25358c8854fe6b2d6982124",
+          "bytes": 609
+        },
+        "installed-context-command/terminal.json": {
+          "sha256": "567a288f81af5f62f519d50a73fdc0dab5c8b07cf247147ea562b8f459f08eff",
+          "bytes": 88
+        },
+        "installed-context-command/stdout.log": {
+          "sha256": "3c7ea3212aafd2be5acbf51507e3e49a34c21208ca191eb23b9ed70e7c7e5aa9",
+          "bytes": 885
+        },
+        "installed-context-command/stderr.log": {
+          "sha256": "c2c5aae2c41dfcaf9853631cb0122419a2c4bdaba7a770fcd0cb3a936e85491b",
+          "bytes": 2149
+        },
+        "installed-context-tests/result.json": {
+          "sha256": "1e5526ec324d86c10a7b4f47e7be88c9de6f2f81b95b07629a850a221f151a01",
+          "bytes": 941
+        },
+        "installed-context-tests/production-imports.json": {
+          "sha256": "e7fa67177b02fe92572ecff17957ada263e9393216c8c0ea7dd72c43c110649c",
+          "bytes": 53162
+        }
+      }
+    }
   },
   "host_lifecycle": {
     "first_attempt": {
@@ -96,15 +131,18 @@
       "next_action": "Fresh complete lifecycle regeneration; preserve original failed evidence"
     },
     "fresh_attempt": {
-      "live_process_verified": true,
-      "source_revision": "c058695048a3a1980e45db977c316a68ee4c868d",
-      "maximum_seconds": 3600,
-      "candidate_produced": false,
-      "result": "running; no qualification claimed"
+      "passed": true,
+      "seconds": 1595.584,
+      "tests": 228,
+      "independent_acceptance": true,
+      "receipt_identity": "sha256:0e2f897c8b6e6ebc7fe9a609a1037fc1541afab3b9e919bf2fd0760f3f65bd16",
+      "finalized_candidate_identity": "sha256:29ea58c0c17d0328c53319c3c8e26c36c95b877e0b0f7da04f876f089e09c6a9",
+      "supported_promotion": true,
+      "parent_receipt_current": true
     }
   },
   "windows_native_gate": {
-    "result": "Full native gate running again after repository hydration; wrapper and gate processes verified live",
+    "result": "Full native gate running on patched composition 23d0b678; live wrapper and gate verified",
     "preflight_refusal": "Existing primary origin differs; preserved without mutation",
     "transport_retry": "Input transfer timed out before files arrived; explicit line-based transfer then succeeded",
     "test_workers": 2,
@@ -140,6 +178,29 @@
       "connectivity_passed": true,
       "source_revision": "c058695048a3a1980e45db977c316a68ee4c868d",
       "tracked_source_changed": false
+    },
+    "hydrated_attempt": {
+      "exit_code": 1,
+      "seconds": 231.546,
+      "timeout": false,
+      "failed_phase": "documentation-dependency-audit",
+      "advisories": [
+        "GHSA-cg2g-xh64-v4q7",
+        "GHSA-mrv2-3pqr-j5jr"
+      ],
+      "dompurify_version": "3.4.16",
+      "source_changed": false,
+      "unit_suite_started": false
+    },
+    "documentation_pin_repair": {
+      "patched_version": "3.4.17",
+      "source_revision": "23d0b678dc63eedbae673d2603dfad5e13ef09bb",
+      "upstream_issue": "https://github.com/jordanhubbard/literate-ai/issues/120",
+      "controller_clean_install_audit_and_rendering_passed": true,
+      "documentation_tests": 21,
+      "rendered_diagrams": 121,
+      "markdown_files": 625,
+      "audit_policy_unchanged": true
     }
   },
   "historical_descriptor_native_evidence": "verification/native-sdk-isolated-cli-development.json",
@@ -147,5 +208,137 @@
   "product_receipt": false,
   "iso_created": false,
   "release_authorized": false,
-  "next_action": "Complete exact composed installed context controls, Windows gate and fresh full host lifecycle before supported receipt promotion or integration"
+  "next_action": "Complete exact patched native Windows and FreeBSD lifecycle qualification, exercise the real SDK tree aliases through public CLI, then admit actual compiler SDK and product lifecycle",
+  "patched_wheel_renewal": {
+    "source_revision": "23d0b678dc63eedbae673d2603dfad5e13ef09bb",
+    "target": "Linux x86_64 / Python 3.14",
+    "result": "passed",
+    "maximum_seconds": 2100,
+    "guest_qualification_serialized": true,
+    "wheel_growth_budget_bytes": 4294967296,
+    "minimum_host_reserve_bytes": 42949672960,
+    "cache_deletion_performed": false,
+    "terminal": {
+      "exit_code": 0,
+      "schema": "daemonarchy/native-command-terminal@1",
+      "seconds": 662.744
+    },
+    "wheel_identity": "sha256:f5b85eb55e2782a5ed32379d3cf34f7d0b116f801804177b432a6d9353b4c09f",
+    "standard_binding": {
+      "distribution": "sha256:e0dd058e6e67bca93e3dd485bc6c4cc43fa8215a33e2160503809f5afdc359d7",
+      "members": 1235,
+      "policy": "sha256:a5ca0d6d13daff0199f218c5e4af723a2cec87b927e75dd3a731c511b5d85ac7"
+    },
+    "tamper_refusal": "standard_binding.changed",
+    "report_identity": "sha256:770a72fff26501432ecc9c3f10ef5ac4eb81016691b48b32fa698b4b72284667"
+  },
+  "completed_guest_retirement": {
+    "terminal": {
+      "exit_code": 0,
+      "expired": false,
+      "seconds": 6342.6936867176555
+    },
+    "qemu_absent": true,
+    "normal_shutdown_requested": true,
+    "retained_runtime_and_evidence_preserved": true,
+    "new_allocation_required_for_patched_native_renewal": true
+  },
+  "patched_freebsd_renewal": {
+    "framework_revision": "23d0b678dc63eedbae673d2603dfad5e13ef09bb",
+    "new_allocation": true,
+    "original_completed_guest_preserved": true,
+    "maximum_guest_lifetime_seconds": 9000,
+    "native_role": {
+      "os": "FreeBSD 16.0-CURRENT",
+      "uid": 2002,
+      "cpus": 4,
+      "memory_mib": 4096,
+      "alignment_passed": true
+    },
+    "carrier": {
+      "schema": "daemonarchy/qualified-native-carrier-development@1",
+      "framework_commit": "23d0b678dc63eedbae673d2603dfad5e13ef09bb",
+      "wheel_identity": "sha256:f5b85eb55e2782a5ed32379d3cf34f7d0b116f801804177b432a6d9353b4c09f",
+      "distribution_identity": "sha256:e0dd058e6e67bca93e3dd485bc6c4cc43fa8215a33e2160503809f5afdc359d7",
+      "dependency_closure_identity": "sha256:2e13cd609bd708efc25a1c603e6166edab964d5a018f8805531f286f9c09137c",
+      "seed_closure_identity": "sha256:cf27f5f9047f06973bd8e6c2a45c404be74362d98af412742c3ed31e66400e29",
+      "carrier_sha256": "92b61d365902c8909e2a63b458b955ec742d323158b6fef87624375c1b095549",
+      "bootstrap_sha256": "29fa4f5b517d222dfe9b0402fd77cb0d97e341b8b672081921311132434d04b8",
+      "native_installed_qualified": false,
+      "source_sdk_admitted": false,
+      "release_acceptance": false
+    },
+    "fixture_archive_sha256": "8f2079fc1225f7f1b27d4c0c31cc6d889d6c76e276e67e3cca406428a8d53f1e",
+    "offline_bootstrap": {
+      "exit_code": 0,
+      "schema": "daemonarchy/native-command-terminal@1",
+      "seconds": 7.607
+    },
+    "installed_binding_controls": {
+      "selected": 6,
+      "failures": 0,
+      "errors": 0,
+      "skipped": 0,
+      "module_sha256": "118eaf712600436acccd83ac2b69b68cce71c486405ea473330cbe5d50d744ac",
+      "test_sha256": "4a73cbf9bbdd1cecb4e1f59e68cdd0b702efe5e596bcf8229e049d3aee5c39b6",
+      "module_from_installed_prefix": true,
+      "canonical_native_cli_qualified": false
+    },
+    "public_cli_result": {
+      "passed": true,
+      "record": "verification/native-sdk-postaudit-cli-development.json",
+      "supervised_seconds": 536.095,
+      "receipt_identity": "sha256:c9a3135fb3911a2cbfcdf4fe7ab31349de1db7f65161c763b33daeeecd9b8c85",
+      "receipt_scope": "local-runtime",
+      "original_tests": {
+        "failed": 0,
+        "passed": 3,
+        "skipped": 0
+      },
+      "independent_acceptance_cases": 2,
+      "records_reverified": 28,
+      "source_server_terminal": 0
+    },
+    "compiler_sdk_admitted": false,
+    "product_receipt": false,
+    "release_qualified": false,
+    "initialization": {
+      "exit_code": 0,
+      "schema": "daemonarchy/native-command-terminal@1",
+      "seconds": 50.318
+    },
+    "sdk_tree_aliases": {
+      "public_cli_qualified": false,
+      "state": "authorized public CLI execution running; live supervisor observed",
+      "separate_project": true,
+      "initialization": {
+        "exit_code": 0,
+        "schema": "daemonarchy/native-command-terminal@1",
+        "seconds": 72.938
+      },
+      "case_sensitive": true,
+      "aliases": [
+        {
+          "kind": "hardlink",
+          "path": "python/vendor_math/lib/vendor_math.so.hard",
+          "target": "python/vendor_math/lib/vendor_math.so"
+        },
+        {
+          "kind": "symlink",
+          "path": "python/vendor_math/lib/vendor_math.so.symbolic",
+          "target": "vendor_math.so"
+        }
+      ],
+      "snapshot": {
+        "algorithm": "sha256",
+        "digest": "b358e5965c4ca4e0eac61002344b1ce5bded95168eb46864f5a7be2ee7ca6cbe",
+        "schema": "urn:literate-ai:schema:v1:content-identity"
+      },
+      "actual_symlink_text_verified": true,
+      "actual_hardlink_inode_verified": true,
+      "compiler_sdk_admitted": false,
+      "product_receipt": false,
+      "release_qualified": false
+    }
+  }
 }

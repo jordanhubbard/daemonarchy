@@ -68,8 +68,11 @@ require separate demonstrated integration.
 The current product release is 1.1.1. Its published artifact identity and actual
 qualification scope remain in the [release record](docs/testing-1.1.1.md).
 Product responsibilities and current acceptance coverage are mapped in
-[the architecture](docs/architecture/design-traceability.md). G7's planner,
-parallel installer, visualizers and new graphical manager remain planned work.
+[the architecture](docs/architecture/design-traceability.md). G7 remains unfinished:
+pinned DAG/acquisition work has scoped native evidence, and a
+[draft measured-dashboard candidate](https://github.com/jordanhubbard/daemonarchy/pull/21)
+passes controller and native PTY checks. Complete planner integration, safe parallel
+installation, physical display acceptance and the graphical manager remain open.
 G8's complete source/ports Component coverage is also unfinished. Existing eight
 product integration contracts and a whole-system source build are not a catalog
 of every base build unit or ports origin. COMP-001 owns that additional work.

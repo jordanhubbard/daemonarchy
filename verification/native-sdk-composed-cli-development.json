@@ -77,7 +77,42 @@
     "module_from_installed_prefix": true,
     "module_sha256": "118eaf712600436acccd83ac2b69b68cce71c486405ea473330cbe5d50d744ac"
   },
-  "installed_context_controls": "running separately; not yet qualified",
+  "installed_context_controls": {
+    "tests": 10,
+    "passed": 10,
+    "failed": 0,
+    "skipped": 0,
+    "supervised_seconds": 625.485,
+    "production_modules_verified": 469,
+    "imports_sha256": "69eb7159fc5fee777b64b02ad7db63ef28f8986d54cb2bc67137dcf135c3c1d0",
+    "scope": "Fixture-supplied project discovery and local Git routing; real source build, grants, custody and acceptance. Not canonical public CLI or actual compiler SDK qualification.",
+    "raw_evidence": {
+      "installed-context-command/started.json": {
+        "sha256": "ad82a5f8d18fd031997f5e9740ecf2ebfde8d052e25358c8854fe6b2d6982124",
+        "bytes": 609
+      },
+      "installed-context-command/terminal.json": {
+        "sha256": "567a288f81af5f62f519d50a73fdc0dab5c8b07cf247147ea562b8f459f08eff",
+        "bytes": 88
+      },
+      "installed-context-command/stdout.log": {
+        "sha256": "3c7ea3212aafd2be5acbf51507e3e49a34c21208ca191eb23b9ed70e7c7e5aa9",
+        "bytes": 885
+      },
+      "installed-context-command/stderr.log": {
+        "sha256": "c2c5aae2c41dfcaf9853631cb0122419a2c4bdaba7a770fcd0cb3a936e85491b",
+        "bytes": 2149
+      },
+      "installed-context-tests/result.json": {
+        "sha256": "1e5526ec324d86c10a7b4f47e7be88c9de6f2f81b95b07629a850a221f151a01",
+        "bytes": 941
+      },
+      "installed-context-tests/production-imports.json": {
+        "sha256": "e7fa67177b02fe92572ecff17957ada263e9393216c8c0ea7dd72c43c110649c",
+        "bytes": 53162
+      }
+    }
+  },
   "transport_wrapper_note": "The transport-only summary conservatively retains canonical_installed_cli_qualified false; actual public CLI admission and qualification progress are separately inspected above",
   "source_built_compiler_admitted": false,
   "actual_freebsd_source_sdk_admitted": false,

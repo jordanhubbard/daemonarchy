@@ -146,8 +146,8 @@ preserved. No performance fix or lifecycle pass is claimed.
 - **Depends on:** none
 - **Implementation:**
   - [ ] Prototype multiple styles from recorded events; implement stage-aware presentation; validate on physical console and SSH/serial.
-  - **Implementation checkpoint:** The retained dashboard now reads bounded incremental observations and offers bars, spectrum and scope styles, pin/sequence-checked acquisition events, explicit waiting/failure, plain output, reduced motion and resize handling. Storage milestones and archive counts advance only after their native commands succeed; pkg download reports and processing positions remain distinct from verified transaction completion. Twelve controller and twelve native FreeBSD/PTY checks pass, including small terminals, 16/256 colors, signal cleanup and backlog drain. [Scoped evidence](../../verification/installer-progress-development.json) retains exact source hashes and limits; the intentional retained source baseline is refreshed.
-  - **Recorded replay checkpoint:** A verbatim retained native pkg journal passes all three styles through real PTYs: 16 ordered events, eight archives and 29,831 verified bytes. Its input hash, journal hash and current retained imported database hash agree with the original signed acquisition result; replay produces no installer result. The expanded eleven-case controller suite passes, and the exact suite exits zero on FreeBSD. The existing controller workflow now triggers and runs these controls on renderer, installer hook and fixture changes. It does not perform a live fetch or installation.
+  - **Implementation checkpoint:** [Draft PR #21](https://github.com/jordanhubbard/daemonarchy/pull/21) retains a dashboard that now reads bounded incremental observations and offers bars, spectrum and scope styles, pin/sequence-checked acquisition events, explicit waiting/failure, plain output, reduced motion and resize handling. Storage milestones and archive counts advance only after their native commands succeed; pkg download reports and processing positions remain distinct from verified transaction completion. Twelve controller and twelve native FreeBSD/PTY checks pass, including small terminals, 16/256 colors, signal cleanup and backlog drain. [Scoped evidence](../../verification/installer-progress-development.json) retains exact source hashes and limits; the intentional retained source baseline is refreshed.
+  - **Recorded replay checkpoint:** A verbatim retained native pkg journal passes all three styles through real PTYs: 16 ordered events, eight archives and 29,831 verified bytes. Its input hash, journal hash and current retained imported database hash agree with the original signed acquisition result; replay produces no installer result. The expanded twelve-case controller and native suites pass, including rejection of backward package counts and changed totals. The existing controller workflow now triggers and runs these controls on renderer, installer hook and fixture changes. It does not perform a live fetch or installation.
   - **Next action:** Qualify the integrated dashboard during full native installation, SSH/serial and physical-console acceptance, then connect final planner/GUI events. UI-001 remains open.
 - **Evidence:**
   - [ ] Useful readable metrics, genuine waiting/failure states, resize and reduced-motion behavior, bounded cost and native console demonstrations.
@@ -275,6 +275,17 @@ preserved. No performance fix or lifecycle pass is claimed.
 - **Evidence:**
   - [ ] Every inherited backlog obligation has direct completion evidence; native and virtual/physical acceptance match exact final artifacts; full LitAI verification and release gates pass; published new release and immutable assets are verified.
 
+The [final October 22 refresh](../../verification/upstream-refresh-2026-10-22-final.json)
+confirms the owned source mirror still matches upstream at `775e421dc38f`.
+Source PR #9 retains four passing Linux cross-builds and two queued macOS cells;
+its integration remains pending. [Ports PR #17](https://github.com/jordanhubbard/daemonarchy-ports/pull/17)
+is merged at `702e0e3cc491`, importing two further upstream commits through
+`e4abbf95f5b8`: the new optique port and octave-forge-drafting 0.2.4.
+All seven changed paths match upstream exactly; all 64 downstream blobs/modes
+and the complete downstream binary delta are preserved. Whitespace checks pass.
+Native changed-port builds and clean bulk qualification remain unrun. Active
+workspaces and published release pins retain their preceding selections.
+
 The [latest October 22 refresh](../../verification/upstream-refresh-2026-10-22-late.json)
 keeps sources current at `775e421dc38f`. Source PR #9's exact-head run now has
 all four Linux cross-builds passing; both macOS cells remain queued, so source
@@ -385,15 +396,31 @@ and passes six binding controls. Its [real public CLI renewal](../../verificatio
 now passes in 573.597 supervised seconds: three original tests and two independent
 acceptance cases pass, the local-runtime receipt is admitted, all 28 retained
 records reverify from current bytes, and the owned source server exits zero.
-Installed context controls are running. Native Windows passes preflight,
+All ten installed context controls now pass in 625.485 supervised seconds,
+with zero skips and 469 installed production modules verified. Native Windows passes preflight,
 environment, compile, lint, OpenSpec and documentation checks, then its wheel
 check refuses missing Git objects in the qualification partial clone before unit
 testing. The failed run is retained. Fetching the complete Git object closure
 reduces 4,142 missing objects to zero, and connectivity verification passes.
-The full native gate is running again; production source is unchanged.
+The renewed native gate then refuses newly reported critical/high DOMPurify
+advisories before wheel or unit tests. [Framework issue #120](https://github.com/jordanhubbard/literate-ai/issues/120)
+owns the compatible 3.4.17 transitive-lock update and native gate renewal; no audit
+exception is added. Production Python source is unchanged.
 The first complete host lifecycle refuses a generated frontend BigInt error
-without a candidate receipt. A fresh complete regeneration is running with the
-same configured model and unchanged 3,600-second limit; the failure is retained.
+without a candidate receipt. Fresh complete regeneration with the same configured
+model now passes 228 tests and independent acceptance in 1,595.584 seconds.
+Supported promotion yields current parent receipt `0e2f897c8b6e`; the original
+failure remains retained. The compatible DOMPurify 3.4.17 repair passes clean
+controller audit and documentation checks without exceptions. The full native
+Windows gate is now running on patched composition `23d0b678`.
+The [patched-wheel public CLI renewal](../../verification/native-sdk-postaudit-cli-development.json)
+also passes on a fresh FreeBSD allocation with exact framework `23d0b678`:
+536.095 supervised seconds, three original tests, two independent acceptance
+cases and all 28 retained records reverified. Its 3600-second authorization limit
+is unchanged. A separate tree-alias case now observes real hard-link inode equivalence and
+exact symbolic-link text from its live producer. Its public CLI consumer is
+running; the tree lifecycle remains unqualified until its terminal result.
+
 No compiler SDK, product receipt, ISO or release admission follows from these
 partial checks.
 
@@ -684,3 +711,10 @@ before claiming the observer optimization resolves that release blocker.
   - [x] Allocate a private per-run ISO staging directory; preserve preceding artifacts; bind exact loader, kernel/world sets, jail, ports, modules and checkout selections; coordinate native dispatch with active worker ownership.
 - **Evidence:**
   - [x] Retain staging isolation/refusal controls, input identities, native assembly results and ISO hash; announce readiness only after a real test artifact exists. Keep hardware and final 1.2 release obligations open.
+
+Patched composition `23d0b678` is undergoing exact Linux wheel renewal while its
+native Windows gate continues. Completed SDK/PTY guest work is retired by normal
+shutdown before the original deadline; QEMU exits zero and the original disks,
+prefixes and raw evidence remain retained. Wheel and subsequent native guest
+renewal are serialized to preserve the 40 GiB backing-volume reserve; no cache or
+evidence deletion is performed. This is resource scheduling, not a gate waiver.
