@@ -1,6 +1,6 @@
 {
   "schema": "daemonarchy/composed-framework-qualification-development@1",
-  "observed_utc": "2026-10-22T18:58:20.358172+00:00",
+  "observed_utc": "2026-10-22T19:14:41.744791+00:00",
   "framework_revision": "c058695048a3a1980e45db977c316a68ee4c868d",
   "scope": "Exact Windows and descriptor framework composition; native development qualification in progress",
   "controller_regression": {
@@ -208,5 +208,26 @@
   "product_receipt": false,
   "iso_created": false,
   "release_authorized": false,
-  "next_action": "Complete native Windows and exact patched-wheel qualification, then proceed to actual compiler SDK and product lifecycle admission"
+  "next_action": "Complete native Windows and exact patched-wheel qualification, then proceed to actual compiler SDK and product lifecycle admission",
+  "patched_wheel_renewal": {
+    "source_revision": "23d0b678dc63eedbae673d2603dfad5e13ef09bb",
+    "target": "Linux x86_64 / Python 3.14",
+    "result": "running; owned supervisor verified live",
+    "maximum_seconds": 2100,
+    "guest_qualification_serialized": true,
+    "wheel_growth_budget_bytes": 4294967296,
+    "minimum_host_reserve_bytes": 42949672960,
+    "cache_deletion_performed": false
+  },
+  "completed_guest_retirement": {
+    "terminal": {
+      "exit_code": 0,
+      "expired": false,
+      "seconds": 6342.6936867176555
+    },
+    "qemu_absent": true,
+    "normal_shutdown_requested": true,
+    "retained_runtime_and_evidence_preserved": true,
+    "new_allocation_required_for_patched_native_renewal": true
+  }
 }

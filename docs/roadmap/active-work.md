@@ -147,6 +147,7 @@ preserved. No performance fix or lifecycle pass is claimed.
 - **Implementation:**
   - [ ] Prototype multiple styles from recorded events; implement stage-aware presentation; validate on physical console and SSH/serial.
   - **Candidate review:** [Draft PR #21](https://github.com/jordanhubbard/daemonarchy/pull/21) replaces elapsed-time completion estimates with measured storage/archive/pkg observations and three styles. Ten controller and ten native FreeBSD/PTY checks pass, including resize, small terminals, 16/256 colors, reduced motion, failure and cursor cleanup. The completion-invariant fixture still passes. This review refreshes its intentional retained source baseline and locks; recorded acquisition replay, full native installation and physical-console/serial acceptance remain open.
+  - **Recorded replay:** The expanded eleven-case controller suite passes, and its exact transferred suite exits zero on FreeBSD. All three styles replay the verbatim 16-event native acquisition journal, reaching eight verified archives and 29,831 bytes without producing an installer result. Input/journal hashes and the retained imported database hash match the original native result. Full native installation and physical acceptance remain open.
 - **Evidence:**
   - [ ] Useful readable metrics, genuine waiting/failure states, resize and reduced-motion behavior, bounded cost and native console demonstrations.
 
@@ -690,3 +691,10 @@ before claiming the observer optimization resolves that release blocker.
   - [x] Allocate a private per-run ISO staging directory; preserve preceding artifacts; bind exact loader, kernel/world sets, jail, ports, modules and checkout selections; coordinate native dispatch with active worker ownership.
 - **Evidence:**
   - [x] Retain staging isolation/refusal controls, input identities, native assembly results and ISO hash; announce readiness only after a real test artifact exists. Keep hardware and final 1.2 release obligations open.
+
+Patched composition `23d0b678` is undergoing exact Linux wheel renewal while its
+native Windows gate continues. Completed SDK/PTY guest work is retired by normal
+shutdown before the original deadline; QEMU exits zero and the original disks,
+prefixes and raw evidence remain retained. Wheel and subsequent native guest
+renewal are serialized to preserve the 40 GiB backing-volume reserve; no cache or
+evidence deletion is performed. This is resource scheduling, not a gate waiver.
