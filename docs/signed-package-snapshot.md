@@ -125,9 +125,12 @@ directory as a read-only seed. The new run still authenticates the catalogue and
 reverifies every selected archive through native pkg. Do not reuse a live case.
 Parallel acquisition does not establish parallel installation, final-release
 selection, an installer/GUI integration, a lifecycle receipt or a performance gain.
-Controller command-protocol fixtures exercise scheduling and failure guards;
-native signature, corruption, concurrency and serial-parity acceptance remain
-required before this new mode is qualified.
+Controller command-protocol fixtures exercise scheduling and failure guards.
+The [native development checkpoint](../verification/parallel-package-fetch-development.json)
+now passes real pkg signature, corruption, concurrency, serial parity and fresh
+retry on eight packages from the immutable 1.1.1 feed, with peak four active
+fetches. All 40 process/snapshot controls also pass on FreeBSD. Full final-release
+selection and performance qualification remain required.
 
 Pin the completed input file and run from reviewed source:
 
