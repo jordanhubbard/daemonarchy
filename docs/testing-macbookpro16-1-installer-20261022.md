@@ -5,6 +5,17 @@ and recovery evidence, not completed installation, desktop acceptance or final
 release hardware attestation. The MSI RTX 5080 laptop remains a separate next
 hardware investigation.
 
+## Current qualification state
+
+| Check | Result |
+| --- | --- |
+| Recovered package installation | Full dependency/file verification passed, including after forced power-off |
+| NVMe under four trackers | Package recovery completed; earlier fatal-status cause remains open |
+| Physical EFI countdown | Boots through to the operating system without Enter |
+| Retained debugging grant | Same approval/host identity and unattended resumption verified over multiple reboots |
+| Navi14 graphics attachment | Reproducibly fails enabling graphics queues; desktop acceptance blocked |
+| Independent hardware diagnostics | Pending; health counters alone do not exclude a fault |
+
 ## Inputs and observed discrepancy
 
 The operator reports that the installer claimed success. The installed target
@@ -221,3 +232,52 @@ A diagnostic build passed against the exact stock kernel source
 Its additional ring-test diagnostics are investigative only. The separate module
 remains staged outside the installed package; target execution is pending recovery
 and is not implied by native build success. This does not qualify a release.
+
+
+## First instrumented ring test
+
+After the operator power-cycled the unresponsive target, rescue boot retained
+approval and suppressed graphics loading. The original packaged GPU module
+remained byte-identical, and full installed-file and dependency checks passed
+after that forced power-off. The failed alternate queue parameter was removed
+from persistent configuration and the original value of one restored before
+loading the separately staged diagnostic module.
+
+Diagnostic module SHA256
+`8ab4005e1d61922c4d739977e0d0e65b94249cf51b2aa670e8c92a329e5c4781`
+reproduced the initialization failure. Its ring-test log identifies
+`kiq_0.2.1.0`, index 9, type 10, with doorbells enabled and a 100000-microsecond
+timeout. Scratch register `0xc040` remained `0xcafedead` rather than the expected
+GPU-written `0xdeadbeef`; the failing stage was asynchronous graphics-queue
+initialization. This identifies a failed command-ring progress test, not its
+underlying hardware or driver cause.
+
+The module-load syscall returned successfully even though device attachment failed;
+`devinfo` still showed no attached DRM device and no graphics readiness marker
+was created. SSH remained available and bounded NVMe/shutdown tracing retained
+no such event during the test. A second diagnostic adds read/write-pointer and
+successful-test logging to distinguish the preceding compute-queue test from
+the failing graphics-queue mapping. Its native build passes; fresh-boot execution
+is recorded separately. Neither diagnostic replaces the packaged driver.
+
+
+The second diagnostic module (SHA256
+`b1b114e1ed8d2fa6e23fc1cdaddb44847afd48c13897057728700b5193566288`)
+ran from a fresh rescue boot. The KIQ test following compute-queue mapping
+passed with scratch `0xdeadbeef` and a write pointer of `0x200`. The test after
+graphics-queue mapping failed with scratch `0xcafedead` and a write pointer of
+`0x400`. The software-visible read pointer was zero in both cases, including the
+successful test, so that value alone is not treated as proof of a stalled hardware
+read pointer. The failure boundary is reproducible; its underlying cause remains
+open. Both instrumented attempts returned with SSH available and no NVMe reset
+or shutdown request observed before the next explicitly controlled reboot.
+
+
+A further fresh-boot comparison used the same diagnostic module and original
+asynchronous queue setting, with only `compat.linuxkpi.amdgpu_dpm=0` changed.
+The driver confirmed both parameter values but failed earlier, reporting SMU
+firmware loading failure before the instrumented ring tests. This is not a
+successful workaround and does not isolate the original queue failure. The
+runtime-only power-management setting was cleared and a clean rescue reboot
+requested. The packaged driver remains unchanged; diagnostic modules remain
+separate and automatic GPU loading remains suppressed.

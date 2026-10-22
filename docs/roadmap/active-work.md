@@ -701,7 +701,7 @@ before claiming the observer optimization resolves that release blocker.
 - **Implementation:**
   - [ ] Reproduce and isolate ANS2 fatal I/O, preserve exact input and recovery identities, implement an independently tested correction, then repeat fresh-image installation and hardware checks.
 - **Evidence:**
-  - [ ] 2026-10-22 physical reproduction and exact cached package repair are recorded in docs/testing-macbookpro16-1-installer-20261022.md; storage correction, false-success explanation and complete hardware acceptance remain open.
+  - [ ] 2026-10-22 physical reproduction, exact cached package recovery under four trackers, and full integrity after a forced power-off are recorded in docs/testing-macbookpro16-1-installer-20261022.md. Instrumented Navi14 tests isolate a graphics-queue initialization boundary; storage cause, false-success explanation and complete hardware acceptance remain open.
 
 ### [ ] DEBUG-002 — Preserve approved hardware-debugging sessions across reboot
 
