@@ -223,6 +223,17 @@ preserved. No performance fix or lifecycle pass is claimed.
   The protocol remains unauthenticated and panic-only; physical NIC, pre-driver
   and continuous early-kernel transport qualification remain open.
 
+- **Native debugger baseline:** The [FreeBSD client checkpoint](../../verification/netgdb-native-baseline-development.json)
+  now passes actual e1000 NetGDB register and panic-memory reads, a kernel
+  backtrace, enumeration of 100 threads and orderly detach with matching ELF
+  symbols. Independent serial control verifies return to DDB, local register
+  inspection, pager recovery and reset. Both guests exit zero before their
+  deadlines. Two debugger re-entry messages and the absent source-text paths
+  are retained observations. This uses the unmodified retained `bdcfeac3e1cb`
+  kernel baseline, not repair `791ac20a21ad`. Build and qualify that candidate's
+  peer-close recovery next; native netdump, physical NIC and early-kernel
+  activation remain open.
+
 - **Implementation:**
   - [x] Inspect loader/kernel transport foundations: EFI Simple Network Protocol and standalone UDP exist; an interactive loader network stub does not. Current NetGDB explicitly requires a panic and an initialized supported NIC. Firmware networking stops at `ExitBootServices`; boot flags do not establish an early network debugger. This is source-backed scope discovery, not runtime qualification.
   - [ ] Qualify an explicitly selected loader command/console stub, including environment inspection/update and kernel boot over the reviewed wired transport.
