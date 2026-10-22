@@ -2,11 +2,11 @@
   "schema": "daemonarchy/installer-progress-development@1",
   "scope": "Measured dashboard implementation, controller and native FreeBSD PTY observation; no actual installation or physical-console acceptance",
   "controller": {
-    "tests": 10,
-    "passed": 10,
+    "tests": 11,
+    "passed": 11,
     "failed": 0,
     "skipped": 0,
-    "seconds": 8.298
+    "seconds": 8.494
   },
   "native": {
     "target": {
@@ -18,24 +18,22 @@
     "terminal": {
       "exit_code": 0,
       "schema": "daemonarchy/native-command-terminal@1",
-      "seconds": 8.233
+      "seconds": 8.383
     },
-    "tests": 10,
-    "passed": 10,
+    "tests": 11,
+    "passed": 11,
     "failed": 0,
     "skipped": 0,
     "source_hashes": {
       "overlay/usr/local/libexec/daemonarchy-installer/progress-dashboard.py": "c0b7aa0da0f92540d6b93d1338ed86dabd0a5184913b0b989275ffb93aab6533",
       "overlay/usr/local/libexec/daemonarchy-installer/dashboard": "86fc2ba69196a0d92a5cb3f90029295afab22969f8f0aba21c6d02428fe15f79",
-      "tests/installer-progress.py": "0c8c29be156d8c31c05c127942b52b34309a593a694cc3479bf962dc9a71a23b"
+      "tests/installer-progress.py": "9faf4de88494e1144b055efeae6326c31d29fd485ebaa926887e5781e3c9a8ab",
+      "tests/fixtures/installer-progress/native-acquisition.jsonl": "e0c703bccb73be95218afe5fc2cbc07ca23afd3c9f93bb9fe2ce75d341468fb3",
+      "tests/fixtures/installer-progress/native-acquisition-provenance.json": "3cbc0f8d1e51f11afe2baa59a54883b54432d50c5d1f373a28919e8f5a99a0f9"
     },
     "raw_evidence": {
-      "tests-command/started.json": {
-        "sha256": "5d65fc172a14258415ff2708c597e103d8f75e02f65d6ba1e7f7d46149fde288",
-        "bytes": 309
-      },
       "tests-command/terminal.json": {
-        "sha256": "0b6b2524c7849cdf31feacf6fa11d6d11b9f89c3d1ab118ecf6c3bfa47ae8e5c",
+        "sha256": "9aeaa058c9b6c66f1093c0770b95cc60e123585e9b1328e7c547bbdf6bff8f44",
         "bytes": 86
       },
       "tests-command/stdout.log": {
@@ -43,10 +41,11 @@
         "bytes": 0
       },
       "tests-command/stderr.log": {
-        "sha256": "d60fa21580f87ecaf72274db13fa6894f21e5a925eac3e476106baa40e18b809",
-        "bytes": 1769
+        "sha256": "27cf3d4a8baa4156d04587958cf7490e315a90b92a49f637a6e48d92a9993fe7",
+        "bytes": 1971
       }
-    }
+    },
+    "source_hashes_reverified_at_collection": true
   },
   "implementation": [
     "No wall-clock completion estimate",
@@ -80,7 +79,7 @@
     "verified_bytes": 29831,
     "native_pkg_version": "2.8.4",
     "historical_feed": "packages-16-amd64-1.1.1",
-    "scope": "Exact expanded suite exits zero on FreeBSD; verbatim historical acquisition journal replay. Existing ten-case raw evidence retains its preceding scope; expanded raw test output is retained on the cold guest.",
+    "scope": "All eleven native FreeBSD PTY cases pass, including verbatim historical acquisition replay in all three styles; raw test output collected and hash-verified from a read-only clone of the completed guest.",
     "live_fetch_performed_by_replay": false,
     "installation_authorized": false,
     "release_qualified": false,
@@ -106,6 +105,62 @@
       "spectrum",
       "scope"
     ],
-    "installer_result_produced": false
+    "installer_result_produced": false,
+    "raw_test_output_collected_and_verified": true
+  },
+  "preceding_ten_case_observation": {
+    "controller": {
+      "tests": 10,
+      "passed": 10,
+      "failed": 0,
+      "skipped": 0,
+      "seconds": 8.298
+    },
+    "native": {
+      "target": {
+        "os": "freebsd16",
+        "release": "16.0-CURRENT",
+        "architecture": "amd64",
+        "python": "3.12.15"
+      },
+      "terminal": {
+        "exit_code": 0,
+        "schema": "daemonarchy/native-command-terminal@1",
+        "seconds": 8.233
+      },
+      "tests": 10,
+      "passed": 10,
+      "failed": 0,
+      "skipped": 0,
+      "source_hashes": {
+        "overlay/usr/local/libexec/daemonarchy-installer/progress-dashboard.py": "c0b7aa0da0f92540d6b93d1338ed86dabd0a5184913b0b989275ffb93aab6533",
+        "overlay/usr/local/libexec/daemonarchy-installer/dashboard": "86fc2ba69196a0d92a5cb3f90029295afab22969f8f0aba21c6d02428fe15f79",
+        "tests/installer-progress.py": "0c8c29be156d8c31c05c127942b52b34309a593a694cc3479bf962dc9a71a23b"
+      },
+      "raw_evidence": {
+        "tests-command/started.json": {
+          "sha256": "5d65fc172a14258415ff2708c597e103d8f75e02f65d6ba1e7f7d46149fde288",
+          "bytes": 309
+        },
+        "tests-command/terminal.json": {
+          "sha256": "0b6b2524c7849cdf31feacf6fa11d6d11b9f89c3d1ab118ecf6c3bfa47ae8e5c",
+          "bytes": 86
+        },
+        "tests-command/stdout.log": {
+          "sha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855",
+          "bytes": 0
+        },
+        "tests-command/stderr.log": {
+          "sha256": "d60fa21580f87ecaf72274db13fa6894f21e5a925eac3e476106baa40e18b809",
+          "bytes": 1769
+        }
+      }
+    }
+  },
+  "hosted_ci": {
+    "head_revision": "e842b40b18ef494ef170b72bcadad8f119c21d6c",
+    "run": "https://github.com/jordanhubbard/daemonarchy/actions/runs/39840105392",
+    "conclusion": "success",
+    "scope": "Ubuntu controller progress/PTY and completion controls plus existing graph and ISO control tests; not a native installation"
   }
 }
