@@ -138,6 +138,26 @@ class NativePlanTests(unittest.TestCase):
             connection.execute("DELETE FROM packages")
         plan.empty_database(database)
 
+    def test_only_the_explicit_template_may_be_pristine(self):
+        database = self.root / "pristine.sqlite"
+        database.write_bytes(b"")
+        with self.assertRaises(sqlite3.OperationalError):
+            plan.empty_database(database)
+        plan.empty_database(database, allow_pristine_template=True)
+        alias = self.root / "alias.sqlite"
+        alias.symlink_to(database)
+        with self.assertRaises(OSError):
+            plan.empty_database(alias, allow_pristine_template=True)
+        with closing(sqlite3.connect(database)) as connection, connection:
+            connection.execute("CREATE TABLE unexpected (value TEXT)")
+        with self.assertRaises(sqlite3.OperationalError):
+            plan.empty_database(database, allow_pristine_template=True)
+        with closing(sqlite3.connect(database)) as connection, connection:
+            connection.execute("CREATE TABLE packages (name TEXT)")
+            connection.execute("INSERT INTO packages VALUES ('installed')")
+        with self.assertRaisesRegex(ValueError, "installed package database"):
+            plan.empty_database(database, allow_pristine_template=True)
+
     def test_nonzero_exit_preserves_partial_evidence(self):
         with self.assertRaisesRegex(ValueError, "exit 3"):
             plan.run_step([sys.executable], ["-c", "print('partial plan'); raise SystemExit(3)"], self.root, "refusal")

@@ -7,23 +7,23 @@
   "result_schema": "daemonarchy/signed-package-snapshot@2",
   "event_schema": "daemonarchy/package-progress-event@1",
   "legacy_serial_schema_preserved": true,
-  "controller_checks_passed": 111,
+  "controller_checks_passed": 112,
   "controller_groups": {
     "native-tree-discovery": 9,
     "native-dirdeps": 11,
     "native-workspace": 8,
     "qemu-worker": 13,
     "package-dag": 23,
-    "native-package-plan": 22,
+    "native-package-plan": 23,
     "signed-package-snapshot": 17,
     "iso-stage": 2,
     "test-loader": 6
   },
   "source_sha256": {
-    "scripts/native-package-plan.py": "93e66a23df78edb2cb16d567fe926024c9aadafe04e5e0e26c381f549d78cbb2",
-    "scripts/signed-package-snapshot.py": "386fb82989ba5e92edc51b4a53288aad3c830cfdcdf49e28bd59d5965642e8c5",
+    "scripts/native-package-plan.py": "a007222266e0ac79bb9ee12911c0876e4aae547d409a47834d79c50f0dd1c4c2",
+    "scripts/signed-package-snapshot.py": "78e93c25a3a5513f79d378c752fa8bdee73dcfbd8e8176a69e3c2ca4e5db6675",
     "scripts/package-dag.py": "1b99e5ba0a574d8a0a78445e9814685ed6e640629d32ffd324cb6440626b3e7c",
-    "tests/native-package-plan.py": "d04c558983e14c2f1b079ad674c990d75f1443ebdc6d8ff78173c66fd33a5f4f",
+    "tests/native-package-plan.py": "daeeb13b43f2c9ee07a452315e57463aadaf4ff84f38c71218a12a1190a38e0f",
     "tests/signed-package-snapshot.py": "a70b3d69363baec16903113830a583398b5333ce753e12e57d52da2880cdc284"
   },
   "controller_fetch_peer_scope": "Actual child processes using a command-protocol fixture; not native pkg signature or checksum qualification",
@@ -48,12 +48,22 @@
   "project_authority_valid": true,
   "component_locks_current": 8,
   "product_lifecycle_receipt": "missing",
-  "native_qualification": "pending",
+  "native_qualification": "initial serial subset passed; all eight parallel batches verified but the untouched zero-byte template refused final validation; corrected source requires fresh native renewal",
   "native_pkg_observed_version": "2.8.4",
   "native_pkg_observed_sha256": "5fb7f228998089b65b06f3586428241330e9e86f4b8b3833c02637de358e6273",
   "native_signed_snapshot_qualified": false,
   "actual_parallel_installation": false,
   "installation_authorized": false,
   "performance_gain_qualified": false,
-  "release_qualified": false
+  "release_qualified": false,
+  "initial_native_probe": {
+    "source_revision": "be5c455e8b82fa555bdf6f2aeee7b55bcd1ee417",
+    "selected": 8,
+    "serial_passed": true,
+    "parallel_batches_verified": 8,
+    "parallel_passing_result": false,
+    "host_database_unchanged": true,
+    "refusal": "no such table: packages in the unused zero-byte source template",
+    "correction": "Only the explicit source template accepts a regular zero-byte file. Every executed worker still requires the native schema and zero installed packages."
+  }
 }

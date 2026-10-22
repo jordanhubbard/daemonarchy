@@ -100,6 +100,10 @@ fetch keeps the same frozen repository URL and uses native pkg's checksum
 verification. Each completed batch must also pass exact file inventory, size,
 independent SHA-256, unchanged catalogue and empty installed-database/cache checks
 before its files become available in the case's shared payload directory.
+The untouched source template may remain the zero-byte file created by native
+`pkg shell`; only that explicit template accepts this pristine state. Every
+executed worker must have the real native schema and zero installed packages.
+Nonempty unsupported databases and nonzero installed counts still refuse.
 Retained batch copies use exclusive hard links to avoid duplicating payload
 bytes. Database copies and retained command-log limits are included in the disk
 reserve check. All fetch children share one deadline; failure, diagnostic,

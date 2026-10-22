@@ -416,7 +416,7 @@ def verify(config_path, config_pin, case):
         verified = verify_payload_files(case / "payloads", packages)
         if hashlib.sha256(databases[0].read_bytes()).hexdigest() != database_pin:
             raise ValueError("frozen authenticated catalogue database changed during fetch")
-        native.empty_database(case / "db" / "local.sqlite")
+        native.empty_database(case / "db" / "local.sqlite", allow_pristine_template=policy is not None)
         if any((case / "cache").iterdir()):
             raise ValueError("unexpected private cache files outside fetched payloads")
         transfers = dict(offline_requests=origin.offline_requests, https_redirects=origin.redirect_requests)

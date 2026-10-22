@@ -92,7 +92,16 @@ def imported_metadata(database, graph_packages):
                 raise ValueError(f"native imported dependencies differ: {name}")
 
 
-def empty_database(path):
+def empty_database(path, *, allow_pristine_template=False):
+    if allow_pristine_template:
+        with os.fdopen(os.open(path, os.O_RDONLY | os.O_NOFOLLOW | os.O_NONBLOCK), "rb") as stream:
+            info = os.fstat(stream.fileno())
+            if not stat.S_ISREG(info.st_mode):
+                raise ValueError("private installed package database must be a regular file")
+            # pkg shell creates this zero-byte template before any fetch opens
+            # it. Executed worker databases must still have the native schema.
+            if info.st_size == 0:
+                return
     with closing(sqlite3.connect(path.absolute().as_uri() + "?mode=ro", uri=True)) as connection:
         count = connection.execute("SELECT count(*) FROM packages").fetchone()[0]
     if count != 0:
