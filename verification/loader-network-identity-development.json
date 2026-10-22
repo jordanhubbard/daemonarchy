@@ -1,0 +1,83 @@
+{
+  "schema": "daemonarchy/loader-network-identity-development@1",
+  "observed_utc": "2026-10-22T12:31:39.148462+00:00",
+  "source_revision": "f45d86b2114356e81205166b89a5191a23d40a87",
+  "source_review": "https://github.com/jordanhubbard/daemonarchy-src/pull/7",
+  "source_evidence": {
+    "url": "https://github.com/jordanhubbard/daemonarchy-src/blob/f45d86b2114356e81205166b89a5191a23d40a87/verification/loader-network-identity-development.json",
+    "sha256": "1edd0f59d9da88343d9f53b983013255f04253441ef6777a70e70260c7cc7417"
+  },
+  "scope": "Native export controls and actual two-NIC firmware/kernel identity only; failed cross-interface netboot remains required",
+  "native_stand_build": {
+    "passed": true,
+    "seconds": 84.147,
+    "platform": "FreeBSD amd64",
+    "bootstrap_toolchain_admitted": false
+  },
+  "native_export_controls": {
+    "passed": true,
+    "seconds": 1.337,
+    "sanitizers": [
+      "address",
+      "undefined-behavior"
+    ],
+    "partial_export_failure_positions": [
+      1,
+      2,
+      3,
+      4
+    ],
+    "ordinary_metadata_independence": true,
+    "leak_sanitizer_supported": false
+  },
+  "artifacts": [
+    {
+      "name": "loader_lua.efi",
+      "sha256": "c67cc0d852af9aa263cb68c9d777a31aac0511700695b0894abcddf9cb28a01b",
+      "bytes": 733184
+    },
+    {
+      "name": "loader_lua.sym",
+      "sha256": "a2a1d356357c879669f2ed85cd793ff15176a6d97ff82f1246010a8864093d64",
+      "bytes": 881672
+    }
+  ],
+  "actual_uefi": {
+    "firmware": "OVMF / QEMU KVM",
+    "firmware_nics": 2,
+    "nic_model": "e1000",
+    "authenticated_pairing": true,
+    "debug_selected_second_nic": true,
+    "actual_mac_and_addresses_exported": true,
+    "firmware_handoff_observed": true,
+    "independent_kernel_ssh": true,
+    "kernel_observed": true,
+    "boot_id_matches_controller": true,
+    "debug_mac_matches_second_native_nic": true,
+    "debug_addresses_preserved": true,
+    "strict_pinned_host_key": true,
+    "observation_sha256": "29fb82531dc115a73708aaf8bde44f57dd9afbe61d24b8c317e7cd9ef6ed27fd",
+    "other_nic_file_transfer_qualified": false,
+    "release_acceptance": false
+  },
+  "cross_interface_netboot": {
+    "passed": false,
+    "issue": "https://github.com/jordanhubbard/daemonarchy-src/issues/11",
+    "failure": "A net0 file request reused the cached net1 connection; the expected TFTP file was not received.",
+    "source_boundary": "stand/common/dev_net.c caches by driver name without the device unit; the debug attachment shares that lifetime owner.",
+    "proposed_unit_only_cleanup_safe": false
+  },
+  "owned_vm_cleanup": {
+    "recovery_guest_exit_code": 0,
+    "recovery_guest_seconds": 548.687486296054,
+    "dual_nic_guest_exit_code": 0,
+    "dual_nic_guest_seconds": 356.6182821728289,
+    "original_disks_preserved": true
+  },
+  "current_test_iso_selection_changed": false,
+  "physical_firmware_qualified": false,
+  "early_kernel_transport_qualified": false,
+  "native_lifecycle_receipt": false,
+  "release_acceptance": false,
+  "ledger_rows_closed": 0
+}
