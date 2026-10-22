@@ -171,6 +171,17 @@ class PackageGraphTests(unittest.TestCase):
                          {k: self.rows[0][k] for k in ("dep_formula", "conflicts", "shlibs_required", "options")})
         self.assertFalse(report["native_solver_qualified"])
 
+    def test_actual_native_catalogue_checksum_is_preserved_without_relabeling(self):
+        checksum = '2$jn8h7m3joqhg8nukwytbh8fsymbg7wtwpwsiz9pcy6e39dymphje4ba88tetjf7aewat3ubb8a8jxfb7494amyu1hrmuf5bz8phjtab'
+        self.rows[0]["sum"] = checksum
+        self.catalogue("release", self.rows)
+        row = self.collect()["packages"]["desktop"]
+        self.assertEqual(row["archive_checksum"], dict(format="pkg-file-checksum", value=checksum))
+        self.assertNotIn("sha256", row)
+        for value in ['2$short', '2$' + 'a' * 102, '2$' + '!' * 103, 'type$' + 'a' * 103]:
+            with self.subTest(value=value), self.assertRaises(ValueError):
+                dag.archive_checksum(value)
+
     def test_missing_roots_and_empty_selection_refuse(self):
         for roots in ([], ["missing"], "desktop", [None]):
             with self.subTest(roots=roots):

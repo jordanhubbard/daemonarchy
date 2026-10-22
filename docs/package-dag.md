@@ -8,6 +8,16 @@ format. Root selections must explicitly include their GPU and optional packages.
 This is the first PKG-001 implementation step; actual release catalogue captures,
 native solver validation and transaction execution remain unfinished.
 
+The [development checkpoint](../verification/package-dag-development.json) binds
+23 passing controller and native FreeBSD fixture checks. An existing native
+development catalogue produces identical controller/native graphs: 1,469 packages
+and 5,099 dependency edges in its complete closure; the desktop and NVIDIA
+selections contain 952 and 960 packages respectively. One dependency-version
+difference remains explicit. This capture uses a synthetic transport URL solely
+for collector smoke and does not authenticate a repository, admit final release
+inputs or authorize installation. The first real-catalogue refusal and its
+checksum-format correction are retained.
+
 ## Inputs and use
 
 Capture catalogues through the existing trusted native repository workflow.
@@ -77,6 +87,13 @@ origins, ABI, flavour annotations, canonical manifest hashes, native constraints
 download bytes and installed-byte estimates. Each selection records roots,
 edges and deterministic dependency-first order. Shared dependencies count once;
 totals are metadata estimates, not measurements of actual peak disk use.
+
+`archive_checksum` distinguishes legacy SHA-256 hexadecimal values from pkg's
+tagged native checksum strings. The complete native string is preserved without
+relabeling it as SHA-256 or decoding its historical base32 representation. Native
+pkg must validate its algorithm and the actual archive bytes before installation.
+This field follows the upstream
+[pkg checksum implementation](https://github.com/freebsd/pkg/blob/main/libpkg/pkg_checksum.c).
 
 Missing dependencies, origin conflicts, cycles, ambiguous repository bindings,
 duplicate JSON keys/records, unsafe archive paths, wrong ABI, newer OSVERSION

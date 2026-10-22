@@ -73,6 +73,18 @@ def size(value):
     return value
 
 
+def archive_checksum(value):
+    if isinstance(value, str) and re.fullmatch(r"[0-9a-f]{64}", value):
+        return dict(format="sha256-hex", value=value)
+    # pkg records typed checksums as <type>$<encoded digest>. Preserve the
+    # complete native representation; the type does not identify SHA-256 and
+    # historical base32 encodings differ from standard z-base-32. Native pkg
+    # must validate the checksum against the archive before installation.
+    if isinstance(value, str) and re.fullmatch(r"[0-9]{1,2}\$(?:[a-z0-9]{52}|[a-z0-9]{64}|[a-z0-9]{103}|[a-z0-9]{128})", value):
+        return dict(format="pkg-file-checksum", value=value)
+    fail("missing or malformed package archive checksum")
+
+
 def load_catalogue(config, base, abi, osversion):
     repository = text(config["id"], "repository ID")
     url = text(config["url"], "repository URL")
@@ -104,9 +116,7 @@ def load_catalogue(config, base, abi, osversion):
                 fail(f"native package lacks FreeBSD_version: {name}")
         elif not isinstance(required_os, str) or not re.fullmatch(r"[0-9]{7}", required_os) or int(required_os) > osversion:
             fail(f"incompatible package FreeBSD_version: {name}")
-        checksum = row["sum"]
-        if not isinstance(checksum, str) or not re.fullmatch(r"[0-9a-f]{64}", checksum):
-            fail(f"missing package SHA-256: {name}")
+        checksum = archive_checksum(row["sum"])
         path = text(row.get("repopath", row.get("path")), "package repository path")
         if any(c in path for c in ("\\", "?", "#", "%")) or path.startswith("/") or any(p in ("", ".", "..") for p in path.split("/")):
             fail("unsafe package repository path")
@@ -124,7 +134,7 @@ def load_catalogue(config, base, abi, osversion):
         if name in packages:
             fail(f"ambiguous package name in repository: {name}")
         packages[name] = dict(name=name, version=version, origin=origin, abi=package_abi,
-                              repository=repository, archive_path=path, sha256=checksum,
+                              repository=repository, archive_path=path, archive_checksum=checksum,
                               download_bytes=size(row["pkgsize"]), installed_bytes=size(row["flatsize"]),
                               manifest_sha256=digest(json.dumps(row, sort_keys=True, separators=(",", ":"), allow_nan=False).encode()),
                               annotations=annotations, dependencies=deps,

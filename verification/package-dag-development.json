@@ -1,16 +1,16 @@
 {
   "schema": "daemonarchy/package-dag-development@1",
   "queue_item": "PKG-001",
-  "recorded_at": "2026-10-22T06:43:49.965938+00:00",
-  "scope": "Pinned catalogue graph collector and refusal controls; fixture inputs only",
+  "recorded_at": "2026-10-22T06:48:08.433564+00:00",
+  "scope": "Pinned catalogue collector/refusal controls and an existing native development catalogue; not final release input admission",
   "input_sha256": {
-    "scripts/package-dag.py": "775764493d2e87aa696eb47bcfd60ad740770822b383a16f26010834f17eb55b",
-    "tests/package-dag.py": "35bdf04c42d27e2db48704901aa673ff29682e3fff261d81fabfa5ec15fe20e7"
+    "scripts/package-dag.py": "1b99e5ba0a574d8a0a78445e9814685ed6e640629d32ffd324cb6440626b3e7c",
+    "tests/package-dag.py": "569531e67e61e67ed4f75d553561628ed046cd181fd55591057c539864b3d34e"
   },
   "controller": {
     "os": "macOS",
     "python": "3.14.7",
-    "focused_tests_passed": 22,
+    "focused_tests_passed": 23,
     "existing_controller_tests_passed": 48
   },
   "native": {
@@ -18,8 +18,8 @@
     "release": "16.0-CURRENT",
     "python": "3.12.14",
     "exit_code": 0,
-    "tests_passed": 22,
-    "test_stderr_sha256": "b3153c1a2153b95e401cf604dd9bfe3d310fde769483bd53ea10e466223abe01",
+    "tests_passed": 23,
+    "test_stderr_sha256": "40d69787380914f74fce54f9c810beb7af77d44d8d87eace351f8f7ab8795bb7",
     "logs_retained_privately": true
   },
   "authority": {
@@ -35,5 +35,50 @@
     "Verify package payload hashes and installed files",
     "Implement shared transaction coordination and structured progress",
     "Qualify actual safe parallel installation, failure/retry/recovery and measured performance"
+  ],
+  "captured_catalogue": {
+    "archive_sha256": "253af2446b006614caa7e5bc237e4f96f24c103b1fb3bd6531eccbb6f00d9de2",
+    "archive_bytes": 407914,
+    "catalogue_sha256": "772f0ce4cbcdae66ad4d7ea454d5d7419d04602c70bf63ec6835bb30dfee4869",
+    "catalogue_bytes": 2386617,
+    "records": 1469,
+    "scope": "Existing native poudriere development repository, not selected or admitted as final 1.2 release inputs",
+    "repository_signature_qualified": false,
+    "transport_url": "synthetic example.invalid placeholder used only for collector smoke; no downloads",
+    "native_cli_exit_code": 0,
+    "canonical_graph_sha256": "8a532f772409870687b4fbc825c1e4067eb1a593817fa7d3eec1d89b3527f6c5",
+    "controller_native_graphs_equal": true,
+    "selections": {
+      "complete-captured-catalogue": {
+        "packages": 1469,
+        "edges": 5099,
+        "version_resolution_required": 1
+      },
+      "desktop": {
+        "packages": 952,
+        "edges": 4282,
+        "version_resolution_required": 1
+      },
+      "desktop-nvidia": {
+        "packages": 960,
+        "edges": 4319,
+        "version_resolution_required": 1
+      }
+    },
+    "unresolved_version_edges": [
+      {
+        "package": "daemonarchy",
+        "dependency": "omarchy",
+        "declared_version": "4.0.4_14",
+        "selected_version": "4.0.4_16"
+      }
+    ]
+  },
+  "retained_failures": [
+    {
+      "scope": "first real catalogue capture",
+      "result": "SHA-256-only archive checksum assumption refused all native tagged sums",
+      "corrected_by": "Preserve tagged native pkg checksums without relabeling them as SHA-256; renewed 23-case native suite and real catalogue CLI pass"
+    }
   ]
 }
