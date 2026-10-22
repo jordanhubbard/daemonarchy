@@ -16,6 +16,11 @@ work; it is not a separate published tag in this repository. The proposed name
 
 ## Unreleased
 
+- Add read-only package dependency graphs from pinned repository catalogues,
+  with exact archive identities, per-selection closure and space estimates,
+  repository conflict and ABI/OSVERSION refusal checks. Native solver acceptance,
+  transaction execution and safe parallel installation remain unfinished.
+
 - Build tooling: select original source authority in place through a reviewed
   metadata-only plan and qualified combined Standard distribution. Preserve
   original source layout and receipt requirements; native execution profiles,

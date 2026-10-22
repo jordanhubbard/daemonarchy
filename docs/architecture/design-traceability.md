@@ -13,7 +13,7 @@ buildable or generated artifacts. Existing source remains implementation authori
 | G4 | [Diagnostics](https://github.com/jordanhubbard/daemonarchy/blob/main/components/diagnostics/component.md) | Pairing/rescue tools, observers and controller receiver | Approval, revocation, bounds, identity, abrupt loss and owned cleanup |
 | G5 | [Verified boot](https://github.com/jordanhubbard/daemonarchy/blob/main/components/verified-boot/component.md) | secureboot build/sign/bundle/maintenance tools and retained source patches | Exact trust closure, actual enforcement/rejection and maintenance/recovery |
 | G6, G8, G9 | [Release](https://github.com/jordanhubbard/daemonarchy/blob/main/components/release/component.md) | ISO/feed/checkouts assembly, pinned-tree discovery and publication scripts; planned complete source/ports Component execution | Full-tree ownership, per-unit pkg provenance, variant-aware selected closures and measured build/packaging improvement; exact artifacts and native/VM/hardware evidence |
-| G3, G7 | [Package engine](https://github.com/jordanhubbard/daemonarchy/blob/main/components/package-engine/component.md) | Planned; current installer still uses its existing package operations | Complete DAG, coordinated parallel installation, failure/retry/recovery and measured performance |
+| G3, G7 | [Package engine](https://github.com/jordanhubbard/daemonarchy/blob/main/components/package-engine/component.md) | Pinned catalogue graph collector; current installer uses its existing package operations | Complete release DAG, native solver acceptance, coordinated parallel installation, failure/retry/recovery and measured performance |
 
 ## Source custody and repository boundaries
 
@@ -126,7 +126,7 @@ the public repository paths so mutable resolver mutexes are not documentation
 assets. Source
 indexing is disabled. Future framework updates must preserve these boundaries.
 
-<!-- literate-ai:authority-reviewed sha256:6673687417c2fa0e3d83dbbabf9d741954d3461e12c50a4e4ebede7612815fa6 -->
+<!-- literate-ai:authority-reviewed sha256:daccf0091aea533b3ae3395632da3782f1b348cb427343bf28e601336fff86df -->
 
 
 ## Rechecking preservation

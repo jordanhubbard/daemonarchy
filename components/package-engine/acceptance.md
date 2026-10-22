@@ -4,9 +4,14 @@ Acceptance binds exact input/source identities, test command, worker/OS, artifac
 hash, result and limitations. Historical results are evidence only for their
 recorded scope; these requirements are not a current execution receipt.
 
-No implementation or executable acceptance suite exists yet. Keep PKG-001
-open until the release DAG, scheduler, integrity and failure/performance cases
-are implemented and exercised on native FreeBSD.
+The [pinned catalogue collector](../../scripts/package-dag.py) has
+[controller checks](../../tests/package-dag.py) for complete transitive closure,
+shared dependencies, per-selection totals, catalogue mutation, malformed input,
+ABI/OSVERSION refusal, repository conflicts, cycles and preserved output.
+[Its input and evidence contract](../../docs/package-dag.md) distinguishes these
+graphs from native solver acceptance and installation permission. Keep PKG-001
+open until actual release catalogues, native resolution, the scheduler, integrity
+and failure/performance cases are exercised on native FreeBSD.
 
 ## Required scenarios
 
