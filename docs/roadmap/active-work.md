@@ -412,8 +412,21 @@ cwd, mount/export and Git audits, preserving its old revision and index. Primary
 refs/HEAD are unchanged. The full native kernel now builds in fresh objects with
 four jobs and unchanged 2400-second supervision, within the 3 GiB write budget
 and 40 GiB physical host reserve. Earlier bare-repository and checkout failures
-remain retained. The changed kernel is not built or runtime-qualified yet.
-Driver-ready activation, authentication and physical acceptance remain open.
+remain retained. The [exact kernel and early guard checkpoint](../../verification/debugnet-early-kernel-development.json)
+now passes its clean GENERIC build in 521.803 supervised seconds. All three
+products share build ID `38821cf580ffed76cdffc9109ee84bd6f5f4d71a` and transfer
+hashes reverify. A direct boot-time DDB call before driver initialization returns
+`ENXIO` with ten inspected allocator/saved-state words unchanged; registers and
+ordinary boot then pass, with independent UUID, kernel and NIC observations.
+The guest shuts down normally before deadline. The same-guest completion of a
+truncated serial continue request remains recorded. The [ready-kernel NetGDB renewal](../../verification/debugnet-ready-recovery-development.json)
+passes two detach sessions and one abrupt peer closure, with three allocator
+restorations and local DDB recovery. The [Netdump renewal](../../verification/debugnet-ready-netdump-development.json)
+passes on the same exact kernel: native postmortem reads the panic and 100 threads,
+and reconstruction of all 165,330,944 core bytes from the private-wire capture
+matches the received dump hash. Both test pairs stop before their deadlines.
+Continuous early-kernel networking, authentication, physical NIC and final
+source/compiler/product admission remain open.
 
 The [standalone NetGDB contribution patch](../contributions/netgdb-peer-close.md)
 applies to current upstream and passes its style checker. It remains unsubmitted
@@ -496,8 +509,10 @@ The optional-import framework CI passes 2179 selected unit cases (2090 passes,
 89 declared skips) and documentation checks, then correctly refuses the stale
 lifecycle-driver pin. Reviewing the sole changed TCB import location through the
 canonical command records `4ec3013bae99`; documentation authority passes and the
-old receipt becomes stale. Exact framework `191887c0` now has a complete fresh
-configured host lifecycle running with its unchanged 3600-second bound, and new
+old receipt becomes stale. Exact framework `191887c0` then passes its complete
+230-test configured host lifecycle with independent acceptance in 1664.006 seconds.
+Its receipt is canonically promoted and committed in `bd76625f`; driver review and
+framework verification pass. The final receipt commit has new
 hosted CI is queued. The Windows gate remains bound to preceding `8f1b7df6`;
 its result cannot qualify later project metadata.
 

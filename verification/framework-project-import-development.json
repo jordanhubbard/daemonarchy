@@ -80,15 +80,15 @@
     "documentation_test_failures": 0,
     "rendered_mermaid_diagrams": 121,
     "markdown_files_scanned": 625,
-    "last_observed_free_bytes": 36066041856,
+    "last_observed_free_bytes": 34918088704,
     "metadata_scope": "The running Windows gate remains exact 8f1b7df6; it cannot qualify later TCB/authority metadata."
   },
   "compiler_sdk_admitted": false,
   "product_receipt": false,
   "iso_created": false,
   "release_authorized": false,
-  "next_action": "Observe the same exact-candidate Windows setup/gate handle to terminal; preserve all failed temporary evidence and do not widen its deadline.",
-  "observed_utc": "2026-10-22T21:05:25.597671+00:00",
+  "next_action": "Observe existing exact 8f1b7df6 Windows gate and exact current framework CI; native final installed-wheel and source SDK admission remain open",
+  "observed_utc": "2026-10-22T22:18:00.021448+00:00",
   "product_verify": {
     "authority": "pass",
     "committed_locks": 8,
@@ -120,19 +120,27 @@
     "canonical_review_recorded": true,
     "subsequent_driver_review": "pass",
     "documentation_authority": "pass",
-    "receipt": "stale; full configured lifecycle renewal is running"
+    "receipt": "current; canonical candidate promoted after complete configured lifecycle"
   },
   "reviewed_candidate_host_lifecycle": {
-    "state": "running; supervisor and CLI child observed live",
+    "state": "passed; canonical receipt promoted",
     "maximum_seconds": 3600,
     "source_revision": "191887c0a57f1f68b6c8e64150dd8264d94efb6f",
     "force_regeneration": true,
     "project_configured_cli_and_model": true,
-    "candidate_receipt_admitted": false
+    "candidate_receipt_admitted": true,
+    "exit_code": 0,
+    "seconds": 1664.006,
+    "tests": 230,
+    "independent_acceptance": true,
+    "receipt_identity": "sha256:28593bc24cbad618717640a8ffb0b2d748ef80289e1938c27fd20b76d56478c7",
+    "framework_verify": "pass; current receipt and authority; three declared skips"
   },
   "reviewed_candidate_ci": {
-    "run": "https://github.com/jordanhubbard/literate-ai/actions/runs/39859120438",
-    "status": "queued",
+    "run": "https://github.com/jordanhubbard/literate-ai/actions/runs/39863795014",
+    "source_revision": "bd76625f0ee63da98dc29792768e5c837d72de9e",
+    "status": "pending",
     "conclusion": null
-  }
+  },
+  "reviewed_framework_receipt_revision": "bd76625f0ee63da98dc29792768e5c837d72de9e"
 }

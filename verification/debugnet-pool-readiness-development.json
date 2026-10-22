@@ -170,15 +170,14 @@
       "bytes": 1744
     }
   },
-  "linked_kernel_built": false,
-  "native_boot_and_netgdb_netdump_renewed": false,
+  "linked_kernel_built": true,
+  "native_boot_and_netgdb_netdump_renewed": true,
   "early_kernel_transport_qualified": false,
   "source_sdk_admitted": false,
   "release_acceptance": false,
   "remaining": [
-    "Build an exact clean changed kernel with the production caller and header",
-    "Native unavailable-pool refusal and known-good NetGDB/Netdump VM renewal",
-    "Driver-ready boot activation, authentication, physical NIC and final release acceptance"
+    "Continuous early-kernel network activation and authentication",
+    "Physical NIC and exact final admitted source/compiler/product lifecycle acceptance"
   ],
   "style9": {
     "errors": 0,
@@ -229,21 +228,28 @@
     }
   },
   "native_kernel_build": {
-    "state": "running; live supervisor and compiler output observed",
+    "state": "passed",
     "source_revision": "7a4b58c717bc423e6a8575e27e5b60d409e10725",
     "source_tree": "db475e9dc7df8371476ed7ff85326040438e91b0",
     "jobs": 4,
     "maximum_seconds": 2400,
     "fresh_object_directory": true,
     "install_performed": false,
-    "linked_kernel_qualified": false
+    "linked_kernel_qualified": false,
+    "exit_code": 0,
+    "supervised_seconds": 521.803,
+    "build_id": "38821cf580ffed76cdffc9109ee84bd6f5f4d71a"
   },
   "planned_early_native_control": {
-    "state": "not yet run",
+    "state": "passed in the real kernel; independent ordinary boot verified; guest shut down normally",
     "entry": "boot-time DDB before network-driver initialization",
     "operation": "Call the actual debugnet_mbuf_start function, require ENXIO with saved/global zones unchanged, then continue boot",
     "panic_guard_bypass": false,
-    "normal_panic_netgdb_and_netdump_renewal_required": true,
+    "normal_panic_netgdb_and_netdump_renewal_required": false,
     "scope": "Allocator readiness only; no continuous early-kernel network transport claim"
-  }
+  },
+  "native_build_record": "verification/debugnet-early-kernel-development.json",
+  "early_native_direct_guard_verified": true,
+  "ready_netgdb_record": "verification/debugnet-ready-recovery-development.json",
+  "ready_netdump_record": "verification/debugnet-ready-netdump-development.json"
 }
