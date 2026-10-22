@@ -332,6 +332,20 @@ five explicit FreeBSD locks pass. Source PR #7 remains a draft, and native SDK,
 compiler admission, physical firmware, early-kernel transport and final release
 qualification remain open.
 
+The [native NetGDB recovery checkpoint](../../verification/netgdb-peer-close-development.json)
+qualifies exact kernel `791ac20a21ad` from a clean native GENERIC build
+(609.905 seconds; 610.475 supervised), with matching kernel/full/debug build IDs.
+FreeBSD GDB 15.1 reads registers, actual panic memory, a panic backtrace and 104
+threads. Two orderly detach sessions return to DDB, including a renewed complete
+version-output check after retaining a harness truncation failure. A third client
+exits without detach: captured FINISHED now reaches generic GDB termination,
+restores mbuf zones and returns to DDB. Local registers and reset work after the
+close; non-panic refusal and local continue also pass. Both owned VMs exit zero
+before deadline and all disks are retained. [Source issue #12](https://github.com/jordanhubbard/daemonarchy-src/issues/12)
+is implemented and natively qualified on draft PR #7, pending integration.
+Physical NICs, Netdump, authenticated kernel sessions, continuous early-kernel
+transport, compiler/SDK admission and release acceptance remain open.
+
 The [descriptor-read checkpoint](../../verification/native-sdk-descriptor-read-development.json)
 records framework code `4ed7e5a1`, published with qualification at `9b834cde`.
 Its uninterrupted regression passes 2,132 cases with 70 declared skips; the exact
