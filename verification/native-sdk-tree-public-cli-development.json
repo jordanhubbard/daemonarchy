@@ -1,0 +1,243 @@
+{
+  "schema": "daemonarchy/native-sdk-isolated-cli-development@1",
+  "observed_utc": "2026-10-22T19:49:54.522433+00:00",
+  "scope": "Real installed public CLI original-source SDK tree microfixture with hard-link and symlink aliases; local-runtime consumer admission only",
+  "framework_source_revision": "23d0b678dc63eedbae673d2603dfad5e13ef09bb",
+  "wheel_identity": "sha256:f5b85eb55e2782a5ed32379d3cf34f7d0b116f801804177b432a6d9353b4c09f",
+  "distribution_identity": "sha256:e0dd058e6e67bca93e3dd485bc6c4cc43fa8215a33e2160503809f5afdc359d7",
+  "native_role": {
+    "os": "FreeBSD 16.0-CURRENT",
+    "kernel_revision": "041802b362aa",
+    "architecture": "amd64",
+    "filesystem": "UFS",
+    "hypervisor": "KVM",
+    "vcpus": 4,
+    "memory_mib": 4096,
+    "unprivileged": true,
+    "alignment_passed": true,
+    "original_disk_preserved": true
+  },
+  "preparation": {
+    "offline_bootstrap_seconds": 7.607,
+    "project_initialization_seconds": 72.938,
+    "fixture_archive_sha256": "8f2079fc1225f7f1b27d4c0c31cc6d889d6c76e276e67e3cca406428a8d53f1e"
+  },
+  "canonical_cli": {
+    "passed": true,
+    "supervised_total_seconds": 535.622,
+    "exit_code": 0,
+    "authorized_execution_limit_seconds": 3600,
+    "deadline_unchanged": true,
+    "authority_mode": "retained-project",
+    "source_authority": "original",
+    "conversion_advanced": false,
+    "no_discovery_transport_or_producer_mocks": true,
+    "source_files": 9,
+    "source_commit": "728854f443b5b0d17e072e26b1ef433a38b29c9d",
+    "source_tree": "sha256:d0115b5cb6226b3c597212668cbb60ef13247800e4dfdadaeb5fd14e7c46bcd2",
+    "source_snapshot": "sha256:da3824a41ad28baf1b16c099bedf10a88f1ac420c79ebdbe368133a3cd5daa25",
+    "authorization_refusals": {
+      "missing-authorization": "rebuild.host_execution_not_acknowledged",
+      "missing-retained-authorization": "retained_project.admission_invalid"
+    },
+    "receipt_identity": "sha256:94bad12c9f818323b4e1d2b1301a7050eb607bb560bc400b9c9abed4d738bb1f",
+    "receipt_scope": "local-runtime",
+    "original_tests": {
+      "failed": 0,
+      "passed": 3,
+      "skipped": 0
+    },
+    "command_stages": [
+      "build",
+      "test",
+      "docs",
+      "accept"
+    ],
+    "independent_acceptance_cases": 2,
+    "independent_acceptance_exit_codes": [
+      0,
+      2
+    ],
+    "withheld_product_stdout": "10.0\n",
+    "records_reverified": 28,
+    "record_verification_is_inspection_not_reconstructed_live_admission": true,
+    "source_server_terminal": 0,
+    "completed_run_sdk_admitted": false
+  },
+  "loader_control": {
+    "consumer_rpath": false,
+    "reviewed_loader_required": true,
+    "without_loader_exit_code": 1
+  },
+  "installed_binding_controls": {
+    "selected": 6,
+    "passed": 6,
+    "failed": 0,
+    "skipped": 0,
+    "module_from_installed_prefix": true,
+    "module_sha256": "118eaf712600436acccd83ac2b69b68cce71c486405ea473330cbe5d50d744ac"
+  },
+  "installed_context_controls": "running separately; not yet qualified",
+  "transport_wrapper_note": "The transport-only summary conservatively retains canonical_installed_cli_qualified false; actual public CLI admission and qualification progress are separately inspected above",
+  "source_built_compiler_admitted": false,
+  "actual_freebsd_source_sdk_admitted": false,
+  "consumer_project_current_receipt": false,
+  "daemonarchy_product_receipt": false,
+  "package_qualified": false,
+  "iso_created": false,
+  "release_acceptance": false,
+  "raw_evidence": {
+    "tree-sdk-command/started.json": {
+      "sha256": "a575bd98a60893225a6b573598b8d2bcee142e3cbffbc5b0fc92af3d16e32a35",
+      "bytes": 784
+    },
+    "tree-sdk-command/terminal.json": {
+      "sha256": "0bae18db98c83e6c77713f7c6401b7a19f631e309b21417ea0bcace34f74b84f",
+      "bytes": 88
+    },
+    "tree-sdk-command/stdout.log": {
+      "sha256": "faf25bcf7fd2ce9b7e0b5134998a4823410f21501173c1226b901228aaf3ef97",
+      "bytes": 812
+    },
+    "tree-sdk-command/stderr.log": {
+      "sha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855",
+      "bytes": 0
+    },
+    "canonical-sdk-tree-transport/result.json": {
+      "sha256": "2c0d91919c3a9a4ff603aefefe4dea3c95b72302982bf6f0a5d985fc5f4727d4",
+      "bytes": 519
+    },
+    "canonical-sdk-tree-transport/qualification/authorized-execution.stderr": {
+      "sha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855",
+      "bytes": 0
+    },
+    "canonical-sdk-tree-transport/qualification/authorized-execution.stdout": {
+      "sha256": "4c6d0a7357191f11ad18f396b1c63db85396f4f6ce19b0583598d0999472e0a3",
+      "bytes": 6544
+    },
+    "canonical-sdk-tree-transport/qualification/component-lock.stderr": {
+      "sha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855",
+      "bytes": 0
+    },
+    "canonical-sdk-tree-transport/qualification/component-lock.stdout": {
+      "sha256": "f556e481abd2685f89b96c714ad69f851ac047311dd9f20d3b05883d35fb028c",
+      "bytes": 1494
+    },
+    "canonical-sdk-tree-transport/qualification/documentation-review.stderr": {
+      "sha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855",
+      "bytes": 0
+    },
+    "canonical-sdk-tree-transport/qualification/documentation-review.stdout": {
+      "sha256": "f2ace5320047ba3f2013399c49614d018102d5446cba61888c1729487596e106",
+      "bytes": 457
+    },
+    "canonical-sdk-tree-transport/qualification/final-documentation-review.stderr": {
+      "sha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855",
+      "bytes": 0
+    },
+    "canonical-sdk-tree-transport/qualification/final-documentation-review.stdout": {
+      "sha256": "573733837e2d6a8d3692e39afe33f8698d5ae7634b903ce04ec5df83995f5099",
+      "bytes": 458
+    },
+    "canonical-sdk-tree-transport/qualification/final-validate.stderr": {
+      "sha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855",
+      "bytes": 0
+    },
+    "canonical-sdk-tree-transport/qualification/final-validate.stdout": {
+      "sha256": "c88f6420659079cfd5e799b820a7b4afadadf4a53bb69359792b016ed0f3a9cf",
+      "bytes": 95873
+    },
+    "canonical-sdk-tree-transport/qualification/missing-authorization.stderr": {
+      "sha256": "f012093aa9149555d8a5e3d64873c85666c7a9f58450299dda16e98c1791bc86",
+      "bytes": 303
+    },
+    "canonical-sdk-tree-transport/qualification/missing-authorization.stdout": {
+      "sha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855",
+      "bytes": 0
+    },
+    "canonical-sdk-tree-transport/qualification/missing-retained-authorization.stderr": {
+      "sha256": "eb99887c0de598b4450e5be4c180ef798cd9d028e7fc3514b1f127b196f3ff77",
+      "bytes": 191
+    },
+    "canonical-sdk-tree-transport/qualification/missing-retained-authorization.stdout": {
+      "sha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855",
+      "bytes": 0
+    },
+    "canonical-sdk-tree-transport/qualification/original-apply.stderr": {
+      "sha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855",
+      "bytes": 0
+    },
+    "canonical-sdk-tree-transport/qualification/original-apply.stdout": {
+      "sha256": "97f0e93b3436f9939300bce86a1e9d60073c4ed834b77d40ce33b44a70416fb5",
+      "bytes": 970
+    },
+    "canonical-sdk-tree-transport/qualification/original-plan.stderr": {
+      "sha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855",
+      "bytes": 0
+    },
+    "canonical-sdk-tree-transport/qualification/original-plan.stdout": {
+      "sha256": "5bbb9da6f05cb64ac958519a3ab9296efdb988e1ce8443199140e81697340b45",
+      "bytes": 686
+    },
+    "canonical-sdk-tree-transport/qualification/progress.json": {
+      "sha256": "72ee7e89912df3cb64544cff97642784c728fb65d38c7e7a3766109fd93dd7b5",
+      "bytes": 420
+    },
+    "canonical-sdk-tree-transport/qualification/retained-plan.stderr": {
+      "sha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855",
+      "bytes": 0
+    },
+    "canonical-sdk-tree-transport/qualification/retained-plan.stdout": {
+      "sha256": "b08ed5c5257d7c1668640197c39eb020ff49eeca4eac15940306c3443c92d065",
+      "bytes": 6018
+    },
+    "canonical-sdk-tree-transport/qualification/selected-sdk-tree.json": {
+      "sha256": "1e19b83418c0fe0ec45687c2cd0c2f2862ddcf66ce70ef6269bc2a43d4ee2984",
+      "bytes": 451
+    },
+    "canonical-sdk-tree-transport/qualification/without-loader.stderr": {
+      "sha256": "fc8ff40654bf392c3147eeae4077a557bdc65c9ab88a8f0eaff26253ff78a86e",
+      "bytes": 73
+    },
+    "canonical-sdk-tree-transport/qualification/without-loader.stdout": {
+      "sha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855",
+      "bytes": 0
+    }
+  },
+  "record_inspection_sha256": "79b90fc26a36798a671b4573ffcf051332b12ae6d340f1df964cbce1970ea366",
+  "preceding_worker_investigation": "verification/native-sdk-worker-investigation-development.json",
+  "primary_worker_timeout_retained": true,
+  "composed_windows_descriptor_qualification": "Exact patched composition 23d0b678; native Windows qualification remains open; configured parent host receipt current",
+  "sdk_tree_product": {
+    "aliases": [
+      {
+        "kind": "hardlink",
+        "path": "python/vendor_math/lib/vendor_math.so.hard",
+        "target": "python/vendor_math/lib/vendor_math.so"
+      },
+      {
+        "kind": "symlink",
+        "path": "python/vendor_math/lib/vendor_math.so.symbolic",
+        "target": "vendor_math.so"
+      }
+    ],
+    "case_sensitive": true,
+    "compiler_sdk_admitted": false,
+    "snapshot": {
+      "algorithm": "sha256",
+      "digest": "b358e5965c4ca4e0eac61002344b1ce5bded95168eb46864f5a7be2ee7ca6cbe",
+      "schema": "urn:literate-ai:schema:v1:content-identity"
+    },
+    "actual_symlink_text_verified": true,
+    "actual_hardlink_inode_verified": true,
+    "live_recipe_commands": [
+      "configure",
+      "build",
+      "hardlink",
+      "symlink"
+    ],
+    "consumer_link_input": "vendor_math.so.symbolic",
+    "physical_observation_sha256": "456f4e9a53558df9871728e82f8b7de8a70022dc9d0d1ee3d5b316f969049e38"
+  },
+  "preceding_regular_file_sdk_qualification": "verification/native-sdk-postaudit-cli-development.json"
+}

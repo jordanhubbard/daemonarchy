@@ -180,13 +180,17 @@ remain open; the installed seed still has unknown source-build provenance.
 
 There is also a distinct typed SDK boundary to complete. The selected toolchain
 inventory has 28 internal links, including `ar -> llvm-ar` and header aliases.
-Current native SDK capture requires links to be materialized first; its snapshot
-and retained SDK placement represent regular files only. Framework
+The preceding regular-file SDK protocol still refuses aliases. Framework
 [issue #93](https://github.com/jordanhubbard/literate-ai/issues/93) owns faithful
 alias provenance through source-built SDK capture, producer admission,
 materialization and consumer scopes. Preserve existing SDK identities and
-refusals until that integration is qualified. Passing retained source/input link
-checks does not admit these compiler SDK products.
+refusals unless the new tree capability is explicitly selected. The
+[installed public tree microfixture](../../verification/native-sdk-tree-public-cli-development.json)
+now passes on exact candidate `23d0b678`, preserving a real hard-link group and
+exact symlink text through the live recipe and C consumer. Three original tests,
+two acceptance cases and all 28 retained records verify. Its receipt is only
+local-runtime; the completed run still reports SDK admission false. Actual
+compiler SDK, per-unit package and release admission remain open.
 
 Read-only inspection of the completed source-built pkgbase artifacts now verifies
 524 package manifests against their recorded artifact hashes. The candidate
@@ -196,6 +200,24 @@ compiler/sysroot package dependency closure is `FreeBSD-clang`,
 resource headers, C++ headers and runtime, startup objects and linker within this
 closure. These observations identify candidate inputs; they do not establish that
 those inputs are sufficient for every compiler language, target or ports build.
+
+The initial six archives are insufficient for a closed compiler runtime. Their
+manifests require five SONAMEs with no provider in that set. The
+[runtime metadata closure](../../verification/source-compiler-runtime-closure-development.json)
+resolves declared package and shared-library dependencies to 18 exact packages
+(86,885,560 archive bytes), with one provider per required SONAME. All package
+manifests remain bound to the retained source build and artifact hashes. All 18 archives are now collected and reverified against the original build's
+artifact inventory and current native bytes. The read clone shuts down normally;
+QMP observes both original backing layers read-only. Full package payloads also
+contain two unsuitable OS-configuration aliases (`etc/termcap` and
+`etc/os-release`), which remain explicit diagnostic refusals. The declared
+compiler-resource selection covers headers, libraries, resource files and the
+compiler/linker-owned executable roots while excluding OS configuration and
+manual pages. It retains `CC` and `cc`, 28 symbolic aliases and nine hard links;
+all selected alias targets close within the inventory. Its 3,563 regular files
+contain 333,420,987 bytes. No alias is flattened. Physical materialization, actual
+native loader resolution, relocated compilation and live SDK admission remain
+unqualified.
 
 The actual clang package has 15 hard links for executable aliases. The clang
 development package has two library symlinks; the C-library development package

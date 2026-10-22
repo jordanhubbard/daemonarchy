@@ -417,8 +417,11 @@ also passes on a fresh FreeBSD allocation with exact framework `23d0b678`:
 536.095 supervised seconds, three original tests, two independent acceptance
 cases and all 28 retained records reverified. Its 3600-second authorization limit
 is unchanged. A separate tree-alias case now observes real hard-link inode equivalence and
-exact symbolic-link text from its live producer. Its public CLI consumer is
-running; the tree lifecycle remains unqualified until its terminal result.
+exact symbolic-link text from its live producer. Its [public CLI tree lifecycle](../../verification/native-sdk-tree-public-cli-development.json)
+now passes in 535.622 seconds: three original tests, two independent acceptance
+cases, all 28 receipt records reverified and a clean owned-server exit. Its scope
+is local-runtime; the completed run reports SDK admission false. Exact patched
+installed context controls are running separately.
 
 No compiler SDK, product receipt, ISO or release admission follows from these
 partial checks.

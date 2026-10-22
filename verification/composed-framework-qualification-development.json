@@ -1,6 +1,6 @@
 {
   "schema": "daemonarchy/composed-framework-qualification-development@1",
-  "observed_utc": "2026-10-22T19:41:31.454144+00:00",
+  "observed_utc": "2026-10-22T19:50:20.872419+00:00",
   "framework_revision": "c058695048a3a1980e45db977c316a68ee4c868d",
   "scope": "Exact Windows and descriptor framework composition; native development qualification in progress",
   "controller_regression": {
@@ -308,8 +308,8 @@
       "seconds": 50.318
     },
     "sdk_tree_aliases": {
-      "public_cli_qualified": false,
-      "state": "authorized public CLI execution running; live supervisor observed",
+      "public_cli_qualified": true,
+      "state": "passed; raw evidence collected and 28 receipt records reverified",
       "separate_project": true,
       "initialization": {
         "exit_code": 0,
@@ -338,7 +338,21 @@
       "actual_hardlink_inode_verified": true,
       "compiler_sdk_admitted": false,
       "product_receipt": false,
-      "release_qualified": false
-    }
+      "release_qualified": false,
+      "record": "verification/native-sdk-tree-public-cli-development.json",
+      "supervised_seconds": 535.622,
+      "receipt_identity": "sha256:94bad12c9f818323b4e1d2b1301a7050eb607bb560bc400b9c9abed4d738bb1f",
+      "receipt_scope": "local-runtime",
+      "original_tests": {
+        "failed": 0,
+        "passed": 3,
+        "skipped": 0
+      },
+      "independent_acceptance_cases": 2,
+      "records_reverified": 28,
+      "source_server_terminal": 0,
+      "completed_run_sdk_admitted": false
+    },
+    "installed_context_controls": "running separately after tree success; no terminal result claimed"
   }
 }

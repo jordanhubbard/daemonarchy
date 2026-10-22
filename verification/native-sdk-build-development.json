@@ -353,6 +353,23 @@
       "archive_extracted": false,
       "sdk_captured": false,
       "producer_admitted": false
+    },
+    "runtime_metadata_closure": {
+      "record": "verification/source-compiler-runtime-closure-development.json",
+      "initial_missing_sonames": [
+        "libexecinfo.so.1",
+        "libncursesw.so.9",
+        "libprivatezstd.so.5",
+        "libtinfow.so.9",
+        "libz.so.6"
+      ],
+      "package_count": 18,
+      "archive_bytes": 86885560,
+      "unique_providers": true,
+      "archives_collected": true,
+      "native_loader_observation_complete": false,
+      "source_sdk_admitted": false,
+      "resource_selection_alias_targets_closed": true
     }
   }
 }
