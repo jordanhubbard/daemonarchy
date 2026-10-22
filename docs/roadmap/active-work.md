@@ -274,6 +274,17 @@ preserved. No performance fix or lifecycle pass is claimed.
 - **Evidence:**
   - [ ] Every inherited backlog obligation has direct completion evidence; native and virtual/physical acceptance match exact final artifacts; full LitAI verification and release gates pass; published new release and immutable assets are verified.
 
+The [final October 22 refresh](../../verification/upstream-refresh-2026-10-22-final.json)
+confirms the owned source mirror still matches upstream at `775e421dc38f`.
+Source PR #9 retains four passing Linux cross-builds and two queued macOS cells;
+its integration remains pending. [Ports PR #17](https://github.com/jordanhubbard/daemonarchy-ports/pull/17)
+is merged at `702e0e3cc491`, importing two further upstream commits through
+`e4abbf95f5b8`: the new optique port and octave-forge-drafting 0.2.4.
+All seven changed paths match upstream exactly; all 64 downstream blobs/modes
+and the complete downstream binary delta are preserved. Whitespace checks pass.
+Native changed-port builds and clean bulk qualification remain unrun. Active
+workspaces and published release pins retain their preceding selections.
+
 The [latest October 22 refresh](../../verification/upstream-refresh-2026-10-22-late.json)
 keeps sources current at `775e421dc38f`. Source PR #9's exact-head run now has
 all four Linux cross-builds passing; both macOS cells remain queued, so source
