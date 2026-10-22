@@ -129,6 +129,14 @@ kill. The terminal record retains the actual child status and reason; failed
 child status propagates to the supervisor command. Signal interruption also
 cleans up the owned child and inspector socket. Evidence directories are retained.
 
+Termination, interrupt and hangup signals revoke inspection and request shutdown
+through the supervisor loop. Repeated signals cannot interrupt its existing
+bounded cleanup, so the owned child is reaped before terminal evidence is
+published. An interrupted supervisor returns status 130; terminal evidence keeps
+the actual child status. Controller fake-QMP regression checks cover repeated
+signals during delayed shutdown. These checks do not replace actual VM or
+installed-lifecycle qualification.
+
 Original privileged tests remain trusted. This worker ownership boundary does
 not contain arbitrary privileged code. Native acceptance must still verify the
 exact installed framework, complete original cases, independent acceptance,
