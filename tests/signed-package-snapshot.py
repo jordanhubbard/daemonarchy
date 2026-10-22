@@ -4,8 +4,10 @@
 from contextlib import closing
 import hashlib
 import importlib.util
+import json
 from pathlib import Path
 import sqlite3
+import sys
 import tempfile
 import unittest
 import urllib.error
@@ -176,6 +178,128 @@ class SignedSnapshotTests(unittest.TestCase):
         (self.root / "a.pkg").symlink_to(target)
         with self.assertRaises(OSError):
             snapshot.verify_payload_files(self.root, packages)
+
+    def test_parallel_policy_is_explicit_and_bounded(self):
+        self.assertIsNone(snapshot.fetch_policy({"schema": "daemonarchy/signed-package-snapshot-inputs@1"}))
+        self.assertEqual(snapshot.fetch_policy(dict(schema="daemonarchy/signed-package-snapshot-inputs@2", fetch_workers=4)), (4, 32))
+        for data in [dict(schema="daemonarchy/signed-package-snapshot-inputs@1", fetch_workers=2),
+                     dict(schema="unknown"),
+                     *[dict(schema="daemonarchy/signed-package-snapshot-inputs@2", fetch_workers=n)
+                       for n in [0, 17, True]],
+                     *[dict(schema="daemonarchy/signed-package-snapshot-inputs@2", fetch_workers=2, fetch_batch_packages=n)
+                       for n in [0, 129, False]]]:
+            with self.subTest(data=data), self.assertRaises(ValueError):
+                snapshot.fetch_policy(data)
+
+    def test_balanced_batches_preserve_selection_and_refuse_path_collisions(self):
+        packages = {name: dict(archive_path=f"All/{name}.pkg", download_bytes=size)
+                    for name, size in zip("abcdef", [30, 20, 15, 10, 5, 1])}
+        batches = snapshot.fetch_batches(packages, 2)
+        self.assertEqual(sorted(n for batch in batches for n in batch), sorted(packages))
+        self.assertTrue(all(len(batch) <= 2 for batch in batches))
+        self.assertEqual(batches, snapshot.fetch_batches(dict(reversed(list(packages.items()))), 2))
+        packages["b"]["archive_path"] = "All/a.pkg/b.pkg"
+        with self.assertRaisesRegex(ValueError, "files and directories"):
+            snapshot.fetch_batches(packages, 2)
+
+    def native_fetch_peer(self, action="normal", barrier=1):
+        """A command-protocol fixture, never native signature/checksum evidence."""
+        case = self.root / "case"
+        (case / "db").mkdir(parents=True)
+        (case / "cache").mkdir()
+        (case / "repos").mkdir()
+        repo = case / "db/repo-Test.sqlite"
+        repo.write_bytes(b"frozen authenticated database fixture")
+        with closing(sqlite3.connect(case / "db/local.sqlite")) as db, db:
+            db.execute("CREATE TABLE packages (name TEXT)")
+        packages = {name: dict(archive_path=f"All/{name}.pkg", download_bytes=size)
+                    for name, size in zip("abc", [4, 8, 12])}
+        settings = self.root / "peer-settings.json"
+        settings.write_text(json.dumps(dict(action=action, barrier=barrier, packages=packages)))
+        executable = self.root / "fetch-peer"
+        executable.write_text(f"#!{sys.executable}\n" + '''
+import json, pathlib, sqlite3, sys, time
+settings=json.loads((pathlib.Path(__file__).parent/'peer-settings.json').read_text())
+args=sys.argv[1:]; cfg=json.loads(pathlib.Path(args[args.index('-C')+1]).read_text())
+job=pathlib.Path(cfg['PKG_DBDIR']).parent; case=job.parent.parent
+out=pathlib.Path(args[args.index('-o')+1]); names=args[args.index('--')+1:]
+start=time.monotonic(); ready=case/'peer-ready'; ready.mkdir(exist_ok=True)
+(ready/job.name).write_text('ready'); deadline=time.monotonic()+3
+while len(list(ready.iterdir()))<settings['barrier']:
+ if time.monotonic()>deadline: raise RuntimeError('peer barrier deadline')
+ time.sleep(.01)
+time.sleep(.06)
+for name in names:
+ row=settings['packages'][name]; path=out/row['archive_path']; path.parent.mkdir(parents=True,exist_ok=True)
+ path.write_bytes(name.encode()*row['download_bytes'])
+action=settings['action']
+if action=='extra': (out/'extra.pkg').write_bytes(b'wrong')
+if action=='catalogue': (pathlib.Path(cfg['PKG_DBDIR'])/'repo-Test.sqlite').write_bytes(b'changed')
+if action=='installed':
+ db=sqlite3.connect(pathlib.Path(cfg['PKG_DBDIR'])/'local.sqlite'); db.execute("INSERT INTO packages VALUES ('unexpected')"); db.commit(); db.close()
+if action=='cache': (pathlib.Path(cfg['PKG_CACHEDIR'])/'unexpected').write_bytes(b'wrong')
+if action=='diagnostic': print('native diagnostic',file=sys.stderr)
+if action=='mutate-published':
+ for path in (case/'payloads').rglob('*.pkg'): path.write_bytes(b'x'*path.stat().st_size)
+print(json.dumps({'database':cfg['PKG_DBDIR'],'start':start,'end':time.monotonic()}))
+''')
+        executable.chmod(0o755)
+        return case, repo, packages, executable
+
+    def run_peer(self, fixture, workers=2, batch=1):
+        case, repo, packages, executable = fixture
+        return snapshot.parallel_fetch(executable, {}, packages, repo,
+                                       hashlib.sha256(repo.read_bytes()).hexdigest(),
+                                       case, "Test", (workers, batch), 5, "a" * 64)
+
+    def test_parallel_coordinator_keeps_database_state_private_and_progress_measured(self):
+        fixture = self.native_fetch_peer(barrier=2)
+        case, repo, packages, _executable = fixture
+        original = repo.read_bytes()
+        result = self.run_peer(fixture)
+        self.assertEqual(result['peak_active'], 2)
+        self.assertEqual(result['commands'], 3)
+        self.assertEqual(repo.read_bytes(), original)
+        observations = [json.loads(p.read_text()) for p in (case/'parallel').glob('*/*.stdout')]
+        self.assertEqual(len({o['database'] for o in observations}), 3)
+        first = sorted(observations, key=lambda o:o['start'])[:2]
+        self.assertLess(max(o['start'] for o in first), min(o['end'] for o in first))
+        inventory = snapshot.verify_payload_files(case/'payloads', packages)
+        self.assertEqual(set(inventory), set(packages))
+        events = [json.loads(line) for line in (case/'events.jsonl').read_text().splitlines()]
+        self.assertEqual([e['sequence'] for e in events], list(range(1, len(events)+1)))
+        self.assertTrue(all(e['input_sha256']=='a'*64 for e in events))
+        self.assertEqual(events[-1]['verified_bytes'], sum(p['download_bytes'] for p in packages.values()))
+        self.assertEqual(events[-1]['verified_packages'], 3)
+        self.assertTrue(all(e['state']!='completed' for e in events))
+
+    def test_failed_batch_checks_never_promote_its_archives(self):
+        for action, reason in [('extra','inventory differs'), ('catalogue','clone changed'),
+                               ('installed','installed package database'), ('cache','outside'),
+                               ('diagnostic','exit 0')]:
+            with self.subTest(action=action):
+                # Separate cases preserve every failed attempt in this test.
+                original = self.root
+                self.root = original/action
+                self.root.mkdir()
+                try:
+                    fixture = self.native_fetch_peer(action=action)
+                    with self.assertRaisesRegex(ValueError, reason):
+                        self.run_peer(fixture, workers=1)
+                    case = fixture[0]
+                    self.assertEqual(list((case/'payloads').iterdir()), [])
+                    events = [json.loads(line) for line in (case/'events.jsonl').read_text().splitlines()]
+                    self.assertEqual(events[-1]['state'], 'failed')
+                    self.assertFalse(any(e['state']=='verified' for e in events))
+                finally:
+                    self.root = original
+
+    def test_completed_batch_mutation_refuses_final_inventory(self):
+        fixture = self.native_fetch_peer(action='mutate-published')
+        with self.assertRaisesRegex(ValueError, 'changed after native batch verification'):
+            self.run_peer(fixture, workers=1)
+        events = [json.loads(line) for line in (fixture[0]/'events.jsonl').read_text().splitlines()]
+        self.assertEqual(events[-1]['state'], 'failed')
 
 
 if __name__ == "__main__":

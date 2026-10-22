@@ -4,6 +4,7 @@
 import copy
 from contextlib import closing
 import importlib.util
+import json
 import os
 from pathlib import Path
 import sqlite3
@@ -175,6 +176,103 @@ class NativePlanTests(unittest.TestCase):
             self.assertNotEqual(process.wait(timeout=5), 0)
             with self.assertRaises(ProcessLookupError):
                 os.kill(child_pid, 0)
+        finally:
+            if process.poll() is None:
+                process.kill()
+                process.wait(timeout=5)
+
+    def test_parallel_commands_overlap_with_a_bounded_peak(self):
+        code = ("import json,pathlib,sys,time; p=pathlib.Path(sys.argv[1]); "
+                "start=time.monotonic(); p.write_text('ready'); "
+                "deadline=time.monotonic()+3; "
+                "exec(\"while len(list(p.parent.glob('ready-*')))<2:\\n"
+                " if time.monotonic()>deadline: raise RuntimeError('peer not started')\\n"
+                " time.sleep(.01)\"); time.sleep(.08); "
+                "print(json.dumps({'start':start,'end':time.monotonic()}))")
+        tasks = [([sys.executable], ["-c", code, str(self.root / f"ready-{n}")], self.root, f"parallel-{n}")
+                 for n in range(3)]
+        outputs, events = {}, []
+        result = plan.run_parallel_steps(tasks, workers=2, timeout=5,
+                                         on_complete=lambda n, output: outputs.update({n: json.loads(output)}),
+                                         on_event=lambda *event: events.append(event))
+        first, second = outputs["parallel-0"], outputs["parallel-1"]
+        self.assertLess(max(first["start"], second["start"]), min(first["end"], second["end"]))
+        self.assertEqual(result["commands"], 3)
+        self.assertEqual(result["peak_active"], 2)
+        self.assertTrue(all(event[2] <= 2 for event in events))
+        self.assertEqual(sum(e[0] == "verified" for e in events), 3)
+
+    def test_parallel_failure_reaps_peer_without_starting_queued_work(self):
+        bad = ("import pathlib,time; p=pathlib.Path('peer.stdout'); "
+               "deadline=time.monotonic()+3; "
+               "exec(\"while not p.exists() or not p.stat().st_size:\\n"
+               " if time.monotonic()>deadline: raise RuntimeError('peer not ready')\\n"
+               " time.sleep(.01)\"); print('failed batch',flush=True); raise SystemExit(3)")
+        sleeping = "import os,time; print(os.getpid(),flush=True); time.sleep(60)"
+        tasks = [([sys.executable], ["-c", bad], self.root, "bad"),
+                 ([sys.executable], ["-c", sleeping], self.root, "peer"),
+                 ([sys.executable], ["-c", "print('must not run')"], self.root, "queued")]
+        events = []
+        with self.assertRaisesRegex(ValueError, "exit 3"):
+            plan.run_parallel_steps(tasks, workers=2, timeout=5,
+                                    on_event=lambda *event: events.append(event))
+        self.assertFalse((self.root / "queued.stdout").exists())
+        self.assertEqual((self.root / "bad.stdout").read_text(), "failed batch\n")
+        peer = int((self.root / "peer.stdout").read_text())
+        with self.assertRaises(ProcessLookupError):
+            os.kill(peer, 0)
+        self.assertIn(("failed", "bad"), [(e[0], e[1]) for e in events])
+        self.assertEqual(events[-1][:3], ("cancelled", "peer", 0))
+
+    def test_parallel_verifier_refusal_precedes_queued_work(self):
+        tasks = [([sys.executable], ["-c", "print('unaccepted archive')"], self.root, "first"),
+                 ([sys.executable], ["-c", "print('must not run')"], self.root, "queued")]
+
+        def refuse(_name, _output):
+            raise ValueError("archive verification refused")
+
+        with self.assertRaisesRegex(ValueError, "archive verification refused"):
+            plan.run_parallel_steps(tasks, workers=1, timeout=5, on_complete=refuse)
+        self.assertFalse((self.root / "queued.stdout").exists())
+
+    def test_parallel_deadline_reaps_all_active_children(self):
+        code = "import os,time; print(os.getpid(),flush=True); time.sleep(60)"
+        tasks = [([sys.executable], ["-c", code], self.root, f"hung-{n}") for n in range(2)]
+        with self.assertRaises(subprocess.TimeoutExpired):
+            plan.run_parallel_steps(tasks, workers=2, timeout=0.5)
+        for n in range(2):
+            pid = int((self.root / f"hung-{n}.stdout").read_text())
+            with self.assertRaises(ProcessLookupError):
+                os.kill(pid, 0)
+
+    def test_parallel_limits_refuse_before_opening_command_logs(self):
+        task = [([sys.executable], ["-c", "print('must not run')"], self.root, "limits")]
+        for workers, timeout in [(0, 1), (17, 1), (True, 1), (1, 0), (1, float("inf")), (1, True)]:
+            with self.subTest(workers=workers, timeout=timeout), self.assertRaises(ValueError):
+                plan.run_parallel_steps(task, workers=workers, timeout=timeout)
+        self.assertFalse((self.root / "limits.stdout").exists())
+
+    def test_parallel_signal_cleanup_reaps_both_children(self):
+        code = ("import importlib.util,sys; from pathlib import Path; "
+                f"s=importlib.util.spec_from_file_location('plan',{str(SCRIPT)!r}); "
+                "p=importlib.util.module_from_spec(s); s.loader.exec_module(p); p.install_signal_handlers(); "
+                "child=\"import os,time; print(os.getpid(),flush=True); time.sleep(60)\"; "
+                f"tasks=[([sys.executable],['-c',child],Path({str(self.root)!r}),'sig-'+str(n)) for n in range(2)]; "
+                "p.run_parallel_steps(tasks,workers=2,timeout=60)")
+        process = subprocess.Popen([sys.executable, "-c", code], stdout=subprocess.DEVNULL, stderr=subprocess.DEVNULL)
+        try:
+            outputs = [self.root / f"sig-{n}.stdout" for n in range(2)]
+            deadline = time.monotonic() + 5
+            while not all(p.exists() and p.stat().st_size for p in outputs):
+                if process.poll() is not None or time.monotonic() >= deadline:
+                    self.fail("both native children did not become ready")
+                time.sleep(0.01)
+            pids = [int(p.read_text()) for p in outputs]
+            process.terminate()
+            self.assertNotEqual(process.wait(timeout=5), 0)
+            for pid in pids:
+                with self.assertRaises(ProcessLookupError):
+                    os.kill(pid, 0)
         finally:
             if process.poll() is None:
                 process.kill()

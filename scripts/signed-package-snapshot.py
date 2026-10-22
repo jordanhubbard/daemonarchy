@@ -32,6 +32,148 @@ native = importlib.util.module_from_spec(SPEC)
 SPEC.loader.exec_module(native)
 dag = native.dag
 SCHEMA = "daemonarchy/signed-package-snapshot@1"
+PARALLEL_SCHEMA = "daemonarchy/signed-package-snapshot@2"
+
+
+def fetch_policy(config):
+    schema = config["schema"]
+    if schema == "daemonarchy/signed-package-snapshot-inputs@1":
+        if "fetch_workers" in config or "fetch_batch_packages" in config:
+            raise ValueError("parallel fetch options require signed snapshot inputs version 2")
+        return None
+    if schema != "daemonarchy/signed-package-snapshot-inputs@2":
+        raise ValueError("unsupported signed snapshot input schema")
+    workers, batch = config["fetch_workers"], config.get("fetch_batch_packages", 32)
+    if type(workers) is not int or not 1 <= workers <= 16:
+        raise ValueError("fetch workers must be one to sixteen")
+    if type(batch) is not int or not 1 <= batch <= 128:
+        raise ValueError("fetch batch packages must be one to 128")
+    return workers, batch
+
+
+def fetch_batches(packages, maximum):
+    """Balance signed download sizes without changing the selected inventory."""
+    import heapq
+
+    count = (len(packages) + maximum - 1) // maximum
+    groups = [[] for _ in range(count)]
+    heap = [(0, n) for n in range(count)]
+    for name in sorted(packages, key=lambda n: (-packages[n]["download_bytes"], n)):
+        size, index = heapq.heappop(heap)
+        groups[index].append(name)
+        if len(groups[index]) < maximum:
+            heapq.heappush(heap, (size + packages[name]["download_bytes"], index))
+    for group in groups:
+        if sum(len(n.encode()) + 1 for n in group) > 65536:
+            raise ValueError("native fetch argument budget exceeded")
+    paths = sorted(row["archive_path"] for row in packages.values())
+    if any(b.startswith(a + "/") for a, b in zip(paths, paths[1:])):
+        raise ValueError("signed archive paths conflict as files and directories")
+    return [tuple(sorted(group)) for group in groups]
+
+
+def parallel_fetch(executable, pkg_config, packages, database, database_pin, case,
+                   rid, policy, timeout, input_pin):
+    """Fetch into independent native state and publish only verified batches."""
+    workers, maximum = policy
+    batches = fetch_batches(packages, maximum)
+    source_database = case / "db"
+    database_relative = database.relative_to(source_database)
+    database_bytes = 0
+    for path in source_database.rglob("*"):
+        info = path.lstat()
+        if stat.S_ISREG(info.st_mode):
+            database_bytes += info.st_size
+        elif not stat.S_ISDIR(info.st_mode):
+            raise ValueError("private native database contains a link or special file")
+    total = sum(row["download_bytes"] for row in packages.values())
+    retained_budget = len(batches) * (database_bytes + 2 * native.MAX_OUTPUT)
+    if shutil.disk_usage(case).free < total + retained_budget + 2 * 1024**3:
+        raise ValueError("parallel fetch exceeds retained database/log budget or disk reserve")
+    parallel = case / "parallel"
+    parallel.mkdir(mode=0o700)
+    destination = case / "payloads"
+    destination.mkdir(mode=0o700)
+    jobs, verified = {}, {}
+    verified_bytes = 0
+    sequence = 0
+    phase_started = time.monotonic()
+    journal_path = case / "events.jsonl"
+
+    with journal_path.open("x", encoding="utf-8") as journal:
+        def event(state, name, active, _elapsed):
+            nonlocal sequence
+            sequence += 1
+            entry = dict(schema="daemonarchy/package-progress-event@1", sequence=sequence,
+                         input_sha256=input_pin, repository_database_sha256=database_pin,
+                         phase="download", state=state, batch=name,
+                         packages=list(jobs[name][1]) if name in jobs else [],
+                         elapsed_seconds=time.monotonic() - phase_started,
+                         configured_workers=workers, active_workers=active,
+                         verified_packages=len(verified), total_packages=len(packages),
+                         verified_bytes=verified_bytes,
+                         total_bytes=total)
+            journal.write(json.dumps(entry, sort_keys=True) + "\n")
+            journal.flush()
+            os.fsync(journal.fileno())
+
+        def tasks():
+            for index, names in enumerate(batches):
+                if hashlib.sha256(database.read_bytes()).hexdigest() != database_pin:
+                    raise ValueError("authenticated catalogue changed before native fetch")
+                name = f"fetch-{index:06d}"
+                job = parallel / name
+                job.mkdir(mode=0o700)
+                shutil.copytree(source_database, job / "db")
+                copied = job / "db" / database_relative
+                if hashlib.sha256(copied.read_bytes()).hexdigest() != database_pin:
+                    raise ValueError("native fetch database clone differs from authenticated input")
+                (job / "cache").mkdir(mode=0o700)
+                (job / "pkg.conf").write_text(json.dumps(dict(
+                    pkg_config, PKG_DBDIR=str(job / "db"), PKG_CACHEDIR=str(job / "cache"))))
+                jobs[name] = job, {n: packages[n] for n in names}
+                command = [str(executable), "-C", str(job / "pkg.conf"), "-R", str(case / "repos")]
+                args = ["fetch", "-Uy", "-r", rid, "-o", str(job / "payloads"), "--", *names]
+                yield command, args, job, name
+
+        def complete(name, _output):
+            nonlocal verified_bytes
+            job, selected = jobs[name]
+            observed = verify_payload_files(job / "payloads", selected)
+            copied = job / "db" / database_relative
+            if hashlib.sha256(copied.read_bytes()).hexdigest() != database_pin:
+                raise ValueError("authenticated catalogue clone changed during native fetch")
+            native.empty_database(job / "db" / "local.sqlite")
+            if any((job / "cache").iterdir()):
+                raise ValueError("native fetch populated a cache outside its selected payloads")
+            for package, row in observed.items():
+                target = destination / row["archive_path"]
+                target.parent.mkdir(parents=True, exist_ok=True)
+                # Exclusive hard links retain the original batch's evidence and
+                # never overwrite an already published path.
+                os.link(job / "payloads" / row["archive_path"], target)
+                verified[package] = row
+                verified_bytes += row["download_bytes"]
+
+        try:
+            execution = native.run_parallel_steps(tasks(), workers=workers, timeout=timeout,
+                                                  on_complete=complete, on_event=event)
+            final = verify_payload_files(destination, packages)
+            if final != verified:
+                raise ValueError("published payloads changed after native batch verification")
+            if hashlib.sha256(database.read_bytes()).hexdigest() != database_pin:
+                raise ValueError("authenticated source catalogue changed during parallel fetch")
+        except BaseException:
+            try:
+                event("failed", None, 0, time.monotonic() - phase_started)
+            except BaseException:
+                pass  # Preserve the failure even when its journal cannot be written.
+            raise
+    return dict(**execution, requested_workers=workers, batches=len(batches),
+                retained_database_bytes=database_bytes * len(batches),
+                maximum_retained_log_bytes=2 * native.MAX_OUTPUT * len(batches),
+                progress=dict(path="events.jsonl", events=sequence,
+                              sha256=hashlib.sha256(journal_path.read_bytes()).hexdigest()))
 
 
 def https_url(value):
@@ -67,6 +209,7 @@ class FrozenOrigin:
         self.payloads = {}
         self.offline_requests = 0
         self.redirect_requests = 0
+        self.counter_lock = threading.Lock()
         owner = self
 
         class Handler(http.server.BaseHTTPRequestHandler):
@@ -90,7 +233,8 @@ class FrozenOrigin:
                         if "url" not in owner.source:
                             self.send_error(404)
                             return
-                        owner.redirect_requests += 1
+                        with owner.counter_lock:
+                            owner.redirect_requests += 1
                         self.send_response(302)
                         self.send_header("Location", owner.source["url"] + "/" + quote(name, safe="/"))
                         self.send_header("Content-Length", "0")
@@ -108,7 +252,8 @@ class FrozenOrigin:
                     except (OSError, ValueError):
                         unavailable()
                         return
-                    owner.offline_requests += 1
+                    with owner.counter_lock:
+                        owner.offline_requests += 1
                     with stream:
                         self.send_response(200)
                         self.send_header("Content-Length", str(info.st_size))
@@ -185,8 +330,7 @@ def verify(config_path, config_pin, case):
     if platform.system() != "FreeBSD" or os.geteuid() != 0:
         raise ValueError("signed snapshot verification requires FreeBSD root and isolated scratch state")
     config = native.read_json(config_path, config_pin, dag.MAX_LINE)
-    if config["schema"] != "daemonarchy/signed-package-snapshot-inputs@1":
-        raise ValueError("unsupported signed snapshot input schema")
+    policy = fetch_policy(config)
     abi, osversion = config["abi"], config["osversion"]
     if (not isinstance(abi, str) or not re.fullmatch(r"FreeBSD:[0-9]+:[A-Za-z0-9_]+", abi)
             or type(osversion) is not int or not 1000000 <= osversion <= 9999999
@@ -260,9 +404,14 @@ def verify(config_path, config_pin, case):
         origin.payloads = {row["archive_path"]: row["download_bytes"] for row in packages.values()}
         if native.run_step(command, ["shell", "SELECT 1;"], case, "initialize", timeout=10) != "1\n":
             raise ValueError("private package database initialization failed")
-        args = ["fetch", "-Uy", "-r", rid, "-o", str(case / "payloads")]
-        args += ["-a"] if selected == "all" else ["--", *selected]
-        native.run_step(command, args, case, "fetch-verify", timeout=timeout)
+        if policy is None:
+            args = ["fetch", "-Uy", "-r", rid, "-o", str(case / "payloads")]
+            args += ["-a"] if selected == "all" else ["--", *selected]
+            native.run_step(command, args, case, "fetch-verify", timeout=timeout)
+            execution = None
+        else:
+            execution = parallel_fetch(executable, pkg_config, packages, databases[0],
+                                       database_pin, case, rid, policy, timeout, config_pin)
         fetched = time.monotonic()
         verified = verify_payload_files(case / "payloads", packages)
         if hashlib.sha256(databases[0].read_bytes()).hexdigest() != database_pin:
@@ -272,7 +421,8 @@ def verify(config_path, config_pin, case):
             raise ValueError("unexpected private cache files outside fetched payloads")
         transfers = dict(offline_requests=origin.offline_requests, https_redirects=origin.redirect_requests)
     dag.read_pinned(executable, config["pkg"]["sha256"], 128 * 1024 * 1024)
-    result = dict(schema=SCHEMA, input_sha256=config_pin, repository_id=rid,
+    result = dict(schema=SCHEMA if policy is None else PARALLEL_SCHEMA,
+                  input_sha256=config_pin, repository_id=rid,
                   public_key_sha256=repo["public_key"]["sha256"],
                   metadata_sha256={name: value["sha256"] for name, value in repo["metadata"].items()},
                   pkg_version=version, pkg_sha256=config["pkg"]["sha256"], os=platform.system(), release=platform.release(),
@@ -283,7 +433,18 @@ def verify(config_path, config_pin, case):
                   transfer_requests=transfers,
                   seconds=dict(authentication=authenticated - started, fetch_verify=fetched - authenticated,
                                total=time.monotonic() - started))
-    (case / "result.json").write_text(json.dumps(result, indent=2, sort_keys=True) + "\n")
+    if execution is not None:
+        result["fetch_execution"] = dict(execution, state="completed")
+        pending = case / ".result.pending.json"
+        with pending.open("x", encoding="utf-8") as stream:
+            stream.write(json.dumps(result, indent=2, sort_keys=True) + "\n")
+            stream.flush()
+            os.fsync(stream.fileno())
+        # Publication is the completion boundary. The progress journal never
+        # independently declares that this guarded result has been accepted.
+        os.link(pending, case / "result.json")
+    else:
+        (case / "result.json").write_text(json.dumps(result, indent=2, sort_keys=True) + "\n")
     return result
 
 

@@ -1,0 +1,59 @@
+{
+  "schema": "daemonarchy/parallel-package-fetch-development@1",
+  "recorded_at": "2026-10-22T11:09:45.457665+00:00",
+  "queue_item": "PKG-001",
+  "scope": "Controller qualification of bounded native command ownership, isolated fetch state and progress; native pkg crypto/concurrency renewal remains required",
+  "input_schema": "daemonarchy/signed-package-snapshot-inputs@2",
+  "result_schema": "daemonarchy/signed-package-snapshot@2",
+  "event_schema": "daemonarchy/package-progress-event@1",
+  "legacy_serial_schema_preserved": true,
+  "controller_checks_passed": 111,
+  "controller_groups": {
+    "native-tree-discovery": 9,
+    "native-dirdeps": 11,
+    "native-workspace": 8,
+    "qemu-worker": 13,
+    "package-dag": 23,
+    "native-package-plan": 22,
+    "signed-package-snapshot": 17,
+    "iso-stage": 2,
+    "test-loader": 6
+  },
+  "source_sha256": {
+    "scripts/native-package-plan.py": "93e66a23df78edb2cb16d567fe926024c9aadafe04e5e0e26c381f549d78cbb2",
+    "scripts/signed-package-snapshot.py": "386fb82989ba5e92edc51b4a53288aad3c830cfdcdf49e28bd59d5965642e8c5",
+    "scripts/package-dag.py": "1b99e5ba0a574d8a0a78445e9814685ed6e640629d32ffd324cb6440626b3e7c",
+    "tests/native-package-plan.py": "d04c558983e14c2f1b079ad674c990d75f1443ebdc6d8ff78173c66fd33a5f4f",
+    "tests/signed-package-snapshot.py": "a70b3d69363baec16903113830a583398b5333ce753e12e57d52da2880cdc284"
+  },
+  "controller_fetch_peer_scope": "Actual child processes using a command-protocol fixture; not native pkg signature or checksum qualification",
+  "process_controls": [
+    "actual overlapping children and bounded peak",
+    "failure stops queued work and reaps peers",
+    "post-command verifier refusal precedes queued work",
+    "common deadline reaps active children",
+    "signal cleanup reaps both children",
+    "invalid bounds refuse before command logs"
+  ],
+  "fetch_controls": [
+    "private database clone per batch",
+    "exact promoted inventory and measured verified-byte progress",
+    "catalogue, installed-database and cache changes refuse",
+    "stderr diagnostic refuses even with exit zero",
+    "published batch mutation refuses final inventory"
+  ],
+  "retained_development_failures": [
+    "Failure-path cleanup initially signalled an already terminating process group twice and skipped reaping after a signal error. The owner now signals once and waits even when signalling raises; the first failed test and focused diagnostic remain retained."
+  ],
+  "project_authority_valid": true,
+  "component_locks_current": 8,
+  "product_lifecycle_receipt": "missing",
+  "native_qualification": "pending",
+  "native_pkg_observed_version": "2.8.4",
+  "native_pkg_observed_sha256": "5fb7f228998089b65b06f3586428241330e9e86f4b8b3833c02637de358e6273",
+  "native_signed_snapshot_qualified": false,
+  "actual_parallel_installation": false,
+  "installation_authorized": false,
+  "performance_gain_qualified": false,
+  "release_qualified": false
+}
