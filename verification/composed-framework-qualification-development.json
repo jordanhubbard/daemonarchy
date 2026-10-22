@@ -1,6 +1,6 @@
 {
   "schema": "daemonarchy/composed-framework-qualification-development@1",
-  "observed_utc": "2026-10-22T19:14:41.744791+00:00",
+  "observed_utc": "2026-10-22T19:28:59.678928+00:00",
   "framework_revision": "c058695048a3a1980e45db977c316a68ee4c868d",
   "scope": "Exact Windows and descriptor framework composition; native development qualification in progress",
   "controller_regression": {
@@ -208,16 +208,29 @@
   "product_receipt": false,
   "iso_created": false,
   "release_authorized": false,
-  "next_action": "Complete native Windows and exact patched-wheel qualification, then proceed to actual compiler SDK and product lifecycle admission",
+  "next_action": "Complete exact patched native Windows and FreeBSD lifecycle qualification, exercise the real SDK tree aliases through public CLI, then admit actual compiler SDK and product lifecycle",
   "patched_wheel_renewal": {
     "source_revision": "23d0b678dc63eedbae673d2603dfad5e13ef09bb",
     "target": "Linux x86_64 / Python 3.14",
-    "result": "running; owned supervisor verified live",
+    "result": "passed",
     "maximum_seconds": 2100,
     "guest_qualification_serialized": true,
     "wheel_growth_budget_bytes": 4294967296,
     "minimum_host_reserve_bytes": 42949672960,
-    "cache_deletion_performed": false
+    "cache_deletion_performed": false,
+    "terminal": {
+      "exit_code": 0,
+      "schema": "daemonarchy/native-command-terminal@1",
+      "seconds": 662.744
+    },
+    "wheel_identity": "sha256:f5b85eb55e2782a5ed32379d3cf34f7d0b116f801804177b432a6d9353b4c09f",
+    "standard_binding": {
+      "distribution": "sha256:e0dd058e6e67bca93e3dd485bc6c4cc43fa8215a33e2160503809f5afdc359d7",
+      "members": 1235,
+      "policy": "sha256:a5ca0d6d13daff0199f218c5e4af723a2cec87b927e75dd3a731c511b5d85ac7"
+    },
+    "tamper_refusal": "standard_binding.changed",
+    "report_identity": "sha256:770a72fff26501432ecc9c3f10ef5ac4eb81016691b48b32fa698b4b72284667"
   },
   "completed_guest_retirement": {
     "terminal": {
@@ -229,5 +242,56 @@
     "normal_shutdown_requested": true,
     "retained_runtime_and_evidence_preserved": true,
     "new_allocation_required_for_patched_native_renewal": true
+  },
+  "patched_freebsd_renewal": {
+    "framework_revision": "23d0b678dc63eedbae673d2603dfad5e13ef09bb",
+    "new_allocation": true,
+    "original_completed_guest_preserved": true,
+    "maximum_guest_lifetime_seconds": 9000,
+    "native_role": {
+      "os": "FreeBSD 16.0-CURRENT",
+      "uid": 2002,
+      "cpus": 4,
+      "memory_mib": 4096,
+      "alignment_passed": true
+    },
+    "carrier": {
+      "schema": "daemonarchy/qualified-native-carrier-development@1",
+      "framework_commit": "23d0b678dc63eedbae673d2603dfad5e13ef09bb",
+      "wheel_identity": "sha256:f5b85eb55e2782a5ed32379d3cf34f7d0b116f801804177b432a6d9353b4c09f",
+      "distribution_identity": "sha256:e0dd058e6e67bca93e3dd485bc6c4cc43fa8215a33e2160503809f5afdc359d7",
+      "dependency_closure_identity": "sha256:2e13cd609bd708efc25a1c603e6166edab964d5a018f8805531f286f9c09137c",
+      "seed_closure_identity": "sha256:cf27f5f9047f06973bd8e6c2a45c404be74362d98af412742c3ed31e66400e29",
+      "carrier_sha256": "92b61d365902c8909e2a63b458b955ec742d323158b6fef87624375c1b095549",
+      "bootstrap_sha256": "29fa4f5b517d222dfe9b0402fd77cb0d97e341b8b672081921311132434d04b8",
+      "native_installed_qualified": false,
+      "source_sdk_admitted": false,
+      "release_acceptance": false
+    },
+    "fixture_archive_sha256": "8f2079fc1225f7f1b27d4c0c31cc6d889d6c76e276e67e3cca406428a8d53f1e",
+    "offline_bootstrap": {
+      "exit_code": 0,
+      "schema": "daemonarchy/native-command-terminal@1",
+      "seconds": 7.607
+    },
+    "installed_binding_controls": {
+      "selected": 6,
+      "failures": 0,
+      "errors": 0,
+      "skipped": 0,
+      "module_sha256": "118eaf712600436acccd83ac2b69b68cce71c486405ea473330cbe5d50d744ac",
+      "test_sha256": "4a73cbf9bbdd1cecb4e1f59e68cdd0b702efe5e596bcf8229e049d3aee5c39b6",
+      "module_from_installed_prefix": true,
+      "canonical_native_cli_qualified": false
+    },
+    "public_cli_result": "running; original public SDK lifecycle; supervisor verified live",
+    "compiler_sdk_admitted": false,
+    "product_receipt": false,
+    "release_qualified": false,
+    "initialization": {
+      "exit_code": 0,
+      "schema": "daemonarchy/native-command-terminal@1",
+      "seconds": 50.318
+    }
   }
 }
