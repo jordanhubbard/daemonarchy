@@ -146,6 +146,7 @@ preserved. No performance fix or lifecycle pass is claimed.
 - **Depends on:** none
 - **Implementation:**
   - [ ] Prototype multiple styles from recorded events; implement stage-aware presentation; validate on physical console and SSH/serial.
+  - **Candidate review:** [Draft PR #21](https://github.com/jordanhubbard/daemonarchy/pull/21) replaces elapsed-time completion estimates with measured storage/archive/pkg observations and three styles. Ten controller and ten native FreeBSD/PTY checks pass, including resize, small terminals, 16/256 colors, reduced motion, failure and cursor cleanup. The completion-invariant fixture still passes. This review refreshes its intentional retained source baseline and locks; recorded acquisition replay, full native installation and physical-console/serial acceptance remain open.
 - **Evidence:**
   - [ ] Useful readable metrics, genuine waiting/failure states, resize and reduced-motion behavior, bounded cost and native console demonstrations.
 
@@ -382,15 +383,23 @@ and passes six binding controls. Its [real public CLI renewal](../../verificatio
 now passes in 573.597 supervised seconds: three original tests and two independent
 acceptance cases pass, the local-runtime receipt is admitted, all 28 retained
 records reverify from current bytes, and the owned source server exits zero.
-Installed context controls are running. Native Windows passes preflight,
+All ten installed context controls now pass in 625.485 supervised seconds,
+with zero skips and 469 installed production modules verified. Native Windows passes preflight,
 environment, compile, lint, OpenSpec and documentation checks, then its wheel
 check refuses missing Git objects in the qualification partial clone before unit
 testing. The failed run is retained. Fetching the complete Git object closure
 reduces 4,142 missing objects to zero, and connectivity verification passes.
-The full native gate is running again; production source is unchanged.
+The renewed native gate then refuses newly reported critical/high DOMPurify
+advisories before wheel or unit tests. [Framework issue #120](https://github.com/jordanhubbard/literate-ai/issues/120)
+owns the compatible 3.4.17 transitive-lock update and native gate renewal; no audit
+exception is added. Production Python source is unchanged.
 The first complete host lifecycle refuses a generated frontend BigInt error
-without a candidate receipt. A fresh complete regeneration is running with the
-same configured model and unchanged 3,600-second limit; the failure is retained.
+without a candidate receipt. Fresh complete regeneration with the same configured
+model now passes 228 tests and independent acceptance in 1,595.584 seconds.
+Supported promotion yields current parent receipt `0e2f897c8b6e`; the original
+failure remains retained. The compatible DOMPurify 3.4.17 repair passes clean
+controller audit and documentation checks without exceptions. The full native
+Windows gate is now running on patched composition `23d0b678`.
 No compiler SDK, product receipt, ISO or release admission follows from these
 partial checks.
 
