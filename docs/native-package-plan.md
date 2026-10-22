@@ -13,6 +13,11 @@ Signed repository acquisition, payload verification, transaction coordination,
 safe parallel installation and native performance/recovery acceptance remain
 required under PKG-001.
 
+The separate [signed snapshot checker](signed-package-snapshot.md) now provides
+native public-key catalogue and fetched-archive verification. Its observations
+remain distinct from the unsigned development-plan probes below; a signed
+snapshot does not silently promote a graph or authorize installation.
+
 [The development checkpoint](../verification/native-package-plan-development.json)
 binds 16 passing controller and native FreeBSD checks, exact tested code/pkg/
 graph/metadata hashes, and actual desktop/NVIDIA plans matching all 952/960

@@ -22,6 +22,15 @@ cleanup. [The native procedure](../../docs/native-package-plan.md) uses an empty
 private database and frozen local metadata; it grants no installation permission
 or signed-repository/lifecycle acceptance.
 
+The [signed snapshot checker](../../scripts/signed-package-snapshot.py) uses
+native public-key catalogue import and fetch/checksum verification against pinned
+metadata. Its [controller controls](../../tests/signed-package-snapshot.py)
+cover frozen/allowlisted serving, unsafe inputs, offline read-only replay and
+exact archive inventory. [The native procedure](../../docs/signed-package-snapshot.md)
+requires real wrong-key, altered-signature and corrupt-payload refusal as well as
+positive observations. It grants no dependency-plan, installation or lifecycle
+acceptance, and historical release fixtures cannot qualify final 1.2 inputs.
+
 ## Required scenarios
 
 - **Complete dependency plan:** demonstrate the stated requirement on its actual supported
