@@ -1,0 +1,206 @@
+{
+  "schema": "daemonarchy/native-sdk-isolated-cli-development@1",
+  "observed_utc": "2026-10-22T17:45:08.239678+00:00",
+  "scope": "Real installed public CLI original-source SDK microfixture on isolated FreeBSD; local-runtime consumer admission only",
+  "framework_source_revision": "4ed7e5a1024b513a497f3608e053d759f7bce952",
+  "wheel_identity": "sha256:359cbf0f25a9b22f1dc5e276c42030b8a539ae17878c1db374f3b23dd73a81db",
+  "distribution_identity": "sha256:196504b9d858d877009293736ddcfef0bd28c68fdcb1dcc3c6ffbd9784fb02e7",
+  "native_role": {
+    "os": "FreeBSD 16.0-CURRENT",
+    "kernel_revision": "041802b362aa",
+    "architecture": "amd64",
+    "filesystem": "UFS",
+    "hypervisor": "KVM",
+    "vcpus": 4,
+    "memory_mib": 4096,
+    "unprivileged": true,
+    "alignment_passed": true,
+    "original_disk_preserved": true
+  },
+  "preparation": {
+    "offline_bootstrap_seconds": 9.015,
+    "project_initialization_seconds": 120.362,
+    "fixture_archive_sha256": "766b22edaa479cab39c2efc86ea03e09471eb20d503c2e7425ca36f65f231e67"
+  },
+  "canonical_cli": {
+    "passed": true,
+    "supervised_total_seconds": 575.845,
+    "exit_code": 0,
+    "authorized_execution_limit_seconds": 3600,
+    "deadline_unchanged": true,
+    "authority_mode": "retained-project",
+    "source_authority": "original",
+    "conversion_advanced": false,
+    "no_discovery_transport_or_producer_mocks": true,
+    "source_files": 9,
+    "source_commit": "caa38b9cafcf43dbea5786a12bc2eaa550cb0912",
+    "source_tree": "sha256:d0115b5cb6226b3c597212668cbb60ef13247800e4dfdadaeb5fd14e7c46bcd2",
+    "source_snapshot": "sha256:45e090b504f6adb53f49424aa9dcf6f91c9606e3501f139c571a47bad6bb5c31",
+    "authorization_refusals": {
+      "missing-authorization": "rebuild.host_execution_not_acknowledged",
+      "missing-retained-authorization": "retained_project.admission_invalid"
+    },
+    "receipt_identity": "sha256:fd8acae71dfed07242e97b0b6182e02a33f6646ebbf60be5d935e64518e07198",
+    "receipt_scope": "local-runtime",
+    "original_tests": {
+      "failed": 0,
+      "passed": 3,
+      "skipped": 0
+    },
+    "command_stages": [
+      "build",
+      "test",
+      "docs",
+      "accept"
+    ],
+    "independent_acceptance_cases": 2,
+    "independent_acceptance_exit_codes": [
+      0,
+      2
+    ],
+    "withheld_product_stdout": "10.0\n",
+    "records_reverified": 28,
+    "record_verification_is_inspection_not_reconstructed_live_admission": true,
+    "source_server_terminal": 0
+  },
+  "loader_control": {
+    "consumer_rpath": false,
+    "reviewed_loader_required": true,
+    "without_loader_exit_code": 1
+  },
+  "installed_binding_controls": {
+    "selected": 6,
+    "passed": 6,
+    "failed": 0,
+    "skipped": 0,
+    "module_from_installed_prefix": true,
+    "module_sha256": "118eaf712600436acccd83ac2b69b68cce71c486405ea473330cbe5d50d744ac"
+  },
+  "installed_context_controls": "running separately; not yet qualified",
+  "transport_wrapper_note": "The transport-only summary conservatively retains canonical_installed_cli_qualified false; actual public CLI admission and qualification progress are separately inspected above",
+  "source_built_compiler_admitted": false,
+  "actual_freebsd_source_sdk_admitted": false,
+  "consumer_project_current_receipt": false,
+  "daemonarchy_product_receipt": false,
+  "package_qualified": false,
+  "iso_created": false,
+  "release_acceptance": false,
+  "raw_evidence": {
+    "canonical-sdk-command/started.json": {
+      "sha256": "f5f311f118a56e35257ffde975e79100a39effbd1df350da812db17803c84d78",
+      "bytes": 772
+    },
+    "canonical-sdk-command/terminal.json": {
+      "sha256": "76cb8027007e1c334369da3dbc96037b696ed8542333228d877873281004126e",
+      "bytes": 88
+    },
+    "canonical-sdk-command/stdout.log": {
+      "sha256": "5eb6b11ebb62859960beb1c6307460e0b150efeefc9a96ea9469991b77c07776",
+      "bytes": 812
+    },
+    "canonical-sdk-command/stderr.log": {
+      "sha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855",
+      "bytes": 0
+    },
+    "canonical-sdk-transport/result.json": {
+      "sha256": "0b8a15ea8e21f4268df18cfbf2b827b58ed1a56c75448b2ea06f2f05fd5839f9",
+      "bytes": 519
+    },
+    "canonical-sdk-transport/qualification/authorized-execution.stderr": {
+      "sha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855",
+      "bytes": 0
+    },
+    "canonical-sdk-transport/qualification/authorized-execution.stdout": {
+      "sha256": "099a9332c475b51166b57afa3819af3bbd911981ce0a984be71bfa4c6c95762e",
+      "bytes": 6532
+    },
+    "canonical-sdk-transport/qualification/component-lock.stderr": {
+      "sha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855",
+      "bytes": 0
+    },
+    "canonical-sdk-transport/qualification/component-lock.stdout": {
+      "sha256": "3683ea40641a599ce9633d0e2a3fdb875e6aec0f66ff65c88646123dcd4becc0",
+      "bytes": 1506
+    },
+    "canonical-sdk-transport/qualification/documentation-review.stderr": {
+      "sha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855",
+      "bytes": 0
+    },
+    "canonical-sdk-transport/qualification/documentation-review.stdout": {
+      "sha256": "78409f4058251ba764b4f79b1280bbbc041256ea92677a59e0c58ff7701113d3",
+      "bytes": 457
+    },
+    "canonical-sdk-transport/qualification/final-documentation-review.stderr": {
+      "sha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855",
+      "bytes": 0
+    },
+    "canonical-sdk-transport/qualification/final-documentation-review.stdout": {
+      "sha256": "bfc7bc17b281e47e11307e3c02c956c2e480af74bc04034ce69e5f9362464afe",
+      "bytes": 458
+    },
+    "canonical-sdk-transport/qualification/final-validate.stderr": {
+      "sha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855",
+      "bytes": 0
+    },
+    "canonical-sdk-transport/qualification/final-validate.stdout": {
+      "sha256": "26191a8d25f34e4004a4642ad35c4adf09601f39a353170d9a24f4c21c788166",
+      "bytes": 95873
+    },
+    "canonical-sdk-transport/qualification/missing-authorization.stderr": {
+      "sha256": "f012093aa9149555d8a5e3d64873c85666c7a9f58450299dda16e98c1791bc86",
+      "bytes": 303
+    },
+    "canonical-sdk-transport/qualification/missing-authorization.stdout": {
+      "sha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855",
+      "bytes": 0
+    },
+    "canonical-sdk-transport/qualification/missing-retained-authorization.stderr": {
+      "sha256": "eb99887c0de598b4450e5be4c180ef798cd9d028e7fc3514b1f127b196f3ff77",
+      "bytes": 191
+    },
+    "canonical-sdk-transport/qualification/missing-retained-authorization.stdout": {
+      "sha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855",
+      "bytes": 0
+    },
+    "canonical-sdk-transport/qualification/original-apply.stderr": {
+      "sha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855",
+      "bytes": 0
+    },
+    "canonical-sdk-transport/qualification/original-apply.stdout": {
+      "sha256": "b095c65790a445881ad1d2ce686440cad10206e43d708272f356d65317a72f2e",
+      "bytes": 970
+    },
+    "canonical-sdk-transport/qualification/original-plan.stderr": {
+      "sha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855",
+      "bytes": 0
+    },
+    "canonical-sdk-transport/qualification/original-plan.stdout": {
+      "sha256": "ba1df6899dae885c6cba4bf428b937bbe3ed0cf7dc7d9e690fb0a67a75501e8f",
+      "bytes": 686
+    },
+    "canonical-sdk-transport/qualification/progress.json": {
+      "sha256": "33d5b7bebdd2bd340d75c747525641614e6d1e8b39a9cd0eb52a4f87c3bfac0c",
+      "bytes": 395
+    },
+    "canonical-sdk-transport/qualification/retained-plan.stderr": {
+      "sha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855",
+      "bytes": 0
+    },
+    "canonical-sdk-transport/qualification/retained-plan.stdout": {
+      "sha256": "3ef4684f426b0687145994fa20df117bb2e9fc1ca6340d41d5c758269dd0e4a1",
+      "bytes": 6018
+    },
+    "canonical-sdk-transport/qualification/without-loader.stderr": {
+      "sha256": "fc8ff40654bf392c3147eeae4077a557bdc65c9ab88a8f0eaff26253ff78a86e",
+      "bytes": 73
+    },
+    "canonical-sdk-transport/qualification/without-loader.stdout": {
+      "sha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855",
+      "bytes": 0
+    }
+  },
+  "record_inspection_sha256": "635093d35151c394b4f1e624e4ede2d2baae0eabe72de1d6a25cb5b390da5a1f",
+  "preceding_worker_investigation": "verification/native-sdk-worker-investigation-development.json",
+  "primary_worker_timeout_retained": true,
+  "composed_windows_descriptor_qualification": "pending on separate code c0586950; this wheel excludes the later Windows composition"
+}

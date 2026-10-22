@@ -346,6 +346,18 @@ is implemented and natively qualified on draft PR #7, pending integration.
 Physical NICs, Netdump, authenticated kernel sessions, continuous early-kernel
 transport, compiler/SDK admission and release acceptance remain open.
 
+The [isolated native public SDK checkpoint](../../verification/native-sdk-isolated-cli-development.json)
+now passes exact framework wheel `4ed7e5a1` in 575.845 supervised seconds, within
+the unchanged 3,600-second authorized execution budget. The real public CLI
+builds the original consumer, passes three tests, documentation and two withheld
+acceptance cases, and admits a local-runtime receipt. All 28 retained records
+reverify from current CAS bytes. The accepted app fails without the reviewed
+loader context; both authorization refusals remain intact. The owned source
+server exits zero, and six binding controls pass in this new prefix. Ten installed
+context controls remain live separately. This does not admit the source-built
+compiler, actual FreeBSD source SDK, packages, product receipt, ISO or release.
+The separate Windows/descriptor composition still requires exact qualification.
+
 The [native worker investigation](../../verification/native-sdk-worker-investigation-development.json)
 now profiles the installed descriptor candidate for a deliberate 300-second
 execution window. File closes consume 134.537 self seconds and stat calls
@@ -358,7 +370,8 @@ primary role and 0.18–0.20 seconds in a disposable aligned FreeBSD VM. The
 kernels, filesystems and load differ; this is diagnostic evidence of a worker
 bottleneck, not a controlled speedup attribution. The isolated offline install
 and project initialization pass. Its unchanged-budget canonical SDK command
-is live; complete it and the ten installed context controls before qualification.
+was live at that checkpoint and has now passed as recorded above. Complete the
+ten installed context controls before closing the context qualification.
 Windows/descriptor composition is isolated for fresh full regression and later
 exact-wheel/lifecycle renewal. The missing product receipt and release gates
 remain open.
