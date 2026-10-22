@@ -277,6 +277,15 @@ preserved. No performance fix or lifecycle pass is claimed.
 - **Evidence:**
   - [ ] Every inherited backlog obligation has direct completion evidence; native and virtual/physical acceptance match exact final artifacts; full LitAI verification and release gates pass; published new release and immutable assets are verified.
 
+The [subsequent October 22 refresh](../../verification/upstream-refresh-2026-10-22-night.json)
+confirms sources remain current at `775e421dc38f`; source PR #9 still has four
+passing Linux cross-builds and two queued macOS cells. [Ports PR #18](https://github.com/jordanhubbard/daemonarchy-ports/pull/18)
+is merged at `72c758ea367d`, importing 44 upstream commits through
+`a7c9a97bae26` across 172 paths. All 64 downstream blobs/modes and the complete
+downstream binary delta are preserved; the imported delta exactly matches
+upstream. Its 141 whitespace diagnostics match the upstream patch files verbatim.
+Native changed-port builds and clean bulk qualification remain unrun.
+
 The [final October 22 refresh](../../verification/upstream-refresh-2026-10-22-final.json)
 confirms the owned source mirror still matches upstream at `775e421dc38f`.
 Source PR #9 retains four passing Linux cross-builds and two queued macOS cells;
