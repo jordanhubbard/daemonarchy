@@ -810,3 +810,15 @@ shutdown before the original deadline; QEMU exits zero and the original disks,
 prefixes and raw evidence remain retained. Wheel and subsequent native guest
 renewal are serialized to preserve the 40 GiB backing-volume reserve; no cache or
 evidence deletion is performed. This is resource scheduling, not a gate waiver.
+
+The [iflib debugnet ownership correction](../../verification/iflib-debugnet-ownership-development.json)
+addresses another prerequisite found during the resumable-debugger audit.
+Production START changes receive allocator pointers and batching, but END leaves
+them changed; the multi-list loop also repeats list zero. The original callback
+fails three sanitizer controls on macOS and FreeBSD. The candidate passes exact
+pointer/batching restoration across repeated sessions and every receive list.
+Exact kernel/recovery renewal, ring-buffer provenance and non-panic resume remain
+open; no panic-only guard is removed. Source issue #16 owns this correction.
+The exact `4f46a741fb2` candidate kernel build is live in fresh objects on the
+native worker with four jobs and a 2400-second limit. Before/during/after live
+allocator inspection and ordinary recovery renewal remain required.
