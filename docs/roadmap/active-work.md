@@ -416,8 +416,9 @@ The [patched-wheel public CLI renewal](../../verification/native-sdk-postaudit-c
 also passes on a fresh FreeBSD allocation with exact framework `23d0b678`:
 536.095 supervised seconds, three original tests, two independent acceptance
 cases and all 28 retained records reverified. Its 3600-second authorization limit
-is unchanged. A separate tree-alias case is being initialized; its real hard-link
-and symlink producer/consumer route remains unqualified.
+is unchanged. A separate tree-alias case now observes real hard-link inode equivalence and
+exact symbolic-link text from its live producer. Its public CLI consumer is
+running; the tree lifecycle remains unqualified until its terminal result.
 
 No compiler SDK, product receipt, ISO or release admission follows from these
 partial checks.

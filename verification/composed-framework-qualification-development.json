@@ -1,6 +1,6 @@
 {
   "schema": "daemonarchy/composed-framework-qualification-development@1",
-  "observed_utc": "2026-10-22T19:39:20.131305+00:00",
+  "observed_utc": "2026-10-22T19:41:31.454144+00:00",
   "framework_revision": "c058695048a3a1980e45db977c316a68ee4c868d",
   "scope": "Exact Windows and descriptor framework composition; native development qualification in progress",
   "controller_regression": {
@@ -307,6 +307,38 @@
       "schema": "daemonarchy/native-command-terminal@1",
       "seconds": 50.318
     },
-    "sdk_tree_aliases": "separate public tree initializer dispatched; not yet qualified"
+    "sdk_tree_aliases": {
+      "public_cli_qualified": false,
+      "state": "authorized public CLI execution running; live supervisor observed",
+      "separate_project": true,
+      "initialization": {
+        "exit_code": 0,
+        "schema": "daemonarchy/native-command-terminal@1",
+        "seconds": 72.938
+      },
+      "case_sensitive": true,
+      "aliases": [
+        {
+          "kind": "hardlink",
+          "path": "python/vendor_math/lib/vendor_math.so.hard",
+          "target": "python/vendor_math/lib/vendor_math.so"
+        },
+        {
+          "kind": "symlink",
+          "path": "python/vendor_math/lib/vendor_math.so.symbolic",
+          "target": "vendor_math.so"
+        }
+      ],
+      "snapshot": {
+        "algorithm": "sha256",
+        "digest": "b358e5965c4ca4e0eac61002344b1ce5bded95168eb46864f5a7be2ee7ca6cbe",
+        "schema": "urn:literate-ai:schema:v1:content-identity"
+      },
+      "actual_symlink_text_verified": true,
+      "actual_hardlink_inode_verified": true,
+      "compiler_sdk_admitted": false,
+      "product_receipt": false,
+      "release_qualified": false
+    }
   }
 }
