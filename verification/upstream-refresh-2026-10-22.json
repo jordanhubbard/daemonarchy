@@ -1,0 +1,43 @@
+{
+  "schema": "daemonarchy/upstream-refresh-development@1",
+  "observed_utc": "2026-10-22T08:04:43.422681+00:00",
+  "scope": "R12-18 source/ports reconciliation preparation; no native release input admission or acceptance",
+  "sources": {
+    "repository": "https://github.com/jordanhubbard/daemonarchy-src",
+    "upstream_revision": "9c67d6ed9632e180e95bebabc5a8ceae7f22ce1a",
+    "owned_main_revision": "9c67d6ed9632e180e95bebabc5a8ceae7f22ce1a",
+    "integration_review": "https://github.com/jordanhubbard/daemonarchy-src/pull/9",
+    "integration_status": "open",
+    "upstream_commits_pending_integration": 93,
+    "checks": {
+      "success": 10,
+      "queued": 2,
+      "queued_cells": [
+        "amd64 macos-latest (clang-18)",
+        "aarch64 macos-latest (clang-18)"
+      ]
+    }
+  },
+  "ports": {
+    "repository": "https://github.com/jordanhubbard/daemonarchy-ports",
+    "previous_integration_revision": "7d62331853236467bd98c66c67f80d668d410d80",
+    "upstream_revision": "418670e029c3d5bd61059bb50af7ab21d6c9786a",
+    "integration_revision": "b96f619449b51901e0db7c938791b631029c98e0",
+    "integration_review": "https://github.com/jordanhubbard/daemonarchy-ports/pull/10",
+    "integration_status": "merged",
+    "upstream_commits_imported": 44,
+    "conflicts": 0,
+    "preserved_downstream_paths": 64,
+    "preserved_git_blobs_and_modes": true,
+    "complete_downstream_delta_preserved": true,
+    "whitespace_check": "Ten warnings in six verbatim upstream patch files; preserved unchanged",
+    "native_changed_port_tests": false,
+    "native_clean_bulk": false
+  },
+  "active_workspace_selection_sha256": "4e79295002b67899e66b4665f43848b73288a26df5037d7d859f0b2c25c1a3fd",
+  "active_workspace_selection_changed": false,
+  "published_artifacts_changed": false,
+  "native_release_inputs_admitted": false,
+  "release_acceptance": false,
+  "ledger_rows_closed": 0
+}
