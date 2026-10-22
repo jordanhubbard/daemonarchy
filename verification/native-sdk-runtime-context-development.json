@@ -1,6 +1,6 @@
 {
   "schema": "daemonarchy/native-sdk-runtime-context-development@1",
-  "observed_utc": "2026-10-22T11:58:31.639783+00:00",
+  "observed_utc": "2026-10-22T12:04:43.686033+00:00",
   "scope": "ADOPT-002 preparation; installed native context cases pass, canonical public CLI terminates at its unchanged 3600-second deadline; no product admission",
   "framework_issue": "https://github.com/jordanhubbard/literate-ai/issues/118",
   "framework_review": "https://github.com/jordanhubbard/literate-ai/pull/110",
@@ -136,5 +136,96 @@
   "iso_created": false,
   "published_artifacts_changed": false,
   "release_acceptance": false,
-  "ledger_rows_closed": 0
+  "ledger_rows_closed": 0,
+  "read_only_native_dependency_profile": {
+    "seconds": 14.613,
+    "components": 34,
+    "edges": 97,
+    "observation_bytes": 54122,
+    "observation_sha256": "588ea64e7a94038f1fc12d4e74e429c39ba3af6b55d1abf1d4509e2c230b8627",
+    "profile_sha256": "ce43bf7e626a789d16ba7f80a6daa056160373b70d85fecf59e1d5b5a52e2538",
+    "scope": "Instrumented read-only native input/dependency observation; excludes binding-owner checks, command execution and admission; not an uninstrumented performance benchmark",
+    "supervised_seconds": 28.232,
+    "first_attempt": "Refused already retired inputs; fresh verified diagnostic capture passed. Original attempt remains retained.",
+    "stat_calls": 10520,
+    "inspector_processes": 217,
+    "top_functions": [
+      {
+        "file": "profile-retained-native-observation-v2.py",
+        "line": 22,
+        "function": "observe",
+        "calls": 1,
+        "self_seconds": 6.8e-05,
+        "cumulative_seconds": 14.600424
+      },
+      {
+        "file": "observation.py",
+        "line": 884,
+        "function": "observe",
+        "calls": 1,
+        "self_seconds": 2.9e-05,
+        "cumulative_seconds": 12.93156
+      },
+      {
+        "file": "freebsd.py",
+        "line": 40,
+        "function": "observe",
+        "calls": 1,
+        "self_seconds": 0.000173,
+        "cumulative_seconds": 12.931514
+      },
+      {
+        "file": "freebsd.py",
+        "line": 49,
+        "function": "_observe",
+        "calls": 1,
+        "self_seconds": 0.001566,
+        "cumulative_seconds": 12.931341
+      },
+      {
+        "file": "freebsd.py",
+        "line": 249,
+        "function": "_closure",
+        "calls": 1,
+        "self_seconds": 0.011338,
+        "cumulative_seconds": 11.288538
+      },
+      {
+        "file": "freebsd.py",
+        "line": 262,
+        "function": "image",
+        "calls": 152,
+        "self_seconds": 0.005865,
+        "cumulative_seconds": 8.623032
+      },
+      {
+        "file": "observation.py",
+        "line": 2329,
+        "function": "_run_bounded_tool",
+        "calls": 217,
+        "self_seconds": 0.025345,
+        "cumulative_seconds": 8.366793
+      },
+      {
+        "file": "_process.py",
+        "line": 41,
+        "function": "run_bounded_process",
+        "calls": 217,
+        "self_seconds": 0.050313,
+        "cumulative_seconds": 7.275915
+      }
+    ]
+  },
+  "read_only_public_plan_profile": {
+    "seconds": 105.045,
+    "exit_code": 0,
+    "ok": true,
+    "profile_sha256": "f0b37fff4733c1cbbe7fc9931ec19ac192a0e6b953ea61e957757cc768eae506",
+    "scope": "Instrumented read-only public retained plan; no execution, SDK admission or release benchmark",
+    "supervised_seconds": 105.98,
+    "stat_calls": 43832,
+    "installed_distribution_observations": 4,
+    "distribution_cumulative_seconds": 75.588888,
+    "inventory_prefilter_cumulative_seconds": 32.781708
+  }
 }
