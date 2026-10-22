@@ -81,6 +81,18 @@ no legacy conversion metadata will be synthesized. Metadata-only original
 adoption does not grant execution or acceptance; native receipt and ISO remain
 missing. Preserve original source placement and earn lifecycle admission.
 
+The [SDK runtime candidate](../../verification/native-sdk-public-development.json)
+now has a separate [draft framework contribution #110](https://github.com/jordanhubbard/literate-ai/pull/110).
+Exact code `f65e0c62` passes 2,046 controller tests with 70 skips and no failures,
+clean wheel qualification and offline FreeBSD installation of 37 distributions.
+Its source fixtures supply project discovery and local Git routing; installed
+native fixture checks remain running. A separate real SSH source acquisition and
+capture check passes without routing mocks. A real canonical project now passes
+installed FreeBSD CLI validation with its 16-kind default receipt policy preserved;
+canonical build/test acceptance remains open. These preparation checks do not
+admit the actual compiler/sysroot, product lifecycle or ISO. Next bind the complete
+actual retained profiles and earn native admission; all 24 release rows remain open.
+
 - **Evidence:**
   - [ ] Actual installed CLI accepts retained native execution; source and binary invalidation works; native tests and artifact hashes are current; failed or omitted evidence blocks publication; existing release workflow is reproduced.
 

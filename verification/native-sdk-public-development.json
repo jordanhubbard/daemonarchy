@@ -1,0 +1,67 @@
+{
+  "schema": "daemonarchy/native-sdk-public-development@1",
+  "scope": "Framework preparation for ADOPT-002; no product lifecycle admission or completed release obligation",
+  "framework_review": "https://github.com/jordanhubbard/literate-ai/pull/110",
+  "qualified_code_revision": "f65e0c622aaaa7bb6102d864b61404de524b9645",
+  "review_head": "c39ac88cc76830defbf6a34503989f6109020904",
+  "wheel_identity": "sha256:7e2ca6c78987136723c6efc8ae2f46c7617a2e72a829d4576381db2aab67d841",
+  "distribution_identity": "sha256:7175249318bdfef817eeacbffaeb33e9b64c96350ad3e924e2f1ae2bdf31e2a4",
+  "controller_regression": {
+    "selected": 2116,
+    "passed": 2046,
+    "skipped": 70,
+    "failed": 0,
+    "seconds": 1172.745,
+    "report_sha256": "ad0a00d4c7fd199cbf0cceec6abf76e138d9eb3e034b381ac1a88f4cd7280b1a"
+  },
+  "focused_cases": {
+    "sdk_policy_and_custody": 12,
+    "sdk_runtime_and_refusals": 7,
+    "existing_runtime_compatibility": 21,
+    "skipped": 0,
+    "scope": "Project discovery and local Git routing are fixture-supplied; real CMake compilation, grants, custody and acceptance execute"
+  },
+  "wheel": {
+    "qualified": true,
+    "members": 1231
+  },
+  "freebsd_offline_install": {
+    "passed": true,
+    "distributions_verified": 37,
+    "seconds": 88.753
+  },
+  "installed_freebsd_fixture_batch": {
+    "status": "running",
+    "terminal_result_claimed": false,
+    "canonical_cli_acceptance": false
+  },
+  "real_source_transport": {
+    "passed": true,
+    "method": "Task-owned loopback SSH server with ephemeral keys and strict host-key verification; installed production source acquisition/capture, no routing mock",
+    "files": 8,
+    "source_snapshot": "sha256:36a3d91618c4674220e210041a0886c2ad416559443d7dc1ceb21a0206d5433e",
+    "source_tree": "sha256:5f094494e171854532dd8486a43e9afd8401d06e880b9b35035d42aa08b3ba8c",
+    "first_attempt": "Strict server ownership checks refused authorization under a shared temporary parent; failure retained",
+    "owned_server_terminal": true,
+    "host_ssh_configuration_changed": false
+  },
+  "canonical_project_preparation": {
+    "installed_initialization_adapter": true,
+    "installed_public_cli_validate_passed": true,
+    "default_receipt_policy_preserved": true,
+    "required_evidence_kinds": 16,
+    "build_test_acceptance": false
+  },
+  "compiler_sdk_admitted": false,
+  "product_receipt": false,
+  "iso_created": false,
+  "release_acceptance": false,
+  "ledger_rows_closed": 0,
+  "product_verification": {
+    "authority": "pass",
+    "host_contract_locks_current": 8,
+    "failure": "project.test_receipt_missing",
+    "source_intelligence": "disabled skip",
+    "html_observability": "undeclared skip"
+  }
+}
