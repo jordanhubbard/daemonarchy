@@ -109,7 +109,12 @@ conflicts) remain visible. The collector does not implement pkg's solver, test
 file/script side effects or grant transaction permission: every result retains
 `native_solver_qualified: false` and `installation_authorized: false`.
 
-Next integrate actual native pkg resolution and signed catalogue acquisition,
+The [native resolution checker](native-package-plan.md) now compares actual
+pkg dry-run proposals and imported package/dependency identities with a pinned
+graph in a fresh private database. Its development observations remain distinct
+from signed repository, payload and installation acceptance.
+
+Next qualify signed catalogue acquisition and native resolution for final inputs,
 capture every real release selection, and qualify hash/installed-file evidence.
 Then implement the shared transaction coordinator and progress events, with safe
 parallel installation, failure/retry/recovery and measured native performance.

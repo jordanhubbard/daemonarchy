@@ -120,6 +120,7 @@ actual retained profiles and earn native admission; all 24 release rows remain o
 - **Depends on:** none
 - **Implementation:**
   - [x] Implement pinned catalogue dependency-graph collection and controller refusal checks. Preserve exact package/archive/manifest identities, repository selection, ABI/OSVERSION constraints and per-selection transitive closure; retain unresolved native version/solver requirements explicitly. [Collector contract](../package-dag.md).
+  - [x] Compare actual native pkg dry-run plans with captured development graphs in fresh private databases. All 952 desktop and 960 NVIDIA package identities and imported dependencies match; native version-drift and omitted-transitive-package controls refuse. Sixteen controller/native checks pass. [Native checkpoint](../../verification/native-package-plan-development.json). Signed final inputs, actual installation and lifecycle admission remain open.
   - [ ] Capture complete real release catalogues and every supported selection; qualify native solver results, signature/hash verification and graph invalidation.
   - [ ] Implement coordinated bounded scheduling; publish structured progress; exercise retry, failures and recovery.
 - **Evidence:**

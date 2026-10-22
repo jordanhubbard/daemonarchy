@@ -5,6 +5,8 @@ on:
     paths:
       - 'scripts/package-dag.py'
       - 'tests/package-dag.py'
+      - 'scripts/native-package-plan.py'
+      - 'tests/native-package-plan.py'
       - 'scripts/inspect-freebsd-graph.py'
       - 'tests/native-tree-discovery.py'
       - 'scripts/resolve-freebsd-dirdeps.py'
@@ -27,6 +29,8 @@ on:
     paths:
       - 'scripts/package-dag.py'
       - 'tests/package-dag.py'
+      - 'scripts/native-package-plan.py'
+      - 'tests/native-package-plan.py'
       - 'scripts/inspect-freebsd-graph.py'
       - 'tests/native-tree-discovery.py'
       - 'scripts/resolve-freebsd-dirdeps.py'
@@ -64,6 +68,7 @@ jobs:
           python3 tests/native-workspace.py -v
           python3 tests/qemu-worker.py -v
           python3 tests/package-dag.py -v
+          python3 tests/native-package-plan.py -v
       - name: Isolated ISO staging controls
         run: |
           sh -n build-iso.sh scripts/iso-stage.sh
