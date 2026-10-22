@@ -1,0 +1,70 @@
+{
+  "schema": "daemonarchy/installer-progress-development@1",
+  "scope": "Measured dashboard implementation, controller and native FreeBSD PTY observation; no actual installation or physical-console acceptance",
+  "controller": {
+    "tests": 10,
+    "passed": 10,
+    "failed": 0,
+    "skipped": 0,
+    "seconds": 8.298
+  },
+  "native": {
+    "target": {
+      "os": "freebsd16",
+      "release": "16.0-CURRENT",
+      "architecture": "amd64",
+      "python": "3.12.15"
+    },
+    "terminal": {
+      "exit_code": 0,
+      "schema": "daemonarchy/native-command-terminal@1",
+      "seconds": 8.233
+    },
+    "tests": 10,
+    "passed": 10,
+    "failed": 0,
+    "skipped": 0,
+    "source_hashes": {
+      "overlay/usr/local/libexec/daemonarchy-installer/progress-dashboard.py": "c0b7aa0da0f92540d6b93d1338ed86dabd0a5184913b0b989275ffb93aab6533",
+      "overlay/usr/local/libexec/daemonarchy-installer/dashboard": "86fc2ba69196a0d92a5cb3f90029295afab22969f8f0aba21c6d02428fe15f79",
+      "tests/installer-progress.py": "0c8c29be156d8c31c05c127942b52b34309a593a694cc3479bf962dc9a71a23b"
+    },
+    "raw_evidence": {
+      "tests-command/started.json": {
+        "sha256": "5d65fc172a14258415ff2708c597e103d8f75e02f65d6ba1e7f7d46149fde288",
+        "bytes": 309
+      },
+      "tests-command/terminal.json": {
+        "sha256": "0b6b2524c7849cdf31feacf6fa11d6d11b9f89c3d1ab118ecf6c3bfa47ae8e5c",
+        "bytes": 86
+      },
+      "tests-command/stdout.log": {
+        "sha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855",
+        "bytes": 0
+      },
+      "tests-command/stderr.log": {
+        "sha256": "d60fa21580f87ecaf72274db13fa6894f21e5a925eac3e476106baa40e18b809",
+        "bytes": 1769
+      }
+    }
+  },
+  "implementation": [
+    "No wall-clock completion estimate",
+    "Successful storage preparation and archive extraction counters",
+    "Native pkg reported download completions and processing positions",
+    "Pinned ordered verified-archive journal observation",
+    "Bars/spectrum/scope and plain output",
+    "Reduced motion, resize, small terminals, 16/256 colors, owner-result and signal cleanup"
+  ],
+  "physical_console_qualified": false,
+  "full_native_install_qualified": false,
+  "actual_parallel_installation": false,
+  "product_receipt": false,
+  "release_qualified": false,
+  "remaining": [
+    "Native full installation using final image",
+    "Physical console and serial display acceptance",
+    "Complete final release planner/GUI event integration"
+  ],
+  "installer_completion_invariant_regression": "tests/install-integrity.sh passed with declared native-pkg and pool command protocol fixtures; not real package installation"
+}

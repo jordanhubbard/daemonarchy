@@ -72,6 +72,19 @@ phase() {
   log "$2"
 }
 
+# Only report completed operations. Labels and phases are fixed protocol values;
+# no account, path or credential is interpolated into JSON.
+progress_count() {
+  local current=$2 total=$3 label unit
+  case $1 in
+    disk) label='Storage preparation milestones'; unit=milestones ;;
+    base) label='Release archives expanded'; unit=archives ;;
+    *) return 1 ;;
+  esac
+  [[ $current =~ ^[0-9]+$ && $total =~ ^[0-9]+$ ]] || return 1
+  printf '@@progress {"schema":"daemonarchy/installer-progress@1","phase":"%s","label":"%s","current":%s,"total":%s,"unit":"%s"}\n' "$1" "$label" "$current" "$total" "$unit"
+}
+
 cuda_setup_started=false
 cleanup() {
   local status=$?
@@ -124,7 +137,9 @@ validate_install_layout
 layout_backup=$(mktemp)
 gpart backup "$disk" >"$layout_backup" 2>/dev/null || : >"$layout_backup"
 phase disk "Preparing the selected installation space on $disk"
+progress_count disk 0 3
 apply_install_layout
+progress_count disk 1 3
 if [[ $encrypt_installation == true ]]; then
   log "Encrypting the ZFS partition"
   passfile=$(mktemp)
@@ -154,13 +169,19 @@ done
 zfs create -o setuid=off "$POOL/var/tmp"
 zpool set bootfs="$POOL/ROOT/default" "$POOL"
 chmod 1777 "$TARGET/tmp" "$TARGET/var/tmp"
+progress_count disk 2 3
 diagnostics_begin "$TARGET" "$username" "${ssh_enable:-false}" /tmp/daemonarchy-install.log
+progress_count disk 3 3
 
 # ---------------------------------------------------------------- base system
 
 phase base "Installing the FreeBSD base system"
+expanded_sets=0
+progress_count base 0 3
 for set in base kernel lib32; do
   tar -xpf "$DIST/$set.txz" -C "$TARGET"
+  expanded_sets=$((expanded_sets + 1))
+  progress_count base "$expanded_sets" 3
 done
 
 # Recovery must work before the large desktop transaction. Create the selected

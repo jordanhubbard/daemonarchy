@@ -146,6 +146,8 @@ preserved. No performance fix or lifecycle pass is claimed.
 - **Depends on:** none
 - **Implementation:**
   - [ ] Prototype multiple styles from recorded events; implement stage-aware presentation; validate on physical console and SSH/serial.
+  - **Implementation checkpoint:** The retained dashboard now reads bounded incremental observations and offers bars, spectrum and scope styles, pin/sequence-checked acquisition events, explicit waiting/failure, plain output, reduced motion and resize handling. Storage milestones and archive counts advance only after their native commands succeed; pkg download reports and processing positions remain distinct from verified transaction completion. Ten controller and ten native FreeBSD/PTY checks pass, including small terminals, 16/256 colors, signal cleanup and backlog drain. [Scoped evidence](../../verification/installer-progress-development.json) retains exact source hashes and limits; the intentional retained source baseline is refreshed.
+  - **Next action:** Replay recorded native acquisition journals and qualify the integrated dashboard during full native installation, SSH/serial and physical-console acceptance, then connect final planner/GUI events. UI-001 remains open.
 - **Evidence:**
   - [ ] Useful readable metrics, genuine waiting/failure states, resize and reduced-motion behavior, bounded cost and native console demonstrations.
 

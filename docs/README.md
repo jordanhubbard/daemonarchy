@@ -47,3 +47,5 @@ reachable without changing its historical scope.
 - [1.2 loader test ISO and qualification](testing-1.2-test-iso.md)
 
 - [NetGDB peer-close patch for human review](contributions/netgdb-peer-close.md)
+
+- [Measured installer progress](installer-progress.md)

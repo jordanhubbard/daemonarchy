@@ -265,7 +265,7 @@
     {
       "path": "overlay/usr/local/libexec/daemonarchy-installer/dashboard",
       "owner": "installer",
-      "sha256": "fbd702ace484a086bcb46378880d3333ba71888c6f97f2ec166e06367bb33c1a",
+      "sha256": "86fc2ba69196a0d92a5cb3f90029295afab22969f8f0aba21c6d02428fe15f79",
       "executable": true
     },
     {
@@ -307,7 +307,7 @@
     {
       "path": "overlay/usr/local/libexec/daemonarchy-installer/install",
       "owner": "installer",
-      "sha256": "62604c6c465ecae20c4efa2aca6dbcb06c355028f565ca3bf4fd59c7d69500e0",
+      "sha256": "bccf504dc082f4f39fd9d8cd397ec5cfbcfc61fb85a04b53754b0a88aa997347",
       "executable": true
     },
     {
@@ -339,6 +339,12 @@
       "owner": "installer",
       "sha256": "c639fed145d0da776c7c4e936d1308305f6402e8ed23bdee5fa9bf049b96db82",
       "executable": false
+    },
+    {
+      "path": "overlay/usr/local/libexec/daemonarchy-installer/progress-dashboard.py",
+      "owner": "installer",
+      "sha256": "c0b7aa0da0f92540d6b93d1338ed86dabd0a5184913b0b989275ffb93aab6533",
+      "executable": true
     },
     {
       "path": "overlay/usr/local/libexec/daemonarchy-installer/rebuild-caches",
@@ -797,6 +803,12 @@
       "executable": false
     },
     {
+      "path": "tests/installer-progress.py",
+      "owner": "installer",
+      "sha256": "0c8c29be156d8c31c05c127942b52b34309a593a694cc3479bf962dc9a71a23b",
+      "executable": false
+    },
+    {
       "path": "tests/linux-cuda.sh",
       "owner": "installer",
       "sha256": "4b92aafc289568206a6bffbd446b2462c3d412b7be946d20de65f13f72d27c76",
@@ -958,6 +970,39 @@
       "sha256": "b1fb7cce1f6889f001f4450ba6f3b965dede9a67b38f210ea180ad4e5a39f014",
       "executable": false,
       "reason": "PERF-001/COMP-001 reviewed unqualified-target classification and returned-query output custody; no native lifecycle qualification"
+    }
+  ],
+  "implementation_updates": [
+    {
+      "work_item": "UI-001",
+      "preceding_commit": "e7dad049ed010b02d63dbd1f0c6ed61d7d171c34",
+      "reason": "Intentional retained installer progress implementation; no historical lifecycle or installation acceptance is relabeled",
+      "files": [
+        {
+          "path": "overlay/usr/local/libexec/daemonarchy-installer/dashboard",
+          "preceding_source_sha256": "fbd702ace484a086bcb46378880d3333ba71888c6f97f2ec166e06367bb33c1a",
+          "current_sha256": "86fc2ba69196a0d92a5cb3f90029295afab22969f8f0aba21c6d02428fe15f79",
+          "preceding_baseline_sha256": "fbd702ace484a086bcb46378880d3333ba71888c6f97f2ec166e06367bb33c1a"
+        },
+        {
+          "path": "overlay/usr/local/libexec/daemonarchy-installer/install",
+          "preceding_source_sha256": "62604c6c465ecae20c4efa2aca6dbcb06c355028f565ca3bf4fd59c7d69500e0",
+          "current_sha256": "bccf504dc082f4f39fd9d8cd397ec5cfbcfc61fb85a04b53754b0a88aa997347",
+          "preceding_baseline_sha256": "62604c6c465ecae20c4efa2aca6dbcb06c355028f565ca3bf4fd59c7d69500e0"
+        },
+        {
+          "path": "overlay/usr/local/libexec/daemonarchy-installer/progress-dashboard.py",
+          "preceding_source_sha256": null,
+          "current_sha256": "c0b7aa0da0f92540d6b93d1338ed86dabd0a5184913b0b989275ffb93aab6533",
+          "preceding_baseline_sha256": null
+        },
+        {
+          "path": "tests/installer-progress.py",
+          "preceding_source_sha256": null,
+          "current_sha256": "0c8c29be156d8c31c05c127942b52b34309a593a694cc3479bf962dc9a71a23b",
+          "preceding_baseline_sha256": null
+        }
+      ]
     }
   ]
 }
