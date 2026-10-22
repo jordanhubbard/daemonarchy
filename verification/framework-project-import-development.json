@@ -1,0 +1,96 @@
+{
+  "schema": "daemonarchy/framework-project-import-development@1",
+  "scope": "Parent framework optional project import repair; product release remains unqualified",
+  "framework_base_revision": "23d0b678dc63eedbae673d2603dfad5e13ef09bb",
+  "framework_candidate_revision": "8f1b7df634e0c34ccd55bba1486f2c7e4b2539ad",
+  "upstream_issue": "https://github.com/jordanhubbard/literate-ai/issues/121",
+  "upstream_review": "https://github.com/jordanhubbard/literate-ai/pull/122",
+  "review_state": "draft; stacked on retained SDK composition",
+  "profile": {
+    "operation": "Installed read-only project validation under cProfile",
+    "exit_code": 0,
+    "supervisor_seconds": 498.828,
+    "authority_unchanged": true,
+    "mac_adapter_import_profile_seconds": 235.620184129,
+    "uri_grammar_import_profile_seconds": 228.888157573,
+    "lark_parser_constructions": 39,
+    "profile_overhead_included": true,
+    "catalog_loading_profile_seconds": 142.613849246
+  },
+  "native_import_diagnostic": {
+    "schema": "literate-ai/optional-project-import-diagnostic@1",
+    "issue": "https://github.com/jordanhubbard/literate-ai/issues/121",
+    "base_revision": "23d0b678dc63eedbae673d2603dfad5e13ef09bb",
+    "candidate_module_sha256": "706a7cd4e2b2c0948d75aae8fe2961e72859969875c620ac149a2a1c1e5aa6b6",
+    "native_platform": "Windows",
+    "method": "One baseline/deferred ordered pair using the same retained installed interpreter; in-memory command-module substitution only; no installed payload changes",
+    "observations": [
+      {
+        "mode": "baseline",
+        "seconds": 7.480990740004927,
+        "mac_loaded": true,
+        "jsonschema_loaded": true,
+        "uri_grammar_loaded": true,
+        "exit_code": 0,
+        "supervisor_seconds": 8.140999999945052
+      },
+      {
+        "mode": "deferred",
+        "seconds": 2.907386273960583,
+        "mac_loaded": false,
+        "jsonschema_loaded": false,
+        "uri_grammar_loaded": false,
+        "exit_code": 0,
+        "supervisor_seconds": 3.344000000040978
+      }
+    ],
+    "installed_module_unchanged": true,
+    "limitations": [
+      "Single ordered pair; filesystem and interpreter cache effects not controlled",
+      "Import-only diagnostic; project validation and full wheel/unit gates not renewed",
+      "Prior cProfile times include substantial profiler overhead and are not unprofiled latency estimates"
+    ],
+    "native_gate_passed": false
+  },
+  "controller_checks": {
+    "focused_tests": 2,
+    "cyclonedx_tests": 7,
+    "failures": 0,
+    "original_import_regression": "fails against eager-import baseline",
+    "repository_lint": "pass",
+    "repository_format": "1695 files formatted",
+    "authority": "pass",
+    "framework_verify": {
+      "pass": 2,
+      "fail": 0,
+      "skipped": 3
+    }
+  },
+  "candidate_native_gate": {
+    "status": "fresh canonical checkout setup in progress; live native setup supervisor observed",
+    "maximum_seconds": 5400,
+    "test_workers": 2,
+    "previous_failed_workspace_preserved": true,
+    "native_gate_passed": false
+  },
+  "compiler_sdk_admitted": false,
+  "product_receipt": false,
+  "iso_created": false,
+  "release_authorized": false,
+  "next_action": "Observe the same exact-candidate Windows setup/gate handle to terminal; preserve all failed temporary evidence and do not widen its deadline.",
+  "observed_utc": "2026-10-22T21:04:55.511635+00:00",
+  "product_verify": {
+    "authority": "pass",
+    "committed_locks": 8,
+    "locks": "pass",
+    "receipt": "missing; fail",
+    "pass": 2,
+    "fail": 1,
+    "skipped": 2
+  },
+  "candidate_hosted_ci": {
+    "run": "https://github.com/jordanhubbard/literate-ai/actions/runs/39854078138",
+    "status": "queued",
+    "conclusion": null
+  }
+}

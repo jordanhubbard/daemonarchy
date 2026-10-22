@@ -415,6 +415,17 @@ Windows gate on patched composition `23d0b678` reached its unchanged
 5400-second limit during wheel qualification. Its finite supervisor terminated
 the process tree; the unit suite did not start. The failed workspace and wheel
 remain retained for targeted profiling; no native Windows gate pass is claimed.
+The [targeted import investigation](../../verification/framework-project-import-development.json)
+now finds 39 optional URI parser constructions during ordinary project CLI startup.
+The parent repair in [draft framework PR #122](https://github.com/jordanhubbard/literate-ai/pull/122)
+defers MAC validation imports until its command is selected; strict schema rejection
+still passes through the actual CLI. Two focused and seven CycloneDX cases pass;
+repository lint, formatting, authority and declared framework verification pass.
+A single unprofiled Windows baseline/deferred import pair takes 7.48/2.91 seconds
+with installed bytes unchanged. Profile times include substantial overhead; neither
+measurement proves complete wheel qualification. Exact candidate `8f1b7df6` is staged
+for a fresh canonical Windows checkout with its original 5400-second gate bound;
+the setup supervisor is live, and the failed preceding workspace remains retained.
 The [patched-wheel public CLI renewal](../../verification/native-sdk-postaudit-cli-development.json)
 also passes on a fresh FreeBSD allocation with exact framework `23d0b678`:
 536.095 supervised seconds, three original tests, two independent acceptance

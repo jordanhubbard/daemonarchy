@@ -242,7 +242,14 @@
       "maximum_seconds": 600,
       "profiling_only": true,
       "native_windows_gate_passed": false,
-      "source_revision": "23d0b678dc63eedbae673d2603dfad5e13ef09bb"
+      "source_revision": "23d0b678dc63eedbae673d2603dfad5e13ef09bb",
+      "exit_code": 0,
+      "supervisor_seconds": 498.828,
+      "authority_unchanged": true,
+      "profile_overhead_included": true,
+      "optional_import_repair_record": "verification/framework-project-import-development.json",
+      "candidate_revision": "8f1b7df634e0c34ccd55bba1486f2c7e4b2539ad",
+      "candidate_review": "https://github.com/jordanhubbard/literate-ai/pull/122"
     }
   },
   "historical_descriptor_native_evidence": "verification/native-sdk-isolated-cli-development.json",
