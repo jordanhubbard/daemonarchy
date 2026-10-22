@@ -16,6 +16,11 @@ work; it is not a separate published tag in this repository. The proposed name
 
 ## Unreleased
 
+- Preserve owned disposable-QEMU cleanup through repeated termination signals.
+  Revoke inspection, finish the existing bounded shutdown and retain terminal
+  evidence before returning an interrupted status. Controller regression checks
+  cover the reproduced orphan-child defect; actual VM renewal remains separate.
+
 - Compare native pkg dry-run proposals and imported package/dependency records
   with pinned selection graphs in fresh private databases. Keep metadata and
   partial failures, enforce internal process deadlines and reject mismatched

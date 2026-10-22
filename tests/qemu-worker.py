@@ -41,7 +41,9 @@ while True:
     line=stream.readline()
     if not line:break
     request=json.loads(line);name=request['execute']
-    if name=='system_powerdown':sys.exit(0)
+    if name=='system_powerdown':
+     (root/'powerdown-seen').write_text('requested')
+     if not (root/'hold-powerdown').exists():sys.exit(0)
     if name=='query-status':value={'running':True,'status':'running'}
     elif name=='query-block':
      value=[{'inserted':{'file':str(root/'guest.qcow2'),'drv':'qcow2','ro':False}},
@@ -102,7 +104,8 @@ class QemuWorkerTests(unittest.TestCase):
             stderr=subprocess.PIPE,
         )
         self.addCleanup(self.stop)
-        for _ in range(200):
+        deadline = time.monotonic() + 5
+        while time.monotonic() < deadline:
             if self.process.poll() is not None:
                 self.fail(self.process.communicate()[1].decode())
             if (self.root / "qmp.sock").exists():
@@ -114,7 +117,7 @@ class QemuWorkerTests(unittest.TestCase):
         if self.process is not None:
             if self.process.poll() is None:
                 self.process.terminate()
-            self.process.communicate(timeout=5)
+            self.process.communicate(timeout=45)
 
     def request(self, **changes):
         return {
@@ -227,6 +230,36 @@ class QemuWorkerTests(unittest.TestCase):
         self.assertEqual(
             self.exchange(self.request()), {"error": "allocation.inspection-refused"}
         )
+
+    def test_repeated_termination_during_cleanup_reaps_owned_child(self):
+        import signal
+
+        (self.root / "hold-powerdown").touch()
+        self.start()
+        child_pid = json.loads((self.root / "started.json").read_text())["pid"]
+        try:
+            self.process.terminate()
+            deadline = time.monotonic() + 5
+            while not (self.root / "powerdown-seen").exists():
+                if self.process.poll() is not None or time.monotonic() >= deadline:
+                    self.fail("supervisor did not reach owned cleanup")
+                time.sleep(0.01)
+            for signum in (signal.SIGTERM, signal.SIGINT, signal.SIGHUP):
+                os.kill(self.process.pid, signum)
+            with self.assertRaises(subprocess.TimeoutExpired):
+                self.process.wait(timeout=0.3)
+            os.kill(child_pid, signal.SIGTERM)
+            self.assertNotEqual(self.process.wait(timeout=5), 0)
+            with self.assertRaises(ProcessLookupError):
+                os.kill(child_pid, 0)
+            terminal = json.loads((self.root / "terminal.json").read_text())
+            self.assertEqual(terminal["reason"], "supervisor-interrupted")
+            self.assertFalse((self.root / "inspection.sock").exists())
+        finally:
+            try:
+                os.kill(child_pid, signal.SIGTERM)
+            except ProcessLookupError:
+                pass
 
     def test_private_configuration_and_old_session_are_required(self):
         self.config.chmod(0o644)

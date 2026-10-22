@@ -278,6 +278,7 @@ class QemuWorker:
             if (self.root / name).exists() or (self.root / name).is_symlink():
                 raise ValueError("preserve existing worker session: " + name)
         self.process = None
+        self.interrupted = False
         self.started = None
         self.allocation_identity = None
         self.seen = set()
@@ -478,6 +479,9 @@ class QemuWorker:
                     {**facts, "allocation_identity": self.allocation_identity},
                 )
                 while self.process.poll() is None:
+                    if self.interrupted:
+                        reason = "supervisor-interrupted"
+                        break
                     if (
                         time.monotonic() - self.started
                         >= self.config["maximum_runtime_seconds"]
@@ -542,7 +546,7 @@ class QemuWorker:
                     "inspection_revoked": self.revoked,
                 },
             )
-        return self.process.returncode
+        return 130 if self.interrupted else self.process.returncode
 
 
 def main():
@@ -552,11 +556,18 @@ def main():
     if os.name != "posix":
         raise ValueError("POSIX supervisor host required")
 
-    def interrupted(_signum, _frame):
-        raise KeyboardInterrupt
+    controller = None
 
-    signal.signal(signal.SIGTERM, interrupted)
-    return QemuWorker(args.config).run()
+    def interrupted(_signum, _frame):
+        if controller is None:
+            raise KeyboardInterrupt  # Construction has not launched an owned child.
+        controller.interrupted = True
+        controller.revoked = True
+
+    for signum in (signal.SIGTERM, signal.SIGINT, signal.SIGHUP):
+        signal.signal(signum, interrupted)
+    controller = QemuWorker(args.config)
+    return controller.run()
 
 
 if __name__ == "__main__":
