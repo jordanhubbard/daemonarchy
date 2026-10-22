@@ -1,6 +1,6 @@
 {
   "schema": "daemonarchy/composed-framework-qualification-development@1",
-  "observed_utc": "2026-10-22T19:28:59.678928+00:00",
+  "observed_utc": "2026-10-22T19:39:20.131305+00:00",
   "framework_revision": "c058695048a3a1980e45db977c316a68ee4c868d",
   "scope": "Exact Windows and descriptor framework composition; native development qualification in progress",
   "controller_regression": {
@@ -284,7 +284,21 @@
       "module_from_installed_prefix": true,
       "canonical_native_cli_qualified": false
     },
-    "public_cli_result": "running; original public SDK lifecycle; supervisor verified live",
+    "public_cli_result": {
+      "passed": true,
+      "record": "verification/native-sdk-postaudit-cli-development.json",
+      "supervised_seconds": 536.095,
+      "receipt_identity": "sha256:c9a3135fb3911a2cbfcdf4fe7ab31349de1db7f65161c763b33daeeecd9b8c85",
+      "receipt_scope": "local-runtime",
+      "original_tests": {
+        "failed": 0,
+        "passed": 3,
+        "skipped": 0
+      },
+      "independent_acceptance_cases": 2,
+      "records_reverified": 28,
+      "source_server_terminal": 0
+    },
     "compiler_sdk_admitted": false,
     "product_receipt": false,
     "release_qualified": false,
@@ -292,6 +306,7 @@
       "exit_code": 0,
       "schema": "daemonarchy/native-command-terminal@1",
       "seconds": 50.318
-    }
+    },
+    "sdk_tree_aliases": "separate public tree initializer dispatched; not yet qualified"
   }
 }

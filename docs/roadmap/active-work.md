@@ -412,6 +412,13 @@ Supported promotion yields current parent receipt `0e2f897c8b6e`; the original
 failure remains retained. The compatible DOMPurify 3.4.17 repair passes clean
 controller audit and documentation checks without exceptions. The full native
 Windows gate is now running on patched composition `23d0b678`.
+The [patched-wheel public CLI renewal](../../verification/native-sdk-postaudit-cli-development.json)
+also passes on a fresh FreeBSD allocation with exact framework `23d0b678`:
+536.095 supervised seconds, three original tests, two independent acceptance
+cases and all 28 retained records reverified. Its 3600-second authorization limit
+is unchanged. A separate tree-alias case is being initialized; its real hard-link
+and symlink producer/consumer route remains unqualified.
+
 No compiler SDK, product receipt, ISO or release admission follows from these
 partial checks.
 
