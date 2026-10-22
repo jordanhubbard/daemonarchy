@@ -97,7 +97,7 @@
   "product_receipt": false,
   "iso_created": false,
   "release_authorized": false,
-  "next_action": "Inspect retained wheel-smoke stage evidence and catalog/import costs before another full native gate; renew exact final inputs without widening the deadline",
+  "next_action": "Retain per-operation timing through the existing wheel-smoke timing-report option, then identify the expensive native stages before a complete new qualification",
   "observed_utc": "2026-10-22T22:18:00.021448+00:00",
   "product_verify": {
     "authority": "pass",
@@ -152,5 +152,6 @@
     "status": "pending",
     "conclusion": null
   },
-  "reviewed_framework_receipt_revision": "bd76625f0ee63da98dc29792768e5c837d72de9e"
+  "reviewed_framework_receipt_revision": "bd76625f0ee63da98dc29792768e5c837d72de9e",
+  "native_validation_diagnostic": "verification/framework-windows-validation-diagnostic.json"
 }

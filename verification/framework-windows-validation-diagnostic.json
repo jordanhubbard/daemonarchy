@@ -1,0 +1,92 @@
+{
+  "schema": "daemonarchy/framework-windows-validation-diagnostic@1",
+  "observed_utc": "2026-10-22T22:52:20.780670+00:00",
+  "scope": "Read-only diagnostic of preserved installed-wheel fixtures after a failed full native Windows gate",
+  "full_gate_source_revision": "8f1b7df634e0c34ccd55bba1486f2c7e4b2539ad",
+  "full_gate_terminal": {
+    "timeout": true,
+    "seconds": 5400.328,
+    "phase": "wheel smoke",
+    "unit_tests_started": false
+  },
+  "probes": [
+    {
+      "fixture": "preserved golden-created",
+      "result": "early stale-documentation-authority refusal",
+      "report": {
+        "exit_code": 2,
+        "seconds": 11.172,
+        "timeout": false,
+        "project_manifest_unchanged": true,
+        "installed_module_unchanged": true,
+        "wheel_sha256": "0a4a5e0654c15eb3ae720645397f1b07ee6d57f4b09831134956296910dbcd33",
+        "stdout_bytes": 0,
+        "stderr_bytes": 352,
+        "unprofiled": true,
+        "native_full_gate_passed": false
+      }
+    },
+    {
+      "fixture": "preserved initialized-project",
+      "result": "successful canonical project validation",
+      "report": {
+        "exit_code": 0,
+        "seconds": 9.187,
+        "timeout": false,
+        "project_manifest_unchanged": true,
+        "installed_module_unchanged": true,
+        "wheel_sha256": "0a4a5e0654c15eb3ae720645397f1b07ee6d57f4b09831134956296910dbcd33",
+        "stdout_bytes": 194460,
+        "stderr_bytes": 379,
+        "unprofiled": true,
+        "native_full_gate_passed": false
+      },
+      "operation_debug_milliseconds": 6206,
+      "result_envelope_verified": true,
+      "stdout_encoding": "Windows cp1252"
+    }
+  ],
+  "raw_evidence": {
+    "wd-v1/started.json": {
+      "sha256": "f0aa731785a2a100c7b4562211f73d4e6cade3948016d1973b969745590f83ee",
+      "bytes": 262
+    },
+    "wd-v1/terminal.json": {
+      "sha256": "38d3326440d46e1bb89ab285dcf3c29759091b0ba2726a491d88a24cb81f1a3d",
+      "bytes": 336
+    },
+    "wd-v1/stdout.log": {
+      "sha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855",
+      "bytes": 0
+    },
+    "wd-v1/stderr.log": {
+      "sha256": "f0a2a3aa589625115363c7f731dc0d9cc07e38b53596838931df09ecc1469cfa",
+      "bytes": 352
+    },
+    "wd-v2/started.json": {
+      "sha256": "10bcfabcba931eba1ba9c8fb6bfbb30400ac8386281a7e5646cbd132e3309a16",
+      "bytes": 262
+    },
+    "wd-v2/terminal.json": {
+      "sha256": "2d859a998a6d94acad9f2ff89dcbc4ac44eabbb508b740632a99650120e782cc",
+      "bytes": 340
+    },
+    "wd-v2/stdout.log": {
+      "sha256": "588faa37b72fc094ea1d3f74d4dbdb23881c3eb71177dbe53dbf3c016b363b34",
+      "bytes": 194460
+    },
+    "wd-v2/stderr.log": {
+      "sha256": "5dde18da7ec83c21b7b00f0cf8f25ed31e2fefb85f2356497f55516ba8468f62",
+      "bytes": 379
+    }
+  },
+  "limitations": [
+    "Single ordered diagnostics; cache/order effects uncontrolled",
+    "Successful isolated validation does not qualify the wheel/full gate or identify its aggregate bottleneck",
+    "Earlier cProfile import/stat costs include profiling overhead"
+  ],
+  "next_action": "Retain per-operation timing through the existing wheel-smoke timing-report option, then identify the expensive native stages before a complete new qualification",
+  "native_full_gate_passed": false,
+  "source_sdk_admitted": false,
+  "release_acceptance": false
+}

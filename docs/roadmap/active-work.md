@@ -840,3 +840,19 @@ restoration, cleared saved/active state and the original batching setting;
 registers and reset work after peer closure. Native GDB sees 104 threads. Both
 owned VMs stop normally within their original bounds. Real-NIC coverage is one
 2048-byte receive list; Netdump renewal and non-panic resume remain unqualified.
+
+The [iflib-kernel Netdump renewal](../../verification/iflib-debugnet-netdump-development.json)
+passes with native panic/version/backtrace and 104-thread inspection. Independent
+reconstruction from 116,400 captured data messages covers all 165,834,752 bytes
+without gaps or overlap and matches the received core hash. Both bounded VMs
+stop cleanly. The new ESP omits unselected modules/firmware and shares immutable
+product files by verified read-only inode; retained cases are preserved. This
+completes the scoped VM recovery renewal, while buffer provenance, non-panic
+resume, authentication, physical NIC and final lifecycle admission stay open.
+
+The [preserved Windows fixture diagnostic](../../verification/framework-windows-validation-diagnostic.json)
+separates an 11.172-second stale-review refusal from successful initialized-project
+validation in 9.187 seconds (6.206 seconds inside the operation). Manifests and
+installed module bytes stay unchanged. These single ordered observations do not
+identify the full gate bottleneck or qualify its wheel. Next: retain per-operation
+wheel-smoke timings and investigate the expensive native stages.
