@@ -45,7 +45,7 @@ Provide the same structured plan and measured events to installer ANSI visualize
 
 ## Requirement: Failure and performance acceptance
 
-Stop dependent work after failure and retain retry/recovery evidence. Demonstrate actual parallel installation and total-time improvements separately from parallel downloads. This component is planned, not implemented.
+Stop dependent work after failure and retain retry/recovery evidence. Demonstrate actual parallel installation and total-time improvements separately from parallel downloads. A pinned catalogue graph collector is implemented; native solver acceptance, transaction execution and parallel installation remain unfinished.
 
 See [the public contract](interfaces/contract.md), [acceptance requirements](acceptance.md)
 and [product traceability](../../docs/architecture/design-traceability.md).

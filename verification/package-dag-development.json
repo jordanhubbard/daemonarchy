@@ -1,0 +1,39 @@
+{
+  "schema": "daemonarchy/package-dag-development@1",
+  "queue_item": "PKG-001",
+  "recorded_at": "2026-10-22T06:43:49.965938+00:00",
+  "scope": "Pinned catalogue graph collector and refusal controls; fixture inputs only",
+  "input_sha256": {
+    "scripts/package-dag.py": "775764493d2e87aa696eb47bcfd60ad740770822b383a16f26010834f17eb55b",
+    "tests/package-dag.py": "35bdf04c42d27e2db48704901aa673ff29682e3fff261d81fabfa5ec15fe20e7"
+  },
+  "controller": {
+    "os": "macOS",
+    "python": "3.14.7",
+    "focused_tests_passed": 22,
+    "existing_controller_tests_passed": 48
+  },
+  "native": {
+    "os": "FreeBSD",
+    "release": "16.0-CURRENT",
+    "python": "3.12.14",
+    "exit_code": 0,
+    "tests_passed": 22,
+    "test_stderr_sha256": "b3153c1a2153b95e401cf604dd9bfe3d310fde769483bd53ea10e466223abe01",
+    "logs_retained_privately": true
+  },
+  "authority": {
+    "project_validation": "pass",
+    "committed_host_locks_current": 8,
+    "lock_node_edge_counts_preserved": true
+  },
+  "lifecycle_receipt": "missing",
+  "release_qualified": false,
+  "remaining": [
+    "Capture exact signed real release catalogues and all supported selections",
+    "Qualify native pkg solver results and changed-input invalidation",
+    "Verify package payload hashes and installed files",
+    "Implement shared transaction coordination and structured progress",
+    "Qualify actual safe parallel installation, failure/retry/recovery and measured performance"
+  ]
+}
