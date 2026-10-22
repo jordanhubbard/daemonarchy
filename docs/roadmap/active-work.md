@@ -208,6 +208,21 @@ preserved. No performance fix or lifecycle pass is claimed.
 - **Handoff identity renewal:** Source `f45d86b21143` and its exact rebuilt EFI pass native sanitizer export-failure controls and actual two-e1000 UEFI/kernel identity checks. Independent SSH verifies that the boot ID, selected debug NIC and local/peer addresses survive handoff. Both owned guests shut down successfully with original disks preserved. The [identity checkpoint](../../verification/loader-network-identity-development.json) retains the separate failed transfer: a `net0` file request reused the cached `net1` connection. [Source issue #11](https://github.com/jordanhubbard/daemonarchy-src/issues/11) owns unit-specific selection and live debug lifetime; fixing the unit comparison alone would close the active console NIC. The subsequent ownership checkpoint below records that repair and its scoped renewals. Early-kernel transport and physical firmware remain open.
 - **Network ownership repair:** The [ownership checkpoint](../../verification/loader-network-ownership-development.json) records stable physical owners, separate raw debug sockets, driver/unit-aware ordinary access, close accounting, explicit protocol restoration and interface-bound DHCP cache reuse. Three native owner/cache suites and three native parser/SNP/bootinfo suites pass under sanitizers; 62 controller cases pass with four declared skips. The exact new EFI passes cross-NIC and same-NIC TFTP, two revocation/restart cycles, adversarial sessions, 112 queue-pressure drops with working control, fragmented 8192-byte NFS reads and NFS kernel boot. Four independent SSH observations match boot IDs/MACs; all six final owned guests shut down successfully. The NFS debug address remains metadata rather than active kernel networking. Source issue #11 remains pending draft-review integration; native SDK admission, physical firmware, early-kernel transport and release acceptance remain open.
 
+- **Panic transport baseline and recovery repair:** The
+  [baseline checkpoint](../../verification/netgdb-panic-baseline-development.json)
+  binds the actual kernel and matching full/debug symbols to ELF build ID
+  `8139e27d002dc81d7f3a342d74ecc346e2787bb3`. An isolated guest refuses non-panic
+  NetGDB entry, resumes locally and connects over e1000 after a controlled panic.
+  The first Linux GDB client lacks the FreeBSD ABI; no successful native debugger
+  inspection is claimed. Peer closure reaches debugnet but leaves NetGDB polling.
+  [Source issue #12](https://github.com/jordanhubbard/daemonarchy-src/issues/12)
+  owns the missing finish callback and single teardown owner. Its source repair
+  is in progress; a changed native kernel and successful inspection, detach and
+  peer-close/local recovery remain required. The FreeBSD client is prepared.
+  Both guests and owned tunnels are stopped, with original disks preserved.
+  The protocol remains unauthenticated and panic-only; physical NIC, pre-driver
+  and continuous early-kernel transport qualification remain open.
+
 - **Implementation:**
   - [x] Inspect loader/kernel transport foundations: EFI Simple Network Protocol and standalone UDP exist; an interactive loader network stub does not. Current NetGDB explicitly requires a panic and an initialized supported NIC. Firmware networking stops at `ExitBootServices`; boot flags do not establish an early network debugger. This is source-backed scope discovery, not runtime qualification.
   - [ ] Qualify an explicitly selected loader command/console stub, including environment inspection/update and kernel boot over the reviewed wired transport.
@@ -290,6 +305,19 @@ The controller passes 62 cases with four native-only skips; authority and all
 five explicit FreeBSD locks pass. Source PR #7 remains a draft, and native SDK,
 compiler admission, physical firmware, early-kernel transport and final release
 qualification remain open.
+
+The [descriptor-read checkpoint](../../verification/native-sdk-descriptor-read-development.json)
+records framework code `4ed7e5a1`, published with qualification at `9b834cde`.
+Its uninterrupted regression passes 2,132 cases with 70 declared skips; the exact
+clean Linux wheel passes. Six binding controls pass from the installed FreeBSD
+prefix, including open-boundary symlink refusal. The complete configured host
+lifecycle passes 228 tests and independent acceptance; its receipt is promoted
+through the supported command and verifies current. The real installed FreeBSD
+SDK replay is still executing with its unchanged 3,600-second command budget.
+This does not admit the actual compiler/sysroot or Daemonarchy lifecycle. Complete
+that replay, the installed context controls and Windows composition before landing
+the parent contribution. The preceding checkpoint retains its older artifact and
+233-test receipt scope.
 
 The [observer performance checkpoint](../../verification/native-sdk-observation-performance-development.json)
 records the exact `760bfa09` wheel, 2,131 controller passes with 70 declared
