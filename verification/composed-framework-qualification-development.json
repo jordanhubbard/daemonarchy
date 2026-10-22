@@ -1,6 +1,6 @@
 {
   "schema": "daemonarchy/composed-framework-qualification-development@1",
-  "observed_utc": "2026-10-22T20:12:36.589905+00:00",
+  "observed_utc": "2026-10-22T20:35:24.854953+00:00",
   "framework_revision": "c058695048a3a1980e45db977c316a68ee4c868d",
   "scope": "Exact Windows and descriptor framework composition; native development qualification in progress",
   "controller_regression": {
@@ -142,7 +142,7 @@
     }
   },
   "windows_native_gate": {
-    "result": "Full native gate running on patched composition 23d0b678; live wrapper and gate verified",
+    "result": "Patched native full gate timed out at the unchanged 5400-second limit during wheel qualification; unit suite not started",
     "preflight_refusal": "Existing primary origin differs; preserved without mutation",
     "transport_retry": "Input transfer timed out before files arrived; explicit line-based transfer then succeeded",
     "test_workers": 2,
@@ -201,6 +201,48 @@
       "rendered_diagrams": 121,
       "markdown_files": 625,
       "audit_policy_unchanged": true
+    },
+    "current_patched_attempt": {
+      "terminal": {
+        "exit_code": 1,
+        "timeout": true,
+        "seconds": 5400.36,
+        "source_revision": "23d0b678dc63eedbae673d2603dfad5e13ef09bb",
+        "native_windows": true,
+        "release_authorized": false
+      },
+      "failed_phase": "wheel",
+      "unit_suite_started": false,
+      "maximum_gate_seconds": 5400,
+      "deadline_unchanged": true,
+      "completed_phases": [
+        "preflight",
+        "environment",
+        "compile",
+        "lint",
+        "openspec"
+      ],
+      "documentation_tests": 21,
+      "rendered_diagrams": 121,
+      "markdown_files": 625,
+      "process_tree_terminated_by_finite_supervisor": true,
+      "retained_wheel_and_workspace_preserved": true,
+      "last_observed_activity": "Owned installed CLI and Git subprocesses; targeted profiling required",
+      "path_alignment_observation": {
+        "source_checkout_covered": false,
+        "sibling_temporary_covered": false,
+        "base_python_process_covered": true,
+        "declared_path_exclusion_count": 1,
+        "declared_process_exclusion_count": 1,
+        "preferences_modified": false
+      }
+    },
+    "diagnostic_followup": {
+      "operation": "Read-only installed project validation cProfile against retained project",
+      "maximum_seconds": 600,
+      "profiling_only": true,
+      "native_windows_gate_passed": false,
+      "source_revision": "23d0b678dc63eedbae673d2603dfad5e13ef09bb"
     }
   },
   "historical_descriptor_native_evidence": "verification/native-sdk-isolated-cli-development.json",
@@ -208,7 +250,7 @@
   "product_receipt": false,
   "iso_created": false,
   "release_authorized": false,
-  "next_action": "Complete native Windows gate and actual live source-producer/SDK admission, then full source/ports, package, ISO and hardware release acceptance",
+  "next_action": "Profile failed Windows wheel qualification without increasing its deadline; proceed to actual live native source-producer/SDK admission and remaining release gates",
   "patched_wheel_renewal": {
     "source_revision": "23d0b678dc63eedbae673d2603dfad5e13ef09bb",
     "target": "Linux x86_64 / Python 3.14",

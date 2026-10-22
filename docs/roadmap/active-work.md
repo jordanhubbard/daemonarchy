@@ -411,7 +411,10 @@ model now passes 228 tests and independent acceptance in 1,595.584 seconds.
 Supported promotion yields current parent receipt `0e2f897c8b6e`; the original
 failure remains retained. The compatible DOMPurify 3.4.17 repair passes clean
 controller audit and documentation checks without exceptions. The full native
-Windows gate is now running on patched composition `23d0b678`.
+Windows gate on patched composition `23d0b678` reached its unchanged
+5400-second limit during wheel qualification. Its finite supervisor terminated
+the process tree; the unit suite did not start. The failed workspace and wheel
+remain retained for targeted profiling; no native Windows gate pass is claimed.
 The [patched-wheel public CLI renewal](../../verification/native-sdk-postaudit-cli-development.json)
 also passes on a fresh FreeBSD allocation with exact framework `23d0b678`:
 536.095 supervised seconds, three original tests, two independent acceptance
