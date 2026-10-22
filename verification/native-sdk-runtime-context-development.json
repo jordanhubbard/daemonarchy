@@ -1,0 +1,91 @@
+{
+  "schema": "daemonarchy/native-sdk-runtime-context-development@1",
+  "observed_utc": "2026-10-22T10:29:23.522796+00:00",
+  "scope": "ADOPT-002 preparation; framework loader-context repair with complete controller evidence and ongoing installed native renewal; no product admission",
+  "framework_issue": "https://github.com/jordanhubbard/literate-ai/issues/118",
+  "framework_review": "https://github.com/jordanhubbard/literate-ai/pull/110",
+  "framework_review_head": "cb648dc90a1cd456340fe905945a00e0cc05730a",
+  "qualified_code_revision": "4eab5e2584b21772ae070197049ccb29a31acd5e",
+  "source_tree": "68f2c6bbe227840322ba7baf73e1f1e8bb478450",
+  "test_tree": "4313c61e0c68b3152ef07921e9c174a12370b60c",
+  "controller_regression": {
+    "exit_code": 0,
+    "executed": 2128,
+    "failed": 0,
+    "known_failed": 0,
+    "passed": 2128,
+    "selected": 2198,
+    "skipped": 70,
+    "seconds": 2440.464,
+    "workers": 2,
+    "report_sha256": "eb7857d62ed5293d6ee47b4e5c801c7c4595af7ec88dd9818eeb118c3ebe7f9a"
+  },
+  "controller_focused_cases": {
+    "native_loading_integration": 7,
+    "graph_equivalence": 3,
+    "all_ten_pass_in_full_regression": true,
+    "integration_seconds": 208.072,
+    "integration_report_sha256": "8e6864f33c835a6bfd703796b471803c16813752458925e8526a60a14cc0023c"
+  },
+  "framework_wheel": {
+    "qualified": true,
+    "identity": "sha256:08cfcc338f978604bea1950829a3140e288f8207771588578fb900fbe1452bf8",
+    "distribution_identity": "sha256:0ff58bd5a0332856bbc0ed57cc1417bc8ab75902edcd3ce5de24e79cd9667c92",
+    "members": 1235,
+    "seconds": 545.561,
+    "report_sha256": "1caf70b8e16160717ffdd91e240f37c6f6677f567ad822603920b78b1cca7fd2"
+  },
+  "framework_host_lifecycle": {
+    "passed": true,
+    "tests": 223,
+    "seconds": 1606.917,
+    "receipt_current": true,
+    "receipt_identity": "sha256:ad15d0df01e07445de1704c82368d2b9076dcbd54d7cad2c45e47114b74407c0",
+    "finalized_candidate_identity": "sha256:a0b3926ce42a61d4c0a62849621df99e99e4d763c4df51c6cc575653e94aa1af",
+    "independent_acceptance": true,
+    "scope": "Complete configured host sample matrix; preserves its own 223-test result, distinct from the predecessor 227-test result"
+  },
+  "framework_current_verification": true,
+  "captured_runtime_context": {
+    "live_dependency_owner_required": true,
+    "exact_plan_manifest_environment_binding": true,
+    "complete_native_code_and_edge_equivalence": true,
+    "sdk_owned_placement_preserved": true,
+    "external_equivalent_copies_allowed": true,
+    "bound_process_projection_immutable": true,
+    "cleanup_revalidation_required": true
+  },
+  "ambient_override_refusal_preserved": true,
+  "freebsd_offline_install": {
+    "passed": true,
+    "target": "FreeBSD / Python 3.12",
+    "distributions_verified": 37,
+    "distribution_identity": "sha256:0ff58bd5a0332856bbc0ed57cc1417bc8ab75902edcd3ce5de24e79cd9667c92",
+    "seconds": 145.926
+  },
+  "installed_native_context_cases": {
+    "status_at_observation": "running",
+    "selected": 10,
+    "terminal_result_claimed": false
+  },
+  "canonical_installed_native_cli": {
+    "status_at_observation": "running",
+    "stage": "final-documentation-review",
+    "fresh_project_initialization_passed": true,
+    "native_library_sdk_production_completed": true,
+    "default_required_evidence_kinds": 16,
+    "standard_distribution_identity": "sha256:0ff58bd5a0332856bbc0ed57cc1417bc8ab75902edcd3ce5de24e79cd9667c92",
+    "authored_probe_requires_captured_loader": true,
+    "authored_probe_has_separate_host_and_plan_refusals": true,
+    "consumer_build_tests_acceptance": false,
+    "terminal_result_claimed": false
+  },
+  "active_workspace_selection_sha256": "4e79295002b67899e66b4665f43848b73288a26df5037d7d859f0b2c25c1a3fd",
+  "active_workspace_selection_changed": false,
+  "compiler_sdk_admitted": false,
+  "product_lifecycle_receipt": false,
+  "iso_created": false,
+  "published_artifacts_changed": false,
+  "release_acceptance": false,
+  "ledger_rows_closed": 0
+}

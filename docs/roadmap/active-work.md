@@ -84,7 +84,7 @@ payload/runtime audits and disposable UEFI installation/reboot; see TESTISO-001.
 Preserve original source placement and earn lifecycle admission.
 
 The [SDK runtime candidate](../../verification/native-sdk-public-development.json)
-now has a separate [draft framework contribution #110](https://github.com/jordanhubbard/literate-ai/pull/110).
+now has a separate [framework contribution #110](https://github.com/jordanhubbard/literate-ai/pull/110).
 Exact code `f65e0c62` passes 2,046 controller tests with 70 skips and no failures,
 clean wheel qualification and offline FreeBSD installation of 37 distributions.
 Its source fixtures supply project discovery and local Git routing; installed
@@ -106,12 +106,23 @@ The supervised preparation and execution attempt ended after 951.990 seconds wit
 `retained_project.execution_failed`: the SDK command scope rejects an import or
 loader override. The retained runner projects `LD_LIBRARY_PATH` from its reviewed
 captured runtime directory, while the SDK scope rejects that key unconditionally;
-the current framework review still has both behaviors.
+that installed candidate retained both behaviors.
 [Framework issue #118](https://github.com/jordanhubbard/literate-ai/issues/118)
-owns their fail-closed composition. Fix that boundary without dropping declared
-runtime dependencies or relaxing the ambient-injection guard, then rerun installed
-native build/tests and independent acceptance. No consumer lifecycle admission,
-compiler/sysroot admission, product receipt or release acceptance is earned.
+owns their fail-closed composition. The subsequent repair binds the complete
+captured loader projection to live dependency and command owners, preserving
+ambient-injection, shadowing, drift and revocation refusal. Exact code `4eab5e25`
+passes all 2,198 controller cases (2,128 passes, 70 declared skips), its clean
+wheel qualification and the complete 223-test framework host lifecycle with
+independent acceptance and a current framework receipt. Published review head
+`cb648dc9` has the same source/test trees; its exact CI remains pending. Offline
+FreeBSD installation verifies all 37 distributions. Ten installed context cases
+and a fresh canonical native CLI replay are running. The latter has completed
+native library-SDK production and reached final documentation review while
+preserving the default 16-kind receipt policy. Its authored consumer has no RPATH
+and must use the captured loader path; host and plan authorization controls are
+separate. The [renewal checkpoint](../../verification/native-sdk-runtime-context-development.json)
+keeps that preparation separate from unearned consumer, compiler/sysroot, product
+and release admission. All 24 release obligations remain open.
 
 A separate successful read-only plan under cProfile took 68.762 seconds and
 recorded 41,930 stat calls plus four installed-distribution observations. This is
