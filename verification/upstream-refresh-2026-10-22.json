@@ -1,6 +1,6 @@
 {
   "schema": "daemonarchy/upstream-refresh-development@1",
-  "observed_utc": "2026-10-22T11:55:42.497091+00:00",
+  "observed_utc": "2026-10-22T12:10:44.085221+00:00",
   "scope": "R12-18 source/ports reconciliation preparation; no native release input admission or acceptance",
   "sources": {
     "repository": "https://github.com/jordanhubbard/daemonarchy-src",
@@ -10,6 +10,44 @@
     "integration_status": "open",
     "upstream_commits_pending_integration": 94,
     "checks": {
+      "run": "https://github.com/jordanhubbard/daemonarchy-src/actions/runs/39776145660",
+      "status": "queued",
+      "conclusion": "",
+      "cells": [
+        {
+          "name": "amd64 ubuntu-22.04 (clang-15)",
+          "status": "in_progress",
+          "conclusion": ""
+        },
+        {
+          "name": "aarch64 ubuntu-24.04 (clang-18)",
+          "status": "in_progress",
+          "conclusion": ""
+        },
+        {
+          "name": "amd64 macos-latest (clang-18)",
+          "status": "queued",
+          "conclusion": ""
+        },
+        {
+          "name": "aarch64 macos-latest (clang-18)",
+          "status": "queued",
+          "conclusion": ""
+        },
+        {
+          "name": "amd64 ubuntu-24.04 (clang-18)",
+          "status": "in_progress",
+          "conclusion": ""
+        },
+        {
+          "name": "aarch64 ubuntu-22.04 (clang-15)",
+          "status": "in_progress",
+          "conclusion": ""
+        }
+      ],
+      "scope": "Fresh exact-head validation of the actual bootstrap-order repair; no passing integration result claimed."
+    },
+    "previous_exact_upstream_checks": {
       "success": 9,
       "failure": 1,
       "queued": 2,
@@ -23,6 +61,16 @@
         "aarch64 macos-latest (clang-18)"
       ],
       "scope": "Exact ad0f8669 head remains unmerged; failed and queued checks are not passing integration evidence."
+    },
+    "integration_review_head": "883295fb6aa3717b608818e85d67276da9ae4f5f",
+    "downstream_bootstrap_repair": {
+      "issue": "https://github.com/jordanhubbard/daemonarchy-src/issues/10",
+      "revision": "883295fb6aa3717b608818e85d67276da9ae4f5f",
+      "changed_paths": [
+        "Makefile.inc1"
+      ],
+      "change": "Add mandoc to the existing libz prerequisite within BOOTSTRAP_ALL_TOOLS; preserve native default bootstrap selection.",
+      "qualified": false
     }
   },
   "ports": {

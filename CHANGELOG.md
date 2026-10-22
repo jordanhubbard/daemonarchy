@@ -16,6 +16,11 @@ work; it is not a separate published tag in this repository. The proposed name
 
 ## Unreleased
 
+- Add bounded parallel authenticated package acquisition with separate native pkg
+  databases, verified-byte progress and fresh retry. Preserve serial inputs.
+  Native regression covers an eight-package historical subset; final release
+  inputs, installation scheduling and installer/GUI integration remain pending.
+
 - Preserve owned disposable-QEMU cleanup through repeated termination signals.
   Revoke inspection, finish the existing bounded shutdown and retain terminal
   evidence before returning an interrupted status. Controller regression checks

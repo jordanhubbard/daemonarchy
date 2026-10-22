@@ -249,10 +249,13 @@ merged in [ports PR #12](https://github.com/jordanhubbard/daemonarchy-ports/pull
 with all 64 downstream paths and the complete downstream delta preserved. Nine
 whitespace warnings inside one verbatim upstream patch are retained. Source
 tracking is current at `ad0f86694157`; [source PR #9](https://github.com/jordanhubbard/daemonarchy-src/pull/9)
-retains 94 commits pending integration. Its exact-head run has nine successful
-checks, one failed ARM64 Ubuntu 24.04 cross-build and two queued macOS cells.
-The failed kernel-toolchain bootstrap cannot link `mandoc` because zlib symbols
-are unresolved. Active workspace selections are unchanged.
+retains 94 commits pending integration plus a scoped bootstrap repair at
+`883295fb6aa`. The earlier exact-upstream run passed nine checks but failed its
+ARM64 Ubuntu 24.04 `mandoc` link while zlib was still compiling; two macOS cells
+remained queued. [Source issue #10](https://github.com/jordanhubbard/daemonarchy-src/issues/10)
+records the missing graph edge. The repair adds `mandoc` to the existing zlib
+prerequisite inside `BOOTSTRAP_ALL_TOOLS`; exact-head cross-build qualification
+is now pending in run `39776145660`. Active workspace selections are unchanged.
 Native changed-port tests, clean bulk builds, coherent final input admission and
 the remaining R12-18 requirements stay open.
 
