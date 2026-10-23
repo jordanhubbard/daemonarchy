@@ -65,8 +65,9 @@ On October 23, the updated helper and panel were installed on a MacBookPro16,1
 that was still running the 1.1.1 desktop package after a failed Wi-Fi setup.
 The retained grant, approved key and listener remained active; the helper
 published both wired and Wi-Fi addresses. The desktop shell restarted and its
-IPC ping succeeded. Visible panel behavior and reboot persistence with this
-combination remain to be confirmed.
+IPC ping succeeded. The operator confirmed that the network menu displays
+the remote-debugging section, listener address and Unpair control. Control
+actions and reboot persistence with this combination remain to be confirmed.
 On images without that panel integration, `remote-debug status` checks whether
 the listener is running and `remote-debug unpair` revokes the grant from a local
 root shell. `sudo daemonarchy-debug status --details` also prints whether a
