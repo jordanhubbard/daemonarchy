@@ -326,3 +326,12 @@ During the same installed-system session, a completed supplicant scan returned
 An immediate second scan returned `FAIL-BUSY` while the first was pending.
 This supports the installer's repeated, delayed scan UI; it does not establish
 that the installer image discovers all eight networks or joins one reliably.
+
+After restoring ordinary supplicant operation, WPA reached COMPLETED and
+wireless DHCP assigned an address again. A one-minute, 120-packet gateway
+probe with 1200-byte payloads used the `wlan0` route and received 117 replies
+(2.5% loss; mean round-trip 6.391 ms). The selected AP changed during the
+probe; WPA and the DHCP address were still present afterward. No missing-ring
+or ring-full transmit drops were recorded. This establishes that the recovered
+link carries traffic, while its packet loss and reassociation remain a release
+blocker for a Wi-Fi-only installation claim.
