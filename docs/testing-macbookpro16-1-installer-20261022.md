@@ -31,9 +31,14 @@ submitted/295 completed and 1103 RX completions during continued use. This is
 association and bidirectional traffic evidence, not a sustained reliability or
 post-reboot test. The earlier failure to ping 192.168.211.161 used a gateway
 from a different network and does not establish a driver defect.
-The MacBook later stopped answering on its wired debugging address; its
-screen state and retained logs have not yet been inspected. That interruption
-prevents a sustained Wi-Fi reliability claim.
+The MacBook later stopped answering on its wired debugging address and then
+recovered without rebooting: uptime continued, load was low, and WPA2/DHCP
+were restored. The retained log shows repeated association attempts and
+roaming across access points before recovery, without a panic. The operator
+confirmed that the desktop stayed responsive during the outage. A later
+source-bound gateway ping returned 8/8 replies, with TX completions matching
+all 882 submitted packets. This network interruption still prevents a
+sustained Wi-Fi reliability claim.
 
 The source package supplying the B3 firmware declares its license `unknown`.
 Blobs and private module builds are kept outside the repository. A private

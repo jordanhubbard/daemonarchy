@@ -28,7 +28,11 @@ a supported acquisition path. The diagnostic driver is not yet integrated as
 a maintained port, and the baseline image retains its older desktop/GPU
 packages. MacBook Wi-Fi joined WPA2, obtained DHCP and reached the gateway
 before this image was built; the physical preview image has not yet been
-booted. The machine later stopped answering on its wired debugging address,
-so the duration and cause of that outage require physical/log inspection.
+booted. The machine later temporarily stopped answering on its wired debugging
+address, then recovered with uninterrupted uptime, low load, and WPA2/DHCP
+restored. The operator reports the desktop remained responsive. A later
+source-bound gateway ping returned 8/8 replies. Repeated roaming/association
+attempts appear in the retained log;
+the cause of the network interruption remains open.
 Reboot stability and the earlier NVMe interruption remain release
 gates. The MSI laptop or desktop has not been qualified by this preview.
