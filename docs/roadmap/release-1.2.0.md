@@ -88,7 +88,7 @@ This is dependency planning, not a passing bulk. A clean full changed-port bulk,
 physical desktop check, source/ports pin and final artifact identity are still
 required before R12-18 can close.
 
-The October 23 disposable source integration check merged the exact current
+The October 23 disposable source integration check merged the then-current
 [signed-firmware PR #29](https://github.com/jordanhubbard/daemonarchy/pull/29)
 head `2cb0b460f003e986ca806015d55a388f9b0409d8` and
 [debug-status PR #30](https://github.com/jordanhubbard/daemonarchy/pull/30)
