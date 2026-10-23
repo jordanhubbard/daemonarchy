@@ -35,6 +35,10 @@
   DHCP client, extend WPA/DHCP waits, and require a lasting address and default
   route on `wlan0`. The first physical join needed a second attempt and later
   lost its address; the revised path is awaiting a fresh hardware test.
+  The current candidate can select a scanned AP by BSSID when one network name
+  has several, and it keeps live Ethernet debugging while Wi-Fi becomes the
+  package-download route. Both paths pass focused native tests; the ISO run
+  remains open.
   Bound-check Broadcom scan security records after a malformed result crashed
   `ifconfig -v`; a native-built preview module then returned ten BSSIDs and
   passed gateway and Internet traffic over Wi-Fi alone. Fresh-install and
