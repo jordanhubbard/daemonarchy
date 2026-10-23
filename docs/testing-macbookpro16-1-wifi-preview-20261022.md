@@ -146,6 +146,27 @@ BUSY, so a cold boot was selected for the next comparative test. A separate
 diagnostic-only module that records firmware link event status, reason and
 key-install timing builds natively, but has not been tested on the MacBook.
 
+The retained physical `wifi-current-dmesg.gz` has SHA-256
+`7ad37b99c8c64ad81a949b18f60357cb8d2480653cf2531a3f87325e50aba44e`.
+Its first `E_LINK` down event occurs while the VAP reports state 5 (RUN), and
+the driver explicitly ignores it. Before the following failed `SET_SSID`
+event, `vap_transmit` logs another 56 IPv4 and 30 ARP frames, all still in
+RUN. These are requests entering the driver, not evidence that the AP received
+them. The experimental link-fix trace has SHA-256
+`592589cf816e3368bf5364d0beb0d4a7cb6ead1a3a1c64d285a28425fa4b059f`;
+its link flaps and failed DHCP remain a negative result.
+
+The [upstream Linux brcmfmac connection handler](https://git.kernel.org/pub/scm/linux/kernel/git/torvalds/linux.git/tree/drivers/net/wireless/broadcom/brcm80211/brcmfmac/cfg80211.c)
+recognizes an `E_LINK` down event, then checks the event BSSID against the
+connected profile before disconnecting. This is a behavior reference, not an
+untested FreeBSD patch or a claim about the exact Omarchy kernel revision. The
+next physical trace must record event status, reason, BSSID, current BSSID and
+pairwise-key state around a failed traffic window. The logging-only module
+retained for this purpose has SHA-256
+`f541d1ede54a7be281bba0699a9eff3811a22a12716f3509c216ddcf971bdf3c`.
+At the 2026-10-23 recheck, the SSH listener was closed; this module had not
+been loaded on the MacBook and the cause of the ignored event was unproven.
+
 The controlled reboot first selected the existing ZFS installation instead
 of the USB installer. A one-time EFI boot entry was created for the attached
 USB, with the normal disk BootOrder restored; physical USB boot and renewed
