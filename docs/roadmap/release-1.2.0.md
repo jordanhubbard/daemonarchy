@@ -92,6 +92,17 @@ This was a disposable October 19 CURRENT jail, not the production release jail.
 Physical desktop acceptance, coherent source/package/module pinning, signed feed
 and final artifact identity are still required before R12-18 can close.
 
+The same worker now retains a separately verified candidate set cache at
+`/usr/daemonarchy/cache/iso-snapshot-20261019-041802b362aa`. The official
+snapshot's `REVISION` remained `041802b362aa` before and after acquisition;
+`base.txz`, `kernel.txz` and `lib32.txz` matched its MANIFEST SHA-256 values.
+The kernel identity inside `kernel.txz` matches the actual poudriere jail kernel,
+and both base and jail headers report OSVERSION `1600028`. This establishes
+candidate set/jail coherence, not a built ISO or source-checkout selection.
+The current committed checkout catalogue still names the older source revision
+`bdcfeac3e1cb8ce3f05c32d8a7ad3597deb48bdf`; its required kernel identity
+check will refuse these new sets until a matching signed catalogue is selected.
+
 The October 23 disposable source integration check merged the then-current
 [signed-firmware PR #29](https://github.com/jordanhubbard/daemonarchy/pull/29)
 head `2cb0b460f003e986ca806015d55a388f9b0409d8` and
