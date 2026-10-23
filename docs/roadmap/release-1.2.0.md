@@ -128,8 +128,13 @@ head are ancestors of the clean preflight tree. The six EFI timer controls,
 `-Werror` builds of `hidquirk.ko` and `hkbd.ko`, and the native `stand` build
 pass on this tree. The resulting Lua EFI loader hashes to
 `00e7ea32efc7288daae1526bbaf631a724d9c83bcc6b07da8e5b4e14ccfaa909`.
-This is a build and merge check; it is neither the final signed loader nor a
-MacBook reboot or sustained-input qualification.
+The full native GENERIC kernel and modules build then completed in 1,849 seconds
+with `-j2`; its kernel SHA-256 is
+`fa04e893df37a6c2d98200450855ce2483e8dfd71c5131d4d420116ec18cacdd`,
+and its embedded build identity names the exact preflight revision. All four
+existing verified-boot source patches pass `git apply --check` against this
+tree. These are build and merge checks; they are neither final signed boot
+artifacts nor a MacBook reboot or sustained-input qualification.
 
 The same worker now retains a separately verified candidate set cache at
 `/usr/daemonarchy/cache/iso-snapshot-20261019-041802b362aa`. The official
