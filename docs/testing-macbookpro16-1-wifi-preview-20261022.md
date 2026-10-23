@@ -178,8 +178,11 @@ the retained source patch is
 The patch logs firmware event status, reason, flags, event and selected BSSID,
 VAP state, and whether a pairwise key was installed since the latest join. It
 does not change link handling. The native worker built it against a
-`bdcfeac3e1cb` kernel; the target kernel identity and module hash must be
-checked before any live swap. No physical test of this module has occurred.
+`bdcfeac3e1cb` kernel. The worker's `/boot/kernel/kernel` SHA-256 is
+`94e4ace9d6b6083f682d1a0d325162d10d0db852aa82400f7b59655e4df507b2`,
+matching the documented preview kernel above. The MacBook's currently booted
+kernel and target module hash must still be checked before any live swap. No
+physical test of this module has occurred.
 
 The controlled reboot first selected the existing ZFS installation instead
 of the USB installer. A one-time EFI boot entry was created for the attached
