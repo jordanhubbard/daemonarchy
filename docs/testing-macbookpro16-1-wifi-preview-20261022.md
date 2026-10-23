@@ -309,10 +309,20 @@ included in repository evidence.
 On a later failed attempt, the supplicant again recorded receipt of message 1
 and three attempts to send message 2. Over the bounded attempt, the VAP entry
 counter rose while PCIe bus submission and completion counters did not. The
-driver reported no firmware-dead, missing-ring or ring-full drops. This points
-to a drop before bus submission, but the coarse counters do not identify the
-frame or branch. A subsequent diagnostic module logs only EAPOL frame length,
-EtherType and VAP state to resolve that branch; a clean WPA exchange with the
-module showed contiguous Ethernet headers and two bus submissions. The failed
-exchange still needs the same trace. The wired debugger then stopped answering,
-so no stronger driver conclusion is recorded here.
+driver reported no firmware-dead, missing-ring or ring-full drops. The coarse
+counter gap motivated an EAPOL-specific check; it did not identify a frame or
+branch. A subsequent diagnostic module logs only EAPOL frame length, EtherType
+and VAP state; a clean WPA exchange with the
+module showed contiguous Ethernet headers and two bus submissions. A later
+failed exchange also showed EAPOL frames arriving at the VAP in RUN state with
+contiguous Ethernet headers, ruling out that VAP's early state and short-header
+drop branches for the traced frames. The coarse counter gap can include other
+traffic while the VAP is down; it does not prove EAPOL was dropped. The wired
+debugger temporarily stopped answering during reassociation, then recovered
+without a reboot. No stronger driver conclusion is recorded here.
+
+During the same installed-system session, a completed supplicant scan returned
+29 BSS entries representing eight distinct SSIDs across both 2.4 and 5 GHz.
+An immediate second scan returned `FAIL-BUSY` while the first was pending.
+This supports the installer's repeated, delayed scan UI; it does not establish
+that the installer image discovers all eight networks or joins one reliably.
