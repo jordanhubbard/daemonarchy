@@ -124,6 +124,22 @@ MOCK
   rescue_resume_debug </dev/null
   [[ ! -e $debug_command.calls ]]
 )
+# The same approved grant also resumes when network readiness exceeds a minute.
+(
+  touch "$debug_state/active"
+  rm -f "$debug_command.calls"
+  cat >"$debug_command" <<'MOCK'
+#!/bin/sh
+case $1 in
+  resume) echo resume >>"$0.calls" ;;
+  status) [ "$(wc -l <"$0.calls")" -ge 62 ] ;;
+esac
+MOCK
+  ticks=0
+  rescue_resume_debug </dev/null
+  [[ $(wc -l <"$debug_command.calls") -eq 62 && $ticks == 61 ]]
+  rm "$debug_state/active" "$debug_command.calls"
+)
 printf '#!/bin/sh\ncase "$1" in\nstatus) exit 0 ;;\nresume) echo resume >>"$0.calls" ;;\nesac\n' >"$debug_command"
 touch "$debug_state/active"
 # Boot resumption happens before desktop monitoring, including a healthy desktop.

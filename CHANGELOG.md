@@ -4,7 +4,8 @@
 
 - Preserve approved installed-system debugging keys, server identity and private
   state across reboot. Resume the existing session without Unpair or fresh
-  confirmation; retain explicit revocation and unknown-key refusal.
+  confirmation; retain explicit revocation and unknown-key refusal. Keep
+  retrying after slow network bring-up while the approved grant remains active.
 - On MacBookPro16,1, correct the offset EFI framebuffer reservation in the
   Navi14 driver and skip stalled LED output reports for the built-in T2 keyboard.
   The refreshed graphics package and one-boot quirked kernel reached a visible

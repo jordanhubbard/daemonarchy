@@ -69,11 +69,16 @@ rescue_resume_debug() {
   remaining=60
   # USB Ethernet and DHCP can become ready after the recovery console starts.
   # Retry in the background so a retained grant resumes without console input.
-  while [ -f "$debug_state/active" ] && [ "$remaining" -gt 0 ]; do
+  while [ -f "$debug_state/active" ]; do
     "$debug_command" resume || true
     "$debug_command" status >/dev/null 2>&1 && return 0
-    remaining=$((remaining - 1))
-    sleep 1
+    if [ "$remaining" -gt 0 ]; then
+      remaining=$((remaining - 1))
+      sleep 1
+    else
+      # A slow USB/network bring-up must not discard an approved grant.
+      sleep 5
+    fi
   done
 }
 
