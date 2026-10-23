@@ -40,6 +40,11 @@
           "path": "tests/installed-desktop.sh",
           "execution": "native-freebsd-or-explicit-harness",
           "current_framework_receipt": false
+        },
+        {
+          "path": "tests/installer-progress.py",
+          "execution": "controller-and-native-freebsd-pty",
+          "current_framework_receipt": false
         }
       ]
     },

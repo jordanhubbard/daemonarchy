@@ -26,6 +26,13 @@ on:
       - 'scripts/test-loader.py'
       - 'tests/test-loader.py'
       - 'live-post.sh'
+      - 'overlay/usr/local/libexec/daemonarchy-installer/progress-dashboard.py'
+      - 'overlay/usr/local/libexec/daemonarchy-installer/dashboard'
+      - 'overlay/usr/local/libexec/daemonarchy-installer/install'
+      - 'overlay/usr/local/libexec/daemonarchy-installer/install-integrity'
+      - 'tests/installer-progress.py'
+      - 'tests/install-integrity.sh'
+      - 'tests/fixtures/installer-progress/**'
       - '.github/workflows/native-graph.yml'
   pull_request:
     paths:
@@ -52,6 +59,13 @@ on:
       - 'scripts/test-loader.py'
       - 'tests/test-loader.py'
       - 'live-post.sh'
+      - 'overlay/usr/local/libexec/daemonarchy-installer/progress-dashboard.py'
+      - 'overlay/usr/local/libexec/daemonarchy-installer/dashboard'
+      - 'overlay/usr/local/libexec/daemonarchy-installer/install'
+      - 'overlay/usr/local/libexec/daemonarchy-installer/install-integrity'
+      - 'tests/installer-progress.py'
+      - 'tests/install-integrity.sh'
+      - 'tests/fixtures/installer-progress/**'
       - '.github/workflows/native-graph.yml'
   workflow_dispatch:
 
@@ -79,3 +93,10 @@ jobs:
           sh -n build-iso.sh scripts/iso-stage.sh
           python3 tests/iso-stage.py -v
           python3 tests/test-loader.py -v
+      - name: Measured installer progress and completion controls
+        env:
+          PYTHONDONTWRITEBYTECODE: '1'
+        run: |
+          bash -n overlay/usr/local/libexec/daemonarchy-installer/dashboard overlay/usr/local/libexec/daemonarchy-installer/install
+          python3 tests/installer-progress.py
+          bash tests/install-integrity.sh

@@ -11,6 +11,12 @@
       "executable": false
     },
     {
+      "path": ".github/workflows/native-graph.yml",
+      "owner": "release",
+      "sha256": "cc879b6fb54df68e1f7679d0106bcf7fa9bcbb2c6a99280e147ffeb8813a44d2",
+      "executable": false
+    },
+    {
       "path": ".gitignore",
       "owner": "release",
       "sha256": "32dae3052f331ee34d628ef535709b301259a45df7c7522c4d35dcf49873f00b",
@@ -265,7 +271,7 @@
     {
       "path": "overlay/usr/local/libexec/daemonarchy-installer/dashboard",
       "owner": "installer",
-      "sha256": "fbd702ace484a086bcb46378880d3333ba71888c6f97f2ec166e06367bb33c1a",
+      "sha256": "86fc2ba69196a0d92a5cb3f90029295afab22969f8f0aba21c6d02428fe15f79",
       "executable": true
     },
     {
@@ -307,7 +313,7 @@
     {
       "path": "overlay/usr/local/libexec/daemonarchy-installer/install",
       "owner": "installer",
-      "sha256": "62604c6c465ecae20c4efa2aca6dbcb06c355028f565ca3bf4fd59c7d69500e0",
+      "sha256": "bccf504dc082f4f39fd9d8cd397ec5cfbcfc61fb85a04b53754b0a88aa997347",
       "executable": true
     },
     {
@@ -339,6 +345,12 @@
       "owner": "installer",
       "sha256": "c639fed145d0da776c7c4e936d1308305f6402e8ed23bdee5fa9bf049b96db82",
       "executable": false
+    },
+    {
+      "path": "overlay/usr/local/libexec/daemonarchy-installer/progress-dashboard.py",
+      "owner": "installer",
+      "sha256": "c0b7aa0da0f92540d6b93d1338ed86dabd0a5184913b0b989275ffb93aab6533",
+      "executable": true
     },
     {
       "path": "overlay/usr/local/libexec/daemonarchy-installer/rebuild-caches",
@@ -749,6 +761,18 @@
       "executable": false
     },
     {
+      "path": "tests/fixtures/installer-progress/native-acquisition-provenance.json",
+      "owner": "installer",
+      "sha256": "3cbc0f8d1e51f11afe2baa59a54883b54432d50c5d1f373a28919e8f5a99a0f9",
+      "executable": false
+    },
+    {
+      "path": "tests/fixtures/installer-progress/native-acquisition.jsonl",
+      "owner": "installer",
+      "sha256": "e0c703bccb73be95218afe5fc2cbc07ca23afd3c9f93bb9fe2ce75d341468fb3",
+      "executable": false
+    },
+    {
       "path": "tests/gpu-config.sh",
       "owner": "installer",
       "sha256": "69d6164c7cac7ffa22ecc158c4358614aa51fcadcf77495ace8fcbe0a53a026a",
@@ -794,6 +818,12 @@
       "path": "tests/installer-clock.sh",
       "owner": "installer",
       "sha256": "0648547ea3ed87673edd2ccdc1f0a2b6057ee3191bb40d5e4daf0c242883b7e8",
+      "executable": false
+    },
+    {
+      "path": "tests/installer-progress.py",
+      "owner": "installer",
+      "sha256": "9faf4de88494e1144b055efeae6326c31d29fd485ebaa926887e5781e3c9a8ab",
       "executable": false
     },
     {
@@ -958,6 +988,96 @@
       "sha256": "b1fb7cce1f6889f001f4450ba6f3b965dede9a67b38f210ea180ad4e5a39f014",
       "executable": false,
       "reason": "PERF-001/COMP-001 reviewed unqualified-target classification and returned-query output custody; no native lifecycle qualification"
+    }
+  ],
+  "implementation_updates": [
+    {
+      "work_item": "UI-001",
+      "preceding_commit": "e7dad049ed010b02d63dbd1f0c6ed61d7d171c34",
+      "reason": "Intentional retained installer progress implementation; no historical lifecycle or installation acceptance is relabeled",
+      "files": [
+        {
+          "path": "overlay/usr/local/libexec/daemonarchy-installer/dashboard",
+          "preceding_source_sha256": "fbd702ace484a086bcb46378880d3333ba71888c6f97f2ec166e06367bb33c1a",
+          "current_sha256": "86fc2ba69196a0d92a5cb3f90029295afab22969f8f0aba21c6d02428fe15f79",
+          "preceding_baseline_sha256": "fbd702ace484a086bcb46378880d3333ba71888c6f97f2ec166e06367bb33c1a"
+        },
+        {
+          "path": "overlay/usr/local/libexec/daemonarchy-installer/install",
+          "preceding_source_sha256": "62604c6c465ecae20c4efa2aca6dbcb06c355028f565ca3bf4fd59c7d69500e0",
+          "current_sha256": "bccf504dc082f4f39fd9d8cd397ec5cfbcfc61fb85a04b53754b0a88aa997347",
+          "preceding_baseline_sha256": "62604c6c465ecae20c4efa2aca6dbcb06c355028f565ca3bf4fd59c7d69500e0"
+        },
+        {
+          "path": "overlay/usr/local/libexec/daemonarchy-installer/progress-dashboard.py",
+          "preceding_source_sha256": null,
+          "current_sha256": "c0b7aa0da0f92540d6b93d1338ed86dabd0a5184913b0b989275ffb93aab6533",
+          "preceding_baseline_sha256": null
+        },
+        {
+          "path": "tests/installer-progress.py",
+          "preceding_source_sha256": null,
+          "current_sha256": "0c8c29be156d8c31c05c127942b52b34309a593a694cc3479bf962dc9a71a23b",
+          "preceding_baseline_sha256": null
+        }
+      ]
+    },
+    {
+      "work_item": "UI-001",
+      "preceding_commit": "b15f69a5d37b853b9a9d98f69dc8b0815fe53ba8",
+      "reason": "Add a verbatim retained native acquisition fixture and exact consumer replay without changing production renderer or claiming live installation",
+      "files": [
+        {
+          "path": "tests/installer-progress.py",
+          "preceding_source_sha256": "0c8c29be156d8c31c05c127942b52b34309a593a694cc3479bf962dc9a71a23b",
+          "current_sha256": "9faf4de88494e1144b055efeae6326c31d29fd485ebaa926887e5781e3c9a8ab",
+          "preceding_baseline_sha256": "0c8c29be156d8c31c05c127942b52b34309a593a694cc3479bf962dc9a71a23b"
+        },
+        {
+          "path": "tests/fixtures/installer-progress/native-acquisition.jsonl",
+          "preceding_source_sha256": null,
+          "current_sha256": "e0c703bccb73be95218afe5fc2cbc07ca23afd3c9f93bb9fe2ce75d341468fb3",
+          "preceding_baseline_sha256": null
+        },
+        {
+          "path": "tests/fixtures/installer-progress/native-acquisition-provenance.json",
+          "preceding_source_sha256": null,
+          "current_sha256": "3cbc0f8d1e51f11afe2baa59a54883b54432d50c5d1f373a28919e8f5a99a0f9",
+          "preceding_baseline_sha256": null
+        }
+      ]
+    },
+    {
+      "work_item": "UI-001",
+      "preceding_commit": "57e37f1c257c1744abd92fce785925a4a9d9b08c",
+      "reason": "Run portable measured progress and completion controls for renderer, installer hook and fixture changes in the existing controller workflow",
+      "files": [
+        {
+          "path": ".github/workflows/native-graph.yml",
+          "preceding_source_sha256": "741cd4f3dcf1993a3ff2019b655a79dbb60f7fae185d232f18e46edff4341f9c",
+          "current_sha256": "cc879b6fb54df68e1f7679d0106bcf7fa9bcbb2c6a99280e147ffeb8813a44d2",
+          "preceding_baseline_sha256": null
+        }
+      ]
+    },
+    {
+      "work_item": "UI-001",
+      "preceding_commit": "78dbc47d6189f1925ba1960b78f7c5d62027791d",
+      "reason": "Reject backward verified archive counts and changed package totals without advancing the accepted journal observation; recorded native journal regression",
+      "files": [
+        {
+          "path": "overlay/usr/local/libexec/daemonarchy-installer/progress-dashboard.py",
+          "preceding_source_sha256": "c0b7aa0da0f92540d6b93d1338ed86dabd0a5184913b0b989275ffb93aab6533",
+          "current_sha256": "c37d6714cea9485ca7f65f68cd8b6d18da06be1e45d354cba5ab2e8df0a302df",
+          "preceding_baseline_sha256": "c0b7aa0da0f92540d6b93d1338ed86dabd0a5184913b0b989275ffb93aab6533"
+        },
+        {
+          "path": "tests/installer-progress.py",
+          "preceding_source_sha256": "9faf4de88494e1144b055efeae6326c31d29fd485ebaa926887e5781e3c9a8ab",
+          "current_sha256": "2879828220c1cc1bef7d7454b9107d70ba4fb8f671baf7aa3883a1149d8bb43e",
+          "preceding_baseline_sha256": "9faf4de88494e1144b055efeae6326c31d29fd485ebaa926887e5781e3c9a8ab"
+        }
+      ]
     }
   ]
 }

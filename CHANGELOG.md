@@ -16,6 +16,10 @@ work; it is not a separate published tag in this repository. The proposed name
 
 ## Unreleased
 
+- Installer: replace elapsed-time progress estimates with measured milestones,
+  archive and package observations; add bars, spectrum and scope views, plain
+  output, reduced motion and terminal resize handling.
+
 - Add bounded parallel authenticated package acquisition with separate native pkg
   databases, verified-byte progress and fresh retry. Preserve serial inputs.
   Native regression covers an eight-package historical subset; final release
