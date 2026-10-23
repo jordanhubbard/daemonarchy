@@ -911,6 +911,7 @@ remains open; report files do not establish a passing gate.
 ### [ ] DEBUG-003 — Deliver early-kernel wired diagnostics for 1.3.1
 
 - **GitHub issue:** [#27](https://github.com/jordanhubbard/daemonarchy/issues/27), milestone **1.3.1**.
+- **Preflight checkpoint:** [Native-built firmware inventory](../../verification/earlynet-131-inventory-development.json) passes exact-image UEFI VM checks with and without a NIC. It automatically reports PCI/UNDI data without starting a kernel. MSI target data and the actual early-kernel backend remain pending; this does not close DEBUG-003.
 
 - **Release scope:** [1.3.1 completion checks](release-1.3.1.md); built-in Ethernet is the operator-selected bring-up transport. The in-progress 1.3 release is separate.
 

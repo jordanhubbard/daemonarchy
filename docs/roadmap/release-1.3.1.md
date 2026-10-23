@@ -74,3 +74,26 @@ an explicitly supported early native backend is required for the built-in NIC.
 Historical 1.2 development records retain their original scope. This operator
 decision assigns the continuous early-kernel transport and MSI capture to
 1.3.1; it does not silently waive unrelated acceptance or publish a release.
+
+## Firmware preflight checkpoint
+
+The [development record](../../verification/earlynet-131-inventory-development.json)
+binds source `51924656dcb3`, its native FreeBSD build and a separately booted
+16,811,520-byte GPT/FAT inventory image. Native descriptor/protocol/setup
+controls and controller regression pass. Actual UEFI QEMU boots with e1000 and
+with no NIC reach the automatic inventory and loader prompt; both VMs stop
+cleanly and leave the image bytes unchanged. The earlier invalid-FAT and
+missing-loader-root attempts remain failures, not successful boot evidence.
+
+The image automatically prints `PCI Ethernet`, the firmware NIC MAC/location
+when available, and `UNDI` status. It contains no kernel, installer or private
+keys and does not start the NIC or modify internal disks. Use the
+[exact CI artifact](https://github.com/jordanhubbard/daemonarchy-src/actions/runs/39924040948/artifacts/12487884623),
+which includes `daemonarchy-1.3.1-firmware-inventory-amd64.img`. Write the image
+to a spare USB medium and boot it as UEFI with Secure Boot disabled for this
+unsigned development loader. Retain the MSI's PCI and UNDI lines. No kernel
+boot is needed to collect them.
+
+This is the required hardware/backend preflight, **not** the completed early
+kernel connection. The actual kernel producer, runtime mapping/callbacks,
+pre-driver packets and MSI acceptance remain open under DEBUG-003.

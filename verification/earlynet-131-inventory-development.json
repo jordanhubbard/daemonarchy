@@ -1,0 +1,71 @@
+{
+  "schema": "daemonarchy/earlynet-firmware-inventory-development@1",
+  "release_target": "1.3.1",
+  "status": "development-preflight-pass",
+  "source_revision": "51924656dcb3e748a585886294b040d055fa316b",
+  "source_tree": "f0909c56e2535a452ce19d426682284e843c298b",
+  "tracking": {
+    "product_issue": "https://github.com/jordanhubbard/daemonarchy/issues/27",
+    "source_issue": "https://github.com/jordanhubbard/daemonarchy-src/issues/21",
+    "source_pr": "https://github.com/jordanhubbard/daemonarchy-src/pull/22"
+  },
+  "native_build": {
+    "run_url": "https://github.com/jordanhubbard/daemonarchy-src/actions/runs/39924040948",
+    "result": "success",
+    "worker": "FreeBSD freebsd 15.0-RELEASE-p13 FreeBSD 15.0-RELEASE-p13 releng/15.0-n281114-af58d0db156a GENERIC amd64",
+    "controller_tests": {
+      "total": 70,
+      "passed": 66,
+      "declared_skips": 4
+    },
+    "programs": [
+      "sanitized UNDI descriptor admission",
+      "native C packet protocol including kernel-role schema",
+      "loader setup and menu Lua interaction controls"
+    ],
+    "filesystem": "fstyp msdosfs and read-only fsck_msdosfs passed"
+  },
+  "artifact": {
+    "name": "daemonarchy-1.3.1-firmware-inventory-amd64.img",
+    "bytes": 16811520,
+    "sha256": "6ca8e1e0f6cfd80e34c0697959f308a560285cec8d2fe6c2eb78902efb1049bc",
+    "artifact_url": "https://github.com/jordanhubbard/daemonarchy-src/actions/runs/39924040948/artifacts/12487884623",
+    "loader_bytes": 738816,
+    "loader_sha256": "59a946047d788b5022dad9f8d07e4debc9716fdefe5e9c3762e9562be42b01d9",
+    "contents": "standalone UEFI loader and automatic firmware inventory; no kernel, installer or credentials",
+    "signed": false
+  },
+  "uefi_vm": {
+    "emulated_target": "amd64",
+    "accelerator": "TCG",
+    "results": {
+      "e1000": {
+        "observed": true,
+        "qmp_quit_sent": true,
+        "exit_code": 0,
+        "image_unchanged": true,
+        "scope": "UEFI firmware inventory only; no kernel connection",
+        "no_nic": false
+      },
+      "no_nic": {
+        "observed": true,
+        "qmp_quit_sent": true,
+        "exit_code": 0,
+        "image_unchanged": true,
+        "scope": "UEFI firmware inventory only; no kernel connection",
+        "no_nic": true
+      }
+    },
+    "observation": "Exact native-produced GPT/FAT image boots to automatic PCI/MAC/UNDI inventory and the loader prompt. The e1000 is PCI 8086:100e; its firmware UNDI descriptor does not advertise PCI. No UNDI entry point or kernel was called."
+  },
+  "earlier_failures_retained": [
+    "forced FAT16 default geometry produced a blank filesystem despite formatter exit zero; filesystem validation and explicit cluster geometry added",
+    "standalone loader root lacked defaults configuration; added a non-autobooting loader configuration",
+    "native build adapter failures: unwanted BIOS link closure, missing networking header, Lua object path and absent guest Git"
+  ],
+  "kernel_connection_implemented": false,
+  "post_exit_boot_services_packets_verified": false,
+  "msi_physical_qualified": false,
+  "framework_product_receipt": false,
+  "next_required_target_evidence": "Boot this separate inventory image on the MSI and retain its PCI Ethernet identity and UNDI status before selecting the actual early-kernel backend. Keep the in-progress 1.3 release separate."
+}
