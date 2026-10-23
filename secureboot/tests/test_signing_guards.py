@@ -3,9 +3,11 @@ import argparse
 import importlib.util
 import json
 from pathlib import Path
+import shutil
 import subprocess
 import tempfile
 import unittest
+from unittest.mock import patch
 
 spec = importlib.util.spec_from_file_location(
     "sign_boot_tree", Path(__file__).resolve().parents[1] / "sign-boot-tree.py")
@@ -121,6 +123,48 @@ class SigningGuards(unittest.TestCase):
         (self.root / "boot/efi/EFI/Microsoft/bootmgfw.efi").write_bytes(b"other OS")
         self.assertEqual(sorted(name for name, _ in signer.inventory(self.root)),
                          ["kernel/kernel", "manifest"])
+
+    def test_private_firmware_hash_enters_both_signed_manifests_without_bytes(self):
+        self.args.loader = Path(self.temp.name) / "loader_lua.efi"
+        self.args.loader.write_bytes(b"disposable unsigned loader fixture")
+        patches = Path(signer.__file__).resolve().parent / "patches"
+        receipt = {
+            "schema": 1,
+            "loader_options": [
+                "WITH_LOADER_VERIEXEC=yes", "WITH_LOADER_EFI_SECUREBOOT=yes",
+                "WITH_LOADER_VERIEXEC_PASS_MANIFEST=yes", "VE_SELF_TESTS=yes",
+                "WITHOUT_LOADER_VERIEXEC_TESTING=yes",
+                "WITHOUT_LOADER_VERIEXEC_VECTX=yes",
+            ],
+            "kernel_sha256": signer.digest(self.root / "boot/kernel/kernel"),
+            "unsigned_loader_sha256": signer.digest(self.args.loader),
+            "trust_anchor_sha256": signer.digest(self.args.certificate),
+            "source_patch_sha256": signer.digest(patches / "module-policy.patch"),
+            "loader_patch_sha256": signer.digest(patches / "loader-rootpool.patch"),
+            "optional_verification_patch_sha256": signer.digest(
+                patches / "efi-optional-verification.patch"),
+            "cd9660_patch_sha256": signer.digest(patches / "cd9660-verification.patch"),
+        }
+        self.args.build_receipt = Path(self.temp.name) / "build.json"
+        self.args.build_receipt.write_text(json.dumps(receipt))
+        original_run = signer.run
+
+        def test_run(*command, **kwargs):
+            if command[0] == "uefisign":
+                shutil.copyfile(command[-1], command[command.index("-o") + 1])
+                return subprocess.CompletedProcess(command, 0)
+            return original_run(*command, **kwargs)
+
+        fingerprint = "a" * 64
+        with patch.object(signer, "optional_apple_firmware",
+                          return_value={"firmware/test-board.bin": fingerprint}), \
+                patch.object(signer, "run", side_effect=test_run):
+            signer.sign(self.args)
+        self.assertIn(f"firmware/test-board.bin sha256={fingerprint}\n",
+                      (self.root / "boot/manifest").read_text())
+        self.assertIn(f"/boot/firmware/test-board.bin sha256={fingerprint}\n",
+                      (self.root / "boot/runtime.manifest").read_text())
+        self.assertFalse((self.root / "boot/firmware/test-board.bin").exists())
 
 
 if __name__ == "__main__":

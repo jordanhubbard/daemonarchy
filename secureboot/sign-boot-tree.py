@@ -211,7 +211,7 @@ def sign(args):
             if name not in ("manifest", "manifest.sig", "manifest.certs")
             and (not name.endswith("/kernel") or name == kernel_path)
             and not mutable(name)).encode())
-    print("Signed loader, boot manifest and kernel-module manifest; no private key copied.")
+    print("Signed loader, boot manifest and runtime manifest; no private key copied.")
 
 
 if __name__ == "__main__":

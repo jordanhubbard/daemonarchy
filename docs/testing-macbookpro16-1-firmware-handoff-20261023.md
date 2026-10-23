@@ -43,7 +43,9 @@ it records `native_boot_qualified: false`.
 
 `git apply --check` passed on both the pinned source and the separately
 retained FreeBSD-current source checkout. The native runtime probe compiled
-with `-Wall -Wextra -Werror`. The Secure Boot Python suite passed 25 tests;
+with `-Wall -Wextra -Werror`. The Secure Boot Python suite passed 26 tests,
+including a signed-manifest output check that confirms optional firmware
+fingerprints enter both inventories while the image tree contains no firmware;
 syntax checks and `git diff --check` passed. A disposable signed bundle built
 from test credentials accepted the privately imported Apple files only when
 both its boot and runtime manifests contained their exact hashes, and rejected
