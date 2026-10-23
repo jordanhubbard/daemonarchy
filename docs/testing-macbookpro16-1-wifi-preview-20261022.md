@@ -364,8 +364,11 @@ On October 23, the installed system temporarily pinned its currently
 successful BSSID in the supplicant, kept wired debugging enabled, and sent
 300 gateway probes with 1200-byte payloads over `wlan0` at 0.2-second
 intervals. All 300 replies arrived (0% loss; mean RTT 5.192 ms, maximum
-116.589 ms), and WPA remained COMPLETED. The temporary BSSID pin was cleared
-afterward. A separate wired SSH attempt timed out briefly during the test,
-then the debugger returned without a reboot. This bounded result shows that
-steady traffic on that AP worked; it does not establish reliable roaming,
-installer Wi-Fi, or a cause for the transient wired reachability loss.
+116.589 ms), and WPA remained COMPLETED. After the temporary BSSID pin was
+cleared, the supplicant returned to SCANNING, `wlan0` lost carrier and its
+DHCP address disappeared. A separate wired SSH attempt timed out briefly,
+then the debugger returned without a reboot. Re-pinning the last successful
+AP restored WPA and DHCP; the runtime pin remains active for diagnostic work.
+This bounded result shows steady traffic on one AP and a failure during
+unrestricted reassociation. It does not establish the cause of the failed
+handshake, reliable roaming or installer Wi-Fi.
