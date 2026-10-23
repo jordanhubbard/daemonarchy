@@ -123,3 +123,31 @@ attempts appear in the retained log;
 the cause of the network interruption remains open.
 Reboot stability and the earlier NVMe interruption remain release
 gates. The MSI laptop or desktop has not been qualified by this preview.
+
+## 2026-10-23 link-loss follow-up
+
+The live installer later retained `wpa_state=COMPLETED`, an IPv4 lease and a
+default route while gateway pings failed with `Host is down`. The driver still
+logged IPv4 frames entering `vap_transmit` in VAP state RUN. Its kernel log
+also recorded a firmware `E_LINK` down event followed by `ignoring E_LINK down
+in RUN`; the interface therefore continued to report association after the
+firmware had signaled a lost link. Reassociation alone did not restore traffic.
+After wired debugging was re-enabled, a later probe routed over `wlan0`
+returned 3/3 gateway replies and transmit completions advanced. The exact
+recovery trigger was not established.
+
+A native-built experimental module narrowed the link-down exception to the
+period before pairwise-key installation. A live module-swap test reached WPA2
+`COMPLETED` on a weak AP, but DHCP did not obtain a lease. Subsequent attempts
+on stronger APs flapped between link UP and DOWN without a lease. This was
+insufficient to qualify the change; the original diagnostic module was
+restored. Repeated live module reloads then left firmware scans reporting
+BUSY, so a cold boot was selected for the next comparative test. A separate
+diagnostic-only module that records firmware link event status, reason and
+key-install timing builds natively, but has not been tested on the MacBook.
+
+The controlled reboot first selected the existing ZFS installation instead
+of the USB installer. A one-time EFI boot entry was created for the attached
+USB, with the normal disk BootOrder restored; physical USB boot and renewed
+remote debugging are pending. No complete fresh Wi-Fi installation, rebooted
+wireless qualification, or release attestation follows from this session.
