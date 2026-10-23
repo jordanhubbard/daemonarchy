@@ -111,7 +111,7 @@ def build(args):
     kernel_obj, loader_obj = out / "kernel-obj", out / "loader-obj"
     print("Building the policy kernel; see kernel-build.log", flush=True)
     make("kernel-build.log", kernel_obj, worktree, "buildkernel",
-         "KERNCONF=DAEMONARCHY_SECUREBOOT", f"KERNCONFDIR={conf}", "MODULES_OVERRIDE=")
+         "KERNCONF=DAEMONARCHY_SECUREBOOT", f"KERNCONFDIR={conf}", "NO_MODULES=yes")
     print("Building the verified EFI loader; see loader-build.log", flush=True)
     make("loader-build.log", loader_obj, worktree / "stand", *OPTIONS,
          f"TRUST_ANCHORS={ta}", f"TA_PEM_LIST={ta}", f"VC_PEM_LIST={vc}")
