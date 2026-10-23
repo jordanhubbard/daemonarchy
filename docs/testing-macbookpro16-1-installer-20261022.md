@@ -801,3 +801,21 @@ both refused without creating output. The importer is a development tool;
 it is not yet exposed in the live installer, copied into the target, or tested
 across a MacBook reboot. The native radio driver also still needs link-loss
 and traffic repair before a Wi-Fi-ready installation claim is possible.
+
+## 2026-10-23 Wi-Fi link-event diagnostic candidate
+
+The private native driver currently ignores every firmware `E_LINK` down event
+once the net80211 VAP reaches RUN, including after a pairwise key is installed.
+That can conceal a real disconnect. The [upstream Linux brcmfmac event path](https://github.com/torvalds/linux/blob/master/drivers/net/wireless/broadcom/brcm80211/brcmfmac/cfg80211.c)
+also checks the event BSSID against the current connection before acting on a
+link-down notification. This is a protocol reference, not imported driver code
+or proof that the MacBook's event refers to its current AP.
+
+A logging-only private module now records the event and current BSSID, firmware
+status/reason, interface indices, VAP state and pairwise-key state. It leaves
+the existing link handling unchanged. It compiled as `if_brcmfmac.ko` against
+the exact image source `bdcfeac3e1cb8ce3f05c32d8a7ad3597deb48bdf` on
+native FreeBSD 16.0-CURRENT amd64. The module SHA256 is
+`f541d1ede54a7be281bba0699a9eff3811a22a12716f3509c216ddcf971bdf3c`.
+It is retained outside Git for the next physical dropout test; no MacBook
+result or release driver fix is claimed from this compile.
