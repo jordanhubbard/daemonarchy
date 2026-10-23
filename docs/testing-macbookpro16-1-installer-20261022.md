@@ -549,3 +549,34 @@ scan, association, traffic and post-reboot reconnect are separate acceptance
 checks. Until those pass, the installation must report wireless support as
 incomplete. [HW-003](roadmap/active-work.md)
 owns this cross-laptop installer requirement.
+
+### Firmware acquisition probe, October 22
+
+The MacBook identifies as `MacBookPro16,1`, board
+`Mac-E1008331FDC96864`, with PCI `14e4:4464` revision `0x04` at `5:0:0`.
+A [Linux kernel report on the same model](https://lists.openwall.net/netdev/2023/02/23/110)
+identifies its running chip as BCM4364/4 and requests the B3 PCIe firmware
+family. This supports a B3 candidate; it does not establish which Apple board
+configuration this particular unit needs.
+
+For a bounded availability probe, the publicly available
+[T2 firmware package](https://github.com/NoaHimesaka1873/apple-bcm-firmware/releases/tag/v14.0)
+`apple-bcm-firmware-14.0-1-any.pkg.tar.zst` was downloaded to private scratch
+space. Its SHA256 is
+`f2cd47d9e3fb9658f16997b2d9ace3033b57925b8c6ddd86ccc3d07d0c3e9559`.
+The archive contains BCM4364B3 PCIe `.bin`, `.clm_blob`, `.txcap_blob` and
+board-configuration `.txt` files for several Apple families, including `bali`.
+The complete archive was copied to the MacBook's private
+`/var/tmp/daemonarchy-wifi-probe-20261022` directory; the on-device SHA256
+matches. This establishes that firmware bytes can be acquired and delivered,
+not that their original Apple provenance, exact board selection or license for
+image redistribution has been qualified.
+
+No files were installed into the boot firmware path. The installed FreeBSD
+kernel exposes only `if_bwi.ko` and `if_bwn.ko` Broadcom Wi-Fi modules, neither
+matching this FullMAC PCI device. `pciconf` still lists it as `none8`, and
+`ifconfig -l` still lists only loopback and two USB Ethernet interfaces.
+Loading firmware cannot attach an absent BCM4364 driver. The next controlled
+probe needs a native driver able to identify the chip and request the correct
+firmware and board files; only then can firmware loading and wireless operation
+be tested.
