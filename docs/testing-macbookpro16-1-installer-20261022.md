@@ -616,3 +616,13 @@ operation or reboot persistence. The next driver phase must validate shared
 memory bounds and DMA/interrupt handling before attempting interface attach,
 scan, association and traffic. The installer still needs verified firmware
 acquisition, target installation and offline-media/failure paths.
+
+A subsequent experimental full-attachment attempt using this same board file
+lost the SSH connection before returning a result. The target stopped answering
+ARP and ICMP; no scan or association was observed. Its console/panic state has
+not yet been recovered, so this is a failure boundary rather than evidence that
+the board file is wrong. Review of the experimental driver found that it
+advertised host-memory DMA indices but still read and wrote TCM indices. A
+corrected diagnostic variant builds on the native FreeBSD worker but has not
+been deployed or tested on the MacBook. Keep BCM4364 disabled in release images
+until hardware recovery, crash diagnosis and real wireless acceptance pass.
