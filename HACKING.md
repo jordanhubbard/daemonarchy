@@ -349,6 +349,10 @@ sh scripts/cache-release-sets.sh
 JAIL=16amd64 PTREE=omarchyiso sh build-iso.sh
 ```
 
+On a worker with a separate Poudriere configuration directory, set
+`POUDRIERE_ETC=/path/to/poudriere-etc` for `build-iso.sh` so its jail query and
+image command use the same configuration as the package bulk.
+
 For source-built sets such as 1.1.1, populate this directory from the exact qualified build, including its MANIFEST, rather than fetching a newer daily snapshot. The moving snapshot URL is consulted only for missing inputs. Select a new
 cache directory for a new snapshot so an older retained `MANIFEST` cannot be
 mistaken for the new selection. Preserve poudriere's repository structure,

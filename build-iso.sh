@@ -23,6 +23,15 @@ SET_CACHE_DIR=${SET_CACHE_DIR:-/var/cache/daemonarchy-iso}
 OUTDIR=${OUTDIR:-/usr/local/poudriere/data/images}
 ABI=${ABI:-FreeBSD:16:amd64}
 ARCH=${ARCH:-amd64}
+POUDRIERE_ETC=${POUDRIERE_ETC:-}
+
+poudriere_run() {
+  if [ -n "$POUDRIERE_ETC" ]; then
+    poudriere -e "$POUDRIERE_ETC" "$@"
+  else
+    poudriere "$@"
+  fi
+}
 
 here=$(cd "$(dirname "$0")" && pwd)
 . "$here/overlay/usr/local/libexec/daemonarchy-installer/package-repository"
@@ -155,7 +164,7 @@ for set in base kernel lib32; do
 	cp "$cache/$set.txz" "$stage/overlay/usr/freebsd-dist/"
 done
 cp "$cache/MANIFEST" "$stage/overlay/usr/freebsd-dist/"
-jail_root=$(poudriere jail -l -q | awk -v j="$JAIL" '$1 == j { print $NF }')
+jail_root=$(poudriere_run jail -l -q | awk -v j="$JAIL" '$1 == j { print $NF }')
 version() { awk '/^#define __FreeBSD_version/ { print $3 }'; }
 jail_version=$(version <"$jail_root/usr/include/sys/param.h")
 set_version=$(tar -xOf "$cache/base.txz" ./usr/include/sys/param.h | version)
@@ -191,7 +200,7 @@ cp "$here/scripts/live-image-excludes" "$stage/exclude"
 
 # poudriere image names (also the ISO volume label) are alphanumeric only.
 rm -f "$OUTDIR/$NAME.iso.sha256"
-poudriere image -t hybridiso -j "$JAIL" -p "$PTREE" -n "$image" \
+poudriere_run image -t hybridiso -j "$JAIL" -p "$PTREE" -n "$image" \
 	-h daemonarchy-installer -c "$stage/overlay" -f "$stage/live-packages" \
 	-A "$here/live-post.sh" -X "$stage/exclude" -o "$OUTDIR"
 
