@@ -14,7 +14,7 @@ hardware investigation.
 | Physical EFI countdown | Boots through to the operating system without Enter |
 | Retained debugging grant | Same approval/host identity and unattended resumption verified over multiple reboots |
 | Navi14 graphics attachment | Reproducibly fails enabling graphics queues; desktop acceptance blocked |
-| Independent hardware diagnostics | Pending; health counters alone do not exclude a fault |
+| Independent hardware diagnostics | Operator reports Apple Internet Diagnostics ADP000 (no issues found); intermittent faults remain possible |
 
 ## Inputs and observed discrepancy
 
@@ -281,3 +281,110 @@ successful workaround and does not isolate the original queue failure. The
 runtime-only power-management setting was cleared and a clean rescue reboot
 requested. The packaged driver remains unchanged; diagnostic modules remain
 separate and automatic GPU loading remains suppressed.
+
+
+## Independent Apple diagnostics
+
+The operator subsequently ran Internet Apple Diagnostics and reported **ADP000,
+No issues found**. [Apple defines this code](https://support.apple.com/en-us/102334)
+as no issues found. This is operator-reported evidence from a separate diagnostic
+environment, not a result captured by the FreeBSD agent or comprehensive release
+hardware attestation. Together with the reproducible FreeBSD queue-initialization
+boundary, it supports prioritizing driver/firmware investigation; it does not
+exclude every intermittent hardware fault or resolve the earlier NVMe event.
+
+
+## Working Linux reference and descriptor comparison
+
+The operator reports that Omarchy runs perfectly on this **same physical
+MacBook**, identifying Omarchy 4.0.3 and an apparent Linux 7.2.8 kernel. That is
+an operator-reported working comparison, not a live-captured kernel/package
+identity. It strengthens the working hypothesis of a FreeBSD driver/firmware
+interaction. The operator directs using Linux for reference, while making
+focused FreeBSD changes rather than cloning or replacing the driver wholesale.
+
+Reference inspection confirms the Linux 7.2.8 tag exists. The selected
+FreeBSD driver's `gfx10_kiq_map_queues`, `gfx_v10_0_gfx_mqd_init`, and
+`gfx_v10_0_cp_resume` functions match that reference. There are surrounding
+mapping-lifetime and newer-driver changes; equality of these functions does not
+establish equality of memory, firmware, kernel configuration or device-access
+behavior across operating systems.
+
+A third instrumented module records valid-looking graphics descriptor fields
+and the actual queue-mapping inputs. Compute descriptors reside in VRAM and the
+compute setup test passes. Graphics descriptor mapping then reproduces the same
+KIQ timeout, with SSH retained. A single-allocation diagnostic subsequently
+moves only the graphics descriptor from VRAM to the existing GTT/system-memory
+path. Its trace confirms the graphics descriptor changes from a VRAM address
+around `0x8001ea6000` to `0x660000`, while compute descriptors remain in VRAM.
+The same graphics-queue activation failure remains. This rules out that simple
+placement workaround; it does not rule out all memory-access faults.
+
+The next diagnostic restores the original allocation and reads selected command
+processor and GPU memory-fault registers at the existing timeout, before failed
+initialization cleanup frees device resources. It follows the selected GMC
+handler's documented dummy-read requirement for gfx10.1 fault status. No
+production behavior correction or release hardware gate is claimed.
+
+The fourth probe (module SHA256
+`c5960a123ed44cd2cb72ae174be8afee151b6d43c00f5c0712f5fb3936d2c2ea`)
+reproduced the timeout and read gfxhub fault status `0x0000093d`, with fault
+address registers `0:0x401`. This identifies page `0x401000`, containing the
+mapped graphics queue's write-pointer address `0x401060`. The selected register
+masks decode client ID 4 (CPF), VMID 0 and mapping/permission/walker fault bits.
+This is a captured fault at the failure boundary; its onset and root cause still
+need isolation. Command-processor halt bits also require initialization-stage
+context and are not independently classified as the cause. SSH remained usable.
+
+## Periodic CURRENT and ports refresh
+
+The operator requires periodic refresh against FreeBSD-CURRENT while maintaining
+source and ports fixes. The native worker fetched upstream source `main` at
+`775e421dc38f18fa6b7fdc7b214a013cca44b58b` and ports `main` at
+`7312c7155241ff90ca5f69382d3dc99cc7f3fca8` on October 22. Separate review
+worktrees preserve the exact installed-kernel diagnostic source and the owned
+ports patches. These fetched selections are not installed or qualified inputs;
+CURRENT now reports OSVERSION 1600029, versus the target's 1600028.
+
+Related changes identified for review include:
+
+- Source `d2145e9b96448da34d3cfede24c509af6d830c92` restores LinuxKPI
+  runtime-PM return values under CONFIG_PM specifically for reported drm-kmod
+  regressions. The target's selected source predates this correction.
+- Source `e65ccec8c0e359f584b2948c100ee3012e43c6e7` restores namespace
+  notifications following successful recovery from controller failure. This
+  concerns NVMe reset recovery, not proof of a fix for the initiating fatal event.
+- Source `775e421dc38f18fa6b7fdc7b214a013cca44b58b` corrects the default
+  NVMe storage-device method for non-PCI implementations. PCI supplies its own
+  method, so this is not presently identified as the MacBook failure's cause.
+
+The selected drm-612 source archive/version and firmware/meta-port paths have no
+upstream update in this comparison. The DRM port differences include our owned
+VirtIO integration and port revision; a refresh must retain these deliberately,
+rather than treating their absence upstream as a reason to delete them.
+The runbook now requires recording refreshed identities and related-fix decisions,
+integrating in isolated worktrees, and rebuilding/testing matching selections.
+
+The fifth probe (SHA256
+`d9ee3aba53078354f526fc082f226c4cb533fc42890191b872dfcd59c37b8e1e`)
+reads fault status during both tests. Status `0x93c` is already present when the
+compute-queue test passes, followed by `0x93d` at the graphics-queue timeout.
+Thus the fault predates the failing test; its additional-fault bit changes.
+Context-0 aperture and page-table base registers match the driver's selected
+values. The CPU-visible GART entry for page `0x401000` reads zero. Further
+allocation/binding diagnostics are needed before concluding why it is absent.
+
+The two owned EFI timer commits also apply cleanly to the refreshed CURRENT
+source in an isolated review branch, ending at
+`4bc36e19d489513590d18214d4b3f0f36e74941a`. That source refresh is not the
+previously tested loader installed on the MacBook. Build, firmware and hardware
+acceptance must identify the refreshed selection separately.
+
+The refreshed EFI source passes all six native production-C clock controls.
+The sixth GPU diagnostic (SHA256
+`4635de88ea413d6449b729b002c938089164fcdee2385ceee7c4e8418671b911`)
+records the eight-page writeback allocation and nonzero valid-looking PTEs
+immediately after binding. At the later queue timeout the entry for its first
+page reads zero. This narrows the next investigation to mapping retention or
+memory overwrite between initialization stages. It does not yet identify the
+writer or establish that an upstream power-management fix resolves it.

@@ -158,6 +158,17 @@ from an exact source commit. The snapshot-based procedure below remains the
 current release input path until the owned outputs pass admission, signing,
 matching jail/module and VM/hardware qualification.
 
+During source and ports development, periodically refresh the upstream tracking
+refs for FreeBSD-CURRENT and ports `main`. Check again before choosing a new
+diagnostic baseline, submitting a fix or qualifying a release. Review relevant
+upstream commits, including LinuxKPI, NVMe, EFI, DRM ports and firmware changes,
+and record the fetched revisions and the disposition of related fixes. Refresh
+our development branches in isolated worktrees, preserving local patches and
+skipping fixes already upstream. Pin each resulting source/ports selection and
+rebuild against its matching kernel headers before native and hardware tests.
+Keep the previous qualified selection available for comparisons and rollback;
+fetching upstream alone is not an integrated or qualified refresh.
+
 For pinned Git-tree discovery, run `python3 scripts/inspect-freebsd-graph.py`
 with `--kind source` or `--kind ports`, `--repo`, an exact `--revision`, and a new
 `--output` path outside the inspected repository. A ports object store can be
