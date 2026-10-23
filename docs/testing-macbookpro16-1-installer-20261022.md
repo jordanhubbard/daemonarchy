@@ -443,14 +443,13 @@ trackpad devices are enumerated. The operator confirmed the first visible deskto
 and logged in. After trying Alt-Space, the operator suspected a panic, but the
 MacBook remained reachable without a new boot, panic record, GPU reset or NVMe
 error. The same Hyprland and menu processes stayed alive and three terminal
-windows appeared. The on-screen behavior and shortcut acceptance still need an
-operator report; device enumeration alone does not settle keyboard behavior.
+windows appeared. Subsequent input tracing identified a separate keyboard
+stall, described below.
 
-The ports fix is also being carried onto owned integration revision
+The ports fix is also carried onto owned integration revision
 `72c758ea367d0d4aa8108ad6738b04d42e2378d7`, which already includes the recent
 upstream ports refresh. The matching-target package build retains its original
-source selection separately. A clean cherry-pick or patch test is not treated as
-native package acceptance for a changed whole-tree selection.
+source selection separately.
 
 The pinned-target ports package `drm-612-kmod-6.12.110.1600028_6` completed a
 native build with `SRC_BASE` pointing to the exact installed kernel source. Its
@@ -462,5 +461,36 @@ was relocked, and passed `pkg check -d` and `pkg check -s`; the installed module
 hash matches the native staged artifact. The running module is the earlier
 focused build, so installed-package normal-boot acceptance remains pending.
 The refreshed owned ports branch carries the same focused patch in draft
-[ports PR #19](https://github.com/jordanhubbard/daemonarchy-ports/pull/19);
-its separate full native package build is pending.
+[ports PR #19](https://github.com/jordanhubbard/daemonarchy-ports/pull/19).
+Its separate full native package build passed against the exact target source,
+including the compiled helper regression. The refreshed package SHA256 is
+`f3e3cac349851fdf0fc2acdf2dec36971ebb8023c227977fd00c9e45f371c5ba`.
+It was installed behind boot environment `pre-amdgpu-current-package-20261022`
+and passes file and dependency checks. The installed `amdgpu.ko` hash matches
+the staged module. The running module still predates the installed package, so
+normal-boot package acceptance is pending.
+
+## T2 keyboard LED-output stall
+
+The operator observed keyboard input stop and later arrive in a burst, with
+repeat characters outliving physical key releases. At the same time the GPU,
+Hyprland process and kernel remained up. A kernel stack captured while the
+desktop was unresponsive placed Hyprland's main thread in
+`evdev_write -> evdev_inject_event -> hkbd_ev_event -> hkbd_ioctl_locked ->
+hkbd_set_leds -> usbhid_sync_xfer`, sleeping on the USB HID transfer. The
+FreeBSD HID output path has a five-second transfer timeout. Raw keyboard
+interrupts and libinput press/release events were also observed, so the
+compositor's synchronous LED output explains delayed handling and apparent
+repeats better than missing key-up reports at the device.
+
+The built-in keyboard is the Apple T2 virtual USB product `05ac:0340`.
+Setting the existing runtime tunable `hw.hid.hkbd.no_leds=1` immediately
+released the stalled desktop path. The operator then confirmed that the
+keyboard worked. This is strong live evidence for the LED-output path, while
+the underlying virtual-host-controller response remains to be investigated.
+The runtime setting is not persisted. A product-specific HID quirk that skips
+the problematic LED report is under review in
+[source PR #19](https://github.com/jordanhubbard/daemonarchy-src/pull/19).
+Both changed modules compile natively against the target source. Its full
+GENERIC kernel build and physical boot acceptance remain pending. The Linux
+T2 implementation remains a behavioral reference; no Linux code was copied.
