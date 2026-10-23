@@ -84,9 +84,13 @@ transplant while retaining both histories. A native 21-origin poudriere dry run
 at this exact merge revision fetched 1,180 packages and planned 23 builds:
 the 21 product ports plus `ports-mgmt/pkg` and `devel/cmake-core`. Its log is under
 `16test20261019-omarchyrefresh20261023/2026-10-23_04h40m52s` on the worker.
-This is dependency planning, not a passing bulk. A clean full changed-port bulk,
-physical desktop check, source/ports pin and final artifact identity are still
-required before R12-18 can close.
+The subsequent full native bulk at that same ports head exited 0: 1,203 queued,
+23 built, 1,180 fetched, zero failed, skipped or ignored, in 02:37:23. The
+`daemonarchy-1.0.1,1.pkg` output is present. Its retained log is under
+`16test20261019-omarchyrefresh20261023/2026-10-23_05h20m09s` on the worker.
+This was a disposable October 19 CURRENT jail, not the production release jail.
+Physical desktop acceptance, coherent source/package/module pinning, signed feed
+and final artifact identity are still required before R12-18 can close.
 
 The October 23 disposable source integration check merged the then-current
 [signed-firmware PR #29](https://github.com/jordanhubbard/daemonarchy/pull/29)
