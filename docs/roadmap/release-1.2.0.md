@@ -146,6 +146,19 @@ current Lua source spells `Autoboot in` correctly, so the missing character
 remains a display-path observation to reproduce and fix on the final loader;
 the passing timer controls do not resolve that separate visual defect.
 
+The MacBook's repeated `vap_transmit: state=5 etype=0x800` messages come from
+the preview `if_brcmfmac` module before it checks whether a firmware flow ring
+exists. State 5 is net80211 RUN; the messages therefore establish an IPv4
+transmit attempt, not firmware submission or delivery to the AP. A diagnostic
+module built with `-Werror` against the preview kernel's exact FreeBSD source
+`bdcfeac3e1cb8ce3f05c32d8a7ad3597deb48bdf` hashes to
+`58163ef0d117d9da81710ce153d7d2beb777beae9a3891d27cd6c6cca67d3bb6`.
+It removes the per-packet console print and exposes read-only counts for VAP
+attempts, dead firmware, missing or full flow rings, submitted packets and TX
+completions. It changes no transmit or link policy and has not been deployed.
+The next physical check must compare those counters with firmware link events,
+ARP/DHCP and RX counts over a wired debugger before classifying the failure.
+
 The same worker now retains a separately verified candidate set cache at
 `/usr/daemonarchy/cache/iso-snapshot-20261019-041802b362aa`. The official
 snapshot's `REVISION` remained `041802b362aa` before and after acquisition;
