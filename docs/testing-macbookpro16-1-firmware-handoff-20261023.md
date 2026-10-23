@@ -1,8 +1,9 @@
 # MacBookPro16,1 signed firmware handoff candidate, 2026-10-23
 
-This is build and installer-guard evidence for an isolated candidate, not a
-physical Wi-Fi or enforced-boot qualification. No Apple firmware bytes or
-release signing key are part of the repository or public image.
+This is build, installer-guard and disposable enforced-boot guest evidence for
+an isolated candidate, not physical MacBook Wi-Fi qualification. No Apple
+firmware bytes or release signing key are part of the repository or public
+image.
 
 ## Candidate behavior
 
@@ -18,9 +19,8 @@ board files from shared media.
 The FreeBSD binary `firmware_get` path uses an ordinary read. The candidate
 adds the four firmware hashes to the verified runtime manifest and makes the
 policy kernel reject a registered file whose fingerprint mismatches on that
-read path. An optional disposable-guest probe expects `EAUTH` for a tampered
-registered firmware file. This negative probe has **not** run in an enforced
-guest or on the MacBook.
+read path. A disposable Secure Boot guest now confirms `EAUTH` for a tampered
+registered firmware file. The physical MacBook has not run this probe.
 
 ## Native build and local checks
 
@@ -51,11 +51,59 @@ from test credentials accepted the privately imported Apple files only when
 both its boot and runtime manifests contained their exact hashes, and rejected
 a signed runtime inventory with the wrong board-file name.
 
+## Disposable enforced-boot guest
+
+The native worker built the same pinned source and policy patch again, using
+the public Debian OVMF snakeoil test certificate as its trust anchor. The
+retained build receipt is
+`/usr/daemonarchy/firmware-policy-snakeoil-build-20261023/build.json`, SHA-256
+`037ffd7b85136ab4b54ebf5110bda17d24dd7717851560b06e235fa26db85373`;
+its `native_boot_qualified` field remains false because it describes the build
+step, before this guest run. The signed EFI loader's SHA-256 is
+`83c51b6aabf096d7620b0003464c4a12822d91c678ee4e6edd1f5bc2fd695d1e`.
+The signed runtime manifest has SHA-256
+`5e29a6d015373cd22eccf23e3c21a138190d0f480838c1d0ea40f4fd4a4e3cfe`
+and lists the four exact privately imported BCM4364 B3 hashes. None of those
+firmware files or the test key entered the signed boot tree.
+
+The guest used FreeBSD's official 16.0-CURRENT amd64 `base.txz` from
+2026-10-19, verified against its adjacent `MANIFEST` at SHA-256
+`7bf341029f19f10cff4298e619d261b13fb60c9ad4a1272bda5cb4340be8324b`.
+The disk image built on the native worker has SHA-256
+`182b82fddc9cebed3f82bebfb80a110939bf87999ef5c48485b976023bd1f899`
+before boot. QEMU used OVMF Secure Boot with its pre-enrolled public test key;
+the OVMF code image has SHA-256
+`1286f2a3217d09b374d05951355d7a561c8bacecd74845c8a1fbb71a48c0de8d`.
+The serial log remains outside the repository at
+`/tmp/daemonarchy-firmware-policy-guest-20261023.log`, SHA-256
+`0ac5d1af00d95949c13cc326851d61f151670003e9135e8e56b6ff985f7c7551`.
+
+The serial log records `SecureBoot: 1, SetupMode: 0`, successful loader hash
+and certificate self-tests, verified policy kernel and signed runtime manifest,
+and `Security policy loaded: MAC/veriexec`. After boot, the native probe opened
+a deliberately altered `/boot/firmware/brcmfmac4364b3-pcie.bin` whose SHA-256
+was `2bdc9f6debfe561176043d8b1cf17880abb7ca7b2875e95111cef7468e42ebea`,
+different from its registered fingerprint. It reported
+`PASS registered-firmware-read: errno=80` (`EAUTH`). It also reported the
+expected unsigned-module, protected-module-write, kernel-memory-write and
+locked-policy-load denials, passed process-environment inspection, returned
+zero, and shut down cleanly. The focused log checker passes with:
+
+```
+python3 secureboot/tests/check-runtime-log.py firmware-read \
+  /tmp/daemonarchy-firmware-policy-guest-20261023.log \
+  --kernel-path kernel.secure/kernel
+```
+
+This uses a public disposable signing key and an emulated x86 guest. It proves
+the patched FreeBSD read policy under enforcement; it does not qualify the
+production signing authority, the physical MacBook or the Wi-Fi driver.
+
 ## Remaining acceptance
 
 The candidate has not produced a new signed ISO or run the installer on the
 MacBook. The BCM4364 driver still needs stable association, DHCP, traffic and
-reconnect after reboot. Enforced-boot guest and physical negative tests must
-prove modified firmware is refused. The final build must use the protected
-production authority and refreshed coherent source/package inputs. These
-checks keep HW-003, physical Secure Boot and the release ledger open.
+reconnect after reboot. The physical negative test must prove modified
+firmware is refused. The final build must use the protected production
+authority and refreshed coherent source/package inputs. These checks keep
+HW-003, physical Secure Boot and the release ledger open.

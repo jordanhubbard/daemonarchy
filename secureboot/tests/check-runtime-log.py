@@ -5,7 +5,7 @@ from pathlib import Path
 import re
 
 parser = argparse.ArgumentParser(description=__doc__)
-parser.add_argument("mode", choices=("valid", "preload-rejection", "desktop-policy", "firmware-policy", "missing-handoff",
+parser.add_argument("mode", choices=("valid", "preload-rejection", "desktop-policy", "firmware-policy", "firmware-read", "missing-handoff",
                                     "uefi-off", "bios-normal"))
 parser.add_argument("log", type=Path)
 parser.add_argument("--kernel-path", default="kernel/kernel",
@@ -20,7 +20,21 @@ required = [
     r"Testing verify certificate:[^\n]+Passed",
     rf"Verified /boot/{re.escape(args.kernel_path)}",
 ]
-if args.mode == "uefi-off":
+if args.mode == "firmware-read":
+    required += [
+        r"Verified /boot/runtime\.manifest signed by",
+        r"Security policy loaded: MAC/veriexec",
+        r"mac_veriexec: rejected unverified kernel module",
+        r"PASS unsigned-module: errno=8",
+        r"PASS protected-module-write: errno=1",
+        r"PASS registered-firmware-read: errno=80",
+        r"PASS kernel-memory-write: errno=1",
+        r"PASS locked-policy-load: errno=1",
+        r"PASS process-environment-read",
+        r"DAEMONARCHY_GUEST_PROBE_RESULT=0",
+    ]
+    forbidden = [r"panic:", r"(?:^|\n)FAIL ", r"DAEMONARCHY_GUEST_PROBE_RESULT=[1-9]"]
+elif args.mode == "uefi-off":
     required = [r"SecureBoot: 0, SetupMode: [01]",
                 r"DAEMONARCHY_PROFILE_UEFI_OFF_STOCK_KERNEL_PASS"]
     forbidden = [r"panic:", r"UNEXPECTED_POLICY", r"DAEMONARCHY_MODULE_POLICY_STATE="]
