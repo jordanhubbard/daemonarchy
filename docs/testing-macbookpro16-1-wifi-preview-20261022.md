@@ -272,3 +272,24 @@ the router from the wireless lease. It leaves an active wired debugger intact
 and reports the route conflict. The real scan/join test passes on Linux and
 the physical FreeBSD MacBook's shell; the automatic handoff still needs a
 fresh installer run.
+
+### October 23 reassociation ring trace
+
+A second diagnostic module, built against the running MacBook kernel, logged
+the selected BSSID and PCIe transmit-ring lifecycle without changing driver
+behavior. After a clean association and wireless DHCP lease, a requested WPA
+reassociation caused carrier loss and repeated AP selection. For an AP change,
+the trace showed deletion of the prior flow ring and creation of a ring for
+the new BSSID. The missing-ring and full-ring transmit counters remained zero,
+and submitted packets completed. This rules out an unchanged flow-ring BSSID
+as the simple cause of this reproduced stall.
+
+Several subsequent associations ended in firmware authentication event reason
+15 before WPA could remain complete; at least one occurred before a new
+pairwise key was installed. Another transiently reached WPA COMPLETED, then
+lost carrier. The APs in the last scan had weak signals, so the trace alone
+does not distinguish a driver handshake or event-ordering defect from AP
+selection and radio conditions. Keep the Wi-Fi installer path in draft until
+a repeated physical install and reboot demonstrate stable association, DHCP,
+default routing and package downloads. The temporary trace module is retained
+only on the test machine and native builder, not in the release image.
