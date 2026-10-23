@@ -789,7 +789,7 @@ reboot persistence. Keep the recovery image and extracted firmware private.
 
 A first-party [importer](../scripts/import-apple-bcm4364-firmware.py) now
 supports both a direct Apple recovery request and an operator-supplied DMG.
-The current importer SHA256 is
+The importer SHA256 at this checkpoint was
 `195ae76846f81de9a1a78eba69ca878ff710dfb0cdfcd2c7a015e0f573ca4f40`.
 It pins the complete 789,568,598-byte image hash, MacBookPro16,1 model and
 the four extracted file hashes; it writes a private provenance record only
@@ -797,10 +797,12 @@ after all checks pass. Its online path successfully fetched and imported the
 same four files on the controller. Its local-media path passed on native
 FreeBSD 16.0-CURRENT amd64 with `7-zip-26.04`, using the verified image, and
 produced the same hashes. A truncated-image input and a different model were
-both refused without creating output. The importer is a development tool;
-the ISO build recipe now stages it with 7-Zip for manual debug-shell use, but
-no image from that recipe has yet been built or tested. It is not presented in
-the installer menu, copied into the target, or tested across a MacBook reboot.
+both refused without creating output. At this checkpoint, the importer was a
+development tool. The ISO build recipe staged it with 7-Zip for manual
+debug-shell use, but no image from that recipe had been built or tested. It was
+not presented in the installer menu, copied into the target, or tested across
+a MacBook reboot. Later candidate work is tracked in the
+[1.2 ledger](roadmap/release-1.2.0.md).
 The native radio driver also still needs link-loss and traffic repair before a
 Wi-Fi-ready installation claim is possible.
 The importer can also recheck a private stage before handoff. A same-size,

@@ -45,6 +45,7 @@ cache=$SET_CACHE_DIR
 
 mkdir -p "$cache" "$OUTDIR"
 cp -R "$here/overlay" "$stage/overlay"
+mkdir -p "$stage/overlay/boot/firmware"
 if [ -n "${LIVE_EXTRA_OVERLAY:-}" ]; then
     [ -d "$LIVE_EXTRA_OVERLAY" ] || { echo 'LIVE_EXTRA_OVERLAY must be a directory' >&2; exit 1; }
     cp -R "$LIVE_EXTRA_OVERLAY/." "$stage/overlay/"

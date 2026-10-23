@@ -11,6 +11,7 @@ import json
 import os
 from pathlib import Path
 import secrets
+import shutil
 import stat
 import subprocess
 import sys
@@ -116,6 +117,7 @@ def apple_image_request():
 def download_image(target):
     url, token = apple_image_request()
     size, hasher = 0, hashlib.sha256()
+    next_report = 64 * 1024 * 1024
     request = Request(url, headers={"User-Agent": "InternetRecovery/1.0",
                                     "Cookie": "AssetToken=" + token,
                                     "Connection": "close"})
@@ -126,6 +128,11 @@ def download_image(target):
                 raise ValueError("download exceeds the pinned image size")
             hasher.update(block)
             output_file.write(block)
+            if size >= next_report:
+                print(f"Apple recovery image: {size // (1024 * 1024)} of "
+                      f"{(IMAGE_BYTES + 1024 * 1024 - 1) // (1024 * 1024)} MiB downloaded",
+                      file=sys.stderr, flush=True)
+                next_report += 64 * 1024 * 1024
     if size != IMAGE_BYTES or hasher.hexdigest() != IMAGE_SHA256:
         raise ValueError("Apple download does not match the pinned recovery image")
     return url
@@ -144,13 +151,26 @@ def extract(image):
     return payloads
 
 
-def verify_stage(directory, model):
+def verify_files(directory, model):
     if model != "MacBookPro16,1":
         raise ValueError("this firmware profile is only for MacBookPro16,1")
+    if directory.is_symlink() or not directory.is_dir():
+        raise ValueError("firmware directory must be a real directory")
+    for name, (_, size, expected) in FILES.items():
+        path = directory / name
+        if path.is_symlink() or not path.is_file() or path.stat().st_size != size:
+            raise ValueError("invalid firmware file: " + name)
+        if digest(path.read_bytes()) != expected:
+            raise ValueError("firmware hash changed: " + name)
+    print("Verified four BCM4364 B3 firmware files in", directory)
+
+
+def verify_stage(directory, model):
     if (directory.is_symlink() or not directory.is_dir()
             or directory.stat().st_uid != os.geteuid()
             or stat.S_IMODE(directory.stat().st_mode) != 0o700):
         raise ValueError("firmware stage must be an owned private directory")
+    verify_files(directory, model)
     expected_names = set(FILES) | {"provenance.json"}
     if {path.name for path in directory.iterdir()} != expected_names:
         raise ValueError("firmware stage has missing or unexpected files")
@@ -169,20 +189,16 @@ def verify_stage(directory, model):
             or not isinstance(record.get("source"), str)
             or not 0 < len(record["source"]) <= 4096):
         raise ValueError("firmware provenance does not match the selected board")
-    for name, (_, size, expected) in FILES.items():
-        path = directory / name
-        if path.is_symlink() or not path.is_file() or path.stat().st_size != size:
-            raise ValueError("invalid staged firmware file: " + name)
-        if digest(path.read_bytes()) != expected:
-            raise ValueError("staged firmware hash changed: " + name)
-    print("Verified four BCM4364 B3 firmware files in", directory)
-
 
 def import_firmware(args):
     if args.model != "MacBookPro16,1":
         raise ValueError("this firmware profile is only for MacBookPro16,1")
     if args.destination.exists() or args.destination.is_symlink():
         raise ValueError("use a fresh destination directory")
+    required_space = IMAGE_BYTES + 64 * 1024 * 1024
+    if shutil.disk_usage(tempfile.gettempdir()).free < required_space:
+        required_mib = (required_space + 1024 * 1024 - 1) // (1024 * 1024)
+        raise ValueError(f"the live temporary filesystem needs at least {required_mib} MiB free")
     os.umask(0o077)
     with tempfile.TemporaryDirectory(prefix="daemonarchy-apple-recovery-") as temporary:
         image = Path(temporary) / "BaseSystem.dmg"
@@ -221,12 +237,15 @@ def main():
     source.add_argument("--image", type=Path, help="operator-supplied Apple BaseSystem.dmg")
     source.add_argument("--download", action="store_true", help="fetch the pinned image from Apple")
     source.add_argument("--verify-stage", action="store_true", help="recheck an imported directory")
+    source.add_argument("--verify-files", action="store_true", help="check preloaded preview files")
     parser.add_argument("--model", required=True)
     parser.add_argument("--destination", type=Path, required=True)
     args = parser.parse_args()
     try:
         if args.verify_stage:
             verify_stage(args.destination, args.model)
+        elif args.verify_files:
+            verify_files(args.destination, args.model)
         else:
             import_firmware(args)
     except (OSError, ValueError, subprocess.SubprocessError) as error:

@@ -171,6 +171,17 @@ and does not establish working MacBook traffic. The ISO recipe and installer
 still need to select the package and acquire/install verified Apple board
 firmware before R12-10, R12-18 or R12-25 can close.
 
+[Product PR #31](https://github.com/jordanhubbard/daemonarchy/pull/31)
+prepares that ISO path: the module is selected from the candidate ports tree,
+installed and locked on a MacBook target, while the installer offers a pinned
+Apple recovery download or a local recovery image before network selection.
+The importer checks the full image and four files, retains provenance privately,
+and stages those files for the live radio and installed system before disk
+changes. The backend and syntax checks pass, and the native FreeBSD tmpfs mount
+form was exercised on the worker. No ISO from this branch has booted a MacBook;
+the live download/media screens, kernel attach, signed inventory, DHCP/traffic,
+reboot persistence and physical attestation remain open.
+
 The same worker now retains a separately verified candidate set cache at
 `/usr/daemonarchy/cache/iso-snapshot-20261019-041802b362aa`. The official
 snapshot's `REVISION` remained `041802b362aa` before and after acquisition;

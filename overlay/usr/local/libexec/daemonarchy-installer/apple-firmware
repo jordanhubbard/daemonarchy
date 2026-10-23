@@ -1,0 +1,91 @@
+#!/usr/local/bin/bash
+# Verified Apple recovery firmware stays in a private live stage until install.
+# This file is sourced by the configurator and installer.
+
+APPLE_FIRMWARE_STAGE=${APPLE_FIRMWARE_STAGE:-/tmp/daemonarchy-apple-firmware-stage}
+APPLE_FIRMWARE_IMPORTER=${APPLE_FIRMWARE_IMPORTER:-$ISO_SHARE/import-apple-bcm4364-firmware.py}
+APPLE_FIRMWARE_NAMES=(
+  brcmfmac4364b3-pcie.bin
+  brcmfmac4364b3-pcie.txt
+  brcmfmac4364b3-pcie.clm_blob
+  brcmfmac4364b3-pcie.txcap_blob
+)
+
+apple_firmware_preloaded() {
+  "$APPLE_FIRMWARE_IMPORTER" --verify-files --model MacBookPro16,1 \
+    --destination /boot/firmware >/dev/null 2>&1
+}
+
+apple_firmware_verify_live() {
+  local name
+  "$APPLE_FIRMWARE_IMPORTER" --verify-stage --model MacBookPro16,1 \
+    --destination "$APPLE_FIRMWARE_STAGE" || return
+  for name in "${APPLE_FIRMWARE_NAMES[@]}"; do
+    cmp -s "$APPLE_FIRMWARE_STAGE/$name" "/boot/firmware/$name" || return 1
+  done
+}
+
+apple_firmware_radio_attached() {
+  local devices
+  devices=$(sysctl -n net.wlan.devices 2>/dev/null) || return 1
+  [[ " $devices " == *" brcmfmac0 "* ]]
+}
+
+apple_firmware_prepare() {
+  local source=$1 image=${2:-} name attempt
+  if [[ -d $APPLE_FIRMWARE_STAGE ]]; then
+    "$APPLE_FIRMWARE_IMPORTER" --verify-stage --model MacBookPro16,1 \
+      --destination "$APPLE_FIRMWARE_STAGE" || return
+    if apple_firmware_verify_live && apple_firmware_radio_attached; then
+      return 0
+    fi
+  else
+    case $source in
+      download)
+        "$APPLE_FIRMWARE_IMPORTER" --download --model MacBookPro16,1 \
+          --destination "$APPLE_FIRMWARE_STAGE" || return
+        ;;
+      image)
+        [[ -n $image ]] || return 1
+        "$APPLE_FIRMWARE_IMPORTER" --image "$image" --model MacBookPro16,1 \
+          --destination "$APPLE_FIRMWARE_STAGE" || return
+        ;;
+      *) return 2 ;;
+    esac
+  fi
+  # The ISO root is read-only. Mount a small live filesystem at the kernel's
+  # fixed firmware path, then attach the radio after the files are present.
+  [[ -d /boot/firmware ]] || { echo '/boot/firmware is absent from the live ISO' >&2; return 1; }
+  if ! mount | grep -q ' on /boot/firmware '; then
+    mount -t tmpfs -o size=8m tmpfs /boot/firmware || {
+      echo 'Could not make live firmware available to the kernel' >&2
+      return 1
+    }
+  fi
+  for name in "${APPLE_FIRMWARE_NAMES[@]}"; do
+    install -m 0444 "$APPLE_FIRMWARE_STAGE/$name" "/boot/firmware/$name" || return
+  done
+  apple_firmware_verify_live || return
+  if kldstat -n if_brcmfmac >/dev/null 2>&1; then
+    kldunload if_brcmfmac || return
+  fi
+  kldload /boot/modules/if_brcmfmac.ko || return
+  for ((attempt=0; attempt<10; attempt++)); do
+    apple_firmware_radio_attached && return 0
+    sleep 1
+  done
+  echo 'BCM4364 driver loaded, but its wireless interface did not attach' >&2
+  return 1
+}
+
+apple_firmware_install() {
+  local target=$1 name
+  apple_firmware_verify_live || return
+  install -d -m 0700 "$target/var/db/daemonarchy/firmware" || return
+  install -d "$target/boot/firmware" || return
+  for name in "${APPLE_FIRMWARE_NAMES[@]}"; do
+    install -m 0444 "$APPLE_FIRMWARE_STAGE/$name" "$target/boot/firmware/$name" || return
+  done
+  install -m 0600 "$APPLE_FIRMWARE_STAGE/provenance.json" \
+    "$target/var/db/daemonarchy/firmware/provenance.json"
+}

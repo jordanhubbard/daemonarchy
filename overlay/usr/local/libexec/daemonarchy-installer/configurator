@@ -22,6 +22,7 @@ source "$(dirname "$0")/checkout-options"
 source "$(dirname "$0")/gpu-config"
 source "$(dirname "$0")/cuda-options"
 source "$(dirname "$0")/network-addresses"
+source "$(dirname "$0")/apple-firmware"
 
 # The setup form's reserved names are Linux's. On FreeBSD a name is taken if
 # the base system has it (the live system's accounts are the base system's)
@@ -672,6 +673,45 @@ network_step() {
   done
 }
 
+apple_firmware_step() {
+  local choice image
+  [[ $(kenv smbios.system.product 2>/dev/null || true) == MacBookPro16,1 ]] || return 0
+  if [[ -d $APPLE_FIRMWARE_STAGE ]] && apple_firmware_verify_live &&
+     apple_firmware_radio_attached; then
+    return 0
+  fi
+  if apple_firmware_preloaded && apple_firmware_radio_attached; then
+    return 0
+  fi
+  while true; do
+    step "MacBook Wi-Fi firmware"
+    say "This MacBook needs four Apple board files before its Wi-Fi radio can attach."
+    say --foreground 8 "The installer verifies the recovery image and files; no firmware ships in the public ISO."
+    echo
+    choice=$(gum choose --header "Choose a firmware source" \
+      "Download Apple's recovery image using Ethernet" \
+      "Use BaseSystem.dmg from mounted media" \
+      "Configure wired network" "Open debug shell" "Stop installation") || abort
+    case $choice in
+      "Download Apple's recovery image using Ethernet")
+        step "Downloading and verifying Apple recovery firmware"
+        if apple_firmware_prepare download; then break; fi
+        notice "Firmware download or radio attachment failed. Check the network and retry." 4
+        ;;
+      "Use BaseSystem.dmg from mounted media")
+        image=$(gum input --placeholder "/media/usb/BaseSystem.dmg" \
+          --prompt.foreground="#845DF9" --prompt "Image path> ") || continue
+        step "Verifying the selected Apple recovery image"
+        if apple_firmware_prepare image "$image"; then break; fi
+        notice "The image, firmware or radio attachment failed verification. Check the path and retry." 4
+        ;;
+      "Configure wired network") network_step allow-offline ;;
+      "Open debug shell") "$(dirname "$0")/remote-debug" shell ;;
+      "Stop installation") abort ;;
+    esac
+  done
+}
+
 # Remote access: off unless asked for, as on any desktop.
 ssh_enable=false
 ssh_step() {
@@ -894,6 +934,7 @@ while true; do
     'Exit to shell') exit 1 ;;
   esac
 done
+apple_firmware_step
 keyboard_form
 user_step
 network_step

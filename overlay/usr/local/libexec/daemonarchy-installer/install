@@ -38,13 +38,13 @@ source "$(dirname "$0")/install-integrity"
 source "$(dirname "$0")/rescue-setup"
 source "$(dirname "$0")/secureboot-options"
 source "$(dirname "$0")/package-repository"
+source "$(dirname "$0")/apple-firmware"
 package_repository_prepare "$ISO_SHARE"
 macbook_bcm4364=false
 if [[ $(kenv smbios.system.product 2>/dev/null || true) == MacBookPro16,1 ]]; then
   macbook_bcm4364=true
 fi
 checkout_options_prepare "$ISO_SHARE/checkouts.json"
-secureboot_payload_prepare
 if [[ -n ${wifi_enterprise_profile:-} ]]; then
   [[ ${net_mode:-} == wifi ]] || { echo 'An enterprise profile requires Wi-Fi mode' >&2; exit 1; }
   "$ISO_SHARE/omarchy-wifi-enterprise" --validate "$wifi_enterprise_profile"
@@ -135,13 +135,24 @@ if $macbook_bcm4364; then
     echo 'The ISO lacks the BCM4364 driver package for the installed system.' >&2
     exit 1
   }
-  for suffix in bin txt clm_blob txcap_blob; do
-    [[ -f /boot/firmware/brcmfmac4364b3-pcie.$suffix ]] || {
-      echo "The live system lacks BCM4364 board firmware ($suffix); refusing a Wi-Fi-ready installation." >&2
-      exit 1
-    }
-  done
+  if [[ -d $APPLE_FIRMWARE_STAGE ]]; then
+    apple_firmware_prepare download || { echo 'The imported MacBook firmware changed or could not attach.' >&2; exit 1; }
+  elif ! apple_firmware_preloaded; then
+    # An unattended install may provide an Apple image path. Otherwise use
+    # Apple's pinned recovery download over its already configured network.
+    if [[ -n ${apple_firmware_image:-} ]]; then
+      apple_firmware_prepare image "$apple_firmware_image"
+    else
+      apple_firmware_prepare download
+    fi || { echo 'MacBook firmware acquisition failed before disk changes.' >&2; exit 1; }
+  fi
+  apple_firmware_preloaded || { echo 'Verified BCM4364 board firmware is unavailable.' >&2; exit 1; }
+  apple_firmware_radio_attached || { echo 'The BCM4364 wireless interface did not attach.' >&2; exit 1; }
+  if [[ -d $APPLE_FIRMWARE_STAGE ]]; then
+    apple_firmware_stage=$APPLE_FIRMWARE_STAGE
+  fi
 fi
+secureboot_payload_prepare
 
 install_mode=${install_mode:-whole_disk}
 shared_install=false
@@ -204,14 +215,18 @@ for set in base kernel lib32; do
   progress_count base "$expanded_sets" 3
 done
 
-# A private hardware preview may carry verified board firmware. The matching
-# driver enters the target through the ISO's kernel-bound package below.
+# A private hardware preview may carry verified board firmware. Public images
+# import it into a private live stage, including provenance, before disk writes.
+# The driver enters the target through the ISO's kernel-bound package below.
 if $macbook_bcm4364; then
-  install -d "$TARGET/boot/firmware"
-  for firmware in /boot/firmware/brcmfmac4364b3-pcie.*; do
-    [[ -f $firmware ]] || continue
-    install -m 0444 "$firmware" "$TARGET/boot/firmware/${firmware##*/}"
-  done
+  if [[ -d $APPLE_FIRMWARE_STAGE ]]; then
+    apple_firmware_install "$TARGET"
+  else
+    install -d "$TARGET/boot/firmware"
+    for firmware in /boot/firmware/brcmfmac4364b3-pcie.*; do
+      install -m 0444 "$firmware" "$TARGET/boot/firmware/${firmware##*/}"
+    done
+  fi
 fi
 
 # A private MacBook preview may carry a separately qualified EFI timer loader.

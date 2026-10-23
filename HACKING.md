@@ -296,13 +296,17 @@ space than a cached installer-only rebuild. Check resources before dispatching.
    The tool verifies the exact image and four board-file hashes before creating
    the fresh private destination. Recheck a staged import with
    `python3.12 scripts/import-apple-bcm4364-firmware.py --verify-stage --model MacBookPro16,1 --destination /private/firmware-import`.
-   It records a provenance JSON file and does not
-   add firmware to Git, an ISO or an installed target. The ISO recipe stages the
-   tool and 7-Zip for manual use from the live debug shell; it does not yet
-   present a firmware selection screen or copy imported files into the target.
-   The signed boot manifest must admit the exact firmware hashes before a
-   verified-boot target can receive them. Physical reboot/traffic qualification
-   remains open.
+   It records a provenance JSON file and does not add firmware to Git or a
+   redistributable ISO. The MacBook installer now offers the pinned Apple
+   download over Ethernet or an operator-supplied recovery image on mounted
+   media before the network screen. It imports into a private live stage,
+   verifies the four files, attaches the radio, and carries the files and
+   provenance into the target. An unattended MacBook install defaults to the
+   download; `apple_firmware_image=/absolute/path/BaseSystem.dmg` selects local
+   media. Both routes run before disk changes. The live temporary filesystem
+   needs at least 817 MiB free while the image is checked. The signed boot
+   manifest must admit the exact firmware hashes before a verified-boot target
+   can receive them. Physical reboot/traffic qualification remains open.
 
 ### Persistent authoring caches
 
@@ -366,17 +370,19 @@ The installer flow lives in `overlay/`, primarily as Bash helpers. An installer-
 - **`install`** reads its answers from `$DAEMONARCHY_INSTALL_CONF`; the keys are what `configurator`'s `write_install_conf` writes. An unattended install takes the same file from a FAT drive labelled `CIDATA`, which is how both test scripts run.
 - **`configurator`** sources Omarchy's setup form from the `omarchy` package at build time (`build-iso.sh` extracts it), so the account, hostname, and timezone questions follow Omarchy's.
 
-For a private BCM4364 hardware preview, put the kernel-matched
-`if_brcmfmac.ko` in `$LIVE_EXTRA_OVERLAY/boot/modules/` and the verified B3
-firmware, MacBook board data, CLM and TxCap files in
-`$LIVE_EXTRA_OVERLAY/boot/firmware/` under the names
-`brcmfmac4364b3-pcie.{bin,txt,clm_blob,txcap_blob}`. Set `LIVE_EXTRA_OVERLAY`
-when running `build-iso.sh`. The live image loads the module after mounting its
-root; `install` copies the module and firmware into the target and enables the
-module there. Verify the module against the image kernel and test a fresh boot,
-Wi-Fi join, DHCP, traffic and reconnect before calling the image qualified.
-Keep the overlay and ISO private while firmware redistribution rights are
-unverified; the diagnostic source package declares its license `unknown`.
+The candidate ISO takes `if_brcmfmac-kmod` from the selected ports tree and
+installs that package only on MacBookPro16,1 targets. The live installer checks
+that its module bytes match the installed package, then locks the target
+package to the selected kernel. For a private preview, the verified B3 firmware
+can still be supplied under `$LIVE_EXTRA_OVERLAY/boot/firmware/` as
+`brcmfmac4364b3-pcie.{bin,txt,clm_blob,txcap_blob}`. Set
+`LIVE_EXTRA_OVERLAY` when running `build-iso.sh`; the live system loads the
+driver at boot when the firmware is present. The public image instead imports
+the board files from Apple before loading the driver. Test a fresh boot, Wi-Fi
+join, DHCP, traffic and reconnect before calling the image qualified. Keep
+firmware-bearing overlays and their ISOs private while redistribution rights
+are unverified. The FreeBSD driver port uses the ISC-licensed upstream source;
+Apple firmware has separate terms.
 
 ### The ports
 
