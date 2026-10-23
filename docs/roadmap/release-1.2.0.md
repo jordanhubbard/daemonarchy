@@ -141,6 +141,10 @@ and its embedded build identity names the exact preflight revision. All four
 existing verified-boot source patches pass `git apply --check` against this
 tree. These are build and merge checks; they are neither final signed boot
 artifacts nor a MacBook reboot or sustained-input qualification.
+The operator also saw `Autoboot i 3 seconds` on the physical EFI menu. The
+current Lua source spells `Autoboot in` correctly, so the missing character
+remains a display-path observation to reproduce and fix on the final loader;
+the passing timer controls do not resolve that separate visual defect.
 
 The same worker now retains a separately verified candidate set cache at
 `/usr/daemonarchy/cache/iso-snapshot-20261019-041802b362aa`. The official
