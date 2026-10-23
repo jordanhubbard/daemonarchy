@@ -19,6 +19,7 @@ reachable without changing its historical scope.
 - [EFI loader cannot find loader.lua](repair-efi-root.md)
 - [Installation logs and the rescue console](rescue-console.md)
 - [Active work](roadmap/active-work.md)
+- [1.3.1 early-kernel diagnostics](roadmap/release-1.3.1.md)
 - [Owned FreeBSD source builds](source-builds.md)
 - [Disposable QEMU worker ownership](native-qemu-worker.md)
 - [Complete FreeBSD source and ports Component coverage](roadmap/freebsd-components.md)

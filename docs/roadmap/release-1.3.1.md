@@ -1,0 +1,76 @@
+# 1.3.1 early-kernel diagnostics
+
+- **Status:** active
+- **Tracking:** [Issue #27](https://github.com/jordanhubbard/daemonarchy/issues/27), [1.3.1 milestone](https://github.com/jordanhubbard/daemonarchy/milestone/1).
+- **Owning queue item:** [DEBUG-003](active-work.md#debug-003-deliver-early-kernel-wired-diagnostics-for-131)
+- **Completion / archival evidence:** Pending exact native loader/kernel builds,
+  pre-driver VM packet captures, separate image qualification and physical MSI
+  built-in-NIC evidence. No current connection or passing receipt is claimed.
+- **Operator scope, October 23:** the 1.3 release is already in progress.
+  Early-kernel network connection work belongs to **1.3.1**. Keep the 1.3
+  branch, selected artifacts and release process undisturbed.
+
+## Required result
+
+On the MSI Raider 18 HX AI A2XWIG/RTX 5080, retain an explicitly approved wired
+debugging connection from the UEFI loader into the kernel initialization that
+currently resets without a visible panic. Bring-up uses the **built-in NIC**;
+USB adapters and Wi-Fi are outside this acceptance target. Generalize the
+selection and status interface for other built-in Ethernet devices without
+claiming unsupported hardware works.
+
+The operator has already tried the ACPI-on/SMP-disabled and panic-retention
+settings without changing the reset. Do not request that comparison again.
+ACPI-off reports `APIC: Could not find any APICs`; this different failure does
+not explain the original reset. The currently booted medium is described as
+the latest pre-1.3 ISO; its exact filename/hash remains unrecorded.
+
+## Completion checks
+
+- [ ] Provide a discoverable boot-menu setup flow and matching controller;
+  retain local recovery, explicit approval and revocation.
+- [ ] Identify the selected built-in NIC by firmware path, MAC and PCI identity;
+  bind it and the exact kernel/image to one boot identity.
+- [ ] Establish actual packet exchange after `ExitBootServices` and before
+  normal PCI/NIC attachment. Loader-only output, a retained identity variable,
+  post-boot SSH and initialized-driver NetGDB do not close this requirement.
+- [ ] Retain early startup and driver-probe boundaries on the controller, with
+  explicit output loss and last-observed-stage reporting. Silence alone never
+  proves a reset or identifies the failed callback.
+- [ ] Preserve session authentication across the transition without exporting
+  keys through inspectable environment variables or captures. Reject forged,
+  replayed, wrong-boot and malformed control messages.
+- [ ] Bound absent-peer, link-loss, cancellation and reconnect paths; keep the
+  local console usable. Hand network ownership to the native driver safely.
+- [ ] Build exact FreeBSD loader/kernel products and retain independent VM
+  captures for a deliberate pre-driver panic and hard-reset case, successful
+  continued boot and transport-failure controls.
+- [ ] Assemble a separate 1.3.1 diagnostic image with exact inputs and hashes;
+  qualify its boot/trust closure without changing the in-progress 1.3 image.
+- [ ] Capture the real MSI initialization over its built-in Ethernet port.
+  VM e1000 acceptance does not qualify the MSI firmware or NIC.
+
+## Current boundary and implementation direction
+
+The source fork has an authenticated SNP-based loader console and a guided
+activation candidate in [source PR #20](https://github.com/jordanhubbard/daemonarchy-src/pull/20).
+[Source PR #22](https://github.com/jordanhubbard/daemonarchy-src/pull/22) adds
+read-only PCI/UNDI runtime-capability inspection, authenticated kernel-phase
+identity controls and an isolated native loader build. These are prerequisites,
+not the kernel transport. It also has scoped native NetGDB/Netdump development
+evidence once the native
+driver is initialized. Neither implements the required early connection.
+
+SNP is a boot-services protocol and cannot simply be called after firmware
+handoff. Investigate runtime UNDI capability on the selected built-in device
+and a kernel-owned polling backend; admit an actual runtime implementation,
+memory mapping, callbacks and DMA ownership before calling it from the kernel.
+The [UEFI UNDI definition](https://uefi.org/specs/UEFI/2.11/Apx_E_Universal_Network_Driver_Interfaces.html)
+and [runtime-driver guidance](https://tianocore-docs.github.io/edk2-UefiDriverWritersGuide/draft/25_network_driver_design_guidelines/252_nii_protocol_and_undi_implementations/)
+describe that route. Presence of an NII/UNDI descriptor alone is not proof of
+working post-handoff networking. If the actual firmware lacks that capability,
+an explicitly supported early native backend is required for the built-in NIC.
+
+Historical 1.2 development records retain their original scope. This operator
+decision assigns the continuous early-kernel transport and MSI capture to
+1.3.1; it does not silently waive unrelated acceptance or publish a release.
