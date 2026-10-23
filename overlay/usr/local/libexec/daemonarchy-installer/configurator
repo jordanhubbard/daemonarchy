@@ -555,7 +555,7 @@ wifi_connect() {
     lease_file=${WIFI_DHCLIENT_LEASEFILE:-/var/db/dhclient.leases.wlan0}
     router=$(awk '$1 == "option" && $2 == "routers" {
       gsub(/[;,]/, "", $3); value = $3
-    } END { print value }' "$lease_file" 2>/dev/null)
+    } END { print value }' "$lease_file" 2>/dev/null || true)
     if [[ $gateway_if =~ ^[[:alnum:]_.-]+$ && $gateway_if != wlan* &&
           $router =~ ^([0-9]{1,3}\.){3}[0-9]{1,3}$ ]] &&
        ifconfig "$gateway_if" 2>/dev/null | grep -Eq '^[[:space:]]*ether ' &&
