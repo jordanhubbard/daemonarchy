@@ -69,6 +69,10 @@ for pkgfile in "$packages"/All/*.pkg; do
 	esac
 done
 pkg repo -q "$share/repo" >/dev/null
+ls "$share"/repo/All/if_brcmfmac-kmod-*.pkg >/dev/null 2>&1 || {
+  echo 'The kernel-matched BCM4364 driver package is absent from this ISO build' >&2
+  exit 1
+}
 echo "    $(ls "$share/repo/All" | wc -l | tr -d ' ') packages"
 echo "$ABI" >"$share/ABI"
 
@@ -178,7 +182,7 @@ chmod 0755 "$stage"/overlay/usr/local/libexec/daemonarchy-installer/* \
 	"$share/keymap" "$share/compat/timedatectl"
 
 echo "==> Building the image"
-printf '%s\n' bash gum jq ttfx tzupdate pkg wifi-firmware-kmod 7-zip >"$stage/live-packages"
+printf '%s\n' bash gum jq ttfx tzupdate pkg wifi-firmware-kmod if_brcmfmac-kmod 7-zip >"$stage/live-packages"
 printf '%s\n' "$live_python" >>"$stage/live-packages"
 # Trim only the live root. The untouched base.txz still installs a complete
 # development system, and optional source/ports checkouts remain downloadable.

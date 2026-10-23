@@ -39,6 +39,10 @@ source "$(dirname "$0")/rescue-setup"
 source "$(dirname "$0")/secureboot-options"
 source "$(dirname "$0")/package-repository"
 package_repository_prepare "$ISO_SHARE"
+macbook_bcm4364=false
+if [[ $(kenv smbios.system.product 2>/dev/null || true) == MacBookPro16,1 ]]; then
+  macbook_bcm4364=true
+fi
 checkout_options_prepare "$ISO_SHARE/checkouts.json"
 secureboot_payload_prepare
 if [[ -n ${wifi_enterprise_profile:-} ]]; then
@@ -122,6 +126,22 @@ rm -f "$gpu_inventory"
 gpu_resolve_packages "$ISO_SHARE/gpu-packages" "$REPO"
 gpu_prepare_live_compat
 cuda_options_prepare
+if $macbook_bcm4364; then
+  [[ -f /boot/modules/if_brcmfmac.ko ]] || {
+    echo 'The live ISO lacks the kernel-matched BCM4364 driver.' >&2
+    exit 1
+  }
+  ls "$REPO"/All/if_brcmfmac-kmod-*.pkg >/dev/null 2>&1 || {
+    echo 'The ISO lacks the BCM4364 driver package for the installed system.' >&2
+    exit 1
+  }
+  for suffix in bin txt clm_blob txcap_blob; do
+    [[ -f /boot/firmware/brcmfmac4364b3-pcie.$suffix ]] || {
+      echo "The live system lacks BCM4364 board firmware ($suffix); refusing a Wi-Fi-ready installation." >&2
+      exit 1
+    }
+  done
+fi
 
 install_mode=${install_mode:-whole_disk}
 shared_install=false
@@ -184,11 +204,10 @@ for set in base kernel lib32; do
   progress_count base "$expanded_sets" 3
 done
 
-# A hardware preview can carry a module and board firmware matched to this
-# exact kernel. Keep them with the installed system, including offline installs.
-if [[ -f /boot/modules/if_brcmfmac.ko ]]; then
-  install -d "$TARGET/boot/modules" "$TARGET/boot/firmware"
-  install -m 0555 /boot/modules/if_brcmfmac.ko "$TARGET/boot/modules/if_brcmfmac.ko"
+# A private hardware preview may carry verified board firmware. The matching
+# driver enters the target through the ISO's kernel-bound package below.
+if $macbook_bcm4364; then
+  install -d "$TARGET/boot/firmware"
   for firmware in /boot/firmware/brcmfmac4364b3-pcie.*; do
     [[ -f $firmware ]] || continue
     install -m 0444 "$firmware" "$TARGET/boot/firmware/${firmware##*/}"
@@ -259,8 +278,7 @@ loader_brand="daemonarchy"
 kern.vty="vt"
 kern.geom.label.gptid.enable="1"
 EOF
-if [[ -f $TARGET/boot/modules/if_brcmfmac.ko ]] &&
-    [[ $(kenv smbios.system.product 2>/dev/null || true) == MacBookPro16,1 ]]; then
+if $macbook_bcm4364; then
   echo 'hw.hid.hkbd.no_leds="1"' >>"$TARGET/boot/loader.conf"
 fi
 [[ $encrypt_installation == true ]] && echo 'geom_eli_load="YES"' >>"$TARGET/boot/loader.conf"
@@ -279,7 +297,7 @@ dbus_enable="YES"
 seatd_enable="YES"
 sddm_enable="YES"
 EOF
-if [[ -f $TARGET/boot/modules/if_brcmfmac.ko ]]; then
+if $macbook_bcm4364; then
   echo 'kld_list="if_brcmfmac"' >>"$TARGET/etc/rc.conf"
 fi
 # GPU modules are loaded by daemonarchy-graphics after SSH, not early kld.
@@ -374,6 +392,9 @@ pkg_target() {
     pkg -r "$TARGET" -o REPOS_DIR="$repos" -o ABI="$ABI" "$@"
 }
 packages=(pkg bash sudo daemonarchy chromium octopkg wifi-firmware-kmod "${gpu_exact_packages[@]}" "${gpu_userspace_packages[@]}")
+if $macbook_bcm4364; then
+  packages+=(if_brcmfmac-kmod)
+fi
 pkg_target update -f
 if [[ $package_repository_tag != packages-16-amd64 ]]; then
   pkg_target rquery -r Daemonarchy-Dependencies '%n' omarchy | grep -qx omarchy || {
@@ -402,6 +423,14 @@ for attempt in 1 2 3 4 5; do
 done
 phase install "Installing Daemonarchy packages"
 pkg_target install -y "${packages[@]}"
+if $macbook_bcm4364; then
+  pkg_target info -e if_brcmfmac-kmod || { echo 'The BCM4364 driver package is missing.' >&2; exit 1; }
+  [[ -f $TARGET/boot/modules/if_brcmfmac.ko &&
+     $(sha256 -q "$TARGET/boot/modules/if_brcmfmac.ko") == $(sha256 -q /boot/modules/if_brcmfmac.ko) ]] || {
+    echo 'The installed BCM4364 module differs from the live kernel-matched package.' >&2
+    exit 1
+  }
+fi
 if [[ $package_repository_tag != packages-16-amd64 ]]; then
   package_repository_finalize_dependencies pkg_target
 fi
@@ -412,6 +441,7 @@ for gpu_package in "${gpu_exact_packages[@]}"; do
   pkg_target info -e "$gpu_package" || { echo "GPU package mismatch: $gpu_package" >&2; exit 1; }
 done
 pkg_target lock -y "${gpu_lock_packages[@]}"
+if $macbook_bcm4364; then pkg_target lock -y if_brcmfmac-kmod; fi
 secureboot_lock_modules
 gpu_write_config "$TARGET"
 

@@ -15,5 +15,6 @@ x11/owe-lockfeed x11/quickshell
 ISO_ORIGINS="$OMARCHY_ORIGINS
 archivers/7-zip
 graphics/drm-612-kmod graphics/gpu-firmware-kmod net/wifi-firmware-kmod
+net/if_brcmfmac-kmod
 x11/nvidia-driver x11/nvidia-kmod graphics/nvidia-drm-612-kmod x11/linux-nvidia-libs
 "
