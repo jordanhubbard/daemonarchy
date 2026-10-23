@@ -287,6 +287,17 @@ space than a cached installer-only rebuild. Check resources before dispatching.
    on the native FreeBSD worker against the exact ISO kernel sources, then
    verify the staged module hash before authoring the image.
 
+   For MacBookPro16,1 firmware development, `scripts/import-apple-bcm4364-firmware.py`
+   can download the pinned Sonoma recovery image from Apple's recovery service
+   or read an operator-supplied `BaseSystem.dmg`. For example, with Python 3 and
+   `7z` installed, run
+   `python3 scripts/import-apple-bcm4364-firmware.py --download --model MacBookPro16,1 --destination /private/firmware-import`.
+   Replace `--download` with `--image /path/to/BaseSystem.dmg` for local media.
+   The tool verifies the exact image and four board-file hashes before creating
+   the fresh private destination. It records a provenance JSON file and does not
+   add firmware to Git, an ISO or an installed target. Installer integration and
+   physical reboot/traffic qualification remain open.
+
 ### Persistent authoring caches
 
 Keep the following directories on persistent storage on the ISO build host.

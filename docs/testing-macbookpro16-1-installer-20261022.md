@@ -786,3 +786,18 @@ This establishes an Apple recovery source for the exact tested bytes without
 requiring installed macOS. It does not grant redistribution permission or
 qualify a FreeBSD installer acquisition path, driver stability, traffic or
 reboot persistence. Keep the recovery image and extracted firmware private.
+
+A first-party [importer](../scripts/import-apple-bcm4364-firmware.py) now
+supports both a direct Apple recovery request and an operator-supplied DMG.
+The tested importer SHA256 is
+`628e137820fbc2e9fa31db11702c56556d238aec678dccb945adb6f77ff62140`.
+It pins the complete 789,568,598-byte image hash, MacBookPro16,1 model and
+the four extracted file hashes; it writes a private provenance record only
+after all checks pass. Its online path successfully fetched and imported the
+same four files on the controller. Its local-media path passed on native
+FreeBSD 16.0-CURRENT amd64 with `7-zip-26.04`, using the verified image, and
+produced the same hashes. A truncated-image input and a different model were
+both refused without creating output. The importer is a development tool;
+it is not yet exposed in the live installer, copied into the target, or tested
+across a MacBook reboot. The native radio driver also still needs link-loss
+and traffic repair before a Wi-Fi-ready installation claim is possible.
