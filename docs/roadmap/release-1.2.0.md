@@ -92,6 +92,21 @@ This was a disposable October 19 CURRENT jail, not the production release jail.
 Physical desktop acceptance, coherent source/package/module pinning, signed feed
 and final artifact identity are still required before R12-18 can close.
 
+The completed PR #22 bulk built `daemonarchy-1.0.1,1`: that branch diverges from
+the published `daemonarchy-1.1.1` ports branch and lacks 31 release-branch
+commits, including its desktop version and VirtIO DRM backport. It is therefore
+dependency evidence, not the next ISO's package baseline. A disposable
+two-parent merge with the 1.1.1 branch, followed by ports Component PR #7,
+Fastfetch PR #8 and a provenance-preserving cherry-pick of the physically
+tested Radeon PR #19, is retained at `13270547f4689b83a37969439abf1548928990f3`.
+It yields `daemonarchy-1.1.1,1`, `omarchy-4.0.4_24` and
+`drm-612-kmod-6.12.110.1600028_6`. Native patch stages pass for Omarchy and
+DRM; the patched Omarchy QML contains FreeBSD Wi-Fi and debugger status, and
+the Radeon sizing-helper regression passes against the patched source.
+Project authority and native locks pass, while the lifecycle receipt is still
+missing. A full dependency plan and package build at this combined head remain
+open; no 1.2 desktop tag or final image exists.
+
 A second disposable ports worktree refreshed PR #22 against FreeBSD ports
 `99fc0413c18d18fc6c9750f2265ae9e33811b918`, 592 commits beyond the
 official package-feed baseline. Its merge revision
