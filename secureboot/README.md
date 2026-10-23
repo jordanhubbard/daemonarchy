@@ -128,6 +128,18 @@ python3 sign-boot-tree.py /path/to/staging-root \
   --key /protected/release-private.key
 ```
 
+For the MacBookPro16,1 BCM4364 B3 profile, first use
+`scripts/import-apple-bcm4364-firmware.py` to import the pinned Apple recovery
+image into a private directory. Pass that directory with `--firmware-stage`
+when signing. The signer verifies its provenance and four file hashes, then
+adds their fingerprints to the signed boot manifest. It does not copy Apple
+firmware into the public image. The installer needs the same privately acquired
+stage, supplied as `DAEMONARCHY_APPLE_FIRMWARE_STAGE`, before any partition
+write. It verifies the stage against the signed bundle, copies the four files
+to the target, and verifies the installed tree. A signed MacBook image without
+that stage refuses installation before changing the disk. Driver attachment,
+Wi-Fi traffic and reboot persistence still require physical qualification.
+
 The private key stays outside the image, readable only by its owner. The tool
 checks the certificate/key match, signs the PE loader, creates and signs the
 module manifest, and then signs the boot manifest that covers it. Each detached

@@ -214,6 +214,7 @@ fi
 # account with the base shell; switch it to bash after packages are installed.
 create_recovery_accounts "$TARGET" "$username" "${full_name:-$username}" <<<"$password_hash"
 install_rescue_support "$TARGET" "$(dirname "$0")" /usr/local/sbin
+secureboot_install_firmware "$TARGET"
 secureboot_install_profile "$TARGET"
 sync
 

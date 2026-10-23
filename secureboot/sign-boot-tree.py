@@ -7,12 +7,36 @@ running system. Install/update callers must prepare a separate tree first.
 import argparse
 import base64
 import hashlib
+import importlib.util
 import json
 import os
 from pathlib import Path, PurePosixPath
 import re
 import subprocess
 import tempfile
+
+
+def optional_apple_firmware(stage, root):
+    """Bind operator-acquired bytes without including them in the image tree."""
+    if stage is None:
+        return {}
+    if stage.is_symlink():
+        raise ValueError("Private firmware stage must not be a symlink")
+    stage = stage.resolve(strict=True)
+    if stage.is_relative_to(root):
+        raise ValueError("Private firmware stage must stay outside the image tree")
+    script = Path(__file__).resolve().parents[1] / "scripts/import-apple-bcm4364-firmware.py"
+    spec = importlib.util.spec_from_file_location("apple_bcm4364_import", script)
+    importer = importlib.util.module_from_spec(spec)
+    spec.loader.exec_module(importer)
+    importer.verify_stage(stage, "MacBookPro16,1")
+    entries = {}
+    for name, (_, _, expected) in importer.FILES.items():
+        relative = "firmware/" + name
+        if (root / "boot" / relative).exists():
+            raise ValueError("Private Apple firmware must not enter the signed image tree")
+        entries[relative] = expected
+    return entries
 
 
 def run(*command, **kwargs):
@@ -99,6 +123,8 @@ def sign(args):
                if not path.is_symlink() and (name == kernel_path or
                (name.startswith(("kernel/", "kernel.secure/", "modules/"))
                 and name.endswith(".ko")))}
+    optional_firmware = optional_apple_firmware(
+        getattr(args, "firmware_stage", None), root)
     additional = {}
     if args.module_inventory is not None:
         receipt = json.loads(args.module_inventory.read_text())
@@ -179,6 +205,7 @@ def sign(args):
 
         entries = {name: digest(path) for name, path in inventory(root)}
         entries.update(additional)
+        entries.update(optional_firmware)
         manifest("manifest", "".join(
             f"{name} sha256={fingerprint}\n" for name, fingerprint in sorted(entries.items())
             if name not in ("manifest", "manifest.sig", "manifest.certs")
@@ -198,6 +225,8 @@ if __name__ == "__main__":
                         choices=("kernel/kernel", "kernel.secure/kernel"))
     parser.add_argument("--module-inventory", type=Path,
                         help="native release module-inventory.py receipt")
+    parser.add_argument("--firmware-stage", type=Path,
+                        help="private verified MacBookPro16,1 firmware import")
     parser.add_argument("--build-receipt", type=Path, required=True,
                         help="build.py receipt matching kernel, loader and trust anchor")
     args = parser.parse_args()

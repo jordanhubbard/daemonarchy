@@ -142,6 +142,40 @@ class Maintenance(unittest.TestCase):
         with self.assertRaisesRegex(ValueError, "absent from the signed inventory"):
             maintenance.verify_tree(target, metadata)
 
+    def test_optional_signed_firmware_is_required_on_macbook_target(self):
+        payloads = {name: name.encode() for name in maintenance.APPLE_BCM4364}
+        self.contents["boot/manifest"] += "".join(
+            f"{name.removeprefix('boot/')} sha256={hashlib.sha256(data).hexdigest()}\n"
+            for name, data in sorted(payloads.items())).encode()
+        self.metadata["files"]["boot/manifest"] = hashlib.sha256(
+            self.contents["boot/manifest"]).hexdigest()
+        self.archive()
+        source, metadata = self.unpack()
+        target = self.target()
+        maintenance.install(target, source, metadata)
+        maintenance.verify_tree(target, metadata)
+        with self.assertRaisesRegex(ValueError, "Required MacBook firmware is missing"):
+            maintenance.verify_tree(target, metadata, require_apple_bcm4364=True)
+        for name, data in payloads.items():
+            path = target / name
+            path.parent.mkdir(parents=True, exist_ok=True)
+            path.write_bytes(data)
+        maintenance.verify_tree(target, metadata, require_apple_bcm4364=True)
+        (target / next(iter(payloads))).write_bytes(b"modified")
+        with self.assertRaisesRegex(ValueError, "Signed fingerprint mismatch"):
+            maintenance.verify_tree(target, metadata, require_apple_bcm4364=True)
+
+    def test_unsigned_macbook_firmware_prevents_validation(self):
+        self.archive()
+        source, metadata = self.unpack()
+        target = self.target()
+        maintenance.install(target, source, metadata)
+        path = target / "boot/firmware/brcmfmac4364b3-pcie.bin"
+        path.parent.mkdir(parents=True)
+        path.write_bytes(b"unsigned")
+        with self.assertRaisesRegex(ValueError, "absent from the signed inventory"):
+            maintenance.verify_tree(target, metadata)
+
 
 if __name__ == "__main__":
     unittest.main()
