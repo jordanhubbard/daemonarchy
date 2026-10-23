@@ -1,5 +1,28 @@
 # Changelog
 
+## Unreleased hardware debugging
+
+- Preserve approved installed-system debugging keys, server identity and private
+  state across reboot. Resume the existing session without Unpair or fresh
+  confirmation; retain explicit revocation and unknown-key refusal. Keep
+  retrying after slow network bring-up while the approved grant remains active.
+- On MacBookPro16,1, correct the offset EFI framebuffer reservation in the
+  Navi14 driver and skip stalled LED output reports for the built-in T2 keyboard.
+  The refreshed graphics package and one-boot quirked kernel reached a visible
+  Hyprland desktop: the operator entered a password, and the pointer worked
+  after initial lag. These fixes are in draft source/ports contributions, not
+  yet in a published image or a fully qualified normal-boot kernel.
+- Record the MacBook Pro 16 fatal NVMe event reproduced during installer package
+  extraction. Storage correction, BCM4364 Wi-Fi driver and firmware integration,
+  sustained input acceptance, and full physical acceptance remain open.
+- Identify the MacBook's BCM4364 revision 4, TCM geometry and B3 firmware path
+  on physical hardware. A private FreeBSD-native diagnostic module reaches
+  firmware protocol 7, attaches to net80211 and repeatedly scans nearby access
+  points using the candidate `bali-HRPN-u` board data, Apple seed footer and
+  matching CLM and TxCap blobs. Association, traffic, reboot persistence, maintainable
+  driver integration and installer firmware acquisition remain unqualified.
+
+
 This history covers the installer repository from its first commit and all GitHub
 release records. Dates below are GitHub publication dates in UTC; a date embedded
 in a snapshot tag is the image's identifier and can differ from its publication

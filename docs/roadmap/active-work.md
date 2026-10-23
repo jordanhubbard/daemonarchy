@@ -254,7 +254,7 @@ preserved. No performance fix or lifecycle pass is claimed.
 - **Priority:** P1
 - **Owner:** desktop, compatibility and diagnostics Components
 - **Direction:** Keep unresolved GPU, radio, boot and restart behavior explicit while extending physical acceptance.
-- **Conclusion:** HP desktop/application acceptance passed; MacBook GPU/Wi-Fi and earlier restart causes, other platform boot failures and radio/suspend checks remain open.
+- **Conclusion:** HP desktop/application acceptance passed. On the MacBook, a refreshed graphics package and T2 keyboard test kernel reached a visible desktop and accepted a password; the pointer worked after initial lag. Normal-boot integration, sustained input, Wi-Fi and the earlier storage/restart causes remain open, as do other platform boot and radio/suspend checks.
 - **ASRock availability:** The operator reports the RTX system still hangs in firmware and cannot enter setup or the boot menu, even with other USB devices disconnected and the keyboard directly attached. Firmware recovery is pending; no current Daemonarchy boot or physical acceptance result can be obtained from it. Keep R12-11 open.
 - **MSI video:** The October 18 recording ends readable output at `atrtc0: Warning: Couldn't map I/O.` before the display blanks, with no visible panic. The second video confirms the RTC-disable/panic flags and advances to `sc0 failed to probe on isa1` before blanking, without a visible panic. Repeated Intel SPMC constraint-format warnings motivated a `debug.acpi.disabled="spmc"` comparison, which the operator reports made no difference; the exact installer artifact remains unidentified. The [analysis](../testing-1.1-hardware-observations.md#msi-startup-video-reviewed-2026-10-18) records the movie identity, observed scope and source-backed diagnostic; no default quirk or fix is qualified.
 - **Depends on:** none
@@ -866,3 +866,42 @@ on macOS and real Windows. Eight focused tests and driver review pass. Exact
 `46c14963` now runs complete configured host lifecycle renewal under its existing
 3600-second bound. Its receipt is not promoted, and final full native qualification
 remains open; report files do not establish a passing gate.
+
+### [ ] HW-002 — Diagnose MacBook installer interruption and qualify storage recovery
+
+- **Priority:** P1
+- **Owner:** installer and diagnostics Components with native FreeBSD storage
+- **Direction:** Resolve the reproduced Apple ANS2 fatal storage event before MacBook hardware acceptance for the next release.
+- **Conclusion:** Package registration and progress do not establish completion; preserve the interrupted target and controller evidence, then qualify a storage correction and complete native installation and desktop acceptance.
+- **Depends on:** none
+- **Implementation:**
+  - [ ] Reproduce and isolate ANS2 fatal I/O, preserve exact input and recovery identities, implement an independently tested correction, then repeat fresh-image installation and hardware checks.
+- **Evidence:**
+  - [ ] 2026-10-22 physical reproduction, exact cached package recovery under four trackers, and full integrity after a forced power-off are recorded in docs/testing-macbookpro16-1-installer-20261022.md. Instrumented Navi14 tests isolate a graphics-queue initialization boundary; storage cause, false-success explanation and complete hardware acceptance remain open.
+
+### [ ] HW-003 — Acquire and install required laptop firmware
+
+- **Priority:** P1
+- **Owner:** installer and compatibility Components with native FreeBSD driver integration
+- **Direction:** Support laptops that need device-specific firmware during installation, including a MacBook whose macOS installation was wiped.
+- **Conclusion:** Firmware acquisition is part of installer completion when a selected built-in device requires it; a network panel cannot compensate for an unattached driver or absent firmware.
+- **Depends on:** HW-001
+- **Implementation:**
+  - [ ] Identify required firmware and board configuration from the actual PCI/device and driver identity; select an online source with verifiable provenance or operator-supplied local media, including an Apple recovery-image path for BCM4364 without installed macOS.
+  - [ ] Verify integrity and model match before copying into the target, retain source and digest evidence without private data, and make acquisition retryable without repeating disk partitioning or package installation.
+  - [ ] Install firmware in the driver's expected target path, enable its loading at boot, and check actual device attachment, scan, association, traffic and reconnect after reboot; report a clear incomplete-device result when the driver or firmware is unavailable.
+- **Evidence:**
+  - [ ] Fresh physical MacBook installation proves acquisition and rebooted BCM4364 operation; offline-media and failure/retry cases pass. A private diagnostic module now attaches BCM4364/4 to net80211 and returns access points on repeated physical scans using B3 firmware, `bali-HRPN-u` board data, the Apple seed footer, CLM and TxCap blobs. Association, traffic, reconnect, rebooted operation, driver integration and installer firmware acquisition remain open. The ordinary system still leaves the PCI device unbound; manually staged files do not qualify redistribution.
+
+### [ ] DEBUG-002 — Preserve approved hardware-debugging sessions across reboot
+
+- **Priority:** P1
+- **Owner:** diagnostics and installer Components
+- **Direction:** Support repeated hardware bring-up cycles without deleting the previous grant or requiring fresh approval of the same agent.
+- **Conclusion:** Retain private approval and host identity on installed storage; refresh runtime generation, refuse unknown keys on background resume and preserve explicit revocation.
+- **Depends on:** none
+- **Implementation:**
+  - [ ] Implement and natively exercise durable resumption, legacy adoption, boot-console startup and explicit Unpair; verify on the physical MacBook.
+  - [ ] Show the installed desktop's remote-debugging state in its menu bar while a grant or listener is active. Include whether the agent is connected, the listener address/port, and a clear path to revoke access; update promptly after reboot, disconnect and Unpair. The rescue menu is hidden once the desktop is up, so it cannot serve as the only local status display.
+- **Evidence:**
+  - [ ] Native real-SSH persistence, existing lifecycle and delayed-network console fixtures pass. Physical reboot retains the same agent approval and host identity; manual Resume works. One reboot resumed unattended SSH about fifteen seconds into boot, but a later boot reached the desktop with the listener inactive until manual Resume. The 60-second network retry limit is a plausible cause, not yet proven by boot timing. A retry-while-approved correction passes native console tests, including simulated readiness after 60 seconds, and is staged for the next physical reboot. Desktop menu-bar status and image integration remain pending.

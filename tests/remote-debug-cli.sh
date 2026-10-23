@@ -7,6 +7,7 @@ trap 'rm -rf "$work"' EXIT
 # Load the actual listener and prompts without dispatching or starting SSH.
 eval "$(sed '/^source /d; /^case ${1:-shell}/,$d' "$helper")"
 state=$work/state
+fsync() { :; } # Real durable writes are exercised by the native SSH fixtures.
 mkdir -p "$state/requests"
 printf 'SHA256:example\nssh-ed25519 example\n' >"$state/requests/example"
 start_server() { echo "$1" >"$work/port"; server_pid=$$; }

@@ -1,0 +1,708 @@
+# MacBookPro16,1 interrupted installation, October 22, 2026
+
+HW-002 extends HW-001 with a current physical reproduction and a successful
+desktop login. This is diagnostic and recovery evidence, not completed installer
+qualification or final release hardware attestation. The MSI RTX 5080 laptop
+remains a separate next hardware investigation.
+
+## Current qualification state
+
+| Check | Result |
+| --- | --- |
+| Recovered package installation | Full dependency/file verification passed, including after forced power-off |
+| NVMe under four trackers | Package recovery completed; earlier fatal-status cause remains open |
+| Physical EFI countdown | Boots through to the operating system without Enter |
+| Retained debugging grant | Same approval/host identity and unattended resumption verified over multiple reboots |
+| Navi14 graphics and desktop | Refreshed package boots; operator logged into Hyprland on the quirked kernel |
+| Built-in keyboard and trackpad | Password entry succeeded; pointer was initially laggy, then worked; longer use and click behavior remain to be checked |
+| Independent hardware diagnostics | Operator reports Apple Internet Diagnostics ADP000 (no issues found); intermittent faults remain possible |
+
+## Inputs and observed discrepancy
+
+The operator reports that the installer claimed success. The installed target
+instead retains `status=in-progress`, `phase=install`, no exit code/update marker
+and no final package-integrity record. The installer log ends during OpenJDK
+extraction, package 1026/1188; the package database contains 1040 registrations,
+including eleven later registrations whose log lines were not retained. The
+success-screen report has not yet been independently reproduced or explained.
+
+The attached USB identifies itself as `1.1.1 (1.2 loader-debug test 1; 1.1.1 base)`.
+Its installer, launcher and dashboard match the retained controller implementation.
+Its installer helper SHA256 values are:
+
+| Helper | SHA256 |
+| --- | --- |
+| install | 62604c6c465ecae20c4efa2aca6dbcb06c355028f565ca3bf4fd59c7d69500e0 |
+| launch | 42a106a7afa26ac50e0d13ac8a85dd453952d4a755cf08a23fc0c943d9a051c0 |
+| dashboard | fbd702ace484a086bcb46378880d3333ba71888c6f97f2ec166e06367bb33c1a |
+| install-integrity | 5f7756747fb99edb875d4fd69850d2a1dcff5c4a329989144ca6f87337c31bd7 |
+| install-diagnostics | 20b376225b1e920820fadd80112dd1893cbcada245f386e108ec29f0f000f4ba |
+
+This does not independently verify every byte of the USB against the
+[test ISO artifact](testing-1.2-test-iso.md). The running stock kernel identifies
+source `bdcfeac3e1cb`, OSVERSION 1600028. Installed DRM is
+`drm-612-kmod-6.12.110.1600028_5`; no AMD GPU module was loaded during these tests.
+
+## Integrity and bounded recovery
+
+Native dependency verification passed, but full installed-file verification
+failed with **1158 checksum mismatches across twelve packages**. Damaged files
+included zero-length Ghostscript payloads. Samples differed from the corresponding
+files read directly from cached archives. All affected package registrations fell
+in the final two seconds of the retained original transaction. Package database
+consistency therefore did not establish payload integrity.
+
+The pool was ONLINE with zero read/write/checksum errors. NVMe SMART reported
+zero media errors and 96 lifetime unsafe shutdowns. Neither observation explains
+the interruption or excludes a controller/driver failure. Crash dumping was
+disabled, and all phase-boundary kernel logs were identical. They contain no
+later package-phase failure record.
+
+A pre-repair boot environment was retained. Each damaged package was reinstalled
+from its exact cached version, individually verified and followed by `zpool sync`.
+All twelve passed. A second boot environment retained that repaired state.
+
+A private offline repository combined the existing cache and attached ISO. The
+native resolver planned 151 additional packages, without upgrades or removals.
+Every planned archive's name/version and native `FreeBSD_version` were checked
+against OS1600028 before installation; architecture-independent packages could
+omit that annotation. Installation followed dependency order, with individual
+file verification, pool synchronization and an on-target checkpoint per package.
+
+## Reproduced fatal NVMe event
+
+At **19:12:05 UTC**, while installing `qt6-networkauth`, the independent controller
+receiver retained the kernel's fatal-timeout/reset message, then a controller
+start event and repeated reset-wait messages. The receiver retained heartbeats
+through **19:12:18 UTC**, then recorded SSH exit 255 at **19:12:33 UTC**. Subsequent
+SSH and independent native-worker ping probes failed. At that point a new boot had not been
+confirmed; transport loss alone was not counted as a reboot.
+
+Twenty-nine additional packages reached verified durable checkpoints. The last
+was `qt6-imageformats`, leaving 122 planned packages. `qt6-networkauth` extraction
+printed completion, but it did not reach its verification/barrier checkpoint.
+Its integrity required checking after recovery rather than assuming success.
+
+A separate bounded DTrace session watched ACPI button/sleep paths, shutdown
+requests, reboot syscalls and signals to init. A harmless `kill(1, 0)` verified
+caller/stack capture. It retained no real shutdown/reboot event before loss of
+access. Its scope does not exclude T2 firmware reset, panic or an event after
+trace/network delivery ceased.
+
+The SMC shutdown-cause value was `-20`, undecoded by the selected source. The
+thermal-status `prochot` field means enabled in that driver, not proof of current
+overheating. Sampled CPU/GPU temperatures were 57/58 C shortly before failure.
+
+[FreeBSD bug 298197](https://lists.freebsd.org/archives/freebsd-bugs/2026-September/036371.html)
+reports the same fatal/reset/waiting sequence under internal-SSD load on a T2
+Mac mini. This is a related upstream report, not proof of identical root cause.
+Native source tracing locates the message in `nvme_qpair_timeout` after the
+controller fatal-status bit is read, followed by reset-task scheduling. The
+underlying trigger and failed recovery stage remain unresolved.
+
+## Next controlled checks
+
+1. Retain the physical console state and establish whether the target hung,
+   powered off or rebooted. Recover access before another package transaction.
+2. Check the durable checkpoint, active boot identity, newest kernel evidence and
+   affected package files; preserve both recovery environments.
+3. Trace entry/return through available NVMe reset-task, queue-disable and
+   controller-disable probes during a bounded retry. The prepared 600-second
+   trace compiles on the native worker using its actual probe inventory; inlined
+   functions and tail calls have no separate entry/return probes. Compare the exact snapshot's
+   Apple ANS2 implementation with the selected next-release source.
+4. A separate boot test can reduce the existing `hw.nvme.io_trackers` tunable to
+   four to isolate outstanding-I/O pressure. Record it as a diagnostic setting,
+   not a validated fix or release default. Keep other storage variables fixed.
+5. Complete installer postconfiguration, full integrity and dependency checks,
+   then qualify real GPU attachment, authenticated desktop/application rendering,
+   input, peripherals and reboot/recovery on the eventual exact release image.
+
+Raw controller captures, package plans, trace output and private recovery scripts
+remain outside Git. No signing keys, private worker addresses or credentials are
+part of this record. No hardware gate is closed by this investigation.
+
+## Recovery and bring-up fixes
+
+After the operator booted the target again, its new boot identity confirmed a
+reboot. Full file verification found 61 damaged files in the interrupted
+`qt6-networkauth` package and no damage in the earlier verified package
+checkpoints. Package repair/completion remains pending the storage diagnostic.
+
+The operator additionally reported that the installed loader remained at its
+three-second autoboot prompt until Enter. Native inspection found that amd64 EFI
+timeouts use the firmware wall clock. A candidate uses a periodic EFI timer,
+seeded once from the wall clock, to advance deadlines even if GetTime fails or
+stops advancing. The actual production C file reproduces the old failure under a
+frozen-clock control and passes six native controls after correction. A fresh
+stand build passes. Actual OVMF execution counts down without input and returns
+to firmware without a timer callback into unloaded loader code. The first VM
+probe exposed that missing exit cleanup; the corrected candidate and failed
+evidence are both retained. Physical countdown observation remains separate.
+
+DEBUG-002 changes installed-system pairing into a durable, explicitly approved
+hardware-debugging grant. A root-only store retains the approved client key,
+server identity and evidence; recovery refreshes runtime ownership and refuses
+unknown keys without console approval. Native real-SSH fixtures cover legacy
+listener adoption, preservation across shutdown, stable host pinning, unrelated
+reused PIDs, old-generation teardown, repeated resume and explicit revocation.
+Initial storage-parent creation and boot-console resumption are also checked.
+
+The first physical upgrade/reboot exposed an adoption defect: copying the old
+generation lets an old running shell's cleanup revoke the adopted grant. The
+corrected migration gives the grant new ownership before retiring the old
+collector; a native regression verifies that old cleanup cannot revoke it and
+that explicit Unpair cannot reimport the retired grant. Physical automatic
+reconnection must be verified after deploying this correction.
+
+
+## Controlled retry with four outstanding requests
+
+The corrected pairing helper was deployed and a controlled reboot completed.
+The operator reported reaching the rescue selection menu without intervening at
+the loader countdown, then selected Resume. SSH admitted the previously approved
+agent with the identical retained host-key digest. This verifies approval and
+server-identity persistence and manual resumption; it does not verify unattended
+listener startup. The boot clock initially returned to 1970 before NTP corrected
+it; boot identity was distinguished by its changed value and short uptime,
+without assuming wall-clock values must increase.
+
+The first resumption attempt can precede DHCP readiness. A correction retries
+for up to 60 seconds in the background without blocking the recovery menu. A
+native FreeBSD console test covers delayed readiness and absence of a grant;
+a subsequent physical reboot reconnects without console selection about fifteen
+seconds into the new boot, with the same approved client and server identity.
+The unattended listener has no console-approval marker. The diagnostic GPU
+service remains suppressed during that resumption test.
+
+The running NVMe queue reported four trackers. The interrupted
+`qt6-networkauth` payload was reinstalled from its exact cached archive and
+verified. The other 121 pending archives passed version/ABI/dependency preflight,
+then installed individually with file verification and two pool barriers per
+checkpoint. All reached durable checkpoints. A bounded native DTrace session
+watched controller reset, disable and failure paths, with an independent
+controller-side observation stream; no reset event was captured during this
+package run. Installer postconfiguration was then restored from the on-media helpers, including
+ordered GPU configuration, kernel-module locks, ownership/caches, signed package
+feeds and ISO fallback, checkout catalogue, user shell/sudoers, and SDDM state.
+The requested ordinary SSH service received fresh host keys; the debugging
+listener retained its existing separate host identity. Full installed dependency
+and file verification passed, followed by a pool barrier and healthy ZFS status.
+The original incomplete installer state was preserved before recording recovered
+completion, and a pre-GPU recovery boot environment was retained. This recovery
+does not explain the originally reported success screen.
+
+The current SSD health report gives no critical warnings, 100 percent spare,
+2 percent estimated wear and zero reported media errors. The generic error-log
+page is rejected as unsupported, and Identify reports no NVMe device self-test
+support. These limits are recorded rather than counted as successful hardware
+tests. The cause of the earlier fatal controller status remains unresolved;
+completion under this diagnostic tunable does not establish a release fix or
+exclude intermittent hardware failure.
+
+
+## Separate Navi14 graphics initialization failure
+
+After package integrity and recovery were verified, a separately captured
+manual graphics start loaded the exact DRM 6.12.110 module and Navi14 firmware.
+Firmware loading and SMU initialization succeeded, but
+`amdgpu_gfx_enable_kgq` reported `KGQ enable failed` and `gfx_v10_0` initialization
+returned -60. Device attachment failed. The ordered graphics service correctly
+refused its readiness marker, despite the module remaining loaded. SSH remained
+available and the bounded NVMe trace recorded no reset during this attempt.
+Desktop acceptance therefore remains blocked. The selected upstream source
+exposes a default-enabled asynchronous graphics-ring path and a supported
+`compat.linuxkpi.amdgpu_async_gfx_ring=0` alternative; a fresh-boot single-variable
+comparison is the next diagnostic, rather than treating module load as success.
+
+
+The fresh-boot comparison confirmed the alternative graphics-ring parameter was
+zero, with the NVMe tracker setting unchanged. Graphics initialization still
+returned -60. Cleanup then repeatedly timed out writing GPU registers. The
+independent receiver recorded last GPU register messages through 21:59:18 UTC
+and SSH timeout at 21:59:37 UTC; independent ICMP probes also failed. No NVMe
+reset event was captured by its separate trace. No reboot was requested during
+this graphics attempt. Physical console state and a new boot must establish
+whether the system hung, panicked or reset. Automatic graphics loading remains
+suppressed for the next recovery boot. The failed alternative is not a workaround.
+
+A diagnostic build passed against the exact stock kernel source
+`bdcfeac3e1cb8ce3f05c32d8a7ad3597deb48bdf` and the selected
+`drm_v6.12.110_1` archive (SHA256
+`9c99c05c3269271ca6ea19ccdca53b27517b1d6b679065fc5c3dfc2682ddfaef`).
+Its additional ring-test diagnostics are investigative only. The separate module
+remains staged outside the installed package; target execution is pending recovery
+and is not implied by native build success. This does not qualify a release.
+
+
+## First instrumented ring test
+
+After the operator power-cycled the unresponsive target, rescue boot retained
+approval and suppressed graphics loading. The original packaged GPU module
+remained byte-identical, and full installed-file and dependency checks passed
+after that forced power-off. The failed alternate queue parameter was removed
+from persistent configuration and the original value of one restored before
+loading the separately staged diagnostic module.
+
+Diagnostic module SHA256
+`8ab4005e1d61922c4d739977e0d0e65b94249cf51b2aa670e8c92a329e5c4781`
+reproduced the initialization failure. Its ring-test log identifies
+`kiq_0.2.1.0`, index 9, type 10, with doorbells enabled and a 100000-microsecond
+timeout. Scratch register `0xc040` remained `0xcafedead` rather than the expected
+GPU-written `0xdeadbeef`; the failing stage was asynchronous graphics-queue
+initialization. This identifies a failed command-ring progress test, not its
+underlying hardware or driver cause.
+
+The module-load syscall returned successfully even though device attachment failed;
+`devinfo` still showed no attached DRM device and no graphics readiness marker
+was created. SSH remained available and bounded NVMe/shutdown tracing retained
+no such event during the test. A second diagnostic adds read/write-pointer and
+successful-test logging to distinguish the preceding compute-queue test from
+the failing graphics-queue mapping. Its native build passes; fresh-boot execution
+is recorded separately. Neither diagnostic replaces the packaged driver.
+
+
+The second diagnostic module (SHA256
+`b1b114e1ed8d2fa6e23fc1cdaddb44847afd48c13897057728700b5193566288`)
+ran from a fresh rescue boot. The KIQ test following compute-queue mapping
+passed with scratch `0xdeadbeef` and a write pointer of `0x200`. The test after
+graphics-queue mapping failed with scratch `0xcafedead` and a write pointer of
+`0x400`. The software-visible read pointer was zero in both cases, including the
+successful test, so that value alone is not treated as proof of a stalled hardware
+read pointer. The failure boundary is reproducible; its underlying cause remains
+open. Both instrumented attempts returned with SSH available and no NVMe reset
+or shutdown request observed before the next explicitly controlled reboot.
+
+
+A further fresh-boot comparison used the same diagnostic module and original
+asynchronous queue setting, with only `compat.linuxkpi.amdgpu_dpm=0` changed.
+The driver confirmed both parameter values but failed earlier, reporting SMU
+firmware loading failure before the instrumented ring tests. This is not a
+successful workaround and does not isolate the original queue failure. The
+runtime-only power-management setting was cleared and a clean rescue reboot
+requested. The packaged driver remains unchanged; diagnostic modules remain
+separate and automatic GPU loading remains suppressed.
+
+
+## Independent Apple diagnostics
+
+The operator subsequently ran Internet Apple Diagnostics and reported **ADP000,
+No issues found**. [Apple defines this code](https://support.apple.com/en-us/102334)
+as no issues found. This is operator-reported evidence from a separate diagnostic
+environment, not a result captured by the FreeBSD agent or comprehensive release
+hardware attestation. Together with the reproducible FreeBSD queue-initialization
+boundary, it supports prioritizing driver/firmware investigation; it does not
+exclude every intermittent hardware fault or resolve the earlier NVMe event.
+
+
+## Working Linux reference and descriptor comparison
+
+The operator reports that Omarchy runs perfectly on this **same physical
+MacBook**, identifying Omarchy 4.0.3 and an apparent Linux 7.2.8 kernel. That is
+an operator-reported working comparison, not a live-captured kernel/package
+identity. It strengthens the working hypothesis of a FreeBSD driver/firmware
+interaction. The operator directs using Linux for reference, while making
+focused FreeBSD changes rather than cloning or replacing the driver wholesale.
+
+Reference inspection confirms the Linux 7.2.8 tag exists. The selected
+FreeBSD driver's `gfx10_kiq_map_queues`, `gfx_v10_0_gfx_mqd_init`, and
+`gfx_v10_0_cp_resume` functions match that reference. There are surrounding
+mapping-lifetime and newer-driver changes; equality of these functions does not
+establish equality of memory, firmware, kernel configuration or device-access
+behavior across operating systems.
+
+A third instrumented module records valid-looking graphics descriptor fields
+and the actual queue-mapping inputs. Compute descriptors reside in VRAM and the
+compute setup test passes. Graphics descriptor mapping then reproduces the same
+KIQ timeout, with SSH retained. A single-allocation diagnostic subsequently
+moves only the graphics descriptor from VRAM to the existing GTT/system-memory
+path. Its trace confirms the graphics descriptor changes from a VRAM address
+around `0x8001ea6000` to `0x660000`, while compute descriptors remain in VRAM.
+The same graphics-queue activation failure remains. This rules out that simple
+placement workaround; it does not rule out all memory-access faults.
+
+The next diagnostic restores the original allocation and reads selected command
+processor and GPU memory-fault registers at the existing timeout, before failed
+initialization cleanup frees device resources. It follows the selected GMC
+handler's documented dummy-read requirement for gfx10.1 fault status. No
+production behavior correction or release hardware gate is claimed.
+
+The fourth probe (module SHA256
+`c5960a123ed44cd2cb72ae174be8afee151b6d43c00f5c0712f5fb3936d2c2ea`)
+reproduced the timeout and read gfxhub fault status `0x0000093d`, with fault
+address registers `0:0x401`. This identifies page `0x401000`, containing the
+mapped graphics queue's write-pointer address `0x401060`. The selected register
+masks decode client ID 4 (CPF), VMID 0 and mapping/permission/walker fault bits.
+This is a captured fault at the failure boundary; its onset and root cause still
+need isolation. Command-processor halt bits also require initialization-stage
+context and are not independently classified as the cause. SSH remained usable.
+
+## Periodic CURRENT and ports refresh
+
+The operator requires periodic refresh against FreeBSD-CURRENT while maintaining
+source and ports fixes. The native worker fetched upstream source `main` at
+`775e421dc38f18fa6b7fdc7b214a013cca44b58b` and ports `main` at
+`7312c7155241ff90ca5f69382d3dc99cc7f3fca8` on October 22. Separate review
+worktrees preserve the exact installed-kernel diagnostic source and the owned
+ports patches. These fetched selections are not installed or qualified inputs;
+CURRENT now reports OSVERSION 1600029, versus the target's 1600028.
+
+Related changes identified for review include:
+
+- Source `d2145e9b96448da34d3cfede24c509af6d830c92` restores LinuxKPI
+  runtime-PM return values under CONFIG_PM specifically for reported drm-kmod
+  regressions. The target's selected source predates this correction.
+- Source `e65ccec8c0e359f584b2948c100ee3012e43c6e7` restores namespace
+  notifications following successful recovery from controller failure. This
+  concerns NVMe reset recovery, not proof of a fix for the initiating fatal event.
+- Source `775e421dc38f18fa6b7fdc7b214a013cca44b58b` corrects the default
+  NVMe storage-device method for non-PCI implementations. PCI supplies its own
+  method, so this is not presently identified as the MacBook failure's cause.
+
+The selected drm-612 source archive/version and firmware/meta-port paths have no
+upstream update in this comparison. The DRM port differences include our owned
+VirtIO integration and port revision; a refresh must retain these deliberately,
+rather than treating their absence upstream as a reason to delete them.
+The runbook now requires recording refreshed identities and related-fix decisions,
+integrating in isolated worktrees, and rebuilding/testing matching selections.
+
+The fifth probe (SHA256
+`d9ee3aba53078354f526fc082f226c4cb533fc42890191b872dfcd59c37b8e1e`)
+reads fault status during both tests. Status `0x93c` is already present when the
+compute-queue test passes, followed by `0x93d` at the graphics-queue timeout.
+Thus the fault predates the failing test; its additional-fault bit changes.
+Context-0 aperture and page-table base registers match the driver's selected
+values. The CPU-visible GART entry for page `0x401000` reads zero. Further
+allocation/binding diagnostics are needed before concluding why it is absent.
+
+The two owned EFI timer commits also apply cleanly to the refreshed CURRENT
+source in an isolated review branch, ending at
+`4bc36e19d489513590d18214d4b3f0f36e74941a`. That source refresh is not the
+previously tested loader installed on the MacBook. Build, firmware and hardware
+acceptance must identify the refreshed selection separately.
+
+The refreshed EFI source passes all six native production-C clock controls.
+The sixth GPU diagnostic (SHA256
+`4635de88ea413d6449b729b002c938089164fcdee2385ceee7c4e8418671b911`)
+records the eight-page writeback allocation and nonzero valid-looking PTEs
+immediately after binding. At the later queue timeout the entry for its first
+page reads zero. This narrows the next investigation to mapping retention or
+memory overwrite between initialization stages. It does not yet identify the
+writer or establish that an upstream power-management fix resolves it.
+
+A controlled build applies only CURRENT's runtime-PM header correction to the
+exact 1600028 source in a separate worktree, retaining the sixth diagnostic.
+Its module (SHA256
+`6f18dc061448b45fed7ce84489a22a613250ebd6981dd2eb7619da524e53e4a0`)
+builds natively and reproduces both the initially present writeback mapping and
+its later zero entry, with the same KGQ timeout. This upstream correction is
+therefore not a demonstrated fix for this failure. It remains distinct from a
+complete CURRENT kernel/ports refresh and its required hardware qualification.
+
+The refreshed EFI selection also completes a fresh native `stand` build. This
+adds build evidence for CURRENT plus the two timer commits; it does not transfer
+the preceding VM/physical loader results to the refreshed binary.
+
+## EFI framebuffer overlap and focused driver correction
+
+The seventh probe (SHA256
+`881a05fe1c5aa1d0d2c633dc6307b9ba61fc8ccf3ef2e5c92b6e00c16efb98e2`)
+records EFI framebuffer address `0xb0600000`, length `0x1ea0000`, dimensions
+3584 by 2240 and stride 3584 pixels. The GPU BAR begins at `0xb0000000`.
+The framebuffer therefore ends at VRAM offset `0x24a0000`, while the existing
+stolen-memory reservation covers only `0x1ea0000`. The GART table at VRAM
+offset `0x1f00000` lies within the still-active firmware console framebuffer.
+This is a concrete overlap between console drawing and driver page tables.
+
+Extra initialization-stage logging happened to retain the writeback mappings
+and allow that diagnostic to attach the GPU. This changed observation is not
+accepted as a correction. The focused FreeBSD-only change instead extends the
+reservation through the EFI framebuffer's end when its range belongs wholly to
+this GPU's BAR. It rejects missing, unrelated or invalid metadata and does not
+shrink an existing larger reservation. It imports no Linux implementation.
+
+All diagnostic edits were restored before building the focused candidate
+(SHA256 `1f8a9439b230082417c13887098c75424ef8c4d345981b30df7de16ed1047162`).
+Native tests compile its actual sizing helper and pass for the captured overlap,
+missing metadata, a different GPU, exact BAR boundaries, overflowing ranges and
+retaining a larger reservation. The first clean physical boot attaches `drmn0`
+and replaces `efifb` with `drmfb` without diagnostic logging. Repeat boots,
+packaging and desktop acceptance were then checked separately.
+
+The first ports package-build attempt exposed that USES=kmod derives SYSDIR
+from SRC_BASE and overrides a directly supplied SYSDIR. That build is rejected.
+The replacement uses the exact target source as SRC_BASE and a separate object
+root, retaining the matching 1600028 package identity. No package or hardware
+qualification is inferred from the rejected build.
+
+The focused candidate subsequently attaches on two more clean boots, for three
+consecutive physical passes with diagnostic logging absent and automatic remote
+approval retained. The login-screen compositor runs on the internal Apple panel
+at 3072 by 1920 and 60 Hz. A native Wayland EGL query against that compositor
+reports the AMD radeonsi Navi14 renderer, OpenGL 4.6 and Mesa 26.2.2. Keyboard and
+trackpad devices are enumerated. The operator confirmed the first visible desktop
+and logged in. After trying Alt-Space, the operator suspected a panic, but the
+MacBook remained reachable without a new boot, panic record, GPU reset or NVMe
+error. The same Hyprland and menu processes stayed alive and three terminal
+windows appeared. Subsequent input tracing identified a separate keyboard
+stall, described below.
+
+The ports fix is also carried onto owned integration revision
+`72c758ea367d0d4aa8108ad6738b04d42e2378d7`, which already includes the recent
+upstream ports refresh. The matching-target package build retains its original
+source selection separately.
+
+The pinned-target ports package `drm-612-kmod-6.12.110.1600028_6` completed a
+native build with `SRC_BASE` pointing to the exact installed kernel source. Its
+SHA256 is `272e244955f75d9616a9df271595fe6175f9809756d5fe0da45133740cbbeff1`.
+The extracted source contains the focused EFI framebuffer fix and passes the
+compiled helper tests. Before installation, `pre-amdgpu-efifb-package-20261022`
+captured the previous boot environment. The package installed on the MacBook,
+was relocked, and passed `pkg check -d` and `pkg check -s`; the installed module
+hash matches the native staged artifact. At that point the running module was
+still the earlier focused build; a normal boot was checked afterward.
+The refreshed owned ports branch carries the same focused patch in draft
+[ports PR #19](https://github.com/jordanhubbard/daemonarchy-ports/pull/19).
+Its separate full native package build passed against the exact target source,
+including the compiled helper regression. The refreshed package SHA256 is
+`f3e3cac349851fdf0fc2acdf2dec36971ebb8023c227977fd00c9e45f371c5ba`.
+It was installed behind boot environment `pre-amdgpu-current-package-20261022`
+and passes file and dependency checks. The installed `amdgpu.ko` hash matches
+the staged module. The refreshed module then loaded on a controlled normal boot
+without rescue isolation. `drmn0` attached, `drmfb` replaced `efifb`, SDDM started its
+Wayland greeter, and the pool and package checks remained healthy. On the
+subsequent one-boot T2 keyboard kernel described below, the operator entered a
+password and reached the visible desktop with this installed graphics package.
+The pointer was initially very laggy but then worked. That confirms visible
+graphics and basic input on the combined build; the transient lag and sustained
+trackpad behavior still need investigation.
+
+## T2 keyboard LED-output stall
+
+The operator observed keyboard input stop and later arrive in a burst, with
+repeat characters outliving physical key releases. At the same time the GPU,
+Hyprland process and kernel remained up. A kernel stack captured while the
+desktop was unresponsive placed Hyprland's main thread in
+`evdev_write -> evdev_inject_event -> hkbd_ev_event -> hkbd_ioctl_locked ->
+hkbd_set_leds -> usbhid_sync_xfer`, sleeping on the USB HID transfer. The
+FreeBSD HID output path has a five-second transfer timeout. Raw keyboard
+interrupts and libinput press/release events were also observed, so the
+compositor's synchronous LED output explains delayed handling and apparent
+repeats better than missing key-up reports at the device.
+
+The built-in keyboard is the Apple T2 virtual USB product `05ac:0340`.
+Setting the existing runtime tunable `hw.hid.hkbd.no_leds=1` immediately
+released the stalled desktop path. The operator then confirmed that the
+keyboard worked. This is strong live evidence for the LED-output path, while
+the underlying virtual-host-controller response remains to be investigated.
+For normal-boot graphics qualification, the working setting was also placed
+temporarily in `loader.conf`, behind boot environment
+`pre-normal-boot-keyboard-20261022`. A product-specific HID quirk that skips
+the problematic LED report is under review in
+[source PR #19](https://github.com/jordanhubbard/daemonarchy-src/pull/19).
+Both changed modules compile natively against the target source, and the full
+native GENERIC kernel and module build passed. A one-boot copy of that kernel
+(SHA256 `f860d6b6a3a354aa10b1f5b262ada2b9a9fa878ffa0753dfba76b572617e5c07`)
+booted on the MacBook while `hw.hid.hkbd.no_leds=0` overrode the temporary
+loader fallback. Its built-in T2 keyboard enumerated at `05ac:0340`, the
+refreshed graphics module loaded, SDDM reached its Wayland greeter and the pool
+remained healthy. The built-in keyboard evdev node is `event6` on this boot;
+event numbers are not stable across boots. Two LED events sent to that exact
+node reached `hkbd_ev_event`, took 0.062 and 0.058 milliseconds, and caused
+zero `usbhid_sync_xfer` entries in the same DTrace window. This directly
+checks the device-specific quirk with the global bypass disabled. The operator
+then entered a password with the built-in keyboard and reached the desktop.
+The pointer was initially very laggy but later worked. This establishes basic
+physical keyboard and pointer use; sustained typing, clicking and the startup
+lag have not yet been qualified. The Linux T2
+implementation remains a behavioral reference; no Linux code was copied.
+The earlier libinput trace includes 1,190 motion events and 18 button events
+from the built-in trackpad, including continuous motion at roughly eight
+millisecond intervals. The later operator report confirms pointer movement on
+the desktop, but does not yet establish reliable clicking.
+
+## BCM4364 Wi-Fi boundary
+
+The MacBook exposes an unbound PCI network device `14e4:4464`, Apple subdevice
+`106b:07bf`, identified as BCM4364. The installed system has no wireless
+interface and no matching Broadcom firmware files. The selected FreeBSD source
+has no driver match for this PCI ID. The older `bwn(4)` hardware list does not
+establish support for this FullMAC device. A separate experimental
+[FreeBSD-native brcmfmac project](https://github.com/narqo/freebsd-brcmfmac)
+reports PCIe BCM4350 and SDIO BCM43455 work, but does not claim BCM4364
+support. Its implementation is a reference, not an imported driver.
+The [T2 Linux BCE project](https://github.com/t2linux/apple-bce-drv) also
+separates virtual USB input from Wi-Fi; working BCE does not imply wireless
+support. Linux's [brcmfmac PCIe firmware mapping](https://github.com/torvalds/linux/blob/master/drivers/net/wireless/broadcom/brcm80211/brcmfmac/pcie.c)
+distinguishes BCM4364 chip revisions, so the native driver must identify the
+actual running chip revision rather than infer a firmware filename from the
+PCI revision alone. Firmware provenance and a native FreeBSD BCM4364 driver
+must be qualified before Wi-Fi or full hardware attestation can be claimed.
+
+The installer must support required laptop firmware acquisition and target
+installation. Because macOS was wiped here, the
+[T2 Linux recovery-image method](https://wiki.t2linux.org/guides/wifi-bluetooth/)
+is a candidate source that does not require macOS on disk. It still needs a
+FreeBSD-native or controlled installer implementation, board-file matching,
+recorded source/digests, and an offline-media alternative. Driver attachment,
+scan, association, traffic and post-reboot reconnect are separate acceptance
+checks. Until those pass, the installation must report wireless support as
+incomplete. [HW-003](roadmap/active-work.md)
+owns this cross-laptop installer requirement.
+
+### Firmware acquisition probe, October 22
+
+The MacBook identifies as `MacBookPro16,1`, board
+`Mac-E1008331FDC96864`, with PCI `14e4:4464` revision `0x04` at `5:0:0`.
+A [Linux kernel report on the same model](https://lists.openwall.net/netdev/2023/02/23/110)
+identifies its running chip as BCM4364/4 and requests the B3 PCIe firmware
+family. This supports a B3 candidate; it does not establish which Apple board
+configuration this particular unit needs.
+
+For a bounded availability probe, the publicly available
+[T2 firmware package](https://github.com/NoaHimesaka1873/apple-bcm-firmware/releases/tag/v14.0)
+`apple-bcm-firmware-14.0-1-any.pkg.tar.zst` was downloaded to private scratch
+space. Its SHA256 is
+`f2cd47d9e3fb9658f16997b2d9ace3033b57925b8c6ddd86ccc3d07d0c3e9559`.
+The archive contains BCM4364B3 PCIe `.bin`, `.clm_blob`, `.txcap_blob` and
+board-configuration `.txt` files for several Apple families, including `bali`.
+The complete archive was copied to the MacBook's private
+`/var/tmp/daemonarchy-wifi-probe-20261022` directory; the on-device SHA256
+matches. This establishes that firmware bytes can be acquired and delivered,
+not that their original Apple provenance, exact board selection or license for
+image redistribution has been qualified.
+
+At this availability-probe stage, no files were installed into the boot firmware
+path. The installed FreeBSD kernel exposes only `if_bwi.ko` and `if_bwn.ko` Broadcom Wi-Fi modules, neither
+matching this FullMAC PCI device. `pciconf` still lists it as `none8`, and
+`ifconfig -l` still lists only loopback and two USB Ethernet interfaces.
+Loading firmware cannot attach an absent BCM4364 driver. The next controlled
+probe needs a native driver able to identify the chip and request the correct
+firmware and board files; only then can firmware loading and wireless operation
+be tested.
+
+### Native firmware-startup probe, October 22
+
+A diagnostic FreeBSD KLD built on the native builder against the MacBook's
+exact kernel source identified the live chip as BCM4364 revision 4, AXI
+interconnect, ARM CR4 core revision 12, and PCIe core revision 16. It measured
+11 TCM banks totaling `0x140000` bytes, with firmware RAM based at `0x160000`.
+The module unloaded without affecting the desktop or SSH session. A separate,
+isolated spike based on the ISC-licensed FreeBSD-native brcmfmac reference was
+then built against the same source; this is diagnostic work, not a supported or
+installed Wi-Fi driver.
+
+The B3 binary was staged as `brcmfmac4364b3-pcie.bin` in the target's boot
+firmware directory, SHA256
+`5bea76866f6c08c16e64f5c3d833a776e6f419b7758638d818b64ce64820aa2c`.
+The candidate `bali-HRPN-u` board configuration was staged as
+`brcmfmac4364b3-pcie.txt`, SHA256
+`3379a394ab8e1b883514b677876cd158d654e7377bc35f43ab99f6d2ae37ea25`.
+The existing pre-staging boot-environment snapshot protects this test. The
+driver read both files and verified firmware readback in TCM, but the firmware
+did not signal readiness with either no board file or the candidate board file
+alone. Its ARM core did leave reset. Adding the Apple random-seed block and
+`0xfeedc0de` footer immediately before NVRAM, as documented by the
+[Linux PCIe implementation](https://github.com/torvalds/linux/blob/master/drivers/net/wireless/broadcom/brcm80211/brcmfmac/pcie.c),
+made the firmware publish its shared-memory handshake. The running firmware
+reports protocol version 7, 40 flow rings, 43 submission rings, six completion
+rings and a maximum of 511 posted receive buffers. The bounded test stops
+before host DMA rings, interrupts, network interface or radio operations and
+unloads cleanly. PCI `14e4:4464` remains unbound in ordinary operation.
+
+This establishes a working firmware-startup recipe on this physical unit, but
+not exact OTP-to-board-file matching, firmware redistribution rights, network
+operation or reboot persistence. The next driver phase must validate shared
+memory bounds and DMA/interrupt handling before attempting interface attach,
+scan, association and traffic. The installer still needs verified firmware
+acquisition, target installation and offline-media/failure paths.
+
+A subsequent experimental full-attachment attempt using this same board file
+lost the SSH connection before returning a result. The target stopped answering
+ARP and ICMP; no scan or association was observed. Its console/panic state has
+not yet been recovered, so this is a failure boundary rather than evidence that
+the board file is wrong. Review of the experimental driver found that it
+advertised host-memory DMA indices but still read and wrote TCM indices. A
+corrected diagnostic variant built on the native FreeBSD worker was then
+tested. It also hung the machine: a live log reached ARM release but did not
+capture the first marker after DMA-ring setup. Ring setup is the leading
+suspect, although buffered logging prevents assigning an exact statement to
+the failing instruction.
+The prior dump device was `/dev/null`, so no crash image survived that hard
+hang. The machine's existing unused swap partition is now configured as a
+compressed dump device for future panics. A separate native-built diagnostic
+variant successfully allocated and freed all eight DMA buffer sizes without
+publishing host DMA addresses to the firmware. A second variant used firmware
+TCM ring indices instead of host DMA indices. On the physical MacBook it passed
+ring setup, host-ready signaling, MSI handler registration and message-buffer
+initialization, including IOCTL, event and receive-buffer posting. Each bounded
+stage unloaded cleanly and left the desktop and SSH responsive.
+
+The next bounded variant enabled interrupts and sent one firmware-version
+request, stopping before network-interface attachment. During this probe the
+MacBook again stopped answering SSH and ICMP. The last completed bounded
+stage establishes a narrower failure boundary, but there is no live marker
+proving whether interrupt enablement, interrupt processing or the request
+triggered the hang. The configured dump device may capture a panic; a hard
+freeze still may not produce a dump. Do not infer that the candidate board
+file is qualified from the firmware handshake alone. Keep BCM4364 disabled in
+release images until this boundary is fixed and real wireless acceptance passes.
+
+After physical recovery, the target had no panic dump. Two further bounded
+tests completed and unloaded cleanly: enabling MSI for 100 ms without a
+firmware request, and running the driver's completion watchdog for 500 ms.
+A request for the firmware's `ver` value then succeeded with interrupts and
+the watchdog disabled. It returned `wl0: Jul 10 2023 12:53:18 version
+9.30.503.0.32.5.92 FWID 01-c06f991b` while the machine remained responsive.
+This confirms that the candidate firmware processes at least one control
+request on this hardware.
+
+The experimental driver's interrupt filter acknowledged status before its
+deferred handler, unlike the [Linux PCIe reference](https://github.com/torvalds/linux/blob/master/drivers/net/wireless/broadcom/brcm80211/brcmfmac/pcie.c),
+which masks first and acknowledges in the thread. A private diagnostic variant
+changed that sequence and synchronized the DMA request buffer before device
+access. It again lost SSH during a firmware request with MSI enabled and the
+watchdog off. This rules out the watchdog as a necessary trigger and leaves
+MSI delivery, the filter/deferred-handler path and their ring-processing races
+under investigation. The machine did not supply a panic record for the freeze.
+
+The next recovery again showed no panic dump. A one-shot MSI filter masked the
+first interrupt, skipped its separate task queue and let the same firmware
+request finish through polling. It returned the firmware version with one
+filter invocation and zero deferred-task invocations, then unloaded cleanly.
+When a follow-up enabled the separate task queue solely to acknowledge that
+interrupt, with ring processing and interrupt re-enable both disabled, the
+MacBook froze again. This puts the custom filter-to-taskqueue handoff or the
+acknowledge operation ahead of ring processing as the immediate fault boundary.
+The selected native FreeBSD kernel's `taskqueue_create()` builds a queue with
+an `MTX_DEF` sleep mutex, while `taskqueue_create_fast()` uses `MTX_SPIN`.
+Enqueueing onto the former from an interrupt filter is an invalid context and
+is the leading explanation for the hard freeze. A native diagnostic variant
+instead attached an interrupt thread with `bus_setup_intr` and
+`FILTER_SCHEDULE_THREAD`. On the physical MacBook, interrupt filtering,
+completion processing, interrupt rearm, the watchdog and firmware-version
+IOCTL all completed. The BCM4364 attached to net80211 with its hardware MAC,
+and the module unloaded without disrupting the desktop or SSH session.
+
+The first `wlan0` scan failed with firmware status `-4` (`BCME_BADARG`). A
+BCM4364-only version-2 scan request returned `-37` (`BCME_VERSION`), so the
+diagnostic returned to the original version-1 request. The source already had
+a chunked CLM upload path for its SDIO device. Reusing that native path for
+the matching `bali` B3 CLM blob (31,998 bytes, SHA256
+`61f9ffe33d4137eac1dfd93c4be03e6c721f282cfc85a89d7d345ffd12f9f9ac`)
+reported successful firmware `clmload_status`. Three consecutive physical
+scans then returned nearby access points, with no scan error or loss of SSH.
+The matching TxCap blob (723 bytes, SHA256
+`8b794d5ce9311d2794a6eff4f35ffd1d362f341cb648a3b98f7d7420a251866c`)
+also uploaded with successful `txcapload_status`; scanning still returned nearby
+access points. The candidate `bali-HRPN-u` board file therefore supports
+firmware startup, interface attachment and scanning on this unit. Exact
+board-family matching, association, traffic, reconnect, suspend and rebooted
+operation remain open.
+
+The diagnostic module is a private ISC-licensed FreeBSD-native driver spike,
+not part of the installed system or release source. The firmware files were
+staged manually from a private package for this test; firmware provenance,
+redistribution rights and installer acquisition still require review. Keep
+BCM4364 out of release images until a maintainable driver and firmware path
+passes full hardware acceptance.

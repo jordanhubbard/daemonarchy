@@ -361,7 +361,7 @@
     {
       "path": "overlay/usr/local/libexec/daemonarchy-installer/remote-debug",
       "owner": "diagnostics",
-      "sha256": "7406dcf6644719513e22810c92cf93376b128e1e5f8e5f6912bb4c456012baa3",
+      "sha256": "3fae0b1e525a2afa248e0c570fa8be783edf21bf251f0eb6ac2c609a89b1ebb8",
       "executable": true
     },
     {
@@ -397,7 +397,7 @@
     {
       "path": "overlay/usr/local/sbin/daemonarchy-rescue",
       "owner": "diagnostics",
-      "sha256": "f1f8bc69090589b21f88940e673f2d29029326dff28b4d1619d37ee7bc3b6859",
+      "sha256": "9dcb3e4cbdb606040a51c60c9e90d8a0b699b2b9b7fb220e597b7833bf37c69e",
       "executable": true
     },
     {
@@ -840,8 +840,8 @@
     },
     {
       "path": "tests/live-image-runtime.sh",
-      "owner": "installer",
-      "sha256": "f73edc751e6801c990ad43d785f17eb596253feb216302c65ac780d494c87698",
+      "owner": "release",
+      "sha256": "c9b0902c4895ae988904267c615e6ee06896ddf88920b61f621c45cc0efdd994",
       "executable": false
     },
     {
@@ -889,7 +889,7 @@
     {
       "path": "tests/remote-debug-cli.sh",
       "owner": "diagnostics",
-      "sha256": "c0826a2a46797c7b2f8592ba6f7d899b0ac618932be59a03b994bb4937cc6751",
+      "sha256": "cc4aabbe90608d7363cb7d1b0b448eed009c9b2c3d52a8929e788597526fcba8",
       "executable": false
     },
     {
@@ -919,7 +919,7 @@
     {
       "path": "tests/remote-debug-session.sh",
       "owner": "diagnostics",
-      "sha256": "05ac3481e3bce7276e1ec4f2642b5ebe09382f76fa81b89d6788ebbb7b788c2f",
+      "sha256": "7e96a83e4e05689812a0d653441095eb4e9cc093ca619c42a40b0f679a4816cd",
       "executable": false
     },
     {
@@ -931,7 +931,7 @@
     {
       "path": "tests/rescue-console.sh",
       "owner": "diagnostics",
-      "sha256": "cebbbfa0b4ac9294461315fd8a9c2c4ddffbf73bc8f939eaefed060ce601ec29",
+      "sha256": "fe23b1ec1199f7545e1b1c8e019545fa6981c244c48a02135031252c7428fcb2",
       "executable": true
     },
     {
@@ -951,6 +951,13 @@
       "owner": "installer",
       "sha256": "dc6d1a4b9f7c670df3e8a3ec2d74fb676b65abe3149df3610b74357772f47b4a",
       "executable": false
+    },
+    {
+      "path": "tests/remote-debug-reboot.sh",
+      "owner": "diagnostics",
+      "sha256": "5bf46c883e055d9a6ad96e5a35c30a6783634534743f31b30a53c68ecf6ab455",
+      "executable": true,
+      "reason": "DEBUG-002 native reboot/resumption and explicit revocation controls; no final hardware or lifecycle qualification"
     }
   ],
   "implementation_additions": [

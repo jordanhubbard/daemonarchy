@@ -120,11 +120,20 @@ results rather than replacing the configuration that reproduced this failure.
 
 ## Apple T2 MacBook Pro: graphics, Wi-Fi and resets
 
-Read the [MacBook application note](application-note-macbookpro16-1.md) for the
-Radeon Pro 5500M initialization failure and unavailable BCM4364 Wi-Fi. The AMD
-driver recognizes the GPU; age alone does not explain its failure. The wireless
-controller was detected without an attached driver or wireless interface; use
-the verified wired USB Ethernet connection.
+Read the [MacBook application note](application-note-macbookpro16-1.md) and
+[current investigation](testing-macbookpro16-1-installer-20261022.md) for the
+Radeon Pro 5500M and BCM4364 Wi-Fi evidence. The EFI framebuffer overlap fix
+passed three clean GPU boots. The refreshed graphics package reached SDDM's
+Wayland greeter, and the operator subsequently logged into its desktop on the
+T2 keyboard test kernel. The BCM4364 is PCI `14e4:4464`, Apple
+subdevice `106b:07bf`; it remains unbound with no wireless interface or
+firmware files on the installation. Wired USB Ethernet is verified.
+
+The built-in T2 keyboard's synchronous LED-output reports blocked the desktop
+input path. A targeted quirk passed native GENERIC build and a one-boot MacBook
+probe with the global LED bypass off. The operator entered a password and
+reached the desktop; the pointer was initially very laggy but then worked.
+Sustained input and reliable clicking still need qualification.
 
 The MacBookPro16,1 investigation includes earlier BCE/GPU failures and a later
 1.1 candidate that repeatedly restarted or powered off during ordinary package
@@ -132,7 +141,8 @@ installation, before desktop graphics startup. A missing desktop after that
 reset is not proof that installation finished. The retained state and package
 integrity must be inspected before retrying; do not repeat partitioning over
 the existing installation merely to resume packages. No reset cause or
-successful 1.1.1 desktop result is established.
+fully qualified 1.1.1 installer result is established despite the later desktop
+login on the repaired installation.
 
 Use named sysctl keys on this machine: broad `sysctl -a` enumeration previously
 triggered a confirmed LinuxKPI `sysctl_handle_attr()` general-protection fault.
