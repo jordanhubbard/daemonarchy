@@ -469,19 +469,43 @@ use_static() {
 # scan list pads the SSID column to the widest name, so cut it at the BSSID
 # column rather than at whitespace.
 wifi_scan() {
-  ifconfig wlan0 up scan >/dev/null 2>&1
-  ifconfig -v wlan0 list scan 2>/dev/null | awk '
-    NR == 1 { width = index($0, "BSSID") - 1; next }
+  local attempt
+  # A newly attached radio can return only its first BSSID from one scan.
+  # Keep results from several scans so a later response does not hide an AP.
+  for attempt in 1 2 3 4; do
+    ifconfig wlan0 up scan >/dev/null 2>&1
+    ifconfig -v wlan0 list scan 2>/dev/null
+    [[ $attempt == 4 ]] || sleep 3
+  done | awk '
+    index($0, "SSID") && index($0, "BSSID") { width = index($0, "BSSID") - 1; next }
+    width < 1 { next }
     {
       ssid = substr($0, 1, width); sub(/[[:space:]]+$/, "", ssid)
       rest = substr($0, width + 1); split(rest, f, " ")
       split(f[4], sn, ":")
-      if (ssid != "" && !(ssid in seen)) { seen[ssid] = 1; print sn[1] "\t" ssid }
-    }' | sort -rn | cut -f2
+      if (ssid != "") print sn[1] "\t" ssid
+    }' | sort -k1,1nr | awk -F '\t' '!seen[$2]++ { print $2 }'
 }
 
 wifi_connect() {
-  local ssid=$1 psk=$2 hidden=$3 tries
+  local ssid=$1 psk=$2 hidden=$3 tries state gateway_if dhcp_pid dhcp_command
+  local wifi_conf=${WIFI_CONF:-/tmp/wpa_supplicant.conf}
+  local error_file=${WIFI_ERROR_FILE:-/tmp/daemonarchy-wifi-connect-error}
+  local dhcp_pidfile=${WIFI_DHCLIENT_PIDFILE:-/var/run/dhclient/dhclient.wlan0.pid}
+  rm -f "$error_file"
+  # ifconfig_DEFAULT=DHCP may have started a background client before this
+  # radio had an authenticated link. Own the wireless lease after WPA instead
+  # of competing with that early client; leave wired DHCP clients untouched.
+  if [[ -r $dhcp_pidfile ]]; then
+    read -r dhcp_pid <"$dhcp_pidfile"
+    if [[ $dhcp_pid =~ ^[1-9][0-9]*$ ]]; then
+      dhcp_command=$(ps -p "$dhcp_pid" -o command= 2>/dev/null || true)
+      if [[ $dhcp_command == *'dhclient: wlan0'* ||
+            $dhcp_command == *'dhclient wlan0'* ]]; then
+        kill "$dhcp_pid" 2>/dev/null || true
+      fi
+    fi
+  fi
   {
     echo 'ctrl_interface=/var/run/wpa_supplicant'
     if [[ -n $psk ]]; then
@@ -489,20 +513,45 @@ wifi_connect() {
     else
       printf 'network={\n\tssid="%s"\n\tkey_mgmt=NONE\n}\n' "$ssid"
     fi | if [[ $hidden == true ]]; then awk '/^}$/ { print "\tscan_ssid=1" } { print }'; else cat; fi
-  } >/tmp/wpa_supplicant.conf
-  chmod 600 /tmp/wpa_supplicant.conf
+  } >"$wifi_conf"
+  chmod 600 "$wifi_conf"
 
   pkill -f "wpa_supplicant.*wlan0" 2>/dev/null
-  wpa_supplicant -B -i wlan0 -c /tmp/wpa_supplicant.conf >/dev/null 2>&1 || return 1
+  wpa_supplicant -B -i wlan0 -c "$wifi_conf" >/dev/null 2>&1 || {
+    printf '%s\n' 'Could not start the Wi-Fi authenticator.' >"$error_file"
+    return 1
+  }
   # A radio may need to try several BSSIDs for the same SSID. Wait for the
   # completed key exchange before starting DHCP, not just 802.11 association.
-  for ((tries=0; tries<60; tries++)); do
-    wpa_cli -i wlan0 status 2>/dev/null | grep -qx 'wpa_state=COMPLETED' && break
+  for ((tries=0; tries<120; tries++)); do
+    state=$(wpa_cli -i wlan0 status 2>/dev/null | awk -F= '$1 == "wpa_state" { print $2; exit }')
+    [[ $state == COMPLETED ]] && break
     sleep 1
   done
-  ((tries < 60)) || return 1
-  dhclient wlan0 >/dev/null 2>&1 || return 1
-  [[ -n $(port_address wlan0) ]]
+  if ((tries == 120)); then
+    printf 'Wi-Fi authentication timed out after 120 seconds (last state: %s).\n' "${state:-unknown}" >"$error_file"
+    return 1
+  fi
+  timeout 60 dhclient wlan0 >/dev/null 2>&1 || {
+    printf '%s\n' 'Wi-Fi authenticated, but DHCP did not assign an address within 60 seconds.' >"$error_file"
+    return 1
+  }
+  # A transient lease or a link-only association is not usable for an online
+  # install. Let the new route settle, then check the selected Wi-Fi path.
+  sleep 5
+  if [[ -z $(port_address wlan0) ]]; then
+    printf '%s\n' 'Wi-Fi authenticated, but no IP address is available.' >"$error_file"
+    return 1
+  fi
+  gateway_if=$(route -n get default 2>/dev/null | awk '/interface:/ { print $2; exit }')
+  if [[ $gateway_if != wlan0 ]]; then
+    if [[ -n $gateway_if ]]; then
+      printf 'Wi-Fi has an IP address, but %s owns the default route. Disconnect that interface and retry Wi-Fi to install over Wi-Fi.\n' "$gateway_if" >"$error_file"
+    else
+      printf '%s\n' 'Wi-Fi has an IP address, but no default route. Check the DHCP gateway and retry.' >"$error_file"
+    fi
+    return 1
+  fi
 }
 
 use_wifi() {
@@ -544,14 +593,15 @@ use_wifi() {
     bash -c "$(declare -f port_address wifi_connect); wifi_connect \"\$1\" \"\$2\" \"\$3\"" _ "$ssid" "$psk" "$hidden"; then
     net_mode=wifi net_if=$dev wifi_ssid=$ssid wifi_psk=$psk wifi_hidden=$hidden
     wifi_enterprise_profile=''
+    notice "Wi-Fi connected; DHCP address on wlan0: $(port_address wlan0)."
   else
-    notice "Could not connect to $ssid" 3
+    notice "$(cat /tmp/daemonarchy-wifi-connect-error 2>/dev/null || echo "Could not connect to $ssid")" 3
     return 1
   fi
 }
 
 network_step() {
-  local choice status ifc via connected options
+  local choice status ifc via connected options wifi_addr
   local mode=${1:-install}
   while true; do
     step "Network"
@@ -563,6 +613,11 @@ network_step() {
     fi
     echo
     network_summary
+    if [[ $net_mode == wifi ]]; then
+      wifi_addr=$(port_address wlan0)
+      via=$(default_port)
+      say "wlan0 IPv4: ${wifi_addr:-none}; default route: ${via:-none}"
+    fi
     echo
 
     connected=false

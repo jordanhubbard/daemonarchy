@@ -277,6 +277,15 @@ space than a cached installer-only rebuild. Check resources before dispatching.
    with a kernel-matched diagnostic module and board firmware staged outside
    Git. Its firmware source declares an unknown license; keep the image private
    until redistribution rights or a supported acquisition path are established.
+   The EFI timer revision stages a verified loader in the live `/boot/loader.efi`
+   and EFI boot image. Its matching SHA-256 is staged as
+   `macbook-efi-timer-loader.sha256` beside the offline repository; `install`
+   refuses to copy a mismatched loader into a MacBook target.
+   The diagnostic scan-parser change is retained as
+   `patches/brcmfmac/bcm4364-security-ie-bounds.patch`; its input `src/scan.c`
+   SHA-256 is recorded in the hardware test note. Build the resulting module
+   on the native FreeBSD worker against the exact ISO kernel sources, then
+   verify the staged module hash before authoring the image.
 
 ### Persistent authoring caches
 

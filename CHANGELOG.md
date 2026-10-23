@@ -28,6 +28,17 @@
   updated Wi-Fi panel, keyboard LED tunable and a WPA completion wait before
   installer DHCP. The offline repository contains the exact refreshed packages;
   the image is for hardware testing, not public distribution.
+- Correct the private ISO's inherited EFI loader selection after the MacBook
+  still paused at the three-second countdown. The revised image uses the
+  native-tested timer loader for live boot and MacBook target installation.
+  Collect several installer Wi-Fi scans, stop a pre-authentication wireless
+  DHCP client, extend WPA/DHCP waits, and require a lasting address and default
+  route on `wlan0`. The first physical join needed a second attempt and later
+  lost its address; the revised path is awaiting a fresh hardware test.
+  Bound-check Broadcom scan security records after a malformed result crashed
+  `ifconfig -v`; a native-built preview module then returned ten BSSIDs and
+  passed gateway and Internet traffic over Wi-Fi alone. Fresh-install and
+  reboot qualification are still open.
 
 
 This history covers the installer repository from its first commit and all GitHub

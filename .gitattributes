@@ -1,2 +1,3 @@
 # Unified-diff context retains upstream indentation and blank lines.
 secureboot/patches/*.patch -whitespace
+patches/brcmfmac/*.patch -whitespace
