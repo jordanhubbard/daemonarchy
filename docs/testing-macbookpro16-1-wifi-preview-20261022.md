@@ -357,3 +357,15 @@ profile, reached COMPLETED and reacquired DHCP. The grant and listener remained
 active. Automatic profile retention during public-status publication was also
 verified. This does not prove reboot recovery on this incomplete installation:
 the packaged BCM4364 module is still absent from its boot filesystem.
+
+### Bounded single-AP traffic probe
+
+On October 23, the installed system temporarily pinned its currently
+successful BSSID in the supplicant, kept wired debugging enabled, and sent
+300 gateway probes with 1200-byte payloads over `wlan0` at 0.2-second
+intervals. All 300 replies arrived (0% loss; mean RTT 5.192 ms, maximum
+116.589 ms), and WPA remained COMPLETED. The temporary BSSID pin was cleared
+afterward. A separate wired SSH attempt timed out briefly during the test,
+then the debugger returned without a reboot. This bounded result shows that
+steady traffic on that AP worked; it does not establish reliable roaming,
+installer Wi-Fi, or a cause for the transient wired reachability loss.
