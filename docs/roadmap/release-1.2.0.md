@@ -120,6 +120,17 @@ This is a reviewed upstream freshness comparison, not a completed build of the
 newer tree. PR #22 remains the exact revision with a completed native bulk;
 any later ports refresh requires its own full build and acceptance.
 
+An isolated native source preflight at `02984cfbe95c063f130ae20d7ea6ed520df88a8f`
+merges the EFI timer PR #13 and T2 keyboard PR #19 onto the fork's
+`daemonarchy` branch, then merges FreeBSD-current through
+`bea44a83631704110de8bbd7693b683c81d4fe55`. Both fixes and that upstream
+head are ancestors of the clean preflight tree. The six EFI timer controls,
+`-Werror` builds of `hidquirk.ko` and `hkbd.ko`, and the native `stand` build
+pass on this tree. The resulting Lua EFI loader hashes to
+`00e7ea32efc7288daae1526bbaf631a724d9c83bcc6b07da8e5b4e14ccfaa909`.
+This is a build and merge check; it is neither the final signed loader nor a
+MacBook reboot or sustained-input qualification.
+
 The same worker now retains a separately verified candidate set cache at
 `/usr/daemonarchy/cache/iso-snapshot-20261019-041802b362aa`. The official
 snapshot's `REVISION` remained `041802b362aa` before and after acquisition;
