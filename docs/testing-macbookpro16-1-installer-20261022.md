@@ -647,3 +647,21 @@ triggered the hang. The configured dump device may capture a panic; a hard
 freeze still may not produce a dump. Do not infer that the candidate board
 file is qualified from the firmware handshake alone. Keep BCM4364 disabled in
 release images until this boundary is fixed and real wireless acceptance passes.
+
+After physical recovery, the target had no panic dump. Two further bounded
+tests completed and unloaded cleanly: enabling MSI for 100 ms without a
+firmware request, and running the driver's completion watchdog for 500 ms.
+A request for the firmware's `ver` value then succeeded with interrupts and
+the watchdog disabled. It returned `wl0: Jul 10 2023 12:53:18 version
+9.30.503.0.32.5.92 FWID 01-c06f991b` while the machine remained responsive.
+This confirms that the candidate firmware processes at least one control
+request on this hardware.
+
+The experimental driver's interrupt filter acknowledged status before its
+deferred handler, unlike the [Linux PCIe reference](https://github.com/torvalds/linux/blob/master/drivers/net/wireless/broadcom/brcm80211/brcmfmac/pcie.c),
+which masks first and acknowledges in the thread. A private diagnostic variant
+changed that sequence and synchronized the DMA request buffer before device
+access. It again lost SSH during a firmware request with MSI enabled and the
+watchdog off. This rules out the watchdog as a necessary trigger and leaves
+MSI delivery, the filter/deferred-handler path and their ring-processing races
+under investigation. The machine did not supply a panic record for the freeze.
