@@ -10,8 +10,10 @@ snapshot results and limits.
 
 `patches/module-policy.patch` applies to FreeBSD source revision
 `bdcfeac3e1cb8ce3f05c32d8a7ad3597deb48bdf` for the **1.1.1** refresh
-(OSVERSION `1600028`). The existing four Secure Boot patches are retained;
-new loader/early-kernel network debugging is deferred to 1.2.
+(OSVERSION `1600028`) and the MacBook candidate revision
+`02984cfbe95c063f130ae20d7ea6ed520df88a8f` (OSVERSION `1600029`).
+The existing four Secure Boot patches are retained; the MacBook build selects
+its exact source with `--base`. Early-kernel network debugging remains open.
 The module-policy patch adds the opt-in kernel option
 `DAEMONARCHY_MODULE_POLICY`, used together with `MAC_VERIEXEC`,
 `MAC_VERIEXEC_SHA256` and the `mac_veriexec_parser` device in a GENERIC-derived
@@ -72,6 +74,13 @@ sudo python3.12 secureboot/build.py --source /usr/src --out /path/to/fresh-build
   --certificate /path/to/public-trust-anchor.pem \
   --selftest-certificate /path/to/public-selftest-leaf.pem --jobs 4
 ```
+
+For the MacBook candidate, add
+`--base 02984cfbe95c063f130ae20d7ea6ed520df88a8f` and use a checkout at
+that exact revision. The isolated native build completed its policy kernel,
+verified loader and normal loader with a development certificate. This is
+authoring evidence; the signed bundle, firmware boot and full installation
+still require physical qualification.
 
 The recipe requires the pinned source revision, creates a separate Git worktree,
 applies the policy and EFI patches and retains build logs. Write access to the
