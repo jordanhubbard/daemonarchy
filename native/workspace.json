@@ -1,0 +1,16 @@
+{
+  "schema": "daemonarchy/native-workspace-selection@1",
+  "control_repository": "https://github.com/jordanhubbard/daemonarchy.git",
+  "trees": {
+    "src": {
+      "repository": "https://github.com/jordanhubbard/daemonarchy-src.git",
+      "upstream": "https://github.com/freebsd/freebsd-src.git",
+      "revision": "978fed917ba2b391c3eace661c21a7a65549cb23"
+    },
+    "ports": {
+      "repository": "https://github.com/jordanhubbard/daemonarchy-ports.git",
+      "upstream": "https://github.com/freebsd/freebsd-ports.git",
+      "revision": "f7d7ee897405dcb8ce87e674588a4e1b3bfba00e"
+    }
+  }
+}

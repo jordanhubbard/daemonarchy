@@ -1,0 +1,18 @@
+{
+  "schema": "daemonarchy/installer-progress-recorded-fixture@1",
+  "source_revision": "8902832a35521dc26d1741fec558b60adce41692",
+  "source_evidence": "verification/parallel-package-fetch-development.json",
+  "source_result_sha256": "52cc1f1c310f6e725d8dff7138e2ee5fb5c5ca3f81636d7dbd69c316e8fe17d1",
+  "journal_sha256": "e0c703bccb73be95218afe5fc2cbc07ca23afd3c9f93bb9fe2ce75d341468fb3",
+  "input_sha256": "55d8f92e8d03164ca39cab3b2712faae04cd57623271fe767023b83b69ea4865",
+  "repository_database_sha256": "1e2a9168cbd7f12d796fb9e6d3ecef8e5ce0d47a5366148cf14bbe0fd6a13101",
+  "events": 16,
+  "packages": 8,
+  "verified_bytes": 29831,
+  "native_pkg_version": "2.8.4",
+  "historical_feed": "packages-16-amd64-1.1.1",
+  "scope": "Verbatim retained native acquisition journal; replay does not perform a live fetch or establish installation or final release acceptance",
+  "live_fetch_performed_by_replay": false,
+  "installation_authorized": false,
+  "release_qualified": false
+}

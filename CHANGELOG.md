@@ -1,5 +1,31 @@
 # Changelog
 
+## Unreleased hardware debugging
+
+- Preserve approved installed-system debugging keys, server identity and private
+  state across reboot. Resume the existing session without Unpair or fresh
+  confirmation; retain explicit revocation and unknown-key refusal. Keep
+  retrying after slow network bring-up while the approved grant remains active.
+- On MacBookPro16,1, correct the offset EFI framebuffer reservation in the
+  Navi14 driver and skip stalled LED output reports for the built-in T2 keyboard.
+  The refreshed graphics package and one-boot quirked kernel reached a visible
+  Hyprland desktop: the operator entered a password, and the pointer worked
+  after initial lag. These fixes are in draft source/ports contributions, not
+  yet in a published image or a fully qualified normal-boot kernel.
+- Record the MacBook Pro 16 fatal NVMe event reproduced during installer package
+  extraction. Storage correction, BCM4364 Wi-Fi driver and firmware integration,
+  sustained input acceptance, and full physical acceptance remain open.
+- Identify the MacBook's BCM4364 revision 4, TCM geometry and B3 firmware path
+  on physical hardware. A private FreeBSD-native diagnostic module reaches
+  firmware protocol 7, attaches to net80211 and repeatedly scans nearby access
+  points using the candidate `bali-HRPN-u` board data, Apple seed footer and
+  matching CLM and TxCap blobs. The operator joined a WPA2 network from the
+  desktop panel; the radio received DHCP address 10.11.101.63 and reached its
+  gateway. The installer now retains a kernel-matched preview module and staged
+  firmware on the installed target. Fresh-image boot, reconnect, maintainable
+  driver integration and redistributable firmware acquisition remain open.
+
+
 This history covers the installer repository from its first commit and all GitHub
 release records. Dates below are GitHub publication dates in UTC; a date embedded
 in a snapshot tag is the image's identifier and can differ from its publication
@@ -15,6 +41,274 @@ work; it is not a separate published tag in this repository. The proposed name
 1.1-rc2 was replaced by 1.1.1 before publication.
 
 ## Unreleased
+
+- Installer: replace elapsed-time progress estimates with measured milestones,
+  archive and package observations; add bars, spectrum and scope views, plain
+  output, reduced motion and terminal resize handling.
+
+- Add bounded parallel authenticated package acquisition with separate native pkg
+  databases, verified-byte progress and fresh retry. Preserve serial inputs.
+  Native regression covers an eight-package historical subset; final release
+  inputs, installation scheduling and installer/GUI integration remain pending.
+
+- Preserve owned disposable-QEMU cleanup through repeated termination signals.
+  Revoke inspection, finish the existing bounded shutdown and retain terminal
+  evidence before returning an interrupted status. Controller regression checks
+  cover the reproduced orphan-child defect; actual VM renewal remains separate.
+
+- Authenticate frozen package catalogues with a pinned public key and verify
+  fetched archives through native pkg, retaining exact payload inventories and
+  independent SHA-256 hashes. Support read-only offline replay and reject
+  diagnostics even when a native command exits zero. Installation and final
+  release admission remain separate requirements.
+
+- Compare native pkg dry-run proposals and imported package/dependency records
+  with pinned selection graphs in fresh private databases. Keep metadata and
+  partial failures, enforce internal process deadlines and reject mismatched
+  plans. This development check does not install or authorize packages.
+
+- Add read-only package dependency graphs from pinned repository catalogues,
+  with exact archive identities, per-selection closure and space estimates,
+  repository conflict and ABI/OSVERSION refusal checks. Native solver acceptance,
+  transaction execution and safe parallel installation remain unfinished.
+
+- Build tooling: select original source authority in place through a reviewed
+  metadata-only plan and qualified combined Standard distribution. Preserve
+  original source layout and receipt requirements; native execution profiles,
+  current receipts and image qualification remain unfinished.
+
+- Select an exact EFI/Lua pair for a loader-only live test image, verify both
+  identities before image assembly and reject conflicting Secure Boot bundles.
+  Controller/native staging controls pass; no new ISO or boot result is claimed.
+
+- Allocate a fresh private staging directory for each installer ISO build, retaining
+  preceding and failed attempts. This prepares parallel test-image authoring;
+  it does not publish or qualify a new ISO.
+- Repair fastfetch's OS Age on FreeBSD: replace the GNU stat invocation with an
+  explicit native stat/date calculation and report `Unknown` for unusable times.
+  Verified on the installed 1.1.1 desktop; [ports PR #8](https://github.com/jordanhubbard/daemonarchy-ports/pull/8) carries the package fix.
+- Fix ignored EFI handoff errors and shared-NIC IPv4 fragment loss in the source
+  fork. Native sanitizer checks and actual UEFI fragmented NFS/TFTP regressions
+  pass; physical firmware and continuous kernel debugging remain release work.
+
+- Harden the source fork's UEFI console against invalid firmware mode/frame
+  sizes and refuse native kernel handoff when the debug NIC did not quiesce.
+  The actual driver passes native scripted failure checks with address/undefined
+  behavior sanitizers and explicit RX allocation balance; physical firmware,
+  alternate handoffs and release acceptance remain pending.
+
+- Make wired UEFI loader debugging a release blocker and state FreeBSD-only
+  product acceptance explicitly. The source fork now passes a native EFI build
+  and initial real UEFI console tests, including remote show/set/boot, replay
+  refusal, reconnect and local recovery without a peer or NIC. Physical
+  firmware/NIC and remaining netboot/fault checks still block acceptance.
+
+- Inspect source-built compiler/sysroot package provenance and dependencies:
+  verify 524 pkgbase manifests and locate compiler resources, C++ headers/runtime,
+  startup objects and linker in a six-package candidate closure. Record both
+  symbolic and hard-link custody requirements; SDK admission remains pending.
+
+- Complete the unprivileged source world, kernel, package and installer-set build.
+  All 537 recorded artifact hashes, phase logs and installer-manifest references
+  independently verify. The source archive matches all 114,710 Git members and
+  138 symlinks with root ownership and matching modes/bytes. Payload acceptance,
+  SDK admission, ISO creation and boot testing remain open.
+
+- Qualify the `6e370033` development wheel and its isolated FreeBSD installation,
+  including 37 verified distributions, signing and SQLite. All 24 original
+  source tests and 11 independent acceptance cases pass. Cleanup succeeds and a
+  retained local-runtime receipt is admitted, with all 34 records verified.
+  Canonical SDK, pkg and release qualification remain open.
+
+- Reconcile the preceding traversal candidate's retained evidence: full controller
+  regression and its exact wheel pass. Native installed lifecycle qualification
+  and the subsequent private-prefix repair retain separate pending states.
+
+- Preserve the preceding `587ad3f1` native lifecycle failure: compilation and documentation
+  pass, but two of 24 original cases cannot launch through the private allocation
+  directory. Record 16 passing native source-level checks of the scoped access
+  repair separately from the subsequent successful installed retained run.
+
+- Record native input-custody checks for all 114,710 tracked source-fork paths,
+  including modes and 138 symlinks. Keep this evidence separate from complete
+  Component registration, dependency resolution and package admission.
+  Track the 28 toolchain aliases through the separate native SDK admission work.
+
+- Renew the framework development candidate to `587ad3f1` in an isolated native
+  environment after full Python 3.11 and exact installed-wheel checks. Verify
+  offline dependencies, installed bytes, signing and SQLite; native source
+  lifecycle, SDK admission and physical cut-over remain pending.
+
+- Document POSIX ACL readiness for disposable retained-build workers and record
+  the start of an unprivileged, KVM-backed source SDK baseline. Completed SDK
+  admission, packaging and performance qualification remain pending.
+
+- Clarify the 1.2 wired-debugging roadmap: existing loader UDP networking and
+  panic-only kernel NetGDB require separate loader control, kernel debugging and
+  early-driver qualification across the firmware handoff.
+
+- Add a finite QEMU worker supervisor and FreeBSD inspection relay. Bind fresh
+  read-only inspections to an operator-selected plan and actual owned process,
+  QMP state, disk and seed. Preserve console/session records and enforce request
+  deadlines and shutdown cleanup. Twelve controller checks and actual FreeBSD
+  boot/root-relay inspection pass. Actual supervisor interruption also powers off
+  the guest cleanly and removes its inspection socket while retaining evidence.
+  Native automatic expiry and installed lifecycle qualification remain open.
+
+- Record eleven passing native framework source checks for local orchestration,
+  secondary-account access and cleanup-bound receipt admission. A separate live
+  QEMU allocation-owner probe verifies fresh inspection and lifetime revocation.
+  Prepare the source harness to use reviewed test views and the existing secondary
+  account. Installed qualification and the complete source lifecycle remain open.
+
+- Add tested numeric secondary identities and FreeBSD descriptor ACL custody
+  in framework PR #87. Record live allocated-guest scope and read-only-view
+  probes, preserving pending full SDK, installed lifecycle and package admission.
+
+- Verify all 24 original parser/utility cases in a disposable FreeBSD guest,
+  including root and explicitly unprivileged cases, with no skips. Preserve the
+  failed fixture-inheritance probe and exact ACL/account/payload restoration.
+  Installed framework permission management and lifecycle admission remain open.
+
+- Record the qualified controller wheel and verified dependency bootstrap,
+  reviewed source rebind, disposable native guest and isolated ACL-capability
+  checks. Native dependency production and verified installation now pass on the
+  build worker and disposable guest, including real cryptographic operations.
+  Native focused checks pass (29 passed, one optional skip); installed input
+  verification has a median of 9.23 seconds versus 19.79 seconds in three warm
+  samples. Whole-build performance, scoped grants and package acceptance remain
+  pending.
+
+- Retain the renewed native source lifecycle's supervised exit and original
+  test result: 23 pass, one required privileged skip, correctly refused before
+  acceptance. Record the separate input-verification performance experiment
+  without claiming full build or release qualification.
+
+- Add an isolated build-worker framework preview with the tested strict-SBOM
+  optimization and corrected source-version/linker inputs. Retain the first
+  native run's 23-pass/one-root-skip result without awarding acceptance.
+
+- Document the five-owner original-source retained build prototype and observed
+  native products, preserving explicit missing acceptance, package and whole-tree
+  qualification. Link the exact reviewed source entry point and CI evidence.
+
+- Install the exact candidate common CLI on both native roles and validate the
+  reviewed source/ports projects and all five native locks. Retain the preceding
+  CLI aliases and active workspace selection; executable native profiles and
+  current lifecycle receipts remain unfinished.
+
+- Reopen the native LZ4 probe package in private staging and pass five CLI/library
+  checks against its payload, without installing it on the worker. Canonical
+  package admission and VM installation/recovery remain open.
+
+- Run the original parser/utility ATF inventory against native probe products:
+  23 cases pass and the root-required deallocation case remains explicitly
+  skipped. Privileged and independent acceptance remain open.
+
+- Establish reviewed original ports authority and two FreeBSD/pkg locks in
+  [ports PR #7](https://github.com/jordanhubbard/daemonarchy-ports/pull/7), using
+  the complete installed Standard evidence policy. Original implementations
+  remain in place; deployment, native execution and per-unit qualification
+  remain open.
+
+- Add deployment and inspection for a parallel native workspace with independent
+  pinned source/ports checkouts, upstream remotes and isolated output roots.
+  Eight real-Git checks cover preserved local/failed state, independent object
+  storage, upstream refresh and selection drift and pass on both FreeBSD roles.
+  Both deployed workspaces use separate ZFS storage. Diagnostic make probes build
+  the original parser/utility and build/test/package the LZ4 port. Installed
+  Component execution, complete provenance and measured executor selection remain
+  open.
+
+- Prepare exact original-suite reporting and independent utility file-effect
+  expectations in the source fork: 24 original cases and eleven verifier cases.
+  Framework build-output command lookup passes its full local regression
+  (1,809 passes, 42 skips); native/installed execution and actual source-unit
+  qualification remain open in [framework PR #81](https://github.com/jordanhubbard/literate-ai/pull/81).
+
+- Select explicit FreeBSD and pinned native-pkg policies for the initial source
+  units. The framework candidate passes 1,805 local checks with 42 skips;
+  native/installed renewal and original unit compilation remain open.
+
+- Register and lock the first original source header/parser/utility contracts
+  without moving the FreeBSD tree. Record explicit original authority and
+  separate three authored units from zero admitted units or qualified packages.
+  Native lifecycle and operator framework deployment remain open.
+
+- Preserve exact original Kyua result states in retained test reports, including
+  expected failures and root-required skips. Thirteen checks pass on FreeBSD,
+  including actual Kyua/ATF fixtures. Complete original-unit compilation, tests
+  and lifecycle admission remain open.
+
+- Acquire the reviewed native compiler bootstrap seed with bounded byte, mode,
+  link and linker-script custody. Ten refusal/capture checks pass on FreeBSD.
+  The helper and documentation are available in the operator source checkout;
+  SDK admission, original-source compilation and full Component lifecycle remain
+  unqualified.
+
+- Stream large filemon records without loading the whole record into memory;
+  retain finite per-file and aggregate bounds, stable-file checks and immutable
+  custody. Thirty tests pass on native FreeBSD, and the actual 39 MB source
+  archive trace passes capture and hash verification. Preserve the full traced
+  run as failed after its old collector limit; independently verify its 537
+  artifacts and all eight release sets without claiming lifecycle acceptance.
+
+- Establish the operator-development work item for conventional `/usr/src` and
+  `/usr/ports` checkouts, isolated native outputs and a complete Literate AI
+  incremental build/test/package/ISO/installation workflow. Rename the owned ports
+  fork to `daemonarchy-ports`, preserving its branches and history. Full native
+  Component lifecycle qualification remains open.
+
+- Prepare optional native filemon/meta-mode tracing in the source controller,
+  preserving source dependency files and retaining immutable phase observations.
+  Seventeen controller checks pass locally and in controller CI; native tracing
+  setup/execution and canonical action/package qualification remain pending.
+
+- Preserve unqualified native directory references without treating dots inside
+  source paths as machine contexts. Retain returned query output for diagnosis;
+  unresolved references still refuse closure admission. Eleven portable checks
+  pass and a native two-seed probe retains an unresolved legacy CSU reference.
+
+- Add bounded native directory-dependency observation with explicit target/host
+  contexts, shared Makefile inputs, dependency ordering and failure/cycle refusal.
+  Ten portable checks pass; the native `bin/ls` observation resolves 19 directory
+  nodes and 52 edges. Complete native action/Component/package admission remains open.
+
+- Add pinned Git-tree discovery for complete source and ports input inventories,
+  with nine refusal/identity tests and CI. Record 4,620 source/support candidates
+  and 35,204 ports origins; native dependency resolution, canonical Component
+  registration and per-unit pkg qualification remain open.
+- Keep filemon meta-mode progress output quiet so crunchgen's structured make
+  queries retain their original protocol. Preserve the failed full tracing
+  attempt; all 27 controller/bootstrap checks pass on FreeBSD after the fix.
+
+- Validate native filemon header-read capture, unchanged object reuse and
+  changed-header invalidation with preserved trace snapshots. Audit the actual
+  524-package pkgbase catalog and its 1,082 runtime dependency edges. Complete
+  canonical compilation graphs and per-unit provenance remain open.
+
+- Establish PERF-001 for measured native Component execution and faster ISO
+  builds, permitting Bazel, Buck2 or another executor after correctness and
+  end-to-end measurements. The recovered development build finished; no speedup is claimed.
+
+- Add the owned FreeBSD source-build controller and GENERIC/diagnostic profiles
+  in daemonarchy-src, with native pkgbase/installer-set preparation, isolated
+  staging, resumable bounded phases and byte-verification records. Eleven
+  controller checks pass locally, in CI and on FreeBSD; the first native baseline
+  build finished after a retained set-phase failure and exact-plan resume. Its
+  533 recorded artifacts and eight MANIFEST set hashes verify. Fix source/ports
+  archive symlink handling and root ownership, and bind all MANIFEST-listed sets
+  into artifact verification. The corrected full source archive matches all
+  114,642 Git files; all 21 controller checks pass on FreeBSD. Package, boot and
+  release qualification remain pending.
+- Require the complete source and ports trees to be modeled as canonical Literate
+  AI Components, including shared inputs, variants and selected native dependency
+  closures. Full-tree Component registration and lifecycle acceptance are open
+  work under COMP-001; two aggregate build wrappers do not satisfy this scope.
+
+- Record the MSI startup video's last visible legacy-RTC warning and document a
+  targeted one-boot RTC-disable comparison. The reset cause and workaround remain
+  unconfirmed; no automatic boot setting changes.
 
 - Adopt in-place Literate AI product goals, eight logical Component contracts,
   public integration boundaries, stable work IDs, documentation reachability and

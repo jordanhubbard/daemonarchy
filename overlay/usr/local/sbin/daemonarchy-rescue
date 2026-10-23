@@ -7,7 +7,7 @@ failure_wait=15
 poll_seconds=1
 boot_quiet_wait=15
 boot_quiet_seconds=2
-debug_state=/var/run/daemonarchy-remote-debug
+debug_state=/var/db/daemonarchy/remote-debug
 debug_command=/usr/local/sbin/daemonarchy-debug
 
 rescue_record() {
@@ -62,6 +62,24 @@ rescue_reason() {
     return 0
   fi
   return 1
+}
+
+rescue_resume_debug() {
+  [ -x "$debug_command" ] || return 0
+  remaining=60
+  # USB Ethernet and DHCP can become ready after the recovery console starts.
+  # Retry in the background so a retained grant resumes without console input.
+  while [ -f "$debug_state/active" ]; do
+    "$debug_command" resume || true
+    "$debug_command" status >/dev/null 2>&1 && return 0
+    if [ "$remaining" -gt 0 ]; then
+      remaining=$((remaining - 1))
+      sleep 1
+    else
+      # A slow USB/network bring-up must not discard an approved grant.
+      sleep 5
+    fi
+  done
 }
 
 monitor_desktop() {
@@ -131,8 +149,11 @@ rescue_menu() {
     remote_action=remote
     remote_label='Pair a remote debugging agent'
     if [ -e "$debug_state" ] || [ -L "$debug_state" ]; then
-      remote_action=unpair
-      remote_label='Unpair remote debugging agent'
+      remote_label='Resume remote debugging agent'
+      if "$debug_command" status >/dev/null 2>&1; then
+        remote_action=unpair
+        remote_label='Unpair remote debugging agent'
+      fi
     fi
     cat <<MENU
 
@@ -168,6 +189,9 @@ rescue_main() {
   [ "$(id -u)" = 0 ] || { echo 'Run daemonarchy-rescue as root.' >&2; return 1; }
   case ${1:-monitor} in
     monitor)
+      # This grant was approved at the root console before the preceding reboot.
+      # Resume it before waiting for a desktop, without deleting crash evidence.
+      rescue_resume_debug </dev/null >>"$rescue_log" 2>&1 &
       echo 'Waiting for graphical login; this console shows recovery options if it fails.'
       monitor_desktop
       rescue_wait_boot_output

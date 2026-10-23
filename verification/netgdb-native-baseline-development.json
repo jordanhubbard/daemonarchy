@@ -1,0 +1,57 @@
+{
+  "schema": "daemonarchy/netgdb-native-baseline-development@1",
+  "observed_utc": "2026-10-22T16:48:43.999125+00:00",
+  "scope": "Actual native FreeBSD GDB inspection of the retained panic-only kernel baseline; does not qualify the pending peer-close repair or early-kernel networking",
+  "related_issue": "https://github.com/jordanhubbard/daemonarchy-src/issues/12",
+  "kernel_reported_revision": "bdcfeac3e1cb",
+  "kernel_sha256": "94e4ace9d6b6083f682d1a0d325162d10d0db852aa82400f7b59655e4df507b2",
+  "kernel_full_sha256": "12a82cdfe8d046b7eea36dd8b6157abda3ffca5666a6f0cf7facbcd68e4735a9",
+  "kernel_build_id": "8139e27d002dc81d7f3a342d74ecc346e2787bb3",
+  "efi_sha256": "9472af7435e8376e0982edaa78f6a6cc1dfdfabcd544a3c6f73ebcecbf8f0f38",
+  "upstream_proxy_revision": "9d7f2ca5608ab346f81143e7815e11e1e20c921e",
+  "native_client": {
+    "package": "gdb-15.1_7",
+    "sha256": "ac9d1357f4fe13204599a3965629a0bcea58262d0a74b9d7108a6c550b4023cc",
+    "exit_code": 0,
+    "seconds": 1.422,
+    "register_reads": true,
+    "panic_memory_read": true,
+    "backtrace": true,
+    "threads_observed": 100,
+    "orderly_detach": true,
+    "stdout_sha256": "c4bc8a2bf7d0bb4112674a4978e3746375f32af89236cd79dd61d2dec68f0365",
+    "stderr_sha256": "2f824b1376795333ae4fb2f2944853f70af7881343f6f0ae159e05dfc01b405f"
+  },
+  "loader_boot_id": "4fde4ac44d047fae14316b08b05b3ffd",
+  "authenticated_loader_handoff": true,
+  "independent_kernel_vm_boot_id_nic_and_revision_match": true,
+  "boot_profile": "boot -h -D; serial primary and video secondary",
+  "local_recovery": {
+    "panic_observed": true,
+    "ddb_return_after_detach": true,
+    "local_register_read": true,
+    "local_pager_quit": true,
+    "local_reset": true,
+    "debugger_reentry_messages": 2
+  },
+  "observations": [
+    "Two KDB debugger re-entry messages during detach are retained",
+    "The exact ELF symbols are available; their original source-text paths are absent on the peer",
+    "Some optimized argument values are unavailable; inspected panic memory and core backtrace are verified"
+  ],
+  "cleanup": {
+    "target": "DDB reset after controlled panic; QEMU exits because no-reboot is selected",
+    "peer": "normal shutdown",
+    "both_exit_codes": 0,
+    "both_before_deadline": true,
+    "both_processes_absent": true,
+    "original_disks_preserved": true
+  },
+  "kernel_peer_close_repair_qualified": false,
+  "native_netdump_qualified": false,
+  "compiler_source_admitted": false,
+  "physical_nic_qualified": false,
+  "authenticated_kernel_protocol": false,
+  "continuous_early_kernel_transport": false,
+  "release_acceptance": false
+}

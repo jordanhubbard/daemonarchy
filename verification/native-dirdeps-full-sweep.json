@@ -1,0 +1,21 @@
+{
+  "canonical_components_registered": 0,
+  "complete_action_graph": false,
+  "directory_closure_resolved": false,
+  "directory_edges": 12542,
+  "limitation": "Directory declarations retain missing/stale targets and unsupported contexts; observed compiler inputs, selected variants and canonical actions/packages are not admitted.",
+  "producer_sha256": "40b472b57c5d59cf013df3d8bd8f6d88b03dec9b7431e858ec3658651f31bf50",
+  "qualified_packages": 0,
+  "record_status_counts": {
+    "missing-or-unsupported-declaration": 27,
+    "observed": 1766,
+    "query-rejected": 6
+  },
+  "records": 1799,
+  "report_sha256": "f09dde09dc7eb4a02823a333cd534bef135ad50ff3cb880ec9ccbddf6babc085",
+  "schema": "daemonarchy/native-dirdeps-full-sweep@1",
+  "source_revision": "92276fc76c65f3ca31552d2e1833a6063361ff64",
+  "state": "observation-only",
+  "unqualified_targets": 336,
+  "unresolved_nodes": 33
+}

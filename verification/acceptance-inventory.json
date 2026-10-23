@@ -40,6 +40,11 @@
           "path": "tests/installed-desktop.sh",
           "execution": "native-freebsd-or-explicit-harness",
           "current_framework_receipt": false
+        },
+        {
+          "path": "tests/installer-progress.py",
+          "execution": "controller-and-native-freebsd-pty",
+          "current_framework_receipt": false
         }
       ]
     },
@@ -147,6 +152,11 @@
           "path": "tests/rescue-console.sh",
           "execution": "native-freebsd-or-explicit-harness",
           "current_framework_receipt": false
+        },
+        {
+          "path": "tests/remote-debug-reboot.sh",
+          "execution": "native-freebsd-root-isolated-ssh",
+          "current_framework_receipt": false
         }
       ]
     },
@@ -181,7 +191,9 @@
     },
     "release": {
       "goals": [
-        "G6"
+        "G6",
+        "G8",
+        "G9"
       ],
       "state": "retained-implementation",
       "requires": [
@@ -216,6 +228,16 @@
         {
           "path": "test-bhyve.sh",
           "execution": "native-freebsd-or-explicit-harness",
+          "current_framework_receipt": false
+        },
+        {
+          "path": "tests/native-tree-discovery.py",
+          "execution": "portable-controller-discovery-only",
+          "current_framework_receipt": false
+        },
+        {
+          "path": "tests/native-dirdeps.py",
+          "execution": "portable-controller-discovery-only",
           "current_framework_receipt": false
         }
       ]
@@ -272,6 +294,8 @@
     "tests/linux-cuda.sh",
     "tests/live-image-budget.sh",
     "tests/live-image-runtime.sh",
+    "tests/native-dirdeps.py",
+    "tests/native-tree-discovery.py",
     "tests/network-diagnostics.sh",
     "tests/package-repository.sh",
     "tests/pkg-repo-dependencies.sh",

@@ -44,13 +44,25 @@ Press **Enter** on the debug screen to stop access and return to the debug shell
 This closes the listener and its SSH connections and discards pairing
 approvals. From another local console, `daemonarchy-debug unpair` performs the
 same revocation, including terminating the listener's SSH connections.
-Rebooting stops the listener, but an unexpected reset can leave its session
-directory behind. Rescue option 2 then reads **Unpair remote debugging agent**:
-choose it to clear that stale state, then choose **Pair a remote debugging
-agent** to start again. Pairing again requires fresh approval. Unpairing checks
-the recorded process identity before signaling it, so a reused PID cannot
-terminate an unrelated process. Stopping access does not undo work the agent
-performed.
+Development images now retain an installed-system debugging grant across reboot.
+The recovery console restarts the listener when networking is available, keeping
+the same server fingerprint and approved client keys. The agent reconnects with
+its existing key; no new approval is required. An SSH disconnect or reboot does
+not end a hardware bring-up session. New keys still require console approval.
+On a fully booted desktop the rescue menu is not visible, so it cannot show
+whether a debugging grant, listener or active agent connection remains. A
+desktop menu-bar status and revocation control are tracked in DEBUG-002; until
+that is implemented, `remote-debug status` checks whether the listener is
+running and `remote-debug unpair` revokes the grant from a local root shell.
+
+If networking is not ready at startup, rescue option 2 offers **Resume remote
+debugging agent**. This reuses the retained grant without first deleting it.
+A running session offers **Unpair remote debugging agent** instead. Explicit
+Unpair, Enter or Ctrl-C in the interactive listener revokes access and clears
+approval. The process identity is checked before any PID is signaled, so a
+reused PID cannot terminate an unrelated process. Existing diagnostic logs are
+retained. Older 1.1.1 helpers require Unpair/Pair after a stale session; update
+both `remote-debug` and `daemonarchy-rescue` to obtain resumption.
 
 ## For the agent
 
@@ -113,7 +125,7 @@ record. Logs survive an ordinary installed-system reboot; the live ISO's
 memory-backed logs do not. Unpairing ends collection after its current bounded
 cycle; a previous collector cannot attach to a newly paired session. Reconnecting
 restarts a failed collector. Startup errors remain in
-`/var/run/daemonarchy-remote-debug/observer-startup.log` until unpairing.
+`/var/db/daemonarchy/remote-debug/observer-startup.log` until unpairing.
 
 Before any operation that could reset the target, retain a stream **on the
 controlling computer**. From an approved shell, these commands are available:
@@ -163,7 +175,8 @@ after the kernel/network stops responding. Empty crash-dump records do not prove
 that no kernel fault occurred. Serial/BMC capture or kernel network-debug support
 is needed for that boundary; source/loader work is planned for 1.2.
 
-Validate changes with `tests/remote-debug-observe.sh` as root on FreeBSD and
+Validate reboot resumption with `tests/remote-debug-reboot.sh` as root on FreeBSD.
+Validate observation with `tests/remote-debug-observe.sh` as root on FreeBSD and
 `python3 tests/remote-debug-capture.py` on the controller. The existing pairing
 and unpairing lifecycle checks remain separate from these diagnostics checks.
 
@@ -179,17 +192,23 @@ change password authentication in `/etc/ssh/sshd_config`.
 
 The root shell is available through `daemonarchy-debug shell`. Press Enter
 or Ctrl-C in the listener's console to close debug connections and discard
-the temporary keys and approvals. No debug listener starts automatically at
-boot. Older installed images need these tools copied in separately.
+the retained keys and approvals. A previously approved installed-system grant
+resumes at boot; without that prior opt-in no listener starts. Older installed
+images need these tools copied in separately.
 
 ## Implementation
 
-The SSH server is FreeBSD's base-system OpenSSH. It listens only while debug
-mode is active, accepts public-key authentication only, and consults the
+The SSH server is FreeBSD's base-system OpenSSH. It listens only while an
+operator-approved debugging grant is active, accepts public-key authentication only, and consults the
 console pairing helper before accepting a new key. There is no shared
 password, anonymous root login, or permanently installed agent service.
-Server keys, requests and approvals live under `/var/run/daemonarchy-remote-debug`
-and are removed when the listener stops. On the live ISO, `/var` is memory-backed.
+Server keys, requests, the selected port and approvals live in the root-only
+`/var/db/daemonarchy/remote-debug` directory. Runtime listener and collector
+identities are refreshed after reboot without discarding the grant. A background
+resumed listener accepts only previously approved keys. Explicit revocation
+removes the grant and terminates its owned SSH connections. On the live ISO,
+`/var` is memory-backed, so live-USB approval does not survive reboot or transfer
+automatically to an installed target.
 Unattended `CIDATA` installation keeps its existing behavior and does not
 enable debug mode.
 
@@ -255,3 +274,7 @@ FreeBSD Safe Mode (`boot_safe=YES`) and the loader setting
 and configured SSH startup can still run. This does not enable SSH where the
 operator declined it, and does not prevent unrelated kernel or device-driver
 panics. The private headless USB mode additionally blocks T2 BCE autoloading.
+
+At boot, resumption retries for up to 60 seconds in the background while USB
+Ethernet/DHCP becomes ready. The recovery menu remains usable throughout. If
+networking becomes available later, choose Resume to retry the retained grant.

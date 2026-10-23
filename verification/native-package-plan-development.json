@@ -1,0 +1,92 @@
+{
+  "schema": "daemonarchy/native-package-plan-development@1",
+  "queue_item": "PKG-001",
+  "recorded_at": "2026-10-22T07:03:35.293584+00:00",
+  "scope": "Actual pkg dry-run resolution against an existing captured development repository; not signed/final release input admission",
+  "native": {
+    "os": "FreeBSD",
+    "release": "16.0-CURRENT",
+    "python": "3.12.14",
+    "pkg_version": "2.8.4",
+    "pkg_sha256": "6007606eeadc511c8ca22ddc03b71e8bda653ac034a57b291c1ba6785ceee36d"
+  },
+  "source_sha256": {
+    "scripts/native-package-plan.py": "5ce3732c96e7744657d309b66306c21b3e31fdc181f6d071bcff1af3328fc7dc",
+    "scripts/package-dag.py": "1b99e5ba0a574d8a0a78445e9814685ed6e640629d32ffd324cb6440626b3e7c",
+    "tests/native-package-plan.py": "b602de634bd6f8e8bde97e9f510f8f5661587adb089cdd6eeb2e763d15cf6c81"
+  },
+  "graph_sha256": "ec4ba26e28320ac1999b7424e3594f6928af930dcea48434def17992144de9a9",
+  "metadata_sha256": {
+    "meta.conf": "ca7f091a4f9eccbf537a966a0d4d555cdfc4de34ad5be5c96a12c4485130664c",
+    "packagesite.pkg": "253af2446b006614caa7e5bc237e4f96f24c103b1fb3bd6531eccbb6f00d9de2",
+    "data.pkg": "58340c1cc26c8b2a156370870912929b6ced5ea7be9c96ac291ecc8d07a4ef4e"
+  },
+  "controller_tests_passed": 16,
+  "native_tests_passed": 16,
+  "native_test_stderr_sha256": "85975476b6fe5df9040b7bf91037eb9c3bf705c08594e9390855463ee463f99e",
+  "plans": {
+    "desktop": {
+      "packages": 952,
+      "native_plan_matches_graph": true,
+      "imported_package_identities_and_dependencies_checked": true,
+      "installed_packages_after": 0,
+      "package_cache_empty": true,
+      "observed_version_edges": [
+        {
+          "declared_version": "4.0.4_14",
+          "dependency": "omarchy",
+          "package": "daemonarchy",
+          "selected_version": "4.0.4_16"
+        }
+      ]
+    },
+    "desktop-nvidia": {
+      "packages": 960,
+      "native_plan_matches_graph": true,
+      "imported_package_identities_and_dependencies_checked": true,
+      "installed_packages_after": 0,
+      "package_cache_empty": true,
+      "observed_version_edges": [
+        {
+          "declared_version": "4.0.4_14",
+          "dependency": "omarchy",
+          "package": "daemonarchy",
+          "selected_version": "4.0.4_16"
+        }
+      ]
+    }
+  },
+  "negative_controls": [
+    {
+      "name": "changed-version",
+      "exit_code": 1,
+      "success_record_present": false,
+      "stderr_sha256": "1aacbb2e2e326a6758a07f18472063e5d869f1a6be7ccf3b1201c02facd824c9"
+    },
+    {
+      "name": "missing-transitive-package",
+      "exit_code": 1,
+      "success_record_present": false,
+      "stderr_sha256": "33203c48c9ae87a77e4e783b21eb6d29c291259d5c08ca72584ed13f317ec60c"
+    }
+  ],
+  "host_package_database_unchanged": true,
+  "logs_retained_privately": true,
+  "repository_signatures_qualified": false,
+  "installation_authorized": false,
+  "release_qualified": false,
+  "lifecycle_receipt": "missing",
+  "retained_preparation_refusals": [
+    "Unprivileged private package database ownership was refused by pkg; subsequent cases are root-owned",
+    "Fresh private database required native initialization; an ignored native SQL error was rejected as evidence",
+    "A native dry-run without yes printed a plan but exited nonzero; only successful -nUy commands qualify",
+    "Unresolved poudriere metadata symlinks refused; caller now pins actual retained files without writing through links"
+  ],
+  "remaining": [
+    "Signed final release catalogue acquisition and all supported selections",
+    "Payload checksum/signature and installed-file verification",
+    "Shared transaction coordinator and structured progress",
+    "Actual safe parallel installation with recovery/performance acceptance",
+    "Canonical native lifecycle and release receipts"
+  ]
+}

@@ -1,0 +1,167 @@
+{
+  "schema": "daemonarchy/test-iso-development@1",
+  "work_id": "TESTISO-001",
+  "artifact": {
+    "name": "daemonarchy-1.2-test1-amd64.iso",
+    "bytes": 1869762560,
+    "sha256": "146d0a7127472f1d2e8c05cedc2d54e6c91c1aa0988c5cc8506b03d12fbc7aaa",
+    "retained_directory": "daemonarchy-test-images/1.2-test1-146d0a71",
+    "retained_copy_verified": true,
+    "retained_copy_readback_sha256": "146d0a7127472f1d2e8c05cedc2d54e6c91c1aa0988c5cc8506b03d12fbc7aaa",
+    "retained_copy_readback_verified": true
+  },
+  "scope": "1.2 loader-debug test ISO; retained 1.1.1 base and package selection; no release publication",
+  "product_revision": "39c2785b595c8921cfe0fdea6704ad89c27ad7f5",
+  "source_archives": {
+    "product.tar": "046381378cbd66a64fe95b4fbfe4cea0bf8c2665c8529dd06dff31de718f8846",
+    "loader.tar": "4b4cbb5756234765cd8f04fbdd3eb3d48647c519c7806ccf8cfc01e9631dfd37"
+  },
+  "build": {
+    "entrypoint": "build-iso.sh",
+    "exit_code": 0,
+    "seconds": 692.869,
+    "supervisor_seconds": 716.504,
+    "jail": "16rc2",
+    "jail_snapshot_guid": "17813635946880242437",
+    "ports_tree": "rc2",
+    "package_feed": "packages-16-amd64-1.1.1",
+    "captured_package_files": 1469
+  },
+  "payload_audit": {
+    "schema": "daemonarchy/test-iso-payload-audit@1",
+    "iso_sha256": "146d0a7127472f1d2e8c05cedc2d54e6c91c1aa0988c5cc8506b03d12fbc7aaa",
+    "root_payload": {
+      "loader.efi": "691ef8da22ae332f76cdb5a4f05af3e40d80fdad4031f65bdf6c0a05063c057a",
+      "loader.lua": "7e454ce2220c2fbd4b87e2d5b2c60135ecfc4282906b15ae2ec4a9edc808ef83",
+      "base.txz": "942d655cbc25f48d9854f9ae3a62e64ba7f4cb8c28dc9d51a2ab9e496ad30e63",
+      "kernel.txz": "9b15fe0b0a5cd1ecfc3562fe8050126ae67cca794edd6d96f6fc6e8b32a397f8",
+      "lib32.txz": "eae411dae54cf808684b064d053fd3b6f777302053ca2bd8c2ed22e92b695cce",
+      "embedded_package_count": 261,
+      "live_kernel_sha256": "94e4ace9d6b6083f682d1a0d325162d10d0db852aa82400f7b59655e4df507b2"
+    },
+    "efi_boot_payload_sha256": "691ef8da22ae332f76cdb5a4f05af3e40d80fdad4031f65bdf6c0a05063c057a",
+    "efi_boot_lba": 20,
+    "efi_image_bytes": 10485760,
+    "source_revision": "bdcfeac3e1cb8ce3f05c32d8a7ad3597deb48bdf",
+    "ports_revision": "f7d7ee897405dcb8ce87e674588a4e1b3bfba00e",
+    "private_rescue_payload_absent": true,
+    "read_only_devices_cleaned": true,
+    "boot_install_qualified": false,
+    "lifecycle_admitted": false,
+    "release_acceptance": false
+  },
+  "runtime_audit": {
+    "entrypoint": "tests/live-image-runtime.sh",
+    "role": "public",
+    "exit_code": 0,
+    "seconds": 60.638,
+    "retained_elf_dependencies": "passed",
+    "enterprise_wifi_python_imports": "passed"
+  },
+  "transport_copy": {
+    "bytes": 1869762560,
+    "sha256": "146d0a7127472f1d2e8c05cedc2d54e6c91c1aa0988c5cc8506b03d12fbc7aaa",
+    "verified": true
+  },
+  "uefi_install": {
+    "status": "passed",
+    "firmware": "OVMF_CODE_4M.secboot.fd + unenrolled OVMF_VARS_4M.fd",
+    "secure_boot_enforced": false,
+    "source_checkout": false,
+    "ports_checkout": false,
+    "encryption": false,
+    "graphical_session_qualified": false,
+    "harness": "test-qemu.sh",
+    "harness_sha256": "bf8c2c4f9081ef7e6b4dd7bd77beeb444558bc57983de938045bfbeb2ce80104",
+    "identity_check_sha256": "b81962bd1b771c154af176a39fade34595d97c9d8045b01ac5ccfb819f1c50e9",
+    "expected_installed_stock_loader_sha256": "04469c5411b66318832ddd1fa6a87cbfdeedd6eab09e7135d3c925b6c91df710",
+    "exit_code": 0,
+    "seconds": 2513.698,
+    "hypervisor": "QEMU 10.2.1 with KVM",
+    "disk_gib": 40,
+    "memory_gib": 4,
+    "cpu_cores": 4,
+    "installed_disk_booted_without_iso": true,
+    "ssh_login_and_original_system_checks": "passed",
+    "installed_desktop_command_and_policy_checks": "passed",
+    "installed_optional_checkout_policy_checks": "passed",
+    "installed_abi": 1600028,
+    "installed_kernel_sha256": "94e4ace9d6b6083f682d1a0d325162d10d0db852aa82400f7b59655e4df507b2",
+    "stock_loader_checks": [
+      "/boot/loader.efi",
+      "/boot/efi/EFI/BOOT/BOOTX64.EFI",
+      "/boot/efi/EFI/FreeBSD/loader.efi"
+    ],
+    "stock_loader_checks_passed": true,
+    "stdout_sha256": "c8a15bc11696a0919f4eabfa75d984e579e14dd947a8b38843174d5a277de8c8",
+    "stderr_sha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855",
+    "guest_powered_off": true
+  },
+  "preceding_attempt": {
+    "status": "failed before partition writes",
+    "cause": "Read-only monolithic OVMF BIOS exposed no readable SecureBoot EFI variable; installer refused state admission",
+    "diagnosis": "Actual bash trace stopped in secureboot_detect_enforcement; empty install log produced secondary gum no-input message",
+    "preserved": true
+  },
+  "lifecycle_admitted": false,
+  "release_acceptance": false,
+  "hardware_qualified": false,
+  "all_24_obligations_complete": false,
+  "controller_verification": {
+    "authority": "pass",
+    "contract_locks_current": 8,
+    "remaining_failure": "project.test_receipt_missing"
+  },
+  "embedded_packages_manifest": {
+    "path": "verification/test-iso-1.2-test1-packages.json",
+    "sha256": "90c36b254e90dd02f4c148322e85e3d33abb358dfa02fc24c82e0d3dcb12c835",
+    "count": 261
+  },
+  "observed_utc": "2026-10-22T06:14:39.809776+00:00",
+  "kernel_observations": {
+    "install.log": {
+      "panic_marker": false,
+      "witness_messages": [
+        "lock order reversal:",
+        "lock order isofs -> tmpfs attempted at:"
+      ]
+    },
+    "boot.log": {
+      "panic_marker": false,
+      "witness_messages": []
+    }
+  },
+  "known_limits": [
+    "Live poweroff emitted a WITNESS isofs -> tmpfs lock-order reversal; guest powered off, installed disk rebooted and all checks passed; no panic marker in either log",
+    "Unsigned live loader; Secure Boot enforcement, physical hardware and graphical session rendering unqualified",
+    "BIOS, encryption and optional source/ports installs not run for this artifact",
+    "Loader debugging remains disabled; no private profile or authorization injected",
+    "Canonical native lifecycle admission and product receipt remain missing; all 24 final release obligations remain open"
+  ],
+  "qualification": {
+    "native_assembly": "passed",
+    "actual_efi_and_payload_audit": "passed",
+    "complete_live_runtime_audit": "passed",
+    "uefi_install_and_reboot": "passed",
+    "literate_ai_lifecycle_admission": "missing",
+    "release": "not-qualified"
+  },
+  "source_ci": {
+    "conclusion": "success",
+    "headSha": "39c2785b595c8921cfe0fdea6704ad89c27ad7f5",
+    "status": "completed",
+    "url": "https://github.com/jordanhubbard/daemonarchy/actions/runs/39699726311",
+    "observed_utc": "2026-10-22T06:24:07.358732+00:00"
+  },
+  "evidence_retention": {
+    "schema": "daemonarchy/private-vm-retention-check@1",
+    "bytes": 15424265046,
+    "sha256": "3367ee5ab3a66e9d1bd2d473859a736d95f3eedd6c207ac0911e095d442d0f51",
+    "readback_verified": true,
+    "compressed_tar_integrity": "passed",
+    "vm_disk_entries": 2,
+    "terminal_records": 2,
+    "archive_entries": 39,
+    "scope": "Private VM disks, logs, invocation helpers and both terminal results; earlier failure preserved"
+  }
+}

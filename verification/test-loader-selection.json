@@ -1,0 +1,19 @@
+{
+  "schema": "daemonarchy/test-loader@1",
+  "scope": "live-image-only",
+  "source_revision": "848c4bc16f3e757c6c3179f1fed5fcb6cd7503c0",
+  "source_evidence": {
+    "url": "https://github.com/jordanhubbard/daemonarchy-src/blob/848c4bc16f3e757c6c3179f1fed5fcb6cd7503c0/verification/loader-network-development.json",
+    "sha256": "b5dd872a3af988ed7c5b87469e48f2e1b306092da63a510c7c13ec38a84480f0"
+  },
+  "files": {
+    "loader.efi": {
+      "sha256": "691ef8da22ae332f76cdb5a4f05af3e40d80fdad4031f65bdf6c0a05063c057a",
+      "bytes": 732672
+    },
+    "loader.lua": {
+      "sha256": "7e454ce2220c2fbd4b87e2d5b2c60135ecfc4282906b15ae2ec4a9edc808ef83",
+      "bytes": 2674
+    }
+  }
+}

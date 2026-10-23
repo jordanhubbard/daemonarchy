@@ -1,0 +1,68 @@
+{
+  "schema": "literate-ai/windows-wheel-timing-development@1",
+  "observed_utc": "2026-10-22T22:57:30.041912+00:00",
+  "issue": "https://github.com/jordanhubbard/literate-ai/issues/123",
+  "baseline_revision": "cfc941233c27209de05d8d9e31b9d5734fcf99d3",
+  "implementation": [
+    "Always pass the existing timing-report option from the native Windows wheel gate",
+    "Use a new short per-attempt output directory",
+    "Atomically replace completed timing spans; preserve prior report if a later write fails"
+  ],
+  "source_sha256": {
+    "scripts/windows_release_gate.py": "10f739a9d4779cb3a2c8ee1c083f318da95b4c879445a3e0b65f17a7fba6ef40",
+    "scripts/wheel_smoke.py": "2fb433eb6880324f68e5ff84622a61390583c776a44e80df3680d7feffb68c05"
+  },
+  "checks": {
+    "focused_tests": 8,
+    "failures": 0,
+    "baseline_new_regression": "Fails against the verbatim prior timing writer; no errors unrelated to the assertion",
+    "lint": "pass",
+    "format": "pass",
+    "driver_tcb_review": "current; unchanged identity 4ec3013bae99656c0a63b581b8b0e489d93d327aaac94de30106cc635473fe28",
+    "routing_fixture": {
+      "attempts": 2,
+      "gate_exit_codes": [
+        1,
+        1
+      ],
+      "distinct_report_paths": true,
+      "completed_spans_retained_after_failure": true,
+      "controlled_gate_fixture_only": true
+    },
+    "native_windows_atomic_fixture": {
+      "native_windows": true,
+      "cases": [
+        {
+          "phase": "baseline",
+          "functions_sha256": "0beac6bc1957ee7c9debc49cad46819664911ea08b7be608a688b4de34226300",
+          "completed_report_preserved": false,
+          "after_sha256": "7e3eb5fc8da3096692ed52e9ff2a99e4f5bcb43640259131f8ab783a7723862a"
+        },
+        {
+          "phase": "candidate",
+          "functions_sha256": "80b754b3eaa4ad273fe33a23ec676b0210357b157e98554c42fe8f520e7a1b1e",
+          "completed_report_preserved": true,
+          "after_sha256": "6af78dc40e9b6d59bef56db1c3f4c09f9faa52f6903c956e18a80d2b1c17e2ed"
+        }
+      ]
+    }
+  },
+  "scope": "Timing-report integrity and gate routing; fixture success is not complete installed-wheel or release qualification",
+  "host_lifecycle": {
+    "state": "running; exact wrapper and CLI child observed live",
+    "source_revision": "46c14963b5ee48b5f12a9869af2910b21ba1c10a",
+    "maximum_seconds": 3600,
+    "force_regeneration": true,
+    "project_configured_cli_model": true,
+    "receipt_promoted": false
+  },
+  "native_full_gate_passed": false,
+  "release_acceptance": false,
+  "framework_revision": "46c14963b5ee48b5f12a9869af2910b21ba1c10a",
+  "review": "https://github.com/jordanhubbard/literate-ai/pull/124",
+  "hosted_ci": {
+    "run": "https://github.com/jordanhubbard/literate-ai/actions/runs/39868680966",
+    "state": "in_progress"
+  },
+  "source_sdk_admitted": false
+}

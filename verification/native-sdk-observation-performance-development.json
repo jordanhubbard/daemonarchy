@@ -1,0 +1,116 @@
+{
+  "schema": "literate-ai/retained-observation-performance-development@1",
+  "observed_utc": "2026-10-22T14:06:54.400368+00:00",
+  "work_item": "RETAINED-OBSERVATION-PERF-001",
+  "issue": "https://github.com/jordanhubbard/literate-ai/issues/117",
+  "scope": "Fresh direct RECORD enumeration with full controller regression, clean Linux wheel and complete configured host lifecycle; canonical FreeBSD CLI qualification remains pending",
+  "source_sha256": {
+    "src/literate_ai/adapters/standard_lifecycle_binding.py": "c52fa742ef21d465293b65afab9df7cc8c5a1b89a0bcf70e764148aca7ece39d",
+    "tests/critical/test_standard_lifecycle_binding_adapter.py": "c1139128918d8eee24545cf54d322211a0da36b9d0b14367276be645c13cb0c2"
+  },
+  "focused_controller_cases": 5,
+  "record_bytes_bound": 16777216,
+  "record_entries_bound": 100000,
+  "non_record_fallback_preserved": true,
+  "current_bytes_always_hashed": true,
+  "canonical_identity_preserved_on_real_metadata_fixture": true,
+  "full_regression": {
+    "executed": 2131,
+    "failed": 0,
+    "known_failed": 0,
+    "passed": 2131,
+    "selected": 2201,
+    "skipped": 70,
+    "seconds": 2336.332,
+    "workers": 2,
+    "report_sha256": "a6be8c0d17227194d10e30edd379bb995b296e675cb85a27df4520193d4b2b19",
+    "qualified_code_revision": "760bfa0925ffd5ab1083de29aae54c7be9f5ccab"
+  },
+  "native_comparison": {
+    "source_sha256": "c52fa742ef21d465293b65afab9df7cc8c5a1b89a0bcf70e764148aca7ece39d",
+    "identities_equal": true,
+    "scope": "Alternating instrumented source-observer calls against the original installed distribution; candidate source imported separately, not installed-wheel or public CLI qualification",
+    "samples": [
+      {
+        "index": 0,
+        "name": "baseline",
+        "seconds": 24.52,
+        "members": 1235,
+        "identity": "sha256:0ff58bd5a0332856bbc0ed57cc1417bc8ab75902edcd3ce5de24e79cd9667c92",
+        "profile_sha256": "e54fea5e1ea18553dcfb81ecfa9ee5f570b6438b05731369fa2e8f187afd07be",
+        "stat_calls": 7049
+      },
+      {
+        "index": 1,
+        "name": "candidate",
+        "seconds": 11.675,
+        "members": 1235,
+        "identity": "sha256:0ff58bd5a0332856bbc0ed57cc1417bc8ab75902edcd3ce5de24e79cd9667c92",
+        "profile_sha256": "fbda30ca80cbd0d2d3f3fb7c4f37116eaf5619ee7d9c828d4c8d7fbcfeb364c5",
+        "stat_calls": 4944
+      },
+      {
+        "index": 2,
+        "name": "candidate",
+        "seconds": 11.366,
+        "members": 1235,
+        "identity": "sha256:0ff58bd5a0332856bbc0ed57cc1417bc8ab75902edcd3ce5de24e79cd9667c92",
+        "profile_sha256": "a70d1a82f304dbf071234cf889f09b116d1f973e050bd2bf75f3d0997011c0dd",
+        "stat_calls": 4944
+      },
+      {
+        "index": 3,
+        "name": "baseline",
+        "seconds": 23.411,
+        "members": 1235,
+        "identity": "sha256:0ff58bd5a0332856bbc0ed57cc1417bc8ab75902edcd3ce5de24e79cd9667c92",
+        "profile_sha256": "1f9bd30ba6769839202a30ca77170cd06b4ca56cf66ec2252b28a609184f6538",
+        "stat_calls": 7043
+      }
+    ]
+  },
+  "installed_wheel_qualified": true,
+  "canonical_native_cli_qualified": false,
+  "release_authorized": false,
+  "wheel_qualification": {
+    "target": "Linux x86_64 / Python 3.14",
+    "seconds": 524.198,
+    "identity": "sha256:c6d80a19a0f682068dd9488d022c5ab3c9544e00009b8c2da840c8725ce1223a",
+    "distribution_identity": "sha256:7de0ee7ad86921645c2f2a01164ecce7b2c6785d00d104805dc2f888f17530ee",
+    "members": 1235,
+    "tamper_refusal": "standard_binding.changed",
+    "report_sha256": "4f05b4f61ad6c752b59964c36942c3abf53a792f4073941cb2543ae545310be8"
+  },
+  "native_offline_bootstrap": {
+    "passed": true,
+    "seconds": 133.027,
+    "distribution_identity": "sha256:7de0ee7ad86921645c2f2a01164ecce7b2c6785d00d104805dc2f888f17530ee",
+    "dependency_closure_identity": "sha256:10c37bfd5831046ff44b44b859e4802b6965ef395ad9f5de865fefd18abf0a11"
+  },
+  "native_project_initialization": {
+    "passed": true,
+    "seconds": 114.637
+  },
+  "canonical_native_cli_status": {
+    "status": "failed",
+    "reason": "Authorized public build timed out after 3600 seconds",
+    "authorized_execution_budget_seconds": 3600,
+    "supervised_total_seconds": 4162.132,
+    "exit_code": 1,
+    "owned_source_server_terminal": 0,
+    "admission_earned": false,
+    "bootstrap_compiler_source_admitted": false
+  },
+  "framework_current_lifecycle_receipt": {
+    "passed": true,
+    "tests": 233,
+    "seconds": 1385.562,
+    "receipt_identity": "sha256:97da2a96e8e78be2474176c42430a23a7e8d10b38d0654e66ecd16a10e4171cd",
+    "finalized_candidate_identity": "sha256:b6691c9b4ae0714a643e6f9c6a7a517d58d2c0b8814505f971e2ad6f3f5e8a08",
+    "promotion": "litai project test-receipt update",
+    "verify_current": true,
+    "report_sha256": "75354df5b482dd15d98bbde2e06a2505e2cd32d95855a44a8127f436f2f3f4f3",
+    "driver_implementation_identity": "sha256:ae7e2958c721d85df08cd527a3e24e954e369221ba26cb0feb7547012f0809a9"
+  },
+  "next_action": "Profile actual authorized execution; the direct RECORD optimization alone does not satisfy the installed native lifecycle deadline"
+}

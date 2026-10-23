@@ -33,19 +33,21 @@ and the native acceptance inventory remain authoritative for implementation stat
 
 ## Requirement: Approval and revocation
 
-Require console-approved client access. Pair/Unpair must revoke active access and stale generation state, and permit a new pairing. Never treat an ordinary SSH disconnect as task completion.
+Require console approval for a new agent. Preserve an installed-system hardware-debugging grant, approved keys, server identity and private evidence across reboot; resume safely without fresh confirmation or deleting stale state. Resumed background listeners refuse unknown keys. Explicit Unpair or interactive stop revokes active connections and the retained grant. Refresh runtime generations and verify listener identity before signaling a retained PID. Never treat an ordinary SSH disconnect as task completion.
 
 ## Requirement: Bounded evidence
 
-Collect bounded private kernel/system/process/device observations without reading console input, credentials or broad unsafe sysctl enumeration. Retain controller evidence and explicit transport-loss records.
+Passive collectors retain bounded private kernel/system/process/device observations without reading console input, credentials or broad unsafe sysctl enumeration. Retain controller evidence and explicit transport-loss records. Approved loader command input is a separate control channel; retained controller captures contain output, not typed input or pairing keys.
 
 ## Requirement: Observation identity
 
 Distinguish a new boot from an SSH/listener restart using target identity and retained evidence. Missing panic or event output does not identify the cause of a reset.
 
-## Requirement: Cleanup and future transport
+## Requirement: Cleanup and wired boot transport
 
-Finite diagnostic jobs must clean up only their owned state. Early loader/kernel network debugging remains future work with explicit wired-NIC, trust and native acceptance requirements.
+Finite diagnostic jobs clean up only their owned state. Provide an explicitly enabled wired UEFI loader console with authenticated, session-bound and sequenced input. Preserve ordinary loader variable inspection/update and boot commands, bounded private output retention, local console recovery and boot without an available peer. Reject forged, replayed, malformed and oversized input. Remove pairing key material from inspectable environment variables after activation and revoke it when disabled.
+
+This product targets FreeBSD only. Qualify the actual FreeBSD EFI binary in a disposable UEFI VM and on the selected physical firmware/NICs. Firmware network availability and the transition to kernel networking are distinct evidence requirements; report any pre-driver gap rather than claiming continuous kernel debugging.
 
 See [the public contract](interfaces/contract.md), [acceptance requirements](acceptance.md)
 and [product traceability](../../docs/architecture/design-traceability.md).

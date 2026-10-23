@@ -1,0 +1,41 @@
+{
+  "canonical_components_registered": 0,
+  "directory_closure_resolved": false,
+  "directory_edges": 59,
+  "full_sweep_initial": {
+    "admissible_graph": false,
+    "limitation": "Unqualified extra-directory paths were rejected or incorrectly split at dots; no full graph acceptance is claimed.",
+    "missing_or_unsupported": 19,
+    "producer_revision": "eb58622a8b26bb2cd6064ee70a97c79b14351187",
+    "query_rejected": 154,
+    "records": 1790,
+    "report_sha256": "70d13a19247aee1d3bfa7dcf997a52f42f36d637b4e99661653a30f3a58b45ee"
+  },
+  "native_returned_query_outputs_verified": true,
+  "portable_tests_passed": 11,
+  "producer_sha256": "40b472b57c5d59cf013df3d8bd8f6d88b03dec9b7431e858ec3658651f31bf50",
+  "qualified_packages": 0,
+  "records": 20,
+  "report_sha256": "ff75b575e2200cfe9117a823af90608936e8d34489a9091945f112e1a95d0cbe",
+  "schema": "daemonarchy/native-dirdeps-refinement@1",
+  "seeds": [
+    "bin/ls",
+    "bin/timeout"
+  ],
+  "source_revision": "92276fc76c65f3ca31552d2e1833a6063361ff64",
+  "state": "observation-only",
+  "unqualified_targets": [
+    {
+      "consumer": [
+        "bin/timeout",
+        "amd64"
+      ],
+      "reason": "no-established-target-context",
+      "target": "gnu/lib/csu"
+    }
+  ],
+  "validation_sha256": {
+    ".github/workflows/native-graph.yml": "f82760f1d56d568a8a5e05cd5e0b676e5916492fefe521d44e19d9ca933bb4fd",
+    "tests/native-dirdeps.py": "b1fb7cce1f6889f001f4450ba6f3b965dede9a67b38f210ea180ad4e5a39f014"
+  }
+}

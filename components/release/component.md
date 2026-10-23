@@ -63,7 +63,7 @@ source_dependencies: []
 ---
 # Release assembly and qualification
 
-Goals: G6. This is a retained product contract, not an
+Goals: G6, G8, G9. This is a retained product contract, not an
 independently executable or regeneratively qualified Component. Existing source
 and the native acceptance inventory remain authoritative for implementation status.
 
@@ -71,9 +71,21 @@ and the native acceptance inventory remain authoritative for implementation stat
 
 Record exact source, ports, desktop, compatibility, package catalogue, firmware and toolchain inputs. Keep kernel, world, jail and external drivers on compatible selections.
 
+## Requirement: Complete source and ports Component coverage
+
+Represent the complete pinned source and ports trees through canonical Component contracts and input ownership, including shared support inputs and unselected origins. Bind target/options variants and native dependencies explicitly. Reject missing or ambiguous ownership. Keep catalog, admission, selected locks, build, test and independent acceptance states distinct; qualify the exact selected release closure.
+
 ## Requirement: Artifact-bound evidence
 
 Bind test results to exact image, source, target/firmware mode and scope. Earlier-image or component results cannot silently qualify a rebuilt final ISO.
+
+## Requirement: Per-unit packages and measured build improvement
+
+Produce a versioned pkg artifact for every compositional unit with exact source/build provenance and typed dependencies. Qualify source/build products separately from composed runtime installation. Use the Component graph through the native lifecycle and demonstrate materially faster end-to-end build and ISO packaging against the same-target baseline. Replacing make with another build system is permitted; correct invalidation, output and acceptance remain required.
+
+## Requirement: Unified native development and cut-over
+
+Provide one installed Literate AI build/test/package interface for selected source and ports targets in a parallel workspace. Keep independent editable upstream-derived checkouts, control definitions, object/staging/package outputs and evidence discoverable. Preserve regular upstream imports without copying wrappers throughout upstream directories. Use native make targets as an initial bridge and select the executor by equivalent elapsed-time and correctness evidence. Record a designated cut-over and prove selection rollback before retiring preceding build entrypoints.
 
 ## Requirement: Publication consistency
 

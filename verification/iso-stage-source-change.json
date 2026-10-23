@@ -1,0 +1,44 @@
+{
+  "schema": "daemonarchy/retained-source-change@1",
+  "work_id": "TESTISO-001",
+  "basis_revision": "7344996ddf43dc257d35e021e0f8fce84f17c9e4",
+  "historical_baseline": "verification/retained-inputs.json",
+  "historical_baseline_sha256": "444ddd323ad1e6574278302c1dd4f6204b27f8fe8e8ebb7390d3747df583d279",
+  "reason": "Allocate a fresh private ISO stage and preserve preceding attempts; no input, signing, driver or publication policy change.",
+  "replaced": [
+    {
+      "path": "build-iso.sh",
+      "owner": "release",
+      "sha256": "01e04c6181c3313f5c89fa0408ddbcd39a11bb5593092e273d2aa6722031d970",
+      "executable": true
+    }
+  ],
+  "candidate_files": [
+    {
+      "path": "build-iso.sh",
+      "owner": "release",
+      "sha256": "7f963a10a7bd318fe7e09077a92ecb42efaa1f7b74990c4d807c9f458c57327d",
+      "executable": true
+    },
+    {
+      "path": "scripts/iso-stage.sh",
+      "owner": "release",
+      "sha256": "98db71c1cae5dff07aaaa1366bdd0a79a2c2f975efa38124c39f1c2787229a5e",
+      "executable": false
+    },
+    {
+      "path": "tests/iso-stage.py",
+      "owner": "release",
+      "sha256": "18009e7589f0e9556aa371d61c85bb033a9f775e20d69496d463e1b3c0854c95",
+      "executable": false
+    },
+    {
+      "path": ".github/workflows/native-graph.yml",
+      "owner": "release",
+      "sha256": "1f6e48fe5d04106ddf38af6e70f61d0db1caaec3864f133d0b850e5c38166722",
+      "executable": false
+    }
+  ],
+  "authority": "original-source",
+  "lifecycle_receipt": false
+}

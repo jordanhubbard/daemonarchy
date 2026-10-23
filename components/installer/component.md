@@ -69,7 +69,7 @@ Create the original ZFS root with canmount=noauto and explicitly mount it for in
 
 ## Requirement: Useful progress
 
-Expose actual stages, byte/package totals, waiting and errors independently of ANSI animation. The planned visualizer consumes this state and preserves readable plain output.
+Expose actual stages, observed byte/package totals, waiting and errors independently of ANSI animation. Never derive completed work from elapsed time. Completion requires the installer result, not a full meter or a package download event. Multiple visualizer styles consume measured changes; idle redraws, reduced motion and resizing cannot advance counters. Preserve readable plain output, small terminals, native 16/256-color consoles and SSH/serial operation. Bound observation and rendering cost as logs grow.
 
 See [the public contract](interfaces/contract.md), [acceptance requirements](acceptance.md)
 and [product traceability](../../docs/architecture/design-traceability.md).

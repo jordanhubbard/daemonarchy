@@ -25,6 +25,7 @@ wait_for() {
   fail "timed out waiting for $pattern"
 }
 sed -e "s|^state=.*|state=$work/state|" \
+    -e "s|^legacy=.*|legacy=$work/no-legacy|" \
     -e "s|^self=.*|self=$work/remote-debug|" \
     "$here/overlay/usr/local/libexec/daemonarchy-installer/remote-debug" >"$work/remote-debug"
 cp "$here/overlay/usr/local/libexec/daemonarchy-installer/network-addresses" "$work/"

@@ -1,0 +1,124 @@
+{
+  "canonical_components_registered": 0,
+  "complete_action_graph": false,
+  "configuration_sha256": "1af9ffb1275f998385d8d4da37346bae4b31fe62e0730ec8ed5b59a2d80fc4be",
+  "contexts": [
+    "amd64",
+    "host"
+  ],
+  "directory_graph": {
+    "acyclic": true,
+    "cyclic_or_cycle_dependent_nodes": [],
+    "dependency_first_order": [
+      [
+        "bin/sh",
+        "host"
+      ],
+      [
+        "include",
+        "amd64"
+      ],
+      [
+        "include/arpa",
+        "amd64"
+      ],
+      [
+        "include/rpc",
+        "amd64"
+      ],
+      [
+        "include/rpcsvc",
+        "amd64"
+      ],
+      [
+        "include/xlocale",
+        "amd64"
+      ],
+      [
+        "lib/csu/amd64",
+        "amd64"
+      ],
+      [
+        "lib/libc_nonshared",
+        "amd64"
+      ],
+      [
+        "lib/libcompiler_rt",
+        "amd64"
+      ],
+      [
+        "lib/libgcc_eh",
+        "amd64"
+      ],
+      [
+        "lib/libssp_nonshared",
+        "amd64"
+      ],
+      [
+        "lib/libsys",
+        "amd64"
+      ],
+      [
+        "lib/ncurses/tinfo",
+        "host"
+      ],
+      [
+        "usr.bin/yacc",
+        "host"
+      ],
+      [
+        "lib/libc",
+        "amd64"
+      ],
+      [
+        "lib/libgcc_s",
+        "amd64"
+      ],
+      [
+        "lib/libutil",
+        "amd64"
+      ],
+      [
+        "lib/ncurses/tinfo",
+        "amd64"
+      ],
+      [
+        "bin/ls",
+        "amd64"
+      ]
+    ],
+    "directory_edges": 52,
+    "observed_directory_closure_resolved": true,
+    "unresolved_nodes": []
+  },
+  "limitations": [
+    "Directory metadata may be stale or omit compilation inputs",
+    "amd64/host/host32/common contexts only; other variants remain visible as unsupported",
+    "No compilation, per-unit packages, canonical locks or acceptance receipts"
+  ],
+  "make_sha256": "499fdad479abdc4203b911c7f2bd8ae94704e5d7a9d6172b1893822bcf8ad31e",
+  "platform": "FreeBSD-16.0-CURRENT-amd64-64bit-ELF",
+  "producer_revision": "eb58622a8b26bb2cd6064ee70a97c79b14351187",
+  "producer_sha256": "2754beaa97856e88c21a901a24a032db071c8e07ac84498b7b42c9c53a4a7db7",
+  "qualified_packages": 0,
+  "records": 19,
+  "report_sha256": "0399561fea51e437f22dcf9a24f5b1d6a369f0444667f88f7cdc2f702854b262",
+  "revision": "92276fc76c65f3ca31552d2e1833a6063361ff64",
+  "schema": "daemonarchy/native-dirdeps-evidence@1",
+  "seeds": [
+    "bin/ls"
+  ],
+  "shared_makefiles": 40,
+  "state": "observation-only",
+  "target": "amd64",
+  "tests": {
+    "command": "PYTHONDONTWRITEBYTECODE=1 python3 tests/native-dirdeps.py -v",
+    "native_execution_acceptance": false,
+    "platform": "macos",
+    "portable_passed": 10
+  },
+  "validation_sha256": {
+    ".github/workflows/native-graph.yml": "f82760f1d56d568a8a5e05cd5e0b676e5916492fefe521d44e19d9ca933bb4fd",
+    "tests/native-dirdeps.py": "b113fae7f828336efa83949df7bb2f51c6161867f82c2871817cf8437d934b55"
+  }
+}

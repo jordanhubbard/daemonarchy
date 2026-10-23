@@ -53,6 +53,11 @@ sendmail_enable="NONE"
 cron_enable="NO"
 update_motd="NO"
 EOF
+if [ -f "$world/boot/modules/if_brcmfmac.ko" ]; then
+    # The preview image carries a kernel-matched Broadcom module and firmware.
+    # Load it after the live root is mounted, before netif enumerates radios.
+    echo 'kld_list="if_brcmfmac"' >>"$world/etc/rc.conf"
+fi
 ln -sf /tmp/resolv.conf "$world/etc/resolv.conf"
 echo 'resolv_conf=/tmp/resolv.conf' >"$world/etc/resolvconf.conf"
 
@@ -72,4 +77,12 @@ if [ -d "$secureboot_payload" ]; then
     /usr/local/bin/python3.12 "$secureboot_payload/maintenance.py" install \
         "$secureboot_payload/bundle.txz" --signature "$secureboot_payload/bundle.txz.sig" \
         --certificate "$secureboot_payload/certificate.pem" --root "$world" || exit 1
+fi
+
+# Poudriere creates the EFI boot image from this live root after this hook.
+# The selected loader and Lua entrypoint affect only the live medium, not sets.
+test_loader="$world/usr/local/share/daemonarchy-installer/test-loader"
+if [ -d "$test_loader" ]; then
+    /usr/local/bin/python3.12 "$test_loader/install.py" install \
+        --bundle "$test_loader" --root "$world" || exit 1
 fi

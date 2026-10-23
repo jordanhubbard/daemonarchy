@@ -1,0 +1,370 @@
+{
+  "schema": "daemonarchy/source-compiler-relocation-development@1",
+  "observed_utc": "2026-10-22T20:11:39.498302+00:00",
+  "scope": "Actual source-built package C compiler, exact library/header/alias materialization and retired-path relocation diagnostic; no live source producer or SDK admission",
+  "source_revision": "d98e6c2da7571295bb3c70236afe637a987370e0",
+  "original_build_record": "verification/native-sdk-build-development.json",
+  "runtime_closure_record": "verification/source-compiler-runtime-closure-development.json",
+  "source_archive_manifest_sha256": "e94f8b5ba70fdf1287c5a783c0fbb1422e45a2f3cd358f683eb58d5c61d1f894",
+  "selection_sha256": "f4a36655339ced2877c3ab16e0843fbe270d88a60271670fcc16b3e93dd64d34",
+  "helper_sha256": "bef053c59ee28e4566bced55b9fcef7333f1dea4231c06e59cb5a83495dddfe1",
+  "installed_framework_distribution": "sha256:e0dd058e6e67bca93e3dd485bc6c4cc43fa8215a33e2160503809f5afdc359d7",
+  "native_target": {
+    "sys_platform": "freebsd16",
+    "machine": "amd64",
+    "release": "16.0-CURRENT",
+    "python": "3.12.15",
+    "kernel_osreldate": "1600028"
+  },
+  "uid": 2002,
+  "native_materialization_and_compiler_terminal": {
+    "exit_code": 0,
+    "schema": "daemonarchy/native-command-terminal@1",
+    "seconds": 2.271
+  },
+  "regular_files_verified": 3563,
+  "regular_bytes": 333420987,
+  "symbolic_aliases_verified": 28,
+  "hardlink_aliases_verified": 9,
+  "case_sensitive_names_preserved": true,
+  "initial_sdk_path_retired": true,
+  "observations": [
+    {
+      "phase": "initial",
+      "compiler_sha256": "ec5e6df79844bfc5cee0c4e9b611d38715e65031b07370c66c252e385c5c4afd",
+      "compiler_version": "FreeBSD clang version 21.1.8 (https://github.com/llvm/llvm-project.git llvmorg-21.1.8-0-g2078da43e25a)",
+      "compiler_linker_and_application_libraries": {
+        "compiler": [
+          "usr/lib/libprivateclang.so.21",
+          "usr/lib/libprivatellvm.so.21",
+          "lib/libz.so.6",
+          "usr/lib/libprivatezstd.so.5",
+          "usr/lib/libexecinfo.so.1",
+          "lib/libncursesw.so.9",
+          "lib/libthr.so.3",
+          "lib/libc++.so.1",
+          "lib/libcxxrt.so.1",
+          "lib/libm.so.5",
+          "lib/libc.so.7",
+          "lib/libgcc_s.so.1",
+          "lib/libelf.so.2",
+          "lib/libtinfow.so.9",
+          "lib/libsys.so.7"
+        ],
+        "linker": [
+          "usr/lib/libprivatellvm.so.21",
+          "usr/lib/libexecinfo.so.1",
+          "lib/libtinfow.so.9",
+          "lib/libz.so.6",
+          "usr/lib/libprivatezstd.so.5",
+          "lib/libthr.so.3",
+          "lib/libc++.so.1",
+          "lib/libcxxrt.so.1",
+          "lib/libm.so.5",
+          "lib/libc.so.7",
+          "lib/libgcc_s.so.1",
+          "lib/libelf.so.2",
+          "lib/libsys.so.7"
+        ],
+        "application": [
+          "lib/libc.so.7",
+          "lib/libsys.so.7"
+        ]
+      },
+      "include_search_paths": [
+        "usr/lib/clang/21/include",
+        "usr/include"
+      ],
+      "output_sha256": "ee90b10b668f6ba7ee74be07d7763b40af74d240f722291668e31a58c57492f7",
+      "stdout_sha256": "7fb7a0a3f7959c1047ace6c1afdf889287f4bd27bc91f5d6ec9b81ce288a94ca",
+      "guest_kernel_and_elf_interpreter_remain_platform_dependencies": true
+    },
+    {
+      "phase": "relocated",
+      "compiler_sha256": "ec5e6df79844bfc5cee0c4e9b611d38715e65031b07370c66c252e385c5c4afd",
+      "compiler_version": "FreeBSD clang version 21.1.8 (https://github.com/llvm/llvm-project.git llvmorg-21.1.8-0-g2078da43e25a)",
+      "compiler_linker_and_application_libraries": {
+        "compiler": [
+          "usr/lib/libprivateclang.so.21",
+          "usr/lib/libprivatellvm.so.21",
+          "lib/libz.so.6",
+          "usr/lib/libprivatezstd.so.5",
+          "usr/lib/libexecinfo.so.1",
+          "lib/libncursesw.so.9",
+          "lib/libthr.so.3",
+          "lib/libc++.so.1",
+          "lib/libcxxrt.so.1",
+          "lib/libm.so.5",
+          "lib/libc.so.7",
+          "lib/libgcc_s.so.1",
+          "lib/libelf.so.2",
+          "lib/libtinfow.so.9",
+          "lib/libsys.so.7"
+        ],
+        "linker": [
+          "usr/lib/libprivatellvm.so.21",
+          "usr/lib/libexecinfo.so.1",
+          "lib/libtinfow.so.9",
+          "lib/libz.so.6",
+          "usr/lib/libprivatezstd.so.5",
+          "lib/libthr.so.3",
+          "lib/libc++.so.1",
+          "lib/libcxxrt.so.1",
+          "lib/libm.so.5",
+          "lib/libc.so.7",
+          "lib/libgcc_s.so.1",
+          "lib/libelf.so.2",
+          "lib/libsys.so.7"
+        ],
+        "application": [
+          "lib/libc.so.7",
+          "lib/libsys.so.7"
+        ]
+      },
+      "include_search_paths": [
+        "usr/lib/clang/21/include",
+        "usr/include"
+      ],
+      "output_sha256": "ee90b10b668f6ba7ee74be07d7763b40af74d240f722291668e31a58c57492f7",
+      "stdout_sha256": "7fb7a0a3f7959c1047ace6c1afdf889287f4bd27bc91f5d6ec9b81ce288a94ca",
+      "guest_kernel_and_elf_interpreter_remain_platform_dependencies": true
+    }
+  ],
+  "link_trace": {
+    "schema": "daemonarchy/source-compiler-link-trace-diagnostic@1",
+    "exit_code": 0,
+    "seconds": 0.032039662999977736,
+    "source_revision": "d98e6c2da7571295bb3c70236afe637a987370e0",
+    "compiler_entrypoint": "usr/bin/cc",
+    "source_sha256": "29cda1888730ecc07d3a57619346191895e5cbbb0e0da4ed8ff277d8d08332ed",
+    "link_time_inputs": [
+      "usr/lib/crt1.o",
+      "usr/lib/crti.o",
+      "usr/lib/crtbegin.o",
+      "lib/libgcc_s.so.1",
+      "lib/libc.so.7",
+      "lib/libgcc_s.so.1",
+      "usr/lib/crtend.o",
+      "usr/lib/crtn.o"
+    ],
+    "temporary_object_names": [
+      "probe-owned-v2.o"
+    ],
+    "retained_object_sha256": "d6c5309edb650b75c92a8c080d838ad67deedc1bcfaba405c9a123caaec86af0",
+    "all_link_inputs_within_declared_sdk_or_owned_temporary_objects": true,
+    "source_library_script_resolves_in_relocated_sysroot": true,
+    "runtime_libraries": [
+      "lib/libc.so.7",
+      "lib/libsys.so.7"
+    ],
+    "stdout_sha256": "7fb7a0a3f7959c1047ace6c1afdf889287f4bd27bc91f5d6ec9b81ce288a94ca",
+    "trace_sha256": "dd34691c1cc9f771e234642faa51f55b88c56a7e3a2437b4727605685a6fdef4",
+    "guest_kernel_and_elf_interpreter_remain_platform_dependencies": true,
+    "source_sdk_admitted": false,
+    "live_source_producer_admitted": false,
+    "release_qualified": false
+  },
+  "exercised_entrypoint": "usr/bin/cc",
+  "uppercase_CC_absolute_wrapper_invoked": false,
+  "other_compiler_languages_and_targets_qualified": false,
+  "guest_kernel_and_elf_interpreter_remain_platform_dependencies": true,
+  "source_sdk_admitted": false,
+  "live_source_producer_admitted": false,
+  "complete_sdk_license_qualification": false,
+  "product_receipt": false,
+  "per_unit_pkg_provenance_complete": false,
+  "release_qualified": false,
+  "controller_failures_retained": [
+    {
+      "phase": "staging-completion check",
+      "error": "Popen.check_returncode attribute error before diagnostic launch",
+      "recovery": "Existing staged archive independently matched regenerated full stream hash before same-case launch",
+      "evidence_sha256": "19964d053f28054c4e27dd262f94535738fee542205de28e4a1122eedebd3602"
+    },
+    {
+      "phase": "first link-trace inspection",
+      "error": "Compiler had already removed its temporary object",
+      "recovery": "Second trace control retains and hashes its explicit object; path restrictions remain unchanged",
+      "evidence_sha256": "c4f134b7968354b3591166f79dadd00139cd1c3af54d4659ea19b0eac54f444f"
+    }
+  ],
+  "raw_evidence": {
+    "result.json": {
+      "sha256": "7e9b84c36fb64fffd1a46c990f4c8002c5d13ccf0b5e438ff3624effcc4f1aa5",
+      "bytes": 8595
+    },
+    "progress.json": {
+      "sha256": "a8f1588dff560ebb4976222d4754c4e324ffbcd6a8ef7874f9c1d6057df1abbb",
+      "bytes": 99
+    },
+    "probe.c": {
+      "sha256": "29cda1888730ecc07d3a57619346191895e5cbbb0e0da4ed8ff277d8d08332ed",
+      "bytes": 117
+    },
+    "qualify.py": {
+      "sha256": "bef053c59ee28e4566bced55b9fcef7333f1dea4231c06e59cb5a83495dddfe1",
+      "bytes": 8399
+    },
+    "diagnostic-command/started.json": {
+      "sha256": "7a6d1e397d9002f35fbf2f9dcca3c4b41aa85e934b1f09266a45b153094cae27",
+      "bytes": 588
+    },
+    "diagnostic-command/terminal.json": {
+      "sha256": "6c4fb03bffefd1059140e7f08aaefc2e92b315ab26360168609f8225ad341091",
+      "bytes": 86
+    },
+    "diagnostic-command/stdout.log": {
+      "sha256": "dee8097aa60347bcc65f8d4e86ad449d48895c535f183c4e073035ec91a43591",
+      "bytes": 105
+    },
+    "diagnostic-command/stderr.log": {
+      "sha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855",
+      "bytes": 0
+    },
+    "link-trace-v2-result.json": {
+      "sha256": "a362c623ae6f670afa223ad534906337b53ff9a36125142184322d1c56abdd55",
+      "bytes": 1243
+    },
+    "initial-application-ldd.stderr": {
+      "sha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855",
+      "bytes": 0
+    },
+    "initial-application-ldd.stdout": {
+      "sha256": "a54a8810c221adb9c9b1d86822af9d4e21adb3c24894ecf1faa111044b0a6ae7",
+      "bytes": 296
+    },
+    "initial-compile.stderr": {
+      "sha256": "b6371d50f078232c3e2c3a66c23d9f3d3aea5f92638af668dd50e79f59017221",
+      "bytes": 2651
+    },
+    "initial-compile.stdout": {
+      "sha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855",
+      "bytes": 0
+    },
+    "initial-compiler-ldd.stderr": {
+      "sha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855",
+      "bytes": 0
+    },
+    "initial-compiler-ldd.stdout": {
+      "sha256": "1878dcb1cead94a4b7bd98ec89ef373ff11f3db4c318e8e425d335c4b2d2d790",
+      "bytes": 1792
+    },
+    "initial-linker-ldd.stderr": {
+      "sha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855",
+      "bytes": 0
+    },
+    "initial-linker-ldd.stdout": {
+      "sha256": "c78dcf2e163ef2108d8a764a908544fd5fbcd813bdfa35d7f20276be83bf0d8b",
+      "bytes": 1534
+    },
+    "initial-run.stderr": {
+      "sha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855",
+      "bytes": 0
+    },
+    "initial-run.stdout": {
+      "sha256": "7fb7a0a3f7959c1047ace6c1afdf889287f4bd27bc91f5d6ec9b81ce288a94ca",
+      "bytes": 20
+    },
+    "initial-version.stderr": {
+      "sha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855",
+      "bytes": 0
+    },
+    "initial-version.stdout": {
+      "sha256": "71063b1535ce77ea565f86c7182e74346b3a7990fbc2f85ae854640a9a06e627",
+      "bytes": 264
+    },
+    "link-trace-v2-ldd.stderr": {
+      "sha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855",
+      "bytes": 0
+    },
+    "link-trace-v2-ldd.stdout": {
+      "sha256": "a95a9428c0c2c56de1b7155db4b147241693093d05ce1bc8180369d5efb3e2b3",
+      "bytes": 306
+    },
+    "link-trace-v2-object.stderr": {
+      "sha256": "51b51ea811168cab1c8e5227eb77943f2a73fe00559026152ecba5582afed08c",
+      "bytes": 97
+    },
+    "link-trace-v2-object.stdout": {
+      "sha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855",
+      "bytes": 0
+    },
+    "link-trace-v2-run.stderr": {
+      "sha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855",
+      "bytes": 0
+    },
+    "link-trace-v2-run.stdout": {
+      "sha256": "7fb7a0a3f7959c1047ace6c1afdf889287f4bd27bc91f5d6ec9b81ce288a94ca",
+      "bytes": 20
+    },
+    "link-trace-v2.stderr": {
+      "sha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855",
+      "bytes": 0
+    },
+    "link-trace-v2.stdout": {
+      "sha256": "dd34691c1cc9f771e234642faa51f55b88c56a7e3a2437b4727605685a6fdef4",
+      "bytes": 678
+    },
+    "link-trace.stderr": {
+      "sha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855",
+      "bytes": 0
+    },
+    "link-trace.stdout": {
+      "sha256": "1b718d5ca17048dc063bb82964bda3416cb8ba189cc05afb4b4914161dab29de",
+      "bytes": 676
+    },
+    "relocated-application-ldd.stderr": {
+      "sha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855",
+      "bytes": 0
+    },
+    "relocated-application-ldd.stdout": {
+      "sha256": "328a6fcd6ed45279d0e398baa152e3d6970e0c467fc9b2df70d0e63627947bd2",
+      "bytes": 302
+    },
+    "relocated-compile.stderr": {
+      "sha256": "a715cb8e3b35055494203b5808ed3b19ba9d148901a2801e22b110a5cf63977e",
+      "bytes": 2687
+    },
+    "relocated-compile.stdout": {
+      "sha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855",
+      "bytes": 0
+    },
+    "relocated-compiler-ldd.stderr": {
+      "sha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855",
+      "bytes": 0
+    },
+    "relocated-compiler-ldd.stdout": {
+      "sha256": "57c257e16165dae7b2641e2e8c0b95f0ec29a8abe8d046f1aeafcd904959ee1d",
+      "bytes": 1824
+    },
+    "relocated-linker-ldd.stderr": {
+      "sha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855",
+      "bytes": 0
+    },
+    "relocated-linker-ldd.stdout": {
+      "sha256": "7a1836a5e296e0fce94f61f7fb4cebf152fb86f67fd6f1eb3be41a457e352886",
+      "bytes": 1576
+    },
+    "relocated-run.stderr": {
+      "sha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855",
+      "bytes": 0
+    },
+    "relocated-run.stdout": {
+      "sha256": "7fb7a0a3f7959c1047ace6c1afdf889287f4bd27bc91f5d6ec9b81ce288a94ca",
+      "bytes": 20
+    },
+    "relocated-version.stderr": {
+      "sha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855",
+      "bytes": 0
+    },
+    "relocated-version.stdout": {
+      "sha256": "b413eedf9c337deab7b346a5ed9336e7c124ae12f5f8cd88036794e7463faf54",
+      "bytes": 266
+    }
+  },
+  "remaining": [
+    "Actual live source producer and canonical SDK lifecycle admission",
+    "Complete selected source/ports Component and per-unit package provenance",
+    "SDK license closure, other languages/targets and final product/ISO/hardware acceptance"
+  ]
+}

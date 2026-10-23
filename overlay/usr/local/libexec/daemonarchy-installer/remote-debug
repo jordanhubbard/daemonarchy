@@ -2,7 +2,8 @@
 # Console-approved SSH pairing for the live installer and installed systems.
 set -euo pipefail
 source "$(dirname "$0")/network-addresses"
-state=/var/run/daemonarchy-remote-debug
+state=/var/db/daemonarchy/remote-debug
+legacy=/var/run/daemonarchy-remote-debug
 self=/usr/local/libexec/daemonarchy-installer/remote-debug
 
 fail() { echo "Remote debug: $*" >&2; exit 1; }
@@ -80,6 +81,12 @@ authorize() {
   local type=$1 key=$2 fingerprint=$3 request temporary i
   [[ -d $state/requests && -f $state/active ]] || exit 1
   request=$(printf '%s %s' "$type" "$key" | sha256 -q)
+  if [[ -f $state/$request.approved && ! -f $state/$request.denied ]]; then
+    printf '%s %s\n' "$type" "$key"
+    return 0
+  fi
+  # A resumed background listener can admit only previously approved keys.
+  [[ -f $state/console-approval ]] || return 1
   if [[ ! -f $state/requests/$request ]]; then
     temporary=$(mktemp "$state/requests/.pending.XXXXXX")
     printf '%s\n%s %s\n' "$fingerprint" "$type" "$key" >"$temporary"
@@ -101,6 +108,7 @@ session_transition() {
   local operation=$1 result
   shift
   [[ $(id -u) == 0 && $(uname -s) == FreeBSD ]] || fail 'Requires a FreeBSD root console.'
+  [[ -d ${state%/*} ]] || mkdir -p -m 700 "${state%/*}"
   [[ ! -L $state.lock ]] || fail 'Refusing a symlinked session lock.'
   if lockf -k -s -t 5 "$state.lock" "$self" "_$operation" "$@"; then
     return 0
@@ -111,8 +119,54 @@ session_transition() {
   fi
 }
 
+adopt_legacy_session() {
+  local temporary generation old_generation
+  [[ ! -e $state && ! -L $state ]] || return 0
+  [[ -d $legacy && ! -L $legacy && -O $legacy && $(stat -f %Lp "$legacy") == 700 ]] || return 0
+  [[ -f $legacy/active && -f $legacy/generation && -f $legacy/host_key && ! -L $legacy/host_key ]] || return 0
+  # Only adopt state belonging to this helper, not another SSH server.
+  grep -qxF "AuthorizedKeysCommand $self authorize %t %k %f" "$legacy/sshd_config" || return 0
+  old_generation=$(cat "$legacy/generation")
+  [[ $old_generation != retired-* ]] || return 0
+  temporary=$(mktemp -d "${state%/*}/.debug-adopt.XXXXXX")
+  cp -a "$legacy/." "$temporary/"
+  generation=adopted-$BASHPID-$RANDOM-$RANDOM
+  printf '%s\n' "$generation" >"$temporary/generation"
+  printf '%s\n' "$old_generation" >"$temporary/previous-generation"
+  printf '%s\n' "$legacy/sshd_config" >"$temporary/listener-config"
+  # Older sessions did not record their port outside the SSH configuration.
+  awk '$1 == "Port" {print $2; exit}' "$legacy/sshd_config" >"$temporary/port"
+  rm -f "$temporary/console-approval"
+  find "$temporary" -type f -exec fsync {} +
+  fsync "$temporary/requests" "$temporary"
+  mv "$temporary" "$state"
+  fsync "${state%/*}"
+  # The old running shell still owns its old generation. Its EXIT cleanup must
+  # not revoke this adopted session. Retire its collector, keeping the evidence.
+  printf 'retired-%s\n' "$generation" >"$legacy/generation"
+  fsync "$legacy/generation" "$legacy"
+}
+
+listener_command_matches() {
+  local command=$1 config=$state/sshd_config
+  # A hot-deployed helper may adopt a listener started at the legacy path.
+  if [[ -f $state/listener-config && ! -L $state/listener-config && -O $state/listener-config ]]; then
+    IFS= read -r config <"$state/listener-config" || return 1
+  fi
+  [[ $command == *"/usr/sbin/sshd -D -E ${config%/*}/sshd.log -f $config"* ]]
+}
+
+session_running() {
+  local pid='' command=''
+  [[ -d $state && ! -L $state && -O $state && -f $state/active && -f $state/sshd.pid && ! -L $state/sshd.pid ]] || return 1
+  IFS= read -r pid <"$state/sshd.pid" || return 1
+  [[ $pid =~ ^[0-9]+$ ]] && ((pid > 1)) || return 1
+  command=$(ps -p "$pid" -o command= 2>/dev/null) || return 1
+  listener_command_matches "$command" && kill -0 "$pid" 2>/dev/null
+}
+
 stop_session() {
-  local expected=$1 pid='' command=''
+  local expected=$1 preserve=${2:-no} pid='' command=''
   [[ -e $state || -L $state ]] || return 0
   [[ -d $state && ! -L $state && -O $state ]] || fail 'Refusing unsafe debug session state.'
   if [[ $expected != any ]]; then
@@ -126,10 +180,24 @@ stop_session() {
   fi
   # A reboot can leave a PID file whose number now belongs to another process.
   # Only our exact listener configuration grants permission to signal it.
-  [[ $command == *"/usr/sbin/sshd -D -E $state/sshd.log -f $state/sshd_config"* ]] || pid=''
+  listener_command_matches "$command" || pid=''
   # Revocation must complete even when this command disconnects its own SSH.
   trap '' HUP INT TERM
-  rm -rf "$state"
+  if [[ $preserve == yes ]]; then
+    # End old collectors without revoking the operator's durable approval.
+    printf 'suspended-%s-%s\n' "$BASHPID" "$RANDOM" >"$state/generation"
+    rm -f "$state/sshd.pid"
+    rm -f "$state/console-approval"
+    fsync "$state/generation" "$state"
+  else
+    if [[ $legacy != "$state" && -f $legacy/sshd_config ]] &&
+        grep -qxF "AuthorizedKeysCommand $self authorize %t %k %f" "$legacy/sshd_config"; then
+      rm -f "$legacy/active"
+      fsync "$legacy"
+    fi
+    rm -rf "$state"
+    fsync "${state%/*}"
+  fi
   if [[ -n $pid ]]; then
     pkill -TERM -P "$pid" 2>/dev/null || true
     kill -TERM "$pid" 2>/dev/null || true
@@ -152,20 +220,38 @@ validate_server_start() {
 }
 
 create_server() {
-  local port=$1
+  local port=$1 console_approval=${2:-yes}
   validate_server_start "$port"
   port=$((10#$port))
-  [[ ! -e $state ]] || fail 'Another debug session is already active.'
+  session_running && fail 'Another debug session is already active.'
+  session_created_new=yes
+  if [[ -e $state || -L $state ]]; then
+    [[ -d $state && ! -L $state && -O $state && $(stat -f %Lp "$state") == 700 ]] || fail 'Refusing unsafe retained debug session state.'
+    [[ -f $state/active && -d $state/requests && ! -L $state/requests && -f $state/host_key && ! -L $state/host_key && -O $state/host_key ]] || fail 'Retained debug session is incomplete; inspect its state before recovery.'
+    session_created_new=no
+  fi
   # A locked root account also prevents public-key authentication.
   [[ $(awk -F: '$1 == "root" {print $2}' /etc/master.passwd) != '*' ]] || fail 'Root account is locked.'
   umask 077
   mkdir -p "$state/requests"
   session_generation=$BASHPID-$RANDOM-$RANDOM
   printf '%s\n' "$session_generation" >"$state/generation"
-  trap 'result=$?; if ((result != 0)); then stop_session "$session_generation"; fi' EXIT
+  trap 'result=$?; if ((result != 0)); then if [[ $session_created_new == yes ]]; then stop_session "$session_generation"; else stop_session "$session_generation" yes; fi; fi' EXIT
   trap 'exit 130' INT
   trap 'exit 143' TERM HUP
-  ssh-keygen -q -t ed25519 -N '' -f "$state/host_key"
+  if [[ $session_created_new == yes ]]; then
+    ssh-keygen -q -t ed25519 -N '' -f "$state/host_key"
+  else
+    ssh-keygen -y -f "$state/host_key" >/dev/null
+  fi
+  printf '%s\n' "$port" >"$state/port"
+  rm -rf "$state/connected"
+  if [[ $console_approval == yes ]]; then touch "$state/console-approval"; else rm -f "$state/console-approval"; fi
+  if [[ $session_created_new == no ]]; then
+    printf '%s\n' 'Remote debugging resumed. Previous agent approval is retained.' >"$state/progress"
+  else
+    printf '%s\n' 'Waiting for console-approved agent pairing.' >"$state/progress"
+  fi
   cat >"$state/sshd_config" <<EOF
 Port $port
 HostKey $state/host_key
@@ -191,7 +277,9 @@ Subsystem sftp internal-sftp
 ForceCommand $self session
 EOF
   /usr/sbin/sshd -t -f "$state/sshd_config"
+  printf '%s\n' "$state/sshd_config" >"$state/listener-config"
   touch "$state/active"
+  fsync "$state/host_key" "$state/host_key.pub" "$state/port" "$state/active" "$state"
   /usr/sbin/sshd -D -E "$state/sshd.log" -f "$state/sshd_config" </dev/null >>"$state/sshd.log" 2>&1 &
   server_pid=$!
   sleep 1
@@ -212,7 +300,26 @@ start_server() {
   server_pid=${result#*$'\n'}
   trap stop_server EXIT
   trap 'exit 130' INT
-  trap 'exit 143' TERM HUP
+  trap 'session_transition suspend "$session_generation"; trap - EXIT; exit 143' TERM HUP
+}
+
+debug_resume() {
+  local expected port
+  [[ $(id -u) == 0 && $(uname -s) == FreeBSD ]] || fail 'Requires FreeBSD root.'
+  [[ -f $state/active && -f $state/generation && -f $state/port ]] || return 0
+  compgen -G "$state/*.approved" >/dev/null || return 0
+  session_running && return 0
+  # Networking may still be coming up; the rescue menu can resume later too.
+  network_has_address || return 0
+  expected=$(cat "$state/generation")
+  port=$(cat "$state/port")
+  session_transition resume "$expected" "$port" >/dev/null
+}
+
+resume_server() {
+  [[ -f $state/active && -f $state/generation && $(cat "$state/generation") == "$1" ]] || return 0
+  session_running && return 0
+  create_server "$2" no
 }
 
 debug_unpair() {
@@ -230,18 +337,24 @@ show_status() {
   echo 'Server fingerprint:'
   ssh-keygen -l -f "$state/host_key.pub"
   echo
-  echo 'The agent should use a temporary SSH key and tell you its fingerprint.'
+  echo 'Approved keys and this server identity survive reboot until you stop or unpair.'
+  echo 'A new agent should tell you its SSH key fingerprint.'
   echo 'Approve only the matching fingerprint when the pairing request appears.'
   echo 'Waiting for an authenticated agent. Connection and progress will appear here.'
   echo 'Press Enter to stop remote access and return to the debug shell.'
 }
 
 debug_listen() {
-  local port=${1:-2222} request fingerprint answer last_progress=''
-  echo "Pairing grants the approved agent root access until you stop this listener."
-  printf 'Enable remote access on port %s? [y/N] ' "$port"
-  IFS= read -r answer || return 0
-  [[ $answer == y || $answer == Y ]] || return 0
+  local port=${1:-} request fingerprint answer last_progress=''
+  [[ -n $port ]] || port=$(cat "$state/port" 2>/dev/null || echo 2222)
+  if [[ -f $state/active && -f $state/host_key ]]; then
+    echo 'Resuming the operator-approved hardware debugging session.'
+  else
+    echo "Pairing grants the approved agent root access across reboots until stopped or unpaired."
+    printf 'Enable remote access on port %s? [y/N] ' "$port"
+    IFS= read -r answer || return 0
+    [[ $answer == y || $answer == Y ]] || return 0
+  fi
   start_server "$port"
   show_status
   while kill -0 "$server_pid" 2>/dev/null; do
@@ -256,6 +369,7 @@ debug_listen() {
       IFS= read -r answer || return 0
       if [[ $answer == y || $answer == Y ]]; then
         touch "$state/${request##*/}.approved"
+        fsync "$request" "$state/${request##*/}.approved" "$state/requests" "$state"
       else
         touch "$state/${request##*/}.denied"
       fi
@@ -291,6 +405,7 @@ Start console-approved remote access after networking works:
   remote-debug listen          # port 2222
   remote-debug listen 2207     # custom port
   remote-debug unpair          # revoke access, including a stale session
+  remote-debug resume          # resume a previously approved session, no prompt
 
 From an approved SSH connection, report brief progress and explicit completion:
   daemonarchy-debug activity 'Checking Wi-Fi connectivity'
@@ -301,7 +416,10 @@ From an approved SSH connection, report brief progress and explicit completion:
 Disconnecting SSH does not mark the debugging task complete. Completion leaves
 access enabled until the console operator stops the listener.
 
-The listener asks before enabling access and before pairing each new key.
+The listener asks before first enabling access and before pairing each new key.
+On an installed system, approval and the server identity survive reboots, and
+the recovery console resumes access automatically when networking is available.
+Stale listener PIDs do not discard approval or grant permission to kill another process.
 Press Enter or Ctrl-C in the listener to stop it and return to this shell.
 Run help (or remote-debug help) to show these debugging instructions again.
 Use help <builtin> for Bash help, for example: help cd.
@@ -325,9 +443,20 @@ debug_shell() {
 }
 
 case ${1:-shell} in
+  authorize|session|resume|listen|status)
+    if [[ $EUID == 0 && ! -e $state && ! -L $state && -f $legacy/active ]]; then
+      session_transition adopt >/dev/null
+    fi
+    ;;
+esac
+
+case ${1:-shell} in
+  _adopt) [[ $# == 1 && $(id -u) == 0 ]] || exit 1; adopt_legacy_session ;;
   _observe-start) [[ $# == 2 && $(id -u) == 0 ]] || exit 1; create_observer "$2" ;;
   _start) [[ $# == 2 ]] || exit 1; create_server "$2" ;;
   _stop) [[ $# == 2 && $(id -u) == 0 ]] || exit 1; stop_session "$2" ;;
+  _suspend) [[ $# == 2 && $(id -u) == 0 ]] || exit 1; stop_session "$2" yes ;;
+  _resume) [[ $# == 3 && $(id -u) == 0 ]] || exit 1; resume_server "$2" "$3" ;;
   authorize) [[ $# == 4 ]] || exit 1; authorize "$2" "$3" "$4" ;;
   session) [[ $# == 1 ]] || exit 1; debug_session ;;
   activity) shift; debug_activity "$@" ;;
@@ -338,7 +467,9 @@ case ${1:-shell} in
     exec "${self%/*}/debug-observe" "$action" "$state" ;;
   done) [[ $# == 1 ]] || fail 'Usage: remote-debug done'; write_progress 'Remote debugging complete. It is OK to stop this session (press Enter).' ;;
   shell|menu) debug_shell ;;
-  listen) [[ $# -le 2 ]] || fail 'Usage: remote-debug listen [port]'; debug_listen "${2:-2222}" ;;
+  listen) [[ $# -le 2 ]] || fail 'Usage: remote-debug listen [port]'; debug_listen "${2:-}" ;;
+  resume) [[ $# == 1 ]] || exit 1; debug_resume ;;
+  status) [[ $# == 1 && $(id -u) == 0 ]] || exit 1; session_running ;;
   unpair) [[ $# == 1 ]] || fail 'Usage: remote-debug unpair'; debug_unpair ;;
   help) debug_help ;;
   *) fail 'Usage: remote-debug [shell | listen [port] | unpair | observe | snapshot | activity DESCRIPTION | done | help]' ;;

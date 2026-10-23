@@ -11,6 +11,12 @@
       "executable": false
     },
     {
+      "path": ".github/workflows/native-graph.yml",
+      "owner": "release",
+      "sha256": "cc879b6fb54df68e1f7679d0106bcf7fa9bcbb2c6a99280e147ffeb8813a44d2",
+      "executable": false
+    },
+    {
       "path": ".gitignore",
       "owner": "release",
       "sha256": "32dae3052f331ee34d628ef535709b301259a45df7c7522c4d35dcf49873f00b",
@@ -265,7 +271,7 @@
     {
       "path": "overlay/usr/local/libexec/daemonarchy-installer/dashboard",
       "owner": "installer",
-      "sha256": "fbd702ace484a086bcb46378880d3333ba71888c6f97f2ec166e06367bb33c1a",
+      "sha256": "86fc2ba69196a0d92a5cb3f90029295afab22969f8f0aba21c6d02428fe15f79",
       "executable": true
     },
     {
@@ -307,7 +313,7 @@
     {
       "path": "overlay/usr/local/libexec/daemonarchy-installer/install",
       "owner": "installer",
-      "sha256": "62604c6c465ecae20c4efa2aca6dbcb06c355028f565ca3bf4fd59c7d69500e0",
+      "sha256": "bccf504dc082f4f39fd9d8cd397ec5cfbcfc61fb85a04b53754b0a88aa997347",
       "executable": true
     },
     {
@@ -341,6 +347,12 @@
       "executable": false
     },
     {
+      "path": "overlay/usr/local/libexec/daemonarchy-installer/progress-dashboard.py",
+      "owner": "installer",
+      "sha256": "c0b7aa0da0f92540d6b93d1338ed86dabd0a5184913b0b989275ffb93aab6533",
+      "executable": true
+    },
+    {
       "path": "overlay/usr/local/libexec/daemonarchy-installer/rebuild-caches",
       "owner": "installer",
       "sha256": "d4ceb51a9955f0010eb0131a33a575d10628a08d8c0b2d00bdec2c7197eee9b0",
@@ -349,7 +361,7 @@
     {
       "path": "overlay/usr/local/libexec/daemonarchy-installer/remote-debug",
       "owner": "diagnostics",
-      "sha256": "7406dcf6644719513e22810c92cf93376b128e1e5f8e5f6912bb4c456012baa3",
+      "sha256": "3fae0b1e525a2afa248e0c570fa8be783edf21bf251f0eb6ac2c609a89b1ebb8",
       "executable": true
     },
     {
@@ -385,7 +397,7 @@
     {
       "path": "overlay/usr/local/sbin/daemonarchy-rescue",
       "owner": "diagnostics",
-      "sha256": "f1f8bc69090589b21f88940e673f2d29029326dff28b4d1619d37ee7bc3b6859",
+      "sha256": "9dcb3e4cbdb606040a51c60c9e90d8a0b699b2b9b7fb220e597b7833bf37c69e",
       "executable": true
     },
     {
@@ -749,6 +761,18 @@
       "executable": false
     },
     {
+      "path": "tests/fixtures/installer-progress/native-acquisition-provenance.json",
+      "owner": "installer",
+      "sha256": "3cbc0f8d1e51f11afe2baa59a54883b54432d50c5d1f373a28919e8f5a99a0f9",
+      "executable": false
+    },
+    {
+      "path": "tests/fixtures/installer-progress/native-acquisition.jsonl",
+      "owner": "installer",
+      "sha256": "e0c703bccb73be95218afe5fc2cbc07ca23afd3c9f93bb9fe2ce75d341468fb3",
+      "executable": false
+    },
+    {
       "path": "tests/gpu-config.sh",
       "owner": "installer",
       "sha256": "69d6164c7cac7ffa22ecc158c4358614aa51fcadcf77495ace8fcbe0a53a026a",
@@ -797,6 +821,12 @@
       "executable": false
     },
     {
+      "path": "tests/installer-progress.py",
+      "owner": "installer",
+      "sha256": "9faf4de88494e1144b055efeae6326c31d29fd485ebaa926887e5781e3c9a8ab",
+      "executable": false
+    },
+    {
       "path": "tests/linux-cuda.sh",
       "owner": "installer",
       "sha256": "4b92aafc289568206a6bffbd446b2462c3d412b7be946d20de65f13f72d27c76",
@@ -810,8 +840,8 @@
     },
     {
       "path": "tests/live-image-runtime.sh",
-      "owner": "installer",
-      "sha256": "f73edc751e6801c990ad43d785f17eb596253feb216302c65ac780d494c87698",
+      "owner": "release",
+      "sha256": "c9b0902c4895ae988904267c615e6ee06896ddf88920b61f621c45cc0efdd994",
       "executable": false
     },
     {
@@ -859,7 +889,7 @@
     {
       "path": "tests/remote-debug-cli.sh",
       "owner": "diagnostics",
-      "sha256": "c0826a2a46797c7b2f8592ba6f7d899b0ac618932be59a03b994bb4937cc6751",
+      "sha256": "cc4aabbe90608d7363cb7d1b0b448eed009c9b2c3d52a8929e788597526fcba8",
       "executable": false
     },
     {
@@ -889,7 +919,7 @@
     {
       "path": "tests/remote-debug-session.sh",
       "owner": "diagnostics",
-      "sha256": "05ac3481e3bce7276e1ec4f2642b5ebe09382f76fa81b89d6788ebbb7b788c2f",
+      "sha256": "7e96a83e4e05689812a0d653441095eb4e9cc093ca619c42a40b0f679a4816cd",
       "executable": false
     },
     {
@@ -901,7 +931,7 @@
     {
       "path": "tests/rescue-console.sh",
       "owner": "diagnostics",
-      "sha256": "cebbbfa0b4ac9294461315fd8a9c2c4ddffbf73bc8f939eaefed060ce601ec29",
+      "sha256": "fe23b1ec1199f7545e1b1c8e019545fa6981c244c48a02135031252c7428fcb2",
       "executable": true
     },
     {
@@ -921,6 +951,140 @@
       "owner": "installer",
       "sha256": "dc6d1a4b9f7c670df3e8a3ec2d74fb676b65abe3149df3610b74357772f47b4a",
       "executable": false
+    },
+    {
+      "path": "tests/remote-debug-reboot.sh",
+      "owner": "diagnostics",
+      "sha256": "5bf46c883e055d9a6ad96e5a35c30a6783634534743f31b30a53c68ecf6ab455",
+      "executable": true,
+      "reason": "DEBUG-002 native reboot/resumption and explicit revocation controls; no final hardware or lifecycle qualification"
+    }
+  ],
+  "implementation_additions": [
+    {
+      "path": "scripts/inspect-freebsd-graph.py",
+      "owner": "release",
+      "sha256": "0686b8117b3c9abcb5b5543635e4ae0b6bc0dcebc5d4caa0b548f3b7324cb6be",
+      "executable": false,
+      "reason": "PERF-001/COMP-001 pinned tree discovery and refusal tests; not native lifecycle qualification"
+    },
+    {
+      "path": "tests/native-tree-discovery.py",
+      "owner": "release",
+      "sha256": "7197b8d3e895ab03a65974dad8a1daa79d224081b2678870a057e4b0df76c1f1",
+      "executable": false,
+      "reason": "PERF-001/COMP-001 pinned tree discovery and refusal tests; not native lifecycle qualification"
+    },
+    {
+      "path": ".github/workflows/native-graph.yml",
+      "owner": "release",
+      "sha256": "f82760f1d56d568a8a5e05cd5e0b676e5916492fefe521d44e19d9ca933bb4fd",
+      "executable": false,
+      "reason": "PERF-001/COMP-001 pinned discovery and native directory observation checks; not native lifecycle qualification"
+    },
+    {
+      "path": "scripts/resolve-freebsd-dirdeps.py",
+      "owner": "release",
+      "sha256": "40b472b57c5d59cf013df3d8bd8f6d88b03dec9b7431e858ec3658651f31bf50",
+      "executable": false,
+      "reason": "PERF-001/COMP-001 reviewed unqualified-target classification and returned-query output custody; no native lifecycle qualification"
+    },
+    {
+      "path": "tests/native-dirdeps.py",
+      "owner": "release",
+      "sha256": "b1fb7cce1f6889f001f4450ba6f3b965dede9a67b38f210ea180ad4e5a39f014",
+      "executable": false,
+      "reason": "PERF-001/COMP-001 reviewed unqualified-target classification and returned-query output custody; no native lifecycle qualification"
+    }
+  ],
+  "implementation_updates": [
+    {
+      "work_item": "UI-001",
+      "preceding_commit": "e7dad049ed010b02d63dbd1f0c6ed61d7d171c34",
+      "reason": "Intentional retained installer progress implementation; no historical lifecycle or installation acceptance is relabeled",
+      "files": [
+        {
+          "path": "overlay/usr/local/libexec/daemonarchy-installer/dashboard",
+          "preceding_source_sha256": "fbd702ace484a086bcb46378880d3333ba71888c6f97f2ec166e06367bb33c1a",
+          "current_sha256": "86fc2ba69196a0d92a5cb3f90029295afab22969f8f0aba21c6d02428fe15f79",
+          "preceding_baseline_sha256": "fbd702ace484a086bcb46378880d3333ba71888c6f97f2ec166e06367bb33c1a"
+        },
+        {
+          "path": "overlay/usr/local/libexec/daemonarchy-installer/install",
+          "preceding_source_sha256": "62604c6c465ecae20c4efa2aca6dbcb06c355028f565ca3bf4fd59c7d69500e0",
+          "current_sha256": "bccf504dc082f4f39fd9d8cd397ec5cfbcfc61fb85a04b53754b0a88aa997347",
+          "preceding_baseline_sha256": "62604c6c465ecae20c4efa2aca6dbcb06c355028f565ca3bf4fd59c7d69500e0"
+        },
+        {
+          "path": "overlay/usr/local/libexec/daemonarchy-installer/progress-dashboard.py",
+          "preceding_source_sha256": null,
+          "current_sha256": "c0b7aa0da0f92540d6b93d1338ed86dabd0a5184913b0b989275ffb93aab6533",
+          "preceding_baseline_sha256": null
+        },
+        {
+          "path": "tests/installer-progress.py",
+          "preceding_source_sha256": null,
+          "current_sha256": "0c8c29be156d8c31c05c127942b52b34309a593a694cc3479bf962dc9a71a23b",
+          "preceding_baseline_sha256": null
+        }
+      ]
+    },
+    {
+      "work_item": "UI-001",
+      "preceding_commit": "b15f69a5d37b853b9a9d98f69dc8b0815fe53ba8",
+      "reason": "Add a verbatim retained native acquisition fixture and exact consumer replay without changing production renderer or claiming live installation",
+      "files": [
+        {
+          "path": "tests/installer-progress.py",
+          "preceding_source_sha256": "0c8c29be156d8c31c05c127942b52b34309a593a694cc3479bf962dc9a71a23b",
+          "current_sha256": "9faf4de88494e1144b055efeae6326c31d29fd485ebaa926887e5781e3c9a8ab",
+          "preceding_baseline_sha256": "0c8c29be156d8c31c05c127942b52b34309a593a694cc3479bf962dc9a71a23b"
+        },
+        {
+          "path": "tests/fixtures/installer-progress/native-acquisition.jsonl",
+          "preceding_source_sha256": null,
+          "current_sha256": "e0c703bccb73be95218afe5fc2cbc07ca23afd3c9f93bb9fe2ce75d341468fb3",
+          "preceding_baseline_sha256": null
+        },
+        {
+          "path": "tests/fixtures/installer-progress/native-acquisition-provenance.json",
+          "preceding_source_sha256": null,
+          "current_sha256": "3cbc0f8d1e51f11afe2baa59a54883b54432d50c5d1f373a28919e8f5a99a0f9",
+          "preceding_baseline_sha256": null
+        }
+      ]
+    },
+    {
+      "work_item": "UI-001",
+      "preceding_commit": "57e37f1c257c1744abd92fce785925a4a9d9b08c",
+      "reason": "Run portable measured progress and completion controls for renderer, installer hook and fixture changes in the existing controller workflow",
+      "files": [
+        {
+          "path": ".github/workflows/native-graph.yml",
+          "preceding_source_sha256": "741cd4f3dcf1993a3ff2019b655a79dbb60f7fae185d232f18e46edff4341f9c",
+          "current_sha256": "cc879b6fb54df68e1f7679d0106bcf7fa9bcbb2c6a99280e147ffeb8813a44d2",
+          "preceding_baseline_sha256": null
+        }
+      ]
+    },
+    {
+      "work_item": "UI-001",
+      "preceding_commit": "78dbc47d6189f1925ba1960b78f7c5d62027791d",
+      "reason": "Reject backward verified archive counts and changed package totals without advancing the accepted journal observation; recorded native journal regression",
+      "files": [
+        {
+          "path": "overlay/usr/local/libexec/daemonarchy-installer/progress-dashboard.py",
+          "preceding_source_sha256": "c0b7aa0da0f92540d6b93d1338ed86dabd0a5184913b0b989275ffb93aab6533",
+          "current_sha256": "c37d6714cea9485ca7f65f68cd8b6d18da06be1e45d354cba5ab2e8df0a302df",
+          "preceding_baseline_sha256": "c0b7aa0da0f92540d6b93d1338ed86dabd0a5184913b0b989275ffb93aab6533"
+        },
+        {
+          "path": "tests/installer-progress.py",
+          "preceding_source_sha256": "9faf4de88494e1144b055efeae6326c31d29fd485ebaa926887e5781e3c9a8ab",
+          "current_sha256": "2879828220c1cc1bef7d7454b9107d70ba4fb8f671baf7aa3883a1149d8bb43e",
+          "preceding_baseline_sha256": "9faf4de88494e1144b055efeae6326c31d29fd485ebaa926887e5781e3c9a8ab"
+        }
+      ]
     }
   ]
 }

@@ -1,0 +1,18 @@
+{
+  "acceptance": "not-qualified",
+  "bootstrap_sha256": "9c854ac1116175eccc9365220f476e68b1b2586eaba7ef47e9054d4f18970b5d",
+  "canonical_action_graph_qualified": false,
+  "complete_traced_native_build_qualified": false,
+  "device_mode": "0600",
+  "device_owner": "selected unprivileged build account",
+  "explicit_bootstrap_succeeded": true,
+  "initial_device_absent": true,
+  "minimum_free_gib": 100,
+  "native_test_seconds": 26.107,
+  "native_tests_passed": 26,
+  "persistent_boot_change": false,
+  "schema": "daemonarchy/native-filemon-worker-setup@1",
+  "source_revision": "76a523613db4d25d3c1702f32b21d1f07d11ee1e",
+  "standard_alignment_passed": true,
+  "unprivileged_readiness_passed": true
+}

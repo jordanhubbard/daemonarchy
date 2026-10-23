@@ -82,14 +82,19 @@ port and server fingerprint, and approve the matching client-key fingerprint.
 Press Enter or Ctrl-C in the listener to stop access. This does not enable
 normal sshd or grant anonymous/password-free root access.
 
-Option 2 changes to **Unpair remote debugging agent** while pairing state
-exists, including stale state left by an unexpected reboot. Selecting it
-requires the same root authentication, closes the listener and its SSH
-connections, and removes approved keys and session state. The option then
-returns to **Pair a remote debugging agent**; a new session requires fresh
-approval. This also clears the “Another debug session is already active”
-condition without manual file cleanup. An authenticated shell can run
-`daemonarchy-debug unpair` for the same operation.
+Development helpers preserve an installed-system debugging grant and its server
+fingerprint across reboot. The recovery console resumes the approved listener
+before waiting for graphical startup; agents reconnect with their existing keys
+without another confirmation. A stale listener PID is checked against its actual
+command and does not require deleting the saved session.
+
+Option 2 offers **Resume remote debugging agent** for retained state whose
+listener is not running, and **Unpair remote debugging agent** for a running
+listener. Both actions retain the existing root-login boundary. Unpair closes
+owned SSH connections and removes approved keys and session state; the next
+pairing requires fresh approval. `daemonarchy-debug unpair` also revokes a stale
+grant without needing working networking. Earlier 1.1.1 helpers required
+Unpair/Pair after a reboot; both helpers must be updated for resumption.
 
 For a completed installation, the console waits up to 60 seconds for SDDM
 and either its greeter or a Hyprland session process. It keeps monitoring while

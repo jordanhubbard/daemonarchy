@@ -1,0 +1,130 @@
+{
+  "schema": "daemonarchy/native-prefix-search-development@1",
+  "scope": "Preserved preceding installed failure, source-level repair probe and admitted installed retained local-runtime run; not canonical SDK, pkg or release qualification.",
+  "source_revision": "d98e6c2da7571295bb3c70236afe637a987370e0",
+  "installed_framework_revision": "587ad3f1cf39279081a967c87f63cc39a93db07f",
+  "original_execution": {
+    "plan_identity": "sha256:9e03ebca0d50d120acb91aa7b0a66eefdfa668d1da7d537dd900afb77cbcf8f3",
+    "terminal": {
+      "exit_code": 2,
+      "schema": "daemonarchy/native-command-terminal@1",
+      "seconds": 389.958
+    },
+    "build_exit_code": 0,
+    "documentation_exit_code": 0,
+    "original_cases": {
+      "selected": 24,
+      "passed": 22,
+      "broken": 2,
+      "failed": 0,
+      "skipped": 0
+    },
+    "broken_cases": [
+      "truncate.bad_truncate",
+      "truncate.cannot_open"
+    ],
+    "cause": "Secondary-user launchers cannot search the private allocation prefix; test bodies never execute.",
+    "command_observations": [
+      {
+        "observation": {
+          "algorithm": "sha256",
+          "digest": "db6f949849159657e6f3c45f2896aedaf274901b6b5ca2ae2f22828deb74fa63",
+          "media_type": "application/vnd.literate-ai.manifest+json",
+          "size": 1264
+        },
+        "stderr": {
+          "algorithm": "sha256",
+          "digest": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855",
+          "media_type": "application/octet-stream",
+          "size": 0
+        },
+        "stdout": {
+          "algorithm": "sha256",
+          "digest": "fc02b79845c1a8ffccb39e50f96e0d7a3a37801bfe1502d66bcb3af939fa9823",
+          "media_type": "application/octet-stream",
+          "size": 24394
+        }
+      },
+      {
+        "observation": {
+          "algorithm": "sha256",
+          "digest": "20b492f5b2e52425cb4af5cd7ef934893d966c470c7ab3e5b4301081a1962641",
+          "media_type": "application/vnd.literate-ai.manifest+json",
+          "size": 1239
+        },
+        "stderr": {
+          "algorithm": "sha256",
+          "digest": "bc2721e558df9cb2d327ae00bf1f037ff2833c8b61e45d39f3cc5bc1de463364",
+          "media_type": "application/octet-stream",
+          "size": 409
+        },
+        "stdout": {
+          "algorithm": "sha256",
+          "digest": "9da61a0bcbf820e8cc22703f3b216ecaa900b64b9b0068ab26f54fd955fa0f44",
+          "media_type": "application/octet-stream",
+          "size": 632
+        }
+      },
+      {
+        "observation": {
+          "algorithm": "sha256",
+          "digest": "df6d9d7abefd17ef7bcdeb3daab87a6fb8e2df0756787d4a331172eb4ac13d84",
+          "media_type": "application/vnd.literate-ai.manifest+json",
+          "size": 1716
+        },
+        "stderr": {
+          "algorithm": "sha256",
+          "digest": "5ffac32e7bf952d06154429249f1efc5b8abe62454d55ef67bed2be68788d680",
+          "media_type": "application/octet-stream",
+          "size": 1556
+        },
+        "stdout": {
+          "algorithm": "sha256",
+          "digest": "e0b6ad9faf24a93023e599a1fa45cdd9635c20445e51eebb768bf72cafbe3264",
+          "media_type": "application/octet-stream",
+          "size": 1979
+        }
+      }
+    ],
+    "allocation_observations": 18,
+    "view_cleanup_ok": true,
+    "independent_acceptance_executed": false,
+    "admission": false
+  },
+  "repair": {
+    "upstream_issue": "https://github.com/jordanhubbard/literate-ai/issues/94",
+    "candidate_source_sha256": {
+      "src/literate_ai/adapters/retained_prefix_search.py": "c023266f7ab2493c3bc84baf59078118b638a417f464dcac6d6b3b4303129fde",
+      "src/literate_ai/adapters/retained_readonly_views.py": "9ab92d9a5dcb57ac672e4f18a3a6ca48dcc2cb652d3ede3f6ba3ed32f1ec8223"
+    },
+    "native_source_probe": {
+      "selected": 16,
+      "failed": 0,
+      "errors": 0,
+      "skipped": 0,
+      "successful": true,
+      "source_level_only": true
+    },
+    "native_probe_seconds": 64.729,
+    "native_probe_log_sha256": "eb1bc716bb6e2ab38c893873a9c99cd9e428099e6ed1ecc73126e43e879d357e",
+    "fixture_allocation": "protocol-peer",
+    "installed_candidate_qualified": true,
+    "qualified_framework_commit": "6e3700337f2ff2be61b5b86390059878093fc1bd",
+    "qualification_scope": "retained local runtime only",
+    "installed_retained_run": {
+      "checkpoint": "native-development-cli-6e370033.json",
+      "original_cases_passed": 24,
+      "original_cases_skipped": 0,
+      "independent_cases_matched": 11,
+      "cleanup_ok": true,
+      "receipt_identity": "sha256:924264d401159e317059b69c80087ec3a9cd047ca4652a53ca7903fa6c29f559",
+      "verified_records": 34,
+      "package_qualified": false,
+      "canonical_lifecycle_receipt": false,
+      "sdk_admitted": false,
+      "release_authorized": false
+    }
+  },
+  "canonical_source_sdk_admitted": false,
+  "release_acceptance": false
+}

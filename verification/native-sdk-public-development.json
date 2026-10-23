@@ -1,0 +1,205 @@
+{
+  "schema": "daemonarchy/native-sdk-public-development@1",
+  "scope": "Framework preparation for ADOPT-002; no product lifecycle admission or completed release obligation",
+  "framework_review": "https://github.com/jordanhubbard/literate-ai/pull/110",
+  "qualified_code_revision": "f65e0c622aaaa7bb6102d864b61404de524b9645",
+  "review_head": "c39ac88cc76830defbf6a34503989f6109020904",
+  "wheel_identity": "sha256:7e2ca6c78987136723c6efc8ae2f46c7617a2e72a829d4576381db2aab67d841",
+  "distribution_identity": "sha256:7175249318bdfef817eeacbffaeb33e9b64c96350ad3e924e2f1ae2bdf31e2a4",
+  "controller_regression": {
+    "selected": 2116,
+    "passed": 2046,
+    "skipped": 70,
+    "failed": 0,
+    "seconds": 1172.745,
+    "report_sha256": "ad0a00d4c7fd199cbf0cceec6abf76e138d9eb3e034b381ac1a88f4cd7280b1a"
+  },
+  "focused_cases": {
+    "sdk_policy_and_custody": 12,
+    "sdk_runtime_and_refusals": 7,
+    "existing_runtime_compatibility": 21,
+    "skipped": 0,
+    "scope": "Project discovery and local Git routing are fixture-supplied; real CMake compilation, grants, custody and acceptance execute"
+  },
+  "wheel": {
+    "qualified": true,
+    "members": 1231
+  },
+  "freebsd_offline_install": {
+    "passed": true,
+    "distributions_verified": 37,
+    "seconds": 88.753
+  },
+  "installed_freebsd_fixture_batch": {
+    "status": "timed-out",
+    "terminal_result_claimed": true,
+    "canonical_cli_acceptance": false,
+    "exit_code": -15,
+    "timeout": true,
+    "seconds": 1800.047,
+    "selected": 40,
+    "public_runtime_cases_passed": 7,
+    "additional_custody_cases_passed": 2,
+    "batch_complete": false,
+    "stopped_in": "test_private_filesystem_case_preserves_live_sdk_command_scope"
+  },
+  "real_source_transport": {
+    "passed": true,
+    "method": "Task-owned loopback SSH server with ephemeral keys and strict host-key verification; installed production source acquisition/capture, no routing mock",
+    "files": 8,
+    "source_snapshot": "sha256:36a3d91618c4674220e210041a0886c2ad416559443d7dc1ceb21a0206d5433e",
+    "source_tree": "sha256:5f094494e171854532dd8486a43e9afd8401d06e880b9b35035d42aa08b3ba8c",
+    "first_attempt": "Strict server ownership checks refused authorization under a shared temporary parent; failure retained",
+    "owned_server_terminal": true,
+    "host_ssh_configuration_changed": false
+  },
+  "canonical_project_preparation": {
+    "installed_initialization_adapter": true,
+    "installed_public_cli_validate_passed": true,
+    "default_receipt_policy_preserved": true,
+    "required_evidence_kinds": 16,
+    "build_test_acceptance": false,
+    "earlier_build_test_attempt": {
+      "status": "refused",
+      "stage": "component-lock",
+      "seconds": 33.083,
+      "diagnostic": "component_lock.flavor_cardinality: private fixture language slot has zero eligible selections",
+      "product_language_requirement": false,
+      "flavor_added": false
+    },
+    "installed_public_cli_progress": {
+      "observed_utc": "2026-10-22T08:32:41.265495+00:00",
+      "status": "refused",
+      "stage": "authorized-execution",
+      "terminal_result_claimed": true,
+      "component_lock_passed": true,
+      "reviewed_original_adoption_passed": true,
+      "retained_plan_passed": true,
+      "default_receipt_policy_preserved": true,
+      "required_evidence_kinds": 16,
+      "missing_host_execution_acknowledgement": "rebuild.host_execution_not_acknowledged",
+      "native_sdk_library_producer_completed": true,
+      "sdk_policy": {
+        "bindings": [
+          {
+            "component_lock_identity": "sha256:d83eda3a9bbcd2b92c401ec84f2c5f07327c7a591574ed49212cc3a6fb291057",
+            "prefix": "vendor",
+            "selection_identity": "sha256:07aa45509ca8eab8672bfde98d97fbc415f2bd96f73546a19d87a282539a3778",
+            "snapshot_identity": "sha256:04560fa5d045879b634d4f975a7e0561c068cc432ed1419f3b8a6135cb7ed583"
+          }
+        ],
+        "schema": "literate-ai/retained-project-sdk-selection-policy@1"
+      },
+      "consumer_build_tests_acceptance": false,
+      "compiler_sdk_admitted": false,
+      "product_receipt": false,
+      "release_acceptance": false,
+      "missing_retained_authorization": {
+        "exit_code": 2,
+        "diagnostic": "retained_project.admission_invalid",
+        "message": "Authorize the exact current retained-project plan identity",
+        "host_execution_acknowledged": true
+      },
+      "supervisor_exit_code": 1,
+      "authorized_cli_exit_code": 2,
+      "seconds": 951.99,
+      "diagnostic": "retained_project.execution_failed",
+      "cause": "SDK execution environment has an ambient import or loader override",
+      "follow_up_issue": "https://github.com/jordanhubbard/literate-ai/issues/118",
+      "terminal_evidence_sha256": "008e166076f4490ed1b83015b077089ada59620b421776a9236d9f946a269d23",
+      "timing_scope": "Complete supervised SDK preparation, original-project authoring/adoption/planning and authorized execution attempt; not consumer build time"
+    },
+    "retained_authoring_failures": [
+      {
+        "attempt": 2,
+        "exit_code": 1,
+        "seconds": 141.345,
+        "stage": "observing-selected-sdk",
+        "diagnostic": "SDK original source differs from its exact capture",
+        "correction": "Track the authored producer ignore rule for its _build/ outputs; source-mutation checks remain unchanged."
+      },
+      {
+        "attempt": 3,
+        "exit_code": 1,
+        "seconds": 190.487,
+        "stage": "capturing-observed-bootstrap-tools",
+        "native_sdk_library_producer_completed": true,
+        "diagnostic": "retained.tests.cases: requires bounded, sorted, unique case names",
+        "correction": "Sort the declared test policy and report cases; preserve every required case."
+      }
+    ],
+    "planning_profile": {
+      "upstream_issue": "https://github.com/jordanhubbard/literate-ai/issues/117",
+      "method": "Separate real installed read-only retained plan under cProfile; not an uninstrumented release benchmark",
+      "exit_code": 0,
+      "wall_seconds": 68.762,
+      "function_calls": 7237579,
+      "posix_stat_calls": 41930,
+      "posix_stat_total_seconds": 52.308,
+      "installed_distribution_observations": 4,
+      "installed_distribution_cumulative_seconds": 40.591,
+      "report_sha256": "4f9d33cc9e3bf9a65b1fbf06dcb2174189384a12b1d8ddef08f88312fca6d0c6",
+      "fix_qualified": false
+    },
+    "build_test_attempt": {
+      "status": "refused",
+      "stage": "authorized-execution",
+      "diagnostic": "retained_project.execution_failed",
+      "cause": "SDK execution environment has an ambient import or loader override",
+      "seconds": 951.99,
+      "consumer_build_tests_acceptance": false,
+      "upstream_issue": "https://github.com/jordanhubbard/literate-ai/issues/118"
+    },
+    "terminal_cleanup": {
+      "source_server_terminal": 0,
+      "task_nullfs_mounts": 0,
+      "retained_run_mode": "0o700",
+      "project_current_receipt_exists": false,
+      "receipt_policy_evidence_kinds": 16,
+      "audit_sha256": "dd2c813d3a7f23f1dffe7cbddc1452dc4d1c01b44fc8499d146d938971f7913f",
+      "complete_receipt_policy_comparison": {
+        "complete_policy_preserved": true,
+        "comparison_sha256": "7618d90f208da0831ab4c585e2be03dc3e183a22b79cf4f15111155462d7c86a"
+      }
+    }
+  },
+  "compiler_sdk_admitted": false,
+  "product_receipt": false,
+  "release_acceptance": false,
+  "ledger_rows_closed": 0,
+  "product_verification": {
+    "authority": "pass",
+    "host_contract_locks_current": 8,
+    "failure": "project.test_receipt_missing",
+    "source_intelligence": "disabled skip",
+    "html_observability": "undeclared skip"
+  },
+  "iso_created_by_framework_qualification": false,
+  "separate_original_source_test_iso": "verification/test-iso-1.2-test1.json",
+  "hosted_ci_snapshot": {
+    "conclusion": "",
+    "failures": [],
+    "headSha": "c39ac88cc76830defbf6a34503989f6109020904",
+    "status": "queued",
+    "unfinished": [
+      {
+        "name": "Elixir 1.18.0 / OTP 27.0 / macos-15",
+        "status": "queued"
+      },
+      {
+        "name": "Sample composition / macos-latest",
+        "status": "queued"
+      },
+      {
+        "name": "macOS / Python 3.14 / PR smoke (not release qualification)",
+        "status": "queued"
+      },
+      {
+        "name": "Elixir 1.20.4 / OTP 29.1.1 / macos-15",
+        "status": "queued"
+      }
+    ],
+    "url": "https://github.com/jordanhubbard/literate-ai/actions/runs/39699663402",
+    "observed_utc": "2026-10-22T06:24:07.358732+00:00"
+  }
+}

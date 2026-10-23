@@ -1,0 +1,28 @@
+{
+  "abis": [
+    "FreeBSD:16:amd64"
+  ],
+  "acceptance": "not-qualified",
+  "catalog_packages_bound_to_recorded_artifact_sizes": 524,
+  "compiler_build_graph_complete": false,
+  "cyclic_or_cycle_dependent_nodes": [],
+  "dependency_first_nodes": 524,
+  "embedded_complete_source_build_provenance": false,
+  "full_per_unit_component_coverage": false,
+  "limitation": "Catalog package checksums use pkg native encoding and are retained opaquely; recorded artifact SHA256/size verification supplies byte custody. Runtime dependency declarations do not supply compilation actions or complete per-unit provenance.",
+  "missing_or_mismatched_dependency_identities": [],
+  "missing_or_size_mismatched_artifacts": [],
+  "native_annotations": [
+    "FreeBSD_version",
+    "set"
+  ],
+  "packages": 524,
+  "packagesite_sha256": "41d02e34562b71f7143acdc0328043677dcb3e0d3aa04baf7a9e925eeb5e0778",
+  "runtime_dependency_edges": 1082,
+  "schema": "daemonarchy/native-pkgbase-catalog-audit@1",
+  "source_revision": "92276fc76c65f3ca31552d2e1833a6063361ff64",
+  "state": "runtime-catalog-observation-only",
+  "versions": [
+    "16.0.snap20261019054356.92276fc76c65.baseline"
+  ]
+}

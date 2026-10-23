@@ -1,5 +1,8 @@
 # MacBookPro16,1 first-boot investigation
 
+The [October 22 installer investigation](testing-macbookpro16-1-installer-20261022.md)
+records a later OS1600028 installation and a reproduced fatal NVMe event.
+
 This is a dated investigation log. The October 17/18 follow-up at the end
 describes the later 1.1 candidate installation; [1.1.1 qualification](testing-1.1.1.md)
 is separate. Earlier driver results below remain historical evidence. For a

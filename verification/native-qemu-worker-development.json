@@ -1,0 +1,61 @@
+{
+  "schema": "daemonarchy/versioned-qemu-worker-development@1",
+  "scope": "Actual QEMU-owned FreeBSD boot and root SSH inspection relay; operator fixture policy, not a retained lifecycle run.",
+  "native_guest": "FreeBSD 16.0-CURRENT amd64",
+  "operator_fixture_context": true,
+  "native_checks": {
+    "fresh_successful_inspections": 3,
+    "replayed_request_refused": true,
+    "wrong_plan_refused": true,
+    "control_field_refused": true,
+    "worker_live_after_refusals": true,
+    "same_instance": true,
+    "private_root_socket_relay": true
+  },
+  "supervisor_sha256": "331bce88dddb6b7471adb7db0946bd79fb53ea3654f89ed813125411651de336",
+  "relay_sha256": "326eeb58ede530a67a7f663430643c18860edb6a90d78f864b866db5af10a867",
+  "private_record_sha256": "9e1a3ee56131c2ffbd9505dcec2884ecbe541799d619385bdda28e353ab42b0f",
+  "controller_tests": {
+    "selected": 12,
+    "passed": 12,
+    "skipped": 0,
+    "failed": 0,
+    "seconds": 4.512,
+    "scope": "Fake QMP controller tests plus actual local POSIX relay peer checks; no FreeBSD native lifecycle."
+  },
+  "standalone_image_preparation": {
+    "schema": "daemonarchy/standalone-worker-image-preparation@1",
+    "source_disk_sha256": "d39e3bc7d7e0139a0f9c53f9e14e54c05320e507b7512c133b022dfaf627bcd8",
+    "source_image_unchanged": true,
+    "virtual_device_bytes_compared": true,
+    "standalone_disk_sha256": "866b7153199d64b32773dabf0a68edc688eab6bc2f78f78295d29f68b1a17681",
+    "standalone_disk_bytes": 4768202752,
+    "seed_sha256": "38bd8fc2d92441f284a0cbae8d19376bb73999e3f27329e4d3fa408529e75a9a",
+    "seconds": 7.67,
+    "source_sdk_admitted": false,
+    "product_lifecycle_acceptance": false
+  },
+  "actual_expiry_and_shutdown_qualified": false,
+  "installed_framework_integration": false,
+  "source_sdk_admitted": false,
+  "product_lifecycle_acceptance": false,
+  "native_interruption_shutdown": {
+    "terminal": {
+      "exit_code": 0,
+      "inspection_revoked": false,
+      "reason": "supervisor-interrupted",
+      "schema": "daemonarchy/owned-qemu-worker-terminal@1",
+      "seconds": 1821.234,
+      "successful_inspections": 3
+    },
+    "supervisor_process_gone": true,
+    "qemu_process_gone": true,
+    "inspection_endpoint_removed": true,
+    "guest_buffers_synced": true,
+    "terminal_sha256": "7184360281c190e90fac6f312186de78200354fbc92f8b4b7b99ef5dce7c7111",
+    "console_sha256": "bc48d23ffada05cf5f0f698d788f5112befb915fc24f56a94302585b146f3e00",
+    "automatic_expiry_tested": false,
+    "installed_framework_lifecycle_qualified": false,
+    "private_record_sha256": "480ed97dec7d59eb4fd1afad4c5da1542fbd63ff42cb2db52ef303fcc9b2c1d8"
+  }
+}
