@@ -215,8 +215,12 @@ releases a disconnected Ethernet lease before selecting the Wi-Fi gateway;
 its scan, authentication and stale-route test passes on Linux and native
 FreeBSD. Physical installer, reboot and packaged-driver qualification remain
 open. The selected desktop ports branch also carries the 1.3.1 remote-debug
-menu controls at `52777cd5`, which require a new package build after the
-currently running bulk.
+menu controls and a FreeBSD CURRENT DRM virtio compatibility repair at
+`4e8640f85`. The active bulk still uses the previous ports revision and
+failed `graphics/drm-612-kmod`: its local virtio patch redefined LinuxKPI
+UUID and user-copy helpers and shadowed `pci_is_vga`. The corrected patch
+applies cleanly and its virtio module builds against the selected source;
+the complete port and desktop packages still need an exact-revision rebuild.
 
 [Product PR #31](https://github.com/jordanhubbard/daemonarchy/pull/31)
 prepares that ISO path: the module is selected from the candidate ports tree,
@@ -239,6 +243,11 @@ candidate set/jail coherence, not a built ISO or source-checkout selection.
 The current committed checkout catalogue still names the older source revision
 `bdcfeac3e1cb8ce3f05c32d8a7ad3597deb48bdf`; its required kernel identity
 check will refuse these new sets until a matching signed catalogue is selected.
+An exact source checkout package for preflight revision `02984cfbe95c` has
+been built on the native worker from a complete, non-promisor shallow clone.
+Its builder receipt records two package parts and a 722,915,563-byte archive.
+The matching release sets still depend on the running buildworld and package
+bulk; the selected ports checkout package and signed catalogue are pending.
 
 The October 23 disposable source integration check merged the then-current
 [signed-firmware PR #29](https://github.com/jordanhubbard/daemonarchy/pull/29)
