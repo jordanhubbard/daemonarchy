@@ -152,7 +152,20 @@
  		MAC_VERIEXEC_DBG(4, "%s priv=%d error=%d", __func__, priv,
  		    error);
  		break;
-@@ -608,6 +624,20 @@
+@@ -537,7 +553,12 @@
+ 	/*
+ 	 * By now we should have status...
+ 	 */
+ 	status = mac_veriexec_get_fingerprint_status(vp);
++#ifdef DAEMONARCHY_MODULE_POLICY
++	/* Firmware and other registered files must match even on plain reads. */
++	if ((accmode & VREAD) != 0 && status == FINGERPRINT_NOMATCH)
++		return (EAUTH);
++#endif
+ 	if (accmode & VWRITE) {
+ 		/*
+ 		 * If file has a fingerprint then deny the write request,
+@@ -608,6 +629,20 @@
  		return (0);
  
  	error = mac_veriexec_check_vp(cred, vp, accmode);

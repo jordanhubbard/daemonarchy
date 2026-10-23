@@ -194,7 +194,7 @@ def sign(args):
         replace(boot / "loader.efi", signed_loader.read_bytes())
         manifest("runtime.manifest", "".join(
             f"/boot/{name} sha256={fingerprint}\n"
-            for name, fingerprint in sorted(modules.items())).encode())
+            for name, fingerprint in sorted({**modules, **optional_firmware}.items())).encode())
 
         def mutable(name):
             # Configuration can select only code whose fingerprint the loader

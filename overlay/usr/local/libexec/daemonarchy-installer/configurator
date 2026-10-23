@@ -233,6 +233,55 @@ Keyboard,$keyboard_label" |
 net_mode=dhcp net_if="" net_addr="" net_gw="" net_dns=""
 wifi_ssid="" wifi_psk="" wifi_hidden=false
 wifi_enterprise_profile=""
+apple_firmware_stage=${DAEMONARCHY_APPLE_FIRMWARE_STAGE:-}
+
+macbook_firmware_hardware() {
+  [[ $(kenv smbios.system.product 2>/dev/null || true) == MacBookPro16,1 ]] || return 1
+  pciconf -l | awk '
+    (/vendor=0x14e4/ && /device=0x4464/ && /subvendor=0x106b/ && /subdevice=0x07bf/) ||
+    (/chip=0x446414e4/ && /card=0x07bf106b/) { found=1 }
+    END { exit !found }'
+}
+
+apple_firmware_step() {
+  local action image destination importer="$ISO_SHARE/import-apple-bcm4364-firmware.py"
+  local -a source_args=()
+  if ! macbook_firmware_hardware; then
+    notice 'The MacBookPro16,1 BCM4364 B3 board was not detected. This firmware profile cannot be selected.' 3
+    return 1
+  fi
+  action=$(gum choose --header 'MacBook Wi-Fi firmware' \
+    'Download verified Apple recovery image' 'Import local Apple BaseSystem.dmg' \
+    'Verify an existing private stage' 'Go back') || return 1
+  case $action in
+    'Download verified Apple recovery image')
+      source_args=(--download) ;;
+    'Import local Apple BaseSystem.dmg')
+      image=$(gum input --placeholder '/path/to/BaseSystem.dmg' --prompt 'Image> ') || return 1
+      [[ -f $image && ! -L $image ]] || { notice 'Choose a regular Apple recovery image file.' 3; return 1; }
+      source_args=(--image "$image") ;;
+    'Verify an existing private stage')
+      image=$(gum input --placeholder '/tmp/daemonarchy-firmware.XXXXXXXX' --prompt 'Stage> ') || return 1
+      if "$importer" --verify-stage --model MacBookPro16,1 --destination "$image"; then
+        apple_firmware_stage=$image
+        notice 'Verified MacBook firmware stage selected.'
+        return 0
+      fi
+      notice 'The selected private firmware stage failed verification.' 3
+      return 1 ;;
+    *) return 0 ;;
+  esac
+  destination=$(mktemp -d /tmp/daemonarchy-firmware.XXXXXXXX) || return 1
+  rmdir "$destination" || return 1
+  if gum spin --show-output --spinner pulse --title 'Verifying Apple recovery firmware...' -- \
+      "$importer" "${source_args[@]}" --model MacBookPro16,1 --destination "$destination"; then
+    apple_firmware_stage=$destination
+    notice 'Verified Apple firmware is ready for the installed MacBook.'
+  else
+    notice 'Apple firmware acquisition failed. The disk has not been changed; choose another source or retry.' 3
+    return 1
+  fi
+}
 
 online() {
   local status=0
@@ -871,6 +920,7 @@ write_install_conf() {
     printf 'wifi_psk=%q\n' "$wifi_psk"
     printf 'wifi_hidden=%q\n' "$wifi_hidden"
     printf 'wifi_enterprise_profile=%q\n' "$wifi_enterprise_profile"
+    printf 'apple_firmware_stage=%q\n' "$apple_firmware_stage"
     printf 'ssh_enable=%q\n' "$ssh_enable"
     printf 'install_ports=%q\n' "$install_ports"
     printf 'install_src=%q\n' "$install_src"
@@ -881,7 +931,12 @@ write_install_conf() {
 greeter
 while true; do
   clear_logo
-  action=$(gum choose --header 'Installer options' 'Install Daemonarchy' 'Remote agent debug' 'Configure network' 'Exit to shell') || exit 1
+  if [[ $(kenv smbios.system.product 2>/dev/null || true) == MacBookPro16,1 ]]; then
+    options=('Install Daemonarchy' 'Prepare MacBook Wi-Fi firmware' 'Remote agent debug' 'Configure network' 'Exit to shell')
+  else
+    options=('Install Daemonarchy' 'Remote agent debug' 'Configure network' 'Exit to shell')
+  fi
+  action=$(gum choose --header 'Installer options' "${options[@]}") || exit 1
   case "$action" in
     'Install Daemonarchy') break ;;
     'Remote agent debug')
@@ -891,6 +946,7 @@ while true; do
       }
       ;;
     'Configure network') network_step allow-offline ;;
+    'Prepare MacBook Wi-Fi firmware') apple_firmware_step ;;
     'Exit to shell') exit 1 ;;
   esac
 done

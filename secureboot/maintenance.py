@@ -30,6 +30,7 @@ APPLE_BCM4364 = {
     "boot/firmware/brcmfmac4364b3-pcie.clm_blob",
     "boot/firmware/brcmfmac4364b3-pcie.txcap_blob",
 }
+APPLE_IMAGE_SHA256 = "591f07a9a4a58d855a2e53b86a5f5da854a250000a66a9382adaf106c20f839b"
 
 
 def verify_firmware_stage(staged, directory):
@@ -45,17 +46,22 @@ def verify_firmware_stage(staged, directory):
     spec.loader.exec_module(module)
     module.verify_stage(directory, "MacBookPro16,1")
     signed = {}
-    for line in (staged / "boot/manifest").read_text().splitlines():
-        match = re.fullmatch(r"(\S+) sha256=([0-9a-f]{64})", line)
-        if not match:
-            raise ValueError("Malformed signed boot manifest")
-        name, expected = match.groups()
-        if name in signed:
-            raise ValueError("Duplicate signed boot manifest entry")
-        signed[name] = expected
+    for manifest in ("boot/manifest", "boot/runtime.manifest"):
+        entries = {}
+        for line in (staged / manifest).read_text().splitlines():
+            match = re.fullmatch(r"(\S+) sha256=([0-9a-f]{64})", line)
+            if not match:
+                raise ValueError("Malformed signed manifest: " + manifest)
+            name, expected = match.groups()
+            if name in entries:
+                raise ValueError("Duplicate signed manifest entry: " + manifest)
+            entries[name] = expected
+        signed[manifest] = entries
     for relative in APPLE_BCM4364:
         name = relative.removeprefix("boot/firmware/")
-        if signed.get("firmware/" + name) != digest(directory / name):
+        expected = digest(directory / name)
+        if (signed["boot/manifest"].get("firmware/" + name) != expected or
+                signed["boot/runtime.manifest"].get("/boot/firmware/" + name) != expected):
             raise ValueError("Private MacBook firmware differs from the signed release: " + name)
 
 
@@ -140,6 +146,7 @@ def verify_tree(root, metadata, *, require_apple_bcm4364=False):
         if digest(inside(root, name)) != expected:
             raise ValueError(f"Managed boot file mismatch: {name}")
     boot_fingerprints = {}
+    runtime_fingerprints = {}
     for manifest, prefix in (("boot/manifest", "boot/"), ("boot/runtime.manifest", "")):
         for line in inside(root, manifest).read_text().splitlines():
             match = re.fullmatch(r"(\S+) sha256=([0-9a-f]{64})", line)
@@ -162,8 +169,29 @@ def verify_tree(root, metadata, *, require_apple_bcm4364=False):
                 raise ValueError(f"Signed fingerprint mismatch: {relative}")
             if manifest == "boot/manifest":
                 boot_fingerprints[relative] = expected
+            else:
+                runtime_fingerprints[relative] = expected
     if require_apple_bcm4364 and not APPLE_BCM4364.issubset(boot_fingerprints):
         raise ValueError("MacBook firmware is absent from the signed boot inventory")
+    if require_apple_bcm4364 and any(
+            runtime_fingerprints.get(name) != boot_fingerprints[name]
+            for name in APPLE_BCM4364):
+        raise ValueError("MacBook firmware is absent from the signed runtime inventory")
+    if require_apple_bcm4364:
+        provenance = inside(root, "var/db/daemonarchy/firmware/provenance.json")
+        if provenance.is_symlink() or not provenance.is_file() or provenance.stat().st_size > 16384:
+            raise ValueError("MacBook firmware provenance is missing or invalid")
+        record = json.loads(provenance.read_text())
+        expected = {name.removeprefix("boot/firmware/"): boot_fingerprints[name]
+                    for name in APPLE_BCM4364}
+        if (not isinstance(record, dict) or
+                record.get("schema") != "daemonarchy/apple-recovery-firmware@1" or
+                record.get("model") != "MacBookPro16,1" or
+                record.get("pci_device") != "14e4:4464" or
+                record.get("apple_subsystem") != "106b:07bf" or
+                record.get("recovery_image_sha256") != APPLE_IMAGE_SHA256 or
+                record.get("files") != expected):
+            raise ValueError("MacBook firmware provenance differs from the signed files")
     for path in (root / "boot/firmware").glob("brcmfmac4364b3-pcie.*"):
         relative = path.relative_to(root).as_posix()
         if relative not in boot_fingerprints:

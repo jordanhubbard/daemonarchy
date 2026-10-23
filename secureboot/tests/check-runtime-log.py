@@ -5,7 +5,7 @@ from pathlib import Path
 import re
 
 parser = argparse.ArgumentParser(description=__doc__)
-parser.add_argument("mode", choices=("valid", "preload-rejection", "desktop-policy", "missing-handoff",
+parser.add_argument("mode", choices=("valid", "preload-rejection", "desktop-policy", "firmware-policy", "missing-handoff",
                                     "uefi-off", "bios-normal"))
 parser.add_argument("log", type=Path)
 parser.add_argument("--kernel-path", default="kernel/kernel",
@@ -27,7 +27,7 @@ if args.mode == "uefi-off":
 elif args.mode == "bios-normal":
     required = [r"DAEMONARCHY_PROFILE_BIOS_STOCK_KERNEL_PASS"]
     forbidden = [r"panic:", r"UNEXPECTED_POLICY", r"DAEMONARCHY_MODULE_POLICY_STATE="]
-elif args.mode in ("valid", "preload-rejection", "desktop-policy"):
+elif args.mode in ("valid", "preload-rejection", "desktop-policy", "firmware-policy"):
     required += [
         r"Verified /boot/runtime\.manifest signed by",
         r"DAEMONARCHY_MODULE_POLICY_STATE=loaded active enforce locked",
@@ -45,6 +45,8 @@ elif args.mode in ("valid", "preload-rejection", "desktop-policy"):
                      r"DAEMONARCHY_PRELOAD_RAW_REJECTED"]
     if args.mode == "desktop-policy":
         required += [r"PASS process-environment-read"]
+    if args.mode == "firmware-policy":
+        required += [r"PASS registered-firmware-read: errno=80"]
     forbidden = [r"panic:", r"(?:^|\n)FAIL ", r"UNEXPECTEDLY_LOADED"]
 else:
     required += [r"panic: mac_veriexec: verified manifest handoff is required"]

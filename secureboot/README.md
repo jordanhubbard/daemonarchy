@@ -134,11 +134,23 @@ image into a private directory. Pass that directory with `--firmware-stage`
 when signing. The signer verifies its provenance and four file hashes, then
 adds their fingerprints to the signed boot manifest. It does not copy Apple
 firmware into the public image. The installer needs the same privately acquired
-stage, supplied as `DAEMONARCHY_APPLE_FIRMWARE_STAGE`, before any partition
-write. It verifies the stage against the signed bundle, copies the four files
+stage before any partition write. On the MacBook installer menu, choose
+**Prepare MacBook Wi-Fi firmware** to download the pinned Apple recovery image,
+select a local `BaseSystem.dmg`, or verify an existing private stage. The
+unattended path accepts `apple_firmware_stage` in the install configuration;
+an operator can also set `DAEMONARCHY_APPLE_FIRMWARE_STAGE` before launching the
+installer. It verifies the stage against the signed bundle, copies the four files
 to the target, and verifies the installed tree. A signed MacBook image without
 that stage refuses installation before changing the disk. Driver attachment,
 Wi-Fi traffic and reboot persistence still require physical qualification.
+The FreeBSD `firmware_get` binary path opens firmware for an ordinary read.
+This candidate also registers all four files in the verified runtime manifest
+and changes the policy kernel to reject an ordinary read when a registered
+fingerprint mismatches. `runtime-probe.c` accepts a fourth, intentionally
+tampered registered firmware path for the disposable guest; the corresponding
+`firmware-policy` log mode requires the `EAUTH` rejection. A native build,
+enforced guest negative test and physical MacBook test are still required
+before this counts as full hardware attestation.
 
 The private key stays outside the image, readable only by its owner. The tool
 checks the certificate/key match, signs the PE loader, creates and signs the
