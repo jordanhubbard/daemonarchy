@@ -24,6 +24,10 @@
   gateway. The installer now retains a kernel-matched preview module and staged
   firmware on the installed target. Fresh-image boot, reconnect, maintainable
   driver integration and redistributable firmware acquisition remain open.
+- Prepare a private MacBook preview ISO with the MacBook-tested Radeon package,
+  updated Wi-Fi panel, keyboard LED tunable and a WPA completion wait before
+  installer DHCP. The offline repository contains the exact refreshed packages;
+  the image is for hardware testing, not public distribution.
 
 
 This history covers the installer repository from its first commit and all GitHub

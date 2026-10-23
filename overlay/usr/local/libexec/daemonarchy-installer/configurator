@@ -494,10 +494,13 @@ wifi_connect() {
 
   pkill -f "wpa_supplicant.*wlan0" 2>/dev/null
   wpa_supplicant -B -i wlan0 -c /tmp/wpa_supplicant.conf >/dev/null 2>&1 || return 1
-  for tries in 1 2 3 4 5 6 7 8 9 10 11 12 13 14 15; do
-    ifconfig wlan0 | grep -q "status: associated" && break
+  # A radio may need to try several BSSIDs for the same SSID. Wait for the
+  # completed key exchange before starting DHCP, not just 802.11 association.
+  for ((tries=0; tries<60; tries++)); do
+    wpa_cli -i wlan0 status 2>/dev/null | grep -qx 'wpa_state=COMPLETED' && break
     sleep 1
   done
+  ((tries < 60)) || return 1
   dhclient wlan0 >/dev/null 2>&1 || return 1
   [[ -n $(port_address wlan0) ]]
 }

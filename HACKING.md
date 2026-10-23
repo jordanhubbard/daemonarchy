@@ -272,6 +272,11 @@ space than a cached installer-only rebuild. Check resources before dispatching.
    For development images, set `NAME` to a distinct preview filename and
    `PREVIEW_LABEL` to a short description. The installer welcome screen shows
    that label alongside the actual desktop package version.
+   The [private MacBook Wi-Fi preview](docs/testing-macbookpro16-1-wifi-preview-20261022.md)
+   is an operator-only hardware image assembled from the published 1.1.1 ISO,
+   with a kernel-matched diagnostic module and board firmware staged outside
+   Git. Its firmware source declares an unknown license; keep the image private
+   until redistribution rights or a supported acquisition path are established.
 
 ### Persistent authoring caches
 
