@@ -68,6 +68,27 @@ published both wired and Wi-Fi addresses. The desktop shell restarted and its
 IPC ping succeeded. The operator confirmed that the network menu displays
 the remote-debugging section, listener address and Unpair control. Control
 actions and reboot persistence with this combination remain to be confirmed.
+
+On an installed system, the debugger now saves the active `wlan0` supplicant
+profile and wireless parent in its root-only retained grant directory once
+Wi-Fi is authenticated and has an IPv4 address. A boot with no usable network
+address can recreate `wlan0`, start the supplicant from that saved profile and
+start wireless DHCP before resuming the approved listener. The rescue watcher
+retries until an address is available. `sudo daemonarchy-debug wifi-save` and
+`sudo daemonarchy-debug wifi-resume` expose those steps for hardware bring-up;
+Unpair removes the saved profile with the grant. File-backed enterprise
+certificates must already reside on persistent storage. A live USB's volatile
+`/var` does not retain this state across a reboot; a separate private recovery
+image or durable debug medium is still required for that case.
+
+The helper was live-installed on the MacBook with its existing grant intact.
+Its saved profile was mode 0600 and byte-identical to the active profile.
+After stopping only wireless DHCP, destroying `wlan0` and leaving Ethernet up,
+`wifi-resume` recreated the interface, started the supplicant from the retained
+profile, reached WPA COMPLETED and reacquired a DHCP address; the debugger
+listener and grant remained active. Automatic saving on status publication also
+recreated the retained copy from the active `/etc` profile. A full reboot test
+awaits installation of the packaged Wi-Fi driver on this incomplete system.
 On images without that panel integration, `remote-debug status` checks whether
 the listener is running and `remote-debug unpair` revokes the grant from a local
 root shell. `sudo daemonarchy-debug status --details` also prints whether a

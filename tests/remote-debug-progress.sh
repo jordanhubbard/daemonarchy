@@ -7,6 +7,8 @@ work=$(mktemp -d)
 trap 'rm -rf "$work"' EXIT
 eval "$(sed '/^source /d; /^case ${1:-shell}/,$d' "$helper")"
 state=$work/state
+public_state=$work/status
+network_addresses() { :; }
 mkdir "$state"
 touch "$state/active"
 id() { echo 0; }

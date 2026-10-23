@@ -7,6 +7,106 @@ legacy=/var/run/daemonarchy-remote-debug
 self=/usr/local/libexec/daemonarchy-installer/remote-debug
 public_state=/var/run/daemonarchy-debug.status
 
+# Keep the active personal/open Wi-Fi profile with the retained debug grant.
+# The installed system usually has its own rc.conf entry; this also recovers a
+# manually configured debug link after an interrupted installation.
+wifi_supplicant_profile() {
+  local pid command profile
+  while IFS= read -r pid; do
+    [[ $pid =~ ^[0-9]+$ ]] || continue
+    command=$(ps -p "$pid" -o command= 2>/dev/null) || continue
+    [[ $command =~ (^|[[:space:]])-i[[:space:]]*wlan0([[:space:]]|$) ]] || continue
+    [[ $command =~ (^|[[:space:]])-c[[:space:]]+([^[:space:]]+) ]] || continue
+    profile=${BASH_REMATCH[2]}
+    [[ $profile == /* && -f $profile && ! -L $profile && -O $profile ]] || continue
+    printf '%s\n' "$profile"
+    return 0
+  done < <(pgrep -x wpa_supplicant 2>/dev/null || true)
+  return 1
+}
+
+wifi_profile_has_volatile_files() {
+  grep -Eq '^[[:space:]]*(ca_cert|ca_path|client_cert|private_key|pac_file|dh_file)[[:space:]]*=[[:space:]]*"?/(tmp|var/run|var/tmp)/' "$1"
+}
+
+remember_wifi() {
+  local profile parent temporary size
+  [[ -d $state && ! -L $state && -O $state && -f $state/active ]] || return 0
+  [[ -n $(ifconfig wlan0 inet 2>/dev/null | awk '$1 == "inet" { print $2; exit }') ]] || return 0
+  [[ $(wpa_cli -i wlan0 status 2>/dev/null | awk -F= '$1 == "wpa_state" { print $2; exit }') == COMPLETED ]] || return 0
+  profile=$(wifi_supplicant_profile) || return 0
+  wifi_profile_has_volatile_files "$profile" && return 0
+  size=$(stat -f %z "$profile" 2>/dev/null) || return 0
+  [[ $size =~ ^[0-9]+$ ]] && ((size <= 65536)) || return 0
+  parent=$(sysctl -n net.wlan.0.%parent 2>/dev/null) || return 0
+  [[ $parent =~ ^[a-z][a-z0-9]*[0-9]+$ ]] || return 0
+  if [[ -f $state/wifi.conf && ! -L $state/wifi.conf &&
+        -f $state/wifi-parent && ! -L $state/wifi-parent ]] &&
+      cmp -s "$profile" "$state/wifi.conf" &&
+      [[ $(cat "$state/wifi-parent") == "$parent" ]]; then
+    return 0
+  fi
+  umask 077
+  temporary=$(mktemp "$state/.wifi.XXXXXX") || return 0
+  cat "$profile" >"$temporary" || { rm -f "$temporary"; return 0; }
+  chmod 600 "$temporary"
+  mv -f "$temporary" "$state/wifi.conf"
+  printf '%s\n' "$parent" >"$state/wifi-parent"
+  chmod 600 "$state/wifi-parent"
+  fsync "$state/wifi.conf" "$state/wifi-parent" "$state" || true
+}
+
+restore_wifi() {
+  local parent pid command
+  [[ -d $state && ! -L $state && -O $state &&
+     -f $state/wifi.conf && ! -L $state/wifi.conf && -O $state/wifi.conf &&
+     -f $state/wifi-parent && ! -L $state/wifi-parent ]] || return 0
+  [[ -z $(ifconfig wlan0 inet 2>/dev/null | awk '$1 == "inet" { print $2; exit }') ]] || return 0
+  parent=$(cat "$state/wifi-parent")
+  [[ $parent =~ ^[a-z][a-z0-9]*[0-9]+$ ]] || return 0
+  if ! ifconfig "$parent" >/dev/null 2>&1; then
+    [[ $parent =~ ^brcmfmac[0-9]+$ ]] && kldload if_brcmfmac >/dev/null 2>&1 || true
+  fi
+  if ifconfig wlan0 >/dev/null 2>&1; then
+    [[ $(sysctl -n net.wlan.0.%parent 2>/dev/null) == "$parent" ]] || return 0
+  else
+    ifconfig wlan0 create wlandev "$parent" >/dev/null 2>&1 || return 0
+  fi
+  ifconfig wlan0 up >/dev/null 2>&1 || true
+  if ! wifi_supplicant_profile >/dev/null; then
+    wpa_supplicant -B -i wlan0 -c "$state/wifi.conf" >/dev/null 2>&1 || return 0
+  fi
+  if [[ -r /var/run/dhclient/dhclient.wlan0.pid ]]; then
+    IFS= read -r pid </var/run/dhclient/dhclient.wlan0.pid || pid=''
+    if [[ $pid =~ ^[0-9]+$ ]]; then
+      command=$(ps -p "$pid" -o command= 2>/dev/null) || command=''
+      [[ $command == *'dhclient: wlan0'* || $command == *'dhclient wlan0'* ]] && return 0
+    fi
+  fi
+  dhclient -b wlan0 >/dev/null 2>&1 || true
+}
+
+debug_wifi_save() {
+  local profile
+  [[ -n $(ifconfig wlan0 inet 2>/dev/null | awk '$1 == "inet" { print $2; exit }') ]] ||
+    fail 'Wi-Fi needs an IPv4 address before its debug profile can be retained.'
+  [[ $(wpa_cli -i wlan0 status 2>/dev/null | awk -F= '$1 == "wpa_state" { print $2; exit }') == COMPLETED ]] ||
+    fail 'Wi-Fi authentication is not complete.'
+  profile=$(wifi_supplicant_profile) || fail 'The active Wi-Fi profile is not a readable root-owned file.'
+  wifi_profile_has_volatile_files "$profile" &&
+    fail 'A Wi-Fi certificate or key is on volatile storage. Move it to persistent root-only storage before saving this profile.'
+  remember_wifi
+  [[ -s $state/wifi.conf && -s $state/wifi-parent ]] &&
+    cmp -s "$profile" "$state/wifi.conf" || fail 'Could not retain the Wi-Fi debug profile.'
+  echo 'Wi-Fi debug profile retained for this pairing grant.'
+}
+
+debug_wifi_resume() {
+  [[ -s $state/wifi.conf && -s $state/wifi-parent ]] || fail 'No retained Wi-Fi debug profile.'
+  restore_wifi
+  echo 'Wi-Fi recovery requested. Check WPA and DHCP status before relying on this address.'
+}
+
 fail() { echo "Remote debug: $*" >&2; exit 1; }
 
 write_progress() {
@@ -34,7 +134,10 @@ debug_session() {
   : >"$state/connected/$BASHPID"
   trap 'rm -f "$state/connected/$BASHPID"; publish_public_status' EXIT
   trap 'exit 143' HUP TERM
-  write_progress 'Agent connected successfully. Remote debugging is under way.'
+  if [[ ! -f $state/progress ]] ||
+      ! grep -Eq '^(Activity:|Remote debugging complete\.)' "$state/progress"; then
+    write_progress 'Agent connected successfully. Remote debugging is under way.'
+  fi
   publish_public_status || true
   case ${SSH_ORIGINAL_COMMAND:-} in
     '') /bin/sh -l ;;
@@ -173,6 +276,7 @@ session_running() {
 publish_public_status() {
   local temporary grant=0 listener=0 connected=0 port='' addresses='' session pid command
   [[ $(id -u) == 0 ]] || return 1
+  remember_wifi || true
   if [[ -f $state/active ]]; then
     grant=1
     if session_running; then listener=1; fi
@@ -355,6 +459,7 @@ debug_resume() {
   compgen -G "$state/*.approved" >/dev/null || return 0
   session_running && return 0
   # Networking may still be coming up; the rescue menu can resume later too.
+  network_has_address || restore_wifi || true
   network_has_address || return 0
   expected=$(cat "$state/generation")
   port=$(cat "$state/port")
@@ -477,6 +582,8 @@ Start console-approved remote access after networking works:
   remote-debug listen 2207     # custom port
   remote-debug unpair          # revoke access, including a stale session
   remote-debug resume          # resume a previously approved session, no prompt
+  remote-debug wifi-save       # retain the active Wi-Fi profile with this grant
+  remote-debug wifi-resume     # restore saved Wi-Fi settings after a reboot
 
 From an approved SSH connection, report brief progress and explicit completion:
   daemonarchy-debug activity 'Checking Wi-Fi connectivity'
@@ -514,7 +621,7 @@ debug_shell() {
 }
 
 case ${1:-shell} in
-  authorize|session|resume|listen|status|publish-status)
+  authorize|session|resume|listen|status|publish-status|wifi-save|wifi-resume)
     if [[ $EUID == 0 && ! -e $state && ! -L $state && -f $legacy/active ]]; then
       session_transition adopt >/dev/null
     fi
@@ -540,6 +647,8 @@ case ${1:-shell} in
   shell|menu) debug_shell ;;
   listen) [[ $# -le 2 ]] || fail 'Usage: remote-debug listen [port]'; debug_listen "${2:-}" ;;
   resume) [[ $# == 1 ]] || exit 1; debug_resume ;;
+  wifi-save) [[ $# == 1 && $(id -u) == 0 ]] || exit 1; debug_wifi_save ;;
+  wifi-resume) [[ $# == 1 && $(id -u) == 0 ]] || exit 1; debug_wifi_resume ;;
   status)
     [[ $(id -u) == 0 ]] || exit 1
     if [[ $# == 1 ]]; then session_running

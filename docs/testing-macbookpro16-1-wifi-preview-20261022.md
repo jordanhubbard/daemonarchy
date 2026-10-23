@@ -343,3 +343,17 @@ WPA2-PSK/CCMP for both successful and failed BSSIDs. The label is a timeout
 interpretation, not proof that the password entered by the operator was wrong:
 the remaining possibilities include inconsistent AP credentials and loss or
 rejection of the station's second key message. No AP-side capture is available.
+
+### Installed debugger Wi-Fi recovery
+
+The retained-grant helper was live-installed on the incomplete MacBook system.
+With WPA complete and a wireless DHCP address present, it retained the active
+supplicant profile and wireless parent in root-only state. The profile was mode
+0600 and byte-identical to the active configuration. A controlled test stopped
+only wireless DHCP and the supplicant, destroyed `wlan0`, and invoked
+`daemonarchy-debug wifi-resume` while leaving Ethernet and the approved debug
+listener intact. The helper recreated `wlan0`, started WPA from the retained
+profile, reached COMPLETED and reacquired DHCP. The grant and listener remained
+active. Automatic profile retention during public-status publication was also
+verified. This does not prove reboot recovery on this incomplete installation:
+the packaged BCM4364 module is still absent from its boot filesystem.

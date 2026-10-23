@@ -257,6 +257,8 @@ any scope change before calling 1.1.0 complete.
   For 1.3.1, the installed desktop's network menu provides **Pair**, **Resume**
   and **Unpair** controls and shows the approved listener, connected agent,
   address and port. The Pair action remains available without an active grant.
+  The installed debugger retains an authenticated Wi-Fi profile with its grant
+  and can restore wireless DHCP before resuming after a reboot with no address.
 
 - BIOS: the installer now adds a 512 KiB `freebsd-boot` partition in the gap
   before the EFI partition and writes the target snapshot's `pmbr` and
