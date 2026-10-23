@@ -244,6 +244,10 @@ loader_brand="daemonarchy"
 kern.vty="vt"
 kern.geom.label.gptid.enable="1"
 EOF
+if [[ -f $TARGET/boot/modules/if_brcmfmac.ko ]] &&
+    [[ $(kenv smbios.system.product 2>/dev/null || true) == MacBookPro16,1 ]]; then
+  echo 'hw.hid.hkbd.no_leds="1"' >>"$TARGET/boot/loader.conf"
+fi
 [[ $encrypt_installation == true ]] && echo 'geom_eli_load="YES"' >>"$TARGET/boot/loader.conf"
 
 cat >"$TARGET/etc/rc.conf" <<EOF

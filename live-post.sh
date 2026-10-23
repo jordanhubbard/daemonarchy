@@ -70,6 +70,11 @@ kern.vty="vt"
 kern.panic_reboot_wait_time="-1"
 debug.trace_on_panic="1"
 EOF
+if [ -f "$world/boot/modules/if_brcmfmac.ko" ]; then
+    # The diagnostic MacBook keyboard stalls on LED output reports. This
+    # kernel's existing boot tunable keeps input usable during bring-up.
+    echo 'hw.hid.hkbd.no_leds="1"' >>"$world/boot/loader.conf"
+fi
 cp "$world/usr/local/share/daemonarchy-installer/brand-daemonarchy.lua" "$world/boot/lua/"
 
 secureboot_payload="$world/usr/local/share/daemonarchy-installer/secureboot"
