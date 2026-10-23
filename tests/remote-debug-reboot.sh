@@ -4,6 +4,8 @@ set -euo pipefail
 [[ $(uname -s) == FreeBSD && $EUID == 0 ]] || exit 1
 here=$(cd "$(dirname "$0")/.." && pwd)
 work=$(mktemp -d /root/daemonarchy-debug-reboot.XXXXXX)
+public_dir=$(mktemp -d /tmp/daemonarchy-debug-public.XXXXXX)
+chmod 755 "$public_dir"
 port=${DEBUG_REBOOT_TEST_PORT:-23452}
 listener='' unrelated='' client=''
 cleanup() {
@@ -12,7 +14,7 @@ cleanup() {
   for pid in "$listener" "$unrelated" "$client"; do
     [[ -z $pid ]] || kill "$pid" 2>/dev/null || true
   done
-  rm -rf "$work"
+  rm -rf "$work" "$public_dir"
 }
 trap cleanup EXIT
 fail() { echo "FAIL: $*" >&2; cat "$work/console" >&2; exit 1; }
@@ -25,13 +27,13 @@ wait_for() {
   fail "timed out waiting for $pattern"
 }
 sed -e "s|^state=.*|state=$work/legacy|" -e "s|^legacy=.*|legacy=$work/no-legacy|" -e "s|^self=.*|self=$work/remote-debug|" \
-  -e "s|^public_state=.*|public_state=$work/public-status|" \
+  -e "s|^public_state=.*|public_state=$public_dir/status|" \
   "$here/overlay/usr/local/libexec/daemonarchy-installer/remote-debug" >"$work/remote-debug"
 cp "$here/overlay/usr/local/libexec/daemonarchy-installer/network-addresses" "$work/"
 chmod 700 "$work/remote-debug"
 # A live image may not have the durable parent directory yet.
 sed -e "s|^state=.*|state=$work/absent-parent/state|" -e "s|^self=.*|self=$work/fresh-debug|" \
-  -e "s|^public_state=.*|public_state=$work/fresh-public-status|" \
+  -e "s|^public_state=.*|public_state=$public_dir/fresh-status|" \
   "$work/remote-debug" >"$work/fresh-debug"
 chmod 700 "$work/fresh-debug"
 "$work/fresh-debug" _start "$((port + 1))" >"$work/fresh-start"
@@ -58,12 +60,13 @@ printf 'pwd\n' | timeout 15 sftp -q -b - -P "$port" -i "$work/client" \
   -o IdentitiesOnly=yes -o BatchMode=yes -o StrictHostKeyChecking=accept-new \
   -o UserKnownHostsFile="$work/known_hosts" root@127.0.0.1 >"$work/sftp-result" 2>&1 ||
   fail 'approved agent cannot use SFTP after session tracking'
-wait_for '^connected=0$' "$work/public-status"
-grep -qx 'grant=1' "$work/public-status" || fail 'public grant indicator missing'
-grep -qx 'listener=1' "$work/public-status" || fail 'public listener indicator missing'
-grep -qx "port=$port" "$work/public-status" || fail 'public listener port missing'
-[[ $(wc -l <"$work/public-status") -eq 6 ]] || fail 'public status exposed unexpected fields'
-[[ $(stat -f %Lp "$work/public-status") == 644 ]] || fail 'public status is not readable by the desktop'
+wait_for '^connected=0$' "$public_dir/status"
+grep -qx 'grant=1' "$public_dir/status" || fail 'public grant indicator missing'
+grep -qx 'listener=1' "$public_dir/status" || fail 'public listener indicator missing'
+grep -qx "port=$port" "$public_dir/status" || fail 'public listener port missing'
+[[ $(wc -l <"$public_dir/status") -eq 6 ]] || fail 'public status exposed unexpected fields'
+[[ $(stat -f %Lp "$public_dir/status") == 644 ]] || fail 'public status is not readable by the desktop'
+su -m nobody -c "grep -qx 'grant=1' '$public_dir/status'" || fail 'desktop user cannot read public status'
 # Adopt the running legacy listener without changing its host pin or approval.
 original_generation=$(cat "$work/legacy/generation")
 sed -e "s|^state=.*|state=$work/state|" -e "s|^legacy=.*|legacy=$work/legacy|" "$work/remote-debug" >"$work/updated"
@@ -85,8 +88,8 @@ listener=''
 compgen -G "$work/state/*.approved" >/dev/null || fail 'approved key lost'
 [[ ! -f $work/state/console-approval ]] || fail 'unattended console approval remains enabled'
 "$work/remote-debug" _suspend "$(cat "$work/state/generation")"
-grep -qx 'grant=1' "$work/public-status" || fail 'shutdown discarded public grant indicator'
-grep -qx 'listener=0' "$work/public-status" || fail 'shutdown left listener marked active'
+grep -qx 'grant=1' "$public_dir/status" || fail 'shutdown discarded public grant indicator'
+grep -qx 'listener=0' "$public_dir/status" || fail 'shutdown left listener marked active'
 
 # A retained PID now belongs to an unrelated process after reboot.
 sleep 60 & unrelated=$!
@@ -108,14 +111,14 @@ current_pid=$(cat "$work/state/sshd.pid")
 "$work/remote-debug" _stop "$original_generation"
 ssh_client client true
 ssh_client client 'sleep 60' >"$work/active-command" 2>&1 & client=$!
-wait_for '^connected=1$' "$work/public-status"
+wait_for '^connected=1$' "$public_dir/status"
 "$work/remote-debug" unpair
-grep -qx 'grant=0' "$work/public-status" || fail 'unpair left public grant active'
-grep -qx 'connected=0' "$work/public-status" || fail 'unpair left public connection active'
+grep -qx 'grant=0' "$public_dir/status" || fail 'unpair left public grant active'
+grep -qx 'connected=0' "$public_dir/status" || fail 'unpair left public connection active'
 if wait "$client"; then fail 'unpair left an authenticated connection alive'; fi
 client=''
 [[ ! -e $work/state ]] || fail 'unpair retained approval'
 "$work/remote-debug" resume </dev/null
 if ssh_client client true 2>/dev/null; then fail 'revoked grant resumed'; fi
 kill -0 "$unrelated" || fail 'unpair signaled unrelated process'
-echo 'PASS: durable approval, stable host pin, retained evidence, stale PID/generation safety, unknown-key refusal and explicit revocation'
+echo 'PASS: durable approval, host pin, public status, SFTP, stale PID/generation safety, unknown-key refusal and revocation'
