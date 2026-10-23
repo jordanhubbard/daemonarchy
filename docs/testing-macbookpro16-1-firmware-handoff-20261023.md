@@ -74,8 +74,8 @@ The disk image built on the native worker has SHA-256
 before boot. QEMU used OVMF Secure Boot with its pre-enrolled public test key;
 the OVMF code image has SHA-256
 `1286f2a3217d09b374d05951355d7a561c8bacecd74845c8a1fbb71a48c0de8d`.
-The serial log remains outside the repository at
-`/tmp/daemonarchy-firmware-policy-guest-20261023.log`, SHA-256
+The serial log remains outside the repository in the native worker's root-only
+`/usr/daemonarchy/firmware-policy-guest-evidence-20261023/serial.log`, SHA-256
 `0ac5d1af00d95949c13cc326851d61f151670003e9135e8e56b6ff985f7c7551`.
 
 The serial log records `SecureBoot: 1, SetupMode: 0`, successful loader hash
@@ -91,7 +91,7 @@ zero, and shut down cleanly. The focused log checker passes with:
 
 ```
 python3 secureboot/tests/check-runtime-log.py firmware-read \
-  /tmp/daemonarchy-firmware-policy-guest-20261023.log \
+  /path/to/retained/serial.log \
   --kernel-path kernel.secure/kernel
 ```
 
