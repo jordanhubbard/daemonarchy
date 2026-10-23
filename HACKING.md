@@ -297,12 +297,14 @@ space than a cached installer-only rebuild. Check resources before dispatching.
    the fresh private destination. Recheck a staged import with
    `python3.12 scripts/import-apple-bcm4364-firmware.py --verify-stage --model MacBookPro16,1 --destination /private/firmware-import`.
    It records a provenance JSON file and does not
-   add firmware to Git, an ISO or an installed target. The ISO recipe stages the
-   tool and 7-Zip for manual use from the live debug shell; it does not yet
-   present a firmware selection screen or copy imported files into the target.
-   The signed boot manifest must admit the exact firmware hashes before a
-   verified-boot target can receive them. Physical reboot/traffic qualification
-   remains open.
+   add firmware to Git or an ISO. The signed-handoff installer candidate adds
+   **Prepare MacBook Wi-Fi firmware** to the live menu. It accepts the pinned
+   Apple download, a local recovery image or a previously verified private
+   stage, and checks that stage against both signed inventories before disk
+   writes. It copies the four exact files and private provenance into the
+   installed target, then verifies them before reporting completion. The
+   driver, module inventory, physical reboot and Wi-Fi traffic still require
+   qualification on the MacBook; this candidate is not yet a release image.
 
 ### Persistent authoring caches
 

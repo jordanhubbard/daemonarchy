@@ -148,9 +148,13 @@ This candidate also registers all four files in the verified runtime manifest
 and changes the policy kernel to reject an ordinary read when a registered
 fingerprint mismatches. `runtime-probe.c` accepts a fourth, intentionally
 tampered registered firmware path for the disposable guest; the corresponding
-`firmware-policy` log mode requires the `EAUTH` rejection. A native build,
-enforced guest negative test and physical MacBook test are still required
-before this counts as full hardware attestation.
+`firmware-policy` log mode requires the `EAUTH` rejection. The native build and
+a separate enforced OVMF guest now demonstrate this rejection using the focused
+`firmware-read` log check and disposable
+test credentials; see
+[the exact evidence](../docs/testing-macbookpro16-1-firmware-handoff-20261023.md).
+The physical MacBook test, production signing authority and final image are
+still required before this counts as full hardware attestation.
 
 The private key stays outside the image, readable only by its owner. The tool
 checks the certificate/key match, signs the PE loader, creates and signs the
