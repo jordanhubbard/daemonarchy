@@ -257,9 +257,14 @@ A private authoring overlay has all four exact-hash MacBook firmware files and
 an importer-verified Apple recovery provenance stage. This lets the hardware
 test image attach Wi-Fi before network setup without redistributing the files
 in a public ISO. The four Secure Boot source patches apply to the selected
-source; an isolated development-certificate policy kernel and loader build is
-in progress. This does not establish production signing or firmware-enforced
-physical boot.
+source. An isolated development-certificate build completed a policy kernel,
+verified EFI loader and normal EFI loader; its receipt binds exact source
+`02984cfbe95c`, hashes and the development trust anchor. Signed boot-tree
+assembly still awaits source-built release sets and the complete native module
+feed. This does not establish production signing or firmware-enforced physical
+boot. The installer now selects Wi-Fi's DHCP gateway while retaining a live
+Ethernet address and client for debugging; the native focused test passes, but
+the combined route still requires a physical ISO test.
 
 The October 23 disposable source integration check merged the then-current
 [signed-firmware PR #29](https://github.com/jordanhubbard/daemonarchy/pull/29)
