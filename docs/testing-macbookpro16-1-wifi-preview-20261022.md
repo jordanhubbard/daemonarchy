@@ -293,3 +293,26 @@ selection and radio conditions. Keep the Wi-Fi installer path in draft until
 a repeated physical install and reboot demonstrate stable association, DHCP,
 default routing and package downloads. The temporary trace module is retained
 only on the test machine and native builder, not in the release image.
+
+An Ethernet-header-only EAPOL capture during one failed attempt saw four
+retries of the AP's first key message. The capture did not show outbound key
+frames even during a later successful exchange, so this capture point cannot
+prove whether the station sent a reply. A later supplicant debug session on a
+different, weak AP recorded receipt of message 1, sending
+message 2, receipt of message 3 and sending message 4; WPA briefly reached
+COMPLETED before carrier dropped again. This narrows the failure to an
+intermittent association or handshake path, without proving that the driver
+discarded any particular key frame. Supplicant logs are root-readable private
+test artifacts because they contain handshake material; no payloads are
+included in repository evidence.
+
+On a later failed attempt, the supplicant again recorded receipt of message 1
+and three attempts to send message 2. Over the bounded attempt, the VAP entry
+counter rose while PCIe bus submission and completion counters did not. The
+driver reported no firmware-dead, missing-ring or ring-full drops. This points
+to a drop before bus submission, but the coarse counters do not identify the
+frame or branch. A subsequent diagnostic module logs only EAPOL frame length,
+EtherType and VAP state to resolve that branch; a clean WPA exchange with the
+module showed contiguous Ethernet headers and two bus submissions. The failed
+exchange still needs the same trace. The wired debugger then stopped answering,
+so no stronger driver conclusion is recorded here.
