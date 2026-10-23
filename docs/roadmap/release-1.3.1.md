@@ -97,3 +97,27 @@ boot is needed to collect them.
 This is the required hardware/backend preflight, **not** the completed early
 kernel connection. The actual kernel producer, runtime mapping/callbacks,
 pre-driver packets and MSI acceptance remain open under DEBUG-003.
+
+## USB report checkpoint
+
+The [USB persistence development record](../../verification/earlynet-usb-report-development.json)
+binds source `3db23a770643`, its successful native FreeBSD build and the revised
+probe. Use [this revised CI artifact](https://github.com/jordanhubbard/daemonarchy-src/actions/runs/39963296120/artifacts/12505319001)
+for automatic saving; the earlier image above only displays inventory.
+The revised `daemonarchy-1.3.1-firmware-inventory-amd64.img` has SHA256
+`6693284dead657517349cc67c4b8acb68fe8c60d919287eb6d35898356559db9`.
+
+Write the revised image to a spare USB and boot it as UEFI with Secure Boot
+disabled for this unsigned loader. It automatically saves selected model/BIOS
+fields and PCI/MAC/UNDI inventory to `DAEMDBG/BOOT0001.TXT`; later boots use the
+next unused number. Wait for **Saved and verified USB report**, then remove the
+USB and bring back its `DAEMDBG` folder. No screen photographs are required.
+This report contains firmware inventory, not kernel logs.
+
+The writer requires the purpose-built marker on the exact loaded USB device,
+flushes and verifies the saved bytes, preserves previous reports, and refuses
+non-USB boot paths. Read-only/full media or I/O failures show **save FAILED**;
+there is no fallback to another disk. Actual UEFI USB VM tests passed two boots
+with both reports retained, read-only USB failure and non-USB refusal. All cases
+left the attached writable internal disk unchanged. MSI physical acceptance and
+the actual early-kernel connection remain open.
