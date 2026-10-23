@@ -1,9 +1,9 @@
 # MacBookPro16,1 interrupted installation, October 22, 2026
 
-HW-002 extends HW-001 with a current physical reproduction. This is diagnostic
-and recovery evidence, not completed installation, desktop acceptance or final
-release hardware attestation. The MSI RTX 5080 laptop remains a separate next
-hardware investigation.
+HW-002 extends HW-001 with a current physical reproduction and a successful
+desktop login. This is diagnostic and recovery evidence, not completed installer
+qualification or final release hardware attestation. The MSI RTX 5080 laptop
+remains a separate next hardware investigation.
 
 ## Current qualification state
 
@@ -13,7 +13,8 @@ hardware investigation.
 | NVMe under four trackers | Package recovery completed; earlier fatal-status cause remains open |
 | Physical EFI countdown | Boots through to the operating system without Enter |
 | Retained debugging grant | Same approval/host identity and unattended resumption verified over multiple reboots |
-| Navi14 graphics attachment | Reproducibly fails enabling graphics queues; desktop acceptance blocked |
+| Navi14 graphics and desktop | Refreshed package boots; operator logged into Hyprland on the quirked kernel |
+| Built-in keyboard and trackpad | Password entry succeeded; pointer was initially laggy, then worked; longer use and click behavior remain to be checked |
 | Independent hardware diagnostics | Operator reports Apple Internet Diagnostics ADP000 (no issues found); intermittent faults remain possible |
 
 ## Inputs and observed discrepancy
@@ -469,9 +470,12 @@ It was installed behind boot environment `pre-amdgpu-current-package-20261022`
 and passes file and dependency checks. The installed `amdgpu.ko` hash matches
 the staged module. The refreshed module then loaded on a controlled normal boot
 without rescue isolation. `drmn0` attached, `drmfb` replaced `efifb`, SDDM started its
-Wayland greeter, and the pool and package checks remained healthy. The
-operator's visible-screen report is pending, so this is service and driver
-acceptance rather than full display/input acceptance.
+Wayland greeter, and the pool and package checks remained healthy. On the
+subsequent one-boot T2 keyboard kernel described below, the operator entered a
+password and reached the visible desktop with this installed graphics package.
+The pointer was initially very laggy but then worked. That confirms visible
+graphics and basic input on the combined build; the transient lag and sustained
+trackpad behavior still need investigation.
 
 ## T2 keyboard LED-output stall
 
@@ -506,13 +510,16 @@ remained healthy. The built-in keyboard evdev node is `event6` on this boot;
 event numbers are not stable across boots. Two LED events sent to that exact
 node reached `hkbd_ev_event`, took 0.062 and 0.058 milliseconds, and caused
 zero `usbhid_sync_xfer` entries in the same DTrace window. This directly
-checks the device-specific quirk with the global bypass disabled. Physical
-typing and trackpad acceptance still await the operator. The Linux T2
+checks the device-specific quirk with the global bypass disabled. The operator
+then entered a password with the built-in keyboard and reached the desktop.
+The pointer was initially very laggy but later worked. This establishes basic
+physical keyboard and pointer use; sustained typing, clicking and the startup
+lag have not yet been qualified. The Linux T2
 implementation remains a behavioral reference; no Linux code was copied.
 The earlier libinput trace includes 1,190 motion events and 18 button events
 from the built-in trackpad, including continuous motion at roughly eight
-millisecond intervals. Visual pointer/click acceptance is still awaiting the
-operator's report.
+millisecond intervals. The later operator report confirms pointer movement on
+the desktop, but does not yet establish reliable clicking.
 
 ## BCM4364 Wi-Fi boundary
 
