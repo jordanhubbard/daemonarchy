@@ -184,6 +184,24 @@ matching the documented preview kernel above. The MacBook's currently booted
 kernel and target module hash must still be checked before any live swap. No
 physical test of this module has occurred.
 
+The later packaged driver [ports PR #23](https://github.com/jordanhubbard/daemonarchy-ports/pull/23)
+head `311ca12eba9c968d2f3f20bb383210c6934f8672` contains the same four
+diagnostic source changes and no longer prints every VAP transmit attempt to
+the console. Its `PORTREVISION=1` package has not completed a fresh native
+`testport` or run on this MacBook. Once a matching module is installed, capture
+these read-only counters before and after a failed DHCP or gateway probe over
+the wired debugger:
+
+```sh
+sysctl dev.brcmfmac.0.diag_tx_vap_count dev.brcmfmac.0.diag_tx_fw_dead \
+  dev.brcmfmac.0.diag_tx_no_flowring dev.brcmfmac.0.diag_tx_ring_full \
+  dev.brcmfmac.0.tx_count dev.brcmfmac.0.tx_complete \
+  dev.brcmfmac.0.rx_complete
+```
+
+Record the booted kernel and module hashes first. These counter deltas can
+locate the transmit stall; they cannot by themselves prove AP delivery.
+
 The controlled reboot first selected the existing ZFS installation instead
 of the USB installer. A one-time EFI boot entry was created for the attached
 USB, with the normal disk BootOrder restored; physical USB boot and renewed

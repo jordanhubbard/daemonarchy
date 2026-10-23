@@ -171,6 +171,18 @@ and does not establish working MacBook traffic. The ISO recipe and installer
 still need to select the package and acquire/install verified Apple board
 firmware before R12-10, R12-18 or R12-25 can close.
 
+The port's later head `311ca12eba9c968d2f3f20bb383210c6934f8672`
+replaces the packet-by-packet console print with read-only transmit counters
+and increments `PORTREVISION` to 1. The patches apply to the pinned distfile;
+the four changed sources byte-match the separately native-built diagnostic
+module. This new head still needs a completed `testport`: its first run was
+stopped while copying a second jail on the busy 8 GiB builder. On the next
+MacBook wired-debug session, compare the deltas of `diag_tx_vap_count`,
+`diag_tx_fw_dead`, `diag_tx_no_flowring`, `diag_tx_ring_full`, `tx_count`,
+`tx_complete` and `rx_complete` across a failed DHCP/gateway window. The
+earlier passing package check and the undeployed diagnostic build do not prove
+that this new package works on the MacBook.
+
 [Product PR #31](https://github.com/jordanhubbard/daemonarchy/pull/31)
 prepares that ISO path: the module is selected from the candidate ports tree,
 installed and locked on a MacBook target, while the installer offers a pinned
