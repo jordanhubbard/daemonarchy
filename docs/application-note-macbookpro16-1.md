@@ -57,11 +57,12 @@ is a SoftMAC driver; its firmware package is not a demonstrated fix for this
 BCM4364 device. Experimental external driver work mentioned in the investigation
 has not been validated on this MacBook or shipped as a working solution in 1.1.1.
 
-The current development installation still exposes only loopback and USB
-Ethernet; PCI `14e4:4464` is unbound and no matching firmware is installed.
-Remaining work is to qualify a native FreeBSD PCIe FullMAC driver for this exact
-chip/board, obtain the matching firmware and board configuration with recorded
-provenance, and verify scan, association, traffic and reconnect on the MacBook.
+The earlier development installation exposed only loopback and USB Ethernet.
+A later private native FreeBSD driver and `bali` B3 firmware preview attached
+PCI `14e4:4464`, scanned nearby networks and joined an access point. Traffic
+and reconnect remain unreliable in the live installer, so this is not yet
+release Wi-Fi support. Remaining work is to stabilize and qualify the native
+PCIe FullMAC driver, installer acquisition and rebooted traffic on this unit.
 The [experimental native brcmfmac driver](https://github.com/narqo/freebsd-brcmfmac)
 targets BCM4350/BCM43455, so its present device support does not close this gap.
 Linux's [brcmfmac PCIe mapping](https://github.com/torvalds/linux/blob/master/drivers/net/wireless/broadcom/brcm80211/brcmfmac/pcie.c)
@@ -70,8 +71,12 @@ protocol, without importing Linux driver code.
 
 The installer must acquire required laptop firmware when it is absent from its
 image. For a wiped MacBook, the [T2 Linux firmware guide](https://wiki.t2linux.org/guides/wifi-bluetooth/)
-documents extraction from an Apple recovery image without an installed macOS;
-that is a candidate acquisition path, not a qualified FreeBSD installer flow.
+documents extraction from an Apple recovery image without an installed macOS.
+An Apple-signed Sonoma recovery image was downloaded and verified on the
+controller; its BCM4364 B3 `bali` firmware hashes match all four files used in
+the private MacBook radio tests. The exact hashes and verification steps are in
+the [installer investigation](testing-macbookpro16-1-installer-20261022.md#2026-10-23-apple-recovery-firmware-provenance-check).
+This is a verified source candidate, not a qualified FreeBSD installer flow.
 The installer also needs a local-media path when network access is unavailable,
 model/board matching, provenance and integrity checks, transfer into the target
 system, and a reboot test that the driver loads the selected files. It must

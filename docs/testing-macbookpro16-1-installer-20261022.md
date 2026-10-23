@@ -757,3 +757,32 @@ The matching ports review reached FreeBSD-current `076f4cba6304`. Its tree
 differs from the selected Daemonarchy ports snapshot in 4,173 paths, including
 Daemonarchy-specific DRM ports. No ports revision was repinned by this review;
 native package and image qualification must preserve those local differences.
+
+## 2026-10-23 Apple recovery firmware provenance check
+
+On the controller, the [OSX-KVM recovery fetcher](https://github.com/kholia/OSX-KVM/blob/master/fetch-macOS-v2.py)
+at commit `4c378a4b5e0b219783683012bec680325eb40719` (script SHA256
+`39ac6d26bd265f5d32198062f515ad15ef93afb7a74e702be2b008090d5bd5f3`)
+requested the Sonoma recovery image from Apple's recovery service. The 753 MiB
+`BaseSystem.dmg` has SHA256
+`591f07a9a4a58d855a2e53b86a5f5da854a250000a66a9382adaf106c20f839b`;
+its companion chunklist has SHA256
+`63c553b845d70b7b6855d123e71cb76c2a312da65bbbbf508198ab1f873befb0`.
+The fetcher's Apple public-key check accepted the chunklist signature, and all
+76 image chunks passed their SHA256 checks. Verification was rerun directly
+because the fetcher's progress display requires a terminal and aborted in the
+noninteractive download session after both files had completed.
+
+7-Zip opened the verified DMG and extracted
+`usr/share/firmware/wifi/C-4364__s-B3`. Its `bali.trx` is a symlink to
+`borneo.trx`; the `P-bali*HRPN*u*` aliases resolve to
+`P-bali_M-HRPN_V-u__m-7.7.txt`. Those two resolved files and `bali.clmb` and
+`bali.txcb` have exactly the same SHA256 values as all four firmware files
+used in the earlier MacBook radio tests: respectively `5bea76866f6c08c16e64f5c3d833a776e6f419b7758638d818b64ce64820aa2c`,
+`3379a394ab8e1b883514b677876cd158d654e7377bc35f43ab99f6d2ae37ea25`,
+`61f9ffe33d4137eac1dfd93c4be03e6c721f282cfc85a89d7d345ffd12f9f9ac`,
+and `8b794d5ce9311d2794a6eff4f35ffd1d362f341cb648a3b98f7d7420a251866c`.
+This establishes an Apple recovery source for the exact tested bytes without
+requiring installed macOS. It does not grant redistribution permission or
+qualify a FreeBSD installer acquisition path, driver stability, traffic or
+reboot persistence. Keep the recovery image and extracted firmware private.
