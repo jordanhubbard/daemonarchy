@@ -120,11 +120,19 @@ results rather than replacing the configuration that reproduced this failure.
 
 ## Apple T2 MacBook Pro: graphics, Wi-Fi and resets
 
-Read the [MacBook application note](application-note-macbookpro16-1.md) for the
-Radeon Pro 5500M initialization failure and unavailable BCM4364 Wi-Fi. The AMD
-driver recognizes the GPU; age alone does not explain its failure. The wireless
-controller was detected without an attached driver or wireless interface; use
-the verified wired USB Ethernet connection.
+Read the [MacBook application note](application-note-macbookpro16-1.md) and
+[current investigation](testing-macbookpro16-1-installer-20261022.md) for the
+Radeon Pro 5500M and BCM4364 Wi-Fi evidence. The EFI framebuffer overlap fix
+passed three clean GPU boots and a normal boot from the refreshed graphics
+package reached SDDM's Wayland greeter. Operator visible-screen acceptance
+remains pending on that package. The BCM4364 is PCI `14e4:4464`, Apple
+subdevice `106b:07bf`; it remains unbound with no wireless interface or
+firmware files on the installation. Wired USB Ethernet is verified.
+
+The built-in T2 keyboard's synchronous LED-output reports blocked the desktop
+input path. A targeted quirk passed native GENERIC build and a one-boot MacBook
+probe with the global LED bypass off. Physical typing and trackpad acceptance
+on that kernel remain pending.
 
 The MacBookPro16,1 investigation includes earlier BCE/GPU failures and a later
 1.1 candidate that repeatedly restarted or powered off during ordinary package

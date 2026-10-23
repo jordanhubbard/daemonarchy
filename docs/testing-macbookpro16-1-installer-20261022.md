@@ -513,3 +513,18 @@ The earlier libinput trace includes 1,190 motion events and 18 button events
 from the built-in trackpad, including continuous motion at roughly eight
 millisecond intervals. Visual pointer/click acceptance is still awaiting the
 operator's report.
+
+## BCM4364 Wi-Fi boundary
+
+The MacBook exposes an unbound PCI network device `14e4:4464`, Apple subdevice
+`106b:07bf`, identified as BCM4364. The installed system has no wireless
+interface and no matching Broadcom firmware files. The selected FreeBSD source
+has no driver match for this PCI ID. The older `bwn(4)` hardware list does not
+establish support for this FullMAC device. A separate experimental
+[FreeBSD-native brcmfmac project](https://github.com/narqo/freebsd-brcmfmac)
+reports PCIe BCM4350 and SDIO BCM43455 work, but does not claim BCM4364
+support. Its implementation is a reference, not an imported driver.
+The [T2 Linux BCE project](https://github.com/t2linux/apple-bce-drv) also
+separates virtual USB input from Wi-Fi; working BCE does not imply wireless
+support. Firmware provenance and a native FreeBSD BCM4364 driver must be
+qualified before Wi-Fi or full hardware attestation can be claimed.
