@@ -70,8 +70,20 @@ rescue_resume_debug() {
   # USB Ethernet and DHCP can become ready after the recovery console starts.
   # Retry in the background so a retained grant resumes without console input.
   while [ -f "$debug_state/active" ]; do
+    if "$debug_command" status >/dev/null 2>&1; then
+      # Do not spawn another listener while the approved one is healthy.
+      remaining=60
+      sleep 5
+      continue
+    fi
     "$debug_command" resume || true
-    "$debug_command" status >/dev/null 2>&1 && return 0
+    if "$debug_command" status >/dev/null 2>&1; then
+      # The listener can exit after a successful start. Keep watching until
+      # explicit stop or Unpair removes the grant, then resume it unattended.
+      remaining=60
+      sleep 5
+      continue
+    fi
     if [ "$remaining" -gt 0 ]; then
       remaining=$((remaining - 1))
       sleep 1

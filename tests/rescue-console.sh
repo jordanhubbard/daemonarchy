@@ -118,9 +118,10 @@ case $1 in
 esac
 MOCK
   ticks=0
+  sleep() { ticks=$((ticks + 1)); [[ $ticks != 3 ]] || rm "$debug_state/active"; }
   rescue_resume_debug </dev/null
-  [[ $(wc -l <"$debug_command.calls") -eq 3 && $ticks == 2 ]]
-  rm "$debug_state/active" "$debug_command.calls"
+  [[ $(wc -l <"$debug_command.calls") -eq 3 && $ticks == 3 ]]
+  rm "$debug_command.calls"
   rescue_resume_debug </dev/null
   [[ ! -e $debug_command.calls ]]
 )
@@ -136,15 +137,43 @@ case $1 in
 esac
 MOCK
   ticks=0
+  sleep() { ticks=$((ticks + 1)); [[ $ticks != 62 ]] || rm "$debug_state/active"; }
   rescue_resume_debug </dev/null
-  [[ $(wc -l <"$debug_command.calls") -eq 62 && $ticks == 61 ]]
-  rm "$debug_state/active" "$debug_command.calls"
+  [[ $(wc -l <"$debug_command.calls") -eq 62 && $ticks == 62 ]]
+  rm "$debug_command.calls"
 )
-printf '#!/bin/sh\ncase "$1" in\nstatus) exit 0 ;;\nresume) echo resume >>"$0.calls" ;;\nesac\n' >"$debug_command"
+# A listener that exits after a successful start is resumed with the old grant.
+(
+  touch "$debug_state/active"
+  rm -f "$debug_command.calls" "$debug_command.live"
+  cat >"$debug_command" <<'MOCK'
+#!/bin/sh
+case $1 in
+  resume) echo resume >>"$0.calls"; touch "$0.live" ;;
+  status) [ -f "$0.live" ] ;;
+esac
+MOCK
+  ticks=0
+  sleep() {
+    ticks=$((ticks + 1))
+    case $ticks in
+      1) rm "$debug_command.live" ;; # Unexpected listener exit.
+      2) rm "$debug_state/active" ;; # Explicit stop prevents another restart.
+    esac
+  }
+  rescue_resume_debug </dev/null
+  [[ $(wc -l <"$debug_command.calls") -eq 2 && $ticks == 2 ]]
+  rm "$debug_command.calls" "$debug_command.live"
+  rescue_resume_debug </dev/null
+  [[ ! -e $debug_command.calls ]]
+)
+printf '#!/bin/sh\ncase "$1" in\nstatus) [ -f "$0.live" ] ;;\nresume) echo resume >>"$0.calls"; touch "$0.live" ;;\nesac\n' >"$debug_command"
 touch "$debug_state/active"
+rm -f "$debug_command.live" "$debug_command.calls"
 # Boot resumption happens before desktop monitoring, including a healthy desktop.
 (
   id() { echo 0; }
+  sleep() { rm -f "$debug_state/active"; }
   monitor_desktop() { wait "$!"; grep -qx resume "$debug_command.calls"; }
   rescue_wait_boot_output() { :; }
   rescue_record() { :; }

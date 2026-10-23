@@ -48,7 +48,10 @@ Development images now retain an installed-system debugging grant across reboot.
 The recovery console restarts the listener when networking is available, keeping
 the same server fingerprint and approved client keys. The agent reconnects with
 its existing key; no new approval is required. An SSH disconnect or reboot does
-not end a hardware bring-up session. New keys still require console approval.
+not end a hardware bring-up session. The boot console continues checking an
+active grant after the listener starts, and retries if that listener later exits.
+Explicit stop or Unpair removes the active grant and ends this retry. New keys
+still require console approval.
 On a fully booted desktop the rescue menu is not visible, so it cannot show
 whether a debugging grant, listener or active agent connection remains. A
 desktop menu-bar status and revocation control are tracked in DEBUG-002; until
