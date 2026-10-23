@@ -218,8 +218,8 @@ that exact kernel was copied to the MacBook and verified with SHA-256
 The four required private firmware and board files were already in
 `/boot/firmware`. Loading the module attached BCM4364 revision 4; creating
 `wlan0` and starting the existing local WPA profile reached
-`wpa_state=COMPLETED`. DHCP then assigned `10.11.101.63/23` without exposing
-the profile secret. The wired debugger stayed reachable on `10.11.100.62`.
+`wpa_state=COMPLETED`. DHCP then assigned a /23 address without exposing
+the profile secret. The wired debugger stayed reachable.
 
 The active route initially favored Ethernet, so a temporary host route sent
 four gateway probes through `wlan0`; all four returned in 1.1–4.5 ms. Driver
@@ -229,3 +229,10 @@ was removed, restoring the wired route. This proves local Wi-Fi data traffic
 in this manually repaired installed session. It does not prove that the
 installer configures Wi-Fi reliably, that traffic survives a reboot, or that
 the later packaged port has the same behavior. Those remain release gates.
+
+A later scan while associated returned 27 access-point entries. A 60-packet
+gateway probe using 1200-byte payloads through `wlan0` lost no packets; mean
+round-trip time was 2.028 ms, transmit and completion counters both reached
+92, and the three diagnostic drop counters stayed at zero. The existing WPA
+association remained complete. This is a short installed-system check, not a
+replacement for the installer and reboot tests.
