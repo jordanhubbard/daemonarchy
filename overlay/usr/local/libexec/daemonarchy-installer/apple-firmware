@@ -85,15 +85,3 @@ apple_firmware_prepare() {
   echo 'BCM4364 driver loaded, but its wireless interface did not attach' >&2
   return 1
 }
-
-apple_firmware_install() {
-  local target=$1 name
-  apple_firmware_verify_live || return
-  install -d -m 0700 "$target/var/db/daemonarchy/firmware" || return
-  install -d "$target/boot/firmware" || return
-  for name in "${APPLE_FIRMWARE_NAMES[@]}"; do
-    install -m 0444 "$APPLE_FIRMWARE_STAGE/$name" "$target/boot/firmware/$name" || return
-  done
-  install -m 0600 "$APPLE_FIRMWARE_STAGE/provenance.json" \
-    "$target/var/db/daemonarchy/firmware/provenance.json"
-}

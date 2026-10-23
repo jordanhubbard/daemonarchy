@@ -674,7 +674,11 @@ network_step() {
 }
 
 apple_firmware_step() {
-  local choice image previous_stage
+  local choice image previous_stage mode=${1:-required}
+  local options=("Download Apple's recovery image using Ethernet"
+    "Use BaseSystem.dmg from mounted media"
+    "Use an existing verified private stage"
+    "Configure wired network" "Open debug shell" "Stop installation")
   [[ $(kenv smbios.system.product 2>/dev/null || true) == MacBookPro16,1 ]] || return 0
   if ! apple_firmware_hardware; then
     notice 'The expected BCM4364 B3 board was not detected. This firmware profile cannot be used.' 4
@@ -687,16 +691,13 @@ apple_firmware_step() {
   if apple_firmware_preloaded && apple_firmware_radio_attached; then
     return 0
   fi
+  [[ $mode != optional ]] || options+=("Back to installer menu")
   while true; do
     step "MacBook Wi-Fi firmware"
     say "This MacBook needs four Apple board files before its Wi-Fi radio can attach."
     say --foreground 8 "The installer verifies the recovery image and files; no firmware ships in the public ISO."
     echo
-    choice=$(gum choose --header "Choose a firmware source" \
-      "Download Apple's recovery image using Ethernet" \
-      "Use BaseSystem.dmg from mounted media" \
-      "Use an existing verified private stage" \
-      "Configure wired network" "Open debug shell" "Stop installation") || abort
+    choice=$(gum choose --header "Choose a firmware source" "${options[@]}") || abort
     case $choice in
       "Download Apple's recovery image using Ethernet")
         step "Downloading and verifying Apple recovery firmware"
@@ -721,6 +722,7 @@ apple_firmware_step() {
         ;;
       "Configure wired network") network_step allow-offline ;;
       "Open debug shell") "$(dirname "$0")/remote-debug" shell ;;
+      "Back to installer menu") return 0 ;;
       "Stop installation") abort ;;
     esac
   done
@@ -936,7 +938,12 @@ write_install_conf() {
 greeter
 while true; do
   clear_logo
-  action=$(gum choose --header 'Installer options' 'Install Daemonarchy' 'Remote agent debug' 'Configure network' 'Exit to shell') || exit 1
+  if [[ $(kenv smbios.system.product 2>/dev/null || true) == MacBookPro16,1 ]]; then
+    options=('Install Daemonarchy' 'Prepare MacBook Wi-Fi firmware' 'Remote agent debug' 'Configure network' 'Exit to shell')
+  else
+    options=('Install Daemonarchy' 'Remote agent debug' 'Configure network' 'Exit to shell')
+  fi
+  action=$(gum choose --header 'Installer options' "${options[@]}") || exit 1
   case "$action" in
     'Install Daemonarchy') break ;;
     'Remote agent debug')
@@ -946,6 +953,7 @@ while true; do
       }
       ;;
     'Configure network') network_step allow-offline ;;
+    'Prepare MacBook Wi-Fi firmware') apple_firmware_step optional ;;
     'Exit to shell') exit 1 ;;
   esac
 done

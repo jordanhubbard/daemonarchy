@@ -6,6 +6,7 @@ are required before this can be exposed as a supported update command.
 """
 import argparse
 import hashlib
+import importlib.util
 import json
 import os
 from pathlib import Path, PurePosixPath
@@ -23,6 +24,45 @@ MANAGED = {
     "boot/lua/local.lua", "boot/lua/brand-daemonarchy.lua", "boot/daemonarchy-secureboot.conf",
     "usr/local/sbin/daemonarchy-secureboot",
 }
+APPLE_BCM4364 = {
+    "boot/firmware/brcmfmac4364b3-pcie.bin",
+    "boot/firmware/brcmfmac4364b3-pcie.txt",
+    "boot/firmware/brcmfmac4364b3-pcie.clm_blob",
+    "boot/firmware/brcmfmac4364b3-pcie.txcap_blob",
+}
+APPLE_IMAGE_SHA256 = "591f07a9a4a58d855a2e53b86a5f5da854a250000a66a9382adaf106c20f839b"
+
+
+def verify_firmware_stage(staged, directory):
+    """Check private Apple bytes against the authenticated boot inventory."""
+    if directory is None or directory.is_symlink():
+        raise ValueError("A private, non-symlinked firmware stage is required")
+    directory = directory.resolve(strict=True)
+    importer = Path(__file__).resolve().parents[1] / "import-apple-bcm4364-firmware.py"
+    if not importer.is_file():
+        importer = Path(__file__).resolve().parents[1] / "scripts/import-apple-bcm4364-firmware.py"
+    spec = importlib.util.spec_from_file_location("apple_bcm4364_import", importer)
+    module = importlib.util.module_from_spec(spec)
+    spec.loader.exec_module(module)
+    module.verify_stage(directory, "MacBookPro16,1")
+    signed = {}
+    for manifest in ("boot/manifest", "boot/runtime.manifest"):
+        entries = {}
+        for line in (staged / manifest).read_text().splitlines():
+            match = re.fullmatch(r"(\S+) sha256=([0-9a-f]{64})", line)
+            if not match:
+                raise ValueError("Malformed signed manifest: " + manifest)
+            name, expected = match.groups()
+            if name in entries:
+                raise ValueError("Duplicate signed manifest entry: " + manifest)
+            entries[name] = expected
+        signed[manifest] = entries
+    for relative in APPLE_BCM4364:
+        name = relative.removeprefix("boot/firmware/")
+        expected = digest(directory / name)
+        if (signed["boot/manifest"].get("firmware/" + name) != expected or
+                signed["boot/runtime.manifest"].get("/boot/firmware/" + name) != expected):
+            raise ValueError("Private MacBook firmware differs from the signed release: " + name)
 
 
 def digest(path):
@@ -98,7 +138,7 @@ def inside(root, relative):
     return path
 
 
-def verify_tree(root, metadata):
+def verify_tree(root, metadata, *, require_apple_bcm4364=False):
     root = root.resolve(strict=True)
     if digest(inside(root, "boot/kernel/kernel")) != metadata["stock_kernel_sha256"]:
         raise ValueError("Stock kernel differs from the bundle's qualified snapshot")
@@ -106,6 +146,7 @@ def verify_tree(root, metadata):
         if digest(inside(root, name)) != expected:
             raise ValueError(f"Managed boot file mismatch: {name}")
     boot_fingerprints = {}
+    runtime_fingerprints = {}
     for manifest, prefix in (("boot/manifest", "boot/"), ("boot/runtime.manifest", "")):
         for line in inside(root, manifest).read_text().splitlines():
             match = re.fullmatch(r"(\S+) sha256=([0-9a-f]{64})", line)
@@ -116,13 +157,45 @@ def verify_tree(root, metadata):
             if ".." in PurePosixPath(relative).parts or not relative.startswith("boot/"):
                 raise ValueError("Manifest path escapes /boot")
             path = inside(root, relative)
-            # The shared manifest includes optional hardware-specific drivers.
-            if not path.exists() and relative.startswith("boot/modules/") and relative.endswith(".ko"):
+            if require_apple_bcm4364 and relative in APPLE_BCM4364 and not path.exists():
+                raise ValueError(f"Required MacBook firmware is missing: {relative}")
+            # Shared media can omit signed files for other hardware. A MacBook
+            # target explicitly requires its four signed board files below.
+            if (not path.exists() and
+                    ((relative.startswith("boot/modules/") and relative.endswith(".ko"))
+                     or (relative in APPLE_BCM4364 and not require_apple_bcm4364))):
                 continue
             if digest(path) != expected:
                 raise ValueError(f"Signed fingerprint mismatch: {relative}")
             if manifest == "boot/manifest":
                 boot_fingerprints[relative] = expected
+            else:
+                runtime_fingerprints[relative] = expected
+    if require_apple_bcm4364 and not APPLE_BCM4364.issubset(boot_fingerprints):
+        raise ValueError("MacBook firmware is absent from the signed boot inventory")
+    if require_apple_bcm4364 and any(
+            runtime_fingerprints.get(name) != boot_fingerprints[name]
+            for name in APPLE_BCM4364):
+        raise ValueError("MacBook firmware is absent from the signed runtime inventory")
+    if require_apple_bcm4364:
+        provenance = inside(root, "var/db/daemonarchy/firmware/provenance.json")
+        if provenance.is_symlink() or not provenance.is_file() or provenance.stat().st_size > 16384:
+            raise ValueError("MacBook firmware provenance is missing or invalid")
+        record = json.loads(provenance.read_text())
+        expected = {name.removeprefix("boot/firmware/"): boot_fingerprints[name]
+                    for name in APPLE_BCM4364}
+        if (not isinstance(record, dict) or
+                record.get("schema") != "daemonarchy/apple-recovery-firmware@1" or
+                record.get("model") != "MacBookPro16,1" or
+                record.get("pci_device") != "14e4:4464" or
+                record.get("apple_subsystem") != "106b:07bf" or
+                record.get("recovery_image_sha256") != APPLE_IMAGE_SHA256 or
+                record.get("files") != expected):
+            raise ValueError("MacBook firmware provenance differs from the signed files")
+    for path in (root / "boot/firmware").glob("brcmfmac4364b3-pcie.*"):
+        relative = path.relative_to(root).as_posix()
+        if relative not in boot_fingerprints:
+            raise ValueError(f"Installed firmware is absent from the signed inventory: {relative}")
     for path in (root / "boot/modules").glob("*.ko"):
         relative = path.relative_to(root).as_posix()
         if relative not in boot_fingerprints:
@@ -132,7 +205,7 @@ def verify_tree(root, metadata):
             raise ValueError("Verification-control files are forbidden")
 
 
-def install(root, staged, metadata):
+def install(root, staged, metadata, *, require_apple_bcm4364=False):
     root = root.resolve(strict=True)
     if root == Path("/") or staged.resolve().is_relative_to(root):
         raise ValueError("Install only into an offline target or mounted boot environment")
@@ -148,7 +221,7 @@ def install(root, staged, metadata):
         shutil.copyfile(staged / name, temporary)
         temporary.chmod(0o755 if name == "usr/local/sbin/daemonarchy-secureboot" else 0o644)
         os.replace(temporary, target)
-    verify_tree(root, metadata)
+    verify_tree(root, metadata, require_apple_bcm4364=require_apple_bcm4364)
 
 
 def output(*command):
@@ -200,11 +273,16 @@ def main(args):
         staged = Path(name)
         metadata = unpack(args.bundle.resolve(strict=True), args.signature.resolve(strict=True),
                           args.certificate.resolve(strict=True), staged)
-        if args.command == "verify":
-            verify_tree(args.root, metadata)
+        if args.command == "firmware-stage":
+            verify_firmware_stage(staged, args.firmware_stage)
+            print("PASS: private MacBook firmware matches the signed boot inventory")
+        elif args.command == "verify":
+            verify_tree(args.root, metadata,
+                        require_apple_bcm4364=args.require_apple_bcm4364)
             print("PASS: signed bundle and installed boot files match")
         elif args.command == "install":
-            install(args.root, staged, metadata)
+            install(args.root, staged, metadata,
+                    require_apple_bcm4364=args.require_apple_bcm4364)
             print("PASS: offline boot profile installed and validated; EFI setup remains required")
         else:
             native_root()
@@ -219,9 +297,11 @@ def main(args):
             subprocess.run(["bectl", "mount", be, str(mountpoint)], check=True)
             try:
                 if args.command == "stage":
-                    install(mountpoint, staged, metadata)
+                    install(mountpoint, staged, metadata,
+                            require_apple_bcm4364=args.require_apple_bcm4364)
                 else:
-                    verify_tree(mountpoint, metadata)
+                    verify_tree(mountpoint, metadata,
+                                require_apple_bcm4364=args.require_apple_bcm4364)
             finally:
                 subprocess.run(["bectl", "unmount", be], check=True)
             if args.command == "activate":
@@ -236,18 +316,24 @@ def main(args):
 
 if __name__ == "__main__":
     parser = argparse.ArgumentParser(description=__doc__)
-    parser.add_argument("command", choices=("status", "verify", "install", "stage", "activate"))
+    parser.add_argument("command", choices=("status", "verify", "install", "stage", "activate", "firmware-stage"))
     parser.add_argument("bundle", type=Path, nargs="?")
     parser.add_argument("--signature", type=Path)
     parser.add_argument("--certificate", type=Path,
                         help="trusted public certificate obtained independently of the bundle")
     parser.add_argument("--root", type=Path, default=Path("/"))
     parser.add_argument("--environment")
+    parser.add_argument("--firmware-stage", type=Path,
+                        help="private operator-acquired MacBookPro16,1 firmware directory")
+    parser.add_argument("--require-apple-bcm4364", action="store_true",
+                        help="require all four signed BCM4364 B3 files on this target")
     args = parser.parse_args()
     if args.command != "status" and not all((args.bundle, args.signature, args.certificate)):
         parser.error("A bundle, --signature and --certificate are required")
     if args.command in ("stage", "activate") and not args.environment:
         parser.error("--environment is required")
+    if args.command == "firmware-stage" and not args.firmware_stage:
+        parser.error("--firmware-stage is required")
     try:
         main(args)
     except (ValueError, OSError, KeyError, tarfile.TarError, subprocess.CalledProcessError) as error:

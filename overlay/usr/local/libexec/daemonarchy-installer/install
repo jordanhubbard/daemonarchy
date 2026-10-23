@@ -216,19 +216,8 @@ for set in base kernel lib32; do
   progress_count base "$expanded_sets" 3
 done
 
-# A private hardware preview may carry verified board firmware. Public images
-# import it into a private live stage, including provenance, before disk writes.
-# The driver enters the target through the ISO's kernel-bound package below.
-if $macbook_bcm4364; then
-  if [[ -d $APPLE_FIRMWARE_STAGE ]]; then
-    apple_firmware_install "$TARGET"
-  else
-    install -d "$TARGET/boot/firmware"
-    for firmware in /boot/firmware/brcmfmac4364b3-pcie.*; do
-      install -m 0444 "$firmware" "$TARGET/boot/firmware/${firmware##*/}"
-    done
-  fi
-fi
+# The signed firmware handoff below copies the verified private stage into
+# the target. The driver enters through the ISO's kernel-bound package later.
 
 # A private MacBook preview may carry a separately qualified EFI timer loader.
 # Preserve it on the installed system only when its declared identity matches
@@ -249,6 +238,7 @@ fi
 # account with the base shell; switch it to bash after packages are installed.
 create_recovery_accounts "$TARGET" "$username" "${full_name:-$username}" <<<"$password_hash"
 install_rescue_support "$TARGET" "$(dirname "$0")" /usr/local/sbin
+secureboot_install_firmware "$TARGET"
 secureboot_install_profile "$TARGET"
 sync
 

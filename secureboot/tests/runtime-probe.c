@@ -35,9 +35,9 @@ main(int argc, char **argv)
 	int mib[4], result;
 	int fd, failed;
 
-	if (argc != 3 || getuid() != 0) {
+	if ((argc != 3 && argc != 4) || getuid() != 0) {
 		fprintf(stderr, "usage (root, disposable guest only): %s "
-		    "unsigned-module protected-module\n", argv[0]);
+		    "unsigned-module protected-module [tampered-registered-firmware]\n", argv[0]);
 		return (2);
 	}
 	setbuf(stdout, NULL);
@@ -45,6 +45,9 @@ main(int argc, char **argv)
 	failed = denied("unsigned-module", kldload(argv[1]), ENOEXEC);
 	failed |= denied("protected-module-write",
 	    open(argv[2], O_WRONLY), EPERM);
+	if (argc == 4)
+		failed |= denied("registered-firmware-read",
+		    open(argv[3], O_RDONLY), EAUTH);
 	failed |= denied("kernel-memory-write", open("/dev/kmem", O_WRONLY),
 	    EPERM);
 	fd = open("/dev/veriexec", O_RDWR);

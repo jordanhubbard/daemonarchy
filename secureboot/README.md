@@ -128,6 +128,34 @@ python3 sign-boot-tree.py /path/to/staging-root \
   --key /protected/release-private.key
 ```
 
+For the MacBookPro16,1 BCM4364 B3 profile, first use
+`scripts/import-apple-bcm4364-firmware.py` to import the pinned Apple recovery
+image into a private directory. Pass that directory with `--firmware-stage`
+when signing. The signer verifies its provenance and four file hashes, then
+adds their fingerprints to the signed boot manifest. It does not copy Apple
+firmware into the public image. The installer needs the same privately acquired
+stage before any partition write. On the MacBook installer menu, choose
+**Prepare MacBook Wi-Fi firmware** to download the pinned Apple recovery image,
+select a local `BaseSystem.dmg`, or verify an existing private stage. The
+unattended path accepts `apple_firmware_stage` in the install configuration;
+an operator can also set `DAEMONARCHY_APPLE_FIRMWARE_STAGE` before launching the
+installer. It verifies the stage against the signed bundle, copies the four files
+to the target, and verifies the installed tree. A signed MacBook image without
+that stage refuses installation before changing the disk. Driver attachment,
+Wi-Fi traffic and reboot persistence still require physical qualification.
+The FreeBSD `firmware_get` binary path opens firmware for an ordinary read.
+This candidate also registers all four files in the verified runtime manifest
+and changes the policy kernel to reject an ordinary read when a registered
+fingerprint mismatches. `runtime-probe.c` accepts a fourth, intentionally
+tampered registered firmware path for the disposable guest; the corresponding
+`firmware-policy` log mode requires the `EAUTH` rejection. The native build and
+a separate enforced OVMF guest now demonstrate this rejection using the focused
+`firmware-read` log check and disposable
+test credentials; see
+[the exact evidence](../docs/testing-macbookpro16-1-firmware-handoff-20261023.md).
+The physical MacBook test, production signing authority and final image are
+still required before this counts as full hardware attestation.
+
 The private key stays outside the image, readable only by its owner. The tool
 checks the certificate/key match, signs the PE loader, creates and signs the
 module manifest, and then signs the boot manifest that covers it. Each detached

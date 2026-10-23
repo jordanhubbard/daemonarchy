@@ -301,13 +301,15 @@ space than a cached installer-only rebuild. Check resources before dispatching.
    download over Ethernet, an operator-supplied recovery image on mounted
    media, or an already verified private stage before the network screen. It
    imports into a private live stage, verifies the four files, attaches the
-   radio, and carries the files and
-   provenance into the target. An unattended MacBook install defaults to the
-   download; `apple_firmware_image=/absolute/path/BaseSystem.dmg` selects local
-   media. Both routes run before disk changes. The live temporary filesystem
-   needs at least 817 MiB free while the image is checked. The signed boot
-   manifest must admit the exact firmware hashes before a verified-boot target
-   can receive them. Physical reboot/traffic qualification remains open.
+   radio, and carries the files and provenance into the target. An unattended
+   MacBook install defaults to the download;
+   `apple_firmware_image=/absolute/path/BaseSystem.dmg` selects local media.
+   Acquisition and verification against the signed boot inventories occur
+   before disk changes. The live temporary filesystem needs at least 817 MiB
+   free while the image is checked. The signed boot manifest must admit the
+   exact firmware hashes before a verified-boot target can receive them.
+   The driver, module inventory, physical reboot and Wi-Fi traffic still
+   require qualification on the MacBook; this candidate is not a release image.
 
 ### Persistent authoring caches
 

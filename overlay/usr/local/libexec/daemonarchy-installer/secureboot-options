@@ -20,10 +20,19 @@ secureboot_detect_enforcement() {
 }
 
 secureboot_payload_prepare() {
+  local name
   secureboot_enforced=$(secureboot_detect_enforcement) || return
   secureboot_payload="$ISO_SHARE/secureboot"
   efi_pool_selector=false
+  secureboot_firmware_args=()
+  if [[ $(kenv smbios.system.product 2>/dev/null || true) == MacBookPro16,1 ]]; then
+    secureboot_firmware_args=(--require-apple-bcm4364)
+  fi
   if [[ ! -d $secureboot_payload ]]; then
+    if ((${#secureboot_firmware_args[@]})); then
+      echo 'MacBook firmware installation requires a signed boot profile; this image has none.' >&2
+      return 1
+    fi
     if $secureboot_enforced; then
       echo 'Firmware Secure Boot is enabled but the signed installer payload is missing.' >&2
       return 1
@@ -34,7 +43,67 @@ secureboot_payload_prepare() {
   /usr/local/bin/python3.12 "$secureboot_payload/maintenance.py" verify \
     "$secureboot_payload/bundle.txz" --signature "$secureboot_payload/bundle.txz.sig" \
     --certificate "$secureboot_payload/certificate.pem" --root / || return
+  if ((${#secureboot_firmware_args[@]})); then
+    apple_firmware_stage=${apple_firmware_stage:-${DAEMONARCHY_APPLE_FIRMWARE_STAGE:-}}
+    if [[ -z $apple_firmware_stage ]]; then
+      echo 'MacBook firmware stage is missing. Import the verified Apple recovery firmware before installing and set DAEMONARCHY_APPLE_FIRMWARE_STAGE to its private directory.' >&2
+      return 1
+    fi
+    /usr/local/bin/python3.12 "$secureboot_payload/maintenance.py" firmware-stage \
+      "$secureboot_payload/bundle.txz" --signature "$secureboot_payload/bundle.txz.sig" \
+      --certificate "$secureboot_payload/certificate.pem" \
+      --firmware-stage "$apple_firmware_stage" || return
+    apple_firmware_snapshot=$(mktemp -d /tmp/daemonarchy-apple-stage.XXXXXXXX) || return
+    for name in bin txt clm_blob txcap_blob; do
+      if ! install -m 0444 "$apple_firmware_stage/brcmfmac4364b3-pcie.$name" \
+          "$apple_firmware_snapshot/brcmfmac4364b3-pcie.$name"; then
+        rm -rf -- "$apple_firmware_snapshot"
+        return 1
+      fi
+    done
+    if ! install -m 0600 "$apple_firmware_stage/provenance.json" \
+        "$apple_firmware_snapshot/provenance.json" ||
+       ! /usr/local/bin/python3.12 "$secureboot_payload/maintenance.py" firmware-stage \
+          "$secureboot_payload/bundle.txz" --signature "$secureboot_payload/bundle.txz.sig" \
+          --certificate "$secureboot_payload/certificate.pem" \
+          --firmware-stage "$apple_firmware_snapshot"; then
+      rm -rf -- "$apple_firmware_snapshot"
+      return 1
+    fi
+    apple_firmware_stage=$apple_firmware_snapshot
+  fi
   efi_pool_selector=true
+}
+
+secureboot_install_firmware() {
+  local target=$1 name
+  $efi_pool_selector || return 0
+  ((${#secureboot_firmware_args[@]})) || return 0
+  /usr/local/bin/python3.12 "$secureboot_payload/maintenance.py" firmware-stage \
+    "$secureboot_payload/bundle.txz" --signature "$secureboot_payload/bundle.txz.sig" \
+    --certificate "$secureboot_payload/certificate.pem" \
+    --firmware-stage "$apple_firmware_stage" || return
+  if [[ -L $target/boot/firmware ]]; then
+    echo 'Target firmware directory must not be a symlink.' >&2
+    return 1
+  fi
+  install -d -m 0755 "$target/boot/firmware"
+  for name in bin txt clm_blob txcap_blob; do
+    if [[ -L $target/boot/firmware/brcmfmac4364b3-pcie.$name ]]; then
+      echo 'Target firmware file must not be a symlink.' >&2
+      return 1
+    fi
+    install -m 0444 "$apple_firmware_stage/brcmfmac4364b3-pcie.$name" \
+      "$target/boot/firmware/brcmfmac4364b3-pcie.$name" || return
+  done
+  if [[ -L $target/var/db/daemonarchy || -L $target/var/db/daemonarchy/firmware ||
+        -L $target/var/db/daemonarchy/firmware/provenance.json ]]; then
+    echo 'Target firmware provenance path must not contain a symlink.' >&2
+    return 1
+  fi
+  install -d -m 0700 "$target/var/db/daemonarchy/firmware"
+  install -m 0600 "$apple_firmware_stage/provenance.json" \
+    "$target/var/db/daemonarchy/firmware/provenance.json"
 }
 
 secureboot_install_profile() {
@@ -42,7 +111,8 @@ secureboot_install_profile() {
   $efi_pool_selector || return 0
   /usr/local/bin/python3.12 "$secureboot_payload/maintenance.py" install \
     "$secureboot_payload/bundle.txz" --signature "$secureboot_payload/bundle.txz.sig" \
-    --certificate "$secureboot_payload/certificate.pem" --root "$target" || return
+    --certificate "$secureboot_payload/certificate.pem" --root "$target" \
+    "${secureboot_firmware_args[@]}" || return
   mkdir -p "$target/usr/local/sbin" "$target/usr/local/share/daemonarchy-secureboot"
   cp "$secureboot_payload/certificate.pem" "$target/usr/local/share/daemonarchy-secureboot/certificate.pem"
 }
@@ -51,7 +121,8 @@ secureboot_verify_target() {
   $efi_pool_selector || return 0
   /usr/local/bin/python3.12 "$secureboot_payload/maintenance.py" verify \
     "$secureboot_payload/bundle.txz" --signature "$secureboot_payload/bundle.txz.sig" \
-    --certificate "$secureboot_payload/certificate.pem" --root "$1"
+    --certificate "$secureboot_payload/certificate.pem" --root "$1" \
+    "${secureboot_firmware_args[@]}"
 }
 
 secureboot_lock_modules() {
