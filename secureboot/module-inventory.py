@@ -8,6 +8,11 @@ import re
 import subprocess
 import tempfile
 
+SOURCE_OSVERSIONS = {
+    "bdcfeac3e1cb8ce3f05c32d8a7ad3597deb48bdf": 1600028,
+    "02984cfbe95c063f130ae20d7ea6ed520df88a8f": 1600029,
+}
+
 
 def output(*command):
     return subprocess.check_output(command, text=True).strip()
@@ -69,8 +74,9 @@ if __name__ == "__main__":
     parser.add_argument("--source-revision", required=True)
     parser.add_argument("--osversion", type=int, required=True)
     args = parser.parse_args()
-    if not re.fullmatch("[0-9a-f]{40}", args.source_revision) or args.osversion != 1600028:
-        parser.error("Use the selected full source revision and qualified osversion 1600028")
+    if (not re.fullmatch("[0-9a-f]{40}", args.source_revision) or
+            SOURCE_OSVERSIONS.get(args.source_revision) != args.osversion):
+        parser.error("Use a selected source revision with its matching FreeBSD osversion")
     try:
         print(json.dumps(inventory(args), indent=2))
     except (ValueError, OSError, subprocess.CalledProcessError) as error:

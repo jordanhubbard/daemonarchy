@@ -18,6 +18,10 @@ MANAGED = (
     "boot/lua/local.lua", "boot/lua/brand-daemonarchy.lua", "boot/daemonarchy-secureboot.conf",
     "usr/local/sbin/daemonarchy-secureboot",
 )
+SOURCE_OSVERSIONS = {
+    "bdcfeac3e1cb8ce3f05c32d8a7ad3597deb48bdf": 1600028,
+    "02984cfbe95c063f130ae20d7ea6ed520df88a8f": 1600029,
+}
 
 
 def digest(path):
@@ -37,7 +41,9 @@ def main(args):
     if public != subprocess.check_output(["openssl", "pkey", "-in", str(key), "-pubout"]):
         raise ValueError("Certificate/key mismatch")
     receipt = json.loads(args.build_receipt.read_text())
+    osversion = SOURCE_OSVERSIONS.get(receipt.get("base_source"))
     if (receipt.get("boot_pool_selector") != 1 or
+            osversion is None or
             receipt.get("trust_anchor_sha256") != digest(args.certificate) or
             receipt.get("kernel_sha256") != digest(root / MANAGED[0]) or
             receipt.get("normal_loader_sha256") != digest(root / MANAGED[2])):
@@ -49,7 +55,7 @@ def main(args):
             raise ValueError("Bundle files must be regular files inside the staging root")
         files[name] = digest(path)
     metadata = dict(schema=1, loader_protocol=1, release=args.release,
-                    base_source=receipt["base_source"], osversion=1600028,
+                    base_source=receipt["base_source"], osversion=osversion,
                     build=receipt,
                     stock_kernel_sha256=digest(root / "boot/kernel/kernel"),
                     files=files)

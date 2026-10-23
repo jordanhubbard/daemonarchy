@@ -78,6 +78,19 @@ class Maintenance(unittest.TestCase):
         with self.assertRaisesRegex(ValueError, "mismatch"):
             maintenance.verify_tree(target, metadata)
 
+    def test_selected_macbook_source_and_osversion(self):
+        self.metadata["base_source"] = "02984cfbe95c063f130ae20d7ea6ed520df88a8f"
+        self.metadata["osversion"] = 1600029
+        self.archive()
+        _, metadata = self.unpack()
+        self.assertEqual(metadata["osversion"], 1600029)
+
+    def test_selected_macbook_source_rejects_old_osversion(self):
+        self.metadata["base_source"] = "02984cfbe95c063f130ae20d7ea6ed520df88a8f"
+        self.archive()
+        with self.assertRaisesRegex(ValueError, "Unsupported boot bundle"):
+            self.unpack()
+
     def test_altered_archive_fails_before_extraction(self):
         self.archive()
         with self.bundle.open("ab") as stream:

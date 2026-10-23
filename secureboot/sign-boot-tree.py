@@ -15,6 +15,11 @@ import re
 import subprocess
 import tempfile
 
+SOURCE_OSVERSIONS = {
+    "bdcfeac3e1cb8ce3f05c32d8a7ad3597deb48bdf": 1600028,
+    "02984cfbe95c063f130ae20d7ea6ed520df88a8f": 1600029,
+}
+
 
 def optional_apple_firmware(stage, root):
     """Bind operator-acquired bytes without including them in the image tree."""
@@ -129,7 +134,9 @@ def sign(args):
     if args.module_inventory is not None:
         receipt = json.loads(args.module_inventory.read_text())
         if (not isinstance(receipt, dict) or receipt.get("schema") != 1 or
-                receipt.get("osversion") != 1600028 or
+                receipt.get("osversion") not in SOURCE_OSVERSIONS.values() or
+                (receipt.get("source_revision") is not None and
+                 receipt.get("osversion") != SOURCE_OSVERSIONS.get(receipt["source_revision"])) or
                 not isinstance(receipt.get("modules"), dict)):
             raise ValueError("Unsupported release module inventory")
         for name, fingerprint in receipt["modules"].items():

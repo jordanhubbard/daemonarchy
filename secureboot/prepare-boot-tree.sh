@@ -20,7 +20,9 @@ done
 mkdir -p "$root"
 tar --no-same-owner -xpf "$cache/base.txz" -C "$root" ./boot
 tar --no-same-owner -xpf "$cache/kernel.txz" -C "$root" ./boot
-if ! strings "$root/boot/kernel/kernel" | grep -q 'bdcfeac3e'; then
+source_revision=$(jq -er '.base_source | select(test("^[0-9a-f]{40}$"))' "$build/build.json")
+source_abbrev=$(printf '%s' "$source_revision" | cut -c1-12)
+if ! strings "$root/boot/kernel/kernel" | grep -Fq "$source_abbrev"; then
     echo 'Stock kernel does not match the qualified source snapshot' >&2
     exit 1
 fi

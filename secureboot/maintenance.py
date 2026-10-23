@@ -16,7 +16,11 @@ import subprocess
 import tarfile
 import tempfile
 
-BASE = "bdcfeac3e1cb8ce3f05c32d8a7ad3597deb48bdf"
+SOURCE_OSVERSIONS = {
+    "bdcfeac3e1cb8ce3f05c32d8a7ad3597deb48bdf": 1600028,
+    "02984cfbe95c063f130ae20d7ea6ed520df88a8f": 1600029,
+}
+BASE = "bdcfeac3e1cb8ce3f05c32d8a7ad3597deb48bdf"  # Historical 1.1.1 pin.
 MANAGED = {
     "boot/kernel.secure/kernel", "boot/loader.efi", "boot/loader_normal.efi",
     "boot/manifest", "boot/manifest.sig", "boot/manifest.certs",
@@ -113,7 +117,8 @@ def unpack_snapshot(bundle, signature, certificate, destination):
         if (not isinstance(metadata, dict) or
                 not isinstance(metadata.get("files"), dict) or
                 metadata.get("schema") != 1 or metadata.get("loader_protocol") != 1 or
-                metadata.get("base_source") != BASE or metadata.get("osversion") != 1600028 or
+                metadata.get("base_source") not in SOURCE_OSVERSIONS or
+                metadata.get("osversion") != SOURCE_OSVERSIONS[metadata["base_source"]] or
                 set(metadata.get("files", {})) != MANAGED or
                 not isinstance(metadata.get("stock_kernel_sha256"), str) or
                 not re.fullmatch("[0-9a-f]{64}", metadata["stock_kernel_sha256"]) or
