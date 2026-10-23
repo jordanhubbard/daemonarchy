@@ -126,6 +126,18 @@ This is a reviewed upstream freshness comparison, not a completed build of the
 newer tree. PR #22 remains the exact revision with a completed native bulk;
 any later ports refresh requires its own full build and acceptance.
 
+The October 23 upstream recheck found FreeBSD source `main` at
+`91bff7d7ed461360bc992dcd411703db6cd6d2a1`, six commits beyond the pinned
+MacBook source preflight. Those commits include an iflib IPv4-fragment change
+and an ixl NVM update, but no BCM4364, NVMe or EFI loader change. FreeBSD ports
+`main` was `85ad0319366a70bd6b9a0d4548e684e469882f23`. Its recent Qt 6 base
+fix `57fc7b218b5361d6507f1e53a439f0dbbd341eec` defines `Q_OS_FREEBSD`
+correctly; a clean cherry-pick is staged in
+[ports PR #24](https://github.com/jordanhubbard/daemonarchy-ports/pull/24).
+The active native bulk retains its prior pinned tree. Qt base and desktop
+consumers need a new native package build and runtime check before this fix can
+enter a release selection.
+
 An isolated native source preflight at `02984cfbe95c063f130ae20d7ea6ed520df88a8f`
 merges the EFI timer PR #13 and T2 keyboard PR #19 onto the fork's
 `daemonarchy` branch, then merges FreeBSD-current through
