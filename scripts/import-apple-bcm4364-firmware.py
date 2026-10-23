@@ -144,6 +144,40 @@ def extract(image):
     return payloads
 
 
+def verify_stage(directory, model):
+    if model != "MacBookPro16,1":
+        raise ValueError("this firmware profile is only for MacBookPro16,1")
+    if (directory.is_symlink() or not directory.is_dir()
+            or directory.stat().st_uid != os.geteuid()
+            or stat.S_IMODE(directory.stat().st_mode) != 0o700):
+        raise ValueError("firmware stage must be an owned private directory")
+    expected_names = set(FILES) | {"provenance.json"}
+    if {path.name for path in directory.iterdir()} != expected_names:
+        raise ValueError("firmware stage has missing or unexpected files")
+    manifest = directory / "provenance.json"
+    if manifest.is_symlink() or not manifest.is_file() or manifest.stat().st_size > 16384:
+        raise ValueError("invalid firmware provenance record")
+    record = json.loads(manifest.read_text())
+    expected_hashes = {name: expected for name, (_, _, expected) in FILES.items()}
+    if (not isinstance(record, dict)
+            or record.get("schema") != "daemonarchy/apple-recovery-firmware@1"
+            or record.get("model") != model
+            or record.get("pci_device") != "14e4:4464"
+            or record.get("apple_subsystem") != "106b:07bf"
+            or record.get("recovery_image_sha256") != IMAGE_SHA256
+            or record.get("files") != expected_hashes
+            or not isinstance(record.get("source"), str)
+            or not 0 < len(record["source"]) <= 4096):
+        raise ValueError("firmware provenance does not match the selected board")
+    for name, (_, size, expected) in FILES.items():
+        path = directory / name
+        if path.is_symlink() or not path.is_file() or path.stat().st_size != size:
+            raise ValueError("invalid staged firmware file: " + name)
+        if digest(path.read_bytes()) != expected:
+            raise ValueError("staged firmware hash changed: " + name)
+    print("Verified four BCM4364 B3 firmware files in", directory)
+
+
 def import_firmware(args):
     if args.model != "MacBookPro16,1":
         raise ValueError("this firmware profile is only for MacBookPro16,1")
@@ -186,11 +220,15 @@ def main():
     source = parser.add_mutually_exclusive_group(required=True)
     source.add_argument("--image", type=Path, help="operator-supplied Apple BaseSystem.dmg")
     source.add_argument("--download", action="store_true", help="fetch the pinned image from Apple")
+    source.add_argument("--verify-stage", action="store_true", help="recheck an imported directory")
     parser.add_argument("--model", required=True)
     parser.add_argument("--destination", type=Path, required=True)
     args = parser.parse_args()
     try:
-        import_firmware(args)
+        if args.verify_stage:
+            verify_stage(args.destination, args.model)
+        else:
+            import_firmware(args)
     except (OSError, ValueError, subprocess.SubprocessError) as error:
         print("Apple firmware import refused:", error, file=sys.stderr)
         return 1

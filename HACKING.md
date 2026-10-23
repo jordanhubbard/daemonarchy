@@ -294,11 +294,15 @@ space than a cached installer-only rebuild. Check resources before dispatching.
    `python3.12 scripts/import-apple-bcm4364-firmware.py --download --model MacBookPro16,1 --destination /private/firmware-import`.
    Replace `--download` with `--image /path/to/BaseSystem.dmg` for local media.
    The tool verifies the exact image and four board-file hashes before creating
-   the fresh private destination. It records a provenance JSON file and does not
+   the fresh private destination. Recheck a staged import with
+   `python3.12 scripts/import-apple-bcm4364-firmware.py --verify-stage --model MacBookPro16,1 --destination /private/firmware-import`.
+   It records a provenance JSON file and does not
    add firmware to Git, an ISO or an installed target. The ISO recipe stages the
    tool and 7-Zip for manual use from the live debug shell; it does not yet
    present a firmware selection screen or copy imported files into the target.
-   Physical reboot/traffic qualification remains open.
+   The signed boot manifest must admit the exact firmware hashes before a
+   verified-boot target can receive them. Physical reboot/traffic qualification
+   remains open.
 
 ### Persistent authoring caches
 
