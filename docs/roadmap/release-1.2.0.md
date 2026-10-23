@@ -159,6 +159,18 @@ completions. It changes no transmit or link policy and has not been deployed.
 The next physical check must compare those counters with firmware link events,
 ARP/DHCP and RX counts over a wired debugger before classifying the failure.
 
+The FreeBSD-native driver is being prepared as
+[ports PR #23](https://github.com/jordanhubbard/daemonarchy-ports/pull/23):
+`net/if_brcmfmac-kmod` pins the ISC-licensed upstream source and applies the
+retained preview changes. On the native FreeBSD amd64 worker, `poudriere
+testport` passed package staging, QA, plist and install/deinstall checks in
+`16test20261019` with the isolated `brcmfmacport20261023` tree. After patching,
+all 14 C and header files byte-match the physically tested preview source.
+This package check uses the candidate jail, not the final integrated kernel,
+and does not establish working MacBook traffic. The ISO recipe and installer
+still need to select the package and acquire/install verified Apple board
+firmware before R12-10, R12-18 or R12-25 can close.
+
 The same worker now retains a separately verified candidate set cache at
 `/usr/daemonarchy/cache/iso-snapshot-20261019-041802b362aa`. The official
 snapshot's `REVISION` remained `041802b362aa` before and after acquisition;
