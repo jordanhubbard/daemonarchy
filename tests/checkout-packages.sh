@@ -7,7 +7,7 @@ work=$(mktemp -d /var/tmp/daemonarchy-checkout-test.XXXXXX)
 trap 'rm -rf "$work"' EXIT
 source "$here/overlay/usr/local/sbin/daemonarchy-checkouts"
 source "$here/overlay/usr/local/libexec/daemonarchy-installer/checkout-options"
-git init -q -b daemonarchy-1.1-test "$work/repo"
+git init -q -b preflight/macbook-test "$work/repo"
 git -C "$work/repo" config user.name Test
 git -C "$work/repo" config user.email test@example.invalid
 for value in one two three; do
@@ -19,7 +19,7 @@ done
 dd if=/dev/urandom of="$work/repo/payload" bs=1m count=2 status=none
 git -C "$work/repo" add payload
 git -C "$work/repo" commit -qm payload
-python3 "$here/scripts/build-checkout-packages.py" --kind ports --repo "$work/repo" --revision HEAD --branch daemonarchy-1.1-test --remote https://github.com/jordanhubbard/freebsd-ports.git --out "$work/packages" --chunk-mib 1 >"$work/build.log"
+python3 "$here/scripts/build-checkout-packages.py" --kind ports --repo "$work/repo" --revision HEAD --branch preflight/macbook-test --remote https://github.com/jordanhubbard/freebsd-ports.git --out "$work/packages" --chunk-mib 1 >"$work/build.log"
 jq '{schema:1,trees:{ports:.}}' "$work/packages/ports.json" >"$work/catalog.json"
 mkdir -p "$work/root"
 pkg -r "$work/root" -o ABI=FreeBSD:16:amd64 add "$work/packages"/*.pkg
@@ -34,6 +34,7 @@ checkout_materialize ports root "$work/catalog.json" "$work/checkout" "$work/roo
 [[ $(git -C "$work/checkout" remote get-url origin) == https://github.com/jordanhubbard/freebsd-ports.git ]]
 [[ $(git -C "$work/checkout" remote get-url upstream) == https://github.com/freebsd/freebsd-ports.git ]]
 git -C "$work/checkout" remote set-url origin "$work/repo"
+[[ $(git -C "$work/checkout" symbolic-ref --short HEAD) == preflight/macbook-test ]]
 git -C "$work/checkout" fetch --deepen=1 origin
 [[ $(git -C "$work/checkout" rev-list --count HEAD) == 2 ]]
 echo edited >>"$work/checkout/file"

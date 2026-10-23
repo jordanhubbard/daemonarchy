@@ -4,6 +4,7 @@ import argparse
 import json
 from pathlib import Path
 import re
+import subprocess
 
 parser = argparse.ArgumentParser(description=__doc__)
 parser.add_argument('directory', type=Path)
@@ -13,11 +14,17 @@ args = parser.parse_args()
 if not re.fullmatch(r'https://github.com/jordanhubbard/daemonarchy/releases/download/[A-Za-z0-9._-]+', args.url):
     parser.error('Use a release-specific Daemonarchy package repository URL')
 trees = {kind: json.loads((args.directory / (kind + '.json')).read_text()) for kind in ('ports', 'src')}
-if not re.fullmatch(r'[A-Za-z0-9_.-]+', args.ports_tracking_branch) or '..' in args.ports_tracking_branch:
+if not re.fullmatch(r'[A-Za-z0-9_./-]+', args.ports_tracking_branch) or subprocess.run(
+        ['git', 'check-ref-format', '--branch', args.ports_tracking_branch],
+        stdout=subprocess.DEVNULL, stderr=subprocess.DEVNULL).returncode:
     parser.error('Invalid ports tracking branch')
 trees['ports']['tracking_branch'] = args.ports_tracking_branch
 for kind, tree in trees.items():
     assert re.fullmatch(r'[0-9a-f]{40}', tree['revision'])
+    if not re.fullmatch(r'[A-Za-z0-9_./-]+', tree['branch']) or subprocess.run(
+            ['git', 'check-ref-format', '--branch', tree['branch']],
+            stdout=subprocess.DEVNULL, stderr=subprocess.DEVNULL).returncode:
+        parser.error(f'Invalid {kind} checkout branch')
     assert 1 <= tree['depth'] <= 100
     assert tree['parts']
     for part in tree['parts']:

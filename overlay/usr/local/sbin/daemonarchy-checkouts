@@ -28,12 +28,14 @@ checkout_identity() {
   revision=$(jq -r --arg k "$kind" '.trees[$k].revision' "$catalog")
   branch=$(jq -r --arg k "$kind" '.trees[$k].branch' "$catalog")
   tracking_branch=$(jq -r --arg k "$kind" '.trees[$k] | .tracking_branch // .branch' "$catalog")
-  [[ $tracking_branch =~ ^[a-zA-Z0-9_.-]+$ && $tracking_branch != *..* ]] || fail 'Invalid tracking branch'
+  [[ $tracking_branch =~ ^[a-zA-Z0-9_./-]+$ ]] &&
+    git check-ref-format --branch "$tracking_branch" >/dev/null 2>&1 || fail 'Invalid tracking branch'
   remote=$(jq -r --arg k "$kind" '.trees[$k].remote' "$catalog")
   archive_hash=$(jq -r --arg k "$kind" '.trees[$k].archive_sha256' "$catalog")
   need=$(jq -r --arg k "$kind" '.trees[$k].required_bytes' "$catalog")
   [[ $revision =~ ^[0-9a-f]{40}$ && $archive_hash =~ ^[0-9a-f]{64}$ && $need =~ ^[0-9]+$ && ${#need} -le 12 ]] || fail 'Invalid checkout identity or size'
-  [[ $remote == https://github.com/* && $branch =~ ^[a-zA-Z0-9_.-]+$ && $branch != *..* ]] || fail 'Invalid checkout remote or branch'
+  [[ $remote == https://github.com/* && $branch =~ ^[a-zA-Z0-9_./-]+$ ]] &&
+    git check-ref-format --branch "$branch" >/dev/null 2>&1 || fail 'Invalid checkout remote or branch'
 }
 
 checkout_empty_destination() {
