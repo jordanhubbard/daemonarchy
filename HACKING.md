@@ -290,13 +290,15 @@ space than a cached installer-only rebuild. Check resources before dispatching.
    For MacBookPro16,1 firmware development, `scripts/import-apple-bcm4364-firmware.py`
    can download the pinned Sonoma recovery image from Apple's recovery service
    or read an operator-supplied `BaseSystem.dmg`. For example, with Python 3 and
-   `7z` installed, run
-   `python3 scripts/import-apple-bcm4364-firmware.py --download --model MacBookPro16,1 --destination /private/firmware-import`.
+   `7z` installed, run on FreeBSD
+   `python3.12 scripts/import-apple-bcm4364-firmware.py --download --model MacBookPro16,1 --destination /private/firmware-import`.
    Replace `--download` with `--image /path/to/BaseSystem.dmg` for local media.
    The tool verifies the exact image and four board-file hashes before creating
    the fresh private destination. It records a provenance JSON file and does not
-   add firmware to Git, an ISO or an installed target. Installer integration and
-   physical reboot/traffic qualification remain open.
+   add firmware to Git, an ISO or an installed target. The ISO recipe stages the
+   tool and 7-Zip for manual use from the live debug shell; it does not yet
+   present a firmware selection screen or copy imported files into the target.
+   Physical reboot/traffic qualification remains open.
 
 ### Persistent authoring caches
 

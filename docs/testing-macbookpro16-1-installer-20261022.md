@@ -798,9 +798,11 @@ same four files on the controller. Its local-media path passed on native
 FreeBSD 16.0-CURRENT amd64 with `7-zip-26.04`, using the verified image, and
 produced the same hashes. A truncated-image input and a different model were
 both refused without creating output. The importer is a development tool;
-it is not yet exposed in the live installer, copied into the target, or tested
-across a MacBook reboot. The native radio driver also still needs link-loss
-and traffic repair before a Wi-Fi-ready installation claim is possible.
+the ISO build recipe now stages it with 7-Zip for manual debug-shell use, but
+no image from that recipe has yet been built or tested. It is not presented in
+the installer menu, copied into the target, or tested across a MacBook reboot.
+The native radio driver also still needs link-loss and traffic repair before a
+Wi-Fi-ready installation claim is possible.
 
 ## 2026-10-23 Wi-Fi link-event diagnostic candidate
 

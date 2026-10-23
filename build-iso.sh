@@ -104,11 +104,14 @@ sed -e "s/OMARCHY_HOSTNAME_DEFAULT='omarchy'/OMARCHY_HOSTNAME_DEFAULT='daemonarc
 mkdir -p "$share/compat"
 cp "$extract/usr/local/libexec/omarchy/compat/timedatectl" "$share/compat/"
 cp "$extract/usr/local/bin/omarchy-wifi-enterprise" "$share/omarchy-wifi-enterprise"
+cp "$here/scripts/import-apple-bcm4364-firmware.py" "$share/import-apple-bcm4364-firmware.py"
 # Use the helper's actual interpreter dependency, rather than a moving Python
 # default that could disagree with its package's rewritten shebang.
 live_python=$(pkg query -F "$omarchy_pkg" '%dn' | awk '/^python3[0-9]+$/ { print }')
 case "$live_python" in python3[0-9][0-9]) ;; *) echo 'Need one Python interpreter dependency for enterprise Wi-Fi' >&2; exit 1 ;; esac
-chmod 0755 "$share/omarchy-wifi-enterprise"
+live_python_exe=$(printf '%s' "$live_python" | sed -E 's/^python3([0-9][0-9])$/python3.\1/')
+sed -i '' "1s@^.*$@#!/usr/local/bin/$live_python_exe@" "$share/import-apple-bcm4364-firmware.py"
+chmod 0755 "$share/omarchy-wifi-enterprise" "$share/import-apple-bcm4364-firmware.py"
 rm -rf "$extract"
 
 if [ -n "${TEST_LOADER_BUNDLE:-}" ]; then
@@ -175,7 +178,7 @@ chmod 0755 "$stage"/overlay/usr/local/libexec/daemonarchy-installer/* \
 	"$share/keymap" "$share/compat/timedatectl"
 
 echo "==> Building the image"
-printf '%s\n' bash gum jq ttfx tzupdate pkg wifi-firmware-kmod >"$stage/live-packages"
+printf '%s\n' bash gum jq ttfx tzupdate pkg wifi-firmware-kmod 7-zip >"$stage/live-packages"
 printf '%s\n' "$live_python" >>"$stage/live-packages"
 # Trim only the live root. The untouched base.txz still installs a complete
 # development system, and optional source/ports checkouts remain downloadable.
