@@ -1,6 +1,6 @@
 # Changelog
 
-## Unreleased hardware debugging
+## Unreleased 1.3.1 hardware candidate
 
 - Preserve approved installed-system debugging keys, server identity and private
   state across reboot. Resume the existing session without Unpair or fresh
@@ -20,7 +20,7 @@
   firmware protocol 7, attaches to net80211 and repeatedly scans nearby access
   points using the candidate `bali-HRPN-u` board data, Apple seed footer and
   matching CLM and TxCap blobs. The operator joined a WPA2 network from the
-  desktop panel; the radio received DHCP address 10.11.101.63 and reached its
+  desktop panel; the radio received a DHCP address and reached its
   gateway. The installer now retains a kernel-matched preview module and staged
   firmware on the installed target. Fresh-image boot, reconnect, maintainable
   driver integration and redistributable firmware acquisition remain open.
@@ -52,9 +52,13 @@
   trace. A separate candidate carries FreeBSD ports' Qt 6 platform-detection
   fix; its desktop package rebuild and runtime check are also pending.
 - Expose approved remote-debug grant, listener, connection and address status
-  to the desktop bar without publishing private pairing state. The native
-  reboot and SSH fixture passes; the bar has not been observed on the physical
-  MacBook with this revision.
+  in the desktop network menu without publishing private pairing state. The
+  native reboot and SSH fixture passes; the operator confirmed the menu's
+  listener address and Unpair control on the physical MacBook. Retain the
+  installed debugger's active Wi-Fi profile as root-only state and recreate
+  the wireless interface during recovery when no network address is usable.
+  A controlled physical wireless teardown and recovery passed; full reboot
+  recovery with the packaged driver remains open.
 
 
 This history covers the installer repository from its first commit and all GitHub
