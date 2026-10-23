@@ -236,3 +236,39 @@ round-trip time was 2.028 ms, transmit and completion counters both reached
 92, and the three diagnostic drop counters stayed at zero. The existing WPA
 association remained complete. This is a short installed-system check, not a
 replacement for the installer and reboot tests.
+
+The later scan also provoked roaming among APs advertising the same network.
+The radio briefly reported no carrier and WPA moved through ASSOCIATING and
+ASSOCIATED before returning to COMPLETED without manual intervention. The
+logging-only driver recorded a matching link-down event, an authentication
+event with reason 15, then a new pairwise key. The wired debugger remained
+reachable because a temporary host route pinned its controller to the wired
+interface; after wireless DHCP, the overlapping wired and wireless /23 routes
+had otherwise selected the wireless interface for that controller. This short
+recovery does not resolve the earlier persistent traffic stall. Multi-AP
+roaming and stable debugger routing with both interfaces active need a fresh
+physical check.
+
+A controlled Wi-Fi-only route probe left the wired address configured while
+temporarily bringing its link down. FreeBSD still selected that interface for
+the default gateway even when the default route was recreated with the
+wireless interface specified. Four of five Internet probes failed with
+`Network is down`; the fifth succeeded only as the wired link returned.
+An automatic recovery restored the wired link and default route, and WPA
+returned to COMPLETED. A successful gateway probe on `wlan0` therefore does
+not yet qualify package downloads over Wi-Fi with both interfaces configured.
+With an active wired link, the installer reports this route conflict and asks
+the operator to disconnect that link before installing over Wi-Fi.
+With the wired DHCP client stopped and its address removed, the default route
+selected `wlan0`; eight Internet probes returned with no loss and the debugger
+remained reachable on its Wi-Fi address. The wired address was then restored.
+This proves a bounded Wi-Fi-only route and traffic path, but the installed
+system did not go through the new installer handoff or reboot on Wi-Fi.
+
+The installer candidate now handles a disconnected Ethernet adapter that
+retains a stale lease: after WPA and Wi-Fi DHCP complete, it checks the wired
+carrier, releases only that adapter's DHCP client and address, and installs
+the router from the wireless lease. It leaves an active wired debugger intact
+and reports the route conflict. The real scan/join test passes on Linux and
+the physical FreeBSD MacBook's shell; the automatic handoff still needs a
+fresh installer run.

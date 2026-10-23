@@ -195,6 +195,20 @@ MacBook wired-debug session, compare the deltas of `diag_tx_vap_count`,
 earlier passing package check and the undeployed diagnostic build do not prove
 that this new package works on the MacBook.
 
+On October 23, a diagnostic module matching the installed MacBook kernel
+loaded on the physical machine. The radio associated, obtained DHCP, returned
+60 of 60 gateway probes, and found 27 access-point entries. A scan triggered
+brief multi-AP roaming before WPA recovered. With the disconnected wired
+adapter's stale address released, Wi-Fi owned the default route and returned
+eight of eight Internet probes. This manually repaired installed system is
+not a fresh installer or packaged-port result. The installer candidate now
+releases a disconnected Ethernet lease before selecting the Wi-Fi gateway;
+its scan, authentication and stale-route test passes on Linux and native
+FreeBSD. Physical installer, reboot and packaged-driver qualification remain
+open. The selected desktop ports branch also carries the 1.3.1 remote-debug
+menu controls at `52777cd5`, which require a new package build after the
+currently running bulk.
+
 [Product PR #31](https://github.com/jordanhubbard/daemonarchy/pull/31)
 prepares that ISO path: the module is selected from the candidate ports tree,
 installed and locked on a MacBook target, while the installer offers a pinned
