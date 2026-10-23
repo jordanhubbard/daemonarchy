@@ -426,7 +426,7 @@ Native tests compile its actual sizing helper and pass for the captured overlap,
 missing metadata, a different GPU, exact BAR boundaries, overflowing ranges and
 retaining a larger reservation. The first clean physical boot attaches `drmn0`
 and replaces `efifb` with `drmfb` without diagnostic logging. Repeat boots,
-packaging and desktop acceptance remain separate pending checks.
+packaging and desktop acceptance were then checked separately.
 
 The first ports package-build attempt exposed that USES=kmod derives SYSDIR
 from SRC_BASE and overrides a directly supplied SYSDIR. That build is rejected.
@@ -439,12 +439,28 @@ consecutive physical passes with diagnostic logging absent and automatic remote
 approval retained. The login-screen compositor runs on the internal Apple panel
 at 3072 by 1920 and 60 Hz. A native Wayland EGL query against that compositor
 reports the AMD radeonsi Navi14 renderer, OpenGL 4.6 and Mesa 26.2.2. Keyboard and
-trackpad devices are enumerated. Operator confirmation of visible greeter,
-input behavior and a logged-in desktop remains pending; process startup and
-renderer queries alone do not satisfy that acceptance.
+trackpad devices are enumerated. The operator confirmed the first visible desktop
+and logged in. After trying Alt-Space, the operator suspected a panic, but the
+MacBook remained reachable without a new boot, panic record, GPU reset or NVMe
+error. The same Hyprland and menu processes stayed alive and three terminal
+windows appeared. The on-screen behavior and shortcut acceptance still need an
+operator report; device enumeration alone does not settle keyboard behavior.
 
 The ports fix is also being carried onto owned integration revision
 `72c758ea367d0d4aa8108ad6738b04d42e2378d7`, which already includes the recent
 upstream ports refresh. The matching-target package build retains its original
 source selection separately. A clean cherry-pick or patch test is not treated as
 native package acceptance for a changed whole-tree selection.
+
+The pinned-target ports package `drm-612-kmod-6.12.110.1600028_6` completed a
+native build with `SRC_BASE` pointing to the exact installed kernel source. Its
+SHA256 is `272e244955f75d9616a9df271595fe6175f9809756d5fe0da45133740cbbeff1`.
+The extracted source contains the focused EFI framebuffer fix and passes the
+compiled helper tests. Before installation, `pre-amdgpu-efifb-package-20261022`
+captured the previous boot environment. The package installed on the MacBook,
+was relocked, and passed `pkg check -d` and `pkg check -s`; the installed module
+hash matches the native staged artifact. The running module is the earlier
+focused build, so installed-package normal-boot acceptance remains pending.
+The refreshed owned ports branch carries the same focused patch in draft
+[ports PR #19](https://github.com/jordanhubbard/daemonarchy-ports/pull/19);
+its separate full native package build is pending.
