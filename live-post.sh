@@ -57,6 +57,9 @@ if [ -f "$world/boot/modules/if_brcmfmac.ko" ]; then
     # The preview image carries a kernel-matched Broadcom module and firmware.
     # Load it after the live root is mounted, before netif enumerates radios.
     echo 'kld_list="if_brcmfmac"' >>"$world/etc/rc.conf"
+    # ifconfig_DEFAULT=DHCP is for ready-to-use wired adapters. The installer
+    # starts wireless DHCP only after wpa_supplicant authenticates wlan0.
+    echo 'ifconfig_wlan0="NOAUTO"' >>"$world/etc/rc.conf"
 fi
 ln -sf /tmp/resolv.conf "$world/etc/resolv.conf"
 echo 'resolv_conf=/tmp/resolv.conf' >"$world/etc/resolvconf.conf"

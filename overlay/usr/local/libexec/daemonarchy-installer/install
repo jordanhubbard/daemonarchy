@@ -195,6 +195,21 @@ if [[ -f /boot/modules/if_brcmfmac.ko ]]; then
   done
 fi
 
+# A private MacBook preview may carry a separately qualified EFI timer loader.
+# Preserve it on the installed system only when its declared identity matches
+# the live EFI loader; an ordinary image has no selection file.
+timer_loader_identity=$ISO_SHARE/macbook-efi-timer-loader.sha256
+if [[ $(kenv smbios.system.product 2>/dev/null || true) == MacBookPro16,1 &&
+      -f $timer_loader_identity ]]; then
+  read -r timer_loader_hash <"$timer_loader_identity"
+  [[ $timer_loader_hash =~ ^[0-9a-f]{64}$ ]] &&
+      [[ $(sha256 -q /boot/loader.efi) == "$timer_loader_hash" ]] || {
+    echo 'The MacBook EFI timer loader differs from the staged selection.' >&2
+    exit 1
+  }
+  install -m 0555 /boot/loader.efi "$TARGET/boot/loader.efi"
+fi
+
 # Recovery must work before the large desktop transaction. Create the selected
 # account with the base shell; switch it to bash after packages are installed.
 create_recovery_accounts "$TARGET" "$username" "${full_name:-$username}" <<<"$password_hash"

@@ -42,7 +42,7 @@ reachable without changing its historical scope.
 - [Daemonarchy 1.1.1 refresh](testing-1.1.1.md)
 - [MacBookPro16,1 first-boot investigation](testing-macbookpro16-1.md)
 - [MacBook installer fatal NVMe investigation, October 22](testing-macbookpro16-1-installer-20261022.md)
-- [Private MacBook Wi-Fi preview image, October 22](testing-macbookpro16-1-wifi-preview-20261022.md)
+- [Private MacBook Wi-Fi and EFI timer preview images, October 22](testing-macbookpro16-1-wifi-preview-20261022.md)
 
 - [1.2.0 completion obligations and worker model](roadmap/release-1.2.0.md)
 
