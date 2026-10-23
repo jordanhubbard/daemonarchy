@@ -63,6 +63,22 @@ results cannot substitute for current installed-wheel receipts.
 | R12-24 | PERF-001 | Execute graph units as literal LitAI Components with versioned pkg products, full provenance and typed dependencies; demonstrate substantially faster equivalent native build, packaging and ISO workflows with correct invalidation and independent runtime acceptance. |
 | R12-25 | HW-003 | For laptops needing external firmware, the installer identifies required device/board files, obtains them from a verified online source or operator-supplied local media, records provenance and hashes, installs them into the target, and verifies driver attachment after reboot. On this wiped MacBook, qualify an Apple recovery-image acquisition path for BCM4364 without requiring macOS; refuse a wireless-ready claim when firmware or driver support is missing. |
 
+The R12-18 native ports checkpoint on October 23 used a disposable FreeBSD
+16.0-CURRENT poudriere jail and the Omarchy debugger-panel changes from
+[ports PR #21](https://github.com/jordanhubbard/daemonarchy-ports/pull/21).
+The PR's older ports tree planned 292 source builds against the current binary
+feed. A separate test worktree put its 21 new product ports on the official
+package-feed commit `792be2623dc0ef1ac471fb80d4bb242b10b1bdde` while
+retaining that feed's Quickshell 0.3.2. At temporary test revision
+`ef1b27fdf1f9174bcd61124d419b146f07888807`, the matched dry run planned
+only `ports-mgmt/pkg` and `x11-wm/omarchy`; the subsequent native
+`poudriere testport` built both and completed Omarchy package installation and
+removal with exit 0. Its retained worker log is under
+`16test20261019-omarchybaseline20261023/2026-10-23_04h11m50s`.
+The temporary transplant is not the release ports revision. A reconciled
+source/ports pin, clean bulk result, physical desktop check and final artifact
+identity are still required before R12-18 can close.
+
 ## Closure rule
 
 A row closes only when its implementation and required native/VM/physical
