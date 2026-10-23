@@ -623,6 +623,14 @@ ARP and ICMP; no scan or association was observed. Its console/panic state has
 not yet been recovered, so this is a failure boundary rather than evidence that
 the board file is wrong. Review of the experimental driver found that it
 advertised host-memory DMA indices but still read and wrote TCM indices. A
-corrected diagnostic variant builds on the native FreeBSD worker but has not
-been deployed or tested on the MacBook. Keep BCM4364 disabled in release images
-until hardware recovery, crash diagnosis and real wireless acceptance pass.
+corrected diagnostic variant built on the native FreeBSD worker was then
+tested. It also hung the machine: a live log reached ARM release but did not
+capture the first marker after DMA-ring setup. Ring setup is the leading
+suspect, although buffered logging prevents assigning an exact statement to
+the failing instruction.
+The prior dump device was `/dev/null`, so no crash image survived that hard
+hang. The machine's existing unused swap partition is now configured as a
+compressed dump device for future panics. A separate native-built diagnostic
+variant will test DMA allocations without publishing host DMA addresses to the
+firmware. Keep BCM4364 disabled in release images until this boundary is fixed
+and real wireless acceptance passes.
