@@ -665,3 +665,20 @@ access. It again lost SSH during a firmware request with MSI enabled and the
 watchdog off. This rules out the watchdog as a necessary trigger and leaves
 MSI delivery, the filter/deferred-handler path and their ring-processing races
 under investigation. The machine did not supply a panic record for the freeze.
+
+The next recovery again showed no panic dump. A one-shot MSI filter masked the
+first interrupt, skipped its separate task queue and let the same firmware
+request finish through polling. It returned the firmware version with one
+filter invocation and zero deferred-task invocations, then unloaded cleanly.
+When a follow-up enabled the separate task queue solely to acknowledge that
+interrupt, with ring processing and interrupt re-enable both disabled, the
+MacBook froze again. This puts the custom filter-to-taskqueue handoff or the
+acknowledge operation ahead of ring processing as the immediate fault boundary.
+The selected native FreeBSD kernel's `taskqueue_create()` builds a queue with
+an `MTX_DEF` sleep mutex, while `taskqueue_create_fast()` uses `MTX_SPIN`.
+Enqueueing onto the former from an interrupt filter is an invalid context and
+is now the leading explanation for the hard freeze. FreeBSD network drivers
+also attach an interrupt thread through `bus_setup_intr` with
+`FILTER_SCHEDULE_THREAD`; the next private probe will use that kernel path
+instead of enqueuing a custom task from the filter. The diagnosis still needs
+physical confirmation before the driver can be integrated.
