@@ -76,7 +76,7 @@ R12-08 is the immediate implementation priority and a release blocker. R12-01/R1
 remain final lifecycle admission requirements; they do not prevent original-source
 loader development or native qualification. Framework work is tracked by
 [issue 67](https://github.com/jordanhubbard/literate-ai/issues/67) and
-[draft PR 68](https://github.com/jordanhubbard/literate-ai/pull/68). The retained
+[merged PR 68](https://github.com/jordanhubbard/literate-ai/pull/68). The retained
 Standard execution route remains unqualified under reopened
 [issue 22](https://github.com/jordanhubbard/literate-ai/issues/22); receiver and
 wheel-bootstrap success cannot close R12-02.
@@ -89,7 +89,7 @@ coding agent. The provider-neutral correction is tracked in
 [issue 70](https://github.com/jordanhubbard/literate-ai/issues/70). This sample is
 only a framework platform check; it cannot qualify Daemonarchy's complete retained
 project or close either prerequisite row. The new native `pkg` host-install
-realization is contributed in the same draft framework PR, with native and
+realization was contributed in that merged framework PR, with native and
 installed-lifecycle qualification still required.
 
 The subsequent qualified framework wheel at `d96f6b8b` also installed offline
