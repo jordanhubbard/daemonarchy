@@ -746,8 +746,12 @@ upstream revision, and its standalone NVMe module compiles on native FreeBSD.
 The final method correction concerns non-PCI controllers; the MacBook ANS2
 controller uses `nvme_pci`, which already implements that method. The reset
 recovery work is a plausible candidate for the recorded ANS2 event, not a
-demonstrated fix. A full GENERIC kernel build and physical test remain open;
-the selected release source and ISO have not been changed.
+demonstrated fix. The candidate's full amd64 GENERIC kernel build completed on
+native FreeBSD in 1,187 seconds (`make -j4 buildkernel KERNCONF=GENERIC`, exit
+zero). The resulting `kernel` has SHA256
+`f27306e6abc70a869545f30d46783af6b0ed73802702818c3c9b35c21efa7b94`.
+The physical MacBook boot and installer test remain open; the selected release
+source and ISO have not been changed.
 
 The matching ports review reached FreeBSD-current `076f4cba6304`. Its tree
 differs from the selected Daemonarchy ports snapshot in 4,173 paths, including
