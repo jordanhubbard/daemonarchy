@@ -92,6 +92,19 @@ This was a disposable October 19 CURRENT jail, not the production release jail.
 Physical desktop acceptance, coherent source/package/module pinning, signed feed
 and final artifact identity are still required before R12-18 can close.
 
+A second disposable ports worktree refreshed PR #22 against FreeBSD ports
+`99fc0413c18d18fc6c9750f2265ae9e33811b918`, 592 commits beyond the
+official package-feed baseline. Its merge revision
+`71d93183e1b58b76352db825e788f63cf5517797` retains the product ports;
+conflicting Makefiles were resolved to the newer upstream definitions only in
+that test worktree. The exact 21-origin native `poudriere bulk -n -b latest`
+finished with exit 0 and planned 1,193 packages: 965 fetched and 228 source
+builds, including Chromium, CEF, Rust and Qt. Its retained log is under
+`16test20261019-omarchycurrentpreflight20261023/2026-10-23_08h11m44s`.
+This is a reviewed upstream freshness comparison, not a completed build of the
+newer tree. PR #22 remains the exact revision with a completed native bulk;
+any later ports refresh requires its own full build and acceptance.
+
 The same worker now retains a separately verified candidate set cache at
 `/usr/daemonarchy/cache/iso-snapshot-20261019-041802b362aa`. The official
 snapshot's `REVISION` remained `041802b362aa` before and after acquisition;
