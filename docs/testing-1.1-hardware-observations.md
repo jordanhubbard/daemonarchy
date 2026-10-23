@@ -172,9 +172,10 @@ ACPI can produce the reported discovery failure; the exact ISO/kernel provenance
 is still needed to bind that inspection to the running image. The message does
 not establish that the processor lacks an APIC or diagnose the ACPI-on reset.
 
-The next single-variable comparison uses the same image and restores ACPI to
-the enabled baseline, then disables SMP startup. Retain the other baseline
-settings unchanged. At the loader prompt:
+The previously proposed single-variable comparison used the same image with
+ACPI enabled and SMP startup disabled. The operator now confirms these settings
+have already been tried without changing the early reset. The recipe is retained
+for evidence context, not as a new requested comparison:
 
 ```text
 set kern.smp.disabled=1
@@ -189,8 +190,23 @@ to skip secondary-CPU startup while retaining ACPI/APIC discovery. A changed
 result narrows the CPU-startup or concurrency-dependent path; it does not name
 a faulty driver. An unchanged reset keeps probe/SYSINIT instrumentation and the
 last observable boot stage as the next investigation. Panic-reboot settings
-retain ordinary panics; they do not prevent every possible hard reset. No result
-for this comparison is recorded yet.
+retain ordinary panics; they do not prevent every possible hard reset. The
+operator reports no improvement from these settings; no additional repeat is
+requested.
+
+The operator also asks about the previously requested boot-loader network
+access. The source fork implements an opt-in authenticated wired UEFI console
+([runbook](https://github.com/jordanhubbard/daemonarchy-src/blob/5dff8f4cb3cb1ac8d292664d003432f5f75cf9dc/docs/user/loader-network-debug.md)).
+`netdebug devices` checks whether the running loader supplies that command and
+whether firmware exposes an Ethernet interface. Activation requires a shared
+private key file and static local/controller addresses. The recorded 1.2-test1
+ISO includes a development loader with activation disabled, but that does not
+identify the operator's latest pre-1.3 ISO. Continuous early-kernel transport is
+still unfinished: firmware SNP networking stops at `ExitBootServices`, and
+retained identity metadata does not keep a network console alive. Thus the
+implemented loader console alone cannot capture this early-kernel reset.
+Targeted kernel startup/probe instrumentation with retained last-stage output
+remains necessary unless a usable early hardware console is identified.
 
 ## MSI comparison reports
 
