@@ -6,7 +6,7 @@ work=$(mktemp -d)
 trap 'rm -rf "$work"' EXIT
 export WIFI_CONF=$work/wpa.conf WIFI_ERROR_FILE=$work/error
 export WIFI_DHCLIENT_PIDFILE=$work/dhclient.pid
-eval "$(sed -n '/^wifi_scan() {$/,/^}$/p; /^wifi_connect() {$/,/^}$/p' "$here/overlay/usr/local/libexec/daemonarchy-installer/configurator")"
+eval "$(sed -n '/^wifi_scan() {$/,/^}$/p; /^wifi_access_points() {$/,/^}$/p; /^wifi_connect() {$/,/^}$/p' "$here/overlay/usr/local/libexec/daemonarchy-installer/configurator")"
 
 sleep() { :; }
 pkill() { :; }
@@ -27,6 +27,7 @@ ifconfig() {
   printf 'SSID            BSSID              CHAN RATE S:N    INT CAPS\n'
   printf 'First           00:11:22:33:44:55 1    54M  30:0   100 EPS\n'
   if [[ $(<"$work/scans") == $'x\nx\n'* || $(<"$work/scans") == $'x\nx' ]]; then
+    printf 'First           00:11:22:33:44:66 36   54M  45:0   100 EPS\n'
     for n in 2 3 4 5 6 7 8; do
       printf 'Network%s        00:11:22:33:44:%02d 36   54M  40:0   100 EPS\n' "$n" "$n"
     done
@@ -37,6 +38,7 @@ scan=$(wifi_scan)
 (( $(wc -l <<<"$scan") == 8 ))
 (( $(wc -l <"$work/scans") == 4 ))
 for n in 2 3 4 5 6 7 8; do grep -qx "Network$n" <<<"$scan"; done
+[[ $(wifi_access_points First) == $'00:11:22:33:44:66  (signal 45)\n00:11:22:33:44:55  (signal 30)' ]]
 
 wpa_cli() {
   echo x >>"$work/status-checks"
@@ -51,6 +53,14 @@ wifi_connect First example false
 [[ $(<"$work/killed-pid") == 4321 ]]
 (( $(wc -l <"$work/status-checks") == 66 ))
 [[ -f $work/dhcp && ! -e $work/error ]]
+
+wifi_connect First example false 00:11:22:33:44:55
+grep -q '^[[:space:]]*bssid=00:11:22:33:44:55$' "$WIFI_CONF"
+if wifi_connect First example false 'invalid-bssid'; then
+  echo 'Accepted an invalid access-point address' >&2
+  exit 1
+fi
+grep -q 'Invalid access-point address' "$work/error"
 
 rm "$work/killed-pid"
 ps() { printf '%s\n' 'unrelated process'; }

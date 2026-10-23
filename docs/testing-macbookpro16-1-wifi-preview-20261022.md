@@ -381,3 +381,11 @@ that wired address and DHCP client for remote debugging. A disconnected wired
 interface follows the existing stale-lease cleanup path. The focused installer
 test covers both routes, but this behavior still needs a physical ISO install
 with Ethernet retained for the debugger and packages fetched over Wi-Fi.
+
+The candidate also offers a specific access-point address when a scanned
+network name appears on multiple BSSIDs. The chosen address goes into the
+installer session's WPA profile, limiting reassociation during package
+downloads; automatic selection remains available. The focused test covers
+scan ordering, the generated WPA field and invalid-address rejection. No
+physical installer run has yet established that a pinned AP survives the
+whole installation or reboot.
