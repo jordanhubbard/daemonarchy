@@ -715,7 +715,7 @@ before claiming the observer optimization resolves that release blocker.
   - [ ] Verify integrity and model match before copying into the target, retain source and digest evidence without private data, and make acquisition retryable without repeating disk partitioning or package installation.
   - [ ] Install firmware in the driver's expected target path, enable its loading at boot, and check actual device attachment, scan, association, traffic and reconnect after reboot; report a clear incomplete-device result when the driver or firmware is unavailable.
 - **Evidence:**
-  - [ ] Fresh physical MacBook installation proves acquisition and rebooted BCM4364 operation; offline-media and failure/retry cases pass. At present the PCI device is unbound and no matching firmware is installed.
+  - [ ] Fresh physical MacBook installation proves acquisition and rebooted BCM4364 operation; offline-media and failure/retry cases pass. A private, one-boot diagnostic probe now reaches BCM4364 firmware protocol 7 using candidate B3 firmware, board data and the Apple random-seed footer, but stops before DMA or interface attach. The ordinary system still leaves the PCI device unbound; these manually staged files do not qualify installer acquisition or redistribution.
 
 ### [ ] DEBUG-002 — Preserve approved hardware-debugging sessions across reboot
 

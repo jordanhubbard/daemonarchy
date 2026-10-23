@@ -14,6 +14,10 @@
 - Record the MacBook Pro 16 fatal NVMe event reproduced during installer package
   extraction. Storage correction, BCM4364 Wi-Fi driver and firmware integration,
   sustained input acceptance, and full physical acceptance remain open.
+- Identify the MacBook's BCM4364 revision 4, TCM geometry and B3 firmware path
+  on physical hardware. A native diagnostic module reaches firmware protocol 7
+  only when Apple board data includes a random-seed footer; DMA, interface,
+  radio and installer firmware acquisition remain unqualified.
 
 
 This history covers the installer repository from its first commit and all GitHub

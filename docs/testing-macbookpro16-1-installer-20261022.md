@@ -572,11 +572,47 @@ matches. This establishes that firmware bytes can be acquired and delivered,
 not that their original Apple provenance, exact board selection or license for
 image redistribution has been qualified.
 
-No files were installed into the boot firmware path. The installed FreeBSD
-kernel exposes only `if_bwi.ko` and `if_bwn.ko` Broadcom Wi-Fi modules, neither
+At this availability-probe stage, no files were installed into the boot firmware
+path. The installed FreeBSD kernel exposes only `if_bwi.ko` and `if_bwn.ko` Broadcom Wi-Fi modules, neither
 matching this FullMAC PCI device. `pciconf` still lists it as `none8`, and
 `ifconfig -l` still lists only loopback and two USB Ethernet interfaces.
 Loading firmware cannot attach an absent BCM4364 driver. The next controlled
 probe needs a native driver able to identify the chip and request the correct
 firmware and board files; only then can firmware loading and wireless operation
 be tested.
+
+### Native firmware-startup probe, October 22
+
+A diagnostic FreeBSD KLD built on the native builder against the MacBook's
+exact kernel source identified the live chip as BCM4364 revision 4, AXI
+interconnect, ARM CR4 core revision 12, and PCIe core revision 16. It measured
+11 TCM banks totaling `0x140000` bytes, with firmware RAM based at `0x160000`.
+The module unloaded without affecting the desktop or SSH session. A separate,
+isolated spike based on the ISC-licensed FreeBSD-native brcmfmac reference was
+then built against the same source; this is diagnostic work, not a supported or
+installed Wi-Fi driver.
+
+The B3 binary was staged as `brcmfmac4364b3-pcie.bin` in the target's boot
+firmware directory, SHA256
+`5bea76866f6c08c16e64f5c3d833a776e6f419b7758638d818b64ce64820aa2c`.
+The candidate `bali-HRPN-u` board configuration was staged as
+`brcmfmac4364b3-pcie.txt`, SHA256
+`3379a394ab8e1b883514b677876cd158d654e7377bc35f43ab99f6d2ae37ea25`.
+The existing pre-staging boot-environment snapshot protects this test. The
+driver read both files and verified firmware readback in TCM, but the firmware
+did not signal readiness with either no board file or the candidate board file
+alone. Its ARM core did leave reset. Adding the Apple random-seed block and
+`0xfeedc0de` footer immediately before NVRAM, as documented by the
+[Linux PCIe implementation](https://github.com/torvalds/linux/blob/master/drivers/net/wireless/broadcom/brcm80211/brcmfmac/pcie.c),
+made the firmware publish its shared-memory handshake. The running firmware
+reports protocol version 7, 40 flow rings, 43 submission rings, six completion
+rings and a maximum of 511 posted receive buffers. The bounded test stops
+before host DMA rings, interrupts, network interface or radio operations and
+unloads cleanly. PCI `14e4:4464` remains unbound in ordinary operation.
+
+This establishes a working firmware-startup recipe on this physical unit, but
+not exact OTP-to-board-file matching, firmware redistribution rights, network
+operation or reboot persistence. The next driver phase must validate shared
+memory bounds and DMA/interrupt handling before attempting interface attach,
+scan, association and traffic. The installer still needs verified firmware
+acquisition, target installation and offline-media/failure paths.
