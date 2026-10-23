@@ -692,10 +692,13 @@ the matching `bali` B3 CLM blob (31,998 bytes, SHA256
 `61f9ffe33d4137eac1dfd93c4be03e6c721f282cfc85a89d7d345ffd12f9f9ac`)
 reported successful firmware `clmload_status`. Three consecutive physical
 scans then returned nearby access points, with no scan error or loss of SSH.
-The candidate `bali-HRPN-u` board file therefore supports firmware startup,
-interface attachment and scanning on this unit. Exact board-family matching,
-association, traffic, reconnect, suspend and rebooted operation remain open.
-The matching TxCap blob was identified but has not been uploaded or tested.
+The matching TxCap blob (723 bytes, SHA256
+`8b794d5ce9311d2794a6eff4f35ffd1d362f341cb648a3b98f7d7420a251866c`)
+also uploaded with successful `txcapload_status`; scanning still returned nearby
+access points. The candidate `bali-HRPN-u` board file therefore supports
+firmware startup, interface attachment and scanning on this unit. Exact
+board-family matching, association, traffic, reconnect, suspend and rebooted
+operation remain open.
 
 The diagnostic module is a private ISC-licensed FreeBSD-native driver spike,
 not part of the installed system or release source. The firmware files were

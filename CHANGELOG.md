@@ -18,7 +18,7 @@
   on physical hardware. A private FreeBSD-native diagnostic module reaches
   firmware protocol 7, attaches to net80211 and repeatedly scans nearby access
   points using the candidate `bali-HRPN-u` board data, Apple seed footer and
-  matching CLM blob. Association, traffic, reboot persistence, maintainable
+  matching CLM and TxCap blobs. Association, traffic, reboot persistence, maintainable
   driver integration and installer firmware acquisition remain unqualified.
 
 
