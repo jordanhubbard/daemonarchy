@@ -458,8 +458,8 @@ The extracted source contains the focused EFI framebuffer fix and passes the
 compiled helper tests. Before installation, `pre-amdgpu-efifb-package-20261022`
 captured the previous boot environment. The package installed on the MacBook,
 was relocked, and passed `pkg check -d` and `pkg check -s`; the installed module
-hash matches the native staged artifact. The running module is the earlier
-focused build, so installed-package normal-boot acceptance remains pending.
+hash matches the native staged artifact. At that point the running module was
+still the earlier focused build; a normal boot was checked afterward.
 The refreshed owned ports branch carries the same focused patch in draft
 [ports PR #19](https://github.com/jordanhubbard/daemonarchy-ports/pull/19).
 Its separate full native package build passed against the exact target source,
@@ -467,8 +467,11 @@ including the compiled helper regression. The refreshed package SHA256 is
 `f3e3cac349851fdf0fc2acdf2dec36971ebb8023c227977fd00c9e45f371c5ba`.
 It was installed behind boot environment `pre-amdgpu-current-package-20261022`
 and passes file and dependency checks. The installed `amdgpu.ko` hash matches
-the staged module. The running module still predates the installed package, so
-normal-boot package acceptance is pending.
+the staged module. The refreshed module then loaded on a controlled normal boot
+without rescue isolation. `drmn0` attached, `drmfb` replaced `efifb`, SDDM started its
+Wayland greeter, and the pool and package checks remained healthy. The
+operator's visible-screen report is pending, so this is service and driver
+acceptance rather than full display/input acceptance.
 
 ## T2 keyboard LED-output stall
 
@@ -488,9 +491,25 @@ Setting the existing runtime tunable `hw.hid.hkbd.no_leds=1` immediately
 released the stalled desktop path. The operator then confirmed that the
 keyboard worked. This is strong live evidence for the LED-output path, while
 the underlying virtual-host-controller response remains to be investigated.
-The runtime setting is not persisted. A product-specific HID quirk that skips
+For normal-boot graphics qualification, the working setting was also placed
+temporarily in `loader.conf`, behind boot environment
+`pre-normal-boot-keyboard-20261022`. A product-specific HID quirk that skips
 the problematic LED report is under review in
 [source PR #19](https://github.com/jordanhubbard/daemonarchy-src/pull/19).
-Both changed modules compile natively against the target source. Its full
-GENERIC kernel build and physical boot acceptance remain pending. The Linux
-T2 implementation remains a behavioral reference; no Linux code was copied.
+Both changed modules compile natively against the target source, and the full
+native GENERIC kernel and module build passed. A one-boot copy of that kernel
+(SHA256 `f860d6b6a3a354aa10b1f5b262ada2b9a9fa878ffa0753dfba76b572617e5c07`)
+booted on the MacBook while `hw.hid.hkbd.no_leds=0` overrode the temporary
+loader fallback. Its built-in T2 keyboard enumerated at `05ac:0340`, the
+refreshed graphics module loaded, SDDM reached its Wayland greeter and the pool
+remained healthy. The built-in keyboard evdev node is `event6` on this boot;
+event numbers are not stable across boots. Two LED events sent to that exact
+node reached `hkbd_ev_event`, took 0.062 and 0.058 milliseconds, and caused
+zero `usbhid_sync_xfer` entries in the same DTrace window. This directly
+checks the device-specific quirk with the global bypass disabled. Physical
+typing and trackpad acceptance still await the operator. The Linux T2
+implementation remains a behavioral reference; no Linux code was copied.
+The earlier libinput trace includes 1,190 motion events and 18 button events
+from the built-in trackpad, including continuous motion at roughly eight
+millisecond intervals. Visual pointer/click acceptance is still awaiting the
+operator's report.
