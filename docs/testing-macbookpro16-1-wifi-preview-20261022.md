@@ -30,6 +30,39 @@ under both OVMF and BIOS QEMU; the screen showed the private hardware-preview
 label. The booted live system loaded `if_brcmfmac` without a VM radio present.
 A full VM install and physical fresh install are still pending.
 
+## Physical install attempt, October 23
+
+The revised image booted the MacBook and joined Wi-Fi, but the first whole-disk
+install attempt stopped before partition writes. The live installer reported
+`Managed boot file mismatch: boot/loader.efi` while validating its signed boot
+bundle. The live loader hash is the revised timer-loader hash above, while the
+bundle still pins the original loader hash
+`2058bc3b47a6a98b03c7f69c99416b272a31bdefa6415e16e9b171c5ba158e51`.
+The target's existing GPT and importable ZFS pool were still present after the
+failure. This preview must not be treated as an installable image until the
+final loader and signed bundle are made consistent and verified together.
+
+The live system's Wi-Fi profile and remote-debug grant are on volatile `/tmp`
+and `/var` filesystems. A private, mode-0600 recovery copy was retained on the
+debug controller, outside Git, but this ISO cannot automatically reconnect the
+debugger over Wi-Fi after reboot. A future debug image needs a durable,
+access-restricted profile and grant, plus boot-time Wi-Fi and listener startup;
+the saved controller copy alone does not provide unattended recovery.
+
+A second **private development image** was assembled for the next physical
+retry: `daemonarchy-macbook-wifi-debug-recovery-20261023-amd64.iso`, SHA-256
+`5f6b5e49a40f22edeb2da5c6889cb922c0ae91ceb2b258c46ce22d30c33b6688`.
+It carries this one debugging session's Wi-Fi profile, approved SSH state and
+host identity in root-readable ISO files, with a live-boot helper to bring up
+Wi-Fi and resume the listener. The file must remain private and should be
+destroyed when the session ends. The stale signed bundle was removed because
+it cannot attest the timer-fixed loader; firmware Secure Boot was disabled on
+the observed MacBook boot. This image is **not a signed or attested release**.
+Its ISO tree, EFI/GPT boot records and timer-loader hash were checked, and an
+OVMF VM mounted the live root and reached multi-user startup. Automatic Wi-Fi
+reconnection and debugging resumption still require a physical reboot test on
+the MacBook; the VM has no BCM4364 radio.
+
 ## EFI timer and installer Wi-Fi revision
 
 The first preview reused the published 1.1.1 EFI boot image. Its
