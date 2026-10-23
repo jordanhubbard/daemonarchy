@@ -39,6 +39,22 @@
   `ifconfig -v`; a native-built preview module then returned ten BSSIDs and
   passed gateway and Internet traffic over Wi-Fi alone. Fresh-install and
   reboot qualification are still open.
+- Prepare the next MacBook installer image to stage a packaged BCM4364 driver
+  and acquire board firmware from a verified Apple recovery image or local
+  media before disk changes. Bind the selected firmware to the signed target
+  handoff and refuse wireless-ready installation if required files or the
+  driver are missing. The combined source passes contract validation and
+  Secure Boot unit checks; a complete ISO and physical reinstall are pending.
+- Replace the Broadcom preview driver's per-packet console output with
+  read-only transmit-path counters, including missing and full flow rings.
+  The port patches apply to its pinned source and match the native diagnostic
+  module. The revised package still needs native QA and a MacBook traffic
+  trace. A separate candidate carries FreeBSD ports' Qt 6 platform-detection
+  fix; its desktop package rebuild and runtime check are also pending.
+- Expose approved remote-debug grant, listener, connection and address status
+  to the desktop bar without publishing private pairing state. The native
+  reboot and SSH fixture passes; the bar has not been observed on the physical
+  MacBook with this revision.
 
 
 This history covers the installer repository from its first commit and all GitHub
