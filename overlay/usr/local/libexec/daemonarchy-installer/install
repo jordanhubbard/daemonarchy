@@ -184,6 +184,17 @@ for set in base kernel lib32; do
   progress_count base "$expanded_sets" 3
 done
 
+# A hardware preview can carry a module and board firmware matched to this
+# exact kernel. Keep them with the installed system, including offline installs.
+if [[ -f /boot/modules/if_brcmfmac.ko ]]; then
+  install -d "$TARGET/boot/modules" "$TARGET/boot/firmware"
+  install -m 0555 /boot/modules/if_brcmfmac.ko "$TARGET/boot/modules/if_brcmfmac.ko"
+  for firmware in /boot/firmware/brcmfmac4364b3-pcie.*; do
+    [[ -f $firmware ]] || continue
+    install -m 0444 "$firmware" "$TARGET/boot/firmware/${firmware##*/}"
+  done
+fi
+
 # Recovery must work before the large desktop transaction. Create the selected
 # account with the base shell; switch it to bash after packages are installed.
 create_recovery_accounts "$TARGET" "$username" "${full_name:-$username}" <<<"$password_hash"
@@ -249,6 +260,9 @@ dbus_enable="YES"
 seatd_enable="YES"
 sddm_enable="YES"
 EOF
+if [[ -f $TARGET/boot/modules/if_brcmfmac.ko ]]; then
+  echo 'kld_list="if_brcmfmac"' >>"$TARGET/etc/rc.conf"
+fi
 # GPU modules are loaded by daemonarchy-graphics after SSH, not early kld.
 [[ -n $vt_keymap ]] && echo "keymap=\"${vt_keymap%.kbd}\"" >>"$TARGET/etc/rc.conf"
 

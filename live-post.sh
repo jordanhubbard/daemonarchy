@@ -53,6 +53,11 @@ sendmail_enable="NONE"
 cron_enable="NO"
 update_motd="NO"
 EOF
+if [ -f "$world/boot/modules/if_brcmfmac.ko" ]; then
+    # The preview image carries a kernel-matched Broadcom module and firmware.
+    # Load it after the live root is mounted, before netif enumerates radios.
+    echo 'kld_list="if_brcmfmac"' >>"$world/etc/rc.conf"
+fi
 ln -sf /tmp/resolv.conf "$world/etc/resolv.conf"
 echo 'resolv_conf=/tmp/resolv.conf' >"$world/etc/resolvconf.conf"
 

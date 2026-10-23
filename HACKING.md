@@ -335,6 +335,18 @@ The installer flow lives in `overlay/`, primarily as Bash helpers. An installer-
 - **`install`** reads its answers from `$DAEMONARCHY_INSTALL_CONF`; the keys are what `configurator`'s `write_install_conf` writes. An unattended install takes the same file from a FAT drive labelled `CIDATA`, which is how both test scripts run.
 - **`configurator`** sources Omarchy's setup form from the `omarchy` package at build time (`build-iso.sh` extracts it), so the account, hostname, and timezone questions follow Omarchy's.
 
+For a private BCM4364 hardware preview, put the kernel-matched
+`if_brcmfmac.ko` in `$LIVE_EXTRA_OVERLAY/boot/modules/` and the verified B3
+firmware, MacBook board data, CLM and TxCap files in
+`$LIVE_EXTRA_OVERLAY/boot/firmware/` under the names
+`brcmfmac4364b3-pcie.{bin,txt,clm_blob,txcap_blob}`. Set `LIVE_EXTRA_OVERLAY`
+when running `build-iso.sh`. The live image loads the module after mounting its
+root; `install` copies the module and firmware into the target and enables the
+module there. Verify the module against the image kernel and test a fresh boot,
+Wi-Fi join, DHCP, traffic and reconnect before calling the image qualified.
+Keep the overlay and ISO private while firmware redistribution rights are
+unverified; the diagnostic source package declares its license `unknown`.
+
 ### The ports
 
 Work on a review branch based on the exact integration commit in [ROADMAP.md](ROADMAP.md). For 1.1.1 this is `daemonarchy-1.1.1`, pinned in [its qualification record](docs/testing-1.1.1.md); verify that poudriere uses the matching tree and snapshot jail before rebuilding.

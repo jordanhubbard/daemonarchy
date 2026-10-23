@@ -19,8 +19,11 @@
   on physical hardware. A private FreeBSD-native diagnostic module reaches
   firmware protocol 7, attaches to net80211 and repeatedly scans nearby access
   points using the candidate `bali-HRPN-u` board data, Apple seed footer and
-  matching CLM and TxCap blobs. Association, traffic, reboot persistence, maintainable
-  driver integration and installer firmware acquisition remain unqualified.
+  matching CLM and TxCap blobs. The operator joined a WPA2 network from the
+  desktop panel; the radio received DHCP address 10.11.101.63 and reached its
+  gateway. The installer now retains a kernel-matched preview module and staged
+  firmware on the installed target. Fresh-image boot, reconnect, maintainable
+  driver integration and redistributable firmware acquisition remain open.
 
 
 This history covers the installer repository from its first commit and all GitHub

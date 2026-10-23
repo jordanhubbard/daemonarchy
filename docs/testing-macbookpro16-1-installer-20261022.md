@@ -16,6 +16,29 @@ remains a separate next hardware investigation.
 | Navi14 graphics and desktop | Refreshed package boots; operator logged into Hyprland on the quirked kernel |
 | Built-in keyboard and trackpad | Password entry succeeded; pointer was initially laggy, then worked; longer use and click behavior remain to be checked |
 | Independent hardware diagnostics | Operator reports Apple Internet Diagnostics ADP000 (no issues found); intermittent faults remain possible |
+| BCM4364 Wi-Fi diagnostic | Operator joined WPA2 network from desktop panel; DHCP assigned 10.11.101.63 and a source-bound ping reached the LAN gateway (2 of 3 replies). Fresh-image and reboot persistence remain open. |
+
+## Physical Wi-Fi data-path observation
+
+The private FreeBSD-native BCM4364 module loaded B3 firmware with the
+`bali-HRPN-u` board data, CLM and TxCap blobs. The operator entered the Wi-Fi
+password in the desktop panel. `wpa_cli` then reported `WPA2-PSK` and
+`wpa_state=COMPLETED`. A packet capture on the Ethernet side of the same LAN
+observed DHCP and ARP frames from the Wi-Fi MAC. The MacBook's `wlan0` received
+10.11.101.63/23 and reached gateway 10.11.100.254 using that source address.
+Driver counters advanced from 48 submitted/48 completed TX packets to 298
+submitted/295 completed and 1103 RX completions during continued use. This is
+association and bidirectional traffic evidence, not a sustained reliability or
+post-reboot test. The earlier failure to ping 192.168.211.161 used a gateway
+from a different network and does not establish a driver defect.
+The MacBook later stopped answering on its wired debugging address; its
+screen state and retained logs have not yet been inspected. That interruption
+prevents a sustained Wi-Fi reliability claim.
+
+The source package supplying the B3 firmware declares its license `unknown`.
+Blobs and private module builds are kept outside the repository. A private
+test image may stage exact operator-provided files; public redistribution
+requires a verified license or a supported acquisition path.
 
 ## Inputs and observed discrepancy
 
