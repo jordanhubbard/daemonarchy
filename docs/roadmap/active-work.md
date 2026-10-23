@@ -877,7 +877,7 @@ remains open; report files do not establish a passing gate.
 - **Implementation:**
   - [ ] Reproduce and isolate ANS2 fatal I/O, preserve exact input and recovery identities, implement an independently tested correction, then repeat fresh-image installation and hardware checks.
 - **Evidence:**
-  - [ ] 2026-10-22 physical reproduction, exact cached package recovery under four trackers, and full integrity after a forced power-off are recorded in docs/testing-macbookpro16-1-installer-20261022.md. Instrumented Navi14 tests isolate a graphics-queue initialization boundary; storage cause, false-success explanation and complete hardware acceptance remain open.
+  - [ ] 2026-10-22 physical reproduction, exact cached package recovery under four trackers, and full integrity after a forced power-off are recorded in docs/testing-macbookpro16-1-installer-20261022.md. Instrumented Navi14 tests isolate a graphics-queue initialization boundary. A 2026-10-23 FreeBSD-current review produced an isolated native-compiling NVMe candidate with upstream reset recovery, but it is not selected or hardware qualified. Storage cause, false-success explanation and complete hardware acceptance remain open.
 
 ### [ ] HW-003 — Acquire and install required laptop firmware
 

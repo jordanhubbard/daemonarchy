@@ -734,3 +734,22 @@ staged manually from a private package for this test; firmware provenance,
 redistribution rights and installer acquisition still require review. Keep
 BCM4364 out of release images until a maintainable driver and firmware path
 passes full hardware acceptance.
+
+## 2026-10-23 FreeBSD-current storage review
+
+The selected source snapshot `978fed917ba2` was compared with FreeBSD-current
+`775e421dc38`. An isolated candidate `8528d74cd5d` cherry-picks six upstream
+NVMe commits: Format NVM and per-request timeouts, Linux passthrough timeouts,
+namespace notification refactoring and reset recovery, and the default
+`is_storage_device` method correction. Its `sys/dev/nvme` tree now matches that
+upstream revision, and its standalone NVMe module compiles on native FreeBSD.
+The final method correction concerns non-PCI controllers; the MacBook ANS2
+controller uses `nvme_pci`, which already implements that method. The reset
+recovery work is a plausible candidate for the recorded ANS2 event, not a
+demonstrated fix. A full GENERIC kernel build and physical test remain open;
+the selected release source and ISO have not been changed.
+
+The matching ports review reached FreeBSD-current `076f4cba6304`. Its tree
+differs from the selected Daemonarchy ports snapshot in 4,173 paths, including
+Daemonarchy-specific DRM ports. No ports revision was repinned by this review;
+native package and image qualification must preserve those local differences.
