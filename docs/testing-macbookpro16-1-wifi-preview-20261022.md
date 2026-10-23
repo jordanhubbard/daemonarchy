@@ -335,3 +335,11 @@ probe; WPA and the DHCP address were still present afterward. No missing-ring
 or ring-full transmit drops were recorded. This establishes that the recovered
 link carries traffic, while its packet loss and reassociation remain a release
 blocker for a Wi-Fi-only installation claim.
+
+The supplicant's private debug log labeled two failed four-way handshakes
+`WRONG_KEY` after the AP repeated message 1. The same saved profile completed
+the handshake on other BSSIDs advertising that SSID, and scan flags reported
+WPA2-PSK/CCMP for both successful and failed BSSIDs. The label is a timeout
+interpretation, not proof that the password entered by the operator was wrong:
+the remaining possibilities include inconsistent AP credentials and loss or
+rejection of the station's second key message. No AP-side capture is available.

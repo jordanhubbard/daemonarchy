@@ -167,9 +167,18 @@ module built with `-Werror` against the preview kernel's exact FreeBSD source
 `58163ef0d117d9da81710ce153d7d2beb777beae9a3891d27cd6c6cca67d3bb6`.
 It removes the per-packet console print and exposes read-only counts for VAP
 attempts, dead firmware, missing or full flow rings, submitted packets and TX
-completions. It changes no transmit or link policy and has not been deployed.
-The next physical check must compare those counters with firmware link events,
-ARP/DHCP and RX counts over a wired debugger before classifying the failure.
+completions. It changes no transmit or link policy. It was subsequently loaded
+on the physical MacBook over the wired debugger. A Wi-Fi-only route and bounded
+Internet probes worked, but reassociation remained intermittent. A later
+trace-only module showed that the transmit ring is recreated for a changed AP;
+EAPOL frames in both successful and failed handshakes reached the VAP in RUN
+state with contiguous Ethernet headers. A one-minute, 120-packet gateway probe
+over `wlan0` received 117 replies while the AP changed. The supplicant also
+timed out on some APs sharing the saved SSID while completing WPA on others.
+The detailed private-hardware boundary is recorded in
+[the MacBook Wi-Fi preview test](../testing-macbookpro16-1-wifi-preview-20261022.md).
+Stable association, DHCP, routing, package downloads and reboot from the new
+installer ISO remain release gates.
 
 The FreeBSD-native driver is being prepared as
 [ports PR #23](https://github.com/jordanhubbard/daemonarchy-ports/pull/23):
