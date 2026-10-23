@@ -677,8 +677,29 @@ acknowledge operation ahead of ring processing as the immediate fault boundary.
 The selected native FreeBSD kernel's `taskqueue_create()` builds a queue with
 an `MTX_DEF` sleep mutex, while `taskqueue_create_fast()` uses `MTX_SPIN`.
 Enqueueing onto the former from an interrupt filter is an invalid context and
-is now the leading explanation for the hard freeze. FreeBSD network drivers
-also attach an interrupt thread through `bus_setup_intr` with
-`FILTER_SCHEDULE_THREAD`; the next private probe will use that kernel path
-instead of enqueuing a custom task from the filter. The diagnosis still needs
-physical confirmation before the driver can be integrated.
+is the leading explanation for the hard freeze. A native diagnostic variant
+instead attached an interrupt thread with `bus_setup_intr` and
+`FILTER_SCHEDULE_THREAD`. On the physical MacBook, interrupt filtering,
+completion processing, interrupt rearm, the watchdog and firmware-version
+IOCTL all completed. The BCM4364 attached to net80211 with its hardware MAC,
+and the module unloaded without disrupting the desktop or SSH session.
+
+The first `wlan0` scan failed with firmware status `-4` (`BCME_BADARG`). A
+BCM4364-only version-2 scan request returned `-37` (`BCME_VERSION`), so the
+diagnostic returned to the original version-1 request. The source already had
+a chunked CLM upload path for its SDIO device. Reusing that native path for
+the matching `bali` B3 CLM blob (31,998 bytes, SHA256
+`61f9ffe33d4137eac1dfd93c4be03e6c721f282cfc85a89d7d345ffd12f9f9ac`)
+reported successful firmware `clmload_status`. Three consecutive physical
+scans then returned nearby access points, with no scan error or loss of SSH.
+The candidate `bali-HRPN-u` board file therefore supports firmware startup,
+interface attachment and scanning on this unit. Exact board-family matching,
+association, traffic, reconnect, suspend and rebooted operation remain open.
+The matching TxCap blob was identified but has not been uploaded or tested.
+
+The diagnostic module is a private ISC-licensed FreeBSD-native driver spike,
+not part of the installed system or release source. The firmware files were
+staged manually from a private package for this test; firmware provenance,
+redistribution rights and installer acquisition still require review. Keep
+BCM4364 out of release images until a maintainable driver and firmware path
+passes full hardware acceptance.

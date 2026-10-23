@@ -15,9 +15,11 @@
   extraction. Storage correction, BCM4364 Wi-Fi driver and firmware integration,
   sustained input acceptance, and full physical acceptance remain open.
 - Identify the MacBook's BCM4364 revision 4, TCM geometry and B3 firmware path
-  on physical hardware. A native diagnostic module reaches firmware protocol 7
-  only when Apple board data includes a random-seed footer; DMA, interface,
-  radio and installer firmware acquisition remain unqualified.
+  on physical hardware. A private FreeBSD-native diagnostic module reaches
+  firmware protocol 7, attaches to net80211 and repeatedly scans nearby access
+  points using the candidate `bali-HRPN-u` board data, Apple seed footer and
+  matching CLM blob. Association, traffic, reboot persistence, maintainable
+  driver integration and installer firmware acquisition remain unqualified.
 
 
 This history covers the installer repository from its first commit and all GitHub
