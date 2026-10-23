@@ -51,6 +51,16 @@ from test credentials accepted the privately imported Apple files only when
 both its boot and runtime manifests contained their exact hashes, and rejected
 a signed runtime inventory with the wrong board-file name.
 
+On 2026-10-23, a fresh query of FreeBSD's upstream source `main` still returned
+`775e421dc38f18fa6b7fdc7b214a013cca44b58b`, the revision already fetched
+on the native worker. The upstream ports `main` moved from
+`076f4cba630436388d6da26cd5cd111a14d3fd86` to
+`92b1b961dfd3d36e5cbc8d519a3533c115e3ee4d`. Its seven new commits touch
+only bzip3, plakar, checkmate, shairport-sync, rspamd and pkg-devel port files;
+none changes the MacBook driver or Omarchy port. The native worker fetched that
+ports head for review. This is a freshness check, not a refreshed product source
+or ports pin or a release build.
+
 ## Disposable enforced-boot guest
 
 The native worker built the same pinned source and policy patch again, using
