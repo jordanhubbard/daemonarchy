@@ -254,6 +254,9 @@ any scope change before calling 1.1.0 complete.
   `daemonarchy-debug activity` updates and explicit `daemonarchy-debug done`
   completion. Preview.13 and older lack that feedback. A closed SSH connection
   never marks the overall task complete.
+  For 1.3.1, the installed desktop's network menu provides **Pair**, **Resume**
+  and **Unpair** controls and shows the approved listener, connected agent,
+  address and port. The Pair action remains available without an active grant.
 
 - BIOS: the installer now adds a 512 KiB `freebsd-boot` partition in the gap
   before the EFI partition and writes the target snapshot's `pmbr` and
