@@ -5,6 +5,7 @@ source "$(dirname "$0")/network-addresses"
 state=/var/db/daemonarchy/remote-debug
 legacy=/var/run/daemonarchy-remote-debug
 self=/usr/local/libexec/daemonarchy-installer/remote-debug
+public_state=/var/run/daemonarchy-debug.status
 
 fail() { echo "Remote debug: $*" >&2; exit 1; }
 
@@ -28,13 +29,17 @@ debug_session() {
   [[ -f $state/active ]] || fail 'Remote access has stopped.'
   start_observer
   # ForceCommand runs only after successful authentication, including reconnects.
-  if mkdir "$state/connected" 2>/dev/null; then
-    write_progress 'Agent connected successfully. Remote debugging is under way.'
-  fi
+  mkdir -m 700 "$state/connected" 2>/dev/null || [[ -d $state/connected ]] || fail 'Remote access has stopped.'
+  [[ -f $state/active ]] || fail 'Remote access has stopped.'
+  : >"$state/connected/$BASHPID"
+  trap 'rm -f "$state/connected/$BASHPID"; publish_public_status' EXIT
+  trap 'exit 143' HUP TERM
+  write_progress 'Agent connected successfully. Remote debugging is under way.'
+  publish_public_status || true
   case ${SSH_ORIGINAL_COMMAND:-} in
-    '') exec /bin/sh -l ;;
-    internal-sftp) exec /usr/libexec/sftp-server ;;
-    *) exec /bin/sh -c "$SSH_ORIGINAL_COMMAND" ;;
+    '') /bin/sh -l ;;
+    internal-sftp) /usr/libexec/sftp-server ;;
+    *) /bin/sh -c "$SSH_ORIGINAL_COMMAND" ;;
   esac
 }
 
@@ -165,6 +170,44 @@ session_running() {
   listener_command_matches "$command" && kill -0 "$pid" 2>/dev/null
 }
 
+publish_public_status() {
+  local temporary grant=0 listener=0 connected=0 port='' addresses='' session pid command
+  [[ $(id -u) == 0 ]] || return 1
+  if [[ -f $state/active ]]; then
+    grant=1
+    if session_running; then listener=1; fi
+    if [[ -f $state/port ]]; then
+      IFS= read -r port <"$state/port" || true
+      [[ $port =~ ^[0-9]{1,5}$ ]] || port=''
+    fi
+    addresses=$(network_addresses | awk '/^[0-9.]+$/ { printf "%s%s", separator, $0; separator=" " }')
+  fi
+  if [[ $listener == 1 && -d $state/connected ]]; then
+    for session in "$state"/connected/*; do
+      [[ -f $session ]] || continue
+      pid=${session##*/}
+      [[ $pid =~ ^[0-9]+$ ]] || continue
+      command=$(ps -p "$pid" -o command= 2>/dev/null) || command=''
+      if [[ $command == *"$self session"* ]]; then
+        connected=1
+      else
+        rm -f "$session"
+      fi
+    done
+  fi
+  temporary=$(mktemp "${public_state%/*}/.daemonarchy-debug-status.XXXXXX") || return 1
+  chmod 644 "$temporary"
+  {
+    printf 'schema=1\ngrant=%s\nlistener=%s\nconnected=%s\n' "$grant" "$listener" "$connected"
+    printf 'addresses=%s\nport=%s\n' "$addresses" "$port"
+  } >"$temporary"
+  if cmp -s "$temporary" "$public_state"; then
+    rm -f "$temporary"
+  else
+    mv -f "$temporary" "$public_state"
+  fi
+}
+
 stop_session() {
   local expected=$1 preserve=${2:-no} pid='' command=''
   [[ -e $state || -L $state ]] || return 0
@@ -202,6 +245,7 @@ stop_session() {
     pkill -TERM -P "$pid" 2>/dev/null || true
     kill -TERM "$pid" 2>/dev/null || true
   fi
+  publish_public_status || true
 }
 
 stop_server() {
@@ -287,6 +331,7 @@ EOF
     cat "$state/sshd.log" >&2
     fail "Cannot listen on port $port; choose another port."
   fi
+  publish_public_status || true
   printf '%s\n%s\n' "$session_generation" "$server_pid"
 }
 
@@ -443,7 +488,7 @@ debug_shell() {
 }
 
 case ${1:-shell} in
-  authorize|session|resume|listen|status)
+  authorize|session|resume|listen|status|publish-status)
     if [[ $EUID == 0 && ! -e $state && ! -L $state && -f $legacy/active ]]; then
       session_transition adopt >/dev/null
     fi
@@ -470,6 +515,7 @@ case ${1:-shell} in
   listen) [[ $# -le 2 ]] || fail 'Usage: remote-debug listen [port]'; debug_listen "${2:-}" ;;
   resume) [[ $# == 1 ]] || exit 1; debug_resume ;;
   status) [[ $# == 1 && $(id -u) == 0 ]] || exit 1; session_running ;;
+  publish-status) [[ $# == 1 && $(id -u) == 0 ]] || exit 1; publish_public_status ;;
   unpair) [[ $# == 1 ]] || fail 'Usage: remote-debug unpair'; debug_unpair ;;
   help) debug_help ;;
   *) fail 'Usage: remote-debug [shell | listen [port] | unpair | observe | snapshot | activity DESCRIPTION | done | help]' ;;

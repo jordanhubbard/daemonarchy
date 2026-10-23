@@ -44,6 +44,7 @@ Permit graphical startup only with an attached active driver and the required DR
 ## Requirement: Coherent user environment
 
 Install the selected session, theme, menus, user defaults and native FreeBSD tools together. Preserve user customizations during updates.
+While a remote debugging grant is active, show its current listener and authenticated-agent state in the menu bar, including address and port and a local administrator path to Resume or Unpair. The desktop consumes only the diagnostics Component's public status view.
 
 ## Requirement: Shared visual identity
 

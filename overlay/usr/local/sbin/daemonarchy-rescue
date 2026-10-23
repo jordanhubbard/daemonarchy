@@ -67,9 +67,11 @@ rescue_reason() {
 rescue_resume_debug() {
   [ -x "$debug_command" ] || return 0
   remaining=60
+  "$debug_command" publish-status || true
   # USB Ethernet and DHCP can become ready after the recovery console starts.
   # Retry in the background so a retained grant resumes without console input.
   while [ -f "$debug_state/active" ]; do
+    "$debug_command" publish-status || true
     if "$debug_command" status >/dev/null 2>&1; then
       # Do not spawn another listener while the approved one is healthy.
       remaining=60

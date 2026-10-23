@@ -34,6 +34,7 @@ and the native acceptance inventory remain authoritative for implementation stat
 ## Requirement: Approval and revocation
 
 Require console approval for a new agent. Preserve an installed-system hardware-debugging grant, approved keys, server identity and private evidence across reboot; resume safely without fresh confirmation or deleting stale state. Resumed background listeners refuse unknown keys. Explicit Unpair or interactive stop revokes active connections and the retained grant. Refresh runtime generations and verify listener identity before signaling a retained PID. Never treat an ordinary SSH disconnect as task completion.
+Publish only grant, listener, authenticated connection, address and port status for the desktop. Update it after connection, disconnection, restart and revocation; never expose approved keys, host identity or private observations through this public view.
 
 ## Requirement: Bounded evidence
 

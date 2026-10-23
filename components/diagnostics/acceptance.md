@@ -21,6 +21,8 @@ complete declarations and external/native gaps are in [the acceptance inventory]
 - **Approval and revocation:** test first approval, legacy listener adoption,
   shutdown/stale-state resumption with stable host pin and existing agent key,
   unknown-key refusal, reused-PID/generation safety and explicit revocation.
+  Check that the public status changes on connection, disconnection and Unpair
+  without disclosing keys, host identity or private diagnostic output.
   Qualify actual physical reboot separately from the native process fixture.
 - **Bounded evidence:** demonstrate the stated requirement on its actual supported
   target, and retain a negative/failure case where applicable.

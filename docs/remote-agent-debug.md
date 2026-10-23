@@ -52,11 +52,18 @@ not end a hardware bring-up session. The boot console continues checking an
 active grant after the listener starts, and retries if that listener later exits.
 Explicit stop or Unpair removes the active grant and ends this retry. New keys
 still require console approval.
-On a fully booted desktop the rescue menu is not visible, so it cannot show
-whether a debugging grant, listener or active agent connection remains. A
-desktop menu-bar status and revocation control are tracked in DEBUG-002; until
-that is implemented, `remote-debug status` checks whether the listener is
-running and `remote-debug unpair` revokes the grant from a local root shell.
+On a fully booted desktop the rescue menu is not visible. The next desktop
+candidate adds a small badge to the network icon while a debugging grant is
+active. Open the network panel to see whether the listener and an approved
+agent are connected, the available addresses and port, and **Resume** or
+**Unpair**. These actions open a terminal and require the local administrator's
+password. The root helper publishes only these status fields to
+`/var/run/daemonarchy-debug.status`; approved keys, host identity and private
+diagnostic evidence stay under `/var/db/daemonarchy/remote-debug`. The public
+file disappears on reboot until the boot watcher recreates its current state.
+On images without that panel integration, `remote-debug status` checks whether
+the listener is running and `remote-debug unpair` revokes the grant from a local
+root shell.
 
 If networking is not ready at startup, rescue option 2 offers **Resume remote
 debugging agent**. This reuses the retained grant without first deleting it.
