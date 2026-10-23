@@ -2,7 +2,7 @@
 # Verified Apple recovery firmware stays in a private live stage until install.
 # This file is sourced by the configurator and installer.
 
-APPLE_FIRMWARE_STAGE=${APPLE_FIRMWARE_STAGE:-/tmp/daemonarchy-apple-firmware-stage}
+APPLE_FIRMWARE_STAGE=${apple_firmware_stage:-${APPLE_FIRMWARE_STAGE:-/tmp/daemonarchy-apple-firmware-stage}}
 APPLE_FIRMWARE_IMPORTER=${APPLE_FIRMWARE_IMPORTER:-$ISO_SHARE/import-apple-bcm4364-firmware.py}
 APPLE_FIRMWARE_NAMES=(
   brcmfmac4364b3-pcie.bin
@@ -10,6 +10,14 @@ APPLE_FIRMWARE_NAMES=(
   brcmfmac4364b3-pcie.clm_blob
   brcmfmac4364b3-pcie.txcap_blob
 )
+
+apple_firmware_hardware() {
+  [[ $(kenv smbios.system.product 2>/dev/null || true) == MacBookPro16,1 ]] || return 1
+  pciconf -l | awk '
+    (/vendor=0x14e4/ && /device=0x4464/ && /subvendor=0x106b/ && /subdevice=0x07bf/) ||
+    (/chip=0x446414e4/ && /card=0x07bf106b/) { found=1 }
+    END { exit !found }'
+}
 
 apple_firmware_preloaded() {
   "$APPLE_FIRMWARE_IMPORTER" --verify-files --model MacBookPro16,1 \

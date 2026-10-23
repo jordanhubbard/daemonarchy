@@ -298,9 +298,10 @@ space than a cached installer-only rebuild. Check resources before dispatching.
    `python3.12 scripts/import-apple-bcm4364-firmware.py --verify-stage --model MacBookPro16,1 --destination /private/firmware-import`.
    It records a provenance JSON file and does not add firmware to Git or a
    redistributable ISO. The MacBook installer now offers the pinned Apple
-   download over Ethernet or an operator-supplied recovery image on mounted
-   media before the network screen. It imports into a private live stage,
-   verifies the four files, attaches the radio, and carries the files and
+   download over Ethernet, an operator-supplied recovery image on mounted
+   media, or an already verified private stage before the network screen. It
+   imports into a private live stage, verifies the four files, attaches the
+   radio, and carries the files and
    provenance into the target. An unattended MacBook install defaults to the
    download; `apple_firmware_image=/absolute/path/BaseSystem.dmg` selects local
    media. Both routes run before disk changes. The live temporary filesystem

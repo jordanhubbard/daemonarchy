@@ -127,6 +127,7 @@ gpu_resolve_packages "$ISO_SHARE/gpu-packages" "$REPO"
 gpu_prepare_live_compat
 cuda_options_prepare
 if $macbook_bcm4364; then
+  apple_firmware_hardware || { echo 'The expected BCM4364 B3 board was not detected.' >&2; exit 1; }
   [[ -f /boot/modules/if_brcmfmac.ko ]] || {
     echo 'The live ISO lacks the kernel-matched BCM4364 driver.' >&2
     exit 1

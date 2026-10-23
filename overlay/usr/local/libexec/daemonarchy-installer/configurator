@@ -674,8 +674,12 @@ network_step() {
 }
 
 apple_firmware_step() {
-  local choice image
+  local choice image previous_stage
   [[ $(kenv smbios.system.product 2>/dev/null || true) == MacBookPro16,1 ]] || return 0
+  if ! apple_firmware_hardware; then
+    notice 'The expected BCM4364 B3 board was not detected. This firmware profile cannot be used.' 4
+    return 1
+  fi
   if [[ -d $APPLE_FIRMWARE_STAGE ]] && apple_firmware_verify_live &&
      apple_firmware_radio_attached; then
     return 0
@@ -691,6 +695,7 @@ apple_firmware_step() {
     choice=$(gum choose --header "Choose a firmware source" \
       "Download Apple's recovery image using Ethernet" \
       "Use BaseSystem.dmg from mounted media" \
+      "Use an existing verified private stage" \
       "Configure wired network" "Open debug shell" "Stop installation") || abort
     case $choice in
       "Download Apple's recovery image using Ethernet")
@@ -704,6 +709,15 @@ apple_firmware_step() {
         step "Verifying the selected Apple recovery image"
         if apple_firmware_prepare image "$image"; then break; fi
         notice "The image, firmware or radio attachment failed verification. Check the path and retry." 4
+        ;;
+      "Use an existing verified private stage")
+        image=$(gum input --placeholder "/tmp/daemonarchy-firmware-stage" \
+          --prompt.foreground="#845DF9" --prompt "Stage path> ") || continue
+        previous_stage=$APPLE_FIRMWARE_STAGE
+        APPLE_FIRMWARE_STAGE=$image
+        if apple_firmware_prepare existing; then break; fi
+        APPLE_FIRMWARE_STAGE=$previous_stage
+        notice "The private stage or radio attachment failed verification." 4
         ;;
       "Configure wired network") network_step allow-offline ;;
       "Open debug shell") "$(dirname "$0")/remote-debug" shell ;;
@@ -911,6 +925,7 @@ write_install_conf() {
     printf 'wifi_psk=%q\n' "$wifi_psk"
     printf 'wifi_hidden=%q\n' "$wifi_hidden"
     printf 'wifi_enterprise_profile=%q\n' "$wifi_enterprise_profile"
+    printf 'apple_firmware_stage=%q\n' "$APPLE_FIRMWARE_STAGE"
     printf 'ssh_enable=%q\n' "$ssh_enable"
     printf 'install_ports=%q\n' "$install_ports"
     printf 'install_src=%q\n' "$install_src"
@@ -934,7 +949,7 @@ while true; do
     'Exit to shell') exit 1 ;;
   esac
 done
-apple_firmware_step
+apple_firmware_step || abort 'MacBook firmware setup failed before disk changes.'
 keyboard_form
 user_step
 network_step
