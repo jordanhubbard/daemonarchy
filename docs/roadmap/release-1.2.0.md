@@ -63,6 +63,137 @@ results cannot substitute for current installed-wheel receipts.
 | R12-24 | PERF-001 | Execute graph units as literal LitAI Components with versioned pkg products, full provenance and typed dependencies; demonstrate substantially faster equivalent native build, packaging and ISO workflows with correct invalidation and independent runtime acceptance. |
 | R12-25 | HW-003 | For laptops needing external firmware, the installer identifies required device/board files, obtains them from a verified online source or operator-supplied local media, records provenance and hashes, installs them into the target, and verifies driver attachment after reboot. On this wiped MacBook, qualify an Apple recovery-image acquisition path for BCM4364 without requiring macOS; refuse a wireless-ready claim when firmware or driver support is missing. |
 
+The R12-18 native ports checkpoint on October 23 used a disposable FreeBSD
+16.0-CURRENT poudriere jail and the Omarchy debugger-panel changes from
+[ports PR #21](https://github.com/jordanhubbard/daemonarchy-ports/pull/21).
+The PR's older ports tree planned 292 source builds against the current binary
+feed. A separate test worktree put its 21 new product ports on the official
+package-feed commit `792be2623dc0ef1ac471fb80d4bb242b10b1bdde` while
+retaining that feed's Quickshell 0.3.2. At temporary test revision
+`ef1b27fdf1f9174bcd61124d419b146f07888807`, the matched dry run planned
+only `ports-mgmt/pkg` and `x11-wm/omarchy`; the subsequent native
+`poudriere testport` built both and completed Omarchy package installation and
+removal with exit 0. Its retained worker log is under
+`16test20261019-omarchybaseline20261023/2026-10-23_04h11m50s`.
+The temporary transplant is not the release ports revision. A proper two-parent
+merge of the product head and official package snapshot is now proposed in
+[ports PR #22](https://github.com/jordanhubbard/daemonarchy-ports/pull/22) at
+`d7cff107c2e1c80190012ec7db576707a58f19ab`. Its tree
+`92124692db49cf872a1e3a6de4468b60f93b4a51` exactly matches the tested
+transplant while retaining both histories. A native 21-origin poudriere dry run
+at this exact merge revision fetched 1,180 packages and planned 23 builds:
+the 21 product ports plus `ports-mgmt/pkg` and `devel/cmake-core`. Its log is under
+`16test20261019-omarchyrefresh20261023/2026-10-23_04h40m52s` on the worker.
+The subsequent full native bulk at that same ports head exited 0: 1,203 queued,
+23 built, 1,180 fetched, zero failed, skipped or ignored, in 02:37:23. The
+`daemonarchy-1.0.1,1.pkg` output is present. Its retained log is under
+`16test20261019-omarchyrefresh20261023/2026-10-23_05h20m09s` on the worker.
+This was a disposable October 19 CURRENT jail, not the production release jail.
+Physical desktop acceptance, coherent source/package/module pinning, signed feed
+and final artifact identity are still required before R12-18 can close.
+
+The completed PR #22 bulk built `daemonarchy-1.0.1,1`: that branch diverges from
+the published `daemonarchy-1.1.1` ports branch and lacks 31 release-branch
+commits, including its desktop version and VirtIO DRM backport. It is therefore
+dependency evidence, not the next ISO's package baseline. A disposable
+two-parent merge with the 1.1.1 branch, followed by ports Component PR #7,
+Fastfetch PR #8 and a provenance-preserving cherry-pick of the physically
+tested Radeon PR #19, is retained at `13270547f4689b83a37969439abf1548928990f3`.
+It yields `daemonarchy-1.1.1,1`, `omarchy-4.0.4_24` and
+`drm-612-kmod-6.12.110.1600028_6`. Native patch stages pass for Omarchy and
+DRM; the patched Omarchy QML contains FreeBSD Wi-Fi and debugger status, and
+the Radeon sizing-helper regression passes against the patched source.
+Project authority and native locks pass, while the lifecycle receipt is still
+missing. The exact 30-origin native `poudriere bulk -n -b latest` at this head
+finished with exit 0 on the October 19 CURRENT jail: 1,469 queued, 1,207
+official packages fetched, 262 local builds planned, and zero failed, skipped
+or ignored. Of the 262 builds, 234 are GPU or Wi-Fi firmware flavors and 28 are
+other ports, including Daemonarchy, Omarchy, DRM and NVIDIA. Its retained log
+is under `16test20261019-omarchymacbookpreflight20261023/2026-10-23_09h26m22s`
+on the native worker. The corresponding full bulk and final source/kernel/jail
+coherence remain open; no 1.2 desktop tag or final image exists.
+
+A second disposable ports worktree refreshed PR #22 against FreeBSD ports
+`99fc0413c18d18fc6c9750f2265ae9e33811b918`, 592 commits beyond the
+official package-feed baseline. Its merge revision
+`71d93183e1b58b76352db825e788f63cf5517797` retains the product ports;
+conflicting Makefiles were resolved to the newer upstream definitions only in
+that test worktree. The exact 21-origin native `poudriere bulk -n -b latest`
+finished with exit 0 and planned 1,193 packages: 965 fetched and 228 source
+builds, including Chromium, CEF, Rust and Qt. Its retained log is under
+`16test20261019-omarchycurrentpreflight20261023/2026-10-23_08h11m44s`.
+This is a reviewed upstream freshness comparison, not a completed build of the
+newer tree. PR #22 remains the exact revision with a completed native bulk;
+any later ports refresh requires its own full build and acceptance.
+
+An isolated native source preflight at `02984cfbe95c063f130ae20d7ea6ed520df88a8f`
+merges the EFI timer PR #13 and T2 keyboard PR #19 onto the fork's
+`daemonarchy` branch, then merges FreeBSD-current through
+`bea44a83631704110de8bbd7693b683c81d4fe55`. Both fixes and that upstream
+head are ancestors of the clean preflight tree. The six EFI timer controls,
+`-Werror` builds of `hidquirk.ko` and `hkbd.ko`, and the native `stand` build
+pass on this tree. The resulting Lua EFI loader hashes to
+`00e7ea32efc7288daae1526bbaf631a724d9c83bcc6b07da8e5b4e14ccfaa909`.
+The full native GENERIC kernel and modules build then completed in 1,849 seconds
+with `-j2`; its kernel SHA-256 is
+`fa04e893df37a6c2d98200450855ce2483e8dfd71c5131d4d420116ec18cacdd`,
+and its embedded build identity names the exact preflight revision. All four
+existing verified-boot source patches pass `git apply --check` against this
+tree. These are build and merge checks; they are neither final signed boot
+artifacts nor a MacBook reboot or sustained-input qualification.
+The operator also saw `Autoboot i 3 seconds` on the physical EFI menu. The
+current Lua source spells `Autoboot in` correctly, so the missing character
+remains a display-path observation to reproduce and fix on the final loader;
+the passing timer controls do not resolve that separate visual defect.
+
+The MacBook's repeated `vap_transmit: state=5 etype=0x800` messages come from
+the preview `if_brcmfmac` module before it checks whether a firmware flow ring
+exists. State 5 is net80211 RUN; the messages therefore establish an IPv4
+transmit attempt, not firmware submission or delivery to the AP. A diagnostic
+module built with `-Werror` against the preview kernel's exact FreeBSD source
+`bdcfeac3e1cb8ce3f05c32d8a7ad3597deb48bdf` hashes to
+`58163ef0d117d9da81710ce153d7d2beb777beae9a3891d27cd6c6cca67d3bb6`.
+It removes the per-packet console print and exposes read-only counts for VAP
+attempts, dead firmware, missing or full flow rings, submitted packets and TX
+completions. It changes no transmit or link policy and has not been deployed.
+The next physical check must compare those counters with firmware link events,
+ARP/DHCP and RX counts over a wired debugger before classifying the failure.
+
+The FreeBSD-native driver is being prepared as
+[ports PR #23](https://github.com/jordanhubbard/daemonarchy-ports/pull/23):
+`net/if_brcmfmac-kmod` pins the ISC-licensed upstream source and applies the
+retained preview changes. On the native FreeBSD amd64 worker, `poudriere
+testport` passed package staging, QA, plist and install/deinstall checks in
+`16test20261019` with the isolated `brcmfmacport20261023` tree. After patching,
+all 14 C and header files byte-match the physically tested preview source.
+This package check uses the candidate jail, not the final integrated kernel,
+and does not establish working MacBook traffic. The ISO recipe and installer
+still need to select the package and acquire/install verified Apple board
+firmware before R12-10, R12-18 or R12-25 can close.
+
+The same worker now retains a separately verified candidate set cache at
+`/usr/daemonarchy/cache/iso-snapshot-20261019-041802b362aa`. The official
+snapshot's `REVISION` remained `041802b362aa` before and after acquisition;
+`base.txz`, `kernel.txz` and `lib32.txz` matched its MANIFEST SHA-256 values.
+The kernel identity inside `kernel.txz` matches the actual poudriere jail kernel,
+and both base and jail headers report OSVERSION `1600028`. This establishes
+candidate set/jail coherence, not a built ISO or source-checkout selection.
+The current committed checkout catalogue still names the older source revision
+`bdcfeac3e1cb8ce3f05c32d8a7ad3597deb48bdf`; its required kernel identity
+check will refuse these new sets until a matching signed catalogue is selected.
+
+The October 23 disposable source integration check merged the then-current
+[signed-firmware PR #29](https://github.com/jordanhubbard/daemonarchy/pull/29)
+head `2cb0b460f003e986ca806015d55a388f9b0409d8` and
+[debug-status PR #30](https://github.com/jordanhubbard/daemonarchy/pull/30)
+head `326f95e5fee8fcc6df5583afb2100b38dd27449e` on `main`. The only
+conflict was the generated authority-review marker; recording the combined
+review produced identity `sha256:ab398cbd684b96dfebd1f6b3b3d8f9a1b366f7ebfbfb1d544c03c269034fb452`.
+The combined tree passed `litai project validate`, all 26 secure-boot unit
+tests and shell syntax checks. `litai verify` passed authority and locks but
+failed its missing committed test-receipt gate. This disposable preflight is
+merge preparation, not a native or physical release qualification.
+
 ## Closure rule
 
 A row closes only when its implementation and required native/VM/physical

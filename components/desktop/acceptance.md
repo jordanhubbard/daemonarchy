@@ -18,6 +18,9 @@ complete declarations and external/native gaps are in [the acceptance inventory]
 - **Actual graphics readiness:** demonstrate the stated requirement on its actual supported
   target, and retain a negative/failure case where applicable.
 - **Coherent user environment:** demonstrate the stated requirement on its actual supported
-  target, and retain a negative/failure case where applicable.
+  target, and retain a negative/failure case where applicable. For remote
+  debugging, inspect the actual bar and panel after boot, connection,
+  disconnect and Unpair; exercise the local privileged controls without
+  exposing private pairing state.
 - **Shared visual identity:** demonstrate the stated requirement on its actual supported
   target, and retain a negative/failure case where applicable.

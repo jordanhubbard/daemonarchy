@@ -52,11 +52,29 @@ not end a hardware bring-up session. The boot console continues checking an
 active grant after the listener starts, and retries if that listener later exits.
 Explicit stop or Unpair removes the active grant and ends this retry. New keys
 still require console approval.
-On a fully booted desktop the rescue menu is not visible, so it cannot show
-whether a debugging grant, listener or active agent connection remains. A
-desktop menu-bar status and revocation control are tracked in DEBUG-002; until
-that is implemented, `remote-debug status` checks whether the listener is
-running and `remote-debug unpair` revokes the grant from a local root shell.
+On a fully booted desktop the rescue menu is not visible. The network panel
+shows a **Remote debugging** section. **Pair** starts a new session; when a
+grant exists, a small badge marks the network icon and the panel shows whether
+the listener and an approved agent are connected, the available addresses and
+port, and **Resume** or **Unpair**. These actions open a terminal and require
+the local administrator's password. The root helper publishes only these status fields to
+`/var/run/daemonarchy-debug.status`; approved keys, host identity and private
+diagnostic evidence stay under `/var/db/daemonarchy/remote-debug`. The public
+file disappears on reboot until the boot watcher recreates its current state.
+On October 23, the updated helper and panel were installed on a MacBookPro16,1
+that was still running the 1.1.1 desktop package after a failed Wi-Fi setup.
+The retained grant, approved key and listener remained active; the helper
+published both wired and Wi-Fi addresses. The desktop shell restarted and its
+IPC ping succeeded. Visible panel behavior and reboot persistence with this
+combination remain to be confirmed.
+On images without that panel integration, `remote-debug status` checks whether
+the listener is running and `remote-debug unpair` revokes the grant from a local
+root shell. `sudo daemonarchy-debug status --details` also prints whether a
+grant, approved agent, usable IPv4 address and listener exist. It returns 0
+only when the listener is running. If the listener stopped, run
+`sudo daemonarchy-debug resume` and check the detailed status again; inspect
+`/var/db/daemonarchy/remote-debug/sshd.log` if it still cannot listen. This
+local status shows no pairing keys or private observations.
 
 If networking is not ready at startup, rescue option 2 offers **Resume remote
 debugging agent**. This reuses the retained grant without first deleting it.

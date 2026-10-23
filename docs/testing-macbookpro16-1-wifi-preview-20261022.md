@@ -167,6 +167,23 @@ retained for this purpose has SHA-256
 At the 2026-10-23 recheck, the SSH listener was closed; this module had not
 been loaded on the MacBook and the cause of the ignored event was unproven.
 
+A fresh diagnostic-only copy of the FreeBSD driver was built cleanly on the
+native FreeBSD worker at
+`/usr/daemonarchy/brcmfmac-link-event-trace-20261023/if_brcmfmac.ko`.
+Its SHA-256 is
+`065eb4019d10aa2b11afcded429d1418be59bc3a1013053152571ad7b271a5c8`;
+the retained source patch is
+`/usr/daemonarchy/brcmfmac-link-event-trace-20261023/diagnostic.patch`
+(SHA-256 `4c935d4cfd0dddccd2cb8fe217a27f612311e54fa22341f78257b272bc29db56`).
+The patch logs firmware event status, reason, flags, event and selected BSSID,
+VAP state, and whether a pairwise key was installed since the latest join. It
+does not change link handling. The native worker built it against a
+`bdcfeac3e1cb` kernel. The worker's `/boot/kernel/kernel` SHA-256 is
+`94e4ace9d6b6083f682d1a0d325162d10d0db852aa82400f7b59655e4df507b2`,
+matching the documented preview kernel above. The MacBook's currently booted
+kernel and target module hash must still be checked before any live swap. No
+physical test of this module has occurred.
+
 The controlled reboot first selected the existing ZFS installation instead
 of the USB installer. A one-time EFI boot entry was created for the attached
 USB, with the normal disk BootOrder restored; physical USB boot and renewed
