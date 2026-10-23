@@ -204,6 +204,28 @@ locate the transmit stall; they cannot by themselves prove AP delivery.
 
 The controlled reboot first selected the existing ZFS installation instead
 of the USB installer. A one-time EFI boot entry was created for the attached
-USB, with the normal disk BootOrder restored; physical USB boot and renewed
-remote debugging are pending. No complete fresh Wi-Fi installation, rebooted
-wireless qualification, or release attestation follows from this session.
+USB, with the normal disk BootOrder restored. The installed system later
+reappeared over a wired debugger, but it still ran the 1.1.1 desktop and had
+no attached Wi-Fi interface on arrival: the last installer attempt had failed
+in Wi-Fi setup.
+
+### October 23 installed-system transmit check
+
+The booted `MacBookPro16,1` kernel matched the native worker's
+`bdcfeac3e1cb` kernel hash above. A diagnostic `if_brcmfmac.ko` built against
+that exact kernel was copied to the MacBook and verified with SHA-256
+`58163ef0d117d9da81710ce153d7d2beb777beae9a3891d27cd6c6cca67d3bb6`.
+The four required private firmware and board files were already in
+`/boot/firmware`. Loading the module attached BCM4364 revision 4; creating
+`wlan0` and starting the existing local WPA profile reached
+`wpa_state=COMPLETED`. DHCP then assigned `10.11.101.63/23` without exposing
+the profile secret. The wired debugger stayed reachable on `10.11.100.62`.
+
+The active route initially favored Ethernet, so a temporary host route sent
+four gateway probes through `wlan0`; all four returned in 1.1–4.5 ms. Driver
+transmit and completion counters both rose from 20 to 24. Firmware-dead,
+missing-flow-ring and ring-full counters remained zero. The temporary route
+was removed, restoring the wired route. This proves local Wi-Fi data traffic
+in this manually repaired installed session. It does not prove that the
+installer configures Wi-Fi reliably, that traffic survives a reboot, or that
+the later packaged port has the same behavior. Those remain release gates.
