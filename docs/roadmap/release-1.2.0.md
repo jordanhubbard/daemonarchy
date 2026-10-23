@@ -80,7 +80,11 @@ merge of the product head and official package snapshot is now proposed in
 [ports PR #22](https://github.com/jordanhubbard/daemonarchy-ports/pull/22) at
 `d7cff107c2e1c80190012ec7db576707a58f19ab`. Its tree
 `92124692db49cf872a1e3a6de4468b60f93b4a51` exactly matches the tested
-transplant while retaining both histories. A clean full changed-port bulk,
+transplant while retaining both histories. A native 21-origin poudriere dry run
+at this exact merge revision fetched 1,180 packages and planned 23 builds:
+the 21 product ports plus `ports-mgmt/pkg` and `devel/cmake-core`. Its log is under
+`16test20261019-omarchyrefresh20261023/2026-10-23_04h40m52s` on the worker.
+This is dependency planning, not a passing bulk. A clean full changed-port bulk,
 physical desktop check, source/ports pin and final artifact identity are still
 required before R12-18 can close.
 
