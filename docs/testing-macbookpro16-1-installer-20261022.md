@@ -533,5 +533,19 @@ reports PCIe BCM4350 and SDIO BCM43455 work, but does not claim BCM4364
 support. Its implementation is a reference, not an imported driver.
 The [T2 Linux BCE project](https://github.com/t2linux/apple-bce-drv) also
 separates virtual USB input from Wi-Fi; working BCE does not imply wireless
-support. Firmware provenance and a native FreeBSD BCM4364 driver must be
-qualified before Wi-Fi or full hardware attestation can be claimed.
+support. Linux's [brcmfmac PCIe firmware mapping](https://github.com/torvalds/linux/blob/master/drivers/net/wireless/broadcom/brcm80211/brcmfmac/pcie.c)
+distinguishes BCM4364 chip revisions, so the native driver must identify the
+actual running chip revision rather than infer a firmware filename from the
+PCI revision alone. Firmware provenance and a native FreeBSD BCM4364 driver
+must be qualified before Wi-Fi or full hardware attestation can be claimed.
+
+The installer must support required laptop firmware acquisition and target
+installation. Because macOS was wiped here, the
+[T2 Linux recovery-image method](https://wiki.t2linux.org/guides/wifi-bluetooth/)
+is a candidate source that does not require macOS on disk. It still needs a
+FreeBSD-native or controlled installer implementation, board-file matching,
+recorded source/digests, and an offline-media alternative. Driver attachment,
+scan, association, traffic and post-reboot reconnect are separate acceptance
+checks. Until those pass, the installation must report wireless support as
+incomplete. [HW-003](roadmap/active-work.md)
+owns this cross-laptop installer requirement.

@@ -249,7 +249,7 @@ preserved. No performance fix or lifecycle pass is claimed.
 - **Priority:** P1
 - **Owner:** desktop, compatibility and diagnostics Components
 - **Direction:** Keep unresolved GPU, radio, boot and restart behavior explicit while extending physical acceptance.
-- **Conclusion:** HP desktop/application acceptance passed; MacBook GPU/Wi-Fi and earlier restart causes, other platform boot failures and radio/suspend checks remain open.
+- **Conclusion:** HP desktop/application acceptance passed. On the MacBook, a refreshed graphics package and T2 keyboard test kernel reached a visible desktop and accepted a password; the pointer worked after initial lag. Normal-boot integration, sustained input, Wi-Fi and the earlier storage/restart causes remain open, as do other platform boot and radio/suspend checks.
 - **ASRock availability:** The operator reports the RTX system still hangs in firmware and cannot enter setup or the boot menu, even with other USB devices disconnected and the keyboard directly attached. Firmware recovery is pending; no current Daemonarchy boot or physical acceptance result can be obtained from it. Keep R12-11 open.
 - **MSI video:** The October 18 recording ends readable output at `atrtc0: Warning: Couldn't map I/O.` before the display blanks, with no visible panic. The second video confirms the RTC-disable/panic flags and advances to `sc0 failed to probe on isa1` before blanking, without a visible panic. Repeated Intel SPMC constraint-format warnings motivated a `debug.acpi.disabled="spmc"` comparison, which the operator reports made no difference; the exact installer artifact remains unidentified. The [analysis](../testing-1.1-hardware-observations.md#msi-startup-video-reviewed-2026-10-18) records the movie identity, observed scope and source-backed diagnostic; no default quirk or fix is qualified.
 - **Depends on:** none
@@ -702,6 +702,20 @@ before claiming the observer optimization resolves that release blocker.
   - [ ] Reproduce and isolate ANS2 fatal I/O, preserve exact input and recovery identities, implement an independently tested correction, then repeat fresh-image installation and hardware checks.
 - **Evidence:**
   - [ ] 2026-10-22 physical reproduction, exact cached package recovery under four trackers, and full integrity after a forced power-off are recorded in docs/testing-macbookpro16-1-installer-20261022.md. Instrumented Navi14 tests isolate a graphics-queue initialization boundary; storage cause, false-success explanation and complete hardware acceptance remain open.
+
+### [ ] HW-003 — Acquire and install required laptop firmware
+
+- **Priority:** P1
+- **Owner:** installer and compatibility Components with native FreeBSD driver integration
+- **Direction:** Support laptops that need device-specific firmware during installation, including a MacBook whose macOS installation was wiped.
+- **Conclusion:** Firmware acquisition is part of installer completion when a selected built-in device requires it; a network panel cannot compensate for an unattached driver or absent firmware.
+- **Depends on:** HW-001
+- **Implementation:**
+  - [ ] Identify required firmware and board configuration from the actual PCI/device and driver identity; select an online source with verifiable provenance or operator-supplied local media, including an Apple recovery-image path for BCM4364 without installed macOS.
+  - [ ] Verify integrity and model match before copying into the target, retain source and digest evidence without private data, and make acquisition retryable without repeating disk partitioning or package installation.
+  - [ ] Install firmware in the driver's expected target path, enable its loading at boot, and check actual device attachment, scan, association, traffic and reconnect after reboot; report a clear incomplete-device result when the driver or firmware is unavailable.
+- **Evidence:**
+  - [ ] Fresh physical MacBook installation proves acquisition and rebooted BCM4364 operation; offline-media and failure/retry cases pass. At present the PCI device is unbound and no matching firmware is installed.
 
 ### [ ] DEBUG-002 — Preserve approved hardware-debugging sessions across reboot
 

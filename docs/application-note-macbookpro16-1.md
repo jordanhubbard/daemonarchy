@@ -1,9 +1,11 @@
 # Application note: MacBook Pro 16-inch (2019)
 
-Updated October 18, 2026. Model: **MacBookPro16,1**, Apple T2, Intel Core
+Updated October 22, 2026. Model: **MacBookPro16,1**, Apple T2, Intel Core
 i9-9880H. This note describes the observed 1.1 candidate installation on
 OSVERSION `1600027`; the released 1.1.1 uses `1600028`. It does not qualify a
 fresh 1.1.1 installation or claim that the newer base fixes these failures.
+The [October 22 investigation](testing-macbookpro16-1-installer-20261022.md)
+records later development fixes on a repaired 1600028 installation.
 
 ## Radeon Pro 5500M graphics
 
@@ -23,9 +25,21 @@ and device-attachment error 60. Surviving DRM device nodes did not represent
 successful initialization. The 1.1.1 graphics guard rejects that false-ready
 state; it does not repair the underlying GPU failure.
 
-A driver or platform-specific initialization problem remains a working
-hypothesis. Neither a specific Apple firmware defect nor physical GPU failure
-has been established. No working accelerated desktop is claimed on this machine.
+A later FreeBSD DRM reservation fix for the offset EFI framebuffer passed three
+clean physical boots, then a refreshed ports package reached SDDM's Wayland
+greeter. With the T2 keyboard test kernel, the operator entered a password and
+reached a visible Hyprland desktop on that package. Hardware radeonsi/Navi14
+rendering was observed. The corrected package is under review in
+[ports PR #19](https://github.com/jordanhubbard/daemonarchy-ports/pull/19);
+the released 1.1.1 image does not contain this fix.
+
+The built-in T2 keyboard previously stalled the desktop in synchronous HID LED
+output. The device-specific correction in
+[source PR #19](https://github.com/jordanhubbard/daemonarchy-src/pull/19)
+passed a native GENERIC build and a physical LED probe with the global LED
+bypass disabled. The operator used the keyboard to log in. The built-in
+trackpad pointer was initially very laggy, then worked; reliable clicking,
+sustained input and normal-boot integration still need testing.
 
 ## Built-in Wi-Fi is unavailable in the observed installation
 
@@ -43,6 +57,28 @@ is a SoftMAC driver; its firmware package is not a demonstrated fix for this
 BCM4364 device. Experimental external driver work mentioned in the investigation
 has not been validated on this MacBook or shipped as a working solution in 1.1.1.
 
+The current development installation still exposes only loopback and USB
+Ethernet; PCI `14e4:4464` is unbound and no matching firmware is installed.
+Remaining work is to qualify a native FreeBSD PCIe FullMAC driver for this exact
+chip/board, obtain the matching firmware and board configuration with recorded
+provenance, and verify scan, association, traffic and reconnect on the MacBook.
+The [experimental native brcmfmac driver](https://github.com/narqo/freebsd-brcmfmac)
+targets BCM4350/BCM43455, so its present device support does not close this gap.
+Linux's [brcmfmac PCIe mapping](https://github.com/torvalds/linux/blob/master/drivers/net/wireless/broadcom/brcm80211/brcmfmac/pcie.c)
+and this machine's working Linux behavior are references for the hardware
+protocol, without importing Linux driver code.
+
+The installer must acquire required laptop firmware when it is absent from its
+image. For a wiped MacBook, the [T2 Linux firmware guide](https://wiki.t2linux.org/guides/wifi-bluetooth/)
+documents extraction from an Apple recovery image without an installed macOS;
+that is a candidate acquisition path, not a qualified FreeBSD installer flow.
+The installer also needs a local-media path when network access is unavailable,
+model/board matching, provenance and integrity checks, transfer into the target
+system, and a reboot test that the driver loads the selected files. It must
+report a clear unresolved dependency rather than claim wireless readiness if
+firmware acquisition or driver attachment fails. This applies to other laptops
+with required external firmware as well as the BCM4364.
+
 Use the wired USB Ethernet connection already verified on this machine for
 installation, package access and remote debugging. Built-in Wi-Fi remains an
 open hardware compatibility limitation. Do not treat unrelated USB Wi-Fi adapters
@@ -50,9 +86,9 @@ as qualified without testing their exact chipset and driver.
 
 ## Other limits and investigation
 
-Spontaneous restarts remain under investigation separately from graphics and
-Wi-Fi. A retained shutdown sequence does not identify its initiator. Bluetooth
-and native trackpad behavior also remain unqualified.
+The later installer retry reproduced a fatal NVMe status during package
+installation; recovery under four I/O trackers does not resolve its cause.
+Bluetooth, sustained trackpad behavior and restart causes remain unqualified.
 
 See the [dated investigation](testing-macbookpro16-1.md),
 [hardware observations](testing-1.1-hardware-observations.md), and
