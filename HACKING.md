@@ -27,12 +27,13 @@ Use `litai work record` for new stable work IDs. Update the owning requirements,
 acceptance evidence and changelog together. A prospective implementation change
 must explicitly refresh its retained source baseline; metadata-only adoption
 checks must preserve original implementation bytes. Native commands and platform
-requirements remain in this runbook rather than being replaced with generated
-wrapper commands.
+requirements remain in this runbook. PERF-001 permits replacing the build
+executor after equivalent correctness and measured performance are demonstrated;
+generated wrapper commands alone do not establish that qualification.
 
 ## Where things live
 
-Daemonarchy is four repositories:
+Daemonarchy spans the installer, desktop, compatibility, source and ports repositories:
 
 - **This one** builds the installer image:
   - `overlay/usr/local/libexec/daemonarchy-installer/`: the installer. `launch` runs from root's login on the live system; `configurator` asks the questions (it vendors Omarchy's own setup form); `install` partitions, installs, and configures; `dashboard` draws the install screen from the install log.
@@ -58,7 +59,8 @@ Daemonarchy is four repositories:
   - The SDDM theme that reuses Omarchy's with the Daemonarchy wordmark.
   - The System > FreeBSD menu (`omarchy-menu.jsonc`) and the `daemonarchy-*` commands behind it.
   - Its tags set Daemonarchy's version (see Releasing).
-- **[jordanhubbard/freebsd-ports](https://github.com/jordanhubbard/freebsd-ports/tree/daemonarchy-1.1.1)** is the release ports fork; 1.1.1 uses `daemonarchy-1.1.1`, while the older 1.1 candidate uses `daemonarchy-1.1-package-baseline`. Upstream review does not block releases from this fork. It carries the ports:
+- **[jordanhubbard/daemonarchy-src](https://github.com/jordanhubbard/daemonarchy-src)**: the owned FreeBSD source fork. [Owned source builds](docs/source-builds.md) describes exact-commit world/kernel/pkgbase and installer-set preparation; [the performance plan](docs/roadmap/build-performance.md) tracks complete Component execution and build-system evaluation. Development outputs do not change the published 1.1.1 selection.
+- **[jordanhubbard/daemonarchy-ports](https://github.com/jordanhubbard/daemonarchy-ports/tree/daemonarchy-1.1.1)** is the release ports fork; 1.1.1 uses `daemonarchy-1.1.1`, while the older 1.1 candidate uses `daemonarchy-1.1-package-baseline`. Upstream review does not block releases from this fork. It carries the ports:
   - `x11-wm/omarchy`: Omarchy itself, with omarchy-freebsd as a second distfile. Its `files/` holds only patches to Omarchy's own files, among them the ones that add the `FreeBSDWifi.qml` and `FreeBSDBluetooth.qml` stand-ins to the panels.
   - `x11-wm/daemonarchy`: the full desktop's dependencies, plus daemonarchy-desktop. Defaults for new users go to `share/omarchy/skel.d/daemonarchy`, which `seed-user` copies in ahead of Omarchy's.
   - The applications and tools Omarchy uses, one port each (`x11-themes/aether`, `graphics/tensaku`, `misc/ttfx`, ...), resubmitted upstream in [freebsd/freebsd-ports#640](https://github.com/freebsd/freebsd-ports/pull/640); `x11-wm/omarchy` and `x11-wm/daemonarchy` are in [#641](https://github.com/freebsd/freebsd-ports/pull/641). The earlier #630/#635 submissions were closed unmerged. The LinuxKPI header fix is [#642](https://github.com/freebsd/freebsd-ports/pull/642); review status is independent of fork qualification.
@@ -92,7 +94,78 @@ sudo make reinstall clean
 
 `daemonarchy dev link` takes the FreeBSD commands and `freebsdize` from the installed port, so reinstall the omarchy port this way before linking to try changes to them.
 
+### Observe native source dependencies
+
+After pinned-tree discovery, use the native collector from this repository with
+Python 3.11 or later on an unprivileged amd64 FreeBSD worker. Keep the output
+outside the source tree and use a new directory for every observation:
+
+```sh
+python3 /path/to/daemonarchy/scripts/resolve-freebsd-dirdeps.py \
+  --repo /path/to/daemonarchy-src --revision <full-source-commit> \
+  --output /path/to/new-observation --unit bin/ls --acknowledge-evaluation
+```
+
+This evaluates trusted Makefiles, including parse-time commands, while requesting
+only variables; it is not a sandbox or a build/acceptance pass. It rejects dirty
+or ignored source inputs, bounds each query and the total run, retains partial
+records on failure and refuses existing output directories. Omit `--unit` to seed
+all amd64 dependency declarations and follow supported host/common contexts.
+Missing declarations, unsupported contexts and cycles cause a nonzero result.
+Run `PYTHONDONTWRITEBYTECODE=1 python3 tests/native-dirdeps.py -v` for eleven portable
+refusal/graph/process checks; native observation remains a separate result.
+
+## Isolated test-image staging
+
+Every `build-iso.sh` invocation allocates a new private directory beneath
+`ISO_STAGE_PARENT` (default `/var/tmp`) and prints its path. The parent must
+already exist and be an absolute, nonsymlink directory. Failed and completed
+staging trees remain for inspection; a later invocation never deletes them.
+Use separate output names, output directories and native build selections too:
+private staging alone does not make concurrent mutation of a poudriere jail safe.
+
+The [1.2 test-ISO preparation](docs/testing-1.2-test-iso.md) precedes physical
+qualification and is separate from final release publication.
+
 ## Setting up a build host
+
+The product controller now pins the exact combined framework wheel from source
+`e90cbadb`, recorded in `verification/native-first-binding-integration-development.json`.
+It combines reviewed Standard binding with metadata-only original-source adoption;
+the preceding `73311c69` checkpoint remains historical migration evidence.
+Select the matching isolated installation as `FRAMEWORK_CLI` in private operator
+configuration and use `"$FRAMEWORK_CLI"` for lifecycle planning and verification.
+The default installed CLI and active source/ports workspace are preserved. This
+configuration binding does not qualify a retained native build or produce its
+missing receipt. Original-source authority is now selected through the reviewed
+metadata-only `project adopt-original` flow. Actual action/input profiles and
+native admission remain required. Use the explicit retained manifest/profile
+`build` or `test` interface for that work; legacy harness readmission expects
+legacy conversion metadata and is not an original-project initializer.
+
+For a loader-only hardware test medium, follow
+[the 1.2 test-ISO checklist](docs/testing-1.2-test-iso.md). `TEST_LOADER_BUNDLE`
+selects a hash-checked EFI/Lua bundle for the live medium only. It refuses a
+Secure Boot bundle and does not provision debugging keys, enable the console,
+change installer sets or select the installed-system loader. Run
+`python3 tests/test-loader.py -v` for its selection/refusal controls; actual image
+assembly, boot and native lifecycle admission remain separate requirements.
+
+For builds from our owned FreeBSD-CURRENT fork, start with
+[owned source builds](docs/source-builds.md) and the versioned daemonarchy-src
+runbook. That workflow produces development pkgbase packages and installer sets
+from an exact source commit. The snapshot-based procedure below remains the
+current release input path until the owned outputs pass admission, signing,
+matching jail/module and VM/hardware qualification.
+
+For pinned Git-tree discovery, run `python3 scripts/inspect-freebsd-graph.py`
+with `--kind source` or `--kind ports`, `--repo`, an exact `--revision`, and a new
+`--output` path outside the inspected repository. A ports object store can be
+cloned with `--filter=blob:none --no-checkout`; discovery needs its tree objects,
+not Makefile evaluation. Run `PYTHONDONTWRITEBYTECODE=1 python3 tests/native-tree-discovery.py -v`
+for the portable refusal tests. Discovery outputs are not canonical catalogs,
+complete dependency graphs, pkg provenance or framework receipts. See the
+[Component/performance plan](docs/roadmap/build-performance.md).
 
 You need a FreeBSD 16.0-CURRENT machine (bare metal or a VM with capacity for the selected build) with poudriere, git, and the ports tree, as root.
 

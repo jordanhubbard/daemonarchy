@@ -1,0 +1,279 @@
+{
+  "schema": "daemonarchy/native-sdk-runtime-context-development@1",
+  "observed_utc": "2026-10-22T12:10:03.756910+00:00",
+  "scope": "ADOPT-002 preparation; installed native context cases pass, canonical public CLI terminates at its unchanged 3600-second deadline; no product admission",
+  "framework_issue": "https://github.com/jordanhubbard/literate-ai/issues/118",
+  "framework_review": "https://github.com/jordanhubbard/literate-ai/pull/110",
+  "framework_review_head": "cb648dc90a1cd456340fe905945a00e0cc05730a",
+  "qualified_code_revision": "4eab5e2584b21772ae070197049ccb29a31acd5e",
+  "source_tree": "68f2c6bbe227840322ba7baf73e1f1e8bb478450",
+  "test_tree": "4313c61e0c68b3152ef07921e9c174a12370b60c",
+  "controller_regression": {
+    "exit_code": 0,
+    "executed": 2128,
+    "failed": 0,
+    "known_failed": 0,
+    "passed": 2128,
+    "selected": 2198,
+    "skipped": 70,
+    "seconds": 2440.464,
+    "workers": 2,
+    "report_sha256": "eb7857d62ed5293d6ee47b4e5c801c7c4595af7ec88dd9818eeb118c3ebe7f9a"
+  },
+  "controller_focused_cases": {
+    "native_loading_integration": 7,
+    "graph_equivalence": 3,
+    "all_ten_pass_in_full_regression": true,
+    "integration_seconds": 208.072,
+    "integration_report_sha256": "8e6864f33c835a6bfd703796b471803c16813752458925e8526a60a14cc0023c"
+  },
+  "framework_wheel": {
+    "qualified": true,
+    "identity": "sha256:08cfcc338f978604bea1950829a3140e288f8207771588578fb900fbe1452bf8",
+    "distribution_identity": "sha256:0ff58bd5a0332856bbc0ed57cc1417bc8ab75902edcd3ce5de24e79cd9667c92",
+    "members": 1235,
+    "seconds": 545.561,
+    "report_sha256": "1caf70b8e16160717ffdd91e240f37c6f6677f567ad822603920b78b1cca7fd2"
+  },
+  "framework_host_lifecycle": {
+    "passed": true,
+    "tests": 223,
+    "seconds": 1606.917,
+    "receipt_current": true,
+    "receipt_identity": "sha256:ad15d0df01e07445de1704c82368d2b9076dcbd54d7cad2c45e47114b74407c0",
+    "finalized_candidate_identity": "sha256:a0b3926ce42a61d4c0a62849621df99e99e4d763c4df51c6cc575653e94aa1af",
+    "independent_acceptance": true,
+    "scope": "Complete configured host sample matrix; preserves its own 223-test result, distinct from the predecessor 227-test result"
+  },
+  "framework_current_verification": true,
+  "captured_runtime_context": {
+    "live_dependency_owner_required": true,
+    "exact_plan_manifest_environment_binding": true,
+    "complete_native_code_and_edge_equivalence": true,
+    "sdk_owned_placement_preserved": true,
+    "external_equivalent_copies_allowed": true,
+    "bound_process_projection_immutable": true,
+    "cleanup_revalidation_required": true
+  },
+  "ambient_override_refusal_preserved": true,
+  "freebsd_offline_install": {
+    "passed": true,
+    "target": "FreeBSD / Python 3.12",
+    "distributions_verified": 37,
+    "distribution_identity": "sha256:0ff58bd5a0332856bbc0ed57cc1417bc8ab75902edcd3ce5de24e79cd9667c92",
+    "seconds": 145.926
+  },
+  "installed_native_context_cases": {
+    "schema": "daemonarchy/installed-sdk-runtime-context-fixture-development@1",
+    "framework_revision": "4eab5e2584b21772ae070197049ccb29a31acd5e",
+    "distribution_identity": "sha256:0ff58bd5a0332856bbc0ed57cc1417bc8ab75902edcd3ce5de24e79cd9667c92",
+    "target": {
+      "sys_platform": "freebsd16",
+      "machine": "amd64",
+      "release": "16.0-CURRENT",
+      "python": "3.12.14"
+    },
+    "tests": 10,
+    "failures": 0,
+    "errors": 0,
+    "skips": 0,
+    "successful": true,
+    "production_modules_verified": 469,
+    "imports_sha256": "67cb85eec7c6eef713238cbc9b8a37449f3df3d64c90d8b0e4ec185c01ba4c77",
+    "scope": "Fixture-supplied project discovery and local Git routing; real source build, grants, custody and acceptance. Not canonical public CLI or actual compiler SDK qualification.",
+    "canonical_installed_cli_qualified": false,
+    "compiler_sdk_admitted": false,
+    "product_receipt": false,
+    "iso_created": false,
+    "release_acceptance": false,
+    "status_at_observation": "passed",
+    "seconds": 2727.663,
+    "terminal_exit_code": 0,
+    "observation_sha256": "1994944dae4288110111c652fe7d93e7661a8a79595e51aa578beb9f47267c28"
+  },
+  "canonical_installed_native_cli": {
+    "status_at_observation": "failed_timeout",
+    "stage": "authorized-execution",
+    "fresh_project_initialization_passed": true,
+    "native_library_sdk_production_completed": true,
+    "default_required_evidence_kinds": 16,
+    "standard_distribution_identity": "sha256:0ff58bd5a0332856bbc0ed57cc1417bc8ab75902edcd3ce5de24e79cd9667c92",
+    "authored_probe_requires_captured_loader": true,
+    "authored_probe_has_separate_host_and_plan_refusals": true,
+    "consumer_build_tests_acceptance": false,
+    "terminal_result_claimed": true,
+    "terminal_exit_code": 1,
+    "supervised_seconds": 4246.29,
+    "public_cli_deadline_seconds": 3600,
+    "canonical_installed_cli_qualified": false,
+    "host_authorization_negative_passed": true,
+    "exact_plan_authorization_negative_passed": true,
+    "retained_plan_passed": true,
+    "partial_products": "Native ELF application, library and three original test results were present, but no completed manual, receipt or independent admission was earned.",
+    "source_transport_result": {
+      "schema": "daemonarchy/sdk-source-transport-development@1",
+      "canonical_installed_cli_qualified": false,
+      "compiler_sdk_admitted": false,
+      "release_acceptance": false,
+      "ok": false,
+      "resolved_commit": "0bc103ddfdba90a8116b3b1585cd6da00cb56e7f",
+      "files": 9,
+      "source_snapshot": "sha256:1558623dc64eea854dd0024fa048dfe88961a6c3e7e055602bf40bd717507a50",
+      "source_tree": "sha256:d0115b5cb6226b3c597212668cbb60ef13247800e4dfdadaeb5fd14e7c46bcd2",
+      "qualification_exit_code": 1,
+      "error_type": "AssertionError",
+      "error": "",
+      "owned_server_terminal": 0
+    },
+    "observation_sha256": "ba67e1072efe2b6f798fdc57d924c78871155ae480d4a198636f35d4fa6d5a85",
+    "performance_issue": "https://github.com/jordanhubbard/literate-ai/issues/117",
+    "harness_followup": "A later, unreached assertion used output/products/app instead of workspace/outputs/app; corrected probe v6 is prepared for a future fresh attempt. No live result was patched."
+  },
+  "active_workspace_selection_sha256": "4e79295002b67899e66b4665f43848b73288a26df5037d7d859f0b2c25c1a3fd",
+  "active_workspace_selection_changed": false,
+  "compiler_sdk_admitted": false,
+  "product_lifecycle_receipt": false,
+  "iso_created": false,
+  "published_artifacts_changed": false,
+  "release_acceptance": false,
+  "ledger_rows_closed": 0,
+  "read_only_native_dependency_profile": {
+    "seconds": 14.613,
+    "components": 34,
+    "edges": 97,
+    "observation_bytes": 54122,
+    "observation_sha256": "588ea64e7a94038f1fc12d4e74e429c39ba3af6b55d1abf1d4509e2c230b8627",
+    "profile_sha256": "ce43bf7e626a789d16ba7f80a6daa056160373b70d85fecf59e1d5b5a52e2538",
+    "scope": "Instrumented read-only native input/dependency observation; excludes binding-owner checks, command execution and admission; not an uninstrumented performance benchmark",
+    "supervised_seconds": 28.232,
+    "first_attempt": "Refused already retired inputs; fresh verified diagnostic capture passed. Original attempt remains retained.",
+    "stat_calls": 10520,
+    "inspector_processes": 217,
+    "top_functions": [
+      {
+        "file": "profile-retained-native-observation-v2.py",
+        "line": 22,
+        "function": "observe",
+        "calls": 1,
+        "self_seconds": 6.8e-05,
+        "cumulative_seconds": 14.600424
+      },
+      {
+        "file": "observation.py",
+        "line": 884,
+        "function": "observe",
+        "calls": 1,
+        "self_seconds": 2.9e-05,
+        "cumulative_seconds": 12.93156
+      },
+      {
+        "file": "freebsd.py",
+        "line": 40,
+        "function": "observe",
+        "calls": 1,
+        "self_seconds": 0.000173,
+        "cumulative_seconds": 12.931514
+      },
+      {
+        "file": "freebsd.py",
+        "line": 49,
+        "function": "_observe",
+        "calls": 1,
+        "self_seconds": 0.001566,
+        "cumulative_seconds": 12.931341
+      },
+      {
+        "file": "freebsd.py",
+        "line": 249,
+        "function": "_closure",
+        "calls": 1,
+        "self_seconds": 0.011338,
+        "cumulative_seconds": 11.288538
+      },
+      {
+        "file": "freebsd.py",
+        "line": 262,
+        "function": "image",
+        "calls": 152,
+        "self_seconds": 0.005865,
+        "cumulative_seconds": 8.623032
+      },
+      {
+        "file": "observation.py",
+        "line": 2329,
+        "function": "_run_bounded_tool",
+        "calls": 217,
+        "self_seconds": 0.025345,
+        "cumulative_seconds": 8.366793
+      },
+      {
+        "file": "_process.py",
+        "line": 41,
+        "function": "run_bounded_process",
+        "calls": 217,
+        "self_seconds": 0.050313,
+        "cumulative_seconds": 7.275915
+      }
+    ]
+  },
+  "read_only_public_plan_profile": {
+    "seconds": 105.045,
+    "exit_code": 0,
+    "ok": true,
+    "profile_sha256": "f0b37fff4733c1cbbe7fc9931ec19ac192a0e6b953ea61e957757cc768eae506",
+    "scope": "Instrumented read-only public retained plan; no execution, SDK admission or release benchmark",
+    "supervised_seconds": 105.98,
+    "stat_calls": 43832,
+    "installed_distribution_observations": 4,
+    "distribution_cumulative_seconds": 75.588888,
+    "inventory_prefilter_cumulative_seconds": 32.781708
+  },
+  "performance_followup": {
+    "framework_candidate_revision": "760bfa09",
+    "source_sha256": "c52fa742ef21d465293b65afab9df7cc8c5a1b89a0bcf70e764148aca7ece39d",
+    "scope": "Alternating instrumented source-observer calls against the original installed distribution; candidate source imported separately, not installed-wheel or public CLI qualification",
+    "identities_equal": true,
+    "samples": [
+      {
+        "name": "baseline",
+        "index": 0,
+        "seconds": 24.52,
+        "members": 1235,
+        "identity": "sha256:0ff58bd5a0332856bbc0ed57cc1417bc8ab75902edcd3ce5de24e79cd9667c92",
+        "profile_sha256": "e54fea5e1ea18553dcfb81ecfa9ee5f570b6438b05731369fa2e8f187afd07be",
+        "stat_calls": 7049
+      },
+      {
+        "name": "candidate",
+        "index": 1,
+        "seconds": 11.675,
+        "members": 1235,
+        "identity": "sha256:0ff58bd5a0332856bbc0ed57cc1417bc8ab75902edcd3ce5de24e79cd9667c92",
+        "profile_sha256": "fbda30ca80cbd0d2d3f3fb7c4f37116eaf5619ee7d9c828d4c8d7fbcfeb364c5",
+        "stat_calls": 4944
+      },
+      {
+        "name": "candidate",
+        "index": 2,
+        "seconds": 11.366,
+        "members": 1235,
+        "identity": "sha256:0ff58bd5a0332856bbc0ed57cc1417bc8ab75902edcd3ce5de24e79cd9667c92",
+        "profile_sha256": "a70d1a82f304dbf071234cf889f09b116d1f973e050bd2bf75f3d0997011c0dd",
+        "stat_calls": 4944
+      },
+      {
+        "name": "baseline",
+        "index": 3,
+        "seconds": 23.411,
+        "members": 1235,
+        "identity": "sha256:0ff58bd5a0332856bbc0ed57cc1417bc8ab75902edcd3ce5de24e79cd9667c92",
+        "profile_sha256": "1f9bd30ba6769839202a30ca77170cd06b4ca56cf66ec2252b28a609184f6538",
+        "stat_calls": 7043
+      }
+    ],
+    "supervised_seconds": 74.852,
+    "full_controller_regression": "running; no completed result claimed",
+    "installed_candidate_wheel_qualified": false,
+    "public_native_cli_qualified": false
+  }
+}

@@ -1,0 +1,35 @@
+{
+  "schema": "daemonarchy/native-retained-acceptance-checkpoint@1",
+  "work_item": "DEV-001",
+  "framework_issue": "https://github.com/jordanhubbard/literate-ai/issues/22",
+  "framework_revision": "567e0f8a4092ab7c328690bd5e12cc658c1df7e1",
+  "framework_revision_publication": "local checkpoint; full regression pending before push",
+  "native_checks": {
+    "tests": 69,
+    "failures": 0,
+    "skips": 0,
+    "elapsed_seconds": 342.231,
+    "log_sha256": "e9c0e1948f0f53bb25364fe6bcbc712453d101ce1ac95c8810374a7748dcf673",
+    "runner": "canonical make python-check with retained-project selection on native FreeBSD"
+  },
+  "focused_controller_checks": {
+    "tests": 14,
+    "failures": 0,
+    "skips": 0,
+    "elapsed_seconds": 18.619,
+    "log_sha256": "f66ec4f0e11fafd738134b04a6029cd003b6653ea57aecd625c11437be168538"
+  },
+  "qualified_scope": [
+    "typed withheld verifier-policy and exact selected-lock binding",
+    "actual executable export checks with bounded binary input and exact output/status comparison",
+    "output and observed native dependency drift rejection",
+    "failed-case bounded result custody",
+    "existing retained input, planning, test, release-policy, SBOM projection and dependency regression cases"
+  ],
+  "full_framework_regression": "running; no pass claim",
+  "installed_wheel_qualification": "pending; wheel smoke harness still expects Linux on non-Windows/non-macOS hosts, including FreeBSD",
+  "public_retained_execution": "still refuses unqualified execution",
+  "native_lifecycle_receipt": "not qualified",
+  "source_ports_component_execution": "not qualified",
+  "incremental_package_iso_installation": "not qualified"
+}

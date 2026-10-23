@@ -1,0 +1,459 @@
+{
+  "schema": "daemonarchy/composed-framework-qualification-development@1",
+  "observed_utc": "2026-10-22T20:35:24.854953+00:00",
+  "framework_revision": "c058695048a3a1980e45db977c316a68ee4c868d",
+  "scope": "Exact Windows and descriptor framework composition; native development qualification in progress",
+  "controller_regression": {
+    "summary": {
+      "executed": 2135,
+      "failed": 0,
+      "known_failed": 0,
+      "passed": 2135,
+      "selected": 2206,
+      "skipped": 71
+    },
+    "report_identity": "sha256:519ec9503c35f4fa133fd499e1ed722ecae76281ca622b4a1ee20e9c0fb99c62",
+    "release_evidence": false
+  },
+  "linux_installed_wheel": {
+    "ok": true,
+    "wheel_identity": "sha256:9002feed89c6d23d22a75ed9cfd3b980a6aee0d346a061aea37c0ee4b42ce953",
+    "standard_binding": {
+      "distribution": "sha256:36a08d8a67ac21e15d7fb746f2cb7eff842aeb4d177e4d38a1f6a7a176ee8d66",
+      "members": 1235,
+      "policy": "sha256:a5ca0d6d13daff0199f218c5e4af723a2cec87b927e75dd3a731c511b5d85ac7"
+    },
+    "tamper_refusal": "standard_binding.changed",
+    "report_identity": "sha256:b04e5925be728554f2d6a29d2815a2ca15a800ae652fb7a15fa7fb3f9511e08c"
+  },
+  "freebsd_installed_prefix": {
+    "carrier": {
+      "schema": "daemonarchy/qualified-native-carrier-development@1",
+      "framework_commit": "c058695048a3a1980e45db977c316a68ee4c868d",
+      "wheel_identity": "sha256:9002feed89c6d23d22a75ed9cfd3b980a6aee0d346a061aea37c0ee4b42ce953",
+      "distribution_identity": "sha256:36a08d8a67ac21e15d7fb746f2cb7eff842aeb4d177e4d38a1f6a7a176ee8d66",
+      "dependency_closure_identity": "sha256:cf27f5f9047f06973bd8e6c2a45c404be74362d98af412742c3ed31e66400e29",
+      "seed_closure_identity": "sha256:44e2614cff8ed87e80b2ab6b7129fa8ee9d8ae90835187f15bf47f57b5bd3783",
+      "carrier_sha256": "23096649de18184f30be1b13be7ba94612fe74fc551579c8ec281492cf7bc2cf",
+      "bootstrap_sha256": "29fa4f5b517d222dfe9b0402fd77cb0d97e341b8b672081921311132434d04b8",
+      "native_installed_qualified": false,
+      "source_sdk_admitted": false,
+      "release_acceptance": false
+    },
+    "bootstrap": {
+      "exit_code": 0,
+      "schema": "daemonarchy/native-command-terminal@1",
+      "seconds": 6.427
+    },
+    "initialization": {
+      "exit_code": 0,
+      "schema": "daemonarchy/native-command-terminal@1",
+      "seconds": 96.883
+    },
+    "binding_controls": {
+      "selected": 6,
+      "failures": 0,
+      "errors": 0,
+      "skipped": 0,
+      "module_sha256": "118eaf712600436acccd83ac2b69b68cce71c486405ea473330cbe5d50d744ac",
+      "test_sha256": "4a73cbf9bbdd1cecb4e1f59e68cdd0b702efe5e596bcf8229e049d3aee5c39b6",
+      "module_from_installed_prefix": true
+    },
+    "public_cli_exercise": {
+      "passed": true,
+      "record": "verification/native-sdk-composed-cli-development.json",
+      "supervised_seconds": 573.597,
+      "receipt_identity": "sha256:fb4445f32bbef56cd6716597ac31a4bba9e03a3da21e6376d119d8e92ceda6b0",
+      "receipt_scope": "local-runtime",
+      "original_tests": {
+        "failed": 0,
+        "passed": 3,
+        "skipped": 0
+      },
+      "independent_acceptance_cases": 2,
+      "records_reverified": 28,
+      "source_server_terminal": 0
+    },
+    "context_controls": {
+      "tests": 10,
+      "passed": 10,
+      "failed": 0,
+      "skipped": 0,
+      "supervised_seconds": 625.485,
+      "production_modules_verified": 469,
+      "imports_sha256": "69eb7159fc5fee777b64b02ad7db63ef28f8986d54cb2bc67137dcf135c3c1d0",
+      "scope": "Fixture-supplied project discovery and local Git routing; real source build, grants, custody and acceptance. Not canonical public CLI or actual compiler SDK qualification.",
+      "raw_evidence": {
+        "installed-context-command/started.json": {
+          "sha256": "ad82a5f8d18fd031997f5e9740ecf2ebfde8d052e25358c8854fe6b2d6982124",
+          "bytes": 609
+        },
+        "installed-context-command/terminal.json": {
+          "sha256": "567a288f81af5f62f519d50a73fdc0dab5c8b07cf247147ea562b8f459f08eff",
+          "bytes": 88
+        },
+        "installed-context-command/stdout.log": {
+          "sha256": "3c7ea3212aafd2be5acbf51507e3e49a34c21208ca191eb23b9ed70e7c7e5aa9",
+          "bytes": 885
+        },
+        "installed-context-command/stderr.log": {
+          "sha256": "c2c5aae2c41dfcaf9853631cb0122419a2c4bdaba7a770fcd0cb3a936e85491b",
+          "bytes": 2149
+        },
+        "installed-context-tests/result.json": {
+          "sha256": "1e5526ec324d86c10a7b4f47e7be88c9de6f2f81b95b07629a850a221f151a01",
+          "bytes": 941
+        },
+        "installed-context-tests/production-imports.json": {
+          "sha256": "e7fa67177b02fe92572ecff17957ada263e9393216c8c0ea7dd72c43c110649c",
+          "bytes": 53162
+        }
+      }
+    }
+  },
+  "host_lifecycle": {
+    "first_attempt": {
+      "exit_code": 2,
+      "seconds": 704.794,
+      "candidate_exists": false,
+      "timeout": false
+    },
+    "failure_analysis": {
+      "source_revision": "c058695048a3a1980e45db977c316a68ee4c868d",
+      "phase": "full-stack-rust-js/test-generated",
+      "error_class": "Generated frontend passes a BigInt quotient to Math.floor",
+      "reproduction_exit_code": 1,
+      "reproduction_stderr": "Cannot convert a BigInt value to a number\n",
+      "generated_frontend_sha256": "4160b885f709dbfc1a5bdb46d038440e65332d6a622356de75d3029517c337c8",
+      "generated_test_sha256": "fb90159553a28625dccf9dd19daa449eafd1706d27ed9ea846ab68a89d15184c",
+      "candidate_receipt_produced": false,
+      "production_source_modified": false,
+      "next_action": "Fresh complete lifecycle regeneration; preserve original failed evidence"
+    },
+    "fresh_attempt": {
+      "passed": true,
+      "seconds": 1595.584,
+      "tests": 228,
+      "independent_acceptance": true,
+      "receipt_identity": "sha256:0e2f897c8b6e6ebc7fe9a609a1037fc1541afab3b9e919bf2fd0760f3f65bd16",
+      "finalized_candidate_identity": "sha256:29ea58c0c17d0328c53319c3c8e26c36c95b877e0b0f7da04f876f089e09c6a9",
+      "supported_promotion": true,
+      "parent_receipt_current": true
+    }
+  },
+  "windows_native_gate": {
+    "result": "Patched native full gate timed out at the unchanged 5400-second limit during wheel qualification; unit suite not started",
+    "preflight_refusal": "Existing primary origin differs; preserved without mutation",
+    "transport_retry": "Input transfer timed out before files arrived; explicit line-based transfer then succeeded",
+    "test_workers": 2,
+    "maximum_gate_seconds": 5400,
+    "source_revision": "c058695048a3a1980e45db977c316a68ee4c868d",
+    "started_utc": "2026-10-22T18:35:16.797682+00:00",
+    "free_bytes_at_observation": 41101733888,
+    "canonical_worktree_created": true,
+    "full_gate": true,
+    "first_full_attempt": {
+      "exit_code": 1,
+      "seconds": 461.531,
+      "timeout": false,
+      "completed": [
+        "preflight",
+        "environment",
+        "compile",
+        "lint",
+        "openspec",
+        "documentation-tool-tests",
+        "documentation-rendering"
+      ],
+      "documentation_tests": 21,
+      "rendered_diagrams": 121,
+      "markdown_files": 625,
+      "failed_phase": "wheel",
+      "diagnostic": "Partial qualification clone lacks promised Git objects required by the wheel test local bare clone; test suite not started",
+      "production_source_change": false
+    },
+    "repository_hydration": {
+      "missing_objects_before": 4142,
+      "missing_objects_after": 0,
+      "connectivity_passed": true,
+      "source_revision": "c058695048a3a1980e45db977c316a68ee4c868d",
+      "tracked_source_changed": false
+    },
+    "hydrated_attempt": {
+      "exit_code": 1,
+      "seconds": 231.546,
+      "timeout": false,
+      "failed_phase": "documentation-dependency-audit",
+      "advisories": [
+        "GHSA-cg2g-xh64-v4q7",
+        "GHSA-mrv2-3pqr-j5jr"
+      ],
+      "dompurify_version": "3.4.16",
+      "source_changed": false,
+      "unit_suite_started": false
+    },
+    "documentation_pin_repair": {
+      "patched_version": "3.4.17",
+      "source_revision": "23d0b678dc63eedbae673d2603dfad5e13ef09bb",
+      "upstream_issue": "https://github.com/jordanhubbard/literate-ai/issues/120",
+      "controller_clean_install_audit_and_rendering_passed": true,
+      "documentation_tests": 21,
+      "rendered_diagrams": 121,
+      "markdown_files": 625,
+      "audit_policy_unchanged": true
+    },
+    "current_patched_attempt": {
+      "terminal": {
+        "exit_code": 1,
+        "timeout": true,
+        "seconds": 5400.36,
+        "source_revision": "23d0b678dc63eedbae673d2603dfad5e13ef09bb",
+        "native_windows": true,
+        "release_authorized": false
+      },
+      "failed_phase": "wheel",
+      "unit_suite_started": false,
+      "maximum_gate_seconds": 5400,
+      "deadline_unchanged": true,
+      "completed_phases": [
+        "preflight",
+        "environment",
+        "compile",
+        "lint",
+        "openspec"
+      ],
+      "documentation_tests": 21,
+      "rendered_diagrams": 121,
+      "markdown_files": 625,
+      "process_tree_terminated_by_finite_supervisor": true,
+      "retained_wheel_and_workspace_preserved": true,
+      "last_observed_activity": "Owned installed CLI and Git subprocesses; targeted profiling required",
+      "path_alignment_observation": {
+        "source_checkout_covered": false,
+        "sibling_temporary_covered": false,
+        "base_python_process_covered": true,
+        "declared_path_exclusion_count": 1,
+        "declared_process_exclusion_count": 1,
+        "preferences_modified": false
+      }
+    },
+    "diagnostic_followup": {
+      "operation": "Read-only installed project validation cProfile against retained project",
+      "maximum_seconds": 600,
+      "profiling_only": true,
+      "native_windows_gate_passed": false,
+      "source_revision": "23d0b678dc63eedbae673d2603dfad5e13ef09bb",
+      "exit_code": 0,
+      "supervisor_seconds": 498.828,
+      "authority_unchanged": true,
+      "profile_overhead_included": true,
+      "optional_import_repair_record": "verification/framework-project-import-development.json",
+      "candidate_revision": "8f1b7df634e0c34ccd55bba1486f2c7e4b2539ad",
+      "candidate_review": "https://github.com/jordanhubbard/literate-ai/pull/122"
+    }
+  },
+  "historical_descriptor_native_evidence": "verification/native-sdk-isolated-cli-development.json",
+  "compiler_sdk_admitted": false,
+  "product_receipt": false,
+  "iso_created": false,
+  "release_authorized": false,
+  "next_action": "Profile failed Windows wheel qualification without increasing its deadline; proceed to actual live native source-producer/SDK admission and remaining release gates",
+  "patched_wheel_renewal": {
+    "source_revision": "23d0b678dc63eedbae673d2603dfad5e13ef09bb",
+    "target": "Linux x86_64 / Python 3.14",
+    "result": "passed",
+    "maximum_seconds": 2100,
+    "guest_qualification_serialized": true,
+    "wheel_growth_budget_bytes": 4294967296,
+    "minimum_host_reserve_bytes": 42949672960,
+    "cache_deletion_performed": false,
+    "terminal": {
+      "exit_code": 0,
+      "schema": "daemonarchy/native-command-terminal@1",
+      "seconds": 662.744
+    },
+    "wheel_identity": "sha256:f5b85eb55e2782a5ed32379d3cf34f7d0b116f801804177b432a6d9353b4c09f",
+    "standard_binding": {
+      "distribution": "sha256:e0dd058e6e67bca93e3dd485bc6c4cc43fa8215a33e2160503809f5afdc359d7",
+      "members": 1235,
+      "policy": "sha256:a5ca0d6d13daff0199f218c5e4af723a2cec87b927e75dd3a731c511b5d85ac7"
+    },
+    "tamper_refusal": "standard_binding.changed",
+    "report_identity": "sha256:770a72fff26501432ecc9c3f10ef5ac4eb81016691b48b32fa698b4b72284667"
+  },
+  "completed_guest_retirement": {
+    "terminal": {
+      "exit_code": 0,
+      "expired": false,
+      "seconds": 6342.6936867176555
+    },
+    "qemu_absent": true,
+    "normal_shutdown_requested": true,
+    "retained_runtime_and_evidence_preserved": true,
+    "new_allocation_required_for_patched_native_renewal": true
+  },
+  "patched_freebsd_renewal": {
+    "framework_revision": "23d0b678dc63eedbae673d2603dfad5e13ef09bb",
+    "new_allocation": true,
+    "original_completed_guest_preserved": true,
+    "maximum_guest_lifetime_seconds": 9000,
+    "native_role": {
+      "os": "FreeBSD 16.0-CURRENT",
+      "uid": 2002,
+      "cpus": 4,
+      "memory_mib": 4096,
+      "alignment_passed": true
+    },
+    "carrier": {
+      "schema": "daemonarchy/qualified-native-carrier-development@1",
+      "framework_commit": "23d0b678dc63eedbae673d2603dfad5e13ef09bb",
+      "wheel_identity": "sha256:f5b85eb55e2782a5ed32379d3cf34f7d0b116f801804177b432a6d9353b4c09f",
+      "distribution_identity": "sha256:e0dd058e6e67bca93e3dd485bc6c4cc43fa8215a33e2160503809f5afdc359d7",
+      "dependency_closure_identity": "sha256:2e13cd609bd708efc25a1c603e6166edab964d5a018f8805531f286f9c09137c",
+      "seed_closure_identity": "sha256:cf27f5f9047f06973bd8e6c2a45c404be74362d98af412742c3ed31e66400e29",
+      "carrier_sha256": "92b61d365902c8909e2a63b458b955ec742d323158b6fef87624375c1b095549",
+      "bootstrap_sha256": "29fa4f5b517d222dfe9b0402fd77cb0d97e341b8b672081921311132434d04b8",
+      "native_installed_qualified": false,
+      "source_sdk_admitted": false,
+      "release_acceptance": false
+    },
+    "fixture_archive_sha256": "8f2079fc1225f7f1b27d4c0c31cc6d889d6c76e276e67e3cca406428a8d53f1e",
+    "offline_bootstrap": {
+      "exit_code": 0,
+      "schema": "daemonarchy/native-command-terminal@1",
+      "seconds": 7.607
+    },
+    "installed_binding_controls": {
+      "selected": 6,
+      "failures": 0,
+      "errors": 0,
+      "skipped": 0,
+      "module_sha256": "118eaf712600436acccd83ac2b69b68cce71c486405ea473330cbe5d50d744ac",
+      "test_sha256": "4a73cbf9bbdd1cecb4e1f59e68cdd0b702efe5e596bcf8229e049d3aee5c39b6",
+      "module_from_installed_prefix": true,
+      "canonical_native_cli_qualified": false
+    },
+    "public_cli_result": {
+      "passed": true,
+      "record": "verification/native-sdk-postaudit-cli-development.json",
+      "supervised_seconds": 536.095,
+      "receipt_identity": "sha256:c9a3135fb3911a2cbfcdf4fe7ab31349de1db7f65161c763b33daeeecd9b8c85",
+      "receipt_scope": "local-runtime",
+      "original_tests": {
+        "failed": 0,
+        "passed": 3,
+        "skipped": 0
+      },
+      "independent_acceptance_cases": 2,
+      "records_reverified": 28,
+      "source_server_terminal": 0
+    },
+    "compiler_sdk_admitted": false,
+    "product_receipt": false,
+    "release_qualified": false,
+    "initialization": {
+      "exit_code": 0,
+      "schema": "daemonarchy/native-command-terminal@1",
+      "seconds": 50.318
+    },
+    "sdk_tree_aliases": {
+      "public_cli_qualified": true,
+      "state": "passed; raw evidence collected and 28 receipt records reverified",
+      "separate_project": true,
+      "initialization": {
+        "exit_code": 0,
+        "schema": "daemonarchy/native-command-terminal@1",
+        "seconds": 72.938
+      },
+      "case_sensitive": true,
+      "aliases": [
+        {
+          "kind": "hardlink",
+          "path": "python/vendor_math/lib/vendor_math.so.hard",
+          "target": "python/vendor_math/lib/vendor_math.so"
+        },
+        {
+          "kind": "symlink",
+          "path": "python/vendor_math/lib/vendor_math.so.symbolic",
+          "target": "vendor_math.so"
+        }
+      ],
+      "snapshot": {
+        "algorithm": "sha256",
+        "digest": "b358e5965c4ca4e0eac61002344b1ce5bded95168eb46864f5a7be2ee7ca6cbe",
+        "schema": "urn:literate-ai:schema:v1:content-identity"
+      },
+      "actual_symlink_text_verified": true,
+      "actual_hardlink_inode_verified": true,
+      "compiler_sdk_admitted": false,
+      "product_receipt": false,
+      "release_qualified": false,
+      "record": "verification/native-sdk-tree-public-cli-development.json",
+      "supervised_seconds": 535.622,
+      "receipt_identity": "sha256:94bad12c9f818323b4e1d2b1301a7050eb607bb560bc400b9c9abed4d738bb1f",
+      "receipt_scope": "local-runtime",
+      "original_tests": {
+        "failed": 0,
+        "passed": 3,
+        "skipped": 0
+      },
+      "independent_acceptance_cases": 2,
+      "records_reverified": 28,
+      "source_server_terminal": 0,
+      "completed_run_sdk_admitted": false
+    },
+    "installed_context_controls": {
+      "tests": 10,
+      "passed": 10,
+      "failed": 0,
+      "skipped": 0,
+      "supervised_seconds": 592.634,
+      "production_modules_verified": 469,
+      "imports_sha256": "69eb7159fc5fee777b64b02ad7db63ef28f8986d54cb2bc67137dcf135c3c1d0",
+      "scope": "Fixture-supplied project discovery and local Git routing; real source build, grants, custody and acceptance. Not canonical public CLI or actual compiler SDK qualification.",
+      "raw_evidence": {
+        "installed-context-command/started.json": {
+          "sha256": "9131d0282237d86fda2630acfc6484364a2b3c480ef9f6071590a673f49822b4",
+          "bytes": 614
+        },
+        "installed-context-command/terminal.json": {
+          "sha256": "c0087b3e5627e4d8c247057d39b0e6ab4ca75949b8fb02b8558695d7094c01d2",
+          "bytes": 88
+        },
+        "installed-context-command/stdout.log": {
+          "sha256": "00319b220557023f314cc1030a9cf1680e1b708a485a0e3e37493ac99fdfad05",
+          "bytes": 885
+        },
+        "installed-context-command/stderr.log": {
+          "sha256": "631805325a8b039ecb190945d4db3a45a55f0cd7d7635f91bfa377422375009c",
+          "bytes": 2149
+        },
+        "installed-context-tests/result.json": {
+          "sha256": "92e7d0f707dade64a149b1fa2f5d16e663baaa3c8c87d9f48c751d2700a0af5b",
+          "bytes": 941
+        },
+        "installed-context-tests/production-imports.json": {
+          "sha256": "e7fa67177b02fe92572ecff17957ada263e9393216c8c0ea7dd72c43c110649c",
+          "bytes": 53162
+        }
+      }
+    },
+    "source_compiler_diagnostic": {
+      "record": "verification/source-compiler-relocation-development.json",
+      "physical_materialization_verified": true,
+      "retired_path_c_compilation_verified": true,
+      "observed_link_inputs_restricted_to_sdk_and_retained_object": true,
+      "source_sdk_admitted": false
+    },
+    "completed_guest_retirement": {
+      "terminal": {
+        "exit_code": 0,
+        "expired": false,
+        "seconds": 2964.023698416073
+      },
+      "normal_shutdown_requested": true,
+      "qemu_absent": true,
+      "retained_runtime_sdk_data_and_evidence_preserved": true
+    }
+  }
+}

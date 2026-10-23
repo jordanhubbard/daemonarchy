@@ -5,7 +5,8 @@ diagnostic is not a validated workaround or an automatically applied setting.
 
 ## MSI Raider 18 HX AI A2XWIG: early installer reset
 
-Status: **boot blocked; cause unresolved**. Reported 2026-10-15.
+Status: **boot blocked; cause unresolved**. Reported 2026-10-15; boot video
+reviewed 2026-10-18.
 
 | Identification | Tested configuration |
 | --- | --- |
@@ -19,16 +20,65 @@ Status: **boot blocked; cause unresolved**. Reported 2026-10-15.
 | Images reproducing the failure | Daemonarchy 1.0.1 and 1.1.0-preview.11 |
 
 Both installer images start booting from USB and then reset very early during
-kernel startup/probing, returning to Windows. No panic backtrace or final probe
-line has been captured. The behavior predates preview.11. Desktop and NVIDIA
-driver qualification have not been reached.
+kernel startup/probing, returning to Windows. The behavior predates preview.11.
+The subsequently supplied video ends its readable output with
+`atrtc0: Warning: Couldn't map I/O.` and then shows a blank display, without a
+visible panic or backtrace. The exact image and loader settings for that video
+still need identification. Desktop and NVIDIA driver qualification have not been
+reached.
 
 The operator is using this same laptop for the current test conversation;
 rebooting it into a USB test interrupts that session. Diagnostic instructions
 should be available before leaving Windows. Windows machine/account identifiers
 are unnecessary for identifying this quirk.
 
-### Pending diagnostic comparisons
+### RTC comparison prompted by the video
+
+The final visible device is the legacy AT real-time clock. In the inspected
+[FreeBSD driver](https://github.com/freebsd/freebsd-src/blob/df615735960370255d3acc4ac2a6f4fd297b7461/sys/x86/isa/atrtc.c#L474),
+the failed resource allocation prints this warning and continues into CMOS
+register access. The warning itself is not a panic or proof of the reset cause.
+The driver also exposes `hw.atrtc.enabled`; setting it to zero rejects its probe.
+
+On one boot of the same image, enter these commands at the loader prompt:
+
+```text
+set hw.atrtc.enabled=0
+set kern.panic_reboot_wait_time=-1
+set debug.trace_on_panic=1
+boot -v
+```
+
+This is a temporary diagnostic, not an automatic hardware quirk or a validated
+fix. Record whether it reaches later device probes or the installer, hangs, or
+resets again; preserve any new final line. Keep the image and other settings the
+same so the comparison tests RTC attachment. See the
+[dated video analysis](testing-1.1-hardware-observations.md#msi-startup-video-reviewed-2026-10-18).
+
+### RTC-disabled result and next comparison
+
+The follow-up `IMG_2157.MOV` visibly uses the RTC-disable and panic settings
+above. It advances to non-PnP ISA probing, ending at `sc0 failed to probe on isa1`
+before the display blanks; no panic or backtrace is visible. RTC exclusion
+changes progress but does not fix boot. Repeated Intel SPMC power-state constraint
+format warnings supply another investigation lead; deferred ACPI task messages
+and the final unmatched syscons probe do not establish fatal errors.
+
+For a separate boot of that same artifact, retain the three settings above and
+add this single subsystem exclusion before `boot -v`:
+
+```text
+set debug.acpi.disabled="spmc"
+```
+
+This bypasses the System Power Management Controller driver, leaving other ACPI
+subsystems enabled. The operator reports no difference with this exclusion; no
+new video/log independently verifies the exact stopping point. It is not a
+default or demonstrated fix. A separate pending single-CPU comparison removes
+`debug.acpi.disabled`, retains RTC exclusion and the panic flags, and sets
+`kern.smp.disabled=1`. See the [follow-up analysis](testing-1.1-hardware-observations.md#msi-rtc-disabled-follow-up-video-2026-10-18).
+
+### Other pending diagnostic comparisons
 
 1. Boot the checksum-verified stock October 12 FreeBSD mini-memstick image;
    record the outcome separately from Daemonarchy.

@@ -6,6 +6,7 @@ _build/
 
 # Runtime mutex; authored lineage and Component locks remain tracked
 .literate/repository-lineage.lock
+.literate/conversion-authority.lock
 
 # Local skill evaluation reports
 reports/skillevaluator-*

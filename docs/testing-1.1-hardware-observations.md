@@ -14,6 +14,10 @@ matrix. Record the exact image and last visible boot message when available.
 | MSI Raider 18 HX, RTX 5080 | preview.11 and 1.0.1 USB boot, reported 2026-10-15 | Both images reset very early during kernel startup/probing and return to Windows; exact last message not yet captured | Failure predates preview.11; installer boot failed and NVIDIA driver/session tests were not reached |
 | T2 MacBook Pro | Development USB / installed-system investigation, 2026-10-15 | Black screen; internal keyboard unavailable in single-user mode; explicitly preloading `apple_bce` produced a queue-registration panic | Unqualified; original black-screen cause and exact panic backtrace unresolved |
 
+The later [MSI startup video](#msi-startup-video-reviewed-2026-10-18) supplies a
+last visible probe line for a boot whose exact image is still unidentified. It
+does not retroactively identify the final line of either October 15 test.
+
 For the MSI comparison, the preview.10 and preview.11 ISO payloads were mounted
 read-only on FreeBSD and the following files compared byte for byte by SHA-256:
 
@@ -57,11 +61,98 @@ SHA-256: `9127c94970ca11e6e44c582a7cab928851f73fd2476e94471ee1456d63990e14`.
 The compressed download also matched its published checksum. This image is
 available for an operator boot comparison; no MSI result with it is recorded.
 
+## MSI startup video reviewed 2026-10-18
+
+The operator supplied `IMG_2155.MOV`, a 12.2-second, 1920×1080 recording.
+Its SHA-256 is
+`ed681d0b4ff7f41a34f732d733423ce0dfc30c7b67c7f3035da5da62aacec8d0`.
+The original movie and extracted frames remain private; no raw media is committed.
+The image/version and any loader overrides used for this recording are pending
+operator identification.
+
+Readable output shows 24 CPUs, the AP launch list, EFI real-time clock
+registration, and HPET counter/event-timer registration. The last visible lines
+are:
+
+```text
+atrtc0: <AT realtime clock> port 0x70-0x77 irq 8 on acpi0
+atrtc0: Warning: Couldn't map I/O.
+```
+
+Frame inspection around the transition shows the same warning followed by a
+blank display at approximately 7.6 seconds. No panic, trap, backtrace, subsequent
+probe, firmware logo or Windows boot is visible before the recording ends. This
+establishes the last captured console output; the movie alone cannot distinguish
+a reset, power loss or loss of video. Earlier operator reports of a reset remain
+separate evidence.
+
+The inspected upstream `atrtc.c` is byte-identical between current main and its
+[last-changing commit df615735](https://github.com/freebsd/freebsd-src/blob/df615735960370255d3acc4ac2a6f4fd297b7461/sys/x86/isa/atrtc.c).
+`atrtc_attach()` prints the warning when its I/O resource allocation fails, then
+calls `atrtc_start()`, which writes RTC control registers through legacy I/O.
+This makes RTC attachment a focused diagnostic candidate, not a confirmed cause.
+`hw.atrtc.enabled=0` makes `atrtc_probe()` refuse attachment. The
+[one-boot comparison](hardware-quirks.md#rtc-comparison-prompted-by-the-video)
+uses that existing tunable without changing the kernel or installing a default
+workaround. The follow-up below records the RTC-disabled comparison; it still fails to reach the installer.
+
+## MSI RTC-disabled follow-up video, 2026-10-18
+
+`IMG_2157.MOV` is a 14.5-second, 1920x1080 recording, 16,139,826 bytes,
+SHA-256 `ccb9f6f3a04fd66af93da47feb13143f24352ec13c01b9a982de68c7eec1d275`.
+The loader visibly sets `hw.atrtc.enabled=0`,
+`kern.panic_reboot_wait_time=-1`, `debug.trace_on_panic=1`, then uses `boot -v`.
+The exact installer artifact/version remains unidentified. Raw media and frames
+remain private in the controller's temporary evidence directory.
+
+This boot advances beyond the earlier RTC stopping point. It enumerates PCI and
+ACPI devices, reports repeated `acpi_spmc0: Intel: Wrong package length` messages
+for power-state constraint packages, enables ACPI GPEs and reaches non-PnP ISA
+probing. The last readable lines are:
+
+```text
+isa_probe_children: probing non-PnP devices
+sc0 failed to probe on isa1
+```
+
+The display subsequently blanks around 12.8 seconds, without a visible panic,
+backtrace, firmware logo or Windows startup. The operator reports another boot
+failure; the movie alone does not distinguish reset, power loss and video loss.
+Disabling RTC attachment changes observed progress but does not qualify a fix or
+establish RTC as the sole cause.
+
+Source inspection at FreeBSD `bdaddb76ef1b9d5537f4a76cff01cdb4795804a4`
+shows that `isa_probe_nomatch()` merely reports an unmatched device. The final
+`sc0` line does not establish a syscons crash or identify the next child.
+`AcpiOsExecute: task queue not started` is a verbose deferred-work message that
+returns success. The Intel SPMC constraint parser skips packages whose element
+count differs from its expected three; this is evidence of a firmware/driver
+format mismatch, not proof that parsing caused the later failure.
+
+The next targeted one-boot comparison retains the three visible settings above
+and adds `set debug.acpi.disabled="spmc"` before `boot -v`. The driver explicitly
+honors this subsystem exclusion. The operator subsequently reports no difference
+with the exclusion. No follow-up movie or kernel log was supplied, so the exact
+last line and effective driver exclusion are not independently verified. This
+negative comparison weakens SPMC attachment as the immediate failure trigger; it
+does not validate the rejected power-state constraints. It does not disable all
+ACPI or qualify a permanent workaround. If failure persists, per-child probe
+entry/exit instrumentation can identify the unreported operation after the final
+ISA message. A separate pending comparison returns to the RTC-disabled baseline,
+removes `debug.acpi.disabled`, and adds `kern.smp.disabled=1` to test the
+multiprocessor configuration. A changed result would implicate CPU/interrupt or
+concurrency-dependent behavior without identifying a particular driver; an
+unchanged result would motivate probe entry/exit and SYSINIT instrumentation.
+No single-CPU result or instrumented-kernel build is claimed. Relevant source: [ISA probes](https://github.com/freebsd/freebsd-src/blob/bdaddb76ef1b9d5537f4a76cff01cdb4795804a4/sys/isa/isa_common.c),
+[ACPI deferred work](https://github.com/freebsd/freebsd-src/blob/bdaddb76ef1b9d5537f4a76cff01cdb4795804a4/sys/dev/acpica/Osd/OsdSchedule.c),
+and [SPMC](https://github.com/freebsd/freebsd-src/blob/bdaddb76ef1b9d5537f4a76cff01cdb4795804a4/sys/dev/acpica/acpi_spmc.c).
+
 ## MSI comparison reports
 
 The operator subsequently reproduced the early reset with Daemonarchy 1.0.1.
-The observed failure therefore predates preview.11. A stock FreeBSD boot result
-and a final probe line remain missing.
+The observed failure therefore predates preview.11. At that checkpoint, a stock
+FreeBSD boot result and a final probe line were missing; the later video above
+adds console evidence for its separately scoped boot.
 
 Windows System Information supplied by the operator identifies:
 

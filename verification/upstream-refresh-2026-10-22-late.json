@@ -1,0 +1,77 @@
+{
+  "schema": "daemonarchy/upstream-refresh-development@1",
+  "observed_utc": "2026-10-22T18:13:46.741588+00:00",
+  "scope": "Upstream source status and additional ports refresh; native release qualification remains open",
+  "sources": {
+    "upstream_revision": "775e421dc38f18fa6b7fdc7b214a013cca44b58b",
+    "owned_main_revision": "775e421dc38f18fa6b7fdc7b214a013cca44b58b",
+    "head": "b051901b0ff1e60080e4194d25906140050604b1",
+    "new_upstream_commits": 0,
+    "integration_review": "https://github.com/jordanhubbard/daemonarchy-src/pull/9",
+    "integration_status": "open; exact-head macOS cross-builds queued",
+    "checks": {
+      "run": "https://github.com/jordanhubbard/daemonarchy-src/actions/runs/39818544271",
+      "status": "queued",
+      "conclusion": "",
+      "cells": [
+        {
+          "name": "amd64 ubuntu-22.04 (clang-15)",
+          "status": "completed",
+          "conclusion": "success"
+        },
+        {
+          "name": "aarch64 macos-latest (clang-18)",
+          "status": "queued",
+          "conclusion": ""
+        },
+        {
+          "name": "aarch64 ubuntu-24.04 (clang-18)",
+          "status": "completed",
+          "conclusion": "success"
+        },
+        {
+          "name": "amd64 macos-latest (clang-18)",
+          "status": "queued",
+          "conclusion": ""
+        },
+        {
+          "name": "amd64 ubuntu-24.04 (clang-18)",
+          "status": "completed",
+          "conclusion": "success"
+        },
+        {
+          "name": "aarch64 ubuntu-22.04 (clang-15)",
+          "status": "completed",
+          "conclusion": "success"
+        }
+      ]
+    },
+    "native_world_kernel_qualification": false
+  },
+  "ports": {
+    "previous_revision": "17bebe849ef230be8b33b2149edb606ca62dfa21",
+    "previous_upstream": "ca96d11f77ad222de8d59670235aea3ae753486c",
+    "upstream_revision": "4df6b05e0803ae455de700ec72fbd9b5042852b4",
+    "head": "423ce82d26f2cef47e07caea85a2222f9b0153cd",
+    "upstream_commits": 27,
+    "upstream_paths": 57,
+    "preserved_downstream_paths": 64,
+    "complete_downstream_delta_preserved": true,
+    "exact_upstream_delta_imported": true,
+    "blobs_and_modes_preserved": true,
+    "whitespace_exit_code": 2,
+    "repository": "https://github.com/jordanhubbard/daemonarchy-ports",
+    "integration_review": "https://github.com/jordanhubbard/daemonarchy-ports/pull/16",
+    "integration_revision": "e132ac13a895fa6b35f4c541543c99f96155f094",
+    "integration_status": "merged",
+    "hosted_workflows_configured": false,
+    "native_changed_port_tests": false,
+    "native_clean_bulk": false,
+    "whitespace_warnings": 6,
+    "whitespace_matches_verbatim_upstream": true
+  },
+  "preceding_checkpoint": "verification/upstream-refresh-2026-10-22-evening.json",
+  "active_workspace_selection_changed": false,
+  "published_artifacts_changed": false,
+  "native_release_inputs_admitted": false
+}

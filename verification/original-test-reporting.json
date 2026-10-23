@@ -1,0 +1,38 @@
+{
+  "schema": "daemonarchy/original-test-reporting-checkpoint@1",
+  "work_item": "COMP-001",
+  "status": "report-producer-qualified",
+  "source_repository": "https://github.com/jordanhubbard/daemonarchy-src",
+  "source_revision": "0ece875bdea68df7aae5574905b25125ad0871ba",
+  "producer": "tools/daemonarchy/report-kyua.py",
+  "producer_sha256": "7bc012d04dd9bad03842a7ff7abdcf8db29fc02d62c36814b0d4ccbc27012dc8",
+  "tests_sha256": "afead5fd544219d0dbac980ed4cdb750b5d2b9880fc37507bb17a92634e8375a",
+  "original_schema": "contrib/kyua/store/schema_v3.sql",
+  "original_schema_sha256": "c5ef9e69fe200f66aeced0a6bd65931b4078a4b3c064f5b06dd19ff99a86b484",
+  "native_checks": {
+    "count": 13,
+    "passed": 13,
+    "skipped": 0,
+    "failed": 0,
+    "elapsed_seconds": 1.721,
+    "log_sha256": "1ffdf8480a5f7ef6f029793464f4324cc88ab044c6d4b5d8b021419139cf7b18",
+    "actual_plain_kyua_run": true,
+    "actual_atf_expected_failure": true,
+    "actual_atf_root_requirement_skip": true
+  },
+  "outcomes": {
+    "passed": "passed",
+    "failed": "failed",
+    "broken": "failed",
+    "expected_failure": "failed",
+    "skipped": "skipped with exact original reason; no permission granted"
+  },
+  "canonical_units_admitted": 0,
+  "limitations": [
+    "Tests qualify result translation and refusal using native fixtures, not original unit compilation.",
+    "The complete original parser and truncate suites have not run against newly compiled products.",
+    "Privileged original cases still require the disposable privileged acceptance environment.",
+    "The reporter/runtime, original program, inventory, database and both reports must join current locked lifecycle custody.",
+    "This unsigned checkpoint and the report producer do not grant lifecycle or package admission."
+  ]
+}

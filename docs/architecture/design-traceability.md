@@ -12,8 +12,8 @@ buildable or generated artifacts. Existing source remains implementation authori
 | G3 | [Updates](https://github.com/jordanhubbard/daemonarchy/blob/main/components/updates/component.md) | Adoption/checkouts helpers and external desktop boot-environment tools | ABI refusal, preserved package/user choices, actual update/rollback/return |
 | G4 | [Diagnostics](https://github.com/jordanhubbard/daemonarchy/blob/main/components/diagnostics/component.md) | Pairing/rescue tools, observers and controller receiver | Approval, revocation, bounds, identity, abrupt loss and owned cleanup |
 | G5 | [Verified boot](https://github.com/jordanhubbard/daemonarchy/blob/main/components/verified-boot/component.md) | secureboot build/sign/bundle/maintenance tools and retained source patches | Exact trust closure, actual enforcement/rejection and maintenance/recovery |
-| G6 | [Release](https://github.com/jordanhubbard/daemonarchy/blob/main/components/release/component.md) | ISO/feed/checkouts assembly and publication scripts | Exact commit/artifacts, scoped native/VM/hardware evidence and explicit exceptions |
-| G3, G7 | [Package engine](https://github.com/jordanhubbard/daemonarchy/blob/main/components/package-engine/component.md) | Planned; current installer still uses its existing package operations | Complete DAG, coordinated parallel installation, failure/retry/recovery and measured performance |
+| G6, G8, G9 | [Release](https://github.com/jordanhubbard/daemonarchy/blob/main/components/release/component.md) | ISO/feed/checkouts assembly, pinned-tree discovery and publication scripts; planned complete source/ports Component execution | Full-tree ownership, per-unit pkg provenance, variant-aware selected closures and measured build/packaging improvement; exact artifacts and native/VM/hardware evidence |
+| G3, G7 | [Package engine](https://github.com/jordanhubbard/daemonarchy/blob/main/components/package-engine/component.md) | Pinned catalogue graph collector; current installer uses its existing package operations | Complete release DAG, native solver acceptance, coordinated parallel installation, failure/retry/recovery and measured performance |
 
 ## Source custody and repository boundaries
 
@@ -32,10 +32,23 @@ compatibility identity is also recorded from the qualified release selection;
 none of these identities is inferred from an ambient checkout. Complete native
 input admission, including toolchains and firmware, remains unfinished work.
 
-FreeBSD sources/ports, Omarchy, firmware and native toolchains remain external
-inputs. Keep their normal upstream synchronization and contribution procedures.
-Do not subject their complete histories to generated-source authority or silently
-convert a moving branch into a qualified dependency.
+FreeBSD source and ports implementations remain upstream-maintained retained
+inputs with their normal synchronization and contribution procedures. Their
+complete selected trees must be represented as canonical Components under G8
+and [COMP-001](../roadmap/freebsd-components.md), including shared/support inputs
+and unselected origins; opaque whole-tree wrappers are insufficient. Preserve
+source authority and pin actual selections. Neither catalog registration nor
+a moving branch is a qualified dependency or native acceptance result.
+
+The owned [daemonarchy-src build workflow](../source-builds.md) prepares pinned
+FreeBSD world/kernel/source packages and installer sets on the native build
+worker. Its unsigned build records and controller tests do not qualify framework
+execution, installation, VM boot, module compatibility, signing or hardware.
+SRC-001 owns preparation; ADOPT-002 and RELEASE-001 retain their acceptance gates.
+PERF-001 permits a replacement build system while preserving source/ABI and
+dependency correctness. The pinned-tree discovery helper supplies diagnostic
+inputs, with [producer/result identities](../../verification/native-tree-discovery.json);
+it does not fabricate canonical contracts, package products or receipts.
 
 ## Cross-component invariants
 
@@ -79,13 +92,19 @@ instead authors the supported project/Component contracts in place and explicitl
 selects root repository authority through the reviewed `litai reparent none`
 operation. No converted-stage or regenerated-source evidence is fabricated.
 
-The installed CLI is Literate AI 1.3.0. Its retained-project handler provides
-planning and explicitly refuses unqualified Standard execution. Framework issue
-[#22](https://github.com/jordanhubbard/literate-ai/issues/22) is closed as completed,
-but that tracker state is not execution evidence for this installed path. ADOPT-002
-must reconcile the executable capability, native FreeBSD driver and mixed-input
-custody before binding release enforcement. Existing publication commands remain
-unchanged; this adoption does not release a new product version.
+The stable installed CLI remains Literate AI 1.3.0 from the 1.1.1 system. A
+separate `litai-dev` on the HP uses the exact reviewed framework wheel for the
+source fork's Standard binding. It validates `/usr/src` authority and three
+locks; no retained test receipt or native execution qualification exists.
+Framework issue [#22](https://github.com/jordanhubbard/literate-ai/issues/22)
+tracks the remaining executable capability and evidence gates. ADOPT-002 must
+qualify native FreeBSD execution and mixed-input custody before release
+enforcement changes. This adoption does not release a new product version. The reviewed public
+`project adopt-original` operation now selects original source authority in place
+on the product, preserving 272 tracked entries and adding only authority metadata
+and its evidence/mutex. This is neither retained lifecycle admission nor
+regenerative conversion authority. Explicit complete native manifests/profiles
+remain required for executable work.
 
 
 ## Current tooling and gate interpretation
@@ -107,7 +126,7 @@ the public repository paths so mutable resolver mutexes are not documentation
 assets. Source
 indexing is disabled. Future framework updates must preserve these boundaries.
 
-<!-- literate-ai:authority-reviewed sha256:9ab990be6ed019a7921301b25711ed79bd3345e115d9a5a5152da7eb416f69f6 -->
+<!-- literate-ai:authority-reviewed sha256:afe9aa546cd7b43644626c70aac0482ed737caba325f01e48ceec6805aada914 -->
 
 
 ## Rechecking preservation

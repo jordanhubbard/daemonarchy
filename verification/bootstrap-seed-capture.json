@@ -1,0 +1,66 @@
+{
+  "schema": "daemonarchy/bootstrap-seed-checkpoint@1",
+  "work_item": "COMP-001",
+  "status": "captured-inputs-only",
+  "source_repository": "https://github.com/jordanhubbard/daemonarchy-src",
+  "source_revision": "ed5050835b9c5f2c918666228f36ac1fee2e5c42",
+  "producer": "tools/daemonarchy/capture-seed.py",
+  "producer_sha256": "8556b43f532b89f15bc1f2adcf3c9def3691e08fdb1f7b219882249d9879eddb",
+  "reviewed_inventory_sha256": "74e7e4ba1241de799e24296633644b8ac1a67b7196ce8e3cd65d7b2506bb1864",
+  "native_capture": {
+    "status": "copied-seed",
+    "inventory_entries": 4402,
+    "regular_files": 4114,
+    "regular_file_bytes": 237147193,
+    "symlinks": 15,
+    "log_sha256": "7d1ada01630e20f9739107fa2cb42ec832e7348412558ac218ebe0a195242ca8",
+    "native_refusal_checks": 10,
+    "native_refusal_check_seconds": 1.234,
+    "native_refusal_check_failures": 0,
+    "native_refusal_check_skips": 0
+  },
+  "framework_input_custody": {
+    "status": "source-and-promoted-tree-reverified",
+    "framework_revision": "ab15e04e9fb6aadadf26c9a8085640eec275edcc",
+    "manifest_identity": "sha256:5219f23b38a181354c13eb88bffb7cfb9407d5f50ab9e060c2b37de54572e377",
+    "members": 4129,
+    "directories": 279,
+    "regular_file_bytes": 237147193,
+    "symlinks": 15,
+    "elapsed_ms": {
+      "promoted-tree-reverified": 197530,
+      "source-reverified": 103808
+    },
+    "result_sha256": "f0e12d0f78c535a5ab427a345c4764fe6e42636cf0c17743d088833961ac989f",
+    "log_sha256": "13fbed14b1567ced28d1f97dc72503193fa1acac5141a1b8d5a8d1569c219a2f",
+    "earlier_attempts": [
+      {
+        "status": "observation-timeout",
+        "framework_revision": "d833ebd0fadced1bd1648f10f25004f3454e32dc",
+        "deadline_seconds": 300,
+        "exit_code": 124,
+        "qualified": false,
+        "next": "Repeat with stage timings and a longer bounded observation; retain the failed attempt."
+      },
+      {
+        "capture_api_verified_ms": 458188,
+        "error": "diagnostic float timing rejected by canonical JSON",
+        "exit_code": 1,
+        "promoted_tree_reverified_ms": 552646,
+        "log_sha256": "b8aaad37846b1fab401f9581b0e8d7b50f20b787d90aaa7f6c306a5165926bba"
+      }
+    ],
+    "sdk_admitted": false,
+    "component_admitted": false
+  },
+  "source_build_provenance": "unknown-host-bootstrap",
+  "sdk_admitted": false,
+  "canonical_units_admitted": 0,
+  "limitations": [
+    "Copied installed compiler bytes do not establish original compiler build provenance.",
+    "The seed is not a newly built LLVM Component or admitted native SDK.",
+    "Relocated compiler resources, sysroot and linker-script resolution remain unqualified.",
+    "Original-source per-unit build, tests, pkg and incremental lifecycle remain open.",
+    "This unsigned checkpoint is not a lifecycle receipt or release acceptance."
+  ]
+}

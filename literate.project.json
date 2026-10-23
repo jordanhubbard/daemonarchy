@@ -36,10 +36,19 @@
     },
     "artifact_publication": "metadata-only"
   },
-  "agent_development_workflow": "dev",
-  "repository_policy": {
-    "default_branch": "main",
-    "schema": "literate-ai/repository-policy@1"
+  "lifecycle_driver": {
+    "schema": "urn:literate-ai:schema:v2:project-lifecycle-driver",
+    "binding": "standard",
+    "framework_distribution_identity": {
+      "schema": "urn:literate-ai:schema:v1:content-identity",
+      "algorithm": "sha256",
+      "digest": "a720a1bea3a4130162ce38773e21ea3b42e435cf41d31c44357d34f4633ea12f"
+    },
+    "policy_identity": {
+      "schema": "urn:literate-ai:schema:v1:content-identity",
+      "algorithm": "sha256",
+      "digest": "a5ca0d6d13daff0199f218c5e4af723a2cec87b927e75dd3a731c511b5d85ac7"
+    }
   },
   "test_receipt": "verification/current.json",
   "test_receipt_policy": {
@@ -61,5 +70,24 @@
       "workspace-admission"
     ],
     "minimum_test_count": 1
+  },
+  "repository_policy": {
+    "schema": "literate-ai/repository-policy@1",
+    "default_branch": "main",
+    "main_state": "free",
+    "pre_release_version": null,
+    "default_component": null,
+    "sample_component_roots": [
+      "samples"
+    ],
+    "work_queue": "docs/roadmap/active-work.md",
+    "remote": "origin",
+    "merge_method": "merge",
+    "pull_request_labels": [],
+    "release_engineer_source": "README.md#release-engineers",
+    "release_ci_workflow": "CI",
+    "patch_authority": "strict",
+    "writers": [],
+    "branch_gc_minimum_age_days": 7
   }
 }

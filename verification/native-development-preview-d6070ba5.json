@@ -1,0 +1,182 @@
+{
+  "schema": "daemonarchy/native-development-preview@1",
+  "status": "installed-native-runtime-qualified-project-acceptance-pending",
+  "admitted": false,
+  "framework_revision": "d6070ba530a743f323e12e23b37b2c7840d49a3b",
+  "framework_review": "https://github.com/jordanhubbard/literate-ai/pull/82",
+  "framework_ci_run": 39415313837,
+  "framework_ci_complete": false,
+  "wheel_sha256": "c36be2bb76cfd41ca0e5e185eeb95e3f73e6c4f2fd327e28e9c53241e59d7d7a",
+  "wheel_bytes": 3698108,
+  "distribution_identity": "sha256:45a9c62db237a2b5facee35f992b33fde07b8643c44eccf94f6a654debb633e4",
+  "distribution_members": 1204,
+  "standard_policy_identity": "sha256:a5ca0d6d13daff0199f218c5e4af723a2cec87b927e75dd3a731c511b5d85ac7",
+  "local_regression": {
+    "selected": 1907,
+    "passed": 1865,
+    "skipped": 42,
+    "failed": 0,
+    "seconds": 1043.891,
+    "report_sha256": "aeba051ec5d0a178f3a5451c75b4220e360efa9c7a4ba1de4483e6945f9a0277",
+    "log_sha256": "81aae3d3b81d09691cf5cf879a76d207bda549b0d399a0344f62c976d4851c83"
+  },
+  "installed_wheel_qualification": {
+    "passed": true,
+    "wheel_manifest_identity": "sha256:5893aaec223de2727f7e09c5e54c71dab77921367a745f50d9d91914e04cc09e",
+    "log_sha256": "5b8e39dac36cde6cabe68aaebd6690070a0315235b2d55ee950272c0b6362927"
+  },
+  "controller_bootstrap": {
+    "dependency_closure_identity": "sha256:62fc4bfb7a1c6f4ea6699ea87abb7e1520aae8d3b10cca1af43ca0b37c3ab687",
+    "installed_distributions": 36,
+    "verified_wheelhouse": true,
+    "source_review_rebind_plan": "sha256:f274b56021aa1800589687b631fe41349fdff5ebf12a058c8dab0fc153bb95a0",
+    "evidence_kinds_preserved": 16,
+    "native_rebind_applied": true
+  },
+  "native_dependency_production": {
+    "status": "source wheels built and verified wheelhouse bootstrapped",
+    "framework_wheel_verified": true,
+    "rust": "1.98.1",
+    "compiler": "FreeBSD Clang 21.1.8",
+    "cargo_build_jobs": 2,
+    "source_built_toolchain_admitted": false,
+    "wheelhouse_qualified": true,
+    "exit_code": 0,
+    "seconds": 991.19,
+    "stdout_sha256": "a961454058651432102892da6b6b0bf181a48d8552bb10e2f119b25083e75650",
+    "stderr_sha256": "8a1bf2b2349ced0f9a56930a29385aa7e21b37e72de379c8d1e1232eb1069bd7",
+    "dependency_closure_identity": "sha256:76baaf5f2c670b5178b7896866d2a157de2730e2443ba279bde1b46e832372c7",
+    "installed_distributions": 37
+  },
+  "disposable_acceptance_guest": {
+    "booted": true,
+    "tools_aligned": true,
+    "root_uid": 0,
+    "secondary_uid": 2001,
+    "secondary_gid": 2001,
+    "image_sha256": "96fc03aa32be69a406c50db17927019af1f755b3074de44f8aabcb55c5330428",
+    "decompressed_base_sha256": "a0967586dfd3027d41b94807e1a4b7e86f57169c65757b0d70a467ff43613f32",
+    "base_image_url": "https://download.freebsd.org/snapshots/VM-IMAGES/16.0-CURRENT/amd64/20261019/FreeBSD-16.0-CURRENT-amd64-BASIC-CLOUDINIT-20261019-041802b362aa-290219-ufs.qcow2.xz",
+    "physical_acceptance": false,
+    "firstboot_updates_disabled": true,
+    "disk_virtual_gib": 20,
+    "backend_probe": {
+      "schema": "daemonarchy/native-scoped-acl-capability@1",
+      "status": "isolated-backend-probe-only",
+      "framework_feature_implemented": false,
+      "acceptance_qualified": false,
+      "identity": {
+        "name": "litaitest",
+        "uid": 2001,
+        "gid": 2001
+      },
+      "backend": "FreeBSD UFS POSIX.1e ACLs explicitly enabled on disposable guest",
+      "checks": {
+        "private_default_denied": true,
+        "selected_read_allowed": true,
+        "unrelated_read_denied": true,
+        "ungranted_write_denied": true,
+        "new_unrelated_read_denied": true,
+        "revoked_read_denied": true,
+        "restored_private_default_denied": true
+      },
+      "preexisting_resource_acls_restored_exactly": true,
+      "resources_compared": 4,
+      "payload_unchanged": true,
+      "log_sha256": "1fe74c98cf9f200bbdb871cccc80f6be92b644667479ebf97e1f7ab0fae45d7e",
+      "script_sha256": "8106f45daad1915f299b76be7f9a511b16ed530e3a698ab34e4691756b05a49b",
+      "default_backend_refusal_retained": true,
+      "failed_probes_retained": true,
+      "remaining": [
+        "typed worker and disposable-allocation authority",
+        "descriptor-based custody and permission/identity currentness",
+        "retained workspace and receipt integration",
+        "complete original native suite and independent acceptance"
+      ]
+    },
+    "framework_workspace_grants_implemented": false,
+    "original_privileged_suite_complete": false,
+    "system_tests_uid": 977,
+    "system_tests_account_changed": false,
+    "installed_runtime": {
+      "verified_wheelhouse": true,
+      "dependency_closure_identity": "sha256:76baaf5f2c670b5178b7896866d2a157de2730e2443ba279bde1b46e832372c7",
+      "installed_distributions": 37,
+      "runtime_probe": {
+        "schema": "daemonarchy/installed-runtime-probe@1",
+        "passed": true,
+        "python": "3.12.15 (main, Oct 15 2026, 01:08:57) [Clang 21.1.8 (https://github.com/llvm/llvm-project.git llvmorg-21.1.8-0-g2078da",
+        "adapter_sha256": "6811499e92de9342cd8e316ae65dc2f4316acb5610b9072392ada6e7b5245e02",
+        "ed25519_sign_verify": true
+      },
+      "runtime_probe_sha256": "cdeaf9dd1dbf0ba9a7a7dcd2475b42a13af9069c681bc7530d94359250513d32"
+    }
+  },
+  "default_cli_changed": false,
+  "development_alias_changed": false,
+  "active_workspace_selection_changed": false,
+  "cut_over_complete": false,
+  "limitations": [
+    "Exact framework CI remains queued; installed native focused checks do not establish full FreeBSD platform or retained-project acceptance.",
+    "Disposable allocation authority, descriptor-based ACL custody and lifecycle/receipt integration remain unimplemented.",
+    "Original privileged/unprivileged tests, independent acceptance and per-unit package products remain open.",
+    "Complete source/ports catalogs, compiler SDK provenance and equivalent full build/package/ISO qualification remain open."
+  ],
+  "native_installed_checks": {
+    "schema": "daemonarchy/native-installed-framework-checks@1",
+    "framework_revision": "d6070ba530a743f323e12e23b37b2c7840d49a3b",
+    "distribution_identity": "sha256:45a9c62db237a2b5facee35f992b33fde07b8643c44eccf94f6a654debb633e4",
+    "distribution_members": 1204,
+    "native_crypto_signature_verified": true,
+    "imported_installed_runtime": true,
+    "selected": 30,
+    "failed": 0,
+    "errors": 0,
+    "skipped": 1,
+    "passed": 29,
+    "seconds": 6.101,
+    "log_sha256": "fff4b8079d473ba6c5fe888c2f3be789238ec7923dfa9b91ed2615d73e242dc6",
+    "skip_reasons": [
+      "requires an explicitly selected Git source corpus"
+    ],
+    "ok": true,
+    "retained_project_acceptance": false
+  },
+  "native_installed_input_verification": {
+    "schema": "daemonarchy/retained-input-verification-comparison@1",
+    "manifest_identity": "sha256:b3b95f194a006f04e98fe84394a7be53ef620cd9f1c075145889f16f952d9761",
+    "members": 5270,
+    "adapter_sha256": "6811499e92de9342cd8e316ae65dc2f4316acb5610b9072392ada6e7b5245e02",
+    "platform": "FreeBSD",
+    "python": "3.12.14",
+    "samples": [
+      {
+        "seconds": 10.240401,
+        "cpu_seconds": 9.959551
+      },
+      {
+        "seconds": 8.303648,
+        "cpu_seconds": 8.261736
+      },
+      {
+        "seconds": 9.227105,
+        "cpu_seconds": 9.180532
+      }
+    ],
+    "median_seconds": 9.227105,
+    "whole_build_measurement": false,
+    "baseline_median_seconds": 19.794351,
+    "conditions": "Three warm samples per implementation; host and filesystem cache state not controlled."
+  },
+  "native_source_rebind": {
+    "source_revision": "949a40c88544a6a64bca0f8877f38ed77f71e656",
+    "plan_identity": "sha256:518ae5edd39c6deddcef78a0a7dffa2d25a7878a06e2c41d735dbbc4569d2e77",
+    "required_evidence_kinds_preserved": 16,
+    "policy_changed": false,
+    "previous_workspaces_preserved": true,
+    "receipt": "missing",
+    "authority_passed": true,
+    "locks_passed": 5,
+    "check_record_sha256": "14adc966fa923677020c41069f88910cb19586c4aa8524675b670bffea34bb1f"
+  }
+}

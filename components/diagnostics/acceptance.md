@@ -23,5 +23,10 @@ complete declarations and external/native gaps are in [the acceptance inventory]
   target, and retain a negative/failure case where applicable.
 - **Observation identity:** demonstrate the stated requirement on its actual supported
   target, and retain a negative/failure case where applicable.
-- **Cleanup and future transport:** demonstrate the stated requirement on its actual supported
-  target, and retain a negative/failure case where applicable.
+- **Cleanup and wired boot transport:** retain actual FreeBSD EFI build identities,
+  VM and physical NIC evidence for output, variable inspection/update and boot
+  control. Verify forged/replayed/malformed/oversized input refusal, retransmission
+  without duplicate commands, bounded queues, peer loss/reconnection, missing NIC,
+  local recovery and revocation. Pairing keys and typed input must not enter
+  inspectable loader variables or retained output logs. Document the exact
+  firmware-to-kernel coverage gap; a packet unit test cannot close this scenario.

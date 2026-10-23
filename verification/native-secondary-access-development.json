@@ -1,0 +1,253 @@
+{
+  "schema": "daemonarchy/secondary-access-development@1",
+  "status": "source-level-local-orchestration-and-cleanup-admission-tested-installed-qualification-pending",
+  "installed_feature_qualified": false,
+  "lifecycle_acceptance": false,
+  "source_sdk_admitted": false,
+  "per_unit_packages_qualified": false,
+  "backend": {
+    "framework_revision": "011d52a56682b416304672b5c12015a42fec01f8",
+    "review": "https://github.com/jordanhubbard/literate-ai/pull/87",
+    "module_sha256": "41a6037264cfa6820acd6e48c324d74728d7ba8fff8c1a7b9c64d9c73818f562",
+    "full_regression": {
+      "selected": 1930,
+      "passed": 1879,
+      "skipped": 51,
+      "failed": 0,
+      "seconds": 1015.463,
+      "report_sha256": "62f6a447e2018599605fce03c90bb3e4a4478811e86b63d7ff0cc18dab514da0",
+      "log_sha256": "70945fe918b96527b1eb0a83239d6570f8e32636abbc499da4a5e7c8715fbb1d"
+    },
+    "focused_native": {
+      "schema": "daemonarchy/native-descriptor-acl-tests@1",
+      "source_probe_only": true,
+      "installed_feature": false,
+      "selected": 14,
+      "passed": 13,
+      "skipped": 1,
+      "failed": 0,
+      "errors": 0,
+      "source_sha256": {
+        "backend.py": "41a6037264cfa6820acd6e48c324d74728d7ba8fff8c1a7b9c64d9c73818f562",
+        "test_backend.py": "e2e5fd6e8ad8d40cd9685ccd82a754bea0b0b29855cf409cb0a36d3032b1a814"
+      },
+      "ok": true
+    },
+    "native_probe_checks": {
+      "private_default_denied": true,
+      "selected_read_allowed": true,
+      "unrelated_read_denied": true,
+      "new_child_denied": true,
+      "revocation_denied": true,
+      "exact_cleanup": true,
+      "restored_private_denied": true,
+      "permission_drift_refused": true,
+      "drift_cleanup_refused": true,
+      "drift_original_mode_restored": true,
+      "replacement_inode_unchanged": true,
+      "masked_existing_user_denied_before": true,
+      "new_user_executes": true,
+      "mask_widening_preserves_existing_denial": true,
+      "extended_original_acl_restored": true,
+      "command_failure_cleanup": true,
+      "hardlink_refused": true,
+      "special_file_refused": true,
+      "descriptor_reuse_refused": true,
+      "reused_inode_acl_unchanged": true,
+      "foreign_descriptor_not_closed": true,
+      "enter_drift_body_not_executed": true,
+      "enter_failure_custody_closed": true,
+      "extended_default_acl_restored": true,
+      "root_uid_projection_refused": true,
+      "all_owned_descriptors_closed": true
+    }
+  },
+  "live_scope_prototype": {
+    "part_of_published_framework_revision": false,
+    "checks": {
+      "private_before": true,
+      "selected_read": true,
+      "unrelated_denied": true,
+      "selected_write_denied": true,
+      "fixture_write": true,
+      "new_unrelated_denied": true,
+      "exact_restoration": true,
+      "private_after": true,
+      "fixture_private_after": true,
+      "config_claim_refused": true,
+      "unbound_link_refused": true,
+      "all_descriptors_closed": true
+    },
+    "actual_owned_qemu_inspection": true,
+    "private_authenticated_observation_channel": true,
+    "configuration_claim_alone_refused": true,
+    "resource_owner_source_sha256": "466fd858395120622a60904f81595b262936cd1d79304f2d1ac4cb0887ddb1d9",
+    "allocation_client_source_sha256": "ca33c896c3366b88765b320e9b4b8bada21af90d9426dd9df3ba0531a3abe2be"
+  },
+  "original_suite_with_live_scope": {
+    "passed": 24,
+    "skipped": 0,
+    "failed": 0,
+    "exit_code": 0,
+    "preexisting_acls_restored": true,
+    "accounts_unchanged": true,
+    "payload_unchanged": true,
+    "all_owned_descriptors_closed": true,
+    "fixture_children_remaining": 0,
+    "database_sha256": "8fc5ca49eafc84a8c90072bd52fdcdd0cad85f29e57445294d9f1f775ce1c5af",
+    "report_sha256": "d5de391a49f80e0cdb060938632bd90d7686e2b1e46e3086912ca5ed5e3b0ace",
+    "inventory_sha256": "f27b4e827b42b0d553a8603ad2842a0dd8e95f0f2448890e2eaa89d322f5146e",
+    "runtime": "Guest base Kyua/ATF and libraries, unchanged previously retained compiled products, and a probe-local launcher."
+  },
+  "readonly_view_probe": {
+    "scope": "Isolated two-file/relative-alias capability fixture; not the full captured SDK.",
+    "checks": {
+      "private_before": true,
+      "readonly_mount": true,
+      "nosuid_mount": true,
+      "selected_read": true,
+      "retained_relative_alias_read": true,
+      "backing_private": true,
+      "root_new_file_refused": true,
+      "root_content_write_refused": true,
+      "secondary_new_file_refused": true,
+      "exact_acl_cleanup": true,
+      "mount_removed": true,
+      "source_bytes_unchanged": true,
+      "private_after": true
+    },
+    "mount_command": "mount -t nullfs -o ro,nosuid",
+    "effective_kernel_flags_verified": true,
+    "unmounted_after_probe": true,
+    "direct_helper_failure_preserved": true,
+    "direct_helper_issue": "https://github.com/jordanhubbard/daemonarchy-src/issues/5"
+  },
+  "full_sdk_preparation": {
+    "archive": {
+      "schema": "daemonarchy/bootstrap-archive-inspection@1",
+      "entries": 5493,
+      "symlinks": 28,
+      "payload_bytes": 307792068,
+      "sha256": "d7f36b4f0bd3266df0493cba1b6c9c317905125fd1fa892297e6b5d533cc757d",
+      "complete_internal_link_closure": true,
+      "source_sdk_admitted": false
+    },
+    "guest_import": {
+      "schema": "daemonarchy/bootstrap-guest-import@1",
+      "archive_sha256": "d7f36b4f0bd3266df0493cba1b6c9c317905125fd1fa892297e6b5d533cc757d",
+      "archive_bytes": 311152640,
+      "seconds": 45.198,
+      "ownership_and_permission_projection": "Python tar data filter into a fresh root-owned private directory",
+      "source_sdk_admitted": false
+    },
+    "original_suite_in_full_sdk_view": {
+      "passed": 24,
+      "skipped": 0,
+      "failed": 0,
+      "checks": {
+        "both_readonly_nosuid": true,
+        "captured_sdk_runtime_used": true,
+        "exact_acl_cleanup": true,
+        "mounts_removed": true,
+        "accounts_unchanged": true,
+        "compiled_programs_and_body_unchanged": true,
+        "all_owned_descriptors_closed": true,
+        "fixture_children_empty": true
+      },
+      "acl_resources_mutated": 2,
+      "readonly_nosuid_mounts": 2,
+      "database_sha256": "2df24464fb50475732b073171a03b7cd4987c678b40e2007ca03657c7a92878b",
+      "report_sha256": "d5de391a49f80e0cdb060938632bd90d7686e2b1e46e3086912ca5ed5e3b0ace",
+      "inventory_sha256": "f27b4e827b42b0d553a8603ad2842a0dd8e95f0f2448890e2eaa89d322f5146e",
+      "probe_launcher_generated": true,
+      "commands": "Captured bootstrap-v6 Kyua, ATF, shell and utility paths selected through readonly views; target VM supplies kernel and ELF interpreter. Full runtime-dependency admission remains open.",
+      "script_sha256": "c0a360d130f3444026e89920d6a94fc2e760c8a89c7417cad7f220b59cc09841",
+      "source_probe_only": true,
+      "installed_framework_integration": false
+    }
+  },
+  "remaining": [
+    "Qualify the reviewed readonly-view workspace/admission integration in an installed distribution and a reusable real allocation inspector; existing native fixture lifecycle and actual QEMU allocation-owner probes are separate source-level evidence.",
+    "Bind complete alias closure and actual root/unprivileged runtime dependency observations in the reviewed profile and retained receipt.",
+    "Run installed framework original tests and independent acceptance before receipt or package admission.",
+    "Complete source/ports canonical catalogs, source-built SDK provenance, per-unit packages and equivalent whole-build/invalidation/ISO/recovery qualification."
+  ],
+  "framework_local_orchestration_source_checks": {
+    "actual_provisioner_qualified": false,
+    "allocation_inspector_protocol_fixture": true,
+    "duration_seconds": 797.989,
+    "failed": 0,
+    "fixture_lifecycle_admission_exercised": true,
+    "fixture_local_orchestration_exercised": true,
+    "installed_framework_qualified": false,
+    "log_sha256": "6ce8039d4aa231c08cede6950531c618255b2ab4882141ba52ed46775bb00ddf",
+    "module_sha256": {
+      "adapters/retained_project_completion.py": "c1c4c56176984670b72579b5ea8225f410390d67a77ffeadea9e1586c329a419",
+      "adapters/retained_project_execution.py": "f05055a906d57d8baa19dca87a06b770e09814b4e9e2d9702c55728538b54c71",
+      "adapters/retained_project_receipt.py": "302d3c972bee5ca5c508e41e04a4de322c8f514c3dff0b74651305a322f86af1",
+      "adapters/retained_project_runtime.py": "797ec6ecc9b7cf5351b873d77c5c482f698d65df5771c731204262b1ed66b3f6",
+      "adapters/retained_readonly_views.py": "d87111f613a0884e56ad8eefe824c2167d9c7be665160107c0e22526f588715b",
+      "contracts/retained_secondary_evidence.py": "ac2f48bf6e305d6f6028f13dae009c221338b877c6100c20136b003e9cf085ee"
+    },
+    "native_test_sha256": "92bf1b98a6cd6e206cea84d1dfbe8abe16bcc8f208ecce3e1896da9fd6233a70",
+    "original_source_suite_executed": false,
+    "passed": 11,
+    "post_test_audit": {
+      "accounts": {
+        "litaitest": {
+          "gid": 2001,
+          "groups": [
+            2001
+          ],
+          "uid": 2001
+        },
+        "tests": {
+          "gid": 977,
+          "groups": [
+            977
+          ],
+          "uid": 977
+        }
+      },
+      "remaining_nullfs_mounts": [],
+      "root_free_bytes": 13776449536,
+      "schema": "daemonarchy/native-orchestration-post-test-audit@1"
+    },
+    "product_lifecycle_acceptance": false,
+    "public_cli_lifecycle_executed": false,
+    "schema": "daemonarchy/native-secondary-orchestration-source-tests@1",
+    "selected": 11,
+    "skipped": 0,
+    "source_archive_sha256": "fe3f9fb1d87afb9a0d535fcc55df03d99aa6334bb4b02853ebf56c84c98096d8",
+    "source_commit": "d3b8c278044ef14c776af216b9a4fc333d4d18d8",
+    "source_probe_only": true,
+    "source_sdk_admitted": false,
+    "record_sha256": "7260c2663cd95b479a5515c3f4f9ad5b81135f4adfb03517b8beee32c913e023"
+  },
+  "actual_qemu_framework_owner_probe": {
+    "framework_revision": "e456f4a1",
+    "record_sha256": "f6f6b104cd7ab7641972d350e3dbe41a0e924a50aa5e0e9207c6cd1ef36d9f78",
+    "source_probe_only": true,
+    "fresh_owner_inspections": 2,
+    "same_live_instance": true,
+    "fresh_process_and_qmp_checks": true,
+    "private_root_socket_transport": true,
+    "insufficient_lifetime_refused": true,
+    "permanent_revocation": true,
+    "temporary_socket_and_configuration_removed": true,
+    "reusable_provisioner_qualified": false,
+    "installed_distribution_qualified": false,
+    "retained_lifecycle_executed": false,
+    "source_sdk_admitted": false
+  },
+  "source_harness_preparation": {
+    "source_revision": "dcac180c84477e9e084635526ed7d406d63eba7d",
+    "selected": 66,
+    "passed": 62,
+    "skipped": 4,
+    "failed": 0,
+    "log_sha256": "d815f342344b78a07de498cfd11d2467ad54428f6ec695d0abb7460379077866",
+    "new_selected_native_profile_executed": false,
+    "scope": "Reviewed optional secondary account, named runtime/product views, writable fixture and original Kyua user selection; upstream tests and five source Component locks unchanged."
+  }
+}

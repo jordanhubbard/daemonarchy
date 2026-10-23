@@ -8,6 +8,9 @@ reachable without changing its historical scope.
 - [Product architecture and acceptance traceability](architecture/design-traceability.md)
 - [Enterprise Wi-Fi (1.1 / 1.1.1)](enterprise-wifi.md)
 - [FreeBSD application and menu policy](freebsd-application-policy.md)
+- [Pinned package dependency graphs](package-dag.md)
+- [Native package resolution checks](native-package-plan.md)
+- [Signed catalogue and package payload checks](signed-package-snapshot.md)
 - [Getting started with Daemonarchy](getting-started.md)
 - [Hardware quirks](hardware-quirks.md)
 - [Optional ports and system source: space estimate](optional-source-sizing.md)
@@ -16,6 +19,11 @@ reachable without changing its historical scope.
 - [EFI loader cannot find loader.lua](repair-efi-root.md)
 - [Installation logs and the rescue console](rescue-console.md)
 - [Active work](roadmap/active-work.md)
+- [Owned FreeBSD source builds](source-builds.md)
+- [Disposable QEMU worker ownership](native-qemu-worker.md)
+- [Complete FreeBSD source and ports Component coverage](roadmap/freebsd-components.md)
+- [Native Component execution and build performance](roadmap/build-performance.md)
+- [Parallel native workspace and executor selection](roadmap/native-workspace.md)
 - [Manual certificate enrollment for 1.1 and 1.1.1](secure-boot.md)
 - [1.1 BIOS development checks](testing-1.1-bios.md)
 - [Bluetooth audio development checks](testing-1.1-bluetooth-audio.md)
@@ -33,3 +41,9 @@ reachable without changing its historical scope.
 - [Hyprland in QEMU: VirtIO DRM development checks](testing-1.1-vm-graphics.md)
 - [Daemonarchy 1.1.1 refresh](testing-1.1.1.md)
 - [MacBookPro16,1 first-boot investigation](testing-macbookpro16-1.md)
+
+- [1.2.0 completion obligations and worker model](roadmap/release-1.2.0.md)
+
+- [1.2 loader test ISO and qualification](testing-1.2-test-iso.md)
+
+- [NetGDB peer-close patch for human review](contributions/netgdb-peer-close.md)

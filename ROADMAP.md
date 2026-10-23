@@ -5,6 +5,23 @@ Use [the active queue](docs/roadmap/active-work.md) for stable work IDs and
 acceptance status, and [the architecture](docs/architecture/design-traceability.md)
 for Component ownership. This file remains the release and feature overview.
 
+## 1.2.0: owned source builds and complete Component coverage
+
+Build our pinned FreeBSD-CURRENT fork through the [owned source workflow](docs/source-builds.md),
+then represent all selected `/usr/src` and `/usr/ports` inputs and native units as
+canonical Literate AI Components. Ports origins, source programs/libraries,
+kernel/loader units and shared build/support inputs need explicit ownership,
+target/options variants and dependencies. Whole-tree build wrappers are preparation;
+full catalog coverage and qualification of the selected release closure remain
+open under [COMP-001](docs/roadmap/freebsd-components.md). The
+[1.2.0 ledger](docs/roadmap/release-1.2.0.md) retains the complete release scope.
+
+The current [build-performance program](docs/roadmap/build-performance.md) will
+execute the established graph as literal Literate AI Components, producing
+per-unit pkg products with provenance and dependencies. Make is the baseline;
+Bazel, Buck2 or another suitable executor may replace it when measurements and
+native correctness demonstrate substantial improvement.
+
 ## 1.1.1 refresh
 
 The current stable release is **1.1.1**. Its source is
@@ -308,8 +325,23 @@ Later 1.1 QEMU results are recorded in [the final candidate record](docs/testing
 Loader and early-kernel network-debugging changes are deferred to **1.2**.
 The selected GENERIC already includes DEBUGNET, NETDUMP and NETGDB; those
 facilities require a supported, initialized wired NIC and do not provide a
-loader-to-early-kernel transport. A future source fork and explicitly selected
+loader-to-early-kernel transport. The owned source fork and an explicitly selected
 debug profile need separate design, privacy/trust boundaries, matching symbols,
 and native transport/crash qualification. None of those new source changes is
 part of 1.1.1. Its approved-session SSH diagnostics retain evidence while
 userland/networking works and explicitly report the limits after a hard reset.
+
+Source inspection confirms two distinct foundations. The EFI loader uses firmware
+Simple Network Protocol with the standalone UDP stack for network boot; a remote
+loader command/console stub is not implemented. Kernel NetGDB uses UDP through a
+proxy and currently refuses activation before a panic. Boot `-d` or `-g` flags do
+not select a NIC or turn it into an early-boot network listener. See the
+[NetGDB contract](https://man.freebsd.org/cgi/man.cgi?query=netgdb&sektion=4).
+
+Qualify loader variable/console/boot control first, then supported kernel
+NetGDB/netdump operation, then early-kernel transport. UEFI networking ends at
+`ExitBootServices`; the kernel must initialize its own driver. Carrying the same
+NIC identity and addresses across that boundary does not by itself cover failures
+before driver initialization. The latter phase needs explicit early-driver and
+debugger work, with retained traffic and matching symbols rather than inferred
+coverage from a successful network boot.

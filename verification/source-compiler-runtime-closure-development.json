@@ -1,0 +1,884 @@
+{
+  "schema": "daemonarchy/source-compiler-package-closure-diagnostic@1",
+  "source_revision": "d98e6c2da7571295bb3c70236afe637a987370e0",
+  "observed_package_manifest_sha256": "567e6254e4b06a50efed3c4e0cf57f111e82f6d249c49ac401dcfb179dd113d2",
+  "initial_packages": [
+    "FreeBSD-clang",
+    "FreeBSD-clang-dev",
+    "FreeBSD-clibs",
+    "FreeBSD-clibs-dev",
+    "FreeBSD-libcompiler_rt-dev",
+    "FreeBSD-lld"
+  ],
+  "initial_missing_sonames": [
+    "libexecinfo.so.1",
+    "libncursesw.so.9",
+    "libprivatezstd.so.5",
+    "libtinfow.so.9",
+    "libz.so.6"
+  ],
+  "selected_packages": [
+    {
+      "name": "FreeBSD-audit-lib",
+      "artifact": {
+        "path": "repo/FreeBSD:16:amd64/16.0.snap20261020170725.d98e6c2da757.baseline/FreeBSD-audit-lib-16.0.snap20261020170725.d98e6c2da757.baseline.pkg",
+        "sha256": "62f36f816144039d288dd1c38040142df2ef39a884513bc8966a561eaeac66b3",
+        "size": 37480
+      },
+      "shlibs_provided": [
+        "libbsm.so.3"
+      ],
+      "shlibs_required": [
+        "libc.so.7"
+      ]
+    },
+    {
+      "name": "FreeBSD-bzip2-lib",
+      "artifact": {
+        "path": "repo/FreeBSD:16:amd64/16.0.snap20261020170725.d98e6c2da757.baseline/FreeBSD-bzip2-lib-16.0.snap20261020170725.d98e6c2da757.baseline.pkg",
+        "sha256": "26a10b99f06546a3509616bef33db7d5af7f3b915e39be3a13a82be8219dd127",
+        "size": 36833
+      },
+      "shlibs_provided": [
+        "libbz2.so.4"
+      ],
+      "shlibs_required": [
+        "libc.so.7"
+      ]
+    },
+    {
+      "name": "FreeBSD-clang",
+      "artifact": {
+        "path": "repo/FreeBSD:16:amd64/16.0.snap20261020170725.d98e6c2da757.baseline/FreeBSD-clang-16.0.snap20261020170725.d98e6c2da757.baseline.pkg",
+        "sha256": "70e33a60291a950eafc08fea2c4ec7cc385c9c86b205181842530accbe54060e",
+        "size": 43887675
+      },
+      "shlibs_provided": [
+        "libprivateclang.so.21",
+        "libprivatellvm.so.21"
+      ],
+      "shlibs_required": [
+        "libc++.so.1",
+        "libc.so.7",
+        "libcxxrt.so.1",
+        "libexecinfo.so.1",
+        "libgcc_s.so.1",
+        "libm.so.5",
+        "libncursesw.so.9",
+        "libprivatezstd.so.5",
+        "libthr.so.3",
+        "libtinfow.so.9",
+        "libz.so.6"
+      ]
+    },
+    {
+      "name": "FreeBSD-clang-dev",
+      "artifact": {
+        "path": "repo/FreeBSD:16:amd64/16.0.snap20261020170725.d98e6c2da757.baseline/FreeBSD-clang-dev-16.0.snap20261020170725.d98e6c2da757.baseline.pkg",
+        "sha256": "ca25ba17694f72eb0fb52dff443e9c89e2994359b5f8329135ea12b80a941ef5",
+        "size": 15481492
+      },
+      "shlibs_provided": [],
+      "shlibs_required": [
+        "libc++.so.1",
+        "libc.so.7",
+        "libcxxrt.so.1",
+        "libgcc_s.so.1",
+        "libm.so.5",
+        "libprivatellvm.so.21"
+      ]
+    },
+    {
+      "name": "FreeBSD-clibs",
+      "artifact": {
+        "path": "repo/FreeBSD:16:amd64/16.0.snap20261020170725.d98e6c2da757.baseline/FreeBSD-clibs-16.0.snap20261020170725.d98e6c2da757.baseline.pkg",
+        "sha256": "20a431fa0df793b794a462f06f6d24a85f15a54ae3470ec04e007fd892b69cf5",
+        "size": 1468762
+      },
+      "shlibs_provided": [
+        "libc++.so.1",
+        "libc.so.7",
+        "libcxxrt.so.1",
+        "libdl.so.1",
+        "libgcc_s.so.1",
+        "libgcc_s_asneeded.so.1",
+        "libm.so.5",
+        "librt.so.1",
+        "libssp.so.0",
+        "libsys.so.7",
+        "libthr.so.3"
+      ],
+      "shlibs_required": []
+    },
+    {
+      "name": "FreeBSD-clibs-dev",
+      "artifact": {
+        "path": "repo/FreeBSD:16:amd64/16.0.snap20261020170725.d98e6c2da757.baseline/FreeBSD-clibs-dev-16.0.snap20261020170725.d98e6c2da757.baseline.pkg",
+        "sha256": "30256f0fce5741b80dd8c0dd51aa933001ed04d8315e13ddcba1da79ad56ee36",
+        "size": 18822479
+      },
+      "shlibs_provided": [],
+      "shlibs_required": [
+        "libc.so.7",
+        "libgcc_s.so.1",
+        "libsys.so.7",
+        "libthr.so.3"
+      ]
+    },
+    {
+      "name": "FreeBSD-libarchive",
+      "artifact": {
+        "path": "repo/FreeBSD:16:amd64/16.0.snap20261020170725.d98e6c2da757.baseline/FreeBSD-libarchive-16.0.snap20261020170725.d98e6c2da757.baseline.pkg",
+        "sha256": "9b96a71ef80ad66c6b8379da9f562a3c643473405bc09dedf4cf663448163803",
+        "size": 385112
+      },
+      "shlibs_provided": [
+        "libarchive.so.7"
+      ],
+      "shlibs_required": [
+        "libbsdxml.so.4",
+        "libbz2.so.4",
+        "libc.so.7",
+        "libcrypto.so.35",
+        "liblzma.so.5",
+        "libprivatezstd.so.5",
+        "libz.so.6"
+      ]
+    },
+    {
+      "name": "FreeBSD-libcasper",
+      "artifact": {
+        "path": "repo/FreeBSD:16:amd64/16.0.snap20261020170725.d98e6c2da757.baseline/FreeBSD-libcasper-16.0.snap20261020170725.d98e6c2da757.baseline.pkg",
+        "sha256": "255a66dd70aba265c6acabf3706f36ab6eb3b95fff5249de2c7682e41265ab5b",
+        "size": 40932
+      },
+      "shlibs_provided": [
+        "libcap_dns.so.2",
+        "libcap_fileargs.so.1",
+        "libcap_grp.so.1",
+        "libcap_net.so.1",
+        "libcap_netdb.so.1",
+        "libcap_pwd.so.1",
+        "libcap_sysctl.so.2",
+        "libcap_syslog.so.1",
+        "libcasper.so.1"
+      ],
+      "shlibs_required": [
+        "libc.so.7",
+        "libnv.so.1"
+      ]
+    },
+    {
+      "name": "FreeBSD-libcompiler_rt-dev",
+      "artifact": {
+        "path": "repo/FreeBSD:16:amd64/16.0.snap20261020170725.d98e6c2da757.baseline/FreeBSD-libcompiler_rt-dev-16.0.snap20261020170725.d98e6c2da757.baseline.pkg",
+        "sha256": "2311cd3e44b57aec969731e98de5cd9fe87359e9c7617835940fc8f2acee78b4",
+        "size": 247588
+      },
+      "shlibs_provided": [],
+      "shlibs_required": []
+    },
+    {
+      "name": "FreeBSD-libexecinfo",
+      "artifact": {
+        "path": "repo/FreeBSD:16:amd64/16.0.snap20261020170725.d98e6c2da757.baseline/FreeBSD-libexecinfo-16.0.snap20261020170725.d98e6c2da757.baseline.pkg",
+        "sha256": "9ba345dd95bafad13b4cefcb2e30dcfbd2b689dbd7a5cd97b6f4b834aac08297",
+        "size": 5109
+      },
+      "shlibs_provided": [
+        "libexecinfo.so.1"
+      ],
+      "shlibs_required": [
+        "libc.so.7",
+        "libelf.so.2",
+        "libgcc_s.so.1"
+      ]
+    },
+    {
+      "name": "FreeBSD-lld",
+      "artifact": {
+        "path": "repo/FreeBSD:16:amd64/16.0.snap20261020170725.d98e6c2da757.baseline/FreeBSD-lld-16.0.snap20261020170725.d98e6c2da757.baseline.pkg",
+        "sha256": "237e87300f37719bdf9b6e44ab33f0a7357ff43226c54429301112a9d7c7a189",
+        "size": 866777
+      },
+      "shlibs_provided": [],
+      "shlibs_required": [
+        "libc++.so.1",
+        "libc.so.7",
+        "libcxxrt.so.1",
+        "libexecinfo.so.1",
+        "libm.so.5",
+        "libprivatellvm.so.21",
+        "libprivatezstd.so.5",
+        "libthr.so.3",
+        "libtinfow.so.9",
+        "libz.so.6"
+      ]
+    },
+    {
+      "name": "FreeBSD-ncurses-lib",
+      "artifact": {
+        "path": "repo/FreeBSD:16:amd64/16.0.snap20261020170725.d98e6c2da757.baseline/FreeBSD-ncurses-lib-16.0.snap20261020170725.d98e6c2da757.baseline.pkg",
+        "sha256": "d841a25d16d1030b73be34af4ba7645ebba484f913cc0cba7efcfa0159f442cd",
+        "size": 339410
+      },
+      "shlibs_provided": [
+        "libformw.so.6",
+        "libmenuw.so.6",
+        "libncursesw.so.9",
+        "libpanelw.so.6",
+        "libtinfow.so.9"
+      ],
+      "shlibs_required": [
+        "libc.so.7"
+      ]
+    },
+    {
+      "name": "FreeBSD-openssl-lib",
+      "artifact": {
+        "path": "repo/FreeBSD:16:amd64/16.0.snap20261020170725.d98e6c2da757.baseline/FreeBSD-openssl-lib-16.0.snap20261020170725.d98e6c2da757.baseline.pkg",
+        "sha256": "39703e6c66601617d40861914309415588831a6c87dfaa9a1f72af8622d2c592",
+        "size": 2294176
+      },
+      "shlibs_provided": [
+        "libcrypto.so.35",
+        "libssl.so.35"
+      ],
+      "shlibs_required": [
+        "libc.so.7",
+        "libthr.so.3"
+      ]
+    },
+    {
+      "name": "FreeBSD-pam-lib",
+      "artifact": {
+        "path": "repo/FreeBSD:16:amd64/16.0.snap20261020170725.d98e6c2da757.baseline/FreeBSD-pam-lib-16.0.snap20261020170725.d98e6c2da757.baseline.pkg",
+        "sha256": "af5ae5fcd90c2aaf320a64cabe310b616588aa81a118e61d26ae2188f7b6411a",
+        "size": 21640
+      },
+      "shlibs_provided": [
+        "libpam.so.6"
+      ],
+      "shlibs_required": [
+        "libc.so.7"
+      ]
+    },
+    {
+      "name": "FreeBSD-runtime",
+      "artifact": {
+        "path": "repo/FreeBSD:16:amd64/16.0.snap20261020170725.d98e6c2da757.baseline/FreeBSD-runtime-16.0.snap20261020170725.d98e6c2da757.baseline.pkg",
+        "sha256": "45369e03f1b4d4106baee2a9171f3ad082be98e611d1cd728243fed24a6a2aac",
+        "size": 2532550
+      },
+      "shlibs_provided": [
+        "lib80211.so.1",
+        "libbsdxml.so.4",
+        "libcam.so.7",
+        "libcrypt.so.5",
+        "libedit.so.8",
+        "libelf.so.2",
+        "libgeom.so.5",
+        "libipsec.so.4",
+        "libjail.so.1",
+        "libkiconv.so.4",
+        "libkvm.so.7",
+        "libmd.so.7",
+        "libnv.so.1",
+        "libprivatekldelf.so.5",
+        "libregex.so.1",
+        "librpcsvc.so.5",
+        "libsbuf.so.6",
+        "libstdthreads.so.0",
+        "libutil.so.10",
+        "libuvmem.so.1",
+        "libxo.so.0"
+      ],
+      "shlibs_required": [
+        "libarchive.so.7",
+        "libbsm.so.3",
+        "libc.so.7",
+        "libcap_dns.so.2",
+        "libcap_fileargs.so.1",
+        "libcap_syslog.so.1",
+        "libcasper.so.1",
+        "libcrypto.so.35",
+        "libm.so.5",
+        "libpam.so.6",
+        "libprivatezstd.so.5",
+        "libthr.so.3",
+        "libtinfow.so.9",
+        "libz.so.6"
+      ]
+    },
+    {
+      "name": "FreeBSD-xz-lib",
+      "artifact": {
+        "path": "repo/FreeBSD:16:amd64/16.0.snap20261020170725.d98e6c2da757.baseline/FreeBSD-xz-lib-16.0.snap20261020170725.d98e6c2da757.baseline.pkg",
+        "sha256": "fa63951ac481053915c7784d76889d78e3f62bc9c2cd7a05de5190e0d5338609",
+        "size": 95792
+      },
+      "shlibs_provided": [
+        "liblzma.so.5"
+      ],
+      "shlibs_required": [
+        "libc.so.7",
+        "libmd.so.7",
+        "libthr.so.3"
+      ]
+    },
+    {
+      "name": "FreeBSD-zlib",
+      "artifact": {
+        "path": "repo/FreeBSD:16:amd64/16.0.snap20261020170725.d98e6c2da757.baseline/FreeBSD-zlib-16.0.snap20261020170725.d98e6c2da757.baseline.pkg",
+        "sha256": "7363257699ca572259aba35b6e0a55f0db8f8ac2df49d248dffa4f058c9ee3a5",
+        "size": 51527
+      },
+      "shlibs_provided": [
+        "libz.so.6"
+      ],
+      "shlibs_required": [
+        "libc.so.7"
+      ]
+    },
+    {
+      "name": "FreeBSD-zstd-lib",
+      "artifact": {
+        "path": "repo/FreeBSD:16:amd64/16.0.snap20261020170725.d98e6c2da757.baseline/FreeBSD-zstd-lib-16.0.snap20261020170725.d98e6c2da757.baseline.pkg",
+        "sha256": "fdd607ef2ddb8c002a1f5d4476b42ffc275141bab74bb34073b89f4919fba347",
+        "size": 270226
+      },
+      "shlibs_provided": [
+        "libprivatezstd.so.5"
+      ],
+      "shlibs_required": [
+        "libc.so.7",
+        "libthr.so.3"
+      ]
+    }
+  ],
+  "closure_edges": [
+    {
+      "package": "FreeBSD-lld",
+      "kind": "shared-library",
+      "soname": "libc++.so.1",
+      "dependency": "FreeBSD-clibs"
+    },
+    {
+      "package": "FreeBSD-lld",
+      "kind": "shared-library",
+      "soname": "libc.so.7",
+      "dependency": "FreeBSD-clibs"
+    },
+    {
+      "package": "FreeBSD-lld",
+      "kind": "shared-library",
+      "soname": "libcxxrt.so.1",
+      "dependency": "FreeBSD-clibs"
+    },
+    {
+      "package": "FreeBSD-lld",
+      "kind": "shared-library",
+      "soname": "libexecinfo.so.1",
+      "dependency": "FreeBSD-libexecinfo"
+    },
+    {
+      "package": "FreeBSD-lld",
+      "kind": "shared-library",
+      "soname": "libm.so.5",
+      "dependency": "FreeBSD-clibs"
+    },
+    {
+      "package": "FreeBSD-lld",
+      "kind": "shared-library",
+      "soname": "libprivatellvm.so.21",
+      "dependency": "FreeBSD-clang"
+    },
+    {
+      "package": "FreeBSD-lld",
+      "kind": "shared-library",
+      "soname": "libprivatezstd.so.5",
+      "dependency": "FreeBSD-zstd-lib"
+    },
+    {
+      "package": "FreeBSD-lld",
+      "kind": "shared-library",
+      "soname": "libthr.so.3",
+      "dependency": "FreeBSD-clibs"
+    },
+    {
+      "package": "FreeBSD-lld",
+      "kind": "shared-library",
+      "soname": "libtinfow.so.9",
+      "dependency": "FreeBSD-ncurses-lib"
+    },
+    {
+      "package": "FreeBSD-lld",
+      "kind": "shared-library",
+      "soname": "libz.so.6",
+      "dependency": "FreeBSD-zlib"
+    },
+    {
+      "package": "FreeBSD-zlib",
+      "kind": "shared-library",
+      "soname": "libc.so.7",
+      "dependency": "FreeBSD-clibs"
+    },
+    {
+      "package": "FreeBSD-ncurses-lib",
+      "kind": "shared-library",
+      "soname": "libc.so.7",
+      "dependency": "FreeBSD-clibs"
+    },
+    {
+      "package": "FreeBSD-zstd-lib",
+      "kind": "shared-library",
+      "soname": "libc.so.7",
+      "dependency": "FreeBSD-clibs"
+    },
+    {
+      "package": "FreeBSD-zstd-lib",
+      "kind": "shared-library",
+      "soname": "libthr.so.3",
+      "dependency": "FreeBSD-clibs"
+    },
+    {
+      "package": "FreeBSD-libexecinfo",
+      "kind": "shared-library",
+      "soname": "libc.so.7",
+      "dependency": "FreeBSD-clibs"
+    },
+    {
+      "package": "FreeBSD-libexecinfo",
+      "kind": "shared-library",
+      "soname": "libelf.so.2",
+      "dependency": "FreeBSD-runtime"
+    },
+    {
+      "package": "FreeBSD-libexecinfo",
+      "kind": "shared-library",
+      "soname": "libgcc_s.so.1",
+      "dependency": "FreeBSD-clibs"
+    },
+    {
+      "package": "FreeBSD-runtime",
+      "kind": "shared-library",
+      "soname": "libarchive.so.7",
+      "dependency": "FreeBSD-libarchive"
+    },
+    {
+      "package": "FreeBSD-runtime",
+      "kind": "shared-library",
+      "soname": "libbsm.so.3",
+      "dependency": "FreeBSD-audit-lib"
+    },
+    {
+      "package": "FreeBSD-runtime",
+      "kind": "shared-library",
+      "soname": "libc.so.7",
+      "dependency": "FreeBSD-clibs"
+    },
+    {
+      "package": "FreeBSD-runtime",
+      "kind": "shared-library",
+      "soname": "libcap_dns.so.2",
+      "dependency": "FreeBSD-libcasper"
+    },
+    {
+      "package": "FreeBSD-runtime",
+      "kind": "shared-library",
+      "soname": "libcap_fileargs.so.1",
+      "dependency": "FreeBSD-libcasper"
+    },
+    {
+      "package": "FreeBSD-runtime",
+      "kind": "shared-library",
+      "soname": "libcap_syslog.so.1",
+      "dependency": "FreeBSD-libcasper"
+    },
+    {
+      "package": "FreeBSD-runtime",
+      "kind": "shared-library",
+      "soname": "libcasper.so.1",
+      "dependency": "FreeBSD-libcasper"
+    },
+    {
+      "package": "FreeBSD-runtime",
+      "kind": "shared-library",
+      "soname": "libcrypto.so.35",
+      "dependency": "FreeBSD-openssl-lib"
+    },
+    {
+      "package": "FreeBSD-runtime",
+      "kind": "shared-library",
+      "soname": "libm.so.5",
+      "dependency": "FreeBSD-clibs"
+    },
+    {
+      "package": "FreeBSD-runtime",
+      "kind": "shared-library",
+      "soname": "libpam.so.6",
+      "dependency": "FreeBSD-pam-lib"
+    },
+    {
+      "package": "FreeBSD-runtime",
+      "kind": "shared-library",
+      "soname": "libprivatezstd.so.5",
+      "dependency": "FreeBSD-zstd-lib"
+    },
+    {
+      "package": "FreeBSD-runtime",
+      "kind": "shared-library",
+      "soname": "libthr.so.3",
+      "dependency": "FreeBSD-clibs"
+    },
+    {
+      "package": "FreeBSD-runtime",
+      "kind": "shared-library",
+      "soname": "libtinfow.so.9",
+      "dependency": "FreeBSD-ncurses-lib"
+    },
+    {
+      "package": "FreeBSD-runtime",
+      "kind": "shared-library",
+      "soname": "libz.so.6",
+      "dependency": "FreeBSD-zlib"
+    },
+    {
+      "package": "FreeBSD-pam-lib",
+      "kind": "shared-library",
+      "soname": "libc.so.7",
+      "dependency": "FreeBSD-clibs"
+    },
+    {
+      "package": "FreeBSD-openssl-lib",
+      "kind": "shared-library",
+      "soname": "libc.so.7",
+      "dependency": "FreeBSD-clibs"
+    },
+    {
+      "package": "FreeBSD-openssl-lib",
+      "kind": "shared-library",
+      "soname": "libthr.so.3",
+      "dependency": "FreeBSD-clibs"
+    },
+    {
+      "package": "FreeBSD-libcasper",
+      "kind": "shared-library",
+      "soname": "libc.so.7",
+      "dependency": "FreeBSD-clibs"
+    },
+    {
+      "package": "FreeBSD-libcasper",
+      "kind": "shared-library",
+      "soname": "libnv.so.1",
+      "dependency": "FreeBSD-runtime"
+    },
+    {
+      "package": "FreeBSD-audit-lib",
+      "kind": "shared-library",
+      "soname": "libc.so.7",
+      "dependency": "FreeBSD-clibs"
+    },
+    {
+      "package": "FreeBSD-libarchive",
+      "kind": "shared-library",
+      "soname": "libbsdxml.so.4",
+      "dependency": "FreeBSD-runtime"
+    },
+    {
+      "package": "FreeBSD-libarchive",
+      "kind": "shared-library",
+      "soname": "libbz2.so.4",
+      "dependency": "FreeBSD-bzip2-lib"
+    },
+    {
+      "package": "FreeBSD-libarchive",
+      "kind": "shared-library",
+      "soname": "libc.so.7",
+      "dependency": "FreeBSD-clibs"
+    },
+    {
+      "package": "FreeBSD-libarchive",
+      "kind": "shared-library",
+      "soname": "libcrypto.so.35",
+      "dependency": "FreeBSD-openssl-lib"
+    },
+    {
+      "package": "FreeBSD-libarchive",
+      "kind": "shared-library",
+      "soname": "liblzma.so.5",
+      "dependency": "FreeBSD-xz-lib"
+    },
+    {
+      "package": "FreeBSD-libarchive",
+      "kind": "shared-library",
+      "soname": "libprivatezstd.so.5",
+      "dependency": "FreeBSD-zstd-lib"
+    },
+    {
+      "package": "FreeBSD-libarchive",
+      "kind": "shared-library",
+      "soname": "libz.so.6",
+      "dependency": "FreeBSD-zlib"
+    },
+    {
+      "package": "FreeBSD-xz-lib",
+      "kind": "shared-library",
+      "soname": "libc.so.7",
+      "dependency": "FreeBSD-clibs"
+    },
+    {
+      "package": "FreeBSD-xz-lib",
+      "kind": "shared-library",
+      "soname": "libmd.so.7",
+      "dependency": "FreeBSD-runtime"
+    },
+    {
+      "package": "FreeBSD-xz-lib",
+      "kind": "shared-library",
+      "soname": "libthr.so.3",
+      "dependency": "FreeBSD-clibs"
+    },
+    {
+      "package": "FreeBSD-bzip2-lib",
+      "kind": "shared-library",
+      "soname": "libc.so.7",
+      "dependency": "FreeBSD-clibs"
+    },
+    {
+      "package": "FreeBSD-clibs-dev",
+      "kind": "package-dependency",
+      "dependency": "FreeBSD-clibs"
+    },
+    {
+      "package": "FreeBSD-clibs-dev",
+      "kind": "shared-library",
+      "soname": "libc.so.7",
+      "dependency": "FreeBSD-clibs"
+    },
+    {
+      "package": "FreeBSD-clibs-dev",
+      "kind": "shared-library",
+      "soname": "libgcc_s.so.1",
+      "dependency": "FreeBSD-clibs"
+    },
+    {
+      "package": "FreeBSD-clibs-dev",
+      "kind": "shared-library",
+      "soname": "libsys.so.7",
+      "dependency": "FreeBSD-clibs"
+    },
+    {
+      "package": "FreeBSD-clibs-dev",
+      "kind": "shared-library",
+      "soname": "libthr.so.3",
+      "dependency": "FreeBSD-clibs"
+    },
+    {
+      "package": "FreeBSD-clang-dev",
+      "kind": "package-dependency",
+      "dependency": "FreeBSD-clang"
+    },
+    {
+      "package": "FreeBSD-clang-dev",
+      "kind": "shared-library",
+      "soname": "libc++.so.1",
+      "dependency": "FreeBSD-clibs"
+    },
+    {
+      "package": "FreeBSD-clang-dev",
+      "kind": "shared-library",
+      "soname": "libc.so.7",
+      "dependency": "FreeBSD-clibs"
+    },
+    {
+      "package": "FreeBSD-clang-dev",
+      "kind": "shared-library",
+      "soname": "libcxxrt.so.1",
+      "dependency": "FreeBSD-clibs"
+    },
+    {
+      "package": "FreeBSD-clang-dev",
+      "kind": "shared-library",
+      "soname": "libgcc_s.so.1",
+      "dependency": "FreeBSD-clibs"
+    },
+    {
+      "package": "FreeBSD-clang-dev",
+      "kind": "shared-library",
+      "soname": "libm.so.5",
+      "dependency": "FreeBSD-clibs"
+    },
+    {
+      "package": "FreeBSD-clang-dev",
+      "kind": "shared-library",
+      "soname": "libprivatellvm.so.21",
+      "dependency": "FreeBSD-clang"
+    },
+    {
+      "package": "FreeBSD-clang",
+      "kind": "package-dependency",
+      "dependency": "FreeBSD-libcompiler_rt-dev"
+    },
+    {
+      "package": "FreeBSD-clang",
+      "kind": "package-dependency",
+      "dependency": "FreeBSD-lld"
+    },
+    {
+      "package": "FreeBSD-clang",
+      "kind": "shared-library",
+      "soname": "libc++.so.1",
+      "dependency": "FreeBSD-clibs"
+    },
+    {
+      "package": "FreeBSD-clang",
+      "kind": "shared-library",
+      "soname": "libc.so.7",
+      "dependency": "FreeBSD-clibs"
+    },
+    {
+      "package": "FreeBSD-clang",
+      "kind": "shared-library",
+      "soname": "libcxxrt.so.1",
+      "dependency": "FreeBSD-clibs"
+    },
+    {
+      "package": "FreeBSD-clang",
+      "kind": "shared-library",
+      "soname": "libexecinfo.so.1",
+      "dependency": "FreeBSD-libexecinfo"
+    },
+    {
+      "package": "FreeBSD-clang",
+      "kind": "shared-library",
+      "soname": "libgcc_s.so.1",
+      "dependency": "FreeBSD-clibs"
+    },
+    {
+      "package": "FreeBSD-clang",
+      "kind": "shared-library",
+      "soname": "libm.so.5",
+      "dependency": "FreeBSD-clibs"
+    },
+    {
+      "package": "FreeBSD-clang",
+      "kind": "shared-library",
+      "soname": "libncursesw.so.9",
+      "dependency": "FreeBSD-ncurses-lib"
+    },
+    {
+      "package": "FreeBSD-clang",
+      "kind": "shared-library",
+      "soname": "libprivatezstd.so.5",
+      "dependency": "FreeBSD-zstd-lib"
+    },
+    {
+      "package": "FreeBSD-clang",
+      "kind": "shared-library",
+      "soname": "libthr.so.3",
+      "dependency": "FreeBSD-clibs"
+    },
+    {
+      "package": "FreeBSD-clang",
+      "kind": "shared-library",
+      "soname": "libtinfow.so.9",
+      "dependency": "FreeBSD-ncurses-lib"
+    },
+    {
+      "package": "FreeBSD-clang",
+      "kind": "shared-library",
+      "soname": "libz.so.6",
+      "dependency": "FreeBSD-zlib"
+    }
+  ],
+  "unique_providers": true,
+  "package_and_runtime_metadata_closed": true,
+  "native_loader_observation_complete": true,
+  "archives_collected": true,
+  "source_sdk_admitted": false,
+  "relocated_compilation_verified": true,
+  "release_qualified": false,
+  "observed_utc": "2026-10-22T19:56:53.001688+00:00",
+  "scope": "Read-only exact source-built pkgbase package and SONAME metadata closure; not native loader, compiler relocation or SDK admission",
+  "preceding_six_archive_record": "verification/native-sdk-build-development.json",
+  "retained_archive_corpus": {
+    "packages": 18,
+    "bytes": 86885560,
+    "manifest_sha256": "e94f8b5ba70fdf1287c5a783c0fbb1422e45a2f3cd358f683eb58d5c61d1f894",
+    "original_build_inventory_and_native_archive_hashes_reverified": true,
+    "original_source_disk_layers_read_only": 2,
+    "read_clone_normal_shutdown": {
+      "exit_code": 0,
+      "expired": false,
+      "seconds": 129.79736089287326
+    },
+    "payload_inspection": {
+      "regular_files": 4743,
+      "symlinks": 36,
+      "hardlinks": 2050,
+      "derived_directory_count": 321,
+      "refusals": [
+        {
+          "path": "etc/termcap",
+          "kind": "symlink",
+          "target": "/usr/share/misc/termcap",
+          "reason": "SDK alias target segment must be a non-empty string"
+        },
+        {
+          "path": "etc/os-release",
+          "kind": "symlink",
+          "target": "../var/run/os-release",
+          "reason": "SDK alias target is absent from its inventoried tree"
+        }
+      ]
+    },
+    "payload_diagnostic_sha256": "980482b49ce797984a2324d70d1d0afda064d4533b430dd96166403f67cc78c6"
+  },
+  "compiler_resource_selection": {
+    "schema": "daemonarchy/source-compiler-resource-selection-diagnostic@1",
+    "source_revision": "d98e6c2da7571295bb3c70236afe637a987370e0",
+    "source_archive_manifest_sha256": "e94f8b5ba70fdf1287c5a783c0fbb1422e45a2f3cd358f683eb58d5c61d1f894",
+    "package_payload_diagnostic_sha256": "980482b49ce797984a2324d70d1d0afda064d4533b430dd96166403f67cc78c6",
+    "selection_rule": {
+      "resource_roots": [
+        "usr/include",
+        "usr/lib",
+        "lib",
+        "libexec"
+      ],
+      "executable_owners": [
+        "FreeBSD-clang",
+        "FreeBSD-lld"
+      ],
+      "executable_root": "usr/bin",
+      "exclude_operating_system_configuration_and_manuals": true
+    },
+    "case_sensitive_required": true,
+    "compiler_entrypoint": "usr/bin/cc",
+    "linker_entrypoint": "usr/bin/ld.lld",
+    "resource_directory": "usr/lib/clang/21",
+    "license_source": "COPYRIGHT at exact source revision",
+    "license_sha256": "d714467a37d231cd5e630f09eacb134d6936e74940836129309ed20d796ca790",
+    "regular_files": 3563,
+    "regular_bytes": 333420987,
+    "maximum_regular_file_bytes": 99368472,
+    "symlinks": 28,
+    "hardlinks": 9,
+    "all_selected_alias_targets_present": true,
+    "physical_materialization_verified": true,
+    "native_loader_observation_complete": true,
+    "relocated_compilation_verified": true,
+    "source_sdk_admitted": false,
+    "release_qualified": false,
+    "remaining": [
+      "Actual live source-producer and canonical SDK admission",
+      "Complete SDK license closure and other entrypoint/language/target qualification",
+      "Per-unit package and final product acceptance"
+    ],
+    "selection_file_sha256": "f4a36655339ced2877c3ab16e0843fbe270d88a60271670fcc16b3e93dd64d34",
+    "directory_count": 239
+  },
+  "native_loader_scope": "Observed source C compiler, linker and probe application; other entrypoints and targets remain unqualified",
+  "relocation_record": "verification/source-compiler-relocation-development.json"
+}

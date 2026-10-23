@@ -1,0 +1,99 @@
+{
+  "schema": "daemonarchy/standard-first-binding-development@1",
+  "work_id": "ADOPT-002",
+  "product_revision": "aadfa33f2e7412f888afd601e821fad3bdb2723e",
+  "scope": "Installed migration qualification on a disposable native copy followed by exact reviewed configuration apply on the controller; no retained lifecycle admission",
+  "framework_revision": "73311c69cb37c982f77b5ce6d9ecfe1b5e2c987e",
+  "framework_pr": "https://github.com/jordanhubbard/literate-ai/pull/108",
+  "wheel_identity": "sha256:ab058b140a95b121e4e924ea657da4fd6795758998ca32195b4a82e8f29df0a0",
+  "distribution_identity": "sha256:9b5562d72116ecd644e6fdb4ced2895bc37123d5e6af01bfb3440f9efadc942f",
+  "dependency_closure_identity": "sha256:ecc2fa175fc144c47a69b4cb4802f50190c74dfedf5ebf9230e08f6fbac35f40",
+  "installed_distributions_verified": 37,
+  "target": {
+    "sys_platform": "freebsd16",
+    "machine": "amd64",
+    "release": "16.0-CURRENT",
+    "python": "3.12.14"
+  },
+  "probe": {
+    "terminal": {
+      "exit_code": 0,
+      "schema": "daemonarchy/native-command-terminal@1",
+      "seconds": 54.986
+    },
+    "checks": 5,
+    "plan_identity": "sha256:285d53dc6901f0ddce4040dddd38adf585eed7c36ecc72f1b31fd54efd0b0ca9",
+    "receipt_policy_preserved": true,
+    "historical_files_preserved": 42,
+    "source_sha256": "aba67acbcab91d97d85a09a6373e3bb3503cb9fd90b3c0df31c8757e0f803121",
+    "stdout_sha256": "ab2470580e995af55751063dc328b774865273118ddf6c0ffcc7d25ca6ba8e23",
+    "stderr_sha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855"
+  },
+  "fixture_source_archive_sha256": "5aa4a3befc14991cbe1fdd24a4901357c1a302efcd34232632e93bd4d26f8fcc",
+  "preserved_failures": [
+    {
+      "attempt": "v2",
+      "cause": "Probe parsed structured CLI refusal from stdout instead of stderr",
+      "product_binding_applied": false
+    },
+    {
+      "attempt": "v3",
+      "cause": "Probe compared omitted unset driver to explicit null; independent native inspection confirmed only the intended driver change",
+      "product_copy_binding_applied": true,
+      "actual_product_changed": false
+    }
+  ],
+  "boundaries": {
+    "actual_product_binding_applied": true,
+    "default_cli_changed": false,
+    "native_lifecycle_receipt": false,
+    "source_sdk_admitted": false,
+    "iso_created": false,
+    "hardware_or_release_acceptance": false
+  },
+  "controller_binding_apply": {
+    "schema": "daemonarchy/first-binding-apply-development@1",
+    "action": "applied",
+    "plan_identity": "sha256:285d53dc6901f0ddce4040dddd38adf585eed7c36ecc72f1b31fd54efd0b0ca9",
+    "previous_project_configuration_identity": "sha256:1895711e5b95c96f136c09874d149cff8c09dec4138639b31c628d85d786b80f",
+    "project_configuration_identity": "sha256:0dcef24ab268513e931e9bf7ceb691f8d9b22f8d397b24cb189ed580eb9adfd4",
+    "before_manifest_sha256": "1895711e5b95c96f136c09874d149cff8c09dec4138639b31c628d85d786b80f",
+    "after_manifest_sha256": "0dcef24ab268513e931e9bf7ceb691f8d9b22f8d397b24cb189ed580eb9adfd4",
+    "receipt_policy_preserved": true,
+    "historical_evidence_files_preserved": 43,
+    "default_cli_unchanged": true,
+    "native_lifecycle_receipt": false,
+    "iso_created": false,
+    "stdout_sha256": "a93ec8e909cafc2534bf96c0a340fd77ccecb67965d934905d95ab60c15f8158",
+    "stderr_sha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855"
+  },
+  "controller_installation": {
+    "python": "3.14.8",
+    "distribution_identity": "sha256:9b5562d72116ecd644e6fdb4ced2895bc37123d5e6af01bfb3440f9efadc942f",
+    "dependency_closure_identity": "sha256:2c8ea791a4e307f61f1a42efb765cb4bf20440437eef88997851e72fd015bbd4",
+    "installed_distributions_verified": 36,
+    "default_cli_unchanged": true,
+    "preceding_bootstrap_failure": "The standalone Python 3.14.7 could not create the copied isolated venv during ensurepip; an existing compatible Homebrew interpreter succeeded with the same qualified bootstrap and closure."
+  },
+  "controller_verification": {
+    "authority": "pass",
+    "host_contract_locks_current": 8,
+    "counts": {
+      "fail": 1,
+      "pass": 2,
+      "skipped": 2
+    },
+    "remaining_gate": "project.test_receipt_missing",
+    "native_target_execution_claimed": false,
+    "logical_dependency_requirements_preserved": true,
+    "lock_check_sha256": "9b3fa9606cc0d8c389f47571c6d47a3820ee1bff9c22c2271b24452fc4938325"
+  },
+  "next_lifecycle_preflight": {
+    "retained_harness_plan_error": "retained_harness.not_adopted",
+    "adopt_original_available_in_this_wheel": false,
+    "native_admission_upstream_pr": "https://github.com/jordanhubbard/literate-ai/pull/87",
+    "native_admission_upstream_revision": "1fb6679a0fa67968fd2039ebded420a3818598df",
+    "next_action": "Qualify a combined candidate with reviewed first binding and in-place original-source native admission, then author actual product profiles without relocating retained source.",
+    "conversion_authority_synthesized": false
+  }
+}

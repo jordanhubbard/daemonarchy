@@ -1,0 +1,122 @@
+{
+  "schema": "daemonarchy/native-sdk-descriptor-read-development@1",
+  "observed_utc": "2026-10-22T17:02:51.948029+00:00",
+  "scope": "Framework descriptor-read qualification and failed native SDK replay; no native compiler or product receipt admission",
+  "framework_code_revision": "4ed7e5a1024b513a497f3608e053d759f7bce952",
+  "framework_review_branch_head": "442e34d2",
+  "issue": "https://github.com/jordanhubbard/literate-ai/issues/117",
+  "descriptor_read_candidate": {
+    "source_sha256": "118eaf712600436acccd83ac2b69b68cce71c486405ea473330cbe5d50d744ac",
+    "reviewed_driver_identity": "sha256:be82990eed48623266e27522a5240cc771ed0ec6a66de4cffa7b52aef21f37b4",
+    "open_boundary_symlink_baseline": "Two subcases reproduce acceptance of a link to the original inode; both now refuse",
+    "focused_controller_cases": 6,
+    "native_source_import_diagnostic": {
+      "source_sha256": "9635766e58636059fbc5fe506d4b34a7fd4eb6fc08e6b85d72a2b08a996f90b2",
+      "samples": [
+        {
+          "name": "baseline",
+          "seconds": 8.553,
+          "identity": "sha256:7de0ee7ad86921645c2f2a01164ecce7b2c6785d00d104805dc2f888f17530ee",
+          "members": 1235
+        },
+        {
+          "name": "candidate",
+          "seconds": 7.056,
+          "identity": "sha256:7de0ee7ad86921645c2f2a01164ecce7b2c6785d00d104805dc2f888f17530ee",
+          "members": 1235
+        },
+        {
+          "name": "candidate",
+          "seconds": 7.59,
+          "identity": "sha256:7de0ee7ad86921645c2f2a01164ecce7b2c6785d00d104805dc2f888f17530ee",
+          "members": 1235
+        },
+        {
+          "name": "baseline",
+          "seconds": 8.582,
+          "identity": "sha256:7de0ee7ad86921645c2f2a01164ecce7b2c6785d00d104805dc2f888f17530ee",
+          "members": 1235
+        }
+      ],
+      "tests": {
+        "selected": 6,
+        "failures": 0,
+        "errors": 0,
+        "skipped": 0
+      },
+      "test_output": "test_editable_installations_are_explicitly_rejected (test_candidate_binding.StandardLifecycleBindingAdapterTests.test_editable_installations_are_explicitly_rejected) ... ok\ntest_malformed_and_excessive_record_inventories_refuse (test_candidate_binding.StandardLifecycleBindingAdapterTests.test_malformed_and_excessive_record_inventories_refuse) ... ok\ntest_member_redirected_to_its_original_inode_at_open_refuses (test_candidate_binding.StandardLifecycleBindingAdapterTests.test_member_redirected_to_its_original_inode_at_open_refuses) ... ok\ntest_missing_recorded_nonmandatory_member_refuses (test_candidate_binding.StandardLifecycleBindingAdapterTests.test_missing_recorded_nonmandatory_member_refuses) ... ok\ntest_missing_symlinked_and_incomplete_payload_members_are_rejected (test_candidate_binding.StandardLifecycleBindingAdapterTests.test_missing_symlinked_and_incomplete_payload_members_are_rejected) ... ok\ntest_record_inventory_skips_prefilter_but_reobserves_actual_bytes (test_candidate_binding.StandardLifecycleBindingAdapterTests.test_record_inventory_skips_prefilter_but_reobserves_actual_bytes) ... ok\n\n----------------------------------------------------------------------\nRan 6 tests in 1.589s\n\nOK\n",
+      "diagnostic_only": true,
+      "installed_candidate_qualified": false
+    },
+    "native_diagnostic_source_scope": "Separately imported pre-format source against the previously installed wheel; no installed-candidate qualification",
+    "fresh_byte_reads_preserved": true,
+    "full_regression": {
+      "selected": 2202,
+      "passed": 2132,
+      "skipped": 70,
+      "failed": 0,
+      "seconds": 908.832,
+      "workers": 12,
+      "uninterrupted": true,
+      "report_sha256": "a480e613d38a2edea6e47db4068c30096f2b71eaafa7e46a66124fec1c587da3"
+    },
+    "clean_wheel": {
+      "passed": true,
+      "seconds": 569.152,
+      "target": "Linux x86_64 / Python 3.14",
+      "wheel_identity": "sha256:359cbf0f25a9b22f1dc5e276c42030b8a539ae17878c1db374f3b23dd73a81db",
+      "distribution_identity": "sha256:196504b9d858d877009293736ddcfef0bd28c68fdcb1dcc3c6ffbd9784fb02e7",
+      "members": 1235,
+      "tamper_refusal": "standard_binding.changed"
+    },
+    "current_host_receipt": "current after supported receipt promotion",
+    "canonical_native_cli_qualified": false,
+    "directory_relative_metadata_probe": {
+      "members": 1235,
+      "parent_directories": 228,
+      "repeats": 2,
+      "metadata_equal": true,
+      "absolute_seconds": 4.945896414981689,
+      "directory_relative_seconds": 5.959457288961858,
+      "decision": "Not adopted; measured path was slower"
+    },
+    "source_revision": "4ed7e5a1024b513a497f3608e053d759f7bce952",
+    "installed_freebsd_controls": {
+      "selected": 6,
+      "passed": 6,
+      "skipped": 0,
+      "failed": 0,
+      "seconds": 1.459,
+      "module_sha256": "118eaf712600436acccd83ac2b69b68cce71c486405ea473330cbe5d50d744ac",
+      "module_from_installed_prefix": true,
+      "canonical_native_cli_qualified": false
+    },
+    "offline_freebsd_bootstrap_seconds": 113.05,
+    "native_project_initialization_seconds": 97.78,
+    "canonical_native_cli_status": {
+      "status": "failed",
+      "reason": "Authorized public build timed out after 3600 seconds",
+      "authorized_execution_budget_seconds": 3600,
+      "supervised_total_seconds": 4103.472,
+      "exit_code": 1,
+      "owned_source_server_terminal": 0,
+      "admission_earned": false,
+      "bootstrap_compiler_source_admitted": false
+    }
+  },
+  "framework_current_lifecycle_receipt": {
+    "state": "current",
+    "passed": true,
+    "tests": 228,
+    "seconds": 1823.13,
+    "receipt_identity": "sha256:b6d7329d67710bfbab7c4658333a26c98ee4216d97e2f40bcd4da0ee98098bbd",
+    "finalized_candidate_identity": "sha256:84024d79d87c08197d4ae3638af01a241d3c8ffa9b19cf4c803a8affbb705ce0",
+    "driver_implementation_identity": "sha256:be82990eed48623266e27522a5240cc771ed0ec6a66de4cffa7b52aef21f37b4",
+    "promotion": "litai project test-receipt update",
+    "verify_current": true
+  },
+  "canonical_native_cli_qualified": false,
+  "native_source_built_compiler_admitted": false,
+  "product_current_receipt": false,
+  "release_acceptance": false
+}

@@ -1,0 +1,183 @@
+{
+  "schema": "daemonarchy/original-native-suite-guest-probe@1",
+  "status": "complete-original-inventory-passed-manually-scoped-probe",
+  "framework_grants_implemented": false,
+  "lifecycle_acceptance": false,
+  "source_sdk_admitted": false,
+  "per_unit_packages_qualified": false,
+  "physical_acceptance": false,
+  "compiled_products_origin": "Previously retained native run v3; see retained-run-v3.json in the source repository. Products were transferred unchanged, not rebuilt in this guest.",
+  "runtime_tools": "Official disposable FreeBSD snapshot base Kyua 0.15.0, ATF and runtime libraries; this probe does not admit their source provenance.",
+  "guest_image_sha256": "96fc03aa32be69a406c50db17927019af1f755b3074de44f8aabcb55c5330428",
+  "root_uid": 0,
+  "secondary_identity": {
+    "name": "litaitest",
+    "uid": 2001,
+    "gid": 2001,
+    "groups": [
+      2001
+    ]
+  },
+  "original_inventory_sha256": "f27b4e827b42b0d553a8603ad2842a0dd8e95f0f2448890e2eaa89d322f5146e",
+  "original_report_sha256": "d5de391a49f80e0cdb060938632bd90d7686e2b1e46e3086912ca5ed5e3b0ace",
+  "original_database_sha256": "79807dabf4d5ddc77b0afafd4bb3c0535d6dd3d1a2e33fe69e5bf1afc411dd75",
+  "passed": 24,
+  "skipped": 0,
+  "failed": 0,
+  "broken": 0,
+  "exit_code": 0,
+  "cases": [
+    {
+      "id": "parser.expand_generic",
+      "original_outcome": "passed",
+      "original_reason": null
+    },
+    {
+      "id": "parser.expand_number__bad",
+      "original_outcome": "passed",
+      "original_reason": null
+    },
+    {
+      "id": "parser.expand_number__ok",
+      "original_outcome": "passed",
+      "original_reason": null
+    },
+    {
+      "id": "parser.expand_unsigned",
+      "original_outcome": "passed",
+      "original_reason": null
+    },
+    {
+      "id": "truncate.bad_refer",
+      "original_outcome": "passed",
+      "original_reason": null
+    },
+    {
+      "id": "truncate.bad_truncate",
+      "original_outcome": "passed",
+      "original_reason": null
+    },
+    {
+      "id": "truncate.cannot_open",
+      "original_outcome": "passed",
+      "original_reason": null
+    },
+    {
+      "id": "truncate.deallocate",
+      "original_outcome": "passed",
+      "original_reason": null
+    },
+    {
+      "id": "truncate.illegal_option",
+      "original_outcome": "passed",
+      "original_reason": null
+    },
+    {
+      "id": "truncate.illegal_size",
+      "original_outcome": "passed",
+      "original_reason": null
+    },
+    {
+      "id": "truncate.negative",
+      "original_outcome": "passed",
+      "original_reason": null
+    },
+    {
+      "id": "truncate.new_absolute_grow",
+      "original_outcome": "passed",
+      "original_reason": null
+    },
+    {
+      "id": "truncate.new_absolute_shrink",
+      "original_outcome": "passed",
+      "original_reason": null
+    },
+    {
+      "id": "truncate.new_relative_grow",
+      "original_outcome": "passed",
+      "original_reason": null
+    },
+    {
+      "id": "truncate.new_relative_shrink",
+      "original_outcome": "passed",
+      "original_reason": null
+    },
+    {
+      "id": "truncate.new_zero",
+      "original_outcome": "passed",
+      "original_reason": null
+    },
+    {
+      "id": "truncate.no_files",
+      "original_outcome": "passed",
+      "original_reason": null
+    },
+    {
+      "id": "truncate.opt_c",
+      "original_outcome": "passed",
+      "original_reason": null
+    },
+    {
+      "id": "truncate.opt_rs",
+      "original_outcome": "passed",
+      "original_reason": null
+    },
+    {
+      "id": "truncate.reference",
+      "original_outcome": "passed",
+      "original_reason": null
+    },
+    {
+      "id": "truncate.rounddown",
+      "original_outcome": "passed",
+      "original_reason": null
+    },
+    {
+      "id": "truncate.rounddown_zero",
+      "original_outcome": "passed",
+      "original_reason": null
+    },
+    {
+      "id": "truncate.roundup",
+      "original_outcome": "passed",
+      "original_reason": null
+    },
+    {
+      "id": "truncate.too_large_size",
+      "original_outcome": "passed",
+      "original_reason": null
+    }
+  ],
+  "scope": {
+    "fixture_write_inheritance": true,
+    "unrelated_resources_default_denied": true,
+    "preexisting_acls_restored_exactly": true,
+    "accounts_unchanged": true,
+    "payload_unchanged": true,
+    "framework_descriptor_custody": false
+  },
+  "payload_sha256": {
+    "products/bin/truncate": "e7c8b6548f5be5414a0224b891077fb4d1cfd915ab9dd53499974af203272133",
+    "products/tests/expand_number_test": "f20e7a842651ab74ecdc61e484799319442dbd328135aa5f0b21ce004ea07375",
+    "products/tests/truncate_test.body": "2d88c97184e274a8acbcb9bc2d56eb26a590ae8fe1205e3bb1be3d34841e7ca0",
+    "products/tests/truncate_test": "7c11d199f4dbbda168ab3a7e5ea0a52a0d9ca78c0b20b923f103e9d5dc7c7a49",
+    "products/tests/Kyuafile": "dd533946e8cf1c9003fdd0e8368f80cfbb89f102c6288a05d5d2a2d7ab39177f"
+  },
+  "probe_script_sha256": "b38151715634f5f1dc6a406118f08d7ef193516d0f2cb57f569d552dfbc7dda9",
+  "probe_result_sha256": "a8e920dbe5fb71b5def6b6f69a51cfe8cdc8d35915aceb878d62abc9baa44e65",
+  "verbose_report_sha256": "44b2f292d0e36b612b16562d5bad9e5297d911adfaaa45ed5adf968f7f05e1f8",
+  "negative_probe": {
+    "preserved": true,
+    "passed": 22,
+    "broken": 2,
+    "skipped": 0,
+    "cause": "Default-deny inheritance also denied ATF temporary/result writes within the explicitly writable fixture subtree.",
+    "preexisting_acls_restored_exactly": true,
+    "report_sha256": "cd386a707a123064d38d903338bd741a8abede97e6af85428acbb7d5960bb428"
+  },
+  "remaining": [
+    "Trusted live disposable-allocation authority and descriptor-based scoped permission owner.",
+    "Current identity, grant, command and cleanup evidence integrated into retained lifecycle admission.",
+    "Installed framework execution, independent acceptance and per-unit package qualification."
+  ]
+}

@@ -1,0 +1,28 @@
+{
+  "acceptance": "not-qualified",
+  "canonical_component_execution_qualified": false,
+  "complete_action_graph": false,
+  "configurations": {
+    "sys/amd64/conf/GENERIC": "b4116c63f993f867909bd0ae220bd013b25b812394240915066d66c7a1a08d54",
+    "tools/daemonarchy/src.conf": "1af9ffb1275f998385d8d4da37346bae4b31fe62e0730ec8ed5b59a2d80fc4be"
+  },
+  "event": "started",
+  "independent_output_from_failed_attempt": true,
+  "jobs": 12,
+  "kernel": "GENERIC",
+  "meta_verbosity": "disabled",
+  "package_version": "16.0.snap20261019101502.7d93dff0e80a.baseline.filemon",
+  "per_unit_pkg_qualified": false,
+  "performance_gain_qualified": false,
+  "plan_identity": "14513628ca7e81d797fd9cab7879a3cbbb06fbd10cc713f1873eb463148e7bab",
+  "profile": "baseline",
+  "schema": "daemonarchy/native-traced-build-start@1",
+  "source_revision": "7d93dff0e80a96734f5c0ebe1a48fe378bc3b876",
+  "source_tree": "892ad27a0c35fa679dbaafe213219f6336ec24c9",
+  "target": "amd64",
+  "target_arch": "amd64",
+  "trace_mode": "filemon",
+  "upstream_base": "bdaddb76ef1b9d5537f4a76cff01cdb4795804a4",
+  "worker_feature_preflight_passed": true,
+  "worker_resource_preflight_passed": true
+}
