@@ -104,8 +104,14 @@ It yields `daemonarchy-1.1.1,1`, `omarchy-4.0.4_24` and
 DRM; the patched Omarchy QML contains FreeBSD Wi-Fi and debugger status, and
 the Radeon sizing-helper regression passes against the patched source.
 Project authority and native locks pass, while the lifecycle receipt is still
-missing. A full dependency plan and package build at this combined head remain
-open; no 1.2 desktop tag or final image exists.
+missing. The exact 30-origin native `poudriere bulk -n -b latest` at this head
+finished with exit 0 on the October 19 CURRENT jail: 1,469 queued, 1,207
+official packages fetched, 262 local builds planned, and zero failed, skipped
+or ignored. Of the 262 builds, 234 are GPU or Wi-Fi firmware flavors and 28 are
+other ports, including Daemonarchy, Omarchy, DRM and NVIDIA. Its retained log
+is under `16test20261019-omarchymacbookpreflight20261023/2026-10-23_09h26m22s`
+on the native worker. The corresponding full bulk and final source/kernel/jail
+coherence remain open; no 1.2 desktop tag or final image exists.
 
 A second disposable ports worktree refreshed PR #22 against FreeBSD ports
 `99fc0413c18d18fc6c9750f2265ae9e33811b918`, 592 commits beyond the
