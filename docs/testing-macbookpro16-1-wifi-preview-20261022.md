@@ -372,3 +372,12 @@ AP restored WPA and DHCP; the runtime pin remains active for diagnostic work.
 This bounded result shows steady traffic on one AP and a failure during
 unrestricted reassociation. It does not establish the cause of the failed
 handshake, reliable roaming or installer Wi-Fi.
+
+### Wired debugger during Wi-Fi installation
+
+The installer candidate now selects the wireless DHCP gateway after a Wi-Fi
+join even if a live Ethernet connection still owns the default route. It keeps
+that wired address and DHCP client for remote debugging. A disconnected wired
+interface follows the existing stale-lease cleanup path. The focused installer
+test covers both routes, but this behavior still needs a physical ISO install
+with Ethernet retained for the debugger and packages fetched over Wi-Fi.

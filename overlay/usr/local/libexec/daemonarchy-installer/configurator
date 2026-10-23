@@ -547,36 +547,38 @@ wifi_connect() {
   fi
   gateway_if=$(route -n get default 2>/dev/null | awk '/interface:/ { print $2; exit }')
   if [[ $gateway_if != wlan0 ]]; then
-    # A disconnected Ethernet adapter can retain its DHCP address and default
-    # route. Releasing that stale lease lets the already authenticated WLAN
-    # become the install path without requiring another password attempt.
-    # Never alter a wired adapter that still has carrier: it may be carrying
-    # the remote debugger.
+    # A wired adapter may own the default route even after Wi-Fi obtains a
+    # lease. Keep a live wired address for the debugger while selecting the
+    # wireless gateway for package downloads. Release a stale wired lease only
+    # when its cable has no carrier.
     lease_file=${WIFI_DHCLIENT_LEASEFILE:-/var/db/dhclient.leases.wlan0}
     router=$(awk '$1 == "option" && $2 == "routers" {
       gsub(/[;,]/, "", $3); value = $3
     } END { print value }' "$lease_file" 2>/dev/null || true)
     if [[ $gateway_if =~ ^[[:alnum:]_.-]+$ && $gateway_if != wlan* &&
           $router =~ ^([0-9]{1,3}\.){3}[0-9]{1,3}$ ]] &&
-       ifconfig "$gateway_if" 2>/dev/null | grep -Eq '^[[:space:]]*ether ' &&
-       ifconfig "$gateway_if" 2>/dev/null | grep -Eq 'status: (no carrier|inactive)'; then
-      wired_pidfile=${WIFI_WIRED_DHCLIENT_PIDFILE:-/var/run/dhclient/dhclient.$gateway_if.pid}
-      if [[ -r $wired_pidfile ]]; then
-        read -r dhcp_pid <"$wired_pidfile"
-        if [[ $dhcp_pid =~ ^[1-9][0-9]*$ ]]; then
-          dhcp_command=$(ps -p "$dhcp_pid" -o command= 2>/dev/null || true)
-          if [[ $dhcp_command == *"dhclient: $gateway_if"* ||
-                $dhcp_command == *"dhclient $gateway_if"* ]]; then
-            kill "$dhcp_pid" 2>/dev/null || true
+       ifconfig "$gateway_if" 2>/dev/null | grep -Eq '^[[:space:]]*ether '; then
+      if ifconfig "$gateway_if" 2>/dev/null | grep -Eq 'status: (no carrier|inactive)'; then
+        wired_pidfile=${WIFI_WIRED_DHCLIENT_PIDFILE:-/var/run/dhclient/dhclient.$gateway_if.pid}
+        if [[ -r $wired_pidfile ]]; then
+          read -r dhcp_pid <"$wired_pidfile"
+          if [[ $dhcp_pid =~ ^[1-9][0-9]*$ ]]; then
+            dhcp_command=$(ps -p "$dhcp_pid" -o command= 2>/dev/null || true)
+            if [[ $dhcp_command == *"dhclient: $gateway_if"* ||
+                  $dhcp_command == *"dhclient $gateway_if"* ]]; then
+              kill "$dhcp_pid" 2>/dev/null || true
+            fi
           fi
         fi
+        stale_addr=$(port_address "$gateway_if")
+        if [[ -n $stale_addr ]]; then
+          ifconfig "$gateway_if" inet "$stale_addr" delete >/dev/null 2>&1 || true
+        fi
+        route -q delete default >/dev/null 2>&1 || true
+        route -q add default "$router" -ifp wlan0 >/dev/null 2>&1 || true
+      else
+        route -q change default "$router" -ifp wlan0 >/dev/null 2>&1 || true
       fi
-      stale_addr=$(port_address "$gateway_if")
-      if [[ -n $stale_addr ]]; then
-        ifconfig "$gateway_if" inet "$stale_addr" delete >/dev/null 2>&1 || true
-      fi
-      route -q delete default >/dev/null 2>&1 || true
-      route -q add default "$router" -ifp wlan0 >/dev/null 2>&1 || true
       gateway_if=$(route -n get default 2>/dev/null | awk '/interface:/ { print $2; exit }')
     fi
   fi

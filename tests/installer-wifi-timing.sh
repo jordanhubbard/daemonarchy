@@ -66,13 +66,38 @@ fi
 grep -q 'em0 owns the default route' "$work/error"
 route() { printf '%s\n' 'interface: wlan0'; }
 
-# Pulling the cable can leave a DHCP address and default route behind. Once
-# the Wi-Fi lease exists, the installer must release only that stale wired
-# client and select the wireless gateway without asking for the password again.
+# Keep live Ethernet and its DHCP client for debugging, but send install
+# downloads over the newly authenticated Wi-Fi default route.
 export WIFI_DHCLIENT_LEASEFILE=$work/wlan0.lease
 export WIFI_WIRED_DHCLIENT_PIDFILE=$work/em0.pid
 printf 'lease {\n  option routers 192.0.2.1;\n}\n' >"$WIFI_DHCLIENT_LEASEFILE"
 printf '%s\n' 5678 >"$WIFI_WIRED_DHCLIENT_PIDFILE"
+ifconfig() {
+  case "$*" in
+    em0) printf '%s\n' 'ether 02:00:00:00:00:01' 'status: active' ;;
+    *) return 1 ;;
+  esac
+}
+route() {
+  case "$*" in
+    '-n get default')
+      if [[ -f $work/wireless-default ]]; then
+        printf '%s\n' 'interface: wlan0'
+      else
+        printf '%s\n' 'interface: em0'
+      fi ;;
+    '-q change default 192.0.2.1 -ifp wlan0') printf '%s\n' changed >"$work/wireless-default" ;;
+    *) return 1 ;;
+  esac
+}
+wifi_connect First example false
+[[ $(<"$work/wireless-default") == changed && $(<"$work/killed-pid") == 4321 &&
+   ! -e $work/wired-address && ! -e $work/error ]]
+rm "$work/wireless-default"
+
+# Pulling the cable can leave a DHCP address and default route behind. Once
+# the Wi-Fi lease exists, the installer must release only that stale wired
+# client and select the wireless gateway without asking for the password again.
 port_address() { [[ $1 == em0 ]] && echo 192.0.2.8 || echo 192.0.2.5; }
 ps() { printf '%s\n' 'dhclient: em0 (dhclient)'; }
 ifconfig() {
