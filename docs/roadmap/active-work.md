@@ -726,5 +726,6 @@ before claiming the observer optimization resolves that release blocker.
 - **Depends on:** none
 - **Implementation:**
   - [ ] Implement and natively exercise durable resumption, legacy adoption, boot-console startup and explicit Unpair; verify on the physical MacBook.
+  - [ ] Show the installed desktop's remote-debugging state in its menu bar while a grant or listener is active. Include whether the agent is connected, the listener address/port, and a clear path to revoke access; update promptly after reboot, disconnect and Unpair. The rescue menu is hidden once the desktop is up, so it cannot serve as the only local status display.
 - **Evidence:**
   - [ ] Native real-SSH persistence, existing lifecycle and delayed-network console fixtures pass. Physical reboot retains the same agent approval and host identity; manual Resume works. The DHCP-race correction then resumes unattended SSH about fifteen seconds into a further physical reboot, with unchanged approved client and host identity. Review/image integration remain pending.

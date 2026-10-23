@@ -631,6 +631,19 @@ the failing instruction.
 The prior dump device was `/dev/null`, so no crash image survived that hard
 hang. The machine's existing unused swap partition is now configured as a
 compressed dump device for future panics. A separate native-built diagnostic
-variant will test DMA allocations without publishing host DMA addresses to the
-firmware. Keep BCM4364 disabled in release images until this boundary is fixed
-and real wireless acceptance passes.
+variant successfully allocated and freed all eight DMA buffer sizes without
+publishing host DMA addresses to the firmware. A second variant used firmware
+TCM ring indices instead of host DMA indices. On the physical MacBook it passed
+ring setup, host-ready signaling, MSI handler registration and message-buffer
+initialization, including IOCTL, event and receive-buffer posting. Each bounded
+stage unloaded cleanly and left the desktop and SSH responsive.
+
+The next bounded variant enabled interrupts and sent one firmware-version
+request, stopping before network-interface attachment. During this probe the
+MacBook again stopped answering SSH and ICMP. The last completed bounded
+stage establishes a narrower failure boundary, but there is no live marker
+proving whether interrupt enablement, interrupt processing or the request
+triggered the hang. The configured dump device may capture a panic; a hard
+freeze still may not produce a dump. Do not infer that the candidate board
+file is qualified from the firmware handshake alone. Keep BCM4364 disabled in
+release images until this boundary is fixed and real wireless acceptance passes.

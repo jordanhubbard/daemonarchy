@@ -49,6 +49,11 @@ The recovery console restarts the listener when networking is available, keeping
 the same server fingerprint and approved client keys. The agent reconnects with
 its existing key; no new approval is required. An SSH disconnect or reboot does
 not end a hardware bring-up session. New keys still require console approval.
+On a fully booted desktop the rescue menu is not visible, so it cannot show
+whether a debugging grant, listener or active agent connection remains. A
+desktop menu-bar status and revocation control are tracked in DEBUG-002; until
+that is implemented, `remote-debug status` checks whether the listener is
+running and `remote-debug unpair` revokes the grant from a local root shell.
 
 If networking is not ready at startup, rescue option 2 offers **Resume remote
 debugging agent**. This reuses the retained grant without first deleting it.
