@@ -63,7 +63,12 @@ diagnostic evidence stay under `/var/db/daemonarchy/remote-debug`. The public
 file disappears on reboot until the boot watcher recreates its current state.
 On images without that panel integration, `remote-debug status` checks whether
 the listener is running and `remote-debug unpair` revokes the grant from a local
-root shell.
+root shell. `sudo daemonarchy-debug status --details` also prints whether a
+grant, approved agent, usable IPv4 address and listener exist. It returns 0
+only when the listener is running. If the listener stopped, run
+`sudo daemonarchy-debug resume` and check the detailed status again; inspect
+`/var/db/daemonarchy/remote-debug/sshd.log` if it still cannot listen. This
+local status shows no pairing keys or private observations.
 
 If networking is not ready at startup, rescue option 2 offers **Resume remote
 debugging agent**. This reuses the retained grant without first deleting it.

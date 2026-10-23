@@ -372,6 +372,32 @@ debug_unpair() {
   echo 'Remote debugging agent unpaired. Remote access and pairing state have been cleared.'
 }
 
+status_details() {
+  local grant=no approval=no listener=no port='' addresses=''
+  [[ $(id -u) == 0 && $(uname -s) == FreeBSD ]] || fail 'Requires FreeBSD root.'
+  if [[ -f $state/active ]]; then
+    grant=yes
+    compgen -G "$state/*.approved" >/dev/null && approval=yes
+    if [[ -f $state/port ]]; then IFS= read -r port <"$state/port" || true; fi
+  fi
+  session_running && listener=yes
+  addresses=$(network_addresses | paste -sd, -)
+  printf 'Grant: %s\nApproved agent: %s\nListener: %s\nIPv4 addresses: %s\nPort: %s\n' \
+    "$grant" "$approval" "$listener" "${addresses:-none}" "${port:-none}"
+  if [[ $listener == no ]]; then
+    if [[ $grant == no ]]; then
+      echo 'No retained debugging grant. Pair from the rescue console to enable access.'
+    elif [[ $approval == no ]]; then
+      echo 'No approved agent remains in the retained grant. Pair at the console.'
+    elif [[ -z $addresses ]]; then
+      echo 'No usable IPv4 address. Configure networking, then run daemonarchy-debug resume.'
+    else
+      echo 'The listener is stopped. Run daemonarchy-debug resume; inspect the private sshd.log if it fails.'
+    fi
+  fi
+  [[ $listener == yes ]]
+}
+
 show_status() {
   echo 'Daemonarchy remote debug mode'
   echo
@@ -514,7 +540,12 @@ case ${1:-shell} in
   shell|menu) debug_shell ;;
   listen) [[ $# -le 2 ]] || fail 'Usage: remote-debug listen [port]'; debug_listen "${2:-}" ;;
   resume) [[ $# == 1 ]] || exit 1; debug_resume ;;
-  status) [[ $# == 1 && $(id -u) == 0 ]] || exit 1; session_running ;;
+  status)
+    [[ $(id -u) == 0 ]] || exit 1
+    if [[ $# == 1 ]]; then session_running
+    elif [[ $# == 2 && $2 == --details ]]; then status_details
+    else exit 1
+    fi ;;
   publish-status) [[ $# == 1 && $(id -u) == 0 ]] || exit 1; publish_public_status ;;
   unpair) [[ $# == 1 ]] || fail 'Usage: remote-debug unpair'; debug_unpair ;;
   help) debug_help ;;

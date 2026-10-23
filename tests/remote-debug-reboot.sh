@@ -64,6 +64,10 @@ wait_for '^connected=0$' "$public_dir/status"
 grep -qx 'grant=1' "$public_dir/status" || fail 'public grant indicator missing'
 grep -qx 'listener=1' "$public_dir/status" || fail 'public listener indicator missing'
 grep -qx "port=$port" "$public_dir/status" || fail 'public listener port missing'
+"$work/remote-debug" status --details >"$work/status-running" || fail 'detailed status missed running listener'
+grep -qx 'Grant: yes' "$work/status-running" || fail 'detailed status missed retained grant'
+grep -qx 'Approved agent: yes' "$work/status-running" || fail 'detailed status missed approved agent'
+grep -qx 'Listener: yes' "$work/status-running" || fail 'detailed status missed running listener'
 [[ $(wc -l <"$public_dir/status") -eq 6 ]] || fail 'public status exposed unexpected fields'
 [[ $(stat -f %Lp "$public_dir/status") == 644 ]] || fail 'public status is not readable by the desktop'
 su -m nobody -c "grep -qx 'grant=1' '$public_dir/status'" || fail 'desktop user cannot read public status'
@@ -90,6 +94,22 @@ compgen -G "$work/state/*.approved" >/dev/null || fail 'approved key lost'
 "$work/remote-debug" _suspend "$(cat "$work/state/generation")"
 grep -qx 'grant=1' "$public_dir/status" || fail 'shutdown discarded public grant indicator'
 grep -qx 'listener=0' "$public_dir/status" || fail 'shutdown left listener marked active'
+if "$work/remote-debug" status --details >"$work/status-suspended"; then
+  fail 'detailed status reported a stopped listener as running'
+fi
+grep -qx 'Grant: yes' "$work/status-suspended" || fail 'detailed status lost retained grant'
+grep -qx 'Listener: no' "$work/status-suspended" || fail 'detailed status missed stopped listener'
+grep -q 'Run daemonarchy-debug resume' "$work/status-suspended" || fail 'detailed status omitted recovery step'
+approved=$(printf '%s\n' "$work"/state/*.approved)
+mv "$approved" "$approved.held"
+"$work/remote-debug" status --details >"$work/status-no-approval" && fail 'missing approval reported a listener'
+grep -qx 'Approved agent: no' "$work/status-no-approval" || fail 'detailed status missed missing approval'
+mv "$approved.held" "$approved"
+mv "$work/network-addresses" "$work/network-addresses.saved"
+printf 'network_addresses() { :; }\nnetwork_has_address() { return 1; }\n' >"$work/network-addresses"
+"$work/remote-debug" status --details >"$work/status-no-address" && fail 'missing address reported a listener'
+grep -qx 'IPv4 addresses: none' "$work/status-no-address" || fail 'detailed status missed missing address'
+mv "$work/network-addresses.saved" "$work/network-addresses"
 
 # A retained PID now belongs to an unrelated process after reboot.
 sleep 60 & unrelated=$!
@@ -114,6 +134,10 @@ ssh_client client 'sleep 60' >"$work/active-command" 2>&1 & client=$!
 wait_for '^connected=1$' "$public_dir/status"
 "$work/remote-debug" unpair
 grep -qx 'grant=0' "$public_dir/status" || fail 'unpair left public grant active'
+if "$work/remote-debug" status --details >"$work/status-unpaired"; then
+  fail 'detailed status reported an unpaired listener as running'
+fi
+grep -qx 'Grant: no' "$work/status-unpaired" || fail 'detailed status retained revoked grant'
 grep -qx 'connected=0' "$public_dir/status" || fail 'unpair left public connection active'
 if wait "$client"; then fail 'unpair left an authenticated connection alive'; fi
 client=''
