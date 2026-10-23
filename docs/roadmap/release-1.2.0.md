@@ -245,9 +245,21 @@ The current committed checkout catalogue still names the older source revision
 check will refuse these new sets until a matching signed catalogue is selected.
 An exact source checkout package for preflight revision `02984cfbe95c` has
 been built on the native worker from a complete, non-promisor shallow clone.
-Its builder receipt records two package parts and a 722,915,563-byte archive.
-The matching release sets still depend on the running buildworld and package
-bulk; the selected ports checkout package and signed catalogue are pending.
+Its final branch-matched builder receipt records two package parts. The
+corrected ports checkout package at `4e8640f85` has one part. The native
+checkout round-trip test passed with a slash-containing branch, package
+extraction, local edits and checksum rejection. The candidate catalogue pins
+both revisions and three package parts; publication and production repository
+signing remain pending. The old bulk was stopped after its DRM failure; a
+fresh jail and complete bulk await the running buildworld and release sets.
+
+A private authoring overlay has all four exact-hash MacBook firmware files and
+an importer-verified Apple recovery provenance stage. This lets the hardware
+test image attach Wi-Fi before network setup without redistributing the files
+in a public ISO. The four Secure Boot source patches apply to the selected
+source; an isolated development-certificate policy kernel and loader build is
+in progress. This does not establish production signing or firmware-enforced
+physical boot.
 
 The October 23 disposable source integration check merged the then-current
 [signed-firmware PR #29](https://github.com/jordanhubbard/daemonarchy/pull/29)
