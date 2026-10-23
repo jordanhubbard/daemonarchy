@@ -2,7 +2,12 @@
 # Verified Apple recovery firmware stays in a private live stage until install.
 # This file is sourced by the configurator and installer.
 
-APPLE_FIRMWARE_STAGE=${apple_firmware_stage:-${APPLE_FIRMWARE_STAGE:-/tmp/daemonarchy-apple-firmware-stage}}
+if [[ -z ${apple_firmware_stage:-${APPLE_FIRMWARE_STAGE:-}} &&
+      -f ${ISO_SHARE:-}/private-apple-stage/provenance.json ]]; then
+  APPLE_FIRMWARE_STAGE=$ISO_SHARE/private-apple-stage
+else
+  APPLE_FIRMWARE_STAGE=${apple_firmware_stage:-${APPLE_FIRMWARE_STAGE:-/tmp/daemonarchy-apple-firmware-stage}}
+fi
 APPLE_FIRMWARE_IMPORTER=${APPLE_FIRMWARE_IMPORTER:-$ISO_SHARE/import-apple-bcm4364-firmware.py}
 APPLE_FIRMWARE_NAMES=(
   brcmfmac4364b3-pcie.bin

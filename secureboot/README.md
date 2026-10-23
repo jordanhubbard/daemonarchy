@@ -84,6 +84,13 @@ input/output hashes, options and build epoch. A fixed `--epoch` can be recorded
 for subsequent builds; it must fall within the certificates' validity periods.
 The receipt is build evidence, not a native boot qualification.
 
+For the next MacBook candidate, pass `--base
+02984cfbe95c063f130ae20d7ea6ed520df88a8f` with a source checkout at that
+exact revision. The four policy and EFI patches applied cleanly to its Git
+index on the native worker; the policy kernel, loader and signed bundle still
+require a fresh build and qualification. Omitting `--base` retains the
+historical 1.1.1 source pin.
+
 For a retry, `--prepared-source /path/to/retained/worktree` avoids another
 checkout. The recipe compares every tracked source file against a temporary
 Git index containing exactly the pinned base plus the current patches, and

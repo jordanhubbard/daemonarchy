@@ -10,6 +10,7 @@ import json
 import os
 from pathlib import Path
 import platform
+import re
 import shutil
 import subprocess
 import tempfile
@@ -37,12 +38,13 @@ def build(args):
     if platform.system() != "FreeBSD" or platform.machine() != "amd64":
         raise ValueError("Run on a qualified native FreeBSD amd64 build worker")
     source = args.source.resolve(strict=True)
+    base = args.base
     out = args.out.resolve()
     if out.is_relative_to(source):
         raise ValueError("Output must be outside the selected system source tree")
     if out.exists():
         raise ValueError("Use a fresh output directory; retained build evidence is preserved")
-    if output("git", "-C", str(source), "rev-parse", "HEAD") != BASE:
+    if output("git", "-C", str(source), "rev-parse", "HEAD") != base:
         raise ValueError("Source HEAD does not match the qualified snapshot")
     subprocess.run(["git", "-C", str(source), "diff", "--quiet", "HEAD"], check=True)
     certs = [args.certificate.resolve(strict=True),
@@ -64,17 +66,17 @@ def build(args):
     worktree = args.prepared_source.resolve(strict=True) if args.prepared_source else out / "source"
     if args.prepared_source is None:
         subprocess.run(["git", "-C", str(source), "worktree", "add", "--detach",
-                        str(worktree), BASE], check=True)
+                        str(worktree), base], check=True)
         for candidate in patches:
             subprocess.run(["git", "-C", str(worktree), "apply", "--check", str(candidate)], check=True)
             subprocess.run(["git", "-C", str(worktree), "apply", str(candidate)], check=True)
     # A retained prepared worktree may save a checkout on a build retry, but it
     # must match the exact pinned base plus these patches, with no extra edits.
-    if output("git", "-C", str(worktree), "rev-parse", "HEAD") != BASE:
+    if output("git", "-C", str(worktree), "rev-parse", "HEAD") != base:
         raise ValueError("Prepared source HEAD differs from the qualified snapshot")
     with tempfile.TemporaryDirectory(prefix="daemonarchy-source-index-") as temporary:
         index_env = dict(os.environ, GIT_INDEX_FILE=str(Path(temporary) / "index"))
-        subprocess.run(["git", "-C", str(worktree), "read-tree", BASE], env=index_env, check=True)
+        subprocess.run(["git", "-C", str(worktree), "read-tree", base], env=index_env, check=True)
         for candidate in patches:
             subprocess.run(["git", "-C", str(worktree), "apply", "--cached", str(candidate)],
                            env=index_env, check=True)
@@ -128,7 +130,7 @@ def build(args):
          "WITHOUT_LOADER_VERIEXEC_VECTX=yes", "WITHOUT_LOADER_BIOS=yes")
     shutil.copyfile(normal_obj / obj_suffix / "stand/efi/loader_lua/loader_lua.efi",
                     out / "loader_normal.efi")
-    receipt = dict(schema=1, base_source=BASE, source_patch_sha256=sha(patch),
+    receipt = dict(schema=1, base_source=base, source_patch_sha256=sha(patch),
                    loader_patch_sha256=sha(loader_patch),
                    optional_verification_patch_sha256=sha(optional_patch),
                    cd9660_patch_sha256=sha(cd9660_patch),
@@ -147,6 +149,8 @@ def build(args):
 if __name__ == "__main__":
     parser = argparse.ArgumentParser(description=__doc__)
     parser.add_argument("--source", type=Path, required=True)
+    parser.add_argument("--base", default=BASE,
+                        help="exact source revision; defaults to the historical 1.1.1 input")
     parser.add_argument("--prepared-source", type=Path,
                         help="reuse a worktree containing exactly the pinned base plus current patches")
     parser.add_argument("--out", type=Path, required=True)
@@ -155,6 +159,8 @@ if __name__ == "__main__":
     parser.add_argument("--jobs", type=int, default=4)
     parser.add_argument("--epoch", type=int)
     args = parser.parse_args()
+    if not re.fullmatch(r"[0-9a-f]{40}", args.base):
+        parser.error("Use a 40-character source revision")
     if not 1 <= args.jobs <= 32 or (args.epoch is not None and args.epoch <= 0):
         parser.error("Use 1..32 build jobs and a positive build epoch")
     try:
