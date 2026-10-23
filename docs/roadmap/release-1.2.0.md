@@ -88,6 +88,18 @@ This is dependency planning, not a passing bulk. A clean full changed-port bulk,
 physical desktop check, source/ports pin and final artifact identity are still
 required before R12-18 can close.
 
+The October 23 disposable source integration check merged the exact current
+[signed-firmware PR #29](https://github.com/jordanhubbard/daemonarchy/pull/29)
+head `2cb0b460f003e986ca806015d55a388f9b0409d8` and
+[debug-status PR #30](https://github.com/jordanhubbard/daemonarchy/pull/30)
+head `326f95e5fee8fcc6df5583afb2100b38dd27449e` on `main`. The only
+conflict was the generated authority-review marker; recording the combined
+review produced identity `sha256:ab398cbd684b96dfebd1f6b3b3d8f9a1b366f7ebfbfb1d544c03c269034fb452`.
+The combined tree passed `litai project validate`, all 26 secure-boot unit
+tests and shell syntax checks. `litai verify` passed authority and locks but
+failed its missing committed test-receipt gate. This disposable preflight is
+merge preparation, not a native or physical release qualification.
+
 ## Closure rule
 
 A row closes only when its implementation and required native/VM/physical
