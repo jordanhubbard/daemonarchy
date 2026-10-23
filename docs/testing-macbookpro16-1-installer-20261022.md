@@ -388,3 +388,63 @@ immediately after binding. At the later queue timeout the entry for its first
 page reads zero. This narrows the next investigation to mapping retention or
 memory overwrite between initialization stages. It does not yet identify the
 writer or establish that an upstream power-management fix resolves it.
+
+A controlled build applies only CURRENT's runtime-PM header correction to the
+exact 1600028 source in a separate worktree, retaining the sixth diagnostic.
+Its module (SHA256
+`6f18dc061448b45fed7ce84489a22a613250ebd6981dd2eb7619da524e53e4a0`)
+builds natively and reproduces both the initially present writeback mapping and
+its later zero entry, with the same KGQ timeout. This upstream correction is
+therefore not a demonstrated fix for this failure. It remains distinct from a
+complete CURRENT kernel/ports refresh and its required hardware qualification.
+
+The refreshed EFI selection also completes a fresh native `stand` build. This
+adds build evidence for CURRENT plus the two timer commits; it does not transfer
+the preceding VM/physical loader results to the refreshed binary.
+
+## EFI framebuffer overlap and focused driver correction
+
+The seventh probe (SHA256
+`881a05fe1c5aa1d0d2c633dc6307b9ba61fc8ccf3ef2e5c92b6e00c16efb98e2`)
+records EFI framebuffer address `0xb0600000`, length `0x1ea0000`, dimensions
+3584 by 2240 and stride 3584 pixels. The GPU BAR begins at `0xb0000000`.
+The framebuffer therefore ends at VRAM offset `0x24a0000`, while the existing
+stolen-memory reservation covers only `0x1ea0000`. The GART table at VRAM
+offset `0x1f00000` lies within the still-active firmware console framebuffer.
+This is a concrete overlap between console drawing and driver page tables.
+
+Extra initialization-stage logging happened to retain the writeback mappings
+and allow that diagnostic to attach the GPU. This changed observation is not
+accepted as a correction. The focused FreeBSD-only change instead extends the
+reservation through the EFI framebuffer's end when its range belongs wholly to
+this GPU's BAR. It rejects missing, unrelated or invalid metadata and does not
+shrink an existing larger reservation. It imports no Linux implementation.
+
+All diagnostic edits were restored before building the focused candidate
+(SHA256 `1f8a9439b230082417c13887098c75424ef8c4d345981b30df7de16ed1047162`).
+Native tests compile its actual sizing helper and pass for the captured overlap,
+missing metadata, a different GPU, exact BAR boundaries, overflowing ranges and
+retaining a larger reservation. The first clean physical boot attaches `drmn0`
+and replaces `efifb` with `drmfb` without diagnostic logging. Repeat boots,
+packaging and desktop acceptance remain separate pending checks.
+
+The first ports package-build attempt exposed that USES=kmod derives SYSDIR
+from SRC_BASE and overrides a directly supplied SYSDIR. That build is rejected.
+The replacement uses the exact target source as SRC_BASE and a separate object
+root, retaining the matching 1600028 package identity. No package or hardware
+qualification is inferred from the rejected build.
+
+The focused candidate subsequently attaches on two more clean boots, for three
+consecutive physical passes with diagnostic logging absent and automatic remote
+approval retained. The login-screen compositor runs on the internal Apple panel
+at 3072 by 1920 and 60 Hz. A native Wayland EGL query against that compositor
+reports the AMD radeonsi Navi14 renderer, OpenGL 4.6 and Mesa 26.2.2. Keyboard and
+trackpad devices are enumerated. Operator confirmation of visible greeter,
+input behavior and a logged-in desktop remains pending; process startup and
+renderer queries alone do not satisfy that acceptance.
+
+The ports fix is also being carried onto owned integration revision
+`72c758ea367d0d4aa8108ad6738b04d42e2378d7`, which already includes the recent
+upstream ports refresh. The matching-target package build retains its original
+source selection separately. A clean cherry-pick or patch test is not treated as
+native package acceptance for a changed whole-tree selection.
