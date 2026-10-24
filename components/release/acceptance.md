@@ -14,7 +14,8 @@ actual native assembly/boot evidence; physical results follow artifact readiness
 
 - [scripts/verify-release-assets.py](../../scripts/verify-release-assets.py) binds
   staged public asset hashes to the release record and validates the signed boot
-  bundle. Its result covers artifact integrity only.
+  bundle. Its `--published` mode also checks the exact GitHub latest release,
+  tag target and uploaded digests. Its result covers artifact identity only.
 - [tests/live-image-runtime.sh](../../tests/live-image-runtime.sh)
 - [tests/live-image-budget.sh](../../tests/live-image-budget.sh)
 - [tests/checkout-kernel-identity.sh](../../tests/checkout-kernel-identity.sh)

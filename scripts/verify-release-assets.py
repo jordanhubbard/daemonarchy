@@ -45,8 +45,9 @@ def read_record(path):
         raise ValueError("Expected a canonical release version")
     if record.get("tag") != f"daemonarchy-{version}":
         raise ValueError("Release tag and version differ")
-    if not isinstance(record.get("source_commit"), str) or not COMMIT.fullmatch(record["source_commit"]):
-        raise ValueError("Release source commit is invalid")
+    for field in ("installer_commit", "source_commit"):
+        if not isinstance(record.get(field), str) or not COMMIT.fullmatch(record[field]):
+            raise ValueError(f"Release {field} is invalid")
     if not isinstance(record.get("osversion"), int) or isinstance(record["osversion"], bool):
         raise ValueError("Release OSVERSION is invalid")
     assets = record.get("assets")
@@ -129,14 +130,57 @@ def verify(record_path, directory):
     return record
 
 
+def github(path):
+    output = subprocess.check_output(
+        ["gh", "api", f"repos/jordanhubbard/daemonarchy/{path}"], text=True
+    )
+    return json.loads(output, object_pairs_hook=unique_pairs)
+
+
+def verify_published(record):
+    tag = record["tag"]
+    release = github(f"releases/tags/{tag}")
+    latest = github("releases/latest")
+    if (release.get("tag_name") != tag or release.get("draft") is not False
+            or release.get("prerelease") is not False
+            or release.get("target_commitish") != record["installer_commit"]
+            or release.get("id") != latest.get("id")):
+        raise ValueError("Published release is not the exact stable latest selection")
+    observed = release.get("assets")
+    if not isinstance(observed, list) or len(observed) != len(record["assets"]):
+        raise ValueError("Published asset count differs")
+    assets = {entry.get("name"): entry for entry in observed if isinstance(entry, dict)}
+    if set(assets) != set(record["assets"]) or len(assets) != len(observed):
+        raise ValueError("Published asset names differ")
+    for name, (size, identity) in record["assets"].items():
+        if assets[name].get("size") != size or assets[name].get("digest") != identity:
+            raise ValueError(f"Published asset differs: {name}")
+    reference = github(f"git/ref/tags/{tag}")
+    target = reference.get("object")
+    if not isinstance(target, dict):
+        raise ValueError("Published tag has no Git object")
+    if target.get("type") == "tag":
+        annotated = github(f"git/tags/{target.get('sha')}")
+        if annotated.get("tag") != tag:
+            raise ValueError("Annotated tag name differs")
+        target = annotated.get("object")
+    if not isinstance(target, dict) or target.get("type") != "commit" or target.get("sha") != record["installer_commit"]:
+        raise ValueError("Published tag does not select the reviewed product commit")
+
+
 if __name__ == "__main__":
     parser = argparse.ArgumentParser(description=__doc__)
     parser.add_argument("--record", type=Path, required=True)
     parser.add_argument("--assets", type=Path, required=True)
+    parser.add_argument("--published", action="store_true",
+                        help="also compare GitHub's stable latest release, tag and asset digests")
     args = parser.parse_args()
     try:
         selection = verify(args.record, args.assets)
+        if args.published:
+            verify_published(selection)
     except (ValueError, OSError, KeyError, TypeError, json.JSONDecodeError,
             subprocess.CalledProcessError) as error:
         parser.exit(1, f"Release asset verification failed: {error}\n")
-    print(f"Verified {len(selection['assets'])} staged assets and signed boot bundle for {selection['tag']}")
+    suffix = " and published stable release" if args.published else ""
+    print(f"Verified {len(selection['assets'])} staged assets and signed boot bundle{suffix} for {selection['tag']}")

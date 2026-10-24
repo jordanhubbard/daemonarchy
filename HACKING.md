@@ -797,6 +797,9 @@ coordinated operation.
    file, matching PEM/DER certificate, the detached boot-bundle signature,
    its internal files, and its source/OSVERSION identity. Native ISO runtime,
    physical hardware, signed feed and post-upload checks remain separate gates.
+   After publication, rerun the same command with `--published` to compare the
+   GitHub stable latest release, annotated tag target and all six uploaded
+   asset sizes and SHA-256 digests with the exact local record.
 
 3. Point the Download section at the top of README.md to the new release: release name, ISO and checksum links, SHA-256, and the `dd` example.
 4. If the release replaces one with a serious bug, say so at the top of the old release's notes.
