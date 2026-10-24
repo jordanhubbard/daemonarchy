@@ -1,0 +1,44 @@
+{
+  "schema": "daemonarchy/retained-source-change@1",
+  "work_id": "RELEASE-001",
+  "basis_revision": "bdf9d2d0637e49690b0560893dadf1da9104ab1f",
+  "historical_baseline": "verification/retained-inputs.json",
+  "historical_baseline_sha256": "5b8321e945e0dab3423941c2ec7e01389409a02b15a2c12c7648c6ed27c32c51",
+  "reason": "Bind 1.3.1 publication to exact retained native source, package, signing, ISO and MacBook evidence while preserving the unqualified LitAI lifecycle receipt for staged adoption.",
+  "replaced": [
+    {
+      "path": "scripts/release-check-1.3.1.py",
+      "owner": "release",
+      "sha256": "85b1230b230ddde03527a38103d2e1a6315b84b2fcffd13be365559ba26c5b85",
+      "executable": false
+    },
+    {
+      "path": ".github/workflows/native-graph.yml",
+      "owner": "release",
+      "sha256": "73ea6aec65d09f0179f9e9e8768c136266ac05346e27d7e44dd3847bbbf0d8e2",
+      "executable": false
+    }
+  ],
+  "candidate_files": [
+    {
+      "path": "scripts/release-check-1.3.1.py",
+      "owner": "release",
+      "sha256": "765c7ced353f738e396cce442c216c73e30144213dcaa8f7c1d2d8906e97757d",
+      "executable": false
+    },
+    {
+      "path": "tests/release-native-evidence.py",
+      "owner": "release",
+      "sha256": "fec043351ec69577768f91e058131808260c240ff54a662e4bd9a175c81d252a",
+      "executable": false
+    },
+    {
+      "path": ".github/workflows/native-graph.yml",
+      "owner": "release",
+      "sha256": "4b13a8964eb3370ba6f35b00761de6a0f5a9e19566921458e552f87278b8f47b",
+      "executable": false
+    }
+  ],
+  "authority": "original-source",
+  "lifecycle_receipt": false
+}

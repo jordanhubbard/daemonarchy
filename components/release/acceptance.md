@@ -16,6 +16,10 @@ actual native assembly/boot evidence; physical results follow artifact readiness
   staged public asset hashes to the release record and validates the signed boot
   bundle. Its `--published` mode also checks the exact GitHub latest release,
   tag target and uploaded digests. Its result covers artifact identity only.
+- [scripts/release-check-1.3.1.py](../../scripts/release-check-1.3.1.py) binds
+  the private native source, Poudriere, signing and ISO result files to the same
+  release record and ISO hash. It requires current LitAI authority and locks;
+  the unqualified full LitAI lifecycle receipt retains its separate status.
 - [tests/live-image-runtime.sh](../../tests/live-image-runtime.sh)
 - [tests/live-image-budget.sh](../../tests/live-image-budget.sh)
 - [tests/checkout-kernel-identity.sh](../../tests/checkout-kernel-identity.sh)

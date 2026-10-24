@@ -43,17 +43,18 @@ been built or installed. The new package signing key has a separately held
 encrypted recovery copy with a verified restore. The production boot signing
 key and certificate are staged on the native worker with root-only access;
 the final signed bundle remains pending. The signed application feed, the public ISO, a fresh
-MacBook install, retained native receipt and production boot attestation are
+MacBook install, retained native build evidence and production boot attestation are
 still release gates. The MSI early kernel boot remains unqualified and is not
 claimed by the MacBook release notes.
 
 `litai verify` currently fails its declared receipt gate because
-`verification/current.json` is absent. The merged `literate.release.json`
-invokes a fail-closed gate for exact native receipt, signed artifacts, image
-identity and physical MacBook acceptance. The read-only contribution sweep
-has classified historical 1.2.0 backlog issue (#11) as deferred from 1.3.1;
-the cross-repository Literate AI release work is tracked for 1.4 in issue #39.
-No historical log is a substitute for the retained receipt.
+`verification/current.json` is absent. The 1.3.1 release gate separately checks
+current LitAI authority and locks, then requires a hashed native build record,
+signed artifacts, image identity and physical MacBook acceptance. That native
+record binds actual source, ports, signing and ISO results without asserting a
+passing LitAI lifecycle receipt. Issues #11 and #39 have explicit 1.3.1
+deferrals and 1.4.0 milestones; the complete LitAI release graph remains open.
+No historical log is a substitute for a current native result or LitAI receipt.
 
 ### [x] ADOPT-001 — Establish product-wide Literate AI authority
 

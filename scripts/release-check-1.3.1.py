@@ -5,6 +5,7 @@ import hashlib
 import json
 import os
 from pathlib import Path
+import re
 import subprocess
 import sys
 
@@ -19,6 +20,14 @@ CHECKS = (
     "trackpad", "debugger_resume", "signed_boot_chain", "untrusted_boot_rejected",
     "package_upgrade",
 )
+NATIVE_EVIDENCE = frozenset((
+    "source-world.log", "source-kernel.log", "source-release-sets.log",
+    "source-build.exit", "secureboot-build.exit", "bulk.log", "bulk.exit",
+    "package-manifest.json", "ports.built", "app-feed.log", "app-feed.exit",
+    "boot-bundle.log", "boot-bundle.exit", "iso-build.log", "iso.exit",
+))
+NATIVE_RESULTS = frozenset(name for name in NATIVE_EVIDENCE if name.endswith(".exit"))
+HEX = re.compile(r"[0-9a-f]{64}\Z")
 
 
 def require(condition, message):
@@ -57,6 +66,69 @@ def digest(path):
         return hashlib.file_digest(stream, "sha256").hexdigest()
 
 
+def tail_contains(path, marker):
+    with path.open("rb") as stream:
+        stream.seek(0, os.SEEK_END)
+        stream.seek(max(0, stream.tell() - 65536))
+        return marker in stream.read()
+
+
+def native_evidence(record, iso_sha256):
+    """Bind the existing native build path to retained, exact release evidence.
+
+    Literate AI's full project receipt remains an open 1.4 adoption task. This
+    1.3.1 gate checks its current authority and locks separately, then requires
+    the native build, signed feed, signed boot and ISO outputs used for release.
+    """
+    path = external_file("DAEMONARCHY_NATIVE_RECORD")
+    require(record.get("native_evidence_sha256") == digest(path),
+            "native evidence record differs from release selection")
+    native = document(path)
+    require(native.get("schema") == "daemonarchy/native-release-evidence@1"
+            and native.get("source_commit") == SOURCE
+            and native.get("ports_commit") == PORTS
+            and native.get("desktop_commit") == DESKTOP
+            and native.get("iso_installer_commit") == ISO_PRODUCT
+            and native.get("osversion") == 1600029
+            and native.get("iso_sha256") == iso_sha256,
+            "native evidence selects other release inputs")
+    entries = native.get("evidence")
+    require(isinstance(entries, dict) and set(entries) == NATIVE_EVIDENCE,
+            "native evidence inventory is incomplete")
+    root = Path(os.environ.get("DAEMONARCHY_NATIVE_EVIDENCE_ROOT", ""))
+    require(root.is_absolute() and root.is_dir() and not root.is_symlink(),
+            "set DAEMONARCHY_NATIVE_EVIDENCE_ROOT to the retained native logs")
+    paths = {}
+    for name, expected in entries.items():
+        require(isinstance(expected, str) and HEX.fullmatch(expected),
+                "invalid native evidence digest: " + name)
+        evidence = root / name
+        require(evidence.is_file() and not evidence.is_symlink()
+                and digest(evidence) == expected,
+                "native evidence is missing or differs: " + name)
+        paths[name] = evidence
+    for name in NATIVE_RESULTS:
+        require(paths[name].read_bytes() == b"0\n", "native result failed: " + name)
+    require(tail_contains(paths["source-world.log"], b">>> World build completed")
+            and tail_contains(paths["source-kernel.log"],
+                              b">>> Kernel build for GENERIC completed"),
+            "native source build completion is absent")
+    manifest = document(paths["package-manifest.json"])
+    require(manifest.get("source_revision") == SOURCE
+            and manifest.get("ports_revision") == PORTS
+            and manifest.get("jail_osversion") == 1600029,
+            "native package manifest selects other source or ports")
+    packages = manifest.get("packages")
+    require(isinstance(packages, dict)
+            and {"daemonarchy-1.3.1,1.pkg", "dotnet-9.0.14.pkg"} <= set(packages),
+            "native desktop or required dotnet package is absent")
+    require(manifest.get("built_sha256") == digest(paths["ports.built"]),
+            "native successful-build list differs from package manifest")
+    require(any(line.split()[:2] == ["lang/dotnet", "dotnet-9.0.14"]
+                for line in paths["ports.built"].read_text().splitlines()),
+            "native dotnet build result is absent")
+
+
 def public_feed(tag):
     payload = subprocess.check_output(
         ["gh", "api", f"repos/jordanhubbard/daemonarchy/releases/tags/{tag}"],
@@ -87,7 +159,7 @@ def main():
     require(record.get("installer_commit") == head, "release record selects another product commit")
     run("git", "merge-base", "--is-ancestor", ISO_PRODUCT, head)
 
-    run("litai", "verify")
+    run("litai", "verify", "--gate", "authority", "--gate", "locks")
 
     assets = os.environ.get("DAEMONARCHY_RELEASE_ASSETS", "")
     require(bool(assets), "set DAEMONARCHY_RELEASE_ASSETS to the reviewed local stage")
@@ -97,6 +169,7 @@ def main():
         "--assets", str(stage))
     iso = stage / "daemonarchy-1.3.1-amd64.iso"
     run("sh", "scripts/check-image-size.sh", str(iso))
+    native_evidence(record, record["assets"][iso.name][1].removeprefix("sha256:"))
 
     hardware = document(external_file("DAEMONARCHY_HARDWARE_RECORD"))
     require(hardware.get("schema") == "daemonarchy/macbook-acceptance@1"
@@ -129,7 +202,7 @@ def main():
 
     public_feed("checkouts-16-amd64-1.3.1")
     public_feed("packages-16-amd64-1.3.1")
-    print("1.3.1 release gate passed for the exact native receipt, ISO, feeds and MacBook evidence")
+    print("1.3.1 release gate passed for exact native evidence, ISO, feeds and MacBook acceptance")
 
 
 if __name__ == "__main__":

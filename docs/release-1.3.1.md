@@ -52,7 +52,9 @@ from the final 1.3.1 ISO.
   ports revisions; installation from the final ISO remains open.
 - Assemble the public ISO without private firmware or development signing
   credentials. Verify its exact inputs, SHA-256, signed boot bundle, production
-  certificate, and installed package and module inventory.
+  certificate, installed package and module inventory, and the retained native
+  build evidence bound to the release record. LitAI's broader project receipt
+  remains open under its staged adoption work.
 - Run the [MacBook acceptance plan](testing-macbookpro16-1-1.3.1.md) from an
   erased disk using Wi-Fi for installation. Confirm unattended autoboot,
   storage integrity, desktop input, Wi-Fi traffic and reboot, debugger recovery,
