@@ -24,8 +24,8 @@ Component discovery, build-performance and operator-development work.
   The exact heads merge cleanly at `a1860ae9b780`; hosted controller and
   native-loader checks must pass at that head. The active private ISO bulk
   still uses source `02984cfbe95c`. A separate exact-source world, kernel and
-  release-set build is queued after that preview finishes. It currently targets
-  the earlier MacBook source head `75a3f211e776`.
+  release-set build is queued after that preview finishes and targets the
+  combined source head `a1860ae9b780`.
 - [Ports PR #24](https://github.com/jordanhubbard/daemonarchy-ports/pull/24)
   is the selected MacBook ports head `4e8640f85f8e`. Its fresh-jail full bulk
   is active. Keep the selected checkout and package closure pinned through
