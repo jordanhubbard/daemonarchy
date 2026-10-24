@@ -31,9 +31,11 @@ Component discovery, build-performance and operator-development work.
   release-set build is queued after that preview finishes and targets the
   combined source head `a1860ae9b780`.
 - [Ports PR #24](https://github.com/jordanhubbard/daemonarchy-ports/pull/24)
-  is the selected MacBook ports head `4e8640f85f8e`. Its fresh-jail full bulk
-  is active. Keep the selected checkout and package closure pinned through
-  image construction and physical testing.
+  is the private-preview MacBook ports head `4e8640f85f8e`. Its fresh-jail
+  full bulk is active. [Ports follow-on PR #25](https://github.com/jordanhubbard/daemonarchy-ports/pull/25)
+  carries the later protected Wi-Fi credential prompt onto that head at
+  `a7cbe897`; it needs an exact native package build and final-image acceptance.
+  Keep each checkout and package closure pinned through its own image run.
 - [MSI diagnosis PR #26](https://github.com/jordanhubbard/daemonarchy/pull/26)
   and [early-network PR #28](https://github.com/jordanhubbard/daemonarchy/pull/28)
   remain separate from the MacBook image path. Integrate and qualify their
