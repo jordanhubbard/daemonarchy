@@ -13,8 +13,9 @@
   after initial lag. These fixes are merged into source and ports `main`, but
   are not yet in a published image or a fully qualified normal-boot kernel.
 - Record the MacBook Pro 16 fatal NVMe event reproduced during installer package
-  extraction. Storage correction, BCM4364 Wi-Fi driver and firmware integration,
-  sustained input acceptance, and full physical acceptance remain open.
+  extraction. Its cause and fresh-image storage I/O acceptance remain open. The
+  BCM4364 driver and firmware handoff are integrated as a release candidate;
+  sustained input and full physical acceptance from that image remain open.
 - Identify the MacBook's BCM4364 revision 4, TCM geometry and B3 firmware path
   on physical hardware. A private FreeBSD-native diagnostic module reaches
   firmware protocol 7, attaches to net80211 and repeatedly scans nearby access
@@ -77,6 +78,20 @@
   Wired networking recovered after selecting its route. S3 qualification on
   the new image remains open; see
   `docs/testing-macbookpro16-1-s3-20261024.md`.
+- Merge the reviewed product, FreeBSD source and ports branches into their
+  respective main branches. The selected source incorporates FreeBSD CURRENT
+  through `a3d1d4e8`; all eight hosted source checks pass at `d63d77f4`.
+  Ports `7e417dae` retains the reviewed package baseline and Chromium while
+  the exact native world, kernel, package and image builds continue.
+- Stage a signed optional source and ports checkout feed for those exact commits.
+  A native client authenticated and installed its seed packages and reproduced
+  the selected trees; the feed is not yet published or tested from the final ISO.
+  Prepare a replacement Secure Boot certificate as a separate candidate because
+  the 1.1 private boot key is not on the release builder. Physical db enrollment,
+  enforced boot and signed update/recovery acceptance remain open.
+- Track the complete network bootloader debugger and MSI early-kernel capture
+  under 1.3.2. This MacBook candidate does not claim MSI installation or
+  attestation.
 
 
 This history covers the installer repository from its first commit and all GitHub
