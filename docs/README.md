@@ -5,6 +5,7 @@ commands remain in root `HACKING.md`. This index makes the retained evidence
 reachable without changing its historical scope.
 
 - [Application note: MacBook Pro 16-inch (2019)](application-note-macbookpro16-1.md)
+- [MacBookPro16,1 physical acceptance for 1.3.1](testing-macbookpro16-1-1.3.1.md)
 - [Product architecture and acceptance traceability](architecture/design-traceability.md)
 - [Enterprise Wi-Fi (1.1 / 1.1.1)](enterprise-wifi.md)
 - [FreeBSD application and menu policy](freebsd-application-policy.md)
