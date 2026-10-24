@@ -1,0 +1,55 @@
+{
+  "schema": "daemonarchy/checkout-catalog-development@1",
+  "scope": "Candidate package and local native client verification; not a published 1.3.1 release or installed-ISO result",
+  "source_revision": "faac40107e936c2e133bd938ca56097d3cfed1c4",
+  "ports_revision": "efb8f848465553e178c4341154f5b8e11953cf8a",
+  "tracking_branches": {
+    "source": "preflight/release-1.3.1-source-plus-onboarding",
+    "ports": "preflight/release-1.3.1-ports-20261024"
+  },
+  "packages": [
+    {
+      "name": "daemonarchy-ports-checkout-000-20261023.gefb8f8484655.pkg",
+      "sha256": "b6722632129feb4f0d5c8d9e277d9c871d9da2eb13f4ef5ef046c3cc3b96bf87",
+      "bytes": 238252870
+    },
+    {
+      "name": "daemonarchy-src-checkout-000-20261023.gfaac40107e93.pkg",
+      "sha256": "ec47e9335176e5ff4ce3f79164dc5665babb99822588ee9669275933890dc1e9",
+      "bytes": 536743137
+    },
+    {
+      "name": "daemonarchy-src-checkout-001-20261023.gfaac40107e93.pkg",
+      "sha256": "f3ddda9b505ddd8728439de911a5089cf2ce5ab955596f8de91e05a5b22caaff",
+      "bytes": 181206212
+    }
+  ],
+  "catalog_sha256": "3c94abc6d534a331fcbfaebce70082d16fdb1dd542dc9962b9fceb070c321bee",
+  "signed_packagesite_sha256": "f15778abfc16b7a207445cd27d67bc8cbc215929d670313f8d9933f9d064c52c",
+  "signing_public_key_der_sha256": "67986b400f28a49e99df0f1f3368f60aca8064d5dc00094700ba1a17d8474ef7",
+  "reconstructed_archives": {
+    "ports": {
+      "parts": 1,
+      "bytes": 238459213,
+      "sha256": "c1d7f991d63e192e8e8247d1d0bdf8e676684a41beeab9a05ef3c5aa2c72bee4"
+    },
+    "source": {
+      "parts": 2,
+      "bytes": 723297406,
+      "sha256": "f904291776c501f6fa7ec6203671ae4adaf7d294c7aa980774d44af23aa808b5"
+    }
+  },
+  "native_client": {
+    "platform": "FreeBSD 16 amd64, host OSVERSION 1600028",
+    "correct_key_catalog_query": "passed: three exact checkout packages visible",
+    "wrong_key_catalog_query": "refused: invalid signature, no queryable catalogue",
+    "isolated_pkg_install": "passed: all three seed packages installed",
+    "materialize_ports": "passed: exact revision, owner, shallow history and upstream tracking",
+    "materialize_source": "passed: exact revision, owner, shallow history and upstream tracking"
+  },
+  "limitations": [
+    "The catalogue points at review branches; rebuild from merged main heads for the production image.",
+    "The candidate checkout feed has not been published.",
+    "No installed-image kernel identity, physical MacBook installation or MSI boot is qualified by this test."
+  ]
+}

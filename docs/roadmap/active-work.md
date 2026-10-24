@@ -58,6 +58,13 @@ records exact ancestor checks and the diverged GPU ports branch's identical
 implementation blobs. It is not the formal release contribution sweep or
 artifact acceptance.
 
+The [candidate checkout package record](../../verification/checkout-catalog-1.3.1-candidate-development.json)
+binds the exact `faac4010` source and `efb8f848` ports payloads. An isolated
+native `pkg` client authenticated and installed all three seed packages with
+the new key, rejected the old key, and materialized both shallow trees at the
+recorded revisions. The catalogue tracks review branches; the final image
+needs fresh packages and a catalogue bound to the merged release heads.
+
 The MacBook's installed 1.1.1 system failed the S3 trial and later lost both
 debugger network paths; the new image has not yet been installed. The new
 package-signing key now has a separately held encrypted recovery copy with a
