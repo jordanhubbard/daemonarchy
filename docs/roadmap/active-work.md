@@ -12,6 +12,10 @@ Component discovery, build-performance and operator-development work.
 
 ### 1.3.1 MacBook release landing, 2026-10-24
 
+- [Product integration PR #32](https://github.com/jordanhubbard/daemonarchy/pull/32)
+  combines the MacBook candidate below with MSI diagnosis and early-network
+  product scope. It is draft until the exact native image, retained receipt,
+  physical MacBook and MSI paths, and production attestation pass.
 - [Product PR #31](https://github.com/jordanhubbard/daemonarchy/pull/31)
   integrates the MacBook installer, debugger menu and signed firmware work at
   `9d55d9a3e1d9`. The earlier product firmware, debugger-status and EFI-timer
