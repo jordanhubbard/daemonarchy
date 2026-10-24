@@ -26,15 +26,19 @@ revisions pinned through the final image run.
 The [final checkout development record](../../verification/checkout-catalog-1.3.1-final-development.json)
 binds signed source and ports seed packages to the merged `main` heads. An
 isolated native `pkg` client authenticated and installed all three packages,
-rejected the old key, and materialized both exact shallow Git trees. GitHub
-publication and installed-image acceptance remain open. The desktop source is
+rejected the old key, and materialized both exact shallow Git trees. The
+[versioned checkout feed](https://github.com/jordanhubbard/daemonarchy/releases/tag/checkouts-16-amd64-1.3.1)
+is public with 11 verified assets; a separate native FreeBSD `pkg` client
+accepted its public catalogue and listed all three packages. Installed-image
+acceptance remains open. The desktop source is
 pinned to `ec2a0082` until qualification permits a stable `v1.3.1` tag.
 
 The MacBook's installed 1.1.1 system reached a working desktop, but failed the
 S3 trial and later lost both debugger network paths. The new image has not yet
 been built or installed. The new package signing key has a separately held
-encrypted recovery copy with a verified restore; the production boot signing
-key location remains unresolved. Exact signed feeds, the public ISO, a fresh
+encrypted recovery copy with a verified restore. The production boot signing
+key and certificate are staged on the native worker with root-only access;
+the final signed bundle remains pending. The signed application feed, the public ISO, a fresh
 MacBook install, retained native receipt and production boot attestation are
 still release gates. The MSI early kernel boot remains unqualified and is not
 claimed by the MacBook release notes.

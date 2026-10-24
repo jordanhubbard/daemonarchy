@@ -1,8 +1,11 @@
 # Daemonarchy 1.3.1 release notes
 
 **Status: unpublished candidate.** This page records the intended release and
-the evidence still needed before a stable GitHub release. No public 1.3.1 ISO,
-package feed, checkout feed, or boot bundle is available yet. The private
+the evidence still needed before a stable GitHub release. The
+[signed 1.3.1 checkout feed](https://github.com/jordanhubbard/daemonarchy/releases/tag/checkouts-16-amd64-1.3.1)
+is public and its 11 assets have matching digests; an isolated native FreeBSD
+`pkg` client accepted its catalogue and listed all three checkout packages.
+No public 1.3.1 ISO, application package feed, or boot bundle is available yet. The private
 MacBook preview embeds development-only inputs and is not a public artifact.
 
 ## What changes
@@ -43,9 +46,9 @@ from the final 1.3.1 ISO.
 ## Qualification still required
 
 - Finish the native production source and ports builds. Publish and verify the
-  versioned signed application and checkout feeds with a real FreeBSD client.
-  The checkout feed's local native client test is complete at the merged source
-  and ports revisions; it has not been published or tested from an ISO.
+  versioned signed application feed with a real FreeBSD client. The checkout
+  feed's public catalogue and native client test pass at the merged source and
+  ports revisions; installation from the final ISO remains open.
 - Assemble the public ISO without private firmware or development signing
   credentials. Verify its exact inputs, SHA-256, signed boot bundle, production
   certificate, and installed package and module inventory.
