@@ -3,79 +3,47 @@
 [PROJECT.md](https://github.com/jordanhubbard/daemonarchy/blob/main/PROJECT.md) owns product goals and completeness.
 Checkboxes below are execution status, not substitutes for test receipts.
 
-## Open pull-request landing queue
+## 1.3.1 release execution, 2026-10-24
 
-[Draft PR #12](https://github.com/jordanhubbard/daemonarchy/pull/12) carries native
-Component discovery, build-performance and operator-development work.
-[Issue #11](https://github.com/jordanhubbard/daemonarchy/issues/11) tracks the broader
-1.2.0 release. Existing release/test worktrees remain retained.
+All previously open Daemonarchy product, source, and ports pull requests are
+merged into their respective `main` branches. Desktop and omarchy-freebsd have
+no open pull requests. The [landing inventory](../../verification/contribution-inventory-1.3.1-development.json)
+records the earlier review heads; a fresh final contribution sweep is still
+required. Retained worktrees and development evidence remain available.
 
-### 1.3.1 MacBook release landing, 2026-10-24
+Source `main` at `d63d77f4` includes the MacBook and early-network work plus
+FreeBSD CURRENT through `a3d1d4e8`. Its exact native world, kernel and set
+build is queued after the private preview bulk. Ports `main` at `7e417dae`
+contains all fork branch histories and retains the reviewed `efb8f848` file
+tree. The selected official package snapshot does not include the newest
+upstream ports changes; [the refresh record](../../verification/freebsd-current-refresh-20261024-development.json)
+explains the dependency and conflict review. The exact `1600029` jail bulk is
+queued after the source build. Keep all source, ports, checkout and package
+revisions pinned through the final image run.
 
-- [Product integration PR #32](https://github.com/jordanhubbard/daemonarchy/pull/32)
-  combines the MacBook candidate below with MSI diagnosis and early-network
-  product scope. It is draft until the exact native image, retained receipt,
-  physical MacBook and MSI paths, and production attestation pass.
-- [Product PR #31](https://github.com/jordanhubbard/daemonarchy/pull/31)
-  integrates the MacBook installer, debugger menu and signed firmware work at
-  `9d55d9a3e1d9`. The earlier product firmware, debugger-status and EFI-timer
-  worktree heads are ancestors of this branch; the PR remains draft until an
-  exact image is installed and qualified on the MacBook.
-- [Source integration PR #25](https://github.com/jordanhubbard/daemonarchy-src/pull/25)
-  combines the MacBook source [PR #23](https://github.com/jordanhubbard/daemonarchy-src/pull/23),
-  including the tested Netlink `route -ifp` correction, with the early-network
-  source [PR #22](https://github.com/jordanhubbard/daemonarchy-src/pull/22),
-  the completed onboarding review [PR #4](https://github.com/jordanhubbard/daemonarchy-src/pull/4),
-  and the mandoc bootstrap dependency from CURRENT refresh [PR #9](https://github.com/jordanhubbard/daemonarchy-src/pull/9).
-  The exact candidate head is `faac40107e93`; its earlier parent
-  `a1860ae9b780` passed hosted controller and native-loader checks. Both checks
-  also passed at the exact `faac40107e93` head. The active private ISO bulk still uses source `02984cfbe95c`.
-  A separate exact-source world, kernel and
-  release-set build is queued after that preview finishes and targets the
-  combined source head `faac40107e93`.
-- [Ports PR #24](https://github.com/jordanhubbard/daemonarchy-ports/pull/24)
-  is the private-preview MacBook ports head `4e8640f85f8e`. Its fresh-jail
-  full bulk is active. [Ports follow-on PR #25](https://github.com/jordanhubbard/daemonarchy-ports/pull/25)
-  carries the later protected Wi-Fi credential prompt and pins the 1.3.1
-  desktop package candidate to source `ec2a00824ec9` at `efb8f848`.
-  Native ports `makesum`, checksum, extract and an isolated package build pass
-  for that source archive. The preliminary `daemonarchy-1.3.1,1` package
-  contains version `1.3.1` and has SHA-256
-  `b1b1bb447658e40c8d1ccb7ab05cadec33af4da9a2aa275de827fd5b440b8b60`.
-  It was built on host OSVERSION `1600028` with dependency checks disabled;
-  the exact `1600029` jail bulk, signed feed and final-image acceptance remain
-  open. A separate `efb8f848` Poudriere tree is registered and its full bulk is
-  queued to start only after the `faac40107e93` source sets complete. The stable
-  desktop tag must match the reviewed source tree after qualification.
-  Keep each checkout and package closure pinned through its own image run.
-- [MSI diagnosis PR #26](https://github.com/jordanhubbard/daemonarchy/pull/26)
-  and [early-network PR #28](https://github.com/jordanhubbard/daemonarchy/pull/28)
-  remain separate from the MacBook image path. Integrate and qualify their
-  hardware path before the full 1.3.1 production release.
+The [candidate checkout record](../../verification/checkout-catalog-1.3.1-candidate-development.json)
+shows that a native `pkg` client authenticated and installed the old review
+branch seed packages with the new key, rejected the old key, and materialized
+both trees. Final checkout packages and a catalogue for merged `main` heads
+are being built separately. The desktop source is pinned to `ec2a0082` until
+qualification permits a stable `v1.3.1` tag.
 
-The [scoped open-PR inventory](../../verification/contribution-inventory-1.3.1-development.json)
-records exact ancestor checks and the diverged GPU ports branch's identical
-implementation blobs. It is not the formal release contribution sweep or
-artifact acceptance.
+The MacBook's installed 1.1.1 system reached a working desktop, but failed the
+S3 trial and later lost both debugger network paths. The new image has not yet
+been built or installed. The new package signing key has a separately held
+encrypted recovery copy with a verified restore; the production boot signing
+key location remains unresolved. Exact signed feeds, the public ISO, a fresh
+MacBook install, retained native receipt and production boot attestation are
+still release gates. The MSI early kernel boot remains unqualified and is not
+claimed by the MacBook release notes.
 
-The [candidate checkout package record](../../verification/checkout-catalog-1.3.1-candidate-development.json)
-binds the exact `faac4010` source and `efb8f848` ports payloads. An isolated
-native `pkg` client authenticated and installed all three seed packages with
-the new key, rejected the old key, and materialized both shallow trees at the
-recorded revisions. The catalogue tracks review branches; the final image
-needs fresh packages and a catalogue bound to the merged release heads.
-
-The MacBook's installed 1.1.1 system failed the S3 trial and later lost both
-debugger network paths; the new image has not yet been installed. The new
-package-signing key now has a separately held encrypted recovery copy with a
-verified streamed restore. The declared native receipt and production boot
-attestation remain missing. These are current release gates, not completed
-attestation evidence.
-The read-only `litai release contributions sweep --version 1.3.1
---require-ready` currently refuses with `release.policy_unavailable` because
-`literate.release.json` is absent. Author the release policy only together
+`litai verify` currently fails its declared receipt gate because
+`verification/current.json` is absent. The read-only `litai release contributions
+sweep --version 1.3.1 --require-ready` refuses `release.policy_unavailable`
+because `literate.release.json` is absent. Author the release policy together
 with an executable gate that verifies the exact native receipt, signed package
-and boot artifacts, image identity, and physical hardware acceptance.
+and boot artifacts, image identity, and physical hardware acceptance. No
+historical log is a substitute for the retained receipt.
 
 ### [x] ADOPT-001 — Establish product-wide Literate AI authority
 

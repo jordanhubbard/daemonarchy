@@ -22,7 +22,7 @@ MacBook preview embeds development-only inputs and is not a public artifact.
   policy are pinned to reviewed revisions for the final image.
 
 Source `main` now merges FreeBSD CURRENT through `a3d1d4e8` (October 24)
-at `d63d77f4`. Ports `main` is `966ca478`, with the same release file tree as
+at `d63d77f4`. Ports `main` is `7e417dae`, with the same release file tree as
 `efb8f848` and the reviewed official package snapshot lineage. A trial merge
 of upstream ports `7b2b5742` changed 3,140 files and had eight conflicts,
 and would require a
