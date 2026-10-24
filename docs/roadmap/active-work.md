@@ -44,7 +44,8 @@ Component discovery, build-performance and operator-development work.
   `b1b1bb447658e40c8d1ccb7ab05cadec33af4da9a2aa275de827fd5b440b8b60`.
   It was built on host OSVERSION `1600028` with dependency checks disabled;
   the exact `1600029` jail bulk, signed feed and final-image acceptance remain
-  open. The stable
+  open. A separate `efb8f848` Poudriere tree is registered and its full bulk is
+  queued to start only after the `faac40107e93` source sets complete. The stable
   desktop tag must match the reviewed source tree after qualification.
   Keep each checkout and package closure pinned through its own image run.
 - [MSI diagnosis PR #26](https://github.com/jordanhubbard/daemonarchy/pull/26)
