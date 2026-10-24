@@ -252,9 +252,12 @@ extraction, local edits and checksum rejection. The candidate catalogue pins
 both revisions and three package parts; publication and production repository
 signing remain pending. The old bulk was stopped after its DRM failure. The
 exact source `02984cfbe95c` completed native `buildworld` with exit zero on
-October 23; its built GENERIC kernel embeds that revision. Release-set staging
-is running, with a fresh jail and complete bulk guarded on manifest-checked
-sets. The completed world alone does not qualify an ISO or package feed.
+October 23; its built GENERIC kernel embeds that revision. Source-built
+`base.txz`, `kernel.txz` and `lib32.txz` then matched their MANIFEST hashes;
+the base reports OSVERSION `1600029` and the kernel set carries the same
+source identity. A fresh jail from those sets has passed its source and kernel
+checks, and the 31-origin package bulk is running against ports `4e8640f85`.
+Its result, signed module inventory and ISO remain open.
 
 A private authoring overlay has all four exact-hash MacBook firmware files and
 an importer-verified Apple recovery provenance stage. This lets the hardware
@@ -263,8 +266,8 @@ in a public ISO. The four Secure Boot source patches apply to the selected
 source. An isolated development-certificate build completed a policy kernel,
 verified EFI loader and normal EFI loader; its receipt binds exact source
 `02984cfbe95c`, hashes and the development trust anchor. Signed boot-tree
-assembly still awaits source-built release sets and the complete native module
-feed. This does not establish production signing or firmware-enforced physical
+assembly still awaits the complete native module feed. This does not establish
+production signing or firmware-enforced physical
 boot. The installer now selects Wi-Fi's DHCP gateway while retaining a live
 Ethernet address and client for debugging; the native focused test passes, but
 the combined route still requires a physical ISO test.
