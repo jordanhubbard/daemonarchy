@@ -47,6 +47,11 @@ package-signing key now has a separately held encrypted recovery copy with a
 verified streamed restore. The declared native receipt and production boot
 attestation remain missing. These are current release gates, not completed
 attestation evidence.
+The read-only `litai release contributions sweep --version 1.3.1
+--require-ready` currently refuses with `release.policy_unavailable` because
+`literate.release.json` is absent. Author the release policy only together
+with an executable gate that verifies the exact native receipt, signed package
+and boot artifacts, image identity, and physical hardware acceptance.
 
 ### [x] ADOPT-001 — Establish product-wide Literate AI authority
 
