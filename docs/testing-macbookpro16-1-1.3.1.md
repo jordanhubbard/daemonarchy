@@ -70,11 +70,14 @@ contains private network or credential details.
 - [ ] Bind the final kernel, external modules and four firmware files into a
   bundle signed by the protected production authority. Verify the bundle,
   module inventory, source/jail identities and image contents independently.
-- [ ] Enroll the matching public certificate in UEFI **db** while preserving
-  existing PK, KEK, OEM/Microsoft db entries and dbx. Confirm firmware
-  enforcement on the physical MacBook, boot the installed system, reject an
-  untrusted boot component, and pass signed update, failure rollback and
-  recovery tests. See the [manual enrollment contract](secure-boot.md).
+- [ ] Record the MacBook's actual T2 boot policy and test the signed installer,
+  installed boot files, rejected untrusted component, signed update, failure
+  rollback, and recovery. Apple's documented T2 Full and Medium policies do
+  not provide the generic UEFI **db** enrollment route assumed in the
+  [manual enrollment contract](secure-boot.md#apple-t2-macbook-limitation).
+  If FreeBSD boots only under No Security, record that firmware enforcement is
+  absent; project signature checks alone cannot close a hardware-rooted boot
+  attestation requirement.
 - [ ] Verify the versioned package and checkout feeds using only the new
   public key, then perform an installed package update and reboot. Retain
   exact package, boot and image digests with the signed release record.
