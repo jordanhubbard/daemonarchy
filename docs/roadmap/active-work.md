@@ -14,14 +14,18 @@ Component discovery, build-performance and operator-development work.
 
 - [Product PR #31](https://github.com/jordanhubbard/daemonarchy/pull/31)
   integrates the MacBook installer, debugger menu and signed firmware work at
-  `088844dc6818`. The earlier product firmware, debugger-status and EFI-timer
+  `9d55d9a3e1d9`. The earlier product firmware, debugger-status and EFI-timer
   worktree heads are ancestors of this branch; the PR remains draft until an
   exact image is installed and qualified on the MacBook.
-- [Source PR #23](https://github.com/jordanhubbard/daemonarchy-src/pull/23)
-  now includes the tested Netlink `route -ifp` correction at `75a3f211e776`.
-  The active private ISO bulk still uses source `02984cfbe95c`; a separate
-  exact-source world, kernel and release-set build is queued after that
-  preview finishes.
+- [Source integration PR #25](https://github.com/jordanhubbard/daemonarchy-src/pull/25)
+  combines the MacBook source [PR #23](https://github.com/jordanhubbard/daemonarchy-src/pull/23),
+  including the tested Netlink `route -ifp` correction, with the early-network
+  source [PR #22](https://github.com/jordanhubbard/daemonarchy-src/pull/22).
+  The exact heads merge cleanly at `a1860ae9b780`; hosted controller and
+  native-loader checks must pass at that head. The active private ISO bulk
+  still uses source `02984cfbe95c`. A separate exact-source world, kernel and
+  release-set build is queued after that preview finishes. It currently targets
+  the earlier MacBook source head `75a3f211e776`.
 - [Ports PR #24](https://github.com/jordanhubbard/daemonarchy-ports/pull/24)
   is the selected MacBook ports head `4e8640f85f8e`. Its fresh-jail full bulk
   is active. Keep the selected checkout and package closure pinned through
