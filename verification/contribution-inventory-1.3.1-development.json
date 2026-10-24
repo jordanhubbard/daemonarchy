@@ -29,6 +29,19 @@
     }
   },
   "method": "GitHub compare API for exact open PR heads versus selected heads; Git blob SHA comparison for the three diverged GPU implementation files",
+  "local_worktree_audit_20261024": {
+    "product": "Every named local branch head is an ancestor of the selected integration branch. The detached source-preflight worktree has nine unique merge commits but no unique non-merge commits; their merged parents are ancestors of the selected branch.",
+    "source": {
+      "validated_common_cli_head": "dbe8c17c831d20659d7d0ee74afbeaaf0df4fa73 is an ancestor of faac4010 by GitHub compare",
+      "preview_and_route_heads": "02984cfbe95c and 5b8ca6dcfbd9 are ancestors of faac4010 by GitHub compare",
+      "local_nvme_head": "8528d74cd5d911ab09efff435e4020429f966657 is unpublished, but its sole changed file sys/dev/nvme/nvme_if.m has the same Git blob e0186914f3cc08800304063c217eb03e4a9bd386 at faac4010"
+    },
+    "ports": {
+      "refresh_head": "d7cff107c2e1c80190012ec7db576707a58f19ab is an ancestor of efb8f848 by GitHub compare",
+      "local_brcmfmac_head": "The entire tracked net/if_brcmfmac-kmod subtree at 0d823f1b4f7a1cb6fe1937f54a36a2b530a3c3f8 is byte-identical to efb8f848; normalized ls-tree digest b36ff863168f4588052a13839a537d23013dab12313b12c7ceb7a68d7a7c2bf6. An untracked work directory is retained outside the release tree."
+    },
+    "limitation": "Historical detached baseline test checkouts are preserved and are not selected release inputs."
+  },
   "open_gates": [
     "Native package and source sets at selected heads",
     "Fresh public ISO and physical MacBook Wi-Fi install",
