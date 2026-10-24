@@ -33,8 +33,9 @@ Component discovery, build-performance and operator-development work.
 
 The MacBook's installed 1.1.1 system failed the S3 trial and later lost both
 debugger network paths; the new image has not yet been installed. The new
-package-signing key still needs independent encrypted backup, and the declared
-native receipt is missing. These are current release gates, not completed
+package-signing key now has a separately held encrypted recovery copy with a
+verified streamed restore. The declared native receipt and production boot
+attestation remain missing. These are current release gates, not completed
 attestation evidence.
 
 ### [x] ADOPT-001 — Establish product-wide Literate AI authority

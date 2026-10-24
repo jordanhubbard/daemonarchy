@@ -68,7 +68,9 @@
   `docs/package-repository-key-rotation-1.3.1.md`; the stable feed and installed
   1.1.1 trust key remain unchanged. Existing installations need an explicit
   trust enrollment because the old private key is unavailable on the current
-  native builder. Signed candidate publication and upgrade acceptance are open.
+  native builder. An encrypted recovery copy of the new key passed a streamed
+  public-fingerprint restore check. Signed candidate publication and upgrade
+  acceptance are open.
 - Record a physical MacBook S3 trial on the installed 1.1.1 system. Resume
   kept the same kernel but showed ACPI PCIe power-state timeouts, a Broadcom
   firmware trap, transient input loss, and a stale wireless default route.

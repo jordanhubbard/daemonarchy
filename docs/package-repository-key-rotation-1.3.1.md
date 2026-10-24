@@ -17,11 +17,13 @@ public keys in DER form:
 | Existing 1.1.1 key | `2e0e0cab66c8f60579d992359d93e66a0ad5cb49996279fae68ffde3988df38a` |
 | New 1.3.1 candidate key | `67986b400f28a49e99df0f1f3368f60aca8064d5dc00094700ba1a17d8474ef7` |
 
-Before production publication, place an encrypted backup of the new private
-key in an independently controlled location and verify that it can restore
-the same public fingerprint. The current single-host key is only a candidate
-signer; another silent key loss would repeat this migration problem. Record
-backup custody outside the public repository without committing the key.
+An encrypted recovery copy is now held separately from its decryption key on
+another machine. A streamed restore on 2026-10-24 reproduced the new public
+key's DER SHA-256 above without saving a plaintext signing-key copy outside
+the native signer. Backup coordinates and ciphertext digest are retained in
+private custody records, outside this repository. This closes the package-key
+backup requirement; feed signing, installation and upgrade acceptance remain
+open.
 
 ## Candidate publication
 
