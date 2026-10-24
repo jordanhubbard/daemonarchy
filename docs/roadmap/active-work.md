@@ -25,13 +25,14 @@ Component discovery, build-performance and operator-development work.
   combines the MacBook source [PR #23](https://github.com/jordanhubbard/daemonarchy-src/pull/23),
   including the tested Netlink `route -ifp` correction, with the early-network
   source [PR #22](https://github.com/jordanhubbard/daemonarchy-src/pull/22)
-  and the completed onboarding review [PR #4](https://github.com/jordanhubbard/daemonarchy-src/pull/4).
-  The exact candidate head is `364c9e002ac3`; its prior parent `a1860ae9b780`
-  passed hosted controller and native-loader checks, which must pass again at
-  the new head. The active private ISO bulk still uses source `02984cfbe95c`.
+  the completed onboarding review [PR #4](https://github.com/jordanhubbard/daemonarchy-src/pull/4),
+  and the mandoc bootstrap dependency from CURRENT refresh [PR #9](https://github.com/jordanhubbard/daemonarchy-src/pull/9).
+  The exact candidate head is `faac40107e93`; its earlier parent
+  `a1860ae9b780` passed hosted controller and native-loader checks, which must
+  pass again at the new head. The active private ISO bulk still uses source `02984cfbe95c`.
   A separate exact-source world, kernel and
   release-set build is queued after that preview finishes and targets the
-  combined source head `364c9e002ac3`.
+  combined source head `faac40107e93`.
 - [Ports PR #24](https://github.com/jordanhubbard/daemonarchy-ports/pull/24)
   is the private-preview MacBook ports head `4e8640f85f8e`. Its fresh-jail
   full bulk is active. [Ports follow-on PR #25](https://github.com/jordanhubbard/daemonarchy-ports/pull/25)
