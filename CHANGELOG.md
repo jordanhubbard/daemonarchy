@@ -1,6 +1,8 @@
 # Changelog
 
-## Unreleased 1.3.1 hardware candidate
+## 1.3.1 - 2026-10-24
+
+[README.md](https://github.com/jordanhubbard/daemonarchy/blob/daemonarchy-1.3.1/README.md)
 
 - Require a retained, hashed native source, package, signing and ISO evidence
   record for the 1.3.1 production release gate. Keep the separately configured
