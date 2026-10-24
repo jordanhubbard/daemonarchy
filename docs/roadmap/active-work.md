@@ -51,9 +51,9 @@ claimed by the MacBook release notes.
 `verification/current.json` is absent. The merged `literate.release.json`
 invokes a fail-closed gate for exact native receipt, signed artifacts, image
 identity and physical MacBook acceptance. The read-only contribution sweep
-has one unclassified historical 1.2.0 backlog issue (#11), which requires a
-current-release disposition before release readiness can pass. No historical
-log is a substitute for the retained receipt.
+has classified historical 1.2.0 backlog issue (#11) as deferred from 1.3.1;
+the cross-repository Literate AI release work is tracked for 1.4 in issue #39.
+No historical log is a substitute for the retained receipt.
 
 ### [x] ADOPT-001 — Establish product-wide Literate AI authority
 
