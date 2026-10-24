@@ -37,6 +37,11 @@ interface: FreeBSD's Netlink `route` path discarded that option. A patched
 utility passed a physical switch to wireless and back to wired while both
 addresses were present; the isolated source correction is
 [daemonarchy-src PR 24](https://github.com/jordanhubbard/daemonarchy-src/pull/24).
+It was merged into the MacBook source integration branch at `75a3f211e776`.
+The current private ISO build remains pinned to the earlier `02984cfbe95c`
+source sets and stages that tested utility only in its live environment.
+Production sets and the installed utility must be rebuilt from the merged
+source revision.
 
 The pre- and post-resume raw logs remain private on the MacBook and controller.
 S3 acceptance is **open**. Repeat on the exact new image after qualifying ACPI

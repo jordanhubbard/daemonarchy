@@ -258,6 +258,11 @@ the base reports OSVERSION `1600029` and the kernel set carries the same
 source identity. A fresh jail from those sets has passed its source and kernel
 checks, and the 31-origin package bulk is running against ports `4e8640f85`.
 Its result, signed module inventory and ISO remain open.
+The Netlink `route -ifp` correction passed the native route build and a
+physical interface switch in both directions on the MacBook. It is now merged
+into the source integration branch at `75a3f211e776`; this is newer than the
+`02984cfbe95c` preview sets. A production world, kernel, checkout catalogue
+and package closure must be rebuilt or requalified at the final source head.
 
 A private authoring overlay has all four exact-hash MacBook firmware files and
 an importer-verified Apple recovery provenance stage. This lets the hardware
