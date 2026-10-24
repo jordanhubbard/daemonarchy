@@ -2,6 +2,9 @@
 
 ## Unreleased 1.3.1 hardware candidate
 
+- Require a retained, hashed native source, package, signing and ISO evidence
+  record for the 1.3.1 production release gate. Keep the separately configured
+  LitAI project receipt unqualified until its native lifecycle is admitted.
 - Preserve approved installed-system debugging keys, server identity and private
   state across reboot. Resume the existing session without Unpair or fresh
   confirmation; retain explicit revocation and unknown-key refusal. Keep
