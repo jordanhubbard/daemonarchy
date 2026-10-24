@@ -10,6 +10,33 @@ Component discovery, build-performance and operator-development work.
 [Issue #11](https://github.com/jordanhubbard/daemonarchy/issues/11) tracks the broader
 1.2.0 release. Existing release/test worktrees remain retained.
 
+### 1.3.1 MacBook release landing, 2026-10-24
+
+- [Product PR #31](https://github.com/jordanhubbard/daemonarchy/pull/31)
+  integrates the MacBook installer, debugger menu and signed firmware work at
+  `088844dc6818`. The earlier product firmware, debugger-status and EFI-timer
+  worktree heads are ancestors of this branch; the PR remains draft until an
+  exact image is installed and qualified on the MacBook.
+- [Source PR #23](https://github.com/jordanhubbard/daemonarchy-src/pull/23)
+  now includes the tested Netlink `route -ifp` correction at `75a3f211e776`.
+  The active private ISO bulk still uses source `02984cfbe95c`; a separate
+  exact-source world, kernel and release-set build is queued after that
+  preview finishes.
+- [Ports PR #24](https://github.com/jordanhubbard/daemonarchy-ports/pull/24)
+  is the selected MacBook ports head `4e8640f85f8e`. Its fresh-jail full bulk
+  is active. Keep the selected checkout and package closure pinned through
+  image construction and physical testing.
+- [MSI diagnosis PR #26](https://github.com/jordanhubbard/daemonarchy/pull/26)
+  and [early-network PR #28](https://github.com/jordanhubbard/daemonarchy/pull/28)
+  remain separate from the MacBook image path. Integrate and qualify their
+  hardware path before the full 1.3.1 production release.
+
+The MacBook's installed 1.1.1 system failed the S3 trial and later lost both
+debugger network paths; the new image has not yet been installed. The new
+package-signing key still needs independent encrypted backup, and the declared
+native receipt is missing. These are current release gates, not completed
+attestation evidence.
+
 ### [x] ADOPT-001 — Establish product-wide Literate AI authority
 
 - **Priority:** P1
