@@ -325,7 +325,20 @@ verification; see the [test record](docs/testing-1.1-live-checkouts.md).
 Later 1.1 QEMU results are recorded in [the final candidate record](docs/testing-1.1-final-image.md). The refreshed 1.1.1 sizes and public catalogue are recorded in [the sizing report](docs/optional-source-sizing.md); its final-image checks remain separate.
 
 
+## 1.3.2: complete network bootloader debugging
+
+The current operator direction assigns the complete bootloader environment and
+MSI early-kernel capture to **1.3.2**, superseding earlier 1.2/1.3.1 scheduling.
+[DEBUG-003 and the detailed plan](docs/roadmap/release-1.3.2.md) cover plain wired
+console control without SSH or additional authentication, variables, disk and
+network kernel/module loading, downloaded Lua execution, actual pre-driver
+networking and physical MSI acceptance. Prior release and prerequisite evidence
+retain their original scope. The implementation is incomplete.
+
 ## 1.2: earlier network debugging
+
+The following records the earlier scope and inspection baseline; use the 1.3.2
+plan above for current implementation status and scheduling.
 
 Loader and early-kernel network-debugging changes are deferred to **1.2**.
 The selected GENERIC already includes DEBUGNET, NETDUMP and NETGDB; those

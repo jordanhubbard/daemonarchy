@@ -36,11 +36,15 @@ Independent portability gates in the parent framework are not product OS gates.
 Wired UEFI loader remote console/control is an immediate next-release blocker
 under DEBUG-001. Implementation proceeds while framework CI is pending.
 
-The operator's October 23 release direction assigns completion of the
-loader-to-early-kernel connection and MSI built-in-Ethernet bring-up to **1.3.1**
-under DEBUG-003. The 1.3 release is already in progress and must remain
-undisturbed. The [1.3.1 scope](docs/roadmap/release-1.3.1.md) supersedes earlier
-next-release wording for this specific transport work; no completion is claimed.
+The operator assigns the complete network bootloader debugging environment and
+MSI built-in-Ethernet early-kernel capture to **1.3.2** under DEBUG-003 and
+[issue #33](https://github.com/jordanhubbard/daemonarchy/issues/33). The
+[1.3.2 plan](docs/roadmap/release-1.3.2.md) supersedes the earlier 1.3.1 scope.
+It requires remote kernel/module selection and transfer, variable access,
+network Lua execution and actual pre-driver kernel output. This explicitly
+enabled boot debugging mode requires no SSH or additional session
+authentication. Preserve prior releases and historical evidence; no completion
+is claimed.
 
 ## Dependencies
 
