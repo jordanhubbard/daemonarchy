@@ -1,0 +1,39 @@
+{
+  "schema": "daemonarchy/freebsd-current-refresh-development@1",
+  "date_utc": "2026-10-24",
+  "source": {
+    "previous_integration": "faac40107e936c2e133bd938ca56097d3cfed1c4",
+    "upstream_main": "a3d1d4e88ae7435cfc32a886999dcde2173839cd",
+    "upstream_commits_since_fork_main": 14,
+    "merged_integration": "d63d77f4eb3cc29e16510f7bdec73602e27c2844",
+    "merged_tree": "ce901cde05e8e1f80283876c82e077bf6db1e74a",
+    "merge_conflicts": 0,
+    "changed_files_over_previous_integration": 11,
+    "native_build_state": "queued; not a passing source build or final ISO"
+  },
+  "ports": {
+    "selected_integration": "efb8f848465553e178c4341154f5b8e11953cf8a",
+    "selected_official_package_snapshot_ancestor": "792be2623dc0ef1ac471fb80d4bb242b10b1bdde",
+    "upstream_main_reviewed": "7b2b5742244e719fbc599526c76c535cf2e0c5e5",
+    "merge_base": "ce97aa4dd1d9326775655b810ef384f38f78f0e5",
+    "trial_merge_conflicts": [
+      "audio/cliamp/Makefile",
+      "lang/php82/Makefile",
+      "lang/php83/Makefile",
+      "lang/php84/Makefile",
+      "lang/php85/Makefile",
+      "sysutils/lazydocker/Makefile",
+      "sysutils/udiskie/Makefile",
+      "x11/owe/Makefile"
+    ],
+    "trial_merge_changed_files_over_selected": 3140,
+    "selected_chromium": "154.0.8037.57_2",
+    "upstream_chromium": "156.0.8078.47_1",
+    "decision": "Retain selected official package snapshot lineage for 1.3.1; the raw ports main merge needs a new signed package baseline and full dependency qualification."
+  },
+  "limitations": [
+    "The source refresh has no completed native world, kernel, module, ISO, or physical hardware result yet.",
+    "The selected ports tree is not the latest upstream ports main tree.",
+    "The official binary catalogue currently supplies the selected Chromium 154 version, not upstream ports Chromium 156."
+  ]
+}
