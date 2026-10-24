@@ -147,6 +147,67 @@ No single-CPU result or instrumented-kernel build is claimed. Relevant source: [
 [ACPI deferred work](https://github.com/freebsd/freebsd-src/blob/bdaddb76ef1b9d5537f4a76cff01cdb4795804a4/sys/dev/acpica/Osd/OsdSchedule.c),
 and [SPMC](https://github.com/freebsd/freebsd-src/blob/bdaddb76ef1b9d5537f4a76cff01cdb4795804a4/sys/dev/acpica/acpi_spmc.c).
 
+## MSI ACPI-on reset and ACPI-off APIC panic, reported 2026-10-23
+
+The operator now reports an early kernel reset with ACPI enabled, without a
+visible panic. Disabling ACPI changes the result to a panic and debugger entry
+with `APIC: Could not find any APICs`. The operator confirms this is the MSI
+Raider 18 HX with RTX 5080 and identifies the boot medium as the latest pre-1.3
+ISO. Its exact filename/hash and the current BIOS revision remain unrecorded.
+The previous detailed inventory below remains historical; no new successful MSI
+boot or physical acceptance is claimed.
+
+These two outcomes are distinct. In inspected source
+`5dff8f4cb3cb1ac8d292664d003432f5f75cf9dc`,
+[`acpi_find_table()`](https://github.com/jordanhubbard/daemonarchy-src/blob/5dff8f4cb3cb1ac8d292664d003432f5f75cf9dc/sys/amd64/acpica/acpi_machdep.c)
+returns zero when `hint.acpi.0.disabled` disables ACPI.
+[`madt_probe()`](https://github.com/jordanhubbard/daemonarchy-src/blob/5dff8f4cb3cb1ac8d292664d003432f5f75cf9dc/sys/x86/acpica/madt.c)
+then cannot select the ACPI Multiple APIC Description Table enumerator. If no
+alternative enumerator succeeds,
+[`apic_init()`](https://github.com/jordanhubbard/daemonarchy-src/blob/5dff8f4cb3cb1ac8d292664d003432f5f75cf9dc/sys/x86/x86/local_apic.c)
+prints the reported `APIC: Could not find any APICs` diagnostic before it can
+panic with `running without device atpic requires a local APIC` in a kernel
+without the optional legacy PIC driver. This source path explains how disabling
+ACPI can produce the reported discovery failure; the exact ISO/kernel provenance
+is still needed to bind that inspection to the running image. The message does
+not establish that the processor lacks an APIC or diagnose the ACPI-on reset.
+
+The previously proposed single-variable comparison used the same image with
+ACPI enabled and SMP startup disabled. The operator now confirms these settings
+have already been tried without changing the early reset. The recipe is retained
+for evidence context, not as a new requested comparison:
+
+```text
+set kern.smp.disabled=1
+set kern.panic_reboot_wait_time=-1
+set debug.debugger_on_panic=1
+boot -v
+```
+
+The SMP tunable is read during early startup and causes
+[`mp_start()`](https://github.com/jordanhubbard/daemonarchy-src/blob/5dff8f4cb3cb1ac8d292664d003432f5f75cf9dc/sys/kern/subr_smp.c)
+to skip secondary-CPU startup while retaining ACPI/APIC discovery. A changed
+result narrows the CPU-startup or concurrency-dependent path; it does not name
+a faulty driver. An unchanged reset keeps probe/SYSINIT instrumentation and the
+last observable boot stage as the next investigation. Panic-reboot settings
+retain ordinary panics; they do not prevent every possible hard reset. The
+operator reports no improvement from these settings; no additional repeat is
+requested.
+
+The operator also asks about the previously requested boot-loader network
+access. The source fork implements an opt-in authenticated wired UEFI console
+([runbook](https://github.com/jordanhubbard/daemonarchy-src/blob/5dff8f4cb3cb1ac8d292664d003432f5f75cf9dc/docs/user/loader-network-debug.md)).
+`netdebug devices` checks whether the running loader supplies that command and
+whether firmware exposes an Ethernet interface. Activation requires a shared
+private key file and static local/controller addresses. The recorded 1.2-test1
+ISO includes a development loader with activation disabled, but that does not
+identify the operator's latest pre-1.3 ISO. Continuous early-kernel transport is
+still unfinished: firmware SNP networking stops at `ExitBootServices`, and
+retained identity metadata does not keep a network console alive. Thus the
+implemented loader console alone cannot capture this early-kernel reset.
+Targeted kernel startup/probe instrumentation with retained last-stage output
+remains necessary unless a usable early hardware console is identified.
+
 ## MSI comparison reports
 
 The operator subsequently reproduced the early reset with Daemonarchy 1.0.1.
