@@ -27,6 +27,13 @@ The saved post-resume kernel log shows:
 - A later Broadcom scan returned error 55 and the BCM4364 firmware console
   reported `TRAP 4`. Wi-Fi did not pass traffic afterward.
 
+The saved pre-suspend snapshot contains no Broadcom firmware trap; the
+post-resume snapshot contains the one above. The diagnostic external PCIe
+driver registers probe, attach and detach methods, with no device suspend or
+resume method. That leaves firmware power-transition handling unqualified.
+This code observation does not isolate the Broadcom trap from the simultaneous
+ACPI PCIe and USB resume failures.
+
 Both wired and wireless interfaces retained addresses on the same subnet.
 The default route remained bound to the failed wireless interface after it was
 put down, so off-subnet traffic failed. With wireless down, the wired route
