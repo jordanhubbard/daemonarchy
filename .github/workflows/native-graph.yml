@@ -33,6 +33,8 @@ on:
       - 'tests/installer-progress.py'
       - 'tests/install-integrity.sh'
       - 'tests/fixtures/installer-progress/**'
+      - 'literate.release.json'
+      - 'scripts/release-check-1.3.1.py'
       - '.github/workflows/native-graph.yml'
   pull_request:
     paths:
@@ -66,6 +68,8 @@ on:
       - 'tests/installer-progress.py'
       - 'tests/install-integrity.sh'
       - 'tests/fixtures/installer-progress/**'
+      - 'literate.release.json'
+      - 'scripts/release-check-1.3.1.py'
       - '.github/workflows/native-graph.yml'
   workflow_dispatch:
 
@@ -100,3 +104,12 @@ jobs:
           bash -n overlay/usr/local/libexec/daemonarchy-installer/dashboard overlay/usr/local/libexec/daemonarchy-installer/install
           python3 tests/installer-progress.py
           bash tests/install-integrity.sh
+      - name: Release gate refuses missing evidence
+        run: |
+          python3 -m json.tool literate.release.json >/dev/null
+          python3 -m py_compile scripts/release-check-1.3.1.py
+          if python3 scripts/release-check-1.3.1.py >release-gate.log 2>&1; then
+            echo 'Release gate accepted absent evidence' >&2
+            exit 1
+          fi
+          grep -q 'set DAEMONARCHY_RELEASE_RECORD' release-gate.log

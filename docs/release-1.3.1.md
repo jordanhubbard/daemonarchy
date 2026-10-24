@@ -1,8 +1,11 @@
 # Daemonarchy 1.3.1 release notes
 
 **Status: unpublished candidate.** This page records the intended release and
-the evidence still needed before a stable GitHub release. No public 1.3.1 ISO,
-package feed, checkout feed, or boot bundle is available yet. The private
+the evidence still needed before a stable GitHub release. The
+[signed 1.3.1 checkout feed](https://github.com/jordanhubbard/daemonarchy/releases/tag/checkouts-16-amd64-1.3.1)
+is public and its 11 assets have matching digests; an isolated native FreeBSD
+`pkg` client accepted its catalogue and listed all three checkout packages.
+No public 1.3.1 ISO, application package feed, or boot bundle is available yet. The private
 MacBook preview embeds development-only inputs and is not a public artifact.
 
 ## What changes
@@ -43,18 +46,20 @@ from the final 1.3.1 ISO.
 ## Qualification still required
 
 - Finish the native production source and ports builds. Publish and verify the
-  versioned signed application and checkout feeds with a real FreeBSD client.
-  The checkout feed's local native client test is complete at the merged source
-  and ports revisions; it has not been published or tested from an ISO.
+  versioned signed application feed with a real FreeBSD client. The checkout
+  feed's public catalogue and native client test pass at the merged source and
+  ports revisions; installation from the final ISO remains open.
 - Assemble the public ISO without private firmware or development signing
   credentials. Verify its exact inputs, SHA-256, signed boot bundle, production
   certificate, and installed package and module inventory.
 - Run the [MacBook acceptance plan](testing-macbookpro16-1-1.3.1.md) from an
   erased disk using Wi-Fi for installation. Confirm unattended autoboot,
   storage integrity, desktop input, Wi-Fi traffic and reboot, debugger recovery,
-  and production Secure Boot enrollment and enforcement. The earlier installer
-  reported a fatal NVMe event; Apple Diagnostics returned `ADP000`, but this
-  does not explain or clear that event.
+  and the actual T2 boot policy plus signed-chain enforcement. Apple's T2
+  policy does not document a third-party UEFI db enrollment path; a boot under
+  No Security cannot be claimed as firmware-enforced Secure Boot. The earlier
+  installer reported a fatal NVMe event; Apple Diagnostics returned `ADP000`,
+  but this does not explain or clear that event.
 - The installed 1.1.1 MacBook failed its [S3 trial](testing-macbookpro16-1-s3-20261024.md):
   ACPI PCIe methods timed out, USB devices detached, and the Broadcom firmware
   reported a trap. Suspend and resume remain unqualified for 1.3.1.

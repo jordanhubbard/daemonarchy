@@ -1,0 +1,32 @@
+{
+  "schema": "literate-ai/release-policy@2",
+  "version_scheme": "semver",
+  "version_authority": {
+    "path": "literate.project.json",
+    "format": "json-pointer",
+    "selectors": ["/version"]
+  },
+  "version_mirrors": [],
+  "documentation_authority": ["docs/architecture/design-traceability.md"],
+  "contributions": {
+    "current_milestone": "1.3.1"
+  },
+  "allowed_transitions": ["patch", "minor", "major", "prerelease", "explicit"],
+  "gate": {
+    "argv": ["python3", "scripts/release-check-1.3.1.py"],
+    "timeout_seconds": 172800
+  },
+  "changelog": {
+    "path": "CHANGELOG.md",
+    "unreleased_heading": "## Unreleased 1.3.1 hardware candidate"
+  },
+  "tag": {
+    "prefix": "daemonarchy-",
+    "signed": false
+  },
+  "remote": "origin",
+  "provider": {
+    "kind": "github",
+    "repository": "jordanhubbard/daemonarchy"
+  }
+}

@@ -31,9 +31,27 @@ native signer. The private key is not an ISO or repository input. The candidate
 `daemonarchy-1.3.1.der` SHA-256 and X.509 SHA-256 fingerprint are
 `ee140e7a68d566d37a96ea49ac68238d2e039c1172eb896ab69bff189d70b733`.
 This identifies a prepared candidate, not an enrolled or qualified release
-authority. If selected for 1.3.1, add this certificate to db while retaining
-the 1.1 and platform certificates, then run the physical enforcement, recovery
-and negative tests below before publishing the stable ISO.
+authority. On firmware with generic UEFI db enrollment, add this certificate
+while retaining the 1.1 and platform certificates, then run the physical
+enforcement, recovery and negative tests below before claiming that profile.
+
+### Apple T2 MacBook limitation
+
+The generic UEFI db enrollment contract below has **not** been shown to work on
+MacBookPro16,1. Apple describes the T2 Mac boot policy as Full Security for
+Apple-verified operating systems, Medium Security for Apple- or
+Microsoft-signed operating systems, and No Security for other boot images.
+The [T2 Linux installation guide](https://wiki.t2linux.org/guides/preinstall/)
+reports that even a Microsoft-signed shim cannot boot a third-party system
+while T2 Secure Boot is enabled. See [Apple's T2 boot-policy documentation](https://support.apple.com/guide/security/secc7b34e5b5/web).
+
+Until a supported and physically tested T2 trust path exists, a Daemonarchy
+signature and signed boot manifest can verify the project's own boot files,
+but they do not prove firmware-enforced Secure Boot on this MacBook. Record the
+actual T2 policy for each hardware test. Do not claim firmware enforcement from
+an OVMF test, a successful signed-bundle check, or a FreeBSD boot under
+No Security. The db enrollment contract remains applicable only to firmware
+that exposes a compatible enrollment mechanism.
 
 ## Enrollment contract
 
