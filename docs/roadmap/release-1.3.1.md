@@ -1,8 +1,15 @@
 # 1.3.1 early-kernel diagnostics
 
-- **Status:** active
+- **Status:** partial
+- **Scope transfer:** unfinished transport work is superseded by the
+  [1.3.2 implementation plan](release-1.3.2.md) and
+  [issue #33](https://github.com/jordanhubbard/daemonarchy/issues/33).
+  The original assignment and artifact evidence below are historical.
+  Product #27 closed after prerequisites merged; the complete feature remains
+  open under DEBUG-003 for 1.3.2. The new explicit plain mode supersedes the
+  authentication requirement below for this boot debugging workflow.
 - **Tracking:** [Issue #27](https://github.com/jordanhubbard/daemonarchy/issues/27), [1.3.1 milestone](https://github.com/jordanhubbard/daemonarchy/milestone/1).
-- **Owning queue item:** [DEBUG-003](active-work.md#debug-003-deliver-early-kernel-wired-diagnostics-for-131)
+- **Owning queue item:** [DEBUG-003](active-work.md#debug-003-deliver-network-bootloader-debugging-and-msi-kernel-capture-for-132)
 - **Completion / archival evidence:** Pending exact native loader/kernel builds,
   pre-driver VM packet captures, separate image qualification and physical MSI
   built-in-NIC evidence. No current connection or passing receipt is claimed.

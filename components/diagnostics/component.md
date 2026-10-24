@@ -33,7 +33,7 @@ and the native acceptance inventory remain authoritative for implementation stat
 
 ## Requirement: Approval and revocation
 
-Require console approval for a new agent. Preserve an installed-system hardware-debugging grant, approved keys, server identity and private evidence across reboot; resume safely without fresh confirmation or deleting stale state. Resumed background listeners refuse unknown keys. Explicit Unpair or interactive stop revokes active connections and the retained grant. Refresh runtime generations and verify listener identity before signaling a retained PID. Never treat an ordinary SSH disconnect as task completion.
+For installed-system SSH debugging, require console approval for a new agent. Preserve an installed-system hardware-debugging grant, approved keys, server identity and private evidence across reboot; resume safely without fresh confirmation or deleting stale state. Resumed background listeners refuse unknown keys. Explicit Unpair or interactive stop revokes active connections and the retained grant. Refresh runtime generations and verify listener identity before signaling a retained PID. Never treat an ordinary SSH disconnect as task completion.
 Publish only grant, listener, authenticated connection, address and port status for the desktop. Update it after connection, disconnection, restart and revocation; never expose approved keys, host identity or private observations through this public view.
 Keep the listener's exit-code-only status check for boot supervision, and provide a local privileged detailed status that explains missing approval, networking or listener state during hardware bring-up.
 
@@ -47,27 +47,27 @@ Distinguish a new boot from an SSH/listener restart using target identity and re
 
 ## Requirement: Cleanup and wired boot transport
 
-Finite diagnostic jobs clean up only their owned state. Provide an explicitly enabled wired UEFI loader console with authenticated, session-bound and sequenced input. Preserve ordinary loader variable inspection/update and boot commands, bounded private output retention, local console recovery and boot without an available peer. Reject forged, replayed, malformed and oversized input. Remove pairing key material from inspectable environment variables after activation and revoke it when disabled.
+Finite diagnostic jobs clean up only their owned state. For the existing authenticated mode, provide an explicitly enabled wired UEFI loader console with authenticated, session-bound and sequenced input. Preserve ordinary loader variable inspection/update and boot commands, bounded private output retention, local console recovery and boot without an available peer. Reject forged, replayed, malformed and oversized input. Remove pairing key material from inspectable environment variables after activation and revoke it when disabled.
 
 This product targets FreeBSD only. Qualify the actual FreeBSD EFI binary in a disposable UEFI VM and on the selected physical firmware/NICs. Firmware network availability and the transition to kernel networking are distinct evidence requirements; report any pre-driver gap rather than claiming continuous kernel debugging.
 
-## Requirement: 1.3.1 early-kernel connection
+## Requirement: 1.3.2 network bootloader and early-kernel diagnostics
 
-For the 1.3.1 bring-up profile, retain an explicitly approved authenticated
-wired connection from the loader into kernel initialization before normal
-PCI/NIC attachment. Use the selected built-in Ethernet port and retain its
-identity, one boot identity and exact loader/kernel/image inputs. Capture
-startup and probe boundaries at the controller; report output loss and the
-last observed stage without inferring a reset from silence. Keep local recovery
-usable, bound missing-peer/reconnection paths and transfer hardware ownership
-to the native driver safely. Do not call a boot-services network protocol after
-`ExitBootServices` or expose pairing keys through environment variables or logs.
+Provide an explicitly enabled plain wired boot debugging mode equivalent to
+daemonarchy-debug, without SSH, pairing keys or additional session
+authentication. Preserve the existing authenticated loader mode and installed
+SSH approval as separate facilities. Local enable/Stop controls remain available.
+Expose commands/output, variable get/set/unset, disk kernel and module selection,
+direct UDP kernel/module transfer, TFTP download and execution of downloaded Lua
+through the real loader interpreter. Bound staging, retries and memory use;
+never execute partial files or silently mix incompatible kernel/module sets.
 
-The MSI Raider 18 HX AI A2XWIG/RTX 5080 is the required physical acceptance
-target. Runtime UNDI descriptor presence, loader-only traffic and post-boot
-SSH/NetGDB are insufficient. This capability is unfinished and belongs to
-1.3.1, separately from the already in-progress 1.3 release. Its full acceptance
-is in [the 1.3.1 scope](../../docs/roadmap/release-1.3.1.md).
-
-See [the public contract](interfaces/contract.md), [acceptance requirements](acceptance.md)
-and [product traceability](../../docs/architecture/design-traceability.md).
+Provide actual packets after firmware exit and before ordinary PCI/NIC attachment
+using an admitted backend for the built-in NIC. Preloading a kernel NIC module
+does not supply loader networking or prove early operation. Retain earliest-stage
+output, boot/phase identity, explicit loss and last-observed state on the
+controller, bounded panic polling and safe transfer to the native driver.
+Require exact native products, full UEFI VM operation/failure controls and a real
+MSI Raider 18 HX built-in-NIC capture under the
+[1.3.2 plan](../../docs/roadmap/release-1.3.2.md). Historical 1.3.1 prerequisites,
+USB inventory and later-driver NetGDB do not close this requirement.

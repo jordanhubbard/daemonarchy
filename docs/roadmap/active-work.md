@@ -256,7 +256,7 @@ lifecycle authority.
 
 ### [ ] DEBUG-001 — Qualify earlier wired network debugging for 1.2
 
-- **Release scheduling update, October 23:** Continuous early-kernel transport and the MSI built-in-NIC capture now belong to DEBUG-003 for **1.3.1**, per operator direction. The in-progress 1.3 release stays separate; the earlier development history below is not a new 1.3 completion gate.
+- **Current release scheduling:** The complete network bootloader environment, continuous early-kernel transport and MSI built-in-NIC capture belong to DEBUG-003 for **1.3.2**, superseding the earlier 1.3.1 assignment. Prior release artifacts and the development history below retain their original scope.
 
 - **Priority:** P0 — next-release blocker
 - **Owner:** diagnostics and verified-boot Components
@@ -970,19 +970,21 @@ remains open; report files do not establish a passing gate.
   - [ ] A desktop status candidate publishes only grant, listener, connected-agent, address and port fields to a world-readable runtime file. The native real-SSH fixture passes approval, SFTP, disconnect, reboot suspension, resume and Unpair status transitions. On October 23, the updated helper and network panel were live-installed on the MacBook with the retained grant intact; the public status named both IP addresses and the listener, QML formatting passed, and the restarted desktop shell answered IPC. The operator confirmed that the visible menu shows the remote-debugging section, listener address and Unpair control. Control actions and reboot behavior still need physical checks. The installed desktop package remains 1.1.1 after its Wi-Fi setup failure.
   - [ ] The installed debugger now retains the active Wi-Fi profile and wireless parent with the root-only pairing grant. On the MacBook, a live update saved a mode-0600 profile matching the active configuration, then recreated `wlan0`, completed WPA and reacquired DHCP after a controlled wireless teardown while Ethernet and the approved listener stayed active. Public-status publication also saved the profile automatically. A full reboot over Wi-Fi awaits the packaged driver in the new ISO; the live USB still needs a durable medium for cross-reboot state.
 
-### [ ] DEBUG-003 — Deliver early-kernel wired diagnostics for 1.3.1
+### [ ] DEBUG-003 — Deliver network bootloader debugging and MSI kernel capture for 1.3.2
 
-- **GitHub issue:** [#27](https://github.com/jordanhubbard/daemonarchy/issues/27), milestone **1.3.1**.
-- **Preflight checkpoint:** [Native-built firmware inventory](../../verification/earlynet-131-inventory-development.json) passes exact-image UEFI VM checks with and without a NIC. It automatically reports PCI/UNDI data without starting a kernel. MSI target data and the actual early-kernel backend remain pending; this does not close DEBUG-003.
-
-- **Release scope:** [1.3.1 completion checks](release-1.3.1.md); built-in Ethernet is the operator-selected bring-up transport. The in-progress 1.3 release is separate.
-
+- **GitHub issue:** [#33](https://github.com/jordanhubbard/daemonarchy/issues/33), milestone **1.3.2**; source [#21](https://github.com/jordanhubbard/daemonarchy-src/issues/21).
+- **Release scope:** [Detailed 1.3.2 plan](release-1.3.2.md) supersedes the earlier 1.3.1 assignment. Preserve previous releases, image bytes and evidence. Historical product #27 closed after prerequisites merged; complete-feature acceptance remains open here.
 - **Priority:** P0
-- **Owner:** diagnostics and owned FreeBSD source
-- **Direction:** Keep the in-progress 1.3 release unchanged. Finish an explicitly enabled authenticated connection from the UEFI loader into kernel startup for built-in Ethernet, with the MSI Raider 18 HX as the physical acceptance target.
-- **Conclusion:** Loader-only networking and initialized-driver NetGDB do not satisfy the MSI early-reset use case. Implementation and exact native/VM/physical evidence are required for 1.3.1.
-- **Depends on:** DEBUG-001
+- **Owner:** diagnostics, owned FreeBSD source and release integration
+- **Direction:** Provide the bootloader equivalent of daemonarchy-debug: explicitly enabled plain wired console with no SSH or additional authentication, kernel/module selection from disk or direct UDP transfer, variable get/set/unset, downloaded Lua execution, and actual pre-driver kernel capture over the MSI built-in Ethernet port.
+- **Conclusion:** A preloaded NIC kernel module does not supply loader networking or establish the early transport. Loader-only output, inventory and initialized-driver NetGDB do not satisfy the MSI reset use case.
+- **Depends on:** DEBUG-001 prerequisites; exact MSI NIC/firmware identity and admitted loader/early polling backends for hardware capture. Loader/controller implementation can proceed before the MSI report.
+- **Preflight evidence:** Existing [inventory](../../verification/earlynet-131-inventory-development.json) and [USB report persistence](../../verification/earlynet-usb-report-development.json) retain their original scope and hashes. Neither captures kernel logs.
 - **Implementation:**
-  - [ ] Close firmware handoff, preserve boot/session identity, provide early startup output and recovery, and integrate the guided loader setup in an isolated 1.3.1 image.
+  - [ ] Specify protocol/CLI and implement plain-mode activation, remote commands, variables and local Stop/recovery.
+  - [ ] Implement bounded direct UDP staging, TFTP pulls, disk/staged kernel/module boot and downloaded Lua execution through standard loader APIs.
+  - [ ] Identify the MSI NIC, select and implement actual loader/early-kernel backends, add handoff metadata and earliest-stage polling output.
+  - [ ] Qualify panic/reset behavior and safe native-driver takeover; package the controller and separate 1.3.2 diagnostic image.
 - **Evidence:**
-  - [ ] Require exact native build, forced pre-driver reset/panic VM capture, missing-peer/NIC and revocation controls, normal-boot regressions, and a retained MSI built-in-NIC capture; do not repeat the exhausted ACPI/SMP/panic tunable comparisons.
+  - [ ] Complete the plan's native/UEFI transfer, script, disk boot, fault and recovery matrix with exact artifact identities.
+  - [ ] Retain independent pre-driver panic/reset captures, successful normal boot and actual MSI built-in-NIC evidence. Preserve controller logs on loss; do not repeat exhausted ACPI/SMP/panic tunable comparisons or infer a reset cause from silence.
