@@ -126,14 +126,23 @@ Radeon Pro 5500M and BCM4364 Wi-Fi evidence. The EFI framebuffer overlap fix
 passed three clean GPU boots. The refreshed graphics package reached SDDM's
 Wayland greeter, and the operator subsequently logged into its desktop on the
 T2 keyboard test kernel. The BCM4364 is PCI `14e4:4464`, Apple
-subdevice `106b:07bf`; it remains unbound with no wireless interface or
-firmware files on the installation. Wired USB Ethernet is verified.
+subdevice `106b:07bf`. It was initially unbound; a private driver and
+board-firmware preview later attached it and passed isolated gateway and
+Internet traffic tests. Fresh installation from the next image remains open.
+Wired USB Ethernet is verified.
 
 The built-in T2 keyboard's synchronous LED-output reports blocked the desktop
 input path. A targeted quirk passed native GENERIC build and a one-boot MacBook
 probe with the global LED bypass off. The operator entered a password and
 reached the desktop; the pointer was initially very laggy but then worked.
 Sustained input and reliable clicking still need qualification.
+
+A physical S3 test on the installed 1.1.1 system did not resume cleanly.
+The screen initially stayed black; later ACPI PCIe power-method timeouts,
+temporary input loss, Broadcom firmware failure, and a stale wireless default
+route were observed. The wired gateway responded once wireless was down and
+the wired route was selected. This test does not qualify suspend on the new
+image; see the [S3 trial](testing-macbookpro16-1-s3-20261024.md).
 
 The MacBookPro16,1 investigation includes earlier BCE/GPU failures and a later
 1.1 candidate that repeatedly restarted or powered off during ordinary package

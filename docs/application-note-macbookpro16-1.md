@@ -1,6 +1,6 @@
 # Application note: MacBook Pro 16-inch (2019)
 
-Updated October 22, 2026. Model: **MacBookPro16,1**, Apple T2, Intel Core
+Updated October 24, 2026. Model: **MacBookPro16,1**, Apple T2, Intel Core
 i9-9880H. This note describes the observed 1.1 candidate installation on
 OSVERSION `1600027`; the released 1.1.1 uses `1600028`. It does not qualify a
 fresh 1.1.1 installation or claim that the newer base fixes these failures.
@@ -59,10 +59,13 @@ has not been validated on this MacBook or shipped as a working solution in 1.1.1
 
 The earlier development installation exposed only loopback and USB Ethernet.
 A later private native FreeBSD driver and `bali` B3 firmware preview attached
-PCI `14e4:4464`, scanned nearby networks and joined an access point. Traffic
-and reconnect remain unreliable in the live installer, so this is not yet
-release Wi-Fi support. Remaining work is to stabilize and qualify the native
-PCIe FullMAC driver, installer acquisition and rebooted traffic on this unit.
+PCI `14e4:4464`, scanned nearby networks and joined an access point. A
+subsequent isolated test passed gateway and Internet traffic over Wi-Fi, and
+the desktop displayed the connected network. The live installer previously
+associated without an IP address; a revised scan, WPA wait, DHCP and route
+path is awaiting a fresh install from the next image. Reassociation across
+access points, suspend and rebooted traffic remain unqualified for release.
+The [release investigation](roadmap/release-1.2.0.md) tracks these results.
 The [experimental native brcmfmac driver](https://github.com/narqo/freebsd-brcmfmac)
 targets BCM4350/BCM43455, so its present device support does not close this gap.
 Linux's [brcmfmac PCIe mapping](https://github.com/torvalds/linux/blob/master/drivers/net/wireless/broadcom/brcm80211/brcmfmac/pcie.c)
@@ -84,9 +87,8 @@ report a clear unresolved dependency rather than claim wireless readiness if
 firmware acquisition or driver attachment fails. This applies to other laptops
 with required external firmware as well as the BCM4364.
 
-Use the wired USB Ethernet connection already verified on this machine for
-installation, package access and remote debugging. Built-in Wi-Fi remains an
-open hardware compatibility limitation. Do not treat unrelated USB Wi-Fi adapters
+Keep wired USB Ethernet available for installation and remote debugging while
+the new Wi-Fi installer path is tested. Do not treat unrelated USB Wi-Fi adapters
 as qualified without testing their exact chipset and driver.
 
 ## Other limits and investigation
@@ -94,6 +96,9 @@ as qualified without testing their exact chipset and driver.
 The later installer retry reproduced a fatal NVMe status during package
 installation; recovery under four I/O trackers does not resolve its cause.
 Bluetooth, sustained trackpad behavior and restart causes remain unqualified.
+An [October 24 S3 test](testing-macbookpro16-1-s3-20261024.md) on the installed
+1.1.1 system exposed ACPI, input and networking failures after resume; suspend
+acceptance remains open.
 
 See the [dated investigation](testing-macbookpro16-1.md),
 [hardware observations](testing-1.1-hardware-observations.md), and
