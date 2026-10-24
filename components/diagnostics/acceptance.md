@@ -38,3 +38,11 @@ complete declarations and external/native gaps are in [the acceptance inventory]
   local recovery and revocation. Pairing keys and typed input must not enter
   inspectable loader variables or retained output logs. Document the exact
   firmware-to-kernel coverage gap; a packet unit test cannot close this scenario.
+- **1.3.1 early-kernel connection:** require real authenticated packets after
+  firmware exit and before normal PCI/NIC attachment, with exact loader/kernel
+  products, NIC and boot identity. Retain deliberate pre-driver panic and hard
+  reset VM captures, successful continued boot, wrong-boot/replay/forgery and
+  absent-peer/link-loss controls, local recovery, revocation and safe transfer
+  to the native driver. Qualify the separate diagnostic image and actual MSI
+  built-in-NIC startup capture. Runtime descriptor checks and controller-only
+  fixtures do not close this scenario or establish the cause of the MSI reset.

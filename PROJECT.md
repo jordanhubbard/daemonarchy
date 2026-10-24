@@ -36,6 +36,12 @@ Independent portability gates in the parent framework are not product OS gates.
 Wired UEFI loader remote console/control is an immediate next-release blocker
 under DEBUG-001. Implementation proceeds while framework CI is pending.
 
+The operator's October 23 release direction assigns completion of the
+loader-to-early-kernel connection and MSI built-in-Ethernet bring-up to **1.3.1**
+under DEBUG-003. The 1.3 release is already in progress and must remain
+undisturbed. The [1.3.1 scope](docs/roadmap/release-1.3.1.md) supersedes earlier
+next-release wording for this specific transport work; no completion is claimed.
+
 ## Dependencies
 
 The next release depends on a qualified Literate AI revision/wheel providing

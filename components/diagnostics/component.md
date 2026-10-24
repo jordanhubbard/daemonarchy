@@ -51,5 +51,23 @@ Finite diagnostic jobs clean up only their owned state. Provide an explicitly en
 
 This product targets FreeBSD only. Qualify the actual FreeBSD EFI binary in a disposable UEFI VM and on the selected physical firmware/NICs. Firmware network availability and the transition to kernel networking are distinct evidence requirements; report any pre-driver gap rather than claiming continuous kernel debugging.
 
+## Requirement: 1.3.1 early-kernel connection
+
+For the 1.3.1 bring-up profile, retain an explicitly approved authenticated
+wired connection from the loader into kernel initialization before normal
+PCI/NIC attachment. Use the selected built-in Ethernet port and retain its
+identity, one boot identity and exact loader/kernel/image inputs. Capture
+startup and probe boundaries at the controller; report output loss and the
+last observed stage without inferring a reset from silence. Keep local recovery
+usable, bound missing-peer/reconnection paths and transfer hardware ownership
+to the native driver safely. Do not call a boot-services network protocol after
+`ExitBootServices` or expose pairing keys through environment variables or logs.
+
+The MSI Raider 18 HX AI A2XWIG/RTX 5080 is the required physical acceptance
+target. Runtime UNDI descriptor presence, loader-only traffic and post-boot
+SSH/NetGDB are insufficient. This capability is unfinished and belongs to
+1.3.1, separately from the already in-progress 1.3 release. Its full acceptance
+is in [the 1.3.1 scope](../../docs/roadmap/release-1.3.1.md).
+
 See [the public contract](interfaces/contract.md), [acceptance requirements](acceptance.md)
 and [product traceability](../../docs/architecture/design-traceability.md).
