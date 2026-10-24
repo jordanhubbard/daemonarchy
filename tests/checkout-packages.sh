@@ -19,7 +19,7 @@ done
 dd if=/dev/urandom of="$work/repo/payload" bs=1m count=2 status=none
 git -C "$work/repo" add payload
 git -C "$work/repo" commit -qm payload
-python3 "$here/scripts/build-checkout-packages.py" --kind ports --repo "$work/repo" --revision HEAD --branch preflight/macbook-test --remote https://github.com/jordanhubbard/freebsd-ports.git --out "$work/packages" --chunk-mib 1 >"$work/build.log"
+python3.12 "$here/scripts/build-checkout-packages.py" --kind ports --repo "$work/repo" --revision HEAD --branch preflight/macbook-test --remote https://github.com/jordanhubbard/freebsd-ports.git --out "$work/packages" --chunk-mib 1 >"$work/build.log"
 jq '{schema:1,trees:{ports:.}}' "$work/packages/ports.json" >"$work/catalog.json"
 mkdir -p "$work/root"
 pkg -r "$work/root" -o ABI=FreeBSD:16:amd64 add "$work/packages"/*.pkg
