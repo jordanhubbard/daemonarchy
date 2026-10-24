@@ -6,9 +6,11 @@ Checkboxes below are execution status, not substitutes for test receipts.
 ## 1.3.1 release execution, 2026-10-24
 
 All previously open Daemonarchy product, source, and ports pull requests are
-merged into their respective `main` branches. Desktop and omarchy-freebsd have
-no open pull requests. The [landing inventory](../../verification/contribution-inventory-1.3.1-development.json)
-records the earlier review heads; a fresh final contribution sweep is still
+merged into their respective `main` branches. The [current GitHub branch audit](../../verification/branch-merge-audit-1.3.1-development.json)
+finds all 76 non-main branch heads ancestral to `main` across those three
+repositories and no open PRs in any of the five Daemonarchy repositories.
+The [earlier landing inventory](../../verification/contribution-inventory-1.3.1-development.json)
+retains review-head details; a formal release contribution sweep is still
 required. Retained worktrees and development evidence remain available.
 
 Source `main` at `d63d77f4` includes the MacBook and early-network work plus

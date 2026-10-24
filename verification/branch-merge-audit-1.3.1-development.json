@@ -1,0 +1,93 @@
+{
+  "audited_utc": "2026-10-24T06:34:25.408028+00:00",
+  "limitations": [
+    "This is a GitHub branch and open-PR snapshot, not a native build, local worktree, release contribution-policy, or artifact acceptance result.",
+    "Historical branch refs remain retained; ancestor status does not imply branch deletion.",
+    "Large native source and ports worktrees were audited by committed heads and selected file blobs; a full current untracked-file inventory was not run during the active bulk."
+  ],
+  "local_worktrees": {
+    "ports": {
+      "retained_heads_ancestral_to_main_by_github_compare": [
+        "787adf82440539eb8e029ff7b4cb4e83467a4fa4",
+        "4e8640f85f8eb944f35b6d22adc87709229a8e7b"
+      ],
+      "tracked_edits_in_local_debug_worktrees": 0
+    },
+    "product": {
+      "branch_heads_ancestral_to_main": [
+        "812982262640ca58ec24286588a38f58a0cf5d93",
+        "037ce3d199b67b0921bb238ed5766a3181061a5b",
+        "12fee633dca82249353c05172680893a10f6ff40",
+        "2cb0b460f003e986ca806015d55a388f9b0409d8",
+        "190022dca4dba78e50d1c1375f81b2ac191e9238",
+        "08c0a4a2d7f7d6fbb84c5af1455bf54cbea9c22b"
+      ],
+      "detached_superseded_head": "bb03a4d1ef5543e9dbb90ae59ceec98496b714dd",
+      "detached_unique_merge_resolution_paths": [
+        "docs/architecture/design-traceability.md"
+      ],
+      "detached_unique_nonmerge_commits": 0,
+      "preserved_untracked": [
+        ".codegraph/",
+        "pr-body.md"
+      ],
+      "tracked_edits_in_retained_worktrees": 0
+    },
+    "source": {
+      "nvme_changed_paths_byte_identical_to_main": [
+        "sys/dev/nvme/nvme_ctrlr.c",
+        "sys/dev/nvme/nvme_if.m",
+        "sys/dev/nvme/nvme_private.h",
+        "sys/dev/nvme/nvme_qpair.c",
+        "sys/dev/nvme/nvme_sysctl.c"
+      ],
+      "old_native_head": "978fed917ba2b391c3eace661c21a7a65549cb23",
+      "old_native_head_ancestral_to_main_by_github_compare": true,
+      "unpublished_nvme_head": "8528d74cd5d911ab09efff435e4020429f966657"
+    }
+  },
+  "method": "For each GitHub branch ref, compare its commit as base with the repository main commit as head; ahead or identical proves that branch head is an ancestor of main. Query open pull requests separately.",
+  "repositories": {
+    "daemonarchy": {
+      "branch_count": 29,
+      "main": "8bc60034ec46b8c40a6a57a157e3ed3f65a42c7e",
+      "merged_branch_count": 28,
+      "non_main_count": 28,
+      "open_pull_requests": [],
+      "unmerged_branches": {}
+    },
+    "daemonarchy-desktop": {
+      "branch_count": 1,
+      "main": "ec2a00824ec95b342c0c095657ac725c56f0528b",
+      "merged_branch_count": 0,
+      "non_main_count": 0,
+      "open_pull_requests": [],
+      "unmerged_branches": {}
+    },
+    "daemonarchy-ports": {
+      "branch_count": 35,
+      "main": "7e417dae24ffb95c4625601ae9d654eb2ca68f4d",
+      "merged_branch_count": 34,
+      "non_main_count": 34,
+      "open_pull_requests": [],
+      "unmerged_branches": {}
+    },
+    "daemonarchy-src": {
+      "branch_count": 15,
+      "main": "d63d77f4eb3cc29e16510f7bdec73602e27c2844",
+      "merged_branch_count": 14,
+      "non_main_count": 14,
+      "open_pull_requests": [],
+      "unmerged_branches": {}
+    },
+    "omarchy-freebsd": {
+      "branch_count": 1,
+      "main": "800bf89b6ec6d0cfaaebb46a2440f56c3f997c8a",
+      "merged_branch_count": 0,
+      "non_main_count": 0,
+      "open_pull_requests": [],
+      "unmerged_branches": {}
+    }
+  },
+  "schema": "daemonarchy/branch-merge-audit@1"
+}
