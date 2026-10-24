@@ -69,6 +69,12 @@
   1.1.1 trust key remain unchanged. Existing installations need an explicit
   trust enrollment because the old private key is unavailable on the current
   native builder. Signed candidate publication and upgrade acceptance are open.
+- Record a physical MacBook S3 trial on the installed 1.1.1 system. Resume
+  kept the same kernel but showed ACPI PCIe power-state timeouts, a Broadcom
+  firmware trap, transient input loss, and a stale wireless default route.
+  Wired networking recovered after selecting its route. S3 qualification on
+  the new image remains open; see
+  `docs/testing-macbookpro16-1-s3-20261024.md`.
 
 
 This history covers the installer repository from its first commit and all GitHub
