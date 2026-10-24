@@ -68,6 +68,13 @@ The MacBook's current wired address, debugger listener and return path still
 need direct inspection; a successful gateway ping alone does not establish
 inbound debugger recovery.
 
+In a later controller check, the previous wired address no longer answered
+ARP. A bounded probe of the local `/23` did not discover the adapter's
+previously observed MAC at another address. That observation does not
+distinguish a detached interface, a changed link state, or a network stack
+failure on the MacBook. Inspect `ue1`, its current address and the debugger
+listener locally before attributing the loss to any one of them.
+
 S3 acceptance is **open**. Repeat on the exact new image after qualifying ACPI
 power restoration, T2 input, desktop restart, BCM firmware recovery, NVMe I/O,
 and network route selection across multiple cycles.
