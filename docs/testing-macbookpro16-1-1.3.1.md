@@ -8,11 +8,11 @@ contains private network or credential details.
 
 | Final input | Exact value and evidence |
 | --- | --- |
-| Product commit and release tag | Pending |
-| FreeBSD source and ports commits | Pending; the private preview uses older source sets |
+| Product commit and release tag | ISO build pinned to `cdeb3434a2f7e5e205feb756c897b1e4a98d4c28`; final `daemonarchy-1.3.1` tag pending |
+| FreeBSD source and ports commits | `d63d77f4eb3cc29e16510f7bdec73602e27c2844` and `7e417dae24ffb95c4625601ae9d654eb2ca68f4d`; final native build pending |
 | ISO SHA-256 and signed boot-bundle identity | Pending |
-| Package and checkout feed tags, keys and signature checks | Pending |
-| BCM4364 module package and Apple board-file hashes | Pending |
+| Package and checkout feed tags, keys and signature checks | Public `checkouts-16-amd64-1.3.1` verified with 11 matching asset digests; `packages-16-amd64-1.3.1` and installed signature checks pending. Selected package public key SHA-256: `67986b400f28a49e99df0f1f3368f60aca8064d5dc00094700ba1a17d8474ef7` (DER form). |
+| BCM4364 module package and Apple board-file hashes | Module package and installed hashes pending. Pinned Apple recovery image SHA-256: `591f07a9a4a58d855a2e53b86a5f5da854a250000a66a9382adaf106c20f839b`; the four expected board-file hashes are in the [firmware importer](../scripts/import-apple-bcm4364-firmware.py). The private source stage passed its hash check, but that does not qualify the final ISO or installed target. |
 
 ## Fresh installer boot and storage
 
