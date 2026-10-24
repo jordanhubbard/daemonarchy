@@ -4,6 +4,16 @@
 
 [README.md](https://github.com/jordanhubbard/daemonarchy/blob/daemonarchy-1.3.1/README.md)
 
+- On October 24 the operator confirmed that all pre-production checks passed
+  on the Intel 16-inch MacBook Pro and waived only an additional physical
+  acceptance rerun of the final public ISO. Existing observations retain their
+  original artifact scope; no final-ISO physical result or hardware-rooted T2
+  attestation is claimed. Native build, signing, feed, ISO integrity and
+  publication checks remain release gates. See the [decision
+  record](verification/macbook-release-decision-1.3.1.json). The development
+  checkpoints below describe their state when recorded; references to then-open
+  physical tests are historical and do not reinstate a 1.3.1 release gate.
+
 - Require a retained, hashed native source, package, signing and ISO evidence
   record for the 1.3.1 production release gate. Keep the separately configured
   LitAI project receipt unqualified until its native lifecycle is admitted.

@@ -1,5 +1,5 @@
 #!/usr/bin/env python3
-"""Fail closed until the exact 1.3.1 ISO and MacBook acceptance are current."""
+"""Check exact 1.3.1 artifacts and the recorded MacBook release decision."""
 
 import hashlib
 import json
@@ -18,8 +18,10 @@ ISO_PRODUCT = "cdeb3434a2f7e5e205feb756c897b1e4a98d4c28"
 CHECKS = (
     "fresh_install", "wifi_only_install", "nvme_io", "graphics", "keyboard",
     "trackpad", "debugger_resume", "signed_boot_chain", "untrusted_boot_rejected",
-    "package_upgrade",
+    "package_upgrade", "s3_resume", "t2_boot_policy",
 )
+DECISION = ROOT / "verification/macbook-release-decision-1.3.1.json"
+EVIDENCE_STATUS = "MacBook pre-production checks operator-confirmed passed; final ISO rerun waived"
 NATIVE_EVIDENCE = frozenset((
     "source-world.log", "source-kernel.log", "source-release-sets.log",
     "source-build.exit", "secureboot-build.exit", "bulk.log", "bulk.exit",
@@ -143,6 +145,34 @@ def public_feed(tag):
             "support feed has no assets: " + tag)
 
 
+def macbook_release_decision(record):
+    """Bind the operator's scoped decision without inventing final-ISO results."""
+    require(record.get("evidence_status") == EVIDENCE_STATUS,
+            "MacBook release decision differs")
+    require(record.get("macbook_release_decision_sha256") == digest(DECISION),
+            "MacBook release decision digest differs")
+    decision = document(DECISION)
+    require(decision.get("schema") == "daemonarchy/macbook-release-decision@1"
+            and decision.get("version") == "1.3.1"
+            and decision.get("model") == "MacBookPro16,1"
+            and decision.get("iso_installer_commit") == ISO_PRODUCT
+            and decision.get("operator_confirmation_date") == "2026-10-24"
+            and decision.get("operator_confirmation") ==
+                "All pre-production checks have passed on the Intel 16-inch MacBook Pro."
+            and decision.get("preproduction_result") == "passed (operator-confirmed)"
+            and decision.get("preproduction_artifact_scope") ==
+                "pre-production MacBook configurations; exact artifact hashes were not supplied with the operator confirmation"
+            and decision.get("final_public_iso_rerun") == "waived by operator; not run"
+            and decision.get("final_public_iso_sha256") is None
+            and decision.get("final_public_iso_physical_result") == "not claimed"
+            and decision.get("hardware_rooted_attestation") == "not claimed",
+            "MacBook decision claims an unsupported physical result")
+    checks = decision.get("final_public_iso_checks")
+    require(isinstance(checks, dict) and set(checks) == set(CHECKS)
+            and all(value == "not rerun" for value in checks.values()),
+            "final public ISO hardware checks must remain not rerun")
+
+
 def main():
     record_path = external_file("DAEMONARCHY_RELEASE_RECORD")
     record = document(record_path)
@@ -153,8 +183,7 @@ def main():
             and record.get("source_commit") == SOURCE
             and record.get("ports_commit") == PORTS
             and record.get("desktop_commit") == DESKTOP, "release input selection changed")
-    require(record.get("evidence_status") == "qualified on final MacBook image",
-            "final MacBook qualification is not recorded")
+    macbook_release_decision(record)
     head = subprocess.check_output(["git", "rev-parse", "HEAD"], cwd=ROOT, text=True).strip()
     require(record.get("installer_commit") == head, "release record selects another product commit")
     run("git", "merge-base", "--is-ancestor", ISO_PRODUCT, head)
@@ -171,38 +200,9 @@ def main():
     run("sh", "scripts/check-image-size.sh", str(iso))
     native_evidence(record, record["assets"][iso.name][1].removeprefix("sha256:"))
 
-    hardware = document(external_file("DAEMONARCHY_HARDWARE_RECORD"))
-    require(hardware.get("schema") == "daemonarchy/macbook-acceptance@1"
-            and hardware.get("model") == "MacBookPro16,1"
-            and hardware.get("result") == "passed", "MacBook acceptance has not passed")
-    iso_identity = record["assets"][iso.name][1]
-    require(hardware.get("iso_sha256") == iso_identity.removeprefix("sha256:")
-            and hardware.get("installer_commit") == ISO_PRODUCT,
-            "MacBook acceptance selects other ISO bytes or installer source")
-    require(hardware.get("t2_boot_policy") in ("Full Security", "Medium Security")
-            and hardware.get("firmware_enforced") is True,
-            "T2 firmware enforcement is not established")
-    checks = hardware.get("checks")
-    require(isinstance(checks, dict) and all(checks.get(name) is True for name in CHECKS),
-            "MacBook acceptance checks are incomplete")
-    evidence_root = os.environ.get("DAEMONARCHY_HARDWARE_EVIDENCE", "")
-    require(bool(evidence_root), "set DAEMONARCHY_HARDWARE_EVIDENCE to retained logs")
-    evidence_root = Path(evidence_root).resolve(strict=True)
-    evidence = hardware.get("evidence")
-    require(isinstance(evidence, dict) and evidence,
-            "MacBook acceptance has no retained evidence")
-    for name, expected in evidence.items():
-        require(isinstance(name, str) and name == Path(name).name and name not in (".", ".."),
-                "invalid hardware evidence name")
-        require(isinstance(expected, str) and len(expected) == 64,
-                "invalid hardware evidence digest")
-        path = evidence_root / name
-        require(path.is_file() and not path.is_symlink() and digest(path) == expected,
-                "hardware evidence is missing or differs: " + name)
-
     public_feed("checkouts-16-amd64-1.3.1")
     public_feed("packages-16-amd64-1.3.1")
-    print("1.3.1 release gate passed for exact native evidence, ISO, feeds and MacBook acceptance")
+    print("1.3.1 release gate passed for exact native evidence, ISO, feeds and scoped MacBook decision")
 
 
 if __name__ == "__main__":

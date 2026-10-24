@@ -33,28 +33,36 @@ isolated native `pkg` client authenticated and installed all three packages,
 rejected the old key, and materialized both exact shallow Git trees. The
 [versioned checkout feed](https://github.com/jordanhubbard/daemonarchy/releases/tag/checkouts-16-amd64-1.3.1)
 is public with 11 verified assets; a separate native FreeBSD `pkg` client
-accepted its public catalogue and listed all three packages. Installed-image
-acceptance remains open. The desktop source is
+accepted its public catalogue and listed all three packages. The desktop source is
 pinned to `ec2a0082` until qualification permits a stable `v1.3.1` tag.
 
-The MacBook's installed 1.1.1 system reached a working desktop, but failed the
-S3 trial and later lost both debugger network paths. The new image has not yet
-been built or installed. The new package signing key has a separately held
+The operator confirmed on October 24 that all pre-production checks passed on
+the Intel 16-inch MacBook Pro and waived only an additional physical acceptance
+rerun against the final public 1.3.1 ISO. The earlier 1.1.1 S3 and debugger
+observations remain historical results for that image, not current release
+blockers. No final-ISO physical boot or hardware-rooted T2 attestation is
+claimed. See the [scoped decision](../../verification/macbook-release-decision-1.3.1.json)
+and [acceptance record](../testing-macbookpro16-1-1.3.1.md). The new image has
+not yet been assembled. The new package signing key has a separately held
 encrypted recovery copy with a verified restore. The production boot signing
 key and certificate are staged on the native worker with root-only access;
-the final signed bundle remains pending. The signed application feed, the public ISO, a fresh
-MacBook install, retained native build evidence and production boot attestation are
-still release gates. The MSI early kernel boot remains unqualified and is not
+the final signed bundle remains pending. The signed application feed, public
+ISO, retained native build evidence, artifact integrity and publication checks
+remain release gates. The MSI early kernel boot remains unqualified and is not
 claimed by the MacBook release notes.
 
 `litai verify` currently fails its declared receipt gate because
 `verification/current.json` is absent. The 1.3.1 release gate separately checks
 current LitAI authority and locks, then requires a hashed native build record,
-signed artifacts, image identity and physical MacBook acceptance. That native
+signed artifacts, image identity and the scoped MacBook release decision. That native
 record binds actual source, ports, signing and ISO results without asserting a
 passing LitAI lifecycle receipt. Issues #11 and #39 have explicit 1.3.1
 deferrals and 1.4.0 milestones; the complete LitAI release graph remains open.
 No historical log is a substitute for a current native result or LitAI receipt.
+The dated development entries below retain the status observed at their own
+artifact revisions. The October 24 operator confirmation supersedes their
+then-open MacBook physical checks as a 1.3.1 publication gate; it does not
+rewrite those observations as tests of the final ISO.
 
 ### [x] ADOPT-001 — Establish product-wide Literate AI authority
 
@@ -321,7 +329,7 @@ lifecycle authority.
 - **Priority:** P1
 - **Owner:** desktop, compatibility and diagnostics Components
 - **Direction:** Keep unresolved GPU, radio, boot and restart behavior explicit while extending physical acceptance.
-- **Conclusion:** HP desktop/application acceptance passed. On the MacBook, a refreshed graphics package and T2 keyboard test kernel reached a visible desktop and accepted a password; the pointer worked after initial lag. A private BCM4364 driver and board firmware joined WPA2, obtained DHCP and reached the gateway, and the desktop Wi-Fi panel connected. A private fresh-install preview ISO now includes the tested Radeon and Omarchy packages, keyboard tunable, radio payload and installer WPA wait; physical boot and installation of that exact image, network durability, maintainable/redistributable radio integration and the earlier storage/restart causes remain open, as do other platform boot and radio/suspend checks. See [preview evidence](../testing-macbookpro16-1-wifi-preview-20261022.md).
+- **Conclusion:** HP desktop/application acceptance passed. On the MacBook, a refreshed graphics package and T2 keyboard test kernel reached a visible desktop and accepted a password; the pointer worked after initial lag. A private BCM4364 driver and board firmware joined WPA2, obtained DHCP and reached the gateway, and the desktop Wi-Fi panel connected. The operator confirmed on October 24 that all Intel 16-inch MacBook Pro pre-production checks passed and waived a final-ISO physical rerun. Earlier preview gaps and failures remain historical observations on their original images, not current 1.3.1 publication blockers. The final public ISO has no claimed physical run or hardware-rooted T2 attestation. Other hardware platforms and future driver improvements remain tracked here. See [preview evidence](../testing-macbookpro16-1-wifi-preview-20261022.md) and the [release decision](../../verification/macbook-release-decision-1.3.1.json).
 - **ASRock availability:** The operator reports the RTX system still hangs in firmware and cannot enter setup or the boot menu, even with other USB devices disconnected and the keyboard directly attached. Firmware recovery is pending; no current Daemonarchy boot or physical acceptance result can be obtained from it. Keep R12-11 open.
 - **MSI video:** The October 18 recording ends readable output at `atrtc0: Warning: Couldn't map I/O.` before the display blanks, with no visible panic. The second video confirms the RTC-disable/panic flags and advances to `sc0 failed to probe on isa1` before blanking, without a visible panic. Repeated Intel SPMC constraint-format warnings motivated a `debug.acpi.disabled="spmc"` comparison, which the operator reports made no difference; the exact installer artifact remains unidentified. The [analysis](../testing-1.1-hardware-observations.md#msi-startup-video-reviewed-2026-10-18) records the movie identity, observed scope and source-backed diagnostic; no default quirk or fix is qualified.
 - **MSI current report, October 23:** ACPI enabled still produces an early reset without a visible panic; disabling it produces a missing-APIC panic and debugger entry. The operator confirms the MSI Raider 18 HX/RTX 5080, latest pre-1.3 ISO and `APIC: Could not find any APICs`; exact artifact filename/hash and current BIOS remain unrecorded. [The source-backed diagnostic](../testing-1.1-hardware-observations.md#msi-acpi-on-reset-and-acpi-off-apic-panic-reported-2026-10-23) explains why ACPI-off can also remove MADT-based APIC discovery. The operator confirms the proposed ACPI-on/SMP-disabled and panic-retention settings were already tried without changing the reset; do not request that repeat. Loader networking is implemented only through firmware handoff; continuous early-kernel capture remains unfinished. No boot fix is claimed.

@@ -40,9 +40,13 @@ Native FreeBSD world, kernel, and release sets passed independently on
 `daemon.local` and the madmax FreeBSD guest. The package build and ISO remain
 separate qualification steps.
 
-These are candidate changes. The desktop observation was on an installed 1.1.1
-system with live development updates. It does not qualify a fresh installation
-from the final 1.3.1 ISO.
+The operator confirmed on 2026-10-24 that **all pre-production checks passed
+on the Intel 16-inch MacBook Pro** and waived an additional physical acceptance
+run against the final public 1.3.1 ISO. Existing test records keep their
+original image and development-input scope; the confirmation does not supply
+a final-ISO hardware run or artifact hash. See the
+[MacBook release decision](../verification/macbook-release-decision-1.3.1.json)
+and [acceptance record](testing-macbookpro16-1-1.3.1.md).
 
 ## Qualification still required
 
@@ -55,26 +59,25 @@ from the final 1.3.1 ISO.
   certificate, installed package and module inventory, and the retained native
   build evidence bound to the release record. LitAI's broader project receipt
   remains open under its staged adoption work.
-- Run the [MacBook acceptance plan](testing-macbookpro16-1-1.3.1.md) from an
-  erased disk using Wi-Fi for installation. Confirm unattended autoboot,
-  storage integrity, desktop input, Wi-Fi traffic and reboot, debugger recovery,
-  and the actual T2 boot policy plus signed-chain enforcement. [Apple's current
-  firmware guide](https://support.apple.com/guide/security/boot-process-sec5d0fab7c6/1/web/1)
-  lists Microsoft UEFI CA 2023, but the MacBook has no tested
-  third-party firmware trust path or custom db enrollment. A boot under No
-  Security cannot be claimed as firmware-enforced Secure Boot. The earlier
-  installer reported a fatal NVMe event; Apple Diagnostics returned `ADP000`,
-  but this does not explain or clear that event.
-- The installed 1.1.1 MacBook failed its [S3 trial](testing-macbookpro16-1-s3-20261024.md):
-  ACPI PCIe methods timed out, USB devices detached, and the Broadcom firmware
-  reported a trap. Suspend and resume remain unqualified for 1.3.1.
+
+## Hardware status and limits
+
+- The additional [MacBook acceptance rerun](testing-macbookpro16-1-1.3.1.md)
+  on the final ISO is waived by the operator. The MacBook passed all
+  pre-production checks by operator confirmation; this release makes no claim
+  that the final ISO bytes were installed or booted on it. The actual T2 boot
+  policy and firmware enforcement of this ISO were not established, so
+  hardware-rooted attestation is not claimed. [Apple's T2 firmware
+  guide](https://support.apple.com/guide/security/boot-process-sec5d0fab7c6/1/web/1)
+  remains the policy reference. The earlier fatal NVMe event and the
+  [1.1.1 S3 failure](testing-macbookpro16-1-s3-20261024.md) are historical
+  observations tied to their original images, not current release gates.
 - The MSI Raider 18 HX with RTX 5080 still resets during early kernel startup.
   Loader networking works in isolation. The complete network bootloader debugger,
   pre-driver kernel capture, and physical MSI result are tracked for
   [1.3.2](roadmap/release-1.3.2.md). This release makes no MSI installation or
   attestation claim.
 
-The exact ISO digest, source and ports release heads, signed feed tags, final
-hardware results, and GitHub release URL will be added only after those
-artifacts and observations exist. The root `CHANGELOG.md` retains the detailed
+The exact ISO digest, signed feed tags and GitHub release URL will be added
+after those artifacts exist. The root `CHANGELOG.md` retains the detailed
 candidate history and limitations.

@@ -6,7 +6,7 @@
 - **Tracking:** [product issue #39](https://github.com/jordanhubbard/daemonarchy/issues/39), [1.4.0 milestone](https://github.com/jordanhubbard/daemonarchy/milestone/3).
 - **Owning queue item:** [PERF-002](active-work.md#perf-002-coordinate-all-daemonarchy-repositories-through-literate-ai-workers-in-140).
 - **Existing foundations:** [retained native execution](active-work.md#adopt-002-qualify-retained-native-execution-and-release-enforcement), [complete source and ports ownership](freebsd-components.md), [native workspace](native-workspace.md), and [build-performance work](build-performance.md).
-- **Release boundary:** this is 1.4 work. The pinned 1.3.1 package, ISO, signing, and MacBook acceptance path remains the current release path; [1.3.2 early-kernel MSI debugging](release-1.3.2.md) has its own acceptance.
+- **Release boundary:** this is 1.4 work. The pinned 1.3.1 package, ISO and signing path remains the current release path; the operator confirmed MacBook pre-production checks and waived an additional final-ISO physical rerun. [1.3.2 early-kernel MSI debugging](release-1.3.2.md) has its own acceptance.
 
 ## Intended operating model
 

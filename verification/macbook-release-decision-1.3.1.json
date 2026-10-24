@@ -1,0 +1,28 @@
+{
+  "schema": "daemonarchy/macbook-release-decision@1",
+  "version": "1.3.1",
+  "model": "MacBookPro16,1",
+  "iso_installer_commit": "cdeb3434a2f7e5e205feb756c897b1e4a98d4c28",
+  "operator_confirmation_date": "2026-10-24",
+  "operator_confirmation": "All pre-production checks have passed on the Intel 16-inch MacBook Pro.",
+  "preproduction_result": "passed (operator-confirmed)",
+  "preproduction_artifact_scope": "pre-production MacBook configurations; exact artifact hashes were not supplied with the operator confirmation",
+  "final_public_iso_rerun": "waived by operator; not run",
+  "final_public_iso_sha256": null,
+  "final_public_iso_checks": {
+    "fresh_install": "not rerun",
+    "wifi_only_install": "not rerun",
+    "nvme_io": "not rerun",
+    "graphics": "not rerun",
+    "keyboard": "not rerun",
+    "trackpad": "not rerun",
+    "debugger_resume": "not rerun",
+    "signed_boot_chain": "not rerun",
+    "untrusted_boot_rejected": "not rerun",
+    "package_upgrade": "not rerun",
+    "s3_resume": "not rerun",
+    "t2_boot_policy": "not rerun"
+  },
+  "final_public_iso_physical_result": "not claimed",
+  "hardware_rooted_attestation": "not claimed"
+}

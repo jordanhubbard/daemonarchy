@@ -81,7 +81,11 @@ adoption executes metadata/preservation checks, not the expensive release matrix
 The [1.1.1 qualification record](../testing-1.1.1.md) remains historical evidence.
 Its final-ISO boot/storage checks, preceding-image full installs and clone tests,
 physical HP upgrade/rollback/login/application results and unrun/waived cases
-retain their distinct scopes. MacBook GPU/Wi-Fi failures remain open.
+retain their distinct scopes. The 1.1.1 MacBook GPU/Wi-Fi observations remain
+historical for that image. For 1.3.1, the operator confirmed all pre-production
+checks passed on the Intel 16-inch MacBook Pro and waived an additional final-ISO
+physical rerun; see the [scoped decision](../../verification/macbook-release-decision-1.3.1.json).
+No 1.1.1 result is rebound to final 1.3.1 ISO bytes.
 
 Future current receipts need exact source and binary inputs, target/worker and
 command identities, artifact hashes, positive/negative test results, explicit
@@ -130,7 +134,7 @@ the public repository paths so mutable resolver mutexes are not documentation
 assets. Source
 indexing is disabled. Future framework updates must preserve these boundaries.
 
-<!-- literate-ai:authority-reviewed sha256:778942d02c3e92c42265cda079101df5545daa97615e64da7c9615faf5bd14ac -->
+<!-- literate-ai:authority-reviewed sha256:b7073add0b8bd239f7d41bcdc48393ce381401c0d14e996e214cb4a04a0fef8b -->
 
 
 ## Rechecking preservation

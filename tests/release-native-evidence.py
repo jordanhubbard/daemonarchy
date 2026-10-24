@@ -105,5 +105,45 @@ class NativeReleaseEvidence(unittest.TestCase):
             self.check()
 
 
+class MacBookReleaseDecision(unittest.TestCase):
+    def setUp(self):
+        self.temporary = tempfile.TemporaryDirectory()
+        self.addCleanup(self.temporary.cleanup)
+        self.path = Path(self.temporary.name) / "decision.json"
+        self.decision = json.loads(release.DECISION.read_text())
+
+    def check(self):
+        self.path.write_text(json.dumps(self.decision) + "\n")
+        record = {
+            "evidence_status": release.EVIDENCE_STATUS,
+            "macbook_release_decision_sha256": sha(self.path.read_bytes()),
+        }
+        with patch.object(release, "DECISION", self.path):
+            release.macbook_release_decision(record)
+
+    def test_operator_confirmation_and_final_iso_waiver_pass(self):
+        self.check()
+
+    def test_final_iso_result_cannot_be_promoted_to_passed(self):
+        self.decision["final_public_iso_checks"]["fresh_install"] = "passed"
+        with self.assertRaisesRegex(ValueError, "must remain not rerun"):
+            self.check()
+
+    def test_hardware_rooted_attestation_cannot_be_inferred(self):
+        self.decision["hardware_rooted_attestation"] = "passed"
+        with self.assertRaisesRegex(ValueError, "unsupported physical result"):
+            self.check()
+
+    def test_changed_decision_digest_is_rejected(self):
+        self.path.write_text(json.dumps(self.decision) + "\n")
+        record = {
+            "evidence_status": release.EVIDENCE_STATUS,
+            "macbook_release_decision_sha256": "0" * 64,
+        }
+        with patch.object(release, "DECISION", self.path):
+            with self.assertRaisesRegex(ValueError, "digest differs"):
+                release.macbook_release_decision(record)
+
+
 if __name__ == "__main__":
     unittest.main()
