@@ -1,0 +1,39 @@
+{
+  "schema": "daemonarchy/contribution-inventory-development@1",
+  "scope": "Open-PR ancestry and selected implementation comparison only; not release readiness or a Literate AI contribution sweep",
+  "product": {
+    "selected_pr": 32,
+    "observed_head_before_this_record": "f878b0f",
+    "open_pr_heads_verified_as_ancestors": [31, 29, 28, 26]
+  },
+  "source": {
+    "selected_pr": 25,
+    "head": "faac40107e936c2e133bd938ca56097d3cfed1c4",
+    "open_pr_heads_verified_as_ancestors": [23, 22, 20, 19, 17, 15, 13, 9, 7, 4],
+    "upstream_refresh_note": "PR 9's mandoc bootstrap dependency is byte-identical in the selected Makefile.inc1; its head is a merge parent."
+  },
+  "ports": {
+    "selected_pr": 25,
+    "head": "a7cbe897216d5fe0f509d204f7ba6f8f70e84775",
+    "open_pr_heads_verified_as_ancestors": [24, 23, 22, 8, 7],
+    "gpu_pr_19": {
+      "ancestry": "diverged",
+      "implementation_blobs_identical": [
+        "graphics/drm-612-kmod/files/README.daemonarchy-efifb",
+        "graphics/drm-612-kmod/files/patch-amdgpu-efifb-reservation",
+        "graphics/drm-612-kmod/files/test-efifb-reservation.py"
+      ],
+      "port_revision_in_pr": 6,
+      "port_revision_in_selected_head": 7,
+      "limitation": "No release package has yet been built from the selected head."
+    }
+  },
+  "method": "GitHub compare API for exact open PR heads versus selected heads; Git blob SHA comparison for the three diverged GPU implementation files",
+  "open_gates": [
+    "Native package and source sets at selected heads",
+    "Fresh public ISO and physical MacBook Wi-Fi install",
+    "Physical MSI early-kernel network and hardware acceptance",
+    "Current retained native receipt and executable release policy",
+    "Production package signing, boot attestation, publication and verification"
+  ]
+}

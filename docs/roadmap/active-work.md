@@ -44,6 +44,11 @@ Component discovery, build-performance and operator-development work.
   remain separate from the MacBook image path. Integrate and qualify their
   hardware path before the full 1.3.1 production release.
 
+The [scoped open-PR inventory](../../verification/contribution-inventory-1.3.1-development.json)
+records exact ancestor checks and the diverged GPU ports branch's identical
+implementation blobs. It is not the formal release contribution sweep or
+artifact acceptance.
+
 The MacBook's installed 1.1.1 system failed the S3 trial and later lost both
 debugger network paths; the new image has not yet been installed. The new
 package-signing key now has a separately held encrypted recovery copy with a
