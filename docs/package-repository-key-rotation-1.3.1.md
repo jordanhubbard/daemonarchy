@@ -71,6 +71,16 @@ Retain the old configuration until this succeeds, including the ISO fallback.
 Document the exact published tag and commands in the release instructions once
 the candidate feed exists. Do not silently replace an installed public key.
 
+Key enrollment does not upgrade the FreeBSD base. The tested 1.1.1 native
+installation reports `kern.osreldate=1600028`; the 1.3.1 package build and
+installer jail select `1600029`. Check the target with
+`sysctl -n kern.osreldate` before enabling the new feed or installing its
+packages. An existing installation on the older base needs the qualified
+1.3.1 ISO or a separately tested base, kernel and module upgrade first. Do not
+use `IGNORE_OSVERSION` to force the new packages onto the older system. Retain
+the old feed and key until the updated base boots and its new repository
+signature, package dependencies and rollback path have been checked.
+
 This key signs `pkg` repositories. It does not replace the separate Secure Boot
 and hardware-attestation signing certificate; production boot attestation still
 needs its own qualification and release signer.
