@@ -708,6 +708,11 @@ It copies `origins.sh` and itself to the build host (`BUILD_HOST`, default `free
 
 The signing key is `/usr/local/etc/daemonarchy/pkg-repo.key` on the build host. Make it once with `pkg-repo.sh keygen`, and commit the public key it prints as `overlay/usr/local/share/daemonarchy-installer/daemonarchy.pub`. Keep a copy of the private key somewhere safe. If it is lost, a new key has to be put on every installed system by hand.
 
+The 1.3.1 candidate uses a separate versioned feed and new key because the old
+private key is unavailable on the current build host. Follow
+[the rotation plan](docs/package-repository-key-rotation-1.3.1.md) before
+publishing or changing an installed repository configuration.
+
 ### Images
 
 Daemonarchy releases use [semantic versioning](https://semver.org), numbered on their own rather than after Omarchy's or FreeBSD's releases (the notes say which of each a release carries). The number is the daemonarchy-desktop tag that `x11-wm/daemonarchy` fetches (its `DISTVERSION`):

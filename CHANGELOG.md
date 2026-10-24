@@ -63,6 +63,12 @@
   the wireless interface during recovery when no network address is usable.
   A controlled physical wireless teardown and recovery passed; full reboot
   recovery with the packaged driver remains open.
+- Prepare a separate package-repository signing key for the 1.3.1 candidate
+  and a versioned feed. The new public key and rotation plan are recorded in
+  `docs/package-repository-key-rotation-1.3.1.md`; the stable feed and installed
+  1.1.1 trust key remain unchanged. Existing installations need an explicit
+  trust enrollment because the old private key is unavailable on the current
+  native builder. Signed candidate publication and upgrade acceptance are open.
 
 
 This history covers the installer repository from its first commit and all GitHub

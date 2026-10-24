@@ -1,0 +1,56 @@
+# Package repository key rotation for 1.3.1
+
+The private key for the existing package feed is not present on the current
+native build host. The MacBook's installed `/usr/local/etc/pkg/keys/daemonarchy.pub`
+matches the public key shipped in the 1.1.1 installer. Preserve the existing
+`packages-16-amd64` feed and its public key for systems that still trust it.
+Do not replace that feed's catalogues with signatures from the new key.
+
+On 2026-10-24, a separate 4096-bit RSA key was generated on `daemon.local` at
+`/usr/local/etc/daemonarchy/pkg-repo-next.key` with root-only read permission.
+Its public half is [pkg-repo-1.3.1.pub](../keys/pkg-repo-1.3.1.pub).
+An OpenSSL sign/verify challenge passed on the native host. SHA-256 of the
+public keys in DER form:
+
+| Trust anchor | SHA-256 |
+| --- | --- |
+| Existing 1.1.1 key | `2e0e0cab66c8f60579d992359d93e66a0ad5cb49996279fae68ffde3988df38a` |
+| New 1.3.1 candidate key | `67986b400f28a49e99df0f1f3368f60aca8064d5dc00094700ba1a17d8474ef7` |
+
+## Candidate publication
+
+1. Complete the exact FreeBSD source and ports bulk, including kernel modules,
+   and retain its successful package list and build receipts.
+2. Build a new signed application feed under a **versioned** tag such as
+   `packages-16-amd64-1.3.1-r1`. Pass
+   `KEY=/usr/local/etc/daemonarchy/pkg-repo-next.key` to `pkg-repo.sh build`.
+   Sign the separate checkout repository with the same key. Check both
+   catalogues and selected package payloads with `pkg` using only the new public
+   key before publishing. Upload payloads before catalogues.
+3. Build the 1.3.1 ISO with that exact `PACKAGE_REPOSITORY_TAG`, its matching
+   `CHECKOUT_CATALOG`, and
+   `PACKAGE_REPOSITORY_PUBLIC_KEY=keys/pkg-repo-1.3.1.pub`. The build script
+   stages this public key as the installer's `daemonarchy.pub`; the installed
+   package and checkout repository configurations then point to the new key.
+   The unversioned stable tag rejects an alternate public key.
+4. Boot and install from that exact ISO on the MacBook, verify both signed
+   repository refreshes and a package upgrade, then retain the image digest and
+   physical receipt. Publish the release only after its other hardware and
+   attestation gates pass.
+
+## Existing installations
+
+An installation holding only the old public key cannot authenticate the new
+feed. The old private key is unavailable, so a signed old-key update cannot
+deliver the new trust anchor. Existing installations need an explicit manual
+enrollment: obtain the new public key through a trusted release channel, verify
+its DER SHA-256 above, install it alongside the old key, and add a separate
+versioned repository configuration pointing at the new tag and new key. Refresh
+that repository and verify its signature before preferring it for upgrades.
+Retain the old configuration until this succeeds, including the ISO fallback.
+Document the exact published tag and commands in the release instructions once
+the candidate feed exists. Do not silently replace an installed public key.
+
+This key signs `pkg` repositories. It does not replace the separate Secure Boot
+and hardware-attestation signing certificate; production boot attestation still
+needs its own qualification and release signer.

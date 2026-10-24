@@ -37,6 +37,21 @@ here=$(cd "$(dirname "$0")" && pwd)
 . "$here/overlay/usr/local/libexec/daemonarchy-installer/package-repository"
 PACKAGE_REPOSITORY_TAG=${PACKAGE_REPOSITORY_TAG:-packages-16-amd64}
 package_repository_tag_validate "$PACKAGE_REPOSITORY_TAG"
+PACKAGE_REPOSITORY_PUBLIC_KEY=${PACKAGE_REPOSITORY_PUBLIC_KEY:-}
+if [ -n "$PACKAGE_REPOSITORY_PUBLIC_KEY" ]; then
+    [ "$PACKAGE_REPOSITORY_TAG" != packages-16-amd64 ] || {
+        echo 'An alternate package key requires a versioned repository tag' >&2
+        exit 1
+    }
+    [ -s "$PACKAGE_REPOSITORY_PUBLIC_KEY" ] || {
+        echo 'PACKAGE_REPOSITORY_PUBLIC_KEY must name a nonempty public key' >&2
+        exit 1
+    }
+    openssl pkey -pubin -in "$PACKAGE_REPOSITORY_PUBLIC_KEY" -noout >/dev/null 2>&1 || {
+        echo 'PACKAGE_REPOSITORY_PUBLIC_KEY is not a valid public key' >&2
+        exit 1
+    }
+fi
 CHECKOUT_CATALOG=${CHECKOUT_CATALOG:-$here/overlay/usr/local/share/daemonarchy-installer/checkouts.json}
 packages=/usr/local/poudriere/data/packages/$JAIL-$PTREE
 [ -n "$CHECKOUT_CATALOG" ] && [ -s "$CHECKOUT_CATALOG" ] || {
@@ -62,6 +77,9 @@ fi
 share=$stage/overlay/usr/local/share/daemonarchy-installer
 cp "$CHECKOUT_CATALOG" "$share/checkouts.json"
 printf '%s\n' "$PACKAGE_REPOSITORY_TAG" >"$share/package-repository-tag"
+if [ -n "$PACKAGE_REPOSITORY_PUBLIC_KEY" ]; then
+    cp "$PACKAGE_REPOSITORY_PUBLIC_KEY" "$share/daemonarchy.pub"
+fi
 
 echo "==> Collecting the Omarchy package repository"
 mkdir -p "$share/repo/All"
