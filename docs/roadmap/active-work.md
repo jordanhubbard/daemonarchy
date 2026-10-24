@@ -38,8 +38,13 @@ Component discovery, build-performance and operator-development work.
   full bulk is active. [Ports follow-on PR #25](https://github.com/jordanhubbard/daemonarchy-ports/pull/25)
   carries the later protected Wi-Fi credential prompt and pins the 1.3.1
   desktop package candidate to source `ec2a00824ec9` at `efb8f848`.
-  Native ports `makesum`, checksum and extract pass for that source archive;
-  an exact package build and final-image acceptance remain open. The stable
+  Native ports `makesum`, checksum, extract and an isolated package build pass
+  for that source archive. The preliminary `daemonarchy-1.3.1,1` package
+  contains version `1.3.1` and has SHA-256
+  `b1b1bb447658e40c8d1ccb7ab05cadec33af4da9a2aa275de827fd5b440b8b60`.
+  It was built on host OSVERSION `1600028` with dependency checks disabled;
+  the exact `1600029` jail bulk, signed feed and final-image acceptance remain
+  open. The stable
   desktop tag must match the reviewed source tree after qualification.
   Keep each checkout and package closure pinned through its own image run.
 - [MSI diagnosis PR #26](https://github.com/jordanhubbard/daemonarchy/pull/26)
