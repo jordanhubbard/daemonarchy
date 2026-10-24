@@ -14,6 +14,15 @@ ISO**, not a failed pre-production check. No earlier result is rebound to final
 ISO bytes. Production build, feed, signing, image-integrity and publication
 checks remain mandatory and are recorded separately.
 
+Retained pre-production records include the [installed-system MacBook
+observations](testing-macbookpro16-1.md), [Wi-Fi preview and traffic
+traces](testing-macbookpro16-1-wifi-preview-20261022.md), and [installer and
+storage investigations](testing-macbookpro16-1-installer-20261022.md).
+The [1.1.1 S3 trial](testing-macbookpro16-1-s3-20261024.md) keeps its historical
+failure result. These records keep their own image and test scope; the later
+October 24 aggregate pass is explicitly an operator confirmation, not a
+retroactive rewrite of any individual run.
+
 | Final input | Exact value and evidence |
 | --- | --- |
 | Product commit and release tag | ISO build pinned to `cdeb3434a2f7e5e205feb756c897b1e4a98d4c28`; final `daemonarchy-1.3.1` tag pending. No final-ISO MacBook run is required by the October 24 operator decision. |
