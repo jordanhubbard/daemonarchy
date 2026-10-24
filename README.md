@@ -191,6 +191,10 @@ Daemonarchy is four repositories:
 
 On a FreeBSD 16.0-CURRENT host with poudriere: build the ports, build the image with `./build-iso.sh`, test it with `./test-bhyve.sh` (or `./test-qemu.sh` on a host without bhyve), and publish it. [HACKING.md](HACKING.md) walks through each step, the faster loops for changing the installer, the ports, and the artwork, and the pitfalls met so far.
 
+## Release Engineers
+
+- `jordanhubbard`
+
 ## Historical limits of 1.0.1
 
 - Whole-disk installs only; no dual boot.
