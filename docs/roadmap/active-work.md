@@ -265,7 +265,7 @@ lifecycle authority.
 - **Current source evidence:** [source PR #7](https://github.com/jordanhubbard/daemonarchy-src/pull/7) now contains the integrated console/controller. Native FreeBSD build and initial OVMF VM checks pass: authenticated show/set/boot, reconnect and replay refusal, output retry/ACK reflection, shared-NIC TFTP kernel loading, bounded RX pressure, missing-NIC normal boot and missing-peer local keyboard boot. A separate login/SSH observation confirms the remote kernel boot. Physical firmware/NIC, shared-netboot and injected firmware faults remain unqualified; this is not release acceptance.
 - **Fault hardening:** Native scripted SNP/boot-service callback checks pass timeouts, late/error completion, shutdown quarantine, receive/allocation errors and polling/ownership bounds under address/undefined-behavior sanitizers. They reproduced and fixed frame-size overflow. The native ELF boot path now refuses an active/quarantined NIC; actual failed-firmware handoff remains unqualified. The latest binary repeats UEFI network/recovery checks, and its loader boot ID and MAC match the kernel environment/native NIC. EFI bootinfo errors now propagate, with native production-code tests for map/allocation/exit/retry/success paths. A production-parser fixture and actual UEFI NFS transfer reproduce and fix fragment theft: 8192-byte reads now complete with debugging active, and NFS kernel boot independently reaches a FreeBSD login. The latest EFI repeats adversarial session, TFTP/queue-pressure and remote boot/SSH checks. Runtime-map failure recovery, alternate exec paths and physical firmware remain unqualified.
 - **Handoff identity renewal:** Source `f45d86b21143` and its exact rebuilt EFI pass native sanitizer export-failure controls and actual two-e1000 UEFI/kernel identity checks. Independent SSH verifies that the boot ID, selected debug NIC and local/peer addresses survive handoff. Both owned guests shut down successfully with original disks preserved. The [identity checkpoint](../../verification/loader-network-identity-development.json) retains the separate failed transfer: a `net0` file request reused the cached `net1` connection. [Source issue #11](https://github.com/jordanhubbard/daemonarchy-src/issues/11) owns unit-specific selection and live debug lifetime; fixing the unit comparison alone would close the active console NIC. The subsequent ownership checkpoint below records that repair and its scoped renewals. Early-kernel transport and physical firmware remain open.
-- **Network ownership repair:** The [ownership checkpoint](../../verification/loader-network-ownership-development.json) records stable physical owners, separate raw debug sockets, driver/unit-aware ordinary access, close accounting, explicit protocol restoration and interface-bound DHCP cache reuse. Three native owner/cache suites and three native parser/SNP/bootinfo suites pass under sanitizers; 62 controller cases pass with four declared skips. The exact new EFI passes cross-NIC and same-NIC TFTP, two revocation/restart cycles, adversarial sessions, 112 queue-pressure drops with working control, fragmented 8192-byte NFS reads and NFS kernel boot. Four independent SSH observations match boot IDs/MACs; all six final owned guests shut down successfully. The NFS debug address remains metadata rather than active kernel networking. Source issue #11 remains pending draft-review integration; native SDK admission, physical firmware, early-kernel transport and release acceptance remain open.
+- **Network ownership repair:** The [ownership checkpoint](../../verification/loader-network-ownership-development.json) records stable physical owners, separate raw debug sockets, driver/unit-aware ordinary access, close accounting, explicit protocol restoration and interface-bound DHCP cache reuse. Three native owner/cache suites and three native parser/SNP/bootinfo suites pass under sanitizers; 62 controller cases pass with four declared skips. The exact new EFI passes cross-NIC and same-NIC TFTP, two revocation/restart cycles, adversarial sessions, 112 queue-pressure drops with working control, fragmented 8192-byte NFS reads and NFS kernel boot. Four independent SSH observations match boot IDs/MACs; all six final owned guests shut down successfully. The NFS debug address remains metadata rather than active kernel networking. The source work has merged; native SDK admission, physical firmware, early-kernel transport and release acceptance remain open.
 
 - **Panic transport baseline and recovery repair:** The
   [baseline checkpoint](../../verification/netgdb-panic-baseline-development.json)
@@ -422,7 +422,7 @@ same-NIC revocation/restart and small/fragmented NFS with kernel loading pass.
 Three independent kernel observations match boot IDs and NIC identities; the
 NFS debug IP remains metadata only. All four owned guests shut down normally.
 The controller passes 62 cases with four native-only skips; authority and all
-five explicit FreeBSD locks pass. Source PR #7 remains a draft, and native SDK,
+five explicit FreeBSD locks pass. Source PR #7 is now merged; native SDK,
 compiler admission, physical firmware, early-kernel transport and final release
 qualification remain open.
 
@@ -436,7 +436,7 @@ exits without detach: captured FINISHED now reaches generic GDB termination,
 restores mbuf zones and returns to DDB. Local registers and reset work after the
 close; non-panic refusal and local continue also pass. Both owned VMs exit zero
 before deadline and all disks are retained. [Source issue #12](https://github.com/jordanhubbard/daemonarchy-src/issues/12)
-is implemented and natively qualified on draft PR #7, pending integration.
+was implemented and natively qualified on PR #7, now merged into source `main`.
 Physical NICs, Netdump, authenticated kernel sessions, continuous early-kernel
 transport, compiler/SDK admission and release acceptance remain open.
 
@@ -462,7 +462,7 @@ an inactive pool. All seven absent/partial combinations, retry and complete cycl
 pass in sanitized controller and native FreeBSD function fixtures. The controller
 suite passes 62 cases with four native-only skips; style checks and hosted controller
 CI pass. [Source issue #14](https://github.com/jordanhubbard/daemonarchy-src/issues/14)
-and [draft PR #15](https://github.com/jordanhubbard/daemonarchy-src/pull/15) retain this
+and [merged PR #15](https://github.com/jordanhubbard/daemonarchy-src/pull/15) retain this
 repair. A fresh native checkout reached its 300-second bound; its remaining owned
 Git child is stopped and all partial files/logs are retained. A clean, unused cold
 canonical checkout then reaches exact `7a4b58c717bc` in 2.13 seconds after process,

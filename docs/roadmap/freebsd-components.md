@@ -315,10 +315,10 @@ qualify no compiler/runtime or executable Standard profile. Registered/locked un
 three; admitted units and qualified per-unit packages remain zero. This does
 not establish complete source or ports coverage or native source compilation.
 
-The owned source integration branch is `daemonarchy`, separate from the
-upstream-tracking `main`; its source-development PR remains a draft. The
-operator's `/usr/src` checkout now uses source revision
-`978fed917ba2b391c3eace661c21a7a65549cb23`; isolated `litai-dev` validates
+The source fork's `daemonarchy` and `main` branches now both select
+`d63d77f4eb3cc29e16510f7bdec73602e27c2844`; the source-development PRs
+are merged. The earlier operator `/usr/src` checkpoint used source revision
+`978fed917ba2b391c3eace661c21a7a65549cb23`; isolated `litai-dev` validated
 its current Standard binding and three locks. The receipt is missing because no
 retained native lifecycle has run. The stable 1.1.1 framework remains unchanged.
 The next executable step is the actual Standard/native profile, complete
