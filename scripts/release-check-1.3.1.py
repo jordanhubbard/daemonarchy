@@ -10,8 +10,6 @@ import sys
 
 
 ROOT = Path(__file__).resolve().parents[1]
-RECORD = ROOT / "verification/release-1.3.1.json"
-HARDWARE = ROOT / "verification/macbookpro16-1-1.3.1.json"
 SOURCE = "d63d77f4eb3cc29e16510f7bdec73602e27c2844"
 PORTS = "7e417dae24ffb95c4625601ae9d654eb2ca68f4d"
 DESKTOP = "ec2a00824ec95b342c0c095657ac725c56f0528b"
@@ -41,6 +39,15 @@ def document(path):
     return json.loads(path.read_text(), object_pairs_hook=unique_pairs)
 
 
+def external_file(variable):
+    value = os.environ.get(variable, "")
+    require(bool(value), "set " + variable + " to the reviewed evidence file")
+    path = Path(value)
+    require(path.is_absolute() and not path.is_symlink(),
+            variable + " must name a regular absolute path")
+    return path.resolve(strict=True)
+
+
 def run(*argv):
     subprocess.run(argv, cwd=ROOT, check=True)
 
@@ -65,7 +72,8 @@ def public_feed(tag):
 
 
 def main():
-    record = document(RECORD)
+    record_path = external_file("DAEMONARCHY_RELEASE_RECORD")
+    record = document(record_path)
     require(record.get("schema") == "daemonarchy/release-inputs@1"
             and record.get("version") == "1.3.1"
             and record.get("tag") == "daemonarchy-1.3.1", "wrong release record")
@@ -85,12 +93,12 @@ def main():
     require(bool(assets), "set DAEMONARCHY_RELEASE_ASSETS to the reviewed local stage")
     stage = Path(assets).resolve(strict=True)
     require(stage.is_dir(), "release asset stage is not a directory")
-    run(sys.executable, "scripts/verify-release-assets.py", "--record", str(RECORD),
+    run(sys.executable, "scripts/verify-release-assets.py", "--record", str(record_path),
         "--assets", str(stage))
     iso = stage / "daemonarchy-1.3.1-amd64.iso"
     run("sh", "scripts/check-image-size.sh", str(iso))
 
-    hardware = document(HARDWARE)
+    hardware = document(external_file("DAEMONARCHY_HARDWARE_RECORD"))
     require(hardware.get("schema") == "daemonarchy/macbook-acceptance@1"
             and hardware.get("model") == "MacBookPro16,1"
             and hardware.get("result") == "passed", "MacBook acceptance has not passed")
