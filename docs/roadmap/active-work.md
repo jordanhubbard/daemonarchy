@@ -36,8 +36,11 @@ Component discovery, build-performance and operator-development work.
 - [Ports PR #24](https://github.com/jordanhubbard/daemonarchy-ports/pull/24)
   is the private-preview MacBook ports head `4e8640f85f8e`. Its fresh-jail
   full bulk is active. [Ports follow-on PR #25](https://github.com/jordanhubbard/daemonarchy-ports/pull/25)
-  carries the later protected Wi-Fi credential prompt onto that head at
-  `a7cbe897`; it needs an exact native package build and final-image acceptance.
+  carries the later protected Wi-Fi credential prompt and pins the 1.3.1
+  desktop package candidate to source `ec2a00824ec9` at `efb8f848`.
+  Native ports `makesum`, checksum and extract pass for that source archive;
+  an exact package build and final-image acceptance remain open. The stable
+  desktop tag must match the reviewed source tree after qualification.
   Keep each checkout and package closure pinned through its own image run.
 - [MSI diagnosis PR #26](https://github.com/jordanhubbard/daemonarchy/pull/26)
   and [early-network PR #28](https://github.com/jordanhubbard/daemonarchy/pull/28)

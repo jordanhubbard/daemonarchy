@@ -14,7 +14,7 @@
   },
   "ports": {
     "selected_pr": 25,
-    "head": "a7cbe897216d5fe0f509d204f7ba6f8f70e84775",
+    "head": "efb8f848465553e178c4341154f5b8e11953cf8a",
     "open_pr_heads_verified_as_ancestors": [24, 23, 22, 8, 7],
     "gpu_pr_19": {
       "ancestry": "diverged",
@@ -25,7 +25,7 @@
       ],
       "port_revision_in_pr": 6,
       "port_revision_in_selected_head": 7,
-      "limitation": "No release package has yet been built from the selected head."
+      "limitation": "No release package has yet been built from the selected head. The 1.3.1 desktop source is pinned to ec2a00824ec95b342c0c095657ac725c56f0528b until a matching stable tag is made."
     }
   },
   "method": "GitHub compare API for exact open PR heads versus selected heads; Git blob SHA comparison for the three diverged GPU implementation files",
