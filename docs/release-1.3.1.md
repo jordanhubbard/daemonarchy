@@ -55,9 +55,11 @@ from the final 1.3.1 ISO.
 - Run the [MacBook acceptance plan](testing-macbookpro16-1-1.3.1.md) from an
   erased disk using Wi-Fi for installation. Confirm unattended autoboot,
   storage integrity, desktop input, Wi-Fi traffic and reboot, debugger recovery,
-  and the actual T2 boot policy plus signed-chain enforcement. Apple's T2
-  policy does not document a third-party UEFI db enrollment path; a boot under
-  No Security cannot be claimed as firmware-enforced Secure Boot. The earlier
+  and the actual T2 boot policy plus signed-chain enforcement. [Apple's current
+  firmware guide](https://support.apple.com/guide/security/boot-process-sec5d0fab7c6/1/web/1)
+  lists Microsoft UEFI CA 2023, but the MacBook has no tested
+  third-party firmware trust path or custom db enrollment. A boot under No
+  Security cannot be claimed as firmware-enforced Secure Boot. The earlier
   installer reported a fatal NVMe event; Apple Diagnostics returned `ADP000`,
   but this does not explain or clear that event.
 - The installed 1.1.1 MacBook failed its [S3 trial](testing-macbookpro16-1-s3-20261024.md):

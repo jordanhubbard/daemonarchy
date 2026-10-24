@@ -41,9 +41,15 @@ The generic UEFI db enrollment contract below has **not** been shown to work on
 MacBookPro16,1. Apple describes the T2 Mac boot policy as Full Security for
 Apple-verified operating systems, Medium Security for Apple- or
 Microsoft-signed operating systems, and No Security for other boot images.
-The [T2 Linux installation guide](https://wiki.t2linux.org/guides/preinstall/)
-reports that even a Microsoft-signed shim cannot boot a third-party system
-while T2 Secure Boot is enabled. See [Apple's T2 boot-policy documentation](https://support.apple.com/guide/security/secc7b34e5b5/web).
+Apple's [August 2026 boot-process guide](https://support.apple.com/guide/security/boot-process-sec5d0fab7c6/1/web/1)
+lists Microsoft UEFI CA 2023 among certificates used to authenticate Microsoft
+bootloaders. That certificate listing does not establish that this MacBook's
+firmware accepts a partner-signed shim for FreeBSD under Full or Medium
+Security. The [T2 Linux installation guide](https://wiki.t2linux.org/guides/preinstall/)
+still reports that even shim-signed GRUB cannot boot a third-party system while
+T2 Secure Boot is enabled. The MacBook's actual firmware inventory, boot
+policy and enforcement need a physical test; a custom Daemonarchy certificate
+has not been enrolled in its firmware. See also [Apple's T2 boot-policy documentation](https://support.apple.com/guide/security/secc7b34e5b5/web).
 
 Until a supported and physically tested T2 trust path exists, a Daemonarchy
 signature and signed boot manifest can verify the project's own boot files,
