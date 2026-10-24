@@ -187,6 +187,15 @@ diagnostic evidence with profiling overhead, not a release performance benchmark
 owns bounded observation/revalidation work with tamper and revocation guards
 preserved. No performance fix or lifecycle pass is claimed.
 
+The [current-framework preparation record](../../verification/framework-c345e652-native-preparation.json)
+binds clean framework source `c345e652`, an exact wheel and seven passing
+Linux ARM64 captured-runtime cases. The wheel copy has the same SHA-256 on the
+FreeBSD build host, but an isolated no-dependency install cannot start the CLI
+because `referencing` is absent. It is neither a complete dependency install
+nor a native product receipt. Install from an exact FreeBSD dependency closure,
+then run the real public retained build and test path before updating product
+lifecycle authority.
+
 - **Evidence:**
   - [ ] Actual installed CLI accepts retained native execution; source and binary invalidation works; native tests and artifact hashes are current; failed or omitted evidence blocks publication; existing release workflow is reproduced.
 
