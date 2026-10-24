@@ -25,6 +25,16 @@ private custody records, outside this repository. This closes the package-key
 backup requirement; feed signing, installation and upgrade acceptance remain
 open.
 
+An isolated native preflight on 2026-10-24 signed a one-package test catalogue
+with the new key. `pkg` authenticated it with only the matching public key and
+queried the package. With an unrelated public key, it reported an invalid
+signature and left no queryable catalogue, although `pkg update -f` returned
+success. The worker still runs OSVERSION `1600028` while the test package was
+built for `1600029`, so this signature-only preflight used
+`IGNORE_OSVERSION=yes`. It does not qualify the candidate feed or a package
+installation. The final feed must be checked on a matching native system with
+no OSVERSION override; `pkg update` exit status alone is insufficient.
+
 ## Candidate publication
 
 1. Complete the exact FreeBSD source and ports bulk, including kernel modules,
@@ -33,8 +43,10 @@ open.
    `packages-16-amd64-1.3.1-r1`. Pass
    `KEY=/usr/local/etc/daemonarchy/pkg-repo-next.key` to `pkg-repo.sh build`.
    Sign the separate checkout repository with the same key. Check both
-   catalogues and selected package payloads with `pkg` using only the new public
-   key before publishing. Upload payloads before catalogues.
+   catalogues and every package payload with the
+   [signed snapshot checker](signed-package-snapshot.md) using only the new
+   public key on a matching OSVERSION before publishing. Confirm the authenticated
+   catalogue can be queried; upload payloads before catalogues.
 3. Build the 1.3.1 ISO with that exact `PACKAGE_REPOSITORY_TAG`, its matching
    `CHECKOUT_CATALOG`, and
    `PACKAGE_REPOSITORY_PUBLIC_KEY=keys/pkg-repo-1.3.1.pub`. The build script
