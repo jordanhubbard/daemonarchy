@@ -76,12 +76,14 @@ now records an exact reviewed Standard configuration apply on the controller usi
 qualified framework `73311c69`; all seven existing receipt requirements, 43 historical
 evidence files, the default CLI and active workspace selection are preserved. The
 same plan identity passed five real installed CLI operations on a disposable
-FreeBSD product copy, and all 13 installed contract cases pass. [Framework PR #108](https://github.com/jordanhubbard/literate-ai/pull/108)
-remains draft pending exact hosted CI. Use its matching isolated CLI for lifecycle
-planning. This binding is not native execution, SDK/pkg/ISO admission or release
+FreeBSD product copy, and all 13 installed contract cases pass. At that
+checkpoint, [framework PR #108](https://github.com/jordanhubbard/literate-ai/pull/108)
+was a draft; it was subsequently consolidated into merged PR #110. Its isolated
+CLI established lifecycle planning only. This binding is not native execution,
+SDK/pkg/ISO admission or release
 qualification. Current authority and all eight host contract locks pass after an explicit lock/audit refresh; the configured project receipt remains missing. A read-only retained-harness plan now reports
 `retained_harness.not_adopted`; this first-binding wheel does not expose
-`project adopt-original`. Next qualify a candidate combining this repair with
+`project adopt-original`. The next candidate combined this repair with
 in-place native admission from [framework PR #87](https://github.com/jordanhubbard/literate-ai/pull/87),
 then author/admit the actual product profiles. The combined `e90cbadb` candidate
 now passes full controller regression (2,035 passes, 70 skips, no failures), clean
@@ -98,7 +100,8 @@ revision `dbd3420`: all 272 tracked source entries preserve their bytes/modes;
 only original-adoption evidence, authority metadata and its runtime mutex are
 added. The mutex is explicitly ignored afterward; authored authority JSON remains
 tracked. [Framework PR #109](https://github.com/jordanhubbard/literate-ai/pull/109)
-retains the combined candidate and its pending exact-head hosted matrix.
+retained the combined candidate at that checkpoint; it was later consolidated
+into PR #110.
 
 Next author the real FreeBSD source/binary/toolchain action inventory as a complete
 retained manifest/profile and use the public `build`/`test --retained-project`
@@ -112,6 +115,13 @@ Preserve original source placement and earn lifecycle admission.
 
 The [SDK runtime candidate](../../verification/native-sdk-public-development.json)
 now has a separate [framework contribution #110](https://github.com/jordanhubbard/literate-ai/pull/110).
+That contribution merged on October 23 with its hosted matrix passing.
+PRs #87, #108 and #109 were closed as superseded by it. On October 24 the
+controller's clean framework checkout was fast-forwarded to `d17881fa0`, but
+its installed `litai` still reports `90d5b6e9`. The Daemonarchy project still
+selects its earlier framework distribution identity, and `litai verify` still
+fails the configured native receipt gate. An exact installed candidate and real
+FreeBSD retained profile must be qualified before changing that authority.
 Exact code `f65e0c62` passes 2,046 controller tests with 70 skips and no failures,
 clean wheel qualification and offline FreeBSD installation of 37 distributions.
 Its source fixtures supply project discovery and local Git routing; installed
