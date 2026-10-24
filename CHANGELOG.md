@@ -81,8 +81,9 @@
 - Merge the reviewed product, FreeBSD source and ports branches into their
   respective main branches. The selected source incorporates FreeBSD CURRENT
   through `a3d1d4e8`; all eight hosted source checks pass at `d63d77f4`.
-  Ports `7e417dae` retains the reviewed package baseline and Chromium while
-  the exact native world, kernel, package and image builds continue.
+  Ports `7e417dae` retains the reviewed package baseline and Chromium. The
+  exact native world, kernel and release sets passed on both FreeBSD builders;
+  the full package build and final ISO remain in progress.
 - Stage a signed optional source and ports checkout feed for those exact commits.
   A native client authenticated and installed its seed packages and reproduced
   the selected trees; the feed is not yet published or tested from the final ISO.
