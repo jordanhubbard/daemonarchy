@@ -79,7 +79,8 @@ contains private network or credential details.
   public key, then perform an installed package update and reboot. Retain
   exact package, boot and image digests with the signed release record.
 
-After the MacBook passes, run the separate MSI hardware and network-aware
-early-boot acceptance before declaring the full 1.3.1 hardware matrix complete.
+The separate MSI hardware and network-aware early-boot acceptance belongs to
+[1.3.2](roadmap/release-1.3.2.md). Do not treat MacBook acceptance as MSI
+qualification.
 No row here is closed by a development-kernel desktop login or a successful
 installer exit alone.

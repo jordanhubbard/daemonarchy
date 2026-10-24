@@ -31,6 +31,11 @@ port and official binary catalogue contain Chromium `154.0.8037.57_2`;
 upstream ports main has `156.0.8078.47_1`. Chromium remains in Daemonarchy,
 but this candidate does not claim the newer browser version.
 
+All eight hosted source checks passed at the selected `d63d77f4` commit,
+including the controller, native loader, and Linux/macOS architecture jobs.
+The native FreeBSD world, kernel, release sets, and package builds remain
+separate qualification steps.
+
 These are candidate changes. The desktop observation was on an installed 1.1.1
 system with live development updates. It does not qualify a fresh installation
 from the final 1.3.1 ISO.
@@ -54,9 +59,10 @@ from the final 1.3.1 ISO.
   ACPI PCIe methods timed out, USB devices detached, and the Broadcom firmware
   reported a trap. Suspend and resume remain unqualified for 1.3.1.
 - The MSI Raider 18 HX with RTX 5080 still resets during early kernel startup.
-  Loader networking works in isolation; continuous authenticated early-kernel
-  capture and a physical boot result remain open. This page makes no MSI
-  installation or attestation claim.
+  Loader networking works in isolation. The complete network bootloader debugger,
+  pre-driver kernel capture, and physical MSI result are tracked for
+  [1.3.2](roadmap/release-1.3.2.md). This release makes no MSI installation or
+  attestation claim.
 
 The exact ISO digest, source and ports release heads, signed feed tags, final
 hardware results, and GitHub release URL will be added only after those
