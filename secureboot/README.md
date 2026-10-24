@@ -84,12 +84,12 @@ sudo python3.12 secureboot/build.py --source /usr/src --out /path/to/fresh-build
   --selftest-certificate /path/to/public-selftest-leaf.pem --jobs 4
 ```
 
-For the MacBook candidate, add
-`--base 02984cfbe95c063f130ae20d7ea6ed520df88a8f` and use a checkout at
-that exact revision. The isolated native build completed its policy kernel,
-verified loader and normal loader with a development certificate. This is
-authoring evidence; the signed bundle, firmware boot and full installation
-still require physical qualification.
+For the 1.3.1 MacBook candidate, add
+`--base d63d77f4eb3cc29e16510f7bdec73602e27c2844` and use a checkout at
+that exact revision. An earlier isolated build at `02984cfb` completed its
+policy kernel, verified loader and normal loader with a development
+certificate. The current revision's native build, signed bundle, firmware boot
+and full installation require separate qualification.
 
 The recipe requires the pinned source revision, creates a separate Git worktree,
 applies the policy and EFI patches and retains build logs. Write access to the
@@ -102,11 +102,10 @@ input/output hashes, options and build epoch. A fixed `--epoch` can be recorded
 for subsequent builds; it must fall within the certificates' validity periods.
 The receipt is build evidence, not a native boot qualification.
 
-For the next MacBook candidate, pass `--base
-02984cfbe95c063f130ae20d7ea6ed520df88a8f` with a source checkout at that
-exact revision. The four policy and EFI patches applied cleanly to its Git
-index on the native worker; the policy kernel, loader and signed bundle still
-require a fresh build and qualification. Omitting `--base` retains the
+For the current 1.3.1 candidate, pass `--base
+d63d77f4eb3cc29e16510f7bdec73602e27c2844`. The queued native recipe
+must apply its policy and EFI patches and complete a fresh build before the
+kernel, loader or signed bundle can be admitted. Omitting `--base` retains the
 historical 1.1.1 source pin.
 
 For a retry, `--prepared-source /path/to/retained/worktree` avoids another
