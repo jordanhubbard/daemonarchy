@@ -10,7 +10,26 @@
     "main_commit": "d63d77f4eb3cc29e16510f7bdec73602e27c2844",
     "merge_conflicts": 0,
     "changed_files_over_previous_integration": 11,
-    "native_build_state": "queued; not a passing source build or final ISO"
+    "native_build_state": "queued; not a passing source build or final ISO",
+    "hosted_ci": {
+      "checked_utc": "2026-10-24T06:41:57.724992+00:00",
+      "head": "d63d77f4eb3cc29e16510f7bdec73602e27c2844",
+      "passed_checks": [
+        "controller",
+        "native-loader",
+        "amd64 ubuntu-22.04 (clang-15)",
+        "amd64 ubuntu-24.04 (clang-18)",
+        "aarch64 ubuntu-22.04 (clang-15)",
+        "aarch64 ubuntu-24.04 (clang-18)",
+        "amd64 macos-latest (clang-18)",
+        "aarch64 macos-latest (clang-18)"
+      ],
+      "runs": [
+        "https://github.com/jordanhubbard/daemonarchy-src/actions/runs/40068278453",
+        "https://github.com/jordanhubbard/daemonarchy-src/actions/runs/40068293833"
+      ],
+      "scope": "Hosted checks at the exact selected source commit; not the native world/kernel/release-set build."
+    }
   },
   "ports": {
     "selected_integration": "efb8f848465553e178c4341154f5b8e11953cf8a",
