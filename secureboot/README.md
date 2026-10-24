@@ -12,6 +12,9 @@ snapshot results and limits.
 `bdcfeac3e1cb8ce3f05c32d8a7ad3597deb48bdf` for the **1.1.1** refresh
 (OSVERSION `1600028`) and the MacBook candidate revision
 `02984cfbe95c063f130ae20d7ea6ed520df88a8f` (OSVERSION `1600029`).
+The production candidate `faac40107e936c2e133bd938ca56097d3cfed1c4`
+also has OSVERSION `1600029`; bundle creation, signing, module inventory and
+maintenance verification bind that exact revision to the matching ABI.
 The existing four Secure Boot patches are retained; the MacBook build selects
 its exact source with `--base`. Early-kernel network debugging remains open.
 All four patches also apply in sequence to the exact 1.3.1 source integration

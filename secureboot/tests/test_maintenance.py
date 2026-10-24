@@ -91,6 +91,19 @@ class Maintenance(unittest.TestCase):
         with self.assertRaisesRegex(ValueError, "Unsupported boot bundle"):
             self.unpack()
 
+    def test_production_macbook_source_and_osversion(self):
+        self.metadata["base_source"] = "faac40107e936c2e133bd938ca56097d3cfed1c4"
+        self.metadata["osversion"] = 1600029
+        self.archive()
+        _, metadata = self.unpack()
+        self.assertEqual(metadata["osversion"], 1600029)
+
+    def test_production_macbook_source_rejects_old_osversion(self):
+        self.metadata["base_source"] = "faac40107e936c2e133bd938ca56097d3cfed1c4"
+        self.archive()
+        with self.assertRaisesRegex(ValueError, "Unsupported boot bundle"):
+            self.unpack()
+
     def test_altered_archive_fails_before_extraction(self):
         self.archive()
         with self.bundle.open("ab") as stream:

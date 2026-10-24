@@ -18,6 +18,7 @@ import tempfile
 SOURCE_OSVERSIONS = {
     "bdcfeac3e1cb8ce3f05c32d8a7ad3597deb48bdf": 1600028,
     "02984cfbe95c063f130ae20d7ea6ed520df88a8f": 1600029,
+    "faac40107e936c2e133bd938ca56097d3cfed1c4": 1600029,
 }
 
 
