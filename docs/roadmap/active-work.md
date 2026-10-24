@@ -24,12 +24,12 @@ Component discovery, build-performance and operator-development work.
 - [Source integration PR #25](https://github.com/jordanhubbard/daemonarchy-src/pull/25)
   combines the MacBook source [PR #23](https://github.com/jordanhubbard/daemonarchy-src/pull/23),
   including the tested Netlink `route -ifp` correction, with the early-network
-  source [PR #22](https://github.com/jordanhubbard/daemonarchy-src/pull/22)
+  source [PR #22](https://github.com/jordanhubbard/daemonarchy-src/pull/22),
   the completed onboarding review [PR #4](https://github.com/jordanhubbard/daemonarchy-src/pull/4),
   and the mandoc bootstrap dependency from CURRENT refresh [PR #9](https://github.com/jordanhubbard/daemonarchy-src/pull/9).
   The exact candidate head is `faac40107e93`; its earlier parent
-  `a1860ae9b780` passed hosted controller and native-loader checks, which must
-  pass again at the new head. The active private ISO bulk still uses source `02984cfbe95c`.
+  `a1860ae9b780` passed hosted controller and native-loader checks. Both checks
+  also passed at the exact `faac40107e93` head. The active private ISO bulk still uses source `02984cfbe95c`.
   A separate exact-source world, kernel and
   release-set build is queued after that preview finishes and targets the
   combined source head `faac40107e93`.
