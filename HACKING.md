@@ -791,6 +791,12 @@ coordinated operation.
    physical qualification deferrals must remain explicit limitations in the
    release notes; they never become passing results. For 1.1.1 retain the existing
    1.1.0 draft and leave the unversioned stable application feed unchanged.
+   Before upload, run `python3 scripts/verify-release-assets.py --record
+   verification/release-1.3.1.json --assets /path/to/staged-assets` on the six
+   staged public assets. It checks exact sizes and digests, the ISO checksum
+   file, matching PEM/DER certificate, the detached boot-bundle signature,
+   its internal files, and its source/OSVERSION identity. Native ISO runtime,
+   physical hardware, signed feed and post-upload checks remain separate gates.
 
 3. Point the Download section at the top of README.md to the new release: release name, ISO and checksum links, SHA-256, and the `dd` example.
 4. If the release replaces one with a serious bug, say so at the top of the old release's notes.
