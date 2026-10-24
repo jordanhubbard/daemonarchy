@@ -14,14 +14,18 @@ retains review-head details; a formal release contribution sweep is still
 required. Retained worktrees and development evidence remain available.
 
 Source `main` at `d63d77f4` includes the MacBook and early-network work plus
-FreeBSD CURRENT through `a3d1d4e8`. Its exact native world, kernel and set
-build is queued after the private preview bulk. Ports `main` at `7e417dae`
+FreeBSD CURRENT through `a3d1d4e8`. Its exact native world build is running;
+kernel and set production steps follow it. Ports `main` at `7e417dae`
 contains all fork branch histories and retains the reviewed `efb8f848` file
 tree. The selected official package snapshot does not include the newest
 upstream ports changes; [the refresh record](../../verification/freebsd-current-refresh-20261024-development.json)
 explains the dependency and conflict review. The exact `1600029` jail bulk is
 queued after the source build. Keep all source, ports, checkout and package
-revisions pinned through the final image run.
+revisions pinned through the final image run. Product `main` at `33ff0108`
+contains merged release notes, policy and the hardware-record identity fix.
+The ISO worker and public feed controllers use a separate clean product
+checkout pinned to `cdeb3434`; the final tag can include the later release
+documentation while the physical test record identifies the ISO source.
 
 The [final checkout development record](../../verification/checkout-catalog-1.3.1-final-development.json)
 binds signed source and ports seed packages to the merged `main` heads. An
@@ -44,12 +48,12 @@ still release gates. The MSI early kernel boot remains unqualified and is not
 claimed by the MacBook release notes.
 
 `litai verify` currently fails its declared receipt gate because
-`verification/current.json` is absent. The read-only `litai release contributions
-sweep --version 1.3.1 --require-ready` refuses `release.policy_unavailable`
-because `literate.release.json` is absent. Author the release policy together
-with an executable gate that verifies the exact native receipt, signed package
-and boot artifacts, image identity, and physical hardware acceptance. No
-historical log is a substitute for the retained receipt.
+`verification/current.json` is absent. The merged `literate.release.json`
+invokes a fail-closed gate for exact native receipt, signed artifacts, image
+identity and physical MacBook acceptance. The read-only contribution sweep
+has one unclassified historical 1.2.0 backlog issue (#11), which requires a
+current-release disposition before release readiness can pass. No historical
+log is a substitute for the retained receipt.
 
 ### [x] ADOPT-001 — Establish product-wide Literate AI authority
 
