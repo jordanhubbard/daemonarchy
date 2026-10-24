@@ -10,8 +10,8 @@
   Navi14 driver and skip stalled LED output reports for the built-in T2 keyboard.
   The refreshed graphics package and one-boot quirked kernel reached a visible
   Hyprland desktop: the operator entered a password, and the pointer worked
-  after initial lag. These fixes are in draft source/ports contributions, not
-  yet in a published image or a fully qualified normal-boot kernel.
+  after initial lag. These fixes are merged into source and ports `main`, but
+  are not yet in a published image or a fully qualified normal-boot kernel.
 - Record the MacBook Pro 16 fatal NVMe event reproduced during installer package
   extraction. Storage correction, BCM4364 Wi-Fi driver and firmware integration,
   sustained input acceptance, and full physical acceptance remain open.

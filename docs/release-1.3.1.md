@@ -21,10 +21,11 @@ MacBook preview embeds development-only inputs and is not a public artifact.
   kernel-bound modules, package catalogue, optional checkout packages, and boot
   policy are pinned to reviewed revisions for the final image.
 
-The source candidate now merges FreeBSD CURRENT through `a3d1d4e8` (October 24)
-at `d63d77f4`. The ports candidate remains pinned to the selected official
-package snapshot lineage at `efb8f848`: a trial merge of upstream ports
-`7b2b5742` changed 3,140 files and had eight conflicts, and would require a
+Source `main` now merges FreeBSD CURRENT through `a3d1d4e8` (October 24)
+at `d63d77f4`. Ports `main` is `966ca478`, with the same release file tree as
+`efb8f848` and the reviewed official package snapshot lineage. A trial merge
+of upstream ports `7b2b5742` changed 3,140 files and had eight conflicts,
+and would require a
 new package baseline and full dependency rebuild. The selected `www/chromium`
 port and official binary catalogue contain Chromium `154.0.8037.57_2`;
 upstream ports main has `156.0.8078.47_1`. Chromium remains in Daemonarchy,
