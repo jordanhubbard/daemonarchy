@@ -14,6 +14,11 @@ contains private network or credential details.
 | Package and checkout feed tags, keys and signature checks | Public `checkouts-16-amd64-1.3.1` verified with 11 matching asset digests and a native FreeBSD `pkg` catalogue read; `packages-16-amd64-1.3.1` and installed signature checks pending. Selected package public key SHA-256: `67986b400f28a49e99df0f1f3368f60aca8064d5dc00094700ba1a17d8474ef7` (DER form). |
 | BCM4364 module package and Apple board-file hashes | Module package and installed hashes pending. Pinned Apple recovery image SHA-256: `591f07a9a4a58d855a2e53b86a5f5da854a250000a66a9382adaf106c20f839b`; the four expected board-file hashes are in the [firmware importer](../scripts/import-apple-bcm4364-firmware.py). The private source stage passed its hash check, but that does not qualify the final ISO or installed target. |
 
+The physical acceptance record's `installer_commit` identifies the source
+actually built into the ISO (`cdeb3434...`). The release record separately
+identifies the final tagged product commit, which can include later release
+notes and policy changes without changing the tested ISO bytes.
+
 On 2026-10-24, an isolated FreeBSD `pkg` 2.8.4 client configured with the
 selected public key updated the published checkout repository and processed
 three packages. `pkg rquery` returned the ports checkout at

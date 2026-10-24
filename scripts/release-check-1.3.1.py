@@ -104,8 +104,8 @@ def main():
             and hardware.get("result") == "passed", "MacBook acceptance has not passed")
     iso_identity = record["assets"][iso.name][1]
     require(hardware.get("iso_sha256") == iso_identity.removeprefix("sha256:")
-            and hardware.get("installer_commit") == head,
-            "MacBook acceptance selects other release bytes")
+            and hardware.get("installer_commit") == ISO_PRODUCT,
+            "MacBook acceptance selects other ISO bytes or installer source")
     require(hardware.get("t2_boot_policy") in ("Full Security", "Medium Security")
             and hardware.get("firmware_enforced") is True,
             "T2 firmware enforcement is not established")
