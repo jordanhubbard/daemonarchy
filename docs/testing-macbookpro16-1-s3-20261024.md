@@ -44,6 +44,15 @@ Production sets and the installed utility must be rebuilt from the merged
 source revision.
 
 The pre- and post-resume raw logs remain private on the MacBook and controller.
+During a later post-resume check, putting `wlan0` down made the route to the
+gateway select the USB Ethernet interface, and the MacBook received gateway
+replies. The controller, native build host and a second peer still received no
+reply from the MacBook's previously observed wired address. A controller-side
+packet capture showed its ICMP requests leaving on Ethernet without replies.
+The MacBook's current wired address, debugger listener and return path still
+need direct inspection; a successful gateway ping alone does not establish
+inbound debugger recovery.
+
 S3 acceptance is **open**. Repeat on the exact new image after qualifying ACPI
 power restoration, T2 input, desktop restart, BCM firmware recovery, NVMe I/O,
 and network route selection across multiple cycles.
