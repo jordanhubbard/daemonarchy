@@ -36,7 +36,8 @@ but this candidate does not claim the newer browser version.
 
 All eight hosted source checks passed at the selected `d63d77f4` commit,
 including the controller, native loader, and Linux/macOS architecture jobs.
-The native FreeBSD world, kernel, release sets, and package builds remain
+Native FreeBSD world, kernel, and release sets passed independently on
+`daemon.local` and the madmax FreeBSD guest. The package build and ISO remain
 separate qualification steps.
 
 These are candidate changes. The desktop observation was on an installed 1.1.1
@@ -45,7 +46,7 @@ from the final 1.3.1 ISO.
 
 ## Qualification still required
 
-- Finish the native production source and ports builds. Publish and verify the
+- Finish the native production ports build. Publish and verify the
   versioned signed application feed with a real FreeBSD client. The checkout
   feed's public catalogue and native client test pass at the merged source and
   ports revisions; installation from the final ISO remains open.
