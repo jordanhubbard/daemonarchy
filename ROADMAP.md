@@ -5,6 +5,19 @@ Use [the active queue](docs/roadmap/active-work.md) for stable work IDs and
 acceptance status, and [the architecture](docs/architecture/design-traceability.md)
 for Component ownership. This file remains the release and feature overview.
 
+## 1.4.0: one Literate AI release graph across the owned forks
+
+Use Literate AI's parallel workers to coordinate build, test, package and release
+creation across the selected Daemonarchy product, source, ports, desktop and
+FreeBSD compatibility forks. The plan admits exact cross-repository dependencies
+and lets FreeBSD make, Poudriere/pkg, ISO tools and a measured Bazel or other
+executor perform their native actions. LitAI owns action custody, safe
+dependency-ready scheduling, cache invalidation, evidence and publication.
+Wrapping the current serial release script as one opaque action does not
+deliver that result. See [PERF-002 and its 1.4.0 plan](docs/roadmap/release-1.4.0.md).
+This work is scoped after the current 1.3.1 release; 1.3.2 retains the MSI
+early-kernel debugging milestone.
+
 ## 1.2.0: owned source builds and complete Component coverage
 
 Build our pinned FreeBSD-CURRENT fork through the [owned source workflow](docs/source-builds.md),

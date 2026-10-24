@@ -49,6 +49,10 @@ PERF-001 permits a replacement build system while preserving source/ABI and
 dependency correctness. The pinned-tree discovery helper supplies diagnostic
 inputs, with [producer/result identities](../../verification/native-tree-discovery.json);
 it does not fabricate canonical contracts, package products or receipts.
+[PERF-002](../roadmap/release-1.4.0.md) extends that work in 1.4 to a locked
+cross-repository release graph scheduled by Literate AI workers. Native build
+and packaging tools remain action executors; 1.3.1 uses its existing qualified
+release path and evidence gates.
 
 ## Cross-component invariants
 
@@ -126,7 +130,7 @@ the public repository paths so mutable resolver mutexes are not documentation
 assets. Source
 indexing is disabled. Future framework updates must preserve these boundaries.
 
-<!-- literate-ai:authority-reviewed sha256:c1013e88de5c663f634da2121b2b5139b1425e4130552cffc882213334bb8fe5 -->
+<!-- literate-ai:authority-reviewed sha256:ab8409e5580f739e783e89f37c90f575c58ba98185d413438e8a05a6782b1a63 -->
 
 
 ## Rechecking preservation

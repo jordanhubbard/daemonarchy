@@ -670,6 +670,24 @@ before claiming the observer optimization resolves that release blocker.
   - [ ] Same-target baseline/optimized measurements retain source, configuration, toolchain, cache/resource state, action counts, output hashes and test results.
   - [ ] Native Component invalidation, per-unit pkg provenance, complete dependency closure, packaging, ISO installation and rollback remain correct.
 
+### [ ] PERF-002 — Coordinate all Daemonarchy repositories through Literate AI workers in 1.4.0
+
+- **GitHub issue:** [#39](https://github.com/jordanhubbard/daemonarchy/issues/39); [1.4.0 milestone](https://github.com/jordanhubbard/daemonarchy/milestone/3).
+- **Detailed plan:** [1.4.0 cross-repository build and release graph](release-1.4.0.md).
+- **Priority:** P1 for 1.4.0; outside the 1.3.1 release and 1.3.2 MSI acceptance paths.
+- **Owner:** LitAI native lifecycle, owned source/ports/desktop/compatibility forks and product release integration.
+- **Direction:** Select exact commits across all owned release-input repositories, resolve their complete native build/test/package/release dependency graph, and schedule ready actions with LitAI's parallel workers. Keep FreeBSD make, Poudriere/pkg, ISO/signing tools and a measured Bazel or other executor as native action implementations.
+- **Conclusion:** LitAI must coordinate fine-grained input custody, invalidation, resource-bounded concurrency, test receipts, package provenance and exact release publication. A single opaque wrapper around the legacy build and distribution pipeline does not meet this item.
+- **Depends on:** ADOPT-002, COMP-001, DEV-001, PERF-001.
+- **Implementation:**
+  - [ ] Bind product, source, ports, desktop and FreeBSD compatibility fork revisions, plus any selected owned Omarchy input, in one reviewed release plan with upstream ancestry and target/options/toolchain identities.
+  - [ ] Admit complete relevant Component/action ownership and conditional dependencies; execute and cache native source, tests, packages, feeds, boot products and ISO actions through LitAI workers without racing pkg database or protected signer state.
+  - [ ] Compare clean, unchanged and changed-input end-to-end workflows against the 1.3.1 baseline, qualify native/VM/physical results on exact assets, and publish a verified 1.4.0 release from the selected plan.
+- **Evidence:**
+  - [ ] Per-repository locks, zero unowned selected inputs, complete dependency and package closures, correct invalidation and reusable verified outputs are retained.
+  - [ ] At least two isolated ready worker slots run independent native actions concurrently within recorded resource budgets; failure, retry and serialization controls pass.
+  - [ ] Measured full release creation is materially faster without omitted tests or packages, and the tagged ISO, signed feeds, receipts and scoped hardware evidence agree on exact bytes.
+
 ### [ ] DEV-001 — Provide an operator-ready native Component development system
 
 - **Disposable worker implementation:** The versioned QEMU supervisor owns its
