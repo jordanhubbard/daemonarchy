@@ -1,4 +1,4 @@
-# Manual certificate enrollment for 1.1 and 1.1.1
+# Manual Secure Boot certificate enrollment
 
 The 1.1 candidate includes the production manual-enrollment profile. Stable
 1.0.1 requires Secure Boot to be disabled. Use only the production certificate
@@ -23,12 +23,24 @@ The 1.1.1 refresh retains the same production signing authority and certificate 
 The production `daemonarchy-1.1.der` SHA-256 is
 `111539a7fb7178cea65f3e2fc50ea00839d045324a4272ce190e4733a9c118dd`.
 
+## 1.3.1 replacement candidate
+
+The 1.1 signing private key has not been found on the release build host. A
+replacement 1.3.1 key and public certificate have been prepared on the protected
+native signer. The private key is not an ISO or repository input. The candidate
+`daemonarchy-1.3.1.der` SHA-256 and X.509 SHA-256 fingerprint are
+`ee140e7a68d566d37a96ea49ac68238d2e039c1172eb896ab69bff189d70b733`.
+This identifies a prepared candidate, not an enrolled or qualified release
+authority. If selected for 1.3.1, add this certificate to db while retaining
+the 1.1 and platform certificates, then run the physical enforcement, recovery
+and negative tests below before publishing the stable ISO.
+
 ## Enrollment contract
 
 1. Obtain the certificate from the same verified release as the ISO. Compare
    its DER SHA-256 and X.509 fingerprint with the published values. On FreeBSD,
-   `sha256 daemonarchy-1.1.der` and
-   `openssl x509 -inform DER -in daemonarchy-1.1.der -noout -fingerprint -sha256`
+   `sha256 <matching-certificate.der>` and
+   `openssl x509 -inform DER -in <matching-certificate.der> -noout -fingerprint -sha256`
    should report the same digest, apart from fingerprint punctuation.
    If firmware selects certificate files from removable storage, copy the DER
    file onto FAT32 media that it can browse. The installer ISO is read-only;
