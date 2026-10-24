@@ -21,12 +21,12 @@ explains the dependency and conflict review. The exact `1600029` jail bulk is
 queued after the source build. Keep all source, ports, checkout and package
 revisions pinned through the final image run.
 
-The [candidate checkout record](../../verification/checkout-catalog-1.3.1-candidate-development.json)
-shows that a native `pkg` client authenticated and installed the old review
-branch seed packages with the new key, rejected the old key, and materialized
-both trees. Final checkout packages and a catalogue for merged `main` heads
-are being built separately. The desktop source is pinned to `ec2a0082` until
-qualification permits a stable `v1.3.1` tag.
+The [final checkout development record](../../verification/checkout-catalog-1.3.1-final-development.json)
+binds signed source and ports seed packages to the merged `main` heads. An
+isolated native `pkg` client authenticated and installed all three packages,
+rejected the old key, and materialized both exact shallow Git trees. GitHub
+publication and installed-image acceptance remain open. The desktop source is
+pinned to `ec2a0082` until qualification permits a stable `v1.3.1` tag.
 
 The MacBook's installed 1.1.1 system reached a working desktop, but failed the
 S3 trial and later lost both debugger network paths. The new image has not yet

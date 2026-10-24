@@ -39,6 +39,8 @@ from the final 1.3.1 ISO.
 
 - Finish the native production source and ports builds. Publish and verify the
   versioned signed application and checkout feeds with a real FreeBSD client.
+  The checkout feed's local native client test is complete at the merged source
+  and ports revisions; it has not been published or tested from an ISO.
 - Assemble the public ISO without private firmware or development signing
   credentials. Verify its exact inputs, SHA-256, signed boot bundle, production
   certificate, and installed package and module inventory.

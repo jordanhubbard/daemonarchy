@@ -1,0 +1,55 @@
+{
+  "schema": "daemonarchy/checkout-catalog-development@1",
+  "scope": "Merged-main signed checkout packages and isolated native client acceptance; GitHub publication and installed-image acceptance remain open",
+  "source_revision": "d63d77f4eb3cc29e16510f7bdec73602e27c2844",
+  "ports_revision": "7e417dae24ffb95c4625601ae9d654eb2ca68f4d",
+  "tracking_branches": {
+    "source": "main",
+    "ports": "main"
+  },
+  "packages": [
+    {
+      "name": "daemonarchy-ports-checkout-000-20261023.g7e417dae24ff.pkg",
+      "sha256": "660cbea6847aa2205e81a48619869fa3ed37d7a7fac30ff49621fb3d795fcfc1",
+      "bytes": 238200735
+    },
+    {
+      "name": "daemonarchy-src-checkout-000-20261023.gd63d77f4eb3c.pkg",
+      "sha256": "096cd9fac94b45bdce4b4bfbc3b1fd6de11234bf79be52d26a7aac39ccf4e7e2",
+      "bytes": 536791091
+    },
+    {
+      "name": "daemonarchy-src-checkout-001-20261023.gd63d77f4eb3c.pkg",
+      "sha256": "70918f0f48e2fa6cf0efdcf13c8b25a55dfce990342bcfb4045950e2f8996653",
+      "bytes": 181228648
+    }
+  ],
+  "catalog_sha256": "4b4e0a3dd22d61a064f22d4a78ac137cd5a4b2609ba103fa1e268e64b7ae51bf",
+  "signed_packagesite_sha256": "e463d97da61aa24f6134b6e175532982aa0e3c4f638cb09c39efccd7d258eed0",
+  "signing_public_key_der_sha256": "67986b400f28a49e99df0f1f3368f60aca8064d5dc00094700ba1a17d8474ef7",
+  "reconstructed_archives": {
+    "ports": {
+      "parts": 1,
+      "bytes": 238438847,
+      "sha256": "d5abf55c21f9f6a32e0519ac21f20825636f5aafafc7b701e077be5a7a399b43"
+    },
+    "source": {
+      "parts": 2,
+      "bytes": 723309503,
+      "sha256": "700d75ad5f8b319e14e08b0ee73a1499284b9e06dfa732e5a846a982f1dc13c9"
+    }
+  },
+  "native_client": {
+    "platform": "FreeBSD 16 amd64, host OSVERSION 1600028",
+    "correct_key_catalog_query": "passed: all three exact checkout packages visible",
+    "wrong_key_catalog_query": "refused: invalid signature removed the repository; query returned no packages",
+    "isolated_pkg_install": "passed: all three seed packages installed into an isolated root",
+    "materialize_ports": "passed: exact revision, main branch, shallow self-contained Git history and configured fork remote",
+    "materialize_source": "passed: exact revision, main branch, shallow self-contained Git history and configured fork remote"
+  },
+  "limitations": [
+    "The signed checkout repository has not yet been published on GitHub.",
+    "The matching production kernel and installed-image source identity have not yet been checked.",
+    "No physical MacBook fresh install or MSI early boot is qualified by this test."
+  ]
+}
