@@ -34,6 +34,14 @@ resume method. That leaves firmware power-transition handling unqualified.
 This code observation does not isolate the Broadcom trap from the simultaneous
 ACPI PCIe and USB resume failures.
 
+The [upstream Linux Broadcom PCIe driver](https://github.com/torvalds/linux/blob/master/drivers/net/wireless/broadcom/brcm80211/brcmfmac/pcie.c)
+provides a useful behavior reference: it informs firmware before D3, waits for
+an acknowledgement, then either wakes the existing device on D0 or reprobes
+after a cold transition. This is a reference for an isolated FreeBSD driver
+experiment, not evidence that those callbacks alone will fix this MacBook.
+Capture the firmware mailbox and PCIe state across the next controlled S3
+trial before selecting a recovery path.
+
 Both wired and wireless interfaces retained addresses on the same subnet.
 The default route remained bound to the failed wireless interface after it was
 put down, so off-subnet traffic failed. With wireless down, the wired route
