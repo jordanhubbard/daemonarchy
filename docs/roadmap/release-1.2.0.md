@@ -250,8 +250,11 @@ corrected ports checkout package at `4e8640f85` has one part. The native
 checkout round-trip test passed with a slash-containing branch, package
 extraction, local edits and checksum rejection. The candidate catalogue pins
 both revisions and three package parts; publication and production repository
-signing remain pending. The old bulk was stopped after its DRM failure; a
-fresh jail and complete bulk await the running buildworld and release sets.
+signing remain pending. The old bulk was stopped after its DRM failure. The
+exact source `02984cfbe95c` completed native `buildworld` with exit zero on
+October 23; its built GENERIC kernel embeds that revision. Release-set staging
+is running, with a fresh jail and complete bulk guarded on manifest-checked
+sets. The completed world alone does not qualify an ISO or package feed.
 
 A private authoring overlay has all four exact-hash MacBook firmware files and
 an importer-verified Apple recovery provenance stage. This lets the hardware
