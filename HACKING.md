@@ -779,11 +779,13 @@ coordinated operation.
    then tag the exact reviewed commit. Publish a normal stable GitHub release
    `daemonarchy-<version>`, marked latest. Standard public assets are the ISO,
    its `.sha256`, `daemonarchy-<version>-boot.txz`, its detached `.sig`, and
-   `daemonarchy-1.1.pem` / `.der`. Certificate filenames identify the retained
-   signing authority and do not change to 1.1.1. For example:
+   the matching public Secure Boot certificate in PEM and DER form. The 1.3.1
+   candidate rotates that certificate because the previous private signing key
+   is unavailable; do not reuse the 1.1 certificate names for a different key.
+   For 1.3.1, after the exact build and hardware gates pass:
 
    ```
-   gh release create daemonarchy-<version> --target <exact-reviewed-commit> --latest --title "Daemonarchy <version>" --notes-file notes.md daemonarchy-<version>-amd64.iso daemonarchy-<version>-amd64.iso.sha256 daemonarchy-<version>-boot.txz daemonarchy-<version>-boot.txz.sig daemonarchy-1.1.pem daemonarchy-1.1.der
+   gh release create daemonarchy-1.3.1 --target <exact-reviewed-commit> --latest --title "Daemonarchy 1.3.1" --notes-file notes.md daemonarchy-1.3.1-amd64.iso daemonarchy-1.3.1-amd64.iso.sha256 daemonarchy-1.3.1-boot.txz daemonarchy-1.3.1-boot.txz.sig daemonarchy-1.3.1.pem daemonarchy-1.3.1.der
    ```
 
    Verify the exact uploaded asset names, sizes and SHA-256 digests. Keep
