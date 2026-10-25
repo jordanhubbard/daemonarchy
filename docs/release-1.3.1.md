@@ -5,6 +5,16 @@ was not published, so the 1.3.1 changelog and public announcement cover the
 entire interval since 1.1.1. The [GitHub release](https://github.com/jordanhubbard/daemonarchy/releases/tag/daemonarchy-1.3.1)
 is the authority for the final ISO, asset hashes and publication state.
 
+**Published October 25:** The stable GitHub release contains the production
+ISO (SHA-256 `ef5b1bec2189350e1ae194d251c35b959a39d7e4993b6a0f4deb7dcb30365735`),
+signed boot bundle and public certificate. The corrected signed application
+feed contains 204 package archives. An independent bhyve run on `daemon.local`
+installed this exact ISO using the public feeds, verified the installed files,
+booted the installed system, ran its checks, and shut it down successfully.
+The release branch was merged into `main` through PR #46. The operator-confirmed
+MacBook pre-production pass stands; only an additional physical rerun of this
+final ISO was waived.
+
 **Preparation checkpoint, October 24: unpublished candidate.** This page
 records the intended release and evidence needed before publication. The
 [initial signed 1.3.1 checkout feed](https://github.com/jordanhubbard/daemonarchy/releases/tag/checkouts-16-amd64-1.3.1)
@@ -86,8 +96,9 @@ native `pkg` client inside the selected 1600029 root verified both its local
 signed catalogue and the corrected public GitHub feed without suppressing the
 target OS-version check. The signer host's 1600028 userland required a separate local version
 exception during its own client probe; that failed first probe and its scoped
-recovery are retained. The original full Chromium and CEF builds continue as
-a fallback until independent bhyve QA passes.
+recovery are retained. At this checkpoint, the original full Chromium and CEF
+builds remained a fallback pending independent bhyve QA. The corrected feed
+and exact ISO subsequently passed that run on October 25.
 
 The operator confirmed on 2026-10-24 that **all pre-production checks passed
 on the Intel 16-inch MacBook Pro** and waived an additional physical acceptance
