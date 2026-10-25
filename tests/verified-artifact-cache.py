@@ -139,6 +139,24 @@ class InstallerCacheTests(unittest.TestCase):
             self.assertNotIn("kldload", result.stderr)
             self.assertEqual(prior.read_bytes(), b"retained previous qualification")
 
+    def test_harness_allows_preallocated_empty_work_directory(self):
+        root = Path(__file__).resolve().parents[1]
+        with tempfile.TemporaryDirectory() as directory:
+            path = Path(directory)
+            work = path / "allocated-empty"
+            work.mkdir()
+            shim = path / "bin"
+            shim.mkdir()
+            command = shim / "kldload"
+            command.write_text("#!/bin/sh\nexit 42\n")
+            command.chmod(0o755)
+            result = subprocess.run(["sh", str(root / "test-bhyve.sh"), "/does/not/exist.iso"],
+                                    env=dict(os.environ, WORK=str(work), NIC="fixture0", PATH=str(shim) + os.pathsep + os.environ["PATH"]),
+                                    text=True, capture_output=True)
+            # Reached the harmless host-operation fixture, then stopped before any mutation.
+            self.assertEqual(result.returncode, 42, result.stderr)
+            self.assertEqual(list(work.iterdir()), [])
+
     def test_selected_metadata_pins_reject_corruption(self):
         with tempfile.TemporaryDirectory() as directory:
             path = Path(directory)

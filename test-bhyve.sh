@@ -63,10 +63,17 @@ fi
 
 ISO=${1:?usage: test-bhyve.sh daemonarchy.iso | --cleanup}
 
-# Each qualification keeps its disks, CIDATA and logs; never replace an old run.
-if [ -e "$WORK" ] || [ -L "$WORK" ]; then
-    echo 'Bhyve qualification requires a fresh WORK path; retain the earlier run.' >&2
+# Accept a newly allocated empty directory, but keep every earlier run intact.
+if [ -L "$WORK" ] || { [ -e "$WORK" ] && [ ! -d "$WORK" ]; }; then
+    echo 'Bhyve qualification requires a fresh WORK directory; retain the earlier run.' >&2
     exit 1
+fi
+if [ -d "$WORK" ]; then
+    work_contents=$(LC_ALL=C ls -A "$WORK") || exit 1
+    if [ -n "$work_contents" ]; then
+        echo 'Bhyve qualification requires a fresh WORK directory; retain the earlier run.' >&2
+        exit 1
+    fi
 fi
 
 kldload -n vmm if_bridge if_tap nmdm

@@ -51,6 +51,32 @@ acquire and verify the exact public ISO/boot assets and perform fresh installati
 and installed boot against public signed feeds. This cache code does not perform
 that VM/hardware matrix or authorize its publication.
 
+## Bounded native OBS probe (coordinator slot required)
+
+Use an approved healthy FreeBSD root slot and the exact reviewed product revision.
+Prepare the existing signed-snapshot input schema with the reviewed public 1.3.1
+key, all three pinned public metadata files, `abi: "FreeBSD:16:amd64"`, the selected
+`osversion: 1600029`, `packages: ["obs-studio"]`, a 16 MiB download budget, and a
+120-second fetch timeout. Pin the root-owned native `pkg` executable as usual.
+Use `qa_mode: "iterative"`, no offline source, the public versioned 1.3.1 payload
+URL, and a fresh isolated `verified_cache_root`. Then run sequentially:
+
+```sh
+# INPUT_SHA256 binds the same reviewed inputs for both runs. Neither case exists.
+python3 scripts/signed-package-snapshot.py /isolated/obs-probe-inputs.json \
+  --sha256 INPUT_SHA256 --case /isolated/obs-probe-cold
+python3 scripts/signed-package-snapshot.py /isolated/obs-probe-inputs.json \
+  --sha256 INPUT_SHA256 --case /isolated/obs-probe-warm
+```
+
+Retain both cases and compare `repository_signature_verified`,
+`payload_checksums_verified`, exact package SHA-256/size, transfer requests,
+`verified_cache`, empty private package databases and elapsed times. A warm hit
+must still pass native verification. This probe performs no installation,
+compilation, signing or VM launch and cannot qualify application/runtime ABI
+behavior. A further corruption control must use a separate newly created test
+namespace; never damage an earlier retained cache or published archive.
+
 ## Stable cache API
 
 `scripts/verified-artifact-cache.py` exposes:
@@ -129,8 +155,10 @@ PACKAGE_CACHE_DATA_SHA256=DATA_SHA256 \
 sh test-bhyve.sh /isolated/candidate.iso
 ```
 
-Normal harness runs require a fresh `WORK` path and refuse to replace earlier
-disks, CIDATA or logs. The harness validates before host mutation or VM launch, then writes those fields
+Normal harness runs require a not-yet-created or existing empty, non-symlink
+`WORK` directory. Allocating it with `mktemp -d` is supported. Any existing
+contents, including hidden files, refuse before host mutation, preserving earlier
+disks, CIDATA and logs. Keep receipt outputs in a separate directory. The harness validates before host mutation or VM launch, then writes those fields
 into its private CIDATA configuration. The installer validates and retains fresh
 metadata preflight downloads before any disk changes, rejects changed metadata,
 and keeps `signature_type: "pubkey"` and the image's selected public key. Use the
