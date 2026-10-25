@@ -1,6 +1,6 @@
 # Changelog
 
-## 1.3.1 - 2026-10-24
+## 1.3.1
 
 [README.md](https://github.com/jordanhubbard/daemonarchy/blob/daemonarchy-1.3.1/README.md)
 
