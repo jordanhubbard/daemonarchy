@@ -1,0 +1,35 @@
+{
+  "acceptance": "not-qualified",
+  "admitted": false,
+  "build_dependency_order": [],
+  "gaps": [
+    "no retained per-unit producer profiles selected"
+  ],
+  "observation_scope": "Three locally available product repositories only; selected source/ports native locks remain pending.",
+  "repositories": [
+    {
+      "git_tree": "29d0f9bc6e880fae9ab9bda89a9096bb694bd70d",
+      "id": "daemonarchy",
+      "repository": "https://github.com/jordanhubbard/daemonarchy.git",
+      "revision": "f2d184bb3dee8f26c724a24116939380c9a9db92",
+      "upstream": null
+    },
+    {
+      "git_tree": "108832082ab4391d70cd2cb18b049e0378e3d55c",
+      "id": "daemonarchy-desktop",
+      "repository": "https://github.com/jordanhubbard/daemonarchy-desktop.git",
+      "revision": "ec2a00824ec95b342c0c095657ac725c56f0528b",
+      "upstream": null
+    },
+    {
+      "git_tree": "5261092e67c08441372e215d55c04f4f48f1d740",
+      "id": "omarchy-freebsd",
+      "repository": "https://github.com/jordanhubbard/omarchy-freebsd.git",
+      "revision": "800bf89b6ec6d0cfaaebb46a2440f56c3f997c8a",
+      "upstream": null
+    }
+  ],
+  "schema": "daemonarchy/release-input-graph@1",
+  "selection_identity": "sha256:14dca6a63ac0a9d8440921f43016af568b1454fdf1ab1b6d76d97643b18c1d4b",
+  "units": []
+}

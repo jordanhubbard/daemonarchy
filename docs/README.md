@@ -62,3 +62,5 @@ reachable without changing its historical scope.
 - [Measured installer progress](installer-progress.md)
 
 - [Package reuse provenance inventory](package-reuse-inventory.md)
+
+- [Cross-repository retained input graph](release-input-graph.md)
