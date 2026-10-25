@@ -42,6 +42,21 @@ source and ports changes through their own reviewed main branches before the
 
 ## Cross-release artifact reuse and distributed execution
 
+Before scheduling any release build, produce an exhaustive package inventory
+against the last published release. Include every old and selected package,
+including added and removed origins, build dependencies and package-only
+changes. For each row, record exact source and port-tree identities, package
+version, options, flavors, generated inputs, toolchain and base ABI, build and
+runtime dependency identities, old artifact digest, selected artifact digest
+when present, and the proposed reuse or rebuild reason. Fail the release plan
+if any package lacks a decision or if an unchanged artifact is rebuilt without
+a recorded invalidation or failed native qualification. Publish aggregate
+counts, cache bytes and time saved, plus the per-package decision ledger with
+the release evidence. The [1.1.1-to-1.3.1 application-feed inventory](evidence/release-1.3.1-package-reuse-inventory.md)
+is the baseline: it covers 510 old packages, including 320 with unchanged port
+and dependency metadata and 162 requiring runtime ABI review. Its LibreOffice
+row changed version and port inputs, so that package required a new build.
+
 Always reuse a verified build output, binary, package or release input across
 versions when its complete action identity is unchanged. A release number or
 an unrelated repository commit must not force recompilation. Cache keys must
@@ -120,6 +135,12 @@ loss without racing package databases or protected signing state.
 - [ ] Inventory all selected fork revisions, tools, workers, actions and outputs;
   record complete-tree source/ports ownership and the 1.3.1 clean-build timing
   baseline, including world, kernel, package fetch/build, signing and ISO stages.
+- [ ] Before queueing builds, compare every package in the prior public feed and
+  selected release closure, including additions and removals. Produce the
+  per-package reuse/rebuild ledger and account for every build, cache hit,
+  invalidation, failed qualification, package byte and elapsed time. Reject an
+  unexplained rebuild of an unchanged package. Include the 1.3.1 Chromium,
+  CEF, OBS and changed LibreOffice cases in the regression fixture.
 - [ ] Qualify retained native profiles and full dependency closures for every
   selected repository. Demonstrate that changed implementation, header,
   generated input, port option/flavor, compiler, sysroot and upstream commit
