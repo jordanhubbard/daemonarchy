@@ -38,7 +38,7 @@ complete declarations and external/native gaps are in [the acceptance inventory]
   local recovery and revocation. Pairing keys and typed input must not enter
   inspectable loader variables or retained output logs. Document the exact
   firmware-to-kernel coverage gap; a packet unit test cannot close this scenario.
-- **1.3.2 network bootloader debugging:** execute plain-mode activation without
+- **1.4 network bootloader debugging:** execute plain-mode activation without
   SSH or keys, remote commands and variable get/set/unset, disk kernel/module
   boot, direct UDP kernel/module transfer and boot, TFTP downloads, and downloaded
   Lua using real loader APIs. Verify actual artifacts, incomplete/corrupt transfers,
@@ -46,13 +46,15 @@ complete declarations and external/native gaps are in [the acceptance inventory]
   peer/NIC loss, local recovery and disk preservation. Boot/sequence validation
   provides correlation and duplicate suppression, not authentication. Retain the
   existing authenticated mode's separate regression requirements above.
-- **1.3.2 early-kernel connection:** require real packets after firmware exit and
+- **1.4 mountroot and early-kernel connection:** force the `mountroot>` prompt
+  and remotely exchange input and output there; require real packets after firmware exit and
   before normal PCI/NIC attachment with exact products, NIC and boot identity.
   Retain deliberate pre-driver panic and hard-reset captures, successful continued
   boot, bounded panic polling, loss counters, stale/malformed message controls and
   safe native-driver takeover. Qualify the separate diagnostic image and actual
-  MSI built-in-NIC startup capture. Use the complete
-  [1.3.2 acceptance matrix](../../docs/roadmap/release-1.3.2.md#acceptance-matrix).
+  MSI built-in-NIC startup capture. Use the current
+  [1.4 P0 matrix](../../docs/roadmap/release-1.4.0.md#p0-network-debugging-across-the-boot-boundary)
+  and retained [earlier matrix](../../docs/roadmap/release-1.3.2.md#acceptance-matrix).
   Descriptor checks, a preloaded NIC module and controller-only fixtures do not
   close this scenario or establish the MSI reset's cause. USB report acceptance
   remains firmware inventory persistence; kernel capture is retained on the host.

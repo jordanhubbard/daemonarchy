@@ -1,4 +1,11 @@
-# 1.3.2 network bootloader debugging and MSI kernel capture
+# Historical 1.3.2 network bootloader and MSI plan
+
+**Superseded October 25, 2026:** The operator moved this feature to 1.4 P0 and
+expanded it to remote interaction at `mountroot>`, boot-block/loader coverage,
+early startup and panic. The [current 1.4 plan](release-1.4.0.md) and
+[DEBUG-003](active-work.md#debug-003-deliver-bidirectional-loader-mountroot-and-panic-network-debugging-for-14)
+own implementation and acceptance. The scope and evidence below are retained
+as historical design work, not a 1.3.2 completion claim.
 
 - **Status:** active
 - **Implementation state:** planned; target acceptance incomplete.
@@ -6,7 +13,7 @@
   [1.3.2 milestone](https://github.com/jordanhubbard/daemonarchy/milestone/2).
 - **Source tracking:** [#21](https://github.com/jordanhubbard/daemonarchy-src/issues/21),
   [source 1.3.2 milestone](https://github.com/jordanhubbard/daemonarchy-src/milestone/2).
-- **Owning queue item:** [DEBUG-003](active-work.md#debug-003-deliver-network-bootloader-debugging-and-msi-kernel-capture-for-132).
+- **Owning queue item:** [DEBUG-003](active-work.md#debug-003-deliver-bidirectional-loader-mountroot-and-panic-network-debugging-for-14).
 - **Completion / archival evidence:** pending implementation, exact native/VM
   operation and failure matrix, separate image and physical MSI capture.
 - **Owners:** product diagnostics (operator flow, controller and acceptance),

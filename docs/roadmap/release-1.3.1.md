@@ -9,7 +9,7 @@
   open under DEBUG-003 for 1.3.2. The new explicit plain mode supersedes the
   authentication requirement below for this boot debugging workflow.
 - **Tracking:** [Issue #27](https://github.com/jordanhubbard/daemonarchy/issues/27), [1.3.1 milestone](https://github.com/jordanhubbard/daemonarchy/milestone/1).
-- **Owning queue item:** [DEBUG-003](active-work.md#debug-003-deliver-network-bootloader-debugging-and-msi-kernel-capture-for-132)
+- **Owning queue item:** [DEBUG-003](active-work.md#debug-003-deliver-bidirectional-loader-mountroot-and-panic-network-debugging-for-14)
 - **Completion / archival evidence:** Pending exact native loader/kernel builds,
   pre-driver VM packet captures, separate image qualification and physical MSI
   built-in-NIC evidence. No current connection or passing receipt is claimed.

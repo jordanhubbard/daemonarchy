@@ -1,12 +1,68 @@
-# 1.4.0: Literate AI across the Daemonarchy release graph
+# 1.4.0: network debugging and an incremental release graph
 
 - **Status:** active
 - **Release scope:** 1.4.0; no 1.4 build or release qualification is claimed.
-- **Completion / archival evidence:** pending cross-repository locks, native worker receipts, equivalent timing comparisons, exact ISO/feed qualification, and published release verification.
-- **Tracking:** [product issue #39](https://github.com/jordanhubbard/daemonarchy/issues/39), [1.4.0 milestone](https://github.com/jordanhubbard/daemonarchy/milestone/3).
-- **Owning queue item:** [PERF-002](active-work.md#perf-002-coordinate-all-daemonarchy-repositories-through-literate-ai-workers-in-140).
+- **Priority:** P0 network debugging from boot blocks and loader through `mountroot>`, early kernel and panic. Distributed/incremental build work supports this release.
+- **Completion / archival evidence:** pending exact native VM operation/fault matrix and physical hardware capture, cross-repository locks and receipts, artifact reuse, exact diagnostic image/feed qualification and published release verification.
+- **Tracking:** [network debugging issue #33](https://github.com/jordanhubbard/daemonarchy/issues/33), [source issue #21](https://github.com/jordanhubbard/daemonarchy-src/issues/21), [build issue #39](https://github.com/jordanhubbard/daemonarchy/issues/39), [1.4.0 milestone](https://github.com/jordanhubbard/daemonarchy/milestone/3).
+- **Owning queue item:** [DEBUG-003](active-work.md#debug-003-deliver-bidirectional-loader-mountroot-and-panic-network-debugging-for-14).
+- **Supporting queue item:** [PERF-002](active-work.md#perf-002-coordinate-all-daemonarchy-repositories-through-literate-ai-workers-in-140) owns the build and release path.
 - **Existing foundations:** [retained native execution](active-work.md#adopt-002-qualify-retained-native-execution-and-release-enforcement), [complete source and ports ownership](freebsd-components.md), [native workspace](native-workspace.md), and [build-performance work](build-performance.md).
-- **Release boundary:** this is 1.4 work. The pinned 1.3.1 package, ISO and signing path remains the current release path; the operator confirmed MacBook pre-production checks and waived an additional final-ISO physical rerun. [1.3.2 early-kernel MSI debugging](release-1.3.2.md) has its own acceptance.
+- **Release boundary:** 1.3.1 is published and immutable. The [former 1.3.2 network plan](release-1.3.2.md) is historical; its requirements are carried forward here with the additional mountroot and panic acceptance. The operator-confirmed MacBook pre-production result and narrow final-ISO rerun waiver retain their original 1.3.1 scope.
+
+## P0: network debugging across the boot boundary
+
+Deliver a real bidirectional console/debugger session in explicitly enabled
+plain mode. Do not add a key, pairing step or SSH dependency. Keep the local
+console and Stop/recovery path available. Support ordinary loader commands,
+variable get/set/unset, disk and downloaded kernel/module selection, direct UDP
+and TFTP transfer, and downloaded Lua executed by the real loader interpreter.
+Cover the boot blocks and loader, including the transition into the kernel;
+state the earliest stage actually instrumented and any earlier gap. Firmware
+SNP is usable only before `ExitBootServices`.
+
+Before ordinary NIC attachment, provide a kernel-owned, bounded polled path
+for output **and remote input** at a deliberately forced `mountroot>` prompt.
+Continue through early startup, a deliberate pre-driver panic and a later
+panic/debugger entry. Record boot and phase identity, the last successfully
+received stage, dropped bytes and transport loss on the controller. A hard
+reset must preserve already-received output without fabricating a panic.
+Quiesce the early path before one native driver takes ownership of RX/TX rings,
+DMA buffers and callbacks. Test normal boot, failed attach, link loss, malformed
+traffic, timeout, controller restart and repeated enable/Stop cycles.
+
+Choose NIC backends from retained PCI/firmware reports and native driver
+evidence, never from the laptop model. Implement and qualify VM backends now;
+physical MSI built-in-Ethernet acceptance follows once its exact report and
+access are available. A loader-only packet capture or later-driver NetGDB
+session does not qualify mountroot, panic or the MSI reset boundary. The
+earlier [network design](release-1.3.2.md) remains a detailed implementation
+reference, with this 1.4 scope and acceptance taking precedence.
+
+The native VM matrix must force `mountroot>` and prove remote interaction,
+deliberately panic before normal NIC attachment, panic later, hard-reset after
+a known stage, boot normally through driver takeover, and inject transport
+faults. Retain both passing and failed logs against exact source, kernel,
+loader, controller, NIC and image identities. Build a separate exact 1.4
+diagnostic artifact; do not modify the public 1.3.1 ISO or feed.
+
+## Preserve and reuse the 1.3.1 build inventory
+
+Before any substantial 1.4 build, record worker health and inventory every
+retained package archive, installed package, signed repository/catalogue,
+Poudriere jail/tree, object tree and shared cache in place. Verify artifact
+bytes, provenance, ABI, options, flavors and dependency identities. Reuse or
+requalify compatible outputs before queuing a genuinely necessary rebuild;
+record the reason for every rebuild. No clean, distclean, prune, blanket
+rebuild, replacement of old outputs or deletion of retained evidence is
+allowed. Place new debugger builds, package candidates and diagnostic images
+in isolated output roots, and keep existing mounts, active processes and
+path-dependent environments intact. New linked worktrees belong under
+`~/.worktrees/<repository>/<name>`.
+
+Use owned finite supervisors for native jobs, with logs and exit records kept
+outside older output roots. Final 1.4 QA must still obtain public binaries and
+packages; local verified caches accelerate iterative tests only.
 
 ## Intended operating model
 
