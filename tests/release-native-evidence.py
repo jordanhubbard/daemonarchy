@@ -109,6 +109,10 @@ class NativeReleaseEvidence(unittest.TestCase):
         del self.values["bulk.log"]
         del self.values["bulk.exit"]
         self.values["image-install.exit"] = b"0\n"
+        self.values["native-signed-feed-check.exit"] = b"0\n"
+        self.values["native-signed-feed-check.log"] = (
+            b"Selected root OSVERSION: 1600029; IGNORE_OSVERSION unset\n"
+            b"Daemonarchy-Test repository update completed. 203 packages processed.\n")
         self.values["image-install.log"] = ("\n".join(
             "Installing " + name.removesuffix(".pkg") + "..."
             for name in (*release.REUSED_ARCHIVES, "daemonarchy-1.3.1,1.pkg")) + "\n").encode()

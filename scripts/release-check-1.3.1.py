@@ -32,6 +32,7 @@ NATIVE_RESULTS = frozenset(name for name in NATIVE_EVIDENCE if name.endswith(".e
 REUSE_EVIDENCE = (NATIVE_EVIDENCE - {"bulk.log", "bulk.exit"}) | frozenset((
     "image-install.log", "image-install.exit", "pkg-check-deps.log",
     "pkg-check-files.log", "runtime-smoke.log", "reuse-provenance.json",
+    "native-signed-feed-check.log", "native-signed-feed-check.exit",
 ))
 REUSED_ARCHIVES = {
     "cef-152.0.6.pkg": "31dcd655bab385a5a134f54d4c28414a1f71bd0bb798151035879be8897a72b3",
@@ -185,6 +186,11 @@ def native_evidence(record, iso_sha256):
                 and b"OBS Studio - 32.2.2" in paths["runtime-smoke.log"].read_bytes()
                 and b"CEF RTLD_NOW load passed" in paths["runtime-smoke.log"].read_bytes(),
                 "installed desktop or reused executable checks are missing")
+        require(b"Selected root OSVERSION: 1600029; IGNORE_OSVERSION unset" in
+                paths["native-signed-feed-check.log"].read_bytes()
+                and b"Daemonarchy-Test repository update completed. 203 packages processed." in
+                paths["native-signed-feed-check.log"].read_bytes(),
+                "native selected-base signed feed verification is missing")
 
 
 def public_feed(tag):
