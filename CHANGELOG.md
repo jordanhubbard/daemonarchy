@@ -4,6 +4,13 @@
 
 [README.md](https://github.com/jordanhubbard/daemonarchy/blob/daemonarchy-1.3.1/README.md)
 
+This is the next production release after 1.1.1; **1.2.0 was not published**.
+This entry covers the complete interval since 1.1.1. The first section records
+the release candidate and its evidence. The development section below retains
+the other work from that interval with its actual qualification boundaries;
+repository development is not itself a claim that a feature is in the public
+ISO or has passed physical acceptance.
+
 - On October 24 the operator confirmed that all pre-production checks passed
   on the Intel 16-inch MacBook Pro and waived only an additional physical
   acceptance rerun of the final public ISO. Existing observations retain their
@@ -117,14 +124,14 @@ date. Entries describe the behavior and evidence recorded for that release, not
 support guarantees for every machine. Related desktop and compatibility changes
 are included where the corresponding release notes identify them.
 
-**Current publication state:** 1.1.1 is the latest published stable installer. The superseded 1.1.0 and preview.13 drafts and the
+**Publication sequence:** 1.1.1 preceded this 1.3.1 release candidate. The superseded 1.1.0 and preview.13 drafts and the
 previously published 1.1.0-rc.1 release assets were removed at the operator's
 request on October 18 to avoid download confusion and reclaim storage.
 Their historical entries and source tags are preserved. “1.1-release” in testing discussions refers to the 1.1
 work; it is not a separate published tag in this repository. The proposed name
 1.1-rc2 was replaced by 1.1.1 before publication.
 
-## Unreleased
+### Other development since 1.1.1 (not claimed as shipped in the 1.3.1 ISO)
 
 - Installer: replace elapsed-time progress estimates with measured milestones,
   archive and package observations; add bars, spectrum and scope views, plain
@@ -399,6 +406,10 @@ work; it is not a separate published tag in this repository. The proposed name
   an acceptance inventory. Retain original source, native commands and published
   release identities. Native lifecycle execution and release enforcement remain
   separate, unqualified follow-up work; no current passing receipt is claimed.
+
+## Unreleased
+
+Future changes after the 1.3.1 release candidate belong here.
 
 ## 1.1.1 — 2026-10-18
 

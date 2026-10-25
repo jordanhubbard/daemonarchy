@@ -346,14 +346,14 @@ lifecycle authority.
 - **Evidence:**
   - [ ] Native/operator results identify exact hardware and build, with unresolved or unrun cases remaining open rather than waived into passing.
 
-### [ ] RELEASE-001 — Deliver 1.2.0 through first-class FreeBSD Literate AI execution
+### [ ] RELEASE-001 — Deliver a qualified Literate AI release workflow in 1.4
 
 - **GitHub issue:** [#11](https://github.com/jordanhubbard/daemonarchy/issues/11)
 
 - **Priority:** P1
 - **Owner:** whole product, release and acceptance
-- **Direction:** Finish all existing Daemonarchy backlog work and publish a new release entirely through the qualified Literate AI method.
-- **Conclusion:** The existence proof must include actual native build, complete declared testing, artifact custody and publication; authority-only adoption, waived backlog, or an external manual release is insufficient.
+- **Direction:** Finish the retained backlog and publish a future release entirely through qualified Literate AI execution across the owned repositories. The original 1.2.0 milestone was not published; 1.3.1 records the intervening development but uses its separately verified native release workflow.
+- **Conclusion:** This remains a 1.4 goal. Its existence proof must include actual native build, complete declared testing, artifact custody and publication; authority-only adoption, waived backlog, or the 1.3.1 native release cannot close it.
 - **Depends on:** ADOPT-002,UI-001,PKG-001,GUI-001,DEBUG-001,HW-001,SRC-001,COMP-001
 - **Implementation:**
   - [x] Inventory current roadmap and queue obligations in [the 1.2.0 completion ledger](release-1.2.0.md), including inherited Bluetooth, enterprise Wi-Fi, dual-boot, bhyve and physical trust/graphics gaps.

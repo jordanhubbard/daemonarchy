@@ -18,7 +18,11 @@ deliver that result. See [PERF-002 and its 1.4.0 plan](docs/roadmap/release-1.4.
 This work is scoped after the current 1.3.1 release; 1.3.2 retains the MSI
 early-kernel debugging milestone.
 
-## 1.2.0: owned source builds and complete Component coverage
+## Unpublished 1.2.0 plan: owned source builds and complete Component coverage
+
+No 1.2.0 production release was published. The 1.3.1 changelog covers work
+since 1.1.1, including this plan's completed development, while the remaining
+Component and executor obligations stay in the active queue and 1.4.0 roadmap.
 
 Build our pinned FreeBSD-CURRENT fork through the [owned source workflow](docs/source-builds.md),
 then represent all selected `/usr/src` and `/usr/ports` inputs and native units as
@@ -37,7 +41,7 @@ native correctness demonstrate substantial improvement.
 
 ## 1.1.1 refresh
 
-The current stable release is **1.1.1**. Its source is
+The stable release preceding 1.3.1 was **1.1.1**. Its source is
 `bdcfeac3e1cb8ce3f05c32d8a7ad3597deb48bdf` (OSVERSION `1600028`), with ports
 `f7d7ee897405dcb8ce87e674588a4e1b3bfba00e` on `daemonarchy-1.1.1`.
 Matching world, kernel, jail and driver builds replace the older OSVERSION

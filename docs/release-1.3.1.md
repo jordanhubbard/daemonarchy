@@ -1,13 +1,18 @@
 # Daemonarchy 1.3.1 release notes
 
-**Status: unpublished candidate.** This page records the intended release and
-the evidence still needed before a stable GitHub release. The
+Daemonarchy 1.3.1 is the next production release after 1.1.1. Version 1.2.0
+was not published, so the 1.3.1 changelog and public announcement cover the
+entire interval since 1.1.1. The [GitHub release](https://github.com/jordanhubbard/daemonarchy/releases/tag/daemonarchy-1.3.1)
+is the authority for the final ISO, asset hashes and publication state.
+
+**Preparation checkpoint, October 24: unpublished candidate.** This page
+records the intended release and evidence needed before publication. The
 [initial signed 1.3.1 checkout feed](https://github.com/jordanhubbard/daemonarchy/releases/tag/checkouts-16-amd64-1.3.1)
 is public with 11 matching asset digests. The selected ports revision requires
 a [replacement signed checkout feed](https://github.com/jordanhubbard/daemonarchy/releases/tag/checkouts-16-amd64-1.3.1-r2).
 All 11 replacement assets match their published digests, and a native FreeBSD
 `pkg` client accepted its public catalogue and listed all three packages.
-No public 1.3.1 ISO, application package feed, or boot bundle is available yet. The private
+At that checkpoint, no public 1.3.1 ISO, application package feed, or boot bundle was available. The private
 MacBook preview embeds development-only inputs and is not a public artifact.
 
 ## What changes
@@ -25,6 +30,16 @@ MacBook preview embeds development-only inputs and is not a public artifact.
 - The EFI loader countdown and target boot files are updated. Source, ports,
   kernel-bound modules, package catalogue, optional checkout packages, and boot
   policy are pinned to reviewed revisions for the final image.
+
+Other work since 1.1.1 includes measured installer-progress displays,
+bounded package-acquisition and dependency-graph tooling, authenticated
+catalogue and native package-plan checks, owned QEMU workers, early wired
+network-debugging development, and Literate AI contracts for the retained
+FreeBSD implementation. The root CHANGELOG.md keeps the detailed
+record. These development paths retain their recorded qualification limits;
+their presence in the repository does not make them public-ISO features or
+claim a complete LitAI-managed release, safe parallel package installation,
+or physical early-kernel debugger acceptance.
 
 Source `main` now merges FreeBSD CURRENT through `a3d1d4e8` (October 24)
 at `d63d77f4`. Ports `main` is `b7857842`; it adds a Broadcom SDPCM event
