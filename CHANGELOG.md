@@ -25,6 +25,12 @@ ISO or has passed physical acceptance.
 - Require a retained, hashed native source, package, signing and ISO evidence
   record for the 1.3.1 production release gate. Keep the separately configured
   LitAI project receipt unqualified until its native lifecycle is admitted.
+- Reuse five exact 1.1.1 application archives after native 1600029 install,
+  dependency, file and runtime checks. The first exact-ISO bhyve install found
+  `py312-brotli` absent from its FreeBSD mirror catalogue. Add that verified
+  native archive to the versioned signed feed, retain the failed install as
+  historical evidence, and verify the corrected 204-package public catalogue
+  with a native 1600029 client before repeating ISO QA.
 - Preserve approved installed-system debugging keys, server identity and private
   state across reboot. Resume the existing session without Unpair or fresh
   confirmation; retain explicit revocation and unknown-key refusal. Keep

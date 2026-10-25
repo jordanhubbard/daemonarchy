@@ -34,6 +34,10 @@ REUSE_EVIDENCE = (NATIVE_EVIDENCE - {"bulk.log", "bulk.exit"}) | frozenset((
     "pkg-check-files.log", "runtime-smoke.log", "reuse-provenance.json",
     "native-signed-feed-check.log", "native-signed-feed-check.exit",
 ))
+CLOSURE_EVIDENCE = REUSE_EVIDENCE | frozenset((
+    "installer-mirror-closure.json", "native-public-feed-check.log",
+    "native-public-feed-check.exit",
+))
 REUSED_ARCHIVES = {
     "cef-152.0.6.pkg": "31dcd655bab385a5a134f54d4c28414a1f71bd0bb798151035879be8897a72b3",
     "chromium-154.0.8037.57_2.pkg": "e81a45507040c957303138f6c837a01873157827f8f3e3b578c6833a52a72177",
@@ -100,7 +104,8 @@ def native_evidence(record, iso_sha256):
     native = document(path)
     schema = native.get("schema")
     require(schema in ("daemonarchy/native-release-evidence@1",
-                       "daemonarchy/native-release-evidence@2")
+                       "daemonarchy/native-release-evidence@2",
+                       "daemonarchy/native-release-evidence@3")
             and native.get("source_commit") == SOURCE
             and native.get("ports_commit") == PORTS
             and native.get("desktop_commit") == DESKTOP
@@ -109,7 +114,8 @@ def native_evidence(record, iso_sha256):
             and native.get("iso_sha256") == iso_sha256,
             "native evidence selects other release inputs")
     entries = native.get("evidence")
-    expected_files = (NATIVE_EVIDENCE if schema.endswith("@1") else REUSE_EVIDENCE)
+    expected_files = (NATIVE_EVIDENCE if schema.endswith("@1") else
+                      REUSE_EVIDENCE if schema.endswith("@2") else CLOSURE_EVIDENCE)
     require(isinstance(entries, dict) and set(entries) == expected_files,
             "native evidence inventory is incomplete")
     root = Path(os.environ.get("DAEMONARCHY_NATIVE_EVIDENCE_ROOT", ""))
@@ -144,7 +150,7 @@ def native_evidence(record, iso_sha256):
     require(any(line.split()[:2] == ["lang/dotnet", "dotnet-9.0.14"]
                 for line in paths["ports.built"].read_text().splitlines()),
             "native dotnet build result is absent")
-    if schema.endswith("@2"):
+    if schema.endswith(("@2", "@3")):
         require(manifest.get("schema") == "daemonarchy/madmax-package-import@2"
                 and manifest.get("assembly_kind") == "selected-base-installed-reuse"
                 and manifest.get("image_install_log_sha256") == digest(paths["image-install.log"])
@@ -186,14 +192,34 @@ def native_evidence(record, iso_sha256):
                 and b"OBS Studio - 32.2.2" in paths["runtime-smoke.log"].read_bytes()
                 and b"CEF RTLD_NOW load passed" in paths["runtime-smoke.log"].read_bytes(),
                 "installed desktop or reused executable checks are missing")
+        count = b"204" if schema.endswith("@3") else b"203"
         require(b"Selected root OSVERSION: 1600029; IGNORE_OSVERSION unset" in
                 paths["native-signed-feed-check.log"].read_bytes()
-                and b"Daemonarchy-Test repository update completed. 203 packages processed." in
+                and b"Daemonarchy-Test repository update completed. " + count +
+                b" packages processed." in
                 paths["native-signed-feed-check.log"].read_bytes(),
                 "native selected-base signed feed verification is missing")
+    if schema.endswith("@3"):
+        mirror = document(paths["installer-mirror-closure.json"])
+        require(mirror == {
+            "schema": "daemonarchy/installer-mirror-closure@1",
+            "installer_iso_sha256": iso_sha256,
+            "missing_names": ["py312-brotli"],
+            "selected_package_count": 203,
+            "native_closure_package_count": 982,
+        }, "failed installer mirror closure is not recorded")
+        require("py312-brotli-1.2.0.pkg" in packages
+                and b"Selected root OSVERSION: 1600029; IGNORE_OSVERSION unset" in
+                paths["native-public-feed-check.log"].read_bytes()
+                and b"Daemonarchy-Public repository update completed. 204 packages processed." in
+                paths["native-public-feed-check.log"].read_bytes()
+                and b"Native 1600029 client verified public signed feed with 204 packages" in
+                paths["native-public-feed-check.log"].read_bytes(),
+                "corrected public feed lacks native target verification")
+    return packages
 
 
-def public_feed(tag):
+def public_feed(tag, expected_package=None):
     payload = subprocess.check_output(
         ["gh", "api", f"repos/jordanhubbard/daemonarchy/releases/tags/{tag}"],
         text=True,
@@ -205,6 +231,13 @@ def public_feed(tag):
             "support feed is not published: " + tag)
     require(isinstance(feed.get("assets"), list) and feed["assets"],
             "support feed has no assets: " + tag)
+    if expected_package is not None:
+        name, size, sha256 = expected_package
+        assets = {item.get("name"): item for item in feed["assets"]}
+        require(len(assets) == len(feed["assets"]) == 208
+                and assets.get(name, {}).get("size") == size
+                and assets[name].get("digest") == "sha256:" + sha256,
+                "corrected public feed inventory or native archive differs")
 
 
 def macbook_release_decision(record):
@@ -260,10 +293,14 @@ def main():
         "--assets", str(stage))
     iso = stage / "daemonarchy-1.3.1-amd64.iso"
     run("sh", "scripts/check-image-size.sh", str(iso))
-    native_evidence(record, record["assets"][iso.name][1].removeprefix("sha256:"))
+    packages = native_evidence(record, record["assets"][iso.name][1].removeprefix("sha256:"))
 
     public_feed("checkouts-16-amd64-1.3.1-r2")
-    public_feed("packages-16-amd64-1.3.1")
+    py_brotli = packages.get("py312-brotli-1.2.0.pkg")
+    require(isinstance(py_brotli, list) and len(py_brotli) == 2,
+            "native py312-brotli archive is absent")
+    public_feed("packages-16-amd64-1.3.1",
+                ("py312-brotli-1.2.0.pkg", *py_brotli))
     print("1.3.1 release gate passed for exact native evidence, ISO, feeds and scoped MacBook decision")
 
 

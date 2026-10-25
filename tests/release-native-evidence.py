@@ -161,6 +161,39 @@ class NativeReleaseEvidence(unittest.TestCase):
         self.reuse()
         self.check()
 
+    def closure(self):
+        self.reuse()
+        self.native["schema"] = "daemonarchy/native-release-evidence@3"
+        self.values["native-signed-feed-check.log"] = (
+            b"Selected root OSVERSION: 1600029; IGNORE_OSVERSION unset\n"
+            b"Daemonarchy-Test repository update completed. 204 packages processed.\n")
+        self.values["installer-mirror-closure.json"] = (json.dumps({
+            "schema": "daemonarchy/installer-mirror-closure@1",
+            "installer_iso_sha256": ISO_SHA,
+            "missing_names": ["py312-brotli"],
+            "selected_package_count": 203,
+            "native_closure_package_count": 982,
+        }) + "\n").encode()
+        self.values["native-public-feed-check.exit"] = b"0\n"
+        self.values["native-public-feed-check.log"] = (
+            b"Selected root OSVERSION: 1600029; IGNORE_OSVERSION unset\n"
+            b"Daemonarchy-Public repository update completed. 204 packages processed.\n"
+            b"Native 1600029 client verified public signed feed with 204 packages\n")
+        self.manifest["packages"]["py312-brotli-1.2.0.pkg"] = [14342, "2" * 64]
+        self.values["package-manifest.json"] = (json.dumps(self.manifest) + "\n").encode()
+        self.write()
+
+    def test_corrected_public_feed_with_mirror_closure_passes(self):
+        self.closure()
+        self.check()
+
+    def test_corrected_feed_without_public_client_result_refuses(self):
+        self.closure()
+        self.values["native-public-feed-check.exit"] = b"1\n"
+        self.write()
+        with self.assertRaisesRegex(ValueError, "native result failed"):
+            self.check()
+
     def test_reuse_with_changed_archive_digest_refuses_even_when_rehashed(self):
         self.reuse()
         self.manifest["packages"]["cef-152.0.6.pkg"][1] = "f" * 64

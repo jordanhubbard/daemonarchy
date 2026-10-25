@@ -75,13 +75,19 @@ and was installed and checked in that same 1600029 root. Full graphical
 application behavior remains part of final-image QA.
 
 The protected signer checked the 1,463-archive candidate repository against
-its complete SHA-256 manifest and signed the 203-archive application feed.
-A native `pkg` client inside the selected 1600029 root verified the signed
-catalogue and all 203 entries without suppressing the target OS-version
-check. The signer host's 1600028 userland required a separate local version
+its complete SHA-256 manifest and first signed a 203-archive application feed.
+The first exact-ISO bhyve install then exposed a missing `py312-brotli` archive:
+the installer VM's FreeBSD mirror catalogue lacked it, although another native
+worker's FreeBSD mirror listed it. A dependency-closure audit found that this
+was the only unresolved package name from the selected 982-package native
+closure. The signer retained the failed attempt and signed a corrected
+204-archive feed containing the verified native `py312-brotli` archive. A
+native `pkg` client inside the selected 1600029 root verified both its local
+signed catalogue and the corrected public GitHub feed without suppressing the
+target OS-version check. The signer host's 1600028 userland required a separate local version
 exception during its own client probe; that failed first probe and its scoped
 recovery are retained. The original full Chromium and CEF builds continue as
-a fallback until final ISO assembly and independent bhyve QA pass.
+a fallback until independent bhyve QA passes.
 
 The operator confirmed on 2026-10-24 that **all pre-production checks passed
 on the Intel 16-inch MacBook Pro** and waived an additional physical acceptance
