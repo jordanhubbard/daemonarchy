@@ -1,30 +1,54 @@
 # MacBookPro16,1 physical acceptance for 1.3.1
 
-Status: **open**. This is the acceptance record for the final public 1.3.1
-image, not a result from the installed 1.1.1 system or the private development
-ISO. Fill in the exact revision and artifact identities before beginning the
-physical run; retain console, debugger and package evidence outside Git when it
-contains private network or credential details.
+Status: **pre-production checks passed by operator confirmation; additional
+final-ISO physical rerun waived on 2026-10-24**. The operator confirmed that
+all pre-production checks passed on the Intel 16-inch MacBook Pro. The final
+public 1.3.1 ISO has not been run on that machine. This record preserves the
+scope of the earlier observations and the decision to release without another
+MacBook acceptance run. The machine and its pre-production validation must not
+be described as untested. The exact decision is recorded in
+[the release decision](../verification/macbook-release-decision-1.3.1.json).
+
+Every unchecked physical item below means **not rerun against the final public
+ISO**, not a failed pre-production check. No earlier result is rebound to final
+ISO bytes. Production build, feed, signing, image-integrity and publication
+checks remain mandatory and are recorded separately.
+
+Retained pre-production records include the [installed-system MacBook
+observations](testing-macbookpro16-1.md), [Wi-Fi preview and traffic
+traces](testing-macbookpro16-1-wifi-preview-20261022.md), and [installer and
+storage investigations](testing-macbookpro16-1-installer-20261022.md).
+The [1.1.1 S3 trial](testing-macbookpro16-1-s3-20261024.md) keeps its historical
+failure result. These records keep their own image and test scope; the later
+October 24 aggregate pass is explicitly an operator confirmation, not a
+retroactive rewrite of any individual run.
 
 | Final input | Exact value and evidence |
 | --- | --- |
-| Product commit and release tag | ISO build pinned to `cdeb3434a2f7e5e205feb756c897b1e4a98d4c28`; final `daemonarchy-1.3.1` tag pending |
-| FreeBSD source and ports commits | `d63d77f4eb3cc29e16510f7bdec73602e27c2844` and `7e417dae24ffb95c4625601ae9d654eb2ca68f4d`; final native build pending |
-| ISO SHA-256 and signed boot-bundle identity | Pending |
-| Package and checkout feed tags, keys and signature checks | Public `checkouts-16-amd64-1.3.1` verified with 11 matching asset digests and a native FreeBSD `pkg` catalogue read; `packages-16-amd64-1.3.1` and installed signature checks pending. Selected package public key SHA-256: `67986b400f28a49e99df0f1f3368f60aca8064d5dc00094700ba1a17d8474ef7` (DER form). |
-| BCM4364 module package and Apple board-file hashes | Module package and installed hashes pending. Pinned Apple recovery image SHA-256: `591f07a9a4a58d855a2e53b86a5f5da854a250000a66a9382adaf106c20f839b`; the four expected board-file hashes are in the [firmware importer](../scripts/import-apple-bcm4364-firmware.py). The private source stage passed its hash check, but that does not qualify the final ISO or installed target. |
+| Product commit and release tag | ISO build pinned to `cdeb3434a2f7e5e205feb756c897b1e4a98d4c28`; at the October 24 checkpoint the final `daemonarchy-1.3.1` tag was pending. The public release identifies the tagged product commit. No final-ISO MacBook run is required by the operator decision. |
+| FreeBSD source and ports commits | `d63d77f4eb3cc29e16510f7bdec73602e27c2844` and `b785784219af455a9ce4fd70c59bc96ba77f469f`; the final native ports bulk was pending at the October 24 checkpoint. Its final result belongs to the public release evidence. The earlier `7e417dae` pin remains in historical build records. |
+| ISO SHA-256 and signed boot-bundle identity | Not available at the October 24 checkpoint. The [public release](https://github.com/jordanhubbard/daemonarchy/releases/tag/daemonarchy-1.3.1) records the exact ISO digest and signed bundle identities after verification. No hash is inferred from the earlier MacBook runs. |
+| Package and checkout feed tags, keys and signature checks | The earlier public `checkouts-16-amd64-1.3.1` feed passed its own 11-asset digest and native `pkg` checks. The selected replacement [feed](https://github.com/jordanhubbard/daemonarchy/releases/tag/checkouts-16-amd64-1.3.1-r2) has 11 matching public asset digests, and a native FreeBSD `pkg` client authenticated its public catalogue. At the October 24 checkpoint, `packages-16-amd64-1.3.1` and installed signature checks were pending; the final feed result is recorded in the public release. Selected package public key SHA-256: `67986b400f28a49e99df0f1f3368f60aca8064d5dc00094700ba1a17d8474ef7` (DER form). |
+| BCM4364 module package and Apple board-file hashes | Module package and image hashes were pending at the October 24 checkpoint; the exact image/package record belongs to the public release. Installed-target hashes will not be collected in a final-ISO MacBook rerun. Pinned Apple recovery image SHA-256: `591f07a9a4a58d855a2e53b86a5f5da854a250000a66a9382adaf106c20f839b`; the four expected board-file hashes are in the [firmware importer](../scripts/import-apple-bcm4364-firmware.py). The private source stage passed its hash check, but that does not verify the public ISO contents. |
 
-The physical acceptance record's `installer_commit` identifies the source
-actually built into the ISO (`cdeb3434...`). The release record separately
-identifies the final tagged product commit, which can include later release
-notes and policy changes without changing the tested ISO bytes.
+The `iso_installer_commit` identifies the source built into the ISO
+(`cdeb3434...`). The release record separately identifies the final tagged
+product commit, which can include later release notes and policy changes
+without changing ISO bytes. The pre-production confirmation does not identify
+a final-ISO SHA-256 or claim a physical boot of those bytes.
 
 On 2026-10-24, an isolated FreeBSD `pkg` 2.8.4 client configured with the
 selected public key updated the published checkout repository and processed
 three packages. `pkg rquery` returned the ports checkout at
 `20261023.g7e417dae24ff` and both source parts at
 `20261023.gd63d77f4eb3c`. This checks the public catalogue and native client
-trust path; package installation and the final MacBook target remain open.
+trust path; installation from the public ISO is not claimed and its additional
+MacBook rerun is waived.
+
+The selected replacement catalogue uses ports `b7857842` and the same source
+`d63d77f4`. A native FreeBSD `pkg` client authenticated its new signed
+public catalogue and listed one ports and two source checkout packages. This
+is a public feed trust check, not a MacBook installation result.
 
 ## Fresh installer boot and storage
 
@@ -94,8 +118,14 @@ trust path; package installation and the final MacBook target remain open.
   public key, then perform an installed package update and reboot. Retain
   exact package, boot and image digests with the signed release record.
 
+The earlier 1.1.1 NVMe, network and S3 observations remain historical records
+for their recorded images. They are not presented as current 1.3.1 publication
+blockers or as results from the final ISO. Actual T2 firmware enforcement and
+hardware-rooted attestation for the final ISO are not claimed.
+
 The separate MSI hardware and network-aware early-boot acceptance belongs to
 [1.3.2](roadmap/release-1.3.2.md). Do not treat MacBook acceptance as MSI
 qualification.
-No row here is closed by a development-kernel desktop login or a successful
-installer exit alone.
+No final-ISO checkbox here is closed by the operator's pre-production
+confirmation, a development-kernel desktop login, or a successful installer
+exit alone; those observations retain their own artifact scope.

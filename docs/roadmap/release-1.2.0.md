@@ -1,14 +1,17 @@
 # 1.2.0 completion obligations
 
 - **Status:** active
-- **Owning queue item:** [RELEASE-001](active-work.md#release-001-deliver-120-through-first-class-freebsd-literate-ai-execution)
+- **Owning queue item:** [RELEASE-001](active-work.md#release-001-deliver-a-qualified-literate-ai-release-workflow-in-14)
 - **Completion / archival evidence:** Pending exact final LitAI release receipts,
   native/VM/physical acceptance and independently verified GitHub publication.
 
-[RELEASE-001](active-work.md) carries the operator's goal: finish the existing
+[RELEASE-001](active-work.md) recorded the original 1.2.0 goal: finish the existing
 backlog and publish a new Daemonarchy release entirely through qualified
-Literate AI execution. This ledger expands the queue and the remaining
-[ROADMAP.md](https://github.com/jordanhubbard/daemonarchy/blob/main/ROADMAP.md) obligations. Every row is open for the new release;
+Literate AI execution. No 1.2.0 release was published. The 1.3.1 changelog
+covers the complete interval since 1.1.1 and distinguishes shipped behavior
+from development evidence; outstanding LitAI orchestration is scoped to 1.4.0.
+This unpublished historical plan retains the original queue and the remaining
+[ROADMAP.md](https://github.com/jordanhubbard/daemonarchy/blob/main/ROADMAP.md) obligations. Open rows belong to the active queue and later milestones;
 prior evidence remains useful only within its original artifact/hardware scope.
 There is no inherited waiver, current receipt or claim of release readiness here.
 

@@ -14,47 +14,64 @@ retains review-head details; a formal release contribution sweep is still
 required. Retained worktrees and development evidence remain available.
 
 Source `main` at `d63d77f4` includes the MacBook and early-network work plus
-FreeBSD CURRENT through `a3d1d4e8`. Its exact native world build is running;
-kernel and set production steps follow it. Ports `main` at `7e417dae`
-contains all fork branch histories and retains the reviewed `efb8f848` file
-tree. The selected official package snapshot does not include the newest
+FreeBSD CURRENT through `a3d1d4e8`. Its exact native world, kernel and release
+set builds passed. Ports `main` at `b7857842` contains all fork branch
+histories and adds a Broadcom SDPCM event BSSID fix verified by native
+Poudriere testport to the earlier `7e417dae` tree. The selected official
+package snapshot does not include the newest
 upstream ports changes; [the refresh record](../../verification/freebsd-current-refresh-20261024-development.json)
-explains the dependency and conflict review. The exact `1600029` jail bulk is
-queued after the source build. Keep all source, ports, checkout and package
-revisions pinned through the final image run. Product `main` at `33ff0108`
+explains the dependency and conflict review. The `1600029` jail bulk on madmax
+is in progress, with failed earlier attempts retained for audit. Keep all
+source, ports, checkout and package revisions pinned through the final image
+run. Product `main` at `33ff0108`
 contains merged release notes, policy and the hardware-record identity fix.
 The ISO worker and public feed controllers use a separate clean product
 checkout pinned to `cdeb3434`; the final tag can include the later release
 documentation while the physical test record identifies the ISO source.
 
-The [final checkout development record](../../verification/checkout-catalog-1.3.1-final-development.json)
-binds signed source and ports seed packages to the merged `main` heads. An
-isolated native `pkg` client authenticated and installed all three packages,
-rejected the old key, and materialized both exact shallow Git trees. The
-[versioned checkout feed](https://github.com/jordanhubbard/daemonarchy/releases/tag/checkouts-16-amd64-1.3.1)
-is public with 11 verified assets; a separate native FreeBSD `pkg` client
-accepted its public catalogue and listed all three packages. Installed-image
-acceptance remains open. The desktop source is
-pinned to `ec2a0082` until qualification permits a stable `v1.3.1` tag.
+The [earlier checkout development record](../../verification/checkout-catalog-1.3.1-final-development.json)
+binds signed source and ports seed packages to the then-selected `main` heads,
+including ports `7e417dae`. An isolated native `pkg` client authenticated and
+installed those three packages, rejected the old key, and materialized both
+exact shallow Git trees. The
+[initial versioned checkout feed](https://github.com/jordanhubbard/daemonarchy/releases/tag/checkouts-16-amd64-1.3.1)
+is public with 11 verified assets for the earlier ports pin. The
+[replacement feed](https://github.com/jordanhubbard/daemonarchy/releases/tag/checkouts-16-amd64-1.3.1-r2)
+selects `b7857842` with 11 matching public asset digests, and a native FreeBSD
+`pkg` client authenticated its public catalogue. The
+desktop source is pinned to `ec2a0082` until qualification permits a stable
+`v1.3.1` tag.
 
-The MacBook's installed 1.1.1 system reached a working desktop, but failed the
-S3 trial and later lost both debugger network paths. The new image has not yet
-been built or installed. The new package signing key has a separately held
-encrypted recovery copy with a verified restore. The production boot signing
+The operator confirmed on October 24 that all pre-production checks passed on
+the Intel 16-inch MacBook Pro and waived only an additional physical acceptance
+rerun against the final public 1.3.1 ISO. The earlier 1.1.1 S3 and debugger
+observations remain historical results for that image, not current release
+blockers. No final-ISO physical boot or hardware-rooted T2 attestation is
+claimed. See the [scoped decision](../../verification/macbook-release-decision-1.3.1.json)
+and [acceptance record](../testing-macbookpro16-1-1.3.1.md). At this October 24
+checkpoint, the new image had not yet been assembled. `daemon.local` was
+selected as the independent final-ISO bhyve installation and boot test target.
+The new package signing key has a separately
+held encrypted recovery copy with a verified restore. The production boot signing
 key and certificate are staged on the native worker with root-only access;
-the final signed bundle remains pending. The signed application feed, the public ISO, a fresh
-MacBook install, retained native build evidence and production boot attestation are
-still release gates. The MSI early kernel boot remains unqualified and is not
+the final signed bundle was pending at this checkpoint. The signed application
+feed, public ISO, retained native build evidence, artifact integrity and
+publication checks are release gates whose final outcome belongs to the public
+release record. The MSI early kernel boot remains unqualified and is not
 claimed by the MacBook release notes.
 
 `litai verify` currently fails its declared receipt gate because
 `verification/current.json` is absent. The 1.3.1 release gate separately checks
 current LitAI authority and locks, then requires a hashed native build record,
-signed artifacts, image identity and physical MacBook acceptance. That native
+signed artifacts, image identity and the scoped MacBook release decision. That native
 record binds actual source, ports, signing and ISO results without asserting a
 passing LitAI lifecycle receipt. Issues #11 and #39 have explicit 1.3.1
 deferrals and 1.4.0 milestones; the complete LitAI release graph remains open.
 No historical log is a substitute for a current native result or LitAI receipt.
+The dated development entries below retain the status observed at their own
+artifact revisions. The October 24 operator confirmation supersedes their
+then-open MacBook physical checks as a 1.3.1 publication gate; it does not
+rewrite those observations as tests of the final ISO.
 
 ### [x] ADOPT-001 — Establish product-wide Literate AI authority
 
@@ -321,7 +338,7 @@ lifecycle authority.
 - **Priority:** P1
 - **Owner:** desktop, compatibility and diagnostics Components
 - **Direction:** Keep unresolved GPU, radio, boot and restart behavior explicit while extending physical acceptance.
-- **Conclusion:** HP desktop/application acceptance passed. On the MacBook, a refreshed graphics package and T2 keyboard test kernel reached a visible desktop and accepted a password; the pointer worked after initial lag. A private BCM4364 driver and board firmware joined WPA2, obtained DHCP and reached the gateway, and the desktop Wi-Fi panel connected. A private fresh-install preview ISO now includes the tested Radeon and Omarchy packages, keyboard tunable, radio payload and installer WPA wait; physical boot and installation of that exact image, network durability, maintainable/redistributable radio integration and the earlier storage/restart causes remain open, as do other platform boot and radio/suspend checks. See [preview evidence](../testing-macbookpro16-1-wifi-preview-20261022.md).
+- **Conclusion:** HP desktop/application acceptance passed. On the MacBook, a refreshed graphics package and T2 keyboard test kernel reached a visible desktop and accepted a password; the pointer worked after initial lag. A private BCM4364 driver and board firmware joined WPA2, obtained DHCP and reached the gateway, and the desktop Wi-Fi panel connected. The operator confirmed on October 24 that all Intel 16-inch MacBook Pro pre-production checks passed and waived a final-ISO physical rerun. Earlier preview gaps and failures remain historical observations on their original images, not current 1.3.1 publication blockers. The final public ISO has no claimed physical run or hardware-rooted T2 attestation. Other hardware platforms and future driver improvements remain tracked here. See [preview evidence](../testing-macbookpro16-1-wifi-preview-20261022.md) and the [release decision](../../verification/macbook-release-decision-1.3.1.json).
 - **ASRock availability:** The operator reports the RTX system still hangs in firmware and cannot enter setup or the boot menu, even with other USB devices disconnected and the keyboard directly attached. Firmware recovery is pending; no current Daemonarchy boot or physical acceptance result can be obtained from it. Keep R12-11 open.
 - **MSI video:** The October 18 recording ends readable output at `atrtc0: Warning: Couldn't map I/O.` before the display blanks, with no visible panic. The second video confirms the RTC-disable/panic flags and advances to `sc0 failed to probe on isa1` before blanking, without a visible panic. Repeated Intel SPMC constraint-format warnings motivated a `debug.acpi.disabled="spmc"` comparison, which the operator reports made no difference; the exact installer artifact remains unidentified. The [analysis](../testing-1.1-hardware-observations.md#msi-startup-video-reviewed-2026-10-18) records the movie identity, observed scope and source-backed diagnostic; no default quirk or fix is qualified.
 - **MSI current report, October 23:** ACPI enabled still produces an early reset without a visible panic; disabling it produces a missing-APIC panic and debugger entry. The operator confirms the MSI Raider 18 HX/RTX 5080, latest pre-1.3 ISO and `APIC: Could not find any APICs`; exact artifact filename/hash and current BIOS remain unrecorded. [The source-backed diagnostic](../testing-1.1-hardware-observations.md#msi-acpi-on-reset-and-acpi-off-apic-panic-reported-2026-10-23) explains why ACPI-off can also remove MADT-based APIC discovery. The operator confirms the proposed ACPI-on/SMP-disabled and panic-retention settings were already tried without changing the reset; do not request that repeat. Loader networking is implemented only through firmware handoff; continuous early-kernel capture remains unfinished. No boot fix is claimed.
@@ -331,14 +348,14 @@ lifecycle authority.
 - **Evidence:**
   - [ ] Native/operator results identify exact hardware and build, with unresolved or unrun cases remaining open rather than waived into passing.
 
-### [ ] RELEASE-001 — Deliver 1.2.0 through first-class FreeBSD Literate AI execution
+### [ ] RELEASE-001 — Deliver a qualified Literate AI release workflow in 1.4
 
 - **GitHub issue:** [#11](https://github.com/jordanhubbard/daemonarchy/issues/11)
 
 - **Priority:** P1
 - **Owner:** whole product, release and acceptance
-- **Direction:** Finish all existing Daemonarchy backlog work and publish a new release entirely through the qualified Literate AI method.
-- **Conclusion:** The existence proof must include actual native build, complete declared testing, artifact custody and publication; authority-only adoption, waived backlog, or an external manual release is insufficient.
+- **Direction:** Finish the retained backlog and publish a future release entirely through qualified Literate AI execution across the owned repositories. The original 1.2.0 milestone was not published; 1.3.1 records the intervening development but uses its separately verified native release workflow.
+- **Conclusion:** This remains a 1.4 goal. Its existence proof must include actual native build, complete declared testing, artifact custody and publication; authority-only adoption, waived backlog, or the 1.3.1 native release cannot close it.
 - **Depends on:** ADOPT-002,UI-001,PKG-001,GUI-001,DEBUG-001,HW-001,SRC-001,COMP-001
 - **Implementation:**
   - [x] Inventory current roadmap and queue obligations in [the 1.2.0 completion ledger](release-1.2.0.md), including inherited Bluetooth, enterprise Wi-Fi, dual-boot, bhyve and physical trust/graphics gaps.
@@ -677,17 +694,23 @@ before claiming the observer optimization resolves that release blocker.
 - **Detailed plan:** [1.4.0 cross-repository build and release graph](release-1.4.0.md).
 - **Priority:** P1 for 1.4.0; outside the 1.3.1 release and 1.3.2 MSI acceptance paths.
 - **Owner:** LitAI native lifecycle, owned source/ports/desktop/compatibility forks and product release integration.
-- **Direction:** Select exact commits across all owned release-input repositories, resolve their complete native build/test/package/release dependency graph, and schedule ready actions with LitAI's parallel workers. Keep FreeBSD make, Poudriere/pkg, ISO/signing tools and a measured Bazel or other executor as native action implementations.
-- **Conclusion:** LitAI must coordinate fine-grained input custody, invalidation, resource-bounded concurrency, test receipts, package provenance and exact release publication. A single opaque wrapper around the legacy build and distribution pipeline does not meet this item.
+- **Direction:** Select exact commits across all owned release-input repositories, resolve their complete native build/test/package/release dependency graph, and schedule ready actions across multiple physical machines with LitAI's parallel workers and a shared verified artifact cache. Treat ports and packages as build artifacts; evaluate Bazel incremental builds, remote cache/execution and other suitable tools. FreeBSD make and Poudriere are optional executors.
+- **Fork authority:** The owned FreeBSD source and ports forks are in scope for any 1.4 build, ports, package, ABI or cache integration changes needed to deliver this flow. Keep their native contracts and reviewable FreeBSD CURRENT refreshes; land changes in each fork's main before the release selection is locked.
+- **Conclusion:** LitAI must coordinate cross-release reuse of unchanged builds, binaries, packages and release inputs; fine-grained input custody and invalidation; resource-bounded distributed concurrency; test receipts, package provenance and exact release publication. A single opaque wrapper around the legacy build and distribution pipeline does not meet this item.
 - **Depends on:** ADOPT-002, COMP-001, DEV-001, PERF-001.
 - **Implementation:**
   - [ ] Bind product, source, ports, desktop and FreeBSD compatibility fork revisions, plus any selected owned Omarchy input, in one reviewed release plan with upstream ancestry and target/options/toolchain identities.
-  - [ ] Admit complete relevant Component/action ownership and conditional dependencies; execute and cache native source, tests, packages, feeds, boot products and ISO actions through LitAI workers without racing pkg database or protected signer state.
-  - [ ] Compare clean, unchanged and changed-input end-to-end workflows against the 1.3.1 baseline, qualify native/VM/physical results on exact assets, and publish a verified 1.4.0 release from the selected plan.
+  - [ ] Implement authoritative dependency, package, ABI and cache metadata at the source and ports producers where needed; qualify and merge the fork changes, rather than inferring a complete graph from an outer wrapper alone.
+  - [ ] Admit complete relevant Component/action ownership and conditional dependencies. Key cached outputs by source subtrees and shared inputs, port metadata, generated inputs, toolchain/sysroot, relevant target ABI, build-time dependency contents, runtime ABI/version constraints, command and environment; retain exact OSVERSION and package versions as provenance, and repair missing graph edges before admitting a cache hit.
+  - [ ] Separate actual build-time inputs from runtime-only dependencies. For a changed OSVERSION or runtime package, qualify reuse of unchanged userland payloads against the selected ABI, version constraints, package scripts and native application behavior; retain the exact payload digest and new receipt. Rebuild changed headers, static inputs, kernel modules or incompatible/uncertain cases. Exercise the 1.1.1-to-1.3.1 Chromium/CEF case.
+  - [ ] Execute and cache native source, tests, binaries, ports packages, feeds, boot products and ISO inputs through LitAI workers on multiple physical machines. Share verified immutable artifacts, avoid duplicate actions and race-free package database or protected signer access. Select Bazel, remote cache/execution or another incremental executor by equivalent native correctness and measured speed.
+  - [ ] Compare clean, unchanged and changed-input single-machine and distributed workflows against the 1.3.1 baseline, qualify native/VM/physical results on exact assets, and publish a verified 1.4.0 release from the selected plan.
 - **Evidence:**
-  - [ ] Per-repository locks, zero unowned selected inputs, complete dependency and package closures, correct invalidation and reusable verified outputs are retained.
-  - [ ] At least two isolated ready worker slots run independent native actions concurrently within recorded resource budgets; failure, retry and serialization controls pass.
-  - [ ] Measured full release creation is materially faster without omitted tests or packages, and the tagged ISO, signed feeds, receipts and scoped hardware evidence agree on exact bytes.
+  - [ ] Per-repository locks, zero unowned selected inputs, complete dependency and package closures, correct invalidation and verified cross-release reuse are retained. Unchanged action keys cause no recompilation; missing edges refuse reuse.
+  - [ ] Compatible base/runtime-dependency version changes requalify and reuse unchanged userland payloads without recompilation; incompatible ABI, changed build inputs or failing native tests rebuild the correct closure.
+  - [ ] The 1.3.1 Chromium/CEF regression is eliminated in an admitted 1.4 run: unchanged release inputs compile no packages, compatible base/runtime version changes requalify and reuse both browser payloads, and changed build inputs or incompatible ABI rebuild only the affected closure. On equivalent build/package/sign/ISO gates and worker pool, finish a compatible update at least 4x faster and an unchanged rerun at least 10x faster than a clean rebuild. Record wall-clock time, cache bytes and every decision; duplicate full builds on additional machines do not satisfy this item.
+  - [ ] At least two physical machines run independent native actions concurrently from one plan and shared verified cache within recorded resource budgets; duplicate-key, failure, retry and serialization controls pass.
+  - [ ] Measured full release creation and unchanged repeat are materially faster without omitted tests or packages, and the tagged ISO, signed feeds, receipts and scoped hardware evidence agree on exact bytes.
 
 ### [ ] DEV-001 — Provide an operator-ready native Component development system
 

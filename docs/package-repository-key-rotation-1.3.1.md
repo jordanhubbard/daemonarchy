@@ -35,12 +35,12 @@ built for `1600029`, so this signature-only preflight used
 installation. The final feed must be checked on a matching native system with
 no OSVERSION override; `pkg update` exit status alone is insufficient.
 
-## Candidate publication
+## 1.3.1 publication
 
 1. Complete the exact FreeBSD source and ports bulk, including kernel modules,
    and retain its successful package list and build receipts.
-2. Build a new signed application feed under a **versioned** tag such as
-   `packages-16-amd64-1.3.1-r1`. Pass
+2. Build the signed application feed under the selected **versioned** tag
+   `packages-16-amd64-1.3.1`. Pass
    `KEY=/usr/local/etc/daemonarchy/pkg-repo-next.key` to `pkg-repo.sh build`.
    Sign the separate checkout repository with the same key. Check both
    catalogues and every package payload with the
@@ -53,10 +53,13 @@ no OSVERSION override; `pkg update` exit status alone is insufficient.
    stages this public key as the installer's `daemonarchy.pub`; the installed
    package and checkout repository configurations then point to the new key.
    The unversioned stable tag rejects an alternate public key.
-4. Boot and install from that exact ISO on the MacBook, verify both signed
-   repository refreshes and a package upgrade, then retain the image digest and
-   physical receipt. Publish the release only after its other hardware and
-   attestation gates pass.
+4. Verify the exact ISO digest and contents, signed boot bundle, certificate,
+   both signed feeds, native runtime, fresh VM installation, and published
+   asset digests. On 2026-10-24 the operator confirmed that all pre-production
+   checks passed on the Intel 16-inch MacBook Pro and waived only an additional
+   physical rerun of the final public ISO. Preserve those earlier checks in
+   their original artifact scope. Do not claim a final-ISO MacBook boot or
+   hardware-rooted T2 attestation from the production artifact checks.
 
 ## Existing installations
 
@@ -68,8 +71,10 @@ its DER SHA-256 above, install it alongside the old key, and add a separate
 versioned repository configuration pointing at the new tag and new key. Refresh
 that repository and verify its signature before preferring it for upgrades.
 Retain the old configuration until this succeeds, including the ISO fallback.
-Document the exact published tag and commands in the release instructions once
-the candidate feed exists. Do not silently replace an installed public key.
+The selected new tag is `packages-16-amd64-1.3.1`; it must be published and
+verified before enrollment. No in-place migration command is qualified for
+the existing 1.1.1 installation in this release. Do not silently replace an
+installed public key.
 
 Key enrollment does not upgrade the FreeBSD base. The tested 1.1.1 native
 installation reports `kern.osreldate=1600028`; the 1.3.1 package build and
@@ -81,6 +86,6 @@ use `IGNORE_OSVERSION` to force the new packages onto the older system. Retain
 the old feed and key until the updated base boots and its new repository
 signature, package dependencies and rollback path have been checked.
 
-This key signs `pkg` repositories. It does not replace the separate Secure Boot
-and hardware-attestation signing certificate; production boot attestation still
-needs its own qualification and release signer.
+This key signs `pkg` repositories. The 1.3.1 boot bundle uses a separate
+production signer and verification path. Hardware-rooted T2 attestation for
+the final ISO is not claimed.

@@ -20,6 +20,12 @@ actual native assembly/boot evidence; physical results follow artifact readiness
   the private native source, Poudriere, signing and ISO result files to the same
   release record and ISO hash. It requires current LitAI authority and locks;
   the unqualified full LitAI lifecycle receipt retains its separate status.
+  For 1.3.1 it also binds the [October 24 MacBook operator
+  decision](../../verification/macbook-release-decision-1.3.1.json): all
+  pre-production checks passed by operator confirmation, and only the
+  additional final-ISO physical rerun is waived. This does not waive native,
+  signature, feed, image-integrity or publication verification and does not
+  claim hardware-rooted attestation for the final ISO.
 - [tests/live-image-runtime.sh](../../tests/live-image-runtime.sh)
 - [tests/live-image-budget.sh](../../tests/live-image-budget.sh)
 - [tests/checkout-kernel-identity.sh](../../tests/checkout-kernel-identity.sh)

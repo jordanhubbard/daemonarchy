@@ -6,7 +6,7 @@ reachable without changing its historical scope.
 
 - [Application note: MacBook Pro 16-inch (2019)](application-note-macbookpro16-1.md)
 - [MacBookPro16,1 physical acceptance for 1.3.1](testing-macbookpro16-1-1.3.1.md)
-- [Daemonarchy 1.3.1 release notes (unpublished candidate)](release-1.3.1.md)
+- [Daemonarchy 1.3.1 release notes and evidence](release-1.3.1.md)
 - [Product architecture and acceptance traceability](architecture/design-traceability.md)
 - [Enterprise Wi-Fi (1.1 / 1.1.1)](enterprise-wifi.md)
 - [FreeBSD application and menu policy](freebsd-application-policy.md)
@@ -24,6 +24,7 @@ reachable without changing its historical scope.
 - [Active work](roadmap/active-work.md)
 - [1.3.2 network bootloader debugging and MSI kernel capture](roadmap/release-1.3.2.md)
 - [1.4.0 Literate AI cross-repository build and release orchestration](roadmap/release-1.4.0.md)
+- [1.1.1-to-1.3.1 application package reuse inventory](evidence/release-1.3.1-package-reuse-inventory.md)
 - [Earlier 1.3.1 diagnostics scope and preflight evidence](roadmap/release-1.3.1.md)
 - [Owned FreeBSD source builds](source-builds.md)
 - [Disposable QEMU worker ownership](native-qemu-worker.md)
@@ -52,7 +53,7 @@ reachable without changing its historical scope.
 - [MacBook signed firmware handoff candidate, October 23](testing-macbookpro16-1-firmware-handoff-20261023.md)
 - [MacBook physical S3 suspend and resume trial, October 24](testing-macbookpro16-1-s3-20261024.md)
 
-- [1.2.0 completion obligations and worker model](roadmap/release-1.2.0.md)
+- [Unpublished 1.2.0 plan and worker model](roadmap/release-1.2.0.md)
 
 - [1.2 loader test ISO and qualification](testing-1.2-test-iso.md)
 

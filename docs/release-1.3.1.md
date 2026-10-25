@@ -1,11 +1,18 @@
 # Daemonarchy 1.3.1 release notes
 
-**Status: unpublished candidate.** This page records the intended release and
-the evidence still needed before a stable GitHub release. The
-[signed 1.3.1 checkout feed](https://github.com/jordanhubbard/daemonarchy/releases/tag/checkouts-16-amd64-1.3.1)
-is public and its 11 assets have matching digests; an isolated native FreeBSD
-`pkg` client accepted its catalogue and listed all three checkout packages.
-No public 1.3.1 ISO, application package feed, or boot bundle is available yet. The private
+Daemonarchy 1.3.1 is the next production release after 1.1.1. Version 1.2.0
+was not published, so the 1.3.1 changelog and public announcement cover the
+entire interval since 1.1.1. The [GitHub release](https://github.com/jordanhubbard/daemonarchy/releases/tag/daemonarchy-1.3.1)
+is the authority for the final ISO, asset hashes and publication state.
+
+**Preparation checkpoint, October 24: unpublished candidate.** This page
+records the intended release and evidence needed before publication. The
+[initial signed 1.3.1 checkout feed](https://github.com/jordanhubbard/daemonarchy/releases/tag/checkouts-16-amd64-1.3.1)
+is public with 11 matching asset digests. The selected ports revision requires
+a [replacement signed checkout feed](https://github.com/jordanhubbard/daemonarchy/releases/tag/checkouts-16-amd64-1.3.1-r2).
+All 11 replacement assets match their published digests, and a native FreeBSD
+`pkg` client accepted its public catalogue and listed all three packages.
+At that checkpoint, no public 1.3.1 ISO, application package feed, or boot bundle was available. The private
 MacBook preview embeds development-only inputs and is not a public artifact.
 
 ## What changes
@@ -24,9 +31,20 @@ MacBook preview embeds development-only inputs and is not a public artifact.
   kernel-bound modules, package catalogue, optional checkout packages, and boot
   policy are pinned to reviewed revisions for the final image.
 
+Other work since 1.1.1 includes measured installer-progress displays,
+bounded package-acquisition and dependency-graph tooling, authenticated
+catalogue and native package-plan checks, owned QEMU workers, early wired
+network-debugging development, and Literate AI contracts for the retained
+FreeBSD implementation. The root CHANGELOG.md keeps the detailed
+record. These development paths retain their recorded qualification limits;
+their presence in the repository does not make them public-ISO features or
+claim a complete LitAI-managed release, safe parallel package installation,
+or physical early-kernel debugger acceptance.
+
 Source `main` now merges FreeBSD CURRENT through `a3d1d4e8` (October 24)
-at `d63d77f4`. Ports `main` is `7e417dae`, with the same release file tree as
-`efb8f848` and the reviewed official package snapshot lineage. A trial merge
+at `d63d77f4`. Ports `main` is `b7857842`; it adds a Broadcom SDPCM event
+BSSID fix to the earlier `7e417dae` release tree. Native FreeBSD Poudriere
+testport passed for that fix. A trial merge
 of upstream ports `7b2b5742` changed 3,140 files and had eight conflicts,
 and would require a
 new package baseline and full dependency rebuild. The selected `www/chromium`
@@ -37,44 +55,83 @@ but this candidate does not claim the newer browser version.
 All eight hosted source checks passed at the selected `d63d77f4` commit,
 including the controller, native loader, and Linux/macOS architecture jobs.
 Native FreeBSD world, kernel, and release sets passed independently on
-`daemon.local` and the madmax FreeBSD guest. The package build and ISO remain
-separate qualification steps.
+`daemon.local` and the madmax FreeBSD guest. At the October 24 preparation
+checkpoint, the madmax ports bulk was still running; its failed earlier
+attempts were retained, and a passing retry was required. `daemon.local` was
+reserved for independent final-ISO bhyve testing. The package build and ISO
+have separate qualification records in the public release.
 
-These are candidate changes. The desktop observation was on an installed 1.1.1
-system with live development updates. It does not qualify a fresh installation
-from the final 1.3.1 ISO.
+## October 25 package reuse qualification
 
-## Qualification still required
+The selected FreeBSD 1600029 installed root accepted 954 packages, including
+five exact published 1.1.1 archives: Chromium, CEF, OBS Studio, tensaku, and
+the Hyprland preview share picker. Their port subtrees are unchanged. The
+older archives were built for userland 1600028, so matching port metadata
+alone did not admit them. Native dependency and file checks passed for all
+five and the Daemonarchy desktop package; Chromium and OBS reported their
+expected versions, and CEF loaded with immediate symbol resolution. The
+Daemonarchy desktop archive came from the selected ports and desktop commits
+and was installed and checked in that same 1600029 root. Full graphical
+application behavior remains part of final-image QA.
 
-- Finish the native production ports build. Publish and verify the
-  versioned signed application feed with a real FreeBSD client. The checkout
-  feed's public catalogue and native client test pass at the merged source and
-  ports revisions; installation from the final ISO remains open.
+The protected signer checked the 1,463-archive candidate repository against
+its complete SHA-256 manifest and first signed a 203-archive application feed.
+The first exact-ISO bhyve install then exposed a missing `py312-brotli` archive:
+the installer VM's FreeBSD mirror catalogue lacked it, although another native
+worker's FreeBSD mirror listed it. A dependency-closure audit found that this
+was the only unresolved package name from the selected 982-package native
+closure. The signer retained the failed attempt and signed a corrected
+204-archive feed containing the verified native `py312-brotli` archive. A
+native `pkg` client inside the selected 1600029 root verified both its local
+signed catalogue and the corrected public GitHub feed without suppressing the
+target OS-version check. The signer host's 1600028 userland required a separate local version
+exception during its own client probe; that failed first probe and its scoped
+recovery are retained. The original full Chromium and CEF builds continue as
+a fallback until independent bhyve QA passes.
+
+The operator confirmed on 2026-10-24 that **all pre-production checks passed
+on the Intel 16-inch MacBook Pro** and waived an additional physical acceptance
+run against the final public 1.3.1 ISO. Existing test records keep their
+original image and development-input scope; the confirmation does not supply
+a final-ISO hardware run or artifact hash. See the
+[MacBook release decision](../verification/macbook-release-decision-1.3.1.json)
+and [acceptance record](testing-macbookpro16-1-1.3.1.md).
+
+## October 24 production gates
+
+These gates were open at the preparation checkpoint. The public GitHub release
+notes and exact asset record report their final results; this section preserves
+the decision and required checks without treating an earlier attempt as passed.
+
+- Finish the production package set through native builds and explicitly
+  qualified exact-archive reuse, then verify the versioned signed
+  application feed with a native FreeBSD client. The replacement checkout
+  feed's public digests and signed catalogue had passed at the selected source
+  and ports revisions. Final-ISO installation had not run at this checkpoint.
 - Assemble the public ISO without private firmware or development signing
-  credentials. Verify its exact inputs, SHA-256, signed boot bundle, production
-  certificate, installed package and module inventory, and the retained native
-  build evidence bound to the release record. LitAI's broader project receipt
-  remains open under its staged adoption work.
-- Run the [MacBook acceptance plan](testing-macbookpro16-1-1.3.1.md) from an
-  erased disk using Wi-Fi for installation. Confirm unattended autoboot,
-  storage integrity, desktop input, Wi-Fi traffic and reboot, debugger recovery,
-  and the actual T2 boot policy plus signed-chain enforcement. [Apple's current
-  firmware guide](https://support.apple.com/guide/security/boot-process-sec5d0fab7c6/1/web/1)
-  lists Microsoft UEFI CA 2023, but the MacBook has no tested
-  third-party firmware trust path or custom db enrollment. A boot under No
-  Security cannot be claimed as firmware-enforced Secure Boot. The earlier
-  installer reported a fatal NVMe event; Apple Diagnostics returned `ADP000`,
-  but this does not explain or clear that event.
-- The installed 1.1.1 MacBook failed its [S3 trial](testing-macbookpro16-1-s3-20261024.md):
-  ACPI PCIe methods timed out, USB devices detached, and the Broadcom firmware
-  reported a trap. Suspend and resume remain unqualified for 1.3.1.
+  credentials, then verify its exact inputs, SHA-256, signed boot bundle,
+  production certificate, installed package and module inventory, and the
+  native build evidence bound to the release record. LitAI's broader project
+  receipt remains open under its staged adoption work.
+
+## Hardware status and limits
+
+- The additional [MacBook acceptance rerun](testing-macbookpro16-1-1.3.1.md)
+  on the final ISO is waived by the operator. The MacBook passed all
+  pre-production checks by operator confirmation; this release makes no claim
+  that the final ISO bytes were installed or booted on it. The actual T2 boot
+  policy and firmware enforcement of this ISO were not established, so
+  hardware-rooted attestation is not claimed. [Apple's T2 firmware
+  guide](https://support.apple.com/guide/security/boot-process-sec5d0fab7c6/1/web/1)
+  remains the policy reference. The earlier fatal NVMe event and the
+  [1.1.1 S3 failure](testing-macbookpro16-1-s3-20261024.md) are historical
+  observations tied to their original images, not current release gates.
 - The MSI Raider 18 HX with RTX 5080 still resets during early kernel startup.
   Loader networking works in isolation. The complete network bootloader debugger,
   pre-driver kernel capture, and physical MSI result are tracked for
   [1.3.2](roadmap/release-1.3.2.md). This release makes no MSI installation or
   attestation claim.
 
-The exact ISO digest, source and ports release heads, signed feed tags, final
-hardware results, and GitHub release URL will be added only after those
-artifacts and observations exist. The root `CHANGELOG.md` retains the detailed
-candidate history and limitations.
+The public GitHub release linked above carries the exact ISO digest, signed
+feed tags and final native verification. The root `CHANGELOG.md` retains the
+detailed candidate history and limitations.

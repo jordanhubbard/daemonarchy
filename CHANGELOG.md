@@ -1,33 +1,69 @@
 # Changelog
 
-## Unreleased 1.3.1 hardware candidate
+## 1.3.1
+
+[README.md](https://github.com/jordanhubbard/daemonarchy/blob/daemonarchy-1.3.1/README.md)
+
+This is the next production release after 1.1.1; **1.2.0 was not published**.
+This entry covers the complete interval since 1.1.1. The first section records
+the October 24 release candidate and its evidence. The development section
+below retains the other work from that interval with its actual qualification
+boundaries;
+repository development is not itself a claim that a feature is in the public
+ISO or has passed physical acceptance.
+
+- On October 24 the operator confirmed that all pre-production checks passed
+  on the Intel 16-inch MacBook Pro and waived only an additional physical
+  acceptance rerun of the final public ISO. Existing observations retain their
+  original artifact scope; no final-ISO physical result or hardware-rooted T2
+  attestation is claimed. Native build, signing, feed, ISO integrity and
+  publication checks remain release gates. See the [decision
+  record](verification/macbook-release-decision-1.3.1.json). The development
+  checkpoints below describe their state when recorded; references to then-open
+  physical tests are historical and do not reinstate a 1.3.1 release gate.
 
 - Require a retained, hashed native source, package, signing and ISO evidence
   record for the 1.3.1 production release gate. Keep the separately configured
   LitAI project receipt unqualified until its native lifecycle is admitted.
+- Reuse five exact 1.1.1 application archives after native 1600029 install,
+  dependency, file and runtime checks. The first exact-ISO bhyve install found
+  `py312-brotli` absent from its FreeBSD mirror catalogue. Add that verified
+  native archive to the versioned signed feed, retain the failed install as
+  historical evidence, and verify the corrected 204-package public catalogue
+  with a native 1600029 client before repeating ISO QA.
 - Preserve approved installed-system debugging keys, server identity and private
   state across reboot. Resume the existing session without Unpair or fresh
   confirmation; retain explicit revocation and unknown-key refusal. Keep
   retrying after slow network bring-up while the approved grant remains active.
+
+### October 24 candidate checkpoints (historical)
+
+The following bullets retain the state of each candidate when it was recorded.
+Their then-open checks are not current release blockers. The operator-confirmed
+MacBook pre-production pass and final-ISO rerun waiver govern hardware
+acceptance; the public release record governs final artifact results.
+
 - On MacBookPro16,1, correct the offset EFI framebuffer reservation in the
   Navi14 driver and skip stalled LED output reports for the built-in T2 keyboard.
   The refreshed graphics package and one-boot quirked kernel reached a visible
   Hyprland desktop: the operator entered a password, and the pointer worked
-  after initial lag. These fixes are merged into source and ports `main`, but
-  are not yet in a published image or a fully qualified normal-boot kernel.
+  after initial lag. These fixes were merged into source and ports `main`, but
+  were not yet in a published image at this checkpoint.
 - Record the MacBook Pro 16 fatal NVMe event reproduced during installer package
-  extraction. Its cause and fresh-image storage I/O acceptance remain open. The
-  BCM4364 driver and firmware handoff are integrated as a release candidate;
-  sustained input and full physical acceptance from that image remain open.
+  extraction. At this checkpoint its cause and fresh-image storage I/O
+  acceptance were open. The BCM4364 driver and firmware handoff were integrated
+  as a release candidate;
+  sustained input and full physical acceptance from that image were open then.
 - Identify the MacBook's BCM4364 revision 4, TCM geometry and B3 firmware path
   on physical hardware. A private FreeBSD-native diagnostic module reaches
   firmware protocol 7, attaches to net80211 and repeatedly scans nearby access
   points using the candidate `bali-HRPN-u` board data, Apple seed footer and
   matching CLM and TxCap blobs. The operator joined a WPA2 network from the
   desktop panel; the radio received a DHCP address and reached its
-  gateway. The installer now retains a kernel-matched preview module and staged
-  firmware on the installed target. Fresh-image boot, reconnect, maintainable
-  driver integration and redistributable firmware acquisition remain open.
+  gateway. The installer candidate retained a kernel-matched preview module
+  and staged firmware on the installed target. Fresh-image boot, reconnect, maintainable
+  driver integration and redistributable firmware acquisition were open at
+  this checkpoint.
 - Prepare a private MacBook preview ISO with the MacBook-tested Radeon package,
   updated Wi-Fi panel, keyboard LED tunable and a WPA completion wait before
   installer DHCP. The offline repository contains the exact refreshed packages;
@@ -38,27 +74,30 @@
   Collect several installer Wi-Fi scans, stop a pre-authentication wireless
   DHCP client, extend WPA/DHCP waits, and require a lasting address and default
   route on `wlan0`. The first physical join needed a second attempt and later
-  lost its address; the revised path is awaiting a fresh hardware test.
-  The current candidate can select a scanned AP by BSSID when one network name
+  lost its address; the revised path awaited a fresh hardware test at that
+  checkpoint.
+  That candidate could select a scanned AP by BSSID when one network name
   has several, and it keeps live Ethernet debugging while Wi-Fi becomes the
-  package-download route. Both paths pass focused native tests; the ISO run
-  remains open.
+  package-download route. Both paths passed focused native tests; the ISO run
+  was open at that checkpoint.
   Bound-check Broadcom scan security records after a malformed result crashed
   `ifconfig -v`; a native-built preview module then returned ten BSSIDs and
   passed gateway and Internet traffic over Wi-Fi alone. Fresh-install and
-  reboot qualification are still open.
+  reboot qualification were open at that checkpoint.
 - Prepare the next MacBook installer image to stage a packaged BCM4364 driver
   and acquire board firmware from a verified Apple recovery image or local
   media before disk changes. Bind the selected firmware to the signed target
   handoff and refuse wireless-ready installation if required files or the
-  driver are missing. The combined source passes contract validation and
-  Secure Boot unit checks; a complete ISO and physical reinstall are pending.
+  driver are missing. The combined source passed contract validation and
+  Secure Boot unit checks; a complete ISO and physical reinstall were pending
+  then. The later final-ISO physical rerun was waived.
 - Replace the Broadcom preview driver's per-packet console output with
   read-only transmit-path counters, including missing and full flow rings.
   The port patches apply to its pinned source and match the native diagnostic
-  module. The revised package still needs native QA and a MacBook traffic
-  trace. A separate candidate carries FreeBSD ports' Qt 6 platform-detection
-  fix; its desktop package rebuild and runtime check are also pending.
+  module. The revised package still needed native QA and a MacBook traffic
+  trace at that checkpoint. A separate candidate carried FreeBSD ports' Qt 6
+  platform-detection fix; its desktop package rebuild and runtime check were
+  pending then.
 - Expose approved remote-debug grant, listener, connection and address status
   in the desktop network menu without publishing private pairing state. The
   native reboot and SSH fixture passes; the operator confirmed the menu's
@@ -66,7 +105,7 @@
   installed debugger's active Wi-Fi profile as root-only state and recreate
   the wireless interface during recovery when no network address is usable.
   A controlled physical wireless teardown and recovery passed; full reboot
-  recovery with the packaged driver remains open.
+  recovery with the packaged driver was open at that checkpoint.
 - Prepare a separate package-repository signing key for the 1.3.1 candidate
   and a versioned feed. The new public key and rotation plan are recorded in
   `docs/package-repository-key-rotation-1.3.1.md`; the stable feed and installed
@@ -74,25 +113,28 @@
   trust enrollment because the old private key is unavailable on the current
   native builder. An encrypted recovery copy of the new key passed a streamed
   public-fingerprint restore check. Signed candidate publication and upgrade
-  acceptance are open.
+  acceptance were open at that checkpoint.
 - Record a physical MacBook S3 trial on the installed 1.1.1 system. Resume
   kept the same kernel but showed ACPI PCIe power-state timeouts, a Broadcom
   firmware trap, transient input loss, and a stale wireless default route.
-  Wired networking recovered after selecting its route. S3 qualification on
-  the new image remains open; see
+  Wired networking recovered after selecting its route. No new-image S3
+  qualification was claimed at that checkpoint; see
   `docs/testing-macbookpro16-1-s3-20261024.md`.
 - Merge the reviewed product, FreeBSD source and ports branches into their
   respective main branches. The selected source incorporates FreeBSD CURRENT
   through `a3d1d4e8`; all eight hosted source checks pass at `d63d77f4`.
   Ports `7e417dae` retains the reviewed package baseline and Chromium. The
   exact native world, kernel and release sets passed on both FreeBSD builders;
-  the full package build and final ISO remain in progress.
+  the full package build and final ISO were in progress at that checkpoint.
 - Stage a signed optional source and ports checkout feed for those exact commits.
   A native client authenticated and installed its seed packages and reproduced
-  the selected trees; the feed is not yet published or tested from the final ISO.
+  the selected trees; the feed was not yet published or tested from the final
+  ISO at that checkpoint. The replacement signed checkout feed `r2` was
+  subsequently published and its 11 assets verified.
   Prepare a replacement Secure Boot certificate as a separate candidate because
   the 1.1 private boot key is not on the release builder. Physical db enrollment,
-  enforced boot and signed update/recovery acceptance remain open.
+  enforced boot and signed update/recovery acceptance were outside that
+  candidate's claimed qualification.
 - Track the complete network bootloader debugger and MSI early-kernel capture
   under 1.3.2. This MacBook candidate does not claim MSI installation or
   attestation.
@@ -105,14 +147,14 @@ date. Entries describe the behavior and evidence recorded for that release, not
 support guarantees for every machine. Related desktop and compatibility changes
 are included where the corresponding release notes identify them.
 
-**Current publication state:** 1.1.1 is the latest published stable installer. The superseded 1.1.0 and preview.13 drafts and the
+**Publication sequence:** 1.1.1 preceded this 1.3.1 release candidate. The superseded 1.1.0 and preview.13 drafts and the
 previously published 1.1.0-rc.1 release assets were removed at the operator's
 request on October 18 to avoid download confusion and reclaim storage.
 Their historical entries and source tags are preserved. “1.1-release” in testing discussions refers to the 1.1
 work; it is not a separate published tag in this repository. The proposed name
 1.1-rc2 was replaced by 1.1.1 before publication.
 
-## Unreleased
+### Other development since 1.1.1 (not claimed as shipped in the 1.3.1 ISO)
 
 - Installer: replace elapsed-time progress estimates with measured milestones,
   archive and package observations; add bars, spectrum and scope views, plain
@@ -387,6 +429,10 @@ work; it is not a separate published tag in this repository. The proposed name
   an acceptance inventory. Retain original source, native commands and published
   release identities. Native lifecycle execution and release enforcement remain
   separate, unqualified follow-up work; no current passing receipt is claimed.
+
+## Unreleased
+
+Future changes after the 1.3.1 release candidate belong here.
 
 ## 1.1.1 — 2026-10-18
 
