@@ -29,10 +29,11 @@ The ISO worker and public feed controllers use a separate clean product
 checkout pinned to `cdeb3434`; the final tag can include the later release
 documentation while the physical test record identifies the ISO source.
 
-The [final checkout development record](../../verification/checkout-catalog-1.3.1-final-development.json)
-binds signed source and ports seed packages to the merged `main` heads. An
-isolated native `pkg` client authenticated and installed all three packages,
-rejected the old key, and materialized both exact shallow Git trees. The
+The [earlier checkout development record](../../verification/checkout-catalog-1.3.1-final-development.json)
+binds signed source and ports seed packages to the then-selected `main` heads,
+including ports `7e417dae`. An isolated native `pkg` client authenticated and
+installed those three packages, rejected the old key, and materialized both
+exact shallow Git trees. The
 [initial versioned checkout feed](https://github.com/jordanhubbard/daemonarchy/releases/tag/checkouts-16-amd64-1.3.1)
 is public with 11 verified assets for the earlier ports pin. The
 [replacement feed](https://github.com/jordanhubbard/daemonarchy/releases/tag/checkouts-16-amd64-1.3.1-r2)
