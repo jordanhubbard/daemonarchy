@@ -4,8 +4,9 @@
 the evidence still needed before a stable GitHub release. The
 [initial signed 1.3.1 checkout feed](https://github.com/jordanhubbard/daemonarchy/releases/tag/checkouts-16-amd64-1.3.1)
 is public with 11 matching asset digests. The selected ports revision requires
-a new, separately signed checkout feed; its native FreeBSD `pkg` catalogue
-check passed, and publication is pending.
+a [replacement signed checkout feed](https://github.com/jordanhubbard/daemonarchy/releases/tag/checkouts-16-amd64-1.3.1-r2).
+All 11 replacement assets match their published digests, and a native FreeBSD
+`pkg` client accepted its public catalogue and listed all three packages.
 No public 1.3.1 ISO, application package feed, or boot bundle is available yet. The private
 MacBook preview embeds development-only inputs and is not a public artifact.
 
@@ -56,9 +57,9 @@ and [acceptance record](testing-macbookpro16-1-1.3.1.md).
 
 - Finish the native production ports build. Publish and verify the
   versioned signed application feed with a real FreeBSD client. The checkout
-  replacement checkout feed's native signed-catalogue test passes at the
-  selected source and ports revisions; its public asset verification and
-  installation from the final ISO remain open.
+  replacement checkout feed's public digests and native signed catalogue
+  pass at the selected source and ports revisions. Installation from the final
+  ISO remains open.
 - Assemble the public ISO without private firmware or development signing
   credentials. Verify its exact inputs, SHA-256, signed boot bundle, production
   certificate, installed package and module inventory, and the retained native

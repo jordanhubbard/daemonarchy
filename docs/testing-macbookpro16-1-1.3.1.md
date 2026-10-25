@@ -28,7 +28,7 @@ retroactive rewrite of any individual run.
 | Product commit and release tag | ISO build pinned to `cdeb3434a2f7e5e205feb756c897b1e4a98d4c28`; final `daemonarchy-1.3.1` tag pending. No final-ISO MacBook run is required by the October 24 operator decision. |
 | FreeBSD source and ports commits | `d63d77f4eb3cc29e16510f7bdec73602e27c2844` and `b785784219af455a9ce4fd70c59bc96ba77f469f`; final native ports bulk pending. The earlier `7e417dae` pin remains in its historical build records. |
 | ISO SHA-256 and signed boot-bundle identity | Pending |
-| Package and checkout feed tags, keys and signature checks | The earlier public `checkouts-16-amd64-1.3.1` feed passed its own 11-asset digest and native `pkg` checks. The selected replacement `checkouts-16-amd64-1.3.1-r2` passed a native signed-catalogue check and awaits public asset verification. `packages-16-amd64-1.3.1` and installed signature checks remain pending. Selected package public key SHA-256: `67986b400f28a49e99df0f1f3368f60aca8064d5dc00094700ba1a17d8474ef7` (DER form). |
+| Package and checkout feed tags, keys and signature checks | The earlier public `checkouts-16-amd64-1.3.1` feed passed its own 11-asset digest and native `pkg` checks. The selected replacement [feed](https://github.com/jordanhubbard/daemonarchy/releases/tag/checkouts-16-amd64-1.3.1-r2) has 11 matching public asset digests, and a native FreeBSD `pkg` client authenticated its public catalogue. `packages-16-amd64-1.3.1` and installed signature checks remain pending. Selected package public key SHA-256: `67986b400f28a49e99df0f1f3368f60aca8064d5dc00094700ba1a17d8474ef7` (DER form). |
 | BCM4364 module package and Apple board-file hashes | Module package and image hashes pending; installed-target hashes will not be collected in a final-ISO MacBook rerun. Pinned Apple recovery image SHA-256: `591f07a9a4a58d855a2e53b86a5f5da854a250000a66a9382adaf106c20f839b`; the four expected board-file hashes are in the [firmware importer](../scripts/import-apple-bcm4364-firmware.py). The private source stage passed its hash check, but that does not verify the public ISO contents. |
 
 The `iso_installer_commit` identifies the source built into the ISO
@@ -47,8 +47,8 @@ MacBook rerun is waived.
 
 The selected replacement catalogue uses ports `b7857842` and the same source
 `d63d77f4`. A native FreeBSD `pkg` client authenticated its new signed
-catalogue and listed one ports and two source checkout packages. This is
-pre-publication feed verification, not a MacBook installation result.
+public catalogue and listed one ports and two source checkout packages. This
+is a public feed trust check, not a MacBook installation result.
 
 ## Fresh installer boot and storage
 

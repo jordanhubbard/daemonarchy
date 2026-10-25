@@ -34,9 +34,10 @@ binds signed source and ports seed packages to the merged `main` heads. An
 isolated native `pkg` client authenticated and installed all three packages,
 rejected the old key, and materialized both exact shallow Git trees. The
 [initial versioned checkout feed](https://github.com/jordanhubbard/daemonarchy/releases/tag/checkouts-16-amd64-1.3.1)
-is public with 11 verified assets for the earlier ports pin. The replacement
-`checkouts-16-amd64-1.3.1-r2` catalogue selects `b7857842`, passed a native
-FreeBSD signed catalogue read, and awaits public asset verification. The
+is public with 11 verified assets for the earlier ports pin. The
+[replacement feed](https://github.com/jordanhubbard/daemonarchy/releases/tag/checkouts-16-amd64-1.3.1-r2)
+selects `b7857842` with 11 matching public asset digests, and a native FreeBSD
+`pkg` client authenticated its public catalogue. The
 desktop source is pinned to `ec2a0082` until qualification permits a stable
 `v1.3.1` tag.
 
