@@ -61,6 +61,28 @@ attempts were retained, and a passing retry was required. `daemon.local` was
 reserved for independent final-ISO bhyve testing. The package build and ISO
 have separate qualification records in the public release.
 
+## October 25 package reuse qualification
+
+The selected FreeBSD 1600029 installed root accepted 954 packages, including
+five exact published 1.1.1 archives: Chromium, CEF, OBS Studio, tensaku, and
+the Hyprland preview share picker. Their port subtrees are unchanged. The
+older archives were built for userland 1600028, so matching port metadata
+alone did not admit them. Native dependency and file checks passed for all
+five and the Daemonarchy desktop package; Chromium and OBS reported their
+expected versions, and CEF loaded with immediate symbol resolution. The
+Daemonarchy desktop archive came from the selected ports and desktop commits
+and was installed and checked in that same 1600029 root. Full graphical
+application behavior remains part of final-image QA.
+
+The protected signer checked the 1,463-archive candidate repository against
+its complete SHA-256 manifest and signed the 203-archive application feed.
+A native `pkg` client inside the selected 1600029 root verified the signed
+catalogue and all 203 entries without suppressing the target OS-version
+check. The signer host's 1600028 userland required a separate local version
+exception during its own client probe; that failed first probe and its scoped
+recovery are retained. The original full Chromium and CEF builds continue as
+a fallback until final ISO assembly and independent bhyve QA pass.
+
 The operator confirmed on 2026-10-24 that **all pre-production checks passed
 on the Intel 16-inch MacBook Pro** and waived an additional physical acceptance
 run against the final public 1.3.1 ISO. Existing test records keep their
@@ -75,7 +97,8 @@ These gates were open at the preparation checkpoint. The public GitHub release
 notes and exact asset record report their final results; this section preserves
 the decision and required checks without treating an earlier attempt as passed.
 
-- Finish the native production ports build and verify the versioned signed
+- Finish the production package set through native builds and explicitly
+  qualified exact-archive reuse, then verify the versioned signed
   application feed with a native FreeBSD client. The replacement checkout
   feed's public digests and signed catalogue had passed at the selected source
   and ports revisions. Final-ISO installation had not run at this checkpoint.
