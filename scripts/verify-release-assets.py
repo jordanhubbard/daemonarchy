@@ -22,7 +22,7 @@ ROOT = Path(__file__).resolve().parents[1]
 HEX = re.compile(r"[0-9a-f]{64}\Z")
 COMMIT = re.compile(r"[0-9a-f]{40}\Z")
 VERSION = re.compile(r"(?:0|[1-9][0-9]*)\.(?:0|[1-9][0-9]*)\.(?:0|[1-9][0-9]*)\Z")
-CERTIFICATE = re.compile(r"daemonarchy-[0-9]+\.[0-9]+\.pem\Z")
+CERTIFICATE = re.compile(r"daemonarchy-[0-9]+(?:\.[0-9]+){1,2}\.pem\Z")
 
 
 def unique_pairs(pairs):
