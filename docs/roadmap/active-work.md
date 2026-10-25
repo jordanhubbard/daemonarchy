@@ -48,14 +48,16 @@ rerun against the final public 1.3.1 ISO. The earlier 1.1.1 S3 and debugger
 observations remain historical results for that image, not current release
 blockers. No final-ISO physical boot or hardware-rooted T2 attestation is
 claimed. See the [scoped decision](../../verification/macbook-release-decision-1.3.1.json)
-and [acceptance record](../testing-macbookpro16-1-1.3.1.md). The new image has
-not yet been assembled. `daemon.local` is the independent final-ISO bhyve
-installation and boot test target. The new package signing key has a separately
+and [acceptance record](../testing-macbookpro16-1-1.3.1.md). At this October 24
+checkpoint, the new image had not yet been assembled. `daemon.local` was
+selected as the independent final-ISO bhyve installation and boot test target.
+The new package signing key has a separately
 held encrypted recovery copy with a verified restore. The production boot signing
 key and certificate are staged on the native worker with root-only access;
-the final signed bundle remains pending. The signed application feed, public
-ISO, retained native build evidence, artifact integrity and publication checks
-remain release gates. The MSI early kernel boot remains unqualified and is not
+the final signed bundle was pending at this checkpoint. The signed application
+feed, public ISO, retained native build evidence, artifact integrity and
+publication checks are release gates whose final outcome belongs to the public
+release record. The MSI early kernel boot remains unqualified and is not
 claimed by the MacBook release notes.
 
 `litai verify` currently fails its declared receipt gate because

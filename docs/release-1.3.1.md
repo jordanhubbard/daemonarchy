@@ -55,10 +55,11 @@ but this candidate does not claim the newer browser version.
 All eight hosted source checks passed at the selected `d63d77f4` commit,
 including the controller, native loader, and Linux/macOS architecture jobs.
 Native FreeBSD world, kernel, and release sets passed independently on
-`daemon.local` and the madmax FreeBSD guest. The madmax ports bulk is still
-running; its failed earlier attempts remain recorded and require a passing
-retry. `daemon.local` is reserved for independent final-ISO bhyve testing.
-The package build and ISO remain separate qualification steps.
+`daemon.local` and the madmax FreeBSD guest. At the October 24 preparation
+checkpoint, the madmax ports bulk was still running; its failed earlier
+attempts were retained, and a passing retry was required. `daemon.local` was
+reserved for independent final-ISO bhyve testing. The package build and ISO
+have separate qualification records in the public release.
 
 The operator confirmed on 2026-10-24 that **all pre-production checks passed
 on the Intel 16-inch MacBook Pro** and waived an additional physical acceptance
@@ -68,18 +69,21 @@ a final-ISO hardware run or artifact hash. See the
 [MacBook release decision](../verification/macbook-release-decision-1.3.1.json)
 and [acceptance record](testing-macbookpro16-1-1.3.1.md).
 
-## Qualification still required
+## October 24 production gates
 
-- Finish the native production ports build. Publish and verify the
-  versioned signed application feed with a real FreeBSD client. The checkout
-  replacement checkout feed's public digests and native signed catalogue
-  pass at the selected source and ports revisions. Installation from the final
-  ISO remains open.
+These gates were open at the preparation checkpoint. The public GitHub release
+notes and exact asset record report their final results; this section preserves
+the decision and required checks without treating an earlier attempt as passed.
+
+- Finish the native production ports build and verify the versioned signed
+  application feed with a native FreeBSD client. The replacement checkout
+  feed's public digests and signed catalogue had passed at the selected source
+  and ports revisions. Final-ISO installation had not run at this checkpoint.
 - Assemble the public ISO without private firmware or development signing
-  credentials. Verify its exact inputs, SHA-256, signed boot bundle, production
-  certificate, installed package and module inventory, and the retained native
-  build evidence bound to the release record. LitAI's broader project receipt
-  remains open under its staged adoption work.
+  credentials, then verify its exact inputs, SHA-256, signed boot bundle,
+  production certificate, installed package and module inventory, and the
+  native build evidence bound to the release record. LitAI's broader project
+  receipt remains open under its staged adoption work.
 
 ## Hardware status and limits
 
@@ -99,6 +103,6 @@ and [acceptance record](testing-macbookpro16-1-1.3.1.md).
   [1.3.2](roadmap/release-1.3.2.md). This release makes no MSI installation or
   attestation claim.
 
-The exact ISO digest, signed feed tags and GitHub release URL will be added
-after those artifacts exist. The root `CHANGELOG.md` retains the detailed
-candidate history and limitations.
+The public GitHub release linked above carries the exact ISO digest, signed
+feed tags and final native verification. The root `CHANGELOG.md` retains the
+detailed candidate history and limitations.
