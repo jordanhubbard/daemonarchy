@@ -62,6 +62,18 @@ class RecoveryTests(unittest.TestCase):
         with self.assertRaisesRegex(ValueError, "unqualified"):
             self.result(provenance=provenance)
 
+    def test_malformed_metadata_or_admission_refuses(self):
+        with self.assertRaisesRegex(ValueError, "must be objects"):
+            recovery.recover([], "c" * 64, self.provenance, self.sha)
+        provenance = copy.deepcopy(self.provenance)
+        provenance["retained_archives"] = [None]
+        with self.assertRaisesRegex(ValueError, "must be an object"):
+            self.result(provenance=provenance)
+        manifest = copy.deepcopy(self.manifest)
+        manifest["packages"]["chromium-1.pkg"] = []
+        with self.assertRaisesRegex(ValueError, "archive size/identity"):
+            self.result(manifest=manifest)
+
     def test_pinned_metadata_is_read_only_and_tampering_refuses(self):
         with tempfile.TemporaryDirectory() as directory:
             path = Path(directory) / "manifest.json"

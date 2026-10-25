@@ -39,6 +39,8 @@ def archive_name(name):
 
 def recover(manifest, manifest_sha, provenance, provenance_sha):
     manifest_sha, provenance_sha = digest(manifest_sha), digest(provenance_sha)
+    if not isinstance(manifest, dict) or not isinstance(provenance, dict):
+        raise ValueError("historical metadata must be objects")
     if (manifest.get("schema") != "daemonarchy/madmax-package-import@2"
             or manifest.get("assembly_kind") != "selected-base-installed-reuse"
             or provenance.get("schema") != "daemonarchy/package-reuse-candidate@1"
@@ -60,7 +62,11 @@ def recover(manifest, manifest_sha, provenance, provenance_sha):
             raise ValueError("invalid historical archive size/identity")
         digest(identity[1])
     admitted = {}
+    if not isinstance(provenance.get("retained_archives"), list):
+        raise ValueError("historical admissions must be a list")
     for item in provenance["retained_archives"]:
+        if not isinstance(item, dict):
+            raise ValueError("historical admission must be an object")
         name = archive_name(item["archive"])
         if name in admitted or item.get("qualification") != "admitted_for_release":
             raise ValueError("duplicate or unqualified historical admission")
