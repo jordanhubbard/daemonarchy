@@ -55,8 +55,10 @@ Each unit has these fields:
 - `options`, native port `flavor` or null, `compiler`, `sysroot`, and
   `execution_identity`. Compiler is an exact tool identity from the canonical
   profile. Sysroot is the canonical retained `sdk` role closure identity.
-- `generated_inputs`: exact retained paths/digests and named producer references.
-  A producer reference still requires native output/closure admission.
+- `generated_inputs`: exact retained paths/digests, `producer` references in
+  `UNIT#ACTION` form and declared producer `output` paths. Missing units, actions,
+  output ownership and cross-unit build edges refuse graph construction. A
+  producer reference still requires native output/closure admission.
 - `dependencies`: typed `build` or `runtime` edges with `unit`, `identity`,
   `artifact_identity`, `members`, `selected_version`, and `version_constraint`.
   Build identity means relevant producer payload contents; runtime identity means

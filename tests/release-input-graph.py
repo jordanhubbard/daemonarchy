@@ -225,9 +225,17 @@ class GraphTests(unittest.TestCase):
         self.assertEqual(self.decision(old), "build-inputs-changed")
         old = self.collect()
         generated = self.write("unit/generated.h", b"#define GENERATED 1\n")
-        self.unit["generated_inputs"] = [{**generated, "producer": "source:generator/generate"}]
+        self.unit["generated_inputs"] = [{**generated, "producer": "source:tool#generate", "output": "unit/generated.h"}]
+        self.profile["actions"].insert(0, {"id":"generate", "stage":"generate", "tool":"cc", "argv":[],
+                                         "requires":[], "inventory":["generated-header"],
+                                         "outputs":["unit/generated.h"], "timeout_seconds":30})
+        self.profile["actions"][1]["requires"] = ["generate"]
         self.update_selection()
         self.assertEqual(self.decision(old), "build-inputs-changed")
+        self.selection["units"][0]["generated_inputs"][0]["producer"] = "missing#generate"
+        with self.assertRaisesRegex(ValueError, "missing producer"):
+            self.collect()
+        self.selection["units"][0]["generated_inputs"][0]["producer"] = "source:tool#generate"
         self.selection["units"][0]["generated_inputs"][0]["sha256"] = "0"*64
         with self.assertRaisesRegex(ValueError, "generated input"):
             self.collect()

@@ -196,11 +196,11 @@ def unit_record(spec, repos, paths, retained_root=None):
     require(isinstance(spec["generated_inputs"], list), "generated input inventory required")
     generated = []
     for entry in spec["generated_inputs"]:
-        fields(entry, "path sha256 producer")
+        fields(entry, "path sha256 producer output")
         member = known.get(relative(entry["path"]))
         require(member is not None and member.sha256 == entry["sha256"],
                 "generated input must be in retained byte closure")
-        generated.append({**entry, "producer": text(entry["producer"])})
+        generated.append({**entry, "producer": text(entry["producer"]), "output": relative(entry["output"])})
     require(len({e["path"] for e in generated}) == len(generated), "duplicate generated input")
     dependencies, seen = [], set()
     require(isinstance(spec["dependencies"], list), "typed dependency inventory required")
@@ -276,6 +276,15 @@ def collect(selection, paths, retained_roots=None):
     pending, order = set(units), []
     for unit in units.values():
         require(all(d["unit"] in units for d in unit["dependencies"]), "incomplete cross-repository dependency closure")
+        for generated in unit["build_inputs"]["generated_inputs"]:
+            provider, separator, action_id = generated["producer"].partition("#")
+            require(separator and provider in units, "generated input names a missing producer unit")
+            actions = {a["id"]: a for a in units[provider]["build_inputs"]["actions"]}
+            require(action_id in actions and any(generated["output"] == output or
+                    generated["output"].startswith(output + "/") for output in actions[action_id]["outputs"]),
+                    "generated input names an undeclared producer output")
+            require(provider == unit["id"] or any(d["unit"] == provider and d["kind"] == "build"
+                    for d in unit["dependencies"]), "generated cross-unit input requires a build edge")
     while pending:
         ready = sorted(n for n in pending if all(d["unit"] not in pending for d in units[n]["dependencies"]
                                                 if d["kind"] == "build"))
