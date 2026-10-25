@@ -694,17 +694,18 @@ before claiming the observer optimization resolves that release blocker.
 - **Detailed plan:** [1.4.0 cross-repository build and release graph](release-1.4.0.md).
 - **Priority:** P1 for 1.4.0; outside the 1.3.1 release and 1.3.2 MSI acceptance paths.
 - **Owner:** LitAI native lifecycle, owned source/ports/desktop/compatibility forks and product release integration.
-- **Direction:** Select exact commits across all owned release-input repositories, resolve their complete native build/test/package/release dependency graph, and schedule ready actions with LitAI's parallel workers. Keep FreeBSD make, Poudriere/pkg, ISO/signing tools and a measured Bazel or other executor as native action implementations.
-- **Conclusion:** LitAI must coordinate fine-grained input custody, invalidation, resource-bounded concurrency, test receipts, package provenance and exact release publication. A single opaque wrapper around the legacy build and distribution pipeline does not meet this item.
+- **Direction:** Select exact commits across all owned release-input repositories, resolve their complete native build/test/package/release dependency graph, and schedule ready actions across multiple physical machines with LitAI's parallel workers and a shared verified artifact cache. Treat ports and packages as build artifacts; evaluate Bazel incremental builds, remote cache/execution and other suitable tools. FreeBSD make and Poudriere are optional executors.
+- **Conclusion:** LitAI must coordinate cross-release reuse of unchanged builds, binaries, packages and release inputs; fine-grained input custody and invalidation; resource-bounded distributed concurrency; test receipts, package provenance and exact release publication. A single opaque wrapper around the legacy build and distribution pipeline does not meet this item.
 - **Depends on:** ADOPT-002, COMP-001, DEV-001, PERF-001.
 - **Implementation:**
   - [ ] Bind product, source, ports, desktop and FreeBSD compatibility fork revisions, plus any selected owned Omarchy input, in one reviewed release plan with upstream ancestry and target/options/toolchain identities.
-  - [ ] Admit complete relevant Component/action ownership and conditional dependencies; execute and cache native source, tests, packages, feeds, boot products and ISO actions through LitAI workers without racing pkg database or protected signer state.
-  - [ ] Compare clean, unchanged and changed-input end-to-end workflows against the 1.3.1 baseline, qualify native/VM/physical results on exact assets, and publish a verified 1.4.0 release from the selected plan.
+  - [ ] Admit complete relevant Component/action ownership and conditional dependencies. Key cached outputs by source subtrees and shared inputs, port metadata, generated inputs, toolchain/sysroot, target OSVERSION/ABI, dependency package contents, command and environment; repair missing graph edges before admitting a cache hit.
+  - [ ] Execute and cache native source, tests, binaries, ports packages, feeds, boot products and ISO inputs through LitAI workers on multiple physical machines. Share verified immutable artifacts, avoid duplicate actions and race-free package database or protected signer access. Select Bazel, remote cache/execution or another incremental executor by equivalent native correctness and measured speed.
+  - [ ] Compare clean, unchanged and changed-input single-machine and distributed workflows against the 1.3.1 baseline, qualify native/VM/physical results on exact assets, and publish a verified 1.4.0 release from the selected plan.
 - **Evidence:**
-  - [ ] Per-repository locks, zero unowned selected inputs, complete dependency and package closures, correct invalidation and reusable verified outputs are retained.
-  - [ ] At least two isolated ready worker slots run independent native actions concurrently within recorded resource budgets; failure, retry and serialization controls pass.
-  - [ ] Measured full release creation is materially faster without omitted tests or packages, and the tagged ISO, signed feeds, receipts and scoped hardware evidence agree on exact bytes.
+  - [ ] Per-repository locks, zero unowned selected inputs, complete dependency and package closures, correct invalidation and verified cross-release reuse are retained. Unchanged action keys cause no recompilation; missing edges refuse reuse.
+  - [ ] At least two physical machines run independent native actions concurrently from one plan and shared verified cache within recorded resource budgets; duplicate-key, failure, retry and serialization controls pass.
+  - [ ] Measured full release creation and unchanged repeat are materially faster without omitted tests or packages, and the tagged ISO, signed feeds, receipts and scoped hardware evidence agree on exact bytes.
 
 ### [ ] DEV-001 — Provide an operator-ready native Component development system
 

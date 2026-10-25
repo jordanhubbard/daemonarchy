@@ -11,13 +11,14 @@
 ## Intended operating model
 
 Literate AI owns one exact, cross-repository release plan and schedules its
-dependency-ready actions on parallel native workers. Existing implementation
-and tool authority stays with each owned fork and its native build system. FreeBSD
-`make`, Poudriere, `pkg`, ISO assembly, signing tools, and a measured Bazel or
-other executor can all run as action executors. Their inputs, outputs, variants,
-dependencies and side effects must be visible to the LitAI plan. Calling a full
-legacy build or release script as one opaque action is a migration bridge; it
-cannot provide per-unit invalidation or worker scheduling.
+dependency-ready actions on parallel native workers. Preserve each owned fork's
+source and the FreeBSD package, installer and signing contracts. Select the
+executor by measured correctness and elapsed time: Bazel, remote build caches,
+remote execution, other incremental tools, `make` and Poudriere are candidates.
+`make` and Poudriere are not required architecture. Every action's inputs,
+outputs, variants, dependencies and side effects must be visible to the LitAI
+plan. Calling a full legacy build or release script as one opaque action is a
+migration bridge; it cannot provide per-unit invalidation or worker scheduling.
 
 The selected release workspace includes `daemonarchy`, `daemonarchy-src`,
 `daemonarchy-ports`, `daemonarchy-desktop`, and `omarchy-freebsd`. Admit the owned
@@ -26,6 +27,34 @@ uses it. Record each commit, upstream ancestry, tree identity and integration
 contract without collapsing independently maintained repositories into one
 checkout. Preserve reviewable upstream refreshes and pin one selection for each
 qualification run.
+
+## Cross-release artifact reuse and distributed execution
+
+Always reuse a verified build output, binary, package or release input across
+versions when its complete action identity is unchanged. A release number or
+an unrelated repository commit must not force recompilation. Cache keys must
+cover the exact source subdirectory and transitive shared inputs; port
+Makefiles, distinfo, patches, plist, options, flavors and metadata; generated
+inputs; compiler, toolchain and sysroot; FreeBSD base OSVERSION and ABI;
+dependency package contents and ABI contracts; command, environment and output
+format. Recheck retained bytes, provenance and signatures where applicable
+before a cache hit. Re-sign or repackage only a changed envelope when the
+underlying payload remains valid.
+
+If the graph lacks an input or dependency edge needed for a sound key, repair
+that graph gap before allowing reuse. Until it is repaired, rebuild the
+affected unit and retain the reason. The 1.1.1 and 1.3.1 Chromium and CEF port
+subtrees are identical, while their selected base OSVERSION and seven package
+dependency versions differ; this is a regression case for refusing a cache hit
+based on port-tree equality alone.
+
+Treat ports and packages as graph artifacts. Evaluate Bazel incremental builds,
+shared remote cache servers and other proven incremental or remote-execution
+systems against equivalent native output and end-to-end time. Dispatch ready
+build, test and package actions across multiple physical machines using their
+CPU, memory, disk, network and target capabilities. Share verified immutable
+artifacts, coalesce duplicate work for one action key, and recover from worker
+loss without racing package databases or protected signing state.
 
 ## Build, test, package and release graph
 
@@ -36,10 +65,11 @@ qualification run.
    source and package edges. Reject missing or ambiguous ownership, incomplete
    closures and changed inputs instead of treating them as cache hits.
 2. **Dispatch native work.** Use LitAI's worker model to run ready actions across
-   isolated FreeBSD build workers, with explicit CPU, memory, disk and network
+   multiple isolated physical machines, with explicit CPU, memory, disk and network
    budgets. Keep a stable action identity over command, toolchain, environment,
    selected inputs and expected outputs. Parallelize independent compilation,
-   tests, downloads, package preparation and image inputs. Serialize shared
+   tests, downloads, package preparation and image inputs. Use shared verified
+   caches and avoid duplicate work for the same action key. Serialize shared
    package-database writes, protected signing operations and any other action
    whose side effects cannot safely overlap.
 3. **Retain products and evidence.** Capture verified source/build/runtime pkg
@@ -62,24 +92,27 @@ qualification run.
 - [ ] Qualify retained native profiles and full dependency closures for every
   selected repository. Demonstrate that changed implementation, header,
   generated input, port option/flavor, compiler, sysroot and upstream commit
-  invalidate the correct dependent actions; an unchanged run reuses only
-  verified outputs.
-- [ ] Run independent ready actions concurrently on at least two isolated
-  admitted worker slots, with bounded resources, retained partial-failure
-  evidence and reproducible retry. Show that package database and signing
-  actions cannot race.
+  invalidate the correct dependent actions; unchanged cross-release actions
+  reuse their verified binary, package and release-input outputs without
+  recompilation. Missing graph edges refuse cache admission until repaired.
+- [ ] Run independent ready actions concurrently on at least two physical
+  machines with a shared verified cache, bounded resources, retained
+  partial-failure evidence and reproducible retry. Coalesce duplicate keys
+  and show that package database and signing actions cannot race.
 - [ ] Build and test the same selected source/ports/desktop/compatibility
   products with native tools under LitAI custody, then produce versioned pkg
   feeds and an installer ISO whose contents and signatures pass native checks.
 - [ ] Measure equivalent clean, unchanged, changed-input, package-only and
-  ISO-only runs against the baseline. Set numeric speed targets from that
-  baseline before implementation and demonstrate material end-to-end savings
-  without skipping required products, tests or acceptance.
+  ISO-only runs against the baseline. Include single-machine and distributed
+  runs, remote cache hit rates, prevented rebuilds, and action-level invalidation
+  reasons. Set numeric speed targets from that baseline before implementation
+  and demonstrate material end-to-end savings without skipping required
+  products, tests or acceptance.
 - [ ] Install the exact image in a fresh VM, exercise upgrade and rollback,
   complete the release's physical hardware matrix, publish through the
   LitAI-controlled release plan and independently verify the tag and assets.
 
-Completion requires the working multi-repository flow and its retained receipts,
-not a renamed wrapper around the current serial build. The executor can remain
-`make` where it performs well; changing to Bazel is justified by equivalent
-native correctness and elapsed-time evidence.
+Completion requires working cross-release reuse, a distributed multi-repository
+flow and retained receipts, not a renamed wrapper around the current serial
+build. Keep `make` or Poudriere only where they meet the same native correctness
+and elapsed-time targets as the selected incremental executor.
