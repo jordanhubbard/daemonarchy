@@ -102,6 +102,18 @@ CPU, memory, disk, network and target capabilities. Share verified immutable
 artifacts, coalesce duplicate work for one action key, and recover from worker
 loss without racing package databases or protected signing state.
 
+Use a cache on the release engineer's network for pre-release build and
+installer iterations. The iterative bhyve harness and installer test
+configuration should accept an explicit package and asset cache source, with
+each entry bound to the selected signed catalogue, package name, version, ABI
+and SHA-256 digest. Reject mismatches, fetch verified misses, and record hits,
+misses, bytes saved and elapsed time. Exercise a corrupt cache entry in a
+fail-closed test. Final release-candidate QA must disable the local cache
+override and fetch the actual public binary, package and feed URLs, then
+verify their signatures and payloads during a fresh install and installed
+boot. Cache savings from earlier iterations cannot stand in for that public
+distribution check.
+
 ## Build, test, package and release graph
 
 1. **Admit inputs and dependencies.** Assign source build units, ports origins,
@@ -162,6 +174,10 @@ loss without racing package databases or protected signing state.
   machines with a shared verified cache, bounded resources, retained
   partial-failure evidence and reproducible retry. Coalesce duplicate keys
   and show that package database and signing actions cannot race.
+- [ ] Demonstrate verified local-cache hits in pre-release installer and build
+  iterations, measured time and network savings, verified miss fallback, and
+  rejection of a corrupt entry. Run final ISO QA with the cache override off
+  against the public signed feeds and public package assets.
 - [ ] Build and test the same selected source/ports/desktop/compatibility
   products with native tools under LitAI custody, then produce versioned pkg
   feeds and an installer ISO whose contents and signatures pass native checks.
