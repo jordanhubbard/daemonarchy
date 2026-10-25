@@ -52,8 +52,8 @@ absent `deps` field, or ABI compatibility from matching ABI text.
 | Decision | Meaning |
 | --- | --- |
 | `new_package` / `removed_package` | Added to or removed from the selected closure; no existing-byte admission implied. |
-| `rebuild_required` | A known build input or origin changed; retain the old archive. |
-| `needs_package_review` | Package version changed; inspect source changes and envelope before scheduling compilation. |
+| `rebuild_required` | A known build input changed; retain the old archive. |
+| `needs_package_review` | Package version, origin or known archive SHA-256/size changed; inspect payload and envelope before scheduling compilation. |
 | `needs_requalification` | Known runtime constraints or OSVERSION changed without a known build-input change. |
 | `blocked_missing_provenance` | Unknown inputs prevent determining unchanged action identity. |
 | `blocked_missing_artifact` | No retained archive identity is recorded. |

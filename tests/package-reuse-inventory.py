@@ -60,6 +60,32 @@ class ReuseTests(unittest.TestCase):
         after["identities"]["port_inputs"] = "changed"
         self.assertEqual(self.compare([before], [after])["packages"][0]["decision"], "rebuild_required")
 
+    def test_origin_move_requests_review_unless_build_inputs_changed(self):
+        for known in (True, False):
+            before = package("chromium")
+            if not known:
+                before["identities"]["port_inputs"] = None
+            after = copy.deepcopy(before)
+            after["origin"] = "moved/chromium"
+            row = self.compare([before], [after])["packages"][0]
+            self.assertEqual(row["decision"], "needs_package_review")
+            self.assertFalse(row["admitted_cache_hit"])
+        before = package("chromium")
+        after = copy.deepcopy(before)
+        after["origin"] = "moved/chromium"
+        after["identities"]["port_inputs"] = "changed"
+        self.assertEqual(self.compare([before], [after])["packages"][0]["decision"], "rebuild_required")
+
+    def test_changed_archive_identity_requests_payload_or_envelope_review(self):
+        for key, value in (("sha256", "sha256:" + "b" * 64), ("bytes", 101)):
+            before = package("chromium")
+            after = copy.deepcopy(before)
+            after["artifact"][key] = value
+            row = self.compare([before], [after])["packages"][0]
+            self.assertEqual(row["decision"], "needs_package_review")
+            self.assertIn("archive_identity_changed_payload_or_envelope_unknown", row["reasons"])
+            self.assertFalse(row["admitted_cache_hit"])
+
     def test_unknown_identity_never_admits_reuse(self):
         for key in reuse.IDENTITIES:
             before = package("chromium")

@@ -101,10 +101,13 @@ def compare(old, selected):
             changed_package = [key for key in ("origin", "version") if a[key] != b[key]]
             row.update(unknown_identities=unknown, changed_build_inputs=changed_build,
                        changed_runtime_inputs=changed_runtime)
-            if changed_build or "origin" in changed_package:
+            if changed_build:
                 decision, reasons = "rebuild_required", changed_package + changed_build
             elif changed_package:
                 decision, reasons = "needs_package_review", changed_package
+            elif (a.get("artifact") is not None and b.get("artifact") is not None
+                  and any(a["artifact"][key] != b["artifact"][key] for key in ("sha256", "bytes"))):
+                decision, reasons = "needs_package_review", ["archive_identity_changed_payload_or_envelope_unknown"]
             elif changed_runtime:
                 decision, reasons = "needs_requalification", changed_runtime
             elif unknown:
