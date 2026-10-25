@@ -65,12 +65,14 @@ class QAPlan(unittest.TestCase):
             }
         )
 
-    def prepare(self):
+    def prepare(self, **kwargs):
         with patch(
             "literate_ai.project_releases.load_release_policy",
             return_value=(self.root, self.policy),
         ):
-            return qa.prepare(self.root, self.plan, self.files, ("installer-iso",))
+            return qa.prepare(
+                self.root, self.plan, self.files, ("installer-iso",), **kwargs
+            )
 
     def test_missing_authenticated_policy_is_explicit_blocker(self):
         result = self.prepare()
@@ -87,6 +89,21 @@ class QAPlan(unittest.TestCase):
                 obligation["harness_environment"], {"PACKAGE_QA_MODE": "final-rc"}
             )
             self.assertIsNone(obligation["cache_override"])
+
+    def test_bhyve_work_is_a_new_child_separate_from_retained_receipts(self):
+        receipts = self.root / "receipts"
+        receipts.mkdir()
+        (receipts / "supervisor.log").write_text("retained")
+        result = self.prepare(receipt_root=receipts)
+        work = receipts / "bhyve-work"
+        self.assertFalse(work.exists())
+        self.assertEqual(
+            result["obligations"][1]["harness_environment"]["WORK"], str(work)
+        )
+        work.mkdir()
+        with self.assertRaisesRegex(ValueError, "new child"):
+            self.prepare(receipt_root=receipts)
+        self.assertEqual((receipts / "supervisor.log").read_text(), "retained")
 
     def test_changed_artifact_is_refused_before_qa(self):
         (self.root / "image.iso").write_bytes(b"changed bytes")

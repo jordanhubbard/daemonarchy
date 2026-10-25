@@ -64,7 +64,10 @@ python3 scripts/release-qa-plan.py --project /absolute/selected/project \
 ```
 
 Artifact roles must be the complete roles from the release contract, not the
-example subset above. The plan never claims acceptance, signs or publishes.
+example subset above. The optional `--receipt-root` names an existing owned native supervisor evidence
+directory. The planner selects its not-yet-created `bhyve-work` child as `WORK`,
+refusing an existing child and leaving retained supervisor files intact. It never
+creates the work child. The plan never claims acceptance, signs or publishes.
 Before final QA, acquire and verify public assets on the allocated native worker;
 retain native signature/package checks, fresh installation and installed boot,
 upgrade, rollback and the physical matrix against the same manifest. Public
