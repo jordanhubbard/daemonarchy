@@ -24,6 +24,7 @@ reachable without changing its historical scope.
 - [Active work](roadmap/active-work.md)
 - [1.3.2 network bootloader debugging and MSI kernel capture](roadmap/release-1.3.2.md)
 - [1.4.0 Literate AI cross-repository build and release orchestration](roadmap/release-1.4.0.md)
+- [1.1.1-to-1.3.1 application package reuse inventory](evidence/release-1.3.1-package-reuse-inventory.md)
 - [Earlier 1.3.1 diagnostics scope and preflight evidence](roadmap/release-1.3.1.md)
 - [Owned FreeBSD source builds](source-builds.md)
 - [Disposable QEMU worker ownership](native-qemu-worker.md)

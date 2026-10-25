@@ -52,7 +52,7 @@ when present, and the proposed reuse or rebuild reason. Fail the release plan
 if any package lacks a decision or if an unchanged artifact is rebuilt without
 a recorded invalidation or failed native qualification. Publish aggregate
 counts, cache bytes and time saved, plus the per-package decision ledger with
-the release evidence. The [1.1.1-to-1.3.1 application-feed inventory](evidence/release-1.3.1-package-reuse-inventory.md)
+the release evidence. The [1.1.1-to-1.3.1 application-feed inventory](../evidence/release-1.3.1-package-reuse-inventory.md)
 is the baseline: it covers 510 old packages, including 320 with unchanged port
 and dependency metadata and 162 requiring runtime ABI review. Its LibreOffice
 row changed version and port inputs, so that package required a new build.
