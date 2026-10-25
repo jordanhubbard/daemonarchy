@@ -14,14 +14,16 @@ retains review-head details; a formal release contribution sweep is still
 required. Retained worktrees and development evidence remain available.
 
 Source `main` at `d63d77f4` includes the MacBook and early-network work plus
-FreeBSD CURRENT through `a3d1d4e8`. Its exact native world build is running;
-kernel and set production steps follow it. Ports `main` at `7e417dae`
-contains all fork branch histories and retains the reviewed `efb8f848` file
-tree. The selected official package snapshot does not include the newest
+FreeBSD CURRENT through `a3d1d4e8`. Its exact native world, kernel and release
+set builds passed. Ports `main` at `b7857842` contains all fork branch
+histories and adds a Broadcom SDPCM event BSSID fix verified by native
+Poudriere testport to the earlier `7e417dae` tree. The selected official
+package snapshot does not include the newest
 upstream ports changes; [the refresh record](../../verification/freebsd-current-refresh-20261024-development.json)
-explains the dependency and conflict review. The exact `1600029` jail bulk is
-queued after the source build. Keep all source, ports, checkout and package
-revisions pinned through the final image run. Product `main` at `33ff0108`
+explains the dependency and conflict review. The `1600029` jail bulk on madmax
+is in progress, with failed earlier attempts retained for audit. Keep all
+source, ports, checkout and package revisions pinned through the final image
+run. Product `main` at `33ff0108`
 contains merged release notes, policy and the hardware-record identity fix.
 The ISO worker and public feed controllers use a separate clean product
 checkout pinned to `cdeb3434`; the final tag can include the later release
@@ -31,10 +33,12 @@ The [final checkout development record](../../verification/checkout-catalog-1.3.
 binds signed source and ports seed packages to the merged `main` heads. An
 isolated native `pkg` client authenticated and installed all three packages,
 rejected the old key, and materialized both exact shallow Git trees. The
-[versioned checkout feed](https://github.com/jordanhubbard/daemonarchy/releases/tag/checkouts-16-amd64-1.3.1)
-is public with 11 verified assets; a separate native FreeBSD `pkg` client
-accepted its public catalogue and listed all three packages. The desktop source is
-pinned to `ec2a0082` until qualification permits a stable `v1.3.1` tag.
+[initial versioned checkout feed](https://github.com/jordanhubbard/daemonarchy/releases/tag/checkouts-16-amd64-1.3.1)
+is public with 11 verified assets for the earlier ports pin. The replacement
+`checkouts-16-amd64-1.3.1-r2` catalogue selects `b7857842`, passed a native
+FreeBSD signed catalogue read, and awaits public asset verification. The
+desktop source is pinned to `ec2a0082` until qualification permits a stable
+`v1.3.1` tag.
 
 The operator confirmed on October 24 that all pre-production checks passed on
 the Intel 16-inch MacBook Pro and waived only an additional physical acceptance
@@ -43,8 +47,9 @@ observations remain historical results for that image, not current release
 blockers. No final-ISO physical boot or hardware-rooted T2 attestation is
 claimed. See the [scoped decision](../../verification/macbook-release-decision-1.3.1.json)
 and [acceptance record](../testing-macbookpro16-1-1.3.1.md). The new image has
-not yet been assembled. The new package signing key has a separately held
-encrypted recovery copy with a verified restore. The production boot signing
+not yet been assembled. `daemon.local` is the independent final-ISO bhyve
+installation and boot test target. The new package signing key has a separately
+held encrypted recovery copy with a verified restore. The production boot signing
 key and certificate are staged on the native worker with root-only access;
 the final signed bundle remains pending. The signed application feed, public
 ISO, retained native build evidence, artifact integrity and publication checks

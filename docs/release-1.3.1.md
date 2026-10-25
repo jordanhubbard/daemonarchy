@@ -2,9 +2,10 @@
 
 **Status: unpublished candidate.** This page records the intended release and
 the evidence still needed before a stable GitHub release. The
-[signed 1.3.1 checkout feed](https://github.com/jordanhubbard/daemonarchy/releases/tag/checkouts-16-amd64-1.3.1)
-is public and its 11 assets have matching digests; an isolated native FreeBSD
-`pkg` client accepted its catalogue and listed all three checkout packages.
+[initial signed 1.3.1 checkout feed](https://github.com/jordanhubbard/daemonarchy/releases/tag/checkouts-16-amd64-1.3.1)
+is public with 11 matching asset digests. The selected ports revision requires
+a new, separately signed checkout feed; its native FreeBSD `pkg` catalogue
+check passed, and publication is pending.
 No public 1.3.1 ISO, application package feed, or boot bundle is available yet. The private
 MacBook preview embeds development-only inputs and is not a public artifact.
 
@@ -25,8 +26,9 @@ MacBook preview embeds development-only inputs and is not a public artifact.
   policy are pinned to reviewed revisions for the final image.
 
 Source `main` now merges FreeBSD CURRENT through `a3d1d4e8` (October 24)
-at `d63d77f4`. Ports `main` is `7e417dae`, with the same release file tree as
-`efb8f848` and the reviewed official package snapshot lineage. A trial merge
+at `d63d77f4`. Ports `main` is `b7857842`; it adds a Broadcom SDPCM event
+BSSID fix to the earlier `7e417dae` release tree. Native FreeBSD Poudriere
+testport passed for that fix. A trial merge
 of upstream ports `7b2b5742` changed 3,140 files and had eight conflicts,
 and would require a
 new package baseline and full dependency rebuild. The selected `www/chromium`
@@ -37,8 +39,10 @@ but this candidate does not claim the newer browser version.
 All eight hosted source checks passed at the selected `d63d77f4` commit,
 including the controller, native loader, and Linux/macOS architecture jobs.
 Native FreeBSD world, kernel, and release sets passed independently on
-`daemon.local` and the madmax FreeBSD guest. The package build and ISO remain
-separate qualification steps.
+`daemon.local` and the madmax FreeBSD guest. The madmax ports bulk is still
+running; its failed earlier attempts remain recorded and require a passing
+retry. `daemon.local` is reserved for independent final-ISO bhyve testing.
+The package build and ISO remain separate qualification steps.
 
 The operator confirmed on 2026-10-24 that **all pre-production checks passed
 on the Intel 16-inch MacBook Pro** and waived an additional physical acceptance
@@ -52,8 +56,9 @@ and [acceptance record](testing-macbookpro16-1-1.3.1.md).
 
 - Finish the native production ports build. Publish and verify the
   versioned signed application feed with a real FreeBSD client. The checkout
-  feed's public catalogue and native client test pass at the merged source and
-  ports revisions; installation from the final ISO remains open.
+  replacement checkout feed's native signed-catalogue test passes at the
+  selected source and ports revisions; its public asset verification and
+  installation from the final ISO remain open.
 - Assemble the public ISO without private firmware or development signing
   credentials. Verify its exact inputs, SHA-256, signed boot bundle, production
   certificate, installed package and module inventory, and the retained native

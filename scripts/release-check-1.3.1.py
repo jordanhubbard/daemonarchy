@@ -12,7 +12,7 @@ import sys
 
 ROOT = Path(__file__).resolve().parents[1]
 SOURCE = "d63d77f4eb3cc29e16510f7bdec73602e27c2844"
-PORTS = "7e417dae24ffb95c4625601ae9d654eb2ca68f4d"
+PORTS = "b785784219af455a9ce4fd70c59bc96ba77f469f"
 DESKTOP = "ec2a00824ec95b342c0c095657ac725c56f0528b"
 ISO_PRODUCT = "cdeb3434a2f7e5e205feb756c897b1e4a98d4c28"
 CHECKS = (
@@ -200,7 +200,7 @@ def main():
     run("sh", "scripts/check-image-size.sh", str(iso))
     native_evidence(record, record["assets"][iso.name][1].removeprefix("sha256:"))
 
-    public_feed("checkouts-16-amd64-1.3.1")
+    public_feed("checkouts-16-amd64-1.3.1-r2")
     public_feed("packages-16-amd64-1.3.1")
     print("1.3.1 release gate passed for exact native evidence, ISO, feeds and scoped MacBook decision")
 
