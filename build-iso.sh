@@ -142,7 +142,7 @@ cp "$here/scripts/import-apple-bcm4364-firmware.py" "$share/import-apple-bcm4364
 live_python=$(pkg query -F "$omarchy_pkg" '%dn' | awk '/^python3[0-9]+$/ { print }')
 case "$live_python" in python3[0-9][0-9]) ;; *) echo 'Need one Python interpreter dependency for enterprise Wi-Fi' >&2; exit 1 ;; esac
 live_python_exe=$(printf '%s' "$live_python" | sed -E 's/^python3([0-9][0-9])$/python3.\1/')
-sed -i '' "1s@^.*$@#!/usr/local/bin/$live_python_exe@" "$share/import-apple-bcm4364-firmware.py"
+sed -i '' "1s@^.*\$@#!/usr/local/bin/$live_python_exe@" "$share/import-apple-bcm4364-firmware.py"
 chmod 0755 "$share/omarchy-wifi-enterprise" "$share/import-apple-bcm4364-firmware.py"
 rm -rf "$extract"
 
