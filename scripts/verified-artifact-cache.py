@@ -33,6 +33,8 @@ def selection_identity(catalogue, name, package):
         pin(value.removeprefix("sha256:"))
     if not isinstance(name, str) or not name:
         raise ValueError("missing package name")
+    if not isinstance(package, dict):
+        raise ValueError("invalid package selection mapping")
     fields = ("version", "abi", "archive_checksum", "archive_path", "download_bytes")
     if any(key not in package for key in fields):
         raise ValueError("incomplete package selection")
@@ -42,6 +44,25 @@ def selection_identity(catalogue, name, package):
         raise ValueError("invalid package byte count")
     return dict(schema="daemonarchy/verified-cache-selection@1", catalogue=catalogue,
                 name=name, **{key: package[key] for key in fields})
+
+
+class NativeAuthenticatedCatalogue:
+    """Trusted producer witness, constructed only after fresh native authentication.
+
+    This class cannot authenticate a signature itself. Its caller owns that trust
+    boundary, just as the caller of retain owns native archive verification.
+    """
+    def __init__(self, catalogue, packages, database_sha256):
+        self.database_sha256 = pin(database_sha256)
+        self.selections = {name: selection_identity(catalogue, name, row)
+                           for name, row in packages.items()}
+        # Snapshot the authenticated selection; later caller mutations cannot
+        # silently expand what this authentication witness selects.
+        self.selections = json.loads(canonical(self.selections))
+
+    def require(self, identity):
+        if self.selections.get(identity["name"]) != identity:
+            raise ValueError("candidate does not match freshly authenticated selection")
 
 
 class VerifiedCache:
@@ -60,6 +81,8 @@ class VerifiedCache:
             if path.is_symlink() or not path.is_dir():
                 raise ValueError("cache namespace is not a directory")
         self.events = []
+        self.candidate_index = None
+        self.candidate_offers = {}
 
     def key(self, identity):
         # Revalidate all bindings rather than accepting opaque arbitrary keys.
@@ -76,6 +99,79 @@ class VerifiedCache:
             raise ValueError("cache entry is not a regular file")
         return stream
 
+    def verified_object(self, digest, size):
+        stream = self.stream(self.root / "objects" / pin(digest))
+        try:
+            if os.fstat(stream.fileno()).st_size != size:
+                raise ValueError("corrupt cache entry size")
+            if hashlib.file_digest(stream, "sha256").hexdigest() != digest:
+                raise ValueError("corrupt cache entry SHA-256")
+            stream.seek(0)
+        except BaseException:
+            stream.close()
+            raise
+        return stream
+
+    @staticmethod
+    def candidate_key(identity):
+        # A transport candidate may move archive path or catalogue/signing key.
+        # It must still pass the current selected native checksum verification.
+        fields = ("name", "version", "abi", "archive_checksum", "download_bytes")
+        return hashlib.sha256(canonical({key: identity[key] for key in fields})).hexdigest()
+
+    def index_candidates(self):
+        index = {}
+        with os.scandir(self.root / "selections") as entries:
+            for count, entry in enumerate(entries, 1):
+                if count > 100000:
+                    raise ValueError("retained candidate inventory exceeds bounded scan")
+                with self.stream(entry.path) as stream:
+                    raw = stream.read(65537)
+                if len(raw) > 65536:
+                    raise ValueError("oversized retained candidate record")
+                record = json.loads(raw)
+                if (not isinstance(record, dict)
+                        or record.get("schema") != "daemonarchy/verified-cache-entry@1"
+                        or entry.name != self.key(record["identity"]) + ".json"):
+                    raise ValueError("retained candidate record binding differs")
+                pin(record["sha256"])
+                index.setdefault(self.candidate_key(record["identity"]), []).append(record)
+        self.candidate_index = index
+
+    def candidate(self, identity, authenticated):
+        """Offer retained bytes for fresh native verification; never admit a hit."""
+        start = time.monotonic()
+        key = self.key(identity)
+        if not isinstance(authenticated, NativeAuthenticatedCatalogue):
+            raise ValueError("candidate reuse requires fresh native catalogue authentication")
+        authenticated.require(identity)
+        if self.candidate_index is None:
+            self.index_candidates()
+        records = self.candidate_index.get(self.candidate_key(identity), [])
+        if not records:
+            return None
+        digests = {row["sha256"] for row in records}
+        if len(digests) != 1:
+            raise ValueError("ambiguous retained candidate archive identities")
+        digest = next(iter(digests))
+        stream = self.verified_object(digest, identity["download_bytes"])
+        offered = dict(selection=key, sha256=digest,
+                       source_selections=sorted(self.key(row["identity"]) for row in records),
+                       authenticated_database_sha256=authenticated.database_sha256)
+        self.candidate_offers[key] = offered
+        self.events.append(dict(kind="candidate_offered", **offered,
+                                bytes=identity["download_bytes"], seconds=time.monotonic()-start))
+        return stream
+
+    def record_candidate_admission(self, key, digest, size):
+        offer = self.candidate_offers.pop(key, None)
+        if offer is not None:
+            if offer["sha256"] != digest:
+                raise ValueError("native verified archive differs from retained candidate")
+            self.events.append(dict(kind="candidate_admitted", **offer, bytes=size,
+                                    native_selected_checksum_reverified=True,
+                                    runtime_qualification_copied=False))
+
     def lookup(self, identity, record_event=True):
         start = time.monotonic()
         key = self.key(identity)
@@ -90,19 +186,11 @@ class VerifiedCache:
             if record_event:
                 self.events.append(dict(kind="miss", selection=key, bytes_saved=0, seconds=time.monotonic()-start))
             return None
-        if selected.get("identity") != identity or selected.get("schema") != "daemonarchy/verified-cache-entry@1":
+        if (not isinstance(selected, dict) or selected.get("identity") != identity
+                or selected.get("schema") != "daemonarchy/verified-cache-entry@1"):
             raise ValueError("cache entry selection binding differs")
         digest = pin(selected["sha256"])
-        stream = self.stream(self.root / "objects" / digest)
-        try:
-            if os.fstat(stream.fileno()).st_size != identity["download_bytes"]:
-                raise ValueError("corrupt cache entry size")
-            if hashlib.file_digest(stream, "sha256").hexdigest() != digest:
-                raise ValueError("corrupt cache entry SHA-256")
-            stream.seek(0)
-        except BaseException:
-            stream.close()
-            raise
+        stream = self.verified_object(digest, identity["download_bytes"])
         if record_event:
             self.events.append(dict(kind="hit", selection=key, sha256=digest,
                                     bytes_saved=identity["download_bytes"], seconds=time.monotonic()-start))
@@ -112,37 +200,53 @@ class VerifiedCache:
         """Call only after native signature and package checksum verification succeeds."""
         key = self.key(identity)
         expected_sha256 = pin(expected_sha256.removeprefix("sha256:"))
+        offer = self.candidate_offers.get(key)
+        if offer is not None and offer["sha256"] != expected_sha256:
+            raise ValueError("native verified archive differs from retained candidate")
         existing = self.lookup(identity, record_event=False)
         if existing is not None:
             with existing:
                 if hashlib.file_digest(existing, "sha256").hexdigest() != expected_sha256:
                     raise ValueError("existing selected cache binding differs")
             self.events.append(dict(kind="retained_existing", selection=key, sha256=expected_sha256))
+            self.record_candidate_admission(key, expected_sha256, identity["download_bytes"])
             return
-        temporary = self.root / "pending" / uuid.uuid4().hex
-        # Failed pending products are deliberately retained for diagnosis.
-        with self.stream(source) as incoming, temporary.open("xb") as outgoing:
-            digest = hashlib.sha256()
-            total = 0
-            while chunk := incoming.read(1024 * 1024):
-                total += len(chunk)
-                if total > identity["download_bytes"]:
-                    raise ValueError("retained archive exceeds selected size")
-                digest.update(chunk)
-                outgoing.write(chunk)
-            outgoing.flush()
-            os.fsync(outgoing.fileno())
-        if total != identity["download_bytes"] or digest.hexdigest() != expected_sha256:
-            raise ValueError("retained archive differs from verified SHA-256/size")
-        os.chmod(temporary, 0o444)
         target = self.root / "objects" / expected_sha256
         try:
-            os.link(temporary, target)
-        except FileExistsError:
-            with self.stream(target) as stream:
-                if (os.fstat(stream.fileno()).st_size != total
-                        or hashlib.file_digest(stream, "sha256").hexdigest() != expected_sha256):
-                    raise ValueError("existing content-addressed object is corrupt")
+            existing_blob = self.verified_object(expected_sha256, identity["download_bytes"])
+        except FileNotFoundError:
+            existing_blob = None
+        if existing_blob is not None:
+            existing_blob.close()
+            # Reverify the freshly native-checked source, then associate the
+            # existing object without copying a duplicate archive into pending.
+            with self.stream(source) as incoming:
+                total = os.fstat(incoming.fileno()).st_size
+                if (total != identity["download_bytes"]
+                        or hashlib.file_digest(incoming, "sha256").hexdigest() != expected_sha256):
+                    raise ValueError("retained archive differs from verified SHA-256/size")
+        else:
+            temporary = self.root / "pending" / uuid.uuid4().hex
+            # Failed pending products are deliberately retained for diagnosis.
+            with self.stream(source) as incoming, temporary.open("xb") as outgoing:
+                digest = hashlib.sha256()
+                total = 0
+                while chunk := incoming.read(1024 * 1024):
+                    total += len(chunk)
+                    if total > identity["download_bytes"]:
+                        raise ValueError("retained archive exceeds selected size")
+                    digest.update(chunk)
+                    outgoing.write(chunk)
+                outgoing.flush()
+                os.fsync(outgoing.fileno())
+            if total != identity["download_bytes"] or digest.hexdigest() != expected_sha256:
+                raise ValueError("retained archive differs from verified SHA-256/size")
+            os.chmod(temporary, 0o444)
+            try:
+                os.link(temporary, target)
+            except FileExistsError:
+                with self.verified_object(expected_sha256, total):
+                    pass
         entry = dict(schema="daemonarchy/verified-cache-entry@1", identity=identity, sha256=expected_sha256)
         record = self.root / "pending" / (uuid.uuid4().hex + ".json")
         with record.open("xb") as stream:
@@ -157,9 +261,14 @@ class VerifiedCache:
                 if stream.read(65537) != canonical(entry):
                     raise ValueError("existing selected cache binding differs")
         self.events.append(dict(kind="retained", selection=key, sha256=expected_sha256, bytes=total))
+        self.candidate_index = None
+        self.record_candidate_admission(key, expected_sha256, total)
 
     def summary(self):
         return dict(hits=sum(e["kind"] == "hit" for e in self.events),
                     misses=sum(e["kind"] == "miss" for e in self.events),
                     bytes_saved=sum(e.get("bytes_saved", 0) for e in self.events),
+                    candidate_requests=sum(e["kind"] == "candidate_offered" for e in self.events),
+                    candidate_bytes_offered=sum(e.get("bytes", 0) for e in self.events if e["kind"] == "candidate_offered"),
+                    candidate_bytes_admitted=sum(e.get("bytes", 0) for e in self.events if e["kind"] == "candidate_admitted"),
                     verification_seconds=sum(e.get("seconds", 0) for e in self.events), events=list(self.events))

@@ -114,6 +114,76 @@ requires package review; compatible runtime/base changes require native
 requalification; changed build inputs require graph-owned invalidation. The
 [reuse inventory](package-reuse-inventory.md) records those separate decisions.
 
+## Candidates across signed catalogue changes
+
+Exact `lookup(identity)` remains strict: a changed catalogue or public-key pin
+is a miss. The native producer can separately offer retained bytes as a candidate
+only after its **current** `pkg update` signature authentication, selected ABI
+checks and authenticated database inventory succeed. The producer constructs a
+`NativeAuthenticatedCatalogue(catalogue, packages, database_sha256)` witness from
+that exact selection; this class is a trusted caller contract and cannot verify
+signatures by itself. Old result replay never constructs this fresh-authentication
+witness.
+
+`cache.candidate(identity, witness)` requires the exact current witness selection.
+It searches retained selection records matching package name, version, ABI,
+opaque native archive checksum and size, verifies record bindings and rehashes
+the object. A transport path or catalogue/signing-key change can reuse those
+bytes. Missing/stale authentication refuses; changed checksum/ABI/version never
+aliases an old candidate. Ambiguous or corrupt records/objects refuse without
+repairing, replacing or deleting old evidence. The bounded index reads at most
+100,000 immutable selection records and is rebuilt after new publication.
+
+An offered stream goes through the fresh private native `pkg fetch` transaction.
+It is **not** a selected hit or new release admission. Only after current native
+checksum verification, frozen-database/executable checks and independent SHA-256
+verification succeed does `retain` create a new catalogue/key selection record.
+It reuses the existing content-addressed object without copying another archive
+into the cache. Old records and bytes remain unchanged. Candidate requests,
+`candidate_bytes_offered` and `candidate_bytes_admitted` are separate from exact
+selection hits; failed verification never increments admitted candidate bytes.
+No previous application/runtime qualification is copied.
+
+For a bounded native cross-catalogue proof, first authenticate and retain the
+unchanged OBS archive against its real public 1.1.1 catalogue and historically
+selected key, using available retained source bytes where present. Then use a
+new private case and the real public 1.3.1 catalogue/key with the **same cache**.
+Both input files remain separately pinned. Verify the second run has fresh native
+signature/checksum success, the same independent archive SHA-256, no public
+payload redirect, admitted candidate bytes, a new exact selection record and
+unchanged old records/object inode. This requires a coordinator-approved native
+slot. Controller HTTP/byte fixtures exercise the protocol but do not establish
+native authentication, application ABI compatibility or release speedup.
+
+## Explicit historical manifest recovery
+
+`scripts/recover-retained-package-inventory.py` reads the exact native assembly
+manifest and its bound historical qualified-provenance document:
+
+```sh
+python3 scripts/recover-retained-package-inventory.py \
+  --manifest /retained/reuse-package-manifest-20261025.json \
+  --manifest-sha256 eb27534e2c75a78fc7d18a0d652911f8f25108e055966c7339df4d1ae34bc2d7 \
+  --provenance /retained/reuse-111-qualified-provenance-20261025.json \
+  --provenance-sha256 db65b7ad849da846a08035ac5b6489dfbd4f2e4c4f0860a45c9b09154fdfc196 \
+  > /isolated/historical-retained-inventory.json
+```
+
+The importer checks metadata pins, cross-document provenance binding, assembly
+revision/base consistency and every recorded admitted archive SHA-256. It emits
+all archive identities; it never reads package payloads, infers name/version from
+a filename, seeds the cache, chooses compilation or issues a current receipt.
+Its `daemonarchy/historical-retained-package-inventory@1` output preserves the
+recorded old scope and explicit unresolved current identities.
+
+Running this importer on the retained records recovered **1,463 archives totaling
+8,686,389,815 bytes**, with **five recorded 1.3.1 admissions**, **1,458 identity-only
+records** and **zero 1.4 admissions**. The five named records are CEF, Chromium,
+the Hyprland preview share picker, OBS and tensaku. Missing public metadata can
+therefore lead to targeted producer/provenance recovery instead of a blanket
+rebuild. Actual current build eligibility and ABI requalification remain the
+responsibility of the graph/native acceptance owners.
+
 ## Finite iterative cache service
 
 A previously completed, reviewed native signed-snapshot case can serve an
