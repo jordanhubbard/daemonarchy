@@ -1,0 +1,62 @@
+name: Release 1.4 controller checks
+
+on:
+  push:
+    paths:
+      - '.github/workflows/release-14-controls.yml'
+      - 'scripts/release-input-graph.py'
+      - 'tests/release-input-graph.py'
+      - 'scripts/release-measurements.py'
+      - 'tests/release-measurements.py'
+      - 'scripts/release-qa-plan.py'
+      - 'tests/release-qa-plan.py'
+      - 'scripts/verified-artifact-cache.py'
+      - 'tests/verified-artifact-cache.py'
+      - 'scripts/signed-package-snapshot.py'
+      - 'tests/signed-package-snapshot.py'
+      - 'overlay/usr/local/libexec/daemonarchy-installer/install'
+      - 'overlay/usr/local/libexec/daemonarchy-installer/package-repository'
+      - 'test-bhyve.sh'
+  pull_request:
+    paths:
+      - '.github/workflows/release-14-controls.yml'
+      - 'scripts/release-input-graph.py'
+      - 'tests/release-input-graph.py'
+      - 'scripts/release-measurements.py'
+      - 'tests/release-measurements.py'
+      - 'scripts/release-qa-plan.py'
+      - 'tests/release-qa-plan.py'
+      - 'scripts/verified-artifact-cache.py'
+      - 'tests/verified-artifact-cache.py'
+      - 'scripts/signed-package-snapshot.py'
+      - 'tests/signed-package-snapshot.py'
+      - 'overlay/usr/local/libexec/daemonarchy-installer/install'
+      - 'overlay/usr/local/libexec/daemonarchy-installer/package-repository'
+      - 'test-bhyve.sh'
+  workflow_dispatch:
+
+permissions:
+  contents: read
+
+jobs:
+  controls:
+    runs-on: ubuntu-latest
+    steps:
+      - uses: actions/checkout@v4
+      - name: Focused release graph, cache, measurement and QA checks
+        env:
+          PYTHONDONTWRITEBYTECODE: '1'
+        run: |
+          for test in \
+            tests/release-input-graph.py \
+            tests/release-measurements.py \
+            tests/release-qa-plan.py \
+            tests/verified-artifact-cache.py \
+            tests/signed-package-snapshot.py; do
+            if test -f "$test"; then
+              python3 "$test" -v
+            fi
+          done
+          bash -n overlay/usr/local/libexec/daemonarchy-installer/install
+          sh -n overlay/usr/local/libexec/daemonarchy-installer/package-repository
+          sh -n test-bhyve.sh
