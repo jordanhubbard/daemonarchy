@@ -31,6 +31,9 @@ SPEC = importlib.util.spec_from_file_location("native_package_plan", Path(__file
 native = importlib.util.module_from_spec(SPEC)
 SPEC.loader.exec_module(native)
 dag = native.dag
+CACHE_SPEC = importlib.util.spec_from_file_location("verified_artifact_cache", Path(__file__).with_name("verified-artifact-cache.py"))
+cache_module = importlib.util.module_from_spec(CACHE_SPEC)
+CACHE_SPEC.loader.exec_module(cache_module)
 SCHEMA = "daemonarchy/signed-package-snapshot@1"
 PARALLEL_SCHEMA = "daemonarchy/signed-package-snapshot@2"
 
@@ -203,7 +206,11 @@ def public_key_bytes(value):
 
 
 class FrozenOrigin:
-    def __init__(self, metadata, source):
+    def __init__(self, metadata, source, cache=None, bind="127.0.0.1", port=0, report_path=None):
+        self.cache = cache
+        self.report_path = report_path
+        self.cache_selections = {}
+        self.cache_failure = None
         self.metadata = metadata
         self.source = source
         self.payloads = {}
@@ -239,19 +246,30 @@ class FrozenOrigin:
                         self.send_header("Location", owner.source["url"] + "/" + quote(name, safe="/"))
                         self.send_header("Content-Length", "0")
                         self.end_headers()
-                    if "directory" not in owner.source:
-                        unavailable()
-                        return
-                    path = Path(owner.source["directory"]) / name
-                    try:
-                        stream = os.fdopen(os.open(path, os.O_RDONLY | os.O_NOFOLLOW | os.O_NONBLOCK), "rb")
+                    stream = None
+                    if owner.cache is not None:
+                        try:
+                            stream = owner.cache.lookup(owner.cache_selections[name])
+                        except (OSError, ValueError, KeyError, TypeError) as error:
+                            owner.cache_failure = str(error)
+                            self.send_error(502, "verified cache entry refused")
+                            return
+                    if stream is not None:
                         info = os.fstat(stream.fileno())
-                        if not stat.S_ISREG(info.st_mode) or info.st_size != owner.payloads[name]:
-                            stream.close()
-                            raise ValueError("offline archive size/type differs")
-                    except (OSError, ValueError):
-                        unavailable()
-                        return
+                    else:
+                        if "directory" not in owner.source:
+                            unavailable()
+                            return
+                        path = Path(owner.source["directory"]) / name
+                        try:
+                            stream = os.fdopen(os.open(path, os.O_RDONLY | os.O_NOFOLLOW | os.O_NONBLOCK), "rb")
+                            info = os.fstat(stream.fileno())
+                            if not stat.S_ISREG(info.st_mode) or info.st_size != owner.payloads[name]:
+                                stream.close()
+                                raise ValueError("offline archive size/type differs")
+                        except (OSError, ValueError):
+                            unavailable()
+                            return
                     with owner.counter_lock:
                         owner.offline_requests += 1
                     with stream:
@@ -269,7 +287,7 @@ class FrozenOrigin:
                 super().setup()
                 self.connection.settimeout(10)
 
-        self.server = http.server.ThreadingHTTPServer(("127.0.0.1", 0), Handler)
+        self.server = http.server.ThreadingHTTPServer((bind, port), Handler)
         self.thread = threading.Thread(target=self.server.serve_forever, daemon=True)
 
     def __enter__(self):
@@ -280,6 +298,10 @@ class FrozenOrigin:
         self.server.shutdown()
         self.server.server_close()
         self.thread.join(timeout=5)
+        if self.cache is not None and self.report_path is not None:
+            with Path(self.report_path).open("x") as stream:
+                json.dump(dict(cache=self.cache.summary(), cache_failure=self.cache_failure), stream, indent=2)
+                stream.write("\n")
 
     @property
     def url(self):
@@ -326,6 +348,29 @@ def verify_payload_files(directory, packages):
     return result
 
 
+def validate_package_abi(packages, expected):
+    permitted = {expected, ":".join(expected.split(":")[:2]) + ":*"}
+    if any(row["abi"] not in permitted for row in packages.values()):
+        raise ValueError("signed package ABI differs from selected target")
+
+
+def cache_policy(config, source):
+    mode = config.get("qa_mode", "iterative")
+    if mode not in ("iterative", "final-rc"):
+        raise ValueError("qa_mode must be iterative or final-rc")
+    root = config.get("verified_cache_root")
+    if mode == "final-rc" and (root is not None or "directory" in source or "url" not in source):
+        raise ValueError("final-rc requires public HTTPS assets with local cache overrides disabled")
+    if mode == "final-rc":
+        url = https_url(source["url"])
+        host = urlsplit(url).hostname.lower()
+        if host != "github.com" and host != "pkg.freebsd.org" and not host.endswith(".pkg.freebsd.org"):
+            raise ValueError("final-rc requires the public GitHub or FreeBSD package publisher")
+    if root is not None and (not isinstance(root, str) or not Path(root).is_absolute()):
+        raise ValueError("verified cache root must be an absolute isolated namespace")
+    return cache_module.VerifiedCache(root) if root is not None else None
+
+
 def verify(config_path, config_pin, case):
     if platform.system() != "FreeBSD" or os.geteuid() != 0:
         raise ValueError("signed snapshot verification requires FreeBSD root and isolated scratch state")
@@ -361,6 +406,7 @@ def verify(config_path, config_pin, case):
         source["directory"] = str((config_path.parent / source["directory"]).absolute())
         if not Path(source["directory"]).is_dir():
             raise ValueError("offline payload directory is unavailable")
+    cache = cache_policy(config, source)
     maximum = dag.size(config["maximum_download_bytes"])
     timeout = config["fetch_timeout_seconds"]
     if type(timeout) is not int or not 1 <= timeout <= 3600:
@@ -381,7 +427,7 @@ def verify(config_path, config_pin, case):
     (case / "pkg.conf").write_text(json.dumps(pkg_config))
     command = [str(executable), "-C", str(case / "pkg.conf"), "-R", str(case / "repos")]
     started = time.monotonic()
-    with FrozenOrigin(metadata, source) as origin:
+    with FrozenOrigin(metadata, source, cache=cache, report_path=case / "verified-cache-events.json") as origin:
         (case / "repos" / "snapshot.conf").write_text(rid + ": " + json.dumps(
             dict(url=origin.url, signature_type="pubkey", pubkey=str(case / "public.pem"), enabled=True)))
         version = native.run_step(command, ["--version"], case, "version", timeout=10).strip()
@@ -398,10 +444,15 @@ def verify(config_path, config_pin, case):
             if len(set(selected)) != len(selected) or any(name not in packages for name in selected):
                 raise ValueError("missing or duplicate selected package")
             packages = {name: packages[name] for name in selected}
+        validate_package_abi(packages, abi)
         total = sum(row["download_bytes"] for row in packages.values())
         if total > maximum or shutil.disk_usage(case).free < total + 2 * 1024**3:
             raise ValueError("signed payload selection exceeds download budget or disk reserve")
         origin.payloads = {row["archive_path"]: row["download_bytes"] for row in packages.values()}
+        catalogue = {name: value["sha256"] for name, value in repo["metadata"].items()}
+        catalogue["public_key"] = repo["public_key"]["sha256"]
+        identities = {name: cache_module.selection_identity(catalogue, name, row) for name, row in packages.items()}
+        origin.cache_selections = {row["archive_path"]: identities[name] for name, row in packages.items()}
         if native.run_step(command, ["shell", "SELECT 1;"], case, "initialize", timeout=10) != "1\n":
             raise ValueError("private package database initialization failed")
         if policy is None:
@@ -412,6 +463,8 @@ def verify(config_path, config_pin, case):
         else:
             execution = parallel_fetch(executable, pkg_config, packages, databases[0],
                                        database_pin, case, rid, policy, timeout, config_pin)
+        if origin.cache_failure is not None:
+            raise ValueError("verified cache refused: " + origin.cache_failure)
         fetched = time.monotonic()
         verified = verify_payload_files(case / "payloads", packages)
         if hashlib.sha256(databases[0].read_bytes()).hexdigest() != database_pin:
@@ -421,16 +474,23 @@ def verify(config_path, config_pin, case):
             raise ValueError("unexpected private cache files outside fetched payloads")
         transfers = dict(offline_requests=origin.offline_requests, https_redirects=origin.redirect_requests)
     dag.read_pinned(executable, config["pkg"]["sha256"], 128 * 1024 * 1024)
+    if cache is not None:
+        for name, row in verified.items():
+            cache.retain(identities[name], case / "payloads" / row["archive_path"], row["sha256"])
     result = dict(schema=SCHEMA if policy is None else PARALLEL_SCHEMA,
                   input_sha256=config_pin, repository_id=rid,
                   public_key_sha256=repo["public_key"]["sha256"],
                   metadata_sha256={name: value["sha256"] for name, value in repo["metadata"].items()},
                   pkg_version=version, pkg_sha256=config["pkg"]["sha256"], os=platform.system(), release=platform.release(),
+                  authenticated_database=databases[0].relative_to(case).as_posix(),
+                  authenticated_database_sha256=database_pin,
                   repository_signature_verified=True, payload_checksums_verified=True,
                   verified_all_catalogue_payloads=selected == "all", packages=verified,
                   download_bytes=total, installed_packages_after=0, private_cache_empty=True,
                   dependency_plan_qualified=False, installation_authorized=False, lifecycle_receipt=None,
                   transfer_requests=transfers,
+                  qa_mode=config.get("qa_mode", "iterative"),
+                  verified_cache=cache.summary() if cache is not None else None,
                   seconds=dict(authentication=authenticated - started, fetch_verify=fetched - authenticated,
                                total=time.monotonic() - started))
     if execution is not None:
@@ -448,14 +508,82 @@ def verify(config_path, config_pin, case):
     return result
 
 
+def serve_case(config_path, config_pin, case, result_pin, cache_root, bind, port, seconds):
+    """Replay a reviewed pinned native result; no new qualification is inferred."""
+    config = native.read_json(config_path, config_pin, dag.MAX_LINE)
+    result = native.read_json(case / "result.json", result_pin, 32 * 1024 * 1024)
+    if (result.get("schema") not in (SCHEMA, PARALLEL_SCHEMA)
+            or result.get("input_sha256") != config_pin or result.get("os") != "FreeBSD"
+            or result.get("repository_signature_verified") is not True
+            or result.get("payload_checksums_verified") is not True):
+        raise ValueError("cache serving requires the exact reviewed native authenticated result")
+    repo = config["repository"]
+    pins = {name: row["sha256"] for name, row in repo["metadata"].items()}
+    if set(pins) != {"meta.conf", "packagesite.pkg", "data.pkg"}:
+        raise ValueError("cache service requires exact signed metadata inventory")
+    if result.get("metadata_sha256") != pins or result.get("public_key_sha256") != repo["public_key"]["sha256"]:
+        raise ValueError("native result catalogue/key binding differs")
+    if config.get("qa_mode") == "final-rc":
+        raise ValueError("final-rc cannot serve a local cache override")
+    if not 1 <= seconds <= 86400 or not 0 <= port <= 65535:
+        raise ValueError("cache service duration/port outside bound")
+    source = {"url": https_url(repo["payload_source"]["url"])}
+    metadata = {name: dag.read_pinned(case / "metadata" / name, sha, 32 * 1024 * 1024) for name, sha in pins.items()}
+    cache = cache_module.VerifiedCache(cache_root)
+    catalogue = dict(pins, public_key=repo["public_key"]["sha256"])
+    verified = result["packages"]
+    if not isinstance(verified, dict) or not 1 <= len(verified) <= dag.MAX_PACKAGES:
+        raise ValueError("empty or oversized verified package selection")
+    packages = verified
+    if "authenticated_database_sha256" in result:
+        relative = Path(result["authenticated_database"])
+        if relative.is_absolute() or relative.parts[:1] != ("db",) or any(p in (".", "..") for p in relative.parts):
+            raise ValueError("unsafe authenticated database path")
+        database = case / relative
+        dag.read_pinned(database, result["authenticated_database_sha256"], 128 * 1024 * 1024)
+        packages = inventory(database)
+        dag.read_pinned(database, result["authenticated_database_sha256"], 128 * 1024 * 1024)
+        for name, row in verified.items():
+            if name not in packages or any(row.get(key) != value for key, value in packages[name].items()):
+                raise ValueError("verified result differs from authenticated catalogue")
+    validate_package_abi(packages, config["abi"])
+    identities = {name: cache_module.selection_identity(catalogue, name, row) for name, row in packages.items()}
+    # Admission copies only previously native-verified bytes; remaining signed selections are public misses.
+    for name, row in verified.items():
+        cache.retain(identities[name], case / "payloads" / archive_path(row["archive_path"]), row["sha256"])
+    with FrozenOrigin(metadata, source, cache=cache, bind=bind, port=port) as origin:
+        origin.payloads = {row["archive_path"]: row["download_bytes"] for row in packages.values()}
+        origin.cache_selections = {row["archive_path"]: identities[name] for name, row in packages.items()}
+        print(json.dumps(dict(cache_service="ready", port=origin.server.server_port, seconds=seconds)), flush=True)
+        deadline = time.monotonic() + seconds
+        while time.monotonic() < deadline and origin.cache_failure is None:
+            time.sleep(min(1, max(0, deadline - time.monotonic())))
+        summary = dict(schema="daemonarchy/verified-cache-service@1", cache=cache.summary(),
+                       native_result_sha256=result_pin, cache_failure=origin.cache_failure,
+                       public_miss_redirects=origin.redirect_requests, new_native_qualification=False)
+    return summary
+
+
 def main():
     parser = argparse.ArgumentParser(description=__doc__)
     parser.add_argument("config", type=Path)
     parser.add_argument("--sha256", required=True)
     parser.add_argument("--case", type=Path, required=True)
+    parser.add_argument("--serve-result-sha256", help="serve the reviewed existing case instead of running native verification")
+    parser.add_argument("--cache-root", type=Path)
+    parser.add_argument("--bind", default="127.0.0.1")
+    parser.add_argument("--port", type=int, default=0)
+    parser.add_argument("--serve-seconds", type=int, default=60)
     args = parser.parse_args()
     native.install_signal_handlers()
     try:
+        if args.serve_result_sha256 is not None:
+            if args.cache_root is None:
+                raise ValueError("cache serving requires an isolated --cache-root")
+            result = serve_case(args.config.absolute(), args.sha256, args.case, args.serve_result_sha256,
+                                args.cache_root, args.bind, args.port, args.serve_seconds)
+            print(json.dumps(result))
+            return 1 if result["cache_failure"] is not None else 0
         result = verify(args.config.absolute(), args.sha256, args.case)
     except (ValueError, OSError, KeyError, TypeError, sqlite3.Error, subprocess.TimeoutExpired) as error:
         print(f"signed package snapshot refused: {error}", file=sys.stderr)

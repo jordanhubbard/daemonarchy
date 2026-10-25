@@ -1,10 +1,14 @@
 #!/usr/bin/env python3
 """Frozen-origin routing, signed inventory and retained payload refusal checks."""
 
-from contextlib import closing
+from contextlib import closing, redirect_stdout
 import hashlib
 import importlib.util
 import json
+import io
+import threading
+import time
+from unittest.mock import patch
 from pathlib import Path
 import sqlite3
 import sys
@@ -201,6 +205,128 @@ class SignedSnapshotTests(unittest.TestCase):
         packages["b"]["archive_path"] = "All/a.pkg/b.pkg"
         with self.assertRaisesRegex(ValueError, "files and directories"):
             snapshot.fetch_batches(packages, 2)
+
+    def test_verified_cache_origin_hashes_hit_and_rejects_corruption_without_redirect(self):
+        cache = snapshot.cache_module.VerifiedCache(self.root.resolve() / "verified-cache")
+        source = self.root / "a.pkg"
+        source.write_bytes(b"test")
+        pins = {name: "a" * 64 for name in ("meta.conf", "packagesite.pkg", "data.pkg", "public_key")}
+        row = dict(version="1", abi="FreeBSD:16:amd64", archive_checksum="opaque-native", archive_path="a.pkg", download_bytes=4)
+        identity = snapshot.cache_module.selection_identity(pins, "a", row)
+        digest = hashlib.sha256(b"test").hexdigest()
+        cache.retain(identity, source, digest)
+        with snapshot.FrozenOrigin({}, {"url": "https://example.invalid/feed"}, cache=cache) as origin:
+            origin.payloads = {"a.pkg": 4}
+            origin.cache_selections = {"a.pkg": identity}
+            with urllib.request.urlopen(origin.url + "/a.pkg", timeout=2) as response:
+                self.assertEqual(response.read(), b"test")
+            target = cache.root / "objects" / digest
+            target.chmod(0o600)
+            target.write_bytes(b"evil")
+            with self.assertRaises(urllib.error.HTTPError) as error:
+                urllib.request.urlopen(origin.url + "/a.pkg", timeout=2)
+            self.assertEqual(error.exception.code, 502)
+            error.exception.close()
+            self.assertEqual(origin.redirect_requests, 0)
+            self.assertIn("SHA-256", origin.cache_failure)
+        self.assertEqual(cache.summary()["hits"], 1)
+        self.assertEqual(cache.summary()["bytes_saved"], 4)
+
+    def test_verified_cache_miss_fetches_from_public_publisher(self):
+        cache = snapshot.cache_module.VerifiedCache(self.root.resolve() / "verified-cache")
+        pins = {name: "a" * 64 for name in ("meta.conf", "packagesite.pkg", "data.pkg", "public_key")}
+        identity = snapshot.cache_module.selection_identity(pins, "a", dict(version="1", abi="FreeBSD:16:amd64", archive_checksum="opaque-native", archive_path="a.pkg", download_bytes=4))
+        with snapshot.FrozenOrigin({}, {"url": "https://example.invalid/feed"}, cache=cache) as origin:
+            origin.payloads = {"a.pkg": 4}
+            origin.cache_selections = {"a.pkg": identity}
+            with self.assertRaises(urllib.error.HTTPError) as error:
+                urllib.request.build_opener(NoRedirect).open(origin.url + "/a.pkg", timeout=2)
+            self.assertEqual(error.exception.code, 302)
+            self.assertEqual(error.exception.headers["Location"], "https://example.invalid/feed/a.pkg")
+            error.exception.close()
+        self.assertEqual(cache.summary()["misses"], 1)
+
+    def test_selected_abi_refuses_other_freebsd_target(self):
+        snapshot.validate_package_abi({"a": {"abi": "FreeBSD:16:amd64"}, "fonts": {"abi": "FreeBSD:16:*"}}, "FreeBSD:16:amd64")
+        for abi in ("FreeBSD:15:amd64", "FreeBSD:16:aarch64", "freebsd:16:x86:64"):
+            with self.assertRaisesRegex(ValueError, "ABI differs"):
+                snapshot.validate_package_abi({"a": {"abi": abi}}, "FreeBSD:16:amd64")
+
+    def test_final_rc_requires_public_source_and_rejects_every_local_override(self):
+        self.assertIsNone(snapshot.cache_policy(dict(qa_mode="final-rc"), {"url": "https://github.com/owner/release"}))
+        for source in ({"directory": str(self.root)}, {"url": "https://github.com/owner/release", "directory": str(self.root)}, {"url": "https://localhost/feed"}):
+            with self.assertRaisesRegex(ValueError, "final-rc"):
+                snapshot.cache_policy(dict(qa_mode="final-rc"), source)
+        with self.assertRaisesRegex(ValueError, "final-rc"):
+            snapshot.cache_policy(dict(qa_mode="final-rc", verified_cache_root=str(self.root)), {"url": "https://github.com/owner/release"})
+
+    def test_finite_service_binds_reviewed_result_and_serves_verified_fixture_bytes(self):
+        # This is a controller protocol fixture, not a native authentication receipt.
+        case = self.root / "serve-case"
+        (case / "metadata").mkdir(parents=True)
+        (case / "payloads").mkdir()
+        metadata = {name: name.encode() for name in ("meta.conf", "packagesite.pkg", "data.pkg")}
+        pins = {name: hashlib.sha256(value).hexdigest() for name, value in metadata.items()}
+        for name, value in metadata.items():
+            (case / "metadata" / name).write_bytes(value)
+        source = case / "payloads/a.pkg"
+        source.write_bytes(b"test")
+        config = dict(abi="FreeBSD:16:amd64", repository=dict(metadata={name: dict(sha256=pin) for name, pin in pins.items()},
+                      public_key=dict(sha256="a" * 64), payload_source=dict(url="https://example.invalid/feed")))
+        config_path = self.root / "serve-inputs.json"
+        config_path.write_text(json.dumps(config))
+        config_pin = hashlib.sha256(config_path.read_bytes()).hexdigest()
+        result = dict(schema=snapshot.SCHEMA, input_sha256=config_pin, os="FreeBSD", repository_signature_verified=True,
+                      payload_checksums_verified=True, metadata_sha256=pins, public_key_sha256="a" * 64,
+                      packages={"a": dict(version="1", abi="FreeBSD:16:amd64", archive_checksum="native-fixture", archive_path="a.pkg", download_bytes=4, sha256=hashlib.sha256(b"test").hexdigest())})
+        result["packages"]["a"].update(origin="misc/a", installed_bytes=100, archive_checksum="a" * 64)
+        a = self.row()
+        a[5] = "a.pkg"
+        b = list(a)
+        b[0], b[2], b[5] = "b", "misc/b", "b.pkg"
+        database = self.database([a, b])
+        (case / "db").mkdir()
+        (case / "db/repo.sqlite").write_bytes(database.read_bytes())
+        result.update(authenticated_database="db/repo.sqlite",
+                      authenticated_database_sha256=hashlib.sha256(database.read_bytes()).hexdigest())
+        result_path = case / "result.json"
+        result_path.write_text(json.dumps(result))
+        result_pin = hashlib.sha256(result_path.read_bytes()).hexdigest()
+        seen = []
+        original = snapshot.FrozenOrigin
+        class ProbeOrigin(original):
+            def __enter__(inner):
+                super().__enter__()
+                def request():
+                    time.sleep(0.05)
+                    with urllib.request.urlopen(inner.url + "/a.pkg", timeout=2) as response:
+                        seen.append(response.read())
+                    try:
+                        urllib.request.build_opener(NoRedirect).open(inner.url + "/b.pkg", timeout=2)
+                    except urllib.error.HTTPError as error:
+                        seen.append((error.code, error.headers["Location"]))
+                        error.close()
+                inner.probe = threading.Thread(target=request)
+                inner.probe.start()
+                return inner
+            def __exit__(inner, *args):
+                inner.probe.join(timeout=3)
+                return super().__exit__(*args)
+        with patch.object(snapshot, "FrozenOrigin", ProbeOrigin), redirect_stdout(io.StringIO()):
+            summary = snapshot.serve_case(config_path, config_pin, case, result_pin,
+                                         self.root.resolve() / "service-cache", "127.0.0.1", 0, 1)
+        self.assertEqual(seen, [b"test", (302, "https://example.invalid/feed/b.pkg")])
+        self.assertEqual(summary["cache"]["hits"], 1)
+        self.assertEqual(summary["cache"]["misses"], 1)
+        self.assertEqual(summary["public_miss_redirects"], 1)
+        self.assertFalse(summary["new_native_qualification"])
+        self.assertEqual(source.read_bytes(), b"test")
+        result["input_sha256"] = "b" * 64
+        result_path.write_text(json.dumps(result))
+        with self.assertRaisesRegex(ValueError, "exact reviewed"):
+            snapshot.serve_case(config_path, config_pin, case, hashlib.sha256(result_path.read_bytes()).hexdigest(),
+                                self.root.resolve() / "refused-cache", "127.0.0.1", 0, 1)
+        self.assertFalse((self.root / "refused-cache").exists())
 
     def native_fetch_peer(self, action="normal", barrier=1):
         """A command-protocol fixture, never native signature/checksum evidence."""
