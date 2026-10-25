@@ -51,7 +51,7 @@ Finite diagnostic jobs clean up only their owned state. For the existing authent
 
 This product targets FreeBSD only. Qualify the actual FreeBSD EFI binary in a disposable UEFI VM and on the selected physical firmware/NICs. Firmware network availability and the transition to kernel networking are distinct evidence requirements; report any pre-driver gap rather than claiming continuous kernel debugging.
 
-## Requirement: 1.3.2 network bootloader and early-kernel diagnostics
+## Requirement: 1.4 loader, mountroot and early-kernel diagnostics
 
 Provide an explicitly enabled plain wired boot debugging mode equivalent to
 daemonarchy-debug, without SSH, pairing keys or additional session
@@ -62,12 +62,13 @@ direct UDP kernel/module transfer, TFTP download and execution of downloaded Lua
 through the real loader interpreter. Bound staging, retries and memory use;
 never execute partial files or silently mix incompatible kernel/module sets.
 
-Provide actual packets after firmware exit and before ordinary PCI/NIC attachment
+Provide remote input and output at a forced `mountroot>` prompt and actual
+packets after firmware exit and before ordinary PCI/NIC attachment
 using an admitted backend for the built-in NIC. Preloading a kernel NIC module
 does not supply loader networking or prove early operation. Retain earliest-stage
 output, boot/phase identity, explicit loss and last-observed state on the
 controller, bounded panic polling and safe transfer to the native driver.
 Require exact native products, full UEFI VM operation/failure controls and a real
 MSI Raider 18 HX built-in-NIC capture under the
-[1.3.2 plan](../../docs/roadmap/release-1.3.2.md). Historical 1.3.1 prerequisites,
+[1.4 plan](../../docs/roadmap/release-1.4.0.md). Historical 1.3.1 prerequisites,
 USB inventory and later-driver NetGDB do not close this requirement.

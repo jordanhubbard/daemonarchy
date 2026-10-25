@@ -5,7 +5,14 @@ Use [the active queue](docs/roadmap/active-work.md) for stable work IDs and
 acceptance status, and [the architecture](docs/architecture/design-traceability.md)
 for Component ownership. This file remains the release and feature overview.
 
-## 1.4.0: one Literate AI release graph across the owned forks
+## 1.4.0: P0 network debugging and an incremental release graph
+
+First deliver bidirectional plain-mode network debugging across boot blocks,
+loader, a forced `mountroot>` prompt, early kernel startup and panic, with
+bounded polled transport and safe native-NIC takeover. Qualify an exact native
+VM fault matrix before claiming physical MSI support. Preserve every published
+1.3.1 artifact and retained package/build/cache output. See
+[DEBUG-003 and the 1.4 plan](docs/roadmap/release-1.4.0.md).
 
 Use Literate AI's parallel workers to coordinate build, test, package and release
 creation across the selected Daemonarchy product, source, ports, desktop and
@@ -15,8 +22,8 @@ executor perform their native actions. LitAI owns action custody, safe
 dependency-ready scheduling, cache invalidation, evidence and publication.
 Wrapping the current serial release script as one opaque action does not
 deliver that result. See [PERF-002 and its 1.4.0 plan](docs/roadmap/release-1.4.0.md).
-This work is scoped after the current 1.3.1 release; 1.3.2 retains the MSI
-early-kernel debugging milestone.
+This build work supports the 1.4 debugger and follows the published 1.3.1
+release. The earlier 1.3.2 network plan is historical.
 
 ## Unpublished 1.2.0 plan: owned source builds and complete Component coverage
 
@@ -342,11 +349,11 @@ verification; see the [test record](docs/testing-1.1-live-checkouts.md).
 Later 1.1 QEMU results are recorded in [the final candidate record](docs/testing-1.1-final-image.md). The refreshed 1.1.1 sizes and public catalogue are recorded in [the sizing report](docs/optional-source-sizing.md); its final-image checks remain separate.
 
 
-## 1.3.2: complete network bootloader debugging
+## Historical 1.3.2 network bootloader plan
 
-The current operator direction assigns the complete bootloader environment and
-MSI early-kernel capture to **1.3.2**, superseding earlier 1.2/1.3.1 scheduling.
-[DEBUG-003 and the detailed plan](docs/roadmap/release-1.3.2.md) cover plain wired
+The earlier operator direction assigned the complete bootloader environment and
+MSI early-kernel capture to 1.3.2. The current 1.4 P0 scope adds mountroot and
+panic interaction. [DEBUG-003 and the historical plan](docs/roadmap/release-1.3.2.md) cover plain wired
 console control without SSH or additional authentication, variables, disk and
 network kernel/module loading, downloaded Lua execution, actual pre-driver
 networking and physical MSI acceptance. Prior release and prerequisite evidence

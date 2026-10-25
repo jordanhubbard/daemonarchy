@@ -22,7 +22,7 @@ reachable without changing its historical scope.
 - [EFI loader cannot find loader.lua](repair-efi-root.md)
 - [Installation logs and the rescue console](rescue-console.md)
 - [Active work](roadmap/active-work.md)
-- [1.3.2 network bootloader debugging and MSI kernel capture](roadmap/release-1.3.2.md)
+- [Historical 1.3.2 network debugging plan](roadmap/release-1.3.2.md)
 - [1.4.0 Literate AI cross-repository build and release orchestration](roadmap/release-1.4.0.md)
 - [1.1.1-to-1.3.1 application package reuse inventory](evidence/release-1.3.1-package-reuse-inventory.md)
 - [Earlier 1.3.1 diagnostics scope and preflight evidence](roadmap/release-1.3.1.md)
