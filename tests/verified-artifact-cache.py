@@ -127,6 +127,18 @@ class InstallerCacheTests(unittest.TestCase):
         self.assertIn("Final RC", result.stderr)
         self.assertNotIn("kldload", result.stderr)
 
+    def test_harness_refuses_existing_work_before_mutating_host(self):
+        root = Path(__file__).resolve().parents[1]
+        with tempfile.TemporaryDirectory() as directory:
+            prior = Path(directory) / "disk.img"
+            prior.write_bytes(b"retained previous qualification")
+            result = subprocess.run(["sh", str(root / "test-bhyve.sh"), "/does/not/exist.iso"],
+                                    env=dict(os.environ, WORK=directory, NIC="fixture0"), text=True, capture_output=True)
+            self.assertNotEqual(result.returncode, 0)
+            self.assertIn("fresh WORK", result.stderr)
+            self.assertNotIn("kldload", result.stderr)
+            self.assertEqual(prior.read_bytes(), b"retained previous qualification")
+
     def test_selected_metadata_pins_reject_corruption(self):
         with tempfile.TemporaryDirectory() as directory:
             path = Path(directory)

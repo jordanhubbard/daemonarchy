@@ -25,6 +25,7 @@ import sys
 import threading
 import time
 from urllib.parse import quote, unquote, urlsplit
+import urllib.request
 
 
 SPEC = importlib.util.spec_from_file_location("native_package_plan", Path(__file__).with_name("native-package-plan.py"))
@@ -371,6 +372,18 @@ def cache_policy(config, source):
     return cache_module.VerifiedCache(root) if root is not None else None
 
 
+def fetch_public_metadata(metadata, publisher):
+    """Final RC reacquires the exact selected feed bytes from the public publisher."""
+    retrieved = {}
+    for name, expected in metadata.items():
+        with urllib.request.urlopen(publisher + "/" + quote(name), timeout=30) as response:
+            actual = response.read(len(expected) + 1)
+        if actual != expected:
+            raise ValueError("public final-rc metadata differs from selected pin: " + name)
+        retrieved[name] = actual
+    return retrieved
+
+
 def verify(config_path, config_pin, case):
     if platform.system() != "FreeBSD" or os.geteuid() != 0:
         raise ValueError("signed snapshot verification requires FreeBSD root and isolated scratch state")
@@ -418,6 +431,10 @@ def verify(config_path, config_pin, case):
     case.mkdir(mode=0o700)
     for name in ("db", "cache", "repos", "metadata"):
         (case / name).mkdir(mode=0o700)
+    if config.get("qa_mode") == "final-rc":
+        metadata = fetch_public_metadata(metadata, source["url"])
+        (case / "public-metadata-acquisition.json").write_text(json.dumps(dict(
+            publisher=source["url"], metadata_sha256={name: hashlib.sha256(data).hexdigest() for name, data in metadata.items()}), indent=2) + "\n")
     for name, data in metadata.items():
         (case / "metadata" / name).write_bytes(data)
     (case / "public.pem").write_bytes(key)
@@ -490,6 +507,7 @@ def verify(config_path, config_pin, case):
                   dependency_plan_qualified=False, installation_authorized=False, lifecycle_receipt=None,
                   transfer_requests=transfers,
                   qa_mode=config.get("qa_mode", "iterative"),
+                  public_metadata_retrieved=config.get("qa_mode") == "final-rc",
                   verified_cache=cache.summary() if cache is not None else None,
                   seconds=dict(authentication=authenticated - started, fetch_verify=fetched - authenticated,
                                total=time.monotonic() - started))

@@ -246,6 +246,15 @@ class SignedSnapshotTests(unittest.TestCase):
             error.exception.close()
         self.assertEqual(cache.summary()["misses"], 1)
 
+    def test_final_rc_reacquires_exact_public_metadata_and_refuses_drift(self):
+        metadata = {"meta.conf": b"selected signed metadata"}
+        with patch.object(snapshot.urllib.request, "urlopen", return_value=io.BytesIO(metadata["meta.conf"])) as request:
+            self.assertEqual(snapshot.fetch_public_metadata(metadata, "https://github.com/owner/release"), metadata)
+            self.assertEqual(request.call_args.args[0], "https://github.com/owner/release/meta.conf")
+        with patch.object(snapshot.urllib.request, "urlopen", return_value=io.BytesIO(b"changed signed metadata")):
+            with self.assertRaisesRegex(ValueError, "differs from selected pin"):
+                snapshot.fetch_public_metadata(metadata, "https://github.com/owner/release")
+
     def test_selected_abi_refuses_other_freebsd_target(self):
         snapshot.validate_package_abi({"a": {"abi": "FreeBSD:16:amd64"}, "fonts": {"abi": "FreeBSD:16:*"}}, "FreeBSD:16:amd64")
         for abi in ("FreeBSD:15:amd64", "FreeBSD:16:aarch64", "freebsd:16:x86:64"):

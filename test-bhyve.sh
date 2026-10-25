@@ -63,6 +63,12 @@ fi
 
 ISO=${1:?usage: test-bhyve.sh daemonarchy.iso | --cleanup}
 
+# Each qualification keeps its disks, CIDATA and logs; never replace an old run.
+if [ -e "$WORK" ] || [ -L "$WORK" ]; then
+    echo 'Bhyve qualification requires a fresh WORK path; retain the earlier run.' >&2
+    exit 1
+fi
+
 kldload -n vmm if_bridge if_tap nmdm
 mkdir -p "$WORK"
 sysctl -q net.link.tap.up_on_open=1 >/dev/null

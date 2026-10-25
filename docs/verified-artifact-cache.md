@@ -43,7 +43,10 @@ requests count as repeated transfers. No savings are claimed for compilation or
 native acceptance, and no native execution is skipped because of a transport hit.
 
 `qa_mode: "final-rc"` rejects a cache root or offline payload source and requires
-the public GitHub/FreeBSD package publisher. The final QA driver must independently
+the public GitHub/FreeBSD package publisher. It reacquires all three feed metadata
+files from that public publisher, refuses drift from selected pins, and records
+`public-metadata-acquisition.json`; final native authentication still follows.
+The final QA driver must independently
 acquire and verify the exact public ISO/boot assets and perform fresh installation
 and installed boot against public signed feeds. This cache code does not perform
 that VM/hardware matrix or authorize its publication.
@@ -126,7 +129,8 @@ PACKAGE_CACHE_DATA_SHA256=DATA_SHA256 \
 sh test-bhyve.sh /isolated/candidate.iso
 ```
 
-The harness validates before host mutation or VM launch, then writes those fields
+Normal harness runs require a fresh `WORK` path and refuse to replace earlier
+disks, CIDATA or logs. The harness validates before host mutation or VM launch, then writes those fields
 into its private CIDATA configuration. The installer validates and retains fresh
 metadata preflight downloads before any disk changes, rejects changed metadata,
 and keeps `signature_type: "pubkey"` and the image's selected public key. Use the
