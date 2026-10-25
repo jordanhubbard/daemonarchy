@@ -7,6 +7,7 @@
 - **Tracking:** [network debugging issue #33](https://github.com/jordanhubbard/daemonarchy/issues/33), [source issue #21](https://github.com/jordanhubbard/daemonarchy-src/issues/21), [build issue #39](https://github.com/jordanhubbard/daemonarchy/issues/39), [1.4.0 milestone](https://github.com/jordanhubbard/daemonarchy/milestone/3).
 - **Owning queue item:** [DEBUG-003](active-work.md#debug-003-deliver-bidirectional-loader-mountroot-and-panic-network-debugging-for-14).
 - **Supporting queue item:** [PERF-002](active-work.md#perf-002-coordinate-all-daemonarchy-repositories-through-literate-ai-workers-in-140) owns the build and release path.
+- **Acceptance coverage:** [row-by-row owner, dependency and evidence ledger](1.4-coverage-ledger.md) tracks every 1.4 requirement and its exact proof.
 - **Existing foundations:** [retained native execution](active-work.md#adopt-002-qualify-retained-native-execution-and-release-enforcement), [complete source and ports ownership](freebsd-components.md), [native workspace](native-workspace.md), and [build-performance work](build-performance.md).
 - **Release boundary:** 1.3.1 is published and immutable. The [former 1.3.2 network plan](release-1.3.2.md) is historical; its requirements are carried forward here with the additional mountroot and panic acceptance. The operator-confirmed MacBook pre-production result and narrow final-ISO rerun waiver retain their original 1.3.1 scope.
 
