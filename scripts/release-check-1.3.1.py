@@ -29,6 +29,17 @@ NATIVE_EVIDENCE = frozenset((
     "boot-bundle.log", "boot-bundle.exit", "iso-build.log", "iso.exit",
 ))
 NATIVE_RESULTS = frozenset(name for name in NATIVE_EVIDENCE if name.endswith(".exit"))
+REUSE_EVIDENCE = (NATIVE_EVIDENCE - {"bulk.log", "bulk.exit"}) | frozenset((
+    "image-install.log", "image-install.exit", "pkg-check-deps.log",
+    "pkg-check-files.log", "runtime-smoke.log", "reuse-provenance.json",
+))
+REUSED_ARCHIVES = {
+    "cef-152.0.6.pkg": "31dcd655bab385a5a134f54d4c28414a1f71bd0bb798151035879be8897a72b3",
+    "chromium-154.0.8037.57_2.pkg": "e81a45507040c957303138f6c837a01873157827f8f3e3b578c6833a52a72177",
+    "hyprland-preview-share-picker-0.2.1.pkg": "ff77d04adff7200c8a218fe3cd3779e05989d33663e4c29ee5bcab62f2bf7c74",
+    "obs-studio-32.2.2_1.pkg": "a3444865cf47768cdd86b7a0107f5087242864c0f942231d2c4c3532ddd56b30",
+    "tensaku-0.29.0.pkg": "2017171beeabe043f27fd24d47c1862360af76543c746a774412ebbf966570ad",
+}
 HEX = re.compile(r"[0-9a-f]{64}\Z")
 
 
@@ -86,7 +97,9 @@ def native_evidence(record, iso_sha256):
     require(record.get("native_evidence_sha256") == digest(path),
             "native evidence record differs from release selection")
     native = document(path)
-    require(native.get("schema") == "daemonarchy/native-release-evidence@1"
+    schema = native.get("schema")
+    require(schema in ("daemonarchy/native-release-evidence@1",
+                       "daemonarchy/native-release-evidence@2")
             and native.get("source_commit") == SOURCE
             and native.get("ports_commit") == PORTS
             and native.get("desktop_commit") == DESKTOP
@@ -95,7 +108,8 @@ def native_evidence(record, iso_sha256):
             and native.get("iso_sha256") == iso_sha256,
             "native evidence selects other release inputs")
     entries = native.get("evidence")
-    require(isinstance(entries, dict) and set(entries) == NATIVE_EVIDENCE,
+    expected_files = (NATIVE_EVIDENCE if schema.endswith("@1") else REUSE_EVIDENCE)
+    require(isinstance(entries, dict) and set(entries) == expected_files,
             "native evidence inventory is incomplete")
     root = Path(os.environ.get("DAEMONARCHY_NATIVE_EVIDENCE_ROOT", ""))
     require(root.is_absolute() and root.is_dir() and not root.is_symlink(),
@@ -109,7 +123,7 @@ def native_evidence(record, iso_sha256):
                 and digest(evidence) == expected,
                 "native evidence is missing or differs: " + name)
         paths[name] = evidence
-    for name in NATIVE_RESULTS:
+    for name in (name for name in expected_files if name.endswith(".exit")):
         require(paths[name].read_bytes() == b"0\n", "native result failed: " + name)
     require(tail_contains(paths["source-world.log"], b">>> World build completed")
             and tail_contains(paths["source-kernel.log"],
@@ -129,6 +143,48 @@ def native_evidence(record, iso_sha256):
     require(any(line.split()[:2] == ["lang/dotnet", "dotnet-9.0.14"]
                 for line in paths["ports.built"].read_text().splitlines()),
             "native dotnet build result is absent")
+    if schema.endswith("@2"):
+        require(manifest.get("schema") == "daemonarchy/madmax-package-import@2"
+                and manifest.get("assembly_kind") == "selected-base-installed-reuse"
+                and manifest.get("image_install_log_sha256") == digest(paths["image-install.log"])
+                and manifest.get("reuse_provenance_sha256") == digest(paths["reuse-provenance.json"]),
+                "qualified reuse installation is not bound to package manifest")
+        provenance = document(paths["reuse-provenance.json"])
+        retained = provenance.get("retained_archives")
+        require(provenance.get("schema") == "daemonarchy/package-reuse-candidate@1"
+                and provenance.get("status") == "admitted_for_release"
+                and provenance.get("source_revision") == SOURCE
+                and provenance.get("ports_revision") == PORTS
+                and provenance.get("selected_base_osversion") == 1600029
+                and isinstance(retained, list) and len(retained) == len(REUSED_ARCHIVES),
+                "reuse provenance does not select qualified inputs")
+        archives = {item.get("archive"): item for item in retained}
+        require(set(archives) == set(REUSED_ARCHIVES),
+                "retained archive inventory differs")
+        for name, sha256 in REUSED_ARCHIVES.items():
+            item = archives[name]
+            package_name = item.get("name")
+            require(item.get("sha256") == "sha256:" + sha256
+                    and item.get("source_tree_equal") is True
+                    and item.get("public_release") == "packages-16-amd64-1.1.1"
+                    and item.get("qualification") == "admitted_for_release"
+                    and isinstance(package_name, str)
+                    and name.startswith(package_name + "-")
+                    and packages.get(name, [None, None])[1] == sha256
+                    and ("Installing " + name.removesuffix(".pkg") + "...").encode()
+                        in paths["image-install.log"].read_bytes()
+                    and ("Checking " + package_name + ": . done").encode()
+                        in paths["pkg-check-deps.log"].read_bytes()
+                    and ("Checking " + package_name + ": . done").encode()
+                        in paths["pkg-check-files.log"].read_bytes(),
+                    "retained archive lacks exact public or native install evidence: " + name)
+        require(b"Installing daemonarchy-1.3.1,1..." in paths["image-install.log"].read_bytes()
+                and b"Checking daemonarchy: . done" in paths["pkg-check-deps.log"].read_bytes()
+                and b"Checking daemonarchy: . done" in paths["pkg-check-files.log"].read_bytes()
+                and b"Chromium 154.0.8037.57" in paths["runtime-smoke.log"].read_bytes()
+                and b"OBS Studio - 32.2.2" in paths["runtime-smoke.log"].read_bytes()
+                and b"CEF RTLD_NOW load passed" in paths["runtime-smoke.log"].read_bytes(),
+                "installed desktop or reused executable checks are missing")
 
 
 def public_feed(tag):

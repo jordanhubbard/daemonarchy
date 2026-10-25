@@ -104,6 +104,67 @@ class NativeReleaseEvidence(unittest.TestCase):
         with self.assertRaisesRegex(ValueError, "dotnet build result is absent"):
             self.check()
 
+    def reuse(self):
+        self.native["schema"] = "daemonarchy/native-release-evidence@2"
+        del self.values["bulk.log"]
+        del self.values["bulk.exit"]
+        self.values["image-install.exit"] = b"0\n"
+        self.values["image-install.log"] = ("\n".join(
+            "Installing " + name.removesuffix(".pkg") + "..."
+            for name in (*release.REUSED_ARCHIVES, "daemonarchy-1.3.1,1.pkg")) + "\n").encode()
+        checks = ("\n".join("Checking " + name.split("-")[0] + ": . done"
+                            for name in release.REUSED_ARCHIVES) +
+                  "\nChecking daemonarchy: . done\n").encode()
+        # Multiword package names require their full registered names.
+        checks = checks.replace(b"Checking hyprland: . done",
+                                b"Checking hyprland-preview-share-picker: . done")
+        checks = checks.replace(b"Checking obs: . done",
+                                b"Checking obs-studio: . done")
+        self.values["pkg-check-deps.log"] = checks
+        self.values["pkg-check-files.log"] = checks
+        self.values["runtime-smoke.log"] = (b"Chromium 154.0.8037.57\n"
+                                             b"OBS Studio - 32.2.2\n"
+                                             b"CEF RTLD_NOW load passed\n")
+        provenance = {
+            "schema": "daemonarchy/package-reuse-candidate@1",
+            "status": "admitted_for_release",
+            "source_revision": release.SOURCE,
+            "ports_revision": release.PORTS,
+            "selected_base_osversion": 1600029,
+            "retained_archives": [
+                {"archive": name, "name": name.split("-")[0],
+                 "sha256": "sha256:" + digest,
+                 "source_tree_equal": True, "qualification": "admitted_for_release",
+                 "public_release": "packages-16-amd64-1.1.1"}
+                for name, digest in release.REUSED_ARCHIVES.items()],
+        }
+        for item in provenance["retained_archives"]:
+            if item["archive"].startswith("hyprland-preview-share-picker-"):
+                item["name"] = "hyprland-preview-share-picker"
+            if item["archive"].startswith("obs-studio-"):
+                item["name"] = "obs-studio"
+        self.values["reuse-provenance.json"] = (json.dumps(provenance) + "\n").encode()
+        self.manifest["schema"] = "daemonarchy/madmax-package-import@2"
+        self.manifest["assembly_kind"] = "selected-base-installed-reuse"
+        self.manifest["image_install_log_sha256"] = sha(self.values["image-install.log"])
+        self.manifest["reuse_provenance_sha256"] = sha(self.values["reuse-provenance.json"])
+        self.manifest["packages"].update({name: [1, digest]
+                                          for name, digest in release.REUSED_ARCHIVES.items()})
+        self.values["package-manifest.json"] = (json.dumps(self.manifest) + "\n").encode()
+        self.write()
+
+    def test_qualified_reuse_with_exact_public_archives_passes(self):
+        self.reuse()
+        self.check()
+
+    def test_reuse_with_changed_archive_digest_refuses_even_when_rehashed(self):
+        self.reuse()
+        self.manifest["packages"]["cef-152.0.6.pkg"][1] = "f" * 64
+        self.values["package-manifest.json"] = (json.dumps(self.manifest) + "\n").encode()
+        self.write()
+        with self.assertRaisesRegex(ValueError, "retained archive lacks exact public"):
+            self.check()
+
 
 class MacBookReleaseDecision(unittest.TestCase):
     def setUp(self):
