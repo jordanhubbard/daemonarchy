@@ -11,8 +11,9 @@
 ## Intended operating model
 
 Literate AI owns one exact, cross-repository release plan and schedules its
-dependency-ready actions on parallel native workers. Preserve each owned fork's
-source and the FreeBSD package, installer and signing contracts. Select the
+dependency-ready actions on parallel native workers. Keep source authority in
+each owned fork and preserve the FreeBSD package, installer and signing
+contracts. Select the
 executor by measured correctness and elapsed time: Bazel, remote build caches,
 remote execution, other incremental tools, `make` and Poudriere are candidates.
 `make` and Poudriere are not required architecture. Every action's inputs,
@@ -28,6 +29,17 @@ contract without collapsing independently maintained repositories into one
 checkout. Preserve reviewable upstream refreshes and pin one selection for each
 qualification run.
 
+Both FreeBSD source and ports are now owned forks. The 1.4.0 implementation
+may change any part of those forks needed to make source units, ports,
+packages, base ABI contracts and release inputs accurately incremental and
+distributable. Put dependency declarations, package metadata, build hooks and
+cache integration in the fork that owns them where that yields an authoritative
+graph. Preserve FreeBSD's functional ABI, package format and installation
+contracts, native qualification and reviewable FreeBSD CURRENT refreshes; the
+existing make/Poudriere execution model is not a constraint. Land the resulting
+source and ports changes through their own reviewed main branches before the
+1.4 release selection is locked.
+
 ## Cross-release artifact reuse and distributed execution
 
 Always reuse a verified build output, binary, package or release input across
@@ -35,18 +47,37 @@ versions when its complete action identity is unchanged. A release number or
 an unrelated repository commit must not force recompilation. Cache keys must
 cover the exact source subdirectory and transitive shared inputs; port
 Makefiles, distinfo, patches, plist, options, flavors and metadata; generated
-inputs; compiler, toolchain and sysroot; FreeBSD base OSVERSION and ABI;
-dependency package contents and ABI contracts; command, environment and output
-format. Recheck retained bytes, provenance and signatures where applicable
-before a cache hit. Re-sign or repackage only a changed envelope when the
-underlying payload remains valid.
+inputs; compiler, toolchain and sysroot; the relevant FreeBSD base ABI;
+build-time dependency contents and generated interfaces; runtime dependency
+ABI contracts and version constraints; command, environment and output format.
+Record the exact base OSVERSION and dependency versions as provenance. Recheck
+retained bytes, provenance and signatures where applicable before a cache hit.
+Re-sign or repackage only a changed envelope when the underlying payload
+remains valid.
 
 If the graph lacks an input or dependency edge needed for a sound key, repair
 that graph gap before allowing reuse. Until it is repaired, rebuild the
 affected unit and retain the reason. The 1.1.1 and 1.3.1 Chromium and CEF port
 subtrees are identical, while their selected base OSVERSION and seven package
-dependency versions differ; this is a regression case for refusing a cache hit
-based on port-tree equality alone.
+dependency versions differ. This is a regression case for separating actual
+build inputs from runtime-only dependencies, rather than either rebuilding on
+every version change or admitting a cache hit based on port-tree equality alone.
+For a changed base or runtime package, allow reuse of a userland payload only
+after proving the selected base and dependency ABI contracts, package version
+constraints, installation scripts, native execution and relevant application
+behavior still hold. Record the new qualification against the retained payload
+digest and repackage metadata if required. Rebuild kernel modules, changed
+headers or generated interfaces, static links, incompatible ABIs, and any
+case without sufficient evidence. A changed OSVERSION by itself must trigger
+requalification, not automatically a full userland rebuild.
+
+The release pipeline must decide reuse before scheduling compilation, fetch
+retained payloads from the shared cache, and record either the native
+requalification receipt or a specific failed condition. A compatible base or
+runtime-library version change must not queue Chromium or CEF for compilation
+solely because that version changed. If compatibility tests fail, rebuild and
+retain the failure. Duplicate full builds on other machines do not count as a
+distributed speedup.
 
 Treat ports and packages as graph artifacts. Evaluate Bazel incremental builds,
 shared remote cache servers and other proven incremental or remote-execution
@@ -95,6 +126,17 @@ loss without racing package databases or protected signing state.
   invalidate the correct dependent actions; unchanged cross-release actions
   reuse their verified binary, package and release-input outputs without
   recompilation. Missing graph edges refuse cache admission until repaired.
+- [ ] Implement required build, ports, package and ABI metadata changes in the
+  owned FreeBSD source and ports forks, with native tests and reviewed merges
+  to each fork's main. Demonstrate that the graph is authoritative at its
+  actual producers rather than inferred only by an outer release wrapper.
+- [ ] Split build-time inputs from runtime-only ABI/version constraints. Prove
+  unchanged userland payload reuse across compatible OSVERSION and runtime
+  dependency changes using native installation, package scripts, executable
+  and application tests, exact payload digests and fresh provenance. Rebuild
+  for changed headers, static dependencies, incompatible ABIs or failed tests.
+  Use the 1.1.1-to-1.3.1 Chromium/CEF case as a positive or negative regression
+  test determined by evidence, not an assumed hit.
 - [ ] Run independent ready actions concurrently on at least two physical
   machines with a shared verified cache, bounded resources, retained
   partial-failure evidence and reproducible retry. Coalesce duplicate keys
@@ -108,6 +150,19 @@ loss without racing package databases or protected signing state.
   reasons. Set numeric speed targets from that baseline before implementation
   and demonstrate material end-to-end savings without skipping required
   products, tests or acceptance.
+- [ ] Demonstrate the 1.3.1 regression is eliminated: an unchanged release
+  rerun compiles no packages; a compatible base/runtime dependency update
+  requalifies and reuses the retained Chromium/CEF payloads without compiling
+  either browser; a changed browser build input or incompatible ABI rebuilds
+  only the affected closure. Report wall-clock time, cache bytes reused and
+  every admission or rebuild reason. A 1.4 release fails this item if it still
+  repeats the 1.3.1 browser rebuild for a compatible version-only change.
+  Measure the full build/package/sign/ISO critical path with the same required
+  gates and worker pool: the compatible-update run must finish at least four
+  times faster than an equivalent clean rebuild, and the unchanged rerun at
+  least ten times faster. Record 1.1.1 and 1.3.1 observed timings separately
+  from these normalized comparisons so earlier retries or hardware waivers
+  cannot inflate a claimed speedup.
 - [ ] Install the exact image in a fresh VM, exercise upgrade and rollback,
   complete the release's physical hardware matrix, publish through the
   LitAI-controlled release plan and independently verify the tag and assets.
