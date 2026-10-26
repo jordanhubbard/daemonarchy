@@ -26,7 +26,10 @@ JAIL=${JAIL:-$image_jail}
 PTREE=${PTREE:-omarchyiso}
 SNAPSHOT_URL=${SNAPSHOT_URL:-$image_snapshot_url}
 SET_CACHE_DIR=${SET_CACHE_DIR:-$image_set_cache_dir}
-OUTDIR=${OUTDIR:-/usr/local/poudriere/data/images}
+# POUDRIERE_DATA must match the selected Poudriere configuration's own
+# setting, so an isolated configuration reads its own package repository.
+POUDRIERE_DATA=${POUDRIERE_DATA:-/usr/local/poudriere/data}
+OUTDIR=${OUTDIR:-$POUDRIERE_DATA/images}
 ABI=${ABI:-$image_abi}
 [ "$ABI" = "$image_abi" ] || { echo "ABI $ABI does not match ARCH $ARCH" >&2; exit 1; }
 POUDRIERE_ETC=${POUDRIERE_ETC:-}
@@ -58,7 +61,8 @@ if [ -n "$PACKAGE_REPOSITORY_PUBLIC_KEY" ]; then
     }
 fi
 CHECKOUT_CATALOG=${CHECKOUT_CATALOG:-$here/overlay/usr/local/share/daemonarchy-installer/checkouts.json}
-packages=/usr/local/poudriere/data/packages/$JAIL-$PTREE
+packages=$POUDRIERE_DATA/packages/$JAIL-$PTREE
+[ -d "$packages/All" ] || { echo "No package repository at $packages; set POUDRIERE_DATA to the configuration's data directory" >&2; exit 1; }
 [ -n "$CHECKOUT_CATALOG" ] && [ -s "$CHECKOUT_CATALOG" ] || {
   echo 'Set CHECKOUT_CATALOG to the published, signed checkout repository catalogue' >&2
   exit 1
