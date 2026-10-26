@@ -1,15 +1,25 @@
 #!/bin/sh
 # Validate ISO GPU payload against the image ABI; emit name/version manifest.
-# Run on FreeBSD: check-gpu-packages.sh repository/All FreeBSD_version
+# Run on FreeBSD: check-gpu-packages.sh repository/All FreeBSD_version [ABI]
+# The DRM and NVIDIA kernel module ports are amd64-only; an aarch64 image
+# carries only the architecture-neutral firmware and refuses any of them.
 set -eu
 packages=$1
 osversion=$2
+abi_expected=${3:-FreeBSD:16:amd64}
+case "$abi_expected" in
+  FreeBSD:16:amd64) required='drm-612-kmod gpu-firmware-kmod gpu-firmware-amd-kmod-navi14 nvidia-driver nvidia-kmod nvidia-drm-612-kmod linux-nvidia-libs' ;;
+  FreeBSD:16:aarch64) required='gpu-firmware-kmod' ;;
+  *) echo "Unsupported image ABI: $abi_expected" >&2; exit 1 ;;
+esac
 manifest=$(mktemp)
 trap 'rm -f "$manifest"' EXIT HUP INT TERM
 for file in "$packages"/*.pkg; do
   name=$(pkg query -F "$file" '%n')
   case "$name" in
-    drm-612-kmod|gpu-firmware-*|nvidia-driver|nvidia-kmod|nvidia-drm-612-kmod|linux-nvidia-libs) ;;
+    gpu-firmware-*) ;;
+    drm-612-kmod|nvidia-driver|nvidia-kmod|nvidia-drm-612-kmod|linux-nvidia-libs)
+      [ "$abi_expected" = FreeBSD:16:amd64 ] || { echo "Unexpected $abi_expected GPU package: $name" >&2; exit 1; } ;;
     drm-*-kmod|nvidia-*) echo "Unexpected GPU package: $name" >&2; exit 1 ;;
     *) continue ;;
   esac
@@ -27,7 +37,7 @@ for file in "$packages"/*.pkg; do
   abi=$(pkg query -F "$file" '%q')
   case "$name:$abi" in
     gpu-firmware-kmod:FreeBSD:16:\*) ;;
-    *:FreeBSD:16:amd64) ;;
+    *:"$abi_expected") ;;
     *) echo "$name: unexpected ABI $abi" >&2; exit 1 ;;
   esac
   case "$name" in
@@ -38,7 +48,7 @@ for file in "$packages"/*.pkg; do
   esac
   printf '%s %s\n' "$name" "$version" >>"$manifest"
 done
-for name in drm-612-kmod gpu-firmware-kmod gpu-firmware-amd-kmod-navi14 nvidia-driver nvidia-kmod nvidia-drm-612-kmod linux-nvidia-libs; do
+for name in $required; do
   count=$(awk -v n="$name" '$1 == n { count++ } END { print count+0 }' "$manifest")
   [ "$count" = 1 ] || { echo "Need exactly one $name package, found $count" >&2; exit 1; }
 done

@@ -24,7 +24,17 @@ from literate_ai.contracts.retained_project_lifecycle import RetainedProjectProf
 SCHEMA = "daemonarchy/release-input-selection@1"
 GRAPH_SCHEMA = "daemonarchy/release-input-graph@1"
 CHANGED = {"new-unit", "build-inputs-changed", "build-dependency-output-unproven",
-           "unresolved-inputs-repair-before-reuse"}
+           "unresolved-inputs-repair-before-reuse", "architecture-differs-no-reuse"}
+# Typed architecture variants. Each unit is built natively for exactly one; the
+# architecture is part of every build and qualification identity, so a key, an
+# edge or a retained product never crosses architectures. The record in
+# native/release-graph/architectures.json must equal this table.
+ARCHITECTURES = {
+    "amd64": {"abi": "FreeBSD:16:amd64", "target": "amd64", "target_arch": "amd64",
+              "aliases": ("amd64", "x86_64", "x86:64")},
+    "aarch64": {"abi": "FreeBSD:16:aarch64", "target": "arm64", "target_arch": "aarch64",
+                "aliases": ("aarch64", "arm64", "aarch64:64")},
+}
 MAX_JSON = 32 * 1024 * 1024
 
 
@@ -148,9 +158,25 @@ def read_record(repo, revision, reference, retained_root=None):
     return document(data)
 
 
+def architecture(value):
+    require(isinstance(value, str) and value in ARCHITECTURES,
+            "unit architecture must be one typed variant: " + ", ".join(sorted(ARCHITECTURES)))
+    return value
+
+
+def profile_architecture(target, arch):
+    """A profile target that names an architecture must name the unit's."""
+    lowered = target.lower()
+    named = {name for name, variant in ARCHITECTURES.items()
+             if any(re.search(r"(?<![a-z0-9])" + re.escape(alias) + r"(?![a-z0-9])", lowered)
+                    for alias in variant["aliases"])}
+    require(named <= {arch}, "profile target names a different architecture than the unit")
+
+
 def unit_record(spec, repos, paths, retained_root=None):
-    fields(spec, "id repository manifest profile options flavor compiler sysroot generated_inputs dependencies unresolved_inputs base_abi execution_identity")
+    fields(spec, "id repository architecture manifest profile options flavor compiler sysroot generated_inputs dependencies unresolved_inputs base_abi execution_identity")
     name, repository = text(spec["id"]), text(spec["repository"])
+    arch = architecture(spec["architecture"])
     require(repository in repos, "unit names an unselected repository")
     revision, repo = repos[repository]["revision"], paths[repository]
     manifest = RetainedProjectManifest.from_dict(read_record(repo, revision, spec["manifest"], retained_root))
@@ -188,6 +214,7 @@ def unit_record(spec, repos, paths, retained_root=None):
         require((mode == "120000") == (member.symlink_target is not None), "retained link kind differs")
         if mode == "120000":
             require(data.decode() == member.symlink_target, "retained symlink target differs")
+    profile_architecture(profile.target, arch)
     require(profile.toolchain_identity == manifest.role_identity({"sdk", "toolchain"}),
             "canonical SDK/toolchain role closure differs from profile")
     require(profile.dependency_identity == manifest.role_identity({"dependency"}),
@@ -256,6 +283,7 @@ def unit_record(spec, repos, paths, retained_root=None):
                and (m.role != "dependency" or m.path in build_dependencies)]
     tools = [{"name": n, "path": p, "identity": i.uri} for n, p, i in profile.tools]
     build = {"schema": "daemonarchy/retained-build-inputs@1", "target": profile.target,
+             "architecture": arch, "abi_architecture": ARCHITECTURES[arch]["abi"],
              "members": sources, "actions": [a.to_dict() for a in profile.actions
                                                 if a.stage in {"acquire", "stage", "generate", "build"}],
              "tools": tools, "toolchain": profile.toolchain_identity.uri,
@@ -266,9 +294,9 @@ def unit_record(spec, repos, paths, retained_root=None):
                                             for d in dependencies if d["kind"] == "build"], key=lambda e: e["unit"])}
     if base["kernel_bound"]:
         build["base_abi"] = base
-    runtime = {"base_abi": base, "dependencies": sorted(dependencies, key=lambda d: (d["unit"], d["kind"])),
+    runtime = {"architecture": arch, "base_abi": base, "dependencies": sorted(dependencies, key=lambda d: (d["unit"], d["kind"])),
                "dependency_members": [m.to_dict() for m in manifest.members if m.role == "dependency"]}
-    return {"id": name, "repository": repository, "manifest_identity": manifest.identity.uri,
+    return {"id": name, "repository": repository, "architecture": arch, "manifest_identity": manifest.identity.uri,
             "profile_identity": profile.identity.uri, "build_inputs": build,
             "build_inputs_identity": canonical_identity(build).uri,
             "qualification_inputs": runtime, "qualification_inputs_identity": canonical_identity(runtime).uri,
@@ -306,6 +334,8 @@ def collect(selection, paths, retained_roots=None):
     pending, order = set(units), []
     for unit in units.values():
         require(all(d["unit"] in units for d in unit["dependencies"]), "incomplete cross-repository dependency closure")
+        require(all(units[d["unit"]]["architecture"] == unit["architecture"] for d in unit["dependencies"]),
+                "dependency edge crosses architectures: " + unit["id"])
         for generated in unit["build_inputs"]["generated_inputs"]:
             provider, separator, action_id = generated["producer"].partition("#")
             require(separator and provider in units, "generated input names a missing producer unit")
@@ -415,10 +445,17 @@ def graph_units(report):
                 unit["qualification_inputs_identity"] == canonical_identity(unit["qualification_inputs"]).uri and
                 unit["dependencies"] == unit["qualification_inputs"]["dependencies"],
                 "graph unit identity differs from its typed inputs: " + unit["id"])
+        arch = architecture(unit.get("architecture"))
+        require(unit["build_inputs"].get("architecture") == arch and
+                unit["build_inputs"].get("abi_architecture") == ARCHITECTURES[arch]["abi"] and
+                unit["qualification_inputs"].get("architecture") == arch,
+                "graph unit architecture differs from its typed inputs: " + unit["id"])
         units[unit["id"]] = unit
     for unit in units.values():
         require(all(d["unit"] in units for d in unit["dependencies"]),
                 "graph has an unknown dependency edge: " + unit["id"])
+        require(all(units[d["unit"]]["architecture"] == unit["architecture"] for d in unit["dependencies"]),
+                "graph dependency edge crosses architectures: " + unit["id"])
     return units
 
 
@@ -434,6 +471,9 @@ def compare(previous, current):
             reason = "removed"
         elif name not in old:
             reason = "new-unit"
+        elif old[name]["architecture"] != new[name]["architecture"]:
+            # Never a hit, a requalification or a verified reuse across variants.
+            reason = "architecture-differs-no-reuse"
         elif new[name]["unresolved_inputs"] or old[name]["unresolved_inputs"]:
             # A previous output built with an open closure was never proved reusable.
             reason = "unresolved-inputs-repair-before-reuse"
