@@ -18,45 +18,36 @@ limits for every release, including the initial installer snapshots.
 
 ## Download
 
-The latest stable release is **[Daemonarchy 1.1.1](https://github.com/jordanhubbard/daemonarchy/releases/tag/daemonarchy-1.1.1)** (x86-64, BIOS or UEFI), with Omarchy 4.0.4 on FreeBSD 16.0-CURRENT, OSVERSION `1600028`.
+The latest stable release is **[Daemonarchy 1.3.1](https://github.com/jordanhubbard/daemonarchy/releases/tag/daemonarchy-1.3.1)** (x86-64, BIOS or UEFI), published October 25, 2026, on FreeBSD 16.0-CURRENT, OSVERSION `1600029`. Version 1.2.0 was not published; 1.3.1 follows 1.1.1.
 
-- [ISO](https://github.com/jordanhubbard/daemonarchy/releases/download/daemonarchy-1.1.1/daemonarchy-1.1.1-amd64.iso): 1,912,215,552 bytes, under 2 GiB.
-- [Checksum](https://github.com/jordanhubbard/daemonarchy/releases/download/daemonarchy-1.1.1/daemonarchy-1.1.1-amd64.iso.sha256): `c1bc6e3a0d30e6806a324aa3abd76eb70f1593f9f22e7aab6d222491fc1eb956`.
-- Adds partition selection, BIOS boot, QEMU/VirGL Hyprland, native FreeBSD app menus, Chromium, OctoPkg, remote-debug progress, and [manual-enrollment Secure Boot](docs/secure-boot.md).
-- Read the [results and limits](docs/testing-1.1.1.md) before installing. Physical graphics/firmware, Bluetooth audio, enterprise Wi-Fi and refreshed bhyve remain unqualified. The ASRock, MSI Raider and T2 MacBook failures are documented.
+- [ISO](https://github.com/jordanhubbard/daemonarchy/releases/download/daemonarchy-1.3.1/daemonarchy-1.3.1-amd64.iso): 2,041,176,064 bytes, under 2 GiB.
+- [Checksum](https://github.com/jordanhubbard/daemonarchy/releases/download/daemonarchy-1.3.1/daemonarchy-1.3.1-amd64.iso.sha256): `ef5b1bec2189350e1ae194d251c35b959a39d7e4993b6a0f4deb7dcb30365735`.
+- The release also carries the signed Secure Boot bundle (`daemonarchy-1.3.1-boot.txz` and its `.sig`) and the public certificate in PEM and DER form. The package-signing key was rotated for 1.3.1; see the [key rotation record](docs/package-repository-key-rotation-1.3.1.md).
+- Read the [1.3.1 release notes](docs/release-1.3.1.md) and their hardware status and limits before installing. The MacBookPro16,1 passed pre-production checks by operator confirmation; an additional physical run of the final ISO was waived. The MSI Raider 18 HX still resets during early kernel startup.
 
-Write it to a USB stick with `dd if=daemonarchy-1.1.1-amd64.iso of=/dev/<usb-device> bs=1m` (`bs=1M` on Linux). Boot with Secure Boot off, or follow the manual enrollment guide to enable verified boot. The installer needs a network connection. Whole-disk installation erases the selected disk; partition mode replaces only the explicitly selected partition.
+Write it to a USB stick with `dd if=daemonarchy-1.3.1-amd64.iso of=/dev/<usb-device> bs=1m` (`bs=1M` on Linux). Boot with Secure Boot off, or follow the manual enrollment guide to enable verified boot. The installer needs a network connection. Whole-disk installation erases the selected disk; partition mode replaces only the explicitly selected partition.
 
 New to Daemonarchy? [Getting started](docs/getting-started.md) walks through writing the stick, installing, and your first hour on the desktop: Wi-Fi, sound, Bluetooth, updates, and what FreeBSD adds. To build an image yourself or work on Daemonarchy, see [HACKING.md](HACKING.md).
 
 Check the [hardware quirks](docs/hardware-quirks.md) for known boot blockers and
 diagnostic notes, including the MSI Raider 18 HX AI A2XWIG early installer reset.
 
-## 1.1.1 release
+## 1.3.1 release
 
-The current stable release is **1.1.1**. Its new base is FreeBSD CURRENT
-`bdcfeac3e1cb` (OSVERSION `1600028`), paired with ports `f7d7ee897405` on
-`daemonarchy-1.1.1`. The [qualification record](docs/testing-1.1.1.md) tracks
-what has passed and what remains unqualified. The operator authorized publication
-without further hardware or final installation-matrix evidence; those gaps remain open.
+The current stable release is **1.3.1**. Its base is the Daemonarchy FreeBSD
+source fork at `d63d77f4` (FreeBSD CURRENT through `a3d1d4e8`, OSVERSION
+`1600029`), with ports at `b7857842`. The [release notes](docs/release-1.3.1.md)
+cover everything since 1.1.1, including MacBookPro16,1 support (Navi14
+graphics, T2 keyboard and trackpad, and BCM4364 Wi-Fi with firmware acquired
+from Apple recovery media), remote-debugging approval that survives reboot, and
+the rotated package-signing key. [CHANGELOG.md](CHANGELOG.md) keeps the detailed
+history, and the previous release's [1.1.1 qualification record](docs/testing-1.1.1.md)
+remains available.
 
-The refresh adds an explicit **Pair / Unpair remote debugging agent** toggle,
-rescue-menu redraw after boot probes, safe initial boot-environment mounting,
-and an installation integrity check that
-refuses to report success with missing or damaged package files. Bounded
-[continuous diagnostics](docs/remote-agent-debug.md#continuous-diagnostics)
-retain evidence on the controller while SSH works. These tools do not observe
-an early boot failure or recover networking after a hard reset. Loader and
-early-kernel network debugging are deferred to **1.2**; 1.1.1 adds no new
-source patches for that work. Older installations should also check their
-[boot-environment mount policy](HACKING.md#boot-environment-mount-policy);
-an application package update alone does not repair existing ZFS properties.
-
-The new application feed is versioned `packages-16-amd64-1.1.1`. Moving an older
-installation to it requires a coordinated base, kernel and driver upgrade;
-changing the package URL alone is insufficient. Existing stable-feed users
-remain on their current feed. Physical GPU, firmware, radio and retained-OS
-qualification remains explicitly recorded, rather than inferred from VM tests.
+Moving an older installation to the 1.3.1 application feed requires a
+coordinated base, kernel and driver upgrade; changing the package URL alone is
+insufficient. Physical GPU, firmware, radio and retained-OS qualification
+remains explicitly recorded rather than inferred from VM tests.
 
 ## What FreeBSD adds
 
@@ -82,9 +73,9 @@ Install software from FreeBSD's package collection through OctoPkg (**Install > 
 - A live FreeBSD system (from the snapshot) that logs root in on the first console and starts the installer.
 - The installer: `configurator` asks the questions, `install` installs, `dashboard` shows its progress, `launch` ties them together.
 - The snapshot's `base.txz`, `kernel.txz` and `lib32.txz`, which become the installed system. The 32-bit compatibility libraries also satisfy native package dependencies such as LLVM/Mesa.
-- A package repository with what pkg.FreeBSD.org does not publish: the Omarchy ports from the release-specific ports integration ([1.1 candidate](https://github.com/jordanhubbard/freebsd-ports/tree/daemonarchy-1.1-package-baseline), [1.1.1 refresh](https://github.com/jordanhubbard/freebsd-ports/tree/daemonarchy-1.1.1)), and the GPU and Wi-Fi kernel modules (`drm-612-kmod`, `gpu-firmware-*-kmod`, `wifi-firmware-*-kmod`) built for the snapshot kernel.
+- A package repository with what pkg.FreeBSD.org does not publish: the Omarchy ports from the release's ports fork ([daemonarchy-ports](https://github.com/jordanhubbard/daemonarchy-ports) `b7857842` for 1.3.1), and the GPU and Wi-Fi kernel modules (`drm-612-kmod`, `gpu-firmware-*-kmod`, `wifi-firmware-*-kmod`) built for the snapshot kernel.
 
-Other desktop dependencies are downloaded during installation. Compatible official packages come from pkg.FreeBSD.org; the 1.1.1 versioned feed also supplies ordinary dependencies rebuilt for its newer ports/base selection. Network access is required. Keeping those downloads off the ISO keeps each release asset below GitHub's 2 GiB limit; a complete offline desktop payload would exceed that budget.
+Other desktop dependencies are downloaded during installation. Compatible official packages come from pkg.FreeBSD.org; the release's versioned feed also supplies ordinary dependencies rebuilt for its newer ports/base selection. Network access is required. Keeping those downloads off the ISO keeps each release asset below GitHub's 2 GiB limit; a complete offline desktop payload would exceed that budget.
 
 ## Updates
 
@@ -115,7 +106,7 @@ pkg upgrade
 
 ## Roadmap
 
-**1.1.1 is available with documented qualification gaps.** See the [roadmap](ROADMAP.md) for remaining
+**1.3.1 is available with documented qualification gaps; 1.4.0 is in development.** See the [roadmap](ROADMAP.md) for remaining
 graphics, Bluetooth, enterprise Wi-Fi, installation and boot support, upstream
 ports work, and the checks required before release. The
 [partition preview guide](docs/testing-1.1-partitions.md) covers installing into
@@ -195,12 +186,13 @@ release pinning and validation details.
 
 ## Source
 
-Daemonarchy is four repositories:
+Daemonarchy is built from these repositories:
 
 - **[jordanhubbard/daemonarchy](https://github.com/jordanhubbard/daemonarchy)** (this one): the installer image, its build and test scripts, and these docs.
 - **[jordanhubbard/daemonarchy-desktop](https://github.com/jordanhubbard/daemonarchy-desktop)**: Daemonarchy's artwork and login theme, and the System > FreeBSD tools. Its tags are Daemonarchy's version numbers.
 - **[jordanhubbard/omarchy-freebsd](https://github.com/jordanhubbard/omarchy-freebsd)**: the FreeBSD compatibility layer that lets Omarchy run unchanged.
-- **[jordanhubbard/freebsd-ports](https://github.com/jordanhubbard/freebsd-ports/tree/daemonarchy-1.1.1)**: the ports fork that packages all of it. The 1.1.1 refresh uses `daemonarchy-1.1.1`; the historical 1.1 candidate used `daemonarchy-1.1-package-baseline`. Upstream submissions continue independently of Daemonarchy releases.
+- **[jordanhubbard/daemonarchy-src](https://github.com/jordanhubbard/daemonarchy-src)**: the owned FreeBSD source fork the image's base system and kernel are built from. 1.3.1 uses `d63d77f4`; review work lands on its `daemonarchy` integration branch.
+- **[jordanhubbard/daemonarchy-ports](https://github.com/jordanhubbard/daemonarchy-ports)**: the ports fork that packages all of it. 1.3.1 uses `b7857842`; review work lands on its `daemonarchy` integration branch. Releases through 1.1.1 used [jordanhubbard/freebsd-ports](https://github.com/jordanhubbard/freebsd-ports/tree/daemonarchy-1.1.1) (`daemonarchy-1.1.1`, and `daemonarchy-1.1-package-baseline` for the 1.1 candidate). Upstream submissions continue independently of Daemonarchy releases.
 
 ## Building
 
