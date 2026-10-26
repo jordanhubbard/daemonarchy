@@ -23,6 +23,11 @@ source "$(dirname "$0")/gpu-config"
 source "$(dirname "$0")/cuda-options"
 source "$(dirname "$0")/network-addresses"
 source "$(dirname "$0")/apple-firmware"
+# The proactive network pipeline (NET-001), shared with the live desktop's
+# graphical installer and unattended installs.
+source "$(dirname "$0")/network-bringup"
+# Tests substitute recorded steps; sudo removes the variable on the live desktop.
+NB_EXEC=${NB_EXEC:-"$(dirname "$0")/network-bringup"}
 
 # The setup form's reserved names are Linux's. On FreeBSD a name is taken if
 # the base system has it (the live system's accounts are the base system's)
@@ -224,19 +229,25 @@ Keyboard,$keyboard_label" |
 #
 # Unlike the Arch ISO, which carries every package, this installer downloads
 # most of the desktop from pkg.FreeBSD.org, so it needs a network before the disk
-# is touched. Every Ethernet port asked for DHCP at boot; this step shows what
-# came of it and lets the user pick a different port, join Wi-Fi on any
-# wireless adapter, or set an address by hand. Whatever is chosen here is what
-# the installed system uses. Wi-Fi is optional. An empty adapter list is a
-# normal Ethernet machine: the probe succeeds with no output, and the screen
-# does not mention Wi-Fi unless a wireless adapter is present.
+# is touched. The network check (network-bringup) runs first: it finds every
+# adapter, probes all wired ports for DHCP at once, picks the primary
+# connection, proves DNS with direct lookups, makes the clock usable and loads
+# missing firmware, falling back to Wi-Fi first when no cable works. This step
+# then shows what it found and lets the user pick a different port, join Wi-Fi
+# on any wireless adapter, enter a DNS server, or set an address by hand.
+# Whatever is chosen here is what the installed system uses. Wi-Fi is
+# optional. An empty adapter list is a normal Ethernet machine: the probe
+# succeeds with no output, and the screen does not mention Wi-Fi unless a
+# wireless adapter is present.
 
-net_mode=dhcp net_if="" net_addr="" net_gw="" net_dns=""
+net_mode=dhcp net_if="" net_addr="" net_gw="" net_dns="" net_dns_source=""
 wifi_ssid="" wifi_psk="" wifi_hidden=false
 wifi_enterprise_profile=""
 
 online() {
   local status=0
+  # A DHCP renewal may have rewritten the servers the network check proved.
+  if declare -F nb_dns_ensure >/dev/null; then nb_dns_ensure; fi
   # Preserve fetch's diagnostic: DNS, TLS, HTTP and timeouts all used to be
   # flattened into "not connected", even with a working DHCP lease and route.
   # fetch's I/O timeout does not bound the resolver's retries against a dead DNS
@@ -358,10 +369,6 @@ wifi_adapters() {
   for device in $devices; do
     printf '%s\n' "$device"
   done
-}
-
-port_address() {
-  ifconfig "$1" inet 2>/dev/null | awk '/inet / { print $2; exit }'
 }
 
 port_state() {
@@ -503,120 +510,8 @@ wifi_access_points() {
     }' | sort -k1,1nr | awk -F '\t' '!seen[$2]++ { print $2 "  (signal " $1 ")" }'
 }
 
-wifi_connect() {
-  local ssid=$1 psk=$2 hidden=$3 bssid=${4:-} tries state gateway_if dhcp_pid dhcp_command
-  local stale_addr wired_pidfile router lease_file
-  local wifi_conf=${WIFI_CONF:-/tmp/wpa_supplicant.conf}
-  local error_file=${WIFI_ERROR_FILE:-/tmp/daemonarchy-wifi-connect-error}
-  local dhcp_pidfile=${WIFI_DHCLIENT_PIDFILE:-/var/run/dhclient/dhclient.wlan0.pid}
-  rm -f "$error_file"
-  if [[ -n $bssid && ! $bssid =~ ^([[:xdigit:]]{2}:){5}[[:xdigit:]]{2}$ ]]; then
-    printf '%s\n' 'Invalid access-point address.' >"$error_file"
-    return 1
-  fi
-  # ifconfig_DEFAULT=DHCP may have started a background client before this
-  # radio had an authenticated link. Own the wireless lease after WPA instead
-  # of competing with that early client; leave wired DHCP clients untouched.
-  if [[ -r $dhcp_pidfile ]]; then
-    read -r dhcp_pid <"$dhcp_pidfile"
-    if [[ $dhcp_pid =~ ^[1-9][0-9]*$ ]]; then
-      dhcp_command=$(ps -p "$dhcp_pid" -o command= 2>/dev/null || true)
-      if [[ $dhcp_command == *'dhclient: wlan0'* ||
-            $dhcp_command == *'dhclient wlan0'* ]]; then
-        kill "$dhcp_pid" 2>/dev/null || true
-      fi
-    fi
-  fi
-  {
-    echo 'ctrl_interface=/var/run/wpa_supplicant'
-    if [[ -n $psk ]]; then
-      wpa_passphrase "$ssid" "$psk" | grep -v '^[[:space:]]*#psk='
-    else
-      printf 'network={\n\tssid="%s"\n\tkey_mgmt=NONE\n}\n' "$ssid"
-  fi | if [[ $hidden == true || -n $bssid ]]; then
-    awk -v hidden="$hidden" -v bssid="$bssid" '
-      /^}$/ {
-        if (hidden == "true") print "\tscan_ssid=1"
-        if (bssid != "") print "\tbssid=" bssid
-      }
-      { print }'
-  else cat; fi
-  } >"$wifi_conf"
-  chmod 600 "$wifi_conf"
+# wifi_connect is shared from network-bringup.
 
-  pkill -f "wpa_supplicant.*wlan0" 2>/dev/null
-  wpa_supplicant -B -i wlan0 -c "$wifi_conf" >/dev/null 2>&1 || {
-    printf '%s\n' 'Could not start the Wi-Fi authenticator.' >"$error_file"
-    return 1
-  }
-  # A radio may need to try several BSSIDs for the same SSID. Wait for the
-  # completed key exchange before starting DHCP, not just 802.11 association.
-  for ((tries=0; tries<120; tries++)); do
-    state=$(wpa_cli -i wlan0 status 2>/dev/null | awk -F= '$1 == "wpa_state" { print $2; exit }')
-    [[ $state == COMPLETED ]] && break
-    sleep 1
-  done
-  if ((tries == 120)); then
-    printf 'Wi-Fi authentication timed out after 120 seconds (last state: %s).\n' "${state:-unknown}" >"$error_file"
-    return 1
-  fi
-  timeout 60 dhclient wlan0 >/dev/null 2>&1 || {
-    printf '%s\n' 'Wi-Fi authenticated, but DHCP did not assign an address within 60 seconds.' >"$error_file"
-    return 1
-  }
-  # A transient lease or a link-only association is not usable for an online
-  # install. Let the new route settle, then check the selected Wi-Fi path.
-  sleep 5
-  if [[ -z $(port_address wlan0) ]]; then
-    printf '%s\n' 'Wi-Fi authenticated, but no IP address is available.' >"$error_file"
-    return 1
-  fi
-  gateway_if=$(route -n get default 2>/dev/null | awk '/interface:/ { print $2; exit }')
-  if [[ $gateway_if != wlan0 ]]; then
-    # A wired adapter may own the default route even after Wi-Fi obtains a
-    # lease. Keep a live wired address for the debugger while selecting the
-    # wireless gateway for package downloads. Release a stale wired lease only
-    # when its cable has no carrier.
-    lease_file=${WIFI_DHCLIENT_LEASEFILE:-/var/db/dhclient.leases.wlan0}
-    router=$(awk '$1 == "option" && $2 == "routers" {
-      gsub(/[;,]/, "", $3); value = $3
-    } END { print value }' "$lease_file" 2>/dev/null || true)
-    if [[ $gateway_if =~ ^[[:alnum:]_.-]+$ && $gateway_if != wlan* &&
-          $router =~ ^([0-9]{1,3}\.){3}[0-9]{1,3}$ ]] &&
-       ifconfig "$gateway_if" 2>/dev/null | grep -Eq '^[[:space:]]*ether '; then
-      if ifconfig "$gateway_if" 2>/dev/null | grep -Eq 'status: (no carrier|inactive)'; then
-        wired_pidfile=${WIFI_WIRED_DHCLIENT_PIDFILE:-/var/run/dhclient/dhclient.$gateway_if.pid}
-        if [[ -r $wired_pidfile ]]; then
-          read -r dhcp_pid <"$wired_pidfile"
-          if [[ $dhcp_pid =~ ^[1-9][0-9]*$ ]]; then
-            dhcp_command=$(ps -p "$dhcp_pid" -o command= 2>/dev/null || true)
-            if [[ $dhcp_command == *"dhclient: $gateway_if"* ||
-                  $dhcp_command == *"dhclient $gateway_if"* ]]; then
-              kill "$dhcp_pid" 2>/dev/null || true
-            fi
-          fi
-        fi
-        stale_addr=$(port_address "$gateway_if")
-        if [[ -n $stale_addr ]]; then
-          ifconfig "$gateway_if" inet "$stale_addr" delete >/dev/null 2>&1 || true
-        fi
-        route -q delete default >/dev/null 2>&1 || true
-        route -q add default "$router" -ifp wlan0 >/dev/null 2>&1 || true
-      else
-        route -q change default "$router" -ifp wlan0 >/dev/null 2>&1 || true
-      fi
-      gateway_if=$(route -n get default 2>/dev/null | awk '/interface:/ { print $2; exit }')
-    fi
-  fi
-  if [[ $gateway_if != wlan0 ]]; then
-    if [[ -n $gateway_if ]]; then
-      printf 'Wi-Fi has an IP address, but %s owns the default route. Disconnect that interface and retry Wi-Fi to install over Wi-Fi.\n' "$gateway_if" >"$error_file"
-    else
-      printf '%s\n' 'Wi-Fi has an IP address, but no default route. Check the DHCP gateway and retry.' >"$error_file"
-    fi
-    return 1
-  fi
-}
 
 use_wifi() {
   local dev=$1 ssid psk hidden=false status authentication enterprise_args
@@ -676,6 +571,165 @@ use_wifi() {
   fi
 }
 
+# The network check, run from this screen: each step runs bounded behind a
+# spinner in its own process and reports what it found; questions (a DNS
+# server, the clock, Wi-Fi) are asked here only when a step could not settle
+# them by itself.
+nb_ui_ran=false
+
+network_step_title() {
+  case $1 in
+    discover) echo 'Finding network adapters...' ;;
+    dhcp) echo "Asking every wired adapter for an address (up to $NB_DHCP_TIMEOUT seconds)..." ;;
+    dns|dns-fallback) echo 'Checking DNS with direct lookups...' ;;
+    dns-try) echo "Asking $2 for $NB_DNS_NAME..." ;;
+    clock) echo 'Checking the system clock...' ;;
+    firmware) echo 'Checking device firmware...' ;;
+    wifi-prepare) echo 'Preparing Wi-Fi radios...' ;;
+    static) echo "Setting the address on $2..." ;;
+    *) echo 'Checking the network...' ;;
+  esac
+}
+
+network_step_bound() {
+  case $1 in
+    discover) echo 30 ;;
+    dhcp) echo $((NB_DHCP_TIMEOUT + NB_LINK_WAIT + 30)) ;;
+    dns|dns-try) echo 20 ;;
+    dns-fallback) echo 90 ;;
+    clock) echo 90 ;;
+    firmware|wifi-prepare) echo 900 ;;
+    *) echo 60 ;;
+  esac
+}
+
+nb_hook_run() {
+  gum spin --spinner pulse --title "$(network_step_title "$@")" -- \
+    timeout "$(network_step_bound "$1")" "$NB_EXEC" "$@"
+}
+
+nb_hook_show() {
+  local line
+  while IFS= read -r line; do say "$line"; done < <(nb_report "$1")
+}
+
+network_dns_prompt() {
+  local server
+  [[ ${1:-} == asked ]] || say --foreground 3 'No DNS server answered a direct lookup. Enter a DNS server that works on this network.'
+  while true; do
+    server=$(gum input --placeholder '192.168.1.1' --prompt.foreground="#845DF9" --prompt 'DNS server> ') || return 1
+    [[ -n $server ]] || return 1
+    if ! nb_valid_ipv4 "$server"; then
+      say --foreground 3 "$server is not an IPv4 address like 192.168.1.1."
+      continue
+    fi
+    nb_run dns-try "$server" && return 0
+    gum confirm --affirmative 'Try another' --negative 'Skip' "$server did not answer. Try another server?" || return 1
+  done
+}
+nb_hook_dns_prompt() { network_dns_prompt; }
+
+nb_hook_clock_prompt() {
+  local status
+  while true; do
+    say --foreground 3 'Network time did not answer. Set the date and time by hand so signatures can be checked.'
+    gum confirm --affirmative 'Set date and time' --negative 'Skip' 'Set the clock now?' || return 1
+    set_clock_manually
+    status=$(nb_clock_status)
+    if [[ $status == usable ]]; then
+      nb_set clock manual
+      return 0
+    fi
+    say --foreground 3 "The clock is still not usable ($status)."
+  done
+}
+
+nb_hook_wifi_join() {
+  local radio radios
+  # A rerun keeps a working Wi-Fi connection instead of asking again.
+  if [[ $net_mode == wifi && -n $(port_address wlan0) ]] && nb_adopt wlan0; then return 0; fi
+  radios=$(nb_get radios)
+  radio=$(nb_get wifi_radio)
+  if (($(wc -w <<<"$radios") > 1)); then
+    radio=$(printf '%s\n' $radios | gum choose --header 'Wi-Fi adapter') || return 1
+  fi
+  [[ -n $radio ]] || return 1
+  say 'No wired connection works. Join a Wi-Fi network.'
+  use_wifi "$radio" || return 1
+  nb_adopt wlan0
+}
+
+# Carry what the check chose into the installer's answers.
+network_bringup_adopt() {
+  local primary
+  primary=$(nb_get primary)
+  if [[ -n $primary && $primary != wlan* && $net_mode != static ]]; then
+    net_mode=dhcp net_if=$primary wifi_enterprise_profile=''
+  fi
+  if [[ -n $(nb_get dns) ]]; then
+    net_dns=$(nb_get dns)
+    net_dns_source=$(nb_get dns_source)
+  fi
+}
+
+network_bringup_ui() {
+  local status keep_dns=$net_dns
+  nb_ui_ran=true
+  step 'Checking the network'
+  say --foreground 8 'Adapters, addresses, DNS, the clock and firmware. Every check is time-limited.'
+  echo
+  # Only DNS servers the user typed are tried ahead of the network's own.
+  [[ $net_dns_source == user || $net_mode == static ]] || net_dns=''
+  nb_pipeline && status=0 || status=$?
+  [[ -n $net_dns ]] || net_dns=$keep_dns
+  network_bringup_adopt
+  if ((status != 0)); then
+    say --foreground 3 "$(nb_get failure)"
+    gum spin --spinner pulse --title 'Opening network options...' -- sleep 3
+  fi
+  return 0
+}
+
+network_bringup_auto() { $nb_ui_ran || network_bringup_ui; }
+
+network_bringup_summary() {
+  local line
+  while IFS= read -r line; do say --foreground 8 "$line"; done < <(nb_report dhcp wifi-join dns clock firmware)
+}
+
+network_bringup_options() {
+  local ifc primary
+  primary=$(nb_get primary)
+  echo 'Run network checks again'
+  for ifc in $(nb_get wired); do
+    [[ $ifc != "$primary" && $(nb_kv "$ifc" status) == lease ]] && echo "Use $ifc as the primary connection"
+  done
+  echo 'Enter a DNS server'
+}
+
+# Re-prove DNS and the clock after the user changed the connection.
+network_recheck() {
+  nb_run dns || true
+  nb_run clock || true
+  network_bringup_adopt
+}
+
+network_bringup_choice() {
+  local ifc
+  case $1 in
+    'Run network checks again') network_bringup_ui ;;
+    'Enter a DNS server')
+      step 'DNS server'
+      network_dns_prompt asked && network_bringup_adopt
+      ;;
+    'Use '*' as the primary connection')
+      ifc=${1#Use }
+      ifc=${ifc% as the primary connection}
+      nb_run primary "$ifc" && network_recheck
+      ;;
+  esac
+}
+
 network_step() {
   local choice status ifc via connected options wifi_addr
   local mode=${1:-install}
@@ -689,6 +743,7 @@ network_step() {
     fi
     echo
     network_summary
+    [[ $mode == remote-debug ]] || network_bringup_summary
     if [[ $net_mode == wifi ]]; then
       wifi_addr=$(port_address wlan0)
       via=$(default_port)
@@ -716,6 +771,7 @@ network_step() {
 
     options=()
     if $connected || [[ ${1:-} == allow-offline ]]; then options+=("Continue"); fi
+    [[ $mode == remote-debug ]] || mapfile -t -O "${#options[@]}" options < <(network_bringup_options)
     for ifc in $(ether_ports); do
       options+=("Use DHCP on $ifc" "Set up $ifc by hand")
     done
@@ -741,9 +797,24 @@ network_step() {
         if [[ $net_mode == dhcp ]]; then net_if=$(default_port); fi
         return 0
         ;;
-      "Join Wi-Fi with "*) use_wifi "${choice#Join Wi-Fi with }" ;;
-      "Use DHCP on "*) use_dhcp "${choice#Use DHCP on }" ;;
-      "Set up "*" by hand") ifc=${choice#Set up }; use_static "${ifc% by hand}" ;;
+      'Run network checks again'|'Enter a DNS server'|'Use '*' as the primary connection')
+        network_bringup_choice "$choice" ;;
+      "Join Wi-Fi with "*)
+        if use_wifi "${choice#Join Wi-Fi with }" && [[ $mode != remote-debug ]] && nb_adopt wlan0; then
+          network_recheck
+        fi
+        ;;
+      "Use DHCP on "*)
+        ifc=${choice#Use DHCP on }
+        use_dhcp "$ifc"
+        if [[ $mode != remote-debug ]] && nb_adopt "$ifc"; then network_recheck; fi
+        ;;
+      "Set up "*" by hand")
+        ifc=${choice#Set up }
+        if use_static "${ifc% by hand}" && [[ $mode != remote-debug ]]; then
+          nb_hook_run static "$net_if" "$net_addr" "$net_gw" "$net_dns" && network_recheck
+        fi
+        ;;
     esac
   done
 }
@@ -1012,6 +1083,7 @@ write_install_conf() {
     printf 'net_addr=%q\n' "$net_addr"
     printf 'net_gw=%q\n' "$net_gw"
     printf 'net_dns=%q\n' "$net_dns"
+    printf 'net_dns_source=%q\n' "$net_dns_source"
     printf 'wifi_ssid=%q\n' "$wifi_ssid"
     printf 'wifi_psk=%q\n' "$wifi_psk"
     printf 'wifi_hidden=%q\n' "$wifi_hidden"
@@ -1042,7 +1114,7 @@ configurator_main() {
           IFS= read -r _ </dev/tty || true
         }
         ;;
-      'Configure network') network_step allow-offline ;;
+      'Configure network') network_bringup_auto; network_step allow-offline ;;
       'Prepare MacBook Wi-Fi firmware') apple_firmware_step optional ;;
       'Exit to shell') exit 1 ;;
     esac
@@ -1050,6 +1122,7 @@ configurator_main() {
   apple_firmware_step || abort 'MacBook firmware setup failed before disk changes.'
   keyboard_form
   user_step
+  network_bringup_auto
   network_step
   ssh_step
   cuda_step

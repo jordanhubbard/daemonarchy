@@ -99,6 +99,49 @@ class AnswerTests(unittest.TestCase):
         self.assertIn('30000 MiB', gui.confirmation_text(answers(install_mode='free_space')))
 
 
+class NetworkViewTests(unittest.TestCase):
+    def status(self, **changes):
+        value = dict(ok=True, online=False, error='fetch: Network is unreachable', mode='dhcp', via='em0', ssid='',
+                     clock='2026-10-26 10:00:00 UTC', checked=True, primary='em0', alternatives=['em1'],
+                     dns='', dns_source='', need='', failure='', clock_state='', clock_status='usable',
+                     manual_clock=False, adapters=[],
+                     reports={'discover': ['Wired adapters: em0, em1.'], 'dhcp': ['Primary connection: em0.'],
+                              'wifi-prepare': [], 'wifi-join': [], 'dns': ['DNS answers through em0.'],
+                              'clock': ['System time is usable.'], 'firmware': []})
+        value.update(changes)
+        return value
+
+    def test_each_step_reports_in_pipeline_order(self):
+        view = gui.network_view(self.status(online=True))
+        self.assertEqual(view['findings'], ['Wired adapters: em0, em1.', 'Primary connection: em0.',
+                                            'DNS answers through em0.', 'System time is usable.'])
+        self.assertEqual(view['status'], 'Package repository reachable securely through em0.')
+        self.assertEqual(view['alternatives'], ['em1'])
+        self.assertFalse(view['manual_clock'] or view['clock_unusable'])
+
+    def test_failures_and_needs_are_shown(self):
+        view = gui.network_view(self.status(need='dns', failure='No DNS server answered a direct lookup.'))
+        self.assertIn('No DNS server answered', view['status'])
+        self.assertIn('Network is unreachable', view['status'])
+        self.assertEqual(view['need'], 'dns')
+        wifi = gui.network_view(self.status(need='wifi', mode='wifi', ssid='home', online=True, via='wlan0'))
+        self.assertIn('Join a Wi-Fi network', wifi['status'])
+        self.assertIn('wlan0 (home)', wifi['status'])
+
+    def test_manual_clock_only_after_network_time_failed(self):
+        wrong = gui.network_view(self.status(clock_state='wrong', clock_status='before-build', manual_clock=True))
+        self.assertTrue(wrong['manual_clock'])
+        unchecked = gui.network_view(self.status(clock_status='before-build'))
+        self.assertFalse(unchecked['manual_clock'])
+        self.assertTrue(unchecked['clock_unusable'])
+
+    def test_network_page_requests_exist_in_the_backend(self):
+        for command in ('network-check', 'network-status', 'network-primary', 'network-dns', 'network-dhcp',
+                        'network-static', 'wifi-scan', 'wifi-join', 'clock-sync', 'clock-set'):
+            self.assertIn(f"'{command}'", (LIB/'live-installer').read_text(), command)
+            self.assertIn(f'  {command}) cmd_', BACKEND, command)
+
+
 class ProgressTests(unittest.TestCase):
     def setUp(self):
         self.dir = tempfile.TemporaryDirectory()

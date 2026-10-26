@@ -9,7 +9,8 @@
 # the same log and result file the text installer's dashboard reads.
 #
 # Read-only commands: facts, partitions, network-status, wifi-scan.
-# Live-system changes (RAM only): network-dhcp, network-static, wifi-join,
+# Live-system changes (RAM only): network-check, network-primary, network-dns,
+# network-dhcp, network-static, wifi-join, clock-sync, clock-set,
 # terminal-step. write-conf writes only /tmp/daemonarchy-install.conf.
 # install is the only command that may change a disk, and only for the disk
 # in the confirmed answer file.
@@ -38,7 +39,7 @@ ok() { jq -cn '{ok: true}'; }
 notice() { :; }
 
 network_state=$LIVE_STATE/network.state
-network_vars=(net_mode net_if net_addr net_gw net_dns wifi_ssid wifi_psk wifi_hidden wifi_enterprise_profile APPLE_FIRMWARE_STAGE)
+network_vars=(net_mode net_if net_addr net_gw net_dns net_dns_source wifi_ssid wifi_psk wifi_hidden wifi_enterprise_profile APPLE_FIRMWARE_STAGE)
 
 save_network() {
   local name
@@ -142,9 +143,36 @@ cmd_partitions() {
       partitions: $partitions, free: $free, efi: $efi}'
 }
 
-cmd_network_status() {
-  local adapters=() ifc online=false addr state
-  load_network
+# ---------------------------------------------------------------- network
+#
+# The network page runs network-bringup's own pipeline and steps with the
+# text configurator's adoption rules (network_bringup_adopt, network_recheck),
+# so both installers make the same decisions. Only the questions differ: where
+# the text installer prompts inline, these hooks record what is needed
+# (need=dns, need=clock or need=wifi) and the page asks for it.
+
+nb_hook_run() {
+  timeout "$(network_step_bound "$1")" "$NB_EXEC" "$@"
+}
+nb_hook_show() { :; }
+nb_hook_dns_prompt() {
+  nb_set need dns
+  nb_fail 'No DNS server answered a direct lookup. Enter a DNS server that works on this network.'
+}
+nb_hook_clock_prompt() {
+  nb_set need clock
+  nb_fail 'Network time did not answer. Set the date and time by hand so signatures can be checked.'
+}
+nb_hook_wifi_join() {
+  # A rerun keeps a working Wi-Fi connection instead of asking again.
+  if [[ $net_mode == wifi && -n $(port_address wlan0) ]] && nb_adopt wlan0; then return 0; fi
+  nb_set need wifi
+  return 1
+}
+
+network_json() {
+  local adapters=() ifc online=false addr state alternatives=() primary step reports
+  primary=$(nb_get primary)
   for ifc in $(ether_ports); do
     adapters+=("$(jq -cn --arg n "$ifc" --arg k "$(adapter_kind "$ifc")" --arg s "$(port_state "$ifc")" \
       --arg a "$(port_address "$ifc")" --arg d "$(adapter_description "$ifc")" \
@@ -158,11 +186,71 @@ cmd_network_status() {
     adapters+=("$(jq -cn --arg n "$ifc" --arg s "$state" --arg a "$addr" --arg d "$(adapter_description "$ifc")" \
       '{name: $n, kind: "Wi-Fi", state: $s, address: $a, description: $d, wireless: true}')")
   done
+  # The same choices the text installer's network screen offers.
+  for ifc in $(nb_get wired); do
+    [[ $ifc != "$primary" && $(nb_kv "$ifc" status) == lease ]] && alternatives+=("$ifc")
+  done
+  reports='{}'
+  for step in discover dhcp wifi-prepare wifi-join dns clock firmware; do
+    reports=$(jq -c --arg k "$step" --arg v "$(nb_report "$step")" '. + {($k): ($v | split("\n") | map(select(length > 0)))}' <<<"$reports")
+  done
   online && online=true
   jq -cn --argjson online "$online" --arg error "${network_probe_error:-}" --arg mode "$net_mode" \
     --arg via "$(default_port)" --arg ssid "$wifi_ssid" --arg clock "$(date -u '+%Y-%m-%d %H:%M:%S UTC')" \
+    --arg primary "$primary" --arg dns "$(nb_get dns)" --arg dns_source "$(nb_get dns_source)" \
+    --arg need "$(nb_get need)" --arg failure "$(nb_get failure)" --arg clock_state "$(nb_get clock)" \
+    --arg clock_status "$(nb_clock_status)" --argjson checked "$([[ -f $NB_STATE/report.discover ]] && echo true || echo false)" \
+    --argjson reports "$reports" \
+    --argjson alternatives "$(printf '%s\n' "${alternatives[@]}" | jq -Rn '[inputs | select(length > 0)]')" \
     --argjson adapters "$(printf '%s\n' "${adapters[@]}" | jq -s 'map(select(. != null))')" \
-    '{ok: true, online: $online, error: $error, mode: $mode, via: $via, ssid: $ssid, clock: $clock, adapters: $adapters}'
+    '{ok: true, online: $online, error: $error, mode: $mode, via: $via, ssid: $ssid, clock: $clock,
+      checked: $checked, primary: $primary, alternatives: $alternatives, dns: $dns, dns_source: $dns_source,
+      need: $need, failure: $failure, clock_state: $clock_state, clock_status: $clock_status,
+      manual_clock: ($clock_state == "wrong"), reports: $reports, adapters: $adapters}'
+}
+
+# Leave the answers and the shared check state consistent, then report.
+network_done() {
+  network_bringup_adopt
+  save_network
+  network_json
+}
+
+cmd_network_status() {
+  load_network
+  network_json
+}
+
+# The text installer's network_bringup_ui, without its spinner and prompts.
+cmd_network_check() {
+  local keep_dns
+  load_network
+  keep_dns=$net_dns
+  # Only DNS servers the user typed are tried ahead of the network's own.
+  [[ $net_dns_source == user || $net_mode == static ]] || net_dns=''
+  nb_pipeline || true
+  [[ -n $net_dns ]] || net_dns=$keep_dns
+  network_done
+}
+
+cmd_network_primary() {
+  local ifc=${1:-}
+  load_network
+  valid_interface "$ifc" && [[ " $(nb_get wired) " == *" $ifc "* && $(nb_kv "$ifc" status) == lease ]] ||
+    invalid primary 'Choose a wired adapter that received a DHCP lease.'
+  nb_hook_run primary "$ifc" || die "Could not make $ifc the primary connection."
+  net_mode=dhcp net_if=$ifc wifi_enterprise_profile=''
+  network_recheck
+  network_done
+}
+
+cmd_network_dns() {
+  local server=${1:-}
+  load_network
+  nb_valid_ipv4 "$server" || invalid dns "$server is not an IPv4 address like 192.168.1.1."
+  nb_hook_run dns-try "$server" || invalid dns "$(nb_report dns | tail -n 1)"
+  nb_set need ''
+  network_done
 }
 
 cmd_network_dhcp() {
@@ -171,7 +259,8 @@ cmd_network_dhcp() {
   valid_interface "$ifc" && ether_ports | grep -qxF -- "$ifc" || die 'Choose a wired adapter.'
   dhclient "$ifc" >/dev/null 2>&1; sleep 2
   net_mode=dhcp net_if=$ifc wifi_enterprise_profile=''
-  save_network; ok
+  if nb_adopt "$ifc"; then network_recheck; fi
+  network_done
 }
 
 cmd_network_static() {
@@ -186,10 +275,35 @@ cmd_network_static() {
   ifconfig "$ifc" inet "$addr" up || die "Could not set the address on $ifc."
   route -q delete default >/dev/null 2>&1
   route -q add default "$gw" >/dev/null || die 'Could not set the default route.'
-  # shellcheck disable=SC2086
-  printf 'nameserver %s\n' ${dns//,/ } >/etc/resolv.conf
   net_mode=static net_if=$ifc net_addr=$addr net_gw=$gw net_dns=$dns wifi_enterprise_profile=''
-  save_network; ok
+  nb_hook_run static "$net_if" "$net_addr" "$net_gw" "$net_dns" && network_recheck
+  network_done
+}
+
+# Same rule as the text installer: network time first (nb_clock); the date
+# may be set by hand only after network time did not answer, and is accepted
+# only when nb_clock_status calls it usable.
+cmd_clock_sync() {
+  load_network
+  nb_hook_run clock || true
+  [[ $(nb_get clock) == wrong ]] || nb_set need ''
+  network_done
+}
+
+cmd_clock_set() {
+  local value=${1:-} status
+  load_network
+  [[ $(nb_get clock) == wrong ]] || invalid clock 'Synchronize with network time first; set the clock by hand only if that fails.'
+  valid_clock_time "$value" || invalid clock 'Enter a valid UTC date and time, for example 2026-10-15 17:30:00.'
+  if service ntpd onestatus >/dev/null 2>&1 && ! service ntpd onestop >/dev/null 2>&1; then
+    die 'Could not stop network time synchronization; the clock was not changed.'
+  fi
+  date -u -f '%Y-%m-%d %H:%M:%S' "$value" >/dev/null 2>&1 || die 'Could not set the system clock.'
+  status=$(nb_clock_status)
+  [[ $status == usable ]] || invalid clock "The clock is still not usable ($status)."
+  nb_set clock manual
+  nb_set need ''
+  network_done
 }
 
 wifi_device() {
@@ -215,19 +329,19 @@ cmd_wifi_join() {
   IFS= read -r psk || psk=''
   if wifi_connect "$ssid" "$psk" "$hidden" ''; then
     net_mode=wifi net_if=$dev wifi_ssid=$ssid wifi_psk=$psk wifi_hidden=$hidden wifi_enterprise_profile=''
-    save_network; ok
+    if nb_adopt wlan0; then nb_set need ''; network_recheck; fi
+    network_done
   else
     die "$(cat /tmp/daemonarchy-wifi-connect-error 2>/dev/null || echo "Could not connect to $ssid")"
   fi
 }
 
-# Enterprise Wi-Fi, manual clock setting and MacBook firmware keep their text
-# screens, hosted in a terminal on the live desktop, and their results become
-# part of the same answer file.
+# Enterprise Wi-Fi and MacBook firmware keep their text screens, hosted in a
+# terminal on the live desktop; their results join the same answers.
 cmd_terminal_step() {
   load_network
   case ${1:-} in
-    network) network_step allow-offline || true ;;
+    network) nb_ui_ran=true; network_step allow-offline || true ;;
     apple-firmware) apple_firmware_step optional || true ;;
     *) die 'Unknown installer step.' ;;
   esac
@@ -364,6 +478,11 @@ case $command in
   facts) cmd_facts ;;
   partitions) cmd_partitions "$@" ;;
   network-status) cmd_network_status ;;
+  network-check) cmd_network_check ;;
+  network-primary) cmd_network_primary "$@" ;;
+  network-dns) cmd_network_dns "$@" ;;
+  clock-sync) cmd_clock_sync ;;
+  clock-set) cmd_clock_set "$@" ;;
   network-dhcp) cmd_network_dhcp "$@" ;;
   network-static) cmd_network_static "$@" ;;
   wifi-scan) cmd_wifi_scan "$@" ;;

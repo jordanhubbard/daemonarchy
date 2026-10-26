@@ -70,8 +70,13 @@ Each unit has these fields:
   `UNIT#ACTION` form and declared producer `output` paths. Missing units, actions,
   output ownership and cross-unit build edges refuse graph construction. A
   producer reference still requires native output/closure admission.
-- `dependencies`: typed `build` or `runtime` edges with `unit`, `identity`,
-  `artifact_identity`, `members`, `selected_version`, and `version_constraint`.
+- `dependencies`: typed `build`, `runtime` or `test` edges with `unit`, `identity`,
+  `artifact_identity`, `members`, `selected_version`, and `version_constraint`,
+  plus optional ordered `declarations` (`declaration`, `requirement`, `target`)
+  recording every producer variable merged into the edge. A `test` edge is a
+  separate qualification edge: it is bound into `qualification_inputs` only,
+  never into a build key or build order, and a changed or requalifying test
+  producer moves its consumer to native ABI requalification.
   Build identity means relevant producer payload contents; runtime identity means
   the selected ABI contract. Artifact identity retains exact archive/output
   provenance. Every retained `dependency` member needs a typed edge. Shared
@@ -87,8 +92,22 @@ identities must match the profile, and tools must be byte members of its declare
 SDK/toolchain closure. For snapshots, the framework's
 `verify_retained_project_inputs` checks actual bytes, modes and links. Tracked
 members additionally match the exact selected Git blobs. Untracked source/build
-inputs require explicit generated producers. Ownership registration against the
-real Component catalog and full retained admission are separate required gates.
+inputs require explicit generated producers.
+
+Every owner is registered against the product's real Component catalog: the
+adapter loads the authored `components/` catalog through the installed
+framework (`project_component_roots` and the locked-generation catalog reader,
+the same authority `litai project validate` uses) and applies
+`require_registered_retained_owners`. An owner whose Component coordinate is not
+declared, or whose authoring identity is stale, refuses the unit. Each unit
+records its `registered_owners`, and the graph records the exact
+`component_catalog` it was checked against. Registration is not admission: full
+retained/native admission remains a separate required gate.
+
+The operator confirmed the owner assignment on 2026-10-26: units from the
+FreeBSD source fork are owned by `component://daemonarchy/release`, and ports
+units by `component://daemonarchy/package-engine`. Dedicated source or ports
+Components are not planned for 1.4.
 
 Admission is exact across units, not only within one unit. Every retained
 member resolves to one canonical Component owner. When several selected units
@@ -98,6 +117,53 @@ Within a unit, each dependency member belongs to exactly one producer unit; a
 member claimed by edges to two different units refuses as an ambiguous edge.
 The collected report is a deep snapshot that never aliases caller selection
 values.
+
+## Translating producer observations
+
+`release-input-graph.py translate REQUEST --request-sha256 SHA --output NEW` turns
+the source fork's `daemonarchy/source-unit-input-observation@1` and the ports
+fork's `daemonarchy/ports-unit-input-observation@1` records into graph units.
+The request (`daemonarchy/release-input-translation@1`) pins every observation
+and optional hosted summary by digest, relative to the request's directory, and
+names each unit's repository, owning Component and optional retained bindings.
+
+- Unit ids are `REPOSITORY:UNIT[@FLAVOR]:ARCHITECTURE`. The architecture comes from
+  the observation (`target`/`target_arch` for source, `architecture` for ports)
+  and must be a typed variant.
+- Options carry every selected native setting: source `WITH_`/`WITHOUT_`
+  options, `FLAG:` overrides, configuration digests and payload scope; ports
+  Boolean options, `MAKE:` variables and the package database context.
+- Ports edges are grouped by origin and kind, so an origin declared in several
+  variables (`BUILD_DEPENDS` and `LIB_DEPENDS`) becomes one typed edge with all
+  its declarations. `LIB_DEPENDS` keeps both its build and runtime edges.
+- The request's `test_edges` decision is mandatory. `qualification` keeps
+  `TEST_DEPENDS` as typed test edges, and `exclude` records them as excluded in
+  the provenance. Neither refuses the observation, and both decisions are
+  explicit.
+- Edges become graph edges only through explicit bindings (identity, artifact,
+  members, version). An unbound edge becomes an `unresolved_inputs` entry, as do
+  every producer unresolved input (absolute native paths are reduced to their
+  basename), an incomplete recursive or compiler/header closure and a diagnostic
+  package database. A unit with an unresolved input never receives a reuse
+  recommendation.
+- Owners must be registered Components. Observations claiming admission or
+  ownership, untyped edges, bindings for unobserved or excluded edges, revision
+  mismatches and hosted summaries that do not corroborate the unit, commit, tree
+  and architecture all refuse.
+
+Units with retained manifest/profile bindings form a `selection` that
+`collect` accepts directly. Otherwise the result holds `draft_units` that list
+the missing retained records, and `selection` is null. The result is never an
+admission.
+
+[`translation-example-request.json`](../native/release-graph/translation-example-request.json)
+and its [result](../native/release-graph/translation-example-result.json)
+translate `usr.bin/truncate` and `archivers/liblz4`. The hosted summaries above
+corroborate their unit, commit, tree and architecture. The hosted runs retained
+the decoded make values only by digest, so the observation files under
+`translation-example/` are schema fixtures modelled on those Makefiles, not
+native output. Both units remain drafts because no retained profile exists for
+them yet. The focused test checks that the result is reproducible.
 
 ## Architecture variants
 

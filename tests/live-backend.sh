@@ -158,6 +158,138 @@ FAKE_INSTALL_STATUS=3 backend install ada0 >/dev/null
 [[ $(cat "$work/install.status") == 3 ]]
 if backend power reboot >/dev/null; then echo 'Rebooted after a failed install' >&2; exit 1; fi
 
+# ---------------------------------------------------------------- network
+# The network page runs network-bringup's pipeline with the text installer's
+# adoption rules. Each step runs from a recorded fake (as network-bringup's
+# own tests shim the network), so both front-ends can be compared directly.
+mkdir -p "$work/fake"
+cat >"$work/fake/bringup" <<'EOF2'
+#!/usr/bin/env bash
+source "$REAL_LIB/network-bringup"
+step=$1; shift
+printf '%s %s\n' "$step" "$*" >>"$FAKE/steps"
+lease() { printf 'status=lease\naddress=%s\ngateway=%s\ngateway_ok=yes\ndns=%s\n' "$2" "$3" "$4" >"$NB_STATE/dhcp/$1"; }
+case $step in
+  discover) nb_begin discover; nb_set wired 'em0 em1'; nb_say 'Wired adapters: em0, em1.' ;;
+  dhcp)
+    nb_begin dhcp
+    lease em0 192.0.2.10 192.0.2.1 192.0.2.53
+    lease em1 198.51.100.10 198.51.100.1 198.51.100.53
+    nb_set primary "${1:-em0}"
+    nb_say 'em0: address 192.0.2.10, gateway 192.0.2.1, DNS 192.0.2.53.'
+    nb_say "Primary connection: ${1:-em0}."
+    ;;
+  primary) nb_begin dhcp; nb_set primary "$1"; nb_say "Primary connection: $1." ;;
+  dns|dns-fallback)
+    nb_begin dns
+    if [[ -f $FAKE/dns-ok ]]; then
+      nb_set dns "$(cat "$FAKE/dns-ok")"; nb_set dns_source dhcp
+      nb_say "DNS answers through $(nb_get primary) at $(cat "$FAKE/dns-ok")."
+    else
+      nb_say 'None of 6 DNS servers answered a lookup of pkg.FreeBSD.org.'; exit 1
+    fi
+    ;;
+  dns-try)
+    nb_begin dns
+    if [[ $1 == "$(cat "$FAKE/user-dns" 2>/dev/null)" ]]; then
+      nb_set dns "$1"; nb_set dns_source user; nb_say "$1 answered; using it."
+    else
+      nb_say "$1 did not answer a lookup of pkg.FreeBSD.org; it was not used."; exit 1
+    fi
+    ;;
+  clock)
+    nb_begin clock
+    if [[ -f $FAKE/ntp-ok ]]; then nb_set clock synchronized; nb_say 'Clock set from network time server pool.ntp.org.'
+    else nb_set clock wrong; nb_say 'Network time synchronization did not answer.'; exit 1; fi
+    ;;
+  firmware) nb_begin firmware; nb_say 'Every network device has its firmware.' ;;
+  wifi-prepare) nb_begin wifi-prepare; nb_say 'No Wi-Fi radio.'; exit 1 ;;
+  static) nb_begin dhcp; nb_set primary "$1"; nb_say "Static address $2 on $1, gateway $3." ;;
+  *) exit 2 ;;
+esac
+EOF2
+chmod +x "$work/fake/bringup"
+stub gum 'case $1 in spin) while [[ $1 != -- ]]; do shift; done; shift; exec "$@" ;; style) shift; printf "%s\n" "${@: -1}" ;; confirm) exit 1 ;; *) exit 1 ;; esac'
+stub date 'case "$*" in *" -j "*|"-j "*) printf "%s\n" "${@: -2:1}" ;; "-u -f %Y-%m-%d %H:%M:%S "*) echo set >>"$FAKE/clock-set" ;; *) exec /bin/date "$@" ;; esac'
+stub service 'exit 1'
+network_env=(NB_EXEC="$work/fake/bringup" REAL_LIB="$lib" FAKE="$work/fake" NB_STATE="$work/nb" NB_LOG="$work/nb/log"
+  NB_RESOLV_CONF="$work/resolv.conf" NB_SIGNING_CERTS="$work/none.pem")
+net() { env "${network_env[@]}" bash -c 'backend "$@"' net "$@"; }
+export -f backend
+export work lib
+reset_network() { rm -rf "$work/nb" "$work/state/network.state" "$work/fake/"{steps,dns-ok,ntp-ok,user-dns,clock-set}; : >"$work/resolv.conf"; }
+# The text installer's own network_bringup_ui, with its screens stubbed.
+tui_decisions() {
+  env "${network_env[@]}" PATH="$work/bin:$PATH" ISO_SHARE="$work/share" bash -c '
+    source "$(dirname "$0")/configurator" 2>/dev/null
+    step() { :; }; say() { :; }
+    network_bringup_ui >/dev/null 2>&1
+    printf "%s|%s|%s|%s|%s|%s\n" "$net_mode" "$net_if" "$net_dns" "$net_dns_source" "$(nb_get primary)" "$(nb_get clock)"
+  ' "$work/libexec/tui"
+}
+live_decisions() {
+  (source "$work/state/network.state"
+   printf '%s|%s|%s|%s|%s|%s\n' "$net_mode" "$net_if" "$net_dns" "$net_dns_source" "$(jq -r .primary <<<"$1")" "$(jq -r '.clock_state' <<<"$1")")
+}
+
+# Everything works: the same primary, DNS and clock as the text installer,
+# with each step's plain-language report and the other leased port offered.
+reset_network
+echo 192.0.2.53 >"$work/fake/dns-ok"; touch "$work/fake/ntp-ok"
+status=$(net network-check)
+jq -e '.checked and .primary == "em0" and .alternatives == ["em1"] and .need == "" and .failure == ""' <<<"$status" >/dev/null
+jq -e '.reports.dhcp | index("Primary connection: em0.")' <<<"$status" >/dev/null
+jq -e '.reports.dns[0] == "DNS answers through em0 at 192.0.2.53."' <<<"$status" >/dev/null
+jq -e '.reports.clock[0] | startswith("Clock set from network time")' <<<"$status" >/dev/null
+live=$(live_decisions "$status")
+[[ $live == 'dhcp|em0|192.0.2.53|dhcp|em0|synchronized' ]] || { echo "live decisions: $live" >&2; exit 1; }
+reset_network; echo 192.0.2.53 >"$work/fake/dns-ok"; touch "$work/fake/ntp-ok"
+[[ $(tui_decisions) == "$live" ]] || { echo "TUI decided $(tui_decisions), live $live" >&2; exit 1; }
+# The primary-interface override, then DNS and the clock are proved again.
+reset_network; echo 192.0.2.53 >"$work/fake/dns-ok"; touch "$work/fake/ntp-ok"
+net network-check >/dev/null
+: >"$work/fake/steps"
+status=$(net network-primary em1)
+[[ $(jq -r .primary <<<"$status") == em1 ]]
+grep -qx 'net_if=em1' "$work/state/network.state"
+[[ $(cut -d' ' -f1 "$work/fake/steps" | tr '\n' ' ') == 'primary dns clock ' ]]
+[[ $(net network-primary em7 | jq -r .field) == primary ]]
+if net network-primary 'em1;reboot' >/dev/null; then echo 'Accepted an invalid primary' >&2; exit 1; fi
+
+# No DNS answers: the page asks for a server, which must answer before use.
+reset_network; touch "$work/fake/ntp-ok"
+status=$(net network-check)
+jq -e '.need == "dns" and (.failure | startswith("No DNS server answered"))' <<<"$status" >/dev/null
+live=$(live_decisions "$status")
+reset_network; touch "$work/fake/ntp-ok"
+[[ $(tui_decisions) == "$live" ]] || { echo "TUI decided $(tui_decisions), live $live (DNS)" >&2; exit 1; }
+reset_network; touch "$work/fake/ntp-ok"; net network-check >/dev/null
+[[ $(net network-dns 300.1.1.1 | jq -r .field) == dns ]]
+[[ $(net network-dns 192.0.2.99 | jq -r .field) == dns ]]
+echo 192.0.2.99 >"$work/fake/user-dns"
+status=$(net network-dns 192.0.2.99)
+jq -e '.need == "" and .dns == "192.0.2.99" and .dns_source == "user"' <<<"$status" >/dev/null
+grep -qx 'net_dns_source=user' "$work/state/network.state"
+
+# Network time fails: only then may the clock be set by hand, and only a
+# usable time is accepted. A working clock is never set by hand.
+reset_network; echo 192.0.2.53 >"$work/fake/dns-ok"
+status=$(net network-check)
+jq -e '.need == "clock" and .manual_clock and .clock_state == "wrong"' <<<"$status" >/dev/null
+live=$(live_decisions "$status")
+reset_network; echo 192.0.2.53 >"$work/fake/dns-ok"
+[[ $(tui_decisions) == "$live" ]] || { echo "TUI decided $(tui_decisions), live $live (clock)" >&2; exit 1; }
+reset_network; echo 192.0.2.53 >"$work/fake/dns-ok"; net network-check >/dev/null
+[[ $(net clock-set 'yesterday' | jq -r .field) == clock ]]
+[[ ! -e $work/fake/clock-set ]]
+status=$(net clock-set "$(/bin/date -u '+%Y-%m-%d %H:%M:%S')")
+jq -e '.clock_state == "manual" and .need == ""' <<<"$status" >/dev/null
+[[ -s $work/fake/clock-set ]]
+reset_network; echo 192.0.2.53 >"$work/fake/dns-ok"; touch "$work/fake/ntp-ok"; net network-check >/dev/null
+[[ $(net clock-set "$(/bin/date -u '+%Y-%m-%d %H:%M:%S')" | jq -r .field) == clock ]]
+[[ ! -e $work/fake/clock-set ]]
+rm -f "$work/bin/gum" "$work/bin/date" "$work/bin/service"
+
 # Network changes and unknown commands are checked too.
 if backend network-dhcp 'vtnet0;reboot' >/dev/null; then echo 'Accepted an invalid interface' >&2; exit 1; fi
 if backend network-static vtnet0 192.168.1.5 192.168.1.1 1.1.1.1 >/dev/null; then echo 'Accepted an address without prefix' >&2; exit 1; fi
@@ -165,4 +297,4 @@ if backend terminal-step shell >/dev/null; then echo 'Accepted an unknown text s
 if backend sh -c id >/dev/null; then echo 'Accepted an unknown command' >&2; exit 1; fi
 stub id '[[ $1 == -u ]] && echo 1000'
 if backend facts >/dev/null; then echo 'Ran without root' >&2; exit 1; fi
-echo 'PASS: graphical backend writes the text installer answers, refuses bad input, installs only the confirmed disk'
+echo 'PASS: graphical backend makes the text installer network decisions, writes its answers, refuses bad input, installs only the confirmed disk'

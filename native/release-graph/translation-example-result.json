@@ -1,0 +1,164 @@
+{
+  "admitted": false,
+  "cache_admission": false,
+  "component_catalog": [
+    {
+      "authoring_identity": "sha256:a1edf73022af1173d1af0c6616c4a07d9b74aa72a8c14c2c546474e2592a72cc",
+      "component": "component://daemonarchy/compatibility"
+    },
+    {
+      "authoring_identity": "sha256:d27c783faf5c300ae0018c0cac3ecf41caa479756669d37ba643098dbc781026",
+      "component": "component://daemonarchy/desktop"
+    },
+    {
+      "authoring_identity": "sha256:290038d4bf6bd4d2781ef018a27f081ec0bc37d31d86c90da19a4c0d29eed098",
+      "component": "component://daemonarchy/diagnostics"
+    },
+    {
+      "authoring_identity": "sha256:14b5b0478e25639009d70d488d62695b5da846a2d5beee2b46886f92581ffb1b",
+      "component": "component://daemonarchy/installer"
+    },
+    {
+      "authoring_identity": "sha256:65450cf862efddcc0a15cc32b9bb520f273f15c2478be923e355d8d72275580d",
+      "component": "component://daemonarchy/package-engine"
+    },
+    {
+      "authoring_identity": "sha256:11e06112b1b3f3a9516040a2484e4def00e5187dbfcb1363fe1501ba6c63ba87",
+      "component": "component://daemonarchy/release"
+    },
+    {
+      "authoring_identity": "sha256:590e4143a54e7c1cf253a8b29ea54ed503e98f7ff08fe182b6467380a2d94180",
+      "component": "component://daemonarchy/updates"
+    },
+    {
+      "authoring_identity": "sha256:7a0be5316411843c76b42d954003cfe2b38cec2b6ea2f5c2a3d73e709b2f22a2",
+      "component": "component://daemonarchy/verified-boot"
+    }
+  ],
+  "draft_units": [
+    {
+      "architecture": "amd64",
+      "base_abi": {
+        "osversion": 1500068
+      },
+      "dependencies": [],
+      "flavor": null,
+      "id": "daemonarchy-ports:archivers/liblz4:amd64",
+      "missing": [
+        "retained manifest/profile",
+        "compiler",
+        "sysroot",
+        "execution_identity",
+        "base ABI contract"
+      ],
+      "options": {
+        "PKGDB:empty-diagnostic": "none",
+        "TEST": true
+      },
+      "repository": "daemonarchy-ports",
+      "unresolved_inputs": [
+        "producer: recursive dependency closure incomplete",
+        "producer: package database is a diagnostic context, not the selected release",
+        "unbound build dependency devel/gmake",
+        "unbound build dependency devel/pkgconf",
+        "unbound test dependency lang/python313"
+      ]
+    },
+    {
+      "architecture": "amd64",
+      "base_abi": {
+        "osversion": null
+      },
+      "dependencies": [],
+      "flavor": null,
+      "id": "daemonarchy-src:usr.bin/truncate:amd64",
+      "missing": [
+        "retained manifest/profile",
+        "compiler",
+        "sysroot",
+        "execution_identity",
+        "base ABI contract"
+      ],
+      "options": {
+        "CONF:make.conf": "sha256:e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855",
+        "CONF:src.conf": "sha256:e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855",
+        "SCOPE": "compile",
+        "WITHOUT_TESTS": "yes"
+      },
+      "repository": "daemonarchy-src",
+      "unresolved_inputs": [
+        "producer: recursive dependency closure incomplete",
+        "producer: compiler/header trace incomplete",
+        "LIBADD util: native-link-resolution-required-not-runtime-only"
+      ]
+    }
+  ],
+  "provenance": [
+    {
+      "authoring_identity": "sha256:65450cf862efddcc0a15cc32b9bb520f273f15c2478be923e355d8d72275580d",
+      "component": "component://daemonarchy/package-engine",
+      "excluded_test_edges": [],
+      "hosted_corroboration": {
+        "path": "hosted-ports-40250211477.json",
+        "scope": "native-metadata-only",
+        "sha256": "9677ad53ce71d4fa0e69a3e996e0038165ca66270d2a47eed492a4195f52dc0d",
+        "workflow_run": "https://github.com/jordanhubbard/daemonarchy-ports/actions/runs/40250211477"
+      },
+      "kind": "ports",
+      "merged_edges": [
+        {
+          "declarations": 1,
+          "kind": "build",
+          "origin": "devel/gmake"
+        },
+        {
+          "declarations": 1,
+          "kind": "build",
+          "origin": "devel/pkgconf"
+        },
+        {
+          "declarations": 1,
+          "kind": "test",
+          "origin": "lang/python313"
+        }
+      ],
+      "observation": {
+        "path": "translation-example/ports-liblz4-observation.json",
+        "sha256": "17f39bc41bc780c7ea6c97d1d28aa48d2a6dc2a77eebdc5e8d0a13fca70132e9"
+      },
+      "observed_revision": "a56c82cc2b0de960aa382d3bc23a08dc6d31bb66",
+      "observed_tree": "353f30b41bbdc5f46b7f08b028ca07c336f95b73",
+      "unit": "daemonarchy-ports:archivers/liblz4:amd64"
+    },
+    {
+      "authoring_identity": "sha256:11e06112b1b3f3a9516040a2484e4def00e5187dbfcb1363fe1501ba6c63ba87",
+      "component": "component://daemonarchy/release",
+      "excluded_test_edges": [],
+      "hosted_corroboration": {
+        "path": "hosted-source-40249878784.json",
+        "scope": "native-metadata-only",
+        "sha256": "ad662564115d5659526419134442b6f2a73527a70e111e3d6b9ee3b8ee3071e7",
+        "workflow_run": "https://github.com/jordanhubbard/daemonarchy-src/actions/runs/40249878784"
+      },
+      "kind": "source",
+      "merged_edges": [],
+      "observation": {
+        "path": "translation-example/source-truncate-observation.json",
+        "sha256": "1c71790198054a062f3957f07b206c74871ed889a5628e38a5daa1a0b01ff280"
+      },
+      "observed_revision": "64d5f9888a215f0a4d27b0aad98588b32a4e8389",
+      "observed_tree": "5f8c5ffc8fb1a5c74fc54c9d5dddddfaa7c1c5e2",
+      "unit": "daemonarchy-src:usr.bin/truncate:amd64"
+    }
+  ],
+  "remaining_gates": [
+    "retained manifests/profiles for every draft unit",
+    "native recursive producer closure",
+    "bound identities for every unbound edge",
+    "native admission and receipts"
+  ],
+  "request_identity": "sha256:edbfe1900005fcfb3ba2d0e6a510b023fd6e313ce40088f8745d449b9b65c350",
+  "schema": "daemonarchy/release-input-translation-result@1",
+  "selection": null,
+  "test_edges": "qualification"
+}

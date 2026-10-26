@@ -93,6 +93,14 @@ if [[ ${DAEMONARCHY_LIVE:-} != 1 ]] && find_cidata; then
   if [[ -z ${password_hash:-} ]]; then
     printf 'password_hash=%q\n' "$(printf '%s' "$password" | openssl passwd -6 -stdin)" >>"$DAEMONARCHY_INSTALL_CONF"
   fi
+  # The same network check as the configurator, without questions: it honors
+  # net_* and wifi_* answers and records the chosen interface and DNS.
+  echo "Daemonarchy autoinstall: checking the network."
+  if ! "$ISO_LIBEXEC/network-bringup" auto "$DAEMONARCHY_INSTALL_CONF" 2>&1 | tee "${serial[@]}"; then
+    echo "Daemonarchy autoinstall FAILED before any disk change: no usable network."
+    echo "See /tmp/daemonarchy-network/log, fix the network or daemonarchy-install.conf, and reboot."
+    exec /bin/sh
+  fi
   if run_install; then
     echo "Daemonarchy autoinstall finished; powering off."
     shutdown -p now

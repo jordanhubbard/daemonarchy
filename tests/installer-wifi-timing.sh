@@ -6,7 +6,12 @@ work=$(mktemp -d)
 trap 'rm -rf "$work"' EXIT
 export WIFI_CONF=$work/wpa.conf WIFI_ERROR_FILE=$work/error
 export WIFI_DHCLIENT_PIDFILE=$work/dhclient.pid
-eval "$(sed -n '/^wifi_scan() {$/,/^}$/p; /^wifi_access_points() {$/,/^}$/p; /^wifi_connect() {$/,/^}$/p' "$here/overlay/usr/local/libexec/daemonarchy-installer/configurator")"
+# wifi_connect is shared with unattended installs through network-bringup.
+eval "$(sed -n '/^wifi_scan() {$/,/^}$/p; /^wifi_access_points() {$/,/^}$/p; /^wifi_connect() {$/,/^}$/p' \
+  "$here/overlay/usr/local/libexec/daemonarchy-installer/configurator" \
+  "$here/overlay/usr/local/libexec/daemonarchy-installer/network-bringup")"
+grep -q '^wifi_connect() {$' "$here/overlay/usr/local/libexec/daemonarchy-installer/configurator" &&
+  { echo 'wifi_connect is defined twice' >&2; exit 1; }
 
 sleep() { :; }
 pkill() { :; }

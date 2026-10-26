@@ -26,6 +26,10 @@ date() {
 say() { printf '%s\n' "$*"; }
 step() { :; }
 network_summary() { :; }
+# The network check has its own test (tests/network-bringup.sh).
+network_bringup_summary() { :; }
+network_bringup_options() { :; }
+nb_adopt() { return 1; }
 ether_ports() { echo ue0; }
 wifi_adapters() { :; }
 default_port() { echo ue0; }

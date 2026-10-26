@@ -57,7 +57,7 @@ The loader menu that appears for a few seconds at boot offers **Try Daemonarchy 
 
 The live desktop runs entirely from the stick and memory: it changes no disk, imports no existing ZFS pool and uses no swap. It is a minimal Hyprland session with a terminal (**Super + Enter**) and the graphical installer, which opens on its own (**Super + I** reopens it). It shows whether the desktop's graphics work on your machine. The graphics driver is chosen and loaded from the stick, so no network is needed for that. The full Omarchy desktop and its applications are only on the installed system.
 
-The graphical installer asks the same questions as the text installer, checks them by the same rules and writes the same answers. Nothing is written to a disk until you tick the confirmation on its last screen and press **Install Daemonarchy**; it then shows the installer's measured progress and offers a restart when the installation has verifiably completed. Enterprise (802.1X) Wi-Fi, setting the clock and the MacBook Wi-Fi firmware step open the text installer's own screens in a terminal window.
+The graphical installer asks the same questions as the text installer, checks them by the same rules and writes the same answers. Its network page runs the same network checks and shows what each one found; you can pick a different wired port as the primary connection, enter a DNS server, and set the clock by hand if network time does not answer. Nothing is written to a disk until you tick the confirmation on its last screen and press **Install Daemonarchy**; it then shows the installer's measured progress and offers a restart when the installation has verifiably completed. Enterprise (802.1X) Wi-Fi, setting the clock and the MacBook Wi-Fi firmware step open the text installer's own screens in a terminal window.
 
 If the graphics cannot start, or when you leave the live desktop, the text installer takes over the screen; no disk has been changed. Everything the live desktop changes is kept in memory; its minimum memory has not been measured yet. Its account is named `live`, so choose a different user name for your installation.
 
@@ -68,7 +68,20 @@ The installer asks a handful of questions, then installs on its own. Use the arr
 1. **Welcome.** Press Enter to begin.
 2. **Keyboard.** Pick your keyboard layout.
 3. **Your account.** Your name, a user name, a password (you will log in with it, and give it when the system asks for your permission), a name for the computer, and your time zone.
-4. **Network.** The installer lists your network adapters. A plugged-in cable is usually already connected; otherwise pick **Join Wi-Fi**, choose your network and type its password. You can also set an address by hand if your network has no DHCP. If the clock is wrong, choose **Set date and time** and enter the current UTC date and time; this works offline. **Synchronize time over network** tries NTP for up to 30 seconds. After either action the installer checks package access again. Package downloads still require internet access.
+4. **Network.** The installer checks the network for you first, and each check takes at most a short, fixed time:
+   - It lists every wired, USB-tethering and Wi-Fi adapter.
+   - It asks all cabled ports for an address at once and uses the one whose gateway answers.
+   - It checks DNS by looking up `pkg.FreeBSD.org` directly: first with your network's own servers, then with Cloudflare (1.1.1.1), Google (8.8.8.8) and Quad9 (9.9.9.9). It does not ping them, because some block ping.
+   - It sets the clock from network time if the clock is wrong.
+   - It loads any Wi-Fi firmware your adapter still needs.
+
+   With no working cable, it gets Wi-Fi ready first and asks you to join a network. The results are listed on the **Network** screen.
+   - **Use … as the primary connection** switches to another port that got an address.
+   - **Enter a DNS server** is for networks that block public DNS. The installer uses the server only if it answers a lookup.
+   - **Join Wi-Fi** lets you choose your network and type its password. **Set up … by hand** sets an address for networks without DHCP.
+   - **Run network checks again** repeats the whole check.
+
+   If network time does not answer, choose **Set date and time** and enter the current UTC date and time; this works offline. **Synchronize time over network** tries NTP for up to 30 seconds. After each change the installer checks package access again. Package downloads still require internet access. If your network's own DNS did not work, the installed system keeps the DNS servers that did. The check's log is in `/tmp/daemonarchy-network/log` (choose **Open debug shell** to read it).
 5. **Remote access.** Say yes only if you want to log in to this machine from another one over SSH.
 6. **Storage.** Pick the disk and installation mode, review the selected region, and choose whether to **encrypt** it. Encryption requires your password each time the machine starts. Earlier 1.0.1 supports whole-disk mode only.
 7. **Ready.** Check the summary and confirm. Writes to the selected disk/partition/free region begin after confirmation.

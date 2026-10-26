@@ -1,0 +1,486 @@
+{
+  "schema": "daemonarchy/release-stage-timing-baseline@1",
+  "release": "1.3.1",
+  "release_selection": {
+    "product": "cdeb3434a2f7e5e205feb756c897b1e4a98d4c28",
+    "freebsd_source": "d63d77f4eb3cc29e16510f7bdec73602e27c2844",
+    "ports": "b785784219af455a9ce4fd70c59bc96ba77f469f",
+    "desktop": "ec2a00824ec95b342c0c095657ac725c56f0528b",
+    "iso_sha256": "ef5b1bec2189350e1ae194d251c35b959a39d7e4993b6a0f4deb7dcb30365735"
+  },
+  "status": "partially-recovered",
+  "comparison_eligible": false,
+  "summary": "Retained supervisor records from the madmax release-builder guests now time the actual 1.3.1 world (2058 s), kernel (240 s), release sets (444 s) and ISO assembly (426 s), each with UTC start/terminal pairs and exact source or full product/ports/source selection checks; package build has only failed or non-producing attempts, and package fetch and signing were not recovered. scripts/release-measurements.py --recover-supervisor validates every record and keeps them historical-observation, so no stage is comparison-eligible for a normalized speedup.",
+  "source_records": [
+    {
+      "path": "verification/native-development-build.json",
+      "sha256": "75d62dd6eeb7cd857adffc373b84dc7572a7a2e43cda180a1d2fd929cb33a79e"
+    },
+    {
+      "path": "verification/native-traced-build-quiet-result.json",
+      "sha256": "93449fd152bda85cc319ab8d809a8cfa91373a112d80651005f9f14d58c24408"
+    },
+    {
+      "path": "verification/parallel-package-fetch-development.json",
+      "sha256": "5178201e6ac14d96dff67a0bf4516633d194a1d47107cf4aa5d3844a01baa510"
+    },
+    {
+      "path": "verification/test-iso-1.2-test1.json",
+      "sha256": "cf28cb08c14a8bb6919af66db53fafc0e2b30a0f9114fb471cabc9c86c834495"
+    },
+    {
+      "path": "verification/release-1.3.1-stage-records/source-progress.tsv",
+      "sha256": "ec5a2a4f391f3a49c545e1e0c6c78a17e84be4a2d24ab33be9706eab01ab9bd1"
+    },
+    {
+      "path": "verification/release-1.3.1-stage-records/bulk-progress.tsv",
+      "sha256": "b78f992edc82c28934607e084e1943801a689e23e0b9f6ced6f2ee13575c7f39"
+    },
+    {
+      "path": "verification/release-1.3.1-stage-records/fast-bulk-progress.tsv",
+      "sha256": "dab9c9160927598c322d1fccfd2d86f2979353c1d140ea55fd3aa0781e993687"
+    },
+    {
+      "path": "verification/release-1.3.1-stage-records/iso-progress.tsv",
+      "sha256": "5bfdddaa5d746a9c2939d24288352e43635af6adf1f0071ed9753f656335c8a5"
+    },
+    {
+      "path": "verification/release-1.3.1-stage-records/iso-progress-attempt1.tsv",
+      "sha256": "27c432dfe5620a0aecc538fcd034b6814c12bff787bdbef475c6d955cb820c1a"
+    },
+    {
+      "path": "verification/release-1.3.1-stage-records/iso-progress-attempt2.tsv",
+      "sha256": "c468e62ccefede35cb0d7bd9a30462992b088d0d14521d6a02f4dfbc491171f0"
+    }
+  ],
+  "required_stages": [
+    "world",
+    "kernel",
+    "package-fetch",
+    "package-build",
+    "signing",
+    "iso"
+  ],
+  "stages": [
+    {
+      "stage": "world",
+      "retained_observations": [
+        {
+          "record": "verification/native-development-build.json",
+          "source_revision": "92276fc76c65f3ca31552d2e1833a6063361ff64",
+          "phase": "buildworld",
+          "elapsed_seconds": 4195.318,
+          "exit": 0,
+          "note": "12-job GENERIC native development build; recovered workflow, not a clean baseline"
+        },
+        {
+          "record": "verification/native-traced-build-quiet-result.json",
+          "source_revision": "7d93dff0e80a96734f5c0ebe1a48fe378bc3b876",
+          "phase": "buildworld",
+          "elapsed_seconds": 5786.789,
+          "exit": 0,
+          "note": "traced (filemon/meta) build whose overall run failed; tracing overhead included"
+        }
+      ],
+      "release_1_3_1_observation": {
+        "record": "verification/release-1.3.1-stage-records/source-progress.tsv",
+        "record_sha256": "ec5a2a4f391f3a49c545e1e0c6c78a17e84be4a2d24ab33be9706eab01ab9bd1",
+        "validator_output_identity": "sha256:ec5a2a4f391f3a49c545e1e0c6c78a17e84be4a2d24ab33be9706eab01ab9bd1",
+        "phase": "buildworld",
+        "started_utc": "2026-10-24T17:48:17Z",
+        "terminal_utc": "2026-10-24T18:22:35Z",
+        "elapsed_seconds": 2058.0,
+        "exit": 0,
+        "worker_profile": "madmax FreeBSD release-builder guest (QEMU/KVM, 16 vCPU, 64 GiB) on a 32-thread i9-14900KF host shared with other retained guests",
+        "source_revision": "d63d77f4eb3cc29e16510f7bdec73602e27c2844",
+        "selection_match": "exact source d63d77f4 (world depends on source only)",
+        "make_jobs": 16,
+        "log_sha256": "d853121fa3cdf5b67f9cbb5f60a4d92a7f38c2c7719609fecf3bdb182c64a034",
+        "fresh_object_directory": true
+      },
+      "comparison_eligible": false,
+      "ineligibility_reasons": [
+        "release-measurements.py marks every recovered supervisor record historical-observation: worker pool, resource budget and gate scope are not bound by identity, and no authenticated per-action receipts are retained",
+        "independent madmax qualification build; the shipped ISO consumed separately imported release sets whose producer timing is not recovered"
+      ]
+    },
+    {
+      "stage": "kernel",
+      "retained_observations": [
+        {
+          "record": "verification/native-development-build.json",
+          "source_revision": "92276fc76c65f3ca31552d2e1833a6063361ff64",
+          "phase": "buildkernel",
+          "elapsed_seconds": 210.84,
+          "exit": 0,
+          "note": "12-job GENERIC native development build; recovered workflow, not a clean baseline"
+        },
+        {
+          "record": "verification/native-traced-build-quiet-result.json",
+          "source_revision": "7d93dff0e80a96734f5c0ebe1a48fe378bc3b876",
+          "phase": "buildkernel",
+          "elapsed_seconds": 1442.698,
+          "exit": 0,
+          "note": "traced (filemon/meta) build whose overall run failed; tracing overhead included"
+        }
+      ],
+      "release_1_3_1_observation": {
+        "record": "verification/release-1.3.1-stage-records/source-progress.tsv",
+        "record_sha256": "ec5a2a4f391f3a49c545e1e0c6c78a17e84be4a2d24ab33be9706eab01ab9bd1",
+        "validator_output_identity": "sha256:ec5a2a4f391f3a49c545e1e0c6c78a17e84be4a2d24ab33be9706eab01ab9bd1",
+        "phase": "buildkernel",
+        "started_utc": "2026-10-24T18:22:35Z",
+        "terminal_utc": "2026-10-24T18:26:35Z",
+        "elapsed_seconds": 240.0,
+        "exit": 0,
+        "worker_profile": "madmax FreeBSD release-builder guest (QEMU/KVM, 16 vCPU, 64 GiB) on a 32-thread i9-14900KF host shared with other retained guests",
+        "source_revision": "d63d77f4eb3cc29e16510f7bdec73602e27c2844",
+        "selection_match": "exact source d63d77f4",
+        "make_jobs": 16,
+        "kernel": "GENERIC",
+        "log_sha256": "ad0c7aac8da7a39fd1b458d2e3b8f407dc88c0a103ef24ab5bc8f1855fd15dcc"
+      },
+      "comparison_eligible": false,
+      "ineligibility_reasons": [
+        "release-measurements.py marks every recovered supervisor record historical-observation: worker pool, resource budget and gate scope are not bound by identity, and no authenticated per-action receipts are retained",
+        "independent madmax qualification build, not the shipped set producer"
+      ]
+    },
+    {
+      "stage": "package-build",
+      "retained_observations": [
+        {
+          "record": "verification/native-development-build.json",
+          "source_revision": "92276fc76c65f3ca31552d2e1833a6063361ff64",
+          "phase": "packages",
+          "elapsed_seconds": 597.429,
+          "exit": 0,
+          "note": "pkgbase packaging phase, not ports package build"
+        },
+        {
+          "record": "verification/native-traced-build-quiet-result.json",
+          "source_revision": "7d93dff0e80a96734f5c0ebe1a48fe378bc3b876",
+          "phase": "packages",
+          "elapsed_seconds": 2569.764,
+          "exit": 0,
+          "note": "pkgbase packaging phase under tracing"
+        }
+      ],
+      "release_1_3_1_observation": null,
+      "comparison_eligible": false,
+      "ineligibility_reasons": [
+        "the madmax bulk attempts used ports 7e417dae and failed (exit 1, exit 11); the third attempt has no recovered terminal record",
+        "the exact-selection fast race was incremental, built only 5 ports and did not produce the published feed",
+        "the published 204-archive feed mixed native builds with five qualified 1.1.1 archive reuses; no complete clean package-build record exists",
+        "release-measurements.py marks every recovered supervisor record historical-observation: worker pool, resource budget and gate scope are not bound by identity, and no authenticated per-action receipts are retained"
+      ],
+      "release_1_3_1_attempts": [
+        {
+          "record": "verification/release-1.3.1-stage-records/bulk-progress.tsv",
+          "record_sha256": "b78f992edc82c28934607e084e1943801a689e23e0b9f6ced6f2ee13575c7f39",
+          "validator_output_identity": "sha256:b78f992edc82c28934607e084e1943801a689e23e0b9f6ced6f2ee13575c7f39",
+          "phase": "bulk",
+          "started_utc": "2026-10-24T17:59:18Z",
+          "terminal_utc": "2026-10-24T19:09:27Z",
+          "elapsed_seconds": 4209.0,
+          "exit": 1,
+          "worker_profile": "madmax FreeBSD release-builder guest (QEMU/KVM, 16 vCPU, 64 GiB) on a 32-thread i9-14900KF host shared with other retained guests",
+          "ports_revision": "7e417dae24ffb95c4625601ae9d654eb2ca68f4d",
+          "selection_match": "no: earlier ports tree 7e417dae, not b7857842",
+          "poudriere_jobs": 3,
+          "origins": 31,
+          "log_sha256": "118413daf3af767ff20304b894d9fd49128f200b1a94ceb2c2c6a2bd036b5cbe"
+        },
+        {
+          "record": "verification/release-1.3.1-stage-records/bulk-progress.tsv",
+          "record_sha256": "b78f992edc82c28934607e084e1943801a689e23e0b9f6ced6f2ee13575c7f39",
+          "validator_output_identity": "sha256:b78f992edc82c28934607e084e1943801a689e23e0b9f6ced6f2ee13575c7f39",
+          "phase": "bulk-restart",
+          "started_utc": "2026-10-24T19:09:34Z",
+          "terminal_utc": "2026-10-25T04:16:31Z",
+          "elapsed_seconds": 32817.0,
+          "exit": 11,
+          "worker_profile": "madmax FreeBSD release-builder guest (QEMU/KVM, 16 vCPU, 64 GiB) on a 32-thread i9-14900KF host shared with other retained guests",
+          "ports_revision": "7e417dae24ffb95c4625601ae9d654eb2ca68f4d",
+          "selection_match": "no: earlier ports tree 7e417dae",
+          "poudriere_jobs": 6,
+          "log_sha256": "4a74a03db8ad72fff9cb44ba199bd90cdc851601ca6de25e915408756191bfd8"
+        },
+        {
+          "record": "verification/release-1.3.1-stage-records/bulk-progress.tsv",
+          "phase": "third bulk",
+          "started_utc": "2026-10-25T04:18:19Z",
+          "terminal_utc": null,
+          "exit": null,
+          "note": "unterminated in the retained snapshot; its terminal record stays inside the 'old' guest, whose SSH service did not answer during read-only recovery"
+        },
+        {
+          "record": "verification/release-1.3.1-stage-records/fast-bulk-progress.tsv",
+          "record_sha256": "dab9c9160927598c322d1fccfd2d86f2979353c1d140ea55fd3aa0781e993687",
+          "validator_output_identity": "sha256:dab9c9160927598c322d1fccfd2d86f2979353c1d140ea55fd3aa0781e993687",
+          "phase": "fast-native-package-race",
+          "started_utc": "2026-10-25T05:51:09Z",
+          "terminal_utc": "2026-10-26T05:35:54Z",
+          "elapsed_seconds": 85485.0,
+          "exit": 0,
+          "worker_profile": "madmax FreeBSD release-builder guest (QEMU/KVM, 16 vCPU, 64 GiB) on a 32-thread i9-14900KF host shared with other retained guests",
+          "selection_match": "exact: script asserts source d63d77f4, ports b7857842, product cdeb3434",
+          "binding_script_sha256": "56ad4a80806c0a25e2ca6d157b11e899fe020cfc390c7d154673c5b222666357",
+          "poudriere_jobs": 8,
+          "make_jobs_number": 4,
+          "queued": 5,
+          "built": 5,
+          "failed": 0,
+          "built_ports": [
+            "editors/libreoffice",
+            "www/chromium",
+            "www/cef",
+            "multimedia/obs-studio",
+            "x11-wm/daemonarchy"
+          ],
+          "poudriere_reported_time": "23:44:43",
+          "log_sha256": "9934412b3655ca84707cb2dc9553a972fae1e61eaa020bb6a6fb1076f8acd100",
+          "note": "independent race in a snapshot-cloned guest, incremental over a retained package repository; finished after the 1.3.1 feed was published, which reused 1.1.1 Chromium/CEF/OBS archives instead"
+        }
+      ]
+    },
+    {
+      "stage": "package-fetch",
+      "retained_observations": [
+        {
+          "record": "verification/parallel-package-fetch-development.json",
+          "source_revision": "8902832a35521dc26d1741fec558b60adce41692",
+          "phase": "authenticated fetch/verify",
+          "packages": 8,
+          "download_bytes": 29831,
+          "serial_total_seconds": 5.089664717030246,
+          "parallel_total_seconds": 3.1442204479826614,
+          "note": "eight-package historical 1.1.1 subset probe"
+        }
+      ],
+      "release_1_3_1_observation": null,
+      "comparison_eligible": false,
+      "ineligibility_reasons": [
+        "eight-package subset of the 1.1.1 feed, not the 1.3.1 982-package closure",
+        "no retained 1.3.1 acquisition timing record",
+        "recovered 1.3.1 logs contain only poudriere's in-bulk fetch of 10 packages, with no separate supervisor timing"
+      ]
+    },
+    {
+      "stage": "signing",
+      "retained_observations": [],
+      "release_1_3_1_observation": null,
+      "comparison_eligible": false,
+      "ineligibility_reasons": [
+        "no retained signing duration record exists in the repository",
+        "1.3.1 signing included a failed 203-archive feed and a corrected 204-archive re-sign; attempt timings were not recorded here",
+        "the protected signer is not one of the recovered builder guests; no signing timing was recovered"
+      ]
+    },
+    {
+      "stage": "iso",
+      "retained_observations": [
+        {
+          "record": "verification/test-iso-1.2-test1.json",
+          "product_revision": "39c2785b595c8921cfe0fdea6704ad89c27ad7f5",
+          "phase": "build-iso.sh",
+          "elapsed_seconds": 692.869,
+          "supervisor_seconds": 716.504,
+          "exit": 0,
+          "note": "1.2-test1 loader-debug test ISO on the retained 1.1.1 base and package feed"
+        }
+      ],
+      "release_1_3_1_observation": {
+        "record": "verification/release-1.3.1-stage-records/iso-progress.tsv",
+        "record_sha256": "5bfdddaa5d746a9c2939d24288352e43635af6adf1f0071ed9753f656335c8a5",
+        "validator_output_identity": "sha256:5bfdddaa5d746a9c2939d24288352e43635af6adf1f0071ed9753f656335c8a5",
+        "phase": "iso",
+        "started_utc": "2026-10-25T18:51:12Z",
+        "terminal_utc": "2026-10-25T18:58:18Z",
+        "elapsed_seconds": 426.0,
+        "exit": 0,
+        "worker_profile": "madmax FreeBSD release-builder guest (QEMU/KVM, 16 vCPU, 64 GiB) on a 32-thread i9-14900KF host shared with other retained guests",
+        "selection_match": "exact: script asserts product cdeb3434, ports b7857842, source d63d77f4 and its output SHA-256 matches the published ISO",
+        "binding_script_sha256": "77cbddc2d90ac704fe0dbe19b87914428155c1a54dc07a768fdcecab545139c1",
+        "log_sha256": "2fe4834c855addeb4ab810714859fc0e5d8eee00f504064b10cf39a2d383c2ab",
+        "output_sha256": "ef5b1bec2189350e1ae194d251c35b959a39d7e4993b6a0f4deb7dcb30365735"
+      },
+      "comparison_eligible": false,
+      "ineligibility_reasons": [
+        "release-measurements.py marks every recovered supervisor record historical-observation: worker pool, resource budget and gate scope are not bound by identity, and no authenticated per-action receipts are retained",
+        "two earlier failed attempts (45 s and 1 s) precede the successful run and must be counted in any critical path"
+      ],
+      "release_1_3_1_failed_attempts": [
+        {
+          "record": "verification/release-1.3.1-stage-records/iso-progress-attempt1.tsv",
+          "record_sha256": "27c432dfe5620a0aecc538fcd034b6814c12bff787bdbef475c6d955cb820c1a",
+          "validator_output_identity": "sha256:27c432dfe5620a0aecc538fcd034b6814c12bff787bdbef475c6d955cb820c1a",
+          "phase": "iso",
+          "started_utc": "2026-10-25T18:48:11Z",
+          "terminal_utc": "2026-10-25T18:48:56Z",
+          "elapsed_seconds": 45.0,
+          "exit": 1,
+          "worker_profile": "madmax FreeBSD release-builder guest (QEMU/KVM, 16 vCPU, 64 GiB) on a 32-thread i9-14900KF host shared with other retained guests",
+          "log_sha256": "1dc577168e8798ef3a4f3fa5c565f151d25e338c87df75e58477858606fc7c04",
+          "failure": "pinned builder sed expansion of positional arguments"
+        },
+        {
+          "record": "verification/release-1.3.1-stage-records/iso-progress-attempt2.tsv",
+          "record_sha256": "c468e62ccefede35cb0d7bd9a30462992b088d0d14521d6a02f4dfbc491171f0",
+          "validator_output_identity": "sha256:c468e62ccefede35cb0d7bd9a30462992b088d0d14521d6a02f4dfbc491171f0",
+          "phase": "iso",
+          "started_utc": "2026-10-25T18:50:47Z",
+          "terminal_utc": "2026-10-25T18:50:48Z",
+          "elapsed_seconds": 1.0,
+          "exit": 1,
+          "worker_profile": "madmax FreeBSD release-builder guest (QEMU/KVM, 16 vCPU, 64 GiB) on a 32-thread i9-14900KF host shared with other retained guests",
+          "log_sha256": "f85ae416cc42abbe10e990753b35dcafcb48820e36a6d6ce3a6e9e18d73e4543",
+          "failure": "wrong package repository path"
+        }
+      ]
+    },
+    {
+      "stage": "release-sets",
+      "retained_observations": [
+        {
+          "record": "verification/native-development-build.json",
+          "source_revision": "92276fc76c65f3ca31552d2e1833a6063361ff64",
+          "phase": "sets",
+          "elapsed_seconds": 220.836,
+          "exit": 1,
+          "note": "set staging attempt"
+        },
+        {
+          "record": "verification/native-development-build.json",
+          "source_revision": "92276fc76c65f3ca31552d2e1833a6063361ff64",
+          "phase": "sets",
+          "elapsed_seconds": 1344.623,
+          "exit": 0,
+          "note": "set staging attempt"
+        },
+        {
+          "record": "verification/native-traced-build-quiet-result.json",
+          "source_revision": "7d93dff0e80a96734f5c0ebe1a48fe378bc3b876",
+          "phase": "sets",
+          "elapsed_seconds": 2584.744,
+          "exit": -1,
+          "note": "set staging under tracing; terminated"
+        }
+      ],
+      "release_1_3_1_observation": {
+        "record": "verification/release-1.3.1-stage-records/source-progress.tsv",
+        "record_sha256": "ec5a2a4f391f3a49c545e1e0c6c78a17e84be4a2d24ab33be9706eab01ab9bd1",
+        "validator_output_identity": "sha256:ec5a2a4f391f3a49c545e1e0c6c78a17e84be4a2d24ab33be9706eab01ab9bd1",
+        "phase": "release-sets",
+        "started_utc": "2026-10-24T18:26:35Z",
+        "terminal_utc": "2026-10-24T18:33:59Z",
+        "elapsed_seconds": 444.0,
+        "exit": 0,
+        "worker_profile": "madmax FreeBSD release-builder guest (QEMU/KVM, 16 vCPU, 64 GiB) on a 32-thread i9-14900KF host shared with other retained guests",
+        "source_revision": "d63d77f4eb3cc29e16510f7bdec73602e27c2844",
+        "selection_match": "exact source d63d77f4",
+        "make_jobs": 16,
+        "verified_sets": [
+          "base",
+          "kernel",
+          "lib32"
+        ],
+        "log_sha256": "db83d2c88e04fce9b33212c110305b84e8c2d3ac76d22a45ffc4a4bbe120adfb"
+      },
+      "comparison_eligible": false,
+      "ineligibility_reasons": [
+        "release-measurements.py marks every recovered supervisor record historical-observation: worker pool, resource budget and gate scope are not bound by identity, and no authenticated per-action receipts are retained",
+        "independent madmax qualification build, not the shipped set producer"
+      ]
+    }
+  ],
+  "release_1_3_1_record_locations": {
+    "state": "partially recovered (read-only)",
+    "recovered_from": "retained madmax release-builder guest 'fast' (a snapshot clone carrying the 'old' guest's 1.3.1 build directory) through read-only SSH; no guest was stopped, restarted, reconfigured or written",
+    "unreachable": [
+      "the 'old' and 'turbo' guests' SSH services did not answer; the third madmax bulk attempt's terminal record remains there",
+      "daemon.local, which also built world/kernel/sets, was not reachable from the controller"
+    ],
+    "large_log_sha256": {
+      "buildworld.log": "d853121fa3cdf5b67f9cbb5f60a4d92a7f38c2c7719609fecf3bdb182c64a034",
+      "buildkernel.log": "ad0c7aac8da7a39fd1b458d2e3b8f407dc88c0a103ef24ab5bc8f1855fd15dcc",
+      "release-sets.log": "db83d2c88e04fce9b33212c110305b84e8c2d3ac76d22a45ffc4a4bbe120adfb",
+      "bulk-attempt-1.log": "118413daf3af767ff20304b894d9fd49128f200b1a94ceb2c2c6a2bd036b5cbe",
+      "bulk-attempt-2.log": "4a74a03db8ad72fff9cb44ba199bd90cdc851601ca6de25e915408756191bfd8"
+    },
+    "validation": "python3 scripts/release-measurements.py --recover-supervisor verification/release-1.3.1-stage-records/<record>.tsv --release-source d63d77f4eb3cc29e16510f7bdec73602e27c2844"
+  },
+  "selected_targets": {
+    "selection_state": "selected before 1.4 implementation; any change requires a recorded roadmap decision",
+    "reference": "An equivalent clean 1.4 run (same product/source/ports selection, tests, gates and admitted worker pool) measured with scripts/release-measurements.py; the 1.3.1 baseline above is not eligible as that reference until recovered and validated.",
+    "targets": [
+      {
+        "id": "unchanged-rerun-speed",
+        "metric": "wall_seconds(unchanged) / wall_seconds(equivalent clean)",
+        "maximum": 0.1,
+        "source": "1.4 coverage ledger A10 (10x)"
+      },
+      {
+        "id": "compatible-update-speed",
+        "metric": "wall_seconds(compatible Chromium/CEF update) / wall_seconds(equivalent clean)",
+        "maximum": 0.25,
+        "source": "1.4 coverage ledger A10 (4x)"
+      },
+      {
+        "id": "unchanged-compilations",
+        "metric": "compiled package and world/kernel compile actions in an unchanged rerun",
+        "maximum": 0,
+        "source": "A10"
+      },
+      {
+        "id": "compatible-browser-compilations",
+        "metric": "Chromium and CEF compilations in a compatible update (both requalified)",
+        "maximum": 0,
+        "source": "A10"
+      },
+      {
+        "id": "changed-input-closure",
+        "metric": "rebuilt actions outside the computed invalidated closure",
+        "maximum": 0,
+        "source": "A10 and build-performance.md"
+      },
+      {
+        "id": "unchanged-cache-hit-rate",
+        "metric": "admitted cache hits / reuse-eligible actions in an unchanged rerun",
+        "minimum": 1.0,
+        "source": "A9 cache hit rates"
+      },
+      {
+        "id": "package-only-regression",
+        "metric": "package-only wall seconds / package stage seconds of the equivalent clean run",
+        "maximum": 1.0,
+        "source": "A9 package-only timing; guard, not a speedup claim"
+      },
+      {
+        "id": "iso-only-regression",
+        "metric": "ISO-only wall seconds / ISO stage seconds of the equivalent clean run",
+        "maximum": 1.0,
+        "source": "A9 ISO-only timing; guard, not a speedup claim"
+      },
+      {
+        "id": "distributed-regression",
+        "metric": "two-physical-worker clean critical path / single-worker equivalent clean critical path",
+        "maximum": 1.0,
+        "source": "A6/A9; any speedup is reported, not assumed"
+      }
+    ],
+    "required_accounting": [
+      "critical-path stage times",
+      "action counts by kind",
+      "cache hit/miss/refusal counts and bytes",
+      "prevented rebuilds",
+      "all retry and failed attempts included"
+    ]
+  },
+  "not_claimed": [
+    "a normalized 1.3.1 baseline",
+    "any 1.4 speedup",
+    "native receipts or lifecycle acceptance",
+    "that the recovered world/kernel/sets produced the shipped ISO's release sets"
+  ]
+}

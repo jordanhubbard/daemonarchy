@@ -16,6 +16,7 @@ import os
 from pathlib import Path
 import subprocess
 import sys
+import threading
 
 LIBEXEC = Path(os.environ.get('ISO_LIBEXEC', Path(__file__).resolve().parent))
 BACKEND = str(LIBEXEC / 'live-backend')
@@ -27,7 +28,7 @@ _spec.loader.exec_module(dashboard)
 
 PAGES = ('welcome', 'keyboard', 'account', 'network', 'options', 'disk', 'review', 'progress')
 FIELD_PAGES = dict(
-    firmware='welcome', keyboard='keyboard',
+    firmware='welcome', primary='network', clock='network', keyboard='keyboard',
     username='account', password='account', password_confirmation='account', full_name='account',
     email_address='account', hostname='account', timezone='account',
     network='network', address='network', gateway='network', dns='network', ssid='network',
@@ -97,6 +98,30 @@ def confirmation_text(answers):
 
 def page_for(field):
     return FIELD_PAGES.get(field or '', 'review')
+
+
+def network_view(status):
+    """What the network page shows, from network-bringup's own reports."""
+    findings = []
+    for step in ('discover', 'dhcp', 'wifi-prepare', 'wifi-join', 'dns', 'clock', 'firmware'):
+        findings.extend(status.get('reports', {}).get(step, []))
+    if status.get('online'):
+        via = status.get('via', '')
+        if status.get('mode') == 'wifi' and status.get('ssid'):
+            via += f" ({status['ssid']})"
+        text = f'Package repository reachable securely through {via}.'
+    else:
+        text = ('Could not reach the package repository securely (https://pkg.FreeBSD.org/).\n'
+                f"{status.get('error', '')}\nSystem time: {status.get('clock', '')}")
+    if status.get('failure'):
+        text += '\n' + status['failure']
+    need = status.get('need', '')
+    if need == 'wifi':
+        text += '\nNo wired connection works. Join a Wi-Fi network.'
+    return dict(online=bool(status.get('online')), checked=bool(status.get('checked')), status=text,
+                findings=findings, alternatives=list(status.get('alternatives', [])), need=need,
+                manual_clock=bool(status.get('manual_clock')),
+                clock_unusable=status.get('clock_status') not in (None, 'usable'))
 
 
 class InstallProgress:
@@ -221,14 +246,65 @@ def run_gui():  # pragma: no cover - needs a Wayland session
     timezone.set_active_id(facts.get('timezone_guess') or 'UTC')
     labelled(box, 'Timezone', timezone)
 
-    # Network.
+    # Network: network-bringup's checks, reported step by step.
     box = page('network', 'Network')
-    box.pack_start(Gtk.Label(xalign=0, wrap=True, label='Daemonarchy downloads most of its packages during the install.'), False, False, 0)
+    box.pack_start(Gtk.Label(xalign=0, wrap=True, label=(
+        'Daemonarchy downloads most of its packages during the install. The installer finds every adapter, '
+        'asks all wired ports for an address, proves DNS with direct lookups, makes the clock usable and loads '
+        'missing firmware. Every check is time-limited.')), False, False, 0)
+    busy = Gtk.Spinner()
+    box.pack_start(busy, False, False, 0)
     network_status = Gtk.Label(xalign=0, wrap=True, selectable=True)
     box.pack_start(network_status, False, False, 0)
+    findings = Gtk.Label(xalign=0, wrap=True, selectable=True)
+    box.pack_start(findings, False, False, 0)
+    needs = Gtk.Box(orientation=Gtk.Orientation.VERTICAL, spacing=6)
+    box.pack_start(needs, False, False, 0)
     adapters = Gtk.Box(orientation=Gtk.Orientation.VERTICAL, spacing=6)
     box.pack_start(adapters, False, False, 0)
-    online = dict(value=False)
+    online = dict(value=False, checked=False)
+    actions = []
+
+    def background(args, data=None, done=None):
+        """Run a backend request off the GTK thread; bring-up steps take time."""
+        for widget in actions + [forward]:
+            widget.set_sensitive(False)
+        busy.start()
+        say('Checking the network...')
+
+        def work():
+            try:
+                reply = backend.call(*args, data=data)
+                GLib.idle_add(finish, reply, None)
+            except BackendError as error:
+                GLib.idle_add(finish, None, error)
+
+        def finish(reply, error):
+            busy.stop()
+            for widget in actions:
+                widget.set_sensitive(True)
+            say(str(error) if error else '', bool(error))
+            if reply and 'reports' in reply:
+                show_network(reply)
+            if done:
+                done(reply)
+            update_buttons()
+            return False
+        threading.Thread(target=work, daemon=True).start()
+
+    def network_request(*args, data=None):
+        background(args, data)
+
+    def entry_row(parent, label, placeholder, button, handler):
+        row = Gtk.Box(spacing=8)
+        row.pack_start(Gtk.Label(label=label, xalign=0), False, False, 0)
+        entry = Gtk.Entry(placeholder_text=placeholder)
+        row.pack_start(entry, True, True, 0)
+        go_button = Gtk.Button(label=button)
+        go_button.connect('clicked', lambda *_: handler(entry.get_text().strip()))
+        row.pack_start(go_button, False, False, 0)
+        parent.pack_start(row, False, False, 0)
+        return row
 
     def static_dialog(ifc):
         dialog = Gtk.Dialog(title=f'Set up {ifc} by hand', transient_for=window, modal=True)
@@ -239,9 +315,8 @@ def run_gui():  # pragma: no cover - needs a Wayland session
         dns = labelled(area, 'DNS servers', Gtk.Entry(text='1.1.1.1'))
         dialog.show_all()
         if dialog.run() == Gtk.ResponseType.OK:
-            call('network-static', ifc, address.get_text(), gateway.get_text(), dns.get_text())
+            network_request('network-static', ifc, address.get_text(), gateway.get_text(), dns.get_text())
         dialog.destroy()
-        refresh_network()
 
     def wifi_dialog(dev):
         found = call('wifi-scan', dev)
@@ -260,25 +335,31 @@ def run_gui():  # pragma: no cover - needs a Wayland session
         area.pack_start(Gtk.Label(xalign=0, wrap=True, label='Enterprise (802.1X) networks: use Other network settings.'), False, False, 0)
         dialog.show_all()
         if dialog.run() == Gtk.ResponseType.OK:
-            say('Connecting...')
-            call('wifi-join', dev, ssid.get_active_text() or '', 'true' if hidden.get_active() else 'false',
-                 data=psk.get_text() + '\n')
+            network_request('wifi-join', dev, ssid.get_active_text() or '', 'true' if hidden.get_active() else 'false',
+                            data=psk.get_text() + '\n')
         dialog.destroy()
-        refresh_network()
 
-    def refresh_network(*_):
-        for child in adapters.get_children():
-            adapters.remove(child)
-        status = call('network-status')
-        if not status:
-            return
-        online['value'] = status['online']
-        if status['online']:
-            via = status['via'] + (f" ({status['ssid']})" if status['mode'] == 'wifi' and status['ssid'] else '')
-            network_status.set_text(f'Package repository reachable securely through {via}.')
-        else:
-            network_status.set_text('Could not reach the package repository securely (https://pkg.FreeBSD.org/).\n'
-                                    f"{status['error']}\nSystem time: {status['clock']}")
+    def show_network(status):
+        view = network_view(status)
+        online['value'], online['checked'] = view['online'], view['checked']
+        network_status.set_text(view['status'])
+        findings.set_text('\n'.join(view['findings']))
+        for container in (needs, adapters):
+            for child in container.get_children():
+                container.remove(child)
+        for ifc in view['alternatives']:
+            use = Gtk.Button(label=f'Use {ifc} as the primary connection')
+            use.connect('clicked', lambda _b, i=ifc: network_request('network-primary', i))
+            needs.pack_start(use, False, False, 0)
+        entry_row(needs, 'DNS server', '192.168.1.1', 'Try this server',
+                  lambda server: network_request('network-dns', server))
+        if view['manual_clock']:
+            entry_row(needs, 'UTC date and time', 'YYYY-MM-DD HH:MM:SS', 'Set the clock',
+                      lambda value: network_request('clock-set', value))
+        elif view['clock_unusable']:
+            sync = Gtk.Button(label='Synchronize time over network')
+            sync.connect('clicked', lambda *_: network_request('clock-sync'))
+            needs.pack_start(sync, False, False, 0)
         for adapter in status['adapters']:
             row = Gtk.Box(spacing=8)
             row.pack_start(Gtk.Label(xalign=0, label=f"{adapter['name']}  {adapter['kind']}  {adapter['state'] or ''}  "
@@ -289,23 +370,27 @@ def run_gui():  # pragma: no cover - needs a Wayland session
                 row.pack_start(join, False, False, 0)
             else:
                 dhcp = Gtk.Button(label='Use DHCP')
-                dhcp.connect('clicked', lambda _b, i=adapter['name']: (call('network-dhcp', i), refresh_network()))
+                dhcp.connect('clicked', lambda _b, i=adapter['name']: network_request('network-dhcp', i))
                 manual = Gtk.Button(label='Set up by hand')
                 manual.connect('clicked', lambda _b, i=adapter['name']: static_dialog(i))
                 row.pack_start(dhcp, False, False, 0)
                 row.pack_start(manual, False, False, 0)
             adapters.pack_start(row, False, False, 0)
+        needs.show_all()
         adapters.show_all()
-        update_buttons()
+
+    def refresh_network(*_):
+        network_request('network-status' if online['checked'] else 'network-check')
 
     row = Gtk.Box(spacing=8)
-    check = Gtk.Button(label='Check again')
-    check.connect('clicked', refresh_network)
+    check = Gtk.Button(label='Run network checks again')
+    check.connect('clicked', lambda *_: network_request('network-check'))
     other = Gtk.Button(label='Other network settings (text screen)')
-    other.connect('clicked', lambda *_: run_text_step('network', refresh_network))
+    other.connect('clicked', lambda *_: run_text_step('network', lambda: network_request('network-status')))
     row.pack_start(check, False, False, 0)
     row.pack_start(other, False, False, 0)
     box.pack_start(row, False, False, 0)
+    actions.extend((check, other))
 
     # Options.
     box = page('options', 'Remote access and development checkouts')

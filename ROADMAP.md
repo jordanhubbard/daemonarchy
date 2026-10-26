@@ -35,6 +35,11 @@ does: a minimal desktop that runs from the ISO and RAM without touching any
 disk, enough to check that the desktop boots and to run the installation
 graphically. See [LIVE-001](docs/roadmap/active-work.md#live-001-offer-a-live-desktop-from-the-installer-media-without-touching-the-disk).
 
+Make the installer's network step proactive: probe every adapter for DHCP at
+once, prove DNS with direct lookups, make the clock usable, fetch missing
+firmware and fall back to Wi-Fi first when no cable works, in one pipeline for
+the text, graphical and unattended installers. See [NET-001](docs/roadmap/active-work.md#net-001-make-the-installer-network-bring-up-proactive-and-robust).
+
 ## Unpublished 1.2.0 plan: owned source builds and complete Component coverage
 
 No 1.2.0 production release was published. The 1.3.1 changelog covers work

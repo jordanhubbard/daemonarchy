@@ -26,6 +26,10 @@ eval "$(sed -n '/^network_step() {$/,/^}$/p' "$here/overlay/usr/local/libexec/da
 step() { :; }
 say() { :; }
 network_summary() { :; }
+# The network check has its own test (tests/network-bringup.sh).
+network_bringup_summary() { :; }
+network_bringup_options() { :; }
+nb_adopt() { return 1; }
 online() { echo 'Unexpected internet probe' >&2; exit 99; }
 default_port() { return 0; }
 ether_ports() { echo em0; }
