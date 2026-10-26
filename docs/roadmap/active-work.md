@@ -1050,7 +1050,8 @@ remains open; report files do not establish a passing gate.
 - **Implementation:**
   - [ ] Inventory aarch64 build, ABI and package gaps in the selected source and ports closure, and add aarch64 as a typed variant in the release input graph.
   - [ ] Build world, kernel, signed aarch64 package feeds and an aarch64 UEFI installer image under the same LitAI custody, cache and graph rules as amd64.
-  - [ ] Stand up an aarch64 UEFI virtual test bed and run install, boot, upgrade, rollback, desktop and network-debug cases on it.
+  - [ ] Install the initial aarch64 worker: a FreeBSD arm64 VMware guest on an Apple silicon Mac from the operator-supplied, checksum-verified arm64 `dvd1` ISO; admit it as the native aarch64 build host and first test target.
+  - [ ] Run install, boot, upgrade, rollback, desktop and network-debug cases in separate aarch64 VMware guests.
   - [ ] After the virtualized matrix passes, enlist M1-M4 Mac laptops for the execution modes they can actually support, recording model, firmware and mode.
 - **Evidence:**
   - [ ] Native aarch64 build, package, signature and ISO records with exact artifact identities, separate from amd64.

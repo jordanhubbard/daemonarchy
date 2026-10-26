@@ -210,11 +210,18 @@ evidence. An amd64 result never qualifies aarch64, and a cache hit never
 crosses architectures.
 
 Little suitable aarch64 hardware is available, so qualify on virtual machines
-first. Run aarch64 UEFI guests under hardware virtualization, for example on
-an aarch64 Linux controller with KVM, and record the host, hypervisor,
-firmware and guest devices with each result. Cover installation, boot,
-upgrade, rollback, the desktop and the network-debugging path where the
-virtual NIC supports it. A virtual result qualifies only virtual operation.
+first. The initial aarch64 worker is a FreeBSD arm64 guest under VMware on an
+Apple silicon Mac, installed from the operator-supplied official FreeBSD
+arm64 `dvd1` ISO. Verify that ISO against FreeBSD's published checksum and
+record its name and SHA-256 before installation. The guest is the native
+aarch64 build host and the first test target; the release graph admits it
+as a worker only after the usual capacity and identity checks. Run Daemonarchy
+installer and boot tests in separate VMware guests rather than nested inside
+the build worker, so a failed test cannot disturb build state. Record the Mac
+model, macOS and VMware versions, guest firmware and virtual devices with
+each result. Cover installation, boot, upgrade, rollback, the desktop and the
+network-debugging path where the virtual NIC supports it. A virtual result
+qualifies only virtual operation.
 
 Once the virtualized matrix passes, enlist the available Apple M1, M2, M3 and
 M4 laptops as test machines. Record each laptop's exact model, firmware and
