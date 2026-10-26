@@ -62,3 +62,7 @@ reachable without changing its historical scope.
 - [Measured installer progress](installer-progress.md)
 
 - [Package reuse provenance inventory](package-reuse-inventory.md)
+
+- [Release measurement and pending QA drivers](release-measurements.md)
+
+- [Verified package retention and iterative installer cache](verified-artifact-cache.md)

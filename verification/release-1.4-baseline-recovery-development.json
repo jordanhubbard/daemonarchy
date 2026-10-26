@@ -1,0 +1,60 @@
+{
+  "baseline_kind": "historical-observation",
+  "comparison_eligible": false,
+  "expected_release_source": "d63d77f4eb3cc29e16510f7bdec73602e27c2844",
+  "gate_scope_identity": null,
+  "matches_release_source": false,
+  "normalization_blockers": [
+    "reported historical phases lack retained started/terminal UTC pairs",
+    "equivalent complete product/worker/resource/gate scope is not established",
+    "original failed/retried/waived work cannot normalize a clean critical path"
+  ],
+  "original_status": "failed",
+  "phase_observations": [
+    {
+      "name": "buildworld",
+      "reported_elapsed_seconds": 5786.789,
+      "reported_log_sha256": "6d9e5c2c3536cc42a4361bbd39d5c532f1c7f8e5b317903ff317d61608010e4d",
+      "started_utc": null,
+      "terminal_exit_status": 0,
+      "terminal_utc": null
+    },
+    {
+      "name": "buildkernel",
+      "reported_elapsed_seconds": 1442.698,
+      "reported_log_sha256": "c0b92c67fb1adcf2983967276742bbdb0c06973c6d97191b1295c920d846c7c4",
+      "started_utc": null,
+      "terminal_exit_status": 0,
+      "terminal_utc": null
+    },
+    {
+      "name": "packages",
+      "reported_elapsed_seconds": 2569.764,
+      "reported_log_sha256": "abad318c4629ad4094a7727b4f0fe3938c135c1c1635b80bfc1145f4c37e7afe",
+      "started_utc": null,
+      "terminal_exit_status": 0,
+      "terminal_utc": null
+    },
+    {
+      "name": "release-obj",
+      "reported_elapsed_seconds": 1563.07,
+      "reported_log_sha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855",
+      "started_utc": null,
+      "terminal_exit_status": 0,
+      "terminal_utc": null
+    },
+    {
+      "name": "sets",
+      "reported_elapsed_seconds": 2584.744,
+      "reported_log_sha256": "a1844ca1d85e773c8f1050533410a4ee662304ecbdd8050f2c30d9f023cd4142",
+      "started_utc": null,
+      "terminal_exit_status": -1,
+      "terminal_utc": null
+    }
+  ],
+  "schema": "daemonarchy/historical-stage-observation-recovery@1",
+  "source_evidence_identity": "sha256:93449fd152bda85cc319ab8d809a8cfa91373a112d80651005f9f14d58c24408",
+  "source_evidence_name": "native-traced-build-quiet-result.json",
+  "source_revision": "7d93dff0e80a96734f5c0ebe1a48fe378bc3b876",
+  "worker_pool_identity": null
+}
