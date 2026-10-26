@@ -1038,3 +1038,22 @@ remains open; report files do not establish a passing gate.
 - **Evidence:**
   - [ ] Complete the plan's native/UEFI loader, boot-block, forced-mountroot, panic, disk-boot, fault and recovery matrix with exact artifact identities and the earliest covered stage stated honestly.
   - [ ] Retain independent pre-driver panic/reset captures, successful normal boot and actual MSI built-in-NIC evidence. Preserve controller logs on loss; do not repeat exhausted ACPI/SMP/panic tunable comparisons or infer a reset cause from silence.
+
+### [ ] ARCH-001 — Add aarch64 as a second supported architecture for 1.4.0
+
+- **GitHub issue:** [#62](https://github.com/jordanhubbard/daemonarchy/issues/62), milestone **1.4.0**.
+- **Priority:** P1
+- **Owner:** release integration, owned FreeBSD source and ports, installer and desktop packaging
+- **Direction:** Build, package, install and boot Daemonarchy for aarch64 alongside amd64 from the same selected source, ports, desktop and compatibility revisions. Use virtual machines as the qualifying test bed now; enlist Apple M1-M4 laptops as test machines only after the virtualized image passes its matrix.
+- **Conclusion:** Each architecture keeps its own artifacts, feeds, timings and evidence; amd64 results never qualify aarch64. Virtualized acceptance qualifies only virtualized operation, and a laptop result is scoped to its exact model and execution mode (hosted VM or bare metal).
+- **Depends on:** PERF-002, DEBUG-003
+- **Implementation:**
+  - [ ] Inventory aarch64 build, ABI and package gaps in the selected source and ports closure, and add aarch64 as a typed variant in the release input graph.
+  - [ ] Build world, kernel, signed aarch64 package feeds and an aarch64 UEFI installer image under the same LitAI custody, cache and graph rules as amd64.
+  - [ ] Install the initial aarch64 worker: a FreeBSD arm64 VMware guest on an Apple silicon Mac from the operator-supplied, checksum-verified arm64 `dvd1` ISO; admit it as the native aarch64 build host and first test target.
+  - [ ] Run install, boot, upgrade, rollback, desktop and network-debug cases in separate aarch64 VMware guests.
+  - [ ] After the virtualized matrix passes, enlist M1-M4 Mac laptops for the execution modes they can actually support, recording model, firmware and mode.
+- **Evidence:**
+  - [ ] Native aarch64 build, package, signature and ISO records with exact artifact identities, separate from amd64.
+  - [ ] Retained aarch64 VM install/boot/upgrade/rollback/desktop/debug matrix results, failures included.
+  - [ ] Scoped per-model Apple silicon laptop records, if and when enlisted, with any unsupported mode stated honestly.
