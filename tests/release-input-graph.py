@@ -72,7 +72,7 @@ class GraphTests(unittest.TestCase):
                                      graph.digest((self.repo/"unit/cc").read_bytes()), "toolchain")
         auxiliary = []
         for path, role in (("unit/dep.lib", "dependency"), ("unit/sysroot.h", "sdk"),
-                           ("unit/generated.h", "source")):
+                           ("unit/generated.h", "source"), ("unit/pkg-plist", "build-definition")):
             if (self.repo/path).exists():
                 data = (self.repo/path).read_bytes()
                 auxiliary.append(RetainedProjectMember(path, len(data), 0o644, graph.digest(data), role))
@@ -280,6 +280,76 @@ class GraphTests(unittest.TestCase):
         self.selection["unexpected"] = 1
         with self.assertRaisesRegex(ValueError, "unknown"):
             self.collect()
+
+
+    def scoped_trace(self, phase="compile", paths=None):
+        if paths is None:
+            paths=["unit/cc","unit/source.c"]
+        return {"schema":"daemonarchy/source-action-trace-observation@1","scope":phase,
+                "commands":["cc -c /sealed/unit/source.c -o /obj/source.o" if phase=="compile" else "pkg create -m /sealed/unit/pkg-plist"],
+                "cwd":"/obj","target":"source.o" if phase=="compile" else "fixture.pkg",
+                "meta_sha256":"3"*64,"environment_identity":"4"*64,
+                "input_accesses":[{"operation":"R","pid":1,"cwd":"/obj","path":"/sealed/"+p} for p in paths],
+                "unresolved_inputs":[]}
+
+    def projection(self, trace):
+        manifest=RetainedProjectManifest.from_dict(json.loads((self.repo/self.unit["manifest"]["path"]).read_bytes()))
+        profile=RetainedProjectProfile.from_dict(json.loads((self.repo/self.unit["profile"]["path"]).read_bytes()))
+        return graph.project_action_trace(manifest,profile,"build",trace,{"/sealed":""})
+
+    def test_packaging_only_bytes_change_package_projection_without_forcing_compile_key(self):
+        self.write("unit/pkg-plist",b"old package envelope")
+        self.update_selection()
+        before=self.projection(self.scoped_trace())
+        package_before=self.projection(self.scoped_trace("package",["unit/pkg-plist"]))
+        self.write("unit/pkg-plist",b"changed packaging plist/install envelope")
+        self.update_selection()
+        after=self.projection(self.scoped_trace())
+        package_after=self.projection(self.scoped_trace("package",["unit/pkg-plist"]))
+        self.assertNotEqual(before["source_manifest_identity"],after["source_manifest_identity"])
+        self.assertEqual(before["projected_inputs_identity"],after["projected_inputs_identity"])
+        self.assertNotEqual(package_before["projected_inputs_identity"],package_after["projected_inputs_identity"])
+        self.assertFalse(after["cache_admission"])
+        self.assertIsNone(after["native_receipt"])
+        self.assertEqual(graph.compare_action_projections(before,after)["reason"],"verify-prior-payload-under-current-native-policy")
+        self.assertEqual(graph.compare_action_projections(package_before,package_after)["reason"],
+                         "package-inputs-changed-repackage-and-requalify")
+
+    def test_scoped_header_or_actual_command_change_invalidates_its_projection(self):
+        self.write("unit/sysroot.h",b"selected header")
+        self.update_selection()
+        trace=self.scoped_trace(paths=["unit/cc","unit/source.c","unit/sysroot.h"])
+        before=self.projection(trace)
+        self.write("unit/sysroot.h",b"changed header")
+        self.update_selection()
+        after=self.projection(trace)
+        self.assertNotEqual(before["projected_inputs_identity"],after["projected_inputs_identity"])
+        trace["commands"]=["cc -O3 -c /sealed/unit/source.c -o /obj/source.o"]
+        self.assertNotEqual(after["projected_inputs_identity"],self.projection(trace)["projected_inputs_identity"])
+
+    def test_unknown_access_and_missing_environment_remain_explicit_native_gaps(self):
+        trace=self.scoped_trace()
+        trace["input_accesses"].append({"path":"/outside/unknown.so"})
+        trace["environment_identity"]=None
+        report=self.projection(trace)
+        self.assertEqual(len(report["unresolved_inputs"]),2)
+        self.assertFalse(report["cache_admission"])
+
+    def test_trace_projection_cli_uses_actual_canonical_snapshot_bytes(self):
+        trace=self.root/"trace.json"
+        trace.write_text(json.dumps(self.scoped_trace()))
+        output=self.root/"projection.json"
+        args=[sys.executable,str(SCRIPT),"trace","--manifest",str(self.repo/self.unit["manifest"]["path"]),
+              "--manifest-sha256",self.unit["manifest"]["sha256"],"--profile",str(self.repo/self.unit["profile"]["path"]),
+              "--profile-sha256",self.unit["profile"]["sha256"],"--trace",str(trace),"--trace-sha256",graph.digest(trace.read_bytes()),
+              "--snapshot",str(self.repo),"--action","build","--bind","/sealed=","--output",str(output)]
+        result=subprocess.run(args,capture_output=True)
+        self.assertEqual(result.returncode,0,result.stderr)
+        self.assertFalse(json.loads(output.read_bytes())["cache_admission"])
+        self.assertEqual(output.stat().st_mode & 0o777,0o600)
+        original=output.read_bytes()
+        self.assertNotEqual(subprocess.run(args,capture_output=True).returncode,0)
+        self.assertEqual(output.read_bytes(),original)
 
     def test_canonical_snapshot_byte_verification_refuses_changed_native_tool(self):
         first = graph.collect(self.selection, {"source": self.repo}, {"source:tool": self.repo})

@@ -16,6 +16,7 @@ import sys
 
 from literate_ai.adapters.retained_project_inputs import verify_retained_project_inputs
 from literate_ai.contracts.identity import ContentIdentity, canonical_identity
+from literate_ai.contracts.retained_component_ownership import retained_owner
 from literate_ai.contracts.retained_project import RetainedProjectManifest
 from literate_ai.contracts.retained_project_lifecycle import RetainedProjectProfile
 
@@ -49,6 +50,13 @@ def document(data):
 
 def digest(data):
     return hashlib.sha256(data).hexdigest()
+
+
+def write_report(path, report):
+    descriptor=os.open(path,os.O_WRONLY|os.O_CREAT|os.O_EXCL|getattr(os,"O_NOFOLLOW",0),0o600)
+    with os.fdopen(descriptor,"w") as stream:
+        json.dump(report,stream,indent=2,sort_keys=True,allow_nan=False)
+        stream.write("\n")
 
 
 def text(value):
@@ -97,8 +105,8 @@ def lock_repository(spec, repo):
         require(upstream_url.startswith("https://") and "@" not in upstream_url,
                 "public upstream URL required")
         upstream = commit(repo, spec["upstream"]["revision"])
-        base = git(repo, "merge-base", revision, upstream).decode().strip()
-        require(base == upstream, "selected upstream commit is not an ancestor; ancestry is not admitted")
+        git(repo, "merge-base", "--is-ancestor", upstream, revision)
+        base = upstream
         ancestry = {"repository": upstream_url, "revision": upstream,
                     "git_tree": git(repo, "rev-parse", upstream + "^{tree}").decode().strip(),
                     "merge_base": base}
@@ -297,6 +305,82 @@ def collect(selection, paths, retained_roots=None):
             "gaps": ([] if units else ["no retained per-unit producer profiles selected"])}
 
 
+def project_action_trace(manifest, profile, action_id, trace, bindings):
+    """Project actual scoped accesses; missing trace/byte authority never admits reuse.
+
+    Bindings map native absolute roots to canonical retained path prefixes. They
+    resolve ownership only: command/cwd paths are preserved verbatim in the key.
+    This makes packaging-only read changes separable without inferring usage from
+    plist/install-script names or from whole port-tree equality.
+    """
+    require(isinstance(manifest, RetainedProjectManifest) and isinstance(profile, RetainedProjectProfile),
+            "canonical retained manifest/profile required")
+    require(trace.get("schema") == "daemonarchy/source-action-trace-observation@1" and
+            trace.get("scope") in {"compile", "link", "generate", "package"}, "scoped filemon facts required")
+    require(isinstance(trace.get("commands"),list) and trace["commands"] and
+            all(isinstance(c,str) and c for c in trace["commands"]), "actual command records required")
+    identity("sha256:"+trace["meta_sha256"])
+    require(Path(trace["cwd"]).is_absolute(), "actual command cwd required")
+    actions = {a.action_id:a for a in profile.actions}
+    require(action_id in actions, "trace action is absent from current canonical profile")
+    by_path = {m.path:m for m in manifest.members}
+    owners = {o.prefix:o for o in manifest.component_ownership}
+    require(owners, "canonical retained input ownership required")
+    roots=[]
+    for native, prefix in bindings.items():
+        require(isinstance(native,str) and Path(native).is_absolute(), "native ownership root must be absolute")
+        require(prefix == "" or relative(prefix), "canonical ownership prefix required")
+        roots.append((Path(native),prefix))
+    roots.sort(key=lambda pair:len(pair[0].parts),reverse=True)
+    selected=set()
+    unresolved=list(trace.get("unresolved_inputs",[]))
+    for access in trace.get("input_accesses",[]):
+        path=Path(access["path"])
+        if not path.is_absolute():
+            unresolved.append({"input":str(path),"reason":"relative/dirfd access ownership not proved"})
+            continue
+        match=next(((native,prefix) for native,prefix in roots if path.is_relative_to(native)),None)
+        if match is None:
+            unresolved.append({"input":str(path),"reason":"native access has no retained ownership binding"})
+            continue
+        native,prefix=match
+        name=(PurePosixPath(prefix)/path.relative_to(native).as_posix()).as_posix()
+        if name not in by_path:
+            unresolved.append({"input":name,"reason":"accessed file/directory is outside sealed member inventory"})
+            continue
+        selected.add(name)
+    require(selected, "trace has no byte-owned canonical input members")
+    pending=list(selected)
+    while pending:
+        member=by_path[pending.pop()]
+        target=member.symlink_destination
+        if target is not None:
+            require(target in by_path,"trace symlink target is outside retained closure")
+            if target not in selected:
+                selected.add(target)
+                pending.append(target)
+    selected_roots=tuple(root for root in manifest.roots if any(n==root or n.startswith(root+"/") for n in selected))
+    directories=tuple(d for d in manifest.directories if any(n.startswith(d+"/") for n in selected))
+    nodes=selected|set(directories)
+    selected_owners={retained_owner(n,owners).prefix for n in nodes if retained_owner(n,owners) is not None}
+    sliced=RetainedProjectManifest(selected_roots,tuple(by_path[n] for n in sorted(selected)),manifest.limits,
+                                  directories,tuple(owners[n] for n in sorted(selected_owners)),manifest.tree_policy)
+    if trace.get("environment_identity") is None:
+        unresolved.append({"reason":"actual command environment was not captured/admitted"})
+    facts={"schema":"daemonarchy/traced-action-inputs@1","phase":trace["scope"],"target":profile.target,
+           "commands":trace["commands"],"cwd":trace["cwd"],"target_output":trace["target"],
+           "environment_identity":trace.get("environment_identity"),"members":[m.to_dict() for m in sliced.members],
+           "member_owners":[o.to_dict() for o in sliced.component_ownership],
+           "tools":[{"name":n,"path":p,"identity":i.uri} for n,p,i in profile.tools if p in selected]}
+    return {"schema":"daemonarchy/traced-action-input-projection@1","action_id":action_id,
+            "source_manifest_identity":manifest.identity.uri,"profile_identity":profile.identity.uri,
+            "trace_identity":"sha256:"+trace["meta_sha256"],"action_manifest":sliced.to_dict(),
+            "projected_inputs":facts,"projected_inputs_identity":canonical_identity(facts).uri,
+            "unresolved_inputs":unresolved,"cache_admission":False,"native_receipt":None,
+            "remaining_gates":["trusted complete native action trace coverage", "current sealed input/owner admission",
+                               "trace environment/ignore/path policy", "generated/output producer and native qualification receipts"]}
+
+
 def compare(previous, current):
     """Conservative pre-scheduling recommendations; never cache-hit authorization."""
     old = {u["id"]: u for u in previous["units"]}
@@ -326,7 +410,85 @@ def compare(previous, current):
             "decisions": [{"unit": n, "reason": decisions[n]} for n in sorted(decisions)]}
 
 
+def compare_action_projections(previous, current):
+    require(previous.get("schema")==current.get("schema")=="daemonarchy/traced-action-input-projection@1",
+            "typed action projections required")
+    require(previous["action_id"]==current["action_id"] and
+            previous["projected_inputs"]["phase"]==current["projected_inputs"]["phase"],
+            "compare the same canonical action and observed phase")
+    for record in (previous,current):
+        require(record["projected_inputs_identity"]==canonical_identity(record["projected_inputs"]).uri,
+                "action projection content identity changed")
+    phase=current["projected_inputs"]["phase"]
+    if current["unresolved_inputs"]:
+        reason="repair-incomplete-native-inputs-before-equivalence"
+    elif previous["projected_inputs_identity"]==current["projected_inputs_identity"]:
+        reason="verify-prior-payload-under-current-native-policy"
+    elif phase=="package":
+        reason="package-inputs-changed-repackage-and-requalify"
+    else:
+        reason=phase+"-inputs-changed"
+    return {"schema":"daemonarchy/traced-action-comparison@1","phase":phase,"reason":reason,
+            "cache_admission":False,"native_action_admission":False,
+            "binary_input_adoption":"separate-policy-and-native-qualification-required"}
+
+
+def trace_projection_main(argv):
+    parser=argparse.ArgumentParser(description="Project scoped filemon accesses into canonical retained byte ownership")
+    for name in ("manifest","profile","trace"):
+        parser.add_argument("--"+name,type=Path,required=True)
+        parser.add_argument("--"+name+"-sha256",required=True)
+    parser.add_argument("--snapshot",type=Path,required=True)
+    parser.add_argument("--previous",type=Path)
+    parser.add_argument("--previous-sha256")
+    parser.add_argument("--action",required=True)
+    parser.add_argument("--bind",action="append",default=[],metavar="NATIVE_ROOT=RETAINED_PREFIX")
+    parser.add_argument("--output",type=Path,required=True)
+    args=parser.parse_args(argv)
+    try:
+        records={}
+        for name in ("manifest","profile","trace"):
+            path=getattr(args,name)
+            require(not path.is_symlink(),"record must be a regular direct file")
+            with path.open("rb") as stream:
+                data=stream.read(MAX_JSON+1)
+            require(digest(data)==getattr(args,name+"_sha256"),"projection record digest changed")
+            records[name]=document(data)
+        manifest=RetainedProjectManifest.from_dict(records["manifest"])
+        profile=RetainedProjectProfile.from_dict(records["profile"])
+        snapshot=args.snapshot.resolve(strict=True)
+        verify_retained_project_inputs(snapshot,manifest)
+        profile_path=args.profile.resolve(strict=True).relative_to(snapshot).as_posix()
+        require(any(m.path==profile_path and m.role=="build-definition" and m.sha256==args.profile_sha256
+                    for m in manifest.members),"profile is outside the captured build-definition closure")
+        require(profile.toolchain_identity==manifest.role_identity({"sdk","toolchain"}) and
+                profile.dependency_identity==manifest.role_identity({"dependency"}),"profile role closure differs")
+        bindings={}
+        for binding in args.bind:
+            native,prefix=binding.split("=",1)
+            require(native not in bindings,"duplicate native root binding")
+            bindings[native]=prefix
+        report=project_action_trace(manifest,profile,args.action,records["trace"],bindings)
+        if args.previous is not None:
+            with args.previous.open("rb") as stream:
+                previous=stream.read(MAX_JSON+1)
+            require(args.previous_sha256 is not None and digest(previous)==args.previous_sha256,
+                    "pin the previous action projection bytes")
+            report["comparison"]=compare_action_projections(document(previous),report)
+        output=args.output.absolute()
+        require(output.parent.resolve(strict=True)==output.parent and not output.is_relative_to(snapshot),
+                "projection evidence must be outside its sealed snapshot")
+        write_report(output,report)
+        print(json.dumps({"projected_inputs_identity":report["projected_inputs_identity"],"cache_admission":False}))
+        return 0
+    except (ValueError,OSError,KeyError,TypeError) as error:
+        print("trace input projection refused: "+str(error),file=sys.stderr)
+        return 1
+
+
 def main():
+    if sys.argv[1:2] == ["trace"]:
+        return trace_projection_main(sys.argv[2:])
     parser = argparse.ArgumentParser(description=__doc__)
     parser.add_argument("selection", type=Path)
     parser.add_argument("--repo", action="append", default=[], metavar="ID=OBJECT_STORE")
@@ -351,9 +513,7 @@ def main():
                 "write graph evidence outside inspected input repositories and snapshots")
         if args.previous is not None:
             report["comparison"] = compare(document(args.previous.read_bytes()), report)
-        with args.output.open("x") as stream:
-            json.dump(report, stream, indent=2, sort_keys=True)
-            stream.write("\n")
+        write_report(args.output,report)
         print(json.dumps({"output_sha256": digest(args.output.read_bytes()), "admitted": False}))
         return 0
     except (ValueError, OSError, KeyError, TypeError, subprocess.SubprocessError) as error:

@@ -143,3 +143,47 @@ CLI subprocesses. They verify byte/ownership/closure refusal, typed dependency
 projection, changed source/generated/header/compiler/options/flavor/executor
 invalidation, kernel/userland OSVERSION distinction, stable unrelated commits
 and policy envelopes, and preservation of existing output/input trees.
+
+
+## Scoped actual-command projections
+
+The source fork's observer can inspect retained bmake/filemon records through the
+existing immutable trace-capture helper. `release-input-graph.py trace` joins those
+exact read/exec facts to current canonical retained snapshot members and owners:
+
+```sh
+"$LITAI_PYTHON" scripts/release-input-graph.py trace \
+  --manifest SNAPSHOT/manifest.json --manifest-sha256 MANIFEST_SHA256 \
+  --profile SNAPSHOT/profile.json --profile-sha256 PROFILE_SHA256 \
+  --trace TRACE_OBSERVATION.json --trace-sha256 OBSERVATION_SHA256 \
+  --snapshot SNAPSHOT --action CANONICAL_ACTION_ID \
+  --bind /native/input/root=retained/prefix --output NEW_PROJECTION.json
+```
+
+Projection files are created exclusive mode `0600`. Literal native command/path
+facts remain private evidence; publish only safe IDs/digests and allowlisted
+semantics, and never commit real raw trace/config/environment captures.
+
+The whole snapshot is verified with the installed canonical byte/mode/link
+verifier before projection. Native root bindings resolve ownership; command/cwd
+paths remain literal because paths can change `__FILE__`, debug info or generated
+output. The result includes a canonical per-action retained submanifest and a
+separate projected identity. Unknown accesses, directories, relative/dirfd paths
+and uncaptured environment remain explicit gaps. Shared-library reads stay input
+candidates even during compilation; file suffixes do not establish independence.
+
+A package-only plist/install/envelope change can alter the package projection
+without altering compile projection when actual complete phase traces prove those
+usage boundaries. The regression exercises this with canonical snapshots and
+actual scoped access records. It is not native acceptance. The original broad
+unit comparison remains conservative until producer facts close its action split.
+A changed compile/header/static/generated/command input still invalidates the
+corresponding phase. Neither a directory-tree hash nor a filename classification
+can authorize an unchanged-compilation claim.
+
+The raw trace scope (`compile`, `link`, `generate`, `package`) is an observation
+phase. It is not the new framework semantic contract's userland/kernel payload
+scope. New semantic-payload re-admission and trusted signed-release binary-input
+adoption need their distinct qualified installed contracts, current policies and
+native proofs. This adapter does not import a WIP source tree or replace the
+selected c345 lifecycle binding. Prior immutable build evidence is never rewritten.

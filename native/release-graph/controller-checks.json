@@ -4,7 +4,7 @@
     {
       "command": "python tests/release-input-graph.py -v",
       "failed": 0,
-      "passed": 20
+      "passed": 24
     },
     {
       "command": "python tests/native-tree-discovery.py",
@@ -51,5 +51,6 @@
     "distributed release and exact artifacts"
   ],
   "schema": "daemonarchy/release-input-graph-development@1",
+  "scoped_trace_projection": "canonical snapshot facts; package-only vs compile identity regression; not native admission",
   "wheel_sha256": "e3d8d2eb307c68dd1137025f6be0476bc790281b01d4ff995701f77f7897527b"
 }
