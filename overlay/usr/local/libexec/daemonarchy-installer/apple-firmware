@@ -66,11 +66,19 @@ apple_firmware_prepare() {
       *) return 2 ;;
     esac
   fi
-  # The ISO root is read-only. Mount a small live filesystem at the kernel's
-  # fixed firmware path, then attach the radio after the files are present.
+  # The ISO root is read-only. Union-mount a small live filesystem at the
+  # kernel's fixed firmware path so the ISO's own firmware stays visible to
+  # later signed-manifest checks, then attach the radio once the files exist.
   [[ -d /boot/firmware ]] || { echo '/boot/firmware is absent from the live ISO' >&2; return 1; }
-  if ! mount | grep -q ' on /boot/firmware '; then
-    mount -t tmpfs -o size=8m tmpfs /boot/firmware || {
+  local current
+  current=$(mount | grep ' on /boot/firmware ' || true)
+  if [[ -n $current && $current != *union* ]]; then
+    # An earlier attempt hid the ISO firmware; replace that mount.
+    umount /boot/firmware || return
+    current=
+  fi
+  if [[ -z $current ]]; then
+    mount -t tmpfs -o union,size=8m tmpfs /boot/firmware || {
       echo 'Could not make live firmware available to the kernel' >&2
       return 1
     }
