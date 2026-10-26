@@ -58,7 +58,20 @@ The installer asks a handful of questions, then installs on its own. Use the arr
 1. **Welcome.** Press Enter to begin.
 2. **Keyboard.** Pick your keyboard layout.
 3. **Your account.** Your name, a user name, a password (you will log in with it, and give it when the system asks for your permission), a name for the computer, and your time zone.
-4. **Network.** The installer lists your network adapters. A plugged-in cable is usually already connected; otherwise pick **Join Wi-Fi**, choose your network and type its password. You can also set an address by hand if your network has no DHCP. If the clock is wrong, choose **Set date and time** and enter the current UTC date and time; this works offline. **Synchronize time over network** tries NTP for up to 30 seconds. After either action the installer checks package access again. Package downloads still require internet access.
+4. **Network.** The installer checks the network for you first, and each check takes at most a short, fixed time:
+   - It lists every wired, USB-tethering and Wi-Fi adapter.
+   - It asks all cabled ports for an address at once and uses the one whose gateway answers.
+   - It checks DNS by looking up `pkg.FreeBSD.org` directly: first with your network's own servers, then with Cloudflare (1.1.1.1), Google (8.8.8.8) and Quad9 (9.9.9.9). It does not ping them, because some block ping.
+   - It sets the clock from network time if the clock is wrong.
+   - It loads any Wi-Fi firmware your adapter still needs.
+
+   With no working cable, it gets Wi-Fi ready first and asks you to join a network. The results are listed on the **Network** screen.
+   - **Use … as the primary connection** switches to another port that got an address.
+   - **Enter a DNS server** is for networks that block public DNS. The installer uses the server only if it answers a lookup.
+   - **Join Wi-Fi** lets you choose your network and type its password. **Set up … by hand** sets an address for networks without DHCP.
+   - **Run network checks again** repeats the whole check.
+
+   If network time does not answer, choose **Set date and time** and enter the current UTC date and time; this works offline. **Synchronize time over network** tries NTP for up to 30 seconds. After each change the installer checks package access again. Package downloads still require internet access. If your network's own DNS did not work, the installed system keeps the DNS servers that did. The check's log is in `/tmp/daemonarchy-network/log` (choose **Open debug shell** to read it).
 5. **Remote access.** Say yes only if you want to log in to this machine from another one over SSH.
 6. **Storage.** Pick the disk and installation mode, review the selected region, and choose whether to **encrypt** it. Encryption requires your password each time the machine starts. Earlier 1.0.1 supports whole-disk mode only.
 7. **Ready.** Check the summary and confirm. Writes to the selected disk/partition/free region begin after confirmation.

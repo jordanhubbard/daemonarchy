@@ -56,6 +56,14 @@ on:
       - 'scripts/check-image-size.sh'
       - 'scripts/live-image-excludes'
       - 'tests/live-image-budget.sh'
+      - 'overlay/usr/local/libexec/daemonarchy-installer/network-bringup'
+      - 'overlay/usr/local/libexec/daemonarchy-installer/network-addresses'
+      - 'overlay/usr/local/libexec/daemonarchy-installer/launch'
+      - 'tests/network-bringup.sh'
+      - 'tests/network-diagnostics.sh'
+      - 'tests/installer-wifi-timing.sh'
+      - 'tests/enterprise-wifi-options.sh'
+      - 'tests/remote-debug-network.sh'
       - '.github/workflows/native-graph.yml'
   pull_request:
     paths:
@@ -112,6 +120,14 @@ on:
       - 'scripts/check-image-size.sh'
       - 'scripts/live-image-excludes'
       - 'tests/live-image-budget.sh'
+      - 'overlay/usr/local/libexec/daemonarchy-installer/network-bringup'
+      - 'overlay/usr/local/libexec/daemonarchy-installer/network-addresses'
+      - 'overlay/usr/local/libexec/daemonarchy-installer/launch'
+      - 'tests/network-bringup.sh'
+      - 'tests/network-diagnostics.sh'
+      - 'tests/installer-wifi-timing.sh'
+      - 'tests/enterprise-wifi-options.sh'
+      - 'tests/remote-debug-network.sh'
       - '.github/workflows/native-graph.yml'
   workflow_dispatch:
 
@@ -160,6 +176,14 @@ jobs:
           python3 tests/apple-firmware-offline.py -v
           bash tests/apple-firmware-offline.sh
           bash tests/live-image-budget.sh
+      - name: Installer network bring-up (NET-001)
+        run: |
+          bash -n overlay/usr/local/libexec/daemonarchy-installer/network-bringup overlay/usr/local/libexec/daemonarchy-installer/launch
+          bash tests/network-bringup.sh
+          bash tests/network-diagnostics.sh
+          bash tests/installer-wifi-timing.sh
+          bash tests/enterprise-wifi-options.sh
+          bash tests/remote-debug-network.sh
       - name: Release gate refuses missing evidence
         run: |
           python3 -m json.tool literate.release.json >/dev/null

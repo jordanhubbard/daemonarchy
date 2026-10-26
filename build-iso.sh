@@ -127,6 +127,8 @@ image=$(printf '%s' "$NAME" | tr -cd '[:alnum:]')
     echo 'NAME must produce an alphanumeric ISO volume label of 1..32 characters' >&2; exit 1;
 }
 echo "$VERSION${PREVIEW_LABEL:+ ($PREVIEW_LABEL)}" >"$share/version"
+# The installer's network check treats a clock earlier than the build as wrong.
+echo "${SOURCE_DATE_EPOCH:-$(date -u +%s)}" >"$share/build-epoch"
 echo "    Daemonarchy $VERSION"
 
 omarchy_pkg=$(ls "$share"/repo/All/omarchy-[0-9]*.pkg | head -n 1)

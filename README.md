@@ -158,6 +158,21 @@ timezone=America/Los_Angeles
 
 The machine powers off when the install finishes.
 
+Before touching the disk, an unattended install runs the same network check as the interactive installer, without asking anything. The check probes every cabled port for DHCP and checks DNS with direct lookups and the clock with network time. It uses Wi-Fi only if no cable works. It honors these optional answers:
+
+```sh
+net_mode=static            # or dhcp (the default) or wifi
+net_if=em0                 # the port to use; for wifi, the radio, for example iwlwifi0
+net_addr=192.168.1.50/24   # static only
+net_gw=192.168.1.1         # static only
+net_dns=192.168.1.53       # tried first; it is used only if it answers
+wifi_ssid="Home"           # joined when no cable works, or with net_mode=wifi
+wifi_psk="password"
+wifi_hidden=false
+```
+
+If no connection, DNS server or clock works, the install stops before any disk change. It says why and points to `/tmp/daemonarchy-network/log`. Enterprise Wi-Fi is joined from the interactive installer only.
+
 ### Optional live checkouts
 
 The development installer offers `/usr/ports` and `/usr/src` separately, both off

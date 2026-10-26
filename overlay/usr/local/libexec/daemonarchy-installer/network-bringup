@@ -1,0 +1,1179 @@
+#!/usr/local/bin/bash
+# Proactive network bring-up for the Daemonarchy installer (NET-001).
+#
+# One pipeline for the text configurator, the live desktop's graphical
+# installer and unattended (CIDATA) installs:
+#
+#   1. discover   every wired, USB-tethering and wireless adapter, plus network
+#                 devices that have no driver yet (pciconf, usbconfig, devinfo)
+#   2. dhcp       probe every wired candidate concurrently with bounded
+#                 timeouts, record address, gateway, DNS and NTP per lease, and
+#                 pick the primary connection (link + lease + answering gateway)
+#   3. dns        query pkg.FreeBSD.org directly at the DHCP-supplied servers,
+#                 then Cloudflare, Google and Quad9 (never ping: some resolvers
+#                 drop ICMP), and write the answering servers to resolv.conf
+#   4. clock      require a time no earlier than the image build and inside
+#                 the signing certificate's validity; try sntp/ntpdate first
+#   5. firmware   fetch only firmware that fwget(8) or the MacBook BCM4364
+#                 profile needs and that is neither loaded nor on the media
+#   6. wifi-prepare  load drivers, attach radios and create wlan0
+#   7. Wi-Fi join (front-end hook), then DNS and clock again over Wi-Fi
+#
+# Without a working wired lease, 6 and 7 run first (generic Wi-Fi firmware and
+# the Apple offline sources are local), then 3-5 over Wi-Fi.
+#
+# Every step is bounded, retryable, writes plain-language lines to
+# $NB_STATE/report.<step> and details to $NB_STATE/log. Results live in
+# $NB_STATE/result so a step can run in a child process (a spinner, the
+# graphical backend) and the caller reads them back with nb_get.
+#
+# Sourced: defines functions only. Executed: `network-bringup <step>` runs one
+# step; `network-bringup auto <install.conf>` runs the unattended pipeline.
+
+ISO_SHARE=${ISO_SHARE:-/usr/local/share/daemonarchy-installer}
+NB_STATE=${NB_STATE:-/tmp/daemonarchy-network}
+NB_LOG=${NB_LOG:-$NB_STATE/log}
+NB_DNS_NAME=${NB_DNS_NAME:-pkg.FreeBSD.org}
+NB_PUBLIC_DNS=${NB_PUBLIC_DNS:-1.1.1.1 1.0.0.1 8.8.8.8 8.8.4.4 9.9.9.9}
+NB_NTP_SERVERS=${NB_NTP_SERVERS:-pool.ntp.org 0.freebsd.pool.ntp.org}
+NB_DHCP_TIMEOUT=${NB_DHCP_TIMEOUT:-20}
+NB_LINK_WAIT=${NB_LINK_WAIT:-4}
+NB_DNS_TIMEOUT=${NB_DNS_TIMEOUT:-6}
+NB_NTP_TIMEOUT=${NB_NTP_TIMEOUT:-8}
+NB_FIRMWARE_TIMEOUT=${NB_FIRMWARE_TIMEOUT:-240}
+NB_BOOT_LEASES=${NB_BOOT_LEASES:-/var/db}
+NB_DHCLIENT_PIDDIR=${NB_DHCLIENT_PIDDIR:-/var/run/dhclient}
+NB_REPO=${NB_REPO:-$ISO_SHARE/repo}
+NB_SIGNING_CERTS=${NB_SIGNING_CERTS:-$ISO_SHARE/secureboot/certificate.pem}
+# An image is not expected to install more than three years after its build.
+NB_CLOCK_MAX_AGE=${NB_CLOCK_MAX_AGE:-94608000}
+# 2026-10-01 00:00:00 UTC, older than any 1.4 image.
+NB_CLOCK_FLOOR_DEFAULT=${NB_CLOCK_FLOOR_DEFAULT:-1790812800}
+if [[ -z ${NB_RESOLV_CONF:-} ]]; then
+  # The live image links /etc/resolv.conf to /tmp/resolv.conf.
+  NB_RESOLV_CONF=$(readlink /etc/resolv.conf 2>/dev/null) || NB_RESOLV_CONF=/etc/resolv.conf
+  [[ $NB_RESOLV_CONF == /* ]] || NB_RESOLV_CONF=/etc/$NB_RESOLV_CONF
+fi
+
+# ---------------------------------------------------------------- state
+
+nb_log() {
+  mkdir -p "$NB_STATE" 2>/dev/null
+  printf '%s %s\n' "$(date -u '+%Y-%m-%dT%H:%M:%SZ' 2>/dev/null)" "$*" >>"$NB_LOG"
+}
+
+# A plain-language finding for the current step; also logged.
+nb_say() {
+  printf '%s\n' "$*" >>"$NB_STATE/report.${NB_STEP:-general}"
+  nb_log "[${NB_STEP:-general}] $*"
+}
+
+nb_begin() {
+  NB_STEP=$1
+  mkdir -p "$NB_STATE" "$NB_STATE/dhcp" "$NB_STATE/dns"
+  : >"$NB_STATE/report.$NB_STEP"
+  nb_log "== $NB_STEP begins"
+}
+
+nb_report() {
+  local step
+  for step in "$@"; do
+    [[ -s $NB_STATE/report.$step ]] && cat "$NB_STATE/report.$step"
+  done
+  return 0
+}
+
+nb_reset() {
+  # Keep lease files so a retry reuses a lease the probe already holds.
+  find "$NB_STATE/dhcp" -type f ! -name '*.leases' -delete 2>/dev/null
+  rm -rf "$NB_STATE/dns" "$NB_STATE"/report.* "$NB_STATE/result"
+  mkdir -p "$NB_STATE/dhcp" "$NB_STATE/dns"
+  chmod 700 "$NB_STATE" 2>/dev/null
+  nb_log '== network bring-up reset'
+}
+
+# Values are interface names, addresses and words; never a newline.
+nb_set() {
+  local key=$1 value=${2:-} file=$NB_STATE/result
+  mkdir -p "$NB_STATE"
+  { [[ -f $file ]] && grep -v "^$key=" "$file"; printf '%s=%s\n' "$key" "${value//$'\n'/ }"; } >"$file.new"
+  mv -f "$file.new" "$file"
+}
+
+nb_get() {
+  local file=${2:-$NB_STATE/result}
+  [[ -f $file ]] || return 0
+  awk -v key="$1" 'index($0, key "=") == 1 { value = substr($0, length(key) + 2) } END { printf "%s", value }' "$file"
+}
+
+nb_kv() { nb_get "$2" "$NB_STATE/dhcp/$1"; }
+
+# ---------------------------------------------------------------- validation
+
+nb_valid_ipv4() {
+  local IFS=. octet a b c d
+  [[ $1 =~ ^[0-9]{1,3}\.[0-9]{1,3}\.[0-9]{1,3}\.[0-9]{1,3}$ ]] || return 1
+  read -r a b c d <<<"$1"
+  for octet in "$a" "$b" "$c" "$d"; do ((10#$octet <= 255)) || return 1; done
+  # Not this network, loopback, multicast or broadcast.
+  ((10#$a != 0 && 10#$a != 127 && 10#$a < 224))
+}
+
+nb_valid_ifname() { [[ $1 =~ ^[a-z][a-z0-9_]{0,14}[0-9]+$ ]]; }
+
+# ---------------------------------------------------------------- 1. discovery
+
+# Loopback, tunnels, bridges and other cloned or capture interfaces are never
+# installation paths. `ifconfig -C` lists the running kernel's cloners too.
+nb_pseudo_driver() {
+  local driver=${1%%[0-9]*} cloners
+  case $driver in
+    lo|tun|tap|gif|gre|stf|pflog|pfsync|enc|bridge|epair|vlan|lagg|wg|ipsec|ovpn|me|vxlan|carp|faith|disc|usbus|ipfw|ipfwlog|edsc|pflow|wlan) return 0 ;;
+  esac
+  cloners=$(ifconfig -C 2>/dev/null) || cloners=''
+  [[ " $cloners " == *" $driver "* ]]
+}
+
+nb_port_address() { port_address "$@"; }
+
+port_address() {
+  ifconfig "$1" inet 2>/dev/null | awk '/inet / { print $2; exit }'
+}
+
+nb_link_state() {
+  local status
+  status=$(ifconfig "$1" 2>/dev/null | awk '/status:/ { sub(/.*status: /, ""); print; exit }')
+  case $status in
+    active|associated) echo up ;;
+    'no carrier') echo no-cable ;;
+    '') echo unknown ;;
+    *) echo "${status// /-}" ;;
+  esac
+}
+
+nb_description() {
+  local dev=$1 driver unit description
+  driver=${dev%%[0-9]*}
+  unit=${dev#"$driver"}
+  description=$(sysctl -n "dev.$driver.$unit.%desc" 2>/dev/null)
+  [[ -n $description ]] || description=$(ifconfig "$dev" 2>/dev/null |
+    awk '/description:/ { sub(/.*description: /, ""); print; exit }')
+  printf '%s' "${description:-hardware description unavailable}"
+}
+
+# USB tethering (urndis, cdce, ipheth) and USB Ethernet attach as ue*, or as
+# a driver whose device path runs through a USB hub.
+nb_interface_kind() {
+  local path
+  [[ $1 == ue* ]] && { echo usb; return; }
+  path=$(devinfo -p "$1" 2>/dev/null) || path=''
+  case " $path " in *" uhub"*|*" usbus"*) echo usb ;; *) echo wired ;; esac
+}
+
+nb_wired_candidates() {
+  local ifc
+  for ifc in $(ifconfig -l ether 2>/dev/null); do
+    nb_pseudo_driver "$ifc" && continue
+    printf '%s\n' "$ifc"
+  done
+}
+
+nb_wireless_radios() {
+  local devices device
+  devices=$(sysctl -n net.wlan.devices 2>/dev/null) || devices=''
+  for device in $devices; do printf '%s\n' "$device"; done
+}
+
+# PCI network functions (Ethernet 0x0200, other/wireless 0x0280) with no
+# driver attached: "selector<TAB>class<TAB>description".
+nb_unattached_pci() {
+  pciconf -lv 2>/dev/null | awk '
+    function flush() { if (sel != "") printf "%s\t%s\t%s\n", sel, cls, (desc != "" ? desc : vendor) ; sel = "" }
+    /^[^[:space:]]/ {
+      flush()
+      if ($1 !~ /^none[0-9]+@pci/) next
+      if (!match($0, /class=0x02(00|80)[0-9a-f]*/)) next
+      cls = (substr($0, RSTART + 6, 6) ~ /^0x0280/) ? "wireless" : "ethernet"
+      sel = $1; sub(/^none[0-9]+@/, "", sel); sub(/:$/, "", sel)
+      desc = ""; vendor = ""
+      next
+    }
+    sel != "" && /^[[:space:]]+vendor[[:space:]]*=/ { v = $0; sub(/.*= *\047?/, "", v); sub(/\047$/, "", v); vendor = v }
+    sel != "" && /^[[:space:]]+device[[:space:]]*=/ { d = $0; sub(/.*= *\047?/, "", d); sub(/\047$/, "", d); desc = vendor " " d }
+    END { flush() }'
+}
+
+# USB devices that look like network adapters and have no driver attached.
+nb_unattached_usb() {
+  local line dev desc
+  command -v usbconfig >/dev/null 2>&1 || return 0
+  while IFS= read -r line; do
+    [[ $line =~ ^(ugen[0-9]+\.[0-9]+):\ \<(.*)\> ]] || continue
+    dev=${BASH_REMATCH[1]} desc=${BASH_REMATCH[2]}
+    shopt -s nocasematch
+    if [[ $desc =~ (802\.11|wireless|wlan|wi-?fi|ethernet|(^|[^a-z])lan([^a-z]|$)|rndis|tether|network) ]]; then
+      shopt -u nocasematch
+      # show_ifdrv prints "ugenX.Y.N: driverN: <...>" for each attached interface.
+      if ! usbconfig -d "$dev" show_ifdrv 2>/dev/null | grep -Eq '^ugen[0-9.]+: [a-z_]+[0-9]+: '; then
+        printf '%s\t%s\t%s\n' "$dev" usb "$desc"
+      fi
+    fi
+    shopt -u nocasematch
+  done < <(usbconfig 2>/dev/null)
+}
+
+nb_discover() {
+  local ifc kind link desc count=0 radios summary=() label
+  nb_begin discover
+  : >"$NB_STATE/interfaces"
+  while read -r ifc; do
+    [[ -n $ifc ]] || continue
+    kind=$(nb_interface_kind "$ifc")
+    link=$(nb_link_state "$ifc")
+    desc=$(nb_description "$ifc")
+    printf '%s\t%s\t%s\t%s\n' "$ifc" "$kind" "$link" "$desc" >>"$NB_STATE/interfaces"
+    case $kind in usb) label='USB network or tethering' ;; *) label=wired ;; esac
+    case $link in
+      up) label+=', cable connected' ;;
+      no-cable) label+=', no cable' ;;
+    esac
+    summary+=("$ifc ($label)")
+    count=$((count + 1))
+  done < <(nb_wired_candidates)
+  radios=$(nb_wireless_radios)
+  : >"$NB_STATE/radios"
+  for ifc in $radios; do
+    printf '%s\t%s\n' "$ifc" "$(nb_description "$ifc")" >>"$NB_STATE/radios"
+    summary+=("$ifc (Wi-Fi)")
+    count=$((count + 1))
+  done
+  { nb_unattached_pci; nb_unattached_usb; } >"$NB_STATE/unattached"
+  if ((count)); then
+    nb_say "Found $count network adapter(s): $(printf '%s, ' "${summary[@]}" | sed 's/, $//')."
+  else
+    nb_say 'No network adapter is attached yet. A USB Ethernet adapter or phone tethering is enough to install.'
+  fi
+  while IFS=$'\t' read -r ifc kind desc; do
+    [[ -n $ifc ]] || continue
+    nb_say "$desc ($ifc) has no driver attached yet; it may need firmware. The installer will try to load it."
+  done <"$NB_STATE/unattached"
+  nb_set wired "$(cut -f1 "$NB_STATE/interfaces" | tr '\n' ' ' | sed 's/ $//')"
+  nb_set radios "$radios"
+  return 0
+}
+
+# ---------------------------------------------------------------- 2. DHCP
+
+nb_lease_value() { # leasefile key: the most recent lease's value
+  awk -v key="$2" '
+    /^lease[[:space:]]*\{/ { split("", v); next }
+    $1 == "fixed-address" { x = $2; sub(/;$/, "", x); v["fixed-address"] = x }
+    $1 == "option" { name = $2; $1 = ""; $2 = ""; v[name] = $0 }
+    END {
+      x = v[key]
+      gsub(/[;"]/, "", x); gsub(/^[[:space:]]+|[[:space:]]+$/, "", x); gsub(/[[:space:]]*,[[:space:]]*/, ",", x)
+      print x
+    }' "$1" 2>/dev/null
+}
+
+nb_dhclient_conf() {
+  [[ -f $NB_STATE/dhclient.conf ]] && return 0
+  cat >"$NB_STATE/dhclient.conf" <<'EOF'
+timeout 15;
+retry 10;
+request subnet-mask, broadcast-address, time-offset, routers,
+        domain-name, domain-name-servers, host-name, ntp-servers, interface-mtu;
+EOF
+}
+
+# Stop a background DHCP client for one interface only, after checking the
+# pid file still names that client.
+nb_stop_dhclient() {
+  local ifc=$1 pidfile pid command
+  pidfile=$NB_DHCLIENT_PIDDIR/dhclient.$ifc.pid
+  [[ -r $pidfile ]] || return 0
+  read -r pid <"$pidfile"
+  [[ $pid =~ ^[1-9][0-9]*$ ]] || return 0
+  command=$(ps -p "$pid" -o command= 2>/dev/null) || return 0
+  if [[ $command == *"dhclient: $ifc"* || $command == *"dhclient"*" $ifc"* ]]; then
+    kill "$pid" 2>/dev/null
+    nb_log "stopped dhclient $pid for $ifc"
+  fi
+}
+
+# A gateway that blocks ICMP still answers ARP; an ARP entry is the proof.
+nb_gateway_ok() {
+  local ifc=$1 addr=$2 gw=$3
+  nb_valid_ipv4 "$gw" || return 1
+  ping -c 1 -t 2 -S "$addr" "$gw" >/dev/null 2>&1
+  arp -n "$gw" 2>/dev/null | grep -Eq " at ([[:xdigit:]]{1,2}:){5}[[:xdigit:]]{1,2} on $ifc( |$)"
+}
+
+nb_write_lease() { # ifc status address gateway gateway_ok dns ntp domain source link
+  {
+    printf 'status=%s\naddress=%s\ngateway=%s\ngateway_ok=%s\n' "$2" "$3" "$4" "$5"
+    printf 'dns=%s\nntp=%s\ndomain=%s\nsource=%s\nlink=%s\n' "$6" "$7" "$8" "$9" "${10}"
+  } >"$NB_STATE/dhcp/$1"
+}
+
+nb_record_lease() { # ifc leasefile source link
+  local ifc=$1 lease=$2 addr gw dns ntp domain ok=no status=lease
+  addr=$(nb_port_address "$ifc")
+  gw=$(nb_lease_value "$lease" routers); gw=${gw%%,*}
+  dns=$(nb_lease_value "$lease" domain-name-servers)
+  ntp=$(nb_lease_value "$lease" ntp-servers)
+  domain=$(nb_lease_value "$lease" domain-name); domain=${domain%% *}
+  [[ $domain =~ ^[A-Za-z0-9.-]+$ ]] || domain=''
+  if [[ -z $addr ]]; then
+    status=no-lease
+  elif [[ -n $gw ]] && nb_gateway_ok "$ifc" "$addr" "$gw"; then
+    ok=yes
+  fi
+  nb_write_lease "$ifc" "$status" "$addr" "$gw" "$ok" "$dns" "$ntp" "$domain" "$3" "${4:-unknown}"
+}
+
+nb_dhcp_probe() {
+  local ifc=$1 link addr lease i
+  ifconfig "$ifc" up >/dev/null 2>&1
+  link=$(nb_link_state "$ifc")
+  for ((i = 0; i < NB_LINK_WAIT; i++)); do
+    [[ $link == up || $link == unknown ]] && break
+    sleep 1
+    link=$(nb_link_state "$ifc")
+  done
+  if [[ $link == no-cable ]]; then
+    nb_write_lease "$ifc" no-cable '' '' no '' '' '' none no-cable
+    return 0
+  fi
+  addr=$(nb_port_address "$ifc")
+  for lease in "$NB_STATE/dhcp/$ifc.leases" "$NB_BOOT_LEASES/dhclient.leases.$ifc"; do
+    if [[ -n $addr && -r $lease && $(nb_lease_value "$lease" fixed-address) == "$addr" ]]; then
+      nb_log "$ifc already holds lease $addr ($lease)"
+      nb_record_lease "$ifc" "$lease" existing "$link"
+      return 0
+    fi
+  done
+  # The boot-time client may still be retrying; this probe owns the interface.
+  nb_stop_dhclient "$ifc"
+  lease=$NB_STATE/dhcp/$ifc.leases
+  rm -f "$lease"
+  nb_log "dhclient $ifc (bounded to ${NB_DHCP_TIMEOUT}s)"
+  timeout "$NB_DHCP_TIMEOUT" dhclient -c "$NB_STATE/dhclient.conf" -l "$lease" "$ifc" >>"$NB_LOG" 2>&1
+  if [[ -z $(nb_port_address "$ifc") ]]; then
+    # A client that found no offer keeps retrying in the background; stop it
+    # so it cannot claim the default route later.
+    nb_stop_dhclient "$ifc"
+    nb_write_lease "$ifc" no-lease '' '' no '' '' '' probe "$link"
+    return 0
+  fi
+  nb_record_lease "$ifc" "$lease" probe "$link"
+}
+
+# Higher is better: a lease with an answering gateway on a wired port, then
+# USB tethering, then a lease whose gateway did not answer ARP.
+nb_score() {
+  local ifc=$1 kind
+  [[ $(nb_kv "$ifc" status) == lease ]] || { echo 0; return; }
+  kind=$(awk -F '\t' -v n="$ifc" '$1 == n { print $2 }' "$NB_STATE/interfaces" 2>/dev/null)
+  if [[ $(nb_kv "$ifc" gateway_ok) == yes ]]; then
+    [[ $kind == usb ]] && echo 2 || echo 3
+  else
+    echo 1
+  fi
+}
+
+nb_ranked() {
+  local ifc default
+  default=$(route -n get default 2>/dev/null | awk '/interface:/ { print $2; exit }')
+  for ifc in $(nb_get wired); do
+    [[ -f $NB_STATE/dhcp/$ifc ]] || continue
+    # Score, then the current default-route owner, then discovery order.
+    printf '%s\t%s\t%s\n' "$(nb_score "$ifc")" "$([[ $ifc == "$default" ]] && echo 1 || echo 0)" "$ifc"
+  done | awk -F '\t' '$1 > 0 { printf "%s\t%s\t%06d\t%s\n", $1, $2, NR, $3 }' |
+    sort -t "$(printf '\t')" -k1,1nr -k2,2nr -k3,3n | cut -f4
+}
+
+# Make one interface the primary connection: the only default route.
+nb_use_primary() {
+  local ifc=$1 gw
+  [[ $(nb_kv "$ifc" status) == lease ]] || return 1
+  gw=$(nb_kv "$ifc" gateway)
+  if nb_valid_ipv4 "$gw"; then
+    route -q delete default >/dev/null 2>&1
+    route -q add default "$gw" >/dev/null 2>&1 || nb_log "could not add default route via $gw"
+  fi
+  nb_set primary "$ifc"
+  nb_set primary_gateway "$gw"
+  nb_log "primary connection: $ifc via ${gw:-no gateway}"
+}
+
+nb_dhcp() {
+  local ifc wanted=${1:-} primary status label
+  nb_begin dhcp
+  nb_dhclient_conf
+  find "$NB_STATE/dhcp" -type f ! -name '*.leases' -delete 2>/dev/null
+  nb_set primary ''
+  for ifc in $(nb_get wired); do
+    nb_dhcp_probe "$ifc" &
+  done
+  wait
+  for ifc in $(nb_get wired); do
+    status=$(nb_kv "$ifc" status)
+    case $status in
+      lease)
+        label="$ifc: address $(nb_kv "$ifc" address)"
+        if [[ -n $(nb_kv "$ifc" gateway) ]]; then
+          label+=", gateway $(nb_kv "$ifc" gateway)"
+          [[ $(nb_kv "$ifc" gateway_ok) == yes ]] || label+=' (gateway did not answer)'
+        else
+          label+=', no gateway offered'
+        fi
+        [[ -z $(nb_kv "$ifc" dns) ]] || label+=", DNS $(nb_kv "$ifc" dns)"
+        ;;
+      no-cable) label="$ifc: no cable connected" ;;
+      *) label="$ifc: no DHCP answer within ${NB_DHCP_TIMEOUT} seconds" ;;
+    esac
+    nb_say "$label."
+  done
+  if [[ -n $wanted ]]; then
+    if [[ $(nb_kv "$wanted" status) != lease ]]; then
+      nb_say "The requested interface $wanted has no DHCP lease."
+      return 1
+    fi
+    primary=$wanted
+  else
+    primary=$(nb_ranked | head -n 1)
+  fi
+  if [[ -z $primary ]]; then
+    [[ -n $(nb_get wired) ]] && nb_say 'No wired interface received a usable DHCP lease.'
+    return 1
+  fi
+  nb_use_primary "$primary"
+  nb_say "Primary connection: $primary."
+}
+
+# Adopt an interface configured outside the probe (Wi-Fi join, manual DHCP).
+nb_adopt() {
+  local ifc=$1 lease
+  nb_valid_ifname "$ifc" || return 1
+  mkdir -p "$NB_STATE/dhcp"
+  lease=$NB_BOOT_LEASES/dhclient.leases.$ifc
+  [[ -r $NB_STATE/dhcp/$ifc.leases ]] && lease=$NB_STATE/dhcp/$ifc.leases
+  nb_record_lease "$ifc" "$lease" adopted "$(nb_link_state "$ifc")"
+  [[ $(nb_kv "$ifc" status) == lease ]] || return 1
+  nb_set primary "$ifc"
+  nb_set primary_gateway "$(nb_kv "$ifc" gateway)"
+}
+
+nb_apply_static() { # ifc address/prefix gateway dns-list
+  local ifc=$1 addr=$2 gw=$3 dns=$4 server servers=()
+  for server in ${dns//,/ }; do nb_valid_ipv4 "$server" && servers+=("$server"); done
+  mkdir -p "$NB_STATE/dhcp"
+  nb_stop_dhclient "$ifc"
+  ifconfig "$ifc" inet "$addr" up >/dev/null 2>&1 || return 1
+  route -q delete default >/dev/null 2>&1
+  route -q add default "$gw" >/dev/null 2>&1 || return 1
+  local IFS=,
+  nb_write_lease "$ifc" lease "${addr%/*}" "$gw" yes "${servers[*]}" '' '' static "$(nb_link_state "$ifc")"
+  nb_set primary "$ifc"
+  nb_set primary_gateway "$gw"
+}
+
+# ---------------------------------------------------------------- 3. DNS
+
+# One direct lookup at one server. The answer, not ICMP, is the test.
+nb_dns_query() {
+  local server=$1 out
+  nb_valid_ipv4 "$server" || return 1
+  if command -v drill >/dev/null 2>&1; then
+    out=$(timeout "$NB_DNS_TIMEOUT" drill "@$server" "$NB_DNS_NAME" A 2>&1) || { nb_log "drill @$server: ${out//$'\n'/ | }"; return 1; }
+    grep -q 'rcode: NOERROR' <<<"$out" &&
+      grep -Eq '[[:space:]]IN[[:space:]]+A[[:space:]]+([0-9]{1,3}\.){3}[0-9]{1,3}' <<<"$out" && return 0
+  elif command -v host >/dev/null 2>&1; then
+    out=$(timeout "$NB_DNS_TIMEOUT" host -W 3 -t A "$NB_DNS_NAME" "$server" 2>&1) || { nb_log "host $server: ${out//$'\n'/ | }"; return 1; }
+    grep -Eq 'has address ([0-9]{1,3}\.){3}[0-9]{1,3}' <<<"$out" && return 0
+  else
+    nb_log 'neither drill nor host is available'
+    return 2
+  fi
+  nb_log "$server answered without an address for $NB_DNS_NAME: ${out//$'\n'/ | }"
+  return 1
+}
+
+nb_write_resolv() { # domain server...
+  local domain=$1 server tmp
+  shift
+  tmp=$NB_RESOLV_CONF.daemonarchy.$$
+  {
+    printf '# Daemonarchy installer: servers that answered a direct lookup of %s\n' "$NB_DNS_NAME"
+    [[ -n $domain ]] && printf 'search %s\n' "$domain"
+    for server; do printf 'nameserver %s\n' "$server"; done
+  } >"$tmp" && mv -f "$tmp" "$NB_RESOLV_CONF"
+}
+
+# Rewrite resolv.conf if a DHCP renewal replaced the checked servers.
+nb_dns_ensure() {
+  local dns first
+  dns=$(nb_get dns)
+  [[ -n $dns ]] || return 0
+  first=${dns%%,*}
+  grep -qx "nameserver $first" "$NB_RESOLV_CONF" 2>/dev/null && return 0
+  nb_log "resolv.conf no longer lists $first; restoring the checked servers"
+  # shellcheck disable=SC2086
+  nb_write_resolv "$(nb_get dns_domain)" ${dns//,/ }
+}
+
+# Query every candidate concurrently, then choose in priority order.
+nb_dns_try_list() { # source-label server...
+  local label=$1 server i=0 chosen=() dhcp_servers primary domain
+  shift
+  rm -f "$NB_STATE"/dns/*
+  for server; do
+    { nb_dns_query "$server" && echo ok || echo failed; } >"$NB_STATE/dns/$i" 2>/dev/null &
+    i=$((i + 1))
+  done
+  wait
+  primary=$(nb_get primary)
+  dhcp_servers=,$(nb_kv "$primary" dns),
+  i=0
+  for server; do
+    if [[ $(cat "$NB_STATE/dns/$i" 2>/dev/null) == ok ]]; then
+      chosen+=("$server")
+      nb_log "DNS $server answered"
+    elif [[ $label == auto && $dhcp_servers == *",$server,"* ]]; then
+      nb_say "The network's DNS server $server did not answer a lookup of $NB_DNS_NAME."
+    else
+      nb_log "DNS $server did not answer"
+    fi
+    i=$((i + 1))
+  done
+  ((${#chosen[@]})) || return 1
+  chosen=("${chosen[@]:0:3}")
+  if [[ $label == auto ]]; then
+    if [[ ,${NB_EXTRA_DNS:-}, == *",${chosen[0]},"* ]]; then label=configured
+    elif [[ $dhcp_servers == *",${chosen[0]},"* ]]; then label=dhcp
+    else label=public; fi
+    # A static connection's own servers are recorded in its lease entry.
+    [[ $label != public && $(nb_kv "$primary" source) == static ]] && label=static
+  fi
+  domain=$(nb_kv "$primary" domain)
+  nb_write_resolv "$domain" "${chosen[@]}" || { nb_say "Could not write $NB_RESOLV_CONF."; return 1; }
+  local IFS=,
+  nb_set dns "${chosen[*]}"
+  nb_set dns_source "$label"
+  nb_set dns_domain "$domain"
+  case $label in
+    dhcp) nb_say "DNS works through the network's own server: ${chosen[*]}." ;;
+    static|configured) nb_say "DNS works through the configured server: ${chosen[*]}." ;;
+    public) nb_say "Using public DNS that answered directly: ${chosen[*]}." ;;
+    user) nb_say "Using your DNS server ${chosen[*]}; it answered a lookup of $NB_DNS_NAME." ;;
+  esac
+}
+
+nb_dns() {
+  local primary server candidates=() seen=' '
+  nb_begin dns
+  nb_set dns ''
+  primary=$(nb_get primary)
+  if [[ -z $primary ]]; then
+    nb_say 'DNS cannot be checked before a network connection exists.'
+    return 1
+  fi
+  for server in ${NB_EXTRA_DNS//,/ } $(nb_kv "$primary" dns | tr ',' ' ') $NB_PUBLIC_DNS; do
+    nb_valid_ipv4 "$server" || continue
+    [[ $seen == *" $server "* ]] && continue
+    seen+="$server "
+    candidates+=("$server")
+  done
+  if nb_dns_try_list auto "${candidates[@]}"; then return 0; fi
+  nb_say "None of ${#candidates[@]} DNS servers answered a lookup of $NB_DNS_NAME through $primary (public DNS may be blocked on this network)."
+  return 1
+}
+
+# Try the next leased interface when nothing answers through the first.
+nb_dns_with_fallback() {
+  local ifc tried
+  nb_dns && return 0
+  tried=$(nb_get primary)
+  for ifc in $(nb_ranked); do
+    [[ $ifc == "$tried" ]] && continue
+    nb_use_primary "$ifc" || continue
+    if nb_dns; then
+      nb_say "Primary connection changed to $ifc because DNS works there."
+      return 0
+    fi
+  done
+  [[ -n $tried ]] && nb_use_primary "$tried"
+  return 1
+}
+
+# A user-supplied server is accepted only after it answers the same query.
+nb_dns_user() {
+  local server=$1
+  nb_begin dns
+  if ! nb_valid_ipv4 "$server"; then
+    nb_say "$server is not a valid IPv4 server address."
+    return 2
+  fi
+  if nb_dns_try_list user "$server"; then return 0; fi
+  nb_say "$server did not answer a lookup of $NB_DNS_NAME; it was not used."
+  return 1
+}
+
+# ---------------------------------------------------------------- 4. clock
+
+nb_now() { date -u +%s; }
+
+nb_file_mtime() { stat -f %m "$1" 2>/dev/null || stat -c %Y "$1" 2>/dev/null; }
+
+nb_fmt_time() {
+  date -u -r "$1" '+%Y-%m-%d %H:%M UTC' 2>/dev/null || date -u -d "@$1" '+%Y-%m-%d %H:%M UTC' 2>/dev/null || echo "epoch $1"
+}
+
+# The image build time: the earliest correct clock this image can see.
+nb_clock_floor() {
+  local value=''
+  [[ -r $ISO_SHARE/build-epoch ]] && read -r value <"$ISO_SHARE/build-epoch"
+  [[ $value =~ ^[0-9]+$ ]] || value=$(nb_file_mtime "$ISO_SHARE/version")
+  [[ $value =~ ^[0-9]+$ ]] || value=$NB_CLOCK_FLOOR_DEFAULT
+  echo "$value"
+}
+
+# usable: no earlier than the build, inside every shipped signing
+# certificate's validity and within NB_CLOCK_MAX_AGE of the build.
+nb_clock_status() {
+  local now floor cert
+  now=$(nb_now)
+  floor=$(nb_clock_floor)
+  [[ $now =~ ^[0-9]+$ ]] || { echo unreadable; return 1; }
+  ((now >= floor)) || { echo before-build; return 1; }
+  for cert in $NB_SIGNING_CERTS; do
+    [[ -r $cert ]] || continue
+    openssl x509 -checkend 0 -noout -in "$cert" >/dev/null 2>&1 || { echo certificate-expired; return 1; }
+  done
+  ((now <= floor + NB_CLOCK_MAX_AGE)) || { echo implausible; return 1; }
+  echo usable
+}
+
+nb_clock_sync() {
+  local server primary
+  primary=$(nb_get primary)
+  for server in $(nb_kv "$primary" ntp | tr ',' ' ') $NB_NTP_SERVERS; do
+    if command -v sntp >/dev/null 2>&1 &&
+       timeout $((NB_NTP_TIMEOUT + 2)) sntp -S -t "$NB_NTP_TIMEOUT" "$server" >>"$NB_LOG" 2>&1; then
+      nb_say "Clock set from network time server $server."
+      return 0
+    fi
+    # ntpd may own UDP 123 on the live system; -u uses an unprivileged port.
+    if command -v ntpdate >/dev/null 2>&1 &&
+       timeout $((NB_NTP_TIMEOUT + 2)) ntpdate -u -b -t "$NB_NTP_TIMEOUT" "$server" >>"$NB_LOG" 2>&1; then
+      nb_say "Clock set from network time server $server."
+      return 0
+    fi
+    nb_log "no time from $server"
+  done
+  return 1
+}
+
+nb_clock() {
+  local status floor
+  nb_begin clock
+  floor=$(nb_clock_floor)
+  status=$(nb_clock_status)
+  if [[ $status == usable ]]; then
+    nb_say "System time $(nb_fmt_time "$(nb_now)") is usable (the image was built $(nb_fmt_time "$floor"))."
+    nb_set clock usable
+    return 0
+  fi
+  case $status in
+    before-build) nb_say "The clock reads $(nb_fmt_time "$(nb_now)"), before this image was built ($(nb_fmt_time "$floor")). Signature and certificate checks would fail." ;;
+    certificate-expired) nb_say "The clock reads $(nb_fmt_time "$(nb_now)"), after the image's signing certificate expires." ;;
+    *) nb_say "The clock reads $(nb_fmt_time "$(nb_now)"), more than three years after this image was built." ;;
+  esac
+  if [[ -n $(nb_get primary) ]] && nb_clock_sync; then
+    status=$(nb_clock_status)
+    if [[ $status == usable || $status == implausible ]]; then
+      # Network time is authoritative; only the age heuristic may disagree.
+      nb_say "System time is now $(nb_fmt_time "$(nb_now)")."
+      nb_set clock synchronized
+      return 0
+    fi
+    if [[ $status == certificate-expired ]]; then
+      nb_say "Network time confirms the image's signing certificate has expired. Download a newer image."
+      nb_set clock expired
+      return 3
+    fi
+  else
+    nb_say 'Network time synchronization did not answer.'
+  fi
+  nb_set clock wrong
+  return 1
+}
+
+# ---------------------------------------------------------------- 5. firmware
+
+nb_fwget_packages() {
+  command -v fwget >/dev/null 2>&1 || return 2
+  timeout 60 fwget -n 2>&1 | tee -a "$NB_LOG" |
+    grep -oE '[a-z0-9][a-z0-9_.+-]*-firmware-[A-Za-z0-9_.+-]*[A-Za-z0-9]' | sort -u
+}
+
+nb_firmware_on_media() {
+  local file
+  for file in "$NB_REPO"/All/"$1"-[0-9]*.pkg; do
+    [[ -f $file ]] && { printf '%s\n' "$file"; return 0; }
+  done
+  return 1
+}
+
+# Firmware kmods are data modules; extract them to tmpfs and load them, since
+# the live root is read-only.
+nb_firmware_load_pkg() {
+  local file=$1 root=$NB_STATE/firmware/root ko path loaded=0
+  mkdir -p "$root"
+  tar -xf "$file" -C "$root" >>"$NB_LOG" 2>&1 || return 1
+  path=$(sysctl -n kern.module_path 2>/dev/null)
+  if [[ $path != *"$root/boot/modules"* ]]; then
+    sysctl kern.module_path="$root/boot/modules${path:+;$path}" >/dev/null 2>&1
+  fi
+  while IFS= read -r ko; do
+    kldload -n "$ko" >>"$NB_LOG" 2>&1 && loaded=$((loaded + 1))
+  done < <(find "$root" -path '*/boot/modules/*.ko' 2>/dev/null)
+  nb_log "loaded $loaded firmware module(s) from ${file##*/}"
+}
+
+nb_firmware_download() {
+  local dest=$NB_STATE/firmware/fetched repos=$NB_STATE/firmware/repos abi
+  mkdir -p "$dest" "$repos" "$NB_STATE/firmware/db" "$NB_STATE/firmware/cache"
+  abi=$(cat "$ISO_SHARE/ABI" 2>/dev/null)
+  cat >"$repos/FreeBSD.conf" <<'EOF'
+FreeBSD: {
+  url: "pkg+https://pkg.FreeBSD.org/${ABI}/latest",
+  mirror_type: "srv",
+  signature_type: "fingerprints",
+  fingerprints: "/usr/share/keys/pkg",
+  enabled: yes
+}
+EOF
+  # pkg verifies the catalogue signature and each archive's checksum.
+  ASSUME_ALWAYS_YES=yes timeout "$NB_FIRMWARE_TIMEOUT" pkg -o REPOS_DIR="$repos" \
+    -o PKG_DBDIR="$NB_STATE/firmware/db" -o PKG_CACHEDIR="$NB_STATE/firmware/cache" \
+    ${abi:+-o ABI="$abi"} fetch -y -o "$dest" "$@" >>"$NB_LOG" 2>&1
+}
+
+nb_apple_needed() {
+  declare -F apple_firmware_hardware >/dev/null || return 1
+  apple_firmware_hardware || return 1
+  ! apple_firmware_radio_attached
+}
+
+# offline: this Mac's recovery partition or a second stick; download: Apple's
+# pinned recovery image. Both go through the importer's verification.
+nb_apple() {
+  local how=$1
+  nb_apple_needed || return 0
+  case $how in
+    offline)
+      if apple_firmware_preloaded && apple_firmware_radio_attached; then return 0; fi
+      if apple_firmware_prepare_internal >>"$NB_LOG" 2>&1 || apple_firmware_prepare_media >>"$NB_LOG" 2>&1; then
+        nb_say 'MacBook Wi-Fi firmware was read from local media and verified; the BCM4364 radio is attached.'
+        return 0
+      fi
+      nb_say 'MacBook Wi-Fi firmware is not on this Mac or an attached stick.'
+      ;;
+    download)
+      if apple_firmware_prepare download >>"$NB_LOG" 2>&1; then
+        nb_say "MacBook Wi-Fi firmware was downloaded from Apple's recovery image and verified."
+        return 0
+      fi
+      nb_say 'Downloading the MacBook Wi-Fi firmware failed; the firmware screen offers other sources.'
+      ;;
+  esac
+  return 1
+}
+
+nb_firmware() {
+  local packages pkg file missing=() other=() online status=0
+  nb_begin firmware
+  online=false
+  [[ -n $(nb_get dns) ]] && online=true
+  packages=$(nb_fwget_packages)
+  case $? in
+    2) nb_say 'fwget is not available on this image; skipping generic firmware detection.' ;;
+  esac
+  for pkg in $packages; do
+    # fwget also reports GPU firmware, which the installed system's graphics
+    # packages carry; the live installer needs only network firmware.
+    [[ $pkg == gpu-firmware-* ]] && { other+=("$pkg"); continue; }
+    if pkg info -e "$pkg" >/dev/null 2>&1; then
+      nb_log "$pkg already installed on the live system"
+    elif file=$(nb_firmware_on_media "$pkg"); then
+      nb_firmware_load_pkg "$file" && nb_say "Loaded $pkg from the installer media."
+    else
+      missing+=("$pkg")
+    fi
+  done
+  ((${#other[@]})) && nb_say "Graphics firmware (${other[*]}) is installed with the system's graphics packages."
+  if ((${#missing[@]})); then
+    if $online; then
+      if nb_firmware_download "${missing[@]}"; then
+        for pkg in "${missing[@]}"; do
+          file=$(find "$NB_STATE/firmware/fetched" -name "$pkg-[0-9]*.pkg" 2>/dev/null | head -n 1)
+          if [[ -n $file ]] && nb_firmware_load_pkg "$file"; then
+            nb_say "Downloaded and loaded $pkg (signature-checked by pkg)."
+          else
+            nb_say "Downloaded $pkg, but it could not be loaded."; status=1
+          fi
+        done
+      else
+        nb_say "Could not download firmware: ${missing[*]}."; status=1
+      fi
+    else
+      nb_say "Firmware not on the media yet: ${missing[*]}. It will be downloaded once the network works."
+      status=1
+    fi
+  fi
+  if nb_apple_needed; then
+    nb_apple offline || { $online && nb_apple download; } || status=1
+  fi
+  if ((status == 0)) && [[ -z $packages ]] && ! nb_apple_needed; then
+    nb_say 'No attached device needs firmware beyond what is already loaded.'
+  elif ((status == 0)); then
+    nb_say 'Every attached device has the firmware it needs.'
+  fi
+  nb_set firmware "$([[ $status == 0 ]] && echo ok || echo incomplete)"
+  return "$status"
+}
+
+# ---------------------------------------------------------------- 6. Wi-Fi radios
+
+nb_wifi_prepare() {
+  local wanted=${1:-} module sel kind desc radios dev parent
+  nb_begin wifi-prepare
+  # Drivers for devices that attached without one (generic firmware is on
+  # the media, so this needs no network).
+  if command -v devmatch >/dev/null 2>&1; then
+    for module in $(timeout 20 devmatch 2>/dev/null); do
+      [[ $module =~ ^[A-Za-z0-9_.-]+$ ]] || continue
+      kldload -n "$module" >>"$NB_LOG" 2>&1 && nb_log "loaded driver $module"
+    done
+  fi
+  while IFS=$'\t' read -r sel kind desc; do
+    [[ $sel == pci* ]] || continue
+    devctl attach "$sel" >>"$NB_LOG" 2>&1 && nb_log "attached $sel ($desc)"
+  done <"$NB_STATE/unattached" 2>/dev/null
+  nb_apple offline
+  radios=$(nb_wireless_radios)
+  nb_set radios "$radios"
+  if [[ -z $radios ]]; then
+    nb_say 'No Wi-Fi radio is available.'
+    nb_set wifi_radio ''
+    return 0
+  fi
+  dev=$wanted
+  [[ -n $dev ]] || dev=$(head -n 1 <<<"$radios")
+  if [[ " $(tr '\n' ' ' <<<"$radios") " != *" $dev "* ]]; then
+    nb_say "Wi-Fi radio $dev is not attached."
+    return 1
+  fi
+  parent=$(sysctl -n net.wlan.0.%parent 2>/dev/null)
+  if [[ $parent != "$dev" ]]; then
+    ifconfig wlan0 destroy >/dev/null 2>&1
+    if ! ifconfig wlan0 create wlandev "$dev" >>"$NB_LOG" 2>&1; then
+      nb_say "Could not create the Wi-Fi interface on $dev."
+      return 1
+    fi
+  fi
+  ifconfig wlan0 up >/dev/null 2>&1
+  nb_set wifi_radio "$dev"
+  nb_say "Wi-Fi radio ready: $dev ($(nb_description "$dev")) as wlan0."
+}
+
+# ---------------------------------------------------------------- 7. Wi-Fi join
+
+wifi_connect() {
+  local ssid=$1 psk=$2 hidden=$3 bssid=${4:-} tries state gateway_if dhcp_pid dhcp_command
+  local stale_addr wired_pidfile router lease_file
+  local wifi_conf=${WIFI_CONF:-/tmp/wpa_supplicant.conf}
+  local error_file=${WIFI_ERROR_FILE:-/tmp/daemonarchy-wifi-connect-error}
+  local dhcp_pidfile=${WIFI_DHCLIENT_PIDFILE:-/var/run/dhclient/dhclient.wlan0.pid}
+  rm -f "$error_file"
+  if [[ -n $bssid && ! $bssid =~ ^([[:xdigit:]]{2}:){5}[[:xdigit:]]{2}$ ]]; then
+    printf '%s\n' 'Invalid access-point address.' >"$error_file"
+    return 1
+  fi
+  # ifconfig_DEFAULT=DHCP may have started a background client before this
+  # radio had an authenticated link. Own the wireless lease after WPA instead
+  # of competing with that early client; leave wired DHCP clients untouched.
+  if [[ -r $dhcp_pidfile ]]; then
+    read -r dhcp_pid <"$dhcp_pidfile"
+    if [[ $dhcp_pid =~ ^[1-9][0-9]*$ ]]; then
+      dhcp_command=$(ps -p "$dhcp_pid" -o command= 2>/dev/null || true)
+      if [[ $dhcp_command == *'dhclient: wlan0'* ||
+            $dhcp_command == *'dhclient wlan0'* ]]; then
+        kill "$dhcp_pid" 2>/dev/null || true
+      fi
+    fi
+  fi
+  {
+    echo 'ctrl_interface=/var/run/wpa_supplicant'
+    if [[ -n $psk ]]; then
+      wpa_passphrase "$ssid" "$psk" | grep -v '^[[:space:]]*#psk='
+    else
+      printf 'network={\n\tssid="%s"\n\tkey_mgmt=NONE\n}\n' "$ssid"
+  fi | if [[ $hidden == true || -n $bssid ]]; then
+    awk -v hidden="$hidden" -v bssid="$bssid" '
+      /^}$/ {
+        if (hidden == "true") print "\tscan_ssid=1"
+        if (bssid != "") print "\tbssid=" bssid
+      }
+      { print }'
+  else cat; fi
+  } >"$wifi_conf"
+  chmod 600 "$wifi_conf"
+
+  pkill -f "wpa_supplicant.*wlan0" 2>/dev/null
+  wpa_supplicant -B -i wlan0 -c "$wifi_conf" >/dev/null 2>&1 || {
+    printf '%s\n' 'Could not start the Wi-Fi authenticator.' >"$error_file"
+    return 1
+  }
+  # A radio may need to try several BSSIDs for the same SSID. Wait for the
+  # completed key exchange before starting DHCP, not just 802.11 association.
+  for ((tries=0; tries<120; tries++)); do
+    state=$(wpa_cli -i wlan0 status 2>/dev/null | awk -F= '$1 == "wpa_state" { print $2; exit }')
+    [[ $state == COMPLETED ]] && break
+    sleep 1
+  done
+  if ((tries == 120)); then
+    printf 'Wi-Fi authentication timed out after 120 seconds (last state: %s).\n' "${state:-unknown}" >"$error_file"
+    return 1
+  fi
+  timeout 60 dhclient wlan0 >/dev/null 2>&1 || {
+    printf '%s\n' 'Wi-Fi authenticated, but DHCP did not assign an address within 60 seconds.' >"$error_file"
+    return 1
+  }
+  # A transient lease or a link-only association is not usable for an online
+  # install. Let the new route settle, then check the selected Wi-Fi path.
+  sleep 5
+  if [[ -z $(port_address wlan0) ]]; then
+    printf '%s\n' 'Wi-Fi authenticated, but no IP address is available.' >"$error_file"
+    return 1
+  fi
+  gateway_if=$(route -n get default 2>/dev/null | awk '/interface:/ { print $2; exit }')
+  if [[ $gateway_if != wlan0 ]]; then
+    # A wired adapter may own the default route even after Wi-Fi obtains a
+    # lease. Keep a live wired address for the debugger while selecting the
+    # wireless gateway for package downloads. Release a stale wired lease only
+    # when its cable has no carrier.
+    lease_file=${WIFI_DHCLIENT_LEASEFILE:-/var/db/dhclient.leases.wlan0}
+    router=$(awk '$1 == "option" && $2 == "routers" {
+      gsub(/[;,]/, "", $3); value = $3
+    } END { print value }' "$lease_file" 2>/dev/null || true)
+    if [[ $gateway_if =~ ^[[:alnum:]_.-]+$ && $gateway_if != wlan* &&
+          $router =~ ^([0-9]{1,3}\.){3}[0-9]{1,3}$ ]] &&
+       ifconfig "$gateway_if" 2>/dev/null | grep -Eq '^[[:space:]]*ether '; then
+      if ifconfig "$gateway_if" 2>/dev/null | grep -Eq 'status: (no carrier|inactive)'; then
+        wired_pidfile=${WIFI_WIRED_DHCLIENT_PIDFILE:-/var/run/dhclient/dhclient.$gateway_if.pid}
+        if [[ -r $wired_pidfile ]]; then
+          read -r dhcp_pid <"$wired_pidfile"
+          if [[ $dhcp_pid =~ ^[1-9][0-9]*$ ]]; then
+            dhcp_command=$(ps -p "$dhcp_pid" -o command= 2>/dev/null || true)
+            if [[ $dhcp_command == *"dhclient: $gateway_if"* ||
+                  $dhcp_command == *"dhclient $gateway_if"* ]]; then
+              kill "$dhcp_pid" 2>/dev/null || true
+            fi
+          fi
+        fi
+        stale_addr=$(port_address "$gateway_if")
+        if [[ -n $stale_addr ]]; then
+          ifconfig "$gateway_if" inet "$stale_addr" delete >/dev/null 2>&1 || true
+        fi
+        route -q delete default >/dev/null 2>&1 || true
+        route -q add default "$router" -ifp wlan0 >/dev/null 2>&1 || true
+      else
+        route -q change default "$router" -ifp wlan0 >/dev/null 2>&1 || true
+      fi
+      gateway_if=$(route -n get default 2>/dev/null | awk '/interface:/ { print $2; exit }')
+    fi
+  fi
+  if [[ $gateway_if != wlan0 ]]; then
+    if [[ -n $gateway_if ]]; then
+      printf 'Wi-Fi has an IP address, but %s owns the default route. Disconnect that interface and retry Wi-Fi to install over Wi-Fi.\n' "$gateway_if" >"$error_file"
+    else
+      printf '%s\n' 'Wi-Fi has an IP address, but no default route. Check the DHCP gateway and retry.' >"$error_file"
+    fi
+    return 1
+  fi
+}
+
+# Non-interactive join from install.conf answers (unattended installs).
+nb_wifi_join() {
+  local error_file=${WIFI_ERROR_FILE:-/tmp/daemonarchy-wifi-connect-error}
+  nb_begin wifi-join
+  if [[ -z ${wifi_ssid:-} ]]; then
+    nb_say 'No Wi-Fi network is configured (set wifi_ssid and wifi_psk).'
+    return 1
+  fi
+  if [[ -n ${wifi_enterprise_profile:-} ]]; then
+    nb_say 'Enterprise Wi-Fi is joined from the interactive installer; unattended installs support personal or open networks.'
+    return 1
+  fi
+  if wifi_connect "$wifi_ssid" "${wifi_psk:-}" "${wifi_hidden:-false}" ''; then
+    nb_adopt wlan0 || true
+    nb_say "Joined Wi-Fi network $wifi_ssid; wlan0 address $(nb_port_address wlan0)."
+    return 0
+  fi
+  nb_say "Could not join $wifi_ssid: $(cat "$error_file" 2>/dev/null || echo 'no diagnostic')"
+  return 1
+}
+
+# ---------------------------------------------------------------- pipeline
+
+# Front-ends override these. The defaults never prompt: unattended installs
+# fail with the step's own explanation instead.
+nb_hook_run() { nb_step "$@"; }
+nb_hook_show() { nb_report "$1" | sed 's/^/  /'; }
+nb_hook_dns_prompt() {
+  nb_fail "No DNS server answered. Set net_dns to a resolver that answers, or allow DNS to 1.1.1.1, 8.8.8.8 or 9.9.9.9."
+}
+nb_hook_clock_prompt() {
+  nb_fail "The system clock is wrong and network time did not answer. Set the firmware clock to UTC, or allow NTP to pool.ntp.org."
+}
+nb_hook_wifi_join() { nb_hook_run wifi-join; }
+
+nb_fail() {
+  nb_set failure "$*"
+  nb_log "FAILED: $*"
+  return 1
+}
+
+# The report file a step writes.
+nb_report_name() {
+  case $1 in
+    dns-fallback|dns-try|dns-ensure) echo dns ;;
+    primary|static|adopt) echo dhcp ;;
+    *) echo "$1" ;;
+  esac
+}
+
+nb_run() { # step...: run, then show what it found
+  local status
+  nb_hook_run "$@" && status=0 || status=$?
+  nb_hook_show "$(nb_report_name "$1")"
+  return "$status"
+}
+
+nb_checks() {
+  local status
+  nb_run dns-fallback || nb_hook_dns_prompt || return 1
+  nb_run clock && status=0 || status=$?
+  if ((status == 3)); then nb_fail 'The image signing certificate has expired.'; return 1; fi
+  ((status == 0)) || nb_hook_clock_prompt || return 1
+  nb_run firmware || nb_log 'firmware step incomplete; continuing'
+  return 0
+}
+
+# Answers honored: net_mode (dhcp|static|wifi), net_if, net_addr, net_gw,
+# net_dns, wifi_ssid, wifi_psk, wifi_hidden.
+nb_pipeline() {
+  local primary
+  nb_reset
+  nb_run discover
+  NB_EXTRA_DNS=${net_dns:-}
+  export NB_EXTRA_DNS
+  case ${net_mode:-dhcp} in
+    static)
+      nb_valid_ifname "${net_if:-}" && [[ -n ${net_addr:-} ]] && nb_valid_ipv4 "${net_gw:-}" ||
+        { nb_fail 'Static addressing needs net_if, net_addr and net_gw.'; return 1; }
+      nb_hook_run static "$net_if" "$net_addr" "$net_gw" "${net_dns:-}" ||
+        { nb_fail "Could not apply the static address to $net_if."; return 1; }
+      ;;
+    wifi)
+      nb_run wifi-prepare "${net_if:-}" || { nb_fail 'No usable Wi-Fi radio.'; return 1; }
+      nb_hook_wifi_join || { nb_fail 'Could not join the configured Wi-Fi network.'; return 1; }
+      ;;
+    *)
+      nb_run dhcp "${net_if:-}"
+      ;;
+  esac
+  primary=$(nb_get primary)
+  if [[ -n $primary ]]; then
+    nb_checks || return 1
+    # Radios become usable now that any downloaded firmware is loaded.
+    [[ ${net_mode:-dhcp} == wifi ]] || nb_run wifi-prepare || true
+    return 0
+  fi
+  # No wired network: Wi-Fi first with local firmware, then the checks.
+  nb_run wifi-prepare || true
+  if [[ -z $(nb_get wifi_radio) ]]; then
+    nb_fail 'No wired interface received a DHCP lease and no Wi-Fi radio is available.'
+    return 1
+  fi
+  nb_hook_wifi_join || { nb_fail 'No wired interface received a DHCP lease and Wi-Fi did not connect.'; return 1; }
+  nb_checks
+}
+
+nb_step() {
+  local step=$1
+  shift
+  case $step in
+    discover) nb_discover ;;
+    dhcp) nb_dhcp "$@" ;;
+    primary) nb_begin dhcp; nb_use_primary "$1" && nb_say "Primary connection: $1." ;;
+    adopt) nb_adopt "$@" ;;
+    static) nb_begin dhcp; nb_apply_static "$@" && nb_say "Static address $2 on $1, gateway $3." ;;
+    dns) nb_dns ;;
+    dns-fallback) nb_dns_with_fallback ;;
+    dns-try) nb_dns_user "$@" ;;
+    dns-ensure) nb_dns_ensure ;;
+    clock) nb_clock ;;
+    firmware) nb_firmware ;;
+    wifi-prepare) nb_wifi_prepare "$@" ;;
+    wifi-join) nb_wifi_join ;;
+    report) nb_report discover dhcp wifi-prepare wifi-join dns clock firmware ;;
+    *) echo "network-bringup: unknown step $step" >&2; return 2 ;;
+  esac
+}
+
+# Unattended: run the pipeline from install.conf answers and record what
+# was chosen back into it for the installer.
+nb_auto() {
+  local conf=$1 status
+  [[ -r $conf ]] || { echo "network-bringup: cannot read $conf" >&2; return 2; }
+  # shellcheck disable=SC1090
+  source "$conf"
+  nb_hook_show() { nb_report "$1" | sed 's/^/  network: /'; }
+  nb_pipeline && status=0 || status=$?
+  if ((status != 0)); then
+    printf 'Network setup failed: %s\nDiagnostic log: %s\n' "$(nb_get failure)" "$NB_LOG" >&2
+    return 1
+  fi
+  {
+    if [[ ${net_mode:-dhcp} == dhcp ]]; then
+      if [[ $(nb_get primary) == wlan0 ]]; then
+        printf 'net_mode=wifi\nnet_if=%q\n' "$(nb_get wifi_radio)"
+      else
+        printf 'net_if=%q\n' "$(nb_get primary)"
+      fi
+    fi
+    printf 'net_dns=%q\nnet_dns_source=%q\n' "$(nb_get dns)" "$(nb_get dns_source)"
+  } >>"$conf"
+}
+
+nb_main() {
+  local command=${1:-report}
+  shift
+  mkdir -p "$NB_STATE"
+  if ! declare -F apple_firmware_hardware >/dev/null && [[ -r $(dirname "$0")/apple-firmware ]]; then
+    # shellcheck source=apple-firmware
+    source "$(dirname "$0")/apple-firmware"
+  fi
+  case $command in
+    auto) nb_auto "$@" ;;
+    *) nb_step "$command" "$@" ;;
+  esac
+}
+
+if [[ ${BASH_SOURCE[0]} == "$0" ]]; then
+  nb_main "$@"
+fi
