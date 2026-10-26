@@ -18,3 +18,13 @@ graphics/drm-612-kmod graphics/gpu-firmware-kmod net/wifi-firmware-kmod
 net/if_brcmfmac-kmod
 x11/nvidia-driver x11/nvidia-kmod graphics/nvidia-drm-612-kmod x11/linux-nvidia-libs
 "
+
+# The live desktop's packages (build-iso.sh live-packages) are installed into
+# the live root from the same poudriere repository. The desktop's own
+# dependencies already bring Hyprland, seatd, D-Bus, Mesa, foot, DejaVu, GTK 3
+# and PyGObject into the bulk; these origins are needed only by the live root.
+# Add them to the bulk list with ISO_ORIGINS. They are not copied into the
+# ISO's package repository.
+LIVE_ORIGINS="
+security/sudo
+"

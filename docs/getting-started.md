@@ -51,6 +51,16 @@ Be sure of the device name: `dd` overwrites whatever you point it at.
 2. For earlier 1.0.1, turn Secure Boot off. The 1.1 release can also boot with it off; enforced Secure Boot requires [manual enrollment of the project certificate](secure-boot.md), preserving existing OEM/Windows keys. Factory keys alone reject the project loader.
 3. Choose the USB stick. Use UEFI for Secure Boot; 1.1 also supports legacy BIOS boot.
 
+### Try the live desktop first (1.4.0 and later)
+
+The loader menu that appears for a few seconds at boot offers **Try Daemonarchy (live desktop, disk untouched)**. Press **T** there (any key first stops the countdown). Pressing Enter, or letting the countdown finish, starts the text installer as before.
+
+The live desktop runs entirely from the stick and memory: it changes no disk, imports no existing ZFS pool and uses no swap. It is a minimal Hyprland session with a terminal (**Super + Enter**) and the graphical installer, which opens on its own (**Super + I** reopens it). It shows whether the desktop's graphics work on your machine. The graphics driver is chosen and loaded from the stick, so no network is needed for that. The full Omarchy desktop and its applications are only on the installed system.
+
+The graphical installer asks the same questions as the text installer, checks them by the same rules and writes the same answers. Nothing is written to a disk until you tick the confirmation on its last screen and press **Install Daemonarchy**; it then shows the installer's measured progress and offers a restart when the installation has verifiably completed. Enterprise (802.1X) Wi-Fi, setting the clock and the MacBook Wi-Fi firmware step open the text installer's own screens in a terminal window.
+
+If the graphics cannot start, or when you leave the live desktop, the text installer takes over the screen; no disk has been changed. Everything the live desktop changes is kept in memory; its minimum memory has not been measured yet. Its account is named `live`, so choose a different user name for your installation.
+
 ## 4. Install
 
 The installer asks a handful of questions, then installs on its own. Use the arrow keys, Tab and Enter.

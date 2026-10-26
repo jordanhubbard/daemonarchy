@@ -1,0 +1,157 @@
+#!/usr/local/bin/bash
+# Load the detected GPU's desktop driver for the live desktop, entirely from
+# the installer media. It reuses the installer's GPU selection (gpu-ids) and
+# exact package manifest (gpu-packages), so the live desktop and an installed
+# system use the same kernel-matched payload, and no network is needed.
+#
+# Kernel modules and firmware are extracted from the ISO repository into the
+# live tmpfs and added to kern.module_path, so /boot/modules and its
+# linker.hints are never rewritten. NVIDIA's userspace driver only adds files
+# to /usr/local: each directory that receives a new entry gets a tmpfs mounted
+# with -o union, which shows new files on top of the read-only ISO, and the
+# package is refused if it would replace any existing ISO file. unionfs is not
+# used (see live-service). pkg's database is on the /var tmpfs. Nothing is
+# written to any disk.
+set -euo pipefail
+
+ISO_SHARE=${ISO_SHARE:-/usr/local/share/daemonarchy-installer}
+REPO=${REPO:-$ISO_SHARE/repo}
+LIVE_STATE=${LIVE_STATE:-/var/run/daemonarchy-live}
+LIVE_MODULES=${LIVE_MODULES:-/live/modules}
+PKG_DBDIR=${PKG_DBDIR:-/var/db/pkg}
+# Tests point this at a fixture tree; the live system uses /.
+LIVE_GPU_ROOT=${LIVE_GPU_ROOT:-}
+export PKG_DBDIR
+DRI_DIR=${DRI_DIR:-/dev/dri}
+here=$(cd "$(dirname "${BASH_SOURCE[0]}")" && pwd)
+# shellcheck source=gpu-config
+source "$here/gpu-config"
+
+fail() { printf 'live-gpu: %s\n' "$*" >&2; exit 1; }
+
+# Firmware packages are per chip, so take the whole family for the selected
+# driver rather than guessing which chip files the driver will request.
+live_gpu_payload() {
+  local package name families=() family
+  for module in "${gpu_modules[@]}"; do
+    case "$module" in
+      amdgpu) families+=(amd) ;;
+      radeonkms) families+=(radeon) ;;
+      i915kms) families+=(intel) ;;
+    esac
+  done
+  for package in "${gpu_exact_packages[@]}"; do
+    name=${package%-*}
+    case "$name" in
+      drm-612-kmod|nvidia-kmod|nvidia-drm-612-kmod) printf '%s\n' "$package" ;;
+      gpu-firmware-*-kmod-*)
+        for family in "${families[@]}"; do
+          [[ $name != gpu-firmware-"$family"-kmod-* ]] || { printf '%s\n' "$package"; break; }
+        done
+        ;;
+    esac
+  done
+}
+
+# Same readiness rule as the installed system's graphics service: a loaded
+# module is not enough; the device must attach and expose DRM nodes.
+live_gpu_attached() {
+  local module devices driver drivers=() card=NO render=NO node
+  for module in "${gpu_modules[@]}"; do
+    case "$module" in
+      linux|linux64) ;;
+      amdgpu|radeonkms|i915kms) drivers+=(drmn) ;;
+      nvidia-drm) drivers+=(nvidia) ;;
+      virtio_gpu_drm) drivers+=(virtio_gpu_drm) ;;
+    esac
+  done
+  ((${#drivers[@]})) || return 0
+  devices=$(devinfo) || { echo 'Cannot inspect attached graphics devices.' >&2; return 1; }
+  for driver in "${drivers[@]}"; do
+    awk -v driver="$driver" '$1 ~ "^" driver "[0-9]+$" && NF == 1 { found = 1 } END { exit !found }' \
+      <<<"$devices" || { echo "No attached $driver device after loading the driver." >&2; return 1; }
+  done
+  for node in "$DRI_DIR"/card[0-9]*; do [[ ! -c $node ]] || card=YES; done
+  for node in "$DRI_DIR"/renderD[0-9]*; do [[ ! -c $node ]] || render=YES; done
+  [[ $card == YES && $render == YES ]] || { echo 'Missing DRM card/render devices.' >&2; return 1; }
+}
+
+# Mount additive tmpfs layers for a userspace package's new files, then add it
+# without running its scripts. Any existing lower file stops the install with
+# its path, since -o union can add names but cannot replace ISO contents.
+live_gpu_add_userspace() {
+  local pkgfile=$1 file dir existing=() dirs=() mounted
+  [[ $PKG_DBDIR == /var/* ]] || fail 'the package database must stay on the /var tmpfs'
+  while IFS= read -r file; do
+    [[ $file == /usr/local/* && $file != *'/../'* ]] || fail "unexpected package path $file"
+    if [[ -e $LIVE_GPU_ROOT$file || -L $LIVE_GPU_ROOT$file ]]; then existing+=("$file"); continue; fi
+    dir=${file%/*}
+    while [[ ! -d $LIVE_GPU_ROOT$dir ]]; do dir=${dir%/*}; done
+    dirs+=("$LIVE_GPU_ROOT$dir")
+  done < <(pkg query -F "$pkgfile" '%Fp')
+  ((${#existing[@]} == 0)) || fail "$(basename "$pkgfile") would replace ISO files: ${existing[*]}"
+  while IFS= read -r dir; do
+    [[ -n $dir ]] || continue
+    mounted=$(awk -v d="$dir" '$2 == d { found = 1 } END { print found + 0 }' "$LIVE_STATE/mounts" 2>/dev/null || echo 0)
+    [[ $mounted == 1 ]] && continue
+    mount -t tmpfs -o "union,mode=$(stat -f '%Lp' "$dir"),uid=$(stat -f '%u' "$dir"),gid=$(stat -f '%g' "$dir")" tmpfs "$dir" ||
+      fail "cannot add a memory layer on $dir"
+    printf '%s %s\n' "$(($(wc -l <"$LIVE_STATE/mounts" 2>/dev/null || echo 0) + 1))" "$dir" >>"$LIVE_STATE/mounts"
+  done < <(printf '%s\n' "${dirs[@]}" | sort -u | awk '{ print length, $0 }' | sort -n | cut -d' ' -f2-)
+  ASSUME_ALWAYS_YES=yes IGNORE_OSVERSION=yes pkg add -q -I -M "$pkgfile"
+}
+
+main() {
+  local inventory package path moddir module current
+  [[ -d $LIVE_MODULES ]] || fail "the live module directory $LIVE_MODULES is missing"
+  inventory=$(mktemp)
+  pciconf -l >"$inventory"
+  gpu_select "$inventory" "$ISO_SHARE/gpu-ids"
+  rm -f "$inventory"
+  ((${#gpu_modules[@]})) || fail 'no supported desktop GPU was detected'
+  gpu_resolve_packages "$ISO_SHARE/gpu-packages" "$REPO"
+
+  moddir=$LIVE_MODULES/boot/modules
+  mkdir -p "$moddir"
+  while read -r package; do
+    path=$REPO/All/$package.pkg
+    [[ -f $path ]] || fail "missing $package in the ISO repository"
+    tar -xf "$path" -C "$LIVE_MODULES" --include='/boot/modules/*' --include='boot/modules/*'
+  done < <(live_gpu_payload)
+  for module in "${gpu_modules[@]}"; do
+    case "$module" in
+      linux|linux64) ;;
+      *) [[ -f $moddir/$module.ko ]] || fail "the ISO payload lacks $module.ko" ;;
+    esac
+  done
+  kldxref "$moddir"
+  current=$(sysctl -n kern.module_path)
+  case ";$current;" in
+    *";$moddir;"*) ;;
+    *) sysctl kern.module_path="$current;$moddir" >/dev/null ;;
+  esac
+
+  : >"$LIVE_STATE/desktop.env"
+  if $gpu_nvidia; then
+    gpu_prepare_live_compat
+    kenv hw.nvidiadrm.modeset=1 >/dev/null
+    # Only the native userspace driver; linux-nvidia-libs serves CUDA, which
+    # the live desktop does not offer. Its other libraries are already live.
+    for package in "${gpu_exact_packages[@]}"; do
+      [[ ${package%-*} == nvidia-driver ]] || continue
+      live_gpu_add_userspace "$REPO/All/$package.pkg"
+    done
+    if ! $gpu_other; then
+      printf 'GBM_BACKEND=nvidia-drm\n__GLX_VENDOR_LIBRARY_NAME=nvidia\n' >"$LIVE_STATE/desktop.env"
+    fi
+  fi
+  for module in "${gpu_modules[@]}"; do
+    kldstat -q -n "$module.ko" || kldload "$module" || fail "cannot load $module"
+  done
+  live_gpu_attached || fail 'the graphics device did not become ready'
+  printf '%s\n' "${gpu_modules[@]}" >"$LIVE_STATE/gpu-modules"
+}
+
+if [[ ${BASH_SOURCE[0]} == "$0" ]]; then
+  main "$@"
+fi

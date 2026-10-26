@@ -9,7 +9,7 @@
 # (install/provisioning/setup-form.sh), vendored into the image, so this asks
 # exactly what the Arch installer asks and checks answers the same way.
 
-ISO_SHARE=/usr/local/share/daemonarchy-installer
+ISO_SHARE=${ISO_SHARE:-/usr/local/share/daemonarchy-installer}
 DAEMONARCHY_INSTALL_CONF=${DAEMONARCHY_INSTALL_CONF:-/tmp/daemonarchy-install.conf}
 LOGO_PATH="$ISO_SHARE/logo.txt"
 
@@ -1010,35 +1010,43 @@ write_install_conf() {
   } >"$DAEMONARCHY_INSTALL_CONF"
 }
 
-greeter
-while true; do
-  clear_logo
-  if [[ $(kenv smbios.system.product 2>/dev/null || true) == MacBookPro16,1 ]]; then
-    options=('Install Daemonarchy' 'Prepare MacBook Wi-Fi firmware' 'Remote agent debug' 'Configure network' 'Exit to shell')
-  else
-    options=('Install Daemonarchy' 'Remote agent debug' 'Configure network' 'Exit to shell')
-  fi
-  action=$(gum choose --header 'Installer options' "${options[@]}") || exit 1
-  case "$action" in
-    'Install Daemonarchy') break ;;
-    'Remote agent debug')
-      "$(dirname "$0")/remote-debug" || {
-        echo 'Remote debug could not start. Press Return to return to the menu.'
-        IFS= read -r _ </dev/tty || true
-      }
-      ;;
-    'Configure network') network_step allow-offline ;;
-    'Prepare MacBook Wi-Fi firmware') apple_firmware_step optional ;;
-    'Exit to shell') exit 1 ;;
-  esac
-done
-apple_firmware_step || abort 'MacBook firmware setup failed before disk changes.'
-keyboard_form
-user_step
-network_step
-ssh_step
-cuda_step
-checkout_step
-disk_form
-clear
-write_install_conf
+configurator_main() {
+  greeter
+  while true; do
+    clear_logo
+    if [[ $(kenv smbios.system.product 2>/dev/null || true) == MacBookPro16,1 ]]; then
+      options=('Install Daemonarchy' 'Prepare MacBook Wi-Fi firmware' 'Remote agent debug' 'Configure network' 'Exit to shell')
+    else
+      options=('Install Daemonarchy' 'Remote agent debug' 'Configure network' 'Exit to shell')
+    fi
+    action=$(gum choose --header 'Installer options' "${options[@]}") || exit 1
+    case "$action" in
+      'Install Daemonarchy') break ;;
+      'Remote agent debug')
+        "$(dirname "$0")/remote-debug" || {
+          echo 'Remote debug could not start. Press Return to return to the menu.'
+          IFS= read -r _ </dev/tty || true
+        }
+        ;;
+      'Configure network') network_step allow-offline ;;
+      'Prepare MacBook Wi-Fi firmware') apple_firmware_step optional ;;
+      'Exit to shell') exit 1 ;;
+    esac
+  done
+  apple_firmware_step || abort 'MacBook firmware setup failed before disk changes.'
+  keyboard_form
+  user_step
+  network_step
+  ssh_step
+  cuda_step
+  checkout_step
+  disk_form
+  clear
+  write_install_conf
+}
+
+# The live desktop's graphical installer sources these screens' rules, checks
+# and answer file writer rather than copying them; only run the TUI directly.
+if [[ ${BASH_SOURCE[0]} == "$0" ]]; then
+  configurator_main
+fi

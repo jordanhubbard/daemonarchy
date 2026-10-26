@@ -1,0 +1,109 @@
+#!/bin/sh
+# PROVIDE: daemonarchy_live
+# REQUIRE: FILESYSTEMS var tmp
+# BEFORE: netif ldconfig
+# KEYWORD: nojail
+#
+# Installed as /etc/rc.d/daemonarchy_live on the installer media only. It does
+# nothing unless the loader's "Try Daemonarchy" entry set daemonarchy_live=YES.
+#
+# The ISO root is read-only cd9660; /var (with pkg's database) and /tmp are
+# already tmpfs. The small configuration and home trees the live desktop
+# changes, /etc, /usr/local/etc, /root and /home, are copied into their own
+# tmpfs at boot, as FreeBSD's rc.initdiskless does, so every change lives in
+# RAM with ordinary rename semantics (pw and pwd_mkdb work). The rest of
+# /usr/local stays the read-only ISO. GPU modules and drivers are added later
+# by live-gpu, only on additive tmpfs layers.
+#
+# unionfs is deliberately not used: a probe of mount_unionfs over this ISO's
+# /etc on FreeBSD 16-CURRENT stopped the host during pw's password database
+# rename. See docs/getting-started.md and HACKING.md.
+#
+# Nothing here imports a pool, enables swap or opens a disk for writing. If a
+# copy cannot be made the mounts already made are removed and ttyv0 falls back
+# to the text installer (see live-session).
+. /etc/rc.subr
+name=daemonarchy_live
+rcvar=daemonarchy_live_enable
+start_cmd=daemonarchy_live_start
+stop_cmd=:
+
+daemonarchy_live_unmount()
+{
+    if [ -s "$daemonarchy_live_state/mounts" ]; then
+        # Most recent mount first.
+        sort -r -n "$daemonarchy_live_state/mounts" | while read -r _ point; do
+            umount "$point" || umount -f "$point"
+        done
+        rm -f "$daemonarchy_live_state/mounts"
+    fi
+}
+
+daemonarchy_live_record()
+{
+    sequence=$((sequence + 1))
+    echo "$sequence $1" >>"$daemonarchy_live_state/mounts"
+}
+
+daemonarchy_live_mount()
+{
+    sequence=0
+    mount -t tmpfs -o mode=0755 tmpfs "$daemonarchy_live_root" || {
+        echo "Cannot mount a tmpfs on $daemonarchy_live_root."; return 1; }
+    daemonarchy_live_record "$daemonarchy_live_root"
+    for tree in $daemonarchy_live_copies; do
+        case "$tree" in
+            /etc|/usr/local/etc|/root|/home) ;;
+            *) echo "Refusing an unexpected live copy: $tree"; return 1 ;;
+        esac
+        [ -d "$tree" ] && [ ! -L "$tree" ] || {
+            echo "The live copy target $tree is not a directory."; return 1; }
+        seed=$daemonarchy_live_root/seed/$(echo "${tree#/}" | tr / -)
+        mkdir -p "$seed" || return 1
+        # Copy first: the tmpfs hides the ISO directory once mounted.
+        tar -cf - -C "$tree" . | tar -xpf - -C "$seed" || {
+            echo "Cannot copy $tree into memory."; return 1; }
+        mount -t tmpfs -o "mode=$(stat -f '%Lp' "$tree"),uid=$(stat -f '%u' "$tree"),gid=$(stat -f '%g' "$tree")" \
+            tmpfs "$tree" || { echo "Cannot mount a tmpfs on $tree."; return 1; }
+        daemonarchy_live_record "$tree"
+        tar -cf - -C "$seed" . | tar -xpf - -C "$tree" || {
+            echo "Cannot populate $tree in memory."; return 1; }
+        rm -rf "$seed"
+    done
+    mkdir -p "$daemonarchy_live_root/modules" || return 1
+    chmod 0755 "$daemonarchy_live_root/modules"
+}
+
+daemonarchy_live_start()
+{
+    [ "$(kenv -q daemonarchy_live 2>/dev/null)" = YES ] || return 0
+    mkdir -p "$daemonarchy_live_state" || return 1
+    chmod 0755 "$daemonarchy_live_state"
+    rm -f "$daemonarchy_live_state/ready" "$daemonarchy_live_state/failed" "$daemonarchy_live_state/mounts"
+    if ! reason=$(daemonarchy_live_mount 2>&1); then
+        daemonarchy_live_unmount
+        printf '%s\n' "${reason:-The live file systems could not be prepared.}" >"$daemonarchy_live_state/failed"
+        echo "Daemonarchy live desktop unavailable: $reason"
+        return 0
+    fi
+    # The live account is created when the image is built; Wayland needs a
+    # private runtime directory.
+    uid=$(id -u "$daemonarchy_live_user" 2>/dev/null) || {
+        daemonarchy_live_unmount
+        echo "The live account $daemonarchy_live_user is missing." >"$daemonarchy_live_state/failed"
+        return 0
+    }
+    mkdir -p "/var/run/user/$uid"
+    chown "$daemonarchy_live_user:$daemonarchy_live_user" "/var/run/user/$uid"
+    chmod 0700 "/var/run/user/$uid"
+    touch "$daemonarchy_live_state/ready"
+    echo 'Daemonarchy live desktop: configuration copied into memory; disks untouched.'
+}
+
+load_rc_config "$name"
+: "${daemonarchy_live_enable:=NO}"
+: "${daemonarchy_live_root:=/live}"
+: "${daemonarchy_live_state:=/var/run/daemonarchy-live}"
+: "${daemonarchy_live_user:=live}"
+: "${daemonarchy_live_copies:=/etc /usr/local/etc /root /home}"
+run_rc_command "$1"

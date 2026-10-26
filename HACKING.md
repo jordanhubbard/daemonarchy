@@ -242,7 +242,7 @@ space than a cached installer-only rebuild. Check resources before dispatching.
    DISTFILES_CACHE=/usr/ports/distfiles
    ```
 
-4. **Build the packages.** List the origins in `ISO_ORIGINS` in `origins.sh` in a file, and bulk-build with `-b latest`. Poudriere fetches eligible official dependencies and builds incompatible or missing ones against the selected jail:
+4. **Build the packages.** List the origins in `ISO_ORIGINS` and `LIVE_ORIGINS` in `origins.sh` in a file (`LIVE_ORIGINS` holds what only the live desktop root needs, such as `security/sudo`; it is not copied into the ISO repository), and bulk-build with `-b latest`. Poudriere fetches eligible official dependencies and builds incompatible or missing ones against the selected jail:
 
    ```
    poudriere bulk -j 16amd64 -p omarchyiso -b latest -t -f omarchyiso-ports.list
@@ -266,11 +266,18 @@ space than a cached installer-only rebuild. Check resources before dispatching.
    exclusions apply only to the live root: `base.txz` and `kernel.txz` remain
    intact, so the installed system retains its compiler, headers and libraries.
    Optional ports/source checkout packages are fetched separately; only their
-   small catalogue is on the ISO. The build rejects a final ISO at or above
-   GitHub's 2 GiB per-asset limit before generating its checksum. Run
-   `bash tests/live-image-budget.sh` to check the exclusions and size boundary.
+   small catalogue is on the ISO. The release publishes the image as `.xz`,
+   so GitHub's 2 GiB per-asset limit applies to the compressed file:
+   `scripts/check-image-size.sh` rejects a `.iso.xz` at or above 2 GiB before
+   its checksum is written. The raw ISO carries the live desktop uncompressed
+   and has its own budget of 3.5 GiB (3,758,096,384 bytes), which still fits a
+   nominal 4 GB USB stick; the build stops before compressing a larger image.
+   The build log records the live `/usr/local` size before and after the live
+   desktop trim. Run `bash tests/live-image-budget.sh` to check the exclusions,
+   the trim and both size boundaries.
    On FreeBSD, `sudo sh tests/live-image-runtime.sh <iso>` mounts the image
-   read-only, checks required live commands and payloads, and resolves the
+   read-only, checks required live commands and payloads (including the live
+   desktop's tools, startup wiring and GTK runtime), and resolves the
    dynamic dependencies of every retained ELF program and library. It uses
    and detaches its own temporary memory-disk device. Follow this with a VM
    boot check; the dependency audit does not qualify installation or hardware.
@@ -396,6 +403,64 @@ join, DHCP, traffic and reconnect before calling the image qualified. Keep
 firmware-bearing overlays and their ISOs private while redistribution rights
 are unverified. The FreeBSD driver port uses the ISC-licensed upstream source;
 Apple firmware has separate terms.
+
+### The live desktop
+
+The loader's **Try Daemonarchy (live desktop, disk untouched)** entry, added by
+`brand-daemonarchy.lua` only when the image's `loader.conf` sets
+`daemonarchy_live_media`, sets the `daemonarchy_live` kenv. The default entry
+still boots the text installer. The pieces, all in
+`overlay/usr/local/libexec/daemonarchy-installer/`:
+
+- **`live-service`** (installed as `/etc/rc.d/daemonarchy_live`) copies `/etc`,
+  `/usr/local/etc`, `/root` and `/home` each into its own tmpfs, the way
+  FreeBSD's `rc.initdiskless` does. `/var` (with pkg's database) and `/tmp`
+  are already tmpfs; the rest of `/usr/local` stays the read-only ISO.
+- **`live-gpu`** reuses the installer's `gpu_select` and exact `gpu-packages`
+  manifest. It extracts the DRM and firmware kernel modules from the ISO
+  repository into `/live/modules`, appends that directory to
+  `kern.module_path`, and runs `kldxref` there, so `/boot/modules` and its
+  `linker.hints` are never rewritten. NVIDIA's userspace driver is added with
+  `pkg add -I -M` after a tmpfs is mounted with `-o union` on each existing
+  `/usr/local` directory that receives a new file. That layer can add names but
+  cannot replace ISO files, so `live-gpu` refuses a package that would replace
+  one and names the file.
+- **`live-session`** runs from root's ttyv0 login before the text installer:
+  it loads the GPU driver, starts `seatd` and runs Hyprland as the `live`
+  account (created when the image is built) through `live-desktop`. When the
+  desktop ends or cannot start, ttyv0 continues into the text installer; the
+  live fallback never starts a CIDATA unattended install. Set
+  `daemonarchy_live_test=compositor-failure` at the loader prompt to exercise
+  the fallback with working graphics.
+- **`live-installer`** (GTK 3 through PyGObject) is the graphical front-end.
+  It sends every privileged request to **`live-backend`**, which the `live`
+  account may run as root through `sudo` and nothing else. The backend sources
+  `configurator`, whose screens only run when it is executed, so both paths
+  share the questions' rules, disk inventory, network helpers and
+  `write_install_conf`. It starts the same `install` engine with the same log
+  and result file, and the front-end renders them with
+  `progress-dashboard.py`'s parser.
+
+The live path does not use unionfs. A probe that mounted `mount_unionfs` over
+`/etc` of the 1.3.1 ISO on a FreeBSD 16-CURRENT build host stopped that host
+while `pw` rewrote the password database (a rename into the union). The host
+needed a power cycle; whether it hung or panicked awaits its crash dump. The
+controller test `tests/live-desktop.sh` fails if any live-path script uses
+unionfs. Plain `-o union` mounts are used only where files are added.
+
+`bash tests/live-desktop.sh`, `bash tests/live-backend.sh`,
+`python3 tests/live-installer.py` and `lua5.4 tests/loader-live-menu.lua` run
+on any host with stubs and do not qualify FreeBSD mounts or graphics. The
+native checks still required on an exact image:
+
+- `live-service`'s tmpfs copies at boot, including `/etc` with `pw useradd`
+  and `pwd_mkdb` afterwards, and `/usr/local/etc/sudoers.d` permissions.
+- `kldxref` and firmware loading from `/live/modules` for amdgpu, i915kms and
+  virtio_gpu_drm, and NVIDIA userspace addition on `-o union` layers,
+  including whether any package file would replace an ISO file.
+- seatd and Hyprland started from root's ttyv0 login through `su -l live`.
+- The graphical installation, before/after disk digests and the TUI fallback
+  (see the LIVE-001 evidence items in the active queue).
 
 ### The ports
 

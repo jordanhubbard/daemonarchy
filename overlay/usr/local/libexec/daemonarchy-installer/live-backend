@@ -1,0 +1,376 @@
+#!/usr/local/bin/bash
+# The graphical installer's privileged half. The live account may run only
+# this command as root (sudoers.d/daemonarchy-live), so every argument and
+# field is checked here, never in the unprivileged front-end.
+#
+# It sources the text configurator, so the graphical path applies the same
+# questions, validation rules, disk inventory, network helpers and answer
+# file writer (write_install_conf), and it starts the same install engine with
+# the same log and result file the text installer's dashboard reads.
+#
+# Read-only commands: facts, partitions, network-status, wifi-scan.
+# Live-system changes (RAM only): network-dhcp, network-static, wifi-join,
+# terminal-step. write-conf writes only /tmp/daemonarchy-install.conf.
+# install is the only command that may change a disk, and only for the disk
+# in the confirmed answer file.
+set -uo pipefail
+umask 022
+# sudo's env_reset removes LIVE_BACKEND_TEST_PATH; only tests set it.
+PATH=${LIVE_BACKEND_TEST_PATH:+$LIVE_BACKEND_TEST_PATH:}/sbin:/bin:/usr/sbin:/usr/bin:/usr/local/sbin:/usr/local/bin
+export PATH
+
+ISO_LIBEXEC=${ISO_LIBEXEC:-/usr/local/libexec/daemonarchy-installer}
+ISO_SHARE=${ISO_SHARE:-/usr/local/share/daemonarchy-installer}
+LIVE_STATE=${LIVE_STATE:-/var/run/daemonarchy-live}
+DAEMONARCHY_INSTALL_CONF=${DAEMONARCHY_INSTALL_CONF:-/tmp/daemonarchy-install.conf}
+INSTALL_LOG=${INSTALL_LOG:-/tmp/daemonarchy-install.log}
+INSTALL_STATUS=${INSTALL_STATUS:-/tmp/daemonarchy-install.status}
+export ISO_SHARE DAEMONARCHY_INSTALL_CONF
+
+die() { jq -cn --arg message "$*" '{ok: false, message: $message}'; exit 1; }
+invalid() { jq -cn --arg field "$1" --arg message "$2" '{ok: false, field: $field, message: $message}'; exit 1; }
+ok() { jq -cn '{ok: true}'; }
+
+# The configurator's top level only defines its screens and default answers.
+# shellcheck source=configurator
+{ source "$ISO_LIBEXEC/configurator"; } 2>/dev/null || die 'Cannot load the installer configurator'
+# Feedback goes back to the front-end as JSON, not to a terminal.
+notice() { :; }
+
+network_state=$LIVE_STATE/network.state
+network_vars=(net_mode net_if net_addr net_gw net_dns wifi_ssid wifi_psk wifi_hidden wifi_enterprise_profile APPLE_FIRMWARE_STAGE)
+
+save_network() {
+  local name
+  mkdir -p "$LIVE_STATE"
+  (umask 077
+   for name in "${network_vars[@]}"; do printf '%s=%q\n' "$name" "${!name-}"; done >"$network_state")
+}
+
+load_network() {
+  local line name
+  [[ -f $network_state ]] || return 0
+  # Accept only this file's own assignments.
+  while IFS= read -r line; do
+    name=${line%%=*}
+    [[ " ${network_vars[*]} " == *" $name "* ]] || die 'Unexpected live network state'
+  done <"$network_state"
+  # shellcheck disable=SC1090
+  source "$network_state"
+}
+
+valid_interface() { [[ $1 =~ ^[a-z][a-z0-9_]*[0-9]+$ ]]; }
+
+# Read one request field into a variable. Strings must be single-line and
+# NUL-free; flags must be JSON booleans. Errors exit with the field name.
+field() {
+  local value
+  value=$(jq -r --arg k "$1" '.[$k] | if type == "string" and (contains("\n") or contains("\r") or contains("\u0000") | not) then "S" + . else "X" end' <<<"$request") ||
+    invalid "$1" "Missing $1."
+  [[ $value == S* ]] || invalid "$1" "Enter $1 on a single line."
+  printf -v "${2:-$1}" '%s' "${value#S}"
+}
+
+flag() {
+  local value
+  value=$(jq -r --arg k "$1" '.[$k] | if type == "boolean" then tostring else "X" end' <<<"$request") ||
+    invalid "$1" "Missing $1."
+  [[ $value == true || $value == false ]] || invalid "$1" "Choose yes or no for $1."
+  printf -v "$1" '%s' "$value"
+}
+
+cmd_facts() {
+  local disks keyboards timezones guess macbook=false firmware=false uefi=false
+  checkout_options_prepare "$ISO_SHARE/checkouts.json" >/dev/null 2>&1 || true
+  disks=$(disk_choices | jq -Rn '[inputs | split("\t") | {name: .[0], size: .[1], description: .[2]}]')
+  keyboards=$(printf '%s\n' "$OMARCHY_KEYBOARD_LAYOUTS" |
+    jq -Rn '[inputs | split("|") | {label: .[0], code: .[1]}]')
+  timezones=$(timedatectl list-timezones | jq -Rn '[inputs | select(length > 0)]')
+  guess=$(timeout 5 tzupdate -p 2>/dev/null) || guess=''
+  if [[ $(kenv smbios.system.product 2>/dev/null || true) == MacBookPro16,1 ]]; then
+    macbook=true
+    if { [[ -d $APPLE_FIRMWARE_STAGE ]] && apple_firmware_verify_live && apple_firmware_radio_attached; } ||
+       { apple_firmware_preloaded && apple_firmware_radio_attached; }; then
+      firmware=true
+    fi
+  fi
+  [[ $(sysctl -n machdep.bootmethod 2>/dev/null) != UEFI ]] || uefi=true
+  jq -cn --argjson disks "$disks" --argjson keyboards "$keyboards" --argjson timezones "$timezones" \
+    --arg guess "$guess" --argjson macbook "$macbook" --argjson firmware "$firmware" --argjson uefi "$uefi" \
+    --arg version "$(cat "$ISO_SHARE/version" 2>/dev/null || true)" \
+    --arg hostname_default "$OMARCHY_HOSTNAME_DEFAULT" \
+    --slurpfile catalog "$ISO_SHARE/checkouts.json" '
+    {ok: true, version: $version, disks: $disks, keyboards: $keyboards, timezones: $timezones,
+     timezone_guess: $guess, macbook: $macbook, apple_firmware_ready: $firmware, uefi: $uefi,
+     hostname_default: $hostname_default,
+     checkouts: ($catalog[0].trees | with_entries(select(.key == "ports" or .key == "src") |
+       .value = {download_mib: ([.value.parts[].download_bytes] | add / 1048576 | ceil),
+                 extra_gib: (.value.required_bytes / 1073741824 | ceil)}))}'
+}
+
+cmd_partitions() {
+  local disk=${1:-} sectors index type start size rows=() free=() efi=() gpt=false snapshot aligned available
+  disk_choices | cut -f1 | grep -qxF -- "$disk" || die 'Choose one of the offered disks.'
+  snapshot=$(disk_fingerprint "$disk") || die "Could not read $disk"
+  checkout_options_prepare "$ISO_SHARE/checkouts.json" >/dev/null 2>&1 || true
+  sectors=$(diskinfo "$disk" | awk '{ print $2 }')
+  if gpart backup "$disk" 2>/dev/null | head -n 1 | grep -q '^GPT '; then gpt=true; fi
+  while read -r index type start size; do
+    case $type in
+      freebsd-zfs | freebsd-ufs | ms-basic-data | linux-data)
+        ((size * sectors >= MIN_DISK_BYTES)) &&
+          rows+=("$(jq -cn --argjson i "$index" --arg t "$type" --arg d "${disk}p${index}" --argjson m "$((size * sectors / 1048576))" '{index: $i, type: $t, device: $d, mib: $m}')")
+        ;;
+      efi)
+        efi+=("$(jq -cn --argjson i "$index" --arg d "${disk}p${index}" --argjson m "$((size * sectors / 1048576))" '{index: $i, device: $d, mib: $m}')")
+        ;;
+    esac
+  done < <(partition_rows "$disk" 2>/dev/null)
+  while read -r start size; do
+    aligned=$(((start + 1048576 / sectors - 1) / (1048576 / sectors) * (1048576 / sectors)))
+    available=$(((start + size - aligned) * sectors / 1048576))
+    ((available >= MIN_INSTALL_MIB)) || continue
+    free+=("$(jq -cn --argjson s "$start" --argjson m "$available" '{start: $s, available_mib: $m}')")
+  done < <(free_rows "$disk" 2>/dev/null)
+  jq -cn --arg disk "$disk" --arg snapshot "$snapshot" --argjson gpt "$gpt" \
+    --arg table "$(gpart show -p "$disk" 2>/dev/null || echo 'No partition table.')" \
+    --argjson minimum "$MIN_INSTALL_MIB" \
+    --argjson partitions "$(printf '%s\n' "${rows[@]}" | jq -s 'map(select(. != null))')" \
+    --argjson free "$(printf '%s\n' "${free[@]}" | jq -s 'map(select(. != null))')" \
+    --argjson efi "$(printf '%s\n' "${efi[@]}" | jq -s 'map(select(. != null))')" \
+    '{ok: true, disk: $disk, snapshot: $snapshot, gpt: $gpt, table: $table, minimum_mib: $minimum,
+      partitions: $partitions, free: $free, efi: $efi}'
+}
+
+cmd_network_status() {
+  local adapters=() ifc online=false addr state
+  load_network
+  for ifc in $(ether_ports); do
+    adapters+=("$(jq -cn --arg n "$ifc" --arg k "$(adapter_kind "$ifc")" --arg s "$(port_state "$ifc")" \
+      --arg a "$(port_address "$ifc")" --arg d "$(adapter_description "$ifc")" \
+      '{name: $n, kind: $k, state: $s, address: $a, description: $d, wireless: false}')")
+  done
+  for ifc in $(wifi_adapters); do
+    addr='' state=''
+    if [[ $(sysctl -n net.wlan.0.%parent 2>/dev/null) == "$ifc" ]]; then
+      addr=$(port_address wlan0); state=$(port_state wlan0)
+    fi
+    adapters+=("$(jq -cn --arg n "$ifc" --arg s "$state" --arg a "$addr" --arg d "$(adapter_description "$ifc")" \
+      '{name: $n, kind: "Wi-Fi", state: $s, address: $a, description: $d, wireless: true}')")
+  done
+  online && online=true
+  jq -cn --argjson online "$online" --arg error "${network_probe_error:-}" --arg mode "$net_mode" \
+    --arg via "$(default_port)" --arg ssid "$wifi_ssid" --arg clock "$(date -u '+%Y-%m-%d %H:%M:%S UTC')" \
+    --argjson adapters "$(printf '%s\n' "${adapters[@]}" | jq -s 'map(select(. != null))')" \
+    '{ok: true, online: $online, error: $error, mode: $mode, via: $via, ssid: $ssid, clock: $clock, adapters: $adapters}'
+}
+
+cmd_network_dhcp() {
+  local ifc=${1:-}
+  load_network
+  valid_interface "$ifc" && ether_ports | grep -qxF -- "$ifc" || die 'Choose a wired adapter.'
+  dhclient "$ifc" >/dev/null 2>&1; sleep 2
+  net_mode=dhcp net_if=$ifc wifi_enterprise_profile=''
+  save_network; ok
+}
+
+cmd_network_static() {
+  local ifc=${1:-} addr=${2:-} gw=${3:-} dns=${4:-}
+  load_network
+  valid_interface "$ifc" && ether_ports | grep -qxF -- "$ifc" || die 'Choose a wired adapter.'
+  valid_cidr "$addr" || invalid address 'Use an address with prefix length, like 192.168.1.50/24.'
+  valid_ip "$gw" || invalid gateway 'Use a gateway address, like 192.168.1.1.'
+  [[ $dns =~ ^([0-9]{1,3}\.){3}[0-9]{1,3}(,([0-9]{1,3}\.){3}[0-9]{1,3})*$ ]] || invalid dns 'Use DNS server addresses separated by commas.'
+  pkill -f "dhclient: $ifc" 2>/dev/null
+  pkill -f "dhclient.*$ifc" 2>/dev/null
+  ifconfig "$ifc" inet "$addr" up || die "Could not set the address on $ifc."
+  route -q delete default >/dev/null 2>&1
+  route -q add default "$gw" >/dev/null || die 'Could not set the default route.'
+  # shellcheck disable=SC2086
+  printf 'nameserver %s\n' ${dns//,/ } >/etc/resolv.conf
+  net_mode=static net_if=$ifc net_addr=$addr net_gw=$gw net_dns=$dns wifi_enterprise_profile=''
+  save_network; ok
+}
+
+wifi_device() {
+  local dev=$1
+  wifi_adapters | grep -qxF -- "$dev" || die 'Choose a Wi-Fi adapter.'
+  if [[ $(sysctl -n net.wlan.0.%parent 2>/dev/null) != "$dev" ]]; then
+    ifconfig wlan0 destroy >/dev/null 2>&1
+    ifconfig wlan0 create wlandev "$dev" >/dev/null 2>&1 || die "Could not use $dev."
+  fi
+}
+
+cmd_wifi_scan() {
+  wifi_device "${1:-}"
+  wifi_scan | jq -Rn '{ok: true, networks: [inputs | select(length > 0)]}'
+}
+
+cmd_wifi_join() {
+  local dev=${1:-} ssid=${2:-} hidden=${3:-false} psk
+  load_network
+  wifi_device "$dev"
+  [[ -n $ssid && ${#ssid} -le 32 && $ssid != *$'\n'* ]] || invalid ssid 'Enter the network name.'
+  [[ $hidden == true || $hidden == false ]] || die 'Invalid hidden-network flag.'
+  IFS= read -r psk || psk=''
+  if wifi_connect "$ssid" "$psk" "$hidden" ''; then
+    net_mode=wifi net_if=$dev wifi_ssid=$ssid wifi_psk=$psk wifi_hidden=$hidden wifi_enterprise_profile=''
+    save_network; ok
+  else
+    die "$(cat /tmp/daemonarchy-wifi-connect-error 2>/dev/null || echo "Could not connect to $ssid")"
+  fi
+}
+
+# Enterprise Wi-Fi, manual clock setting and MacBook firmware keep their text
+# screens, hosted in a terminal on the live desktop, and their results become
+# part of the same answer file.
+cmd_terminal_step() {
+  load_network
+  case ${1:-} in
+    network) network_step allow-offline || true ;;
+    apple-firmware) apple_firmware_step optional || true ;;
+    *) die 'Unknown installer step.' ;;
+  esac
+  save_network
+}
+
+cmd_write_conf() {
+  local request status error action
+  request=$(head -c 65536) || die 'Missing request.'
+  jq -e 'type == "object"' <<<"$request" >/dev/null 2>&1 || die 'Invalid request.'
+  load_network
+  if [[ $(kenv smbios.system.product 2>/dev/null || true) == MacBookPro16,1 ]] &&
+     ! { [[ -d $APPLE_FIRMWARE_STAGE ]] && apple_firmware_verify_live && apple_firmware_radio_attached; } &&
+     ! { apple_firmware_preloaded && apple_firmware_radio_attached; }; then
+    invalid firmware 'Prepare the MacBook Wi-Fi firmware first.'
+  fi
+
+  field keyboard
+  keyboard_label=$(printf '%s\n' "$OMARCHY_KEYBOARD_LAYOUTS" | awk -F'|' -v c="$keyboard" '$2==c{print $1; exit}')
+  [[ -n $keyboard_label ]] || invalid keyboard 'Choose a keyboard layout.'
+
+  field username
+  if [[ ! $username =~ $OMARCHY_USERNAME_PATTERN ]]; then
+    invalid username 'Username must be alphanumeric with no spaces'
+  elif [[ $username =~ $OMARCHY_RESERVED_USERNAMES ]]; then
+    invalid username 'Username is reserved for system'
+  elif omarchy_username_taken "$username"; then
+    invalid username 'That username already exists on this machine'
+  fi
+  field password
+  field password_confirmation
+  if [[ -z $password ]]; then
+    invalid password "Your password can't be blank!"
+  elif [[ $password != "$password_confirmation" ]]; then
+    invalid password "Passwords didn't match!"
+  fi
+  field full_name
+  field email_address
+  field hostname
+  if [[ -z $hostname ]]; then
+    hostname=$OMARCHY_HOSTNAME_DEFAULT
+  elif [[ ! $hostname =~ $OMARCHY_HOSTNAME_PATTERN ]]; then
+    invalid hostname 'Hostname must be 1-63 letters, digits, or dashes, and cannot start or end with a dash'
+  fi
+  field timezone
+  [[ -n $timezone ]] || timezone=UTC
+  timedatectl list-timezones | grep -qxF -- "$timezone" || invalid timezone 'Choose a timezone from the list.'
+
+  flag ssh_enable
+  flag install_ports
+  flag install_src
+  flag encrypt_installation
+  cuda_step
+  checkout_options_prepare "$ISO_SHARE/checkouts.json" >/dev/null 2>&1 || invalid checkouts 'Invalid checkout selection'
+
+  # The same network rule as the text installer: continue only when the
+  # package repository is reachable securely.
+  online || invalid network "Could not reach the package repository securely: ${network_probe_error:-no diagnostic}"
+  if [[ $net_mode == dhcp ]]; then net_if=$(default_port); fi
+
+  field disk
+  disk_choices | cut -f1 | grep -qxF -- "$disk" ||
+    invalid disk "Installation needs one of the offered disks of at least $MIN_INSTALL_MIB MiB."
+  field disk_snapshot
+  [[ $disk_snapshot =~ ^[0-9a-f]{64}$ ]] || invalid disk 'Review the disk again.'
+  field install_mode
+  partition_index='' efi_index='' free_start='' install_size_mib=''
+  case $install_mode in
+    whole_disk) ;;
+    partition|free_space)
+      if [[ $(sysctl -n machdep.bootmethod) != UEFI ]] || ! gpart backup "$disk" | head -n 1 | grep -q '^GPT '; then
+        invalid install_mode 'Preserving an existing disk requires UEFI boot and a GPT partition table.'
+      fi
+      field efi_index
+      [[ $efi_index =~ ^[1-9][0-9]{0,3}$ ]] || invalid efi_index 'Choose the EFI partition to share.'
+      if [[ $install_mode == partition ]]; then
+        field partition_index
+        [[ $partition_index =~ ^[1-9][0-9]{0,3}$ ]] || invalid partition_index 'Choose the partition to replace.'
+        field confirm_partition action
+        [[ $action == "${disk}p${partition_index}" ]] || invalid confirm_partition "Type ${disk}p${partition_index} to confirm."
+      else
+        field free_start
+        field install_size_mib
+        [[ $free_start =~ ^[0-9]{1,15}$ ]] || invalid free_start 'Choose the free space to use.'
+        [[ $install_size_mib =~ ^[1-9][0-9]{0,9}$ ]] || invalid install_size_mib "Enter a size of at least $MIN_INSTALL_MIB MiB."
+      fi
+      ;;
+    *) invalid install_mode 'Choose an installation layout.' ;;
+  esac
+  error=$(validate_install_layout 2>&1) || invalid disk "$error"
+  if [[ $install_mode != whole_disk ]]; then
+    error=$(check_shared_efi 2>&1) || invalid efi_index "$error"
+  fi
+
+  password_hash=$(printf '%s' "$password" | openssl passwd -6 -stdin) || die 'Could not hash the password.'
+  rm -f "$DAEMONARCHY_INSTALL_CONF"
+  write_install_conf
+  status=$?
+  ((status == 0)) || die 'Could not write the installation answers.'
+  ok
+}
+
+cmd_install() {
+  local confirmed=${1:-}
+  [[ -s $DAEMONARCHY_INSTALL_CONF && ! -L $DAEMONARCHY_INSTALL_CONF ]] || die 'Review and confirm the installation first.'
+  [[ $(stat -f '%u:%Lp' "$DAEMONARCHY_INSTALL_CONF") == 0:600 ]] || die 'The installation answers are not private.'
+  [[ $(awk -F= '$1 == "disk" { print $2; exit }' "$DAEMONARCHY_INSTALL_CONF") == "$confirmed" && -n $confirmed ]] ||
+    die 'The confirmed disk does not match the installation answers.'
+  if pgrep -qf "$ISO_LIBEXEC/install\$"; then die 'An installation is already running.'; fi
+  rm -f "$INSTALL_STATUS"
+  : >"$INSTALL_LOG"
+  chmod 0644 "$INSTALL_LOG"
+  # The same engine, log and result file the text installer's dashboard uses.
+  daemon -f "$BASH" -c 'set -o pipefail
+    "$1/install" 2>&1 | tee -a "$2" >/dev/null
+    echo "$?" >"$3.tmp" && chmod 0644 "$3.tmp" && mv "$3.tmp" "$3"' \
+    live-install "$ISO_LIBEXEC" "$INSTALL_LOG" "$INSTALL_STATUS"
+  jq -cn --arg log "$INSTALL_LOG" --arg status "$INSTALL_STATUS" '{ok: true, log: $log, status: $status}'
+}
+
+cmd_power() {
+  [[ $(cat "$INSTALL_STATUS" 2>/dev/null) == 0 ]] || die 'Restart is offered after a successful installation.'
+  case ${1:-} in
+    reboot) shutdown -r now ;;
+    poweroff) shutdown -p now ;;
+    *) die 'Unknown power action.' ;;
+  esac
+}
+
+[[ $(id -u) == 0 ]] || die 'Run through sudo from the live desktop.'
+command=${1:-}
+shift || true
+case $command in
+  facts) cmd_facts ;;
+  partitions) cmd_partitions "$@" ;;
+  network-status) cmd_network_status ;;
+  network-dhcp) cmd_network_dhcp "$@" ;;
+  network-static) cmd_network_static "$@" ;;
+  wifi-scan) cmd_wifi_scan "$@" ;;
+  wifi-join) cmd_wifi_join "$@" ;;
+  terminal-step) cmd_terminal_step "$@" ;;
+  write-conf) cmd_write_conf ;;
+  install) cmd_install "$@" ;;
+  power) cmd_power "$@" ;;
+  *) die 'Unknown live installer command.' ;;
+esac

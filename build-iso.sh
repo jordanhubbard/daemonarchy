@@ -143,6 +143,7 @@ live_python=$(pkg query -F "$omarchy_pkg" '%dn' | awk '/^python3[0-9]+$/ { print
 case "$live_python" in python3[0-9][0-9]) ;; *) echo 'Need one Python interpreter dependency for enterprise Wi-Fi' >&2; exit 1 ;; esac
 live_python_exe=$(printf '%s' "$live_python" | sed -E 's/^python3([0-9][0-9])$/python3.\1/')
 sed -i '' "1s@^.*\$@#!/usr/local/bin/$live_python_exe@" "$share/import-apple-bcm4364-firmware.py"
+sed -i '' "1s@^.*\$@#!/usr/local/bin/$live_python_exe@" "$stage/overlay/usr/local/libexec/daemonarchy-installer/live-installer"
 chmod 0755 "$share/omarchy-wifi-enterprise" "$share/import-apple-bcm4364-firmware.py"
 rm -rf "$extract"
 
@@ -212,6 +213,20 @@ chmod 0755 "$stage"/overlay/usr/local/libexec/daemonarchy-installer/* \
 echo "==> Building the image"
 printf '%s\n' bash gum jq ttfx tzupdate pkg wifi-firmware-kmod if_brcmfmac-kmod 7-zip >"$stage/live-packages"
 printf '%s\n' "$live_python" >>"$stage/live-packages"
+# The minimal live desktop (LIVE-001): compositor, seat and session bus, Mesa
+# for the open drivers (GPU kernel modules come from the ISO repository at
+# boot), a terminal, fonts, and GTK 3 with Python bindings for the graphical
+# installer. GTK 4 is avoided: its media dependencies roughly double the set.
+printf '%s\n' hyprland seatd dbus sudo mesa-dri foot dejavu gtk3 \
+    "py$(printf '%s' "$live_python" | sed 's/^python//')-pygobject" >>"$stage/live-packages"
+# poudriere image installs these from the bulk repository; name a missing
+# one here instead of failing inside the image build.
+while read -r live_package; do
+    ls "$packages/All/$live_package"-[0-9]*.pkg >/dev/null 2>&1 || {
+        echo "The live package $live_package is not in $packages; bulk-build ISO_ORIGINS and LIVE_ORIGINS" >&2
+        exit 1
+    }
+done <"$stage/live-packages"
 # Trim only the live root. The untouched base.txz still installs a complete
 # development system, and optional source/ports checkouts remain downloadable.
 cp "$here/scripts/live-image-excludes" "$stage/exclude"
@@ -224,6 +239,7 @@ poudriere_run image -t hybridiso -j "$JAIL" -p "$PTREE" -n "$image" \
 
 iso=$OUTDIR/$NAME.iso
 [ "$image" = "$NAME" ] || mv "$OUTDIR/$image.iso" "$iso"
+# The raw budget fails before compression; the published .xz is checked below.
 sh "$here/scripts/check-image-size.sh" "$iso"
 digest=$(sha256 -q "$iso")
 printf '%s  %s\n' "$digest" "$(basename "$iso")" >"$iso.sha256"
@@ -237,6 +253,7 @@ if [ "$(xz -dc "$iso.xz" | sha256 -q)" != "$digest" ]; then
   echo "$iso.xz does not decompress to the built image" >&2
   exit 1
 fi
+sh "$here/scripts/check-image-size.sh" "$iso" "$iso.xz"
 printf '%s  %s\n' "$(sha256 -q "$iso.xz")" "$(basename "$iso.xz")" >"$iso.xz.sha256"
 ls -lh "$iso" "$iso.xz"
 cat "$iso.sha256" "$iso.xz.sha256"

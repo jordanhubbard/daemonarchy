@@ -82,7 +82,9 @@ run_install() {
   "$ISO_LIBEXEC/dashboard" "$log" "$status_file"
 }
 
-if find_cidata; then
+# The live desktop entry promises no disk changes until the operator confirms,
+# so its text-installer fallback never starts an unattended CIDATA install.
+if [[ ${DAEMONARCHY_LIVE:-} != 1 ]] && find_cidata; then
   echo "Daemonarchy autoinstall: using daemonarchy-install.conf from the CIDATA drive."
   # Configs may give the password in clear text only; hash it as the
   # configurator would.

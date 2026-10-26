@@ -1,0 +1,504 @@
+#!/usr/bin/env python3
+"""Daemonarchy's graphical installer for the live desktop (GTK 3).
+
+It asks the text configurator's questions, has live-backend (run as root
+through sudo, and itself sourcing the configurator) validate them and write
+the same /tmp/daemonarchy-install.conf, starts the same install engine, and
+renders that engine's @@phase/@@progress log with the text dashboard's own
+parser (progress-dashboard.py). Meters show only measured work.
+
+Nothing here touches a disk: the only disk-changing request is "install",
+sent after the operator confirms, and live-backend checks it again.
+"""
+import importlib.util
+import json
+import os
+from pathlib import Path
+import subprocess
+import sys
+
+LIBEXEC = Path(os.environ.get('ISO_LIBEXEC', Path(__file__).resolve().parent))
+BACKEND = str(LIBEXEC / 'live-backend')
+TERMINAL = os.environ.get('DAEMONARCHY_LIVE_TERMINAL', 'foot')
+
+_spec = importlib.util.spec_from_file_location('installer_progress', LIBEXEC / 'progress-dashboard.py')
+dashboard = importlib.util.module_from_spec(_spec)
+_spec.loader.exec_module(dashboard)
+
+PAGES = ('welcome', 'keyboard', 'account', 'network', 'options', 'disk', 'review', 'progress')
+FIELD_PAGES = dict(
+    firmware='welcome', keyboard='keyboard',
+    username='account', password='account', password_confirmation='account', full_name='account',
+    email_address='account', hostname='account', timezone='account',
+    network='network', address='network', gateway='network', dns='network', ssid='network',
+    ssh_enable='options', install_ports='options', install_src='options', checkouts='options',
+    disk='disk', disk_snapshot='disk', install_mode='disk', efi_index='disk', partition_index='disk',
+    free_start='disk', install_size_mib='disk', encrypt_installation='disk',
+    confirm_partition='review')
+
+
+class BackendError(Exception):
+    def __init__(self, message, field=None):
+        super().__init__(message)
+        self.field = field
+
+
+class Backend:
+    """Every privileged request goes through `sudo -n live-backend`."""
+
+    def __init__(self, runner=subprocess.run, prefix=('sudo', '-n', BACKEND)):
+        self.runner, self.prefix = runner, tuple(prefix)
+
+    def call(self, *args, data=None):
+        result = self.runner(self.prefix + tuple(str(a) for a in args), input=data, capture_output=True,
+                             text=True, timeout=600)
+        try:
+            reply = json.loads(result.stdout.strip().splitlines()[-1]) if result.stdout.strip() else {}
+        except (ValueError, IndexError):
+            reply = {}
+        if result.returncode != 0 or reply.get('ok') is not True:
+            message = reply.get('message') or (result.stderr or '').strip()[-400:] or 'The installer backend failed.'
+            raise BackendError(dashboard.clean(message, 400), reply.get('field'))
+        return reply
+
+    def terminal_command(self, step):
+        if step not in ('network', 'apple-firmware'):
+            raise ValueError('Unknown text step')
+        return [TERMINAL, '-e'] + list(self.prefix) + ['terminal-step', step]
+
+
+def build_request(answers):
+    """The answer fields write_install_conf records, in the backend's types."""
+    text = ('keyboard', 'username', 'password', 'password_confirmation', 'full_name', 'email_address',
+            'hostname', 'timezone', 'disk', 'disk_snapshot', 'install_mode')
+    flags = ('ssh_enable', 'install_ports', 'install_src', 'encrypt_installation')
+    request = {key: str(answers.get(key, '')) for key in text}
+    request.update({key: bool(answers.get(key, False)) for key in flags})
+    mode = request['install_mode']
+    if mode in ('partition', 'free_space'):
+        request['efi_index'] = str(answers.get('efi_index', ''))
+    if mode == 'partition':
+        request['partition_index'] = str(answers.get('partition_index', ''))
+        request['confirm_partition'] = str(answers.get('confirm_partition', ''))
+    elif mode == 'free_space':
+        request['free_start'] = str(answers.get('free_start', ''))
+        request['install_size_mib'] = str(answers.get('install_size_mib', ''))
+    return request
+
+
+def confirmation_text(answers):
+    disk, mode = answers.get('disk', ''), answers.get('install_mode')
+    if mode == 'partition':
+        return f"All contents of {disk}p{answers.get('partition_index')} will be erased and replaced by Daemonarchy. Other partitions and existing EFI boot files will be preserved."
+    if mode == 'free_space':
+        return f"Create a {answers.get('install_size_mib')} MiB Daemonarchy partition in the selected free space. Existing partitions and EFI boot files will be preserved."
+    return f'All partitions and data on {disk} will be destroyed.'
+
+
+def page_for(field):
+    return FIELD_PAGES.get(field or '', 'review')
+
+
+class InstallProgress:
+    """The text dashboard's measured-progress state, read from the same files."""
+
+    def __init__(self, log, status):
+        self.state = dashboard.Progress()
+        self.tail = dashboard.Tail(log)
+        self.status_path = status
+        self.idle_polls = 0
+
+    def poll(self):
+        before = self.state.key()
+        drained = self.tail.poll(self.state)
+        self.idle_polls = 0 if self.state.key() != before else self.idle_polls + 1
+        result = dashboard.status(self.status_path)
+        if not drained:
+            result = None
+        meter = self.state.meter
+        rows = dashboard.lines(self.state, 'plain', 200, idle=self.idle_polls >= 25, result=result)
+        view = dict(title=rows[1], details=rows[2:], fraction=None, done=result is not None,
+                    succeeded=result == 0 and not self.state.warning and not self.state.failed,
+                    recent=list(self.state.recent))
+        if meter:
+            view['fraction'] = meter[1] / meter[2]
+        return view
+
+
+def run_gui():  # pragma: no cover - needs a Wayland session
+    import gi
+    gi.require_version('Gtk', '3.0')
+    from gi.repository import GLib, Gtk
+
+    backend = Backend()
+    answers = dict(install_mode='whole_disk', ssh_enable=False, install_ports=False,
+                   install_src=False, encrypt_installation=False)
+
+    window = Gtk.Window(title='Install Daemonarchy')
+    window.set_default_size(900, 640)
+    window.connect('destroy', Gtk.main_quit)
+    outer = Gtk.Box(orientation=Gtk.Orientation.VERTICAL, spacing=12, margin=18)
+    window.add(outer)
+    stack = Gtk.Stack(transition_type=Gtk.StackTransitionType.SLIDE_LEFT_RIGHT)
+    outer.pack_start(stack, True, True, 0)
+    message = Gtk.Label(xalign=0, wrap=True)
+    outer.pack_start(message, False, False, 0)
+    buttons = Gtk.Box(spacing=8)
+    outer.pack_start(buttons, False, False, 0)
+    back, forward = Gtk.Button(label='Back'), Gtk.Button(label='Next')
+    terminal = Gtk.Button(label='Open terminal')
+    buttons.pack_start(terminal, False, False, 0)
+    buttons.pack_end(forward, False, False, 0)
+    buttons.pack_end(back, False, False, 0)
+    terminal.connect('clicked', lambda *_: subprocess.Popen([TERMINAL]))
+    pages = {}
+
+    def page(name, title):
+        box = Gtk.Box(orientation=Gtk.Orientation.VERTICAL, spacing=10)
+        heading = Gtk.Label(xalign=0)
+        heading.set_markup(f'<span size="x-large" weight="bold">{GLib.markup_escape_text(title)}</span>')
+        box.pack_start(heading, False, False, 0)
+        stack.add_named(box, name)
+        pages[name] = box
+        return box
+
+    def labelled(box, text, widget):
+        row = Gtk.Box(spacing=10)
+        label = Gtk.Label(label=text, xalign=0)
+        label.set_size_request(180, -1)
+        row.pack_start(label, False, False, 0)
+        row.pack_start(widget, True, True, 0)
+        box.pack_start(row, False, False, 0)
+        return widget
+
+    def say(text, error=False):
+        message.set_markup(('<span foreground="#c01c28">%s</span>' if error else '%s') % GLib.markup_escape_text(text or ''))
+
+    def call(*args, data=None):
+        try:
+            return backend.call(*args, data=data)
+        except BackendError as error:
+            say(str(error), True)
+            return None
+
+    def run_text_step(step, done):
+        process = subprocess.Popen(backend.terminal_command(step))
+        GLib.child_watch_add(GLib.PRIORITY_DEFAULT, process.pid, lambda *_: done())
+
+    facts = call('facts') or dict(disks=[], keyboards=[dict(label='English (US)', code='us')],
+                                  timezones=['UTC'], checkouts={}, macbook=False, hostname_default='daemonarchy')
+
+    # Welcome.
+    box = page('welcome', 'Daemonarchy live desktop')
+    box.pack_start(Gtk.Label(xalign=0, wrap=True, label=(
+        "Omarchy's desktop spliced onto FreeBSD's daemon" + (f" · {facts.get('version')}" if facts.get('version') else '')
+        + '.\nThis desktop runs from the installer media and memory. No disk is changed until you '
+        'confirm an installation on the last screen.')), False, False, 0)
+    if facts.get('macbook'):
+        firmware = Gtk.Button(label='Prepare MacBook Wi-Fi firmware (text screen)')
+        firmware.connect('clicked', lambda *_: run_text_step('apple-firmware', lambda: say('Firmware step finished.')))
+        box.pack_start(firmware, False, False, 0)
+
+    # Keyboard.
+    box = page('keyboard', 'Keyboard layout')
+    keyboard = Gtk.ComboBoxText()
+    for row in facts['keyboards']:
+        keyboard.append(row['code'], row['label'])
+    keyboard.set_active_id('us')
+    labelled(box, 'Layout', keyboard)
+
+    # Account.
+    box = page('account', 'Your account and this machine')
+    username = labelled(box, 'Username', Gtk.Entry(placeholder_text='Alphanumeric without spaces (like dhh)'))
+    password = labelled(box, 'Password', Gtk.Entry(visibility=False, placeholder_text='Used for user + root, and disk encryption when enabled'))
+    confirm = labelled(box, 'Confirm password', Gtk.Entry(visibility=False))
+    full_name = labelled(box, 'Full name', Gtk.Entry(placeholder_text='Used for git authentication (optional)'))
+    email = labelled(box, 'Email address', Gtk.Entry(placeholder_text='Used for git authentication (optional)'))
+    hostname = labelled(box, 'Hostname', Gtk.Entry(placeholder_text=f"Letters, digits, and dashes (or empty for '{facts.get('hostname_default', 'daemonarchy')}')"))
+    timezone = Gtk.ComboBoxText.new_with_entry()
+    for zone in facts['timezones']:
+        timezone.append(zone, zone)
+    timezone.set_active_id(facts.get('timezone_guess') or 'UTC')
+    labelled(box, 'Timezone', timezone)
+
+    # Network.
+    box = page('network', 'Network')
+    box.pack_start(Gtk.Label(xalign=0, wrap=True, label='Daemonarchy downloads most of its packages during the install.'), False, False, 0)
+    network_status = Gtk.Label(xalign=0, wrap=True, selectable=True)
+    box.pack_start(network_status, False, False, 0)
+    adapters = Gtk.Box(orientation=Gtk.Orientation.VERTICAL, spacing=6)
+    box.pack_start(adapters, False, False, 0)
+    online = dict(value=False)
+
+    def static_dialog(ifc):
+        dialog = Gtk.Dialog(title=f'Set up {ifc} by hand', transient_for=window, modal=True)
+        dialog.add_buttons('Cancel', Gtk.ResponseType.CANCEL, 'Apply', Gtk.ResponseType.OK)
+        area = dialog.get_content_area()
+        address = labelled(area, 'Address', Gtk.Entry(placeholder_text='192.168.1.50/24'))
+        gateway = labelled(area, 'Gateway', Gtk.Entry(placeholder_text='192.168.1.1'))
+        dns = labelled(area, 'DNS servers', Gtk.Entry(text='1.1.1.1'))
+        dialog.show_all()
+        if dialog.run() == Gtk.ResponseType.OK:
+            call('network-static', ifc, address.get_text(), gateway.get_text(), dns.get_text())
+        dialog.destroy()
+        refresh_network()
+
+    def wifi_dialog(dev):
+        found = call('wifi-scan', dev)
+        if not found:
+            return
+        dialog = Gtk.Dialog(title=f'Wi-Fi network on {dev}', transient_for=window, modal=True)
+        dialog.add_buttons('Cancel', Gtk.ResponseType.CANCEL, 'Connect', Gtk.ResponseType.OK)
+        area = dialog.get_content_area()
+        ssid = Gtk.ComboBoxText.new_with_entry()
+        for name in found['networks']:
+            ssid.append(name, name)
+        ssid.set_active(0)
+        labelled(area, 'Network', ssid)
+        hidden = labelled(area, 'Hidden network', Gtk.CheckButton())
+        psk = labelled(area, 'Password', Gtk.Entry(visibility=False, placeholder_text='Leave empty for an open network'))
+        area.pack_start(Gtk.Label(xalign=0, wrap=True, label='Enterprise (802.1X) networks: use Other network settings.'), False, False, 0)
+        dialog.show_all()
+        if dialog.run() == Gtk.ResponseType.OK:
+            say('Connecting...')
+            call('wifi-join', dev, ssid.get_active_text() or '', 'true' if hidden.get_active() else 'false',
+                 data=psk.get_text() + '\n')
+        dialog.destroy()
+        refresh_network()
+
+    def refresh_network(*_):
+        for child in adapters.get_children():
+            adapters.remove(child)
+        status = call('network-status')
+        if not status:
+            return
+        online['value'] = status['online']
+        if status['online']:
+            via = status['via'] + (f" ({status['ssid']})" if status['mode'] == 'wifi' and status['ssid'] else '')
+            network_status.set_text(f'Package repository reachable securely through {via}.')
+        else:
+            network_status.set_text('Could not reach the package repository securely (https://pkg.FreeBSD.org/).\n'
+                                    f"{status['error']}\nSystem time: {status['clock']}")
+        for adapter in status['adapters']:
+            row = Gtk.Box(spacing=8)
+            row.pack_start(Gtk.Label(xalign=0, label=f"{adapter['name']}  {adapter['kind']}  {adapter['state'] or ''}  "
+                                     f"{adapter['address'] or ''}\n{adapter['description']}"), True, True, 0)
+            if adapter['wireless']:
+                join = Gtk.Button(label='Join Wi-Fi')
+                join.connect('clicked', lambda _b, d=adapter['name']: wifi_dialog(d))
+                row.pack_start(join, False, False, 0)
+            else:
+                dhcp = Gtk.Button(label='Use DHCP')
+                dhcp.connect('clicked', lambda _b, i=adapter['name']: (call('network-dhcp', i), refresh_network()))
+                manual = Gtk.Button(label='Set up by hand')
+                manual.connect('clicked', lambda _b, i=adapter['name']: static_dialog(i))
+                row.pack_start(dhcp, False, False, 0)
+                row.pack_start(manual, False, False, 0)
+            adapters.pack_start(row, False, False, 0)
+        adapters.show_all()
+        update_buttons()
+
+    row = Gtk.Box(spacing=8)
+    check = Gtk.Button(label='Check again')
+    check.connect('clicked', refresh_network)
+    other = Gtk.Button(label='Other network settings (text screen)')
+    other.connect('clicked', lambda *_: run_text_step('network', refresh_network))
+    row.pack_start(check, False, False, 0)
+    row.pack_start(other, False, False, 0)
+    box.pack_start(row, False, False, 0)
+
+    # Options.
+    box = page('options', 'Remote access and development checkouts')
+    ssh = labelled(box, 'Turn on SSH logins', Gtk.Switch(halign=Gtk.Align.START))
+    checkouts = facts.get('checkouts', {})
+    ports = labelled(box, 'Ports tree in /usr/ports', Gtk.CheckButton(label=(
+        f"{checkouts['ports']['download_mib']} MiB download; allow {checkouts['ports']['extra_gib']} GiB extra" if 'ports' in checkouts else '')))
+    src = labelled(box, 'System sources in /usr/src', Gtk.CheckButton(label=(
+        f"{checkouts['src']['download_mib']} MiB download; allow {checkouts['src']['extra_gib']} GiB extra" if 'src' in checkouts else '')))
+
+    # Disk.
+    box = page('disk', 'Install disk')
+    disk = Gtk.ComboBoxText()
+    for row in facts['disks']:
+        disk.append(row['name'], f"{row['name']}  {row['size']}  {row['description']}")
+    labelled(box, 'Disk', disk)
+    table = Gtk.Label(xalign=0, selectable=True)
+    box.pack_start(table, False, False, 0)
+    box.pack_start(Gtk.Label(xalign=0, wrap=True, label='Types describe partitions, not their contents. ms-basic-data may contain Windows or data. '
+                             'EFI, reserved and recovery partitions cannot be selected for replacement.'), False, False, 0)
+    layout = Gtk.ComboBoxText()
+    layout.append('whole_disk', 'Erase the entire disk')
+    layout.append('partition', 'Use an existing OS/data partition')
+    layout.append('free_space', 'Create a partition in free space')
+    layout.set_active_id('whole_disk')
+    labelled(box, 'Layout', layout)
+    target = labelled(box, 'Partition or free space', Gtk.ComboBoxText())
+    size = labelled(box, 'Size in MiB', Gtk.SpinButton.new_with_range(1, 2**31, 1024))
+    efi = labelled(box, 'EFI partition to share', Gtk.ComboBoxText())
+    encrypt = labelled(box, "Encrypt Daemonarchy's partition with your password", Gtk.Switch(halign=Gtk.Align.START))
+    inventory = {}
+
+    def refresh_disk(*_):
+        target.remove_all()
+        efi.remove_all()
+        name = disk.get_active_id()
+        if not name:
+            return
+        found = call('partitions', name)
+        if not found:
+            return
+        inventory.clear()
+        inventory.update(found)
+        table.set_text(found['table'])
+        mode = layout.get_active_id()
+        if mode == 'partition':
+            for row in found['partitions']:
+                target.append(str(row['index']), f"Partition {row['index']} | {row['device']} | {row['type']} | {row['mib']} MiB")
+        elif mode == 'free_space':
+            for row in found['free']:
+                target.append(str(row['start']), f"Free {row['start']} | {row['available_mib']} MiB available")
+        for row in found['efi']:
+            efi.append(str(row['index']), f"EFI {row['index']} | {row['device']} | {row['mib']} MiB")
+        target.set_active(0)
+        efi.set_active(0)
+        shared = mode != 'whole_disk'
+        for widget in (target, efi):
+            widget.set_sensitive(shared)
+        size.set_sensitive(mode == 'free_space')
+        if mode == 'free_space' and found['free']:
+            size.set_range(found['minimum_mib'], found['free'][0]['available_mib'])
+            size.set_value(found['free'][0]['available_mib'])
+        if shared and not found['gpt']:
+            say('Preserving an existing disk requires UEFI boot and a GPT partition table.', True)
+
+    disk.connect('changed', refresh_disk)
+    layout.connect('changed', refresh_disk)
+
+    # Review.
+    box = page('review', 'Ready to install')
+    summary = Gtk.Label(xalign=0, selectable=True)
+    box.pack_start(summary, False, False, 0)
+    warning = Gtk.Label(xalign=0, wrap=True)
+    box.pack_start(warning, False, False, 0)
+    understood = Gtk.CheckButton(label='I understand; install Daemonarchy as shown')
+    box.pack_start(understood, False, False, 0)
+    typed = labelled(box, 'Type the partition to confirm', Gtk.Entry())
+
+    # Progress.
+    box = page('progress', 'Installing Daemonarchy')
+    phase = Gtk.Label(xalign=0)
+    bar = Gtk.ProgressBar(show_text=False)
+    details = Gtk.Label(xalign=0, wrap=True)
+    recent = Gtk.Label(xalign=0, selectable=True)
+    for widget in (phase, bar, details, recent):
+        box.pack_start(widget, False, False, 0)
+    finish = Gtk.Box(spacing=8)
+    reboot = Gtk.Button(label='Reboot into Daemonarchy')
+    reboot.connect('clicked', lambda *_: call('power', 'reboot'))
+    poweroff = Gtk.Button(label='Power off')
+    poweroff.connect('clicked', lambda *_: call('power', 'poweroff'))
+    finish.pack_start(reboot, False, False, 0)
+    finish.pack_start(poweroff, False, False, 0)
+    box.pack_start(finish, False, False, 0)
+
+    def collect():
+        answers.update(
+            keyboard=keyboard.get_active_id() or '', username=username.get_text(), password=password.get_text(),
+            password_confirmation=confirm.get_text(), full_name=full_name.get_text(), email_address=email.get_text(),
+            hostname=hostname.get_text(), timezone=timezone.get_active_text() or '',
+            ssh_enable=ssh.get_active(), install_ports=ports.get_active(), install_src=src.get_active(),
+            disk=disk.get_active_id() or '', disk_snapshot=inventory.get('snapshot', ''),
+            install_mode=layout.get_active_id(), encrypt_installation=encrypt.get_active(),
+            efi_index=efi.get_active_id() or '', confirm_partition=typed.get_text())
+        if answers['install_mode'] == 'partition':
+            answers['partition_index'] = target.get_active_id() or ''
+        elif answers['install_mode'] == 'free_space':
+            answers['free_start'] = target.get_active_id() or ''
+            answers['install_size_mib'] = str(int(size.get_value()))
+
+    def show_review():
+        collect()
+        summary.set_text('\n'.join((
+            f"Username: {answers['username']}", f"Password: {'*' * len(answers['password'])}",
+            f"Full name: {answers['full_name'] or '[Skipped]'}", f"Email address: {answers['email_address'] or '[Skipped]'}",
+            f"Hostname: {answers['hostname'] or facts.get('hostname_default')}", f"Timezone: {answers['timezone']}",
+            f"Keyboard: {keyboard.get_active_text()}", f"SSH: {'on' if answers['ssh_enable'] else 'off'}",
+            f"Encrypt: {'yes' if answers['encrypt_installation'] else 'no'}", f"Disk: {answers['disk']}")))
+        warning.set_markup('<b>%s</b>' % GLib.markup_escape_text(confirmation_text(answers)))
+        typed.get_parent().set_visible(answers['install_mode'] == 'partition')
+        understood.set_active(False)
+
+    progress = {}
+
+    def poll_progress():
+        view = progress['model'].poll()
+        phase.set_text(view['title'])
+        if view['fraction'] is None:
+            bar.set_fraction(0)
+        else:
+            bar.set_fraction(view['fraction'])
+        details.set_text('\n'.join(view['details']))
+        if view['done']:
+            recent.set_text('' if view['succeeded'] else '\n'.join(view['recent']))
+            finish.set_visible(view['succeeded'])
+            back.set_sensitive(not view['succeeded'])
+            return False
+        return True
+
+    def install():
+        collect()
+        if not understood.get_active():
+            say('Confirm the installation first.', True)
+            return
+        try:
+            backend.call('write-conf', data=json.dumps(build_request(answers)))
+        except BackendError as error:
+            say(str(error), True)
+            stack.set_visible_child_name(page_for(error.field))
+            update_buttons()
+            return
+        started = call('install', answers['disk'])
+        if not started:
+            return
+        say('')
+        progress['model'] = InstallProgress(started['log'], started['status'])
+        stack.set_visible_child_name('progress')
+        finish.set_visible(False)
+        update_buttons()
+        GLib.timeout_add(200, poll_progress)
+
+    def update_buttons(*_):
+        name = stack.get_visible_child_name()
+        index = PAGES.index(name)
+        back.set_sensitive(0 < index < PAGES.index('progress'))
+        forward.set_visible(name != 'progress')
+        forward.set_label('Install Daemonarchy' if name == 'review' else 'Next')
+        forward.set_sensitive(name != 'network' or online['value'])
+
+    def go(step):
+        name = stack.get_visible_child_name()
+        if step > 0 and name == 'review':
+            install()
+            return
+        say('')
+        following = PAGES[PAGES.index(name) + step]
+        if following == 'network':
+            refresh_network()
+        if following == 'review':
+            show_review()
+        stack.set_visible_child_name(following)
+        update_buttons()
+
+    back.connect('clicked', lambda *_: go(-1))
+    forward.connect('clicked', lambda *_: go(1))
+    window.show_all()
+    finish.set_visible(False)
+    stack.set_visible_child_name('welcome')
+    update_buttons()
+    Gtk.main()
+
+
+if __name__ == '__main__':
+    if os.geteuid() == 0:
+        sys.exit('Run the graphical installer as the live desktop user, not root.')
+    run_gui()
