@@ -14,6 +14,8 @@ on:
       - 'tests/verified-artifact-cache.py'
       - 'scripts/signed-package-snapshot.py'
       - 'tests/signed-package-snapshot.py'
+      - 'scripts/recover-retained-package-inventory.py'
+      - 'tests/recover-retained-package-inventory.py'
       - 'overlay/usr/local/libexec/daemonarchy-installer/install'
       - 'overlay/usr/local/libexec/daemonarchy-installer/package-repository'
       - 'test-bhyve.sh'
@@ -30,6 +32,8 @@ on:
       - 'tests/verified-artifact-cache.py'
       - 'scripts/signed-package-snapshot.py'
       - 'tests/signed-package-snapshot.py'
+      - 'scripts/recover-retained-package-inventory.py'
+      - 'tests/recover-retained-package-inventory.py'
       - 'overlay/usr/local/libexec/daemonarchy-installer/install'
       - 'overlay/usr/local/libexec/daemonarchy-installer/package-repository'
       - 'test-bhyve.sh'
@@ -63,7 +67,8 @@ jobs:
             tests/release-measurements.py \
             tests/release-qa-plan.py \
             tests/verified-artifact-cache.py \
-            tests/signed-package-snapshot.py; do
+            tests/signed-package-snapshot.py \
+            tests/recover-retained-package-inventory.py; do
             if test -f "$test"; then
               python3 "$test" -v
             fi

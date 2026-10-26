@@ -40,6 +40,12 @@ source "$(dirname "$0")/secureboot-options"
 source "$(dirname "$0")/package-repository"
 source "$(dirname "$0")/apple-firmware"
 package_repository_prepare "$ISO_SHARE"
+package_cache_validate
+if [[ -n ${package_cache_url:-} && $package_repository_tag == packages-16-amd64 ]]; then
+  echo "An iterative cache requires an explicitly versioned signed package feed." >&2
+  exit 1
+fi
+package_cache_check_metadata
 macbook_bcm4364=false
 if [[ $(kenv smbios.system.product 2>/dev/null || true) == MacBookPro16,1 ]]; then
   macbook_bcm4364=true

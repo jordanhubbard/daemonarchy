@@ -1,0 +1,294 @@
+# Verified package retention and iterative installer cache
+
+The package cache retains exact archive bytes in an append-only namespace and
+checks them before every hit. `scripts/signed-package-snapshot.py` remains the
+native authentication producer: it verifies the selected signed catalogue with
+the pinned public key, lets native `pkg` verify fetched archives, then stores the
+independently computed archive SHA-256. Cache transport does not qualify a build,
+a changed ABI, package scripts, an application, an ISO or a release.
+
+Preserve every existing package, port/object tree and cache. Select a fresh cache
+namespace and fresh verification case; this implementation never replaces or
+prunes existing entries. Failed pending copies remain available for diagnosis.
+Duplicate successful content uses hard links. Concurrent identical publication
+is atomic; conflicting content or selection records refuse instead of replacing
+an earlier result. This does not coalesce compilation jobs or serialize package
+transactions; the graph/dispatch coordinator owns those operations.
+
+## Producer configuration
+
+Add these optional top-level fields to the existing pinned signed-snapshot input:
+
+```json
+{
+  "qa_mode": "iterative",
+  "verified_cache_root": "/isolated/cache/daemonarchy-1.4"
+}
+```
+
+The remaining [signed-snapshot inputs](signed-package-snapshot.md) and invocation
+are unchanged. Use a small selected package list for bounded probes. A miss uses
+the existing offline seed/public HTTPS fallback and native checksum verifier.
+Only a successful native fetch/checksum result can reach cache publication.
+A cache hit is rehashed and size-checked before serving and still passes through
+native `pkg` verification. A corrupt entry fails closed with HTTP 502; it is not
+silently replaced, repaired or redirected to a successful download.
+
+Results include `verified_cache` with hits, misses, `corrupt_refusals`, bytes
+saved, verification seconds and per-selection events. A published selection whose
+record is unreadable or misbound, or whose object is missing or has the wrong
+size or SHA-256, is a measured `corrupt_refused` event, never a miss. It serves
+zero bytes and the entry remains in place for diagnosis. The private case also retains
+`verified-cache-events.json` when its frozen origin closes, including on a failed
+native fetch. `bytes_saved` counts bytes served from verified cache instead of
+fetching them from the publisher; it is not measured end-to-end speedup. Repeated
+requests count as repeated transfers. No savings are claimed for compilation or
+native acceptance, and no native execution is skipped because of a transport hit.
+
+`qa_mode: "final-rc"` rejects a cache root or offline payload source and requires
+the public GitHub/FreeBSD package publisher. It reacquires all three feed metadata
+files from that public publisher, refuses drift from selected pins, and records
+`public-metadata-acquisition.json`; final native authentication still follows.
+The final QA driver must independently
+acquire and verify the exact public ISO/boot assets and perform fresh installation
+and installed boot against public signed feeds. This cache code does not perform
+that VM/hardware matrix or authorize its publication.
+
+## Bounded native OBS probe (coordinator slot required)
+
+Use an approved healthy FreeBSD root slot and the exact reviewed product revision.
+Prepare the existing signed-snapshot input schema with the reviewed public 1.3.1
+key, all three pinned public metadata files, `abi: "FreeBSD:16:amd64"`, the selected
+`osversion: 1600029`, `packages: ["obs-studio"]`, a 16 MiB download budget, and a
+120-second fetch timeout. Pin the root-owned native `pkg` executable as usual.
+Use `qa_mode: "iterative"`, no offline source, the public versioned 1.3.1 payload
+URL, and a fresh isolated `verified_cache_root`. Then run sequentially:
+
+```sh
+# INPUT_SHA256 binds the same reviewed inputs for both runs. Neither case exists.
+python3 scripts/signed-package-snapshot.py /isolated/obs-probe-inputs.json \
+  --sha256 INPUT_SHA256 --case /isolated/obs-probe-cold
+python3 scripts/signed-package-snapshot.py /isolated/obs-probe-inputs.json \
+  --sha256 INPUT_SHA256 --case /isolated/obs-probe-warm
+```
+
+Retain both cases and compare `repository_signature_verified`,
+`payload_checksums_verified`, exact package SHA-256/size, transfer requests,
+`verified_cache`, empty private package databases and elapsed times. A warm hit
+must still pass native verification. This probe performs no installation,
+compilation, signing or VM launch and cannot qualify application/runtime ABI
+behavior. A further corruption control must use a separate newly created test
+namespace; never damage an earlier retained cache or published archive.
+
+The 2026-10-26 native run of this probe used pkg 2.8.4, reviewed source `d9341f9`,
+the signed 1.3.1 catalogue and `keys/pkg-repo-1.3.1.pub`, and is
+[recorded](../verification/verified-cache-native-probe-20261025-development.json):
+
+- **Cold:** one miss and one HTTPS redirect; fetch/verify took 2.58 s.
+- **Warm:** one hit served 6,517,442 bytes from cache, with no redirect; the
+  rehash took 0.005 s and fetch/verify took 0.34 s. Native checksum verification
+  still passed on the hit.
+- **Same-size corruption** in a fresh control namespace: refused with HTTP 502,
+  and no result or payload was produced. Native pkg retried the request, so three
+  `corrupt_refused` events were recorded rather than one.
+- **`final-rc`, no cache:** reacquired the public metadata, then signature and
+  checksum verification passed.
+
+All case bytes and the probe namespace were retained.
+
+## Stable cache API
+
+`scripts/verified-artifact-cache.py` exposes:
+
+```python
+identity = selection_identity(
+    {"meta.conf": meta_sha, "packagesite.pkg": catalogue_sha,
+     "data.pkg": data_sha, "public_key": selected_key_sha},
+    "obs-studio",
+    {"version": "32.2.2_1", "abi": "FreeBSD:16:amd64",
+     "archive_checksum": native_checksum,  # Opaque native pkg value, not SHA-256.
+     "archive_path": "obs-studio-32.2.2_1.pkg", "download_bytes": 6517442})
+cache = VerifiedCache(absolute_isolated_root)
+stream = cache.lookup(identity)  # Verified open stream, or None on a genuine miss.
+# After native catalogue/signature and archive-checksum verification succeeds:
+cache.retain(identity, native_verified_archive, independent_archive_sha256)
+metrics = cache.summary()
+```
+
+The selection schema is `daemonarchy/verified-cache-selection@1`. Exact signed
+metadata and public-key hashes, package name/version/ABI, native checksum, archive
+path and byte count all participate in the selection key. Cache entries use
+`daemonarchy/verified-cache-entry@1`, binding the selection to the separately
+observed archive SHA-256. Objects live at `objects/<archive-sha256>` and selection
+records at `selections/<canonical-selection-sha256>.json`. Callers must not edit
+these internals or treat the presence of a record as proof of runtime eligibility.
+The trusted native producer owns admission. The API itself does not authenticate
+arbitrary callers' assertions about signatures or dependency closure.
+
+This key selects package transport bytes. It is deliberately separate from a
+semantic compilation key, a lifecycle dispatch request, or a runtime compatibility
+receipt. A changed signed catalogue can share unchanged object bytes after fresh
+native verification but gets its own selection record. An archive envelope change
+requires package review; compatible runtime/base changes require native
+requalification; changed build inputs require graph-owned invalidation. The
+[reuse inventory](package-reuse-inventory.md) records those separate decisions.
+
+## Candidates across signed catalogue changes
+
+Exact `lookup(identity)` remains strict: a changed catalogue or public-key pin
+is a miss. The native producer can separately offer retained bytes as a candidate
+only after its **current** `pkg update` signature authentication, selected ABI
+checks and authenticated database inventory succeed. The producer constructs a
+`NativeAuthenticatedCatalogue(catalogue, packages, database_sha256)` witness from
+that exact selection; this class is a trusted caller contract and cannot verify
+signatures by itself. Old result replay never constructs this fresh-authentication
+witness.
+
+`cache.candidate(identity, witness)` requires the exact current witness selection.
+It searches retained selection records matching package name, version, ABI,
+opaque native archive checksum and size, verifies record bindings and rehashes
+the object. A transport path or catalogue/signing-key change can reuse those
+bytes. Missing/stale authentication refuses; changed checksum/ABI/version never
+aliases an old candidate. Ambiguous or corrupt records/objects refuse without
+repairing, replacing or deleting old evidence. The bounded index reads at most
+100,000 immutable selection records and is rebuilt after new publication.
+
+An offered stream goes through the fresh private native `pkg fetch` transaction.
+It is **not** a selected hit or new release admission. Only after current native
+checksum verification, frozen-database/executable checks and independent SHA-256
+verification succeed does `retain` create a new catalogue/key selection record.
+It reuses the existing content-addressed object without copying another archive
+into the cache. Old records and bytes remain unchanged. Candidate requests,
+`candidate_bytes_offered` and `candidate_bytes_admitted` are separate from exact
+selection hits; failed verification never increments admitted candidate bytes.
+No previous application/runtime qualification is copied.
+
+For a bounded native cross-catalogue proof, first authenticate and retain the
+unchanged OBS archive against its real public 1.1.1 catalogue and historically
+selected key, using available retained source bytes where present. Then use a
+new private case and the real public 1.3.1 catalogue/key with the **same cache**.
+Both input files remain separately pinned. Verify the second run has fresh native
+signature/checksum success, the same independent archive SHA-256, no public
+payload redirect, admitted candidate bytes, a new exact selection record and
+unchanged old records/object inode. This requires a coordinator-approved native
+slot. Controller HTTP/byte fixtures exercise the protocol but do not establish
+native authentication, application ABI compatibility or release speedup.
+
+## Explicit historical manifest recovery
+
+`scripts/recover-retained-package-inventory.py` reads the exact native assembly
+manifest and its bound historical qualified-provenance document:
+
+```sh
+python3 scripts/recover-retained-package-inventory.py \
+  --manifest /retained/reuse-package-manifest-20261025.json \
+  --manifest-sha256 eb27534e2c75a78fc7d18a0d652911f8f25108e055966c7339df4d1ae34bc2d7 \
+  --provenance /retained/reuse-111-qualified-provenance-20261025.json \
+  --provenance-sha256 db65b7ad849da846a08035ac5b6489dfbd4f2e4c4f0860a45c9b09154fdfc196 \
+  > /isolated/historical-retained-inventory.json
+```
+
+The importer checks metadata pins, cross-document provenance binding, assembly
+revision/base consistency and every recorded admitted archive SHA-256. It emits
+all archive identities; it never reads package payloads, infers name/version from
+a filename, seeds the cache, chooses compilation or issues a current receipt.
+Its `daemonarchy/historical-retained-package-inventory@1` output preserves the
+recorded old scope and explicit unresolved current identities.
+
+Running this importer on the retained records recovered **1,463 archives totaling
+8,686,389,815 bytes**, with **five recorded 1.3.1 admissions**, **1,458 identity-only
+records** and **zero 1.4 admissions**. The five named records are CEF, Chromium,
+the Hyprland preview share picker, OBS and tensaku. Missing public metadata can
+therefore lead to targeted producer/provenance recovery instead of a blanket
+rebuild. Actual current build eligibility and ABI requalification remain the
+responsibility of the graph/native acceptance owners.
+
+## Finite iterative cache service
+
+A previously completed, reviewed native signed-snapshot case can serve an
+iterative installer. Pin its exact `result.json` and original input configuration;
+the service refuses missing authentication flags, mismatched input/key/catalogue
+bindings or changed copied metadata, and verifies archive bytes before use. It copies retained products
+into the selected cache namespace without modifying the native case.
+
+```sh
+python3 scripts/signed-package-snapshot.py /isolated/inputs.json \
+  --sha256 INPUT_SHA256 --case /isolated/completed-native-case \
+  --serve-result-sha256 RESULT_SHA256 --cache-root /isolated/cache/daemonarchy-1.4 \
+  --bind CACHE_LISTEN_ADDRESS --port 8089 --serve-seconds 3600
+```
+
+Use an owned finite supervisor and retain service output. The default bind is
+loopback; choose an explicit reachable address for a guest. The service freezes
+the pinned signed metadata, serves verified selected objects, and redirects
+missing selected archives to the configured public HTTPS publisher. The client
+still authenticates the catalogue and verifies every fetched archive. The service
+uses the result-bound authenticated repository database to allowlist signed
+packages not included in an earlier limited payload fetch, so those become
+verified-client public misses. Older results without a database binding can
+serve only their recorded package subset. The service stops on a corrupt entry
+and reports its failure and counters; it issues no new
+native qualification. It rejects a `final-rc` configuration.
+
+## Bhyve and installer selection
+
+For iterative testing only, set `PACKAGE_CACHE_URL` to that service and supply
+all three selected metadata hashes:
+
+```sh
+PACKAGE_QA_MODE=iterative \
+PACKAGE_CACHE_URL=http://CACHE_HOST:8089 \
+PACKAGE_CACHE_META_SHA256=META_SHA256 \
+PACKAGE_CACHE_PACKAGESITE_SHA256=PACKAGESITE_SHA256 \
+PACKAGE_CACHE_DATA_SHA256=DATA_SHA256 \
+sh test-bhyve.sh /isolated/candidate.iso
+```
+
+Normal harness runs require a not-yet-created or existing empty, non-symlink
+`WORK` directory. Allocating it with `mktemp -d` is supported. Any existing
+contents, including hidden files, refuse before host mutation, preserving earlier
+disks, CIDATA and logs. Keep receipt outputs in a separate directory. The harness validates before host mutation or VM launch, then writes those fields
+into its private CIDATA configuration. The installer validates and retains fresh
+metadata preflight downloads before any disk changes, rejects changed metadata,
+and keeps `signature_type: "pubkey"` and the image's selected public key. Use the
+owned frozen service so the catalogue cannot move between preflight and native
+import. The override applies only to the versioned signed Daemonarchy dependency
+feed; the ISO's kernel-matched packages and FreeBSD upstream policy retain their
+existing sources. Installed production repository configuration retains the public
+versioned feed URL. This is a transport override, not an authentication override.
+
+Use `PACKAGE_QA_MODE=final-rc` with no cache URL or metadata pins for final public
+QA. Both harness and installer reject any override field in that mode, including
+a pin without a URL, before CIDATA creation, host mutation or destructive work.
+The installed dependency feed then names only the public versioned release URL. This
+option alone does not prove that the supplied ISO came from the public release;
+the final QA driver must record public binary acquisition and verification.
+
+## Retained evidence and current qualification boundary
+
+A scoped read of the retained 1.3.1 native assembly manifest recovered 1,463 archive
+identities totaling 8,686,389,815 bytes. Its SHA-256 is
+`eb27534e2c75a78fc7d18a0d652911f8f25108e055966c7339df4d1ae34bc2d7`.
+It binds the historical qualified-provenance document with SHA-256
+`db65b7ad849da846a08035ac5b6489dfbd4f2e4c4f0860a45c9b09154fdfc196`.
+That document admits five retained archives for 1.3.1: CEF, Chromium, the Hyprland
+preview share picker, OBS and tensaku. Its scope includes the FreeBSD 1600029
+installed-root dependency/file checks, Chromium/OBS version probes and CEF dynamic
+loading. Final ISO/VM/public checks are separately scoped. These records are
+available for targeted provenance recovery; missing public fields do not require
+blanket rebuilds. They do not independently qualify unchanged payloads for 1.4.
+
+A bounded native-host-independent retention probe used the existing published
+OBS archive, verified its exact public SHA-256, and checked source hash/mtime
+preservation. With all three selected catalogue hashes, the selected public-key
+hash and opaque native checksum bound, it recorded one miss, one rehashed hit,
+6,517,442 bytes served from cache and approximately 0.022 seconds for retention
+plus lookup. This is transport evidence, not fresh native signature/ABI testing
+or measured release speedup. Existing artifacts and caches remained available.
+
+Controller regressions exercise same-size corruption rejection without fallback,
+selection/ABI/version mismatch refusal, immutable duplicate retention, verified
+HTTP hits and public miss redirects, selected metadata corruption, authentication
+preservation, and final-RC rejection before VM launch. A new native signature/cache
+run and exact VM installation/public-distribution acceptance remain required;
+the active kernel worker's capacity is coordinated separately.
