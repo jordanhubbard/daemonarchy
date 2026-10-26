@@ -158,8 +158,15 @@ the idle primary FreeBSD worker ([record](../native/release-graph/native-ancestr
 writes, 60-second deadlines) shows source upstream `a3d1d4e8` is an ancestor of
 selected `d63d77f4` (exit 0). The ports check fails: selected
 `b785784219af455a9ce4fd70c59bc96ba77f469f` is absent from the worker's
-`/usr/ports` object store (exit 128), so ports ancestry remains unproved until an
-admitted fetch makes that commit available and the check is repeated. No private-worker compilation or
+`/usr/ports` object store (exit 128). An admitted single-commit fetch
+([record](../native/release-graph/native-ancestry-probe-20261026-fetch.json))
+then hit its 1800-second deadline (exit 124). `/usr/ports` is a shallow clone,
+so fetching the commit without a bound deepens far past the 224-commit range
+GitHub reports. HEAD, branch, refs and tracked files are unchanged; an
+incomplete temporary pack remains in place. The rerun probe still fails for
+ports (exit 128) and passes for source. GitHub's compare result is hosted
+reference only, not native evidence. A bounded fetch rewrites the shallow
+boundary and needs separate admission. No private-worker compilation or
 VM was launched by this stream; private producer/profile work stays scheduled
 centrally. The hosted metadata observations below have their own bounded scope.
 

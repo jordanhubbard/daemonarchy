@@ -1,0 +1,158 @@
+{
+  "admission": "operator-approved single-commit fetch into /usr/ports and probe rerun via coordinator, 2026-10-25 (PDT)",
+  "after": {
+    "fetch_head_unchanged": true,
+    "observed_utc": "2026-10-26T04:03:48Z",
+    "ports_branch": "refs/heads/feat/litai-native-components",
+    "ports_head": "086263f34d5bc634bf00ee35621040a875667e1e",
+    "ports_refs_count": 7,
+    "ports_refs_sha256": "ac0f8f490b1b07690786568e437d9e051852be1ecf6c15c794fe4f65b67a8a0c",
+    "ports_status_uno_entries": 0,
+    "preexisting_processes": "8 idle git remote-https helpers (4 ports, 4 src) started 2026-10-23, not from this fetch; untouched",
+    "raw": [
+      "utc=2026-10-26T04:03:48Z host=daemon user=jkh",
+      "bhyve_guests=0",
+      "build_procs=0",
+      "build_like_processes=0",
+      "load={ 0.49 0.33 0.37 }",
+      "head=086263f34d5bc634bf00ee35621040a875667e1e",
+      "branch=refs/heads/feat/litai-native-components",
+      "status_uno_lines=0",
+      "refs_sha256=ac0f8f490b1b07690786568e437d9e051852be1ecf6c15c794fe4f65b67a8a0c",
+      "refs_count=7",
+      "fetch_head=af9eddd69f940afed4ce4dcf77d4efc510adc948ea5d61aa277ccd88bc360d0a",
+      "target_present=no",
+      "gitdir_owner=jkh:jkh drwxr-xr-x jkh:jkh drwxr-xr-x ",
+      "lingering_git=28290 /usr/local/libexec/git-core/git remote-https origin https://github.com/jordanhubbard/daemonarchy-ports.git;28291 /usr/local/libexec/git-core/git-remote-https origin https://github.com/jordanhubbard/daemonarchy-ports.git;74409 /usr/local/libexec/git-core/git remote-https origin https://github.com/jordanhubbard/daemonarchy-src.git;74410 /usr/local/libexec/git-core/git-remote-https origin https://github.com/jordanhubbard/daemonarchy-src.git;48460 /usr/local/libexec/git-core/git remote-https origin https://github.com/jordanhubbard/daemonarchy-src.git;48461 /usr/local/libexec/git-core/git-remote-https origin https://github.com/jordanhubbard/daemonarchy-src.git;30522 /usr/local/libexec/git-core/git remote-https origin https://github.com/jordanhubbard/daemonarchy-src.git;50555 /usr/local/libexec/git-core/git remote-https origin https://github.com/jordanhubbard/daemonarchy-src.git;30523 /usr/local/libexec/git-core/git-remote-https origin https://github.com/jordanhubbard/daemonarchy-src.git;50556 /usr/local/libexec/git-core/git-remote-https origin https://github.com/jordanhubbard/daemonarchy-src.git;81277 /usr/local/libexec/git-core/git remote-https origin https://github.com/jordanhubbard/daemonarchy-ports.git;81278 /usr/local/libexec/git-core/git-remote-https origin https://github.com/jordanhubbard/daemonarchy-ports.git;",
+      "tmp_pack_files=1",
+      "tmp: 822943743 tmp_pack_O08PTm",
+      "shallow=yes packs=3"
+    ],
+    "raw_sha256": "e7a63e96b4a56667fef1e45fefcc650deced821518a73f96e2b16f2e2257d37d",
+    "refs_changed": false,
+    "residue": {
+      "bytes": 822943743,
+      "mtime_matches_fetch_end": true,
+      "note": "incomplete temporary pack from the timed-out fetch; left in place (no deletion, gc or prune authorized)",
+      "path": "/usr/ports/.git/objects/pack/tmp_pack_O08PTm"
+    },
+    "shallow_boundaries": 6,
+    "shallow_repository": true,
+    "target_present": false
+  },
+  "cache_admission": false,
+  "fetch": {
+    "command": "timeout 1800 git -c gc.auto=0 -c maintenance.auto=false -C /usr/ports fetch --no-tags --no-auto-maintenance --no-write-fetch-head --no-recurse-submodules origin b785784219af455a9ce4fd70c59bc96ba77f469f",
+    "duration_seconds": 1800,
+    "end_utc": "2026-10-26T04:03:33Z",
+    "exit_code": 124,
+    "origin": "https://github.com/jordanhubbard/daemonarchy-ports.git",
+    "raw": [
+      "origin=https://github.com/jordanhubbard/daemonarchy-ports.git",
+      "cmd=timeout 1800 git -c gc.auto=0 -c maintenance.auto=false -C /usr/ports fetch --no-tags --no-auto-maintenance --no-write-fetch-head --no-recurse-submodules origin b785784219af455a9ce4fd70c59bc96ba77f469f",
+      "start_utc=2026-10-26T03:33:33Z",
+      "exit=124 duration_s=1800 end_utc=2026-10-26T04:03:33Z"
+    ],
+    "raw_sha256": "26d2f34093a65373300d68605f42f50a4189e8183a9a9fd51a7ac7f502253969",
+    "result": "fail: deadline expired before the fetch completed; no output on non-tty stderr",
+    "start_utc": "2026-10-26T03:33:33Z"
+  },
+  "hosted_reference": {
+    "ahead_by": 224,
+    "behind_by": 0,
+    "native_evidence": false,
+    "source": "GitHub compare API a7c9a97b...b7857842",
+    "status": "ahead"
+  },
+  "native_compilation": false,
+  "preflight": {
+    "bhyve_guests": 0,
+    "build_like_processes": 0,
+    "observed_utc": "2026-10-26T03:32:25Z",
+    "ports_branch": "refs/heads/feat/litai-native-components",
+    "ports_head": "086263f34d5bc634bf00ee35621040a875667e1e",
+    "ports_refs_count": 7,
+    "ports_refs_sha256": "ac0f8f490b1b07690786568e437d9e051852be1ecf6c15c794fe4f65b67a8a0c",
+    "ports_status_uno_entries": 0,
+    "raw": [
+      "utc=2026-10-26T03:32:25Z host=daemon user=jkh",
+      "bhyve_guests=0",
+      "build_procs=0",
+      "build_like_processes=0",
+      "load={ 0.14 0.41 0.67 }",
+      "head=086263f34d5bc634bf00ee35621040a875667e1e",
+      "branch=refs/heads/feat/litai-native-components",
+      "status_uno_lines=0",
+      "refs_sha256=ac0f8f490b1b07690786568e437d9e051852be1ecf6c15c794fe4f65b67a8a0c",
+      "refs_count=7",
+      "fetch_head=af9eddd69f940afed4ce4dcf77d4efc510adc948ea5d61aa277ccd88bc360d0a",
+      "target_present=no",
+      "gitdir_owner=jkh:jkh drwxr-xr-x jkh:jkh drwxr-xr-x "
+    ],
+    "raw_sha256": "e014b0f2d76d420b667f08ed78f537646e0fe5a2054a7cb94329d3137f440ea5",
+    "target_present": false
+  },
+  "probe": {
+    "checks": [
+      {
+        "command": "timeout 60 git -C /usr/src merge-base --is-ancestor a3d1d4e88ae7435cfc32a886999dcde2173839cd d63d77f4eb3cc29e16510f7bdec73602e27c2844",
+        "exit_code": 0,
+        "repository": "daemonarchy-src",
+        "result": "pass"
+      },
+      {
+        "command": "timeout 60 git -C /usr/ports merge-base --is-ancestor a7c9a97bae26bf342e1bffb2273b7ef331cdb289 b785784219af455a9ce4fd70c59bc96ba77f469f",
+        "exit_code": 128,
+        "output": "fatal: Not a valid commit name b785784219af455a9ce4fd70c59bc96ba77f469f",
+        "repository": "daemonarchy-ports",
+        "result": "fail: selected fork commit still absent"
+      }
+    ],
+    "fetch": false,
+    "per_check_deadline_seconds": 60,
+    "raw": [
+      "host=daemon uname=FreeBSD_16.0-CURRENT_FreeBSD_16.0-CURRENT_#0_bdcfeac3e1cb:_Fri_Oct_16_23:15:34_UTC_2026_____root@daemonarchy-release-builder:/home/tester/daemonarchy-rc2-obj/home/tester/daemonarchy-rc2-src/amd64.amd64/sys/GENERIC_amd64",
+      "started_utc=2026-10-26T04:04:02Z",
+      "bhyve_guests=0",
+      "git_version=git version 2.56.0",
+      "== repo=daemonarchy-src path=/usr/src",
+      "origin=https://github.com/jordanhubbard/daemonarchy-src.git",
+      "gitdir=/usr/src/.git",
+      "partial_clone_filter=none",
+      "promisor=none",
+      "cat-file -t d63d77f4eb3cc29e16510f7bdec73602e27c2844 -> rc=0 out=commit",
+      "cat-file -t a3d1d4e88ae7435cfc32a886999dcde2173839cd -> rc=0 out=commit",
+      "cmd=timeout 60 git -C /usr/src merge-base --is-ancestor a3d1d4e88ae7435cfc32a886999dcde2173839cd d63d77f4eb3cc29e16510f7bdec73602e27c2844",
+      "exit=0 elapsed_s=0 output=<empty>",
+      "== repo=daemonarchy-ports path=/usr/ports",
+      "origin=https://github.com/jordanhubbard/daemonarchy-ports.git",
+      "gitdir=/usr/ports/.git",
+      "partial_clone_filter=none",
+      "promisor=none",
+      "cat-file -t b785784219af455a9ce4fd70c59bc96ba77f469f -> rc=128 out=fatal: git cat-file: could not get object info",
+      "cat-file -t a7c9a97bae26bf342e1bffb2273b7ef331cdb289 -> rc=0 out=commit",
+      "cmd=timeout 60 git -C /usr/ports merge-base --is-ancestor a7c9a97bae26bf342e1bffb2273b7ef331cdb289 b785784219af455a9ce4fd70c59bc96ba77f469f",
+      "exit=128 elapsed_s=0 output=fatal: Not a valid commit name b785784219af455a9ce4fd70c59bc96ba77f469f",
+      "finished_utc=2026-10-26T04:04:02Z",
+      "ssh_rc=0"
+    ],
+    "raw_sha256": "15049c46c82d9e091ba98a0c38d1d016a0454603c1effe0205508ef207c9a061",
+    "script": "native/release-graph/ancestry-probe.sh",
+    "script_sha256": "0d9e5ac6f78c5d8516ce0516218a95768c71563a1b5247aa83da20aeaf11795a",
+    "started_utc": "2026-10-26T04:04:02Z"
+  },
+  "release_acceptance": false,
+  "remaining": [
+    "/usr/ports is shallow; an unbounded single-commit fetch deepens far past the 224-commit range and did not finish in 1800s",
+    "a bounded alternative (e.g. --depth or --shallow-exclude=a7c9a97b) rewrites .git/shallow and needs separate admission",
+    "decide whether to keep or remove the 823 MB temporary pack"
+  ],
+  "schema": "daemonarchy/native-ancestry-probe@1",
+  "supersedes_nothing": "native/release-graph/native-ancestry-probe-20261026.json is retained unchanged",
+  "worker": {
+    "git": "2.56.0",
+    "hostname": "daemon",
+    "role": "primary FreeBSD worker (daemon.local)",
+    "uname": "FreeBSD 16.0-CURRENT #0 bdcfeac3e1cb amd64 GENERIC"
+  }
+}
