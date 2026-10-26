@@ -30,6 +30,8 @@ Checking the download is optional but quick. In a terminal, in the folder you sa
 - FreeBSD: `sha256 -c "$(cut -d' ' -f1 daemonarchy-*.iso.sha256)" daemonarchy-*.iso`
 - Windows (PowerShell): `Get-FileHash daemonarchy-*.iso`, then compare the result with the number in the `.sha256` file.
 
+From 1.4.0 the image downloads xz-compressed as `daemonarchy-<version>-<arch>.iso.xz`, which is much smaller. Its `.iso.xz.sha256` file checks the compressed download, so use the same commands with `.iso.xz` in place of `.iso` (for example `sha256sum -c daemonarchy-*.iso.xz.sha256`).
+
 ## 2. Write it to a USB stick
 
 The image is copied to the stick byte for byte; copying the file onto the stick like a document does not work.
@@ -38,6 +40,8 @@ The image is copied to the stick byte for byte; copying the file onto the stick 
 - **Windows:** [Rufus](https://rufus.ie) works too; when it asks, choose **DD image mode**.
 - **macOS:** find the stick with `diskutil list` (say it is `/dev/disk4`), then `diskutil unmountDisk /dev/disk4` and `sudo dd if=daemonarchy-1.1.0-amd64.iso of=/dev/rdisk4 bs=1m`.
 - **Linux:** find the stick with `lsblk` (say `/dev/sdb`), then `sudo dd if=daemonarchy-1.1.0-amd64.iso of=/dev/sdb bs=1M status=progress conv=fsync`.
+
+For a 1.4.0 or later `.iso.xz`, balenaEtcher can flash the compressed file directly. For `dd`, decompress while writing instead of passing `if=`: `xz -dc daemonarchy-<version>-amd64.iso.xz | sudo dd of=/dev/rdisk4 bs=1m` on macOS, or `xz -dc daemonarchy-<version>-amd64.iso.xz | sudo dd of=/dev/sdb bs=1M status=progress conv=fsync` on Linux. FreeBSD and most Linux systems include `xz`; on macOS install it with Homebrew (`brew install xz`). If another tool will not accept the `.xz`, extract the `.iso` first, for example with [7-Zip](https://www.7-zip.org) on Windows.
 
 Be sure of the device name: `dd` overwrites whatever you point it at.
 
