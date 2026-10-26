@@ -1076,3 +1076,18 @@ remains open; report files do not establish a passing gate.
   - [ ] Exact-image VM runs reaching the live desktop and completing a graphical installation, with before/after disk digests proving the live path wrote nothing until install.
   - [ ] Fallback to the TUI installer when the compositor cannot start, and the TUI installer default unchanged.
   - [ ] Scoped physical live-desktop records per tested machine, including the MacBookPro16,1.
+
+### [ ] NET-001 — Make the installer network bring-up proactive and robust
+
+- **GitHub issue:** [#80](https://github.com/jordanhubbard/daemonarchy/issues/80), milestone **1.4.0**.
+- **Priority:** P1
+- **Owner:** installer, live image and unattended install
+- **Direction:** Before any disk change, find every wired, USB-tethering and wireless adapter (including devices still waiting for firmware), probe all wired ports for DHCP concurrently with bounded timeouts, choose the primary connection, prove DNS with direct lookups (DHCP servers, then Cloudflare, Google and Quad9, then a user server that must answer), make the clock usable, load missing firmware, and bring up Wi-Fi; Wi-Fi first when no cable works.
+- **Conclusion:** One shared pipeline (network-bringup) serves the text configurator, the live graphical installer and unattended CIDATA installs. DNS is proven by a record lookup sent to the server, never by ICMP. A usable clock is no earlier than the image build and inside the signing certificate validity; network time is tried before the manual clock. Every step is bounded, retryable, reported in plain language and logged; unattended installs honor net_* answers and fail with a clear message instead of prompting.
+- **Depends on:** none
+- **Implementation:**
+  - [ ] Shared `network-bringup` library and step runner (discover, dhcp, dns, clock, firmware, wifi-prepare, Wi-Fi join), sourced by the configurator and run by `launch` for CIDATA installs; the configurator's network screen shows its findings and offers a primary override, a DNS server entry and a rerun. Verified DNS that replaced broken DHCP DNS is pinned on the installed system with `supersede domain-name-servers`. Code-level only: `tests/network-bringup.sh` exercises every step against shimmed FreeBSD commands in hosted CI.
+  - [ ] The live desktop's graphical backend (LIVE-001) calls the same steps instead of its own DHCP and Wi-Fi commands.
+- **Evidence:**
+  - [ ] Exact-image VM matrix: several NICs with only one offering DHCP, DHCP DNS broken, public DNS blocked with a user resolver, ICMP blocked, a wrong clock fixed by NTP and then by hand, and an unattended CIDATA run, with the retained network-check logs.
+  - [ ] The MacBookPro16,1 BCM4364 path on physical hardware: offline firmware first, Wi-Fi-first ordering with no cable, then DNS and clock over Wi-Fi.

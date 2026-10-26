@@ -252,6 +252,38 @@ operator confirms an installation, and fall back to the TUI installer if the
 compositor cannot start. The TUI installer remains the default boot entry.
 See [LIVE-001](active-work.md#live-001-offer-a-live-desktop-from-the-installer-media-without-touching-the-disk).
 
+## Proactive installer network bring-up
+
+The network step is the most fragile part of an installation: a machine often
+has several adapters, only some get DHCP, and the DNS servers that DHCP supplies
+can be broken. Before any disk change, the installer works through these steps
+on its own:
+
+1. Find every wired, USB-tethering and wireless adapter, including devices still
+   waiting for a driver or firmware. Loopback, the live medium's
+   pseudo-interfaces and tunnels are not shown.
+2. Probe all wired ports for DHCP at the same time, with bounded timeouts. Keep
+   each lease's address, gateway, DNS and NTP servers. Choose the primary
+   connection by link, lease and a gateway that answers ARP, and let the user
+   override the choice.
+3. Prove DNS by sending a record lookup directly to the server, never by ICMP.
+   The DHCP servers come first, then Cloudflare, Google and Quad9. If none
+   answers, accept a server the user enters, but only if it answers the same
+   lookup.
+4. Make the clock usable: no earlier than the image build, and inside the
+   signing certificate's validity. Try network time before the manual clock
+   screen.
+5. Fetch only the firmware that is missing from the media.
+6. Load the Wi-Fi drivers and create wlan0.
+7. Join Wi-Fi if needed, then check DNS and the clock again over Wi-Fi.
+
+With no working cable, steps 6 and 7 come first, using the firmware already on
+the media, and steps 3 to 5 then run over Wi-Fi. The text, graphical and
+unattended installers share this one pipeline. Unattended installs honor
+their `net_*` answers and stop with a clear message instead of prompting. When
+public or user DNS replaced broken DHCP DNS, the installed system keeps it.
+See [NET-001](active-work.md#net-001-make-the-installer-network-bring-up-proactive-and-robust).
+
 ## Delivery sequence and acceptance
 
 - [ ] Inventory all selected fork revisions, tools, workers, actions and outputs;
@@ -323,6 +355,12 @@ See [LIVE-001](active-work.md#live-001-offer-a-live-desktop-from-the-installer-m
   installation from it; show the TUI fallback when the compositor cannot
   start; then record scoped physical live-desktop results, including the
   MacBookPro16,1.
+- [ ] Run the installer's network check against the exact 1.4 image in VMs
+  covering several NICs with only one offering DHCP, broken DHCP DNS,
+  blocked public DNS with a user resolver, ICMP blocked, a wrong clock fixed
+  by NTP and then by hand, and an unattended CIDATA install. Then complete
+  the MacBookPro16,1 path with no cable: offline BCM4364 firmware, Wi-Fi
+  first, then DNS and the clock over Wi-Fi.
 
 Completion requires working cross-release reuse, a distributed multi-repository
 flow and retained receipts, not a renamed wrapper around the current serial
