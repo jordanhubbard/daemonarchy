@@ -201,6 +201,71 @@ class GraphTests(unittest.TestCase):
         with self.assertRaisesRegex(ValueError, "complete typed"):
             self.collect()
 
+    def test_runtime_consumer_of_changed_producer_requires_requalification(self):
+        self.typed_dependency_fixture("runtime")
+        old = self.collect()
+        self.selection["units"][1]["options"] = {"WITH_TESTS": False}
+        reasons = {d["unit"]:d["reason"] for d in graph.compare(old, self.collect())["decisions"]}
+        self.assertEqual(reasons["source:provider"], "build-inputs-changed")
+        self.assertEqual(reasons["source:tool"], "native-ABI-requalification-required")
+        # Requalification itself also propagates over (possibly cyclic) runtime edges.
+        self.selection["units"][1]["options"] = {"WITH_TESTS": True}
+        self.selection["units"][1]["base_abi"]["osversion"] += 1
+        reasons = {d["unit"]:d["reason"] for d in graph.compare(old, self.collect())["decisions"]}
+        self.assertEqual(reasons, {"source:provider": "native-ABI-requalification-required",
+                                   "source:tool": "native-ABI-requalification-required"})
+
+    def test_ambiguous_dependency_member_producer_refuses(self):
+        self.typed_dependency_fixture("build")
+        other = copy.deepcopy(self.selection["units"][0]["dependencies"][0])
+        other.update(unit="source:other", kind="runtime")
+        self.selection["units"][0]["dependencies"].append(other)
+        with self.assertRaisesRegex(ValueError, "ambiguous dependency edge"):
+            self.collect()
+
+    def test_cross_unit_conflicting_owner_refuses(self):
+        manifest = RetainedProjectManifest.from_dict(json.loads((self.repo/"manifest.json").read_bytes()))
+        owners = (RetainedComponentOwner("unit", ComponentCoordinate("fixture", "other"), ID),)
+        conflicting = RetainedProjectManifest(manifest.roots, manifest.members, manifest.limits,
+                                              manifest.directories, owners)
+        second = copy.deepcopy(self.unit)
+        second["id"] = "source:other"
+        second["manifest"] = self.write("other-manifest.json", json.dumps(conflicting.to_dict()).encode())
+        self.selection["repositories"][0]["revision"] = self.commit()
+        self.selection["units"].append(second)
+        with self.assertRaisesRegex(ValueError, "ambiguous cross-unit owner"):
+            self.collect()
+        # The same canonical owner and bytes across units remain admissible inputs.
+        second["manifest"] = self.unit["manifest"]
+        self.assertEqual(len(self.collect()["units"]), 2)
+
+    def test_tampered_previous_graph_or_unknown_edge_refuses_comparison(self):
+        old = self.collect()
+        self.assertFalse(old["units"][0] is self.selection["units"][0])
+        self.selection["units"][0]["options"]["WITH_TESTS"] = False
+        graph.compare(old, old)  # caller mutation does not alias the locked report
+        forged = copy.deepcopy(old)
+        forged["units"][0]["build_inputs"]["options"] = {"WITH_TESTS": False}
+        with self.assertRaisesRegex(ValueError, "identity differs"):
+            graph.compare(forged, self.collect())
+        unknown = copy.deepcopy(old)
+        edge = {"unit": "source:absent", "kind": "runtime", "identity": ID.uri, "artifact_identity": ID.uri,
+                "members": [], "selected_version": "1", "version_constraint": ">=1"}
+        unknown["units"][0]["qualification_inputs"]["dependencies"].append(edge)
+        unknown["units"][0]["dependencies"] = unknown["units"][0]["qualification_inputs"]["dependencies"]
+        unknown["units"][0]["qualification_inputs_identity"] = graph.canonical_identity(
+            unknown["units"][0]["qualification_inputs"]).uri
+        with self.assertRaisesRegex(ValueError, "unknown dependency edge"):
+            graph.compare(unknown, old)
+        with self.assertRaisesRegex(ValueError, "typed release input graph"):
+            graph.compare({**old, "schema": "other"}, old)
+
+    def test_previous_unresolved_closure_is_never_reused(self):
+        self.selection["units"][0]["unresolved_inputs"] = ["native conditional header closure"]
+        old = self.collect()
+        self.selection["units"][0]["unresolved_inputs"] = []
+        self.assertEqual(self.decision(old), "unresolved-inputs-repair-before-reuse")
+
     def test_static_build_identity_change_invalidates_only_consumer(self):
         self.typed_dependency_fixture("build")
         old = self.collect()

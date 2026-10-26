@@ -6,6 +6,7 @@ producer observations, registered ownership and lifecycle admission remain requi
 Run with the project's matching installed Literate AI interpreter.
 """
 import argparse
+import copy
 import hashlib
 import json
 import os
@@ -21,6 +22,9 @@ from literate_ai.contracts.retained_project import RetainedProjectManifest
 from literate_ai.contracts.retained_project_lifecycle import RetainedProjectProfile
 
 SCHEMA = "daemonarchy/release-input-selection@1"
+GRAPH_SCHEMA = "daemonarchy/release-input-graph@1"
+CHANGED = {"new-unit", "build-inputs-changed", "build-dependency-output-unproven",
+           "unresolved-inputs-repair-before-reuse"}
 MAX_JSON = 32 * 1024 * 1024
 
 
@@ -157,6 +161,12 @@ def unit_record(spec, repos, paths, retained_root=None):
     require(len(profile_members) == 1 and profile_members[0].role == "build-definition",
             "profile must belong to the retained build-definition closure")
     known = {m.path: m for m in manifest.members}
+    owners = {o.prefix: o for o in manifest.component_ownership}
+    member_owners = {}
+    for member in manifest.members:
+        owner = retained_owner(member.path, owners)
+        require(owner is not None, "retained member has no canonical Component owner: " + member.path)
+        member_owners[member.path] = (owner.component.uri, owner.authoring_identity.uri, member.sha256)
     if retained_root is not None:
         # Use the framework's own byte/mode/link verifier for captured native tools
         # and generated inputs, which must never be committed as repository blobs.
@@ -231,7 +241,12 @@ def unit_record(spec, repos, paths, retained_root=None):
     require(isinstance(spec["unresolved_inputs"], list) and
             all(isinstance(item, str) and item for item in spec["unresolved_inputs"]),
             "explicit unresolved input inventory required")
-    mapped = {p for d in dependencies for p in d["members"]}
+    providers = {}
+    for dep in dependencies:
+        for path in dep["members"]:
+            require(providers.setdefault(path, dep["unit"]) == dep["unit"],
+                    "ambiguous dependency edge: member has several producer units: " + path)
+    mapped = set(providers)
     require(mapped == {m.path for m in manifest.members if m.role == "dependency"},
             "canonical dependency members require complete typed build/runtime edges")
     build_dependencies = {p for d in dependencies if d["kind"] == "build" for p in d["members"]}
@@ -260,11 +275,13 @@ def unit_record(spec, repos, paths, retained_root=None):
             "dependencies": runtime["dependencies"], "unresolved_inputs": spec["unresolved_inputs"],
             "admitted": False, "native_receipt": None,
             "remaining_gates": ["registered-component-ownership", "producer-closure-observation",
-                                "retained-native-admission", "verified-output-and-ABI-qualification"]}
+                                "retained-native-admission", "verified-output-and-ABI-qualification"]}, member_owners
 
 
 def collect(selection, paths, retained_roots=None):
     retained_roots = retained_roots or {}
+    # The report must be an immutable snapshot, never aliasing caller selection values.
+    selection = copy.deepcopy(selection)
     fields(selection, "schema repositories units")
     require(selection["schema"] == SCHEMA, "unknown release input selection schema")
     require(isinstance(selection["repositories"], list) and selection["repositories"], "select repositories")
@@ -275,11 +292,16 @@ def collect(selection, paths, retained_roots=None):
         repos[name] = lock_repository(spec, paths[name])
     require(set(paths) == set(repos), "unselected repository object store")
     require(isinstance(selection["units"], list), "unit inventory required")
-    units = {}
+    units, claimed = {}, {}
     for spec in selection["units"]:
-        unit = unit_record(spec, repos, paths, retained_roots.get(spec.get("id")))
+        unit, member_owners = unit_record(spec, repos, paths, retained_roots.get(spec.get("id")))
         require(unit["id"] not in units, "duplicate unit")
         units[unit["id"]] = unit
+        # One selected repository path has one canonical owner and one locked byte
+        # identity across every unit; two retained closures cannot disagree.
+        for path, owner in member_owners.items():
+            previous = claimed.setdefault((unit["repository"], path), owner)
+            require(previous == owner, "ambiguous cross-unit owner or bytes for input: " + path)
     require(set(retained_roots) <= set(units), "unselected retained root")
     pending, order = set(units), []
     for unit in units.values():
@@ -299,7 +321,7 @@ def collect(selection, paths, retained_roots=None):
         require(ready, "build dependency cycle")
         order.extend(ready)
         pending.difference_update(ready)
-    return {"schema": "daemonarchy/release-input-graph@1", "repositories": [repos[n] for n in sorted(repos)],
+    return {"schema": GRAPH_SCHEMA, "repositories": [repos[n] for n in sorted(repos)],
             "units": [units[n] for n in sorted(units)], "build_dependency_order": order,
             "admitted": False, "acceptance": "not-qualified", "selection_identity": canonical_identity(selection).uri,
             "gaps": ([] if units else ["no retained per-unit producer profiles selected"])}
@@ -381,17 +403,39 @@ def project_action_trace(manifest, profile, action_id, trace, bindings):
                                "trace environment/ignore/path policy", "generated/output producer and native qualification receipts"]}
 
 
+def graph_units(report):
+    """Re-derive each unit's typed identities; a recorded identity alone is not evidence."""
+    require(isinstance(report, dict) and report.get("schema") == GRAPH_SCHEMA and
+            isinstance(report.get("units"), list), "typed release input graph required")
+    units = {}
+    for unit in report["units"]:
+        require(isinstance(unit, dict) and isinstance(unit.get("id"), str) and unit["id"] not in units,
+                "graph units must have unique ids")
+        require(unit["build_inputs_identity"] == canonical_identity(unit["build_inputs"]).uri and
+                unit["qualification_inputs_identity"] == canonical_identity(unit["qualification_inputs"]).uri and
+                unit["dependencies"] == unit["qualification_inputs"]["dependencies"],
+                "graph unit identity differs from its typed inputs: " + unit["id"])
+        units[unit["id"]] = unit
+    for unit in units.values():
+        require(all(d["unit"] in units for d in unit["dependencies"]),
+                "graph has an unknown dependency edge: " + unit["id"])
+    return units
+
+
 def compare(previous, current):
     """Conservative pre-scheduling recommendations; never cache-hit authorization."""
-    old = {u["id"]: u for u in previous["units"]}
-    new = {u["id"]: u for u in current["units"]}
+    old = graph_units(previous)
+    new = graph_units(current)
+    require(current.get("build_dependency_order") is not None and
+            set(current["build_dependency_order"]) == set(new), "current build order must cover its units")
     decisions = {}
     for name in sorted(old.keys() | new.keys()):
         if name not in new:
             reason = "removed"
         elif name not in old:
             reason = "new-unit"
-        elif new[name]["unresolved_inputs"]:
+        elif new[name]["unresolved_inputs"] or old[name]["unresolved_inputs"]:
+            # A previous output built with an open closure was never proved reusable.
             reason = "unresolved-inputs-repair-before-reuse"
         elif old[name]["build_inputs_identity"] != new[name]["build_inputs_identity"]:
             reason = "build-inputs-changed"
@@ -402,10 +446,21 @@ def compare(previous, current):
         decisions[name] = reason
     # A changed producer's unknown output cannot be silently reused by consumers.
     for name in current["build_dependency_order"]:
-        if any(decisions[d["unit"]] in {"new-unit", "build-inputs-changed", "build-dependency-output-unproven",
-                                          "unresolved-inputs-repair-before-reuse"}
+        if any(decisions[d["unit"]] in CHANGED
                for d in new[name]["dependencies"] if d["kind"] == "build"):
             decisions[name] = "build-dependency-output-unproven"
+    # Runtime edges may be cyclic. A changed or requalifying producer leaves its
+    # runtime consumers' installed behavior unproven, so they cannot keep an
+    # unchanged recommendation even when their own declared inputs are equal.
+    changed = True
+    while changed:
+        changed = False
+        for name in sorted(new):
+            if decisions[name] == "unchanged-inputs-verify-retained-products" and any(
+                    decisions[d["unit"]] in CHANGED | {"native-ABI-requalification-required"}
+                    for d in new[name]["dependencies"] if d["kind"] == "runtime"):
+                decisions[name] = "native-ABI-requalification-required"
+                changed = True
     return {"schema": "daemonarchy/release-input-comparison@1", "cache_admission": False,
             "decisions": [{"unit": n, "reason": decisions[n]} for n in sorted(decisions)]}
 

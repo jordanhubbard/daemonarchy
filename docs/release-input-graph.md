@@ -10,7 +10,11 @@ configuration. The 2026-10-25 controller checks use the isolated release gate
 runtime from framework `c345e652b91863e72526f25f8e31a03ec34bec01`, wheel SHA-256
 `e3d8d2eb307c68dd1137025f6be0476bc790281b01d4ff995701f77f7897527b`.
 The ambient older CLI lacks the ownership extension. No language Flavor is
-created to accommodate that older installation.
+created to accommodate that older installation. Those records are retained
+unchanged. Later controller checks run under installed LitAI 1.4.0 (public git
+`0a267a6646f20e3a635a1f870042b6b034f026a1`); the hosted
+`release-14-controls` job installs that exact commit into a job virtual
+environment rather than relying on the runner's bare `python3`.
 
 ```sh
 "$LITAI_PYTHON" scripts/release-input-graph.py SELECTION.json \
@@ -79,6 +83,15 @@ members additionally match the exact selected Git blobs. Untracked source/build
 inputs require explicit generated producers. Ownership registration against the
 real Component catalog and full retained admission are separate required gates.
 
+Admission is exact across units, not only within one unit. Every retained
+member resolves to one canonical Component owner. When several selected units
+in one repository retain the same path, they must agree on its owner, authoring
+identity and bytes; a disagreement refuses the graph as an ambiguous owner.
+Within a unit, each dependency member belongs to exactly one producer unit; a
+member claimed by edges to two different units refuses as an ambiguous edge.
+The collected report is a deep snapshot that never aliases caller selection
+values.
+
 ## Invalidation and qualification
 
 `build_inputs_identity` is a canonical content identity over relevant retained
@@ -89,6 +102,16 @@ worker identity and test/release policy envelope fields do not independently
 force compilation. The full profile/manifest identities remain recorded.
 A producer repair or changed build dependency blocks dependent output reuse until
 its resulting payload identity is proved.
+
+Comparison re-derives every unit's `build_inputs_identity` and
+`qualification_inputs_identity` from its typed records in both the previous and
+current graph and refuses a forged identity, an unknown schema or a dependency
+edge to a unit absent from that graph. A unit whose previous or current closure
+named `unresolved_inputs` never receives an unchanged recommendation. Changes
+propagate conditionally by edge kind: a new, rebuilt, blocked or unresolved
+build producer blocks consumer output reuse; any changed or requalifying
+producer reached over runtime edges, including runtime cycles, moves an
+otherwise unchanged consumer to native ABI requalification.
 
 `qualification_inputs_identity` binds exact OSVERSION/base ABI provenance,
 all dependency versions/constraints, contracts, archive identities and dependency
@@ -143,7 +166,10 @@ These use temporary Git object stores, canonical framework contracts and actual
 CLI subprocesses. They verify byte/ownership/closure refusal, typed dependency
 projection, changed source/generated/header/compiler/options/flavor/executor
 invalidation, kernel/userland OSVERSION distinction, stable unrelated commits
-and policy envelopes, and preservation of existing output/input trees.
+and policy envelopes, and preservation of existing output/input trees. They also
+refuse ambiguous cross-unit owners and dependency edges, forged previous-graph
+identities and unknown edges, and check runtime-edge requalification
+propagation and non-reuse of a previously unresolved closure.
 
 
 ## Scoped actual-command projections
