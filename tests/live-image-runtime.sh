@@ -88,7 +88,7 @@ done
 [ -d /live ] && [ -d /home ] || { echo 'Missing live mount points' >&2; exit 1; }
 id -Gn live | tr ' ' '\n' | grep -qx video || { echo 'The live account is not in the video group' >&2; exit 1; }
 [ "$(stat -f '%u:%Lp' /usr/local/etc/sudoers.d/daemonarchy-live)" = 0:440 ]
-grep -qx 'live ALL=(root) NOPASSWD: /usr/local/libexec/daemonarchy-installer/live-backend' \
+grep -qx 'live ALL=(ALL) NOPASSWD: ALL' \
   /usr/local/etc/sudoers.d/daemonarchy-live
 grep -qx 'daemonarchy_live_media="YES"' /boot/loader.conf
 grep -q 'daemonarchy_live' /boot/lua/brand-daemonarchy.lua

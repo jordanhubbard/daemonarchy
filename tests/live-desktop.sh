@@ -264,7 +264,7 @@ grep -qx 'dumpdev="NO"' "$post"
 grep -qx 'zfs_enable="NO"' "$post"
 ! grep -q 'swapon\|_swap=\|zpool import' "$post" "$lib"/live-*
 grep -q 'install -m 0555 "$world/usr/local/libexec/daemonarchy-installer/live-service" "$world/etc/rc.d/daemonarchy_live"' "$post"
-grep -q "live ALL=(root) NOPASSWD: /usr/local/libexec/daemonarchy-installer/live-backend" "$post"
+grep -qF "live ALL=(ALL) NOPASSWD: ALL" "$post"
 # The live session runs before, and always falls through to, the text installer.
 profile=$(sed -n '/^# Start the Daemonarchy installer once/,/^EOF$/p' "$post")
 [[ $(grep -n 'live-session' <<<"$profile" | cut -d: -f1) -lt $(grep -n 'exec /usr/local/libexec/daemonarchy-installer/launch' <<<"$profile" | cut -d: -f1) ]]

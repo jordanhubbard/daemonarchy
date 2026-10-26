@@ -116,10 +116,12 @@ if [ -x "$world/usr/local/bin/Hyprland" ]; then
 	install -d -o "$live_uid" -g "$live_uid" -m 0750 "$world/home/live" "$world/home/live/.config" "$world/home/live/.config/hypr"
 	install -o "$live_uid" -g "$live_uid" -m 0644 \
 		"$world/usr/local/share/daemonarchy-installer/live/hyprland.lua" "$world/home/live/.config/hypr/hyprland.lua"
-	# The live account may run only the graphical installer's checked backend
-	# as root; the text installer already runs as root on ttyv0.
+	# The live desktop is a demo and installer that the person at the keyboard
+	# controls completely, not a server: the live account gets passwordless
+	# sudo (operator decision, LIVE-001). The text installer already runs as
+	# root on ttyv0, and the graphical installer still calls only live-backend.
 	install -d -m 0750 "$world/usr/local/etc/sudoers.d"
-	printf '%s\n' 'live ALL=(root) NOPASSWD: /usr/local/libexec/daemonarchy-installer/live-backend' \
+	printf '%s\n' 'live ALL=(ALL) NOPASSWD: ALL' \
 		>"$world/usr/local/etc/sudoers.d/daemonarchy-live"
 	chmod 0440 "$world/usr/local/etc/sudoers.d/daemonarchy-live"
 	# Trim only this disposable live root: compiler toolchains, headers,
