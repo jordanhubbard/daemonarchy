@@ -38,21 +38,32 @@ on:
       - 'tests/release-native-evidence.py'
       - 'scripts/verify-release-assets.py'
       - 'tests/release-asset-names.py'
-      - 'overlay/usr/local/libexec/daemonarchy-installer/live-*'
-      - 'overlay/usr/local/libexec/daemonarchy-installer/launch'
-      - 'overlay/usr/local/libexec/daemonarchy-installer/configurator'
-      - 'overlay/usr/local/libexec/daemonarchy-installer/gpu-config'
+      - 'scripts/image-architecture.sh'
+      - 'origins.sh'
+      - 'scripts/make-efi-iso.sh'
+      - 'scripts/check-gpu-packages.sh'
+      - 'pkg-repo.sh'
       - 'overlay/usr/local/libexec/daemonarchy-installer/disk-layout'
-      - 'overlay/usr/local/share/daemonarchy-installer/brand-daemonarchy.lua'
-      - 'overlay/usr/local/share/daemonarchy-installer/live/**'
+      - 'overlay/usr/local/libexec/daemonarchy-installer/gpu-config'
+      - 'overlay/usr/local/libexec/daemonarchy-installer/package-repository'
+      - 'tests/image-architecture.sh'
+      - 'tests/package-repository.sh'
+      - 'scripts/import-apple-bcm4364-firmware.py'
+      - 'overlay/usr/local/libexec/daemonarchy-installer/apple-firmware'
+      - 'overlay/usr/local/libexec/daemonarchy-installer/configurator'
+      - 'tests/apple-firmware-offline.py'
+      - 'tests/apple-firmware-offline.sh'
       - 'scripts/check-image-size.sh'
       - 'scripts/live-image-excludes'
-      - 'origins.sh'
+      - 'tests/live-image-budget.sh'
+      - 'overlay/usr/local/libexec/daemonarchy-installer/live-*'
+      - 'overlay/usr/local/libexec/daemonarchy-installer/launch'
+      - 'overlay/usr/local/share/daemonarchy-installer/brand-daemonarchy.lua'
+      - 'overlay/usr/local/share/daemonarchy-installer/live/**'
       - 'tests/live-desktop.sh'
       - 'tests/live-backend.sh'
       - 'tests/live-installer.py'
       - 'tests/loader-live-menu.lua'
-      - 'tests/live-image-budget.sh'
       - 'tests/live-image-runtime.sh'
       - '.github/workflows/native-graph.yml'
   pull_request:
@@ -92,21 +103,32 @@ on:
       - 'tests/release-native-evidence.py'
       - 'scripts/verify-release-assets.py'
       - 'tests/release-asset-names.py'
-      - 'overlay/usr/local/libexec/daemonarchy-installer/live-*'
-      - 'overlay/usr/local/libexec/daemonarchy-installer/launch'
-      - 'overlay/usr/local/libexec/daemonarchy-installer/configurator'
-      - 'overlay/usr/local/libexec/daemonarchy-installer/gpu-config'
+      - 'scripts/image-architecture.sh'
+      - 'origins.sh'
+      - 'scripts/make-efi-iso.sh'
+      - 'scripts/check-gpu-packages.sh'
+      - 'pkg-repo.sh'
       - 'overlay/usr/local/libexec/daemonarchy-installer/disk-layout'
-      - 'overlay/usr/local/share/daemonarchy-installer/brand-daemonarchy.lua'
-      - 'overlay/usr/local/share/daemonarchy-installer/live/**'
+      - 'overlay/usr/local/libexec/daemonarchy-installer/gpu-config'
+      - 'overlay/usr/local/libexec/daemonarchy-installer/package-repository'
+      - 'tests/image-architecture.sh'
+      - 'tests/package-repository.sh'
+      - 'scripts/import-apple-bcm4364-firmware.py'
+      - 'overlay/usr/local/libexec/daemonarchy-installer/apple-firmware'
+      - 'overlay/usr/local/libexec/daemonarchy-installer/configurator'
+      - 'tests/apple-firmware-offline.py'
+      - 'tests/apple-firmware-offline.sh'
       - 'scripts/check-image-size.sh'
       - 'scripts/live-image-excludes'
-      - 'origins.sh'
+      - 'tests/live-image-budget.sh'
+      - 'overlay/usr/local/libexec/daemonarchy-installer/live-*'
+      - 'overlay/usr/local/libexec/daemonarchy-installer/launch'
+      - 'overlay/usr/local/share/daemonarchy-installer/brand-daemonarchy.lua'
+      - 'overlay/usr/local/share/daemonarchy-installer/live/**'
       - 'tests/live-desktop.sh'
       - 'tests/live-backend.sh'
       - 'tests/live-installer.py'
       - 'tests/loader-live-menu.lua'
-      - 'tests/live-image-budget.sh'
       - 'tests/live-image-runtime.sh'
       - '.github/workflows/native-graph.yml'
   workflow_dispatch:
@@ -135,6 +157,12 @@ jobs:
           sh -n build-iso.sh scripts/iso-stage.sh
           python3 tests/iso-stage.py -v
           python3 tests/test-loader.py -v
+      - name: Per-architecture image and installer controls
+        run: |
+          sh -n scripts/image-architecture.sh scripts/make-efi-iso.sh scripts/check-gpu-packages.sh pkg-repo.sh
+          bash -n overlay/usr/local/libexec/daemonarchy-installer/disk-layout overlay/usr/local/libexec/daemonarchy-installer/gpu-config
+          sh tests/package-repository.sh
+          bash tests/image-architecture.sh
       - name: Measured installer progress and completion controls
         env:
           PYTHONDONTWRITEBYTECODE: '1'
@@ -156,6 +184,13 @@ jobs:
           bash tests/live-backend.sh
           python3 tests/live-installer.py -v
           lua5.4 tests/loader-live-menu.lua
+      - name: Offline MacBook firmware sources and image size budgets
+        env:
+          PYTHONDONTWRITEBYTECODE: '1'
+        run: |
+          bash -n overlay/usr/local/libexec/daemonarchy-installer/apple-firmware overlay/usr/local/libexec/daemonarchy-installer/configurator
+          python3 tests/apple-firmware-offline.py -v
+          bash tests/apple-firmware-offline.sh
           bash tests/live-image-budget.sh
       - name: Release gate refuses missing evidence
         run: |

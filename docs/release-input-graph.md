@@ -56,6 +56,13 @@ Each unit has these fields:
 
 - `id`, owning `repository`, `manifest` and `profile`; both references contain a
   repository/snapshot-relative `path` and exact byte `sha256`.
+- `architecture`: exactly one typed variant, `amd64` or `aarch64`
+  ([ARCH-001](roadmap/active-work.md#arch-001-add-aarch64-as-a-second-supported-architecture-for-140)).
+  The variant table is recorded in
+  [`native/release-graph/architectures.json`](../native/release-graph/architectures.json)
+  and must equal the adapter's own table. A profile `target` that names an
+  architecture (`amd64`, `x86_64`, `aarch64`, `arm64` or a package ABI) must name
+  the unit's.
 - `options`, native port `flavor` or null, `compiler`, `sysroot`, and
   `execution_identity`. Compiler is an exact tool identity from the canonical
   profile. Sysroot is the canonical retained `sdk` role closure identity.
@@ -91,6 +98,20 @@ Within a unit, each dependency member belongs to exactly one producer unit; a
 member claimed by edges to two different units refuses as an ambiguous edge.
 The collected report is a deep snapshot that never aliases caller selection
 values.
+
+## Architecture variants
+
+The architecture is part of both `build_inputs` (with its package ABI) and
+`qualification_inputs`, so no build key, ABI qualification or retained product
+can be shared between amd64 and aarch64 even when every other input is equal.
+Dependency edges between units of different architectures refuse graph
+construction and comparison. A previous unit whose architecture differs from the
+current unit with the same id is reported as `architecture-differs-no-reuse`,
+a changed state that also blocks its build consumers; it is never a hit, a
+requalification or a verified reuse. Package archive retention already keys on
+the package ABI (`scripts/verified-artifact-cache.py`), so an amd64 archive
+cannot satisfy an aarch64 selection there either. Only the amd64 variant has
+qualified native workers; [the aarch64 plan](aarch64.md) owns the rest.
 
 ## Invalidation and qualification
 
@@ -165,8 +186,15 @@ so fetching the commit without a bound deepens far past the 224-commit range
 GitHub reports. HEAD, branch, refs and tracked files are unchanged; an
 incomplete temporary pack remains in place. The rerun probe still fails for
 ports (exit 128) and passes for source. GitHub's compare result is hosted
-reference only, not native evidence. A bounded fetch rewrites the shallow
-boundary and needs separate admission. No private-worker compilation or
+reference only, not native evidence. A separately admitted bounded fetch
+([record](../native/release-graph/native-ancestry-probe-20261026-bounded.json))
+fell back to `--depth=300` after the server refused `--shallow-exclude` with a raw
+commit ID. It completed in 32 seconds (exit 0). It rewrote `.git/shallow`,
+deepening all six previous boundaries; HEAD, branch, refs and tracked files are
+unchanged and the earlier temporary pack remains. The rerun probe, using the same
+script with no fetch, now passes for both repositories: ports upstream `a7c9a97b`
+is an ancestor of selected `b7857842` (exit 0), and source still passes. A shallow
+boundary can only hide ancestry, so the positive result is a real parent path. No private-worker compilation or
 VM was launched by this stream; private producer/profile work stays scheduled
 centrally. The hosted metadata observations below have their own bounded scope.
 

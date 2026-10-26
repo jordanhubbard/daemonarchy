@@ -24,6 +24,13 @@ LIVE_GPU_ROOT=${LIVE_GPU_ROOT:-}
 export PKG_DBDIR
 DRI_DIR=${DRI_DIR:-/dev/dri}
 here=$(cd "$(dirname "${BASH_SOURCE[0]}")" && pwd)
+# The same architecture selection as install: an aarch64 image packages no
+# KMS driver, so its live desktop falls back to the text installer.
+case "$(cat "$ISO_SHARE/ABI" 2>/dev/null)" in
+  FreeBSD:16:amd64) gpu_arch=amd64 ;;
+  FreeBSD:16:aarch64) gpu_arch=aarch64 ;;
+  *) gpu_arch=unknown ;;
+esac
 # shellcheck source=gpu-config
 source "$here/gpu-config"
 
@@ -103,6 +110,7 @@ live_gpu_add_userspace() {
 
 main() {
   local inventory package path moddir module current
+  [[ $gpu_arch != unknown ]] || fail 'the image ABI is missing or unsupported'
   [[ -d $LIVE_MODULES ]] || fail "the live module directory $LIVE_MODULES is missing"
   inventory=$(mktemp)
   pciconf -l >"$inventory"

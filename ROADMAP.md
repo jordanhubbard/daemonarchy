@@ -30,6 +30,11 @@ and evidence for each architecture. Qualify aarch64 on virtual machines first;
 Apple M1-M4 laptops join as test machines once the virtualized image passes.
 See [ARCH-001](docs/roadmap/active-work.md#arch-001-add-aarch64-as-a-second-supported-architecture-for-140).
 
+Offer a live desktop from the installer media again, as FreeBSD's own media
+does: a minimal desktop that runs from the ISO and RAM without touching any
+disk, enough to check that the desktop boots and to run the installation
+graphically. See [LIVE-001](docs/roadmap/active-work.md#live-001-offer-a-live-desktop-from-the-installer-media-without-touching-the-disk).
+
 ## Unpublished 1.2.0 plan: owned source builds and complete Component coverage
 
 No 1.2.0 production release was published. The 1.3.1 changelog covers work

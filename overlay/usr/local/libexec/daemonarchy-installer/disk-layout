@@ -15,6 +15,8 @@ create_whole_disk_layout() {
   gpart add -i 3 -t freebsd-zfs -a 1m -l daemonarchy-zfs "$disk"
 }
 
+# amd64 only: aarch64 boots by UEFI alone and has no pmbr/gptzfsboot. The
+# p4 freebsd-boot partition stays in the layout so partition indices match.
 install_bios_bootcode() {
   local disk=$1 target=$2
   # Use the installed system's bootcode, matching its ZFS implementation.
@@ -166,8 +168,14 @@ apply_install_layout() {
   fi
 }
 
+# The removable-media fallback name is per architecture: BOOTX64.EFI (amd64,
+# the default) or BOOTAA64.EFI (aarch64).
 write_efi_loader() {
-  local target=$1 pool=$2 shared=$3 esp="$1/boot/efi" destination
+  local target=$1 pool=$2 shared=$3 boot_file=${4:-BOOTX64.EFI} esp="$1/boot/efi" destination
+  case "$boot_file" in
+    BOOTX64.EFI|BOOTAA64.EFI) ;;
+    *) layout_error "Unsupported EFI fallback loader name: $boot_file"; return 1 ;;
+  esac
   if [[ $shared == true ]]; then
     # A unique directory avoids replacing Windows, another FreeBSD install,
     # any existing fallback loader, or an earlier Daemonarchy installation.
@@ -178,7 +186,7 @@ write_efi_loader() {
     efi_loader="$destination/loader.efi"
   else
     mkdir -p "$esp/EFI/BOOT" "$esp/EFI/FreeBSD" || return
-    cp "$target/boot/loader.efi" "$esp/EFI/BOOT/BOOTX64.EFI" || return
+    cp "$target/boot/loader.efi" "$esp/EFI/BOOT/$boot_file" || return
     cp "$target/boot/loader.efi" "$esp/EFI/FreeBSD/loader.efi" || return
     efi_loader="$esp/EFI/FreeBSD/loader.efi"
   fi

@@ -111,6 +111,7 @@ nvidia-drm-612-kmod 595.104.02.1600029
 nvidia-kmod 595.104.02.1600029
 EOF
 cp "$here/overlay/usr/local/share/daemonarchy-installer/gpu-ids" "$work/share/gpu-ids"
+echo FreeBSD:16:amd64 >"$work/share/ABI"
 nvidia_device=$(awk '$1 == "10de" && $5 == "nvidia-drm" { print $2; exit }' "$work/share/gpu-ids")
 ln -s /dev/null "$work/dri/card0"
 ln -s /dev/null "$work/dri/renderD128"
@@ -170,6 +171,14 @@ reset_gpu
 pci='vgapci0@pci0:0:2:0: class=0x030000 vendor=0x1234 device=0x1111 subvendor=0x1af4 subdevice=0x1100'
 if run_gpu 2>"$work/err"; then echo 'Unsupported GPU accepted' >&2; exit 1; fi
 grep -q 'no supported desktop GPU' "$work/err"
+
+# An aarch64 image packages no KMS driver: the session falls back.
+reset_gpu
+echo FreeBSD:16:aarch64 >"$work/share/ABI"
+pci='vgapci0@pci0:3:0:0: class=0x030000 vendor=0x1002 device=0x7340 subvendor=0x1002 subdevice=0x0b0c'
+if run_gpu 2>"$work/err"; then echo 'aarch64 KMS selection accepted' >&2; exit 1; fi
+grep -q 'no supported desktop GPU' "$work/err"
+echo FreeBSD:16:amd64 >"$work/share/ABI"
 
 # NVIDIA: kernel payload in RAM; userspace only adds files, on -o union tmpfs.
 reset_gpu

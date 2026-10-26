@@ -68,27 +68,29 @@ for path in usr/local/llvm19/lib/libLLVM.so.19.1 usr/local/lib/gcc14/libgfortran
   usr/local/bin/Hyprland usr/local/share/hypr/wall0.png; do
   [[ -f $world/$path ]] || { echo "Removed live desktop runtime file: $path" >&2; exit 1; }
 done
-# Sparse files exercise the real boundaries without allocating that space:
-# the raw image may hold up to 3.5 GiB (a 4 GB USB stick), and the published
-# .xz must stay below GitHub's 2 GiB asset limit.
-truncate -s 3758096384 "$work/budget.iso"
+# Sparse files exercise the real raw and published boundaries without
+# allocating that space. The 2 GiB asset limit applies to the published .xz;
+# the raw image keeps a 3.5 GiB budget for 4 GB USB media.
+truncate -s 3758096383 "$work/budget.iso"
 sh "$here/scripts/check-image-size.sh" "$work/budget.iso"
-for bytes in 3758096385 4000000000; do
+truncate -s 2371284992 "$work/budget.iso"
+truncate -s 2147483647 "$work/budget.iso.xz"
+sh "$here/scripts/check-image-size.sh" "$work/budget.iso" "$work/budget.iso.xz"
+for bytes in 3758096384 4000000000; do
   truncate -s "$bytes" "$work/budget.iso"
   if sh "$here/scripts/check-image-size.sh" "$work/budget.iso"; then
     echo "Accepted oversized raw image: $bytes" >&2; exit 1
   fi
 done
-truncate -s 3000000000 "$work/budget.iso"
-truncate -s 2147483647 "$work/budget.iso.xz"
-sh "$here/scripts/check-image-size.sh" "$work/budget.iso" "$work/budget.iso.xz"
+truncate -s 2371284992 "$work/budget.iso"
 for bytes in 2147483648 2371284992; do
   truncate -s "$bytes" "$work/budget.iso.xz"
   if sh "$here/scripts/check-image-size.sh" "$work/budget.iso" "$work/budget.iso.xz"; then
     echo "Accepted oversized published image: $bytes" >&2; exit 1
   fi
 done
-if sh "$here/scripts/check-image-size.sh" "$work/budget.iso" "$work/missing.iso.xz"; then
-  echo 'Accepted a missing published image' >&2; exit 1
+truncate -s 1 "$work/budget.iso.gz"
+if sh "$here/scripts/check-image-size.sh" "$work/budget.iso" "$work/budget.iso.gz"; then
+  echo 'Accepted a non-xz published image' >&2; exit 1
 fi
 echo 'PASS: live development files excluded, install payload retained, raw and published image budgets enforced'

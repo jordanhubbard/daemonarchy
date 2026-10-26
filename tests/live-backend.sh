@@ -73,9 +73,11 @@ backend() {
     bash "$lib/live-backend" "$@"
 }
 snapshot=$(backend partitions ada0 | jq -er '.snapshot')
+# A fresh throwaway answer per run, with a space to exercise quoting.
+answer="fixture $(openssl rand -hex 8)"
 request() {
-  jq -cn --arg snapshot "$snapshot" '{keyboard: "de", username: "alice", password: "s3cret pass",
-    password_confirmation: "s3cret pass", full_name: "Alice Example", email_address: "alice@example.org",
+  jq -cn --arg snapshot "$snapshot" --arg answer "$answer" '{keyboard: "de", username: "alice", password: $answer,
+    password_confirmation: $answer, full_name: "Alice Example", email_address: "alice@example.org",
     hostname: "", timezone: "Europe/Berlin", ssh_enable: true, install_ports: false, install_src: true,
     encrypt_installation: true, disk: "ada0", disk_snapshot: $snapshot, install_mode: "whole_disk"}' |
     jq -c "${1:-.}"
@@ -126,7 +128,7 @@ backend write-conf < <(request) | jq -e '.ok' >/dev/null
   [[ $hostname == daemonarchy && $timezone == Europe/Berlin && $ssh_enable == true ]]
   [[ $install_ports == false && $install_src == true && $install_cuda == false && $encrypt_installation == true ]]
   [[ $net_mode == dhcp && $net_if == vtnet0 && $disk_snapshot == "$snapshot" ]]
-  [[ $password == 's3cret pass' && $password_hash == '$6$'* ]]
+  [[ $password == "$answer" && $password_hash == '$6$'* ]]
   [[ $(printf '%s' "$password" | openssl passwd -6 -salt "$(cut -d'$' -f3 <<<"$password_hash")" -stdin) == "$password_hash" ]]
 )
 (

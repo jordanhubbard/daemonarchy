@@ -63,14 +63,34 @@ apple_firmware_prepare() {
         "$APPLE_FIRMWARE_IMPORTER" --image "$image" --model MacBookPro16,1 \
           --destination "$APPLE_FIRMWARE_STAGE" || return
         ;;
+      internal)
+        # The importer opens the APFS device read-only through 7-Zip; nothing
+        # mounts or writes the Mac's internal disk.
+        [[ -n $image ]] || return 1
+        "$APPLE_FIRMWARE_IMPORTER" --internal-disk "$image" --model MacBookPro16,1 \
+          --destination "$APPLE_FIRMWARE_STAGE" || return
+        ;;
+      files)
+        [[ -n $image ]] || return 1
+        "$APPLE_FIRMWARE_IMPORTER" --files "$image" --model MacBookPro16,1 \
+          --destination "$APPLE_FIRMWARE_STAGE" || return
+        ;;
       *) return 2 ;;
     esac
   fi
-  # The ISO root is read-only. Mount a small live filesystem at the kernel's
-  # fixed firmware path, then attach the radio after the files are present.
+  # The ISO root is read-only. Union-mount a small live filesystem at the
+  # kernel's fixed firmware path so the ISO's own firmware stays visible to
+  # later signed-manifest checks, then attach the radio once the files exist.
   [[ -d /boot/firmware ]] || { echo '/boot/firmware is absent from the live ISO' >&2; return 1; }
-  if ! mount | grep -q ' on /boot/firmware '; then
-    mount -t tmpfs -o size=8m tmpfs /boot/firmware || {
+  local current
+  current=$(mount | grep ' on /boot/firmware ' || true)
+  if [[ -n $current && $current != *union* ]]; then
+    # An earlier attempt hid the ISO firmware; replace that mount.
+    umount /boot/firmware || return
+    current=
+  fi
+  if [[ -z $current ]]; then
+    mount -t tmpfs -o union,size=8m tmpfs /boot/firmware || {
       echo 'Could not make live firmware available to the kernel' >&2
       return 1
     }
@@ -88,5 +108,78 @@ apple_firmware_prepare() {
     sleep 1
   done
   echo 'BCM4364 driver loaded, but its wireless interface did not attach' >&2
+  return 1
+}
+
+# Offline sources: no Ethernet required. Every candidate ends in the same
+# importer verification and provenance record as the Apple download.
+apple_firmware_devices() {
+  local disk device
+  for disk in $(sysctl -n kern.disks 2>/dev/null); do
+    for device in "/dev/$disk" "/dev/$disk"p* "/dev/$disk"s*; do
+      [[ -c $device ]] && printf '%s\n' "$device"
+    done
+  done
+}
+
+apple_firmware_mounted() {
+  mount -p 2>/dev/null | awk -v device="$1" '$1 == device { found=1 } END { exit !found }'
+}
+
+# The Mac's internal APFS partitions, read through 7-Zip without mounting.
+apple_firmware_internal_devices() {
+  local device
+  while read -r device; do
+    [[ $(fstyp "$device" 2>/dev/null) == apfs ]] && printf '%s\n' "$device"
+  done < <(apple_firmware_devices)
+}
+
+apple_firmware_prepare_internal() {
+  local device
+  while read -r device; do
+    echo "Reading Apple recovery firmware from $device (read-only)"
+    apple_firmware_prepare internal "$device" && return 0
+  done < <(apple_firmware_internal_devices)
+  echo 'No internal macOS recovery or system volume supplied the verified board files.' >&2
+  return 1
+}
+
+# Search one read-only mounted volume for a recovery image or the four files.
+apple_firmware_import_from_tree() {
+  local root=$1 candidate
+  while IFS= read -r candidate; do
+    apple_firmware_prepare files "${candidate%/*}" && return 0
+  done < <(find "$root" -maxdepth 4 -type f -name brcmfmac4364b3-pcie.bin 2>/dev/null)
+  while IFS= read -r candidate; do
+    apple_firmware_prepare image "$candidate" && return 0
+  done < <(find "$root" -maxdepth 4 -type f -name BaseSystem.dmg 2>/dev/null)
+  return 1
+}
+
+# A second USB stick (FAT or UFS) carrying BaseSystem.dmg or verified files.
+# Each unmounted volume is mounted read-only in a private directory, searched,
+# then unmounted again. Disks holding APFS (the Mac's internal disk) are skipped.
+apple_firmware_prepare_media() {
+  local device type mountpoint status internal=" "
+  while read -r device; do
+    internal+="${device%%[ps][0-9]*} "
+  done < <(apple_firmware_internal_devices)
+  while read -r device; do
+    [[ $internal == *" ${device%%[ps][0-9]*} "* ]] && continue
+    apple_firmware_mounted "$device" && continue
+    type=$(fstyp "$device" 2>/dev/null) || continue
+    case $type in msdosfs|ufs|cd9660) ;; *) continue ;; esac
+    mountpoint=$(mktemp -d /tmp/daemonarchy-firmware-media.XXXXXXXX) || return
+    if ! mount -r -t "$type" "$device" "$mountpoint" 2>/dev/null; then
+      rmdir "$mountpoint"
+      continue
+    fi
+    echo "Searching $device for Apple recovery firmware (read-only)"
+    apple_firmware_import_from_tree "$mountpoint"
+    status=$?
+    umount "$mountpoint" && rmdir "$mountpoint"
+    ((status == 0)) && return 0
+  done < <(apple_firmware_devices)
+  echo 'No attached FAT or UFS volume supplied a verified recovery image or board files.' >&2
   return 1
 }

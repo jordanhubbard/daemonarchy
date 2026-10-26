@@ -266,15 +266,14 @@ space than a cached installer-only rebuild. Check resources before dispatching.
    exclusions apply only to the live root: `base.txz` and `kernel.txz` remain
    intact, so the installed system retains its compiler, headers and libraries.
    Optional ports/source checkout packages are fetched separately; only their
-   small catalogue is on the ISO. The release publishes the image as `.xz`,
-   so GitHub's 2 GiB per-asset limit applies to the compressed file:
-   `scripts/check-image-size.sh` rejects a `.iso.xz` at or above 2 GiB before
-   its checksum is written. The raw ISO carries the live desktop uncompressed
-   and has its own budget of 3.5 GiB (3,758,096,384 bytes), which still fits a
-   nominal 4 GB USB stick; the build stops before compressing a larger image.
-   The build log records the live `/usr/local` size before and after the live
-   desktop trim. Run `bash tests/live-image-budget.sh` to check the exclusions,
-   the trim and both size boundaries.
+   small catalogue is on the ISO. Releases publish the image as `.iso.xz`, so
+   GitHub's 2 GiB per-asset limit applies to that compressed asset: the build
+   rejects an `.iso.xz` at or above 2 GiB before generating its checksum. The
+   raw ISO keeps a 3.5 GiB (3,758,096,384-byte) budget so it still fits a 4 GB
+   USB stick, checked before its own checksum. Run
+   `bash tests/live-image-budget.sh` to check the exclusions and both size
+   boundaries. The build log records the live `/usr/local` size before and
+   after the live desktop trim, which the same test exercises.
    On FreeBSD, `sudo sh tests/live-image-runtime.sh <iso>` mounts the image
    read-only, checks required live commands and payloads (including the live
    desktop's tools, startup wiring and GTK runtime), and resolves the

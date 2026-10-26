@@ -42,7 +42,8 @@ class GraphTests(unittest.TestCase):
         self.write("unit/source.c", b"int main(void) { return 0; }\n")
         self.upstream = self.commit()
         self.selection = {"schema": graph.SCHEMA, "repositories": [], "units": []}
-        self.unit = {"id": "source:tool", "repository": "source", "options": {"WITH_TESTS": True},
+        self.unit = {"id": "source:tool", "repository": "source", "architecture": "amd64",
+                     "options": {"WITH_TESTS": True},
                      "flavor": None, "compiler": ID.uri, "sysroot": ID.uri,
                      "execution_identity": ID.uri, "generated_inputs": [], "dependencies": [],
                      "unresolved_inputs": [], "base_abi": {"osversion": 1600029,
@@ -156,6 +157,90 @@ class GraphTests(unittest.TestCase):
         self.update_selection()
         self.assertNotEqual(old["units"][0]["profile_identity"], self.collect()["units"][0]["profile_identity"])
         self.assertEqual(self.decision(old), "unchanged-inputs-verify-retained-products")
+
+    def neutral_profile(self):
+        # Isolate the architecture variant: everything else in the unit is equal.
+        self.profile["target"] = "FreeBSD"
+        self.update_selection()
+
+    def test_amd64_product_can_never_satisfy_an_aarch64_unit(self):
+        self.neutral_profile()
+        amd64 = self.collect()
+        self.selection["units"][0]["architecture"] = "aarch64"
+        aarch64 = self.collect()
+        before, after = amd64["units"][0], aarch64["units"][0]
+        self.assertEqual((before["architecture"], after["architecture"]), ("amd64", "aarch64"))
+        self.assertEqual(after["build_inputs"]["abi_architecture"], "FreeBSD:16:aarch64")
+        self.assertNotEqual(before["build_inputs_identity"], after["build_inputs_identity"])
+        self.assertNotEqual(before["qualification_inputs_identity"], after["qualification_inputs_identity"])
+        for old, new in ((amd64, aarch64), (aarch64, amd64)):
+            decision = graph.compare(old, new)["decisions"][0]["reason"]
+            self.assertEqual(decision, "architecture-differs-no-reuse")
+            self.assertIn(decision, graph.CHANGED)
+        self.assertEqual(self.decision(aarch64), "unchanged-inputs-verify-retained-products")
+
+    def test_architecture_change_blocks_consumers_of_the_rebuilt_producer(self):
+        self.neutral_profile()
+        self.typed_dependency_fixture("build")
+        old = self.collect()
+        for unit in self.selection["units"]:
+            unit["architecture"] = "aarch64"
+        decisions = {d["unit"]: d["reason"] for d in graph.compare(old, self.collect())["decisions"]}
+        self.assertEqual(decisions["source:provider"], "architecture-differs-no-reuse")
+        self.assertIn(decisions["source:tool"], graph.CHANGED)
+
+    def test_unknown_or_missing_architecture_refuses(self):
+        for value in ("arm64", "x86_64", "", None):
+            with self.subTest(value=value):
+                self.selection["units"][0]["architecture"] = value
+                with self.assertRaisesRegex(ValueError, "typed variant"):
+                    self.collect()
+        del self.selection["units"][0]["architecture"]
+        with self.assertRaisesRegex(ValueError, "unknown graph fields"):
+            self.collect()
+
+    def test_profile_target_for_another_architecture_refuses(self):
+        self.selection["units"][0]["architecture"] = "aarch64"
+        with self.assertRaisesRegex(ValueError, "different architecture"):
+            self.collect()
+        for target in ("FreeBSD-aarch64", "FreeBSD:16:aarch64", "freebsd-arm64"):
+            with self.subTest(target=target):
+                self.profile["target"] = target
+                self.update_selection()
+                self.selection["units"][0]["architecture"] = "aarch64"
+                self.assertEqual(self.collect()["units"][0]["architecture"], "aarch64")
+
+    def test_dependency_edges_never_cross_architectures(self):
+        self.neutral_profile()
+        self.typed_dependency_fixture("runtime")
+        self.selection["units"][1]["architecture"] = "aarch64"
+        with self.assertRaisesRegex(ValueError, "crosses architectures"):
+            self.collect()
+        self.selection["units"][1]["architecture"] = "amd64"
+        report = self.collect()
+        forged = copy.deepcopy(report)
+        provider = next(u for u in forged["units"] if u["id"] == "source:provider")
+        provider["architecture"] = "aarch64"
+        with self.assertRaisesRegex(ValueError, "architecture differs"):
+            graph.compare(report, forged)
+
+    def test_recorded_architecture_must_match_its_typed_identity(self):
+        self.neutral_profile()
+        old = self.collect()
+        forged = copy.deepcopy(old)
+        forged["units"][0]["architecture"] = "aarch64"
+        with self.assertRaisesRegex(ValueError, "architecture differs"):
+            graph.compare(forged, old)
+
+    def test_architecture_record_matches_graph_variants(self):
+        record = json.loads((SCRIPT.parents[1] / "native/release-graph/architectures.json").read_text())
+        self.assertEqual(record["schema"], "daemonarchy/release-architectures@1")
+        variants = {v["id"]: v for v in record["variants"]}
+        self.assertEqual(set(variants), set(graph.ARCHITECTURES))
+        for name, variant in graph.ARCHITECTURES.items():
+            self.assertEqual({k: variants[name][k] for k in ("abi", "target", "target_arch")},
+                             {k: variant[k] for k in ("abi", "target", "target_arch")})
+            self.assertFalse(variants[name]["qualifies_other_architectures"])
 
     def test_kernel_bound_osversion_change_rebuilds(self):
         self.selection["units"][0]["base_abi"]["kernel_bound"] = True

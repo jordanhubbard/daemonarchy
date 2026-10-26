@@ -230,6 +230,31 @@ Bare-metal FreeBSD on Apple silicon is not assumed; claim it only for a model
 where it has actually been demonstrated. A result on one Apple silicon
 generation does not qualify another.
 
+## Live desktop from the installer media
+
+The FreeBSD installer media can boot to a live system, and Daemonarchy should
+not offer less. Add a boot option that starts a minimal Daemonarchy desktop
+from the ISO and RAM without touching any disk. Its purpose is to show whether
+the desktop boots on the target hardware and, if it does, to run the complete
+installation graphically instead of on the TUI. It does not need the full
+application set: a compositor, a terminal and a graphical installer front-end
+are enough.
+
+Make the read-only ISO root usable without unionfs. Copy `/etc`,
+`/usr/local/etc`, `/root` and `/home` into tmpfs at boot, as FreeBSD's
+`rc.initdiskless` does; `/var` and `/tmp` are already tmpfs. Add GPU payloads
+only on tmpfs layers mounted with `-o union`, which can add files but never
+replace ISO files. A unionfs probe over the ISO's `/etc` stopped a FreeBSD
+16-CURRENT host during `pw`'s password database rename, so unionfs is not
+used. Select GPU modules from the ISO's own package
+repository so the live desktop needs no network. The graphical installer
+writes the same installation configuration as the TUI and renders the
+installer's `@@progress` stream, so both paths share one install engine. Keep
+pool import, disk swap and all disk writes off the live path until the
+operator confirms an installation, and fall back to the TUI installer if the
+compositor cannot start. The TUI installer remains the default boot entry.
+See [LIVE-001](active-work.md#live-001-offer-a-live-desktop-from-the-installer-media-without-touching-the-disk).
+
 ## Delivery sequence and acceptance
 
 - [ ] Inventory all selected fork revisions, tools, workers, actions and outputs;
@@ -296,6 +321,11 @@ generation does not qualify another.
   virtual-machine install, boot, upgrade, rollback, desktop and network-debug
   matrix on the exact aarch64 bytes, then record scoped results for each
   enlisted Apple silicon laptop and execution mode.
+- [ ] Boot the exact 1.4 image to the live desktop in a VM without writing to
+  any disk, proven by before/after disk digests; complete a graphical
+  installation from it; show the TUI fallback when the compositor cannot
+  start; then record scoped physical live-desktop results, including the
+  MacBookPro16,1.
 
 Completion requires working cross-release reuse, a distributed multi-repository
 flow and retained receipts, not a renamed wrapper around the current serial
