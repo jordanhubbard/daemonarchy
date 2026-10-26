@@ -281,6 +281,80 @@ matching 16.0-CURRENT snapshot sets. Record the resulting `uname -a` and
      with their checksums.
    - Record exact artifact identities separately from amd64.
 
+### Worker record: 15.1 to 16.0-CURRENT in a boot environment (2026-10-26)
+
+The first worker was installed from the 15.1 `dvd1` ISO. On 2026-10-26 the
+operator approved moving it to 16.0-CURRENT in a new boot environment, keeping
+15.1 for rollback. The full record, with every hash, is
+[`aarch64-worker-be16-bringup-20261026-development.json`](../verification/aarch64-worker-be16-bringup-20261026-development.json).
+It covers host preparation only: **be16 has not booted yet, and no aarch64
+world, kernel, jail or package exists.**
+
+- **Preflight.**
+  - The pool `zroot` (197G, one NVMe vdev) was ONLINE with no errors, and had
+    one BE, `default`.
+  - The ESP is p1, `gpt/efiboot0`. It held one 15.1 loader as both
+    `efi/freebsd/loader.efi` and `efi/boot/bootaa64.efi` (`f7fce7a5…`).
+  - The guest already had 8 vCPUs and about 16 GiB.
+  - The base was **pkgbase**, not the assumed distribution sets: 316 FreeBSD-*
+    15.1 packages from an enabled `FreeBSD-base` repository.
+- **Sets.** The `snapshots/arm64/aarch64/16.0-CURRENT` snapshot is `BUILDDATE`
+  20261019, `main` `041802b362aa` (`main-n290219`, 1600028). `kernel.txz`
+  (`652609c5…`), `base.txz` (`5e9fa69c…`) and `lib32.txz` (`36c53511…`) were
+  fetched over HTTPS and matched its `MANIFEST`.
+- **BE.** `bectl create be16` cloned `default`. In the mounted be16:
+  - `boot/kernel` became `kernel.15`, and `kernel.txz` was extracted.
+  - `base.txz` and `lib32.txz` were extracted with
+    `--clear-nochange-fflags`, excluding `etc`, `root` dotfiles,
+    `boot/device.hints` and the contents of the shared datasets.
+- **etcupdate.** The worker had no etcupdate database, and `etcupdate -t`
+  takes a build tree rather than `base.txz`. Two distribution trees (`etc`,
+  `root`, `boot/device.hints`) were cut from the verified 15.1-RELEASE and 16
+  `base.txz`. The 15.1 tree seeded `etcupdate extract`; then
+  `etcupdate -F -D /mnt/be16 -t` applied the 16 tree.
+  - **No conflicts.**
+  - `group` merged, gaining `audio` and `vmm`. 54 stock files were updated,
+    three added, and `rc.d/apm` removed.
+  - Users, `rc.conf`, `fstab`, `sysctl.conf`, ssh host keys, `loader.conf`
+    and `sudoers` were verified unchanged.
+  - `certctl rehash` followed.
+- **ESP.** The 16 `loader.efi` (`7f2b89e4…`) replaced `efi/freebsd/loader.efi`
+  and `efi/boot/bootaa64.efi`. The 15.1 copies stay beside them as
+  `loader-15.1.efi` and `bootaa64-15.1.efi`. EFI variables are unchanged.
+- **Packages.**
+  - In be16, `FreeBSD-base` is disabled, so pkg cannot overwrite the
+    verified sets.
+  - `git`, `python312`, `poudriere-devel`, `gmake` and `pkgconf` came from
+    `FreeBSD:16:aarch64` `latest`. Every ports package moved to the 16 ABI.
+  - This needed `IGNORE_OSVERSION`: the packages are 1600029 and the snapshot
+    userland is 1600028.
+  - The 15.1 FreeBSD-* records remain in the database. Removing them, or moving
+    base to pkgbase 16, is the operator's later choice.
+- **Source.** `/usr/src`, the shared dataset, is a blobless clone of
+  `daemonarchy-src` branch `daemonarchy` at `4bfe2344`. That head contains the
+  selected `d63d77f4` (1600029) plus 33 commits.
+- **Activation.** `bectl activate be16` was run: `bootfs` is
+  `zroot/ROOT/be16`. `default` is kept. `/root/BE16-README.txt` gives the
+  rollback, and `/root/be16-post-reboot.sh` in be16 holds the steps below.
+
+**Rollback:** choose `default` from the loader's boot-environment menu, or run
+`bectl activate default` and reboot. If the 16 loader ever fails, copy the
+`-15.1.efi` files back over the active names.
+
+**Still needs the reboot:**
+
+1. Boot be16, and record `uname -a` and `freebsd-version -kru`.
+2. Build the first native aarch64 kernel at the selected source:
+   `make kernel-toolchain` and `make buildkernel KERNCONF=GENERIC`. Install it
+   and reboot. The selected source is 1600029 and a poudriere jail cannot be
+   newer than its host's 1600028 snapshot kernel, so this must come before the
+   jail.
+3. Create `16aarch64` with `poudriere jail -c -j 16aarch64 -a arm64.aarch64
+   -m src=/usr/src -K GENERIC`. Then apply `HACKING.md`'s `/usr/src`,
+   `lib32` and `@clean` checks.
+4. Run the admission checks in step 2 above. The virtual disk is 200G, below
+   the 400 GiB sizing.
+
 ### Separate VMware test guests
 
 Installer and boot tests never run inside the build worker: a failed test must
