@@ -750,7 +750,9 @@ network_step() {
 
 apple_firmware_step() {
   local choice image previous_stage mode=${1:-required}
-  local options=("Download Apple's recovery image using Ethernet"
+  local options=("Read from this Mac's internal macOS Recovery (no network)"
+    "Read from a second USB stick (no network)"
+    "Download Apple's recovery image using Ethernet"
     "Use BaseSystem.dmg from mounted media"
     "Use an existing verified private stage"
     "Configure wired network" "Open debug shell" "Stop installation")
@@ -774,6 +776,18 @@ apple_firmware_step() {
     echo
     choice=$(gum choose --header "Choose a firmware source" "${options[@]}") || abort
     case $choice in
+      "Read from this Mac's internal macOS Recovery (no network)")
+        step "Reading Apple recovery firmware from the internal disk"
+        say --foreground 8 "The internal disk is only read; it is never mounted or changed."
+        if apple_firmware_prepare_internal; then break; fi
+        notice "No internal macOS Recovery supplied the verified files. Try a USB stick or the download." 4
+        ;;
+      "Read from a second USB stick (no network)")
+        step "Searching attached media for Apple recovery firmware"
+        say --foreground 8 "Insert a FAT or UFS stick with BaseSystem.dmg or the four verified files."
+        if apple_firmware_prepare_media; then break; fi
+        notice "No attached stick supplied a verified recovery image or board files." 4
+        ;;
       "Download Apple's recovery image using Ethernet")
         step "Downloading and verifying Apple recovery firmware"
         if apple_firmware_prepare download; then break; fi

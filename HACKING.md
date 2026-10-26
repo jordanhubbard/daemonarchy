@@ -266,9 +266,12 @@ space than a cached installer-only rebuild. Check resources before dispatching.
    exclusions apply only to the live root: `base.txz` and `kernel.txz` remain
    intact, so the installed system retains its compiler, headers and libraries.
    Optional ports/source checkout packages are fetched separately; only their
-   small catalogue is on the ISO. The build rejects a final ISO at or above
-   GitHub's 2 GiB per-asset limit before generating its checksum. Run
-   `bash tests/live-image-budget.sh` to check the exclusions and size boundary.
+   small catalogue is on the ISO. Releases publish the image as `.iso.xz`, so
+   GitHub's 2 GiB per-asset limit applies to that compressed asset: the build
+   rejects an `.iso.xz` at or above 2 GiB before generating its checksum. The
+   raw ISO keeps a 3.5 GiB (3,758,096,384-byte) budget so it still fits a 4 GB
+   USB stick, checked before its own checksum. Run
+   `bash tests/live-image-budget.sh` to check the exclusions and both size boundaries.
    On FreeBSD, `sudo sh tests/live-image-runtime.sh <iso>` mounts the image
    read-only, checks required live commands and payloads, and resolves the
    dynamic dependencies of every retained ELF program and library. It uses

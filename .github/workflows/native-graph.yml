@@ -38,6 +38,14 @@ on:
       - 'tests/release-native-evidence.py'
       - 'scripts/verify-release-assets.py'
       - 'tests/release-asset-names.py'
+      - 'scripts/import-apple-bcm4364-firmware.py'
+      - 'overlay/usr/local/libexec/daemonarchy-installer/apple-firmware'
+      - 'overlay/usr/local/libexec/daemonarchy-installer/configurator'
+      - 'tests/apple-firmware-offline.py'
+      - 'tests/apple-firmware-offline.sh'
+      - 'scripts/check-image-size.sh'
+      - 'scripts/live-image-excludes'
+      - 'tests/live-image-budget.sh'
       - '.github/workflows/native-graph.yml'
   pull_request:
     paths:
@@ -76,6 +84,14 @@ on:
       - 'tests/release-native-evidence.py'
       - 'scripts/verify-release-assets.py'
       - 'tests/release-asset-names.py'
+      - 'scripts/import-apple-bcm4364-firmware.py'
+      - 'overlay/usr/local/libexec/daemonarchy-installer/apple-firmware'
+      - 'overlay/usr/local/libexec/daemonarchy-installer/configurator'
+      - 'tests/apple-firmware-offline.py'
+      - 'tests/apple-firmware-offline.sh'
+      - 'scripts/check-image-size.sh'
+      - 'scripts/live-image-excludes'
+      - 'tests/live-image-budget.sh'
       - '.github/workflows/native-graph.yml'
   workflow_dispatch:
 
@@ -110,6 +126,14 @@ jobs:
           bash -n overlay/usr/local/libexec/daemonarchy-installer/dashboard overlay/usr/local/libexec/daemonarchy-installer/install
           python3 tests/installer-progress.py
           bash tests/install-integrity.sh
+      - name: Offline MacBook firmware sources and image size budgets
+        env:
+          PYTHONDONTWRITEBYTECODE: '1'
+        run: |
+          bash -n overlay/usr/local/libexec/daemonarchy-installer/apple-firmware overlay/usr/local/libexec/daemonarchy-installer/configurator
+          python3 tests/apple-firmware-offline.py -v
+          bash tests/apple-firmware-offline.sh
+          bash tests/live-image-budget.sh
       - name: Release gate refuses missing evidence
         run: |
           python3 -m json.tool literate.release.json >/dev/null
