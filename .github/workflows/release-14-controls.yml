@@ -43,10 +43,21 @@ jobs:
     runs-on: ubuntu-latest
     steps:
       - uses: actions/checkout@v4
+      - name: Install the exact LitAI 1.4.0 framework source used by the QA planner
+        env:
+          # literate-ai main at the 1.4.0 wheel that the Standard lifecycle
+          # rebind binds; the QA planner calls its release-plan APIs.
+          LITAI_FRAMEWORK_COMMIT: 0a267a6646f20e3a635a1f870042b6b034f026a1
+        run: |
+          python3 -m venv "$RUNNER_TEMP/litai"
+          "$RUNNER_TEMP/litai/bin/python" -m pip install --quiet \
+            "literate-ai @ git+https://github.com/jordanhubbard/literate-ai@${LITAI_FRAMEWORK_COMMIT}"
+          echo "$RUNNER_TEMP/litai/bin" >> "$GITHUB_PATH"
       - name: Focused release graph, cache, measurement and QA checks
         env:
           PYTHONDONTWRITEBYTECODE: '1'
         run: |
+          python3 -c 'import literate_ai, sys; print(literate_ai.__file__, sys.version)'
           for test in \
             tests/release-input-graph.py \
             tests/release-measurements.py \
