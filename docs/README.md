@@ -66,3 +66,5 @@ reachable without changing its historical scope.
 - [Release measurement and pending QA drivers](release-measurements.md)
 
 - [Verified package retention and iterative installer cache](verified-artifact-cache.md)
+
+- [Cross-repository retained input graph](release-input-graph.md)

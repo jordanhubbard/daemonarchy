@@ -1,0 +1,42 @@
+{
+  "schema": "daemonarchy/release-input-selection@1",
+  "repositories": [
+    {
+      "id": "daemonarchy",
+      "repository": "https://github.com/jordanhubbard/daemonarchy.git",
+      "revision": "f2d184bb3dee8f26c724a24116939380c9a9db92",
+      "upstream": null
+    },
+    {
+      "id": "daemonarchy-src",
+      "repository": "https://github.com/jordanhubbard/daemonarchy-src.git",
+      "revision": "d63d77f4eb3cc29e16510f7bdec73602e27c2844",
+      "upstream": {
+        "repository": "https://github.com/freebsd/freebsd-src.git",
+        "revision": "a3d1d4e88ae7435cfc32a886999dcde2173839cd"
+      }
+    },
+    {
+      "id": "daemonarchy-ports",
+      "repository": "https://github.com/jordanhubbard/daemonarchy-ports.git",
+      "revision": "b785784219af455a9ce4fd70c59bc96ba77f469f",
+      "upstream": {
+        "repository": "https://github.com/freebsd/freebsd-ports.git",
+        "revision": "a7c9a97bae26bf342e1bffb2273b7ef331cdb289"
+      }
+    },
+    {
+      "id": "daemonarchy-desktop",
+      "repository": "https://github.com/jordanhubbard/daemonarchy-desktop.git",
+      "revision": "ec2a00824ec95b342c0c095657ac725c56f0528b",
+      "upstream": null
+    },
+    {
+      "id": "omarchy-freebsd",
+      "repository": "https://github.com/jordanhubbard/omarchy-freebsd.git",
+      "revision": "800bf89b6ec6d0cfaaebb46a2440f56c3f997c8a",
+      "upstream": null
+    }
+  ],
+  "units": []
+}

@@ -1,0 +1,56 @@
+{
+  "cache_admission": false,
+  "checks": [
+    {
+      "command": "python tests/release-input-graph.py -v",
+      "failed": 0,
+      "passed": 24
+    },
+    {
+      "command": "python tests/native-tree-discovery.py",
+      "failed": 0,
+      "passed": 9
+    },
+    {
+      "command": "python tests/package-dag.py",
+      "failed": 0,
+      "passed": 23
+    },
+    {
+      "command": "git diff --check",
+      "passed": true
+    },
+    {
+      "command": "litai project validate .",
+      "passed": true
+    },
+    {
+      "authority": "pass",
+      "command": "litai verify",
+      "current_locks": 8,
+      "passed": false,
+      "receipt": "project.test_receipt_missing"
+    }
+  ],
+  "framework_commit": "c345e652b91863e72526f25f8e31a03ec34bec01",
+  "native_compilation": false,
+  "native_probe": {
+    "deadline_seconds": 20,
+    "operation": "source upstream ancestry merge-base",
+    "result": "bounded-timeout"
+  },
+  "native_producer_admission": false,
+  "release_acceptance": false,
+  "remaining_gates": [
+    "native source/ports ancestry",
+    "complete registered source/ports unit ownership",
+    "authoritative conditional producer metadata",
+    "native compiler/sysroot/generated/profile closure",
+    "ABI/package native requalification",
+    "verified retained products and receipts",
+    "distributed release and exact artifacts"
+  ],
+  "schema": "daemonarchy/release-input-graph-development@1",
+  "scoped_trace_projection": "canonical snapshot facts; package-only vs compile identity regression; not native admission",
+  "wheel_sha256": "e3d8d2eb307c68dd1137025f6be0476bc790281b01d4ff995701f77f7897527b"
+}
