@@ -1,0 +1,22 @@
+# GitGuardian configuration for this repository.
+# Read by the GitGuardian GitHub check and by ggshield.
+version: 2
+
+secret:
+  # Files that hold illustrative credentials or credential-shaped file
+  # names, never real secrets. Keep this list narrow and explain each entry.
+  ignored_paths:
+    # Installer test fixtures: sample accounts such as "alice" with an
+    # example password, used to check that the live and TUI installers
+    # write identical answer files.
+    - "tests/live-backend.sh"
+    - "tests/live-installer.py"
+    # Worker bring-up records list /etc file names (for example
+    # master.passwd) that etcupdate merged; they contain no credentials.
+    - "verification/aarch64-worker-*-development.json"
+
+  # The illustrative fixture password from the live installer tests,
+  # identified by its SHA-256 so the literal is not repeated here.
+  ignored_matches:
+    - name: live installer test fixture password (illustrative)
+      match: 099a754c8251fb8a001b6642afb5259bd2edb705677b939f6ef4c00cab1e6389
