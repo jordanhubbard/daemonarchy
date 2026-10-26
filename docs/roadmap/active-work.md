@@ -1073,6 +1073,7 @@ remains open; report files do not establish a passing gate.
   - [ ] Provide a graphical installer front-end that writes the same install configuration and renders the installer's @@progress stream.
   - [ ] Keep pool import, disk swap and every disk write disabled on the live path until an installation is confirmed.
   - Controller implementation and stub tests for the remaining items are in draft PR #74; none is checked until exact-image native evidence exists.
+  - First native preview ([record](../testing-1.4-live-desktop-20261026.md)): raw ISO 3,504,902,144 bytes, `.xz` 1,573,059,812 bytes; the runtime audit passed; under bhyve the live boot, the no-supported-GPU fallback and the TUI default left the target disk unchanged. Desktop rendering, the graphical installation and the compositor-failure branch need QEMU/VirGL.
 - **Evidence:**
   - [ ] Exact-image VM runs reaching the live desktop and completing a graphical installation, with before/after disk digests proving the live path wrote nothing until install.
   - [ ] Fallback to the TUI installer when the compositor cannot start, and the TUI installer default unchanged.
