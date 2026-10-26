@@ -57,8 +57,9 @@ jobs:
         with:
           python-version: '3.13'
       # LitAI 1.4.0, the framework the Standard lifecycle binding selects.
-      # Rebuilding changes ZIP timestamps, so verify all 1,240 wheel payloads
-      # rather than the archive hash.
+      # Rebuilding changes ZIP timestamps, and *.dist-info records the build
+      # tool's version, so verify the 1,234 package members rather than the
+      # archive hash; the pinned Git tree covers the source.
       - uses: actions/checkout@v4
         with:
           repository: jordanhubbard/literate-ai
@@ -82,10 +83,11 @@ jobs:
               raise SystemExit(f'expected one pinned framework wheel, found {len(wheels)}')
           with zipfile.ZipFile(wheels[0]) as wheel:
               rows = sorted((name, hashlib.sha256(wheel.read(name)).hexdigest())
-                            for name in wheel.namelist() if not name.endswith('/'))
+                            for name in wheel.namelist()
+                            if not name.endswith('/') and '.dist-info/' not in name)
           digest = hashlib.sha256(json.dumps(rows, separators=(',', ':')).encode()).hexdigest()
-          expected = 'dc43b19bba537e0cbb472a662acc6723050f9f8c60cca59b11d5678011f21e15'
-          if len(rows) != 1240 or digest != expected:
+          expected = '74ceb01337d46463c8a9a20b700fd3ed715f19e5f0bb3e32608c6f2f1b8c8861'
+          if len(rows) != 1234 or digest != expected:
               raise SystemExit(f'framework payload manifest mismatch: {len(rows)} entries, {digest}')
           print(f'framework payload verified: {len(rows)} entries, sha256:{digest}')
           PY
