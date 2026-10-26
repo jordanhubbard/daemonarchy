@@ -1,0 +1,15 @@
+2026-10-24T17:51:37.229786+00:00	ports-checkout wait pid=1650
+2026-10-24T17:51:37.229974+00:00	bulk-supervisor refused 'select.kqueue' object does not support the context manager protocol
+2026-10-24T17:51:49.094443+00:00	ports-checkout wait pid=1650
+2026-10-24T17:57:09.669502+00:00	ports-checkout complete revision=7e417dae24ffb95c4625601ae9d654eb2ca68f4d
+2026-10-24T17:57:15Z	jail-create start source=d63d77f4eb3cc29e16510f7bdec73602e27c2844
+2026-10-24T17:59:18Z	jail-create complete
+2026-10-24T17:59:18Z	ports-register start ports=7e417dae24ffb95c4625601ae9d654eb2ca68f4d
+2026-10-24T17:59:18Z	ports-register complete
+2026-10-24T17:59:18Z	bulk start jobs=3 origins=31
+2026-10-24T19:09:27Z	bulk finished exit=1
+2026-10-24T19:09:27.916397+00:00	bulk-supervisor finished exit=1
+2026-10-24T19:09:34Z	bulk restart jobs=6 after retained attempt 1
+2026-10-25T04:16:31Z	bulk restart finished exit=11
+2026-10-25T04:16:33Z	Rust package staged SHA256=f437d19e6e5afdac96de39bc597456df27323c5a7b3a218e8b1368ca2776affa; host kernel cutover required before bulk attempt 3
+2026-10-25T04:18:19Z	third bulk starting on pinned 1600029 host with verified Rust SHA256=f437d19e6e5afdac96de39bc597456df27323c5a7b3a218e8b1368ca2776affa

@@ -745,6 +745,121 @@ def recover_historical_phases(path, *, release_source=None):
     }
 
 
+_SUPERVISOR_LINE = re.compile(r"(\d{4}-\d\d-\d\dT\d\d:\d\d:\d\d(?:\.\d+)?(?:Z|\+00:00))\t(.*)")
+_PHASE_END = re.compile(
+    r"(.+?) (?:(restart) )?(?:complete(?: (.*))?|(?:finished )?exit=(-?\d+))"
+)
+_PHASE_START = re.compile(r"(.+?) (start|started|restart)(?: (.*))?")
+
+
+def _phase_name(text, restart):
+    name = re.sub(r"[^a-z0-9]+", "-", text.lower()).strip("-")
+    return name + "-restart" if restart else name
+
+
+def _supervisor_time(text):
+    moment = datetime.fromisoformat(text.replace("Z", "+00:00"))
+    require(moment.tzinfo is not None, "supervisor time must be UTC")
+    return moment.astimezone(timezone.utc)
+
+
+def recover_supervisor_progress(path, *, release_source=None):
+    """Recover UTC-bounded stage records from a retained supervisor progress log.
+
+    Each phase needs a ``<name> start`` line and a later ``<name> complete`` or
+    ``<name> exit=N`` line. Unpaired or unparsed lines are retained as counts;
+    nothing here admits a comparison or normalizes a historical run.
+    """
+    path = Path(path)
+    raw = path.read_bytes()
+    open_phases = {}
+    phases = []
+    unparsed = 0
+    finished_exit = None
+    for line in raw.decode("utf-8").splitlines():
+        match = _SUPERVISOR_LINE.fullmatch(line)
+        if match is None:
+            unparsed += 1
+            continue
+        moment, text = _supervisor_time(match.group(1)), match.group(2)
+        final = re.fullmatch(r"finished exit=(-?\d+)", text)
+        if final:
+            finished_exit = int(final.group(1))
+            continue
+        end = _PHASE_END.fullmatch(text)
+        start = None if end else _PHASE_START.fullmatch(text)
+        end_name = end and _phase_name(end.group(1), end.group(2))
+        if start:
+            name = _phase_name(start.group(1), start.group(2) == "restart")
+            require(name not in open_phases, "overlapping supervisor phase " + name)
+            attributes = dict(
+                item.split("=", 1)
+                for item in (start.group(3) or "").split()
+                if "=" in item
+            )
+            open_phases[name] = (moment, attributes)
+        elif end and end_name in open_phases:
+            name = end_name
+            started, attributes = open_phases.pop(name)
+            require(moment >= started, "supervisor phase ends before it starts")
+            phases.append(
+                {
+                    "name": name,
+                    "started_utc": started.strftime("%Y-%m-%dT%H:%M:%SZ"),
+                    "terminal_utc": moment.strftime("%Y-%m-%dT%H:%M:%SZ"),
+                    "elapsed_seconds": (moment - started).total_seconds(),
+                    "terminal_exit_status": 0
+                    if end.group(4) is None
+                    else int(end.group(4)),
+                    "attributes": attributes,
+                }
+            )
+        else:
+            unparsed += 1
+    require(phases, "no paired supervisor phases recovered")
+    revisions = {
+        phase["attributes"]["revision"]
+        for phase in phases
+        if "revision" in phase["attributes"]
+    }
+    revision = revisions.pop() if len(revisions) == 1 else None
+    if release_source is not None:
+        require(
+            isinstance(release_source, str)
+            and re.fullmatch("[0-9a-f]{40}", release_source),
+            "exact release source revision required",
+        )
+    blockers = [
+        "worker pool, resource budget and gate scope are not bound by identity",
+        "no authenticated per-action receipts or acceptance gates are retained",
+    ]
+    if open_phases:
+        blockers.append("supervisor phases without a terminal record")
+    if any(phase["terminal_exit_status"] != 0 for phase in phases) or (
+        finished_exit not in {None, 0}
+    ):
+        blockers.append("failed phases cannot normalize a clean critical path")
+    return {
+        "schema": "daemonarchy/supervisor-stage-observation-recovery@1",
+        "source_evidence_identity": "sha256:" + hashlib.sha256(raw).hexdigest(),
+        "source_evidence_name": path.name,
+        "source_revision": revision,
+        "expected_release_source": release_source,
+        "matches_release_source": None
+        if release_source is None
+        else revision == release_source,
+        "baseline_kind": "historical-observation",
+        "comparison_eligible": False,
+        "finished_exit_status": finished_exit,
+        "phase_observations": phases,
+        "unterminated_phases": sorted(open_phases),
+        "unparsed_lines": unparsed,
+        "worker_pool_identity": None,
+        "gate_scope_identity": None,
+        "normalization_blockers": blockers,
+    }
+
+
 def observe(argv, output_root, *, timeout_seconds, context=None):
     """Run one explicit command in a finite supervisor, retaining failures.
 
@@ -866,6 +981,11 @@ def main():
         help="read a retained traced-build checkpoint without normalizing it",
     )
     parser.add_argument(
+        "--recover-supervisor",
+        type=Path,
+        help="read a retained UTC supervisor progress log without normalizing it",
+    )
+    parser.add_argument(
         "--release-source",
         help="exact expected release source commit for historical comparison",
     )
@@ -876,6 +996,17 @@ def main():
     )
     args = parser.parse_args()
     try:
+        if args.recover_supervisor is not None:
+            print(
+                json.dumps(
+                    recover_supervisor_progress(
+                        args.recover_supervisor, release_source=args.release_source
+                    ),
+                    sort_keys=True,
+                    indent=2,
+                )
+            )
+            return 0
         if args.recover_historical is not None:
             print(
                 json.dumps(

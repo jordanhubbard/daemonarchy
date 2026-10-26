@@ -266,6 +266,56 @@ class Measurements(unittest.TestCase):
             with self.assertRaises(ValueError):
                 m.compare(recovered, run("unchanged"))
 
+    def test_supervisor_progress_recovers_utc_pairs_without_normalizing(self):
+        with tempfile.TemporaryDirectory() as temporary:
+            path = Path(temporary) / "source-progress.tsv"
+            path.write_text(
+                "2026-10-24T17:48:17Z\tbuildworld start revision="
+                + "a" * 40
+                + " jobs=16\n"
+                "2026-10-24T18:22:35Z\tbuildworld complete\n"
+                "2026-10-24T18:22:35Z\tbuildkernel start jobs=16\n"
+                "2026-10-24T18:26:35Z\tbuildkernel complete\n"
+                "2026-10-24T18:26:35Z\tbulk restart jobs=6\n"
+                "2026-10-24T18:30:00Z\tbulk restart finished exit=11\n"
+                "2026-10-24T18:31:00Z\tiso start\n"
+                "free text that is not a supervisor event\n"
+                "2026-10-24T18:33:59Z\tfinished exit=0\n"
+            )
+            recovered = m.recover_supervisor_progress(path, release_source="a" * 40)
+            phases = {item["name"]: item for item in recovered["phase_observations"]}
+            self.assertTrue(recovered["matches_release_source"])
+            self.assertFalse(recovered["comparison_eligible"])
+            self.assertEqual(phases["buildworld"]["elapsed_seconds"], 2058.0)
+            self.assertEqual(phases["buildworld"]["started_utc"], "2026-10-24T17:48:17Z")
+            self.assertEqual(phases["buildkernel"]["terminal_exit_status"], 0)
+            self.assertEqual(phases["bulk-restart"]["terminal_exit_status"], 11)
+            self.assertEqual(recovered["unterminated_phases"], ["iso"])
+            self.assertEqual(recovered["unparsed_lines"], 1)
+            self.assertIn(
+                "failed phases cannot normalize a clean critical path",
+                recovered["normalization_blockers"],
+            )
+            self.assertIn(
+                "supervisor phases without a terminal record",
+                recovered["normalization_blockers"],
+            )
+            self.assertFalse(
+                m.recover_supervisor_progress(path, release_source="b" * 40)[
+                    "matches_release_source"
+                ]
+            )
+            with self.assertRaises(ValueError):
+                m.compare(recovered, run("unchanged"))
+            path.write_text(
+                "2026-10-24T18:00:00Z\tiso start\n2026-10-24T17:00:00Z\tiso exit=0\n"
+            )
+            with self.assertRaises(ValueError):
+                m.recover_supervisor_progress(path)
+            path.write_text("2026-10-24T18:00:00Z\tiso start\n")
+            with self.assertRaises(ValueError):
+                m.recover_supervisor_progress(path)
+
     def test_thresholds_and_bytes_are_computed(self):
         self.assertTrue(m.compare(run(), run("unchanged", 10))["numeric_target_met"])
         self.assertFalse(m.compare(run(), run("unchanged", 11))["numeric_target_met"])
