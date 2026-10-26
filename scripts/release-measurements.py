@@ -47,6 +47,224 @@ def count(value):
     return value
 
 
+def content_identity(value):
+    return (
+        "sha256:"
+        + hashlib.sha256(
+            json.dumps(
+                value,
+                sort_keys=True,
+                separators=(",", ":"),
+                ensure_ascii=False,
+                allow_nan=False,
+            ).encode()
+        ).hexdigest()
+    )
+
+
+def validate_scopes(run):
+    pool = run.get("worker_pool")
+    require(
+        isinstance(pool, dict)
+        and pool.get("schema") == "daemonarchy/measured-worker-pool@1",
+        "actual worker/resource pool descriptor required",
+    )
+    require(
+        content_identity(pool) == run.get("worker_pool_identity"),
+        "worker pool identity does not bind actual resources",
+    )
+    for field in ("catalogue_identity", "admission_policy_identity"):
+        identity(pool.get(field))
+    workers = pool.get("workers")
+    require(
+        isinstance(workers, list) and workers, "worker pool requires explicit workers"
+    )
+    worker_map = {}
+    for worker in workers:
+        require(isinstance(worker, dict), "worker descriptor must be an object")
+        name = worker.get("worker_id")
+        require(
+            isinstance(name, str) and name and name not in worker_map,
+            "worker pool ID missing or duplicated",
+        )
+        worker_map[name] = worker
+        for field in (
+            "worker_identity",
+            "physical_host_identity",
+            "capability_contract_identity",
+            "allocation_identity",
+        ):
+            identity(worker.get(field))
+        require(
+            type(worker.get("slots")) is int and 1 <= worker["slots"] <= 256,
+            "worker pool slots invalid",
+        )
+        resources = worker.get("resources")
+        require(
+            isinstance(resources, dict)
+            and set(resources)
+            == {"cpu_millis", "memory_mib", "disk_mib", "network_mbps"},
+            "complete actual worker resource budget required",
+        )
+        for amount in resources.values():
+            count(amount)
+    observations = run.get("worker_observations")
+    require(
+        isinstance(observations, list) and len(observations) == len(worker_map),
+        "fresh catalogue/observation parent-host bindings required",
+    )
+    observed = set()
+    for observation in observations:
+        require(isinstance(observation, dict), "worker observation must be an object")
+        name = observation.get("worker_id")
+        require(
+            name in worker_map and name not in observed,
+            "worker observation missing or duplicate",
+        )
+        observed.add(name)
+        worker = worker_map[name]
+        for field in ("worker_identity", "physical_host_identity"):
+            require(
+                observation.get(field) == worker[field],
+                "observed physical parent or worker differs",
+            )
+        require(
+            observation.get("catalogue_identity") == pool["catalogue_identity"],
+            "observation catalogue differs",
+        )
+        for field in ("observation_identity", "parent_host_binding_receipt_identity"):
+            identity(observation.get(field))
+        capacity = observation.get("available_resources")
+        require(
+            isinstance(capacity, dict) and set(capacity) == set(worker["resources"]),
+            "actual observed resource capacity missing",
+        )
+        for field, budget in worker["resources"].items():
+            require(
+                count(capacity[field]) >= budget,
+                "observed worker capacity is below allocated budget",
+            )
+    gates = run.get("gate_scope")
+    require(
+        isinstance(gates, dict)
+        and gates.get("schema") == "daemonarchy/measured-gate-scope@1",
+        "actual gate scope required",
+    )
+    require(
+        content_identity(gates) == run.get("gate_scope_identity"),
+        "gate identity does not bind actual requirements",
+    )
+    requirements = gates.get("requirements")
+    require(
+        isinstance(requirements, list) and requirements, "gate requirements missing"
+    )
+    names = set()
+    for item in requirements:
+        name = item.get("gate")
+        require(
+            isinstance(name, str) and name and name not in names,
+            "gate requirement missing or duplicated",
+        )
+        names.add(name)
+        identity(item.get("policy_identity"))
+        identity(item.get("target_identity"))
+    require(
+        names <= set(run.get("gates", {})),
+        "measurement omits selected gates",
+    )
+    if run.get("baseline_kind") == "normalized":
+        require(
+            gates.get("waivers") == [],
+            "waived historical scope cannot normalize a speedup",
+        )
+    mode = run.get("execution_mode")
+    require(mode in {"single-machine", "distributed"}, "actual execution mode required")
+    used = set()
+    for row in run.get("actions", []):
+        require(isinstance(row, dict), "action observation must be an object")
+        require(
+            row.get("worker_id") in worker_map,
+            "action ran outside the measured worker pool",
+        )
+        if row.get("disposition") != "reused":
+            used.add(worker_map[row["worker_id"]]["physical_host_identity"])
+    require(
+        mode != "distributed" or len(used) >= 2,
+        "distributed work requires two physical hosts, not merely worker or VM IDs",
+    )
+    require(
+        mode != "single-machine" or len(used) <= 1,
+        "single-machine observation used multiple physical hosts",
+    )
+    return worker_map
+
+
+def verify_worker_bindings(
+    run, *, plan, policy, resolver, locators, current_state, expected_project_authority
+):
+    """Authenticate actual pool/parent-host observations through LitAI evidence.
+
+    Plan/policy must come from the coordinator's independently pinned verifier
+    configuration. This does not trust a serialized `verified` flag or worker ID.
+    """
+    from literate_ai.application.evidence_verification import verify_run_evidence_graph
+    from literate_ai.contracts import ContentIdentity, canonical_json_bytes
+    from literate_ai.contracts.blobs import BlobRef
+    from literate_ai.security.evidence.plan import EvidenceVerificationPlan
+    from literate_ai.security.evidence.records import PlatformRun
+
+    validate_scopes(run)
+    require(
+        isinstance(plan, EvidenceVerificationPlan)
+        and isinstance(expected_project_authority, ContentIdentity),
+        "independent trusted worker-binding plan required",
+    )
+    require(
+        plan.project_authority == expected_project_authority,
+        "worker bindings select another current authority",
+    )
+    subject = {
+        "schema": "daemonarchy/measured-worker-bindings@1",
+        "worker_pool": run["worker_pool"],
+        "worker_observations": run["worker_observations"],
+    }
+    content = canonical_json_bytes(subject)
+    reference = BlobRef(
+        hashlib.sha256(content).hexdigest(), len(content), media_type="application/json"
+    )
+    root = next(
+        (
+            requirement
+            for requirement in plan.requirements
+            if requirement.envelope == plan.root
+        ),
+        None,
+    )
+    require(
+        root is not None
+        and root.expectation.predicate_type == PlatformRun.SCHEMA
+        and root.expectation.subject == reference,
+        "trusted worker proof does not bind actual pool/observations",
+    )
+    require(
+        {
+            "check/catalogue-binding",
+            "check/observed-parent-host",
+            "check/resource-capacity",
+        }
+        <= set(dict(root.artifacts)),
+        "trusted parent-host/resource checks missing",
+    )
+    return verify_run_evidence_graph(
+        plan.root,
+        requirements=plan.requirements,
+        policy=policy,
+        resolver=resolver,
+        locators=locators,
+        current_state=current_state,
+    )
+
+
 def validate(run):
     require(run.get("schema") == SCHEMA, "unsupported measurement schema")
     require(run.get("scenario") in SCENARIOS, "unknown measurement scenario")
@@ -61,6 +279,7 @@ def validate(run):
         "observation_identity",
     ):
         identity(run.get(field))
+    validate_scopes(run)
     require(run.get("complete") is True, "incomplete release critical path")
     elapsed = count(run.get("wall_time_ns"))
     require(elapsed > 0, "zero elapsed measurement")
@@ -168,6 +387,8 @@ def verify_observations(run, root):
     """Reopen retained worker command observations without promoting receipts."""
     validate(run)
     root = Path(root).resolve(strict=True)
+    pool = {worker["worker_id"]: worker for worker in run["worker_pool"]["workers"]}
+    observations = {item["worker_id"]: item for item in run["worker_observations"]}
     for row in run["actions"]:
         if row["disposition"] == "reused":
             continue  # Cache admission remains owned by the exact cache receipt.
@@ -224,6 +445,18 @@ def verify_observations(run, root):
             require(
                 context.get(field) == run.get(field),
                 "run observation context differs: " + field,
+            )
+        worker = pool[row["worker_id"]]
+        observation = observations[row["worker_id"]]
+        for field in ("worker_identity", "physical_host_identity"):
+            require(
+                context.get(field) == worker[field],
+                "terminal command physical parent/worker differs",
+            )
+        for field in ("observation_identity", "parent_host_binding_receipt_identity"):
+            require(
+                context.get(field) == observation[field],
+                "terminal command observation/host binding differs",
             )
         identity(context.get("worker_identity"))
         require(
@@ -300,6 +533,70 @@ def compare(baseline, candidate):
         "cache_write_bytes": sum(
             row["cache_write_bytes"] for row in candidate["actions"]
         ),
+    }
+
+
+def recover_historical_phases(path, *, release_source=None):
+    """Recover reported per-stage observations without normalizing old outcomes."""
+    path = Path(path)
+    raw = path.read_bytes()
+    value = json.loads(raw)
+    require(
+        value.get("schema") == "daemonarchy/native-traced-build-checkpoint@1",
+        "unsupported retained historical observation format",
+    )
+    original = value.get("original_run")
+    require(
+        isinstance(original, dict) and isinstance(original.get("phases"), list),
+        "retained stage observations unavailable",
+    )
+    phases = []
+    for phase in original["phases"]:
+        elapsed = phase.get("elapsed_seconds")
+        require(
+            type(elapsed) in {int, float} and math.isfinite(elapsed) and elapsed >= 0,
+            "invalid historical phase elapsed time",
+        )
+        require(
+            type(phase.get("exit")) is int, "historical terminal status unavailable"
+        )
+        phases.append(
+            {
+                "name": phase["name"],
+                "reported_elapsed_seconds": elapsed,
+                "terminal_exit_status": phase["exit"],
+                "reported_log_sha256": phase.get("log_sha256"),
+                "started_utc": None,
+                "terminal_utc": None,
+            }
+        )
+    revision = original.get("source_revision")
+    if release_source is not None:
+        require(
+            isinstance(release_source, str)
+            and re.fullmatch("[0-9a-f]{40}", release_source),
+            "exact release source revision required",
+        )
+    return {
+        "schema": "daemonarchy/historical-stage-observation-recovery@1",
+        "source_evidence_identity": "sha256:" + hashlib.sha256(raw).hexdigest(),
+        "source_evidence_name": path.name,
+        "source_revision": revision,
+        "expected_release_source": release_source,
+        "matches_release_source": None
+        if release_source is None
+        else revision == release_source,
+        "baseline_kind": "historical-observation",
+        "comparison_eligible": False,
+        "original_status": original.get("status"),
+        "phase_observations": phases,
+        "worker_pool_identity": None,
+        "gate_scope_identity": None,
+        "normalization_blockers": [
+            "reported historical phases lack retained started/terminal UTC pairs",
+            "equivalent complete product/worker/resource/gate scope is not established",
+            "original failed/retried/waived work cannot normalize a clean critical path",
+        ],
     }
 
 
@@ -419,12 +716,32 @@ def main():
     parser.add_argument("--command", nargs=argparse.REMAINDER)
     parser.add_argument("--baseline", type=Path)
     parser.add_argument(
+        "--recover-historical",
+        type=Path,
+        help="read a retained traced-build checkpoint without normalizing it",
+    )
+    parser.add_argument(
+        "--release-source",
+        help="exact expected release source commit for historical comparison",
+    )
+    parser.add_argument(
         "--observations-root",
         type=Path,
         help="reopen candidate worker observations and logs",
     )
     args = parser.parse_args()
     try:
+        if args.recover_historical is not None:
+            print(
+                json.dumps(
+                    recover_historical_phases(
+                        args.recover_historical, release_source=args.release_source
+                    ),
+                    sort_keys=True,
+                    indent=2,
+                )
+            )
+            return 0
         if args.observe is not None:
             result = observe(
                 args.command,

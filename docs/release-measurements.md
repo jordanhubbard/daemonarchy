@@ -77,3 +77,44 @@ independent public verification uses `litai release verify-published`.
 
 No clean-build normalization, actual distributed/native run, final public install,
 or 1.4 speedup is claimed by these controller contract tests.
+
+Measurement scope now includes the actual `worker_pool` descriptor (catalogue and
+admission-policy identities, each worker's identity, physical parent, allocation,
+capabilities, slots and CPU/RAM/disk/network budget) and `gate_scope` (exact gate,
+policy and target requirements, with explicit waivers). Their identities are
+computed from those contents; an arbitrary reused pool label cannot hide resource
+or gate changes. Fresh `worker_observations` bind catalogue, worker, physical parent,
+observation and parent-binding receipt identities to available resources.
+`execution_mode:distributed` requires executed/requalified actions on at least two
+physical parent identities. Two guests with different worker IDs on one physical
+parent fail that check. Terminal command evidence must bind those same identities.
+
+These structural bindings still need authentication. The coordinator can call
+`verify_worker_bindings` with its independently pinned LitAI evidence plan, trust
+policy, resolver, locators, trusted state and expected current project authority.
+It verifies the actual pool/observation subject plus catalogue-binding, observed
+parent-host and resource-capacity checks through the existing signed-evidence API.
+A caller's serialized success flag is never a substitute for this verification.
+No trusted physical-parent receipts or real two-machine qualification have yet
+been produced by this work. Historical retries, the whole-goal elapsed duration
+and hardware/ISO waivers remain ineligible normalized speed baselines.
+
+Read-only historical recovery accepts the retained traced-build checkpoint format:
+
+```sh
+python3 scripts/release-measurements.py --recover-historical \
+  verification/native-traced-build-quiet-result.json \
+  --release-source d63d77f4eb3cc29e16510f7bdec73602e27c2844
+```
+
+The [recovered stage observations](../verification/release-1.4-baseline-recovery-development.json)
+retain actual reported elapsed times and exits from source `7d93dff0`, including
+its failed `sets` stage. They have no recovered started/terminal UTC pairs or
+proven equivalent pool/gate scope. This source differs from the 1.3.1 release
+gate's `d63d77f4`; these records are historical and explicitly comparison-ineligible.
+They do not supply a 1.3.1 normalized baseline. The retained 1.3.1 physical
+[release decision](../verification/macbook-release-decision-1.3.1.json) also records
+its original final-ISO waiver and missing exact physical artifact hashes. Actual
+1.3.1 per-stage supervisor records still need read-only recovery from retained
+worker evidence when those workers are available. Never substitute the complete
+operator-goal duration, retries or waivers for equivalent clean-build timing.
