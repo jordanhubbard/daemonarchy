@@ -6,6 +6,9 @@ on:
       - '.github/workflows/release-14-controls.yml'
       - 'scripts/release-input-graph.py'
       - 'tests/release-input-graph.py'
+      - 'native/release-graph/**'
+      - 'scripts/package-reuse-inventory.py'
+      - 'tests/package-reuse-inventory.py'
       - 'scripts/release-measurements.py'
       - 'tests/release-measurements.py'
       - 'scripts/release-qa-plan.py'
@@ -22,6 +25,9 @@ on:
       - '.github/workflows/release-14-controls.yml'
       - 'scripts/release-input-graph.py'
       - 'tests/release-input-graph.py'
+      - 'native/release-graph/**'
+      - 'scripts/package-reuse-inventory.py'
+      - 'tests/package-reuse-inventory.py'
       - 'scripts/release-measurements.py'
       - 'tests/release-measurements.py'
       - 'scripts/release-qa-plan.py'
@@ -49,6 +55,7 @@ jobs:
         run: |
           for test in \
             tests/release-input-graph.py \
+            tests/package-reuse-inventory.py \
             tests/release-measurements.py \
             tests/release-qa-plan.py \
             tests/verified-artifact-cache.py \
