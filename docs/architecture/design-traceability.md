@@ -134,7 +134,7 @@ the public repository paths so mutable resolver mutexes are not documentation
 assets. Source
 indexing is disabled. Future framework updates must preserve these boundaries.
 
-<!-- literate-ai:authority-reviewed sha256:5289656c713af72e2d79c44459d7989018d60466c35ff87c2d076b463170811d -->
+<!-- literate-ai:authority-reviewed sha256:a8b563800c5cd5516852da7b78f28a6a708a96fc7b1856fe1e6e9fd97d7baeaf -->
 
 
 ## Rechecking preservation
