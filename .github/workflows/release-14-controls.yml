@@ -17,6 +17,8 @@ on:
       - 'tests/verified-artifact-cache.py'
       - 'scripts/signed-package-snapshot.py'
       - 'tests/signed-package-snapshot.py'
+      - 'scripts/recover-retained-package-inventory.py'
+      - 'tests/recover-retained-package-inventory.py'
       - 'overlay/usr/local/libexec/daemonarchy-installer/install'
       - 'overlay/usr/local/libexec/daemonarchy-installer/package-repository'
       - 'test-bhyve.sh'
@@ -36,6 +38,8 @@ on:
       - 'tests/verified-artifact-cache.py'
       - 'scripts/signed-package-snapshot.py'
       - 'tests/signed-package-snapshot.py'
+      - 'scripts/recover-retained-package-inventory.py'
+      - 'tests/recover-retained-package-inventory.py'
       - 'overlay/usr/local/libexec/daemonarchy-installer/install'
       - 'overlay/usr/local/libexec/daemonarchy-installer/package-repository'
       - 'test-bhyve.sh'
@@ -52,20 +56,19 @@ jobs:
       - uses: actions/setup-python@v5
         with:
           python-version: '3.13'
-      # This is the retained 1.3.1-capable framework API selected by the
-      # release work. The retained wheel's archive SHA256 is
-      # e3d8d2eb307c68dd1137025f6be0476bc790281b01d4ff995701f77f7897527b;
-      # rebuilding changes ZIP timestamps, so verify all 1,239 payloads below.
+      # LitAI 1.4.0, the framework the Standard lifecycle binding selects.
+      # Rebuilding changes ZIP timestamps, so verify all 1,240 wheel payloads
+      # rather than the archive hash.
       - uses: actions/checkout@v4
         with:
           repository: jordanhubbard/literate-ai
-          ref: c345e652b91863e72526f25f8e31a03ec34bec01
+          ref: 0a267a6646f20e3a635a1f870042b6b034f026a1
           path: _framework_src
           persist-credentials: false
       - name: Verify and install the selected framework runtime
         run: |
-          test "$(git -C _framework_src rev-parse HEAD)" = c345e652b91863e72526f25f8e31a03ec34bec01
-          test "$(git -C _framework_src rev-parse HEAD^{tree})" = f2c58cb23d316374a3b4c3b38d9c1b7b3bac57a4
+          test "$(git -C _framework_src rev-parse HEAD)" = 0a267a6646f20e3a635a1f870042b6b034f026a1
+          test "$(git -C _framework_src rev-parse HEAD^{tree})" = cada37a12b930b109b298e0ed5c4f7dc24e5a467
           python -m pip wheel --no-deps --wheel-dir "$RUNNER_TEMP/framework-wheels" ./_framework_src
           python - <<'PY'
           import hashlib
@@ -74,30 +77,32 @@ jobs:
           from pathlib import Path
           import zipfile
 
-          wheels = list(Path(os.environ['RUNNER_TEMP'], 'framework-wheels').glob('literate_ai-1.3.0-*.whl'))
+          wheels = list(Path(os.environ['RUNNER_TEMP'], 'framework-wheels').glob('literate_ai-1.4.0-*.whl'))
           if len(wheels) != 1:
               raise SystemExit(f'expected one pinned framework wheel, found {len(wheels)}')
           with zipfile.ZipFile(wheels[0]) as wheel:
               rows = sorted((name, hashlib.sha256(wheel.read(name)).hexdigest())
                             for name in wheel.namelist() if not name.endswith('/'))
           digest = hashlib.sha256(json.dumps(rows, separators=(',', ':')).encode()).hexdigest()
-          expected = '126f5d4f5988e50e151161ee2235ca6a82652f96c3eb559e780f5acf4cb5aacb'
-          if len(rows) != 1239 or digest != expected:
+          expected = 'dc43b19bba537e0cbb472a662acc6723050f9f8c60cca59b11d5678011f21e15'
+          if len(rows) != 1240 or digest != expected:
               raise SystemExit(f'framework payload manifest mismatch: {len(rows)} entries, {digest}')
           print(f'framework payload verified: {len(rows)} entries, sha256:{digest}')
           PY
-          python -m pip install "$RUNNER_TEMP"/framework-wheels/literate_ai-1.3.0-*.whl
+          python -m pip install "$RUNNER_TEMP"/framework-wheels/literate_ai-1.4.0-*.whl
       - name: Focused release graph, cache, measurement and QA checks
         env:
           PYTHONDONTWRITEBYTECODE: '1'
         run: |
+          python3 -c 'import literate_ai, sys; print(literate_ai.__file__, sys.version)'
           for test in \
             tests/release-input-graph.py \
             tests/package-reuse-inventory.py \
             tests/release-measurements.py \
             tests/release-qa-plan.py \
             tests/verified-artifact-cache.py \
-            tests/signed-package-snapshot.py; do
+            tests/signed-package-snapshot.py \
+            tests/recover-retained-package-inventory.py; do
             if test -f "$test"; then
               python3 "$test" -v
             fi

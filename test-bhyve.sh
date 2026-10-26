@@ -23,6 +23,14 @@ INSTALL_SRC=${INSTALL_SRC:-false}
 for selected in "$INSTALL_PORTS" "$INSTALL_SRC"; do
 	case "$selected" in true|false) ;; *) echo 'Checkout selections must be true or false' >&2; exit 1 ;; esac
 done
+# Validate before any host mutation or VM launch. Defaults exercise public feeds.
+. "$SCRIPT_DIR/overlay/usr/local/libexec/daemonarchy-installer/package-repository"
+package_qa_mode=${PACKAGE_QA_MODE:-iterative}
+package_cache_url=${PACKAGE_CACHE_URL:-}
+package_cache_meta_sha256=${PACKAGE_CACHE_META_SHA256:-}
+package_cache_packagesite_sha256=${PACKAGE_CACHE_PACKAGESITE_SHA256:-}
+package_cache_data_sha256=${PACKAGE_CACHE_DATA_SHA256:-}
+package_cache_validate
 WORK=${WORK:-/var/tmp/daemonarchy-bhyve}
 VM=${VM:-daemonarchy-test}
 NET=${NET:-nat}
@@ -54,6 +62,19 @@ if [ "${1:-}" = --cleanup ]; then
 fi
 
 ISO=${1:?usage: test-bhyve.sh daemonarchy.iso | --cleanup}
+
+# Accept a newly allocated empty directory, but keep every earlier run intact.
+if [ -L "$WORK" ] || { [ -e "$WORK" ] && [ ! -d "$WORK" ]; }; then
+    echo 'Bhyve qualification requires a fresh WORK directory; retain the earlier run.' >&2
+    exit 1
+fi
+if [ -d "$WORK" ]; then
+    work_contents=$(LC_ALL=C ls -A "$WORK") || exit 1
+    if [ -n "$work_contents" ]; then
+        echo 'Bhyve qualification requires a fresh WORK directory; retain the earlier run.' >&2
+        exit 1
+    fi
+fi
 
 kldload -n vmm if_bridge if_tap nmdm
 mkdir -p "$WORK"
@@ -112,6 +133,11 @@ email_address=test@example.com
 hostname=daemonarchy-test
 timezone=America/Los_Angeles
 ssh_enable=true
+package_qa_mode=$package_qa_mode
+package_cache_url=$package_cache_url
+package_cache_meta_sha256=$package_cache_meta_sha256
+package_cache_packagesite_sha256=$package_cache_packagesite_sha256
+package_cache_data_sha256=$package_cache_data_sha256
 EOF
 rm -f "$WORK/cidata.img"
 makefs -t msdos -o volume_label=CIDATA -o fat_type=16 -s 32m "$WORK/cidata.img" "$WORK/cidata"
