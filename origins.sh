@@ -18,3 +18,11 @@ graphics/drm-612-kmod graphics/gpu-firmware-kmod net/wifi-firmware-kmod
 net/if_brcmfmac-kmod
 x11/nvidia-driver x11/nvidia-kmod graphics/nvidia-drm-612-kmod x11/linux-nvidia-libs
 "
+
+# Kernel and driver ports above that are amd64-only (ONLY_FOR_ARCHS=amd64:
+# DRM KMS, NVIDIA and the Apple T2 BCM4364 driver). An aarch64 bulk list and
+# image omit them; see docs/aarch64.md.
+ISO_ORIGINS_AMD64_ONLY="
+graphics/drm-612-kmod net/if_brcmfmac-kmod
+x11/nvidia-driver x11/nvidia-kmod graphics/nvidia-drm-612-kmod x11/linux-nvidia-libs
+"

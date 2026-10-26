@@ -1,0 +1,33 @@
+{
+  "schema": "daemonarchy/release-architectures@1",
+  "issue": "https://github.com/jordanhubbard/daemonarchy/issues/62",
+  "rule": "Each unit names exactly one variant. The variant is part of every build and qualification identity; edges, cache keys, retained products and evidence never cross variants.",
+  "variants": [
+    {
+      "id": "amd64",
+      "abi": "FreeBSD:16:amd64",
+      "target": "amd64",
+      "target_arch": "amd64",
+      "snapshot_url": "https://download.freebsd.org/snapshots/amd64/16.0-CURRENT",
+      "package_repository_tag": "packages-16-amd64",
+      "image": "daemonarchy-VERSION-amd64.iso.xz",
+      "uefi_boot_file": "EFI/BOOT/BOOTX64.EFI",
+      "legacy_bios": true,
+      "worker": "qualified amd64 native workers",
+      "qualifies_other_architectures": false
+    },
+    {
+      "id": "aarch64",
+      "abi": "FreeBSD:16:aarch64",
+      "target": "arm64",
+      "target_arch": "aarch64",
+      "snapshot_url": "https://download.freebsd.org/snapshots/arm64/aarch64/16.0-CURRENT",
+      "package_repository_tag": "packages-16-aarch64",
+      "image": "daemonarchy-VERSION-aarch64.iso.xz",
+      "uefi_boot_file": "EFI/BOOT/BOOTAA64.EFI",
+      "legacy_bios": false,
+      "worker": "pending: FreeBSD arm64 VMware guest on Apple silicon, see docs/aarch64.md",
+      "qualifies_other_architectures": false
+    }
+  ]
+}
