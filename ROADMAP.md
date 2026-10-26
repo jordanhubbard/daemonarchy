@@ -25,6 +25,11 @@ deliver that result. See [PERF-002 and its 1.4.0 plan](docs/roadmap/release-1.4.
 This build work supports the 1.4 debugger and follows the published 1.3.1
 release. The earlier 1.3.2 network plan is historical.
 
+Support aarch64 as well as amd64 in 1.4, with separate products, feeds, images
+and evidence for each architecture. Qualify aarch64 on virtual machines first;
+Apple M1-M4 laptops join as test machines once the virtualized image passes.
+See [ARCH-001](docs/roadmap/active-work.md#arch-001-add-aarch64-as-a-second-supported-architecture-for-140).
+
 ## Unpublished 1.2.0 plan: owned source builds and complete Component coverage
 
 No 1.2.0 production release was published. The 1.3.1 changelog covers work

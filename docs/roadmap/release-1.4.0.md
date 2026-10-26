@@ -4,9 +4,10 @@
 - **Release scope:** 1.4.0; no 1.4 build or release qualification is claimed.
 - **Priority:** P0 network debugging from boot blocks and loader through `mountroot>`, early kernel and panic. Distributed/incremental build work supports this release.
 - **Completion / archival evidence:** pending exact native VM operation/fault matrix and physical hardware capture, cross-repository locks and receipts, artifact reuse, exact diagnostic image/feed qualification and published release verification.
-- **Tracking:** [network debugging issue #33](https://github.com/jordanhubbard/daemonarchy/issues/33), [source issue #21](https://github.com/jordanhubbard/daemonarchy-src/issues/21), [build issue #39](https://github.com/jordanhubbard/daemonarchy/issues/39), [1.4.0 milestone](https://github.com/jordanhubbard/daemonarchy/milestone/3).
+- **Tracking:** [network debugging issue #33](https://github.com/jordanhubbard/daemonarchy/issues/33), [source issue #21](https://github.com/jordanhubbard/daemonarchy-src/issues/21), [build issue #39](https://github.com/jordanhubbard/daemonarchy/issues/39), [aarch64 issue #62](https://github.com/jordanhubbard/daemonarchy/issues/62), [1.4.0 milestone](https://github.com/jordanhubbard/daemonarchy/milestone/3).
 - **Owning queue item:** [DEBUG-003](active-work.md#debug-003-deliver-bidirectional-loader-mountroot-and-panic-network-debugging-for-14).
 - **Supporting queue item:** [PERF-002](active-work.md#perf-002-coordinate-all-daemonarchy-repositories-through-literate-ai-workers-in-140) owns the build and release path.
+- **Architectures:** amd64 and aarch64; [ARCH-001](active-work.md#arch-001-add-aarch64-as-a-second-supported-architecture-for-140) owns aarch64. Virtual machines are the aarch64 test bed for now.
 - **Acceptance coverage:** [row-by-row owner, dependency and evidence ledger](1.4-coverage-ledger.md) tracks every 1.4 requirement and its exact proof.
 - **Existing foundations:** [retained native execution](active-work.md#adopt-002-qualify-retained-native-execution-and-release-enforcement), [complete source and ports ownership](freebsd-components.md), [native workspace](native-workspace.md), and [build-performance work](build-performance.md).
 - **Release boundary:** 1.3.1 is published and immutable. The [former 1.3.2 network plan](release-1.3.2.md) is historical; its requirements are carried forward here with the additional mountroot and panic acceptance. The operator-confirmed MacBook pre-production result and narrow final-ISO rerun waiver retain their original 1.3.1 scope.
@@ -199,6 +200,29 @@ distribution check.
    and scoped physical hardware checks to those exact artifact bytes. Keep the
    existing signing keys and private worker details outside committed metadata.
 
+## Second architecture: aarch64
+
+Ship 1.4 for aarch64 as well as amd64, built from the same selected source,
+ports, desktop and compatibility revisions. aarch64 is a typed variant in the
+release input graph, not a copy of the amd64 plan: it has its own world,
+kernel, packages, signed feeds, UEFI installer image, cache keys, timings and
+evidence. An amd64 result never qualifies aarch64, and a cache hit never
+crosses architectures.
+
+Little suitable aarch64 hardware is available, so qualify on virtual machines
+first. Run aarch64 UEFI guests under hardware virtualization, for example on
+an aarch64 Linux controller with KVM, and record the host, hypervisor,
+firmware and guest devices with each result. Cover installation, boot,
+upgrade, rollback, the desktop and the network-debugging path where the
+virtual NIC supports it. A virtual result qualifies only virtual operation.
+
+Once the virtualized matrix passes, enlist the available Apple M1, M2, M3 and
+M4 laptops as test machines. Record each laptop's exact model, firmware and
+execution mode. Hosted virtualization on macOS is the expected first mode.
+Bare-metal FreeBSD on Apple silicon is not assumed; claim it only for a model
+where it has actually been demonstrated. A result on one Apple silicon
+generation does not qualify another.
+
 ## Delivery sequence and acceptance
 
 - [ ] Inventory all selected fork revisions, tools, workers, actions and outputs;
@@ -260,6 +284,11 @@ distribution check.
 - [ ] Install the exact image in a fresh VM, exercise upgrade and rollback,
   complete the release's physical hardware matrix, publish through the
   LitAI-controlled release plan and independently verify the tag and assets.
+- [ ] Build, sign and publish the aarch64 products, feeds and installer image
+  through the same graph, cache and custody rules as amd64. Pass the aarch64
+  virtual-machine install, boot, upgrade, rollback, desktop and network-debug
+  matrix on the exact aarch64 bytes, then record scoped results for each
+  enlisted Apple silicon laptop and execution mode.
 
 Completion requires working cross-release reuse, a distributed multi-repository
 flow and retained receipts, not a renamed wrapper around the current serial
