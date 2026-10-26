@@ -21,9 +21,12 @@ package_repository_prepare() {
 package_repository_write_dependencies() {
     package_repository_tag_validate "$package_repository_tag" || return 1
     [ "$package_repository_tag" != packages-16-amd64 ] || return 0
+    package_cache_validate || return 1
+    package_dependency_url="https://github.com/jordanhubbard/daemonarchy/releases/download/$package_repository_tag"
+    [ -z "${package_cache_url:-}" ] || package_dependency_url=$package_cache_url
     cat >"$1" <<EOF
 Daemonarchy-Dependencies: {
-  url: "https://github.com/jordanhubbard/daemonarchy/releases/download/$package_repository_tag",
+  url: "$package_dependency_url",
   signature_type: "pubkey",
   pubkey: "$2",
   priority: 9,
@@ -40,4 +43,45 @@ package_repository_finalize_dependencies() {
             "$@" annotate -y -M "$package" repository Daemonarchy || exit 1
         fi
     done
+}
+
+# An explicitly selected iterative transport retains native public-key validation.
+# Installed production configuration always uses the public versioned feed.
+package_cache_validate() {
+    case "${package_qa_mode:-iterative}" in
+        iterative) ;;
+        final-rc)
+            [ -z "${package_cache_url:-}" ] || {
+                echo 'Final RC QA rejects a local package cache override' >&2; return 1;
+            } ;;
+        *) echo 'Invalid package QA mode' >&2; return 1 ;;
+    esac
+    [ -n "${package_cache_url:-}" ] || return 0
+    printf '%s\n' "$package_cache_url" | LC_ALL=C grep -Eq '^https?://[A-Za-z0-9.-]+(:[0-9]+)?(/[A-Za-z0-9._~-]+)*$' || {
+        echo 'Invalid iterative package cache URL' >&2; return 1;
+    }
+    case "$package_cache_url" in *'/..'*|*'/.'|*'//'*'//'*) echo 'Unsafe cache URL path' >&2; return 1 ;; esac
+    for cache_pin in "${package_cache_meta_sha256:-}" "${package_cache_packagesite_sha256:-}" "${package_cache_data_sha256:-}"; do
+        [ "${#cache_pin}" = 64 ] || { echo 'Cache requires exact selected metadata SHA-256 pins' >&2; return 1; }
+        case "$cache_pin" in *[!0-9a-f]*) echo 'Malformed cache metadata SHA-256' >&2; return 1 ;; esac
+    done
+}
+
+package_cache_check_metadata() {
+    package_cache_validate || return 1
+    [ -n "${package_cache_url:-}" ] || return 0
+    # Retain each attempt in a fresh directory, including failed/corrupt metadata.
+    cache_metadata=$(mktemp -d /tmp/daemonarchy-cache-metadata.XXXXXXXX) || return 1
+    for cache_file in meta.conf packagesite.pkg data.pkg; do
+        case "$cache_file" in
+            meta.conf) cache_expected=$package_cache_meta_sha256 ;;
+            packagesite.pkg) cache_expected=$package_cache_packagesite_sha256 ;;
+            data.pkg) cache_expected=$package_cache_data_sha256 ;;
+        esac
+        fetch -q -T 30 -o "$cache_metadata/$cache_file" "$package_cache_url/$cache_file" || return 1
+        [ "$(sha256 -q "$cache_metadata/$cache_file")" = "$cache_expected" ] || {
+            echo "Iterative cache selected metadata mismatch: $cache_file" >&2; return 1;
+        }
+    done
+    printf '%s\n' 'Iterative package cache metadata pins verified; native signature verification follows.'
 }
