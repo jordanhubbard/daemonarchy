@@ -29,24 +29,60 @@ and from upstream FreeBSD ports.
 ### Blocking gaps
 
 1. **The default desktop does not resolve on aarch64.** These packages are absent
-   from `FreeBSD:16:aarch64/latest`:
-   - `x11-wm/hyprland`, the compositor (needed by omarchy and omasnap). The port
-     has no architecture restriction, so its aarch64 build is failing or skipped
-     on the package builders and needs investigation.
-   - `www/chromium`. It is `ONLY_FOR_ARCHS= aarch64 amd64`, but no aarch64
-     package is published.
-   - `sysutils/mise`, which has
-     `BROKEN_aarch64= unsupported freebsd architecture` (conda/rattler#2226). It
-     is an unconditional `RUN_DEPENDS` of `x11-wm/omarchy` and in
+   from `FreeBSD:16:aarch64/latest`. Builder evidence was read on 2026-10-26 from
+   pkg-status.freebsd.org build data and the pkg-fallout list:
+   - **`x11-wm/hyprland`, the compositor** (needed by omarchy and omasnap). The
+     port has no architecture restriction; it fails to build on the main-arm64
+     builder.
+     - pkg-fallout reported `hyprland-0.56.2_2` failing in the build phase on
+       2026-10-23
+       ([log](https://pkg-status.freebsd.org/ampere2/data/main-arm64-default/p3a3ea9a0eb1f_s1ca7f661853/logs/hyprland-0.56.2_2.log)).
+       The same failure hit 0.54.2 in the March main-arm64 build.
+     - Every translation unit compiled with the CMake precompiled header fails
+       under `devel/llvm19` with `reference to '__builtin_va_list' is ambiguous`,
+       raised from `libinput.h` through clang's `__stdarg_va_list.h`.
+     - The port switches to `devel/llvm19` when the base clang reports
+       `+assertions`, which -CURRENT's does.
+     - The 15.1 aarch64 builder compiled the same 0.56.2_2 with the same PCH using
+       base clang 19.1.7 and published it (build `ce97aa4dd1d9`, 2026-10-20).
+     - Every Hyprland library dependency is published for `FreeBSD:16:aarch64`.
+     - I found no upstream fix in FreeBSD ports.
+     - [daemonarchy-ports#28](https://github.com/jordanhubbard/daemonarchy-ports/pull/28)
+       builds without PCH on aarch64 only. This is a candidate fix until a native
+       aarch64 build confirms it.
+   - **`www/chromium`** is `ONLY_FOR_ARCHS= aarch64 amd64`, but has no aarch64
+     package.
+     - 15.1 aarch64: the build ran from 2026-10-20 08:24 to 2026-10-22 19:21 UTC.
+       It was then killed by `Signal 15` at step 53168 of 55897 (95%). That is a
+       builder time limit, not a compile error.
+     - main-arm64: chromium is blacklisted (its last listed build, March 2026,
+       records it as "Blacklisted").
+     - `www/cef` also failed on 15.1 aarch64.
+     - Daemonarchy already builds Chromium for its amd64 feed, because
+       `FreeBSD:16:amd64/latest` has no Chromium package either. For aarch64, a
+       native Chromium build needs a builder with no such time limit, or more
+       capacity.
+   - **`sysutils/mise`** has `BROKEN_aarch64= unsupported freebsd architecture`
+     (conda/rattler#2226), and the builders skip it as ignored. It was an
+     unconditional `RUN_DEPENDS` of `x11-wm/omarchy`, and part of
      `x11-wm/daemonarchy`'s DEV option.
-   - `sysutils/edk2@bhyve`, which is `ONLY_FOR_ARCHS=amd64`. It is an
-     unconditional `RUN_DEPENDS` of `x11-wm/daemonarchy`.
+   - **`sysutils/edk2@bhyve`** is `ONLY_FOR_ARCHS=amd64`. It was an unconditional
+     `RUN_DEPENDS` of `x11-wm/daemonarchy`.
 
-   The fork must make `edk2@bhyve` and `mise` architecture-conditional, or repair
-   mise. Hyprland and Chromium must then be built natively, which is a large
-   build. Every Daemonarchy-only port (the `OMARCHY_ORIGINS`) is likewise absent
-   from the official set, as expected, and must be built natively. Their
-   Makefiles carry no amd64 restriction.
+   [daemonarchy-ports#28](https://github.com/jordanhubbard/daemonarchy-ports/pull/28)
+   (against `daemonarchy`) changes the dependency metadata:
+   - it makes `mise` a dependency everywhere except aarch64;
+   - it makes `edk2@bhyve` an amd64-only dependency;
+   - it leaves amd64 metadata unchanged, which a hosted metadata check verifies.
+
+   omarchy's first-run user provisioning (`install/user/mise-work.sh` and
+   `mise.sh`) still calls `mise` under `bash -eE`. The `omarchy-freebsd`
+   compatibility layer must skip those steps when `mise` is absent before an
+   aarch64 install can complete.
+
+   Every Daemonarchy-only port (the `OMARCHY_ORIGINS`) is absent from the official
+   set, as expected, and must be built natively. Their Makefiles carry no amd64
+   restriction.
 2. **No GPU KMS driver exists for aarch64.**
    - `graphics/drm-612-kmod` (fork-modified) and every other `drm-*-kmod` are
      `ONLY_FOR_ARCHS=amd64`. No DRM kernel module package exists for aarch64.
@@ -277,6 +313,9 @@ passes, with each model's execution mode recorded.
   installation.
 - The worker guest at the sizing above, reachable by SSH, and its admission
   through the worker capacity and identity checks.
-- Decisions on gap 1 (conditional `mise` and `edk2@bhyve` in the fork) and on
-  gap 2 (desktop qualification host).
+- Review of daemonarchy-ports#28 (conditional `mise` and `edk2@bhyve`, and the
+  Hyprland aarch64 PCH workaround), and a decision on gap 2 (the desktop
+  qualification host).
+- Builder capacity for a native aarch64 Chromium build. The 15.1 package
+  builder ran out of time after about 59 hours.
 - The aarch64 package feed release (`packages-16-aarch64*`) and its signing.
