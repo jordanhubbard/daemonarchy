@@ -188,6 +188,15 @@ def validate_scopes(run):
         )
         if row.get("disposition") != "reused":
             used.add(worker_map[row["worker_id"]]["physical_host_identity"])
+        attempts = row.get("attempts", [])
+        require(isinstance(attempts, list), "attempt inventory must be a list")
+        for attempt in attempts:
+            require(isinstance(attempt, dict), "attempt observation must be an object")
+            require(
+                attempt.get("worker_id") in worker_map,
+                "attempt ran outside the measured worker pool",
+            )
+            used.add(worker_map[attempt["worker_id"]]["physical_host_identity"])
     require(
         mode != "distributed" or len(used) >= 2,
         "distributed work requires two physical hosts, not merely worker or VM IDs",
@@ -276,8 +285,13 @@ def validate_attempts(row, *, required=False):
         require(not attempts, "reused payload cannot hide executed attempts")
         return
     require(bool(attempts), "executed action lacks attempt inventory")
+    require(
+        attempts[-1].get("worker_id") == row.get("worker_id"),
+        "successful terminal attempt worker differs from action",
+    )
     requests = set()
     for number, attempt in enumerate(attempts, 1):
+        require(isinstance(attempt, dict), "attempt observation must be an object")
         require(attempt.get("number") == number, "attempt inventory is not contiguous")
         request = identity(attempt.get("request_identity"))
         require(request not in requests, "duplicate attempt request")

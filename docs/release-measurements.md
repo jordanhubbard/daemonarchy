@@ -125,7 +125,9 @@ Every action duration must fit within the complete run elapsed time. Optional
 `attempts` are numbered contiguously with distinct request identities, actual
 terminal status/exit, command and terminal receipt identities, worker, observation
 path, elapsed time and cache costs. Executed/requalified action totals must include
-all attempts, including failed, interrupted and timeout attempts. The last attempt
+all attempts, including failed, interrupted and timeout attempts. Every attempt
+worker must belong to the actual measured pool, and all attempt parent hosts count
+in the declared execution mode. The last attempt
 must succeed; earlier successful attempts cannot be silently retried. Observation
 reopening checks every listed attempt and both retained logs. Reuse has no executed
 attempts and retains its separate cache-admission authority.

@@ -304,6 +304,10 @@ class Measurements(unittest.TestCase):
             m.validate(candidate)
         row.update(wall_time_ns=2, cache_read_bytes=4, cache_write_bytes=0)
         self.assertEqual(m.validate(candidate), candidate)
+        row["attempts"][0]["worker_id"] = "unadmitted-worker"
+        with self.assertRaisesRegex(ValueError, "outside"):
+            m.validate(candidate)
+        row["attempts"][0]["worker_id"] = "fixture"
         row["attempts"][0]["number"] = 2
         with self.assertRaisesRegex(ValueError, "contiguous"):
             m.validate(candidate)
