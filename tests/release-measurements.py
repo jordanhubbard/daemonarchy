@@ -175,6 +175,7 @@ class Measurements(unittest.TestCase):
                     "wall_time_ns": raw["wall_time_ns"],
                 }
             )
+            candidate["wall_time_ns"] = raw["wall_time_ns"]
             self.assertTrue(m.verify_observations(candidate, root))
             candidate["selection_identity"] = "sha256:" + "b" * 64
             with self.assertRaisesRegex(ValueError, "context"):
@@ -266,11 +267,46 @@ class Measurements(unittest.TestCase):
                 m.compare(recovered, run("unchanged"))
 
     def test_thresholds_and_bytes_are_computed(self):
-        self.assertTrue(m.compare(run(), run("unchanged", 10))["target_met"])
-        self.assertFalse(m.compare(run(), run("unchanged", 11))["target_met"])
+        self.assertTrue(m.compare(run(), run("unchanged", 10))["numeric_target_met"])
+        self.assertFalse(m.compare(run(), run("unchanged", 11))["numeric_target_met"])
         result = m.compare(run(), run("compatible-update", 25))
-        self.assertTrue(result["target_met"])
+        self.assertTrue(result["numeric_target_met"])
         self.assertEqual(result["cache_read_bytes"], 4)
+        self.assertIsNone(result["target_met"])
+        self.assertTrue(result["qualification_blockers"])
+
+    def test_elapsed_and_retry_attempt_costs_cannot_be_omitted(self):
+        candidate = run()
+        row = candidate["actions"][0]
+        row["wall_time_ns"] = candidate["wall_time_ns"] + 1
+        with self.assertRaisesRegex(ValueError, "shorter"):
+            m.validate(candidate)
+        candidate = run()
+        row = candidate["actions"][0]
+        attempts = []
+        for number, status, code in ((1, "timed-out", -9), (2, "exited", 0)):
+            attempts.append(
+                {
+                    "number": number,
+                    "request_identity": "sha256:" + str(number) * 64,
+                    "terminal_receipt_identity": IDENTITY,
+                    "command_identity": IDENTITY,
+                    "worker_id": "fixture",
+                    "status": status,
+                    "exit_status": code,
+                    "wall_time_ns": 1,
+                    "cache_read_bytes": 2,
+                    "cache_write_bytes": 0,
+                }
+            )
+        row["attempts"] = attempts
+        with self.assertRaisesRegex(ValueError, "cumulative"):
+            m.validate(candidate)
+        row.update(wall_time_ns=2, cache_read_bytes=4, cache_write_bytes=0)
+        self.assertEqual(m.validate(candidate), candidate)
+        row["attempts"][0]["number"] = 2
+        with self.assertRaisesRegex(ValueError, "contiguous"):
+            m.validate(candidate)
 
     def test_inequivalent_scope_pool_or_historical_baseline_refused(self):
         for field in (

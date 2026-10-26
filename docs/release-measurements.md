@@ -38,7 +38,9 @@ Comparison requires normalized runs with the same complete product obligations,
 gate scope and worker pool. The measurement-scope identity describes equivalent
 output and acceptance obligations while the exact input selection may change.
 Historical 1.1.1/1.3.1 observations stay separate. The comparison computes the
-observed ratio and requires 4x for a compatible update and 10x for unchanged work.
+observed ratio and reports a numeric threshold comparison of 4x for compatible
+updates and 10x for unchanged work. Structural results always keep `target_met`
+null: unsigned observations cannot establish a speedup acceptance gate.
 Missing measurements, receipts or reasons refuse validation. With
 `--observations-root`, executed/requalified rows must name `observation_path`,
 `terminal_receipt_identity` and `command_identity`; the verifier reopens command
@@ -118,3 +120,22 @@ its original final-ISO waiver and missing exact physical artifact hashes. Actual
 1.3.1 per-stage supervisor records still need read-only recovery from retained
 worker evidence when those workers are available. Never substitute the complete
 operator-goal duration, retries or waivers for equivalent clean-build timing.
+
+Every action duration must fit within the complete run elapsed time. Optional
+`attempts` are numbered contiguously with distinct request identities, actual
+terminal status/exit, command and terminal receipt identities, worker, observation
+path, elapsed time and cache costs. Executed/requalified action totals must include
+all attempts, including failed, interrupted and timeout attempts. The last attempt
+must succeed; earlier successful attempts cannot be silently retried. Observation
+reopening checks every listed attempt and both retained logs. Reuse has no executed
+attempts and retains its separate cache-admission authority.
+
+Attempt lists alone cannot prove that an earlier attempt was omitted. The
+coordinator's `compare_authenticated` API therefore requires independent verifier
+configurations for both measurements. `verify_measurement` binds the complete
+measurement bytes to signed LitAI evidence under current project authority and
+requires trusted complete-attempt-inventory, complete-action-inventory,
+current-gates, timing, cache-accounting and physical worker/resource checks.
+Authenticated comparisons require attempt inventories for every action and only
+then set `target_met`. No authenticated full-run measurements have been produced;
+synthetic validator tests establish neither inventory completeness nor performance.

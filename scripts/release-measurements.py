@@ -265,6 +265,53 @@ def verify_worker_bindings(
     )
 
 
+def validate_attempts(row, *, required=False):
+    """Account for every retained attempt; completeness needs trusted inventory proof."""
+    attempts = row.get("attempts")
+    if attempts is None:
+        require(not required, "authenticated complete attempt inventory required")
+        return
+    require(isinstance(attempts, list), "attempt inventory must be a list")
+    if row.get("disposition") == "reused":
+        require(not attempts, "reused payload cannot hide executed attempts")
+        return
+    require(bool(attempts), "executed action lacks attempt inventory")
+    requests = set()
+    for number, attempt in enumerate(attempts, 1):
+        require(attempt.get("number") == number, "attempt inventory is not contiguous")
+        request = identity(attempt.get("request_identity"))
+        require(request not in requests, "duplicate attempt request")
+        requests.add(request)
+        for field in ("terminal_receipt_identity", "command_identity"):
+            identity(attempt.get(field))
+        require(
+            isinstance(attempt.get("worker_id"), str) and attempt["worker_id"],
+            "attempt worker missing",
+        )
+        status = attempt.get("status")
+        require(
+            status in {"exited", "timed-out", "interrupted", "launch-failed"},
+            "attempt observation status missing",
+        )
+        code = attempt.get("exit_status")
+        require(code is None or type(code) is int, "invalid attempt exit status")
+        require(
+            number < len(attempts) or (status == "exited" and code == 0),
+            "completed action has no successful terminal attempt",
+        )
+        require(
+            number == len(attempts) or status != "exited" or code != 0,
+            "successful attempt cannot be silently retried",
+        )
+        for field in ("wall_time_ns", "cache_read_bytes", "cache_write_bytes"):
+            count(attempt.get(field))
+    for field in ("wall_time_ns", "cache_read_bytes", "cache_write_bytes"):
+        require(
+            row.get(field) == sum(attempt[field] for attempt in attempts),
+            "action omits cumulative attempt cost: " + field,
+        )
+
+
 def validate(run):
     require(run.get("schema") == SCHEMA, "unsupported measurement schema")
     require(run.get("scenario") in SCENARIOS, "unknown measurement scenario")
@@ -321,7 +368,11 @@ def validate(run):
         )
         for field in ("receipt_identity", "output_identity", "input_identity"):
             identity(row.get(field))
-        count(row.get("wall_time_ns"))
+        require(
+            count(row.get("wall_time_ns")) <= elapsed,
+            "run elapsed is shorter than an included action",
+        )
+        validate_attempts(row)
         count(row.get("cache_read_bytes"))
         count(row.get("cache_write_bytes"))
         require(
@@ -389,9 +440,14 @@ def verify_observations(run, root):
     root = Path(root).resolve(strict=True)
     pool = {worker["worker_id"]: worker for worker in run["worker_pool"]["workers"]}
     observations = {item["worker_id"]: item for item in run["worker_observations"]}
-    for row in run["actions"]:
-        if row["disposition"] == "reused":
+    rows = []
+    for action in run["actions"]:
+        if action["disposition"] == "reused":
             continue  # Cache admission remains owned by the exact cache receipt.
+        rows.extend(
+            {**action, **attempt} for attempt in action.get("attempts", [dict()])
+        )
+    for row in rows:
         relative = row.get("observation_path")
         require(isinstance(relative, str), "terminal observation path missing")
         parts = Path(relative).parts
@@ -419,9 +475,9 @@ def verify_observations(run, root):
         )
         require(
             record.get("schema") == "daemonarchy/raw-action-observation@1"
-            and record.get("status") == "exited"
-            and record.get("exit_status") == 0,
-            "terminal worker command failed or timed out",
+            and record.get("status") == row.get("status", "exited")
+            and record.get("exit_status") == row.get("exit_status", 0),
+            "terminal worker command status differs",
         )
         require(
             record.get("command_identity") == row.get("command_identity"),
@@ -526,7 +582,13 @@ def compare(baseline, candidate):
         "speedup": ratio,
         "measurement_authentication": "not-established-by-structural-validator",
         "required_speedup": target,
-        "target_met": None if target is None else ratio >= target,
+        "numeric_target_met": None if target is None else ratio >= target,
+        "target_met": None,
+        "qualification_blockers": [
+            "authenticated complete attempt and action inventory",
+            "trusted current gates, timing and cache accounting",
+            "authenticated physical worker/resource bindings",
+        ],
         "cache_read_bytes": sum(
             row["cache_read_bytes"] for row in candidate["actions"]
         ),
@@ -534,6 +596,75 @@ def compare(baseline, candidate):
             row["cache_write_bytes"] for row in candidate["actions"]
         ),
     }
+
+
+def verify_measurement(
+    run, *, plan, policy, resolver, locators, current_state, expected_project_authority
+):
+    """Verify full observation and all-attempt coverage with independently pinned trust."""
+    from literate_ai.application.evidence_verification import verify_run_evidence_graph
+    from literate_ai.contracts import ContentIdentity, canonical_json_bytes
+    from literate_ai.contracts.blobs import BlobRef
+    from literate_ai.security.evidence.plan import EvidenceVerificationPlan
+    from literate_ai.security.evidence.records import PlatformRun
+
+    validate(run)
+    for row in run["actions"]:
+        validate_attempts(row, required=True)
+    require(
+        isinstance(plan, EvidenceVerificationPlan)
+        and isinstance(expected_project_authority, ContentIdentity)
+        and plan.project_authority == expected_project_authority,
+        "independently pinned current measurement authority required",
+    )
+    content = canonical_json_bytes(run)
+    reference = BlobRef(
+        hashlib.sha256(content).hexdigest(), len(content), media_type="application/json"
+    )
+    root = next(
+        (item for item in plan.requirements if item.envelope == plan.root), None
+    )
+    require(
+        root is not None
+        and root.expectation.predicate_type == PlatformRun.SCHEMA
+        and root.expectation.subject == reference,
+        "trusted measurement proof does not bind complete observation",
+    )
+    require(
+        {
+            "check/complete-attempt-inventory",
+            "check/complete-action-inventory",
+            "check/current-gates",
+            "check/timing",
+            "check/cache-accounting",
+            "check/catalogue-binding",
+            "check/observed-parent-host",
+            "check/resource-capacity",
+        }
+        <= set(dict(root.artifacts)),
+        "trusted measurement coverage checks missing",
+    )
+    return verify_run_evidence_graph(
+        plan.root,
+        requirements=plan.requirements,
+        policy=policy,
+        resolver=resolver,
+        locators=locators,
+        current_state=current_state,
+    )
+
+
+def compare_authenticated(
+    baseline, candidate, *, baseline_verifier, candidate_verifier
+):
+    """Admit targets only after both complete measurements pass actual trust checks."""
+    result = compare(baseline, candidate)
+    verify_measurement(baseline, **baseline_verifier)
+    verify_measurement(candidate, **candidate_verifier)
+    result["measurement_authentication"] = "verified-current-evidence-graphs"
+    result["qualification_blockers"] = []
+    result["target_met"] = result["numeric_target_met"]
+    return result
 
 
 def recover_historical_phases(path, *, release_source=None):
