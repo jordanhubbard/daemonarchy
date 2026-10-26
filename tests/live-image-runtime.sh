@@ -92,8 +92,10 @@ grep -qx 'live ALL=(ALL) NOPASSWD: ALL' \
   /usr/local/etc/sudoers.d/daemonarchy-live
 grep -qx 'daemonarchy_live_media="YES"' /boot/loader.conf
 grep -q 'daemonarchy_live' /boot/lua/brand-daemonarchy.lua
-if grep -l 'unionfs' /etc/rc.d/daemonarchy_live /usr/local/libexec/daemonarchy-installer/live-gpu \
-    /usr/local/libexec/daemonarchy-installer/live-session | xargs grep -n 'mount_unionfs\|-t unionfs\|kldload unionfs'; then
+# Comments explain why unionfs is avoided; only commands count.
+if grep -n 'mount_unionfs\|-t unionfs\|kldload unionfs' /etc/rc.d/daemonarchy_live \
+    /usr/local/libexec/daemonarchy-installer/live-gpu /usr/local/libexec/daemonarchy-installer/live-session |
+    grep -v '^[^:]*:[0-9]*:[[:space:]]*#'; then
   echo 'The live desktop must not use unionfs' >&2; exit 1
 fi
 installer_python=$(head -n 1 /usr/local/libexec/daemonarchy-installer/live-installer)
