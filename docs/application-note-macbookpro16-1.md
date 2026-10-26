@@ -80,6 +80,37 @@ controller; its BCM4364 B3 `bali` firmware hashes match all four files used in
 the private MacBook radio tests. The exact hashes and verification steps are in
 the [installer investigation](testing-macbookpro16-1-installer-20261022.md#2026-10-23-apple-recovery-firmware-provenance-check).
 This is a verified source candidate, not a qualified FreeBSD installer flow.
+
+The public ISO does not include Apple's board files. Generic FreeBSD
+`wifi-firmware-kmod` firmware remains on the media. The MacBook firmware step
+offers two sources that need no Ethernet, ahead of the Apple download:
+
+- **This Mac's internal disk.** The importer opens each APFS partition
+  (`fstyp` reports `apfs`) as a device through 7-Zip. It never mounts or writes
+  that disk.
+  - It prefers a Recovery `BaseSystem.dmg`, copied with a 2 GiB bound.
+  - It falls back to the system volume's `usr/share/firmware/wifi/C-4364__s-B3`
+    files.
+  - An image from another macOS build is accepted only when all four extracted
+    files match the pinned sizes and SHA-256 values. Its observed hash is
+    recorded as `source_image_sha256` with `source_image_pinned: false`.
+- **A second USB stick.** The configurator mounts unmounted FAT or UFS volumes
+  read-only, then unmounts them. It skips the live media and any disk holding
+  APFS. It imports either a `BaseSystem.dmg`, which must match the pinned
+  image, or a directory holding the four `brcmfmac4364b3-pcie.*` files, which
+  must match their pinned sizes and hashes. exFAT is not supported on the
+  live system.
+
+Every source produces the same private stage and
+`daemonarchy/apple-recovery-firmware@1` provenance. That provenance adds a
+`source_kind` field. The signed boot and runtime inventories still bind the
+four file hashes.
+
+These paths have controller fixtures only. Physical MacBook proof is still
+required for two things: that 7-Zip reads APFS from a FreeBSD disk device
+(which needs sector-aligned reads), and that the stick search works on real
+hardware.
+
 The installer also needs a local-media path when network access is unavailable,
 model/board matching, provenance and integrity checks, transfer into the target
 system, and a reboot test that the driver loads the selected files. It must

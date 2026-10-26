@@ -237,6 +237,7 @@ if [ "$(xz -dc "$iso.xz" | sha256 -q)" != "$digest" ]; then
   echo "$iso.xz does not decompress to the built image" >&2
   exit 1
 fi
+sh "$here/scripts/check-image-size.sh" "$iso" "$iso.xz"
 printf '%s  %s\n' "$(sha256 -q "$iso.xz")" "$(basename "$iso.xz")" >"$iso.xz.sha256"
 ls -lh "$iso" "$iso.xz"
 cat "$iso.sha256" "$iso.xz.sha256"

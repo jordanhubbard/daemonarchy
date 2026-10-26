@@ -46,13 +46,29 @@ eval "$(sed -n '/^for python_lib in /,/^done$/p' "$here/live-post.sh")"
 [[ ! -e $python_lib/test && ! -e $python_lib/config-3.12/libpython3.12.a ]]
 [[ ! -e $python_lib/json/__pycache__/__init__.opt-1.pyc && ! -e $python_lib/json/__pycache__/__init__.opt-2.pyc ]]
 [[ -f $python_lib/lib-dynload/_ssl.so && -f $python_lib/json/__init__.py && -f $python_lib/json/__pycache__/__init__.pyc ]]
-# Sparse files exercise the real 2 GiB boundary without allocating that space.
-truncate -s 2147483647 "$work/budget.iso"
+# Sparse files exercise the real raw and published boundaries without
+# allocating that space. The 2 GiB asset limit applies to the published .xz;
+# the raw image keeps a 3.5 GiB budget for 4 GB USB media.
+truncate -s 3758096383 "$work/budget.iso"
 sh "$here/scripts/check-image-size.sh" "$work/budget.iso"
-for bytes in 2147483648 2371284992; do
+truncate -s 2371284992 "$work/budget.iso"
+truncate -s 2147483647 "$work/budget.iso.xz"
+sh "$here/scripts/check-image-size.sh" "$work/budget.iso" "$work/budget.iso.xz"
+for bytes in 3758096384 4000000000; do
   truncate -s "$bytes" "$work/budget.iso"
   if sh "$here/scripts/check-image-size.sh" "$work/budget.iso"; then
-    echo "Accepted oversized image: $bytes" >&2; exit 1
+    echo "Accepted oversized raw image: $bytes" >&2; exit 1
   fi
 done
-echo 'PASS: live development files excluded, install payload retained, image budget enforced'
+truncate -s 2371284992 "$work/budget.iso"
+for bytes in 2147483648 2371284992; do
+  truncate -s "$bytes" "$work/budget.iso.xz"
+  if sh "$here/scripts/check-image-size.sh" "$work/budget.iso" "$work/budget.iso.xz"; then
+    echo "Accepted oversized published image: $bytes" >&2; exit 1
+  fi
+done
+truncate -s 1 "$work/budget.iso.gz"
+if sh "$here/scripts/check-image-size.sh" "$work/budget.iso" "$work/budget.iso.gz"; then
+  echo 'Accepted a non-xz published image' >&2; exit 1
+fi
+echo 'PASS: live development files excluded, install payload retained, raw and published image budgets enforced'
