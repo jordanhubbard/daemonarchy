@@ -88,6 +88,8 @@ jobs:
           digest = hashlib.sha256(json.dumps(rows, separators=(',', ':')).encode()).hexdigest()
           expected = '74ceb01337d46463c8a9a20b700fd3ed715f19e5f0bb3e32608c6f2f1b8c8861'
           if len(rows) != 1234 or digest != expected:
+              for name, value in rows:
+                  print('member', value, name)
               raise SystemExit(f'framework payload manifest mismatch: {len(rows)} entries, {digest}')
           print(f'framework payload verified: {len(rows)} entries, sha256:{digest}')
           PY
