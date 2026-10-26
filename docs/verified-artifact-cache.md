@@ -80,6 +80,22 @@ compilation, signing or VM launch and cannot qualify application/runtime ABI
 behavior. A further corruption control must use a separate newly created test
 namespace; never damage an earlier retained cache or published archive.
 
+The 2026-10-26 native run of this probe used pkg 2.8.4, reviewed source `d9341f9`,
+the signed 1.3.1 catalogue and `keys/pkg-repo-1.3.1.pub`, and is
+[recorded](../verification/verified-cache-native-probe-20261025-development.json):
+
+- **Cold:** one miss and one HTTPS redirect; fetch/verify took 2.58 s.
+- **Warm:** one hit served 6,517,442 bytes from cache, with no redirect; the
+  rehash took 0.005 s and fetch/verify took 0.34 s. Native checksum verification
+  still passed on the hit.
+- **Same-size corruption** in a fresh control namespace: refused with HTTP 502,
+  and no result or payload was produced. Native pkg retried the request, so three
+  `corrupt_refused` events were recorded rather than one.
+- **`final-rc`, no cache:** reacquired the public metadata, then signature and
+  checksum verification passed.
+
+All case bytes and the probe namespace were retained.
+
 ## Stable cache API
 
 `scripts/verified-artifact-cache.py` exposes:
