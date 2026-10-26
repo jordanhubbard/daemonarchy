@@ -1,0 +1,254 @@
+{
+  "admission": "operator-approved bounded single-commit fetch into /usr/ports and probe rerun via coordinator, 2026-10-25 (PDT)",
+  "after": {
+    "fetch_head_unchanged": true,
+    "head_history_commits": 468,
+    "new_pack": {
+      "bytes": 31954484,
+      "name": "pack-fc8b88887c787937d672c91fe1ee443019c267ed.pack"
+    },
+    "observed_utc": "2026-10-26T05:45:49Z",
+    "ports_branch": "refs/heads/feat/litai-native-components",
+    "ports_head": "086263f34d5bc634bf00ee35621040a875667e1e",
+    "ports_refs_count": 7,
+    "ports_refs_sha256": "ac0f8f490b1b07690786568e437d9e051852be1ecf6c15c794fe4f65b67a8a0c",
+    "ports_status_uno_entries": 0,
+    "previous_shallow_boundaries": "all six now have their parents present; history was deepened, not shortened",
+    "raw": [
+      "utc=2026-10-26T05:45:49Z host=daemon user=jkh",
+      "bhyve_guests=0",
+      "build_like_processes=0",
+      "active_git_fetch=0",
+      "load={ 0.73 2.57 2.39 }",
+      "head=086263f34d5bc634bf00ee35621040a875667e1e",
+      "branch=refs/heads/feat/litai-native-components",
+      "status_uno_lines=0",
+      "ref: f7d7ee897405dcb8ce87e674588a4e1b3bfba00e refs/heads/daemonarchy-1.1.1",
+      "ref: 086263f34d5bc634bf00ee35621040a875667e1e refs/heads/feat/litai-native-components",
+      "ref: 791eb0cd901073a8dcf747662a6fe0b9e08b9b7c refs/heads/fix/amdgpu-efifb-current",
+      "ref: 3ffe3e4d0a9da0c983c87f72b93f1a9dbbc39221 refs/heads/fix/amdgpu-efifb-reservation",
+      "ref: 97328134cf01adad3b26946d0d0a03d369f4d653 refs/heads/fix/omarchy-wifi-unknown-security",
+      "ref: f7d7ee897405dcb8ce87e674588a4e1b3bfba00e refs/remotes/origin/daemonarchy-1.1.1",
+      "ref: 7312c7155241ff90ca5f69382d3dc99cc7f3fca8 refs/remotes/upstream/main",
+      "refs_sha256=ac0f8f490b1b07690786568e437d9e051852be1ecf6c15c794fe4f65b67a8a0c",
+      "fetch_head_sha256=af9eddd69f940afed4ce4dcf77d4efc510adc948ea5d61aa277ccd88bc360d0a",
+      "shallow_sha256=5013a030796b41fad97b00f7a8e04a0ff2eb7169f2af269be0fe056472bbd99c",
+      "shallow: 30609e385dc08e2bfdf809986a01ba53403396e5",
+      "shallow: 5757edcfc48e4094e61867df22c041a1d863e5a8",
+      "shallow: 5b43ce42aed12a24ed88c0e9fd9b1cca2b33e150",
+      "shallow: 74a95d5b6ac29b909b54082d31fa413f5201d9d0",
+      "shallow: a9b7486808c57f0c79b56a007a334e24d2d5cebd",
+      "shallow: d814ecf161584e30fa96f844478bf056671ad365",
+      "shallow: f3ece91b02541bd5e000dc3b73a813f323c61e42",
+      "pack: 230280 pack-1b44cc639a52d61a2ded05f39d9fce349601f717.idx",
+      "pack: 8449603 pack-1b44cc639a52d61a2ded05f39d9fce349601f717.pack",
+      "pack: 32796 pack-1b44cc639a52d61a2ded05f39d9fce349601f717.rev",
+      "pack: 26496 pack-4d22ba9b0eab79d57a2ec03c0e04681714831a86.idx",
+      "pack: 2452509 pack-4d22ba9b0eab79d57a2ec03c0e04681714831a86.pack",
+      "pack: 3684 pack-4d22ba9b0eab79d57a2ec03c0e04681714831a86.rev",
+      "pack: 6044928 pack-a093bef3937924a143bba722c4dae4e21ad9bd11.idx",
+      "pack: 113510776 pack-a093bef3937924a143bba722c4dae4e21ad9bd11.pack",
+      "pack: 863460 pack-a093bef3937924a143bba722c4dae4e21ad9bd11.rev",
+      "pack: 894328 pack-fc8b88887c787937d672c91fe1ee443019c267ed.idx",
+      "pack: 31954484 pack-fc8b88887c787937d672c91fe1ee443019c267ed.pack",
+      "pack: 127660 pack-fc8b88887c787937d672c91fe1ee443019c267ed.rev",
+      "pack: 822943743 tmp_pack_O08PTm",
+      "target_present=commit",
+      "df=686G avail of 690G"
+    ],
+    "raw_sha256": "4f67e7dc869cc57fbeae1922b3823d2b3a85a98841d523b620fa9351cbd958e0",
+    "refs_changed": false,
+    "refs_created": [],
+    "shallow": [
+      "30609e385dc08e2bfdf809986a01ba53403396e5",
+      "5757edcfc48e4094e61867df22c041a1d863e5a8",
+      "5b43ce42aed12a24ed88c0e9fd9b1cca2b33e150",
+      "74a95d5b6ac29b909b54082d31fa413f5201d9d0",
+      "a9b7486808c57f0c79b56a007a334e24d2d5cebd",
+      "d814ecf161584e30fa96f844478bf056671ad365",
+      "f3ece91b02541bd5e000dc3b73a813f323c61e42"
+    ],
+    "shallow_check": {
+      "raw": [
+        "old_boundary 2a38d60e79f58cf8eca72bb880157ea70073fd3d parents=1 missing_parents=0",
+        "old_boundary 72105f72779d13686938280de0e7e32eb19787df parents=1 missing_parents=0",
+        "old_boundary 76a8950010af76f118e8aea2e0166f30d90a3e9e parents=1 missing_parents=0",
+        "old_boundary 834018b3de987666dd5393190c6ce3a706bc6908 parents=1 missing_parents=0",
+        "old_boundary 9515a4186b543fa97ac88cfd9e06c40de5eb0eea parents=1 missing_parents=0",
+        "old_boundary d617aeb4e4c90f48cc6819b6bbe327967577d828 parents=1 missing_parents=0",
+        "head_history_count=468"
+      ],
+      "raw_sha256": "acc15ddedbf5f69bf4450737a7311e5d67f6dfe0de85dc6693d7b8daaf30a97e"
+    },
+    "shallow_sha256": "5013a030796b41fad97b00f7a8e04a0ff2eb7169f2af269be0fe056472bbd99c",
+    "target_present": true,
+    "tmp_pack": {
+      "bytes": 822943743,
+      "name": "tmp_pack_O08PTm",
+      "unchanged": true
+    }
+  },
+  "before": {
+    "active_git_fetches": 0,
+    "bhyve_guests": 0,
+    "build_like_processes": 0,
+    "observed_utc": "2026-10-26T05:44:41Z",
+    "ports_branch": "refs/heads/feat/litai-native-components",
+    "ports_head": "086263f34d5bc634bf00ee35621040a875667e1e",
+    "ports_refs_count": 7,
+    "ports_refs_sha256": "ac0f8f490b1b07690786568e437d9e051852be1ecf6c15c794fe4f65b67a8a0c",
+    "ports_status_uno_entries": 0,
+    "raw": [
+      "utc=2026-10-26T05:44:41Z host=daemon user=jkh",
+      "bhyve_guests=0",
+      "build_like_processes=0",
+      "active_git_fetch=0",
+      "load={ 0.73 3.02 2.53 }",
+      "head=086263f34d5bc634bf00ee35621040a875667e1e",
+      "branch=refs/heads/feat/litai-native-components",
+      "status_uno_lines=0",
+      "ref: f7d7ee897405dcb8ce87e674588a4e1b3bfba00e refs/heads/daemonarchy-1.1.1",
+      "ref: 086263f34d5bc634bf00ee35621040a875667e1e refs/heads/feat/litai-native-components",
+      "ref: 791eb0cd901073a8dcf747662a6fe0b9e08b9b7c refs/heads/fix/amdgpu-efifb-current",
+      "ref: 3ffe3e4d0a9da0c983c87f72b93f1a9dbbc39221 refs/heads/fix/amdgpu-efifb-reservation",
+      "ref: 97328134cf01adad3b26946d0d0a03d369f4d653 refs/heads/fix/omarchy-wifi-unknown-security",
+      "ref: f7d7ee897405dcb8ce87e674588a4e1b3bfba00e refs/remotes/origin/daemonarchy-1.1.1",
+      "ref: 7312c7155241ff90ca5f69382d3dc99cc7f3fca8 refs/remotes/upstream/main",
+      "refs_sha256=ac0f8f490b1b07690786568e437d9e051852be1ecf6c15c794fe4f65b67a8a0c",
+      "fetch_head_sha256=af9eddd69f940afed4ce4dcf77d4efc510adc948ea5d61aa277ccd88bc360d0a",
+      "shallow_sha256=68480305a4180b42bc1f727124c3bfab7d4e6118a6aa0a8e0703115ffec815cf",
+      "shallow: 2a38d60e79f58cf8eca72bb880157ea70073fd3d",
+      "shallow: 72105f72779d13686938280de0e7e32eb19787df",
+      "shallow: 76a8950010af76f118e8aea2e0166f30d90a3e9e",
+      "shallow: 834018b3de987666dd5393190c6ce3a706bc6908",
+      "shallow: 9515a4186b543fa97ac88cfd9e06c40de5eb0eea",
+      "shallow: d617aeb4e4c90f48cc6819b6bbe327967577d828",
+      "pack: 230280 pack-1b44cc639a52d61a2ded05f39d9fce349601f717.idx",
+      "pack: 8449603 pack-1b44cc639a52d61a2ded05f39d9fce349601f717.pack",
+      "pack: 32796 pack-1b44cc639a52d61a2ded05f39d9fce349601f717.rev",
+      "pack: 26496 pack-4d22ba9b0eab79d57a2ec03c0e04681714831a86.idx",
+      "pack: 2452509 pack-4d22ba9b0eab79d57a2ec03c0e04681714831a86.pack",
+      "pack: 3684 pack-4d22ba9b0eab79d57a2ec03c0e04681714831a86.rev",
+      "pack: 6044928 pack-a093bef3937924a143bba722c4dae4e21ad9bd11.idx",
+      "pack: 113510776 pack-a093bef3937924a143bba722c4dae4e21ad9bd11.pack",
+      "pack: 863460 pack-a093bef3937924a143bba722c4dae4e21ad9bd11.rev",
+      "pack: 822943743 tmp_pack_O08PTm",
+      "target_present=no",
+      "df=686G avail of 690G"
+    ],
+    "raw_sha256": "1a5ec3bb4cf5d1615f548d836ef22f5bac6a5748d0f52c2245e087e6466026c8",
+    "shallow": [
+      "2a38d60e79f58cf8eca72bb880157ea70073fd3d",
+      "72105f72779d13686938280de0e7e32eb19787df",
+      "76a8950010af76f118e8aea2e0166f30d90a3e9e",
+      "834018b3de987666dd5393190c6ce3a706bc6908",
+      "9515a4186b543fa97ac88cfd9e06c40de5eb0eea",
+      "d617aeb4e4c90f48cc6819b6bbe327967577d828"
+    ],
+    "shallow_sha256": "68480305a4180b42bc1f727124c3bfab7d4e6118a6aa0a8e0703115ffec815cf",
+    "target_present": false,
+    "tmp_pack": {
+      "bytes": 822943743,
+      "name": "tmp_pack_O08PTm"
+    }
+  },
+  "cache_admission": false,
+  "fetch": {
+    "attempts": [
+      {
+        "command": "timeout 1800 git -c gc.auto=0 -c maintenance.auto=false -C /usr/ports fetch --no-tags --no-auto-maintenance --no-write-fetch-head --no-recurse-submodules --shallow-exclude=a7c9a97bae26bf342e1bffb2273b7ef331cdb289 origin b785784219af455a9ce4fd70c59bc96ba77f469f",
+        "duration_seconds": 0,
+        "exit_code": 128,
+        "output": "fatal: expected 'acknowledgments'",
+        "result": "refused: --shallow-exclude with a raw commit id was not accepted",
+        "start_utc": "2026-10-26T05:45:06Z"
+      },
+      {
+        "command": "timeout 1800 git -c gc.auto=0 -c maintenance.auto=false -C /usr/ports fetch --no-tags --no-auto-maintenance --no-write-fetch-head --no-recurse-submodules --depth=300 origin b785784219af455a9ce4fd70c59bc96ba77f469f",
+        "duration_seconds": 32,
+        "end_utc": "2026-10-26T05:45:38Z",
+        "exit_code": 0,
+        "output": "",
+        "result": "pass: approved bounded --depth fallback",
+        "start_utc": "2026-10-26T05:45:06Z"
+      }
+    ],
+    "raw": [
+      "cmd=timeout 1800 git -c gc.auto=0 -c maintenance.auto=false -C /usr/ports fetch --no-tags --no-auto-maintenance --no-write-fetch-head --no-recurse-submodules --shallow-exclude=a7c9a97bae26bf342e1bffb2273b7ef331cdb289 origin b785784219af455a9ce4fd70c59bc96ba77f469f",
+      "start_utc=2026-10-26T05:45:06Z",
+      "exit=128 duration_s=0 end_utc=2026-10-26T05:45:06Z",
+      "out: fatal: expected 'acknowledgments'",
+      "fallback=bounded --depth=300 (shallow-exclude refused)",
+      "cmd=timeout 1800 git -c gc.auto=0 -c maintenance.auto=false -C /usr/ports fetch --no-tags --no-auto-maintenance --no-write-fetch-head --no-recurse-submodules --depth=300 origin b785784219af455a9ce4fd70c59bc96ba77f469f",
+      "start_utc=2026-10-26T05:45:06Z",
+      "exit=0 duration_s=32 end_utc=2026-10-26T05:45:38Z",
+      "ssh_rc=0"
+    ],
+    "raw_sha256": "a498025ac0986636655c835d77c3734659d446afac4ab560d37f5789b13c0f1d"
+  },
+  "native_compilation": false,
+  "prior_records": [
+    "native/release-graph/native-ancestry-probe-20261026.json",
+    "native/release-graph/native-ancestry-probe-20261026-fetch.json"
+  ],
+  "probe": {
+    "checks": [
+      {
+        "command": "timeout 60 git -C /usr/src merge-base --is-ancestor a3d1d4e88ae7435cfc32a886999dcde2173839cd d63d77f4eb3cc29e16510f7bdec73602e27c2844",
+        "exit_code": 0,
+        "repository": "daemonarchy-src",
+        "result": "pass"
+      },
+      {
+        "command": "timeout 60 git -C /usr/ports merge-base --is-ancestor a7c9a97bae26bf342e1bffb2273b7ef331cdb289 b785784219af455a9ce4fd70c59bc96ba77f469f",
+        "exit_code": 0,
+        "repository": "daemonarchy-ports",
+        "result": "pass"
+      }
+    ],
+    "fetch": false,
+    "per_check_deadline_seconds": 60,
+    "raw": [
+      "host=daemon uname=FreeBSD_16.0-CURRENT_FreeBSD_16.0-CURRENT_#0_bdcfeac3e1cb:_Fri_Oct_16_23:15:34_UTC_2026_____root@daemonarchy-release-builder:/home/tester/daemonarchy-rc2-obj/home/tester/daemonarchy-rc2-src/amd64.amd64/sys/GENERIC_amd64",
+      "started_utc=2026-10-26T05:45:49Z",
+      "bhyve_guests=0",
+      "git_version=git version 2.56.0",
+      "== repo=daemonarchy-src path=/usr/src",
+      "origin=https://github.com/jordanhubbard/daemonarchy-src.git",
+      "gitdir=/usr/src/.git",
+      "partial_clone_filter=none",
+      "promisor=none",
+      "cat-file -t d63d77f4eb3cc29e16510f7bdec73602e27c2844 -> rc=0 out=commit",
+      "cat-file -t a3d1d4e88ae7435cfc32a886999dcde2173839cd -> rc=0 out=commit",
+      "cmd=timeout 60 git -C /usr/src merge-base --is-ancestor a3d1d4e88ae7435cfc32a886999dcde2173839cd d63d77f4eb3cc29e16510f7bdec73602e27c2844",
+      "exit=0 elapsed_s=0 output=<empty>",
+      "== repo=daemonarchy-ports path=/usr/ports",
+      "origin=https://github.com/jordanhubbard/daemonarchy-ports.git",
+      "gitdir=/usr/ports/.git",
+      "partial_clone_filter=none",
+      "promisor=none",
+      "cat-file -t b785784219af455a9ce4fd70c59bc96ba77f469f -> rc=0 out=commit",
+      "cat-file -t a7c9a97bae26bf342e1bffb2273b7ef331cdb289 -> rc=0 out=commit",
+      "cmd=timeout 60 git -C /usr/ports merge-base --is-ancestor a7c9a97bae26bf342e1bffb2273b7ef331cdb289 b785784219af455a9ce4fd70c59bc96ba77f469f",
+      "exit=0 elapsed_s=0 output=<empty>",
+      "finished_utc=2026-10-26T05:45:49Z",
+      "ssh_rc=0"
+    ],
+    "raw_sha256": "b96dd9d0bf04e0ef8da897d84550fa5715021b1b5710989a4238ab0d7612d11f",
+    "script": "native/release-graph/ancestry-probe.sh",
+    "script_sha256": "0d9e5ac6f78c5d8516ce0516218a95768c71563a1b5247aa83da20aeaf11795a",
+    "shallow_note": "a shallow boundary can only hide ancestry (false negative); a positive result is a real parent path in present objects",
+    "started_utc": "2026-10-26T05:45:49Z"
+  },
+  "release_acceptance": false,
+  "remaining": [
+    "decide whether to keep or remove tmp_pack_O08PTm (left in place)"
+  ],
+  "schema": "daemonarchy/native-ancestry-probe@1",
+  "worker": {
+    "git": "2.56.0",
+    "hostname": "daemon",
+    "role": "primary FreeBSD worker (daemon.local)",
+    "uname": "FreeBSD 16.0-CURRENT #0 bdcfeac3e1cb amd64 GENERIC"
+  }
+}

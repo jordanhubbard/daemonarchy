@@ -160,10 +160,12 @@ if $macbook_bcm4364; then
   elif ! apple_firmware_preloaded; then
     # An unattended install may provide an Apple image path. Otherwise use
     # Apple's pinned recovery download over its already configured network.
+    # Offline sources come first so an install needs no Ethernet.
     if [[ -n ${apple_firmware_image:-} ]]; then
       apple_firmware_prepare image "$apple_firmware_image"
     else
-      apple_firmware_prepare download
+      apple_firmware_prepare_internal || apple_firmware_prepare_media ||
+        apple_firmware_prepare download
     fi || { echo 'MacBook firmware acquisition failed before disk changes.' >&2; exit 1; }
   fi
   apple_firmware_preloaded || { echo 'Verified BCM4364 board firmware is unavailable.' >&2; exit 1; }

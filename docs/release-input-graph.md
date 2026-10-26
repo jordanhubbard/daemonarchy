@@ -186,8 +186,15 @@ so fetching the commit without a bound deepens far past the 224-commit range
 GitHub reports. HEAD, branch, refs and tracked files are unchanged; an
 incomplete temporary pack remains in place. The rerun probe still fails for
 ports (exit 128) and passes for source. GitHub's compare result is hosted
-reference only, not native evidence. A bounded fetch rewrites the shallow
-boundary and needs separate admission. No private-worker compilation or
+reference only, not native evidence. A separately admitted bounded fetch
+([record](../native/release-graph/native-ancestry-probe-20261026-bounded.json))
+fell back to `--depth=300` after the server refused `--shallow-exclude` with a raw
+commit ID. It completed in 32 seconds (exit 0). It rewrote `.git/shallow`,
+deepening all six previous boundaries; HEAD, branch, refs and tracked files are
+unchanged and the earlier temporary pack remains. The rerun probe, using the same
+script with no fetch, now passes for both repositories: ports upstream `a7c9a97b`
+is an ancestor of selected `b7857842` (exit 0), and source still passes. A shallow
+boundary can only hide ancestry, so the positive result is a real parent path. No private-worker compilation or
 VM was launched by this stream; private producer/profile work stays scheduled
 centrally. The hosted metadata observations below have their own bounded scope.
 
