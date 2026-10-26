@@ -23,9 +23,15 @@
 
 set -eu
 
-JAIL=${JAIL:-16amd64}
+# Each architecture publishes its own feed family, packages-16-$ARCH.
+ARCH=${ARCH:-amd64}
+case "$ARCH" in
+amd64 | aarch64) ;;
+*) echo "Unsupported package architecture: $ARCH (expected amd64 or aarch64)" >&2; exit 1 ;;
+esac
+JAIL=${JAIL:-16$ARCH}
 PTREE=${PTREE:-omarchyiso}
-TAG=${TAG:-packages-16-amd64}
+TAG=${TAG:-packages-16-$ARCH}
 GH_REPO=${GH_REPO:-jordanhubbard/daemonarchy}
 BUILD_HOST=${BUILD_HOST:-freebsd.local}
 BUILD_DIR=${BUILD_DIR:-daemonarchy}
@@ -52,7 +58,7 @@ collect() {
 	built_packages=''
 	if [ -n "$BUILT_PACKAGES_FILE" ]; then
 		case "$TAG" in
-		packages-16-amd64-?*) ;;
+		packages-16-"$ARCH"-?*) ;;
 		*) echo 'Rebuilt dependencies require a versioned package-feed tag' >&2; exit 1 ;;
 		esac
 		case "$TAG" in
@@ -115,7 +121,7 @@ upload() {
 	dir=$1
 	if ! gh release view "$TAG" -R "$GH_REPO" >/dev/null 2>&1; then
 		gh release create "$TAG" -R "$GH_REPO" --latest=false \
-		    --title "Daemonarchy packages for FreeBSD 16 (amd64)" \
+		    --title "Daemonarchy packages for FreeBSD 16 ($ARCH)" \
 		    --notes "The pkg repository installed Daemonarchy systems update from: the Omarchy ports and the fixes the official FreeBSD packages lack yet, signed with Daemonarchy's key. There is nothing here to download by hand; \`pkg upgrade\` uses it."
 	fi
 	# Packages first, then the catalogue that names them, so a client never
@@ -141,6 +147,9 @@ upload() {
 }
 
 publish() {
+	# The remote build uses its own defaults, which are the amd64 feed. Build
+	# another architecture on its native host with ARCH set, then upload.
+	[ "$ARCH" = amd64 ] || { echo "publish is amd64-only; run ARCH=$ARCH pkg-repo.sh build on the $ARCH host, then upload" >&2; exit 1; }
 	tmp=$(mktemp -d)
 	scp -q "$here/origins.sh" "$here/pkg-repo.sh" "$BUILD_HOST:$BUILD_DIR/"
 	ssh "$BUILD_HOST" "cd $BUILD_DIR && sudo sh pkg-repo.sh build"

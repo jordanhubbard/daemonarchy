@@ -6,11 +6,13 @@
 # Whole-disk mode creates the following layout. Shared-disk modes replace only
 # the selected OS/data partition or allocate one in the selected free extent:
 # Whole-disk layout:
-#   p1  EFI system partition (FreeBSD loader, also as the fallback BOOTX64.EFI)
+#   p1  EFI system partition (FreeBSD loader, also as the fallback BOOTX64.EFI,
+#       or BOOTAA64.EFI on aarch64)
 #   p2  swap
 #   p3  ZFS pool "zroot" (GELI-encrypted with the user's password if asked),
 #       laid out as bsdinstall does so bectl boot environments work
-#   p4  BIOS boot code, in the alignment gap before p1
+#   p4  BIOS boot code, in the alignment gap before p1 (amd64; left empty on
+#       aarch64, which boots by UEFI only)
 #
 # The base system and kernel come from the release sets on the ISO. The
 # Omarchy ports, the GPU and Wi-Fi kernel modules, and the matching Linux NVIDIA
@@ -26,6 +28,12 @@ REPO=$ISO_SHARE/repo
 TARGET=/mnt
 POOL=zroot
 ABI=$(cat "$ISO_SHARE/ABI")
+case "$ABI" in
+  FreeBSD:16:amd64) image_arch=amd64 efi_boot_file=BOOTX64.EFI ;;
+  FreeBSD:16:aarch64) image_arch=aarch64 efi_boot_file=BOOTAA64.EFI ;;
+  *) echo "Unsupported image ABI: $ABI" >&2; exit 1 ;;
+esac
+gpu_arch=$image_arch
 
 # shellcheck disable=SC1090
 source "$DAEMONARCHY_INSTALL_CONF"
@@ -41,13 +49,14 @@ source "$(dirname "$0")/package-repository"
 source "$(dirname "$0")/apple-firmware"
 package_repository_prepare "$ISO_SHARE"
 package_cache_validate
-if [[ -n ${package_cache_url:-} && $package_repository_tag == packages-16-amd64 ]]; then
+if [[ -n ${package_cache_url:-} && $package_repository_tag == "$package_repository_stable_tag" ]]; then
   echo "An iterative cache requires an explicitly versioned signed package feed." >&2
   exit 1
 fi
 package_cache_check_metadata
 macbook_bcm4364=false
-if [[ $(kenv smbios.system.product 2>/dev/null || true) == MacBookPro16,1 ]]; then
+# The BCM4364 driver package exists only for the amd64 (Intel Mac) image.
+if [[ $image_arch == amd64 && $(kenv smbios.system.product 2>/dev/null || true) == MacBookPro16,1 ]]; then
   macbook_bcm4364=true
 fi
 checkout_options_prepare "$ISO_SHARE/checkouts.json"
@@ -262,12 +271,14 @@ sync
 
 phase loader "Installing the boot loader"
 if ! $shared_install; then
-  install_bios_bootcode "$disk" "$TARGET"
+  if [[ $image_arch == amd64 ]]; then
+    install_bios_bootcode "$disk" "$TARGET"
+  fi
   newfs_msdos -F 32 -c 1 -L DAEMONARCHY "$efi_dev" >/dev/null
 fi
 mkdir -p "$TARGET/boot/efi"
 mount -t msdosfs "$efi_dev" "$TARGET/boot/efi"
-write_efi_loader "$TARGET" "$POOL" "$shared_install"
+write_efi_loader "$TARGET" "$POOL" "$shared_install" "$efi_boot_file"
 if [[ $(sysctl -n machdep.bootmethod) == UEFI ]]; then
   # The qualified loader follows the pool's active BE; older loaders need the
   # existing explicit dataset selection, including on shared disks.
@@ -277,7 +288,7 @@ if [[ $(sysctl -n machdep.bootmethod) == UEFI ]]; then
       echo "Could not register the Daemonarchy EFI entry. Existing boot loaders are preserved; installation cannot finish." >&2
       exit 1
     fi
-    log "No EFI boot entry created; the firmware falls back to EFI/BOOT/BOOTX64.EFI"
+    log "No EFI boot entry created; the firmware falls back to EFI/BOOT/$efi_boot_file"
   fi
 fi
 mkdir -p "$TARGET/var/db/daemonarchy"
@@ -420,7 +431,7 @@ if $macbook_bcm4364; then
   packages+=(if_brcmfmac-kmod)
 fi
 pkg_target update -f
-if [[ $package_repository_tag != packages-16-amd64 ]]; then
+if [[ $package_repository_tag != "$package_repository_stable_tag" ]]; then
   pkg_target rquery -r Daemonarchy-Dependencies '%n' omarchy | grep -qx omarchy || {
     echo 'The signed candidate package repository is unavailable or invalid.' >&2
     exit 1
@@ -455,7 +466,7 @@ if $macbook_bcm4364; then
     exit 1
   }
 fi
-if [[ $package_repository_tag != packages-16-amd64 ]]; then
+if [[ $package_repository_tag != "$package_repository_stable_tag" ]]; then
   package_repository_finalize_dependencies pkg_target
 fi
 
