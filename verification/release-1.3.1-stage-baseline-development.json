@@ -1,0 +1,290 @@
+{
+  "schema": "daemonarchy/release-stage-timing-baseline@1",
+  "release": "1.3.1",
+  "release_selection": {
+    "product": "cdeb3434a2f7e5e205feb756c897b1e4a98d4c28",
+    "freebsd_source": "d63d77f4eb3cc29e16510f7bdec73602e27c2844",
+    "ports": "b785784219af455a9ce4fd70c59bc96ba77f469f",
+    "desktop": "ec2a00824ec95b342c0c095657ac725c56f0528b",
+    "iso_sha256": "ef5b1bec2189350e1ae194d251c35b959a39d7e4993b6a0f4deb7dcb30365735"
+  },
+  "status": "incomplete",
+  "comparison_eligible": false,
+  "summary": "No retained, repository-held native record times the 1.3.1 release stages. Every observation below is a real retained measurement from a different source/product selection and is explicitly comparison-ineligible. It must not be used as the 1.3.1 normalized baseline.",
+  "source_records": [
+    {
+      "path": "verification/native-development-build.json",
+      "sha256": "75d62dd6eeb7cd857adffc373b84dc7572a7a2e43cda180a1d2fd929cb33a79e"
+    },
+    {
+      "path": "verification/native-traced-build-quiet-result.json",
+      "sha256": "93449fd152bda85cc319ab8d809a8cfa91373a112d80651005f9f14d58c24408"
+    },
+    {
+      "path": "verification/parallel-package-fetch-development.json",
+      "sha256": "5178201e6ac14d96dff67a0bf4516633d194a1d47107cf4aa5d3844a01baa510"
+    },
+    {
+      "path": "verification/test-iso-1.2-test1.json",
+      "sha256": "cf28cb08c14a8bb6919af66db53fafc0e2b30a0f9114fb471cabc9c86c834495"
+    }
+  ],
+  "required_stages": [
+    "world",
+    "kernel",
+    "package-fetch",
+    "package-build",
+    "signing",
+    "iso"
+  ],
+  "stages": [
+    {
+      "stage": "world",
+      "retained_observations": [
+        {
+          "record": "verification/native-development-build.json",
+          "source_revision": "92276fc76c65f3ca31552d2e1833a6063361ff64",
+          "phase": "buildworld",
+          "elapsed_seconds": 4195.318,
+          "exit": 0,
+          "note": "12-job GENERIC native development build; recovered workflow, not a clean baseline"
+        },
+        {
+          "record": "verification/native-traced-build-quiet-result.json",
+          "source_revision": "7d93dff0e80a96734f5c0ebe1a48fe378bc3b876",
+          "phase": "buildworld",
+          "elapsed_seconds": 5786.789,
+          "exit": 0,
+          "note": "traced (filemon/meta) build whose overall run failed; tracing overhead included"
+        }
+      ],
+      "release_1_3_1_observation": null,
+      "comparison_eligible": false,
+      "ineligibility_reasons": [
+        "source revision differs from the 1.3.1 release source d63d77f4",
+        "no retained started/terminal UTC pair, worker/resource identity or equivalent gate scope",
+        "no retained 1.3.1 release-build record for this stage in the repository"
+      ]
+    },
+    {
+      "stage": "kernel",
+      "retained_observations": [
+        {
+          "record": "verification/native-development-build.json",
+          "source_revision": "92276fc76c65f3ca31552d2e1833a6063361ff64",
+          "phase": "buildkernel",
+          "elapsed_seconds": 210.84,
+          "exit": 0,
+          "note": "12-job GENERIC native development build; recovered workflow, not a clean baseline"
+        },
+        {
+          "record": "verification/native-traced-build-quiet-result.json",
+          "source_revision": "7d93dff0e80a96734f5c0ebe1a48fe378bc3b876",
+          "phase": "buildkernel",
+          "elapsed_seconds": 1442.698,
+          "exit": 0,
+          "note": "traced (filemon/meta) build whose overall run failed; tracing overhead included"
+        }
+      ],
+      "release_1_3_1_observation": null,
+      "comparison_eligible": false,
+      "ineligibility_reasons": [
+        "source revision differs from the 1.3.1 release source d63d77f4",
+        "no retained started/terminal UTC pair, worker/resource identity or equivalent gate scope",
+        "no retained 1.3.1 release-build record for this stage in the repository"
+      ]
+    },
+    {
+      "stage": "package-build",
+      "retained_observations": [
+        {
+          "record": "verification/native-development-build.json",
+          "source_revision": "92276fc76c65f3ca31552d2e1833a6063361ff64",
+          "phase": "packages",
+          "elapsed_seconds": 597.429,
+          "exit": 0,
+          "note": "pkgbase packaging phase, not ports package build"
+        },
+        {
+          "record": "verification/native-traced-build-quiet-result.json",
+          "source_revision": "7d93dff0e80a96734f5c0ebe1a48fe378bc3b876",
+          "phase": "packages",
+          "elapsed_seconds": 2569.764,
+          "exit": 0,
+          "note": "pkgbase packaging phase under tracing"
+        }
+      ],
+      "release_1_3_1_observation": null,
+      "comparison_eligible": false,
+      "ineligibility_reasons": [
+        "retained phases are pkgbase packaging, not the 1.3.1 ports/poudriere application package build",
+        "1.3.1 package production mixed native builds, retried madmax bulk attempts and five qualified 1.1.1 archive reuses; no complete retained per-attempt record is in the repository",
+        "source/ports revisions differ from the 1.3.1 selection"
+      ]
+    },
+    {
+      "stage": "package-fetch",
+      "retained_observations": [
+        {
+          "record": "verification/parallel-package-fetch-development.json",
+          "source_revision": "8902832a35521dc26d1741fec558b60adce41692",
+          "phase": "authenticated fetch/verify",
+          "packages": 8,
+          "download_bytes": 29831,
+          "serial_total_seconds": 5.089664717030246,
+          "parallel_total_seconds": 3.1442204479826614,
+          "note": "eight-package historical 1.1.1 subset probe"
+        }
+      ],
+      "release_1_3_1_observation": null,
+      "comparison_eligible": false,
+      "ineligibility_reasons": [
+        "eight-package subset of the 1.1.1 feed, not the 1.3.1 982-package closure",
+        "no retained 1.3.1 acquisition timing record"
+      ]
+    },
+    {
+      "stage": "signing",
+      "retained_observations": [],
+      "release_1_3_1_observation": null,
+      "comparison_eligible": false,
+      "ineligibility_reasons": [
+        "no retained signing duration record exists in the repository",
+        "1.3.1 signing included a failed 203-archive feed and a corrected 204-archive re-sign; attempt timings were not recorded here"
+      ]
+    },
+    {
+      "stage": "iso",
+      "retained_observations": [
+        {
+          "record": "verification/test-iso-1.2-test1.json",
+          "product_revision": "39c2785b595c8921cfe0fdea6704ad89c27ad7f5",
+          "phase": "build-iso.sh",
+          "elapsed_seconds": 692.869,
+          "supervisor_seconds": 716.504,
+          "exit": 0,
+          "note": "1.2-test1 loader-debug test ISO on the retained 1.1.1 base and package feed"
+        }
+      ],
+      "release_1_3_1_observation": null,
+      "comparison_eligible": false,
+      "ineligibility_reasons": [
+        "test ISO with 1.1.1 base/package selection, not the 1.3.1 release ISO inputs",
+        "no retained 1.3.1 ISO assembly timing record"
+      ]
+    },
+    {
+      "stage": "release-sets",
+      "retained_observations": [
+        {
+          "record": "verification/native-development-build.json",
+          "source_revision": "92276fc76c65f3ca31552d2e1833a6063361ff64",
+          "phase": "sets",
+          "elapsed_seconds": 220.836,
+          "exit": 1,
+          "note": "set staging attempt"
+        },
+        {
+          "record": "verification/native-development-build.json",
+          "source_revision": "92276fc76c65f3ca31552d2e1833a6063361ff64",
+          "phase": "sets",
+          "elapsed_seconds": 1344.623,
+          "exit": 0,
+          "note": "set staging attempt"
+        },
+        {
+          "record": "verification/native-traced-build-quiet-result.json",
+          "source_revision": "7d93dff0e80a96734f5c0ebe1a48fe378bc3b876",
+          "phase": "sets",
+          "elapsed_seconds": 2584.744,
+          "exit": -1,
+          "note": "set staging under tracing; terminated"
+        }
+      ],
+      "release_1_3_1_observation": null,
+      "comparison_eligible": false,
+      "ineligibility_reasons": [
+        "source revision differs from the 1.3.1 release source d63d77f4",
+        "no retained started/terminal UTC pair, worker/resource identity or equivalent gate scope",
+        "includes a failed first attempt and an exact-plan resume; retries cannot normalize a clean critical path"
+      ]
+    }
+  ],
+  "release_1_3_1_record_locations": {
+    "state": "not recovered",
+    "known_retention": "The 1.3.1 world/kernel/sets builds ran on daemon.local and the madmax FreeBSD guest (release notes); the madmax release-builder guest and its overlays remain retained on madmax. Their per-stage supervisor logs were not read: read-only recovery from those retained guests was not authorized in this session and daemon.local did not resolve from the controller.",
+    "required_recovery": "Read-only extraction of each stage's supervisor record (command, UTC start/end, exit, log digest, worker/resource identity) from the retained 1.3.1 builders, then validation with scripts/release-measurements.py. Never substitute operator-goal duration, retries or waivers."
+  },
+  "selected_targets": {
+    "selection_state": "selected before 1.4 implementation; any change requires a recorded roadmap decision",
+    "reference": "An equivalent clean 1.4 run (same product/source/ports selection, tests, gates and admitted worker pool) measured with scripts/release-measurements.py; the 1.3.1 baseline above is not eligible as that reference until recovered and validated.",
+    "targets": [
+      {
+        "id": "unchanged-rerun-speed",
+        "metric": "wall_seconds(unchanged) / wall_seconds(equivalent clean)",
+        "maximum": 0.1,
+        "source": "1.4 coverage ledger A10 (10x)"
+      },
+      {
+        "id": "compatible-update-speed",
+        "metric": "wall_seconds(compatible Chromium/CEF update) / wall_seconds(equivalent clean)",
+        "maximum": 0.25,
+        "source": "1.4 coverage ledger A10 (4x)"
+      },
+      {
+        "id": "unchanged-compilations",
+        "metric": "compiled package and world/kernel compile actions in an unchanged rerun",
+        "maximum": 0,
+        "source": "A10"
+      },
+      {
+        "id": "compatible-browser-compilations",
+        "metric": "Chromium and CEF compilations in a compatible update (both requalified)",
+        "maximum": 0,
+        "source": "A10"
+      },
+      {
+        "id": "changed-input-closure",
+        "metric": "rebuilt actions outside the computed invalidated closure",
+        "maximum": 0,
+        "source": "A10 and build-performance.md"
+      },
+      {
+        "id": "unchanged-cache-hit-rate",
+        "metric": "admitted cache hits / reuse-eligible actions in an unchanged rerun",
+        "minimum": 1.0,
+        "source": "A9 cache hit rates"
+      },
+      {
+        "id": "package-only-regression",
+        "metric": "package-only wall seconds / package stage seconds of the equivalent clean run",
+        "maximum": 1.0,
+        "source": "A9 package-only timing; guard, not a speedup claim"
+      },
+      {
+        "id": "iso-only-regression",
+        "metric": "ISO-only wall seconds / ISO stage seconds of the equivalent clean run",
+        "maximum": 1.0,
+        "source": "A9 ISO-only timing; guard, not a speedup claim"
+      },
+      {
+        "id": "distributed-regression",
+        "metric": "two-physical-worker clean critical path / single-worker equivalent clean critical path",
+        "maximum": 1.0,
+        "source": "A6/A9; any speedup is reported, not assumed"
+      }
+    ],
+    "required_accounting": [
+      "critical-path stage times",
+      "action counts by kind",
+      "cache hit/miss/refusal counts and bytes",
+      "prevented rebuilds",
+      "all retry and failed attempts included"
+    ]
+  },
+  "not_claimed": [
+    "a 1.3.1 normalized baseline",
+    "any 1.4 speedup",
+    "native receipts or lifecycle acceptance"
+  ]
+}

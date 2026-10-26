@@ -141,3 +141,29 @@ current-gates, timing, cache-accounting and physical worker/resource checks.
 Authenticated comparisons require attempt inventories for every action and only
 then set `target_met`. No authenticated full-run measurements have been produced;
 synthetic validator tests establish neither inventory completeness nor performance.
+
+## 1.3.1 stage-timing baseline and selected targets
+
+The [stage-timing baseline](../verification/release-1.3.1-stage-baseline-development.json)
+names the required world, kernel, package-fetch, package-build, signing and ISO
+stages, plus release sets. It binds the exact 1.3.1 selection (product `cdeb3434`,
+source `d63d77f4`, ports `b7857842`, ISO `ef5b1bec`) and the SHA-256 of every
+retained source record it cites. Retained repository records time other
+selections: the `92276fc7` development build, the failed traced `7d93dff0` run,
+an eight-package fetch probe and the 1.2-test1 ISO. Each stage is therefore
+marked comparison-ineligible, with its reasons. No signing duration is retained.
+The 1.3.1 per-stage supervisor records remain on the retained builders. They
+must be recovered read-only and validated with this driver before any comparison.
+
+The same record fixes the numeric targets before 1.4 implementation:
+- Speed: an unchanged rerun at most 0.1x and a compatible Chromium/CEF update at
+  most 0.25x of an equivalent clean 1.4 run.
+- Compilations: none in an unchanged rerun, and no Chromium or CEF compilation
+  in a compatible update.
+- Rebuild scope and reuse: no rebuild outside the changed closure, and every
+  reuse-eligible action a cache hit when unchanged.
+- No-regression guards: package-only, ISO-only and two-physical-worker runs no
+  slower than the matching clean stage or run.
+
+All retries and failed attempts count. These targets apply to the equivalent
+clean 1.4 reference, not to the ineligible 1.3.1 observations.
