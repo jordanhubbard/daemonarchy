@@ -148,12 +148,44 @@ The [stage-timing baseline](../verification/release-1.3.1-stage-baseline-develop
 names the required world, kernel, package-fetch, package-build, signing and ISO
 stages, plus release sets. It binds the exact 1.3.1 selection (product `cdeb3434`,
 source `d63d77f4`, ports `b7857842`, ISO `ef5b1bec`) and the SHA-256 of every
-retained source record it cites. Retained repository records time other
-selections: the `92276fc7` development build, the failed traced `7d93dff0` run,
-an eight-package fetch probe and the 1.2-test1 ISO. Each stage is therefore
-marked comparison-ineligible, with its reasons. No signing duration is retained.
-The 1.3.1 per-stage supervisor records remain on the retained builders. They
-must be recovered read-only and validated with this driver before any comparison.
+retained source record it cites.
+
+Read-only recovery from the retained madmax release-builder guests produced the
+actual 1.3.1 supervisor records. They are under
+[`verification/release-1.3.1-stage-records/`](../verification/release-1.3.1-stage-records/),
+and each is validated with:
+
+```sh
+python3 scripts/release-measurements.py --recover-supervisor \
+  verification/release-1.3.1-stage-records/source-progress.tsv \
+  --release-source d63d77f4eb3cc29e16510f7bdec73602e27c2844
+```
+
+The recovery pairs each UTC `start` line with its `complete` or `exit=N` line.
+It retains unpaired and unparsed lines, and always reports
+`historical-observation` with its normalization blockers.
+
+| Stage | Recovered 1.3.1 timing | Selection |
+| --- | --- | --- |
+| World | 2,058 s, exit 0, `-j16` | exact source `d63d77f4` |
+| Kernel | 240 s, exit 0, GENERIC | exact source |
+| Release sets | 444 s, exit 0, base/kernel/lib32 verified | exact source |
+| ISO assembly | 426 s, exit 0; earlier failed attempts of 45 s and 1 s | exact product/ports/source; output SHA-256 `ef5b1bec` |
+
+World, kernel and sets ran in a 16-vCPU, 64 GiB guest on a shared 32-thread host.
+They were an independent qualification build, and the shipped ISO used separately
+imported release sets. Package build has only these records:
+- two failed madmax bulks on the earlier ports tree `7e417dae`, of 4,209 s and
+  32,817 s;
+- a third attempt whose terminal record stays in an unreachable guest;
+- an exact-selection fast race of 85,485 s that built five ports incrementally
+  and did not produce the published feed.
+
+Package fetch and signing were not recovered. The validator blocks every recovered
+stage from normalized comparison, because worker pool, resource budget and gate
+scope are not bound by identity and no authenticated receipts exist. These are the
+best available 1.3.1 stage references, not a normalized baseline. Older retained
+records from other selections stay listed and comparison-ineligible.
 
 The same record fixes the numeric targets before 1.4 implementation:
 - Speed: an unchanged rerun at most 0.1x and a compatible Chromium/CEF update at
