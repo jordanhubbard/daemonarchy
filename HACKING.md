@@ -785,7 +785,14 @@ coordinated operation.
    then tag the exact reviewed commit. Publish a normal stable GitHub release
    `daemonarchy-<version>`, marked latest. Standard public assets are the ISO,
    its `.sha256`, `daemonarchy-<version>-boot.txz`, its detached `.sig`, and
-   the matching public Secure Boot certificate in PEM and DER form. The 1.3.1
+   the matching public Secure Boot certificate in PEM and DER form. From 1.4.0
+   the ISO is published xz-compressed as `daemonarchy-<version>-<arch>.iso.xz`,
+   and the published `.iso.xz.sha256` covers the compressed bytes users
+   download. `build-iso.sh` writes both after checking that the `.xz`
+   decompresses to the exact built image. Do not upload the raw `.iso` or its
+   `.iso.sha256`; they stay local for VM QA and native evidence, which binds
+   the uncompressed image digest. Releases through 1.3.1 keep their raw ISO
+   assets unchanged. The 1.3.1
    candidate rotates that certificate because the previous private signing key
    is unavailable; do not reuse the 1.1 certificate names for a different key.
    For 1.3.1, after the exact build and hardware gates pass:

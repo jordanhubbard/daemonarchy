@@ -217,7 +217,7 @@ printf '%s\n' "$live_python" >>"$stage/live-packages"
 cp "$here/scripts/live-image-excludes" "$stage/exclude"
 
 # poudriere image names (also the ISO volume label) are alphanumeric only.
-rm -f "$OUTDIR/$NAME.iso.sha256"
+rm -f "$OUTDIR/$NAME.iso.sha256" "$OUTDIR/$NAME.iso.xz" "$OUTDIR/$NAME.iso.xz.sha256"
 poudriere_run image -t hybridiso -j "$JAIL" -p "$PTREE" -n "$image" \
 	-h daemonarchy-installer -c "$stage/overlay" -f "$stage/live-packages" \
 	-A "$here/live-post.sh" -X "$stage/exclude" -o "$OUTDIR"
@@ -227,5 +227,16 @@ iso=$OUTDIR/$NAME.iso
 sh "$here/scripts/check-image-size.sh" "$iso"
 digest=$(sha256 -q "$iso")
 printf '%s  %s\n' "$digest" "$(basename "$iso")" >"$iso.sha256"
-ls -lh "$iso"
-cat "$iso.sha256"
+
+# Releases publish the image xz-compressed with a checksum of the compressed
+# bytes. Keep the raw image and its checksum for local VM QA and native evidence.
+echo "==> Compressing the image"
+xz -T0 -9 -k "$iso"
+xz -t "$iso.xz"
+if [ "$(xz -dc "$iso.xz" | sha256 -q)" != "$digest" ]; then
+  echo "$iso.xz does not decompress to the built image" >&2
+  exit 1
+fi
+printf '%s  %s\n' "$(sha256 -q "$iso.xz")" "$(basename "$iso.xz")" >"$iso.xz.sha256"
+ls -lh "$iso" "$iso.xz"
+cat "$iso.sha256" "$iso.xz.sha256"

@@ -23,6 +23,13 @@ HEX = re.compile(r"[0-9a-f]{64}\Z")
 COMMIT = re.compile(r"[0-9a-f]{40}\Z")
 VERSION = re.compile(r"(?:0|[1-9][0-9]*)\.(?:0|[1-9][0-9]*)\.(?:0|[1-9][0-9]*)\Z")
 CERTIFICATE = re.compile(r"daemonarchy-[0-9]+(?:\.[0-9]+){1,2}\.pem\Z")
+XZ_MAGIC = b"\xfd7zXZ\x00"
+
+
+def iso_asset(version):
+    """Name the public image: xz-compressed from 1.4.0, the raw ISO before."""
+    raw = f"daemonarchy-{version}-amd64.iso"
+    return raw + ".xz" if tuple(map(int, version.split("."))) >= (1, 4, 0) else raw
 
 
 def unique_pairs(pairs):
@@ -54,9 +61,10 @@ def read_record(path):
     if not isinstance(assets, dict):
         raise ValueError("Release asset map is missing")
     prefix = f"daemonarchy-{version}"
+    iso = iso_asset(version)
     expected = {
-        f"{prefix}-amd64.iso",
-        f"{prefix}-amd64.iso.sha256",
+        iso,
+        iso + ".sha256",
         f"{prefix}-boot.txz",
         f"{prefix}-boot.txz.sig",
     }
@@ -98,10 +106,14 @@ def verify(record_path, directory):
         for name, entry in record["assets"].items()
     }
     prefix = f"daemonarchy-{record['version']}"
-    iso = f"{prefix}-amd64.iso"
+    iso = iso_asset(record["version"])
     checksum = paths[iso + ".sha256"].read_bytes()
     if checksum != f"{record['assets'][iso][1][7:]}  {iso}\n".encode():
         raise ValueError("ISO checksum file differs from the verified image")
+    if iso.endswith(".xz"):
+        with paths[iso].open("rb") as stream:
+            if stream.read(len(XZ_MAGIC)) != XZ_MAGIC:
+                raise ValueError("Compressed ISO asset is not an xz stream")
 
     pem, der = paths[certificate], paths[certificate.removesuffix(".pem") + ".der"]
     if b"PRIVATE KEY" in pem.read_bytes():
