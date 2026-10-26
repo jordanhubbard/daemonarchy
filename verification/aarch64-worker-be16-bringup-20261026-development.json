@@ -79,13 +79,13 @@
       "method": "The worker had no /var/db/etcupdate, and etcupdate -t expects a build tarball, not base.txz. Both trees were made from the release sets: etc, root and boot/device.hints from the 15.1-RELEASE and 16 base.txz. Then etcupdate extract -D /mnt/be16 -t etcupdate-15.1.txz, a dry run (-n), and etcupdate -F -D /mnt/be16 -t etcupdate-16.txz.",
       "old_tree_tarball_sha256": "0b3bdf0c7b94e03295237a83201bb68b373162b852f43aa43ceee8df541703db",
       "new_tree_tarball_sha256": "58575c471397b7170cc8eb362d1f09d153ee6a89c4745cec4b55538937b3d31a",
-      "local_changes_against_15_1": ["etc/master.passwd", "etc/passwd", "etc/pwd.db", "etc/spwd.db", "etc/group", "etc/shells", "etc/sysctl.conf", "etc/ssl (certctl trust store)", "etc/mtree/BSD.tests.dist", "local-only: etc/rc.conf, etc/fstab, etc/resolv.conf, etc/hostid, etc/machine-id, etc/zfs/exports, etc/ssh host keys"],
+      "local_changes_against_15_1": ["the account database (master and public password files and their db files)", "etc/group", "etc/shells", "etc/sysctl.conf", "etc/ssl (certctl trust store)", "etc/mtree/BSD.tests.dist", "local-only: etc/rc.conf, etc/fstab, etc/resolv.conf, etc/hostid, etc/machine-id, etc/zfs/exports, etc/ssh host keys"],
       "result": "exit 0; conflicts: none; etcupdate status reports nothing outstanding",
       "merged": ["M etc/group (16 adds audio:43 and vmm:978; local entries kept)", "M etc/mtree/BSD.tests.dist"],
       "added": ["etc/devd/growfs_postboot.conf", "etc/rc.d/backlight", "etc/rc.d/growfs_postboot"],
       "deleted": ["etc/rc.d/apm"],
       "updated": "54 unmodified stock files (rc.subr, rc.d, defaults/rc.conf, sshd_config, ssh_config, login.conf, pkg/FreeBSD.conf and others)",
-      "kept_unchanged_verified": ["etc/master.passwd", "etc/rc.conf", "etc/fstab", "etc/sysctl.conf", "etc/shells", "etc/hostid", "etc/resolv.conf", "etc/ssh/ssh_host_*", "boot/loader.conf (zfs_load and GEOM label settings)", "usr/local/etc/sudoers"],
+      "kept_unchanged_verified": ["the account database (master password file)", "etc/rc.conf", "etc/fstab", "etc/sysctl.conf", "etc/shells", "etc/hostid", "etc/resolv.conf", "etc/ssh/ssh_host_*", "boot/loader.conf (zfs_load and GEOM label settings)", "usr/local/etc/sudoers"],
       "after": "certctl -D /mnt/be16 rehash"
     },
     "pkg": {
