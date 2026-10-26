@@ -104,6 +104,11 @@ records its `registered_owners`, and the graph records the exact
 `component_catalog` it was checked against. Registration is not admission: full
 retained/native admission remains a separate required gate.
 
+The operator confirmed the owner assignment on 2026-10-26: units from the
+FreeBSD source fork are owned by `component://daemonarchy/release`, and ports
+units by `component://daemonarchy/package-engine`. Dedicated source or ports
+Components are not planned for 1.4.
+
 Admission is exact across units, not only within one unit. Every retained
 member resolves to one canonical Component owner. When several selected units
 in one repository retain the same path, they must agree on its owner, authoring
