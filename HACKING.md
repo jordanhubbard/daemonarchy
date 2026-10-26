@@ -819,7 +819,15 @@ coordinated operation.
    GitHub stable latest release, annotated tag target and all six uploaded
    asset sizes and SHA-256 digests with the exact local record.
 
-3. Point the Download section at the top of README.md to the new release: release name, ISO and checksum links, SHA-256, and the `dd` example.
+3. Once `--published` passes, update the root `README.md` on `main` in the same
+   release cycle; the release is not finished until this lands. Point its
+   Download section and its current-release section to the new tag: release
+   name, ISO and checksum links, byte size and SHA-256 taken from the verified
+   published release (not from local build outputs), the `dd` example, and the
+   release notes and their limits. Turn the previous release's text into
+   history. Never point the README at a draft, prerelease or unpublished
+   release. (After 1.3.1 shipped, the README kept advertising 1.1.1 until this
+   step was enforced.)
 4. If the release replaces one with a serious bug, say so at the top of the old release's notes.
 
 ## Pitfalls met so far
