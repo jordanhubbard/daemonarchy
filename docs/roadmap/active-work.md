@@ -1048,9 +1048,9 @@ remains open; report files do not establish a passing gate.
 - **Conclusion:** Each architecture keeps its own artifacts, feeds, timings and evidence; amd64 results never qualify aarch64. Virtualized acceptance qualifies only virtualized operation, and a laptop result is scoped to its exact model and execution mode (hosted VM or bare metal).
 - **Depends on:** PERF-002, DEBUG-003
 - **Implementation:**
-  - [ ] Inventory aarch64 build, ABI and package gaps in the selected source and ports closure, and add aarch64 as a typed variant in the release input graph.
+  - [x] Inventory aarch64 build, ABI and package gaps in the selected source and ports closure, and add aarch64 as a typed variant in the release input graph. The read-only [aarch64 inventory](../aarch64.md) lists the blocking gaps: the desktop closure (Hyprland, Chromium, `mise`, `edk2@bhyve`), no aarch64 DRM KMS, amd64-only source build tooling and diagnostic kernel, and the loader entropy fallback. The release graph keys every unit on one [architecture variant](../release-input-graph.md#architecture-variants). The product build, installer and release asset check are architecture-aware without a native aarch64 run.
   - [ ] Build world, kernel, signed aarch64 package feeds and an aarch64 UEFI installer image under the same LitAI custody, cache and graph rules as amd64.
-  - [ ] Install the initial aarch64 worker: a FreeBSD arm64 VMware guest on an Apple silicon Mac from the operator-supplied, checksum-verified arm64 `dvd1` ISO; admit it as the native aarch64 build host and first test target.
+  - [ ] Install the initial aarch64 worker: a FreeBSD arm64 VMware guest on an Apple silicon Mac from the operator-supplied, checksum-verified arm64 `dvd1` ISO; admit it as the native aarch64 build host and first test target. The [bring-up plan](../aarch64.md#worker-bring-up-freebsd-arm64-under-vmware-on-apple-silicon) gives sizing, the 15.1-RELEASE `dvd1` to selected-16 step and the separate test guests.
   - [ ] Run install, boot, upgrade, rollback, desktop and network-debug cases in separate aarch64 VMware guests.
   - [ ] After the virtualized matrix passes, enlist M1-M4 Mac laptops for the execution modes they can actually support, recording model, firmware and mode.
 - **Evidence:**

@@ -16,13 +16,19 @@
 
 set -eu
 
-JAIL=${JAIL:-16amd64}
-PTREE=${PTREE:-omarchyiso}
-SNAPSHOT_URL=${SNAPSHOT_URL:-https://download.freebsd.org/snapshots/amd64/16.0-CURRENT}
-SET_CACHE_DIR=${SET_CACHE_DIR:-/var/cache/daemonarchy-iso}
-OUTDIR=${OUTDIR:-/usr/local/poudriere/data/images}
-ABI=${ABI:-FreeBSD:16:amd64}
+here=$(cd "$(dirname "$0")" && pwd)
+# ARCH (amd64 or aarch64) selects every architecture default below. The build
+# host must be a native worker of that architecture.
 ARCH=${ARCH:-amd64}
+. "$here/scripts/image-architecture.sh"
+image_architecture_select "$ARCH"
+JAIL=${JAIL:-$image_jail}
+PTREE=${PTREE:-omarchyiso}
+SNAPSHOT_URL=${SNAPSHOT_URL:-$image_snapshot_url}
+SET_CACHE_DIR=${SET_CACHE_DIR:-$image_set_cache_dir}
+OUTDIR=${OUTDIR:-/usr/local/poudriere/data/images}
+ABI=${ABI:-$image_abi}
+[ "$ABI" = "$image_abi" ] || { echo "ABI $ABI does not match ARCH $ARCH" >&2; exit 1; }
 POUDRIERE_ETC=${POUDRIERE_ETC:-}
 
 poudriere_run() {
@@ -33,13 +39,12 @@ poudriere_run() {
   fi
 }
 
-here=$(cd "$(dirname "$0")" && pwd)
 . "$here/overlay/usr/local/libexec/daemonarchy-installer/package-repository"
-PACKAGE_REPOSITORY_TAG=${PACKAGE_REPOSITORY_TAG:-packages-16-amd64}
-package_repository_tag_validate "$PACKAGE_REPOSITORY_TAG"
+PACKAGE_REPOSITORY_TAG=${PACKAGE_REPOSITORY_TAG:-$image_package_repository_tag}
+package_repository_tag_validate "$PACKAGE_REPOSITORY_TAG" "$ARCH"
 PACKAGE_REPOSITORY_PUBLIC_KEY=${PACKAGE_REPOSITORY_PUBLIC_KEY:-}
 if [ -n "$PACKAGE_REPOSITORY_PUBLIC_KEY" ]; then
-    [ "$PACKAGE_REPOSITORY_TAG" != packages-16-amd64 ] || {
+    [ "$PACKAGE_REPOSITORY_TAG" != "$image_package_repository_tag" ] || {
         echo 'An alternate package key requires a versioned repository tag' >&2
         exit 1
     }
@@ -97,7 +102,8 @@ for pkgfile in "$packages"/All/*.pkg; do
 	esac
 done
 pkg repo -q "$share/repo" >/dev/null
-ls "$share"/repo/All/if_brcmfmac-kmod-*.pkg >/dev/null 2>&1 || {
+# The Apple T2 BCM4364 driver is an amd64-only (Intel Mac) port.
+[ "$ARCH" != amd64 ] || ls "$share"/repo/All/if_brcmfmac-kmod-*.pkg >/dev/null 2>&1 || {
   echo 'The kernel-matched BCM4364 driver package is absent from this ISO build' >&2
   exit 1
 }
@@ -157,6 +163,7 @@ fi
 # Only public, already signed artifacts belong on the authoring worker/image.
 # The private release key is never an input to this script.
 if [ -n "${SECUREBOOT_BUNDLE:-}${SECUREBOOT_SIGNATURE:-}${SECUREBOOT_CERTIFICATE:-}" ]; then
+    [ "$ARCH" = amd64 ] || { echo 'Secure Boot artifacts are built and qualified for amd64 only' >&2; exit 1; }
     [ "$live_python" = python312 ] || { echo 'The verified boot helper requires Python 3.12' >&2; exit 1; }
     for input in "${SECUREBOOT_BUNDLE:-}" "${SECUREBOOT_SIGNATURE:-}" "${SECUREBOOT_CERTIFICATE:-}"; do
         [ -n "$input" ] && [ -s "$input" ] || { echo 'Set all three SECUREBOOT public artifact paths' >&2; exit 1; }
@@ -203,14 +210,15 @@ fi
 
 # Keep NVIDIA and AMD/Intel on the same explicit DRM family. Validate every
 # kernel module against the snapshot ABI before generating the image.
-sh "$here/scripts/check-gpu-packages.sh" "$share/repo/All" "$set_version" >"$share/gpu-packages"
+sh "$here/scripts/check-gpu-packages.sh" "$share/repo/All" "$set_version" "$ABI" >"$share/gpu-packages"
 
 chmod 0755 "$stage"/overlay/usr/local/libexec/daemonarchy-installer/* \
 	"$stage"/overlay/usr/local/bin/* "$stage"/overlay/usr/local/sbin/* \
 	"$share/keymap" "$share/compat/timedatectl"
 
 echo "==> Building the image"
-printf '%s\n' bash gum jq ttfx tzupdate pkg wifi-firmware-kmod if_brcmfmac-kmod 7-zip >"$stage/live-packages"
+# shellcheck disable=SC2086 # the architecture's kernel driver packages, if any
+printf '%s\n' bash gum jq ttfx tzupdate pkg wifi-firmware-kmod $image_kernel_packages 7-zip >"$stage/live-packages"
 printf '%s\n' "$live_python" >>"$stage/live-packages"
 # Trim only the live root. The untouched base.txz still installs a complete
 # development system, and optional source/ports checkouts remain downloadable.
@@ -218,9 +226,20 @@ cp "$here/scripts/live-image-excludes" "$stage/exclude"
 
 # poudriere image names (also the ISO volume label) are alphanumeric only.
 rm -f "$OUTDIR/$NAME.iso.sha256" "$OUTDIR/$NAME.iso.xz" "$OUTDIR/$NAME.iso.xz.sha256"
+if [ "$image_type" = hybridiso ]; then
 poudriere_run image -t hybridiso -j "$JAIL" -p "$PTREE" -n "$image" \
 	-h daemonarchy-installer -c "$stage/overlay" -f "$stage/live-packages" \
 	-A "$here/live-post.sh" -X "$stage/exclude" -o "$OUTDIR"
+else
+	# poudriere's ISO types embed x86 BIOS boot code. Build the same live root
+	# as a tar image, then a UEFI-only hybrid ISO with this architecture's loader.
+	poudriere_run image -t tar -j "$JAIL" -p "$PTREE" -n "$image" \
+		-h daemonarchy-installer -c "$stage/overlay" -f "$stage/live-packages" \
+		-A "$here/live-post.sh" -X "$stage/exclude" -o "$stage"
+	rm -f "$OUTDIR/$image.iso"
+	sh "$here/scripts/make-efi-iso.sh" "$stage/$image.txz" "$image" "$OUTDIR/$image.iso" \
+		"$stage/efi-iso" "$image_efi_boot_file"
+fi
 
 iso=$OUTDIR/$NAME.iso
 [ "$image" = "$NAME" ] || mv "$OUTDIR/$image.iso" "$iso"

@@ -1,8 +1,18 @@
 # The image selects its signed application feed. Candidate installations must
-# keep using that feed without publishing over the stable repository.
-package_repository_tag_validate() {
+# keep using that feed without publishing over the stable repository. Each
+# architecture has its own feed family, packages-16-<arch>; an image never
+# selects another architecture's feed.
+package_repository_architecture() { # FreeBSD package ABI
     case "$1" in
-        packages-16-amd64|packages-16-amd64-?*) ;;
+        FreeBSD:16:amd64) echo amd64 ;;
+        FreeBSD:16:aarch64) echo aarch64 ;;
+        *) echo 'Unsupported Daemonarchy package ABI' >&2; return 1 ;;
+    esac
+}
+
+package_repository_tag_validate() { # tag [architecture, default amd64]
+    case "$1" in
+        packages-16-"${2:-amd64}"|packages-16-"${2:-amd64}"-?*) ;;
         *) echo 'Invalid Daemonarchy package repository tag' >&2; return 1 ;;
     esac
     case "$1" in
@@ -11,16 +21,21 @@ package_repository_tag_validate() {
 }
 
 package_repository_prepare() {
-    package_repository_tag=packages-16-amd64
+    package_repository_arch=amd64
+    if [ -e "$1/ABI" ]; then
+        package_repository_arch=$(package_repository_architecture "$(cat "$1/ABI")") || return 1
+    fi
+    package_repository_stable_tag=packages-16-$package_repository_arch
+    package_repository_tag=$package_repository_stable_tag
     if [ -e "$1/package-repository-tag" ]; then
         package_repository_tag=$(cat "$1/package-repository-tag") || return 1
     fi
-    package_repository_tag_validate "$package_repository_tag"
+    package_repository_tag_validate "$package_repository_tag" "$package_repository_arch"
 }
 
 package_repository_write_dependencies() {
-    package_repository_tag_validate "$package_repository_tag" || return 1
-    [ "$package_repository_tag" != packages-16-amd64 ] || return 0
+    package_repository_tag_validate "$package_repository_tag" "${package_repository_arch:-amd64}" || return 1
+    [ "$package_repository_tag" != "packages-16-${package_repository_arch:-amd64}" ] || return 0
     package_cache_validate || return 1
     package_dependency_url="https://github.com/jordanhubbard/daemonarchy/releases/download/$package_repository_tag"
     [ -z "${package_cache_url:-}" ] || package_dependency_url=$package_cache_url

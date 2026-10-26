@@ -38,6 +38,16 @@ on:
       - 'tests/release-native-evidence.py'
       - 'scripts/verify-release-assets.py'
       - 'tests/release-asset-names.py'
+      - 'scripts/image-architecture.sh'
+      - 'origins.sh'
+      - 'scripts/make-efi-iso.sh'
+      - 'scripts/check-gpu-packages.sh'
+      - 'pkg-repo.sh'
+      - 'overlay/usr/local/libexec/daemonarchy-installer/disk-layout'
+      - 'overlay/usr/local/libexec/daemonarchy-installer/gpu-config'
+      - 'overlay/usr/local/libexec/daemonarchy-installer/package-repository'
+      - 'tests/image-architecture.sh'
+      - 'tests/package-repository.sh'
       - '.github/workflows/native-graph.yml'
   pull_request:
     paths:
@@ -76,6 +86,16 @@ on:
       - 'tests/release-native-evidence.py'
       - 'scripts/verify-release-assets.py'
       - 'tests/release-asset-names.py'
+      - 'scripts/image-architecture.sh'
+      - 'origins.sh'
+      - 'scripts/make-efi-iso.sh'
+      - 'scripts/check-gpu-packages.sh'
+      - 'pkg-repo.sh'
+      - 'overlay/usr/local/libexec/daemonarchy-installer/disk-layout'
+      - 'overlay/usr/local/libexec/daemonarchy-installer/gpu-config'
+      - 'overlay/usr/local/libexec/daemonarchy-installer/package-repository'
+      - 'tests/image-architecture.sh'
+      - 'tests/package-repository.sh'
       - '.github/workflows/native-graph.yml'
   workflow_dispatch:
 
@@ -103,6 +123,12 @@ jobs:
           sh -n build-iso.sh scripts/iso-stage.sh
           python3 tests/iso-stage.py -v
           python3 tests/test-loader.py -v
+      - name: Per-architecture image and installer controls
+        run: |
+          sh -n scripts/image-architecture.sh scripts/make-efi-iso.sh scripts/check-gpu-packages.sh pkg-repo.sh
+          bash -n overlay/usr/local/libexec/daemonarchy-installer/disk-layout overlay/usr/local/libexec/daemonarchy-installer/gpu-config
+          sh tests/package-repository.sh
+          bash tests/image-architecture.sh
       - name: Measured installer progress and completion controls
         env:
           PYTHONDONTWRITEBYTECODE: '1'

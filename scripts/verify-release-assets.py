@@ -24,12 +24,41 @@ COMMIT = re.compile(r"[0-9a-f]{40}\Z")
 VERSION = re.compile(r"(?:0|[1-9][0-9]*)\.(?:0|[1-9][0-9]*)\.(?:0|[1-9][0-9]*)\Z")
 CERTIFICATE = re.compile(r"daemonarchy-[0-9]+(?:\.[0-9]+){1,2}\.pem\Z")
 XZ_MAGIC = b"\xfd7zXZ\x00"
+# Each architecture publishes its own image; aarch64 begins with 1.4.0.
+ARCHITECTURES = {"amd64": (0, 0, 0), "aarch64": (1, 4, 0)}
 
 
-def iso_asset(version):
+def release_tuple(version):
+    return tuple(map(int, version.split(".")))
+
+
+def iso_asset(version, arch="amd64"):
     """Name the public image: xz-compressed from 1.4.0, the raw ISO before."""
-    raw = f"daemonarchy-{version}-amd64.iso"
-    return raw + ".xz" if tuple(map(int, version.split("."))) >= (1, 4, 0) else raw
+    if arch not in ARCHITECTURES:
+        raise ValueError(f"Unsupported image architecture: {arch}")
+    raw = f"daemonarchy-{version}-{arch}.iso"
+    return raw + ".xz" if release_tuple(version) >= (1, 4, 0) else raw
+
+
+def record_architectures(record):
+    """The record's image architectures; a record without the field is amd64 only."""
+    if "architectures" not in record:
+        return ["amd64"]
+    architectures = record["architectures"]
+    if (not isinstance(architectures, list) or not architectures
+            or len(set(architectures)) != len(architectures)
+            or any(not isinstance(arch, str) or arch not in ARCHITECTURES for arch in architectures)):
+        raise ValueError("Release architectures must be a unique list of supported architectures")
+    if architectures != sorted(architectures, key=list(ARCHITECTURES).index):
+        raise ValueError("Release architectures must be listed in canonical order")
+    for arch in architectures:
+        if release_tuple(record["version"]) < ARCHITECTURES[arch]:
+            raise ValueError(f"Release {record['version']} predates {arch} images")
+    return architectures
+
+
+def iso_assets(record):
+    return [iso_asset(record["version"], arch) for arch in record_architectures(record)]
 
 
 def unique_pairs(pairs):
@@ -61,10 +90,8 @@ def read_record(path):
     if not isinstance(assets, dict):
         raise ValueError("Release asset map is missing")
     prefix = f"daemonarchy-{version}"
-    iso = iso_asset(version)
-    expected = {
-        iso,
-        iso + ".sha256",
+    expected = {name for iso in iso_assets(record) for name in (iso, iso + ".sha256")}
+    expected |= {
         f"{prefix}-boot.txz",
         f"{prefix}-boot.txz.sig",
     }
@@ -106,14 +133,14 @@ def verify(record_path, directory):
         for name, entry in record["assets"].items()
     }
     prefix = f"daemonarchy-{record['version']}"
-    iso = iso_asset(record["version"])
-    checksum = paths[iso + ".sha256"].read_bytes()
-    if checksum != f"{record['assets'][iso][1][7:]}  {iso}\n".encode():
-        raise ValueError("ISO checksum file differs from the verified image")
-    if iso.endswith(".xz"):
-        with paths[iso].open("rb") as stream:
-            if stream.read(len(XZ_MAGIC)) != XZ_MAGIC:
-                raise ValueError("Compressed ISO asset is not an xz stream")
+    for iso in iso_assets(record):
+        checksum = paths[iso + ".sha256"].read_bytes()
+        if checksum != f"{record['assets'][iso][1][7:]}  {iso}\n".encode():
+            raise ValueError(f"ISO checksum file differs from the verified image: {iso}")
+        if iso.endswith(".xz"):
+            with paths[iso].open("rb") as stream:
+                if stream.read(len(XZ_MAGIC)) != XZ_MAGIC:
+                    raise ValueError(f"Compressed ISO asset is not an xz stream: {iso}")
 
     pem, der = paths[certificate], paths[certificate.removesuffix(".pem") + ".der"]
     if b"PRIVATE KEY" in pem.read_bytes():
