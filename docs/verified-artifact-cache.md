@@ -34,8 +34,11 @@ A cache hit is rehashed and size-checked before serving and still passes through
 native `pkg` verification. A corrupt entry fails closed with HTTP 502; it is not
 silently replaced, repaired or redirected to a successful download.
 
-Results include `verified_cache` with hits, misses, bytes saved, verification
-seconds and per-selection events. The private case also retains
+Results include `verified_cache` with hits, misses, `corrupt_refusals`, bytes
+saved, verification seconds and per-selection events. A published selection whose
+record is unreadable or misbound, or whose object is missing or has the wrong
+size or SHA-256, is a measured `corrupt_refused` event, never a miss. It serves
+zero bytes and the entry remains in place for diagnosis. The private case also retains
 `verified-cache-events.json` when its frozen origin closes, including on a failed
 native fetch. `bytes_saved` counts bytes served from verified cache instead of
 fetching them from the publisher; it is not measured end-to-end speedup. Repeated
@@ -76,6 +79,22 @@ must still pass native verification. This probe performs no installation,
 compilation, signing or VM launch and cannot qualify application/runtime ABI
 behavior. A further corruption control must use a separate newly created test
 namespace; never damage an earlier retained cache or published archive.
+
+The 2026-10-26 native run of this probe used pkg 2.8.4, reviewed source `d9341f9`,
+the signed 1.3.1 catalogue and `keys/pkg-repo-1.3.1.pub`, and is
+[recorded](../verification/verified-cache-native-probe-20261025-development.json):
+
+- **Cold:** one miss and one HTTPS redirect; fetch/verify took 2.58 s.
+- **Warm:** one hit served 6,517,442 bytes from cache, with no redirect; the
+  rehash took 0.005 s and fetch/verify took 0.34 s. Native checksum verification
+  still passed on the hit.
+- **Same-size corruption** in a fresh control namespace: refused with HTTP 502,
+  and no result or payload was produced. Native pkg retried the request, so three
+  `corrupt_refused` events were recorded rather than one.
+- **`final-rc`, no cache:** reacquired the public metadata, then signature and
+  checksum verification passed.
+
+All case bytes and the probe namespace were retained.
 
 ## Stable cache API
 
@@ -238,8 +257,10 @@ feed; the ISO's kernel-matched packages and FreeBSD upstream policy retain their
 existing sources. Installed production repository configuration retains the public
 versioned feed URL. This is a transport override, not an authentication override.
 
-Use `PACKAGE_QA_MODE=final-rc` with no cache URL for final public QA. Both harness
-and installer reject an override in that mode before destructive work. This
+Use `PACKAGE_QA_MODE=final-rc` with no cache URL or metadata pins for final public
+QA. Both harness and installer reject any override field in that mode, including
+a pin without a URL, before CIDATA creation, host mutation or destructive work.
+The installed dependency feed then names only the public versioned release URL. This
 option alone does not prove that the supplied ISO came from the public release;
 the final QA driver must record public binary acquisition and verification.
 

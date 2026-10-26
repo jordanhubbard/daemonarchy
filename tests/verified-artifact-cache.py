@@ -184,6 +184,66 @@ class CacheTests(unittest.TestCase):
         self.assertFalse((self.root / "cache/selections" / (self.cache.key(selected) + ".json")).exists())
         self.assertEqual(self.cache.summary()["candidate_bytes_admitted"], 0)
 
+    def test_measured_hit_miss_and_corrupt_refusal_counters(self):
+        # Controller transport measurement only; no native timing or speedup claim.
+        self.assertIsNone(self.cache.lookup(self.identity))
+        self.cache.retain(self.identity, self.source, self.sha)
+        for _ in range(2):
+            with self.cache.lookup(self.identity) as stream:
+                self.assertEqual(stream.read(), self.payload)
+        blob = self.root / "cache/objects" / self.sha
+        blob.chmod(0o600)
+        corrupt = b"x" * len(self.payload)
+        blob.write_bytes(corrupt)
+        with self.assertRaisesRegex(ValueError, "corrupt cache entry SHA-256"):
+            self.cache.lookup(self.identity)
+        blob.write_bytes(self.payload + b"!")
+        with self.assertRaisesRegex(ValueError, "corrupt cache entry size"):
+            self.cache.lookup(self.identity)
+        result = self.cache.summary()
+        self.assertEqual((result["misses"], result["hits"], result["corrupt_refusals"]), (1, 2, 2))
+        # Refused bytes are never counted as served from cache.
+        self.assertEqual(result["bytes_saved"], 2 * len(self.payload))
+        refused = [event for event in result["events"] if event["kind"] == "corrupt_refused"]
+        self.assertEqual({event["sha256"] for event in refused}, {self.sha})
+        self.assertTrue(all(event["seconds"] >= 0 and event["bytes_saved"] == 0 for event in refused))
+        self.assertTrue(all(event["seconds"] >= 0 for event in result["events"] if event["kind"] in ("hit", "miss")))
+        # The corrupt object stays in place for diagnosis; nothing repairs it.
+        self.assertEqual(blob.read_bytes(), self.payload + b"!")
+
+    def test_missing_object_or_unreadable_record_is_corruption_not_miss(self):
+        self.cache.retain(self.identity, self.source, self.sha)
+        blob = self.root / "cache/objects" / self.sha
+        moved = self.root / "retained-object-for-diagnosis"
+        os.rename(blob, moved)
+        with self.assertRaises(FileNotFoundError):
+            self.cache.lookup(self.identity)
+        os.rename(moved, blob)
+        record = self.root / "cache/selections" / (self.cache.key(self.identity) + ".json")
+        record.chmod(0o600)
+        record.write_bytes(b"not json")
+        with self.assertRaises(ValueError):
+            self.cache.lookup(self.identity)
+        record.write_bytes(b'{"schema":"daemonarchy/verified-cache-entry@1","identity":{}}')
+        with self.assertRaisesRegex(ValueError, "binding"):
+            self.cache.lookup(self.identity)
+        result = self.cache.summary()
+        self.assertEqual((result["misses"], result["hits"], result["corrupt_refusals"]), (0, 0, 3))
+        self.assertEqual(result["bytes_saved"], 0)
+
+    def test_corrupt_candidate_refusal_is_measured_and_never_offered(self):
+        self.cache.retain(self.identity, self.source, self.sha)
+        blob = self.root / "cache/objects" / self.sha
+        blob.chmod(0o600)
+        blob.write_bytes(b"x" * len(self.payload))
+        selected = self.new_selection()
+        self.assertIsNone(self.cache.lookup(selected))
+        with self.assertRaisesRegex(ValueError, "corrupt"):
+            self.cache.candidate(selected, self.authentication(selected))
+        result = self.cache.summary()
+        self.assertEqual((result["misses"], result["corrupt_refusals"]), (1, 1))
+        self.assertEqual((result["candidate_requests"], result["candidate_bytes_offered"]), (0, 0))
+
 
 
 class InstallerCacheTests(unittest.TestCase):
@@ -225,6 +285,49 @@ class InstallerCacheTests(unittest.TestCase):
         self.assertNotEqual(result.returncode, 0)
         self.assertIn("Final RC", result.stderr)
         self.assertNotIn("kldload", result.stderr)
+
+    def test_final_rc_refuses_every_override_field_and_writes_public_feed(self):
+        pins = ("package_cache_meta_sha256", "package_cache_packagesite_sha256", "package_cache_data_sha256")
+        for field in ("package_cache_url",) + pins:
+            env = {"package_qa_mode": "final-rc", field: self.environment()[field]}
+            result = self.shell("package_cache_validate", env)
+            self.assertNotEqual(result.returncode, 0, field)
+            self.assertIn("Final RC", result.stderr)
+            result = self.shell("package_cache_check_metadata", env)
+            self.assertNotEqual(result.returncode, 0, field)
+        with tempfile.TemporaryDirectory() as directory:
+            target = Path(directory) / "repository.conf"
+            result = self.shell('package_repository_tag=packages-16-amd64-1.4.0; package_repository_write_dependencies "$TARGET" /selected/public-key',
+                                dict(package_qa_mode="final-rc", TARGET=str(target)))
+            self.assertEqual(result.returncode, 0, result.stderr)
+            value = target.read_text()
+            self.assertIn('url: "https://github.com/jordanhubbard/daemonarchy/releases/download/packages-16-amd64-1.4.0"', value)
+            self.assertIn('signature_type: "pubkey"', value)
+            # An inherited override cannot leak into the final installed feed.
+            target.unlink()
+            result = self.shell('package_repository_tag=packages-16-amd64-1.4.0; package_repository_write_dependencies "$TARGET" /selected/public-key',
+                                dict(self.environment(), package_qa_mode="final-rc", TARGET=str(target)))
+            self.assertNotEqual(result.returncode, 0)
+            self.assertFalse(target.exists())
+
+    def test_final_rc_harness_refuses_pin_only_override_before_host_operation(self):
+        root = Path(__file__).resolve().parents[1]
+        with tempfile.TemporaryDirectory() as directory:
+            shim = Path(directory) / "bin"
+            shim.mkdir()
+            for command in ("kldload", "route", "makefs", "bhyve", "ifconfig"):
+                (shim / command).write_text("#!/bin/sh\nexit 42\n")
+                (shim / command).chmod(0o755)
+            for variable in ("PACKAGE_CACHE_URL", "PACKAGE_CACHE_META_SHA256", "PACKAGE_CACHE_PACKAGESITE_SHA256", "PACKAGE_CACHE_DATA_SHA256"):
+                value = "http://127.0.0.1/feed" if variable == "PACKAGE_CACHE_URL" else "a" * 64
+                result = subprocess.run(["sh", str(root / "test-bhyve.sh"), "/does/not/exist.iso"],
+                                        env=dict(os.environ, PACKAGE_QA_MODE="final-rc", NIC="fixture0",
+                                                 WORK=str(Path(directory) / "work"), **{variable: value},
+                                                 PATH=str(shim) + os.pathsep + os.environ["PATH"]),
+                                        text=True, capture_output=True)
+                self.assertEqual(result.returncode, 1, variable)
+                self.assertIn("Final RC", result.stderr)
+                self.assertFalse((Path(directory) / "work").exists())
 
     def test_harness_refuses_existing_work_before_mutating_host(self):
         root = Path(__file__).resolve().parents[1]

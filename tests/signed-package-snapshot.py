@@ -215,7 +215,8 @@ class SignedSnapshotTests(unittest.TestCase):
         identity = snapshot.cache_module.selection_identity(pins, "a", row)
         digest = hashlib.sha256(b"test").hexdigest()
         cache.retain(identity, source, digest)
-        with snapshot.FrozenOrigin({}, {"url": "https://example.invalid/feed"}, cache=cache) as origin:
+        report = self.root / "verified-cache-events.json"
+        with snapshot.FrozenOrigin({}, {"url": "https://example.invalid/feed"}, cache=cache, report_path=report) as origin:
             origin.payloads = {"a.pkg": 4}
             origin.cache_selections = {"a.pkg": identity}
             with urllib.request.urlopen(origin.url + "/a.pkg", timeout=2) as response:
@@ -223,14 +224,20 @@ class SignedSnapshotTests(unittest.TestCase):
             target = cache.root / "objects" / digest
             target.chmod(0o600)
             target.write_bytes(b"evil")
-            with self.assertRaises(urllib.error.HTTPError) as error:
-                urllib.request.urlopen(origin.url + "/a.pkg", timeout=2)
-            self.assertEqual(error.exception.code, 502)
-            error.exception.close()
+            for _ in range(2):
+                # Repeated requests keep refusing; none falls through to the publisher.
+                with self.assertRaises(urllib.error.HTTPError) as error:
+                    urllib.request.build_opener(NoRedirect).open(origin.url + "/a.pkg", timeout=2)
+                self.assertEqual(error.exception.code, 502)
+                error.exception.close()
             self.assertEqual(origin.redirect_requests, 0)
             self.assertIn("SHA-256", origin.cache_failure)
         self.assertEqual(cache.summary()["hits"], 1)
         self.assertEqual(cache.summary()["bytes_saved"], 4)
+        retained = json.loads(report.read_text())
+        self.assertEqual((retained["cache"]["hits"], retained["cache"]["misses"], retained["cache"]["corrupt_refusals"]), (1, 0, 2))
+        self.assertIn("SHA-256", retained["cache_failure"])
+        self.assertEqual(target.read_bytes(), b"evil")
 
     def test_new_catalogue_candidate_is_transport_only_until_current_native_recheck(self):
         cache = snapshot.cache_module.VerifiedCache(self.root.resolve() / "candidate-cache")

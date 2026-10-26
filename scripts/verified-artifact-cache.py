@@ -112,6 +112,11 @@ class VerifiedCache:
             raise
         return stream
 
+    def refuse_corrupt(self, key, start, error, digest=None):
+        # Measure the refusal; never repair, replace, delete or redirect it.
+        self.events.append(dict(kind="corrupt_refused", selection=key, sha256=digest,
+                                reason=str(error), bytes_saved=0, seconds=time.monotonic()-start))
+
     @staticmethod
     def candidate_key(identity):
         # A transport candidate may move archive path or catalogue/signing key.
@@ -146,7 +151,11 @@ class VerifiedCache:
             raise ValueError("candidate reuse requires fresh native catalogue authentication")
         authenticated.require(identity)
         if self.candidate_index is None:
-            self.index_candidates()
+            try:
+                self.index_candidates()
+            except (OSError, ValueError, KeyError, TypeError) as error:
+                self.refuse_corrupt(key, start, error)
+                raise
         records = self.candidate_index.get(self.candidate_key(identity), [])
         if not records:
             return None
@@ -154,7 +163,11 @@ class VerifiedCache:
         if len(digests) != 1:
             raise ValueError("ambiguous retained candidate archive identities")
         digest = next(iter(digests))
-        stream = self.verified_object(digest, identity["download_bytes"])
+        try:
+            stream = self.verified_object(digest, identity["download_bytes"])
+        except (OSError, ValueError) as error:
+            self.refuse_corrupt(key, start, error, digest)
+            raise
         offered = dict(selection=key, sha256=digest,
                        source_selections=sorted(self.key(row["identity"]) for row in records),
                        authenticated_database_sha256=authenticated.database_sha256)
@@ -186,11 +199,21 @@ class VerifiedCache:
             if record_event:
                 self.events.append(dict(kind="miss", selection=key, bytes_saved=0, seconds=time.monotonic()-start))
             return None
-        if (not isinstance(selected, dict) or selected.get("identity") != identity
-                or selected.get("schema") != "daemonarchy/verified-cache-entry@1"):
-            raise ValueError("cache entry selection binding differs")
-        digest = pin(selected["sha256"])
-        stream = self.verified_object(digest, identity["download_bytes"])
+        except (OSError, ValueError) as error:
+            if record_event:
+                self.refuse_corrupt(key, start, error)
+            raise
+        digest = None
+        try:
+            if (not isinstance(selected, dict) or selected.get("identity") != identity
+                    or selected.get("schema") != "daemonarchy/verified-cache-entry@1"):
+                raise ValueError("cache entry selection binding differs")
+            digest = pin(selected.get("sha256"))
+            stream = self.verified_object(digest, identity["download_bytes"])
+        except (OSError, ValueError) as error:
+            if record_event:
+                self.refuse_corrupt(key, start, error, digest)
+            raise
         if record_event:
             self.events.append(dict(kind="hit", selection=key, sha256=digest,
                                     bytes_saved=identity["download_bytes"], seconds=time.monotonic()-start))
@@ -267,6 +290,7 @@ class VerifiedCache:
     def summary(self):
         return dict(hits=sum(e["kind"] == "hit" for e in self.events),
                     misses=sum(e["kind"] == "miss" for e in self.events),
+                    corrupt_refusals=sum(e["kind"] == "corrupt_refused" for e in self.events),
                     bytes_saved=sum(e.get("bytes_saved", 0) for e in self.events),
                     candidate_requests=sum(e["kind"] == "candidate_offered" for e in self.events),
                     candidate_bytes_offered=sum(e.get("bytes", 0) for e in self.events if e["kind"] == "candidate_offered"),

@@ -1,0 +1,215 @@
+{
+  "schema": "daemonarchy/verified-cache-native-probe-development@1",
+  "queue_item": "PERF-002",
+  "ledger_rows": [
+    "A2",
+    "A7"
+  ],
+  "recorded_at": "2026-10-26T03:16:16Z",
+  "admission": "Operator-approved bounded CAS probe on one healthy FreeBSD root slot after the DEBUG bhyve guest exited; no install, compile, signing, VM launch or publication.",
+  "scope": "Native pkg signature/checksum verification of one selected archive with iterative verified-cache miss, hit and corrupt refusal, plus one final-rc public fetch. Transport evidence only: no application, ABI, runtime, installer or release qualification.",
+  "reviewed_source": {
+    "revision": "d9341f9",
+    "git_archive_sha256": "913156b82651996f5fae936b314dd857fb454d25a3eb796ce7babfe27ef5592e",
+    "scripts/signed-package-snapshot.py": "627ca2268363f455da690a5e59934aad5d661929d74ba09e08abe3e032e76ae2",
+    "scripts/verified-artifact-cache.py": "69bfda2b33e599e0484f397fe64c3f77bc57dab7489028db07c759b21e258d8a"
+  },
+  "native": {
+    "os": "FreeBSD",
+    "release": "16.0-CURRENT",
+    "kernel_osversion": 1600028,
+    "python": "3.12.15",
+    "pkg_version": "2.8.4",
+    "pkg_path": "/usr/local/sbin/pkg",
+    "pkg_sha256": "ae1f394f16ece92a004e62b470dbe60658c8ea49cff228f9aebc7a7c4fd73c64",
+    "controller_tests_on_native": {
+      "tests/verified-artifact-cache.py": 22,
+      "tests/signed-package-snapshot.py": 24,
+      "tests/recover-retained-package-inventory.py": 5,
+      "failures": 0
+    }
+  },
+  "selected_catalogue": {
+    "feed": "https://github.com/jordanhubbard/daemonarchy/releases/download/packages-16-amd64-1.3.1",
+    "meta.conf": "ca7f091a4f9eccbf537a966a0d4d555cdfc4de34ad5be5c96a12c4485130664c",
+    "packagesite.pkg": "b4d298a49b8c9542847a592bbd7cddb35ad2fcf8da8a60c378cb2d0e61246437",
+    "data.pkg": "ed9d2e23aa3c332efb0519919e1619a82da413747a70d5e5cad2df2644411fa8",
+    "metadata_matches_github_asset_digests": true,
+    "public_key": {
+      "path": "keys/pkg-repo-1.3.1.pub",
+      "sha256": "08bfcbb3da71c63f054aa72c4c3cbc13f721fb3cd7557222dcbcbc887b79d938",
+      "der_sha256": "67986b400f28a49e99df0f1f3368f60aca8064d5dc00094700ba1a17d8474ef7"
+    }
+  },
+  "selection": {
+    "packages": [
+      "obs-studio"
+    ],
+    "abi": "FreeBSD:16:amd64",
+    "osversion": 1600029,
+    "maximum_download_bytes": 16777216,
+    "fetch_timeout_seconds": 120,
+    "archive": "obs-studio-32.2.2_1.pkg",
+    "download_bytes": 6517442,
+    "archive_sha256": "a3444865cf47768cdd86b7a0107f5087242864c0f942231d2c4c3532ddd56b30",
+    "verified_cache_selection": "a8d1fdc3a084b6a8b7b901a3cb5df02339986f07ca56bc4f3ec8f43479ae60b0"
+  },
+  "inputs_sha256": {
+    "probe.json": "ec6d93570681d7bc1045ca3fae20ef0049259db6269d015b9422b4d1036edae2",
+    "corruption-control.json": "6f7ba5e0a96b82c8dd233862fd90d6b3f30694aa7248859b1dc66227829bd5c5",
+    "final-rc.json": "ca9cebacac9588a332c8ba294e55a9d9ef896c71541b0d4697518e5c474aae36"
+  },
+  "cases": [
+    {
+      "name": "probe-cold",
+      "exit": 0,
+      "qa_mode": "iterative",
+      "namespace": "cache-probe",
+      "result_sha256": "4d31e1f75a20ab3c367cf691b5f5db54d2ad7f3fcadf57a2575bc1ebc5882946",
+      "cache_events_sha256": "7231813c48a2d8fa35cab2d81c4ffd4eea588696a5b8da49cd0d5bdc9ec8b864",
+      "repository_signature_verified": true,
+      "payload_checksums_verified": true,
+      "payload_sha256": "a3444865cf47768cdd86b7a0107f5087242864c0f942231d2c4c3532ddd56b30",
+      "transfer_requests": {
+        "https_redirects": 1,
+        "offline_requests": 0
+      },
+      "verified_cache": {
+        "misses": 1,
+        "hits": 0,
+        "corrupt_refusals": 0,
+        "bytes_saved": 0,
+        "retained_bytes": 6517442
+      },
+      "seconds": {
+        "authentication": 1.656,
+        "fetch_verify": 2.58,
+        "total": 4.489,
+        "wall": 4.79
+      }
+    },
+    {
+      "name": "probe-warm",
+      "exit": 0,
+      "qa_mode": "iterative",
+      "namespace": "cache-probe",
+      "result_sha256": "849131da012a18caa8643f327c9f48ce57fc75c71f46d17147903ddeb589acfc",
+      "cache_events_sha256": "d975c11d45d1f11c708ef1f2467eb914023111f4e582a97bdcae7f168b5360d6",
+      "repository_signature_verified": true,
+      "payload_checksums_verified": true,
+      "payload_sha256": "a3444865cf47768cdd86b7a0107f5087242864c0f942231d2c4c3532ddd56b30",
+      "transfer_requests": {
+        "https_redirects": 0,
+        "offline_requests": 1
+      },
+      "verified_cache": {
+        "misses": 0,
+        "hits": 1,
+        "corrupt_refusals": 0,
+        "bytes_saved": 6517442,
+        "hit_rehash_seconds": 0.0046,
+        "retained": "existing selection, no new object"
+      },
+      "seconds": {
+        "authentication": 1.628,
+        "fetch_verify": 0.336,
+        "total": 2.384,
+        "wall": 2.62
+      }
+    },
+    {
+      "name": "corruption-seed",
+      "exit": 0,
+      "qa_mode": "iterative",
+      "namespace": "cache-corruption-control",
+      "result_sha256": "be5aa14433198aff9d5ec0d5f964937210c48637c04143af793b4ba4db420123",
+      "cache_events_sha256": "b923f13684331a72978b01eeea1ddcbd6ced427272ffe7f9b2643b8185b4217a",
+      "repository_signature_verified": true,
+      "payload_checksums_verified": true,
+      "payload_sha256": "a3444865cf47768cdd86b7a0107f5087242864c0f942231d2c4c3532ddd56b30",
+      "transfer_requests": {
+        "https_redirects": 1,
+        "offline_requests": 0
+      },
+      "verified_cache": {
+        "misses": 1,
+        "hits": 0,
+        "corrupt_refusals": 0,
+        "bytes_saved": 0,
+        "retained_bytes": 6517442
+      },
+      "seconds": {
+        "authentication": 1.679,
+        "fetch_verify": 5.687,
+        "total": 7.678,
+        "wall": 7.9
+      }
+    },
+    {
+      "name": "corruption-check",
+      "exit": 1,
+      "qa_mode": "iterative",
+      "namespace": "cache-corruption-control",
+      "injection": {
+        "method": "same-size zero overwrite of the newly created control namespace object",
+        "size": 6517442,
+        "sha256_before": "a3444865cf47768cdd86b7a0107f5087242864c0f942231d2c4c3532ddd56b30",
+        "sha256_after": "6cbbae6c6e030612c35f6720bb5333ee4eb50ff2129acdc610b46ba3ca154895",
+        "record_sha256": "ea6abdd48c4c15ccbc6ab280a74248f6aadb0dca8d18279f0fee73ac9795bda3"
+      },
+      "result_published": false,
+      "native_error": "pkg: http://127.0.0.1/obs-studio-32.2.2_1.pkg: Bad Gateway",
+      "cache_events_sha256": "dcf2d588eee1ca8ee0abfb00848f35970ecba746c09d904874fda0b9f7518309",
+      "verified_cache": {
+        "misses": 0,
+        "hits": 0,
+        "corrupt_refusals": 3,
+        "bytes_saved": 0,
+        "cache_failure": "corrupt cache entry SHA-256"
+      },
+      "expected_corrupt_refusals": 1,
+      "observation": "Native pkg 2.8.4 requested the archive three times; each request was refused with HTTP 502. The case published no result and fetched no payload, and its private cache stayed empty. The corrupt object remains in place, unrepaired.",
+      "seconds": {
+        "wall": 3.03
+      }
+    },
+    {
+      "name": "final-rc",
+      "exit": 0,
+      "qa_mode": "final-rc",
+      "namespace": null,
+      "result_sha256": "43b811e5472aab5c1dc39e67535b151a2551321300c3b5e64fee31813386d8c2",
+      "public_metadata_acquisition_sha256": "346d67b475e5807b00f215fc106c1715d65e9017dab4b9b550f1668f9f0ce7ae",
+      "repository_signature_verified": true,
+      "payload_checksums_verified": true,
+      "payload_sha256": "a3444865cf47768cdd86b7a0107f5087242864c0f942231d2c4c3532ddd56b30",
+      "public_metadata_retrieved": true,
+      "verified_cache": null,
+      "transfer_requests": {
+        "https_redirects": 1,
+        "offline_requests": 0
+      },
+      "seconds": {
+        "authentication": 2.028,
+        "fetch_verify": 1.836,
+        "total": 4.341,
+        "wall": 6.57
+      }
+    }
+  ],
+  "retention": {
+    "evidence_root": "/var/tmp/daemonarchy-14-cas-native-20261025 on the native worker",
+    "evidence_manifest_sha256": "6f4d6c9944eab460e54b994e3076d15163d37200d14f3192098db5cffad797ed",
+    "manifest_entries": 151,
+    "probe_namespace_object_sha256_after_all_cases": "a3444865cf47768cdd86b7a0107f5087242864c0f942231d2c4c3532ddd56b30",
+    "nothing_deleted": true
+  },
+  "not_established": [
+    "application, ABI or runtime compatibility",
+    "installation or package scripts",
+    "VM or installer cache transport",
+    "release speedup or compilation savings",
+    "final public-cache-off VM/hardware QA",
+    "selected 1.4 catalogue admission"
+  ]
+}
