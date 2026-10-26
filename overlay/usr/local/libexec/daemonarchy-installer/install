@@ -96,8 +96,12 @@ progress_count() {
 }
 
 cuda_setup_started=false
+geli_debug_saved=
 cleanup() {
   local status=$?
+  if [[ -n $geli_debug_saved ]]; then
+    sysctl kern.geom.eli.debug="$geli_debug_saved" >/dev/null 2>&1 || true
+  fi
   if $diagnostics_ready; then
     if ((status != 0)); then
       printf 'Installation exited with status %s.\n' "$status"
@@ -182,6 +186,12 @@ if [[ $encrypt_installation == true ]]; then
   log "Encrypting the ZFS partition"
   passfile=$(mktemp)
   printf '%s' "$password" >"$passfile"
+  # GEOM_ELI announces each provider on the kernel console, which is the
+  # installer's ttyv0. Silence its level-0 notices for this run only.
+  if kldload -n geom_eli 2>/dev/null &&
+     geli_debug_saved=$(sysctl -n kern.geom.eli.debug 2>/dev/null); then
+    sysctl kern.geom.eli.debug=-1 >/dev/null 2>&1 || geli_debug_saved=
+  fi
   # -g: the loader asks for the passphrase and hands the key to the kernel.
   geli init -b -g -e AES-XTS -l 256 -s 4096 -J "$passfile" "$zfs_dev"
   geli attach -j "$passfile" "$zfs_dev"
