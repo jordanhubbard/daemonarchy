@@ -1,0 +1,33 @@
+{
+  "cache_admission": false,
+  "canonical_ownership_registered": false,
+  "compiler_header_trace_complete": false,
+  "configuration_inputs": [],
+  "context": {
+    "flags": {},
+    "make_conf_sha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855",
+    "options": {
+      "WITHOUT_TESTS": "yes"
+    },
+    "payload_scope": "compile",
+    "src_conf_sha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855",
+    "target": "amd64",
+    "target_arch": "amd64"
+  },
+  "fixture_note": "Schema fixture in the producer's observation format. The unit, commit, tree and architecture are corroborated by the retained hosted summary; the hosted run retained decoded make values only by digest, so these context, dependency and unresolved values are modelled on the Makefile at that tree, not observed.",
+  "git_tree": "5f8c5ffc8fb1a5c74fc54c9d5dddddfaa7c1c5e2",
+  "link_build_inputs": [],
+  "native_profile_admitted": false,
+  "recursive_closure_complete": false,
+  "revision": "64d5f9888a215f0a4d27b0aad98588b32a4e8389",
+  "schema": "daemonarchy/source-unit-input-observation@1",
+  "source_generated_and_make_inputs": [],
+  "unit": "usr.bin/truncate",
+  "unresolved_inputs": [
+    {
+      "declaration": "LIBADD",
+      "input": "util",
+      "reason": "native-link-resolution-required-not-runtime-only"
+    }
+  ]
+}

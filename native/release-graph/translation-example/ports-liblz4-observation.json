@@ -1,0 +1,49 @@
+{
+  "cache_admission": false,
+  "canonical_ownership_registered": false,
+  "context": {
+    "architecture": "amd64",
+    "flavor": null,
+    "make_variables": {},
+    "options": {
+      "TEST": true
+    },
+    "osversion": 1500068,
+    "package_database": {
+      "identity": null,
+      "mode": "empty-diagnostic"
+    }
+  },
+  "dependencies": [
+    {
+      "declaration": "BUILD_DEPENDS",
+      "kind": "build",
+      "origin": "devel/gmake",
+      "requirement": "gmake>=4.4.1",
+      "target": null
+    },
+    {
+      "declaration": "BUILD_DEPENDS",
+      "kind": "build",
+      "origin": "devel/pkgconf",
+      "requirement": "pkgconf>=1.3.0_1",
+      "target": null
+    },
+    {
+      "declaration": "TEST_DEPENDS",
+      "kind": "test",
+      "origin": "lang/python313",
+      "requirement": "python3.13",
+      "target": null
+    }
+  ],
+  "fixture_note": "Schema fixture in the producer's observation format. The unit, commit, tree and architecture are corroborated by the retained hosted summary; the hosted run retained decoded make values only by digest, so these context, dependency and unresolved values are modelled on the Makefile at that tree, not observed.",
+  "git_tree": "353f30b41bbdc5f46b7f08b028ca07c336f95b73",
+  "inputs": [],
+  "native_profile_admitted": false,
+  "origin": "archivers/liblz4",
+  "recursive_closure_complete": false,
+  "revision": "a56c82cc2b0de960aa382d3bc23a08dc6d31bb66",
+  "schema": "daemonarchy/ports-unit-input-observation@1",
+  "unresolved_inputs": []
+}
