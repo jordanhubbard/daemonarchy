@@ -151,8 +151,15 @@ producer metadata across the selected closures; all Component registration;
 compiler/header/sysroot/generator observations; Chromium/CEF native ABI evidence;
 complete retained native profiles, receipts and output custody; full package
 comparison and cache decisions; distributed execution and equivalent timing;
-exact feed/ISO/native/VM/hardware/release qualification. A bounded native ancestry
-probe timed out during an active kernel build. No private-worker compilation or
+exact feed/ISO/native/VM/hardware/release qualification. A first bounded native
+ancestry probe timed out during an active kernel build. The admitted repeat on
+the idle primary FreeBSD worker ([record](../native/release-graph/native-ancestry-probe-20261026.json),
+[script](../native/release-graph/ancestry-probe.sh); no fetch, no repository
+writes, 60-second deadlines) shows source upstream `a3d1d4e8` is an ancestor of
+selected `d63d77f4` (exit 0). The ports check fails: selected
+`b785784219af455a9ce4fd70c59bc96ba77f469f` is absent from the worker's
+`/usr/ports` object store (exit 128), so ports ancestry remains unproved until an
+admitted fetch makes that commit available and the check is repeated. No private-worker compilation or
 VM was launched by this stream; private producer/profile work stays scheduled
 centrally. The hosted metadata observations below have their own bounded scope.
 

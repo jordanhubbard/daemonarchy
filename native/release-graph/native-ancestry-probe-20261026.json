@@ -1,0 +1,95 @@
+{
+  "admission": "operator-approved bounded read-only probe via coordinator, 2026-10-25 (PDT)",
+  "cache_admission": false,
+  "checks": [
+    {
+      "command": "timeout 60 git -C /usr/src merge-base --is-ancestor a3d1d4e88ae7435cfc32a886999dcde2173839cd d63d77f4eb3cc29e16510f7bdec73602e27c2844",
+      "elapsed_seconds": 0,
+      "exit_code": 0,
+      "fork_revision": "d63d77f4eb3cc29e16510f7bdec73602e27c2844",
+      "object_store": "/usr/src",
+      "objects_present": {
+        "fork": true,
+        "upstream": true
+      },
+      "origin": "https://github.com/jordanhubbard/daemonarchy-src.git",
+      "output": "",
+      "partial_clone": false,
+      "repository": "daemonarchy-src",
+      "result": "pass: upstream is an ancestor of the selected fork commit",
+      "upstream_revision": "a3d1d4e88ae7435cfc32a886999dcde2173839cd"
+    },
+    {
+      "command": "timeout 60 git -C /usr/ports merge-base --is-ancestor a7c9a97bae26bf342e1bffb2273b7ef331cdb289 b785784219af455a9ce4fd70c59bc96ba77f469f",
+      "elapsed_seconds": 0,
+      "exit_code": 128,
+      "fork_revision": "b785784219af455a9ce4fd70c59bc96ba77f469f",
+      "object_check": "git cat-file -t b785784219af455a9ce4fd70c59bc96ba77f469f -> exit 128: fatal: git cat-file: could not get object info",
+      "object_store": "/usr/ports",
+      "objects_present": {
+        "fork": false,
+        "upstream": true
+      },
+      "origin": "https://github.com/jordanhubbard/daemonarchy-ports.git",
+      "output": "fatal: Not a valid commit name b785784219af455a9ce4fd70c59bc96ba77f469f",
+      "partial_clone": false,
+      "repository": "daemonarchy-ports",
+      "result": "fail: selected fork commit is absent from the worker object store; not fetched",
+      "upstream_revision": "a7c9a97bae26bf342e1bffb2273b7ef331cdb289"
+    }
+  ],
+  "constraints": {
+    "environment": {
+      "GIT_NO_LAZY_FETCH": "1",
+      "GIT_OPTIONAL_LOCKS": "0",
+      "GIT_TERMINAL_PROMPT": "0"
+    },
+    "fetch": false,
+    "per_check_deadline_seconds": 60,
+    "repository_writes": false
+  },
+  "native_compilation": false,
+  "observed_utc": "2026-10-26T03:15:54Z",
+  "probe_script_sha256": "0d9e5ac6f78c5d8516ce0516218a95768c71563a1b5247aa83da20aeaf11795a",
+  "raw_output": [
+    "host=daemon uname=FreeBSD_16.0-CURRENT_FreeBSD_16.0-CURRENT_#0_bdcfeac3e1cb:_Fri_Oct_16_23:15:34_UTC_2026_____root@daemonarchy-release-builder:/home/tester/daemonarchy-rc2-obj/home/tester/daemonarchy-rc2-src/amd64.amd64/sys/GENERIC_amd64",
+    "started_utc=2026-10-26T03:15:54Z",
+    "bhyve_guests=0",
+    "git_version=git version 2.56.0",
+    "== repo=daemonarchy-src path=/usr/src",
+    "origin=https://github.com/jordanhubbard/daemonarchy-src.git",
+    "gitdir=/usr/src/.git",
+    "partial_clone_filter=none",
+    "promisor=none",
+    "cat-file -t d63d77f4eb3cc29e16510f7bdec73602e27c2844 -> rc=0 out=commit",
+    "cat-file -t a3d1d4e88ae7435cfc32a886999dcde2173839cd -> rc=0 out=commit",
+    "cmd=timeout 60 git -C /usr/src merge-base --is-ancestor a3d1d4e88ae7435cfc32a886999dcde2173839cd d63d77f4eb3cc29e16510f7bdec73602e27c2844",
+    "exit=0 elapsed_s=0 output=<empty>",
+    "== repo=daemonarchy-ports path=/usr/ports",
+    "origin=https://github.com/jordanhubbard/daemonarchy-ports.git",
+    "gitdir=/usr/ports/.git",
+    "partial_clone_filter=none",
+    "promisor=none",
+    "cat-file -t b785784219af455a9ce4fd70c59bc96ba77f469f -> rc=128 out=fatal: git cat-file: could not get object info",
+    "cat-file -t a7c9a97bae26bf342e1bffb2273b7ef331cdb289 -> rc=0 out=commit",
+    "cmd=timeout 60 git -C /usr/ports merge-base --is-ancestor a7c9a97bae26bf342e1bffb2273b7ef331cdb289 b785784219af455a9ce4fd70c59bc96ba77f469f",
+    "exit=128 elapsed_s=0 output=fatal: Not a valid commit name b785784219af455a9ce4fd70c59bc96ba77f469f",
+    "finished_utc=2026-10-26T03:15:54Z",
+    "ssh_rc=0"
+  ],
+  "raw_output_sha256": "c76ad4a292394e6d5869a5caea9b52c55988b7572039789f5f1963742799c89e",
+  "release_acceptance": false,
+  "remaining": [
+    "make the selected daemonarchy-ports commit available to the worker object store by an admitted fetch, then repeat the ports check"
+  ],
+  "schema": "daemonarchy/native-ancestry-probe@1",
+  "selection": "native/release-graph/selection.json",
+  "worker": {
+    "bhyve_guests_at_start": 0,
+    "git": "2.56.0",
+    "hostname": "daemon",
+    "preflight": "waited until pgrep -x bhyve reported no guest (cleared 2026-10-26T03:15:29Z); no other build load observed",
+    "role": "primary FreeBSD worker (daemon.local)",
+    "uname": "FreeBSD 16.0-CURRENT #0 bdcfeac3e1cb amd64 GENERIC"
+  }
+}
