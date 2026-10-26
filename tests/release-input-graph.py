@@ -20,6 +20,13 @@ spec = importlib.util.spec_from_file_location("release_graph", SCRIPT)
 graph = importlib.util.module_from_spec(spec)
 spec.loader.exec_module(graph)
 ID = ContentIdentity.parse_uri("sha256:" + "1" * 64)
+CATALOG = {a.coordinate.uri: a for a in graph.component_catalog()}
+
+
+def registered(name):
+    """An exact authored Component from the product's real catalog."""
+    authoring = CATALOG["component://daemonarchy/" + name]
+    return authoring.coordinate, authoring.identity
 OTHER = "sha256:" + "2" * 64
 
 
@@ -64,10 +71,11 @@ class GraphTests(unittest.TestCase):
 
     def commit(self):
         self.git("add", ".")
-        self.git("commit", "-qm", "fixture")
+        self.git("commit", "-q", "--allow-empty", "-m", "fixture")
         return self.git("rev-parse", "HEAD")
 
-    def update_selection(self, *, ownership=True):
+    def update_selection(self, *, ownership=True, owner=None, profile_path="unit/profile.json",
+                         manifest_path="manifest.json"):
         # Canonical role identities ignore unrelated profile policy bytes.
         tool = RetainedProjectMember("unit/cc", len((self.repo/"unit/cc").read_bytes()), 0o644,
                                      graph.digest((self.repo/"unit/cc").read_bytes()), "toolchain")
@@ -84,17 +92,17 @@ class GraphTests(unittest.TestCase):
         self.profile["tools"][0]["identity"] = "sha256:" + tool.sha256
         self.unit["compiler"] = "sha256:" + tool.sha256
         self.unit["sysroot"] = skeleton.role_identity({"sdk"}).uri
-        self.unit["profile"] = self.write("unit/profile.json", json.dumps(self.profile).encode())
+        self.unit["profile"] = self.write(profile_path, json.dumps(self.profile).encode())
         members = tuple(RetainedProjectMember(path, len((self.repo/path).read_bytes()), 0o644,
                                               graph.digest((self.repo/path).read_bytes()), role)
-                        for path, role in (("unit/cc", "toolchain"), ("unit/profile.json", "build-definition"),
+                        for path, role in (("unit/cc", "toolchain"), (profile_path, "build-definition"),
                                            ("unit/source.c", "source")))
         members = tuple(sorted(list(members) + auxiliary, key=lambda m:m.path))
-        owners = (RetainedComponentOwner("unit", ComponentCoordinate("fixture", "tool"), ID),) if ownership else ()
+        owners = (RetainedComponentOwner("unit", *(owner or registered("package-engine"))),) if ownership else ()
         manifest = RetainedProjectManifest(("unit",), members,
                                           RetainedProjectLimits(100, 100000, 1000000),
                                           ("unit",), owners)
-        self.unit["manifest"] = self.write("manifest.json", json.dumps(manifest.to_dict()).encode())
+        self.unit["manifest"] = self.write(manifest_path, json.dumps(manifest.to_dict()).encode())
         revision = self.commit()
         self.selection["repositories"] = [{"id": "source", "repository": "https://example.invalid/source.git",
                                             "revision": revision,
@@ -310,7 +318,7 @@ class GraphTests(unittest.TestCase):
 
     def test_cross_unit_conflicting_owner_refuses(self):
         manifest = RetainedProjectManifest.from_dict(json.loads((self.repo/"manifest.json").read_bytes()))
-        owners = (RetainedComponentOwner("unit", ComponentCoordinate("fixture", "other"), ID),)
+        owners = (RetainedComponentOwner("unit", *registered("release")),)
         conflicting = RetainedProjectManifest(manifest.roots, manifest.members, manifest.limits,
                                               manifest.directories, owners)
         second = copy.deepcopy(self.unit)
@@ -350,6 +358,202 @@ class GraphTests(unittest.TestCase):
         old = self.collect()
         self.selection["units"][0]["unresolved_inputs"] = []
         self.assertEqual(self.decision(old), "unresolved-inputs-repair-before-reuse")
+
+    # --- registered Component owners -------------------------------------------------
+
+    def test_owners_must_be_registered_project_components(self):
+        report = self.collect()
+        self.assertEqual(report["units"][0]["registered_owners"][0]["component"],
+                         registered("package-engine")[0].to_dict())
+        self.assertNotIn("registered-component-ownership", report["units"][0]["remaining_gates"])
+        self.assertEqual({c["component"] for c in report["component_catalog"]}, set(CATALOG))
+        for owner, message in (((ComponentCoordinate("fixture", "tool"), ID), "not a registered"),
+                               ((registered("release")[0], ID), "not a registered")):
+            with self.subTest(owner=owner[0].uri):
+                self.update_selection(owner=owner)
+                with self.assertRaisesRegex(ValueError, message):
+                    self.collect()
+
+    # --- producer observation translation ---------------------------------------------
+
+    def edge(self, kind, declaration, requirement, origin, target=None):
+        return {"kind": kind, "declaration": declaration, "requirement": requirement,
+                "origin": origin, "target": target}
+
+    def ports_observation(self, origin, edges, *, arch="amd64", revision=None):
+        revision = revision or self.selection["repositories"][0]["revision"]
+        return {"schema": "daemonarchy/ports-unit-input-observation@1", "revision": revision,
+                "git_tree": self.git("rev-parse", revision + "^{tree}"), "origin": origin,
+                "context": {"architecture": arch, "osversion": 1600029, "flavor": None,
+                            "options": {"TEST": True}, "make_variables": {},
+                            "package_database": {"mode": "empty-diagnostic", "identity": None}},
+                "dependencies": edges, "inputs": [],
+                "unresolved_inputs": [{"variable": "PKGMESSAGE", "path": "/private/worker/pkg-message",
+                                       "reason": "generated or absent input requires producer"}],
+                "recursive_closure_complete": False, "canonical_ownership_registered": False,
+                "native_profile_admitted": False, "cache_admission": False}
+
+    def translation(self, observations, *, policy="qualification", retained=None, bindings=None,
+                    component="component://daemonarchy/package-engine", hosted=None):
+        base = self.root / "translation"
+        base.mkdir(exist_ok=True)
+        units = []
+        for index, observation in enumerate(observations):
+            data = json.dumps(observation).encode()
+            (base / ("observation-%d.json" % index)).write_bytes(data)
+            units.append({"observation": {"path": "observation-%d.json" % index, "sha256": graph.digest(data)},
+                          "hosted_summary": (hosted or {}).get(index), "repository": "source",
+                          "component": component, "retained": (retained or {}).get(index),
+                          "dependency_bindings": (bindings or {}).get(index, [])})
+        request = {"schema": graph.TRANSLATION_SCHEMA, "repositories": self.selection["repositories"],
+                   "test_edges": policy, "units": units}
+        return graph.translate(request, base), request
+
+    def binding(self, origin, kind, members=(), identity=ID.uri):
+        return {"origin": origin, "kind": kind, "identity": identity, "artifact_identity": ID.uri,
+                "members": list(members), "selected_version": "1.10.0", "version_constraint": ">=1.9"}
+
+    def lz4_edges(self):
+        return [self.edge("build", "BUILD_DEPENDS", "lz4", "archivers/liblz4"),
+                self.edge("build", "LIB_DEPENDS", "liblz4.so", "archivers/liblz4"),
+                self.edge("runtime", "LIB_DEPENDS", "liblz4.so", "archivers/liblz4"),
+                self.edge("build", "BUILD_DEPENDS", "gmake", "devel/gmake"),
+                self.edge("test", "TEST_DEPENDS", "python3.13", "lang/python313")]
+
+    def test_translator_merges_origins_types_test_edges_and_carries_architecture(self):
+        for arch in ("amd64", "aarch64"):
+            result, _ = self.translation([self.ports_observation("archivers/tool", self.lz4_edges(), arch=arch)])
+            self.assertIsNone(result["selection"])
+            unit = result["draft_units"][0]
+            self.assertEqual((unit["id"], unit["architecture"]), ("source:archivers/tool:" + arch, arch))
+            merged = {(e["origin"], e["kind"]): e["declarations"] for e in result["provenance"][0]["merged_edges"]}
+            self.assertEqual(merged, {("archivers/liblz4", "build"): 2, ("archivers/liblz4", "runtime"): 1,
+                                      ("devel/gmake", "build"): 1, ("lang/python313", "test"): 1})
+            self.assertIn("unbound test dependency lang/python313", unit["unresolved_inputs"])
+            self.assertFalse(any("/private/" in item for item in unit["unresolved_inputs"]))
+            self.assertFalse(result["admitted"])
+        excluded, _ = self.translation([self.ports_observation("archivers/tool", self.lz4_edges())], policy="exclude")
+        self.assertEqual([e["origin"] for e in excluded["provenance"][0]["excluded_test_edges"]], ["lang/python313"])
+        self.assertFalse(any("python313" in item for item in excluded["draft_units"][0]["unresolved_inputs"]))
+        with self.assertRaisesRegex(ValueError, "unobserved or excluded"):
+            self.translation([self.ports_observation("archivers/tool", self.lz4_edges())], policy="exclude",
+                             bindings={0: [self.binding("lang/python313", "test")]})
+
+    def test_translator_refuses_unregistered_owner_untyped_arch_and_admission_claims(self):
+        observation = self.ports_observation("archivers/tool", self.lz4_edges())
+        with self.assertRaisesRegex(ValueError, "not a registered"):
+            self.translation([observation], component="component://fixture/tool")
+        for mutate, message in ((lambda o: o["context"].update(architecture="i386"), "typed variant"),
+                                (lambda o: o.update(cache_admission=True), "admission"),
+                                (lambda o: o.update(revision="0" * 40), "revision differs"),
+                                (lambda o: o["dependencies"].append(self.edge("fetch", "X", "y", "a/b")), "untyped")):
+            changed = copy.deepcopy(observation)
+            mutate(changed)
+            with self.subTest(message=message), self.assertRaisesRegex(ValueError, message):
+                self.translation([changed])
+        with self.assertRaisesRegex(ValueError, "test edge decision"):
+            self.translation([observation], policy="refuse")
+        with self.assertRaisesRegex(ValueError, "unobserved"):
+            self.translation([observation], bindings={0: [self.binding("devel/cmake", "build")]})
+
+    def test_translator_hosted_summary_must_corroborate_the_observation(self):
+        source_record = json.loads((SCRIPT.parents[1] / "native/release-graph/hosted-source-40249878784.json").read_bytes())
+        facts = source_record["facts"]
+        observation = {"schema": "daemonarchy/source-unit-input-observation@1", "revision": facts["source_commit"],
+                       "git_tree": facts["source_tree"], "unit": facts["unit"],
+                       "context": {"target": "amd64", "target_arch": "amd64", "options": {"WITHOUT_TESTS": "yes"},
+                                   "flags": {}, "src_conf_sha256": "5" * 64, "make_conf_sha256": "6" * 64,
+                                   "payload_scope": "compile"},
+                       "unresolved_inputs": [{"declaration": "LIBADD", "input": "util",
+                                              "reason": "native-link-resolution-required-not-runtime-only"}],
+                       "recursive_closure_complete": False, "compiler_header_trace_complete": False,
+                       "canonical_ownership_registered": False, "native_profile_admitted": False,
+                       "cache_admission": False}
+        base = self.root / "translation"
+        base.mkdir()
+        data = json.dumps(source_record).encode()
+        (base / "hosted.json").write_bytes(data)
+        hosted = {0: {"path": "hosted.json", "sha256": graph.digest(data)}}
+        self.selection["repositories"][0]["revision"] = facts["source_commit"]
+        result, _ = self.translation([observation], hosted=hosted, component="component://daemonarchy/release")
+        self.assertEqual(result["provenance"][0]["hosted_corroboration"]["scope"], "native-metadata-only")
+        self.assertEqual(result["draft_units"][0]["id"], "source:usr.bin/truncate:amd64")
+        self.assertIn("LIBADD util: native-link-resolution-required-not-runtime-only",
+                      result["draft_units"][0]["unresolved_inputs"])
+        observation["context"].update(target="arm64", target_arch="aarch64")
+        with self.assertRaisesRegex(ValueError, "corroborate"):
+            self.translation([observation], hosted=hosted, component="component://daemonarchy/release")
+
+    def test_recorded_translation_example_is_reproducible(self):
+        base = SCRIPT.parents[1] / "native/release-graph"
+        request = json.loads((base / "translation-example-request.json").read_bytes())
+        recorded = json.loads((base / "translation-example-result.json").read_bytes())
+        def stable(result):
+            # Component authoring identities move with component.md edits; registration is
+            # rechecked against the live catalog, so compare everything else byte-for-byte.
+            result = copy.deepcopy(result)
+            result.pop("component_catalog")
+            for item in result["provenance"]:
+                item.pop("authoring_identity")
+            return result
+        self.assertEqual(stable(graph.translate(request, base)), stable(recorded))
+        self.assertIsNone(recorded["selection"])
+        self.assertFalse(recorded["admitted"])
+        self.assertEqual({p["hosted_corroboration"]["scope"] for p in recorded["provenance"]}, {"native-metadata-only"})
+
+    def translated_pair(self, test_identity=ID.uri):
+        # Provider retained records without dependency members; consumer with dep.lib.
+        if not hasattr(self, "retained_pair"):
+            self.update_selection(profile_path="unit/provider-profile.json", manifest_path="provider-manifest.json")
+            provider = {k: copy.deepcopy(self.unit[k]) for k in ("manifest", "profile", "compiler", "sysroot")}
+            self.write("unit/dep.lib", b"selected dependency bytes")
+            self.update_selection()
+            consumer = {k: copy.deepcopy(self.unit[k]) for k in ("manifest", "profile", "compiler", "sysroot")}
+            self.retained_pair = provider, consumer
+        provider, consumer = self.retained_pair
+        common = {"execution_identity": ID.uri, "base_abi": {"contract": ID.uri, "kernel_bound": False},
+                  "generated_inputs": []}
+        edges = self.lz4_edges()[:3] + [self.edge("test", "TEST_DEPENDS", "lz4", "archivers/liblz4")]
+        result, _ = self.translation(
+            [self.ports_observation("archivers/liblz4", []), self.ports_observation("archivers/tool", edges)],
+            retained={0: {**provider, **common}, 1: {**consumer, **common}},
+            bindings={1: [self.binding("archivers/liblz4", "build", ["unit/dep.lib"]),
+                          self.binding("archivers/liblz4", "runtime", ["unit/dep.lib"]),
+                          self.binding("archivers/liblz4", "test", [], test_identity)]})
+        return result
+
+    def test_translated_selection_builds_a_registered_typed_graph(self):
+        result = self.translated_pair()
+        report = self.collect_translated(result)
+        units = {u["id"]: u for u in report["units"]}
+        tool = units["source:archivers/tool:amd64"]
+        build_edge = next(d for d in tool["dependencies"] if d["kind"] == "build")
+        self.assertEqual([d["declaration"] for d in build_edge["declarations"]], ["BUILD_DEPENDS", "LIB_DEPENDS"])
+        self.assertEqual([e["unit"] for e in tool["build_inputs"]["build_dependencies"]],
+                         ["source:archivers/liblz4:amd64"])
+        self.assertEqual(report["build_dependency_order"],
+                         ["source:archivers/liblz4:amd64", "source:archivers/tool:amd64"])
+        self.assertTrue(tool["unresolved_inputs"])
+        # A changed test-only producer identity requalifies; it never rebuilds.
+        changed = self.collect_translated(self.translated_pair(OTHER))
+        after = {u["id"]: u for u in changed["units"]}["source:archivers/tool:amd64"]
+        self.assertEqual(tool["build_inputs_identity"], after["build_inputs_identity"])
+        self.assertNotEqual(tool["qualification_inputs_identity"], after["qualification_inputs_identity"])
+
+    def collect_translated(self, result):
+        self.assertIsNotNone(result["selection"])
+        return graph.collect(result["selection"], {"source": self.repo})
+
+    def test_test_edges_are_qualification_only_and_propagate_requalification(self):
+        self.typed_dependency_fixture("test")
+        old = self.collect()
+        tool = {u["id"]: u for u in old["units"]}["source:tool"]
+        self.assertEqual(tool["build_inputs"]["build_dependencies"], [])
+        self.assertEqual(tool["dependencies"][0]["kind"], "test")
+        self.selection["units"][1]["options"] = {"WITH_TESTS": False}
+        reasons = {d["unit"]: d["reason"] for d in graph.compare(old, self.collect())["decisions"]}
+        self.assertEqual(reasons, {"source:provider": "build-inputs-changed",
+                                   "source:tool": "native-ABI-requalification-required"})
 
     def test_static_build_identity_change_invalidates_only_consumer(self):
         self.typed_dependency_fixture("build")

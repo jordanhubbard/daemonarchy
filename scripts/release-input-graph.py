@@ -17,7 +17,8 @@ import sys
 
 from literate_ai.adapters.retained_project_inputs import verify_retained_project_inputs
 from literate_ai.contracts.identity import ContentIdentity, canonical_identity
-from literate_ai.contracts.retained_component_ownership import retained_owner
+from literate_ai.contracts.retained_component_ownership import (require_registered_retained_owners,
+                                                                retained_owner)
 from literate_ai.contracts.retained_project import RetainedProjectManifest
 from literate_ai.contracts.retained_project_lifecycle import RetainedProjectProfile
 
@@ -36,6 +37,34 @@ ARCHITECTURES = {
                 "aliases": ("aarch64", "arm64", "aarch64:64")},
 }
 MAX_JSON = 32 * 1024 * 1024
+PROJECT_ROOT = Path(__file__).resolve().parents[1]
+# Typed edge kinds: build edges key compilation and ordering; runtime and test
+# edges bind qualification only. A test edge is a separate qualification edge
+# (e.g. ports TEST_DEPENDS): it never enters a build key or build order.
+DEPENDENCY_KINDS = ("build", "runtime", "test")
+DEPENDENCY_FIELDS = "unit kind identity artifact_identity members selected_version version_constraint"
+_CATALOGS = {}
+
+
+def component_catalog(root=PROJECT_ROOT):
+    """The project's real authored Component catalog; never a synthesized registry."""
+    root = Path(root).resolve(strict=True)
+    if root not in _CATALOGS:
+        from literate_ai.adapters.component_lock_application import project_component_roots
+        from literate_ai.adapters.locked_generation_authority import FilesystemLockedGenerationAuthorityReader
+        from literate_ai.projects import load_project
+        roots = project_component_roots(load_project(root))
+        catalog = FilesystemLockedGenerationAuthorityReader().load_catalog(roots[0])
+        authorings = tuple(sorted(catalog.authorings, key=lambda a: a.coordinate.uri))
+        require({a.coordinate.uri for a in authorings} >=
+                {FilesystemLockedGenerationAuthorityReader().load_catalog(r).root_authoring.coordinate.uri
+                 for r in roots}, "project Component catalog is incomplete")
+        _CATALOGS[root] = authorings
+    return _CATALOGS[root]
+
+
+def catalog_record(catalog):
+    return [{"component": a.coordinate.uri, "authoring_identity": a.identity.uri} for a in catalog]
 
 
 def require(test, message):
@@ -173,7 +202,20 @@ def profile_architecture(target, arch):
     require(named <= {arch}, "profile target names a different architecture than the unit")
 
 
-def unit_record(spec, repos, paths, retained_root=None):
+def dependency_declarations(value):
+    """Producer declarations merged into one typed edge (e.g. BUILD_DEPENDS + LIB_DEPENDS)."""
+    require(isinstance(value, list) and value, "dependency declarations must be a non-empty list")
+    for item in value:
+        fields(item, "declaration requirement target")
+        text(item["declaration"])
+        text(item["requirement"])
+        require(item["target"] is None or isinstance(item["target"], str), "invalid declaration target")
+    keys = [(d["declaration"], d["requirement"], d["target"] or "") for d in value]
+    require(keys == sorted(set(keys)), "dependency declarations must be unique and ordered")
+    return value
+
+
+def unit_record(spec, repos, paths, retained_root=None, catalog=()):
     fields(spec, "id repository architecture manifest profile options flavor compiler sysroot generated_inputs dependencies unresolved_inputs base_abi execution_identity")
     name, repository = text(spec["id"]), text(spec["repository"])
     arch = architecture(spec["architecture"])
@@ -183,6 +225,11 @@ def unit_record(spec, repos, paths, retained_root=None):
     profile = RetainedProjectProfile.from_dict(read_record(repo, revision, spec["profile"], retained_root))
     require(bool(getattr(manifest, "component_ownership", ())),
             "canonical retained Component ownership is required; discovery is insufficient")
+    try:
+        # Every owner must be an exact authored Component in the project's real catalog.
+        require_registered_retained_owners(manifest.component_ownership, catalog)
+    except ValueError as error:
+        raise ValueError("unit owner is not a registered project Component: " + str(error)) from None
     profile_members = [m for m in manifest.members if m.path == spec["profile"]["path"]]
     require(len(profile_members) == 1 and profile_members[0].role == "build-definition",
             "profile must belong to the retained build-definition closure")
@@ -250,8 +297,12 @@ def unit_record(spec, repos, paths, retained_root=None):
     dependencies, seen = [], set()
     require(isinstance(spec["dependencies"], list), "typed dependency inventory required")
     for dep in spec["dependencies"]:
-        fields(dep, "unit kind identity artifact_identity members selected_version version_constraint")
-        require(dep["kind"] in ("build", "runtime"), "dependency kind must be build or runtime")
+        if isinstance(dep, dict) and "declarations" in dep:
+            fields(dep, DEPENDENCY_FIELDS + " declarations")
+            dependency_declarations(dep["declarations"])
+        else:
+            fields(dep, DEPENDENCY_FIELDS)
+        require(dep["kind"] in DEPENDENCY_KINDS, "dependency kind must be build, runtime or test")
         key = (text(dep["unit"]), dep["kind"])
         require(key not in seen, "duplicate typed dependency edge")
         seen.add(key)
@@ -302,12 +353,15 @@ def unit_record(spec, repos, paths, retained_root=None):
             "qualification_inputs": runtime, "qualification_inputs_identity": canonical_identity(runtime).uri,
             "dependencies": runtime["dependencies"], "unresolved_inputs": spec["unresolved_inputs"],
             "admitted": False, "native_receipt": None,
-            "remaining_gates": ["registered-component-ownership", "producer-closure-observation",
+            "registered_owners": [o.to_dict() for o in manifest.component_ownership],
+            "remaining_gates": ["producer-closure-observation",
                                 "retained-native-admission", "verified-output-and-ABI-qualification"]}, member_owners
 
 
-def collect(selection, paths, retained_roots=None):
+def collect(selection, paths, retained_roots=None, catalog=None):
     retained_roots = retained_roots or {}
+    catalog = component_catalog() if catalog is None else tuple(catalog)
+    require(catalog, "registered project Component catalog required")
     # The report must be an immutable snapshot, never aliasing caller selection values.
     selection = copy.deepcopy(selection)
     fields(selection, "schema repositories units")
@@ -322,7 +376,7 @@ def collect(selection, paths, retained_roots=None):
     require(isinstance(selection["units"], list), "unit inventory required")
     units, claimed = {}, {}
     for spec in selection["units"]:
-        unit, member_owners = unit_record(spec, repos, paths, retained_roots.get(spec.get("id")))
+        unit, member_owners = unit_record(spec, repos, paths, retained_roots.get(spec.get("id")), catalog)
         require(unit["id"] not in units, "duplicate unit")
         units[unit["id"]] = unit
         # One selected repository path has one canonical owner and one locked byte
@@ -354,6 +408,7 @@ def collect(selection, paths, retained_roots=None):
     return {"schema": GRAPH_SCHEMA, "repositories": [repos[n] for n in sorted(repos)],
             "units": [units[n] for n in sorted(units)], "build_dependency_order": order,
             "admitted": False, "acceptance": "not-qualified", "selection_identity": canonical_identity(selection).uri,
+            "component_catalog": catalog_record(catalog),
             "gaps": ([] if units else ["no retained per-unit producer profiles selected"])}
 
 
@@ -498,7 +553,7 @@ def compare(previous, current):
         for name in sorted(new):
             if decisions[name] == "unchanged-inputs-verify-retained-products" and any(
                     decisions[d["unit"]] in CHANGED | {"native-ABI-requalification-required"}
-                    for d in new[name]["dependencies"] if d["kind"] == "runtime"):
+                    for d in new[name]["dependencies"] if d["kind"] in ("runtime", "test")):
                 decisions[name] = "native-ABI-requalification-required"
                 changed = True
     return {"schema": "daemonarchy/release-input-comparison@1", "cache_admission": False,
@@ -581,7 +636,226 @@ def trace_projection_main(argv):
         return 1
 
 
+TRANSLATION_SCHEMA = "daemonarchy/release-input-translation@1"
+TRANSLATION_RESULT_SCHEMA = "daemonarchy/release-input-translation-result@1"
+OBSERVATIONS = {"daemonarchy/source-unit-input-observation@1": "source",
+                "daemonarchy/ports-unit-input-observation@1": "ports"}
+TEST_EDGE_POLICIES = ("qualification", "exclude")
+PORT_ORIGIN = re.compile(r"[a-z0-9][a-z0-9+_.-]*/[A-Za-z0-9][A-Za-z0-9+_.-]*(?:@[A-Za-z0-9+_.-]+)?\Z")
+
+
+def pinned_document(base, reference):
+    fields(reference, "path sha256")
+    path = base / relative(reference["path"])
+    require(not path.is_symlink() and path.resolve().is_relative_to(base.resolve()),
+            "translation inputs must stay within the request directory")
+    with path.open("rb") as stream:
+        data = stream.read(MAX_JSON + 1)
+    require(digest(data) == reference["sha256"], "translation input digest changed: " + reference["path"])
+    return document(data)
+
+
+def observed_architecture(kind, context):
+    if kind == "source":
+        arch = context.get("target_arch")
+        require(arch in ARCHITECTURES and context.get("target") == ARCHITECTURES[arch]["target"],
+                "source observation target is not a typed architecture variant")
+    else:
+        arch = context.get("architecture")
+        require(arch in ARCHITECTURES, "ports observation architecture is not a typed variant")
+    return arch
+
+
+def native_token(token):
+    # Absolute native paths may be private; keep only the public basename.
+    return token if not token.startswith("/") else "<native>/" + PurePosixPath(token).name
+
+
+def observed_unit(kind, observation):
+    """Project producer-authored facts; admission claims are never inherited."""
+    require(observation.get("cache_admission") is False and observation.get("native_profile_admitted") is False and
+            observation.get("canonical_ownership_registered") is False,
+            "producer observations cannot carry admission or ownership claims")
+    require(re.fullmatch(r"[0-9a-f]{40}", str(observation.get("revision"))) and
+            re.fullmatch(r"[0-9a-f]{40}", str(observation.get("git_tree"))), "exact observed commit/tree required")
+    context = observation["context"]
+    arch = observed_architecture(kind, context)
+    unresolved = []
+    if observation.get("recursive_closure_complete") is not True:
+        unresolved.append("producer: recursive dependency closure incomplete")
+    if kind == "source":
+        name = relative(observation["unit"])
+        options = {**{k: v for k, v in context["options"].items()},
+                   **{"FLAG:" + k: v for k, v in context["flags"].items()},
+                   "CONF:src.conf": "sha256:" + context["src_conf_sha256"],
+                   "CONF:make.conf": "sha256:" + context["make_conf_sha256"],
+                   "SCOPE": context["payload_scope"]}
+        flavor, osversion, edges = None, None, []
+        if observation.get("compiler_header_trace_complete") is not True:
+            unresolved.append("producer: compiler/header trace incomplete")
+        for item in observation["unresolved_inputs"]:
+            unresolved.append("%s %s: %s" % (item["declaration"], native_token(item["input"]), item["reason"]))
+    else:
+        origin = observation["origin"]
+        require(isinstance(origin, str) and PORT_ORIGIN.fullmatch(origin) and "@" not in origin,
+                "ports observation origin required")
+        flavor = context["flavor"]
+        name = origin + ("@" + flavor if flavor else "")
+        options = {**{k: v for k, v in context["options"].items()},
+                   **{"MAKE:" + k: v for k, v in context["make_variables"].items()},
+                   "PKGDB:" + context["package_database"]["mode"]: context["package_database"]["identity"] or "none"}
+        osversion = context["osversion"]
+        if context["package_database"]["mode"] != "snapshot":
+            unresolved.append("producer: package database is a diagnostic context, not the selected release")
+        for item in observation["unresolved_inputs"]:
+            unresolved.append("%s: %s" % (item["variable"], item["reason"]))
+        edges = observation["dependencies"]
+    return {"name": name, "architecture": arch, "options": options, "flavor": flavor,
+            "osversion": osversion, "edges": edges, "unresolved": unresolved}
+
+
+def merged_edges(edges, policy):
+    """One typed edge per (origin, kind), keeping every producer declaration."""
+    groups, excluded = {}, []
+    for edge in edges:
+        fields(edge, "kind declaration requirement origin target")
+        require(edge["kind"] in DEPENDENCY_KINDS and PORT_ORIGIN.fullmatch(str(edge["origin"])),
+                "observed dependency edge is untyped or has no exact origin")
+        if edge["kind"] == "test" and policy == "exclude":
+            excluded.append(edge)
+            continue
+        declaration = {"declaration": text(edge["declaration"]), "requirement": text(edge["requirement"]),
+                       "target": edge["target"]}
+        groups.setdefault((edge["origin"], edge["kind"]), []).append(declaration)
+    merged = {}
+    for key, declarations in groups.items():
+        unique = {(d["declaration"], d["requirement"], d["target"] or ""): d for d in declarations}
+        merged[key] = [unique[k] for k in sorted(unique)]
+    return merged, excluded
+
+
+def translate(request, base, catalog=None):
+    """Turn exact producer observations into graph selection units; never admits them."""
+    catalog = component_catalog() if catalog is None else tuple(catalog)
+    registered = {a.coordinate.uri: a.identity.uri for a in catalog}
+    fields(request, "schema repositories test_edges units")
+    require(request["schema"] == TRANSLATION_SCHEMA, "unknown translation request schema")
+    require(request["test_edges"] in TEST_EDGE_POLICIES, "explicit test edge decision required: qualification or exclude")
+    require(isinstance(request["repositories"], list) and isinstance(request["units"], list) and request["units"],
+            "repositories and observed units required")
+    repositories = {}
+    for repository in request["repositories"]:
+        fields(repository, "id repository revision upstream")
+        require(text(repository["id"]) not in repositories, "duplicate repository")
+        repositories[repository["id"]] = repository
+    units, draft, provenance, complete = [], [], [], True
+    for spec in request["units"]:
+        fields(spec, "observation hosted_summary repository component retained dependency_bindings")
+        require(spec["repository"] in repositories, "unit names an unselected repository")
+        observation = pinned_document(base, spec["observation"])
+        kind = OBSERVATIONS.get(observation.get("schema"))
+        require(kind is not None, "unknown producer observation schema")
+        require(observation["revision"] == repositories[spec["repository"]]["revision"],
+                "observation revision differs from the selected repository revision")
+        facts = observed_unit(kind, observation)
+        require(spec["component"] in registered,
+                "unit owner is not a registered project Component: " + str(spec["component"]))
+        unit_id = "%s:%s:%s" % (spec["repository"], facts["name"], facts["architecture"])
+        hosted = None
+        if spec["hosted_summary"] is not None:
+            summary = pinned_document(base, spec["hosted_summary"])
+            require(summary.get("schema") == "daemonarchy/hosted-producer-smoke-record@1", "hosted summary schema required")
+            got = summary["facts"]
+            require(got.get("status") == "observed" and got.get("kind") == kind and
+                    got.get("unit") == (observation.get("unit") or observation.get("origin")) and
+                    got.get("source_commit") == observation["revision"] and got.get("source_tree") == observation["git_tree"] and
+                    got.get("architecture") == facts["architecture"],
+                    "hosted summary does not corroborate this observation")
+            hosted = {**spec["hosted_summary"], "workflow_run": summary["workflow_run"], "scope": summary["scope"]}
+        merged, excluded = merged_edges(facts["edges"], request["test_edges"])
+        bindings = {}
+        require(isinstance(spec["dependency_bindings"], list), "dependency binding list required")
+        for binding in spec["dependency_bindings"]:
+            fields(binding, "origin kind identity artifact_identity members selected_version version_constraint")
+            key = (binding["origin"], binding["kind"])
+            require(key not in bindings, "duplicate dependency binding")
+            require(key in merged, "binding names an unobserved or excluded dependency edge: %s %s" % key)
+            bindings[key] = binding
+        dependencies, unresolved = [], list(facts["unresolved"])
+        for (origin, kind_), declarations in sorted(merged.items()):
+            binding = bindings.get((origin, kind_))
+            if binding is None:
+                unresolved.append("unbound %s dependency %s" % (kind_, origin))
+                continue
+            dependencies.append({"unit": "%s:%s:%s" % (spec["repository"], origin, facts["architecture"]),
+                                 "kind": kind_, "identity": identity(binding["identity"]),
+                                 "artifact_identity": identity(binding["artifact_identity"]),
+                                 "members": binding["members"], "selected_version": text(binding["selected_version"]),
+                                 "version_constraint": text(binding["version_constraint"]),
+                                 "declarations": declarations})
+        unit = {"id": unit_id, "repository": spec["repository"], "architecture": facts["architecture"],
+                "options": facts["options"], "flavor": facts["flavor"], "dependencies": dependencies,
+                "unresolved_inputs": unresolved}
+        retained = spec["retained"]
+        if retained is None:
+            complete = False
+            draft.append({**unit, "base_abi": {"osversion": facts["osversion"]},
+                          "missing": ["retained manifest/profile", "compiler", "sysroot", "execution_identity",
+                                      "base ABI contract"]})
+        else:
+            fields(retained, "manifest profile compiler sysroot execution_identity base_abi generated_inputs")
+            base_abi = dict(retained["base_abi"])
+            if kind == "ports":
+                require("osversion" not in base_abi, "ports OSVERSION comes from the observation")
+                base_abi["osversion"] = facts["osversion"]
+            units.append({**unit, "manifest": retained["manifest"], "profile": retained["profile"],
+                          "compiler": retained["compiler"], "sysroot": retained["sysroot"],
+                          "execution_identity": retained["execution_identity"], "base_abi": base_abi,
+                          "generated_inputs": retained["generated_inputs"]})
+        provenance.append({"unit": unit_id, "kind": kind, "observation": spec["observation"],
+                           "observed_revision": observation["revision"], "observed_tree": observation["git_tree"],
+                           "component": spec["component"], "authoring_identity": registered[spec["component"]],
+                           "hosted_corroboration": hosted, "excluded_test_edges": excluded,
+                           "merged_edges": [{"origin": o, "kind": k, "declarations": len(d)}
+                                            for (o, k), d in sorted(merged.items())]})
+    ids = [p["unit"] for p in provenance]
+    require(len(set(ids)) == len(ids), "duplicate translated unit")
+    selection = None
+    if complete:
+        selection = {"schema": SCHEMA, "repositories": request["repositories"],
+                     "units": sorted(units, key=lambda u: u["id"])}
+    return {"schema": TRANSLATION_RESULT_SCHEMA, "request_identity": canonical_identity(request).uri,
+            "test_edges": request["test_edges"], "selection": selection,
+            "draft_units": sorted(draft, key=lambda u: u["id"]),
+            "provenance": sorted(provenance, key=lambda p: p["unit"]),
+            "component_catalog": catalog_record(catalog), "admitted": False, "cache_admission": False,
+            "remaining_gates": ["retained manifests/profiles for every draft unit", "native recursive producer closure",
+                                "bound identities for every unbound edge", "native admission and receipts"]}
+
+
+def translate_main(argv):
+    parser = argparse.ArgumentParser(description="Translate producer observations into release graph selection units")
+    parser.add_argument("request", type=Path)
+    parser.add_argument("--request-sha256", required=True)
+    parser.add_argument("--output", type=Path, required=True)
+    args = parser.parse_args(argv)
+    try:
+        with args.request.open("rb") as stream:
+            data = stream.read(MAX_JSON + 1)
+        require(digest(data) == args.request_sha256, "translation request digest changed")
+        result = translate(document(data), args.request.resolve(strict=True).parent)
+        write_report(args.output, result)
+        print(json.dumps({"output_sha256": digest(args.output.read_bytes()),
+                          "complete_selection": result["selection"] is not None, "admitted": False}))
+        return 0
+    except (ValueError, OSError, KeyError, TypeError) as error:
+        print("release input translation refused: " + str(error), file=sys.stderr)
+        return 1
+
+
 def main():
+    if sys.argv[1:2] == ["translate"]:
+        return translate_main(sys.argv[2:])
     if sys.argv[1:2] == ["trace"]:
         return trace_projection_main(sys.argv[2:])
     parser = argparse.ArgumentParser(description=__doc__)

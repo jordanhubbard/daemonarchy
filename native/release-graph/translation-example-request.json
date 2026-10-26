@@ -1,0 +1,48 @@
+{
+  "repositories": [
+    {
+      "id": "daemonarchy-ports",
+      "repository": "https://github.com/jordanhubbard/daemonarchy-ports.git",
+      "revision": "a56c82cc2b0de960aa382d3bc23a08dc6d31bb66",
+      "upstream": null
+    },
+    {
+      "id": "daemonarchy-src",
+      "repository": "https://github.com/jordanhubbard/daemonarchy-src.git",
+      "revision": "64d5f9888a215f0a4d27b0aad98588b32a4e8389",
+      "upstream": null
+    }
+  ],
+  "schema": "daemonarchy/release-input-translation@1",
+  "test_edges": "qualification",
+  "units": [
+    {
+      "component": "component://daemonarchy/release",
+      "dependency_bindings": [],
+      "hosted_summary": {
+        "path": "hosted-source-40249878784.json",
+        "sha256": "ad662564115d5659526419134442b6f2a73527a70e111e3d6b9ee3b8ee3071e7"
+      },
+      "observation": {
+        "path": "translation-example/source-truncate-observation.json",
+        "sha256": "1c71790198054a062f3957f07b206c74871ed889a5628e38a5daa1a0b01ff280"
+      },
+      "repository": "daemonarchy-src",
+      "retained": null
+    },
+    {
+      "component": "component://daemonarchy/package-engine",
+      "dependency_bindings": [],
+      "hosted_summary": {
+        "path": "hosted-ports-40250211477.json",
+        "sha256": "9677ad53ce71d4fa0e69a3e996e0038165ca66270d2a47eed492a4195f52dc0d"
+      },
+      "observation": {
+        "path": "translation-example/ports-liblz4-observation.json",
+        "sha256": "17f39bc41bc780c7ea6c97d1d28aa48d2a6dc2a77eebdc5e8d0a13fca70132e9"
+      },
+      "repository": "daemonarchy-ports",
+      "retained": null
+    }
+  ]
+}
