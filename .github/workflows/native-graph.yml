@@ -56,17 +56,6 @@ on:
       - 'scripts/check-image-size.sh'
       - 'scripts/live-image-excludes'
       - 'tests/live-image-budget.sh'
-<<<<<<< HEAD
-      - 'overlay/usr/local/libexec/daemonarchy-installer/live-*'
-      - 'overlay/usr/local/libexec/daemonarchy-installer/launch'
-      - 'overlay/usr/local/share/daemonarchy-installer/brand-daemonarchy.lua'
-      - 'overlay/usr/local/share/daemonarchy-installer/live/**'
-      - 'tests/live-desktop.sh'
-      - 'tests/live-backend.sh'
-      - 'tests/live-installer.py'
-      - 'tests/loader-live-menu.lua'
-      - 'tests/live-image-runtime.sh'
-=======
       - 'overlay/usr/local/libexec/daemonarchy-installer/network-bringup'
       - 'overlay/usr/local/libexec/daemonarchy-installer/network-addresses'
       - 'overlay/usr/local/libexec/daemonarchy-installer/launch'
@@ -75,7 +64,14 @@ on:
       - 'tests/installer-wifi-timing.sh'
       - 'tests/enterprise-wifi-options.sh'
       - 'tests/remote-debug-network.sh'
->>>>>>> origin/main
+      - 'overlay/usr/local/libexec/daemonarchy-installer/live-*'
+      - 'overlay/usr/local/share/daemonarchy-installer/brand-daemonarchy.lua'
+      - 'overlay/usr/local/share/daemonarchy-installer/live/**'
+      - 'tests/live-desktop.sh'
+      - 'tests/live-backend.sh'
+      - 'tests/live-installer.py'
+      - 'tests/loader-live-menu.lua'
+      - 'tests/live-image-runtime.sh'
       - '.github/workflows/native-graph.yml'
   pull_request:
     paths:
@@ -132,17 +128,6 @@ on:
       - 'scripts/check-image-size.sh'
       - 'scripts/live-image-excludes'
       - 'tests/live-image-budget.sh'
-<<<<<<< HEAD
-      - 'overlay/usr/local/libexec/daemonarchy-installer/live-*'
-      - 'overlay/usr/local/libexec/daemonarchy-installer/launch'
-      - 'overlay/usr/local/share/daemonarchy-installer/brand-daemonarchy.lua'
-      - 'overlay/usr/local/share/daemonarchy-installer/live/**'
-      - 'tests/live-desktop.sh'
-      - 'tests/live-backend.sh'
-      - 'tests/live-installer.py'
-      - 'tests/loader-live-menu.lua'
-      - 'tests/live-image-runtime.sh'
-=======
       - 'overlay/usr/local/libexec/daemonarchy-installer/network-bringup'
       - 'overlay/usr/local/libexec/daemonarchy-installer/network-addresses'
       - 'overlay/usr/local/libexec/daemonarchy-installer/launch'
@@ -151,7 +136,14 @@ on:
       - 'tests/installer-wifi-timing.sh'
       - 'tests/enterprise-wifi-options.sh'
       - 'tests/remote-debug-network.sh'
->>>>>>> origin/main
+      - 'overlay/usr/local/libexec/daemonarchy-installer/live-*'
+      - 'overlay/usr/local/share/daemonarchy-installer/brand-daemonarchy.lua'
+      - 'overlay/usr/local/share/daemonarchy-installer/live/**'
+      - 'tests/live-desktop.sh'
+      - 'tests/live-backend.sh'
+      - 'tests/live-installer.py'
+      - 'tests/loader-live-menu.lua'
+      - 'tests/live-image-runtime.sh'
       - '.github/workflows/native-graph.yml'
   workflow_dispatch:
 
