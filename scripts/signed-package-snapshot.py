@@ -211,6 +211,7 @@ class FrozenOrigin:
         self.cache = cache
         self.report_path = report_path
         self.cache_selections = {}
+        self.candidate_authentication = None
         self.cache_failure = None
         self.metadata = metadata
         self.source = source
@@ -251,6 +252,8 @@ class FrozenOrigin:
                     if owner.cache is not None:
                         try:
                             stream = owner.cache.lookup(owner.cache_selections[name])
+                            if stream is None and owner.candidate_authentication is not None:
+                                stream = owner.cache.candidate(owner.cache_selections[name], owner.candidate_authentication)
                         except (OSError, ValueError, KeyError, TypeError) as error:
                             owner.cache_failure = str(error)
                             self.send_error(502, "verified cache entry refused")
@@ -470,6 +473,10 @@ def verify(config_path, config_pin, case):
         catalogue["public_key"] = repo["public_key"]["sha256"]
         identities = {name: cache_module.selection_identity(catalogue, name, row) for name, row in packages.items()}
         origin.cache_selections = {row["archive_path"]: identities[name] for name, row in packages.items()}
+        # This witness exists only after the current native signature import and
+        # exact authenticated inventory/target checks. Old result replay cannot
+        # authorize reassociation to another catalogue or signing key.
+        origin.candidate_authentication = cache_module.NativeAuthenticatedCatalogue(catalogue, packages, database_pin)
         if native.run_step(command, ["shell", "SELECT 1;"], case, "initialize", timeout=10) != "1\n":
             raise ValueError("private package database initialization failed")
         if policy is None:

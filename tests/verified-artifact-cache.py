@@ -86,6 +86,105 @@ class CacheTests(unittest.TestCase):
         with self.assertRaisesRegex(ValueError, "symlink"):
             cache.VerifiedCache(linked)
 
+    def new_selection(self):
+        selected = copy.deepcopy(self.identity)
+        selected["catalogue"]["packagesite.pkg"] = "c" * 64
+        selected["catalogue"]["public_key"] = "f" * 64
+        return selected
+
+    def authentication(self, selected):
+        # Controller protocol witness only; no native signature evidence claimed.
+        return cache.NativeAuthenticatedCatalogue(selected["catalogue"], {selected["name"]: selected}, "d" * 64)
+
+    def test_new_authenticated_catalogue_candidate_requires_fresh_verification_before_binding(self):
+        self.cache.retain(self.identity, self.source, self.sha)
+        record = self.root / "cache/selections" / (self.cache.key(self.identity) + ".json")
+        previous = record.read_bytes()
+        blob = self.root / "cache/objects" / self.sha
+        inode = blob.stat().st_ino
+        pending_archives = [p for p in (self.root / "cache/pending").iterdir() if p.suffix != ".json"]
+        selected = self.new_selection()
+        self.assertIsNone(self.cache.lookup(selected))
+        fresh = self.root / "fresh-native-fetch.pkg"
+        with self.cache.candidate(selected, self.authentication(selected)) as stream:
+            fresh.write_bytes(stream.read())
+        current_record = self.root / "cache/selections" / (self.cache.key(selected) + ".json")
+        self.assertFalse(current_record.exists())
+        self.assertEqual(self.cache.summary()["candidate_bytes_admitted"], 0)
+        # A current native consumer must reverify its selected checksum; this
+        # fixture uses a known SHA-256, not an invented interpretation of pkg's typed digest.
+        self.assertEqual(hashlib.sha256(fresh.read_bytes()).hexdigest(), self.sha)
+        self.cache.retain(selected, fresh, self.sha)
+        self.assertTrue(current_record.exists())
+        self.assertEqual(record.read_bytes(), previous)
+        self.assertEqual(blob.stat().st_ino, inode)
+        self.assertEqual(len(list((self.root / "cache/objects").iterdir())), 1)
+        self.assertEqual([p for p in (self.root / "cache/pending").iterdir() if p.suffix != ".json"], pending_archives)
+        self.assertEqual(self.cache.summary()["candidate_bytes_admitted"], len(self.payload))
+        admitted = next(e for e in self.cache.summary()["events"] if e["kind"] == "candidate_admitted")
+        self.assertTrue(admitted["native_selected_checksum_reverified"])
+        self.assertFalse(admitted["runtime_qualification_copied"])
+
+    def test_candidate_refuses_missing_or_stale_current_authentication(self):
+        self.cache.retain(self.identity, self.source, self.sha)
+        for key in ("abi", "archive_checksum", "public_key"):
+            selected = copy.deepcopy(self.identity)
+            if key == "public_key":
+                selected["catalogue"][key] = "f" * 64
+            else:
+                selected[key] = "changed"
+            with self.assertRaisesRegex(ValueError, "fresh native"):
+                self.cache.candidate(selected, None)
+            with self.assertRaisesRegex(ValueError, "freshly authenticated"):
+                self.cache.candidate(selected, self.authentication(self.identity))
+        self.assertEqual(self.cache.summary()["candidate_requests"], 0)
+
+    def test_fresh_authentication_does_not_alias_changed_checksum_or_abi(self):
+        self.cache.retain(self.identity, self.source, self.sha)
+        for key in ("abi", "archive_checksum", "version"):
+            selected = self.new_selection()
+            selected[key] = "changed"
+            self.assertIsNone(self.cache.candidate(selected, self.authentication(selected)))
+        self.assertEqual(self.cache.summary()["candidate_requests"], 0)
+
+    def test_corrupt_candidate_preserves_old_record_and_refuses_new_binding(self):
+        self.cache.retain(self.identity, self.source, self.sha)
+        old = self.root / "cache/selections" / (self.cache.key(self.identity) + ".json")
+        previous = old.read_bytes()
+        blob = self.root / "cache/objects" / self.sha
+        blob.chmod(0o600)
+        corrupt = b"x" * len(self.payload)
+        blob.write_bytes(corrupt)
+        selected = self.new_selection()
+        with self.assertRaisesRegex(ValueError, "corrupt cache entry SHA-256"):
+            self.cache.candidate(selected, self.authentication(selected))
+        self.assertEqual(old.read_bytes(), previous)
+        self.assertEqual(blob.read_bytes(), corrupt)
+        self.assertEqual(self.source.read_bytes(), self.payload)
+        self.assertFalse((self.root / "cache/selections" / (self.cache.key(selected) + ".json")).exists())
+
+    def test_malformed_candidate_record_refuses_without_repair(self):
+        self.cache.retain(self.identity, self.source, self.sha)
+        record = self.root / "cache/selections" / (self.cache.key(self.identity) + ".json")
+        record.chmod(0o600)
+        record.write_bytes(b"[]")
+        selected = self.new_selection()
+        with self.assertRaisesRegex(ValueError, "record binding differs"):
+            self.cache.candidate(selected, self.authentication(selected))
+        self.assertEqual(record.read_bytes(), b"[]")
+        self.assertEqual(self.source.read_bytes(), self.payload)
+
+    def test_failed_candidate_reverification_cannot_publish_current_record(self):
+        self.cache.retain(self.identity, self.source, self.sha)
+        selected = self.new_selection()
+        with self.cache.candidate(selected, self.authentication(selected)):
+            pass
+        with self.assertRaisesRegex(ValueError, "differs from retained candidate"):
+            self.cache.retain(selected, self.source, "b" * 64)
+        self.assertFalse((self.root / "cache/selections" / (self.cache.key(selected) + ".json")).exists())
+        self.assertEqual(self.cache.summary()["candidate_bytes_admitted"], 0)
+
+
 
 class InstallerCacheTests(unittest.TestCase):
     def shell(self, body, extra=None):

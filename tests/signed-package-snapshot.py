@@ -232,6 +232,52 @@ class SignedSnapshotTests(unittest.TestCase):
         self.assertEqual(cache.summary()["hits"], 1)
         self.assertEqual(cache.summary()["bytes_saved"], 4)
 
+    def test_new_catalogue_candidate_is_transport_only_until_current_native_recheck(self):
+        cache = snapshot.cache_module.VerifiedCache(self.root.resolve() / "candidate-cache")
+        source = self.root / "old.pkg"
+        source.write_bytes(b"test")
+        digest = hashlib.sha256(b"test").hexdigest()
+        pins = {name: "a" * 64 for name in ("meta.conf", "packagesite.pkg", "data.pkg", "public_key")}
+        row = dict(version="1", abi="FreeBSD:16:amd64", archive_checksum=digest, archive_path="a.pkg", download_bytes=4)
+        old = snapshot.cache_module.selection_identity(pins, "a", row)
+        cache.retain(old, source, digest)
+        old_record = cache.root / "selections" / (cache.key(old) + ".json")
+        old_bytes = old_record.read_bytes()
+        selected_pins = dict(pins, **{"packagesite.pkg": "b" * 64, "public_key": "c" * 64})
+        selected = snapshot.cache_module.selection_identity(selected_pins, "a", row)
+        # Without a fresh native authentication witness, this is an ordinary
+        # public miss, never an alias to bytes verified under the old key.
+        with snapshot.FrozenOrigin({}, {"url": "https://example.invalid/feed"}, cache=cache) as origin:
+            origin.payloads = {"a.pkg": 4}
+            origin.cache_selections = {"a.pkg": selected}
+            with self.assertRaises(urllib.error.HTTPError) as error:
+                urllib.request.build_opener(NoRedirect).open(origin.url + "/a.pkg", timeout=2)
+            self.assertEqual(error.exception.code, 302)
+            error.exception.close()
+        self.assertEqual(cache.summary()["candidate_requests"], 0)
+        # Controller protocol witness only; this does not run native signatures.
+        authenticated = snapshot.cache_module.NativeAuthenticatedCatalogue(selected_pins, {"a": row}, "d" * 64)
+        with snapshot.FrozenOrigin({}, {"url": "https://example.invalid/feed"}, cache=cache) as origin:
+            origin.payloads = {"a.pkg": 4}
+            origin.cache_selections = {"a.pkg": selected}
+            origin.candidate_authentication = authenticated
+            with urllib.request.urlopen(origin.url + "/a.pkg", timeout=2) as response:
+                payload = response.read()
+            self.assertEqual(origin.redirect_requests, 0)
+        current_record = cache.root / "selections" / (cache.key(selected) + ".json")
+        self.assertFalse(current_record.exists())
+        self.assertEqual(cache.summary()["candidate_bytes_admitted"], 0)
+        fresh = self.root / "fresh-native-fetch.pkg"
+        fresh.write_bytes(payload)
+        # The fixture explicitly uses SHA-256; actual typed checksums stay opaque
+        # and the real producer must let current native pkg verify them.
+        self.assertEqual(hashlib.sha256(payload).hexdigest(), row["archive_checksum"])
+        cache.retain(selected, fresh, digest)
+        self.assertTrue(current_record.exists())
+        self.assertEqual(old_record.read_bytes(), old_bytes)
+        self.assertEqual(cache.summary()["candidate_bytes_admitted"], 4)
+        self.assertEqual(len(list((cache.root / "objects").iterdir())), 1)
+
     def test_verified_cache_miss_fetches_from_public_publisher(self):
         cache = snapshot.cache_module.VerifiedCache(self.root.resolve() / "verified-cache")
         pins = {name: "a" * 64 for name in ("meta.conf", "packagesite.pkg", "data.pkg", "public_key")}
