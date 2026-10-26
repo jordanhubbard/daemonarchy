@@ -34,8 +34,11 @@ A cache hit is rehashed and size-checked before serving and still passes through
 native `pkg` verification. A corrupt entry fails closed with HTTP 502; it is not
 silently replaced, repaired or redirected to a successful download.
 
-Results include `verified_cache` with hits, misses, bytes saved, verification
-seconds and per-selection events. The private case also retains
+Results include `verified_cache` with hits, misses, `corrupt_refusals`, bytes
+saved, verification seconds and per-selection events. A published selection whose
+record is unreadable or misbound, or whose object is missing or has the wrong
+size or SHA-256, is a measured `corrupt_refused` event, never a miss. It serves
+zero bytes and the entry remains in place for diagnosis. The private case also retains
 `verified-cache-events.json` when its frozen origin closes, including on a failed
 native fetch. `bytes_saved` counts bytes served from verified cache instead of
 fetching them from the publisher; it is not measured end-to-end speedup. Repeated
@@ -238,8 +241,10 @@ feed; the ISO's kernel-matched packages and FreeBSD upstream policy retain their
 existing sources. Installed production repository configuration retains the public
 versioned feed URL. This is a transport override, not an authentication override.
 
-Use `PACKAGE_QA_MODE=final-rc` with no cache URL for final public QA. Both harness
-and installer reject an override in that mode before destructive work. This
+Use `PACKAGE_QA_MODE=final-rc` with no cache URL or metadata pins for final public
+QA. Both harness and installer reject any override field in that mode, including
+a pin without a URL, before CIDATA creation, host mutation or destructive work.
+The installed dependency feed then names only the public versioned release URL. This
 option alone does not prove that the supplied ISO came from the public release;
 the final QA driver must record public binary acquisition and verification.
 

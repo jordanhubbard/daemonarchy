@@ -51,7 +51,9 @@ package_cache_validate() {
     case "${package_qa_mode:-iterative}" in
         iterative) ;;
         final-rc)
-            [ -z "${package_cache_url:-}" ] || {
+            # Any override field, even a pin without a URL, refuses: final QA
+            # must use the public versioned feed and its native verification.
+            [ -z "${package_cache_url:-}${package_cache_meta_sha256:-}${package_cache_packagesite_sha256:-}${package_cache_data_sha256:-}" ] || {
                 echo 'Final RC QA rejects a local package cache override' >&2; return 1;
             } ;;
         *) echo 'Invalid package QA mode' >&2; return 1 ;;
