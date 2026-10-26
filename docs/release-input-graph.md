@@ -129,8 +129,9 @@ compiler/header/sysroot/generator observations; Chromium/CEF native ABI evidence
 complete retained native profiles, receipts and output custody; full package
 comparison and cache decisions; distributed execution and equivalent timing;
 exact feed/ISO/native/VM/hardware/release qualification. A bounded native ancestry
-probe timed out during an active kernel build; no native compiler, ports build or
-VM was launched by this stream.
+probe timed out during an active kernel build. No private-worker compilation or
+VM was launched by this stream; private producer/profile work stays scheduled
+centrally. The hosted metadata observations below have their own bounded scope.
 
 Portable checks use the matching installed interpreter:
 
@@ -187,3 +188,35 @@ scope. New semantic-payload re-admission and trusted signed-release binary-input
 adoption need their distinct qualified installed contracts, current policies and
 native proofs. This adapter does not import a WIP source tree or replace the
 selected c345 lifecycle binding. Prior immutable build evidence is never rewritten.
+
+
+## Hosted native metadata observations
+
+The source and ports producer branches now exercise their production invocation
+factory and decoder against actual native BSD make in a hosted FreeBSD
+15.0-RELEASE-p13 amd64 VM, actual OSVERSION 1500068. The source probe queries
+`usr.bin/truncate`; the ports probe queries `archivers/liblz4` using explicitly
+empty diagnostic package state, not selected-release installed facts. Existing
+package database bytes are unchanged and no build targets are requested.
+
+Safe summary records retain exact Git checkout/tree, compiler digest, input and
+driver identities, hosted run URLs and original artifact summary byte digests:
+
+- [Source observation](../native/release-graph/hosted-source-40249878784.json):
+  [run 40249878784](https://github.com/jordanhubbard/daemonarchy-src/actions/runs/40249878784) passes.
+- [Original ports failure](../native/release-graph/hosted-ports-40249884809.json):
+  [run 40249884809](https://github.com/jordanhubbard/daemonarchy-ports/actions/runs/40249884809)
+  failed because an isolated make search path omitted system `sys.mk`.
+- [Renewed ports observation](../native/release-graph/hosted-ports-40250211477.json):
+  [run 40250211477](https://github.com/jordanhubbard/daemonarchy-ports/actions/runs/40250211477)
+  passes after adding `/usr/share/mk` alongside the owned ports Mk directory.
+
+The exact hosted image has no Python or Git. The controller therefore renders a
+base-shell probe with the production invocation factory and checks its output
+with the production decoder; the full Python observer does not execute in the
+guest. Actual host/compiler facts are reported without overriding OSVERSION.
+Raw private commands/environment/configuration are not committed. These are
+native metadata invocation/parser controls, not compiler execution, complete
+filemon byte-at-build-time closure, selected-release context or admission.
+Every summary keeps recursive closure, selected-release context, native profile
+and cache admission false. The summary records are not lifecycle receipts.
