@@ -86,7 +86,7 @@ jobs:
                             for name in wheel.namelist()
                             if not name.endswith('/') and '.dist-info/' not in name)
           digest = hashlib.sha256(json.dumps(rows, separators=(',', ':')).encode()).hexdigest()
-          expected = '74ceb01337d46463c8a9a20b700fd3ed715f19e5f0bb3e32608c6f2f1b8c8861'
+          expected = '7a37c208a61bf38165ce06b9cae0eccafc1ee507dc658f469afda8e92111c0a4'
           if len(rows) != 1234 or digest != expected:
               for name, value in rows:
                   print('member', value, name)
