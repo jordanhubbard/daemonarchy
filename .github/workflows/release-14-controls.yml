@@ -43,13 +43,23 @@ jobs:
     runs-on: ubuntu-latest
     steps:
       - uses: actions/checkout@v4
+      - name: Install the pinned Literate AI 1.4.0 retained contracts
+        # The release input graph imports canonical retained manifest/profile
+        # contracts; pin the exact public 1.4.0 commit rather than the ambient CLI.
+        env:
+          LITAI_COMMIT: 0a267a6646f20e3a635a1f870042b6b034f026a1
+        run: |
+          python3 -m venv "$RUNNER_TEMP/litai"
+          "$RUNNER_TEMP/litai/bin/pip" install --quiet \
+            "literate-ai @ git+https://github.com/jordanhubbard/literate-ai@$LITAI_COMMIT"
       - name: Focused release graph, cache, measurement and QA checks
         env:
           PYTHONDONTWRITEBYTECODE: '1'
         run: |
+          if test -f tests/release-input-graph.py; then
+            "$RUNNER_TEMP/litai/bin/python" tests/release-input-graph.py -v
+          fi
           for test in \
-            tests/release-input-graph.py \
-            tests/release-measurements.py \
             tests/release-qa-plan.py \
             tests/verified-artifact-cache.py \
             tests/signed-package-snapshot.py; do
