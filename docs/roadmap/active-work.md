@@ -1057,3 +1057,21 @@ remains open; report files do not establish a passing gate.
   - [ ] Native aarch64 build, package, signature and ISO records with exact artifact identities, separate from amd64.
   - [ ] Retained aarch64 VM install/boot/upgrade/rollback/desktop/debug matrix results, failures included.
   - [ ] Scoped per-model Apple silicon laptop records, if and when enlisted, with any unsupported mode stated honestly.
+
+### [ ] LIVE-001 — Offer a live desktop from the installer media without touching the disk
+
+- **GitHub issue:** [#67](https://github.com/jordanhubbard/daemonarchy/issues/67), milestone **1.4.0**.
+- **Priority:** P1
+- **Owner:** installer, live image and desktop packaging
+- **Direction:** Add a boot option that starts a minimal Daemonarchy desktop entirely from the ISO and RAM, matching what the FreeBSD installer media already offers. It must show whether the desktop boots on the target hardware and provide enough application surface to run the complete installation graphically instead of on the TUI.
+- **Conclusion:** The live set is deliberately minimal: compositor, terminal and a graphical installer front-end over the existing install engine and configuration file, not the full application set. unionfs with a tmpfs upper layer makes the read-only ISO root writable; -o union mounts alone cannot change lower files. GPU modules come from the ISO repository, so no network is required. Nothing is written to any disk until the operator starts an installation, and a failed desktop start falls back to the TUI installer.
+- **Depends on:** PERF-002
+- **Implementation:**
+  - [ ] Install a minimal live desktop package set into the image at build time and move the 2 GiB budget from the raw ISO to the published .xz asset.
+  - [ ] Add a loader menu entry and live rc path: unionfs tmpfs overlays for /etc, /usr/local, /root and /home, GPU module selection from the ISO repository, an unprivileged live user and automatic desktop start with fallback to the TUI installer.
+  - [ ] Provide a graphical installer front-end that writes the same install configuration and renders the installer's @@progress stream.
+  - [ ] Keep pool import, disk swap and every disk write disabled on the live path until an installation is confirmed.
+- **Evidence:**
+  - [ ] Exact-image VM runs reaching the live desktop and completing a graphical installation, with before/after disk digests proving the live path wrote nothing until install.
+  - [ ] Fallback to the TUI installer when the compositor cannot start, and the TUI installer default unchanged.
+  - [ ] Scoped physical live-desktop records per tested machine, including the MacBookPro16,1.
