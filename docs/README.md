@@ -55,6 +55,7 @@ reachable without changing its historical scope.
 - [Private MacBook Wi-Fi and EFI timer preview images, October 22](testing-macbookpro16-1-wifi-preview-20261022.md)
 - [MacBook signed firmware handoff candidate, October 23](testing-macbookpro16-1-firmware-handoff-20261023.md)
 - [MacBook physical S3 suspend and resume trial, October 24](testing-macbookpro16-1-s3-20261024.md)
+- [MacBook Apple T2 NVMe fatal status: root cause and driver fix, October 26](testing-macbookpro16-1-nvme-20261026.md)
 
 - [Unpublished 1.2.0 plan and worker model](roadmap/release-1.2.0.md)
 
