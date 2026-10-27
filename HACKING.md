@@ -781,6 +781,129 @@ Portable prompt/address tests are `bash tests/remote-debug-cli.sh` and
 custom-port, reconnect and shutdown evidence belongs in the
 [remote debug validation record](docs/testing-1.1-remote-debug.md).
 
+## Hardware bring-up trace image
+
+When a machine hangs or resets during kernel startup and nothing on screen
+says why, use the hardware bring-up trace image. It is a separate image type
+from the install/live ISO, because unattended cycling cannot coexist with
+an interactive menu. The kernel (`debug.boottrace=1`) records each startup
+step in UEFI NVRAM before the step runs. On every boot the loader:
+
+- files the previous boot's trace on the stick
+- clears the NVRAM
+- boots the next queued experiment
+
+[docs/boottrace.md](docs/boottrace.md) describes the record and the
+tunables; this section is the procedure.
+
+### Building the image
+
+Build the image on the FreeBSD builder, from a kernel and loader built from
+daemonarchy-src with boottrace, and the release ISO that kernel matches. The
+ISO supplies `/rescue`, `pciconf`, `devinfo`, `acpidump`, their libraries
+and the modules:
+
+```sh
+sh build-hwtrace-image.sh -I daemonarchy-1.4.0-amd64.iso \
+    -k obj/GENERIC/kernel -l loader_lua.efi -L src/stand/lua \
+    -V 1.4.0-1 -o out
+# -m "msdosfs ..." picks modules (default msdosfs); -s sets the DATRACE
+# size in MiB (default 256); -S adds a serial console for VM tests.
+```
+
+The result is `out/daemonarchy-hwtrace-<version>-amd64.img` (about 390 MB)
+and its `.sha256`. It has three GPT partitions:
+
+- `EFISYS`: the loader.
+- `HWTROOT`: a read-only UFS root holding the following:
+  - `/boot`: the kernel, modules, Lua, the `/boot/d` presets and a
+    `loader.conf` whose only behaviour is the cycle
+  - a rescue root whose `/etc/rc` runs when a boot reaches init. It saves
+    `dmesg`, `sysctl -a`, `kenv`, `kldstat`, `pciconf -lvbc`, `devinfo -vr`
+    and `acpidump -dt` output to `DATRACE/DUMPS/<experiment>/` and reboots.
+    The queue line `hwtrace.shell=YES` gives a shell instead.
+- `DATRACE`: a FAT32 volume with `DATRACE.TAG`, `STATE.TXT`, `QUEUE/`,
+  `TRACES/` and `DUMPS/`.
+
+`tools/boottrace/qemu-stick-test.py IMAGE --vars VARS.fd --log LOG` boots an
+image under QEMU/OVMF. It resets silent boots the way laptop firmware does.
+
+### Experiments
+
+Write a queue on any host with mtools; Linux can also mount `DATRACE`
+directly:
+
+```sh
+tools/boottrace/stick.py queue IMAGE-or-DEVICE-or-MOUNT experiments.txt
+tools/boottrace/stick.py status TARGET
+tools/boottrace/stick.py traces TARGET --out traces/   # readable text
+```
+
+An experiments file is a list of `[name]` blocks. Each line is
+`name=value`, `unset name` or `read-conf /boot/d/N`, applied after the image
+defaults (trace on, `boot -v`, panic reset after 15 s):
+
+```ini
+[legacy-off]
+read-conf /boot/d/1
+
+[legacy-off-one-cpu]
+read-conf /boot/d/1
+kern.smp.disabled=1
+
+[zoom-from-clocks]
+debug.boottrace.from_sub=0x4800000
+```
+
+`queue` replaces the queue and keeps filed traces; `--reset-traces` deletes
+them.
+
+### At the machine
+
+1. Once, in the firmware setup, put USB first in the boot order. Secure Boot
+   stays off.
+2. Attach the stick and power on. Every boot and every firmware reset runs
+   the next experiment. The loader shows **HARDWARE TRACE: STOPPED** when a
+   boot reached init or the queue is empty.
+3. Detach the stick and bring it back. Read `TRACES/` with `stick.py traces`
+   and `DUMPS/`, write the next queue and reattach.
+
+### Zooming in and the NVRAM budget
+
+Variable stores append a copy on every write and rarely reclaim at runtime.
+A laptop store may have only tens of KiB free; the MSI Raider has 55 KiB.
+Each boot therefore spends the free space `QueryVariableInfo` reports, less
+a reserve. The reserve is a quarter of the maximum variable size, kept
+between 8 and 16 KiB; `debug.boottrace.reserve_kb` overrides it.
+
+Each step writes a 64-byte breadcrumb, which costs about 140 bytes of store,
+so roughly 250 to 300 fit in 40 KiB. The full record with the message tail
+is written only at checkpoints, panic and completion. By default, steps
+before `debug.boottrace.from_sub` (`SI_SUB_CONFIGURE`) are persisted only at
+subsystem boundaries; after it, every SYSINIT, attach, config hook and each
+device's first probe is. To zoom in:
+
+- Move `from_sub` later, or set `debug.boottrace.from=N` to persist every
+  step from step N.
+- If a trace says the budget ran out, its last step is the place to start
+  the next experiment from.
+- Each trace records the store figures, so you can see whether the firmware
+  reclaims between boots. `boottrace_compact="YES"` in `loader.conf` makes
+  the loader try to force a reclaim; it is off by default because on OVMF
+  it can leave less space.
+
+### Windows fallback
+
+If the machine falls through to Windows, run this from an elevated
+PowerShell:
+
+```powershell
+powershell -ExecutionPolicy Bypass -File tools\windows\read-boottrace.ps1
+```
+
+It reads both variables (`DaemonarchyBootTrace` and `DBTStep`) and writes a
+text and a raw copy to the desktop; `-Clear` deletes them.
+
 ## Releasing
 
 ### Maintaining the release history

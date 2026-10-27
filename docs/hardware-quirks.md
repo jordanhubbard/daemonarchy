@@ -105,6 +105,15 @@ default or demonstrated fix. A separate pending single-CPU comparison removes
    into the installed configuration. A reset outside ordinary panic handling may
    still occur. See [FreeBSD acpi(4)](https://man.freebsd.org/cgi/man.cgi?query=acpi&sektion=4).
 
+### Reset-surviving trace stick
+
+Filming the screen cannot show what runs after the last message. The
+[hardware trace stick](boottrace.md) records every startup step in a UEFI
+variable before it runs, files each boot's trace on the stick and boots the
+next queued experiment; with the stick first in the boot order the loop is
+unattended. Its first queue starts from the `/boot/d/1` legacy-ISA-off
+preset that produced `sc0 failed to probe on isa1` as the last visible line.
+
 ### Related report
 
 A [May 2026 Slackware report](https://www.linuxquestions.org/questions/slackware-installation-40/slackware-current-usb-boot-grub-hangs-msi-raider-18-hx-ai-4175764459/)
