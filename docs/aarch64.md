@@ -495,11 +495,25 @@ was signed or published.
   label reads "aarch64 development build, unsigned". With a USB keyboard,
   Return opened the installer menu. A first, packageless image of the same
   UEFI path booted from both CD and disk.
-  - **Finding:** bringing up `vtnet0` on arm64 logs WITNESS warnings and a lock
-    order reversal. `vtnet_set_macaddr` creates a bus_dma map under the vtnet
-    core lock, and arm64 bounce-zone creation then mallocs, adds a sysctl and
-    creates a kernel process. The boot continues. This is not yet diagnosed or
-    compared with amd64.
+  - **Finding, fixed in
+    [daemonarchy-src#37](https://github.com/jordanhubbard/daemonarchy-src/pull/37)
+    (open):** bringing up `vtnet0` on arm64 logged about 50 WITNESS warnings
+    and a lock order reversal, `VTNET Core Lock -> sysctl lock`. The boot and
+    DHCP continued.
+    - Cause: the control-command header tag asks for 2-byte alignment, so it
+      could bounce. Its first `bus_dmamap_create()` comes from
+      `vtnet_set_macaddr()` under the core mutex. When no bounce zone exists yet,
+      that call creates one, which takes the sysctl lock, allocates with
+      `M_WAITOK` and starts the busdma thread.
+    - QEMU arm64 `virt` shows it because vtnet is the first driver there to need
+      a bounce zone. amd64 has the same code path. It fires there only when no
+      other driver has made a zone first, and was not tested.
+    - Upstream main has the same code, so it is not fixed upstream either.
+    - The fix creates the zone at attach with `BUS_DMA_ALLOCNOW`.
+    - A QEMU A/B boot of this ISO, remastered with each kernel, gave 50 warnings
+      and 1 LOR without the fix, and none with it. `vtnet0` got a DHCP lease in
+      both runs.
+    - This image's kernel still has the bug until it is rebuilt with the fix.
   - No install was run, because the `packages-16-aarch64` feed is not
     published. No upgrade, rollback, desktop or debugging case was run either.
 

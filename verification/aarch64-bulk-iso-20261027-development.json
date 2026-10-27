@@ -303,8 +303,26 @@
       "serial_log_sha256": "b68e7b0f560e68daea8f50ead81c7f75cf560cc83c1f650f9b0275be5bb31f63",
       "menu_screen_png_sha256": "49c5c7cba06524fd1548d2e05e8701a29c7fe617543a6c9dfe4a25473a4de2e3"
     },
-    "finding_vtnet_witness": "On both boots, bringing up vtnet0 logs WITNESS warnings and a lock order reversal (50 'VTNET Core Lock' lines in boot 1, 52 in boot 2). vtnet_init_locked -> vtnet_set_macaddr (if_vtnet.c:1570) calls bus_dmamap_create while holding the vtnet core mutex. On arm64 that reaches bounce_bus_dmamap_create -> alloc_bounce_zone, which mallocs, adds a sysctl (sysctl lock, sleepable rm) and kproc_creates. Boot and DHCP continue. The smoke ISO, whose rc.conf configures no interface address, shows none of this. Not diagnosed further: it belongs to daemonarchy-src or upstream if_vtnet, and is not yet compared with amd64.",
-    "not_run": "No install to the target disk: the installer would fetch from the packages-16-aarch64 feed, which is not published. No upgrade, rollback, desktop (no KMS driver; gap 2) or network-debugging case. VMware arm64 guests were not used for the image."
+    "finding_vtnet_witness": "On both boots, bringing up vtnet0 logs WITNESS warnings and a lock order reversal (50 'VTNET Core Lock' lines in boot 1, 52 in boot 2). vtnet_init_locked -> vtnet_set_macaddr (if_vtnet.c:1570) calls bus_dmamap_create while holding the vtnet core mutex. On arm64 that reaches bounce_bus_dmamap_create -> alloc_bounce_zone, which mallocs, adds a sysctl (sysctl lock, sleepable rm) and kproc_creates. Boot and DHCP continue. The smoke ISO, whose rc.conf configures no interface address, shows none of this. Diagnosed and fixed in vtnet_witness_followup.",
+    "not_run": "No install to the target disk: the installer would fetch from the packages-16-aarch64 feed, which is not published. No upgrade, rollback, desktop (no KMS driver; gap 2) or network-debugging case. VMware arm64 guests were not used for the image.",
+    "vtnet_witness_followup": {
+      "recorded_at": "2026-10-27T06:00:00Z",
+      "lor_text": "lock order reversal: (sleepable after non-sleepable) / 1st vtnet0 (VTNET Core Lock, sleep mutex) @ sys/dev/virtio/network/if_vtnet.c:1570 / 2nd sysctl lock (sysctl lock, sleepable rm) @ sys/kern/kern_sysctl.c:886 / lock order VTNET Core Lock -> sysctl lock attempted at: witness_checkorder, _rm_wlock_debug, sysctl_add_oid, alloc_bounce_zone, bounce_bus_dmamap_create, vtnet_set_macaddr, vtnet_init_locked, vtnet_ioctl, ifhwioctl, ifioctl, kern_ioctl, sys_ioctl. The other warnings are 'uma_zalloc_debug: zone \"malloc-16\" with the following non-sleepable locks held: exclusive sleep mutex vtnet0 (VTNET Core Lock)', from M_WAITOK allocations in sysctl_add_oid, strdup and kproc_create (the busdma thread) under alloc_bounce_zone.",
+      "root_cause": "vtnet_hdr_dmat, the control-command header tag added by upstream ea130fa32099 ('virtio_net: Use bus_dma for command/ack buffers'), asks for 2-byte alignment. Any alignment above 1 marks a tag as one that could bounce, on arm64 and on x86. The tag's first bus_dmamap_create therefore calls alloc_bounce_zone. That first call is vtnet_ctrl_mac_cmd (inlined into vtnet_set_macaddr) under the core mutex. When no bounce zone exists yet, a new one is created, with its sysctls and, for the first zone in the system, the busdma kernel process. On QEMU arm64 virt no earlier driver creates a zone, so vtnet creates it.",
+      "amd64": "The same code path exists: sys/x86/x86/busdma_bounce.c also sets BUS_DMA_COULD_BOUNCE for alignment > 1 and creates the zone on the first map. It fires only when no bounce zone exists yet in the domain, because vtnet's BUS_SPACE_MAXADDR lowaddr matches any existing zone. A virtio-only bhyve or QEMU guest is the likely case. amd64 was not tested at runtime.",
+      "upstream": "Not fixed. if_vtnet.c, sys/kern/subr_busdma_bounce.c, sys/arm64/arm64/busdma_bounce.c and sys/x86/x86/busdma_bounce.c on freebsd-src main (GitHub API, 2026-10-27) match daemonarchy for this code. The only if_vtnet.c difference is the daemonarchy debugnet change.",
+      "fix": "daemonarchy-src PR #37 (branch fix/vtnet-macaddr-dmamap-lor, commit 94089026351b, off daemonarchy fd259a1787ab), open and not merged: https://github.com/jordanhubbard/daemonarchy-src/pull/37. It passes BUS_DMA_ALLOCNOW when vtnet_attach creates vtnet_hdr_dmat, so the zone and its first pages are set up at attach, where sleeping is allowed. Later map creations under the lock only find the zone and add pages with M_NOWAIT.",
+      "verification": "On the worker, GENERIC (WITNESS) kernels were built from the PR branch and from the same tree with the change reverted. Each was installed into a copy of daemonarchy-1.3.1-aarch64-dev.iso (cd9660 plus EFI El Torito, same label; no GPT). Both were booted with qemu-system-aarch64 11.1.2 TCG and EDK2: -M virt -cpu max -smp 4 -m 4096, virtio-scsi CD, virtio-net user networking, no GPU. Reverted: 50 non-sleepable-lock warnings and 1 lock order reversal (VTNET Core Lock -> sysctl lock), and vtnet0 bound 10.0.2.15 by DHCP. Patched: no WITNESS output at all, and vtnet0 bound 10.0.2.15 by DHCP and reached the ttyu0 login.",
+      "serial_log_sha256": {
+        "reverted": "d5d97189669bf799825234e31913c0faa90f491959642a7d3c30ac6926795834",
+        "patched": "9d7c63b9f070426fd0f999af1e8d3f18aceb4b4fff6b1e53e2c5510d014ce23f"
+      },
+      "test_iso_sha256": {
+        "reverted": "279b17f3a1df34fa9cad23eec0859160764d6c4cb98035ab93d93dcf2a03001d",
+        "patched": "ade3b009636c5de05e09d4389899189c829c4f046137a952a9e7d007b7e2f1c3"
+      },
+      "evidence_location": "/var/log/daemonarchy-build/vtnet-lor-20261027/ on the worker: serial logs, kernel build logs, the remaster and boot scripts, and the diff. The two test ISOs are in the operator's home directory on the worker and are not release inputs."
+    }
   },
   "evidence_location": "Logs, lists, diffs, the guard and run scripts, and the serial and screen captures are on the worker under /var/log/daemonarchy-build/bulk-20261026/ and /var/log/daemonarchy-build/sets-d63d77f4/. The images are in /usr/local/poudriere/data/images/ and the feed in /usr/local/poudriere/data/daemonarchy-repo/packages-16-aarch64-dev20261027/. None of them is published.",
   "remaining_gaps": [
@@ -313,7 +331,7 @@
     "No KMS driver for aarch64, so no desktop qualification under VMware (gap 2); QEMU virtio-gpu still needs graphics/virtio-gpu-qemu-kmod and an image selection.",
     "The feed and image are unsigned and unpublished; signing and the packages-16-aarch64 release are operator-held.",
     "No aarch64 checkout feed: the image carries the amd64 1.3.1 checkout catalogue.",
-    "WITNESS lock order reversal in vtnet_set_macaddr on arm64.",
+    "The vtnet_set_macaddr WITNESS lock order reversal is fixed in daemonarchy-src PR #37 (open). This image's kernel still has it until a rebuild takes the fix.",
     "Source tooling, the arm64 diagnostic kernel and the loader entropy fallback remain open (gaps 3-5).",
     "No install, upgrade, rollback, desktop or debugging case has run, and the worker is not admitted to the release graph; none of this is under LitAI custody.",
     "build-iso.sh's host prerequisites (jq, bash) are not listed for the worker in native/worker-template.json."
