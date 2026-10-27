@@ -61,6 +61,32 @@ def iso_assets(record):
     return [iso_asset(record["version"], arch) for arch in record_architectures(record)]
 
 
+# The hardware bring-up trace image (DEBUG-004) is a separate image type,
+# published xz-compressed from 1.4.0 when the record lists its architectures.
+HWTRACE_FIRST = (1, 4, 0)
+
+
+def hwtrace_asset(version, arch="amd64"):
+    if arch != "amd64":
+        raise ValueError(f"Unsupported hardware trace architecture: {arch}")
+    return f"daemonarchy-hwtrace-{version}-{arch}.img.xz"
+
+
+def hwtrace_assets(record):
+    if "hwtrace" not in record:
+        return []
+    architectures = record["hwtrace"]
+    if (not isinstance(architectures, list) or architectures != ["amd64"]):
+        raise ValueError("Hardware trace images must be listed as [\"amd64\"]")
+    if release_tuple(record["version"]) < HWTRACE_FIRST:
+        raise ValueError(f"Release {record['version']} predates hardware trace images")
+    return [hwtrace_asset(record["version"], arch) for arch in architectures]
+
+
+def checked_images(record):
+    return iso_assets(record) + hwtrace_assets(record)
+
+
 def unique_pairs(pairs):
     result = {}
     for key, value in pairs:
@@ -90,7 +116,7 @@ def read_record(path):
     if not isinstance(assets, dict):
         raise ValueError("Release asset map is missing")
     prefix = f"daemonarchy-{version}"
-    expected = {name for iso in iso_assets(record) for name in (iso, iso + ".sha256")}
+    expected = {name for image in checked_images(record) for name in (image, image + ".sha256")}
     expected |= {
         f"{prefix}-boot.txz",
         f"{prefix}-boot.txz.sig",
@@ -133,7 +159,7 @@ def verify(record_path, directory):
         for name, entry in record["assets"].items()
     }
     prefix = f"daemonarchy-{record['version']}"
-    for iso in iso_assets(record):
+    for iso in checked_images(record):
         checksum = paths[iso + ".sha256"].read_bytes()
         if checksum != f"{record['assets'][iso][1][7:]}  {iso}\n".encode():
             raise ValueError(f"ISO checksum file differs from the verified image: {iso}")

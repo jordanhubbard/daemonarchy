@@ -21,8 +21,11 @@ class ReleaseAssetNames(unittest.TestCase):
         self.addCleanup(self.temporary.cleanup)
         self.path = Path(self.temporary.name) / "record.json"
 
-    def record(self, certificate, version="1.3.1", iso=None, isos=None, architectures=None):
+    def record(self, certificate, version="1.3.1", iso=None, isos=None, architectures=None,
+               hwtrace=None):
         isos = isos or [iso or f"daemonarchy-{version}-amd64.iso"]
+        if hwtrace is not None:
+            isos = isos + [f"daemonarchy-hwtrace-{version}-amd64.img.xz"]
         names = [name for image in isos for name in (image, image + ".sha256")] + [
             f"daemonarchy-{version}-boot.txz",
             f"daemonarchy-{version}-boot.txz.sig",
@@ -37,6 +40,8 @@ class ReleaseAssetNames(unittest.TestCase):
         }
         if architectures is not None:
             record["architectures"] = architectures
+        if hwtrace is not None:
+            record["hwtrace"] = hwtrace
         self.path.write_text(json.dumps(record) + "\n")
         return record
 
@@ -132,6 +137,32 @@ class ReleaseAssetNames(unittest.TestCase):
         self.path.write_text(json.dumps(record) + "\n")
         with self.assertRaisesRegex(ValueError, "not an xz stream"):
             assets.verify(self.path, directory)
+
+
+class HardwareTraceImage(ReleaseAssetNames):
+    def test_140_may_publish_hwtrace_image(self):
+        self.record("daemonarchy-1.4.0.pem", "1.4.0", "daemonarchy-1.4.0-amd64.iso.xz",
+                    hwtrace=["amd64"])
+        record, _ = assets.read_record(self.path)
+        self.assertEqual(assets.hwtrace_assets(record),
+                         ["daemonarchy-hwtrace-1.4.0-amd64.img.xz"])
+
+    def test_hwtrace_image_without_declaration_refused(self):
+        record = self.record("daemonarchy-1.4.0.pem", "1.4.0", "daemonarchy-1.4.0-amd64.iso.xz",
+                             hwtrace=["amd64"])
+        del record["hwtrace"]
+        self.path.write_text(json.dumps(record) + "\n")
+        with self.assertRaisesRegex(ValueError, "incomplete or unexpected"):
+            assets.read_record(self.path)
+
+    def test_hwtrace_before_140_or_other_arch_refused(self):
+        self.record("daemonarchy-1.3.1.pem", hwtrace=["amd64"])
+        with self.assertRaisesRegex(ValueError, "predates hardware trace"):
+            assets.read_record(self.path)
+        self.record("daemonarchy-1.4.0.pem", "1.4.0", "daemonarchy-1.4.0-amd64.iso.xz",
+                    hwtrace=["aarch64"])
+        with self.assertRaisesRegex(ValueError, "listed as"):
+            assets.read_record(self.path)
 
 
 if __name__ == "__main__":

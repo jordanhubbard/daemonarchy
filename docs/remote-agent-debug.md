@@ -10,6 +10,10 @@ and continuous diagnostics. Older images need the matching helpers copied in
 before these newer commands are available; installing a newer kernel is not
 required for these debugging tools.
 
+When a machine resets during kernel startup before any network or console
+evidence survives, use the [hardware trace stick](boottrace.md) instead: it
+records each startup step in UEFI NVRAM and needs only a boot-order change.
+
 ## At the machine
 
 1. Write the selected release ISO to a USB stick and boot it using the

@@ -1,0 +1,24 @@
+# First hardware-trace queue for the MSI Raider 18 HX AI A2XWIG.
+# Coarse traces (subsystem starts, attaches, hinted probes, hooks); zoom in
+# afterwards with debug.boottrace.from=N.  The /boot/d presets keep panics
+# on screen forever; reset after 15 s instead so the loop continues.
+
+[legacy-off]
+read-conf /boot/d/1
+kern.panic_reboot_wait_time=15
+
+[defaults-verbose]
+debug.verbose_sysinit=1
+kern.panic_reboot_wait_time=15
+
+[legacy-off-no-hpet]
+read-conf /boot/d/2
+kern.panic_reboot_wait_time=15
+
+[legacy-off-one-cpu]
+read-conf /boot/d/3
+kern.panic_reboot_wait_time=15
+
+[legacy-off-no-spmc-hlt]
+read-conf /boot/d/4
+kern.panic_reboot_wait_time=15

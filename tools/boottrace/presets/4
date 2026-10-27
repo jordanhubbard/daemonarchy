@@ -1,0 +1,20 @@
+# MSI Raider diagnostics: keep the kernel away from legacy ISA devices,
+# print every startup step, and never auto-reboot after a panic.
+hw.atrtc.enabled="0"
+hint.atkbdc.0.disabled="1"
+hint.atkbd.0.disabled="1"
+hint.psm.0.disabled="1"
+hint.sc.0.disabled="1"
+hint.vga.0.disabled="1"
+hint.uart.0.disabled="1"
+hint.uart.1.disabled="1"
+hint.ppc.0.disabled="1"
+boot_verbose="YES"
+debug.verbose_sysinit="1"
+kern.panic_reboot_wait_time="-1"
+debug.trace_on_panic="1"
+autoboot_delay="NO"
+# Variant 4: legacy-free plus no ACPI processor/idle drivers
+hint.acpi_perf.0.disabled="1"
+debug.acpi.disabled="spmc"
+machdep.idle="hlt"
