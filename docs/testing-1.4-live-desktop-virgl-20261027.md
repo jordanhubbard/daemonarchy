@@ -98,3 +98,6 @@ The ISO hash was verified on madmax after copying. The build evidence is in
   - This PR only adds an explicit message; the policy is unchanged.
   - The operator should decide whether a missing variable means "Secure Boot
     off".
+  - **Resolved after this record:** the operator ruled that a missing
+    variable means Secure Boot off. The installer now proceeds with an
+    explanatory note; a variable with an unknown value is still refused.
