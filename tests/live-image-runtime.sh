@@ -73,10 +73,39 @@ python_command=$(head -n 1 /usr/local/share/daemonarchy-installer/omarchy-wifi-e
 python_command=${python_command#\#!}
 case "$python_command" in /usr/local/bin/python3.[0-9]*) ;; *) echo 'Invalid enterprise helper interpreter' >&2; exit 1 ;; esac
 "$python_command" -c 'import runpy; runpy.run_path("/usr/local/share/daemonarchy-installer/omarchy-wifi-enterprise", run_name="audit"); print("Enterprise Wi-Fi runtime imports passed")'
+# Live desktop (LIVE-001): the minimal desktop set, its startup wiring and the
+# graphical installer's runtime. A Wayland session is not needed to import GTK.
+for tool in Hyprland foot seatd sudo dbus-run-session kldxref su; do
+  command -v "$tool" >/dev/null || { echo "Missing live desktop tool: $tool" >&2; exit 1; }
+done
+for path in /etc/rc.d/daemonarchy_live /home/live/.config/hypr/hyprland.lua \
+  /usr/local/libexec/daemonarchy-installer/live-installer \
+  /usr/local/libexec/daemonarchy-installer/live-backend \
+  /usr/local/libexec/daemonarchy-installer/live-gpu \
+  /usr/local/libexec/daemonarchy-installer/live-session; do
+  [ -s "$path" ] || { echo "Missing live desktop payload: $path" >&2; exit 1; }
+done
+[ -d /live ] && [ -d /home ] || { echo 'Missing live mount points' >&2; exit 1; }
+id -Gn live | tr ' ' '\n' | grep -qx video || { echo 'The live account is not in the video group' >&2; exit 1; }
+[ "$(stat -f '%u:%Lp' /usr/local/etc/sudoers.d/daemonarchy-live)" = 0:440 ]
+grep -qx 'live ALL=(ALL) NOPASSWD: ALL' \
+  /usr/local/etc/sudoers.d/daemonarchy-live
+grep -qx 'daemonarchy_live_media="YES"' /boot/loader.conf
+grep -q 'daemonarchy_live' /boot/lua/brand-daemonarchy.lua
+# Comments explain why unionfs is avoided; only commands count.
+if grep -n 'mount_unionfs\|-t unionfs\|kldload unionfs' /etc/rc.d/daemonarchy_live \
+    /usr/local/libexec/daemonarchy-installer/live-gpu /usr/local/libexec/daemonarchy-installer/live-session |
+    grep -v '^[^:]*:[0-9]*:[[:space:]]*#'; then
+  echo 'The live desktop must not use unionfs' >&2; exit 1
+fi
+installer_python=$(head -n 1 /usr/local/libexec/daemonarchy-installer/live-installer)
+installer_python=${installer_python#\#!}
+"$installer_python" -c 'import gi; gi.require_version("Gtk", "3.0"); from gi.repository import Gtk; print("GTK", Gtk.MAJOR_VERSION, Gtk.MINOR_VERSION)'
+echo 'PASS: live desktop tools, startup wiring and installer runtime'
 # A compiler-only library accidentally removed from a retained executable's
 # dependency chain must fail here, even if that command is not on our tool list.
 find /bin /sbin /lib /libexec /usr/bin /usr/sbin /usr/lib /usr/libexec \
-  /usr/local/bin /usr/local/sbin /usr/local/lib /usr/local/libexec -type f |
+  /usr/local/bin /usr/local/sbin /usr/local/lib /usr/local/libexec /usr/local/llvm[0-9]* -type f |
 while IFS= read -r path; do
   case "$(file -b "$path")" in
     *ELF*dynamically\ linked*)

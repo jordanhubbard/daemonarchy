@@ -20,6 +20,13 @@ fixture_byte='\002'
 if secureboot_detect_enforcement; then
   echo 'FAIL: accepted an unknown firmware state' >&2; exit 1
 fi
+# Firmware without the variable (plain OVMF.fd): refuse, and say why.
+efivar() { return 1; }
+if secureboot_detect_enforcement 2>"$work/err"; then
+  echo 'FAIL: accepted an unreadable firmware state' >&2; exit 1
+fi
+grep -q 'Cannot read the firmware SecureBoot variable' "$work/err"
+efivar() { printf '%b' "$fixture_byte"; }
 fixture_state=1
 if secureboot_payload_prepare; then
   echo 'FAIL: accepted enforced boot without its signed payload' >&2; exit 1

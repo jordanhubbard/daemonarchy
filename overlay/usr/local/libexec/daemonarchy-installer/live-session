@@ -1,0 +1,58 @@
+#!/usr/local/bin/bash
+# Run from root's login on ttyv0 when the loader's live entry was chosen.
+# Starts the live desktop for the unprivileged live account and returns when
+# it ends. Any failure returns nonzero with the reason on the console; either
+# way the caller then starts the text installer on ttyv0, so a machine whose
+# graphics cannot start is still installable.
+set -uo pipefail
+
+LIVE_STATE=${LIVE_STATE:-/var/run/daemonarchy-live}
+LIVE_USER=${LIVE_USER:-live}
+LIVE_LOG=${LIVE_LOG:-/var/log/daemonarchy-live.log}
+ISO_LIBEXEC=${ISO_LIBEXEC:-/usr/local/libexec/daemonarchy-installer}
+SEATD_SERVICE=${SEATD_SERVICE:-/usr/local/etc/rc.d/seatd}
+
+fallback() {
+  printf '\nThe live desktop could not start: %s\n' "$*"
+  printf 'Details: %s\n' "$LIVE_LOG"
+  printf 'Starting the text installer instead. No disk has been changed.\n'
+  sleep "${LIVE_FALLBACK_PAUSE:-5}"
+  return 1
+}
+
+live_session() {
+  local compositor status started elapsed reason
+  if [[ -s $LIVE_STATE/failed ]]; then
+    reason=$(head -n 1 "$LIVE_STATE/failed")
+    fallback "$reason"; return
+  fi
+  [[ -f $LIVE_STATE/ready ]] || { fallback 'the in-memory overlays were not prepared'; return; }
+  printf 'Starting the Daemonarchy live desktop. No disk will be changed.\n'
+  if ! "$ISO_LIBEXEC/live-gpu" >>"$LIVE_LOG" 2>&1; then
+    reason=$(grep '^live-gpu: ' "$LIVE_LOG" | tail -n 1)
+    fallback "${reason#live-gpu: }"; return
+  fi
+  if ! "$SEATD_SERVICE" onestatus >/dev/null 2>&1; then
+    "$SEATD_SERVICE" onestart >>"$LIVE_LOG" 2>&1 || { fallback 'the seat manager (seatd) did not start'; return; }
+  fi
+  compositor=Hyprland
+  # A documented loader tunable for QA: prove the fallback without breaking
+  # graphics (set daemonarchy_live_test=compositor-failure at the loader).
+  if [[ $(kenv -q daemonarchy_live_test 2>/dev/null) == compositor-failure ]]; then
+    compositor=false
+  fi
+  printf '%s\n' "$compositor" >"$LIVE_STATE/compositor"
+  started=$SECONDS
+  su -l "$LIVE_USER" -c "exec $ISO_LIBEXEC/live-desktop" >>"$LIVE_LOG" 2>&1
+  status=$?
+  elapsed=$((SECONDS - started))
+  printf 'Live desktop ended: status %s after %s seconds\n' "$status" "$elapsed" >>"$LIVE_LOG"
+  if ((status != 0)); then
+    fallback "the compositor exited with status $status"; return
+  fi
+  printf 'The live desktop has ended; starting the text installer.\n'
+}
+
+if [[ ${BASH_SOURCE[0]} == "$0" ]]; then
+  live_session
+fi

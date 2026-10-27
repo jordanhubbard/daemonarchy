@@ -1,0 +1,33 @@
+#!/bin/sh
+# Runs as the unprivileged live account from live-session; execs the
+# compositor through seatd. Its exit status is the session's result.
+set -eu
+state=${LIVE_STATE:-/var/run/daemonarchy-live}
+XDG_RUNTIME_DIR=/var/run/user/$(id -u)
+[ -d "$XDG_RUNTIME_DIR" ] && [ -O "$XDG_RUNTIME_DIR" ] || {
+    echo "Missing private runtime directory $XDG_RUNTIME_DIR" >&2; exit 1; }
+LIBSEAT_BACKEND=seatd
+XDG_SESSION_TYPE=wayland
+XDG_CURRENT_DESKTOP=Hyprland
+DAEMONARCHY_LIVE=1
+export XDG_RUNTIME_DIR LIBSEAT_BACKEND XDG_SESSION_TYPE XDG_CURRENT_DESKTOP DAEMONARCHY_LIVE
+# Only fixed NAME=value driver selections written by live-gpu.
+if [ -r "$state/desktop.env" ]; then
+    while IFS='=' read -r key value; do
+        case "$key" in
+            GBM_BACKEND|__GLX_VENDOR_LIBRARY_NAME) export "$key=$value" ;;
+        esac
+    done <"$state/desktop.env"
+fi
+compositor=$(cat "$state/compositor" 2>/dev/null || echo Hyprland)
+case "$compositor" in
+    Hyprland)
+        # A private session bus for the installer's GTK front-end.
+        if command -v dbus-run-session >/dev/null 2>&1; then
+            exec dbus-run-session -- Hyprland
+        fi
+        exec Hyprland
+        ;;
+    false) exec false ;;
+    *) echo "Unexpected compositor selection: $compositor" >&2; exit 1 ;;
+esac

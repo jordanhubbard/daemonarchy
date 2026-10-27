@@ -10,8 +10,13 @@ secureboot_detect_enforcement() {
     1) printf 'true\n'; return ;;
     0) printf 'false\n'; return ;;
   esac
+  # Say why: the graphical installer showed only "exit 1" when firmware
+  # without a SecureBoot variable (plain OVMF.fd) stopped the install here.
   byte=$(efivar -p -N -b -n 8be4df61-93ca-11d2-aa0d-00e098032b8c-SecureBoot 2>/dev/null |
-    od -An -tu1 | tr -d ' \n') || return 1
+    od -An -tu1 | tr -d ' \n') || {
+    echo 'Cannot read the firmware SecureBoot variable; installation has not changed any disks.' >&2
+    return 1
+  }
   case "$byte" in
     1) printf 'true\n' ;;
     0) printf 'false\n' ;;
