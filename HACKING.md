@@ -2,18 +2,21 @@
 
 How to build a Daemonarchy image yourself, change the installer, the ports, or the artwork, and test and release the result. [README.md](README.md) says what Daemonarchy is; this is for working on it.
 
-Current refresh: **1.1.1**, FreeBSD source `bdcfeac3e1cb8ce3f05c32d8a7ad3597deb48bdf`
-(OSVERSION `1600028`), ports `f7d7ee897405dcb8ce87e674588a4e1b3bfba00e`
-on `daemonarchy-1.1.1`. Keep base, kernel, jail, drivers, optional source checkout
-and signed manifests on that selection. The [qualification record](docs/testing-1.1.1.md)
-tracks publication readiness. Older image examples below must use their own
-retained inputs; a package update is not a base/ABI migration.
+Latest published release: **1.3.1** ([`release/current.json`](release/current.json)),
+daemonarchy-src `d63d77f4eb3cc29e16510f7bdec73602e27c2844` (OSVERSION `1600029`),
+daemonarchy-ports `b785784219af455a9ce4fd70c59bc96ba77f469f` on `main`. Keep base,
+kernel, jail, drivers, optional source checkout and signed manifests on that
+selection. The [1.3.1 release notes](docs/release-1.3.1.md) record its qualification
+and limits; the earlier 1.1.1 selection stays in [its record](docs/testing-1.1.1.md).
+Older image examples below must use their own retained inputs; a package update
+is not a base/ABI migration.
 
 ## Literate AI project authority
 
 Read [PROJECT.md](PROJECT.md), [the active queue](docs/roadmap/active-work.md) and
 [the architecture](docs/architecture/design-traceability.md) before changing
-cross-component behavior. Literate AI 1.3.0 currently validates the in-place
+cross-component behavior. Literate AI (the framework release pinned in
+[the release controls workflow](.github/workflows/release-14-controls.yml)) validates the in-place
 contracts; original source and the native commands below retain implementation
 and release authority. Automatic quarantine conversion was not applied.
 
@@ -65,8 +68,8 @@ Daemonarchy spans the installer, desktop, compatibility, source and ports reposi
   - The SDDM theme that reuses Omarchy's with the Daemonarchy wordmark.
   - The System > FreeBSD menu (`omarchy-menu.jsonc`) and the `daemonarchy-*` commands behind it.
   - Its tags set Daemonarchy's version (see Releasing).
-- **[jordanhubbard/daemonarchy-src](https://github.com/jordanhubbard/daemonarchy-src)**: the owned FreeBSD source fork. [Owned source builds](docs/source-builds.md) describes exact-commit world/kernel/pkgbase and installer-set preparation; [the performance plan](docs/roadmap/build-performance.md) tracks complete Component execution and build-system evaluation. Development outputs do not change the published 1.1.1 selection.
-- **[jordanhubbard/daemonarchy-ports](https://github.com/jordanhubbard/daemonarchy-ports/tree/daemonarchy-1.1.1)** is the release ports fork; 1.1.1 uses `daemonarchy-1.1.1`, while the older 1.1 candidate uses `daemonarchy-1.1-package-baseline`. Upstream review does not block releases from this fork. It carries the ports:
+- **[jordanhubbard/daemonarchy-src](https://github.com/jordanhubbard/daemonarchy-src)**: the owned FreeBSD source fork. [Owned source builds](docs/source-builds.md) describes exact-commit world/kernel/pkgbase and installer-set preparation; [the performance plan](docs/roadmap/build-performance.md) tracks complete Component execution and build-system evaluation. Development outputs do not change a published release's selection.
+- **[jordanhubbard/daemonarchy-ports](https://github.com/jordanhubbard/daemonarchy-ports)** is the release ports fork; 1.3.1 uses `b7857842` on `main`. Releases through 1.1.1 used [jordanhubbard/freebsd-ports](https://github.com/jordanhubbard/freebsd-ports): the earlier 1.1.1 on `daemonarchy-1.1.1`, the older 1.1 candidate on `daemonarchy-1.1-package-baseline`. Upstream review does not block releases from this fork. It carries the ports:
   - `x11-wm/omarchy`: Omarchy itself, with omarchy-freebsd as a second distfile. Its `files/` holds only patches to Omarchy's own files, among them the ones that add the `FreeBSDWifi.qml` and `FreeBSDBluetooth.qml` stand-ins to the panels.
   - `x11-wm/daemonarchy`: the full desktop's dependencies, plus daemonarchy-desktop. Defaults for new users go to `share/omarchy/skel.d/daemonarchy`, which `seed-user` copies in ahead of Omarchy's.
   - The applications and tools Omarchy uses, one port each (`x11-themes/aether`, `graphics/tensaku`, `misc/ttfx`, ...), resubmitted upstream in [freebsd/freebsd-ports#640](https://github.com/freebsd/freebsd-ports/pull/640); `x11-wm/omarchy` and `x11-wm/daemonarchy` are in [#641](https://github.com/freebsd/freebsd-ports/pull/641). The earlier #630/#635 submissions were closed unmerged. The LinuxKPI header fix is [#642](https://github.com/freebsd/freebsd-ports/pull/642); review status is independent of fork qualification.
@@ -212,7 +215,7 @@ space than a cached installer-only rebuild. Check resources before dispatching.
    `/usr/lib32/libc.so.7` and the selected `/usr/src/sys/sys/param.h`; checking
    only the live jail directory does not establish what its build clones use.
 
-2. **A ports tree pinned to the official package set.** Before the next release, refresh [the fork's `omarchy` branch](https://github.com/jordanhubbard/freebsd-ports/tree/omarchy) from [upstream FreeBSD ports](https://github.com/freebsd/freebsd-ports), preserving and testing the Daemonarchy changes. The earlier 1.1 candidate uses `daemonarchy-1.1-package-baseline`; the refreshed 1.1.1 uses `daemonarchy-1.1.1` and the exact revision in [its qualification record](docs/testing-1.1.1.md). The 1.1.1 upstream tip is newer than the official binary baseline, so mismatched dependencies must also be rebuilt and published in its versioned candidate feed. Keep the selected integration fixed during qualification. Matching pkg.FreeBSD.org's `latest` baseline avoids rebuilding large dependency stacks; moving beyond it requires the versioned rebuilt-dependency publication procedure below. The official baseline is the newest `ports_top_git_hash` annotation across the set's packages. Builds are incremental, so one package's annotation can be older than the set:
+2. **A ports tree pinned to the official package set.** Before the next release, refresh [the fork's `omarchy` branch](https://github.com/jordanhubbard/freebsd-ports/tree/omarchy) from [upstream FreeBSD ports](https://github.com/freebsd/freebsd-ports), preserving and testing the Daemonarchy changes. 1.3.1 selects daemonarchy-ports `b7857842`, recorded in [its release notes](docs/release-1.3.1.md); the earlier 1.1.1 used `daemonarchy-1.1.1` ([record](docs/testing-1.1.1.md)) and the 1.1 candidate `daemonarchy-1.1-package-baseline`. When the selected tip is newer than the official binary baseline, as it was from 1.1.1 on, mismatched dependencies must also be rebuilt and published in the release's versioned feed. Keep the selected integration fixed during qualification. Matching pkg.FreeBSD.org's `latest` baseline avoids rebuilding large dependency stacks; moving beyond it requires the versioned rebuilt-dependency publication procedure below. The official baseline is the newest `ports_top_git_hash` annotation across the set's packages. Builds are incremental, so one package's annotation can be older than the set:
 
    ```
    mkdir -p /tmp/pq/db /tmp/pq/repos
@@ -256,7 +259,7 @@ space than a cached installer-only rebuild. Check resources before dispatching.
    ./build-iso.sh
    ```
 
-   The image is named after the version of the `daemonarchy` package it carries: `daemonarchy-<version>-<arch>.iso`, for example `daemonarchy-1.0.0-amd64.iso`. Set `NAME` to override.
+   The image is named after the version of the `daemonarchy` package it carries: `daemonarchy-<version>-<arch>.iso`, for example `daemonarchy-1.3.1-amd64.iso`. Set `NAME` to override.
 
    The image and its `.sha256` land in `/usr/local/poudriere/data/images`.
 
@@ -473,7 +476,7 @@ native checks still required on an exact image:
 
 ### The ports
 
-Work on a review branch based on the exact integration commit in [ROADMAP.md](ROADMAP.md). For 1.1.1 this is `daemonarchy-1.1.1`, pinned in [its qualification record](docs/testing-1.1.1.md); verify that poudriere uses the matching tree and snapshot jail before rebuilding.
+Work on a review branch based on the exact integration commit in [ROADMAP.md](ROADMAP.md). For 1.3.1 this is daemonarchy-ports `main` at `b7857842`, pinned in [its release notes](docs/release-1.3.1.md); verify that poudriere uses the matching tree and snapshot jail before rebuilding.
 
 - `poudriere testport -j 16amd64 -p <tree> -o <origin>` checks a port in a clean jail: stage-qa, the plist, install, and deinstall. Use it rather than `make stage-qa` as root on the host, which installs the port's dependencies onto the host.
 - To try a change on a running Daemonarchy desktop, `make reinstall` the port there; `seed-user --force` re-copies the defaults into the home (it never overwrites a file you have).
@@ -747,15 +750,16 @@ the real screen as an asciinema cast; see docs/installer-progress.md.
 
 ### Continuous diagnostics
 
-The 1.1.1 diagnostics path provides bounded read-only `daemonarchy-debug snapshot`
+The diagnostics path (since 1.1.1) provides bounded read-only `daemonarchy-debug snapshot`
 and `observe` output, with private, size-limited target logs. An approved
 controller can retain the stream off-target using `scripts/capture-remote-debug.py`
 and its existing host-key-pinned SSH wrapper. See the [continuous diagnostics
 contract](docs/remote-agent-debug.md#continuous-diagnostics) for exact commands,
 retention and privacy limits. It reports when console-buffer access is unavailable;
 SSH diagnostics cannot reconstruct probes from before networking or survive a
-hard reset as a live connection. Loader/early-kernel network debugging remains
-1.2 work; no new src debugging patches are part of 1.1.1.
+hard reset as a live connection. Loader/early-kernel network debugging is
+upcoming 1.4 work ([plan](docs/roadmap/release-1.4.0.md)); the published 1.3.1
+does not include a qualified early-kernel network debugger.
 
 ### When the screen or keyboard is unusable
 
@@ -916,7 +920,7 @@ and current-status documentation together.
 
 ### Packages
 
-A compatible application fix can reach existing installations through their online repository without a new image. The unversioned publication command below is only for packages compatible with that feed's retained base. For 1.1.1 use the versioned rebuilt-dependency procedure below and leave the unversioned feed unchanged. After rebuilding the compatible packages (step 4 of the build host setup), run this from a workstation with `gh`:
+A compatible application fix can reach existing installations through their online repository without a new image. The unversioned publication command below is only for packages compatible with that feed's retained base. From 1.1.1 on, use the versioned rebuilt-dependency procedure below and leave the unversioned feed unchanged. After rebuilding the compatible packages (step 4 of the build host setup), run this from a workstation with `gh`:
 
 ```
 ./pkg-repo.sh publish
@@ -1016,8 +1020,8 @@ coordinated operation.
    Verify the exact uploaded asset names, sizes and SHA-256 digests. Keep
    release-specific application and checkout feeds non-latest. Operator-approved
    physical qualification deferrals must remain explicit limitations in the
-   release notes; they never become passing results. For 1.1.1 retain the existing
-   1.1.0 draft and leave the unversioned stable application feed unchanged.
+   release notes; they never become passing results. Leave the unversioned
+   stable application feed unchanged.
    Before upload, run `python3 scripts/verify-release-assets.py --record
    verification/release-1.3.1.json --assets /path/to/staged-assets` on the six
    staged public assets. It checks exact sizes and digests, the ISO checksum
@@ -1028,15 +1032,58 @@ coordinated operation.
    GitHub stable latest release, annotated tag target and all six uploaded
    asset sizes and SHA-256 digests with the exact local record.
 
-3. Once `--published` passes, update the root `README.md` on `main` in the same
-   release cycle; the release is not finished until this lands. Point its
-   Download section and its current-release section to the new tag: release
-   name, ISO and checksum links, byte size and SHA-256 taken from the verified
-   published release (not from local build outputs), the `dd` example, and the
-   release notes and their limits. Turn the previous release's text into
-   history. Never point the README at a draft, prerelease or unpublished
-   release. (After 1.3.1 shipped, the README kept advertising 1.1.1 until this
-   step was enforced.)
+3. Once `--published` passes, bring the release media and every document into
+   sync in the same release cycle; the release is not finished until this lands
+   on `main`. Never point any document at a draft, prerelease or unpublished
+   release. (After 1.3.1 shipped, the README and getting-started guide kept
+   advertising 1.1.1 until this step was enforced.)
+
+   1. **Update the source of truth first.** Run
+      `python3 scripts/release-current.py update daemonarchy-<version>
+      --osversion <N> --application-feed <tag> --checkout-feed <tag>`. It reads
+      the published GitHub release, not local build outputs, and rewrites
+      [`release/current.json`](release/current.json): version, tag, publication
+      time, every published image type (the installer ISO for each
+      architecture, and any other image product such as the hardware-trace
+      bring-up image) and the exact names, sizes and SHA-256 digests of all
+      public assets. The previous release moves to `previous_releases`, so its
+      image name, size and checksum become stale wherever a current-state
+      document still carries them. `python3 scripts/release-current.py
+      check-published` compares the file with GitHub's latest release at any time.
+   2. **Run the guard:** `python3 tests/docs-release-sync.py -v`. It lists every
+      current-state document that still names an older release as current, an
+      older image name, checksum or size, or an unreleased version as available.
+      Fix each one; do not weaken the guard or mark a current-state document
+      historical to silence it. CI runs it on every pull request that touches
+      documentation, release records or this procedure.
+   3. **Work through the checklist.** The guard catches identifiers, not
+      meaning, so also review:
+      - **Download section and current-release section of `README.md`:**
+        release name and link, the image and checksum links for *all published
+        image types*, byte sizes and SHA-256 values from the verified published
+        release, the `dd` (or `xz -dc | dd`) example, and the release notes with
+        their limits. Turn the previous release's text into history.
+      - **Release notes** (`docs/release-<version>.md`): published state, final
+        asset identities and limits, linked from `README.md` and `docs/README.md`.
+      - **Every other current-state document**, as listed by
+        `python3 tests/docs-release-sync.py --list`: `HACKING.md` (this file's
+        current-release header and examples), `PROJECT.md`, `ROADMAP.md`,
+        `docs/getting-started.md`, `docs/README.md`, `docs/hardware-quirks.md`,
+        `docs/remote-agent-debug.md`, `docs/secure-boot.md`, the image guides
+        for each published image type, and `secureboot/` READMEs. Hardware
+        support, install procedure and feature descriptions must match what the
+        release actually ships; a feature still in development is described as
+        upcoming with a link to its roadmap entry.
+      - **The image's own shipped documentation and data** under `overlay/`
+        (installer help text, the default checkout catalogue
+        `overlay/usr/local/share/daemonarchy-installer/checkouts.json`, and any
+        version-naming text) for every published image type.
+      - **Checksums and image names** for all published image types, including
+        the separate hardware-trace bring-up image once it is published.
+      - **Historical records** (`docs/testing-*.md`, earlier release notes,
+        `CHANGELOG.md` entries, roadmap ledgers) keep their versions; add a
+        `<!-- release-sync: history -->` passage only for genuine history inside
+        a current-state document.
 4. If the release replaces one with a serious bug, say so at the top of the old release's notes.
 
 ## Pitfalls met so far
@@ -1153,22 +1200,23 @@ printed in the selected kernel's build identity:
 ```sh
 python3 scripts/build-checkout-packages.py --kind ports \
   --repo /usr/local/poudriere/ports/omarchyiso --revision <ports-commit> \
-  --branch daemonarchy-1.1.1 --remote https://github.com/jordanhubbard/freebsd-ports.git \
+  --branch main --remote https://github.com/jordanhubbard/daemonarchy-ports.git \
   --out /path/to/checkout-repo
 python3 scripts/build-checkout-packages.py --kind src \
   --repo /usr/src --revision <kernel-source-commit> \
-  --branch main --remote https://github.com/freebsd/freebsd-src.git \
+  --branch main --remote https://github.com/jordanhubbard/daemonarchy-src.git \
   --out /path/to/checkout-repo
 python3 scripts/make-checkout-catalog.py /path/to/checkout-repo \
   --url https://github.com/jordanhubbard/daemonarchy/releases/download/<checkout-tag> \
-  --ports-tracking-branch daemonarchy-1.1.1 \
+  --ports-tracking-branch main \
   > /path/to/checkout-repo/checkouts.json
 sudo pkg repo /path/to/checkout-repo /usr/local/etc/daemonarchy/pkg-repo.key
 ```
 
-`--depth` defaults to 1. The 1.1.1 package integration is on the fork's
-`daemonarchy-1.1.1` branch; older 1.1 images retain their pinned
-`daemonarchy-1.1-package-baseline` catalogue and feed. Default fetches are restricted to one branch. Payloads are split into 512 MiB parts before packaging,
+`--depth` defaults to 1. The 1.3.1 checkout feed (`checkouts-16-amd64-1.3.1-r2`)
+tracks `main` of daemonarchy-ports and daemonarchy-src; the earlier 1.1.1 tracked
+freebsd-ports `daemonarchy-1.1.1` and FreeBSD `main`, and older 1.1 images retain
+their pinned `daemonarchy-1.1-package-baseline` catalogue and feed. Default fetches are restricted to one branch. Payloads are split into 512 MiB parts before packaging,
 keeping each asset below 2 GiB. Publish the signed repository at a dedicated,
 release-specific tag, packages first and catalogues last. Retain that tag for
 older installations. Pass `CHECKOUT_CATALOG=/path/to/checkout-repo/checkouts.json`

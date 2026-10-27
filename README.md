@@ -114,14 +114,14 @@ an existing OS/data partition or creating a new one in free space.
 
 ## The installer
 
-The 1.1 installer retains installation output on the target disk and
-provide a [console rescue menu](docs/rescue-console.md) when installation is
+Since 1.1, the installer retains installation output on the target disk and
+provides a [console rescue menu](docs/rescue-console.md) when installation is
 interrupted or graphical login fails. It offers logs, a local shell, and the
 same console-approved remote debugging used by the installer. Recovery actions
-require the password selected during installation. In the 1.1.1 refresh, option 2 toggles pairing and unpairing, including removal of stale pairing state after a reset; see the [rescue guide](docs/rescue-console.md).
+require the password selected during installation. Since 1.1.1, option 2 toggles pairing and unpairing, including removal of stale pairing state after a reset; see the [rescue guide](docs/rescue-console.md).
 
-The 1.1 development installer includes **Remote agent debug** in its welcome
-menu. It displays an IP address and configurable SSH port (default 2222), then
+The installer includes **Remote agent debug** in its welcome
+menu. Since 1.3.1, an approval and the agent's identity survive reboot until revoked. It displays an IP address and configurable SSH port (default 2222), then
 asks you to approve the agent's temporary key fingerprint. This lets an agent
 inspect or operate a machine booted from USB before installation. See the
 [remote debug guide](docs/remote-agent-debug.md) for the handoff and pairing
@@ -156,7 +156,7 @@ timezone=America/Los_Angeles
 
 The machine powers off when the install finishes.
 
-Before touching the disk, an unattended install runs the same network check as the interactive installer, without asking anything. The check probes every cabled port for DHCP and checks DNS with direct lookups and the clock with network time. It uses Wi-Fi only if no cable works. It honors these optional answers:
+*Upcoming 1.4.0* (not in the 1.3.1 image): before touching the disk, an unattended install runs the same network check as the interactive installer, without asking anything. The check probes every cabled port for DHCP and checks DNS with direct lookups and the clock with network time. It uses Wi-Fi only if no cable works. It honors these optional answers:
 
 ```sh
 net_mode=static            # or dhcp (the default) or wifi
@@ -173,13 +173,13 @@ If no connection, DNS server or clock works, the install stops before any disk c
 
 ### Optional live checkouts
 
-The development installer offers `/usr/ports` and `/usr/src` separately, both off
+The installer offers `/usr/ports` and `/usr/src` separately, both off
 by default. These are shallow Git checkouts (depth 1), pinned to the release
 ports tree and kernel sources. They support fetching updates and making commits;
 fetch more history explicitly with `git fetch --deepen=100` when needed.
 Set `install_ports=true` and/or `install_src=true` for unattended installation.
 
-On a system installed with this development image, they can also be added later:
+On an installed system, they can also be added later:
 
 ```sh
 sudo daemonarchy-checkouts ports "$USER"

@@ -365,6 +365,7 @@ lifecycle authority.
 - **Depends on:** ADOPT-002,UI-001,PKG-001,GUI-001,DEBUG-001,HW-001,SRC-001,COMP-001
 - **Implementation:**
   - [x] Inventory current roadmap and queue obligations in [the 1.2.0 completion ledger](release-1.2.0.md), including inherited Bluetooth, enterprise Wi-Fi, dual-boot, bhyve and physical trust/graphics gaps.
+  - [x] Keep release media and documentation in sync: [`release/current.json`](../../release/current.json) records the latest published release and all its image types and asset digests; `scripts/release-current.py` updates and checks it against GitHub; `tests/docs-release-sync.py` runs in the release-controls workflow and fails on a current-state document that names an older release as current, an older image name, checksum or size, or an unreleased version as available. HACKING.md's release step 3 is the checklist. The 1.4.0 publication must pass it ([ledger row A16](1.4-coverage-ledger.md)).
   - [ ] Contribute and qualify upstream FreeBSD platform and retained execution support; bind private native workers and VM supervision; complete backlog implementations and acceptance; run the exact final release through Literate AI and verify publication.
 - **Evidence:**
   - [ ] Every inherited backlog obligation has direct completion evidence; native and virtual/physical acceptance match exact final artifacts; full LitAI verification and release gates pass; published new release and immutable assets are verified.

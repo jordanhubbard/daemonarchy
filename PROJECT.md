@@ -77,8 +77,10 @@ original source authority in place, preserving all 272 tracked source entries at
 its reviewed commit. Native retained-project execution and release enforcement
 require separate demonstrated integration.
 
-The current product release is 1.1.1. Its published artifact identity and actual
-qualification scope remain in the [release record](docs/testing-1.1.1.md).
+The current product release is 1.3.1, published October 25, 2026. Its published
+artifact identity is recorded in [`release/current.json`](release/current.json)
+and its actual qualification scope in the [release notes](docs/release-1.3.1.md);
+the earlier 1.1.1 keeps its [record](docs/testing-1.1.1.md).
 Product responsibilities and current acceptance coverage are mapped in
 [the architecture](docs/architecture/design-traceability.md). G7 remains unfinished:
 pinned DAG/acquisition work has scoped native evidence, and a
@@ -126,11 +128,11 @@ The [performance plan](docs/roadmap/build-performance.md)
 owns its measurements and executor decision.
 
 RELEASE-001 remains the broader release program: finish the existing backlog and
-publish through the qualified Literate AI method. The planned minor release is
-1.2.0, consistent with the existing early
-network-debugging roadmap. The completion audit includes all open queue and
-roadmap acceptance, not just implementation code or a worker proof. The
-[completion ledger](docs/roadmap/release-1.2.0.md) expands those obligations and
+publish through the qualified Literate AI method. The next planned minor release
+is 1.4.0 ([plan](docs/roadmap/release-1.4.0.md)); 1.2.0 was never published,
+and 1.3.1 followed 1.1.1. The completion audit includes all open queue and
+roadmap acceptance, not just implementation code or a worker proof. The earlier
+[1.2.0 completion ledger](docs/roadmap/release-1.2.0.md) expands those obligations and
 defines the native/VM/physical worker and evidence model.
 
 COMP-001 adds complete source/ports Component coverage to that release program.
@@ -159,7 +161,10 @@ release/feature overview; it does not independently override completion status.
 
 ## Completed work
 
-[CHANGELOG.md](CHANGELOG.md) records published history. The 1.1.1 release shipped
+[CHANGELOG.md](CHANGELOG.md) records published history. The 1.3.1 release shipped
+MacBookPro16,1 graphics, T2 input and BCM4364 Wi-Fi support, retained
+remote-debugging grants and a rotated package-signing key; see its
+[release notes](docs/release-1.3.1.md). The earlier 1.1.1 release shipped
 refreshed base/packages, diagnostics and installer fixes; native/VM results have
 explicit artifact scope. The physical HP passed upgrade, rollback, desktop and
 operator-confirmed application use. The MacBook's GPU/Wi-Fi failures and earlier

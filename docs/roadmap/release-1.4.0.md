@@ -416,6 +416,14 @@ same stages and metrics from the same producer. See
   diagnostics, a shell and remote-debug approval with tmux keys only, keep
   remote debugging up from the configurator to the end, and confirm the
   graphical installer shows the same stages and metrics.
+- [ ] Bring release media and documentation into sync before calling 1.4.0
+  published: update `release/current.json` from the verified published
+  release with `scripts/release-current.py update`, covering every published
+  image type (each architecture's installer and the separate hardware-trace
+  bring-up image), then pass `tests/docs-release-sync.py` in CI and complete
+  the HACKING.md release checklist for the README download section, release
+  notes, checksums, image names, every current-state document and the image's
+  own shipped documentation and data.
 
 Completion requires working cross-release reuse, a distributed multi-repository
 flow and retained receipts, not a renamed wrapper around the current serial

@@ -39,8 +39,8 @@ dataset recorded at installation time; automatic tracking of subsequent
 
 ## Current signed-loader path
 
-The explicit-dataset repair above is for the older loader. Current signed
-1.1/1.1.1 payloads support `daemonarchy_rootpool=<decimal ZFS pool GUID>` and
+The explicit-dataset repair above is for the older loader. Signed payloads
+since 1.1, including the current 1.3.1 (which retains the loader-rootpool patch), support `daemonarchy_rootpool=<decimal ZFS pool GUID>` and
 follow the pool's active boot environment, including `bectl activate` and
 rollback. The installer selects that path only with a validated matching signed
 payload. Do not replace a current pool selector with a fixed dataset merely
