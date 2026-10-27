@@ -10,17 +10,33 @@ Input is one of:
     (--vars); every stored copy is counted and the live one is decoded.
 
 The record layout is sys/sys/daemonarchy_boottrace.h in daemonarchy-src.
+Breadcrumbs are a ring of variables DBTStep00..DBTStepNN sorted by their
+sequence number; kernels before the ring wrote one DBTStep variable, which
+is still read.  DBTLoader is the hardware-trace stick loader's
+self-report.
 """
 
 import argparse
 import json
+import os
 import struct
 import sys
 import uuid
 
 VARNAME = "DaemonarchyBootTrace"
 STEP_VARNAME = "DBTStep"
+RING_MAX = 64
+RING_NAMES = ["%s%02d" % (STEP_VARNAME, i) for i in range(RING_MAX)]
 STEP = struct.Struct("<IIIIIHH40s")
+LOADER_VARNAME = "DBTLoader"
+LOADER = struct.Struct("<8s14I64s")
+LOADER_STEPS = ["none", "found stick", "read STATE.TXT", "filed trace",
+                "chose experiment", "wrote STATE.TXT", "verified STATE.TXT",
+                "booting", "stopped"]
+LOADER_FLAGS = {0x1: "running", 0x2: "NOT-PERSISTING", 0x4: "repeat-stop",
+                0x8: "block-map", 0x10: "block-map-rejected", 0x20: "test-drop"}
+LOADER_METHODS = {0: "-", 1: "raw blocks (SLOTS.MAP)", 2: "firmware FAT driver"}
+LOADER_VERIFY = {0: "-", 1: "ok", 2: "MISMATCH", 3: "read error", 4: "skipped (test drop)"}
 GUID = uuid.UUID("9262df38-e448-4c99-bdd0-e70eada0faa1")
 MAGIC = b"DBTRACE1"
 HEADER = struct.Struct("<8sHHHHIIIIIIIIIIII64s")
@@ -31,7 +47,8 @@ STATUS = {1: "INCOMPLETE: the kernel never reached init (hang or reset)",
           2: "complete: the kernel reached init",
           3: "PANIC: the kernel panicked"}
 FLAGS = {0x1: "loader-seen", 0x2: "budget-exhausted", 0x4: "write-error",
-         0x8: "fine-window", 0x10: "test-armed", 0x20: "saved-to-usb", 0x40: "thinned"}
+         0x8: "fine-window", 0x10: "test-armed", 0x20: "saved-to-usb", 0x40: "thinned",
+         0x80: "strided", 0x100: "runtime-reclaim"}
 AUTH_VAR_GUID = uuid.UUID("aaf32c78-947b-439a-a180-2e144ec37792")
 VAR_GUID = uuid.UUID("ddcf3616-3275-4164-98b6-fe85707ffe7d")
 VAR_HDR = struct.Struct("<HBBIQ16sIII16s")   # authenticated, 60 bytes
@@ -82,6 +99,45 @@ def decode_step(data):
             "cpu": cpu, "subsystem": a, "order": b, "text": cstr(text)}
 
 
+def decode_ring(blobs):
+    """Breadcrumbs from any number of slot variables, oldest first."""
+    steps = [decode_step(b) for b in blobs]
+    return sorted((s for s in steps if s and s["seq"]), key=lambda s: s["seq"])
+
+
+def decode_loader(data):
+    if data is None or len(data) < LOADER.size:
+        return None
+    f = LOADER.unpack_from(data)
+    if f[0] != b"DBTLDR01":
+        return None
+    keys = ("epoch", "cycle", "step", "flags", "method", "write_status", "verify",
+            "next", "traces", "pending", "repeat", "stick_next", "stick_traces",
+            "stick_pending")
+    rec = dict(zip(keys, f[1:15]))
+    rec["text"] = cstr(f[15])
+    return rec
+
+
+def loader_report(l):
+    step = LOADER_STEPS[l["step"]] if l["step"] < len(LOADER_STEPS) else "?"
+    flags = ",".join(n for bit, n in LOADER_FLAGS.items() if l["flags"] & bit) or "none"
+    out = ["Loader self-report (EFI variable %s): cycle %u (epoch %u) reached '%s'; "
+           "stick via %s; flags %s" % (LOADER_VARNAME, l["cycle"], l["epoch"], step,
+                                       LOADER_METHODS.get(l["method"], "?"), flags)]
+    if l["step"] >= 5:
+        out.append("  wrote next=%u traces=%u pending=%04u, status %u, read-back %s" % (
+            l["next"], l["traces"], l["pending"], l["write_status"],
+            LOADER_VERIFY.get(l["verify"], "?")))
+    out.append("  had read next=%u traces=%u pending=%04u; repeat %u; %s" % (
+        l["stick_next"], l["stick_traces"], l["stick_pending"], l["repeat"], l["text"]))
+    return "\n".join(out) + "\n"
+
+
+def step_line(s):
+    return "b%u " % s["seq"] + crumb_line(s)
+
+
 def crumb_line(c):
     line = "#%u %u.%03us cpu%u %s: %s" % (c["index"], c["ms"] // 1000,
                                           c["ms"] % 1000, c["cpu"], c["kind"],
@@ -92,6 +148,10 @@ def crumb_line(c):
 
 
 def report(rec, step=None):
+    """step: the newest breadcrumb (dict) or the whole ring (list)."""
+    as_ring = isinstance(step, list)
+    ring = step if as_ring else ([step] if step else [])
+    step = ring[-1] if ring else None
     out = ["Daemonarchy boot trace (EFI variable %s, write #%u)" % (VARNAME, rec["seq"]),
            "Status: " + rec["status_text"]]
     newest = rec["crumbs"][-1]["index"] if rec["crumbs"] else 0
@@ -111,8 +171,14 @@ def report(rec, step=None):
         out.append("Persisted: coarse before debug.boottrace.from_sub, every step after it")
     else:
         out.append("Persisted: every step from #%u" % rec["resume_from"])
+    if rec["flags"] & 0x80:
+        out.append("NOTE: the NVRAM budget ran low; near the end only every %uth step was "
+                   "persisted." % (1 << ((rec["flags"] >> 16) & 0xFF)))
     out.append("Recent steps (oldest first):")
     out.extend("  " + crumb_line(c) for c in rec["crumbs"])
+    if as_ring and ring:
+        out.append("NVRAM breadcrumb ring, %u newest (oldest first):" % len(ring))
+        out.extend("  " + step_line(s) for s in ring)
     out.append("Last kernel messages:")
     out.extend("  " + l for l in rec["messages"].rstrip("\n").split("\n"))
     return "\n".join(out) + "\n"
@@ -153,32 +219,54 @@ def main(argv=None):
                     help="path is an EDK2/OVMF variable store")
     ap.add_argument("--efivarfs", action="store_true",
                     help="path is a Linux efivarfs file (attribute prefix)")
-    ap.add_argument("--step", help="breadcrumb file (raw, or efivarfs with --efivarfs)")
+    ap.add_argument("--step", action="append", default=[],
+                    help="breadcrumb file (raw, or efivarfs with --efivarfs); repeat "
+                    "for each ring slot.  With --efivarfs the DBTStep* and DBTLoader "
+                    "files next to PATH are read automatically")
     ap.add_argument("--json", action="store_true")
     args = ap.parse_args(argv)
     with open(args.path, "rb") as f:
         blob = f.read()
-    copies = step = None
-    if args.step:
-        with open(args.step, "rb") as f:
+    copies, loader, raws = None, None, []
+    for path in args.step:
+        with open(path, "rb") as f:
             raw = f.read()
-        step = decode_step(raw[4:] if args.efivarfs else raw)
+        raws.append(raw[4:] if args.efivarfs else raw)
     if args.vars:
-        step = decode_step(scan_vars(blob, STEP_VARNAME)[1])
+        raws += [scan_vars(blob, n)[1] for n in [STEP_VARNAME] + RING_NAMES]
+        loader = decode_loader(scan_vars(blob, LOADER_VARNAME)[1])
         copies, blob = scan_vars(blob)
-        if blob is None:
-            print("no live %s variable (%d stored copies)" % (VARNAME, copies))
-            return 3
     elif args.efivarfs:
         blob = blob[4:]
+        if not args.step:
+            d = os.path.dirname(os.path.abspath(args.path))
+            for n in [STEP_VARNAME] + RING_NAMES + [LOADER_VARNAME]:
+                p = os.path.join(d, "%s-%s" % (n, GUID))
+                if os.path.exists(p):
+                    with open(p, "rb") as f:
+                        data = f.read()[4:]
+                    if n == LOADER_VARNAME:
+                        loader = decode_loader(data)
+                    else:
+                        raws.append(data)
+    ring = decode_ring(raws)
+    if blob is None:
+        print("no live %s variable (%d stored copies)" % (VARNAME, copies))
+        if loader:
+            sys.stdout.write(loader_report(loader))
+        return 3
     rec = decode(blob)
     if args.json:
         rec["stored_copies"] = copies
-        rec["breadcrumb"] = step
+        rec["breadcrumb"] = ring[-1] if ring else None
+        rec["ring"] = ring
+        rec["loader"] = loader
         json.dump(rec, sys.stdout, indent=1)
         print()
     else:
-        sys.stdout.write(report(rec, step))
+        sys.stdout.write(report(rec, ring))
+        if loader:
+            sys.stdout.write(loader_report(loader))
         if copies is not None:
             print("(variable store holds %d copies of the trace)" % copies)
     return 0
