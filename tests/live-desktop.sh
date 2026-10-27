@@ -85,11 +85,17 @@ grep -q 'unexpected live copy' "$work/state/failed"
 unset -f mkdir chmod
 
 # ---------------------------------------------------------------- GPU payload
+# Packages store absolute member names, as pkg writes them, plus metadata.
 make_pkg() {
   local name=$1; shift
-  command mkdir -p "$work/pkgsrc/$name/boot/modules"
-  for module in "$@"; do printf 'ko\n' >"$work/pkgsrc/$name/boot/modules/$module.ko"; done
-  command tar -cf "$work/repo/All/$name.pkg" -C "$work/pkgsrc/$name" boot
+  python3 - "$work/repo/All/$name.pkg" "$@" <<'PY'
+import io, sys, tarfile
+with tarfile.open(sys.argv[1], 'w') as archive:
+    for name, data in [('+COMPACT_MANIFEST', b'{}'), ('/usr/local/share/licenses/x/LICENSE', b'x')] + \
+            [('/boot/modules/%s.ko' % module, b'ko') for module in sys.argv[2:]]:
+        info = tarfile.TarInfo(name); info.size = len(data)
+        archive.addfile(info, io.BytesIO(data))
+PY
 }
 command mkdir -p "$work/repo/All" "$work/share" "$work/modules" "$work/gstate" "$work/dri"
 make_pkg drm-612-kmod-6.12.110.1600029_7 amdgpu i915kms radeonkms virtio_gpu_drm drmn ttm
@@ -122,7 +128,29 @@ run_gpu() (
   # shellcheck source=/dev/null
   source "$lib/live-gpu"
   pciconf() { printf '%s\n' "$pci"; }
-  tar() { command tar -xf "$2" -C "$4" --wildcards 'boot/modules/*'; }
+  # bsdtar semantics that matter here: names are listed as stored, and
+  # extraction fails when a named member or pattern matches nothing.
+  tar() {
+    case $1 in
+      -tf) python3 -c 'import sys, tarfile; print("\n".join(tarfile.open(sys.argv[1]).getnames()))' "$2" ;;
+      -xf)
+        local archive=$2 target=$4; shift 4
+        python3 - "$archive" "$target" "$@" <<'PY'
+import sys, tarfile
+from pathlib import Path
+archive, target, wanted = tarfile.open(sys.argv[1]), Path(sys.argv[2]), sys.argv[3:]
+names = archive.getnames()
+missing = [w for w in wanted if w not in names]
+if missing or any(w.startswith('--') for w in wanted):
+    sys.exit('tar: %s: Not found in archive' % ' '.join(missing or wanted))
+for name in wanted:
+    path = target / name.lstrip('/')
+    path.parent.mkdir(parents=True, exist_ok=True)
+    path.write_bytes(archive.extractfile(name).read())
+PY
+        ;;
+    esac
+  }
   kldxref() { echo "kldxref $*" >>"$work/gcalls"; }
   sysctl() {
     case $* in

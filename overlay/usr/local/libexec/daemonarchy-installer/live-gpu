@@ -109,7 +109,7 @@ live_gpu_add_userspace() {
 }
 
 main() {
-  local inventory package path moddir module current
+  local inventory package path moddir module current member members
   [[ $gpu_arch != unknown ]] || fail 'the image ABI is missing or unsupported'
   [[ -d $LIVE_MODULES ]] || fail "the live module directory $LIVE_MODULES is missing"
   inventory=$(mktemp)
@@ -124,7 +124,15 @@ main() {
   while read -r package; do
     path=$REPO/All/$package.pkg
     [[ -f $path ]] || fail "missing $package in the ISO repository"
-    tar -xf "$path" -C "$LIVE_MODULES" --include='/boot/modules/*' --include='boot/modules/*'
+    # pkg stores absolute member names. Name the module members exactly:
+    # bsdtar exits nonzero for any --include pattern that matches nothing,
+    # which stopped the first native VirGL run before the driver loaded.
+    members=()
+    while IFS= read -r member; do
+      [[ $member =~ ^/?boot/modules/[^/]+$ ]] && members+=("$member")
+    done < <(tar -tf "$path")
+    ((${#members[@]})) || fail "$package has no kernel modules"
+    tar -xf "$path" -C "$LIVE_MODULES" "${members[@]}"
   done < <(live_gpu_payload)
   for module in "${gpu_modules[@]}"; do
     case "$module" in

@@ -35,7 +35,9 @@ OMARCHY_HOSTNAME_PATTERN='^[A-Za-z0-9]([A-Za-z0-9-]{0,61}[A-Za-z0-9])?$'
 OMARCHY_HOSTNAME_DEFAULT='daemonarchy'
 omarchy_username_taken() { return 1; }
 EOF
-printf '#!/bin/sh\n[ "$1" = list-timezones ] && printf "UTC\\nEurope/Berlin\\nAmerica/Los_Angeles\\n"\n' >"$work/share/compat/timedatectl"
+# A long list after the chosen zones: a pipefail "| grep -q" check takes
+# SIGPIPE here, as the real zone list did natively.
+printf '#!/bin/sh\n[ "$1" = list-timezones ] && { printf "UTC\\nEurope/Berlin\\nAmerica/Los_Angeles\\n"; seq -f "Etc/Zone%%g" 1 8000; }\n' >"$work/share/compat/timedatectl"
 chmod +x "$work/share/compat/timedatectl"
 
 stub() { printf '#!/usr/bin/env bash\n%s\n' "$2" >"$work/bin/$1"; chmod +x "$work/bin/$1"; }
