@@ -1,0 +1,173 @@
+{
+  "schema": "daemonarchy/installer-charm-development@1",
+  "work_item": "UI-001",
+  "acceptance_row": "A16",
+  "release": "1.4.0",
+  "recorded": "2026-10-27",
+  "scope": "Charm and sound across the installer phases on controller and native FreeBSD pseudo-terminals, and the OSS write path on a FreeBSD 16 host's real HDMI pcm device. No 1.4 image was built, no installation was run and nothing was heard on an exact image.",
+  "operator_direction": [
+    "A lot of pizazz: Daemonarchy 1.4 must be much more charming and interesting to watch through all phases of installation.",
+    "Use sounds liberally; animations should make noise.",
+    "Stay truthful: animation never fakes progress.",
+    "Procedural sounds only; OSS playback that never blocks; mute/volume keys, a configurator option and a loader default; automatic silence on serial/headless, unattended and no-device.",
+    "The loader gets visual charm only, in daemonarchy-src."
+  ],
+  "controller": {
+    "host": "Linux aarch64, Python 3.15, tmux next-3.7",
+    "runs": [
+      {
+        "command": "python3 tests/installer-progress.py",
+        "tests": 54,
+        "passed": 53,
+        "failed": 0,
+        "skipped": 1,
+        "skipped_reason": "native real-pkg fetch case needs FreeBSD root"
+      },
+      {
+        "command": "bash tests/installer-charm.sh",
+        "result": "PASS"
+      },
+      {
+        "command": "python3 tests/live-installer.py",
+        "tests": 20,
+        "passed": 20,
+        "failed": 0
+      }
+    ]
+  },
+  "native": {
+    "target": {
+      "os": "FreeBSD",
+      "release": "16.0-CURRENT",
+      "architecture": "amd64",
+      "python": "3.12",
+      "tmux": "3.7c"
+    },
+    "runs": [
+      {
+        "command": "python3.12 tests/installer-progress.py",
+        "tests": 54,
+        "passed": 53,
+        "failed": 0,
+        "skipped": 1
+      },
+      {
+        "command": "python3.12 tests/vt-console-colors.py (sys/teken from /usr/src)",
+        "tests": 4,
+        "passed": 4,
+        "failed": 0
+      },
+      {
+        "command": "bash tests/installer-charm.sh",
+        "result": "PASS"
+      },
+      {
+        "command": "python3.12 tests/live-installer.py",
+        "tests": 20,
+        "passed": 20,
+        "failed": 0
+      },
+      {
+        "command": "bash tests/{network-bringup,installer-clock,network-diagnostics,remote-debug-network,enterprise-wifi-options,cuda-options}.sh",
+        "result": "PASS"
+      },
+      {
+        "command": "after the suites: sound players left and default sound directories",
+        "result": "none"
+      }
+    ],
+    "oss_write_path": {
+      "device": "/dev/dsp0 (pcm0, ATI R6xx HDMI; no listener)",
+      "result": "Device.open() set 16-bit mono 22050 Hz with OSS ioctls in 2 ms; a 0.8 s cue wrote in 0.43 s; ensure plus four cues returned to the caller in 0.23 s; the player reported status on and exited on SIGTERM",
+      "sndctl_feeder_chain": "userland -> feeder_root(s16le:1.0) -> feeder_rate(22050 -> 48000) -> feeder_matrix(1.0ch -> 2.0ch) -> feeder_volume(s16le:2.0) -> dsp0.play.0",
+      "ambient_cost": "about 0.12 s CPU per 10 s of ambient playback (controller measurement)"
+    }
+  },
+  "portable_regressions": [
+    "tests/network-bringup.sh",
+    "tests/live-backend.sh",
+    "tests/live-desktop.sh",
+    "tests/network-diagnostics.sh",
+    "tests/remote-debug-network.sh",
+    "tests/enterprise-wifi-options.sh",
+    "tests/cuda-options.sh"
+  ],
+  "findings": [
+    "The first native run failed the tmux completion case: the sound indicator truncated the 'Close the other panes' footer in a split pane. Important footer messages now keep the whole row and narrow footers use the short indicator.",
+    "On the controller and FreeBSD hosts tests/installer-clock.sh (BSD date), tests/live-backend.sh (GNU stat) and tests/live-desktop.sh (python3 name) are platform-specific and fail identically on origin/main where they cannot run.",
+    "A file-backed device keeps its recording aligned with the wall clock, so each demo's .ogg plays in step with its cast.",
+    "An earlier native run of tests/vt-console-colors.py started the sound player on the host's real default device (pcm1), so a few cues played aloud on the test host, and FreeBSD timeout(1), a process reaper, then waited for that player. The test now sets DAEMONARCHY_SOUND=off and a private sound directory, installer-progress tests use a nonexistent device unless they pass a file, and the player now exits after 15 minutes without hearing from a front end (the install screen checks in every 30 seconds; `sound play` restarts it).",
+    "A tmux test's cleanup looked up the sound directory before the session existed and left a player running; it now passes a known directory."
+  ],
+  "loader": {
+    "repository": "daemonarchy-src",
+    "pull_request": "https://github.com/jordanhubbard/daemonarchy-src/pull/36",
+    "evidence": "stub-loader Lua test and luac -p only; not run on a real loader console"
+  },
+  "source_sha256": {
+    "overlay/usr/local/libexec/daemonarchy-installer/sound.py": "5602a1a7392c3902319ad261e2585c8e437f8bc3b7395e3a520c363f8273178f",
+    "overlay/usr/local/libexec/daemonarchy-installer/sound": "874d91f9850164c86799fe00be6750631523bc731f58c18a2de12f55851bb050",
+    "overlay/usr/local/libexec/daemonarchy-installer/charm.py": "8a9ad35379405a4f409c4737843f3a27d5449cf1b3dca822a880a0d3a74403cf",
+    "overlay/usr/local/libexec/daemonarchy-installer/charm": "536f65e52d449f68249aa59931e9869a4e25b36b4404c229a5aacb80927ba8cf",
+    "overlay/usr/local/libexec/daemonarchy-installer/sound-setup": "6e44897070b9488fff4c4b0eeb76f3519b4607ce893a961fcebd133fcf7c0f9e",
+    "overlay/usr/local/libexec/daemonarchy-installer/progress-model.py": "3a14ca2859844fae9b89f11de07b1cccd8a375fd09792aa633f047da2b762aab",
+    "overlay/usr/local/libexec/daemonarchy-installer/progress-dashboard.py": "9870a8bb6bd435c0c6065dc9e0b3d3cc17c69737f78c4b681cd403fa08ea305a",
+    "overlay/usr/local/libexec/daemonarchy-installer/configurator": "416d48a03190c57131bf9128f3e4f8f04ecf15a44a163d8ce93e9d0ed51b41e5",
+    "overlay/usr/local/libexec/daemonarchy-installer/launch": "52aed519169b80d8b138e0c86d59cd8dd2de38ba81d5921da874d7f03c923033",
+    "overlay/usr/local/libexec/daemonarchy-installer/install": "45c782d9c44e7a4ce556adc3180c5806353286b2624cb20243566fc21581f744",
+    "overlay/usr/local/libexec/daemonarchy-installer/install-screen": "7729bf1c1946da0095c969857de2b228345d04073d99797cad9061e53e4a46a1",
+    "overlay/usr/local/libexec/daemonarchy-installer/network-bringup": "8ba4b00b72d7ab0f1c3f41b6ebaf3150581049393c6f743d63a4d076f260d685",
+    "overlay/usr/local/libexec/daemonarchy-installer/live-installer": "6a28a887fb3bc0461b1a46b52dff964264e8e7f4327676cea24a8c28cac98c86",
+    "overlay/usr/local/libexec/daemonarchy-installer/live-backend": "4f63b94694e20aa9e62118ac9dc8ff55fc376cd8b2163f799ec4d8b389484f4e",
+    "overlay/usr/local/share/daemonarchy-installer/install-tmux.conf": "a2b75514a1c0305717bf851780f2b21a8045113d1fbfb19ed3f757b3514a8d24",
+    "overlay/usr/local/share/daemonarchy-installer/greeting/daemonarchy_greeting": "e2a4b2ca9e2a34fb839f8fe96002cb604a2dd0ad243052ebea24d83af236dd0a",
+    "overlay/usr/local/share/daemonarchy-installer/live/hyprland.lua": "cca2f09d33d3d42ceb0a8550cbe79ba50b2e11187d259aafcddea233c43c8312",
+    "live-post.sh": "1b1c8077259f6c3ccf8599d1a647dfb185225747f381d2691477df8ea2149010",
+    "tests/installer-progress.py": "482062c8b4262d16cba26f823558100036ed8ec779c49c0aeedd5e18d47c99b1",
+    "tests/installer-charm.sh": "887f63e6472474327e78082223d5323a54113777011914ab94cb893244b7a451",
+    "tests/live-installer.py": "6da1d1df5a48746e9ef852fc17c0ce2dcce830318fd70b92adc73b3d75fadad8",
+    "scripts/installer-charm-tour.sh": "1c16033198c1e33f223bd8f8255f2c63fa107dfb67976cc146bf65093ed3227a",
+    "scripts/installer-visuals-demo.py": "00812745c65295745607cc6151eb043c346390a9a4c5fb3cd4dbd5b18f74f8ea",
+    "tests/vt-console-colors.py": "deeae73394ece98ad428494cb572ff881e7959fb13162226f7cdaab5cd1a8c18"
+  },
+  "demo_sha256": {
+    "docs/demos/installer-sounds/ambient.ogg": "d5eae46b4d6391e23fb83a971b392eab7c93fc5faec171f44746813fa6b41d6b",
+    "docs/demos/installer-sounds/attract.ogg": "c874f48e5039ae137421ddaa5795edcd88cab8c239084785d3747ad01922c7d2",
+    "docs/demos/installer-sounds/boot.ogg": "8528cc63ed53ac590d8b2346ba2b3cb582bbf0075300d11344022b63ec72e5bf",
+    "docs/demos/installer-sounds/click.ogg": "54c5ead06d091989211a2ea0d12513afd46df460826255d30457b36c082bd1c7",
+    "docs/demos/installer-sounds/commit.ogg": "b2878cc3ac4eaf03c94b1d0a2744abf63b33edad59b65f0dbac63d7e818f7aaa",
+    "docs/demos/installer-sounds/error.ogg": "e7d7631a1aaeff16f24968f66f1679f0807ce7356bc4c5ae8458bd0d43fe3aaf",
+    "docs/demos/installer-sounds/fanfare.ogg": "1fc8642be1783be0535a257ba227ee08b038c18681456ecc5bffad6b32284914",
+    "docs/demos/installer-sounds/greeting.ogg": "db179947343cc6b939a71eba89861dd1cdb3e47836b8f5f92c30ad292bd8ac5a",
+    "docs/demos/installer-sounds/milestone.ogg": "da21eb085365808374faae679904df057373d797bed4f4708aa2abc2e37e5039",
+    "docs/demos/installer-sounds/net_fail.ogg": "1597b78825568ac8f9b9ead74960ca195a2be19e94b4b4ace2b7ccf2cb32d685",
+    "docs/demos/installer-sounds/net_ok.ogg": "4916499dffae41ba63458f5ab9aff10def7cde8bd544649c244efd3990ddc1fb",
+    "docs/demos/installer-sounds/select.ogg": "2e19af6202999d12bc6fa011f27026151a4865229c929d1b5d513a79566365b5",
+    "docs/demos/installer-sounds/stage.ogg": "60527b3b4faeee086f49a3ec55389ea926a2260505c39418a1ed5fa04e161576",
+    "docs/demos/installer-sounds/stage_done.ogg": "4f2f3e400ca8a98ebcdabe6da864e197c3f90e1695bcc646ca69f387973aa9c8",
+    "docs/demos/installer-sounds/tick.ogg": "fff6c2ef4d3ea7bf8f6cfac56d5fb18e032a566cd63975cc70e4b1728f1e2d80",
+    "docs/demos/installer-sounds/tour.ogg": "1c078f0745f263707ce3a65a9b647262d5d8ea7e8ed10dcf640043025d788f20",
+    "docs/demos/installer-sounds/volume.ogg": "d9654b29795c99580194368dba22c9d7dd0a3325b490c0ce94e6cdd2d5e2ea0b",
+    "docs/demos/installer-sounds/warn.ogg": "62f61c2538a994b2ec61732ba86a6428a067426952a632d10bbb8785825937f4",
+    "docs/demos/installer-sounds/whoosh.ogg": "26d46810af81cb7c46d35d1b99e8d9240bc77271b1805e8f9903b8e55c180075",
+    "docs/demos/installer-visuals/console-charm.cast": "f40372e2ca8b33d1256e24a5372f72e289e9f76c5fedc69ba81832ee7dfb67d7",
+    "docs/demos/installer-visuals/console-charm.html": "d636e7dede99c935ff2e572a62183ba5e854c4e85a9348db7dbf8ccd91893ba4",
+    "docs/demos/installer-visuals/console-charm.ogg": "5ec0cf9b3716522521fe0c2437af81f3cb850130614b3474bdaf549dad822e6c",
+    "docs/demos/installer-visuals/console-tmux-sound.cast": "7e1e69abd727c5d2b8db834856968791cb5adc814aed9943595126b968d65711",
+    "docs/demos/installer-visuals/console-tmux-sound.ogg": "7c383e2edc8b00ecb0fb1039a0f4fac5526bc768dd540368cb61d475d28b057d",
+    "docs/demos/installer-visuals/configurator-charm.cast": "46c4d4527c0c636f03117adb21ac83c4d8a9a7086970961b64e96fa0d628af9b",
+    "docs/demos/installer-visuals/configurator-charm.html": "a4840b3eb05a6b6fb44a5df1e36d5a654f07951fc796b301701bce2d57b9757e",
+    "docs/demos/installer-visuals/configurator-charm.ogg": "37069c1eb7b5d1d0e47a296854cff497f1532920bd550e525d0b2dce603275bb"
+  },
+  "physical_console_qualified": false,
+  "heard_on_exact_image": false,
+  "full_native_install_qualified": false,
+  "product_receipt": null,
+  "release_qualified": false,
+  "remaining": [
+    "Build the exact 1.4 image and hear every phase on a physical console with an audio device and in a VM, recording audio with the screen.",
+    "Confirm serial, unattended and no-device runs stay silent with unchanged install results on the exact image.",
+    "Review and test the loader splash (source PR #36) on real UEFI and BIOS loader consoles.",
+    "Confirm the installed system's first-boot welcome and chime and the live desktop greeting on the exact image."
+  ]
+}

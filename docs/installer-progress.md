@@ -22,9 +22,85 @@ Animation smooths only between real samples: bars rise quickly and fall
 slowly toward the latest measurement, peak caps decay, the ticker slides when a
 new package is reported, and the scope scrolls as samples arrive. When nothing
 is measured, nothing moves except the live activity, which keeps showing that
-the machine is (or is not) busy. The Daemonarchy logo is drawn in a static
-gradient; it never animates. The logo appears only on screens with at least
-50 rows; smaller screens show a one-line wordmark.
+the machine is (or is not) busy. The Daemonarchy logo's gradient drifts, and
+a glint crosses the one-line wordmark, at a speed set by the measured
+activity: an idle machine leaves them still. The logo appears only on screens
+with at least 50 rows; smaller screens show a one-line wordmark. The
+flourishes and sounds in [Charm and sound](#charm-and-sound) start only from
+the model's events.
+
+## Charm and sound
+
+The operator asked for 1.4 to be much more charming to watch through every
+phase and to use sound liberally (UI-001, 2026-10-27). Every flourish and every
+sound marks something that really happened, or a wait that really is a wait;
+none of them moves along a track, fills, counts or estimates. The model
+(`progress-model.py`) turns its observations into numbered events, and the
+console screen, the graphical installer and the sound player all react to the
+same events.
+
+| Phase | What you see | What you hear | Started by |
+|---|---|---|---|
+| Loader | An animated color splash: the wordmark sweeps in, the mascot blinks, a tagline types out (at most 0.75 s; any key skips). `daemonarchy_splash=static` draws only the final frame, `NO` turns it off; nothing on serial or without color. | Nothing: UEFI has no reliable audio. | The loader menu ([source PR #36](https://github.com/jordanhubbard/daemonarchy-src/pull/36)) |
+| Welcome screen | The logo's colors drift and the mascot blinks and looks around while the screen waits for Return (attract mode). | The boot chime. | The installer starting on the console |
+| Configurator screens | Each screen title types in. | A whoosh. | Moving to a screen |
+| Network bring-up | A mark that sparkles once per check: √ or × with Network adapters, Wired addresses (DHCP), DNS, System clock, Device firmware, Wi-Fi radios, Wi-Fi. | A rising "connected" or a falling "uh-oh". | Each `network-bringup` step's exit status (`nb_hook_result`) |
+| MacBook firmware | √ "MacBook Wi-Fi firmware verified and the radio attached". | The "connected" sound. | Verified firmware and an attached radio |
+| Disk confirmation | The destruction warning pulses red three times and stays bold red. | A two-tone klaxon; on "Install Daemonarchy", a thunk and a rising launch. | The final review; the operator's confirmation |
+| Install screen opens | Rows appear top to bottom (0.45 s). | | The screen starting |
+| Each stage | A card with the stage name opens over the visuals for 1.6 s; a finished stage sparkles on the timeline. | A rising arpeggio when a stage starts, a bell when it finishes. | `@@phase` and `@@step` markers |
+| Packages | A note lights beside the ticker; every 50 packages (and the last) a banner flashes. | A blip whose pitch walks a pentatonic scale with the package count; a short fanfare every 50. | pkg's own `[n/N]` and `Fetching` lines |
+| While working | The mascot's trident goes up and down at a pace set by the measured activity; the banner glint moves with it. | Optional chiptune: arpeggio loudness and tempo follow CPU, bass follows disk, hi-hats follow network. Silent when nothing is measured. | Kernel counters (the spectrum's samples) |
+| A genuine wait | After 20 s without any report the mascot looks around and a line says "Still working: no new progress report for 0:42". | A soft two-note "still here", once per wait. | No new report for 20 s |
+| Warnings and failures | Warning and failure lines as before. | "Uh-oh" for a progress warning, a descending sad trombone for a failure. | The model's checks; the result file |
+| Completion | Fireworks over the visuals, a "Daemonarchy is installed" card and a happy mascot for 4 s (any key skips); a failure shows its status in a pulsing red card and a sad mascot. | A fanfare, or the failure sound. | Only the installer's result file |
+| First boot | An animated welcome with the mascot and fireworks on the console, once. | The greeting chime; a boot chime on later boots. | `daemonarchy_greeting` (rc.d) |
+| Live desktop | The graphical installer: the wordmark in the logo's gradient, flashes for stage starts and the disk warning, a glowing title for success. | The greeting chime when Hyprland starts, and the same cues as the console from the same events. | Hyprland start; the model's events |
+
+### Controls
+
+- On the install screen the bottom-right corner shows the state (`♪ 70%`,
+  `♪ muted`, `♪ quiet 70%`, or `♪ off (serial console)` with the reason). In
+  tmux the status line shows it too.
+- `C-b m` mutes or unmutes, `C-b +` (or `C-b =`) and `C-b -` change the volume
+  in steps of 10, and `C-b a` turns the ambient music on or off. They are
+  listed in `C-b ?`. With the progress pane focused (or without tmux), `m`,
+  `+`, `-` and `a` work directly.
+- The configurator's menu has "Sound: ..." to choose on, quiet (stage
+  changes, network results, the warning, the result) or off. The choice is
+  written as `sound=` in `daemonarchy-install.conf` and becomes
+  `daemonarchy.sound` in the installed system's `loader.conf`.
+- `daemonarchy.sound=on|quiet|off` in `loader.conf` or at the loader prompt
+  sets the default; `DAEMONARCHY_SOUND` overrides it for a process, and a
+  CIDATA `daemonarchy-install.conf` may set `sound=on`.
+- The graphical installer has a Mute button and a volume slider.
+- `daemonarchy_greeting_enable="NO"` in the installed system's `rc.conf`
+  turns off its chime and first-boot welcome.
+
+### When it is silent
+
+- Serial consoles and serial-class terminals (`/dev/ttyu*`, `TERM=vt100`),
+  and a process with no local console.
+- Unattended CIDATA installs, unless `sound=` or `daemonarchy.sound` asks for
+  sound. Their installed system is silent too unless asked.
+- No audio device: the player loads `snd_hda` and `snd_uaudio` (with
+  `kldload -n`, so a driver already in the kernel is left alone) and stays off
+  if no `/dev/dsp` appears. The live image also loads `snd_uaudio` at boot,
+  and HD Audio is in `GENERIC` on amd64.
+- Reduced motion (`DAEMONARCHY_REDUCED_MOTION=1`) keeps the sounds but draws
+  the flourishes as single static frames; plain/serial output and `NO_COLOR`
+  get plain lines.
+
+A sound never delays or fails anything. `sound.py` synthesizes every sound
+from oscillators, noise and envelopes (no sample files, nothing with an
+outside licence) and one player process per user owns `/dev/dsp`
+(16-bit mono at 22,050 Hz; sound(4) converts it). Front ends send it
+datagrams with `MSG_DONTWAIT`: with no player, a full queue or a broken
+device, the cue is dropped. The player drops cues instead of queueing them
+late, plays nothing while muted, closes the device after two quiet seconds
+so the desktop can use it, and reports a device error to the indicator. It
+exits after 15 minutes without hearing from any front end; the install screen
+checks in every 30 seconds and `sound play` starts it again when needed.
 
 ## Window controls (tmux)
 
@@ -173,6 +249,20 @@ authorizes installation.
   a PTY and records an asciinema cast, optionally with key presses, the tmux
   session, a load command and HTML frames rendered as vt(4) draws them. The
   recorded demos are in [docs/demos/installer-visuals](demos/installer-visuals/README.md).
+
+- The same suite covers charm and sound: the model's events from real
+  markers, the event-to-sound mapping, the ambient layer's silence without
+  measured activity, flourishes that start only from events, mute, volume and
+  ambient keys in a real PTY and through tmux (`C-b m`, `C-b +`, `C-b -`),
+  mode resolution and the automatic silences, cues dropped without blocking,
+  the player writing PCM to a file-backed device and nothing while muted,
+  missing and broken devices, and an install that finishes with the same
+  status when sound is broken. `bash tests/installer-charm.sh` checks the
+  configurator's result marks, the Sound option, `sound=` in the answers and
+  the installed system's chime setup. `scripts/installer-charm-tour.sh` plays
+  the configurator's flourishes and sounds in order; `sound.py render DIR`
+  writes every sound as WAV. Previews are in
+  [docs/demos/installer-sounds](demos/installer-sounds/README.md).
 
 These checks do not partition storage, run pkg or qualify an installed system.
 A full installation with the final image, on the physical console and over

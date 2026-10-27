@@ -98,6 +98,13 @@ if [ -f "$world/boot/modules/if_brcmfmac.ko" ]; then
     echo 'hw.hid.hkbd.no_leds="1"' >>"$world/boot/loader.conf"
 fi
 cp "$world/usr/local/share/daemonarchy-installer/brand-daemonarchy.lua" "$world/boot/lua/"
+# Sound (UI-001): HD Audio is in GENERIC on amd64 and devmatch attaches it
+# elsewhere; USB audio is always a module, so load it for USB headsets and
+# docks. The installer's sound player also runs kldload -n for both when it
+# starts as root, and stays silent when no /dev/dsp appears.
+if [ -f "$world/boot/kernel/snd_uaudio.ko" ]; then
+	echo 'snd_uaudio_load="YES"' >>"$world/boot/loader.conf"
+fi
 
 # Live desktop (LIVE-001). The service is a no-op unless the loader entry
 # set daemonarchy_live=YES. Nothing on this path uses unionfs: a unionfs

@@ -21,6 +21,15 @@ fi
 log=/tmp/daemonarchy-install.log
 status_file=/tmp/daemonarchy-install.status
 
+# Sound (sound.py through the sound wrapper) never blocks or fails anything
+# here. The player starts only where sound is allowed: a local console with an
+# audio device, not a serial console, and not an unattended install unless
+# its daemonarchy-install.conf or the loader asks (sound=on|quiet|off,
+# daemonarchy.sound=on|quiet|off).
+sound() { "$ISO_LIBEXEC/sound" "$@" >/dev/null 2>&1 </dev/null || true; }
+# The vt(4) console: 16 colors for every screen, and a console that may make sound.
+[[ $(tty 2>/dev/null) == /dev/ttyv* ]] && export DAEMONARCHY_CONSOLE=vt
+
 find_cidata() {
   local dev mnt=/tmp/cidata
   for dev in /dev/msdosfs/CIDATA /dev/iso9660/CIDATA /dev/ufs/CIDATA; do
@@ -90,6 +99,10 @@ if [[ ${DAEMONARCHY_LIVE:-} != 1 ]] && find_cidata; then
   # configurator would.
   # shellcheck disable=SC1090
   source "$DAEMONARCHY_INSTALL_CONF"
+  export DAEMONARCHY_UNATTENDED=1
+  [[ ${sound:-} =~ ^(on|quiet|off)$ ]] && export DAEMONARCHY_SOUND=$sound
+  sound ensure
+  sound play boot
   if [[ -z ${password_hash:-} ]]; then
     printf 'password_hash=%q\n' "$(printf '%s' "$password" | openssl passwd -6 -stdin)" >>"$DAEMONARCHY_INSTALL_CONF"
   fi
@@ -110,6 +123,7 @@ if [[ ${DAEMONARCHY_LIVE:-} != 1 ]] && find_cidata; then
   exec /bin/sh
 fi
 
+sound ensure
 "$ISO_LIBEXEC/configurator" || exec /bin/sh
 
 if run_install; then

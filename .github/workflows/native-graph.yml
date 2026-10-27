@@ -28,6 +28,11 @@ on:
       - 'live-post.sh'
       - 'overlay/usr/local/libexec/daemonarchy-installer/progress-dashboard.py'
       - 'overlay/usr/local/libexec/daemonarchy-installer/progress-model.py'
+      - 'overlay/usr/local/libexec/daemonarchy-installer/sound.py'
+      - 'overlay/usr/local/libexec/daemonarchy-installer/charm.py'
+      - 'overlay/usr/local/libexec/daemonarchy-installer/sound-setup'
+      - 'overlay/usr/local/libexec/daemonarchy-installer/configurator'
+      - 'overlay/usr/local/share/daemonarchy-installer/greeting/daemonarchy_greeting'
       - 'overlay/usr/local/libexec/daemonarchy-installer/install-screen'
       - 'overlay/usr/local/libexec/daemonarchy-installer/install-views'
       - 'overlay/usr/local/libexec/daemonarchy-installer/pkg-events'
@@ -39,6 +44,7 @@ on:
       - 'overlay/usr/local/libexec/daemonarchy-installer/install'
       - 'overlay/usr/local/libexec/daemonarchy-installer/install-integrity'
       - 'tests/installer-progress.py'
+      - 'tests/installer-charm.sh'
       - 'tests/install-integrity.sh'
       - 'tests/fixtures/installer-progress/**'
       - 'literate.release.json'
@@ -110,6 +116,11 @@ on:
       - 'live-post.sh'
       - 'overlay/usr/local/libexec/daemonarchy-installer/progress-dashboard.py'
       - 'overlay/usr/local/libexec/daemonarchy-installer/progress-model.py'
+      - 'overlay/usr/local/libexec/daemonarchy-installer/sound.py'
+      - 'overlay/usr/local/libexec/daemonarchy-installer/charm.py'
+      - 'overlay/usr/local/libexec/daemonarchy-installer/sound-setup'
+      - 'overlay/usr/local/libexec/daemonarchy-installer/configurator'
+      - 'overlay/usr/local/share/daemonarchy-installer/greeting/daemonarchy_greeting'
       - 'overlay/usr/local/libexec/daemonarchy-installer/install-screen'
       - 'overlay/usr/local/libexec/daemonarchy-installer/install-views'
       - 'overlay/usr/local/libexec/daemonarchy-installer/pkg-events'
@@ -121,6 +132,7 @@ on:
       - 'overlay/usr/local/libexec/daemonarchy-installer/install'
       - 'overlay/usr/local/libexec/daemonarchy-installer/install-integrity'
       - 'tests/installer-progress.py'
+      - 'tests/installer-charm.sh'
       - 'tests/install-integrity.sh'
       - 'tests/fixtures/installer-progress/**'
       - 'literate.release.json'
@@ -203,10 +215,13 @@ jobs:
         run: |
           bash -n overlay/usr/local/libexec/daemonarchy-installer/dashboard overlay/usr/local/libexec/daemonarchy-installer/install
           bash -n overlay/usr/local/libexec/daemonarchy-installer/install-screen overlay/usr/local/libexec/daemonarchy-installer/remote-debug
-          python3 -m py_compile overlay/usr/local/libexec/daemonarchy-installer/progress-model.py scripts/installer-visuals-demo.py scripts/scrub-install-log.py
+          python3 -m py_compile overlay/usr/local/libexec/daemonarchy-installer/progress-model.py overlay/usr/local/libexec/daemonarchy-installer/sound.py overlay/usr/local/libexec/daemonarchy-installer/charm.py scripts/installer-visuals-demo.py scripts/scrub-install-log.py
+          bash -n overlay/usr/local/libexec/daemonarchy-installer/sound-setup overlay/usr/local/libexec/daemonarchy-installer/configurator overlay/usr/local/libexec/daemonarchy-installer/launch
+          sh -n overlay/usr/local/libexec/daemonarchy-installer/sound overlay/usr/local/libexec/daemonarchy-installer/charm overlay/usr/local/share/daemonarchy-installer/greeting/daemonarchy_greeting
           for view in install-views pkg-events; do python3 -c 'import ast, sys; ast.parse(open(sys.argv[1]).read())' "overlay/usr/local/libexec/daemonarchy-installer/$view"; done
           command -v tmux >/dev/null || sudo apt-get install -y tmux
           python3 tests/installer-progress.py
+          bash tests/installer-charm.sh
           bash tests/install-integrity.sh
       - name: Live desktop controls (LIVE-001)
         env:

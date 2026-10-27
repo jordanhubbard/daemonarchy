@@ -89,7 +89,9 @@ class VtConsoleColorTests(unittest.TestCase):
         cls.work.cleanup()
 
     def env(self, **extra):
-        env = dict(os.environ, ISO_SHARE=str(SHARE), LANG='C.UTF-8', **extra)
+        # Colors only: never start the sound player on the host's real audio device.
+        env = dict(os.environ, ISO_SHARE=str(SHARE), LANG='C.UTF-8', DAEMONARCHY_SOUND='off',
+                   DAEMONARCHY_SOUND_DIR=str(Path(self.work.name)/'sound'), **extra)
         for name in ('NO_COLOR', 'COLORTERM'):
             env.pop(name, None)
         return env

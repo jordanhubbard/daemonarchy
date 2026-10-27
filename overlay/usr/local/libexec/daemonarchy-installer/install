@@ -47,6 +47,7 @@ source "$(dirname "$0")/rescue-setup"
 source "$(dirname "$0")/secureboot-options"
 source "$(dirname "$0")/package-repository"
 source "$(dirname "$0")/apple-firmware"
+source "$(dirname "$0")/sound-setup"
 package_repository_prepare "$ISO_SHARE"
 package_cache_validate
 if [[ -n ${package_cache_url:-} && $package_repository_tag == "$package_repository_stable_tag" ]]; then
@@ -341,6 +342,8 @@ if $macbook_bcm4364; then
   echo 'hw.hid.hkbd.no_leds="1"' >>"$TARGET/boot/loader.conf"
 fi
 [[ $encrypt_installation == true ]] && echo 'geom_eli_load="YES"' >>"$TARGET/boot/loader.conf"
+# The boot chime and first-boot welcome; the sound choice carries over.
+sound_install_target "$TARGET"
 
 cat >"$TARGET/etc/rc.conf" <<EOF
 hostname="$hostname"

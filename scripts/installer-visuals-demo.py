@@ -213,6 +213,8 @@ def main():
     parser.add_argument('--tmux', action='store_true', help='run the full tmux install screen (dashboard wrapper)')
     parser.add_argument('--teken', help='render HTML frames with this vt-teken-render binary (FreeBSD)')
     parser.add_argument('--load', help='shell command run during the replay to create real activity')
+    parser.add_argument('--command', help='record this shell command instead of the install screen '
+                        '(for example scripts/installer-charm-tour.sh); the log is still replayed')
     args = parser.parse_args()
     rows, cols = (int(v) for v in args.size.lower().split('x'))
     lines = args.log.read_bytes().splitlines(keepends=True)
@@ -240,7 +242,10 @@ def main():
         for item in args.env:
             name, _, value = item.partition('=')
             env[name] = value
-        if args.tmux:
+        env['DAEMONARCHY_DEMO_LOG'], env['DAEMONARCHY_DEMO_STATUS'] = str(log), str(status)
+        if args.command:
+            command = ['bash', '-c', args.command]
+        elif args.tmux:
             env['DAEMONARCHY_TMUX_SOCKET'] = f'daemonarchy-demo-{os.getpid()}'
             env['DAEMONARCHY_PROGRESS_STYLE'] = args.style
             command = ['bash', str(LIBEXEC / 'dashboard'), str(log), str(status)]
@@ -314,7 +319,8 @@ def main():
             captured.append(screen.html(f'final frame, {rows}x{cols}'))
         if args.cast:
             header = dict(version=2, width=cols, height=rows, timestamp=int(time.time()),
-                          title=f'Daemonarchy installer screen replaying {args.log.name}',
+                          title=(f'Daemonarchy: {args.command}' if args.command
+                                 else f'Daemonarchy installer screen replaying {args.log.name}'),
                           env=dict(TERM=env['TERM']))
             with args.cast.open('w') as stream:
                 stream.write(json.dumps(header) + '\n')

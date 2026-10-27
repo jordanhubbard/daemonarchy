@@ -233,5 +233,39 @@ class ProgressTests(unittest.TestCase):
         self.assertEqual(gui.activity_text(dict(activity=dict(available=False, current={}, error=''))), '')
 
 
+class CharmAndSoundTests(unittest.TestCase):
+    """The graphical installer flashes and sounds on the same events as the console screen."""
+
+    def test_page_effects_follow_model_events_once(self):
+        events = [dict(serial=1, kind='stage-start', stage='base'), dict(serial=2, kind='packages', current=3),
+                  dict(serial=3, kind='done', result=0, succeeded=True)]
+        seen, effects = gui.page_effects(events, 0)
+        self.assertEqual((seen, effects), (3, ['flash', 'celebrate']))
+        self.assertEqual(gui.page_effects(events, seen), (3, []))
+        self.assertEqual(gui.page_effects([dict(serial=4, kind='done', result=1, succeeded=False)], 3)[1], ['failed'])
+        self.assertEqual(gui.page_effects(None, 0), (0, []))
+
+    def test_same_director_and_sounds_as_the_console(self):
+        self.assertIsNotNone(gui.sound)
+        self.assertTrue(hasattr(gui.sound, 'Director'))
+        with tempfile.TemporaryDirectory() as directory:
+            log, status = Path(directory)/'log', Path(directory)/'status'
+            log.write_text('@@phase disk\n@@phase base\n')
+            view = gui.InstallProgress(log, status, source=None).poll()
+            played = []
+            client = type('Client', (), dict(play=lambda self, cue, **_: played.append(cue),
+                                             ambient=lambda self, levels: None))()
+            director = gui.sound.Director(client)
+            director.feed(dict(events=[]))
+            director.feed(view)
+            self.assertEqual(played, ['stage', 'stage_done', 'stage'])
+
+    def test_banner_markup_and_css_are_safe(self):
+        markup = gui.banner_markup()
+        self.assertEqual(re.sub('<[^>]+>', '', markup), 'DAEMONARCHY')
+        self.assertIn(b'@keyframes', gui.CSS)
+        self.assertNotIn(b'infinite', gui.CSS.split(b'.daemonarchy-celebrate')[0], 'only the result animates forever')
+
+
 if __name__ == '__main__':
     unittest.main()

@@ -14,6 +14,10 @@ Honesty rules:
   cp_times, vm.stats, ZFS kstats). They show that the machine is working and
   how hard; they do not claim how much of the installation is left.
 - Only the installer's result file says whether the installation succeeded.
+- Events (stage started or finished, packages reported, a warning, a genuine
+  wait, the installer's result) are derived from those same observations.
+  Front ends animate flourishes and play sounds from events only, so a
+  flourish or a sound always marks something that really happened.
 """
 from collections import deque
 import ctypes
@@ -762,6 +766,76 @@ def remote_debug(state=REMOTE_STATE, public=REMOTE_PUBLIC):
     return view
 
 
+# ------------------------------------------------------------------ events
+
+MILESTONE = 50  # Packages between milestone flourishes and sounds.
+WAITING = 20.0  # Seconds without any new report before a wait is announced.
+
+
+class Events:
+    """Discrete happenings derived from the model, each with a serial number.
+
+    Consumers remember the last serial they handled. Nothing here is timed
+    or estimated except 'waiting', which states that no report has arrived
+    for WAITING seconds.
+    """
+
+    def __init__(self):
+        self.rows = deque(maxlen=64)
+        self.serial = 0
+        self.reset()
+
+    def reset(self):
+        self.started, self.ended = set(), set()
+        self.ticker = (None, 0, 0)
+        self.warning, self.failed, self.result, self.waiting = '', False, None, False
+
+    def emit(self, kind, **data):
+        self.serial += 1
+        self.rows.append(dict(serial=self.serial, kind=kind, **data))
+
+    def update(self, state, result, idle):
+        timeline = state.timeline
+        if not timeline.started and self.started:
+            self.reset()  # The log restarted.
+        for key in timeline.order:
+            if key not in self.started:
+                self.started.add(key)
+                self.emit('stage-start', stage=key, label=STAGE_LABELS.get(key, key))
+            if key in timeline.ended and key not in self.ended and key != timeline.failed:
+                self.ended.add(key)
+                self.emit('stage-done', stage=key, label=STAGE_LABELS.get(key, key))
+        ticker = state.ticker
+        kind, serial, current = self.ticker
+        if ticker.serial != serial:
+            count = ticker.serial - serial if ticker.serial > serial else 1
+            previous = current if ticker.kind == kind else 0
+            crossed = ticker.current // MILESTONE > previous // MILESTONE or (
+                ticker.total and ticker.current == ticker.total and previous != ticker.total)
+            self.emit('packages', what=ticker.kind, current=ticker.current, total=ticker.total,
+                      count=count, milestone=bool(crossed))
+            self.ticker = (ticker.kind, ticker.serial, ticker.current)
+        if state.warning and state.warning != self.warning:
+            self.emit('warning', text=state.warning)
+        self.warning = state.warning
+        if state.failed and not self.failed:
+            self.emit('failed')
+        self.failed = state.failed
+        if result is not None and self.result is None:
+            self.emit('done', result=result, succeeded=result == 0 and not state.warning and not state.failed)
+        self.result = result
+        waiting = result is None and idle >= WAITING and bool(timeline.started)
+        if waiting and not self.waiting:
+            self.emit('waiting', seconds=int(idle))
+        self.waiting = waiting
+
+    def view(self):
+        return list(self.rows)
+
+
+STAGE_LABELS = {key: label for key, label, _optional in STAGES}
+
+
 # ------------------------------------------------------------------ monitor
 
 class Monitor:
@@ -783,6 +857,7 @@ class Monitor:
         self.result = None
         self.drained = False
         self.finished = False
+        self.events = Events()
 
     def poll(self):
         old = self.state.key(), self.state.ticker.serial
@@ -795,6 +870,7 @@ class Monitor:
             self.finished = True
             self.state.timeline.finish(failed=self.result != 0 or self.state.failed)
         self.activity.sample(self.state.target_disk, self.state.target_pool)
+        self.events.update(self.state, self.result, self.idle_seconds())
         return self.result
 
     def idle_seconds(self):
@@ -819,7 +895,7 @@ class Monitor:
             warning=state.warning, failed=state.failed, result=self.result,
             done=self.result is not None,
             succeeded=self.result == 0 and not state.warning and not state.failed,
-            idle=self.idle_seconds(), recent=list(state.recent))
+            idle=self.idle_seconds(), recent=list(state.recent), events=self.events.view())
 
 
 class InstallProgress:

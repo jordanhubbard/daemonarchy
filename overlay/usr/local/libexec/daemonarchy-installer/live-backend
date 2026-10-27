@@ -164,6 +164,8 @@ nb_hook_run() {
   timeout "$(network_step_bound "$1")" "$NB_EXEC" "$@"
 }
 nb_hook_show() { :; }
+# Replies are JSON on stdout: no result marks here (the GTK page plays its own sounds).
+nb_hook_result() { :; }
 nb_hook_dns_prompt() {
   nb_set need dns
   nb_fail 'No DNS server answered a direct lookup. Enter a DNS server that works on this network.'

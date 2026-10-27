@@ -1,0 +1,69 @@
+#!/bin/sh
+#
+# PROVIDE: daemonarchy_greeting
+# REQUIRE: FILESYSTEMS devmatch
+# BEFORE: LOGIN
+# KEYWORD: nojail
+#
+# Daemonarchy's boot chime, and on the first boot after installation a short
+# animated welcome on the console. Installed by the Daemonarchy installer.
+#
+#   daemonarchy_greeting_enable="NO"   in rc.conf turns both off
+#   daemonarchy.sound="off"            in loader.conf (or at the loader) silences the chime
+#
+# The chime never delays the boot: a background player plays it and exits.
+# A serial or null console, or no audio device, is silent.
+
+. /etc/rc.subr
+
+name=daemonarchy_greeting
+rcvar=daemonarchy_greeting_enable
+desc="Daemonarchy boot chime and first-boot welcome"
+start_cmd="${name}_start"
+stop_cmd=":"
+
+load_rc_config $name
+: ${daemonarchy_greeting_enable:="YES"}
+
+lib=/usr/local/libexec/daemonarchy
+sounds=/usr/local/share/daemonarchy/sounds
+first=/var/db/daemonarchy/first-boot-greeting
+
+daemonarchy_greeting_start()
+{
+	local console mode python cue
+	console=$(kenv -q console 2>/dev/null)
+	case " ${console} " in
+	*" vidconsole "*|*" efi "*|*" efifb "*|"  ") ;;
+	*) return 0 ;;
+	esac
+	mode=$(kenv -q daemonarchy.sound 2>/dev/null)
+	cue=boot
+	[ -e "${first}" ] && cue=greeting
+	python=
+	for candidate in python3.12 python3.11 python3; do
+		if command -v ${candidate} >/dev/null 2>&1; then
+			python=$(command -v ${candidate})
+			break
+		fi
+	done
+	if [ -e "${first}" ]; then
+		rm -f "${first}"
+		if [ -n "${python}" ] && [ -r ${lib}/charm.py ]; then
+			TERM=xterm DAEMONARCHY_CONSOLE=vt ${python} ${lib}/charm.py cheer \
+			    "Welcome to Daemonarchy" "Omarchy's desktop on FreeBSD's daemon" \
+			    </dev/null >/dev/console 2>&1
+		fi
+	fi
+	[ "${mode}" = off ] && return 0
+	if [ -n "${python}" ] && [ -r ${lib}/sound.py ]; then
+		DAEMONARCHY_CONSOLE=vt TMPDIR=/var/run ${python} ${lib}/sound.py chime ${cue} \
+		    </dev/null >/dev/null 2>&1
+	elif [ -c /dev/dsp ] && [ -r ${sounds}/${cue}.u8 ]; then
+		# Without Python: 8 kHz unsigned 8-bit mono, the format /dev/dsp starts in.
+		(dd if=${sounds}/${cue}.u8 of=/dev/dsp bs=4000 >/dev/null 2>&1 &)
+	fi
+	return 0
+}
+
+run_rc_command "$1"
