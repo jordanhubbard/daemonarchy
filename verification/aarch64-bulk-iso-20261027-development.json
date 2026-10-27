@@ -1,0 +1,321 @@
+{
+  "schema": "daemonarchy/aarch64-bulk-iso-development@1",
+  "queue_item": "ARCH-001",
+  "ledger_rows": [
+    "A12"
+  ],
+  "recorded_at": "2026-10-27T05:00:00Z",
+  "follows": "verification/aarch64-worker-native-build-20261026-development.json",
+  "scope": "Development evidence only: the first native aarch64 bulk build of the Daemonarchy image package closure, an unsigned aarch64 package feed, and an unsigned aarch64 UEFI installer ISO with a QEMU/EDK2 boot to the installer menu. Nothing here is signed, published, admitted to the release graph or produced under LitAI custody. No install, upgrade, rollback, desktop or debugging case was run, and nothing qualifies aarch64.",
+  "signing": "None. No signing key was present or used. The feed was made with pkg repo without a key, build-iso.sh ran without PACKAGE_REPOSITORY_PUBLIC_KEY or Secure Boot inputs, and neither artifact carries a signature.",
+  "worker": {
+    "role": "native-build-worker (not admitted)",
+    "identity": "operator VMware guest on Apple silicon; address and hostname kept out of this record",
+    "architecture": "aarch64",
+    "kernel": "FreeBSD 16.0-CURRENT #0 n290215-d63d77f4eb3c (GENERIC, 44e9a957aeb3e531fad2fb97c2478b4ad73e706889110b034784f73ddf85e11d)",
+    "logical_cpus": 8,
+    "physical_memory_bytes": 17142145024,
+    "swap": "2 GiB partition. A temporary 16 GiB swap zvol was added for run 1 and destroyed after the host-disk incident at the operator's direction.",
+    "disk": "VMware Virtual NVMe, 200 GiB. nvmecontrol identify reports Dataset Management Command: Not Supported, so ZFS TRIM cannot return freed blocks to a thin-provisioned host disk.",
+    "pool_allocation": {
+      "after_run1_reboot": "25.8G (zpool list, after the reboot; the 16G swap zvol was then destroyed)",
+      "peak_bytes": 54380019712,
+      "after_iso": "33.9G allocated, 163G free (zpool list)",
+      "note": "The allocation guard sampled every 120 s from run 2 on, against the operator's 150G stop limit; the peak was 54380019712 bytes (50.6 GiB). After the ISO: packages 6.8G, distfiles 5.3G, unsigned feed 1.5G, images 1.5G, bulk logs 73M. The disk has no TRIM, so the host-side size of a thin VMDK may exceed the pool allocation."
+    },
+    "host_incident": "Run 1 was killed at about 2026-10-26T22:00Z when the VMware host ran out of disk and the worker rebooted. This was not a guest fault. zroot came back healthy (zpool status -x clean). poudriere jail -k removed the stale .m reference mounts. Every completed package survived in .building (1144 entries) and run 2 resumed from it. No evidence was lost: the smoke ISO, its serial logs and the release sets were already on disk."
+  },
+  "inputs": {
+    "source": "daemonarchy-src d63d77f4eb3cc29e16510f7bdec73602e27c2844 (1600029), as in the previous record",
+    "jail": "16aarch64 (src=/usr/src at d63d77f4, @clean snapshot from the previous record)",
+    "ports_tree": {
+      "name": "daemonarchy",
+      "base": "daemonarchy-ports branch daemonarchy at 3e782916e6599225b8977646e39da872d01ecf43",
+      "applied": [
+        "Runs 1-2: ports#30 commit a1ea241646e1, which makes x11-wm/daemonarchy depend on www/chromium everywhere except aarch64",
+        "Run 3: ports#30 commit 6ef3fe464cfa, which also makes the OMAAPPS dependency on x11-themes/aether non-aarch64"
+      ],
+      "pull_request": "https://github.com/jordanhubbard/daemonarchy-ports/pull/30 (open, not merged)",
+      "metadata_check": "Tools/daemonarchy/check-arch-deps.sh against 3e782916 on the worker: PASS (amd64 metadata unchanged; aarch64 drops mise, edk2@bhyve, chromium and aether). portlint was not installed on the worker.",
+      "diff_sha256": {
+        "ports-no-chromium.diff": "c1b22284a7b252d8db66dc697417f01b200edab6dc3a3a8af353c3cc8db7cb9f",
+        "ports-no-aether.diff": "ca2e8fa6116ab12dbccf4ba77f80b75714227ccc0846e863c18ba1ead0bce902"
+      }
+    },
+    "poudriere": {
+      "conf": "daemonarchy-poudriere.conf: PACKAGE_FETCH_URL pinned, ALLOW_MAKE_JOBS=yes, plus HACKING.md's PACKAGE_FETCH_BLACKLIST (drm-*-kmod gpu-firmware-* wifi-firmware-* nvidia-* linux-nvidia-libs), so kernel modules are built for the jail kernel",
+      "conf_sha256_before": "b86c68f47ee59689db7694227bfd86dbb3f3e4fd5ec50f64b773f5ddac8f1b65",
+      "conf_sha256_after": "fd733f78938a32d3c6d356d37debf6d8519d058482ffa123b051501b23375ace",
+      "make_conf": "daemonarchy-make.conf (runs 2-3): MAKE_JOBS_NUMBER=4 for devel/llvm*, lang/rust, editors/libreoffice, www/webkit2-gtk, java/openjdk*, lang/spidermonkey*, www/deno, www/node* and lang/zig",
+      "make_conf_sha256": "1256f76451411d299fe16730218eca68d5e0b24e699ad17fe4d915a10482590b",
+      "builders": "-J 2 (the dry run's default would have been 10)"
+    }
+  },
+  "package_list": {
+    "file": "aarch64-ports.list, 34 origins",
+    "sha256": "b12ade2bf011c0d653bb58b1c4542c1b742a8246b33871d674d7fe02e0fdd9a2",
+    "derivation": [
+      "origins.sh ISO_ORIGINS minus ISO_ORIGINS_AMD64_ONLY: the 22 OMARCHY_ORIGINS plus archivers/7-zip, graphics/gpu-firmware-kmod and net/wifi-firmware-kmod",
+      "build-iso.sh live-packages: shells/bash, devel/gum, textproc/jq, misc/ttfx, sysutils/tzupdate, ports-mgmt/pkg, net/wifi-firmware-kmod, archivers/7-zip and the omarchy package's Python (lang/python312)",
+      "The installer package set (pkg bash sudo daemonarchy chromium octopkg wifi-firmware-kmod): adds security/sudo and ports-mgmt/octopkg",
+      "The GPU set: graphics/mesa-dri, graphics/vulkan-loader and every graphics/gpu-firmware-kmod flavor, including navi14"
+    ],
+    "origins": [
+      "audio/cliamp",
+      "devel/tobi-try",
+      "devel/usage",
+      "editors/omarchy-nvim",
+      "editors/omawrite",
+      "graphics/omasnap",
+      "graphics/tensaku",
+      "math/omacalc",
+      "misc/ttfx",
+      "multimedia/omacut",
+      "sysutils/herdr",
+      "sysutils/lazydocker",
+      "sysutils/tzupdate",
+      "sysutils/udiskie",
+      "x11-fonts/ia-writer-fonts",
+      "x11-themes/aether",
+      "x11-wm/omarchy",
+      "x11-wm/daemonarchy",
+      "x11/hyprland-preview-share-picker",
+      "x11/owe",
+      "x11/owe-lockfeed",
+      "x11/quickshell",
+      "archivers/7-zip",
+      "graphics/gpu-firmware-kmod",
+      "net/wifi-firmware-kmod",
+      "shells/bash",
+      "devel/gum",
+      "textproc/jq",
+      "ports-mgmt/pkg",
+      "lang/python312",
+      "security/sudo",
+      "ports-mgmt/octopkg",
+      "graphics/mesa-dri",
+      "graphics/vulkan-loader"
+    ],
+    "exclusions": [
+      {
+        "origins": "graphics/drm-612-kmod, x11/nvidia-driver, x11/nvidia-kmod, graphics/nvidia-drm-612-kmod, x11/linux-nvidia-libs",
+        "reason": "ONLY_FOR_ARCHS=amd64. No DRM/KMS or NVIDIA driver exists for aarch64 (docs/aarch64.md, gap 2; origins.sh ISO_ORIGINS_AMD64_ONLY)."
+      },
+      {
+        "origins": "net/if_brcmfmac-kmod",
+        "reason": "Apple T2 BCM4364 driver, ONLY_FOR_ARCHS=amd64 (docs/aarch64.md, dropped on aarch64)."
+      },
+      {
+        "origins": "www/chromium",
+        "reason": "In the installer set, but no aarch64 package exists. The 15.1 aarch64 builder killed its build at the time limit after about 59 hours, and main-arm64 blacklists it (docs/aarch64.md, gap 1). Kept out of the list. ports#30 drops it from x11-wm/daemonarchy's aarch64 run dependencies, without which the bulk would have queued it."
+      },
+      {
+        "origins": "sysutils/mise",
+        "reason": "BROKEN_aarch64 (conda/rattler#2226). Already dropped on aarch64 by ports#28 (docs/aarch64.md, gap 1)."
+      },
+      {
+        "origins": "sysutils/edk2@bhyve",
+        "reason": "ONLY_FOR_ARCHS=amd64. Already dropped on aarch64 by ports#28."
+      },
+      {
+        "origins": "x11-themes/aether",
+        "reason": "Kept in the list and failed (see failures). ports#30 drops it from x11-wm/daemonarchy's aarch64 run dependencies so that the desktop package and image can be built."
+      }
+    ]
+  },
+  "dry_run": {
+    "command": "poudriere bulk -n -j 16aarch64 -p daemonarchy -b latest -f aarch64-ports.list (before ports#30)",
+    "result": "Queued 1051, fetched 459, would build 592 (including www/chromium, devel/llvm22 and their dependencies). No port ignored.",
+    "log_sha256": "8b5453c402d2d4bc83b36f3a17e0750878d29aa93efb85cae4681bb8d0da83fd"
+  },
+  "bulk": {
+    "command": "timeout -k 300 259200 poudriere bulk -j 16aarch64 -p daemonarchy -b latest -J 2 -f aarch64-ports.list",
+    "logs": "/var/log/daemonarchy-build/bulk-20261026/ on the worker",
+    "runs": [
+      {
+        "run": 1,
+        "build": "2026-10-26_13h35m33s (worker local time)",
+        "window_utc": "2026-10-26T20:35:33Z to about 2026-10-26T22:00Z",
+        "result": "Killed by the host-disk reboot after 1 h 27 min",
+        "queued": 1044,
+        "built": 326,
+        "fetched": 457,
+        "failed": 0,
+        "skipped": 0,
+        "ignored": 0,
+        "log_sha256": "fdd887e159b61203cc31aab88d41ceb8e1c4395046a2aba0550ab06c06551687"
+      },
+      {
+        "run": 2,
+        "build": "2026-10-26_15h12m00s",
+        "window_utc": "2026-10-26T22:12:00Z to 2026-10-27T04:19:12Z",
+        "result": "Completed, exit 2 (one failure)",
+        "queued": 261,
+        "built": 253,
+        "fetched": 6,
+        "failed": 1,
+        "skipped": 1,
+        "ignored": 0,
+        "failed_ports": [
+          "x11-themes/aether (build phase)"
+        ],
+        "skipped_ports": [
+          "x11-wm/daemonarchy (depends on aether)"
+        ],
+        "log_sha256": "137c6fd2ae27d4c02c6d1ee5a93053a51a2e3b51ca70b40cb3d4a4fa67d952de"
+      },
+      {
+        "run": 3,
+        "build": "2026-10-26_21h21m31s",
+        "window_utc": "2026-10-27T04:21:31Z to 2026-10-27T04:24:40Z",
+        "result": "Completed, exit 1 (aether fails again, as expected)",
+        "queued": 2,
+        "built": 1,
+        "fetched": 0,
+        "failed": 1,
+        "skipped": 0,
+        "ignored": 0,
+        "built_ports": [
+          "x11-wm/daemonarchy daemonarchy-1.3.1,1"
+        ],
+        "log_sha256": "8a29a87d6ed3ee61cf3a623833c1af566dcae26940cfea9c21471eb1242238f9"
+      }
+    ],
+    "totals": {
+      "queued": 1044,
+      "built": 580,
+      "fetched": 463,
+      "failed": 1,
+      "skipped_final": 0,
+      "ignored": 0,
+      "note": "580 + 463 + 1 = 1044. Built-package list (runs 1-3) sha256 92c4b85e9af48bac609b98f1bfe77bb18fc48e35c5cc5293f29bc68e04adbdb5. Most rebuilds were needed because ports 3e782916 is ahead of the official FreeBSD:16:aarch64 latest set."
+    },
+    "longest_builds": {
+      "devel/llvm21": "2:10:55 (4 make jobs)",
+      "editors/libreoffice": "1:20:13 (4 make jobs)",
+      "www/deno": "1:07:43",
+      "www/webkit2-gtk@41": "0:56:17",
+      "www/node24": "0:28:42"
+    },
+    "failures": [
+      {
+        "port": "x11-themes/aether 4.30.0",
+        "phase": "build (pre-build: npm run build of the Svelte/Vite frontend)",
+        "error": "rolldown: Cannot find module '@rolldown/binding-freebsd-arm64' (then './rolldown-binding.freebsd-arm64.node' and './rolldown-binding.wasi.cjs')",
+        "diagnosis": "The port builds its frontend offline from aether-4.30.0-npm-cache.tar.gz. That cache holds only the FreeBSD x64 builds of @rolldown/binding, lightningcss and @tailwindcss/oxide. npm publishes no FreeBSD arm64 build of any of the three (registry 404 on 2026-10-27). rolldown and tailwind oxide have wasm32-wasi builds; lightningcss has none in its node package.",
+        "disposition": "Gap. ports#30 drops aether from x11-wm/daemonarchy's aarch64 dependencies. A real fix needs a new distfile: either a prebuilt, architecture-independent frontend/dist from the pinned source and lockfile, or an npm cache with WASI bindings plus a lightningcss replacement. Publishing either distfile is an operator action. Generating the frontend outside poudriere was not attempted."
+      }
+    ]
+  },
+  "release_sets": {
+    "source": "/usr/src at d63d77f4, the native buildworld/buildkernel obj tree from the previous record",
+    "command": "make -C /usr/src/release NOSRC=yes NOPORTS=yes NODOC=yes packagesystem",
+    "window_utc": "Finished 2026-10-26T20:30Z (MANIFEST mtime); started about 15 minutes earlier",
+    "cache": "/var/cache/daemonarchy-iso-aarch64-d63d77f4 (a separate SET_CACHE_DIR from the snapshot cache)",
+    "manifest_sha256": {
+      "base.txz": "8b96602d81692ea1ecb956a80f1c4310f4d2a7a812b6bb8f8cf826027a832a2d",
+      "kernel.txz": "b128aa09e4d82c3c8b5406341cf43f2b2a5a00ef519c67153a50049f8b7a49d9",
+      "lib32.txz": "4dab0664db1ee23d5e24037e27a52a634133acac2c9e04fd8afbe10d77d9ee19"
+    },
+    "base_freebsd_version": 1600029,
+    "kernel_ident": "FreeBSD 16.0-CURRENT #0 n290215-d63d77f4eb3c",
+    "kernel_sha256": "44e9a957aeb3e531fad2fb97c2478b4ad73e706889110b034784f73ddf85e11d (identical to the running worker kernel)",
+    "log_sha256": "6fa860ac6a5f7e68b1ddf630359d40bb4217cb12d58ad02215229e3efd3ae771"
+  },
+  "package_feed": {
+    "status": "unsigned development feed, not uploaded",
+    "command": "ARCH=aarch64 JAIL=16aarch64 PTREE=daemonarchy TAG=packages-16-aarch64-dev20261027 BUILT_PACKAGES_FILE=built-ports-runs1-3.txt sh pkg-repo.sh collect; pkg repo -q <out> (no key)",
+    "payloads": 360,
+    "bytes_on_disk": "1.5G",
+    "selection": "OMARCHY_ORIGINS plus every package rebuilt in runs 1-3, except kernel-bound packages (pkg-repo.sh rules)",
+    "sha256": {
+      "packagesite.pkg": "2111a4ef458f4fa329abf8633979606de136e1b78735a5acc1dbfab209ac0444",
+      "data.pkg": "7730c2c1a5a57c2954ff43b7629b8be64bfcce210418ef872282b41b4dadd2e4",
+      "meta.conf": "ca7f091a4f9eccbf537a966a0d4d555cdfc4de34ad5be5c96a12c4485130664c"
+    },
+    "installer_set_solve": {
+      "command": "pkg install -n pkg bash sudo daemonarchy octopkg, with FreeBSD:16:aarch64 latest (fingerprint-verified) plus this feed (signature_type none), isolated PKG_DBDIR",
+      "result": "Resolves: 939 packages, 294 from the Daemonarchy feed and 645 from FreeBSD:16:aarch64 latest. chromium is not in the set (excluded above).",
+      "log_sha256": "47e4248f4ffb3c8fb9edb8ce138de57e64ee10d60e17f8abe2787b4298d83848"
+    },
+    "poudriere_repository": "16aarch64-daemonarchy: 1404 packages, 6.8G (the bulk repository the ISO takes its packages from; also unsigned)"
+  },
+  "efi_iso_path_smoke": {
+    "purpose": "Check scripts/make-efi-iso.sh (gap 6) before the packages existed, using a plain base+kernel world from the d63d77f4 sets",
+    "iso_sha256": "5503dea7ca2fa61a2c68bb7b2bbd4ce3a4c49db6ce38e213b1f2b46c141f5018",
+    "world_txz_sha256": "4afd729ce54b4391c79fed37342bfe9d3526d57bd9dadbc53b751f404685745e",
+    "layout": "etdump: one default El Torito entry, platform efi, no emulation, 4096 sectors at LBA 20. gpart: a GPT efi partition at sector 80 in the system area. The GPT is reported CORRUPT because there is no backup header at the end; FreeBSD's own release/arm64/mkisoimages.sh writes the same layout.",
+    "boots": [
+      {
+        "media": "virtio-scsi CD-ROM",
+        "result": "EDK2 Boot0001 UEFI QEMU CD-ROM, FreeBSD/arm64 EFI loader 3.1, kernel n290215-d63d77f4eb3c, root cd9660:/dev/iso9660/ARCH001SMOKE, multi-user login in about 60 s",
+        "serial_log_sha256": "72ba431cc841bf6af7303295a83bf2163e634331f368c387bc6f52362cac8512"
+      },
+      {
+        "media": "the same bytes as a raw virtio-blk disk (the USB path)",
+        "result": "EDK2 UEFI Misc Device, currdev disk0p1, root on the ISO label, multi-user login",
+        "serial_log_sha256": "942fdf3775872224fd171512c7cc63ab42626e5e422a3d0584fe0d477031e24b"
+      }
+    ]
+  },
+  "iso": {
+    "status": "unsigned development image, not published",
+    "builder": "build-iso.sh from product origin/main 5532df6, unmodified",
+    "command": "ARCH=aarch64 JAIL=16aarch64 PTREE=daemonarchy SET_CACHE_DIR=/var/cache/daemonarchy-iso-aarch64-d63d77f4 CHECKOUT_CATALOG=<1.3.1-final catalogue> NAME=daemonarchy-1.3.1-aarch64-dev PREVIEW_LABEL='aarch64 development build, unsigned' timeout -k 60 14400 sh build-iso.sh",
+    "host_prerequisites": "jq and bash had to be installed on the worker (the first attempt stopped at 'jq: not found'; that log is kept, sha256 94264dac8190c953e7a5fcba1a350aa267c1f99feedb033b7303580a6365c1f3). Nothing else in build-iso.sh needed changing for arm64.",
+    "checkout_catalog": {
+      "sha256": "4b4e0a3dd22d61a064f22d4a78ac137cd5a4b2609ba103fa1e268e64b7ae51bf",
+      "record": "verification/checkout-catalog-1.3.1-final-development.json",
+      "src_revision": "d63d77f4eb3cc29e16510f7bdec73602e27c2844, which matches the image kernel, so build-iso.sh's kernel identity check passed",
+      "limitation": "Its repository_url is the amd64 checkout feed (checkouts-16-amd64-1.3.1), and its ports revision is 7e417dae, not the 3e782916 tree the packages came from. No aarch64 checkout feed exists, so the image's optional source and ports checkout is not usable on aarch64."
+    },
+    "window_utc": "2026-10-27T04:27:18Z to 2026-10-27T04:44:11Z",
+    "repository_on_image": "242 packages, 12 package accounts reserved; Daemonarchy 1.3.1; ABI FreeBSD:16:aarch64; package feed tag packages-16-aarch64 (no public key, since none was supplied)",
+    "image_type": "poudriere image -t tar, then scripts/make-efi-iso.sh with BOOTAA64.EFI",
+    "artifacts": {
+      "daemonarchy-1.3.1-aarch64-dev.iso": {
+        "bytes": 1269610496,
+        "sha256": "6d6f1fe35ca59422ede292d5791b150ebe1cd415a33314c1f7471df54a45a7d6"
+      },
+      "daemonarchy-1.3.1-aarch64-dev.iso.xz": {
+        "bytes": 678107496,
+        "sha256": "5993212836ed26974246311775455b01ffaf6bb57f606278d576ce4e394cf650"
+      }
+    },
+    "size_checks": "check-image-size.sh passed: the .xz is 1469376152 bytes below the 2 GiB asset limit",
+    "log_sha256": "4de8b4e7ce80ec2fc046f134768168c364a7bc825e8965dda7ae19749dbcf012",
+    "live_image_runtime": {
+      "command": "sh tests/live-image-runtime.sh <iso>",
+      "result": "PASS: live tools, install payloads and retained ELF dependencies (bash 5.3.20 aarch64, jq 1.8.2, pkg 2.8.4, enterprise Wi-Fi imports); no private rescue authorization; feed selection packages-16-aarch64",
+      "log_sha256": "6cd06863334acd1bb47f20219c31667c6f09de934fd38e814f31e467f5e5e23f"
+    }
+  },
+  "boot_evidence": {
+    "host": "qemu-system-aarch64 11.1.2 (qemu-nox11 package) with its edk2-aarch64-code.fd, TCG on the VMware worker (no hardware acceleration)",
+    "machine": "-M virt -cpu max -smp 4 -m 4096; ISO on virtio-scsi CD; 64G sparse raw virtio-blk target (unused); virtio-net user networking; virtio-gpu-pci; serial to file",
+    "boot1": {
+      "result": "EDK2 booted the CD (Boot0001 UEFI QEMU CD-ROM), FreeBSD/arm64 EFI loader 3.1, kernel n290215-d63d77f4eb3c, root cd9660:/dev/iso9660/DAEMONARCHY131AARCH64DEV, hostname daemonarchy-installer, DHCP offer from the QEMU gateway, serial login on ttyu0. The installer welcome screen rendered on the virtio-gpu EFI framebuffer: 'Omarchy's desktop spliced onto FreeBSD's daemon · 1.3.1 (aarch64 development build, unsigned)'. A keypress did not reach it because this machine had no keyboard device.",
+      "serial_log_sha256": "3af4a3d06067fc4ec3040743c3e89c4ca0198b4228f0afad077a1040c49c7494",
+      "welcome_screen_png_sha256": "92b88278af94e9d172c04a72fe06b9f0360dc011a78fb7a9007b15161b3b5bfb"
+    },
+    "boot2": {
+      "result": "The same with qemu-xhci and usb-kbd. Return opened the installer options menu: Install Daemonarchy, Remote agent debug, Configure network, Exit to shell. The run was stopped there.",
+      "serial_log_sha256": "b68e7b0f560e68daea8f50ead81c7f75cf560cc83c1f650f9b0275be5bb31f63",
+      "menu_screen_png_sha256": "49c5c7cba06524fd1548d2e05e8701a29c7fe617543a6c9dfe4a25473a4de2e3"
+    },
+    "finding_vtnet_witness": "On both boots, bringing up vtnet0 logs WITNESS warnings and a lock order reversal (50 'VTNET Core Lock' lines in boot 1, 52 in boot 2). vtnet_init_locked -> vtnet_set_macaddr (if_vtnet.c:1570) calls bus_dmamap_create while holding the vtnet core mutex. On arm64 that reaches bounce_bus_dmamap_create -> alloc_bounce_zone, which mallocs, adds a sysctl (sysctl lock, sleepable rm) and kproc_creates. Boot and DHCP continue. The smoke ISO, whose rc.conf configures no interface address, shows none of this. Not diagnosed further: it belongs to daemonarchy-src or upstream if_vtnet, and is not yet compared with amd64.",
+    "not_run": "No install to the target disk: the installer would fetch from the packages-16-aarch64 feed, which is not published. No upgrade, rollback, desktop (no KMS driver; gap 2) or network-debugging case. VMware arm64 guests were not used for the image."
+  },
+  "evidence_location": "Logs, lists, diffs, the guard and run scripts, and the serial and screen captures are on the worker under /var/log/daemonarchy-build/bulk-20261026/ and /var/log/daemonarchy-build/sets-d63d77f4/. The images are in /usr/local/poudriere/data/images/ and the feed in /usr/local/poudriere/data/daemonarchy-repo/packages-16-aarch64-dev20261027/. None of them is published.",
+  "remaining_gaps": [
+    "Chromium: no aarch64 build; it needs a builder without the 59-hour limit.",
+    "Aether: needs an aarch64-capable frontend distfile (operator publication).",
+    "No KMS driver for aarch64, so no desktop qualification under VMware (gap 2); QEMU virtio-gpu still needs graphics/virtio-gpu-qemu-kmod and an image selection.",
+    "The feed and image are unsigned and unpublished; signing and the packages-16-aarch64 release are operator-held.",
+    "No aarch64 checkout feed: the image carries the amd64 1.3.1 checkout catalogue.",
+    "WITNESS lock order reversal in vtnet_set_macaddr on arm64.",
+    "Source tooling, the arm64 diagnostic kernel and the loader entropy fallback remain open (gaps 3-5).",
+    "No install, upgrade, rollback, desktop or debugging case has run, and the worker is not admitted to the release graph; none of this is under LitAI custody.",
+    "build-iso.sh's host prerequisites (jq, bash) are not listed for the worker in native/worker-template.json."
+  ]
+}

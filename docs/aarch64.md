@@ -4,9 +4,16 @@
 ([issue #62](https://github.com/jordanhubbard/daemonarchy/issues/62)) adds
 aarch64 alongside amd64 for 1.4.0. This page records the read-only inventory of
 2026-10-26, the plan for the first native aarch64 worker, and that worker's
-first native results: a kernel, world and poudriere jail at the selected source,
-and a passing `x11-wm/hyprland` testport. **No aarch64 package feed, image, VM
-or laptop result exists yet.** Nothing here qualifies aarch64, and no amd64
+first native results:
+- a kernel, world and poudriere jail at the selected source, and a passing
+  `x11-wm/hyprland` testport;
+- a native bulk build of the image package closure;
+- an **unsigned development** package feed and UEFI installer ISO. The ISO
+  boots to the installer menu under QEMU/EDK2
+  ([record](#worker-record-native-bulk-unsigned-feed-and-uefi-iso-2026-10-27)).
+
+**No signed or published aarch64 feed or image exists, and no install, VM
+matrix or laptop result exists.** Nothing here qualifies aarch64, and no amd64
 result stands in for one.
 
 ## Inventory, blocking gaps first
@@ -67,6 +74,20 @@ and from upstream FreeBSD ports.
        `FreeBSD:16:amd64/latest` has no Chromium package either. For aarch64, a
        native Chromium build needs a builder with no such time limit, or more
        capacity.
+     - It was an unconditional `RUN_DEPENDS` of `x11-wm/daemonarchy`, so
+       poudriere would queue it before the desktop package.
+       [daemonarchy-ports#30](https://github.com/jordanhubbard/daemonarchy-ports/pull/30)
+       makes it a dependency everywhere except aarch64. An aarch64 desktop
+       therefore has no default browser.
+   - **`x11-themes/aether`** fails in the native aarch64 build.
+     - It builds its Vite frontend offline from an npm cache distfile that
+       carries only the FreeBSD x64 rolldown, lightningcss and tailwind oxide
+       bindings, and npm publishes no FreeBSD arm64 build of any of them.
+     - Failing it skips `x11-wm/daemonarchy`, whose OMAAPPS option depends on
+       it. ports#30 makes that dependency non-aarch64.
+     - A real aarch64 aether needs a new distfile. Either:
+       - a prebuilt, architecture-independent `frontend/dist`; or
+       - an npm cache with WASI bindings and a lightningcss replacement.
    - **`sysutils/mise`** has `BROKEN_aarch64= unsupported freebsd architecture`
      (conda/rattler#2226), and the builders skip it as ignored. It was an
      unconditional `RUN_DEPENDS` of `x11-wm/omarchy`, and part of
@@ -121,7 +142,10 @@ and from upstream FreeBSD ports.
    netconsole build has run in CI.
 6. **poudriere cannot make an aarch64 ISO.** Its `iso` and `hybridiso` types
    embed x86 BIOS boot code (`cdboot`, `pmbr`, `isoboot`). This change adds a
-   UEFI-only path (see below), which no native run has qualified yet.
+   UEFI-only path (see below). A native build of it booted under QEMU/EDK2,
+   both as a CD and as a disk, as development evidence
+   ([record](#worker-record-native-bulk-unsigned-feed-and-uefi-iso-2026-10-27)).
+   No VMware or hardware boot has qualified it.
 7. **Product scripts still bound to amd64** (outside this change):
    - `scripts/build-checkout-packages.py:102` writes an amd64 ABI literal.
    - `scripts/adopt-candidate-packages.sh:33,85` requires amd64.
@@ -402,6 +426,83 @@ is
   - The worker is **not admitted** to the release graph; that admission is
     still to be defined. The 200G disk is below the 400 GiB sizing.
 
+### Worker record: native bulk, unsigned feed and UEFI ISO (2026-10-27)
+
+The record, with every hash, is
+[`aarch64-bulk-iso-20261027-development.json`](../verification/aarch64-bulk-iso-20261027-development.json).
+Everything here is unsigned development evidence, outside LitAI custody. Nothing
+was signed or published.
+
+- **Package list.** 34 origins:
+  - `ISO_ORIGINS` minus `ISO_ORIGINS_AMD64_ONLY`;
+  - `build-iso.sh`'s live packages (`bash gum jq ttfx tzupdate pkg
+    wifi-firmware-kmod 7-zip python312`);
+  - the installer set (`sudo`, `octopkg`);
+  - `mesa-dri` and `vulkan-loader`.
+
+  Exclusions, each recorded with its reason:
+  - DRM/KMS, NVIDIA and `if_brcmfmac-kmod` are amd64-only (gap 2).
+  - `chromium` has no aarch64 build (gap 1).
+  - `mise` and `edk2@bhyve` were already dropped by ports#28.
+- **Ports.** The tree is `3e782916` plus
+  [ports#30](https://github.com/jordanhubbard/daemonarchy-ports/pull/30) (open),
+  which makes `chromium` and `aether` non-aarch64 dependencies of
+  `x11-wm/daemonarchy`. Its metadata check passes on the worker.
+- **poudriere settings.** HACKING.md's `PACKAGE_FETCH_BLACKLIST` was added, so
+  kernel modules are built for the jail kernel.
+- **Bulk.** `poudriere bulk -j 16aarch64 -p daemonarchy -b latest -J 2`, bounded
+  by `timeout -k`. Memory-heavy ports were capped at 4 make jobs by a
+  per-tree `make.conf`.
+  - Runs 1-2 used ports#30's chromium commit. Run 3 added its aether commit, and
+    built `daemonarchy-1.3.1,1`.
+  - Of 1,044 queued packages:
+    - 580 were built;
+    - 463 were fetched from `FreeBSD:16:aarch64` `latest`;
+    - 1 failed (`x11-themes/aether`, above);
+    - none was ignored, and none is still skipped.
+  - The longest builds were `llvm21` (2 h 11 min), LibreOffice (1 h 20 min),
+    deno (1 h 8 min) and WebKitGTK (56 min).
+- **Host incident.** Run 1 was killed after 1 h 27 min when the VMware *host*
+  ran out of disk and rebooted the guest.
+  - The pool was healthy afterwards, and the resumed run reused every completed
+    package. No evidence was lost.
+  - At the operator's direction:
+    - the temporary 16 GiB swap zvol was removed;
+    - a guard stopped the build if zroot passed 150G.
+  - The pool peaked at 50.6 GiB allocated.
+  - The guest's virtual NVMe reports **no Dataset Management (TRIM)**. A thin
+    host disk therefore never shrinks when the guest frees space.
+- **Release sets.** `make -C release packagesystem` from the native `d63d77f4`
+  obj tree produced `base.txz`, `kernel.txz` and `lib32.txz`, held in their own
+  set cache. The kernel set is the worker's own `44e9a957…` kernel.
+- **Feed.** The unsigned development feed `packages-16-aarch64-dev20261027` was
+  made with `pkg-repo.sh collect`, given the rebuilt-package list, then
+  `pkg repo` with no key.
+  - It has 360 payloads.
+  - With `FreeBSD:16:aarch64` `latest`, it resolves the installer set without
+    Chromium: 939 packages, 294 of them from this feed.
+- **ISO.** origin/main's `build-iso.sh` built `daemonarchy-1.3.1-aarch64-dev.iso`
+  unchanged, with `ARCH=aarch64` and the d63d77f4 sets.
+  - The `.iso` is 1,269,610,496 bytes (`6d6f1fe3…`). The `.iso.xz` is
+    678,107,496 bytes (`59932128…`).
+  - It used the 1.3.1-final checkout catalogue, whose source revision is
+    `d63d77f4`, so the kernel identity check passed. That catalogue points at
+    the amd64 checkout feed: no aarch64 checkout feed exists.
+  - The worker needed `jq` and `bash` installed.
+  - `tests/live-image-runtime.sh` passed.
+- **Boot.** `qemu-system-aarch64` 11.1.2 with its EDK2 firmware (TCG,
+  virtio-gpu) booted the image to the installer welcome screen, whose preview
+  label reads "aarch64 development build, unsigned". With a USB keyboard,
+  Return opened the installer menu. A first, packageless image of the same
+  UEFI path booted from both CD and disk.
+  - **Finding:** bringing up `vtnet0` on arm64 logs WITNESS warnings and a lock
+    order reversal. `vtnet_set_macaddr` creates a bus_dma map under the vtnet
+    core lock, and arm64 bounce-zone creation then mallocs, adds a sysctl and
+    creates a kernel process. The boot continues. This is not yet diagnosed or
+    compared with amd64.
+  - No install was run, because the `packages-16-aarch64` feed is not
+    published. No upgrade, rollback, desktop or debugging case was run either.
+
 ### Separate VMware test guests
 
 Installer and boot tests never run inside the build worker: a failed test must
@@ -437,6 +538,12 @@ passes, with each model's execution mode recorded.
 - Review of daemonarchy-ports#28 (conditional `mise` and `edk2@bhyve`, and the
   Hyprland aarch64 PCH workaround), and a decision on gap 2 (the desktop
   qualification host).
+- Review of daemonarchy-ports#30 (no `chromium` or `aether` dependency on
+  aarch64).
 - Builder capacity for a native aarch64 Chromium build. The 15.1 package
   builder ran out of time after about 59 hours.
-- The aarch64 package feed release (`packages-16-aarch64*`) and its signing.
+- An aarch64-capable aether frontend distfile, published as a release asset.
+- The aarch64 package feed release (`packages-16-aarch64*`) and its signing,
+  and an aarch64 checkout feed.
+- Host disk capacity for the worker. Its virtual NVMe has no TRIM, so a
+  thin-provisioned disk only grows.
