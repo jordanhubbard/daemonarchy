@@ -203,6 +203,8 @@ class Progress:
         self.target_pool = None
         self.encrypted = False
         self.lines_read = 0
+        self.fetch = None  # Bytes and archives pkg's event pipe reported (@@fetch).
+        self.fetch_estimate = ''  # pkg's own rounded "N GiB to be downloaded".
 
     def phase_changed(self, phase):
         if phase not in PHASES:
@@ -232,6 +234,20 @@ class Progress:
             self.target_disk = parts[1]
         elif len(parts) == 2 and parts[0] == 'pool' and POOL.fullmatch(parts[1]):
             self.target_pool = parts[1]
+
+    def fetch_event(self, row):
+        if not isinstance(row, dict) or row.get('schema') != 'daemonarchy/pkg-fetch@1':
+            raise ValueError('Unknown fetch event')
+        values = [row.get(key) for key in ('archives', 'bytes', 'file_bytes', 'file_total')]
+        if not all(integer(value) for value in values) or row['file_bytes'] > max(row['file_total'], 0) \
+                or row['file_bytes'] > row['bytes']:
+            raise ValueError('Invalid fetch counters')
+        previous = self.fetch
+        attempt = previous['attempt'] if previous else 1
+        if previous and (row['archives'] < previous['archives'] or row['bytes'] < previous['bytes']):
+            attempt += 1  # A retry runs pkg again and counts from zero.
+        self.fetch = dict(archives=row['archives'], bytes=row['bytes'], file=clean(row.get('file', ''), 80),
+                          file_bytes=row['file_bytes'], file_total=row['file_total'], attempt=attempt)
 
     def measured(self, label, current, total, unit):
         if not integer(current) or not integer(total) or current > total or total == 0:
@@ -301,10 +317,15 @@ class Progress:
                 self.step(clean(line[7:], 80))
             elif line.startswith('@@target '):
                 self.target(clean(line[9:], 80))
+            elif line.startswith('@@fetch '):
+                self.fetch_event(json.loads(line[8:]))
             else:
                 text = clean(line, 4096)
                 if text.strip():
                     self.recent.append(text[:160])
+                estimate = re.match(r'^(\d+(?:\.\d+)? (?:B|KiB|MiB|GiB|TiB)) to be downloaded\.?$', text.strip())
+                if self.phase == 'fetch' and estimate:
+                    self.fetch_estimate = estimate[1]
                 total = re.search(r'packages to be fetched:\s*(\d+)\s*$', text)
                 if self.phase == 'fetch' and total:
                     self.download_total = int(total[1])
@@ -332,7 +353,8 @@ class Progress:
             self.warning = clean(error)
 
     def key(self):
-        return self.phase, self.meter, self.item, tuple(self.history), self.warning, self.failed
+        fetch = (self.fetch['archives'], self.fetch['bytes']) if self.fetch else None
+        return self.phase, self.meter, self.item, tuple(self.history), self.warning, self.failed, fetch
 
 
 class Tail:
@@ -355,6 +377,7 @@ class Tail:
                     state.archive_packages, state.archive_count = 0, None
                     state.timeline.reset()
                     state.ticker.reset()
+                    state.fetch, state.fetch_estimate = None, ''
                     self.offset, self.pending, self.discard = 0, b'', False
                 self.identity = identity
                 stream.seek(self.offset)
@@ -790,6 +813,7 @@ class Monitor:
             stages=state.timeline.rows(), elapsed=state.timeline.total(),
             ticker=dict(kind=ticker.kind, names=list(ticker.names), current=ticker.current,
                         total=ticker.total, serial=ticker.serial, rate=ticker.rate(self.clock())),
+            fetch=dict(state.fetch, estimate=state.fetch_estimate) if state.fetch else None,
             activity=self.activity.view(), target=dict(disk=state.target_disk, pool=state.target_pool,
                                                        encrypted=state.encrypted),
             warning=state.warning, failed=state.failed, result=self.result,
@@ -820,6 +844,8 @@ class InstallProgress:
             details.append('No measured total for this stage')
         if snap['item']:
             details.append(snap['item'])
+        if snap['fetch'] and snap['phase'] == 'fetch':
+            details.append(fetch_text(snap['fetch']))
         if snap['warning']:
             details.append('Progress unavailable: ' + snap['warning'])
         elif snap['idle'] >= 5 and not snap['done']:
@@ -838,6 +864,26 @@ def format_rate(value, unit='B/s'):
         if value >= scale:
             return f'{value / scale:5.1f} {suffix}{unit}'
     return f'{value:5.0f} {unit}'
+
+
+def format_bytes(value):
+    for scale, suffix in ((1 << 40, 'TiB'), (1 << 30, 'GiB'), (1 << 20, 'MiB'), (1 << 10, 'KiB')):
+        if value >= scale:
+            return f'{value / scale:.1f} {suffix}'
+    return f'{value} B'
+
+
+def fetch_text(fetch):
+    """One line about the bytes pkg reported received; never a percentage."""
+    text = f"Received {format_bytes(fetch['bytes'])}"
+    if fetch.get('estimate'):
+        text += f" of about {fetch['estimate']} (pkg's rounded estimate)"
+    text += f"; {fetch['archives']:,} archives finished"
+    if fetch.get('file') and fetch.get('file_total'):
+        text += f"; now {fetch['file']} {format_bytes(fetch['file_bytes'])} of {format_bytes(fetch['file_total'])}"
+    if fetch.get('attempt', 1) > 1:
+        text += f"; attempt {fetch['attempt']}"
+    return text
 
 
 def format_elapsed(seconds):

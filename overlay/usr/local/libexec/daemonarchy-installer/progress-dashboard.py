@@ -65,6 +65,8 @@ def lines(state, style, width, idle=False, result=None):
         output.append('No measured total for this stage')
     if state.item:
         output.append(state.item)
+    if state.fetch and state.phase == 'fetch':
+        output.append(model.fetch_text(dict(state.fetch, estimate=state.fetch_estimate)))
     if state.warning:
         output.append('Progress unavailable: ' + state.warning)
     elif idle and result is None:
@@ -538,6 +540,8 @@ class Visuals:
             rows.append([('No measured total for this stage; live activity is shown below', (GRAY, None, False))])
         if snap['item']:
             rows.append([(snap['item'], (CYAN, None, False))])
+        if snap.get('fetch') and snap['phase'] == 'fetch':
+            rows.append([(model.fetch_text(snap['fetch']), (PURPLE, None, False))])
         if snap['warning']:
             rows.append([('Progress unavailable: ' + snap['warning'], (YELLOW, None, True))])
         elif snap['idle'] >= 5 and not done:

@@ -30,6 +30,7 @@ on:
       - 'overlay/usr/local/libexec/daemonarchy-installer/progress-model.py'
       - 'overlay/usr/local/libexec/daemonarchy-installer/install-screen'
       - 'overlay/usr/local/libexec/daemonarchy-installer/install-views'
+      - 'overlay/usr/local/libexec/daemonarchy-installer/pkg-events'
       - 'overlay/usr/local/libexec/daemonarchy-installer/remote-debug'
       - 'overlay/usr/local/share/daemonarchy-installer/install-tmux.conf'
       - 'scripts/installer-visuals-demo.py'
@@ -101,6 +102,7 @@ on:
       - 'overlay/usr/local/libexec/daemonarchy-installer/progress-model.py'
       - 'overlay/usr/local/libexec/daemonarchy-installer/install-screen'
       - 'overlay/usr/local/libexec/daemonarchy-installer/install-views'
+      - 'overlay/usr/local/libexec/daemonarchy-installer/pkg-events'
       - 'overlay/usr/local/libexec/daemonarchy-installer/remote-debug'
       - 'overlay/usr/local/share/daemonarchy-installer/install-tmux.conf'
       - 'scripts/installer-visuals-demo.py'
@@ -182,7 +184,7 @@ jobs:
           bash -n overlay/usr/local/libexec/daemonarchy-installer/dashboard overlay/usr/local/libexec/daemonarchy-installer/install
           bash -n overlay/usr/local/libexec/daemonarchy-installer/install-screen overlay/usr/local/libexec/daemonarchy-installer/remote-debug
           python3 -m py_compile overlay/usr/local/libexec/daemonarchy-installer/progress-model.py scripts/installer-visuals-demo.py scripts/scrub-install-log.py
-          python3 -c 'import ast, sys; ast.parse(open(sys.argv[1]).read())' overlay/usr/local/libexec/daemonarchy-installer/install-views
+          for view in install-views pkg-events; do python3 -c 'import ast, sys; ast.parse(open(sys.argv[1]).read())' "overlay/usr/local/libexec/daemonarchy-installer/$view"; done
           command -v tmux >/dev/null || sudo apt-get install -y tmux
           python3 tests/installer-progress.py
           bash tests/install-integrity.sh

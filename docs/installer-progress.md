@@ -10,7 +10,8 @@ result file says whether the installation succeeded.
 | Element | Measures | Source |
 |---|---|---|
 | Stage timeline: Partition, Encrypt, ZFS pool, Base sets, Boot loader, Configure, Download, Packages, Account, (Checkouts, CUDA), Verify | The stage that is running, the stages finished, and each stage's elapsed time. Encrypt shows as skipped when the disk is not encrypted. Optional stages appear only when they run. | `@@phase` and `@@step NAME EPOCH` markers that `install` prints when a stage starts. The epoch is the installer's own clock, so a screen that reads the log late still shows real stage times. Older logs without `@@step` use the time the screen read the marker. |
-| Measured counter and bar | Storage preparation milestones, release archives expanded, downloads that native pkg reported complete, or the package position pkg is processing. The bar fills only as that counter advances. | `@@progress` events and native pkg output. |
+| Measured counter and bar | Storage preparation milestones, release archives expanded, downloads that native pkg reported complete, or the package position pkg is processing. The bar fills only as that counter advances. | `@@progress` events and native pkg output. pkg's non-terminal `Fetching NAME: ..... done` lines now count as completed downloads; earlier screens required a `100%` that only a terminal gets. |
+| Download bytes | During the download stage: bytes received for finished archives plus the one in progress, the number of archives finished, the current archive's bytes of its size, and pkg's own rounded total ("about 5 GiB", labelled as pkg's estimate). The attempt number appears on a retry. No percentage is computed from pkg's rounded total. | pkg's event pipe: `install` runs `pkg -o EVENT_PIPE=FIFO fetch`, and `pkg-events` turns `INFO_FETCH_BEGIN`/`INFO_PROGRESS_TICK`/`INFO_FETCH_FINISHED` for archives under `/All/` into `@@fetch` lines in the log (about four a second). pkg's non-terminal output prints only dots, so before this the stage had no byte measurement. |
 | Package ticker | The names of the packages pkg reports, newest on the right, with `n/N` and the observed rate per minute. A rate appears only after ten seconds of real reports. | pkg's `[n/N] Installing NAME...` lines, and `Fetching NAME: ... done` during the download stage. |
 | Spectrum | One bar per CPU core (eight bars at most; more cores are averaged in groups), plus disk write, disk read, I/O operations per second, network in and network out, and ZFS logical writes when the pool is known. Bars scale to the busiest rate seen so far on a logarithmic axis; the numbers under the visuals are exact. Peak caps hold the highest recent value and fall slowly, as in Winamp. | Kernel counters sampled four times a second: `kern.cp_times`, `kern.devstat.all`, the interface MIB (`net.link.generic.ifdata`), `vm.stats`, `kstat.zfs.misc.arcstats.size`, and `kstat.zfs.POOL.dataset.*.nwritten` once a second. Memory disks (the live image) and pass-through devices are excluded. The installer names its target disk and pool with `@@target`, so the meters measure that disk. |
 | Scope | The last minute of disk-write and network-in rates as oscilloscope traces (braille dots, two samples per character). | The same samples. |
@@ -127,8 +128,10 @@ activity rates and their history, the target disk and pool, warnings and the
 result. The console screen draws that snapshot. The live desktop's graphical
 installer (LIVE-001) can use `InstallProgress(log, status).poll()`, which keeps
 the keys its progress page reads today (`title`, `details`, `fraction`,
-`done`, `succeeded`, `recent`) and adds `stages`, `ticker` and `activity`, so
-both installers show the same stages and metrics. `progress-model.py LOG
+`done`, `succeeded`, `recent`) and adds `stages`, `ticker`, `fetch` and
+`activity`, so both installers show the same stages and metrics. During the
+download stage `fraction` is the archive count pkg reported complete, and
+`details` includes the received bytes line. `progress-model.py LOG
 STATUS` prints the snapshots as JSON lines. `progress-dashboard.py` still
 exports `Progress`, `Tail`, `lines`, `status` and `clean`.
 
@@ -153,6 +156,10 @@ authorizes installation.
   splits, resize, the remote debug window and the pairing banner, and
   completion with a shell still open. The tmux cases skip where tmux is
   missing.
+- The same file's fetch cases convert a real pkg event-pipe recording
+  (`tests/fixtures/installer-progress/pkg-fetch-events.jsonl`) and, as root on
+  FreeBSD with `DAEMONARCHY_NATIVE_PKG_FETCH=1`, run a real `pkg fetch` through
+  the event pipe and compare the reported bytes with the downloaded archives.
 - `python3 tests/vt-console-colors.py` (FreeBSD with `/usr/src`) renders the
   real output through sys/teken.
 - `sudo bash tests/remote-debug-background.sh` (FreeBSD) exercises the

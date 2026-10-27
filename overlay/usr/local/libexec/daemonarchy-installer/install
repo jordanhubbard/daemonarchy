@@ -126,6 +126,8 @@ cuda_setup_started=false
 geli_debug_saved=
 cleanup() {
   local status=$?
+  if [[ -n ${fetch_events_pid:-} ]]; then kill "$fetch_events_pid" 2>/dev/null || true; fi
+  if [[ -n ${fetch_events_dir:-} ]]; then rm -rf "$fetch_events_dir"; fi
   if [[ -n $geli_debug_saved ]]; then
     sysctl kern.geom.eli.debug="$geli_debug_saved" >/dev/null 2>&1 || true
   fi
@@ -488,11 +490,52 @@ fi
 # even if the later desktop fetch/install is interrupted.
 pkg_target install -y bash
 
+# pkg's non-terminal output prints only dots while it downloads. Its event
+# pipe reports the bytes received, which pkg-events turns into @@fetch lines in
+# this log for the install screens. Without Python the fetch runs as before.
+fetch_events_dir='' fetch_events_pid=''
+fetch_events_start() {
+  local python
+  fetch_events_dir='' fetch_events_pid=''
+  python=$(command -v python3.12 || command -v python3) || return 0
+  fetch_events_dir=$(mktemp -d) || return 0
+  mkfifo "$fetch_events_dir/pipe" || { rm -rf "$fetch_events_dir"; fetch_events_dir=''; return 0; }
+  "$python" "$(dirname "$0")/pkg-events" "$fetch_events_dir/pipe" "$fetch_events_dir/ready" &
+  fetch_events_pid=$!
+  local tries
+  for ((tries=0; tries<50; tries++)); do
+    [[ -e $fetch_events_dir/ready ]] && return 0
+    sleep 0.1
+  done
+  fetch_events_stop
+}
+fetch_events_stop() {
+  if [[ -n $fetch_events_pid ]]; then
+    if [[ -p $fetch_events_dir/pipe ]] && kill -0 "$fetch_events_pid" 2>/dev/null; then
+      printf '{"type":"DAEMONARCHY_END"}\n' >"$fetch_events_dir/pipe" || kill "$fetch_events_pid" 2>/dev/null || true
+    fi
+    wait "$fetch_events_pid" 2>/dev/null || true
+  fi
+  [[ -z $fetch_events_dir ]] || rm -rf "$fetch_events_dir"
+  fetch_events_dir='' fetch_events_pid=''
+}
+pkg_fetch_measured() {
+  local status=0
+  fetch_events_start
+  if [[ -n $fetch_events_dir ]]; then
+    pkg_target -o EVENT_PIPE="$fetch_events_dir/pipe" "$@" || status=$?
+  else
+    pkg_target "$@" || status=$?
+  fi
+  fetch_events_stop
+  return "$status"
+}
+
 # A thousand downloads over a home connection will see the odd one fail.
 # Fetch everything first, retrying: packages already in the cache are kept, so
 # each attempt picks up where the last one stopped. Then install from the cache.
 for attempt in 1 2 3 4 5; do
-  if pkg_target -o FETCH_TIMEOUT=60 fetch -d -y "${packages[@]}"; then
+  if pkg_fetch_measured -o FETCH_TIMEOUT=60 fetch -d -y "${packages[@]}"; then
     break
   fi
   if (( attempt == 5 )); then

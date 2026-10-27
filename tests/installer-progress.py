@@ -7,6 +7,7 @@ real install log, and activity comes from the host kernel or fake counters.
 import codecs
 import fcntl
 import hashlib
+import importlib.machinery
 import importlib.util
 import json
 import os
@@ -926,6 +927,121 @@ def cpu_seconds(pid):
     for part in clock.split(':'):
         seconds = seconds * 60 + float(part)
     return seconds + (int(days) * 86400 if days else 0)
+
+PKG_EVENTS = ROOT/'overlay/usr/local/libexec/daemonarchy-installer/pkg-events'
+events_loader = importlib.machinery.SourceFileLoader('pkg_events', str(PKG_EVENTS))
+events_spec = importlib.util.spec_from_loader('pkg_events', events_loader)
+pkg_events = importlib.util.module_from_spec(events_spec)
+events_loader.exec_module(pkg_events)
+
+
+class PackageFetchMeasurementTests(unittest.TestCase):
+    """pkg prints only dots when not on a terminal; its event pipe reports bytes."""
+    FIXTURE = ROOT/'tests/fixtures/installer-progress/pkg-fetch-events.jsonl'
+
+    def provenance(self):
+        return json.loads(self.FIXTURE.with_name('pkg-fetch-events-provenance.json').read_text())
+
+    def test_real_pkg_events_become_archive_bytes(self):
+        provenance = self.provenance()
+        data = self.FIXTURE.read_bytes()
+        self.assertEqual(hashlib.sha256(data).hexdigest(), provenance['fixture_sha256'])
+        lines = []
+        converter = pkg_events.Converter(lines.append, clock=lambda: 0.0)
+        for event in pkg_events.events(data[i:i + 997] for i in range(0, len(data), 997)):
+            converter.event(event)
+        rows = [json.loads(line[8:]) for line in lines]
+        self.assertEqual([row['archives'] for row in rows if row['file'] == ''], [1, 2, 3])  # one line per archive
+        last = rows[-1]
+        self.assertEqual(last['archives'], 3)
+        self.assertEqual(last['bytes'], provenance['archive_bytes_total'])
+        names = {row['file'] for row in rows if row['file']}
+        self.assertEqual(names, set(provenance['archives']))  # never meta.conf or data.pkg
+        self.assertTrue(all(row['bytes'] <= provenance['archive_bytes_total'] for row in rows))
+        self.assertEqual([row['bytes'] for row in rows], sorted(row['bytes'] for row in rows))
+
+    def test_event_reader_process_reads_everything_before_the_end_marker(self):
+        with tempfile.TemporaryDirectory() as directory:
+            fifo, ready = Path(directory)/'pipe', Path(directory)/'ready'
+            os.mkfifo(fifo)
+            reader = subprocess.Popen([sys.executable, str(PKG_EVENTS), str(fifo), str(ready)],
+                                      stdout=subprocess.PIPE, text=True)
+            deadline = time.monotonic() + 5
+            while not ready.exists() and time.monotonic() < deadline:
+                time.sleep(0.02)
+            with fifo.open('wb') as pipe:  # pkg opens, writes and closes ...
+                pipe.write(self.FIXTURE.read_bytes())
+            with fifo.open('w') as pipe:  # ... then install writes its marker.
+                pipe.write('{"type":"DAEMONARCHY_END"}\n')
+            output, _ = reader.communicate(timeout=10)
+            self.assertEqual(reader.returncode, 0)
+            last = json.loads(output.splitlines()[-1][8:])
+            self.assertEqual((last['archives'], last['bytes']), (3, self.provenance()['archive_bytes_total']))
+
+    def test_fetch_lines_feed_the_model_screen_and_graphical_installer(self):
+        state = model.Progress()
+        for line in ('@@phase fetch', '2 MiB to be downloaded.', 'Number of packages to be fetched: 3',
+                     '@@fetch {"schema":"daemonarchy/pkg-fetch@1","archives":0,"bytes":8192,"file":"utf8proc-2.12.0",'
+                     '"file_bytes":8192,"file_total":88146}',
+                     'Fetching utf8proc-2.12.0: .......... done',
+                     '@@fetch {"schema":"daemonarchy/pkg-fetch@1","archives":1,"bytes":88146,"file":"","file_bytes":0,'
+                     '"file_total":0}'):
+            state.line(line)
+        self.assertFalse(state.warning)
+        self.assertEqual(state.meter[1:], (1, 3, 'archives'))
+        self.assertEqual(state.fetch['bytes'], 88146)
+        self.assertEqual(state.fetch_estimate, '2 MiB')
+        text = '\n'.join(ui.lines(state, 'bars', 200))
+        self.assertIn('Received 86.1 KiB of about 2 MiB', text)
+        self.assertNotRegex(text, r'\d+%')
+        # A retry runs pkg again from zero: a new attempt, never negative progress.
+        state.line('@@fetch {"schema":"daemonarchy/pkg-fetch@1","archives":0,"bytes":100,"file":"tmux-3.8",'
+                   '"file_bytes":100,"file_total":603611}')
+        self.assertEqual(state.fetch['attempt'], 2)
+        for bad in ('{"schema":"daemonarchy/pkg-fetch@1","archives":-1,"bytes":0,"file_bytes":0,"file_total":0}',
+                    '{"schema":"daemonarchy/pkg-fetch@1","archives":0,"bytes":5,"file_bytes":9,"file_total":9}',
+                    '{"schema":"other","archives":0,"bytes":0,"file_bytes":0,"file_total":0}'):
+            other = model.Progress()
+            other.line('@@fetch ' + bad)
+            self.assertTrue(other.warning)
+            self.assertIsNone(other.fetch)
+        with tempfile.TemporaryDirectory() as directory:
+            log, status = Path(directory)/'log', Path(directory)/'status'
+            log.write_text('@@phase fetch\n5 GiB to be downloaded.\n@@fetch {"schema":"daemonarchy/pkg-fetch@1",'
+                           '"archives":2,"bytes":3000000,"file":"tmux-3.8","file_bytes":4096,"file_total":603611}\n')
+            view = model.InstallProgress(log, status, source=None).poll()
+            self.assertEqual(view['fetch']['archives'], 2)
+            self.assertTrue(any('Received 2.9 MiB of about 5 GiB' in row and 'now tmux-3.8' in row
+                                for row in view['details']))
+
+    @unittest.skipUnless(sys.platform.startswith('freebsd') and os.geteuid() == 0
+                         and os.environ.get('DAEMONARCHY_NATIVE_PKG_FETCH') == '1',
+                         'native: FreeBSD root with DAEMONARCHY_NATIVE_PKG_FETCH=1')
+    def test_native_pkg_fetch_bytes_match_the_downloaded_archives(self):
+        with tempfile.TemporaryDirectory() as directory:
+            fifo, ready, out = Path(directory)/'pipe', Path(directory)/'ready', Path(directory)/'out'
+            os.mkfifo(fifo)
+            reader = subprocess.Popen([sys.executable, str(PKG_EVENTS), str(fifo), str(ready)],
+                                      stdout=subprocess.PIPE, text=True)
+            while not ready.exists():
+                time.sleep(0.02)
+            try:
+                fetched = subprocess.run(['pkg', '-o', f'EVENT_PIPE={fifo}', 'fetch', '-y', '-o', str(out),
+                                          'tmux', 'libevent', 'utf8proc'], capture_output=True, text=True,
+                                         timeout=240, env=dict(os.environ, IGNORE_OSVERSION='yes',
+                                                               ASSUME_ALWAYS_YES='yes'))
+            finally:
+                with fifo.open('w') as pipe:
+                    pipe.write('{"type":"DAEMONARCHY_END"}\n')
+                output, _ = reader.communicate(timeout=30)
+            self.assertEqual(fetched.returncode, 0, fetched.stderr)
+            # Dots only, as in the installer's log: no byte progress in pkg's own output.
+            self.assertRegex(fetched.stdout, r'Fetching tmux-[^:]+: \.+ done')
+            self.assertNotIn('100%', fetched.stdout)
+            last = json.loads(output.splitlines()[-1][8:])
+            sizes = [path.stat().st_size for path in out.rglob('*.pkg')]
+            self.assertEqual(last['archives'], len(sizes))
+            self.assertEqual(last['bytes'], sum(sizes))
 
 if __name__ == '__main__':
     unittest.main(verbosity=2)
