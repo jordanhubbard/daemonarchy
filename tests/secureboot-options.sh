@@ -20,6 +20,21 @@ fixture_byte='\002'
 if secureboot_detect_enforcement; then
   echo 'FAIL: accepted an unknown firmware state' >&2; exit 1
 fi
+# Firmware without the variable (plain OVMF.fd): Secure Boot is off, and the
+# installer says so. This holds with and without pipefail.
+efivar() { return 1; }
+[[ $(secureboot_detect_enforcement 2>"$work/err") == false ]]
+grep -q 'no SecureBoot variable; treating Secure Boot as off' "$work/err"
+[[ $(set +o pipefail; secureboot_detect_enforcement 2>/dev/null) == false ]]
+fixture_state=''
+secureboot_payload_prepare 2>/dev/null
+[[ $secureboot_enforced == false && $efi_pool_selector == false ]]
+# A variable that exists but reads empty is still refused.
+efivar() { :; }
+if secureboot_detect_enforcement 2>/dev/null; then
+  echo 'FAIL: accepted an empty firmware SecureBoot variable' >&2; exit 1
+fi
+efivar() { printf '%b' "$fixture_byte"; }
 fixture_state=1
 if secureboot_payload_prepare; then
   echo 'FAIL: accepted enforced boot without its signed payload' >&2; exit 1
@@ -30,4 +45,4 @@ secureboot_payload_prepare
 fixture_method=BIOS fixture_state=1
 secureboot_payload_prepare
 [[ $secureboot_enforced == false && $efi_pool_selector == false ]]
-echo 'PASS: firmware detection and payload admission fail before disk writes'
+echo 'PASS: firmware detection (missing variable is off) and payload admission fail before disk writes'

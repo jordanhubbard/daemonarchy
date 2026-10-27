@@ -1,0 +1,184 @@
+#!/usr/bin/env python3
+"""What a tmux pane or window shows during the installation.
+
+  install-views chooser       pick log, diagnostics, remote debug or shell
+  install-views log           follow the install log (C-b [ scrolls, q leaves)
+  install-views diagnostics   a read-only system snapshot, refreshed every 5 s
+  install-views remote        console-approved remote debugging (remote-debug listen)
+  install-views shell         a root shell; exit closes the pane
+  install-views window-menu   a window list that cannot close window 0
+
+None of these views starts, stops or changes the installation.
+"""
+import os
+from pathlib import Path
+import re
+import subprocess
+import sys
+import termios
+import time
+import tty
+
+HERE = Path(__file__).resolve().parent
+LOG = os.environ.get('DAEMONARCHY_INSTALL_LOG', '/tmp/daemonarchy-install.log')
+ANSI = re.compile(r'\x1b\][^\x07\x1b]*(?:\x07|\x1b\\)|\x1b\[[0-9;?]*[ -/]*[@-~]|\x1b[@-Z\\-_]')
+
+DIAGNOSTICS = (
+    ('Processes using the most CPU', ['ps', '-axo', 'pid,stat,pcpu,rss,etime,comm', '-r'], 13),
+    ('Disks', ['gpart', 'show', '-p'], 40),
+    ('ZFS pools', ['zpool', 'list', '-v'], 30),
+    ('Encryption', ['geli', 'status'], 10),
+    ('Target file systems', ['df', '-h', '/mnt'], 10),
+    ('Network', ['ifconfig', '-u', '-f', 'inet:cidr'], 40),
+    ('Kernel messages', ['dmesg'], -15),
+)
+
+
+ADDRESSES = (re.compile(r'\b(?:[0-9A-Fa-f]{2}:){5}[0-9A-Fa-f]{2}\b'),
+             re.compile(r'\b(?:\d{1,3}\.){3}\d{1,3}\b'))
+IPV6 = re.compile(r'(?<![\w:])[0-9A-Fa-f:]*:[0-9A-Fa-f:]+(?:%\w+)?')
+
+
+def clean(text, limit=300):
+    text = ANSI.sub('', text)
+    if os.environ.get('DAEMONARCHY_DIAGNOSTICS_REDACT') == '1':
+        # For screen recordings and shared screenshots: hide network and hardware addresses.
+        for pattern in ADDRESSES:
+            text = pattern.sub(lambda match: 'x' * len(match.group(0)), text)
+        # IPv6: a '::' or at least four colons, never a clock time such as 00:01:02.
+        text = IPV6.sub(lambda match: 'x' * len(match.group(0))
+                        if '::' in match.group(0) or match.group(0).count(':') >= 4 else match.group(0), text)
+    return ''.join(c if c.isprintable() or c == '\t' else ' ' for c in text)[:limit]
+
+
+def title(name):
+    """Label the pane, and its window when the pane is alone in it."""
+    sys.stdout.write(f'\033]2;{name}\033\\')
+    sys.stdout.flush()
+    if os.environ.get('TMUX') and os.environ.get('TMUX_PANE'):
+        pane = os.environ['TMUX_PANE']
+        try:
+            count = subprocess.run(['tmux', 'display-message', '-p', '-t', pane, '#{window_panes}'],
+                                   capture_output=True, text=True, timeout=2, check=False).stdout.strip()
+            if count == '1':
+                subprocess.run(['tmux', 'rename-window', '-t', pane, name], capture_output=True, timeout=2, check=False)
+        except (OSError, subprocess.SubprocessError):
+            pass
+
+
+def shell():
+    title('shell')
+    for candidate in (os.environ.get('DAEMONARCHY_PANE_SHELL', ''), '/usr/local/bin/bash', '/bin/sh'):
+        argv = candidate.split()
+        if argv and Path(argv[0]).exists():
+            break
+    if Path(argv[0]).name == 'bash' and len(argv) == 1:
+        argv += ['--noprofile', '--norc', '-i']
+    elif len(argv) == 1:
+        argv.append('-i')
+    env = dict(os.environ, PS1='install-shell# ', DAEMONARCHY_INSTALL_SHELL='1')
+    print('Root shell beside the installation. The install keeps running; exit closes this pane.')
+    os.execvpe(argv[0], argv, env)
+
+
+def log():
+    title('log')
+    print(f'Following {LOG}. C-b [ scrolls back (q leaves scroll mode); C-b x closes this pane.')
+    sys.stdout.flush()
+    os.execvp('tail', ['tail', '-n', '5000', '-F', LOG])
+
+
+def snapshot():
+    rows = [time.strftime('Diagnostics %H:%M:%S (read-only; refreshes every 5 s; C-b [ scrolls)')]
+    for label, argv, limit in DIAGNOSTICS:
+        rows += ['', f'== {label}: {" ".join(argv)}']
+        try:
+            output = subprocess.run(argv, capture_output=True, timeout=3, check=False,
+                                    stdin=subprocess.DEVNULL).stdout.decode('utf-8', 'replace').splitlines()
+        except (OSError, subprocess.SubprocessError) as error:
+            output = [f'unavailable: {error}']
+        output = output[limit:] if limit < 0 else output[:limit]
+        rows += [clean(line) for line in output]
+    return rows
+
+
+def diagnostics(once=False):
+    title('diagnostics')
+    while True:
+        text = '\n'.join(snapshot())
+        sys.stdout.write('\033[H\033[2J' + text + '\n')
+        sys.stdout.flush()
+        if once:
+            return 0
+        time.sleep(5)
+
+
+def remote():
+    title('remote-debug')
+    command = os.environ.get('DAEMONARCHY_REMOTE_DEBUG', str(HERE / 'remote-debug'))
+    print('Console-approved remote debugging. The installation keeps running whatever you choose here.')
+    print('A listener you keep in the background keeps running after this pane closes.\n')
+    result = subprocess.run([command, 'listen'], check=False).returncode
+    print(f'\nremote-debug finished ({result}). Press Enter to close this pane.')
+    try:
+        input()
+    except EOFError:
+        pass
+    return 0
+
+
+def read_key():
+    fd = sys.stdin.fileno()
+    saved = termios.tcgetattr(fd)
+    try:
+        tty.setcbreak(fd)
+        return os.read(fd, 16).decode('latin-1')
+    finally:
+        termios.tcsetattr(fd, termios.TCSANOW, saved)
+
+
+def chooser():
+    title('choose')
+    choices = (('1', 'l', 'Install log', log), ('2', 'd', 'Diagnostics', diagnostics),
+               ('3', 'r', 'Remote debug (console-approved SSH)', remote), ('4', 's', 'Shell', shell))
+    print('What should this pane show?\n')
+    for number, letter, label, _view in choices:
+        print(f'  {number} or {letter}   {label}')
+    print('\nEnter opens a shell. C-b x closes this pane. The installation keeps running.')
+    while True:
+        key = read_key()
+        if key in ('\r', '\n'):
+            return shell()
+        for number, letter, _label, view in choices:
+            if key in (number, letter):
+                sys.stdout.write('\033[H\033[2J')
+                return view()
+
+
+def window_menu():
+    """C-b w: tmux's choose-tree can kill windows, so offer a menu that cannot."""
+    output = subprocess.run(['tmux', 'list-windows', '-F', '#{window_index}\t#{window_name}\t#{window_active}'],
+                            capture_output=True, text=True, check=False).stdout
+    args = ['tmux', 'display-menu', '-T', '#[align=centre] Windows ']
+    for line in output.splitlines():
+        index, name, active = (line.split('\t') + ['', ''])[:3]
+        if not index.isdigit():
+            continue
+        label = f'{index}:{clean(name, 30)}' + ('*' if active == '1' else '')
+        key = index if len(index) == 1 else ''
+        args += [label, key, f'select-window -t :={index}']
+    return subprocess.run(args, check=False).returncode
+
+
+def main(argv):
+    view = argv[1] if len(argv) > 1 else 'chooser'
+    views = dict(chooser=chooser, log=log, shell=shell, remote=remote, diagnostics=diagnostics,
+                 **{'window-menu': window_menu, 'diagnostics-once': lambda: diagnostics(True)})
+    if view not in views:
+        print(__doc__, file=sys.stderr)
+        return 2
+    return views[view]() or 0
+
+
+if __name__ == '__main__':
+    raise SystemExit(main(sys.argv))

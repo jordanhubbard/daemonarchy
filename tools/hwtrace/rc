@@ -1,0 +1,37 @@
+#!/rescue/sh
+# SPDX-License-Identifier: BSD-2-Clause
+# Daemonarchy hardware trace image: this boot reached init.  Save
+# bring-up diagnostics to the DATRACE volume under DUMPS/<experiment>/,
+# then reboot so the loader files the (complete) trace and stops.
+# Set hwtrace.shell=YES (a queue line) to get a shell instead of a reboot.
+PATH=/rescue:/usr/sbin
+export PATH
+echo
+echo "Daemonarchy hardware trace: init reached; saving diagnostics"
+kldload msdosfs 2>/dev/null
+if mount -t msdosfs /dev/gpt/DATRACE /mnt; then
+	id=$(sed -n 's/^pending=//p' /mnt/STATE.TXT)
+	[ -n "$id" ] || id=manual
+	d=/mnt/DUMPS/$id
+	mkdir -p "$d"
+	dmesg -a >"$d/dmesg.txt" 2>&1
+	kenv >"$d/kenv.txt" 2>&1
+	sysctl -a >"$d/sysctl.txt" 2>&1
+	kldstat -v >"$d/kldstat.txt" 2>&1
+	pciconf -lvbc >"$d/pciconf.txt" 2>&1
+	devinfo -vr >"$d/devinfo.txt" 2>&1
+	acpidump -dt >"$d/acpidump.txt" 2>&1
+	date >"$d/done.txt"
+	sync
+	umount /mnt
+	echo "Saved to DATRACE DUMPS/$id"
+else
+	echo "DATRACE volume not found; nothing saved"
+fi
+if [ "$(kenv -q hwtrace.shell)" = YES ]; then
+	echo "hwtrace.shell=YES: starting a shell; 'reboot' continues the loop"
+	exec sh
+fi
+echo "Rebooting in 10 s"
+sleep 10
+reboot

@@ -1,0 +1,13 @@
+{
+  "schema": "daemonarchy/installer-log-fixture-provenance@1",
+  "description": "Events from pkg 2.8.4's EVENT_PIPE during a real `pkg -o EVENT_PIPE=FIFO fetch -y -o DIR tmux libevent utf8proc` on a FreeBSD 16.0-CURRENT amd64 test host, 2026-10-26: repository updates (meta.conf, data.pkg, catalogue processing), one multi-line QUERY_YESNO message and three package archives.",
+  "source_sha256": "2f4bd85289c78d28e2cc5a06079eef71f6eb76ddc0e11711733a467e1c03021f",
+  "source_events": 5236,
+  "fixture": "pkg-fetch-events.jsonl",
+  "fixture_sha256": "fd42bccd675b40ecb99e080803d2d4d9a1f847a9b314b192be6eeca88118bb42",
+  "fixture_events": 204,
+  "reduction": "Runs of INFO_PROGRESS_TICK events keep their first and last tick and every 32nd tick between; every other event is verbatim.",
+  "archives": {"utf8proc-2.12.0": 88146, "libevent-2.1.13": 359068, "tmux-3.8": 603611},
+  "archive_bytes_total": 1050825,
+  "limits": "Public repository URLs only. It shows the event format a fetch produces; it is not a Daemonarchy installation."
+}

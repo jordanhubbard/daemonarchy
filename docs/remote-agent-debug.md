@@ -5,10 +5,16 @@ to an agent running on another computer. Boot the Daemonarchy live USB,
 enable debug mode, and approve the agent's temporary SSH key. No installation
 starts automatically and debug mode does not select or format a target disk.
 
-The 1.1 installer introduced pairing. The 1.1.1 refresh adds Pair/Unpair recovery
-and continuous diagnostics. Older images need the matching helpers copied in
+Pairing was introduced in 1.1, and 1.1.1 added Pair/Unpair recovery and
+continuous diagnostics. In the current 1.3.1, an approval and the agent identity
+survive reboot until revoked, and the desktop network menu shows the listener
+state and offers revocation. Older images need the matching helpers copied in
 before these newer commands are available; installing a newer kernel is not
 required for these debugging tools.
+
+When a machine resets during kernel startup before any network or console
+evidence survives, use the [hardware trace stick](boottrace.md) instead: it
+records each startup step in UEFI NVRAM and needs only a boot-order change.
 
 ## At the machine
 
@@ -144,7 +150,7 @@ newer than preview.13; on older images report the same states directly.
 
 ## Continuous diagnostics
 
-In 1.1.1, the first approved SSH connection starts a read-only diagnostics
+Since 1.1.1, the first approved SSH connection starts a read-only diagnostics
 collector for that pairing. It captures an initial kernel-message snapshot,
 then kernel-message differences and recent `/var/log/messages` output at roughly
 two-second intervals. Every fifth cycle also records process IDs, parent IDs,
@@ -216,7 +222,8 @@ the collector can capture the visible text buffer. It never reads console input.
 The stream cannot capture firmware output, a hard reset, or panic messages emitted
 after the kernel/network stops responding. Empty crash-dump records do not prove
 that no kernel fault occurred. Serial/BMC capture or kernel network-debug support
-is needed for that boundary; source/loader work is planned for 1.2.
+is needed for that boundary; loader and early-kernel network debugging is
+upcoming 1.4 work ([plan](roadmap/release-1.4.0.md)) and is not in the 1.3.1 image.
 
 Validate reboot resumption with `tests/remote-debug-reboot.sh` as root on FreeBSD.
 Validate observation with `tests/remote-debug-observe.sh` as root on FreeBSD and

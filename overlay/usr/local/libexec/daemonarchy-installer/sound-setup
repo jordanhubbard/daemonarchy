@@ -1,0 +1,32 @@
+#!/usr/local/bin/bash
+# shellcheck shell=bash
+# Sourced by install: the installed system's boot chime and first-boot
+# welcome (daemonarchy_greeting), and the sound setting the installer used.
+# Every step here is optional; a failure leaves the system without the chime
+# and never fails the installation.
+
+sound_install_target() {
+  local target=$1 here mode lib sounds
+  here=$(dirname "${BASH_SOURCE[0]}")
+  lib=$target/usr/local/libexec/daemonarchy
+  sounds=$target/usr/local/share/daemonarchy/sounds
+  mode=${sound:-}
+  # An unattended install stays silent afterwards too unless it asked for sound.
+  [[ -z $mode && ${DAEMONARCHY_UNATTENDED:-} == 1 ]] && mode=off
+  {
+    if [[ $mode =~ ^(on|quiet|off)$ ]]; then
+      printf 'daemonarchy.sound="%s"\n' "$mode" >>"$target/boot/loader.conf"
+    fi
+    # USB audio is a module on every architecture; HD Audio is in GENERIC on
+    # amd64 and attaches through devmatch elsewhere.
+    if [[ -f $target/boot/kernel/snd_uaudio.ko ]]; then
+      echo 'snd_uaudio_load="YES"' >>"$target/boot/loader.conf"
+    fi
+    install -d -m 0755 "$lib" "$sounds" "$target/usr/local/etc/rc.d" "$target/var/db/daemonarchy"
+    install -m 0555 "$here/sound.py" "$here/charm.py" "$here/progress-dashboard.py" "$here/progress-model.py" "$lib/"
+    install -m 0555 "$ISO_SHARE/greeting/daemonarchy_greeting" "$target/usr/local/etc/rc.d/daemonarchy_greeting"
+    "$here/sound" render-raw "$sounds" boot greeting
+    : >"$target/var/db/daemonarchy/first-boot-greeting"
+  } 2>&1 | sed 's/^/sound setup: /' || true
+  return 0
+}

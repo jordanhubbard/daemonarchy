@@ -2,18 +2,21 @@
 
 How to build a Daemonarchy image yourself, change the installer, the ports, or the artwork, and test and release the result. [README.md](README.md) says what Daemonarchy is; this is for working on it.
 
-Current refresh: **1.1.1**, FreeBSD source `bdcfeac3e1cb8ce3f05c32d8a7ad3597deb48bdf`
-(OSVERSION `1600028`), ports `f7d7ee897405dcb8ce87e674588a4e1b3bfba00e`
-on `daemonarchy-1.1.1`. Keep base, kernel, jail, drivers, optional source checkout
-and signed manifests on that selection. The [qualification record](docs/testing-1.1.1.md)
-tracks publication readiness. Older image examples below must use their own
-retained inputs; a package update is not a base/ABI migration.
+Latest published release: **1.3.1** ([`release/current.json`](release/current.json)),
+daemonarchy-src `d63d77f4eb3cc29e16510f7bdec73602e27c2844` (OSVERSION `1600029`),
+daemonarchy-ports `b785784219af455a9ce4fd70c59bc96ba77f469f` on `main`. Keep base,
+kernel, jail, drivers, optional source checkout and signed manifests on that
+selection. The [1.3.1 release notes](docs/release-1.3.1.md) record its qualification
+and limits; the earlier 1.1.1 selection stays in [its record](docs/testing-1.1.1.md).
+Older image examples below must use their own retained inputs; a package update
+is not a base/ABI migration.
 
 ## Literate AI project authority
 
 Read [PROJECT.md](PROJECT.md), [the active queue](docs/roadmap/active-work.md) and
 [the architecture](docs/architecture/design-traceability.md) before changing
-cross-component behavior. Literate AI 1.3.0 currently validates the in-place
+cross-component behavior. Literate AI (the framework release pinned in
+[the release controls workflow](.github/workflows/release-14-controls.yml)) validates the in-place
 contracts; original source and the native commands below retain implementation
 and release authority. Automatic quarantine conversion was not applied.
 
@@ -65,8 +68,8 @@ Daemonarchy spans the installer, desktop, compatibility, source and ports reposi
   - The SDDM theme that reuses Omarchy's with the Daemonarchy wordmark.
   - The System > FreeBSD menu (`omarchy-menu.jsonc`) and the `daemonarchy-*` commands behind it.
   - Its tags set Daemonarchy's version (see Releasing).
-- **[jordanhubbard/daemonarchy-src](https://github.com/jordanhubbard/daemonarchy-src)**: the owned FreeBSD source fork. [Owned source builds](docs/source-builds.md) describes exact-commit world/kernel/pkgbase and installer-set preparation; [the performance plan](docs/roadmap/build-performance.md) tracks complete Component execution and build-system evaluation. Development outputs do not change the published 1.1.1 selection.
-- **[jordanhubbard/daemonarchy-ports](https://github.com/jordanhubbard/daemonarchy-ports/tree/daemonarchy-1.1.1)** is the release ports fork; 1.1.1 uses `daemonarchy-1.1.1`, while the older 1.1 candidate uses `daemonarchy-1.1-package-baseline`. Upstream review does not block releases from this fork. It carries the ports:
+- **[jordanhubbard/daemonarchy-src](https://github.com/jordanhubbard/daemonarchy-src)**: the owned FreeBSD source fork. [Owned source builds](docs/source-builds.md) describes exact-commit world/kernel/pkgbase and installer-set preparation; [the performance plan](docs/roadmap/build-performance.md) tracks complete Component execution and build-system evaluation. Development outputs do not change a published release's selection.
+- **[jordanhubbard/daemonarchy-ports](https://github.com/jordanhubbard/daemonarchy-ports)** is the release ports fork; 1.3.1 uses `b7857842` on `main`. Releases through 1.1.1 used [jordanhubbard/freebsd-ports](https://github.com/jordanhubbard/freebsd-ports): the earlier 1.1.1 on `daemonarchy-1.1.1`, the older 1.1 candidate on `daemonarchy-1.1-package-baseline`. Upstream review does not block releases from this fork. It carries the ports:
   - `x11-wm/omarchy`: Omarchy itself, with omarchy-freebsd as a second distfile. Its `files/` holds only patches to Omarchy's own files, among them the ones that add the `FreeBSDWifi.qml` and `FreeBSDBluetooth.qml` stand-ins to the panels.
   - `x11-wm/daemonarchy`: the full desktop's dependencies, plus daemonarchy-desktop. Defaults for new users go to `share/omarchy/skel.d/daemonarchy`, which `seed-user` copies in ahead of Omarchy's.
   - The applications and tools Omarchy uses, one port each (`x11-themes/aether`, `graphics/tensaku`, `misc/ttfx`, ...), resubmitted upstream in [freebsd/freebsd-ports#640](https://github.com/freebsd/freebsd-ports/pull/640); `x11-wm/omarchy` and `x11-wm/daemonarchy` are in [#641](https://github.com/freebsd/freebsd-ports/pull/641). The earlier #630/#635 submissions were closed unmerged. The LinuxKPI header fix is [#642](https://github.com/freebsd/freebsd-ports/pull/642); review status is independent of fork qualification.
@@ -212,7 +215,7 @@ space than a cached installer-only rebuild. Check resources before dispatching.
    `/usr/lib32/libc.so.7` and the selected `/usr/src/sys/sys/param.h`; checking
    only the live jail directory does not establish what its build clones use.
 
-2. **A ports tree pinned to the official package set.** Before the next release, refresh [the fork's `omarchy` branch](https://github.com/jordanhubbard/freebsd-ports/tree/omarchy) from [upstream FreeBSD ports](https://github.com/freebsd/freebsd-ports), preserving and testing the Daemonarchy changes. The earlier 1.1 candidate uses `daemonarchy-1.1-package-baseline`; the refreshed 1.1.1 uses `daemonarchy-1.1.1` and the exact revision in [its qualification record](docs/testing-1.1.1.md). The 1.1.1 upstream tip is newer than the official binary baseline, so mismatched dependencies must also be rebuilt and published in its versioned candidate feed. Keep the selected integration fixed during qualification. Matching pkg.FreeBSD.org's `latest` baseline avoids rebuilding large dependency stacks; moving beyond it requires the versioned rebuilt-dependency publication procedure below. The official baseline is the newest `ports_top_git_hash` annotation across the set's packages. Builds are incremental, so one package's annotation can be older than the set:
+2. **A ports tree pinned to the official package set.** Before the next release, refresh [the fork's `omarchy` branch](https://github.com/jordanhubbard/freebsd-ports/tree/omarchy) from [upstream FreeBSD ports](https://github.com/freebsd/freebsd-ports), preserving and testing the Daemonarchy changes. 1.3.1 selects daemonarchy-ports `b7857842`, recorded in [its release notes](docs/release-1.3.1.md); the earlier 1.1.1 used `daemonarchy-1.1.1` ([record](docs/testing-1.1.1.md)) and the 1.1 candidate `daemonarchy-1.1-package-baseline`. When the selected tip is newer than the official binary baseline, as it was from 1.1.1 on, mismatched dependencies must also be rebuilt and published in the release's versioned feed. Keep the selected integration fixed during qualification. Matching pkg.FreeBSD.org's `latest` baseline avoids rebuilding large dependency stacks; moving beyond it requires the versioned rebuilt-dependency publication procedure below. The official baseline is the newest `ports_top_git_hash` annotation across the set's packages. Builds are incremental, so one package's annotation can be older than the set:
 
    ```
    mkdir -p /tmp/pq/db /tmp/pq/repos
@@ -242,7 +245,7 @@ space than a cached installer-only rebuild. Check resources before dispatching.
    DISTFILES_CACHE=/usr/ports/distfiles
    ```
 
-4. **Build the packages.** List the origins in `ISO_ORIGINS` in `origins.sh` in a file, and bulk-build with `-b latest`. Poudriere fetches eligible official dependencies and builds incompatible or missing ones against the selected jail:
+4. **Build the packages.** List the origins in `ISO_ORIGINS` and `LIVE_ORIGINS` in `origins.sh` in a file (`LIVE_ORIGINS` holds what only the live desktop root needs, such as `security/sudo`; it is not copied into the ISO repository), and bulk-build with `-b latest`. Poudriere fetches eligible official dependencies and builds incompatible or missing ones against the selected jail:
 
    ```
    poudriere bulk -j 16amd64 -p omarchyiso -b latest -t -f omarchyiso-ports.list
@@ -256,7 +259,7 @@ space than a cached installer-only rebuild. Check resources before dispatching.
    ./build-iso.sh
    ```
 
-   The image is named after the version of the `daemonarchy` package it carries: `daemonarchy-<version>-<arch>.iso`, for example `daemonarchy-1.0.0-amd64.iso`. Set `NAME` to override.
+   The image is named after the version of the `daemonarchy` package it carries: `daemonarchy-<version>-<arch>.iso`, for example `daemonarchy-1.3.1-amd64.iso`. Set `NAME` to override.
 
    The image and its `.sha256` land in `/usr/local/poudriere/data/images`.
 
@@ -271,9 +274,12 @@ space than a cached installer-only rebuild. Check resources before dispatching.
    rejects an `.iso.xz` at or above 2 GiB before generating its checksum. The
    raw ISO keeps a 3.5 GiB (3,758,096,384-byte) budget so it still fits a 4 GB
    USB stick, checked before its own checksum. Run
-   `bash tests/live-image-budget.sh` to check the exclusions and both size boundaries.
+   `bash tests/live-image-budget.sh` to check the exclusions and both size
+   boundaries. The build log records the live `/usr/local` size before and
+   after the live desktop trim, which the same test exercises.
    On FreeBSD, `sudo sh tests/live-image-runtime.sh <iso>` mounts the image
-   read-only, checks required live commands and payloads, and resolves the
+   read-only, checks required live commands and payloads (including the live
+   desktop's tools, startup wiring and GTK runtime), and resolves the
    dynamic dependencies of every retained ELF program and library. It uses
    and detaches its own temporary memory-disk device. Follow this with a VM
    boot check; the dependency audit does not qualify installation or hardware.
@@ -360,7 +366,10 @@ JAIL=16amd64 PTREE=omarchyiso sh build-iso.sh
 
 On a worker with a separate Poudriere configuration directory, set
 `POUDRIERE_ETC=/path/to/poudriere-etc` for `build-iso.sh` so its jail query and
-image command use the same configuration as the package bulk.
+image command use the same configuration as the package bulk. If that
+configuration sets its own `POUDRIERE_DATA`, pass the same value to
+`build-iso.sh`, which reads the package repository from
+`$POUDRIERE_DATA/packages/$JAIL-$PTREE` (default `/usr/local/poudriere/data`).
 
 For source-built sets such as 1.1.1, populate this directory from the exact qualified build, including its MANIFEST, rather than fetching a newer daily snapshot. The moving snapshot URL is consulted only for missing inputs. Select a new
 cache directory for a new snapshot so an older retained `MANIFEST` cannot be
@@ -400,9 +409,74 @@ firmware-bearing overlays and their ISOs private while redistribution rights
 are unverified. The FreeBSD driver port uses the ISC-licensed upstream source;
 Apple firmware has separate terms.
 
+### The live desktop
+
+The loader's **Try Daemonarchy (live desktop, disk untouched)** entry, added by
+`brand-daemonarchy.lua` only when the image's `loader.conf` sets
+`daemonarchy_live_media`, sets the `daemonarchy_live` kenv. The default entry
+still boots the text installer. The pieces, all in
+`overlay/usr/local/libexec/daemonarchy-installer/`:
+
+- **`live-service`** (installed as `/etc/rc.d/daemonarchy_live`) copies `/etc`,
+  `/usr/local/etc`, `/root` and `/home` each into its own tmpfs, the way
+  FreeBSD's `rc.initdiskless` does. `/var` (with pkg's database) and `/tmp`
+  are already tmpfs; the rest of `/usr/local` stays the read-only ISO.
+- **`live-gpu`** reuses the installer's `gpu_select` and exact `gpu-packages`
+  manifest. It extracts the DRM and firmware kernel modules from the ISO
+  repository into `/live/modules`, appends that directory to
+  `kern.module_path`, and runs `kldxref` there, so `/boot/modules` and its
+  `linker.hints` are never rewritten. NVIDIA's userspace driver is added with
+  `pkg add -I -M` after a tmpfs is mounted with `-o union` on each existing
+  `/usr/local` directory that receives a new file. That layer can add names but
+  cannot replace ISO files, so `live-gpu` refuses a package that would replace
+  one and names the file.
+- **`live-session`** runs from root's ttyv0 login before the text installer:
+  it loads the GPU driver, starts `seatd` and runs Hyprland as the `live`
+  account (created when the image is built) through `live-desktop`. When the
+  desktop ends or cannot start, ttyv0 continues into the text installer; the
+  live fallback never starts a CIDATA unattended install. Set
+  `daemonarchy_live_test=compositor-failure` at the loader prompt to exercise
+  the fallback with working graphics.
+- **`live-installer`** (GTK 3 through PyGObject) is the graphical front-end.
+  It sends every privileged request to **`live-backend`**, which the `live`
+  account may run as root through `sudo` and nothing else. The backend sources
+  `configurator`, whose screens only run when it is executed, so both paths
+  share the questions' rules, disk inventory, network helpers and
+  `write_install_conf`. Its network page runs `network-bringup`'s pipeline
+  and steps with the configurator's adoption rules (`network_bringup_adopt`,
+  `network_recheck`), shows each step's report, and offers the same primary
+  interface override, DNS server entry and clock rule (network time first,
+  then a hand-set UTC time that must pass `nb_clock_status`). Where the text
+  installer would prompt, the backend records `need=dns|clock|wifi` and the
+  page asks; `tests/live-backend.sh` checks that both front-ends reach the
+  same decisions. It starts the same `install` engine with the same log
+  and result file, and the front-end renders them with
+  `progress-dashboard.py`'s parser.
+
+The live path does not use unionfs. A probe that mounted `mount_unionfs` over
+`/etc` of the 1.3.1 ISO on a FreeBSD 16-CURRENT build host stopped that host
+while `pw` rewrote the password database (a rename into the union). The host
+needed a power cycle; whether it hung or panicked awaits its crash dump. The
+controller test `tests/live-desktop.sh` fails if any live-path script uses
+unionfs. Plain `-o union` mounts are used only where files are added.
+
+`bash tests/live-desktop.sh`, `bash tests/live-backend.sh`,
+`python3 tests/live-installer.py` and `lua5.4 tests/loader-live-menu.lua` run
+on any host with stubs and do not qualify FreeBSD mounts or graphics. The
+native checks still required on an exact image:
+
+- `live-service`'s tmpfs copies at boot, including `/etc` with `pw useradd`
+  and `pwd_mkdb` afterwards, and `/usr/local/etc/sudoers.d` permissions.
+- `kldxref` and firmware loading from `/live/modules` for amdgpu, i915kms and
+  virtio_gpu_drm, and NVIDIA userspace addition on `-o union` layers,
+  including whether any package file would replace an ISO file.
+- seatd and Hyprland started from root's ttyv0 login through `su -l live`.
+- The graphical installation, before/after disk digests and the TUI fallback
+  (see the LIVE-001 evidence items in the active queue).
+
 ### The ports
 
-Work on a review branch based on the exact integration commit in [ROADMAP.md](ROADMAP.md). For 1.1.1 this is `daemonarchy-1.1.1`, pinned in [its qualification record](docs/testing-1.1.1.md); verify that poudriere uses the matching tree and snapshot jail before rebuilding.
+Work on a review branch based on the exact integration commit in [ROADMAP.md](ROADMAP.md). For 1.3.1 this is daemonarchy-ports `main` at `b7857842`, pinned in [its release notes](docs/release-1.3.1.md); verify that poudriere uses the matching tree and snapshot jail before rebuilding.
 
 - `poudriere testport -j 16amd64 -p <tree> -o <origin>` checks a port in a clean jail: stage-qa, the plist, install, and deinstall. Use it rather than `make stage-qa` as root on the host, which installs the port's dependencies onto the host.
 - To try a change on a running Daemonarchy desktop, `make reinstall` the port there; `seed-user --force` re-copies the defaults into the home (it never overwrites a file you have).
@@ -658,18 +732,34 @@ normal SSH configuration and live-USB-to-target key isolation remain separate.
 `sudo bash tests/remote-debug-reboot.sh` exercises retained approval, stable host
 pinning, legacy listener adoption, reused PIDs, repeated resumption and revocation
 on an isolated server (default port 23452).
+`sudo bash tests/remote-debug-background.sh` checks a listener kept in the
+background through the installation (`listen` then `b`, or `background`): it
+survives its console view and the console's Ctrl-C and hangups, new agents are
+approved or denied with `pending`/`approve`/`deny` without a second virtual
+console, a later `listen` attaches, and `stop` revokes it (default port 23461).
+
+### Install screen
+
+`PYTHONDONTWRITEBYTECODE=1 python3 tests/installer-progress.py` runs the install
+screen's model, rendering, PTY and real tmux checks (the tmux cases skip without
+tmux). On FreeBSD with `/usr/src`, `python3 tests/vt-console-colors.py` builds
+sys/teken and checks how vt(4) draws the screen's real output, directly and
+through tmux; set `VT_RENDER_OUT=DIR` to keep HTML renderings.
+`scripts/installer-visuals-demo.py` records a replay of an install log through
+the real screen as an asciinema cast; see docs/installer-progress.md.
 
 ### Continuous diagnostics
 
-The 1.1.1 diagnostics path provides bounded read-only `daemonarchy-debug snapshot`
+The diagnostics path (since 1.1.1) provides bounded read-only `daemonarchy-debug snapshot`
 and `observe` output, with private, size-limited target logs. An approved
 controller can retain the stream off-target using `scripts/capture-remote-debug.py`
 and its existing host-key-pinned SSH wrapper. See the [continuous diagnostics
 contract](docs/remote-agent-debug.md#continuous-diagnostics) for exact commands,
 retention and privacy limits. It reports when console-buffer access is unavailable;
 SSH diagnostics cannot reconstruct probes from before networking or survive a
-hard reset as a live connection. Loader/early-kernel network debugging remains
-1.2 work; no new src debugging patches are part of 1.1.1.
+hard reset as a live connection. Loader/early-kernel network debugging is
+upcoming 1.4 work ([plan](docs/roadmap/release-1.4.0.md)); the published 1.3.1
+does not include a qualified early-kernel network debugger.
 
 ### When the screen or keyboard is unusable
 
@@ -691,6 +781,129 @@ Portable prompt/address tests are `bash tests/remote-debug-cli.sh` and
 custom-port, reconnect and shutdown evidence belongs in the
 [remote debug validation record](docs/testing-1.1-remote-debug.md).
 
+## Hardware bring-up trace image
+
+When a machine hangs or resets during kernel startup and nothing on screen
+says why, use the hardware bring-up trace image. It is a separate image type
+from the install/live ISO, because unattended cycling cannot coexist with
+an interactive menu. The kernel (`debug.boottrace=1`) records each startup
+step in UEFI NVRAM before the step runs. On every boot the loader:
+
+- files the previous boot's trace on the stick
+- clears the NVRAM
+- boots the next queued experiment
+
+[docs/boottrace.md](docs/boottrace.md) describes the record and the
+tunables; this section is the procedure.
+
+### Building the image
+
+Build the image on the FreeBSD builder, from a kernel and loader built from
+daemonarchy-src with boottrace, and the release ISO that kernel matches. The
+ISO supplies `/rescue`, `pciconf`, `devinfo`, `acpidump`, their libraries
+and the modules:
+
+```sh
+sh build-hwtrace-image.sh -I daemonarchy-1.4.0-amd64.iso \
+    -k obj/GENERIC/kernel -l loader_lua.efi -L src/stand/lua \
+    -V 1.4.0-1 -o out
+# -m "msdosfs ..." picks modules (default msdosfs); -s sets the DATRACE
+# size in MiB (default 256); -S adds a serial console for VM tests.
+```
+
+The result is `out/daemonarchy-hwtrace-<version>-amd64.img` (about 390 MB)
+and its `.sha256`. It has three GPT partitions:
+
+- `EFISYS`: the loader.
+- `HWTROOT`: a read-only UFS root holding the following:
+  - `/boot`: the kernel, modules, Lua, the `/boot/d` presets and a
+    `loader.conf` whose only behaviour is the cycle
+  - a rescue root whose `/etc/rc` runs when a boot reaches init. It saves
+    `dmesg`, `sysctl -a`, `kenv`, `kldstat`, `pciconf -lvbc`, `devinfo -vr`
+    and `acpidump -dt` output to `DATRACE/DUMPS/<experiment>/` and reboots.
+    The queue line `hwtrace.shell=YES` gives a shell instead.
+- `DATRACE`: a FAT32 volume with `DATRACE.TAG`, `STATE.TXT`, `QUEUE/`,
+  `TRACES/` and `DUMPS/`.
+
+`tools/boottrace/qemu-stick-test.py IMAGE --vars VARS.fd --log LOG` boots an
+image under QEMU/OVMF. It resets silent boots the way laptop firmware does.
+
+### Experiments
+
+Write a queue on any host with mtools; Linux can also mount `DATRACE`
+directly:
+
+```sh
+tools/boottrace/stick.py queue IMAGE-or-DEVICE-or-MOUNT experiments.txt
+tools/boottrace/stick.py status TARGET
+tools/boottrace/stick.py traces TARGET --out traces/   # readable text
+```
+
+An experiments file is a list of `[name]` blocks. Each line is
+`name=value`, `unset name` or `read-conf /boot/d/N`, applied after the image
+defaults (trace on, `boot -v`, panic reset after 15 s):
+
+```ini
+[legacy-off]
+read-conf /boot/d/1
+
+[legacy-off-one-cpu]
+read-conf /boot/d/1
+kern.smp.disabled=1
+
+[zoom-from-clocks]
+debug.boottrace.from_sub=0x4800000
+```
+
+`queue` replaces the queue and keeps filed traces; `--reset-traces` deletes
+them.
+
+### At the machine
+
+1. Once, in the firmware setup, put USB first in the boot order. Secure Boot
+   stays off.
+2. Attach the stick and power on. Every boot and every firmware reset runs
+   the next experiment. The loader shows **HARDWARE TRACE: STOPPED** when a
+   boot reached init or the queue is empty.
+3. Detach the stick and bring it back. Read `TRACES/` with `stick.py traces`
+   and `DUMPS/`, write the next queue and reattach.
+
+### Zooming in and the NVRAM budget
+
+Variable stores append a copy on every write and rarely reclaim at runtime.
+A laptop store may have only tens of KiB free; the MSI Raider has 55 KiB.
+Each boot therefore spends the free space `QueryVariableInfo` reports, less
+a reserve. The reserve is a quarter of the maximum variable size, kept
+between 8 and 16 KiB; `debug.boottrace.reserve_kb` overrides it.
+
+Each step writes a 64-byte breadcrumb, which costs about 140 bytes of store,
+so roughly 250 to 300 fit in 40 KiB. The full record with the message tail
+is written only at checkpoints, panic and completion. By default, steps
+before `debug.boottrace.from_sub` (`SI_SUB_CONFIGURE`) are persisted only at
+subsystem boundaries; after it, every SYSINIT, attach, config hook and each
+device's first probe is. To zoom in:
+
+- Move `from_sub` later, or set `debug.boottrace.from=N` to persist every
+  step from step N.
+- If a trace says the budget ran out, its last step is the place to start
+  the next experiment from.
+- Each trace records the store figures, so you can see whether the firmware
+  reclaims between boots. `boottrace_compact="YES"` in `loader.conf` makes
+  the loader try to force a reclaim; it is off by default because on OVMF
+  it can leave less space.
+
+### Windows fallback
+
+If the machine falls through to Windows, run this from an elevated
+PowerShell:
+
+```powershell
+powershell -ExecutionPolicy Bypass -File tools\windows\read-boottrace.ps1
+```
+
+It reads both variables (`DaemonarchyBootTrace` and `DBTStep`) and writes a
+text and a raw copy to the desktop; `-Clear` deletes them.
+
 ## Releasing
 
 ### Maintaining the release history
@@ -707,7 +920,7 @@ and current-status documentation together.
 
 ### Packages
 
-A compatible application fix can reach existing installations through their online repository without a new image. The unversioned publication command below is only for packages compatible with that feed's retained base. For 1.1.1 use the versioned rebuilt-dependency procedure below and leave the unversioned feed unchanged. After rebuilding the compatible packages (step 4 of the build host setup), run this from a workstation with `gh`:
+A compatible application fix can reach existing installations through their online repository without a new image. The unversioned publication command below is only for packages compatible with that feed's retained base. From 1.1.1 on, use the versioned rebuilt-dependency procedure below and leave the unversioned feed unchanged. After rebuilding the compatible packages (step 4 of the build host setup), run this from a workstation with `gh`:
 
 ```
 ./pkg-repo.sh publish
@@ -807,8 +1020,8 @@ coordinated operation.
    Verify the exact uploaded asset names, sizes and SHA-256 digests. Keep
    release-specific application and checkout feeds non-latest. Operator-approved
    physical qualification deferrals must remain explicit limitations in the
-   release notes; they never become passing results. For 1.1.1 retain the existing
-   1.1.0 draft and leave the unversioned stable application feed unchanged.
+   release notes; they never become passing results. Leave the unversioned
+   stable application feed unchanged.
    Before upload, run `python3 scripts/verify-release-assets.py --record
    verification/release-1.3.1.json --assets /path/to/staged-assets` on the six
    staged public assets. It checks exact sizes and digests, the ISO checksum
@@ -819,15 +1032,58 @@ coordinated operation.
    GitHub stable latest release, annotated tag target and all six uploaded
    asset sizes and SHA-256 digests with the exact local record.
 
-3. Once `--published` passes, update the root `README.md` on `main` in the same
-   release cycle; the release is not finished until this lands. Point its
-   Download section and its current-release section to the new tag: release
-   name, ISO and checksum links, byte size and SHA-256 taken from the verified
-   published release (not from local build outputs), the `dd` example, and the
-   release notes and their limits. Turn the previous release's text into
-   history. Never point the README at a draft, prerelease or unpublished
-   release. (After 1.3.1 shipped, the README kept advertising 1.1.1 until this
-   step was enforced.)
+3. Once `--published` passes, bring the release media and every document into
+   sync in the same release cycle; the release is not finished until this lands
+   on `main`. Never point any document at a draft, prerelease or unpublished
+   release. (After 1.3.1 shipped, the README and getting-started guide kept
+   advertising 1.1.1 until this step was enforced.)
+
+   1. **Update the source of truth first.** Run
+      `python3 scripts/release-current.py update daemonarchy-<version>
+      --osversion <N> --application-feed <tag> --checkout-feed <tag>`. It reads
+      the published GitHub release, not local build outputs, and rewrites
+      [`release/current.json`](release/current.json): version, tag, publication
+      time, every published image type (the installer ISO for each
+      architecture, and any other image product such as the hardware-trace
+      bring-up image) and the exact names, sizes and SHA-256 digests of all
+      public assets. The previous release moves to `previous_releases`, so its
+      image name, size and checksum become stale wherever a current-state
+      document still carries them. `python3 scripts/release-current.py
+      check-published` compares the file with GitHub's latest release at any time.
+   2. **Run the guard:** `python3 tests/docs-release-sync.py -v`. It lists every
+      current-state document that still names an older release as current, an
+      older image name, checksum or size, or an unreleased version as available.
+      Fix each one; do not weaken the guard or mark a current-state document
+      historical to silence it. CI runs it on every pull request that touches
+      documentation, release records or this procedure.
+   3. **Work through the checklist.** The guard catches identifiers, not
+      meaning, so also review:
+      - **Download section and current-release section of `README.md`:**
+        release name and link, the image and checksum links for *all published
+        image types*, byte sizes and SHA-256 values from the verified published
+        release, the `dd` (or `xz -dc | dd`) example, and the release notes with
+        their limits. Turn the previous release's text into history.
+      - **Release notes** (`docs/release-<version>.md`): published state, final
+        asset identities and limits, linked from `README.md` and `docs/README.md`.
+      - **Every other current-state document**, as listed by
+        `python3 tests/docs-release-sync.py --list`: `HACKING.md` (this file's
+        current-release header and examples), `PROJECT.md`, `ROADMAP.md`,
+        `docs/getting-started.md`, `docs/README.md`, `docs/hardware-quirks.md`,
+        `docs/remote-agent-debug.md`, `docs/secure-boot.md`, the image guides
+        for each published image type, and `secureboot/` READMEs. Hardware
+        support, install procedure and feature descriptions must match what the
+        release actually ships; a feature still in development is described as
+        upcoming with a link to its roadmap entry.
+      - **The image's own shipped documentation and data** under `overlay/`
+        (installer help text, the default checkout catalogue
+        `overlay/usr/local/share/daemonarchy-installer/checkouts.json`, and any
+        version-naming text) for every published image type.
+      - **Checksums and image names** for all published image types, including
+        the separate hardware-trace bring-up image once it is published.
+      - **Historical records** (`docs/testing-*.md`, earlier release notes,
+        `CHANGELOG.md` entries, roadmap ledgers) keep their versions; add a
+        `<!-- release-sync: history -->` passage only for genuine history inside
+        a current-state document.
 4. If the release replaces one with a serious bug, say so at the top of the old release's notes.
 
 ## Pitfalls met so far
@@ -944,22 +1200,23 @@ printed in the selected kernel's build identity:
 ```sh
 python3 scripts/build-checkout-packages.py --kind ports \
   --repo /usr/local/poudriere/ports/omarchyiso --revision <ports-commit> \
-  --branch daemonarchy-1.1.1 --remote https://github.com/jordanhubbard/freebsd-ports.git \
+  --branch main --remote https://github.com/jordanhubbard/daemonarchy-ports.git \
   --out /path/to/checkout-repo
 python3 scripts/build-checkout-packages.py --kind src \
   --repo /usr/src --revision <kernel-source-commit> \
-  --branch main --remote https://github.com/freebsd/freebsd-src.git \
+  --branch main --remote https://github.com/jordanhubbard/daemonarchy-src.git \
   --out /path/to/checkout-repo
 python3 scripts/make-checkout-catalog.py /path/to/checkout-repo \
   --url https://github.com/jordanhubbard/daemonarchy/releases/download/<checkout-tag> \
-  --ports-tracking-branch daemonarchy-1.1.1 \
+  --ports-tracking-branch main \
   > /path/to/checkout-repo/checkouts.json
 sudo pkg repo /path/to/checkout-repo /usr/local/etc/daemonarchy/pkg-repo.key
 ```
 
-`--depth` defaults to 1. The 1.1.1 package integration is on the fork's
-`daemonarchy-1.1.1` branch; older 1.1 images retain their pinned
-`daemonarchy-1.1-package-baseline` catalogue and feed. Default fetches are restricted to one branch. Payloads are split into 512 MiB parts before packaging,
+`--depth` defaults to 1. The 1.3.1 checkout feed (`checkouts-16-amd64-1.3.1-r2`)
+tracks `main` of daemonarchy-ports and daemonarchy-src; the earlier 1.1.1 tracked
+freebsd-ports `daemonarchy-1.1.1` and FreeBSD `main`, and older 1.1 images retain
+their pinned `daemonarchy-1.1-package-baseline` catalogue and feed. Default fetches are restricted to one branch. Payloads are split into 512 MiB parts before packaging,
 keeping each asset below 2 GiB. Publish the signed repository at a dedicated,
 release-specific tag, packages first and catalogues last. Retain that tag for
 older installations. Pass `CHECKOUT_CATALOG=/path/to/checkout-repo/checkouts.json`

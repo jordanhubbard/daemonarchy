@@ -46,7 +46,7 @@ shell use the base system and do not depend on bash, gum, SDDM or Hyprland.
 
 ## At the installed machine
 
-For continuous remote evidence, 1.1.1 starts a bounded diagnostics collector
+For continuous remote evidence, the system (since 1.1.1) starts a bounded diagnostics collector
 after an agent authenticates. Use `daemonarchy-debug snapshot` for current
 state or `daemonarchy-debug observe` for a stream, and retain that stream on the
 controlling computer before package repair or other reset-prone work. See
@@ -102,7 +102,11 @@ those processes run. If they disappear for 15 seconds, the rescue menu appears.
 Normal graphical login and its selected username remain configured as before.
 The monitor detects missing/exited processes; it cannot identify every frozen
 compositor or prove that the screen renders correctly. An authenticated root
-can also run `daemonarchy-rescue menu` from another console at any time.
+can also run `daemonarchy-rescue menu` at any time from an approved remote debug
+SSH session or any root shell. Switching virtual consoles is optional: vt(4)
+binds it only to Alt+F1–F12 and Print Screen, which many laptops (including
+the Touch Bar MacBookPro16,1) do not have; `vidcontrol -s 2 </dev/ttyv0` from a
+root shell switches without those keys.
 
 Rescue entry is recorded in `/var/log/daemonarchy-rescue.log`, with the latest
 kernel snapshot in `/var/db/daemonarchy/install/rescue-kernel.log`.

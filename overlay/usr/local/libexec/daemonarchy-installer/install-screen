@@ -1,0 +1,103 @@
+#!/usr/local/bin/bash
+# The install screen as window 0 of a private, locked-down tmux session.
+#
+#   install-screen LOG STATUS       run the session; exit with the screen's result
+#   install-screen pane-died SOCKET PANE   (tmux hook) respawn the progress view unless it finished
+#
+# tmux provides the window controls with its default Ctrl-b keys (see
+# install-tmux.conf): splits and windows for the install log, diagnostics,
+# remote debugging and shells, and C-b m / C-b + / C-b - for sound.
+# Nothing needs function keys or a virtual console switch. The installation
+# runs outside this session, so closing panes, windows or the whole session
+# never touches it. Without tmux, or if the session cannot start, the plain
+# progress screen runs instead.
+set -u
+here=$(cd "$(dirname "$0")" && pwd)
+share=${ISO_SHARE:-/usr/local/share/daemonarchy-installer}
+socket=${DAEMONARCHY_TMUX_SOCKET:-daemonarchy-install}
+
+python=${DAEMONARCHY_PYTHON:-}
+if [[ -z $python ]]; then
+  for candidate in python3.12 python3; do
+    if command -v "$candidate" >/dev/null 2>&1; then python=$(command -v "$candidate"); break; fi
+  done
+fi
+export DAEMONARCHY_PYTHON=$python
+
+progress_direct() {
+  exec "$python" "$here/progress-dashboard.py" "$@"
+}
+
+if [[ ${1:-} == pane-died ]]; then
+  socket=$2
+  set -- "$1" "$3"
+  # A progress view that recorded its result ends the session; one that
+  # crashed or was interrupted comes straight back.
+  exit_file=$(tmux -L "$socket" show-options -gqv @exit_file)
+  if [[ -n $exit_file && -s $exit_file ]]; then
+    tmux -L "$socket" kill-session -t install
+  else
+    tmux -L "$socket" respawn-pane -k -t "$2"
+  fi
+  exit 0
+fi
+
+log=$1 status_file=$2
+shift 2
+# Sound is optional and never waited for: start the player if this console
+# may make noise (sound.py decides; serial, headless and no-device stay silent).
+"$python" "$here/sound.py" ensure >/dev/null 2>&1 </dev/null || true
+case ${TERM:-dumb} in
+  dumb|vt100|vt102|vt220|ansi|cons25|unknown) progress_direct "$log" "$status_file" "$@" ;;
+esac
+if [[ ${DAEMONARCHY_TMUX:-1} == 0 ]] || ! command -v tmux >/dev/null 2>&1 || ! [[ -t 0 && -t 1 ]]; then
+  progress_direct "$log" "$status_file" "$@"
+fi
+
+# Colors inside the session. tmux maps them to what the outer terminal
+# declares. vt(4) understands 16 colors (TERM=xterm declares 8), and never
+# 24-bit: teken would read R, G and B as separate attributes.
+inner_term=tmux-256color
+infocmp "$inner_term" >/dev/null 2>&1 || inner_term=screen-256color
+infocmp "$inner_term" >/dev/null 2>&1 || inner_term=screen
+tty_name=$(tty 2>/dev/null || true)
+color=256 overrides=() console=
+if [[ $tty_name == /dev/ttyv* || ${DAEMONARCHY_CONSOLE:-} == vt ]]; then
+  color=16 console=vt
+  overrides=(set -as terminal-overrides ",${TERM}:colors#16" \;)
+elif [[ ${COLORTERM:-} == truecolor || ${COLORTERM:-} == 24bit ]]; then
+  color=truecolor
+  overrides=(set -as terminal-features ",${TERM}:RGB" \;)
+fi
+[[ ${NO_COLOR+set} == set ]] && color=none
+
+sound_label=$("$python" "$here/sound.py" label 2>/dev/null </dev/null) || sound_label=
+exit_file=$(mktemp "${TMPDIR:-/tmp}/daemonarchy-screen.XXXXXX") || progress_direct "$log" "$status_file" "$@"
+trap 'rm -f "$exit_file"' EXIT
+tmux -L "$socket" kill-server 2>/dev/null || true
+export DAEMONARCHY_LIBEXEC=$here
+if ! tmux -L "$socket" -f "$share/install-tmux.conf" \
+    set -g default-terminal "$inner_term" \; "${overrides[@]}" \
+    new-session -d -s install -n progress -x "$(tput cols 2>/dev/null || echo 80)" -y "$(tput lines 2>/dev/null || echo 24)" \
+      -e DAEMONARCHY_COLOR="$color" -e DAEMONARCHY_CONSOLE="$console" -e DAEMONARCHY_INSTALL_LOG="$log" \
+      -e ISO_SHARE="$share" \
+      "$python" "$here/progress-dashboard.py" --exit-file "$exit_file" "$log" "$status_file" "$@" 2>/dev/null; then
+  progress_direct "$log" "$status_file" "$@"
+fi
+progress_pane=$(tmux -L "$socket" display-message -p -t install:0.0 '#{pane_id}')
+tmux -L "$socket" set -g @progress "$progress_pane" \; set -g @exit_file "$exit_file" \; \
+  set -g @sound "$sound_label" \; \
+  select-pane -t "$progress_pane" -T progress \; \
+  set -p -t "$progress_pane" remain-on-exit on \; \
+  set-hook -g pane-died "run-shell -b '$BASH $here/install-screen pane-died $socket #{hook_pane}'"
+tmux -L "$socket" attach-session -t install
+tmux -L "$socket" kill-server 2>/dev/null || true
+if [[ -s $exit_file ]]; then
+  read -r code <"$exit_file"
+  [[ $code =~ ^[0-9]{1,3}$ ]] && exit "$code"
+fi
+# The session ended without a recorded result (for example tmux was killed
+# from a shell): keep showing the installation on the plain screen.
+trap - EXIT
+rm -f "$exit_file"
+progress_direct "$log" "$status_file" "$@"

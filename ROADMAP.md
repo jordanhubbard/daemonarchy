@@ -105,7 +105,7 @@ preceding image and have their scope recorded separately.
 Bring Omarchy's 1980s visual character—screensavers, wallpapers and the
 Omarchy/Daemonarchy logos—into installation and package management. The goal
 is useful, creative, colorful feedback with the energy of a Winamp visualizer.
-This is planned work for a future release, not functionality shipped in 1.1.1.
+This is planned work for a future release, not functionality shipped in the published 1.3.1.
 
 ### ANSI installer visualizers
 

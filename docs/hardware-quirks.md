@@ -105,6 +105,15 @@ default or demonstrated fix. A separate pending single-CPU comparison removes
    into the installed configuration. A reset outside ordinary panic handling may
    still occur. See [FreeBSD acpi(4)](https://man.freebsd.org/cgi/man.cgi?query=acpi&sektion=4).
 
+### Reset-surviving trace stick
+
+Filming the screen cannot show what runs after the last message. The
+[hardware trace stick](boottrace.md) records every startup step in a UEFI
+variable before it runs, files each boot's trace on the stick and boots the
+next queued experiment; with the stick first in the boot order the loop is
+unattended. Its first queue starts from the `/boot/d/1` legacy-ISA-off
+preset that produced `sc0 failed to probe on isa1` as the last visible line.
+
 ### Related report
 
 A [May 2026 Slackware report](https://www.linuxquestions.org/questions/slackware-installation-40/slackware-current-usb-boot-grub-hangs-msi-raider-18-hx-ai-4175764459/)
@@ -120,15 +129,25 @@ results rather than replacing the configuration that reproduced this failure.
 
 ## Apple T2 MacBook Pro: graphics, Wi-Fi and resets
 
+**Current release:** 1.3.1 carries the MacBookPro16,1 work below: Navi14
+graphics, the built-in T2 keyboard and trackpad, and BCM4364 Wi-Fi with
+firmware acquired from Apple recovery media or local media before the disk is
+changed. The operator confirmed that all pre-production checks passed on this
+MacBook; an additional physical run of the final public ISO was waived, so the
+final ISO bytes have not been installed on it. Firmware-enforced Secure Boot,
+suspend and the NVMe fix below are not part of that claim. See the
+[1.3.1 release notes](release-1.3.1.md) and
+[MacBook acceptance record](testing-macbookpro16-1-1.3.1.md).
+
 Read the [MacBook application note](application-note-macbookpro16-1.md) and
-[current investigation](testing-macbookpro16-1-installer-20261022.md) for the
+[installer investigation](testing-macbookpro16-1-installer-20261022.md) for the
 Radeon Pro 5500M and BCM4364 Wi-Fi evidence. The EFI framebuffer overlap fix
 passed three clean GPU boots. The refreshed graphics package reached SDDM's
 Wayland greeter, and the operator subsequently logged into its desktop on the
 T2 keyboard test kernel. The BCM4364 is PCI `14e4:4464`, Apple
 subdevice `106b:07bf`. It was initially unbound; a private driver and
 board-firmware preview later attached it and passed isolated gateway and
-Internet traffic tests. Fresh installation from the next image remains open.
+Internet traffic tests. The 1.3.1 installer adds verified firmware acquisition.
 Wired USB Ethernet is verified.
 
 The built-in T2 keyboard's synchronous LED-output reports blocked the desktop
@@ -152,6 +171,16 @@ integrity must be inspected before retrying; do not repeat partitioning over
 the existing installation merely to resume packages. No reset cause or
 fully qualified 1.1.1 installer result is established despite the later desktop
 login on the repaired installation.
+
+The internal T2 SSD (ANS2, `106b:2005`) raised a fatal controller status
+under concurrent writes on both the 1.1.1 and 1.3.1 kernels. That fault
+interrupted package installation. The cause is the order in which the driver
+acknowledged completions, and a driver fix is under review; the published
+1.3.1 kernel does not include it. See the
+[October 26 NVMe record](testing-macbookpro16-1-nvme-20261026.md). Kernels
+without the fix can avoid most failures with `hw.nvme.io_trackers=4`, but
+this is only a workaround: queue depths of 4 and 8 still faulted in raw-write
+tests.
 
 Use named sysctl keys on this machine: broad `sysctl -a` enumeration previously
 triggered a confirmed LinuxKPI `sysctl_handle_attr()` general-protection fault.

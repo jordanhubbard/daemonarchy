@@ -428,8 +428,12 @@ EOF
   printf '%s\n' "$state/sshd_config" >"$state/listener-config"
   touch "$state/active"
   fsync "$state/host_key" "$state/host_key.pub" "$state/port" "$state/active" "$state"
+  # Its own process group: Ctrl-C or a hangup on the console (for example in a
+  # later installer prompt) must not stop a listener left in the background.
+  set -m
   /usr/sbin/sshd -D -E "$state/sshd.log" -f "$state/sshd_config" </dev/null >>"$state/sshd.log" 2>&1 &
   server_pid=$!
+  set +m
   sleep 1
   if ! kill -0 "$server_pid" 2>/dev/null; then
     cat "$state/sshd.log" >&2
@@ -520,19 +524,96 @@ show_status() {
   echo 'Press Enter to stop remote access and return to the debug shell.'
 }
 
-debug_listen() {
-  local port=${1:-} request fingerprint answer last_progress=''
-  [[ -n $port ]] || port=$(cat "$state/port" 2>/dev/null || echo 2222)
-  if [[ -f $state/active && -f $state/host_key ]]; then
-    echo 'Resuming the operator-approved hardware debugging session.'
+# Console approval of one pending pairing request, by its request ID.
+pending_requests() {
+  local request
+  [[ $(id -u) == 0 && -d $state/requests && -f $state/active ]] || return 0
+  for request in "$state"/requests/*; do
+    [[ -f $request && ! -L $request ]] || continue
+    [[ ${request##*/} =~ ^[0-9a-f]{64}$ ]] || continue
+    [[ ! -e $state/${request##*/}.approved && ! -e $state/${request##*/}.denied ]] || continue
+    printf '%s %s\n' "${request##*/}" "$(head -n 1 "$request" | LC_ALL=C tr -cd '\040-\176' | cut -c 1-120)"
+  done
+}
+
+decide_request() {
+  local decision=$1 request=$2
+  [[ $(id -u) == 0 ]] || fail 'Requires root at the console.'
+  [[ $request =~ ^[0-9a-f]{64}$ ]] || fail 'Unknown pairing request.'
+  [[ -f $state/active && -f $state/requests/$request && ! -L $state/requests/$request ]] ||
+    fail 'Unknown pairing request.'
+  [[ ! -e $state/$request.approved && ! -e $state/$request.denied ]] || fail 'That request was already decided.'
+  if [[ $decision == approve ]]; then
+    touch "$state/$request.approved"
+    fsync "$state/requests/$request" "$state/$request.approved" "$state/requests" "$state"
+    echo 'Agent approved.'
   else
-    echo "Pairing grants the approved agent root access across reboots until stopped or unpaired."
-    printf 'Enable remote access on port %s? [y/N] ' "$port"
-    IFS= read -r answer || return 0
-    [[ $answer == y || $answer == Y ]] || return 0
+    touch "$state/$request.denied"
+    echo 'Agent denied.'
   fi
-  start_server "$port"
+}
+
+# Start the listener and leave it running in the background, still requiring
+# console approval for each new agent. The caller asks the operator first.
+# The install screen (Ctrl-b R) and the configurator approve requests, so no
+# second virtual console or function key is needed.
+debug_background() {
+  local port=${1:-}
+  [[ -n $port ]] || port=$(cat "$state/port" 2>/dev/null || echo 2222)
+  if session_running; then
+    [[ -f $state/background ]] || fail 'Another debug session is already active at the console.'
+    echo "Remote access is already running on port $(cat "$state/port" 2>/dev/null || echo "$port")."
+  else
+    start_server "$port"
+    # Detach: this command's exit must not stop the listener.
+    trap - EXIT INT TERM HUP
+    : >"$state/background"
+    echo "Remote access is running in the background on port $port."
+  fi
+  network_addresses | awk -v port="$(cat "$state/port")" '{print "  ssh -p " port " root@" $1}'
+  echo 'Server fingerprint:'
+  ssh-keygen -l -f "$state/host_key.pub"
+  echo 'Approve each new agent from the install screen (Ctrl-b R) or with remote-debug approve.'
+}
+
+debug_stop() {
+  local generation
+  [[ $(id -u) == 0 ]] || fail 'Requires root.'
+  [[ -f $state/generation ]] || { echo 'Remote access is not running.'; return 0; }
+  generation=$(cat "$state/generation")
+  session_transition stop "$generation" >/dev/null
+  echo 'Remote access stopped and the pairing revoked.'
+}
+
+debug_listen() {
+  local port=${1:-} request fingerprint answer last_progress='' attached=no
+  [[ -n $port ]] || port=$(cat "$state/port" 2>/dev/null || echo 2222)
+  if session_running && [[ -f $state/background ]]; then
+    # A background listener keeps running when this console view is left.
+    # A listener owned by another console view is never shared.
+    attached=yes
+    session_generation=$(cat "$state/generation")
+    IFS= read -r server_pid <"$state/sshd.pid"
+    port=$(cat "$state/port")
+    echo 'Attached to the remote access listener that is running in the background.'
+  else
+    if [[ -f $state/active && -f $state/host_key ]]; then
+      echo 'Resuming the operator-approved hardware debugging session.'
+    else
+      echo "Pairing grants the approved agent root access across reboots until stopped or unpaired."
+      printf 'Enable remote access on port %s? [y/N] ' "$port"
+      IFS= read -r answer || return 0
+      [[ $answer == y || $answer == Y ]] || return 0
+    fi
+    start_server "$port"
+    rm -f "$state/background"  # This console view owns the listener until b + Enter.
+  fi
   show_status
+  if [[ $attached == yes ]]; then
+    echo 'Press Enter to leave it running in the background, or type stop and Enter to stop it.'
+  else
+    echo 'Type b and Enter to keep it running in the background (for example during the install).'
+  fi
   while kill -0 "$server_pid" 2>/dev/null; do
     show_progress
     for request in "$state"/requests/*; do
@@ -551,10 +632,19 @@ debug_listen() {
       fi
       show_status
     done
-    if IFS= read -r -t 1; then
+    if IFS= read -r -t 1 answer; then
+      if [[ $attached == yes && $answer != stop ]] || [[ $attached == no && ( $answer == b || $answer == B ) ]]; then
+        trap - EXIT INT TERM HUP
+        : >"$state/background"
+        echo 'Remote access keeps running in the background.'
+        return 0
+      fi
       break
     fi
   done
+  if [[ $attached == yes ]]; then
+    stop_server
+  fi
 }
 
 debug_help() {
@@ -578,7 +668,10 @@ configure /tmp/wpa_supplicant.conf, then run:
   dhclient wlan0
 
 Start console-approved remote access after networking works:
-  remote-debug listen          # port 2222
+  remote-debug listen          # port 2222; type b and Enter to keep it in the background
+  remote-debug background      # start it in the background (keeps running during the install)
+  remote-debug approve ID      # approve a pending agent (remote-debug pending lists them)
+  remote-debug stop            # stop a background listener and revoke the pairing
   remote-debug listen 2207     # custom port
   remote-debug unpair          # revoke access, including a stale session
   remote-debug resume          # resume a previously approved session, no prompt
@@ -598,7 +691,10 @@ The listener asks before first enabling access and before pairing each new key.
 On an installed system, approval and the server identity survive reboots, and
 the recovery console resumes access automatically when networking is available.
 Stale listener PIDs do not discard approval or grant permission to kill another process.
-Press Enter or Ctrl-C in the listener to stop it and return to this shell.
+Press Enter or Ctrl-C in the listener to stop it and return to this shell, or
+type b and Enter to leave it running in the background. During the install the
+install screen shows pairing requests: press r there to approve or deny them.
+No function key or second virtual console is needed for any of this.
 Run help (or remote-debug help) to show these debugging instructions again.
 Use help <builtin> for Bash help, for example: help cd.
 The exit command returns to the invoking console or installer.
@@ -621,7 +717,7 @@ debug_shell() {
 }
 
 case ${1:-shell} in
-  authorize|session|resume|listen|status|publish-status|wifi-save|wifi-resume)
+  authorize|session|resume|listen|background|status|publish-status|wifi-save|wifi-resume)
     if [[ $EUID == 0 && ! -e $state && ! -L $state && -f $legacy/active ]]; then
       session_transition adopt >/dev/null
     fi
@@ -646,6 +742,10 @@ case ${1:-shell} in
   done) [[ $# == 1 ]] || fail 'Usage: remote-debug done'; write_progress 'Remote debugging complete. It is OK to stop this session (press Enter).' ;;
   shell|menu) debug_shell ;;
   listen) [[ $# -le 2 ]] || fail 'Usage: remote-debug listen [port]'; debug_listen "${2:-}" ;;
+  background) [[ $# -le 2 && $(id -u) == 0 ]] || fail 'Usage: remote-debug background [port]'; debug_background "${2:-}" ;;
+  pending) [[ $# == 1 ]] || fail 'Usage: remote-debug pending'; pending_requests ;;
+  approve|deny) [[ $# == 2 ]] || fail "Usage: remote-debug $1 REQUEST"; decide_request "$1" "$2" ;;
+  stop) [[ $# == 1 ]] || fail 'Usage: remote-debug stop'; debug_stop ;;
   resume) [[ $# == 1 ]] || exit 1; debug_resume ;;
   wifi-save) [[ $# == 1 && $(id -u) == 0 ]] || exit 1; debug_wifi_save ;;
   wifi-resume) [[ $# == 1 && $(id -u) == 0 ]] || exit 1; debug_wifi_resume ;;
@@ -658,5 +758,5 @@ case ${1:-shell} in
   publish-status) [[ $# == 1 && $(id -u) == 0 ]] || exit 1; publish_public_status ;;
   unpair) [[ $# == 1 ]] || fail 'Usage: remote-debug unpair'; debug_unpair ;;
   help) debug_help ;;
-  *) fail 'Usage: remote-debug [shell | listen [port] | unpair | observe | snapshot | activity DESCRIPTION | done | help]' ;;
+  *) fail 'Usage: remote-debug [shell | listen [port] | background [port] | pending | approve ID | deny ID | stop | unpair | observe | snapshot | activity DESCRIPTION | done | help]' ;;
 esac

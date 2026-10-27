@@ -9,7 +9,7 @@
 # (install/provisioning/setup-form.sh), vendored into the image, so this asks
 # exactly what the Arch installer asks and checks answers the same way.
 
-ISO_SHARE=/usr/local/share/daemonarchy-installer
+ISO_SHARE=${ISO_SHARE:-/usr/local/share/daemonarchy-installer}
 DAEMONARCHY_INSTALL_CONF=${DAEMONARCHY_INSTALL_CONF:-/tmp/daemonarchy-install.conf}
 LOGO_PATH="$ISO_SHARE/logo.txt"
 
@@ -26,7 +26,16 @@ source "$(dirname "$0")/apple-firmware"
 # The proactive network pipeline (NET-001), shared with the live desktop's
 # graphical installer and unattended installs.
 source "$(dirname "$0")/network-bringup"
-NB_EXEC="$(dirname "$0")/network-bringup"
+# Tests substitute recorded steps; sudo removes the variable on the live desktop.
+NB_EXEC=${NB_EXEC:-"$(dirname "$0")/network-bringup"}
+
+# Charm and sound: short flourishes between screens and sounds for real
+# events (sound.py, charm.py). Both are optional and never fail a step;
+# reduced motion, serial consoles and NO_COLOR get plain output and silence.
+CHARM=${CHARM:-"$(dirname "$0")/charm"}
+SOUND=${SOUND:-"$(dirname "$0")/sound"}
+sound_mode=''
+cue() { "$SOUND" play "$@" >/dev/null 2>&1 </dev/null || true; }
 
 # The setup form's reserved names are Linux's. On FreeBSD a name is taken if
 # the base system has it (the live system's accounts are the base system's)
@@ -102,9 +111,17 @@ greeter() {
   hpad=$(((cols - ${#hint}) / 2)); ((hpad < 0)) && hpad=0
   printf '\033[%d;%dH\033[2m%s\033[0m' "$hint_row" "$((hpad + 1))" "$hint"
 
-  # The Arch ISO's colorshift on the logo, if ttfx is on the image.
+  # The boot chime with the welcome frame.
+  cue boot
+
+  # The Arch ISO's colorshift on the logo, if ttfx is on the image; otherwise
+  # Daemonarchy's own: the logo's colors drift and the mascot blinks while
+  # the screen waits for Return (attract mode; it shows no progress).
   anim=""
-  if command -v ttfx >/dev/null; then
+  if ! command -v ttfx >/dev/null; then
+    "$CHARM" attract --logo "$LOGO_PATH" --top "$logo_row" </dev/null >/dev/tty 2>/dev/null &
+    anim=$!
+  else
     printf '\033[%d;1H\0337' "$((logo_row + logo_h))"
     ttfx -i "$LOGO_PATH" \
       --canvas-width "$((cols > 2 ? cols - 2 : cols))" \
@@ -131,6 +148,7 @@ greeter() {
 }
 
 abort() {
+  cue error
   gum style "${1:-Aborted installation}"
   echo
   gum style "You can retry by running: /usr/local/libexec/daemonarchy-installer/launch"
@@ -140,7 +158,7 @@ abort() {
 step() {
   clear_logo
   echo
-  gum style --padding "0 0 0 $PADDING_LEFT" "$1"
+  "$CHARM" transition "$1" --left "$PADDING_LEFT" 2>/dev/null || gum style --padding "0 0 0 $PADDING_LEFT" "$1"
   echo
 }
 
@@ -612,6 +630,24 @@ nb_hook_show() {
   while IFS= read -r line; do say "$line"; done < <(nb_report "$1")
 }
 
+# Each network check's result: a mark that sparkles, and a sound.
+nb_hook_result() {
+  local label
+  case $1 in
+    discover) label='Network adapters' ;;
+    dhcp) label='Wired addresses (DHCP)' ;;
+    dns|dns-fallback|dns-try|dns-ensure) label='DNS' ;;
+    clock) label='System clock' ;;
+    firmware) label='Device firmware' ;;
+    wifi-prepare) label='Wi-Fi radios' ;;
+    wifi-join) label='Wi-Fi' ;;
+    static) label='Static address' ;;
+    primary) label='Primary connection' ;;
+    *) return 0 ;;
+  esac
+  "$CHARM" result "$([[ $2 == 0 ]] && echo ok || echo fail)" "$label" --left "$PADDING_LEFT" 2>/dev/null || true
+}
+
 network_dns_prompt() {
   local server
   [[ ${1:-} == asked ]] || say --foreground 3 'No DNS server answered a direct lookup. Enter a DNS server that works on this network.'
@@ -885,6 +921,7 @@ apple_firmware_step() {
       "Stop installation") abort ;;
     esac
   done
+  "$CHARM" result ok 'MacBook Wi-Fi firmware verified and the radio attached' --left "$PADDING_LEFT" 2>/dev/null || true
 }
 
 # Remote access: off unless asked for, as on any desktop.
@@ -1038,13 +1075,17 @@ disk_form() {
       encrypt_installation=false
     fi
     step "Ready to install"
+    # The commit warning pulses red with a klaxon; nothing is written until confirmed.
     case $install_mode in
       whole_disk)
-        say --foreground 1 "All partitions and data on $disk will be destroyed."
+        "$CHARM" warn "All partitions and data on $disk will be destroyed." --left "$PADDING_LEFT" 2>/dev/null ||
+          say --foreground 1 "All partitions and data on $disk will be destroyed."
         confirmation="Erase $disk and install?"
         ;;
       partition)
-        say --foreground 1 "All contents of ${disk}p${partition_index} will be erased and replaced by Daemonarchy."
+        "$CHARM" warn "All contents of ${disk}p${partition_index} will be erased and replaced by Daemonarchy." \
+          --left "$PADDING_LEFT" 2>/dev/null ||
+          say --foreground 1 "All contents of ${disk}p${partition_index} will be erased and replaced by Daemonarchy."
         say "Other partitions and existing EFI boot files will be preserved."
         [[ $(gum input --prompt "Type ${disk}p${partition_index} to confirm> ") == "${disk}p${partition_index}" ]] || continue
         confirmation="Replace ${disk}p${partition_index} and install?"
@@ -1057,7 +1098,10 @@ disk_form() {
     esac
     [[ $install_mode == whole_disk ]] || say "A Daemonarchy boot entry will be added. Existing filesystems will not be resized."
     echo
-    gum confirm --default=false --affirmative "Install Daemonarchy" --negative "Go back" "$confirmation" && break
+    if gum confirm --default=false --affirmative "Install Daemonarchy" --negative "Go back" "$confirmation"; then
+      cue commit
+      break
+    fi
   done
 }
 
@@ -1092,39 +1136,110 @@ write_install_conf() {
     printf 'install_ports=%q\n' "$install_ports"
     printf 'install_src=%q\n' "$install_src"
     printf 'install_cuda=%q\n' "$install_cuda"
+    printf 'sound=%q\n' "${sound_mode:-}"
   } >"$DAEMONARCHY_INSTALL_CONF"
 }
 
-greeter
-while true; do
-  clear_logo
-  if [[ $(kenv smbios.system.product 2>/dev/null || true) == MacBookPro16,1 ]]; then
-    options=('Install Daemonarchy' 'Prepare MacBook Wi-Fi firmware' 'Remote agent debug' 'Configure network' 'Exit to shell')
-  else
-    options=('Install Daemonarchy' 'Remote agent debug' 'Configure network' 'Exit to shell')
+# Console-approved remote debugging that keeps running through the install.
+# Everything here is reached with ordinary keys; no function key or second
+# virtual console is needed (many laptops have neither).
+remote_debug_background() {
+  local remote_debug
+  remote_debug="$(dirname "$0")/remote-debug"
+  if ! "$remote_debug" status >/dev/null 2>&1; then
+    gum confirm --default=false --affirmative "Start remote access" --negative "Back" \
+      "Start console-approved SSH access on port 2222? Approved agents get a root shell. It keeps running during the installation; the install screen (Ctrl-b R) approves new agents." || return 0
   fi
-  action=$(gum choose --header 'Installer options' "${options[@]}") || exit 1
-  case "$action" in
-    'Install Daemonarchy') break ;;
-    'Remote agent debug')
-      "$(dirname "$0")/remote-debug" || {
-        echo 'Remote debug could not start. Press Return to return to the menu.'
-        IFS= read -r _ </dev/tty || true
-      }
-      ;;
-    'Configure network') network_bringup_auto; network_step allow-offline ;;
-    'Prepare MacBook Wi-Fi firmware') apple_firmware_step optional ;;
-    'Exit to shell') exit 1 ;;
+  "$remote_debug" background 2222 || echo 'Remote debug could not start. Configure the network first.'
+  echo
+  echo 'Press Return to return to the menu.'
+  IFS= read -r _ </dev/tty || true
+}
+
+remote_debug_approvals() {
+  local remote_debug request id fingerprint requests=()
+  remote_debug="$(dirname "$0")/remote-debug"
+  mapfile -t requests < <("$remote_debug" pending 2>/dev/null)
+  for request in "${requests[@]}"; do
+    id=${request%% *} fingerprint=${request#* }
+    if gum confirm --default=false --affirmative "Approve" --negative "Deny" \
+        "Agent pairing request: $fingerprint. Does it match the fingerprint your agent gave you?"; then
+      "$remote_debug" approve "$id"
+    else
+      "$remote_debug" deny "$id"
+    fi
+  done
+}
+
+# Sound: on, quiet (the moments that matter) or off, for the installer and
+# the installed system's boot chime. Volume and mute stay on the install
+# screen's keys (C-b m, C-b +, C-b -).
+sound_step() {
+  local choice current
+  step "Sound"
+  current=$("$SOUND" label --long 2>/dev/null)
+  say --foreground 8 "Now: ${current:-unavailable}. Sounds mark real events: stages, packages, network checks, the result."
+  say --foreground 8 "On the install screen: C-b m mutes, C-b + and C-b - change the volume, C-b a toggles the music."
+  echo
+  choice=$(gum choose --header 'Installer sound' 'On' 'Quiet (only the moments that matter)' 'Off' 'Back') || return 0
+  case $choice in
+    On) sound_mode=on ;;
+    Quiet*) sound_mode=quiet ;;
+    Off) sound_mode=off ;;
+    *) return 0 ;;
   esac
-done
-apple_firmware_step || abort 'MacBook firmware setup failed before disk changes.'
-keyboard_form
-user_step
-network_bringup_auto
-network_step
-ssh_step
-cuda_step
-checkout_step
-disk_form
-clear
-write_install_conf
+  "$SOUND" ctl "mode=$sound_mode" >/dev/null 2>&1 </dev/null || true
+  "$CHARM" result ok "Sound: $("$SOUND" label --long 2>/dev/null)" --left "$PADDING_LEFT" 2>/dev/null || true
+  sleep 1
+}
+
+configurator_main() {
+  local sound_option
+  greeter
+  while true; do
+    clear_logo
+    sound_option="Sound: $("$SOUND" label --long 2>/dev/null </dev/null || echo unavailable)"
+    if [[ $(kenv smbios.system.product 2>/dev/null || true) == MacBookPro16,1 ]]; then
+      options=('Install Daemonarchy' 'Prepare MacBook Wi-Fi firmware' 'Remote agent debug' 'Remote debug in the background' 'Configure network' "$sound_option" 'Exit to shell')
+    else
+      options=('Install Daemonarchy' 'Remote agent debug' 'Remote debug in the background' 'Configure network' "$sound_option" 'Exit to shell')
+    fi
+    pending_pairings=$("$(dirname "$0")/remote-debug" pending 2>/dev/null | wc -l | tr -d ' ')
+    if [[ ${pending_pairings:-0} -gt 0 ]]; then
+      options=("Approve remote agent pairing ($pending_pairings waiting)" "${options[@]}")
+    fi
+    action=$(gum choose --header 'Installer options' "${options[@]}") || exit 1
+    case "$action" in
+      'Install Daemonarchy') break ;;
+      'Remote debug in the background') remote_debug_background ;;
+      'Approve remote agent pairing'*) remote_debug_approvals ;;
+      'Remote agent debug')
+        "$(dirname "$0")/remote-debug" || {
+          echo 'Remote debug could not start. Press Return to return to the menu.'
+          IFS= read -r _ </dev/tty || true
+        }
+        ;;
+      'Configure network') network_bringup_auto; network_step allow-offline ;;
+      'Prepare MacBook Wi-Fi firmware') apple_firmware_step optional ;;
+      'Sound: '*) sound_step ;;
+      'Exit to shell') exit 1 ;;
+    esac
+  done
+  apple_firmware_step || abort 'MacBook firmware setup failed before disk changes.'
+  keyboard_form
+  user_step
+  network_bringup_auto
+  network_step
+  ssh_step
+  cuda_step
+  checkout_step
+  disk_form
+  clear
+  write_install_conf
+}
+
+# The live desktop's graphical installer sources these screens' rules, checks
+# and answer file writer rather than copying them; only run the TUI directly.
+if [[ ${BASH_SOURCE[0]} == "$0" ]]; then
+  configurator_main
+fi

@@ -1,9 +1,11 @@
 #!/usr/local/bin/bash
 # The viewer never installs packages or writes the install's result file.
 set -u
+# install-screen runs it as window 0 of the installer's tmux session when
+# tmux and a capable terminal are present, and directly otherwise.
 for python in python3.12 python3; do
   if command -v "$python" >/dev/null 2>&1; then
-    exec "$python" "$(dirname "$0")/progress-dashboard.py" "$@"
+    DAEMONARCHY_PYTHON=$(command -v "$python") exec "$BASH" "$(dirname "$0")/install-screen" "$@"
   fi
 done
 # Keep the installer visible if the live image has lost its Python interpreter.

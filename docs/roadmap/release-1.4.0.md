@@ -6,6 +6,7 @@
 - **Completion / archival evidence:** pending exact native VM operation/fault matrix and physical hardware capture, cross-repository locks and receipts, artifact reuse, exact diagnostic image/feed qualification and published release verification.
 - **Tracking:** [network debugging issue #33](https://github.com/jordanhubbard/daemonarchy/issues/33), [source issue #21](https://github.com/jordanhubbard/daemonarchy-src/issues/21), [build issue #39](https://github.com/jordanhubbard/daemonarchy/issues/39), [aarch64 issue #62](https://github.com/jordanhubbard/daemonarchy/issues/62), [1.4.0 milestone](https://github.com/jordanhubbard/daemonarchy/milestone/3).
 - **Owning queue item:** [DEBUG-003](active-work.md#debug-003-deliver-bidirectional-loader-mountroot-and-panic-network-debugging-for-14).
+- **Headline feature:** a live, measured install screen ([UI-001](active-work.md#ui-001-deliver-measured-retro-installer-visualizers), P1 by operator direction on 2026-10-26).
 - **Supporting queue item:** [PERF-002](active-work.md#perf-002-coordinate-all-daemonarchy-repositories-through-literate-ai-workers-in-140) owns the build and release path.
 - **Architectures:** amd64 and aarch64; [ARCH-001](active-work.md#arch-001-add-aarch64-as-a-second-supported-architecture-for-140) owns aarch64. Virtual machines are the aarch64 test bed for now.
 - **Acceptance coverage:** [row-by-row owner, dependency and evidence ledger](1.4-coverage-ledger.md) tracks every 1.4 requirement and its exact proof.
@@ -240,10 +241,13 @@ installation graphically instead of on the TUI. It does not need the full
 application set: a compositor, a terminal and a graphical installer front-end
 are enough.
 
-Make the read-only ISO root writable with `unionfs` and a tmpfs upper layer
-for `/etc`, `/usr/local`, `/root` and `/home`; `/var` and `/tmp` are already
-tmpfs. A plain `-o union` mount layers lookups but cannot change lower files,
-so it is not sufficient here. Select GPU modules from the ISO's own package
+Make the read-only ISO root usable without unionfs. Copy `/etc`,
+`/usr/local/etc`, `/root` and `/home` into tmpfs at boot, as FreeBSD's
+`rc.initdiskless` does; `/var` and `/tmp` are already tmpfs. Add GPU payloads
+only on tmpfs layers mounted with `-o union`, which can add files but never
+replace ISO files. A unionfs probe over the ISO's `/etc` stopped a FreeBSD
+16-CURRENT host during `pw`'s password database rename, so unionfs is not
+used. Select GPU modules from the ISO's own package
 repository so the live desktop needs no network. The graphical installer
 writes the same installation configuration as the TUI and renders the
 installer's `@@progress` stream, so both paths share one install engine. Keep
@@ -283,6 +287,71 @@ unattended installers share this one pipeline. Unattended installs honor
 their `net_*` answers and stop with a clear message instead of prompting. When
 public or user DNS replaced broken DHCP DNS, the installed system keeps it.
 See [NET-001](active-work.md#net-001-make-the-installer-network-bring-up-proactive-and-robust).
+
+## Hardware bring-up trace image
+
+1.4 adds a second image type for Daemonarchy developers and agentic
+researchers: `daemonarchy-hwtrace-<version>-amd64.img`. It is built by
+`build-hwtrace-image.sh` and is not a mode of the install ISO. It carries the
+following:
+- the boottrace kernel and the loader's unattended experiment cycle
+- the `/boot/d` presets
+- a rescue root that saves diagnostics when a boot reaches init
+- a `DATRACE` partition for the queue, traces and dumps
+
+The install ISO never auto-cycles. Its loader offers at most the interactive
+single traced boot. Publishing the image needs its own release-asset entry.
+See [DEBUG-004](active-work.md#debug-004-ship-a-hardware-bring-up-trace-image-for-developers-and-agentic-researchers).
+
+## Headline: a live, measured install screen
+
+A real MacBookPro16,1 installation of 1.3.1 showed almost no visible
+progress: "installation is still running" and then nothing until it ended.
+For 1.4 the operator made a dazzling, truthful install screen a headline
+feature. It stays alive in every stage with real activity: disk throughput and
+IOPS for the target, network rates, per-core CPU, memory, and ZFS writes and
+GELI where cheap. It shows a timeline of the stages (partition, encrypt, ZFS
+pool, base sets, boot loader, configure, download, packages, account, verify)
+with each stage's elapsed time from the installer's own markers, a scrolling
+ticker of the package names pkg reports with count and total, and a
+Winamp-style spectrum and scope driven by measured I/O rates, in 256-color
+gradients with the Daemonarchy logo. Nothing invents a completion percentage
+or time remaining. The FreeBSD vt(4) console is the primary target: it gets
+the 16 vt colors and never 24-bit color, which vt(4) misparses. Plain output,
+reduced motion, small terminals, VT100/serial and SSH keep working.
+
+Nothing may depend on function keys or a virtual console switch, which many
+laptops (including the Touch Bar MacBookPro16,1) cannot use. The screen runs
+as window 0 of a locked-down tmux session with tmux's default `Ctrl-b` keys:
+splits and windows show the install log, diagnostics, console-approved remote
+debugging or a shell, while the installation keeps running and window 0
+cannot be closed. Remote debugging can stay up from the configurator through
+the installation. The live desktop's graphical installer (LIVE-001) shows the
+same stages and metrics from the same producer. See
+[UI-001](active-work.md#ui-001-deliver-measured-retro-installer-visualizers) and
+[installer progress](../installer-progress.md).
+
+On 2026-10-27 the operator asked for much more charm and for sound: "a lot of
+pizazz", more interesting to watch through every phase, using sounds
+liberally, and "animations should make noise". Every phase now has a
+flourish and a sound tied to something real: the loader's animated splash
+(visual only; UEFI has no reliable audio), the welcome screen's boot chime
+and idle animation while it waits for the operator, typed-in screen
+transitions, a sparkling mark and a sound for each network and firmware
+check result, a pulsing disk-commit warning with a klaxon, a stage card and
+sound when each install stage starts, a sparkle when it finishes, a ticker
+blip per reported package and a fanfare every 50, an optional chiptune layer
+whose loudness follows the measured CPU, disk and network rates, a mascot
+whose trident keeps time with measured activity and who says so during a
+genuine wait, fireworks and a fanfare only for the installer's own
+successful result, and a chime with an animated welcome on the installed
+system's first boot and the live desktop. Sounds are synthesized by
+`sound.py` and played through OSS (`/dev/dsp`) by a separate player that the
+installer never waits for; `C-b m` mutes, `C-b +`/`C-b -` set the volume and
+the configurator and `daemonarchy.sound=on|quiet|off` choose the mode. Sound
+is off on serial and headless consoles, in unattended installs unless asked,
+and without an audio device; a sound failure never affects an installation.
+Nothing animated or audible implies progress that was not observed.
 
 ## Delivery sequence and acceptance
 
@@ -361,6 +430,31 @@ See [NET-001](active-work.md#net-001-make-the-installer-network-bring-up-proacti
   by NTP and then by hand, and an unattended CIDATA install. Then complete
   the MacBookPro16,1 path with no cable: offline BCM4364 firmware, Wi-Fi
   first, then DNS and the clock over Wi-Fi.
+- [ ] Install the exact 1.4 image on the physical vt(4) console and in a VM
+  with a serial console while recording the install screen: every stage shows
+  live measured activity and its elapsed time, the package ticker follows pkg,
+  no element shows an invented percentage, and waits and failures are shown as
+  such. On the MacBookPro16,1 with no function keys, open the log,
+  diagnostics, a shell and remote-debug approval with tmux keys only, keep
+  remote debugging up from the configurator to the end, and confirm the
+  graphical installer shows the same stages and metrics.
+- [ ] Bring release media and documentation into sync before calling 1.4.0
+  published: update `release/current.json` from the verified published
+  release with `scripts/release-current.py update`, covering every published
+  image type (each architecture's installer and the separate hardware-trace
+  bring-up image), then pass `tests/docs-release-sync.py` in CI and complete
+  the HACKING.md release checklist for the README download section, release
+  notes, checksums, image names, every current-state document and the image's
+  own shipped documentation and data.
+- [ ] On the exact 1.4 image, with a real audio device on the physical console
+  and in a VM, hear and record every phase's flourish and sound: loader
+  splash (visual only), boot chime, configurator transitions, network and
+  firmware results, disk-commit warning, stage cards, package blips and
+  milestones, ambient layer, completion fanfare (or the error sound), the
+  installed system's first-boot welcome and the live desktop greeting.
+  Mute, volume and the configurator choice work; serial, headless,
+  unattended and no-device runs stay silent; a broken or missing device
+  never changes the install's result.
 
 Completion requires working cross-release reuse, a distributed multi-repository
 flow and retained receipts, not a renamed wrapper around the current serial
