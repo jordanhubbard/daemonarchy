@@ -83,7 +83,7 @@
   },
   "source_sha256": {
     "overlay/usr/local/libexec/daemonarchy-installer/progress-model.py": "516abf3d7f872b114e94f6604d0f146194d4aa1ce43c68db7e2e99298fbdf7c9",
-    "overlay/usr/local/libexec/daemonarchy-installer/progress-dashboard.py": "12da2e4310101ceef26b058e283666354cbd4588d46f1bb43e08d2a63b8a21eb",
+    "overlay/usr/local/libexec/daemonarchy-installer/progress-dashboard.py": "0ca3a6f00f63d0d09ca095e4eb69c98ed5d393d7b18469ee88865eab85ce2304",
     "overlay/usr/local/libexec/daemonarchy-installer/install-screen": "13ac9d78a5f2f4601e0f2d91a76539e1d8c8ea8ddc69abf669c259cf9853a7b3",
     "overlay/usr/local/libexec/daemonarchy-installer/install-views": "75bda3ebea92c24507d8e4536322f9384a87df71c2efae3f11048ab63800b3f0",
     "overlay/usr/local/libexec/daemonarchy-installer/dashboard": "73eb8e8484141d073cbdb91681886f33deeb7291bbf3eca5dccb24a0d923a34f",

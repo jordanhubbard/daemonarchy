@@ -916,6 +916,10 @@ def main(argv=None):
     # or crashed view is respawned by install-screen.
     if args.exit_file and finished:
         args.exit_file.write_text(f'{code}\n')
+        if os.environ.get('TMUX'):
+            # End the installer's session now that its result is recorded
+            # (install-screen's pane-died hook does the same where it fires).
+            subprocess.run(['tmux', 'kill-session'], capture_output=True, timeout=5, check=False)
     return code
 
 
