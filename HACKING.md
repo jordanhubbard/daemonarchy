@@ -15,7 +15,8 @@ is not a base/ABI migration.
 
 Read [PROJECT.md](PROJECT.md), [the active queue](docs/roadmap/active-work.md) and
 [the architecture](docs/architecture/design-traceability.md) before changing
-cross-component behavior. Literate AI 1.3.0 currently validates the in-place
+cross-component behavior. Literate AI (the framework release pinned in
+[the release controls workflow](.github/workflows/release-14-controls.yml)) validates the in-place
 contracts; original source and the native commands below retain implementation
 and release authority. Automatic quarantine conversion was not applied.
 
