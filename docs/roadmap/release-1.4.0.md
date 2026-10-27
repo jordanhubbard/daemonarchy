@@ -241,10 +241,13 @@ installation graphically instead of on the TUI. It does not need the full
 application set: a compositor, a terminal and a graphical installer front-end
 are enough.
 
-Make the read-only ISO root writable with `unionfs` and a tmpfs upper layer
-for `/etc`, `/usr/local`, `/root` and `/home`; `/var` and `/tmp` are already
-tmpfs. A plain `-o union` mount layers lookups but cannot change lower files,
-so it is not sufficient here. Select GPU modules from the ISO's own package
+Make the read-only ISO root usable without unionfs. Copy `/etc`,
+`/usr/local/etc`, `/root` and `/home` into tmpfs at boot, as FreeBSD's
+`rc.initdiskless` does; `/var` and `/tmp` are already tmpfs. Add GPU payloads
+only on tmpfs layers mounted with `-o union`, which can add files but never
+replace ISO files. A unionfs probe over the ISO's `/etc` stopped a FreeBSD
+16-CURRENT host during `pw`'s password database rename, so unionfs is not
+used. Select GPU modules from the ISO's own package
 repository so the live desktop needs no network. The graphical installer
 writes the same installation configuration as the TUI and renders the
 installer's `@@progress` stream, so both paths share one install engine. Keep

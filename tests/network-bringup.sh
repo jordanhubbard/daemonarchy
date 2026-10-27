@@ -504,7 +504,8 @@ network_dns_prompt && fail 'empty DNS answer accepted'
 
 grep -q '^source "$(dirname "$0")/network-bringup"$' "$lib/configurator" || fail 'configurator does not share the pipeline'
 grep -q 'printf .net_dns_source=%q' "$lib/configurator" || fail 'DNS source not written to install.conf'
-main=$(sed -n '/^user_step$/,/^network_step$/p' "$lib/configurator")
+# The flow is inside configurator_main, which runs only when executed.
+main=$(sed -n '/^ *user_step$/,/^ *network_step$/p' "$lib/configurator" | sed 's/^ *//')
 [[ $main == $'user_step\nnetwork_bringup_auto\nnetwork_step' ]] || fail 'network check does not run before the network screen'
 auto=$(grep -n 'network-bringup" auto' "$lib/launch" | cut -d: -f1)
 run=$(grep -n '^  if run_install; then' "$lib/launch" | head -n 1 | cut -d: -f1)

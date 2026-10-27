@@ -26,7 +26,10 @@ JAIL=${JAIL:-$image_jail}
 PTREE=${PTREE:-omarchyiso}
 SNAPSHOT_URL=${SNAPSHOT_URL:-$image_snapshot_url}
 SET_CACHE_DIR=${SET_CACHE_DIR:-$image_set_cache_dir}
-OUTDIR=${OUTDIR:-/usr/local/poudriere/data/images}
+# POUDRIERE_DATA must match the selected Poudriere configuration's own
+# setting, so an isolated configuration reads its own package repository.
+POUDRIERE_DATA=${POUDRIERE_DATA:-/usr/local/poudriere/data}
+OUTDIR=${OUTDIR:-$POUDRIERE_DATA/images}
 ABI=${ABI:-$image_abi}
 [ "$ABI" = "$image_abi" ] || { echo "ABI $ABI does not match ARCH $ARCH" >&2; exit 1; }
 POUDRIERE_ETC=${POUDRIERE_ETC:-}
@@ -58,7 +61,8 @@ if [ -n "$PACKAGE_REPOSITORY_PUBLIC_KEY" ]; then
     }
 fi
 CHECKOUT_CATALOG=${CHECKOUT_CATALOG:-$here/overlay/usr/local/share/daemonarchy-installer/checkouts.json}
-packages=/usr/local/poudriere/data/packages/$JAIL-$PTREE
+packages=$POUDRIERE_DATA/packages/$JAIL-$PTREE
+[ -d "$packages/All" ] || { echo "No package repository at $packages; set POUDRIERE_DATA to the configuration's data directory" >&2; exit 1; }
 [ -n "$CHECKOUT_CATALOG" ] && [ -s "$CHECKOUT_CATALOG" ] || {
   echo 'Set CHECKOUT_CATALOG to the published, signed checkout repository catalogue' >&2
   exit 1
@@ -151,6 +155,7 @@ live_python=$(pkg query -F "$omarchy_pkg" '%dn' | awk '/^python3[0-9]+$/ { print
 case "$live_python" in python3[0-9][0-9]) ;; *) echo 'Need one Python interpreter dependency for enterprise Wi-Fi' >&2; exit 1 ;; esac
 live_python_exe=$(printf '%s' "$live_python" | sed -E 's/^python3([0-9][0-9])$/python3.\1/')
 sed -i '' "1s@^.*\$@#!/usr/local/bin/$live_python_exe@" "$share/import-apple-bcm4364-firmware.py"
+sed -i '' "1s@^.*\$@#!/usr/local/bin/$live_python_exe@" "$stage/overlay/usr/local/libexec/daemonarchy-installer/live-installer"
 chmod 0755 "$share/omarchy-wifi-enterprise" "$share/import-apple-bcm4364-firmware.py"
 rm -rf "$extract"
 
@@ -222,6 +227,20 @@ echo "==> Building the image"
 # shellcheck disable=SC2086 # the architecture's kernel driver packages, if any
 printf '%s\n' bash gum tmux jq ttfx tzupdate pkg wifi-firmware-kmod $image_kernel_packages 7-zip >"$stage/live-packages"
 printf '%s\n' "$live_python" >>"$stage/live-packages"
+# The minimal live desktop (LIVE-001): compositor, seat and session bus, Mesa
+# for the open drivers (GPU kernel modules come from the ISO repository at
+# boot), a terminal, fonts, and GTK 3 with Python bindings for the graphical
+# installer. GTK 4 is avoided: its media dependencies roughly double the set.
+printf '%s\n' hyprland seatd dbus sudo mesa-dri foot dejavu gtk3 \
+    "py$(printf '%s' "$live_python" | sed 's/^python//')-pygobject" >>"$stage/live-packages"
+# poudriere image installs these from the bulk repository; name a missing
+# one here instead of failing inside the image build.
+while read -r live_package; do
+    ls "$packages/All/$live_package"-[0-9]*.pkg >/dev/null 2>&1 || {
+        echo "The live package $live_package is not in $packages; bulk-build ISO_ORIGINS and LIVE_ORIGINS" >&2
+        exit 1
+    }
+done <"$stage/live-packages"
 # Trim only the live root. The untouched base.txz still installs a complete
 # development system, and optional source/ports checkouts remain downloadable.
 cp "$here/scripts/live-image-excludes" "$stage/exclude"
@@ -245,6 +264,7 @@ fi
 
 iso=$OUTDIR/$NAME.iso
 [ "$image" = "$NAME" ] || mv "$OUTDIR/$image.iso" "$iso"
+# The raw budget fails before compression; the published .xz is checked below.
 sh "$here/scripts/check-image-size.sh" "$iso"
 digest=$(sha256 -q "$iso")
 printf '%s  %s\n' "$digest" "$(basename "$iso")" >"$iso.sha256"
