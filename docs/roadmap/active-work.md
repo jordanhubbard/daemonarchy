@@ -1074,6 +1074,7 @@ remains open; report files do not establish a passing gate.
   - [ ] Keep pool import, disk swap and every disk write disabled on the live path until an installation is confirmed.
   - Controller implementation and stub tests for the remaining items are in draft PR #74; none is checked until exact-image native evidence exists.
   - First native preview ([record](../testing-1.4-live-desktop-20261026.md)): raw ISO 3,504,902,144 bytes, `.xz` 1,573,059,812 bytes; the runtime audit passed; under bhyve the live boot, the no-supported-GPU fallback and the TUI default left the target disk unchanged. Desktop rendering, the graphical installation and the compositor-failure branch need QEMU/VirGL.
+  - QEMU/VirGL on madmax ([record](../testing-1.4-live-desktop-virgl-20261027.md)): live1 fell back because of a module-extraction defect. Rebuilt live2 (`358b16b`) rendered Hyprland and the graphical installer, passed the forced compositor-failure fallback and network-page parity, left the target unchanged in every live boot, and completed a graphical whole-disk install that boots to the installed desktop. Open question: whether firmware without a SecureBoot variable should count as Secure Boot off.
 - **Evidence:**
   - [ ] Exact-image VM runs reaching the live desktop and completing a graphical installation, with before/after disk digests proving the live path wrote nothing until install.
   - [ ] Fallback to the TUI installer when the compositor cannot start, and the TUI installer default unchanged.
