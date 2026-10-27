@@ -1,0 +1,164 @@
+{
+  "schema": "daemonarchy/aarch64-worker-native-build-development@1",
+  "queue_item": "ARCH-001",
+  "ledger_rows": [
+    "A12"
+  ],
+  "recorded_at": "2026-10-26T18:20:00Z",
+  "admission": "Operator-directed: the aarch64 VMware build worker is entirely the project's to reconfigure. Native builds on that worker only; no other host, no publication, no signing.",
+  "scope": "First native aarch64 kernel, world, poudriere jail and port build at the selected source and ports revisions. It confirms that x11-wm/hyprland builds natively on aarch64 with the ports#28 workaround. No package feed, image, VM or laptop result exists. Nothing here admits the worker to the release graph or qualifies aarch64.",
+  "follows": "verification/aarch64-worker-be16-bringup-20261026-development.json",
+  "worker": {
+    "role": "native-build-worker",
+    "identity": "operator VMware guest on Apple silicon; address and hostname kept out of this record",
+    "architecture": "aarch64",
+    "logical_cpus": 8,
+    "physical_memory_bytes": 17142145024,
+    "swap": "2 GiB partition",
+    "pool": "zroot 197G, ONLINE; 16.9G allocated, 180G free after the runs"
+  },
+  "host_changes_after_bringup": {
+    "performed_by": "coordinator, under the operator's direction",
+    "reboot": "Booted be16 (snapshot kernel main-n290219-041802b362aa), then the selected-source kernel.",
+    "pkg_database": "The 316 stale FreeBSD-* 15.1 records were purged (a backup of local.sqlite was kept on the worker), and freebsd-release-manifests was restored. 125 packages are registered.",
+    "boot_environments": "default (15.1) was destroyed. be16 is the only BE (NR).",
+    "address_selection": "ip6addrctl_policy=ipv4_prefer. The guest takes an IPv6 address from router advertisements, but IPv6 does not pass traffic, so every fetch stalled about 90 s before falling back."
+  },
+  "kernel": {
+    "source": "daemonarchy-src d63d77f4eb3cc29e16510f7bdec73602e27c2844 (/usr/src, detached)",
+    "freebsd_version": 1600029,
+    "config": "GENERIC (no arm64 DAEMONARCHY_DIAGNOSTIC exists; gap 3)",
+    "build_window_utc": "2026-10-26T11:46:32Z to 2026-10-26T12:07:10Z (kernel-toolchain plus buildkernel; buildkernel alone 12:02:25Z to 12:07:10Z)",
+    "ident": "FreeBSD 16.0-CURRENT #0 n290215-d63d77f4eb3c",
+    "kernel_sha256": "44e9a957aeb3e531fad2fb97c2478b4ad73e706889110b034784f73ddf85e11d",
+    "installed": "Running on the worker; the snapshot kernel (8152218c4f1a5d7ddab7ac0c7619eb4827e956fa7d3ce14726d020a9e921970d) is /boot/kernel.old.",
+    "logs": {
+      "kernel-d63d77f4.log": "40df57d4e461d7915ebd114d4d4eede9b0a6f966ae469cfc64979f1f5c80cfcc",
+      "installkernel-d63d77f4.log": "d0c981917b1609caa7af75779aa7c5acf4db217826d97ebb632a3f697b8ec1b6"
+    }
+  },
+  "world_and_jail": {
+    "jail": "16aarch64",
+    "version": "16.0-CURRENT 1600029",
+    "arch": "arm64.aarch64",
+    "method": "src=/usr/src at d63d77f4 (buildworld, installworld, kernel GENERIC)",
+    "buildworld_window_utc": "2026-10-26T12:18:18Z to 2026-10-26T12:58:35Z",
+    "jail_install_window_utc": "2026-10-26T12:58:35Z to 2026-10-26T12:59:17Z",
+    "clean_snapshot": "zroot/poudriere/jails/16aarch64@clean holds boot/kernel/kernel (44e9a957...e11d, the same d63d77f4 kernel), usr/lib32/libc.so.7 and usr/src/sys/sys/param.h (1600029).",
+    "lib32_libc_sha256": "34b87f5e8469dd802063e83390d913669a95a89e07a7a9b3a827120753369a83",
+    "logs": {
+      "world-jail-d63d77f4.log": "a6387f4e2ed1100d2f9bab4bb214b36e2499928f6c79d9430df2690e5f3e94cf",
+      "jail-16aarch64.log": "77cbc0ebbc5e14f5c787035a20a018149fc4c8819e194afe7f80ed1757fa2d88"
+    },
+    "earlier_failure": "jail-16aarch64.log is a first attempt at 12:13:16Z: installworld without a prior buildworld failed (Error code 71 in realmaninstall). It was retained and superseded by world-jail-d63d77f4.log."
+  },
+  "ports_tree": {
+    "name": "daemonarchy",
+    "repository": "https://github.com/jordanhubbard/daemonarchy-ports",
+    "branch": "daemonarchy",
+    "revision": "3e782916e6599225b8977646e39da872d01ecf43",
+    "includes": ["ports#28 merge 956ed4bb232cf84ca9291fd132b24f85bbc7ad1e", "ports#29 merge 3e782916e6599225b8977646e39da872d01ecf43"],
+    "clone": "git clone --depth 1 --single-branch into /usr/local/poudriere/ports/daemonarchy, registered with poudriere ports -m null (as in HACKING.md)",
+    "poudriere_settings": {
+      "poudriere.conf": "ZPOOL=zroot, FREEBSD_HOST=https://download.FreeBSD.org, USE_TMPFS=data, DISTFILES_CACHE=/usr/ports/distfiles",
+      "daemonarchy-poudriere.conf": "PACKAGE_FETCH_URL=\"http://pkg.FreeBSD.org/\\${ABI}\", ALLOW_MAKE_JOBS=yes"
+    }
+  },
+  "hyprland_testport": {
+    "command": "timeout 8h poudriere testport -j 16aarch64 -p daemonarchy -b latest [-J N] -o x11-wm/hyprland",
+    "port": "x11-wm/hyprland 0.56.2_2",
+    "result": "success",
+    "runs": [
+      {
+        "run": "aborted-fetchurl",
+        "window_utc": "2026-10-26T13:08:30Z to 2026-10-26T13:11:59Z",
+        "exit": 143,
+        "reason": "PACKAGE_FETCH_URL was written unescaped, so ${ABI} expanded empty and no package could be fetched. Stopped and corrected.",
+        "log_sha256": "4d586e8c70d501c6b76d5a572ece71e6275b985ccdd3c2854c86e99eb5360c2d"
+      },
+      {
+        "run": "run1-makejobs1",
+        "window_utc": "2026-10-26T13:12:20Z to 2026-10-26T14:35:55Z",
+        "exit": 143,
+        "builders": 8,
+        "fetched": 238,
+        "queued_to_build": 132,
+        "built_before_stop": 115,
+        "reason": "Stopped deliberately: without ALLOW_MAKE_JOBS each builder compiled llvm19 and rust single-threaded, which would not finish inside the bound. The built packages were kept.",
+        "log_sha256": "627c9cf23e2298193c76dcea66278bb0edfdd0ffbc3acb69e38b2ce6314b10c2"
+      },
+      {
+        "run": "run2",
+        "window_utc": "2026-10-26T14:36:27Z to 2026-10-26T14:57:19Z",
+        "exit": 1,
+        "builders": 3,
+        "make_jobs": "ALLOW_MAKE_JOBS=yes",
+        "failed": ["devel/llvm19 (build)", "lang/rust (build)"],
+        "skipped": 13,
+        "reason": "Out of memory: llvm19 and rust's bundled LLVM, both at 8 jobs together, had llvm-tblgen processes killed by the kernel ('failed to reclaim memory') on 16 GiB with 2 GiB swap. Not a compile error.",
+        "log_sha256": "0c113b2b3b23f0d34af03f35d4e3f16339252cf5d3c4dda55faf11db40025340",
+        "error_logs": {
+          "llvm19-19.1.7_4.log": "1f7599b2325ae30f8b8e741496512d887febaac85af8f67297891acfcacb4a1d",
+          "rust-1.99.1_1.log": "341451cd3e328b51a52e7ca48df8559e8124bc5f49b8b8a2cf37758fbd54b546"
+        }
+      },
+      {
+        "run": "run3",
+        "window_utc": "2026-10-26T14:58:52Z to 2026-10-26T18:00:07Z",
+        "duration_seconds": 10875,
+        "exit": 0,
+        "builders": 1,
+        "make_jobs": "ALLOW_MAKE_JOBS=yes",
+        "summary": "Queued 16, built 16, failed 0, skipped 0, then testport of x11-wm/hyprland passed.",
+        "dependency_build_times": {
+          "lang/rust": "00:52:45",
+          "devel/cargo-c": "00:43:54 (mostly crate fetch stalls before the IPv4 preference was set)",
+          "devel/llvm19": "00:56:35",
+          "multimedia/ffmpeg": "00:05:24",
+          "graphics/mesa-libs": "00:03:45",
+          "graphics/mesa-dri": "00:02:23"
+        },
+        "log_sha256": "9254204ab644dd138e7f71694706c5edb4ae048e13eba9e47a2282d84330a670",
+        "port_logs": {
+          "hyprland-0.56.2_2.log": "d817ccd4185f055ec1ecb28351d3c2650db536f68bdb0e019d0b9b198ad81294",
+          "llvm19-19.1.7_4.log": "d45e92690fae02c003deb8cb9760b8943e86d0e597c6352c84f9503d8717472b",
+          "rust-1.99.1_1.log": "ea290d986671a5e52ae4a873730acbe3bec476aba523ba6a80a27de725e10ceb"
+        }
+      }
+    ],
+    "hyprland_build": {
+      "window": "2026-10-26T10:56:47-07:00 to 2026-10-26T11:00:06-07:00 (build time 00:03:19)",
+      "compiler": "Clang 19.1.7, /usr/local/llvm19/bin/clang++ (the devel/llvm19 compiler that fails with PCH on the main-arm64 builder)",
+      "pch": "CMake reports 'Not using precompiled headers'; no .pch, -include-pch or cmake_pch reference appears in the log",
+      "phases": "configure, build (526 ninja steps), stage, stage-qa, check-plist ('No pkg-plist issues found'), staging-violation check, install, shared-library check, deinstall, leftover check, clean",
+      "qa_warnings": ["you might not need LIB_DEPENDS on libOpenGL.so, libglib-2.0.so, libintl.so, libharfbuzz.so", "REINPLACE_CMD did not modify src/render/OpenGL.cpp and src/debug/HyprCtl.cpp"],
+      "package_retained": false,
+      "package_note": "testport does not keep the target package in the repository; dependencies built here (rust, llvm19, mesa and others) are in /usr/local/poudriere/data/packages/16aarch64-daemonarchy. No feed or package identity is claimed."
+    },
+    "conclusion": "ports#28 is confirmed natively: hyprland 0.56.2_2 builds, stages, passes stage-qa and check-plist, and installs and deinstalls cleanly on aarch64 with devel/llvm19 once precompiled headers are disabled. This confirms a build, not a runtime: under VMware the guest cannot start Hyprland (gap 2)."
+  },
+  "admission": {
+    "native_inspect_worker_allocation": "Not applicable. native/inspect-worker-allocation.py relays to the inspection socket of a native/qemu-worker.py-supervised QEMU guest. This worker is a VMware guest with no such supervisor or socket, so nothing was run and no allocation record exists.",
+    "worker_template_checks": {
+      "template": "native/worker-template.json (platforms.freebsd)",
+      "commands": {
+        "git": "/usr/local/bin/git 2.56.0",
+        "make": "/usr/bin/make",
+        "cc": "/usr/bin/cc, FreeBSD clang 21.1.8",
+        "readelf": "/usr/bin/readelf",
+        "pkg": "/usr/sbin/pkg 2.8.4",
+        "gmake": "/usr/local/bin/gmake 4.4.1",
+        "pkg-config": "/usr/bin/pkg-config"
+      },
+      "python": "python3.12 3.12.14 (minimum 3.12)",
+      "free_space_gib": 177,
+      "minimum_free_gib": 10,
+      "result": "pass"
+    },
+    "release_graph": "Not admitted. The release graph's capacity and identity admission for the aarch64 worker is still to be defined and recorded.",
+    "capacity_notes": [
+      "16 GiB with 2 GiB swap cannot build llvm19 and rust concurrently at 8 jobs each. Use one builder for LLVM-class ports, or add memory.",
+      "The 200G disk is below docs/aarch64.md's 400 GiB sizing."
+    ]
+  }
+}

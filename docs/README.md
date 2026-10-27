@@ -59,6 +59,7 @@ reachable without changing its historical scope.
 - [Unpublished 1.2.0 plan and worker model](roadmap/release-1.2.0.md)
 
 - [1.2 loader test ISO and qualification](testing-1.2-test-iso.md)
+- [1.4 network-debug native rerun, October 26](testing-1.4-network-debug-20261026.md)
 
 - [NetGDB peer-close patch for human review](contributions/netgdb-peer-close.md)
 

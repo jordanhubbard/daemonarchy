@@ -3,9 +3,11 @@
 [ARCH-001](roadmap/active-work.md#arch-001-add-aarch64-as-a-second-supported-architecture-for-140)
 ([issue #62](https://github.com/jordanhubbard/daemonarchy/issues/62)) adds
 aarch64 alongside amd64 for 1.4.0. This page records the read-only inventory of
-2026-10-26 and the plan for the first native aarch64 worker. **No aarch64 world,
-kernel, package, image, VM or laptop result exists yet.** Nothing here
-qualifies aarch64, and no amd64 result stands in for one.
+2026-10-26, the plan for the first native aarch64 worker, and that worker's
+first native results: a kernel, world and poudriere jail at the selected source,
+and a passing `x11-wm/hyprland` testport. **No aarch64 package feed, image, VM
+or laptop result exists yet.** Nothing here qualifies aarch64, and no amd64
+result stands in for one.
 
 ## Inventory, blocking gaps first
 
@@ -48,8 +50,11 @@ and from upstream FreeBSD ports.
      - Every Hyprland library dependency is published for `FreeBSD:16:aarch64`.
      - I found no upstream fix in FreeBSD ports.
      - [daemonarchy-ports#28](https://github.com/jordanhubbard/daemonarchy-ports/pull/28)
-       builds without PCH on aarch64 only. This is a candidate fix until a native
-       aarch64 build confirms it.
+       builds without PCH on aarch64 only. A native aarch64 `poudriere testport`
+       at ports `3e782916` confirmed it on 2026-10-26: 0.56.2_2 builds with
+       `devel/llvm19` clang 19.1.7, passes stage-qa and check-plist, and
+       installs and deinstalls cleanly
+       ([record](#worker-record-native-kernel-jail-and-hyprland-2026-10-26)).
    - **`www/chromium`** is `ONLY_FOR_ARCHS= aarch64 amd64`, but has no aarch64
      package.
      - 15.1 aarch64: the build ran from 2026-10-20 08:24 to 2026-10-22 19:21 UTC.
@@ -280,6 +285,122 @@ matching 16.0-CURRENT snapshot sets. Record the resulting `uname -a` and
      build-iso.sh`. It produces `daemonarchy-VERSION-aarch64.iso` and `.iso.xz`
      with their checksums.
    - Record exact artifact identities separately from amd64.
+
+### Worker record: 15.1 to 16.0-CURRENT in a boot environment (2026-10-26)
+
+The first worker was installed from the 15.1 `dvd1` ISO. On 2026-10-26 the
+operator approved moving it to 16.0-CURRENT in a new boot environment, keeping
+15.1 for rollback. The full record, with every hash, is
+[`aarch64-worker-be16-bringup-20261026-development.json`](../verification/aarch64-worker-be16-bringup-20261026-development.json).
+It covers host preparation only. The results after the reboot are in the
+[next record](#worker-record-native-kernel-jail-and-hyprland-2026-10-26).
+
+- **Preflight.**
+  - The pool `zroot` (197G, one NVMe vdev) was ONLINE with no errors, and had
+    one BE, `default`.
+  - The ESP is p1, `gpt/efiboot0`. It held one 15.1 loader as both
+    `efi/freebsd/loader.efi` and `efi/boot/bootaa64.efi` (`f7fce7a5…`).
+  - The guest already had 8 vCPUs and about 16 GiB.
+  - The base was **pkgbase**, not the assumed distribution sets: 316 FreeBSD-*
+    15.1 packages from an enabled `FreeBSD-base` repository.
+- **Sets.** The `snapshots/arm64/aarch64/16.0-CURRENT` snapshot is `BUILDDATE`
+  20261019, `main` `041802b362aa` (`main-n290219`, 1600028). `kernel.txz`
+  (`652609c5…`), `base.txz` (`5e9fa69c…`) and `lib32.txz` (`36c53511…`) were
+  fetched over HTTPS and matched its `MANIFEST`.
+- **BE.** `bectl create be16` cloned `default`. In the mounted be16:
+  - `boot/kernel` became `kernel.15`, and `kernel.txz` was extracted.
+  - `base.txz` and `lib32.txz` were extracted with
+    `--clear-nochange-fflags`, excluding `etc`, `root` dotfiles,
+    `boot/device.hints` and the contents of the shared datasets.
+- **etcupdate.** The worker had no etcupdate database, and `etcupdate -t`
+  takes a build tree rather than `base.txz`. Two distribution trees (`etc`,
+  `root`, `boot/device.hints`) were cut from the verified 15.1-RELEASE and 16
+  `base.txz`. The 15.1 tree seeded `etcupdate extract`; then
+  `etcupdate -F -D /mnt/be16 -t` applied the 16 tree.
+  - **No conflicts.**
+  - `group` merged, gaining `audio` and `vmm`. 54 stock files were updated,
+    three added, and `rc.d/apm` removed.
+  - Users, `rc.conf`, `fstab`, `sysctl.conf`, ssh host keys, `loader.conf`
+    and `sudoers` were verified unchanged.
+  - `certctl rehash` followed.
+- **ESP.** The 16 `loader.efi` (`7f2b89e4…`) replaced `efi/freebsd/loader.efi`
+  and `efi/boot/bootaa64.efi`. The 15.1 copies stay beside them as
+  `loader-15.1.efi` and `bootaa64-15.1.efi`. EFI variables are unchanged.
+- **Packages.**
+  - In be16, `FreeBSD-base` is disabled, so pkg cannot overwrite the
+    verified sets.
+  - `git`, `python312`, `poudriere-devel`, `gmake` and `pkgconf` came from
+    `FreeBSD:16:aarch64` `latest`. Every ports package moved to the 16 ABI.
+  - This needed `IGNORE_OSVERSION`: the packages are 1600029 and the snapshot
+    userland is 1600028.
+  - The 15.1 FreeBSD-* records remain in the database. Removing them, or moving
+    base to pkgbase 16, is the operator's later choice.
+- **Source.** `/usr/src`, the shared dataset, is a blobless clone of
+  `daemonarchy-src` branch `daemonarchy` at `4bfe2344`. That head contains the
+  selected `d63d77f4` (1600029) plus 33 commits.
+- **Activation.** `bectl activate be16` was run: `bootfs` is
+  `zroot/ROOT/be16`. `default` is kept. `/root/BE16-README.txt` gives the
+  rollback, and `/root/be16-post-reboot.sh` in be16 holds the steps below.
+
+**Rollback:** choose `default` from the loader's boot-environment menu, or run
+`bectl activate default` and reboot. If the 16 loader ever fails, copy the
+`-15.1.efi` files back over the active names.
+
+The steps that needed the reboot (boot be16, build and install the
+selected-source kernel, create the jail, admission) are done or resolved in the
+next record.
+
+### Worker record: native kernel, jail and Hyprland (2026-10-26)
+
+The operator then put the worker entirely at the project's disposal. The record
+is
+[`aarch64-worker-native-build-20261026-development.json`](../verification/aarch64-worker-native-build-20261026-development.json).
+
+- **Host.** be16 booted. The stale FreeBSD-* 15.1 pkg records were purged and
+  `default` was destroyed, so be16 is the only BE. Address selection now prefers
+  IPv4 (`ip6addrctl_policy=ipv4_prefer`): the guest gets an IPv6 address that
+  passes no traffic, and every fetch stalled before falling back.
+- **Kernel.** The first native aarch64 kernel, GENERIC at `d63d77f4` (1600029),
+  was built in 20 minutes with its toolchain. It is installed and running as
+  `n290215-d63d77f4eb3c` (`44e9a957…`); the snapshot kernel is
+  `/boot/kernel.old`. No arm64 `DAEMONARCHY_DIAGNOSTIC` exists yet (gap 3).
+- **World and jail.** buildworld took 40 minutes. `16aarch64` (16.0-CURRENT
+  1600029, `arm64.aarch64`, `src=/usr/src`) was created from it. Its `@clean`
+  snapshot holds the same kernel, `usr/lib32/libc.so.7` and the 1600029
+  `param.h`. An earlier installworld without a buildworld failed and is kept.
+- **Ports tree.** `daemonarchy` is a depth-1 clone of `daemonarchy-ports`
+  branch `daemonarchy` at `3e782916`, which includes ports#28 and #29. It is
+  registered with `-m null`. `daemonarchy-poudriere.conf` pins
+  `PACKAGE_FETCH_URL` and sets `ALLOW_MAKE_JOBS=yes`.
+- **Hyprland.** `poudriere testport -j 16aarch64 -p daemonarchy -b latest
+  -o x11-wm/hyprland` **passed** on the third full run (3 h 1 min, one builder).
+  - 238 dependencies came from `FreeBSD:16:aarch64` `latest`. 131 ports were
+    built natively across the runs (115 in the first, 16 in the last), because
+    the ports tree is ahead of the official set. They include `lang/rust`
+    (53 min), `devel/llvm19` (57 min) and Mesa.
+  - Hyprland built with `/usr/local/llvm19/bin/clang++` 19.1.7, the compiler
+    that fails on the main-arm64 builder, and CMake reported "Not using
+    precompiled headers".
+  - stage-qa and check-plist passed, with only `LIB_DEPENDS` and
+    `REINPLACE_CMD` hints. Install, the shared-library check and deinstall
+    were clean.
+  - This confirms a build, not a runtime: the VMware guest cannot start
+    Hyprland (gap 2).
+- **Failed runs, kept.**
+  - One run had an unescaped `${ABI}`, so no package could be fetched.
+  - One single-job run was stopped deliberately because LLVM would have
+    outlasted the bound.
+  - A three-builder run lost `llvm19` and `rust` to the out-of-memory killer:
+    both built LLVM at 8 jobs on 16 GiB with 2 GiB swap. Use one builder for
+    LLVM-class ports, or add memory.
+- **Admission.**
+  - `native/inspect-worker-allocation.py` does not apply: it relays to a
+    `native/qemu-worker.py` QEMU guest's inspection socket, which a VMware
+    guest does not have.
+  - The `native/worker-template.json` checks pass: every command is present,
+    Python is 3.12.14, and 177 GiB is free against a 10 GiB minimum.
+  - The worker is **not admitted** to the release graph; that admission is
+    still to be defined. The 200G disk is below the 400 GiB sizing.
 
 ### Separate VMware test guests
 
