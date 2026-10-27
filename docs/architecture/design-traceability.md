@@ -26,8 +26,12 @@ shared input. Future source changes require a deliberate baseline refresh.
 
 Desktop and compatibility sources remain in their own repositories. Their local
 contracts describe product integration without moving or regenerating upstream
-source. The [release selection](../../verification/release-1.1.1.json) binds the
-published installer, FreeBSD source/ports, desktop and feed selections. The
+source. The latest published release (1.3.1) and its exact public assets are
+recorded in [`release/current.json`](../../release/current.json), which
+`tests/docs-release-sync.py` holds current-state documentation to. The committed
+historical [1.1.1 release selection](../../verification/release-1.1.1.json) binds the
+published installer, FreeBSD source/ports, desktop and feed selections; no
+matching 1.3.1 input record is committed. The
 compatibility identity is also recorded from the qualified release selection;
 none of these identities is inferred from an ambient checkout. Complete native
 input admission, including toolchains and firmware, remains unfinished work.
@@ -134,7 +138,7 @@ the public repository paths so mutable resolver mutexes are not documentation
 assets. Source
 indexing is disabled. Future framework updates must preserve these boundaries.
 
-<!-- literate-ai:authority-reviewed sha256:9bdb381a4245df57f794d41861babdb79dc108620581113996fd497aa970a5a1 -->
+<!-- literate-ai:authority-reviewed sha256:c8c89ab0cf7699e227f3866fb6c61af687f2f67f074faa32c3852f88cdba7a97 -->
 
 
 ## Rechecking preservation

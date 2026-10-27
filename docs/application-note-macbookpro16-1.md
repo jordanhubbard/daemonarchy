@@ -1,10 +1,20 @@
 # Application note: MacBook Pro 16-inch (2019)
 
 Updated October 24, 2026. Model: **MacBookPro16,1**, Apple T2, Intel Core
-i9-9880H. This note describes the observed 1.1 candidate installation on
-OSVERSION `1600027`; the released 1.1.1 uses `1600028`. It does not qualify a
-fresh 1.1.1 installation or claim that the newer base fixes these failures.
-The [October 22 investigation](testing-macbookpro16-1-installer-20261022.md)
+i9-9880H.
+
+**Current release:** 1.3.1 (OSVERSION `1600029`) carries the graphics, T2
+keyboard and BCM4364 Wi-Fi work described below, including the framebuffer and
+keyboard fixes and verified Apple firmware acquisition in the installer. The
+operator confirmed that all pre-production checks passed on this MacBook; an
+additional physical run of the final public ISO was waived. Suspend, the NVMe
+fault and firmware-enforced Secure Boot remain open. See the
+[1.3.1 release notes](release-1.3.1.md) and
+[MacBook acceptance record](testing-macbookpro16-1-1.3.1.md).
+
+The investigation below began with the 1.1 candidate installation on
+OSVERSION `1600027`; the earlier 1.1.1 release used `1600028`. The
+[October 22 investigation](testing-macbookpro16-1-installer-20261022.md)
 records later development fixes on a repaired 1600028 installation.
 
 ## Radeon Pro 5500M graphics
@@ -22,26 +32,26 @@ An earlier 6.6 driver attempt failed during PSP/SDMA firmware initialization.
 The later controlled 6.12 attempt read Navi14 firmware and initialized SMU and
 Display Core, then reported `KGQ enable failed`, `gfx_v10_0 hw_init failed -60`
 and device-attachment error 60. Surviving DRM device nodes did not represent
-successful initialization. The 1.1.1 graphics guard rejects that false-ready
+successful initialization. The graphics guard (since 1.1.1) rejects that false-ready
 state; it does not repair the underlying GPU failure.
 
 A later FreeBSD DRM reservation fix for the offset EFI framebuffer passed three
 clean physical boots, then a refreshed ports package reached SDDM's Wayland
 greeter. With the T2 keyboard test kernel, the operator entered a password and
 reached a visible Hyprland desktop on that package. Hardware radeonsi/Navi14
-rendering was observed. The corrected package is under review in
-[ports PR #19](https://github.com/jordanhubbard/daemonarchy-ports/pull/19);
-the released 1.1.1 image does not contain this fix.
+rendering was observed. The corrected package was merged in
+[ports PR #19](https://github.com/jordanhubbard/daemonarchy-ports/pull/19)
+and ships in 1.3.1; the earlier 1.1.1 image does not contain it.
 
 The built-in T2 keyboard previously stalled the desktop in synchronous HID LED
 output. The device-specific correction in
-[source PR #19](https://github.com/jordanhubbard/daemonarchy-src/pull/19)
-passed a native GENERIC build and a physical LED probe with the global LED
+[source PR #19](https://github.com/jordanhubbard/daemonarchy-src/pull/19),
+which ships in 1.3.1, passed a native GENERIC build and a physical LED probe with the global LED
 bypass disabled. The operator used the keyboard to log in. The built-in
 trackpad pointer was initially very laggy, then worked; reliable clicking,
 sustained input and normal-boot integration still need testing.
 
-## Built-in Wi-Fi is unavailable in the observed installation
+## Built-in Wi-Fi in the observed installation
 
 The detected wireless controller is **Broadcom BCM4364 revision 4**, PCI
 `14e4:4464`, Apple subsystem `106b:07bf`. The recorded inventory found it
@@ -55,7 +65,7 @@ This controller needs suitable FullMAC driver support and board-specific firmwar
 FreeBSD's existing [bwn driver](https://man.freebsd.org/cgi/man.cgi?query=bwn&sektion=4)
 is a SoftMAC driver; its firmware package is not a demonstrated fix for this
 BCM4364 device. Experimental external driver work mentioned in the investigation
-has not been validated on this MacBook or shipped as a working solution in 1.1.1.
+had not been validated on this MacBook or shipped as a working solution in the earlier 1.1.1.
 
 The earlier development installation exposed only loopback and USB Ethernet.
 A later private native FreeBSD driver and `bali` B3 firmware preview attached
@@ -63,9 +73,10 @@ PCI `14e4:4464`, scanned nearby networks and joined an access point. A
 subsequent isolated test passed gateway and Internet traffic over Wi-Fi, and
 the desktop displayed the connected network. The live installer previously
 associated without an IP address; a revised scan, WPA wait, DHCP and route
-path is awaiting a fresh install from the next image. Reassociation across
-access points, suspend and rebooted traffic remain unqualified for release.
-The [release investigation](roadmap/release-1.2.0.md) tracks these results.
+path ships in 1.3.1, whose MacBook pre-production checks passed by operator
+confirmation. Reassociation across access points, suspend and rebooted traffic
+remain unqualified. The earlier [release investigation](roadmap/release-1.2.0.md)
+retains these results.
 The [experimental native brcmfmac driver](https://github.com/narqo/freebsd-brcmfmac)
 targets BCM4350/BCM43455, so its present device support does not close this gap.
 Linux's [brcmfmac PCIe mapping](https://github.com/torvalds/linux/blob/master/drivers/net/wireless/broadcom/brcm80211/brcmfmac/pcie.c)
@@ -125,10 +136,12 @@ as qualified without testing their exact chipset and driver.
 ## Other limits and investigation
 
 The later installer retry reproduced a fatal NVMe status during package
-installation; recovery under four I/O trackers does not resolve its cause.
+installation. The [root cause and a driver fix](testing-macbookpro16-1-nvme-20261026.md)
+are recorded; the fix is not in the 1.3.1 kernel, and four I/O trackers only
+reduce the failures.
 Bluetooth, sustained trackpad behavior and restart causes remain unqualified.
-An [October 24 S3 test](testing-macbookpro16-1-s3-20261024.md) on the installed
-1.1.1 system exposed ACPI, input and networking failures after resume; suspend
+An [October 24 S3 test](testing-macbookpro16-1-s3-20261024.md) on the earlier
+installed 1.1.1 system exposed ACPI, input and networking failures after resume; suspend
 acceptance remains open.
 
 See the [dated investigation](testing-macbookpro16-1.md),

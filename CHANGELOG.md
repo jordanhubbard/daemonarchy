@@ -1,6 +1,25 @@
 # Changelog
 
-## 1.3.1
+## Unreleased
+
+### Changed
+
+- Current-state documentation now tracks the published 1.3.1 release. The
+  getting-started guide, HACKING.md, PROJECT.md, the documentation index,
+  hardware, Secure Boot, remote-debug, enterprise Wi-Fi, rescue, application
+  policy and checkout-sizing guides, the MacBook application note and the
+  `secureboot/` READMEs no longer present 1.1.1 as current. The 1.4 network
+  bring-up, unattended network check, live desktop and `.iso.xz` download are
+  described as upcoming. The default checkout catalogue shipped on the image is
+  now the published 1.3.1 catalogue (`checkouts-16-amd64-1.3.1-r2`).
+- `release/current.json` records the latest published release and its exact
+  public assets. `scripts/release-current.py` updates it from, and checks it
+  against, the published GitHub release. `tests/docs-release-sync.py` fails CI
+  when a current-state document names an older release as current, an older
+  image name, checksum or size, or an unreleased version as available. The
+  release procedure updates the record first, then the guard enforces the rest.
+
+## 1.3.1 — 2026-10-25
 
 [README.md](https://github.com/jordanhubbard/daemonarchy/blob/daemonarchy-1.3.1/README.md)
 
@@ -429,10 +448,6 @@ work; it is not a separate published tag in this repository. The proposed name
   an acceptance inventory. Retain original source, native commands and published
   release identities. Native lifecycle execution and release enforcement remain
   separate, unqualified follow-up work; no current passing receipt is claimed.
-
-## Unreleased
-
-Future changes after the 1.3.1 release candidate belong here.
 
 ## 1.1.1 — 2026-10-18
 

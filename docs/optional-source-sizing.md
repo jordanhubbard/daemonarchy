@@ -7,19 +7,30 @@ catalogue. See [the build and runtime instructions](https://github.com/jordanhub
 The seed packages contain no full historical repository; users can deepen
 history explicitly with Git.
 
-## Current 1.1.1 shallow packages
+## Current 1.3.1 shallow packages
 
 The checked-in [catalogue](../overlay/usr/local/share/daemonarchy-installer/checkouts.json)
-selects ports `f7d7ee897405dcb8ce87e674588a4e1b3bfba00e` on
-`daemonarchy-1.1.1` and source `bdcfeac3e1cb8ce3f05c32d8a7ad3597deb48bdf`.
-The [versioned checkout feed](https://github.com/jordanhubbard/daemonarchy/releases/tag/checkouts-16-bdcfeac3e1cb-f7d7ee897405-v1)
-is public and its signed catalogue, payloads and materialization have native
-verification recorded in [the 1.1.1 record](testing-1.1.1.md).
+is byte-identical to the one published with the
+[1.3.1 checkout feed](https://github.com/jordanhubbard/daemonarchy/releases/tag/checkouts-16-amd64-1.3.1-r2)
+(SHA-256 `c9909b88a6d9817ad01b2c96107b5a2eb2c67c3c993fe059e86b74134f89ca5c`).
+It selects daemonarchy-ports `b785784219af455a9ce4fd70c59bc96ba77f469f` and
+daemonarchy-src `d63d77f4eb3cc29e16510f7bdec73602e27c2844`, both on `main`. A
+native FreeBSD `pkg` client accepted the feed's signed catalogue; see the
+[1.3.1 release notes](release-1.3.1.md).
 
 | Selection | Package download, bytes | Extracted content including `.git`, bytes | Peak free-space allowance, bytes |
 | --- | ---: | ---: | ---: |
-| Ports | 237,513,943 | 728,629,485 | 3,906,574,381 |
-| System source | 716,771,851 | 1,930,848,921 | 6,923,737,608 |
+| Ports | 238,227,784 | 732,991,869 | 3,918,238,282 |
+| System source | 718,019,739 | 1,932,460,458 | 6,930,664,679 |
+
+<!-- release-sync: history -->
+The earlier 1.1.1 catalogue selected ports `f7d7ee897405dcb8ce87e674588a4e1b3bfba00e`
+on `daemonarchy-1.1.1` and source `bdcfeac3e1cb8ce3f05c32d8a7ad3597deb48bdf` from the
+[1.1.1 checkout feed](https://github.com/jordanhubbard/daemonarchy/releases/tag/checkouts-16-bdcfeac3e1cb-f7d7ee897405-v1),
+verified in [the 1.1.1 record](testing-1.1.1.md): ports 237,513,943 /
+728,629,485 / 3,906,574,381 bytes and system source 716,771,851 /
+1,930,848,921 / 6,923,737,608 bytes.
+<!-- /release-sync -->
 
 The allowances cover seed packages, assembly, extraction and allocation
 headroom; they are additional to the desktop target minimum and exclude build
@@ -132,11 +143,13 @@ different compressor will change download sizes.
 
 ## ISO impact
 
-The published 1.0.1 ISO is 1,834,121,216 bytes. Adding these two compressed
+<!-- release-sync: history -->
+This October 13 arithmetic is kept for provenance. The published 1.0.1 ISO is 1,834,121,216 bytes. Adding these two compressed
 archives gives approximately 2,169,336,760 bytes (2.020 GiB), before additional
 ISO metadata or other 1.1 changes. That exceeds the documented 2 GiB release
 asset budget by about 20.8 MiB. This is arithmetic on the existing ISO, not a
 new ISO build measurement.
+<!-- /release-sync -->
 
 Prefer downloading selected, pinned archives during installation; this adds
 no archive payload to the ISO. Offer independent selections and verify their

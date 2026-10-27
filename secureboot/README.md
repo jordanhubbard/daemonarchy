@@ -1,12 +1,12 @@
 # Secure Boot authoring
 
-This directory implements the 1.1 manual-enrollment boot profile and its
-authoring tools. The candidate integrates public signed artifacts into the
-installer; private keys and firmware-enrollment operations do not belong in
-this directory. See
+This directory implements the manual-enrollment boot profile, introduced in
+1.1, and its authoring tools. The published 1.3.1 release integrates its public
+signed artifacts into the installer; private keys and firmware-enrollment
+operations do not belong in this directory. See
 [the retained 1.1 evidence](../docs/testing-1.1-secureboot.md) and
-[current 1.1.1 qualification record](../docs/testing-1.1.1.md) for separate
-snapshot results and limits.
+[the 1.3.1 release notes](../docs/release-1.3.1.md) for separate snapshot
+results and limits.
 
 `patches/module-policy.patch` applies to FreeBSD source revision
 `bdcfeac3e1cb8ce3f05c32d8a7ad3597deb48bdf` for the **1.1.1** refresh
@@ -16,7 +16,8 @@ The production candidate `faac40107e936c2e133bd938ca56097d3cfed1c4`
 also has OSVERSION `1600029`; bundle creation, signing, module inventory and
 maintenance verification bind that exact revision to the matching ABI.
 The FreeBSD CURRENT integration `d63d77f4eb3cc29e16510f7bdec73602e27c2844`
-retains that OSVERSION and is the selected source for the next native build.
+retains that OSVERSION and is the source of the published 1.3.1 release, whose
+native Secure Boot policy build and signed boot bundle passed.
 The existing four Secure Boot patches are retained; the MacBook build selects
 its exact source with `--base`. Early-kernel network debugging remains open.
 All four patches also apply in sequence to the exact 1.3.1 source integration
@@ -84,12 +85,12 @@ sudo python3.12 secureboot/build.py --source /usr/src --out /path/to/fresh-build
   --selftest-certificate /path/to/public-selftest-leaf.pem --jobs 4
 ```
 
-For the 1.3.1 MacBook candidate, add
+For the 1.3.1 selection, add
 `--base d63d77f4eb3cc29e16510f7bdec73602e27c2844` and use a checkout at
 that exact revision. An earlier isolated build at `02984cfb` completed its
 policy kernel, verified loader and normal loader with a development
-certificate. The current revision's native build, signed bundle, firmware boot
-and full installation require separate qualification.
+certificate. The 1.3.1 native build and signed bundle passed for the release;
+firmware enforcement on physical hardware still requires separate qualification.
 
 The recipe requires the pinned source revision, creates a separate Git worktree,
 applies the policy and EFI patches and retains build logs. Write access to the
@@ -102,10 +103,10 @@ input/output hashes, options and build epoch. A fixed `--epoch` can be recorded
 for subsequent builds; it must fall within the certificates' validity periods.
 The receipt is build evidence, not a native boot qualification.
 
-For the current 1.3.1 candidate, pass `--base
-d63d77f4eb3cc29e16510f7bdec73602e27c2844`. The queued native recipe
-must apply its policy and EFI patches and complete a fresh build before the
-kernel, loader or signed bundle can be admitted. Omitting `--base` retains the
+For the published 1.3.1 selection, pass `--base
+d63d77f4eb3cc29e16510f7bdec73602e27c2844`. A new selection must apply its
+policy and EFI patches and complete a fresh native build before its kernel,
+loader or signed bundle can be admitted. Omitting `--base` retains the
 historical 1.1.1 source pin.
 
 For a retry, `--prepared-source /path/to/retained/worktree` avoids another
