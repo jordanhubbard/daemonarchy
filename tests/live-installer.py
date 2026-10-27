@@ -203,5 +203,35 @@ class ProgressTests(unittest.TestCase):
         self.assertFalse(view['succeeded'])
 
 
+    def test_shared_model_feeds_stages_ticker_download_and_activity(self):
+        self.assertIs(gui.InstallProgress, gui.model.InstallProgress)
+        model = gui.InstallProgress(self.log, self.status)
+        self.write('@@step partition 1000', '@@phase base', self.metric(1), '@@phase fetch',
+                   'Fetching bash-5.2.37: .......... done', '@@phase install',
+                   '[1/3] Installing bash-5.2.37...', '[2/3] Installing curl-8.11.1...')
+        view = model.poll()
+        for key in ('title', 'details', 'fraction', 'done', 'succeeded', 'recent',
+                    'stages', 'ticker', 'fetch', 'activity'):
+            self.assertIn(key, view)
+        text = gui.stages_text(view)
+        self.assertIn('Base sets', text)
+        self.assertIn('Packages', text)
+        self.assertIn('now', text.splitlines()[[r['key'] for r in view['stages']].index('packages')])
+        self.assertIn('curl-8.11.1', gui.ticker_text(view))
+        self.assertIn('2/3', gui.ticker_text(view))
+        self.assertIsInstance(gui.activity_text(view), str)
+
+    def test_activity_text_uses_measured_counters_only(self):
+        view = dict(activity=dict(available=True, current=dict(
+            cpu=0.5, disk_write=2 << 20, disk_read=0, net_rx=1 << 20, net_tx=0,
+            memory=dict(total=8 << 30, used=2 << 30, arc=1 << 30))), target=dict(encrypted=True))
+        text = gui.activity_text(view)
+        self.assertIn('CPU  50%', text)
+        self.assertIn('2.0 MB/s', text)
+        self.assertIn('ARC 1.0 GiB', text)
+        self.assertIn('GELI', text)
+        self.assertEqual(gui.activity_text(dict(activity=dict(available=False, current={}, error=''))), '')
+
+
 if __name__ == '__main__':
     unittest.main()

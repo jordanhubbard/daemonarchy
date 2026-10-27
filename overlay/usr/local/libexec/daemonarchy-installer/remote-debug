@@ -555,7 +555,7 @@ decide_request() {
 
 # Start the listener and leave it running in the background, still requiring
 # console approval for each new agent. The caller asks the operator first.
-# The install screen (key r) and the configurator approve requests, so no
+# The install screen (Ctrl-b R) and the configurator approve requests, so no
 # second virtual console or function key is needed.
 debug_background() {
   local port=${1:-}
@@ -573,7 +573,7 @@ debug_background() {
   network_addresses | awk -v port="$(cat "$state/port")" '{print "  ssh -p " port " root@" $1}'
   echo 'Server fingerprint:'
   ssh-keygen -l -f "$state/host_key.pub"
-  echo 'Approve each new agent from the install screen (key r) or with remote-debug approve.'
+  echo 'Approve each new agent from the install screen (Ctrl-b R) or with remote-debug approve.'
 }
 
 debug_stop() {

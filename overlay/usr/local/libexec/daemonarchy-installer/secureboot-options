@@ -10,13 +10,16 @@ secureboot_detect_enforcement() {
     1) printf 'true\n'; return ;;
     0) printf 'false\n'; return ;;
   esac
-  # Say why: the graphical installer showed only "exit 1" when firmware
-  # without a SecureBoot variable (plain OVMF.fd) stopped the install here.
-  byte=$(efivar -p -N -b -n 8be4df61-93ca-11d2-aa0d-00e098032b8c-SecureBoot 2>/dev/null |
-    od -An -tu1 | tr -d ' \n') || {
-    echo 'Cannot read the firmware SecureBoot variable; installation has not changed any disks.' >&2
-    return 1
-  }
+  # Firmware that exposes no SecureBoot variable (plain OVMF.fd, older PCs,
+  # some Mac EFI) cannot enforce signatures, so it counts as Secure Boot off
+  # (operator ruling for 1.4). A variable that exists but holds an unknown
+  # value still stops the install before any disk changes.
+  local variable=8be4df61-93ca-11d2-aa0d-00e098032b8c-SecureBoot
+  if ! efivar -p -N -b -n "$variable" >/dev/null 2>&1; then
+    echo 'The firmware has no SecureBoot variable; treating Secure Boot as off.' >&2
+    printf 'false\n'; return
+  fi
+  byte=$(efivar -p -N -b -n "$variable" 2>/dev/null | od -An -tu1 | tr -d ' \n') || byte=''
   case "$byte" in
     1) printf 'true\n' ;;
     0) printf 'false\n' ;;

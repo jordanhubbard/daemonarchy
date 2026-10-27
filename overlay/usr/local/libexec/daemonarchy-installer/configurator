@@ -1104,7 +1104,7 @@ remote_debug_background() {
   remote_debug="$(dirname "$0")/remote-debug"
   if ! "$remote_debug" status >/dev/null 2>&1; then
     gum confirm --default=false --affirmative "Start remote access" --negative "Back" \
-      "Start console-approved SSH access on port 2222? Approved agents get a root shell. It keeps running during the installation; the install screen (key r) approves new agents." || return 0
+      "Start console-approved SSH access on port 2222? Approved agents get a root shell. It keeps running during the installation; the install screen (Ctrl-b R) approves new agents." || return 0
   fi
   "$remote_debug" background 2222 || echo 'Remote debug could not start. Configure the network first.'
   echo

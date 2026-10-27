@@ -4,8 +4,10 @@
 It asks the text configurator's questions, has live-backend (run as root
 through sudo, and itself sourcing the configurator) validate them and write
 the same /tmp/daemonarchy-install.conf, starts the same install engine, and
-renders that engine's @@phase/@@progress log with the text dashboard's own
-parser (progress-dashboard.py). Meters show only measured work.
+renders that engine's log through the shared progress model
+(progress-model.py) that the console screen also uses: the same stages,
+package ticker, download bytes and system activity. Meters show only
+measured work.
 
 Nothing here touches a disk: the only disk-changing request is "install",
 sent after the operator confirms, and live-backend checks it again.
@@ -22,9 +24,15 @@ LIBEXEC = Path(os.environ.get('ISO_LIBEXEC', Path(__file__).resolve().parent))
 BACKEND = str(LIBEXEC / 'live-backend')
 TERMINAL = os.environ.get('DAEMONARCHY_LIVE_TERMINAL', 'foot')
 
-_spec = importlib.util.spec_from_file_location('installer_progress', LIBEXEC / 'progress-dashboard.py')
-dashboard = importlib.util.module_from_spec(_spec)
-_spec.loader.exec_module(dashboard)
+
+def _load(name, filename):
+    spec = importlib.util.spec_from_file_location(name, LIBEXEC / filename)
+    module = importlib.util.module_from_spec(spec)
+    spec.loader.exec_module(module)
+    return module
+
+
+model = _load('daemonarchy_progress_model', 'progress-model.py')
 
 PAGES = ('welcome', 'keyboard', 'account', 'network', 'options', 'disk', 'review', 'progress')
 FIELD_PAGES = dict(
@@ -59,7 +67,7 @@ class Backend:
             reply = {}
         if result.returncode != 0 or reply.get('ok') is not True:
             message = reply.get('message') or (result.stderr or '').strip()[-400:] or 'The installer backend failed.'
-            raise BackendError(dashboard.clean(message, 400), reply.get('field'))
+            raise BackendError(model.clean(message, 400), reply.get('field'))
         return reply
 
     def terminal_command(self, step):
@@ -124,30 +132,56 @@ def network_view(status):
                 clock_unusable=status.get('clock_status') not in (None, 'usable'))
 
 
-class InstallProgress:
-    """The text dashboard's measured-progress state, read from the same files."""
+# The shared model's adapter: poll() returns the keys the progress page reads
+# (title, details, fraction, done, succeeded, recent) plus stages, ticker,
+# fetch and activity, all from the same log and counters as the console.
+InstallProgress = model.InstallProgress
 
-    def __init__(self, log, status):
-        self.state = dashboard.Progress()
-        self.tail = dashboard.Tail(log)
-        self.status_path = status
-        self.idle_polls = 0
+STAGE_MARKS = dict(done='done', active='now', failed='FAILED', skipped='skipped', pending='')
 
-    def poll(self):
-        before = self.state.key()
-        drained = self.tail.poll(self.state)
-        self.idle_polls = 0 if self.state.key() != before else self.idle_polls + 1
-        result = dashboard.status(self.status_path)
-        if not drained:
-            result = None
-        meter = self.state.meter
-        rows = dashboard.lines(self.state, 'plain', 200, idle=self.idle_polls >= 25, result=result)
-        view = dict(title=rows[1], details=rows[2:], fraction=None, done=result is not None,
-                    succeeded=result == 0 and not self.state.warning and not self.state.failed,
-                    recent=list(self.state.recent))
-        if meter:
-            view['fraction'] = meter[1] / meter[2]
-        return view
+
+def stages_text(view):
+    """One row per installer stage with its measured elapsed time."""
+    rows = []
+    for row in view.get('stages') or ():
+        mark = STAGE_MARKS.get(row['state'], row['state'])
+        elapsed = model.format_elapsed(row['elapsed'])
+        rows.append(f"{row['label']:<12} {mark:<8} {elapsed}".rstrip())
+    return '\n'.join(rows)
+
+
+def ticker_text(view):
+    """The package names pkg reported most recently, with n/N and rate."""
+    ticker = view.get('ticker') or {}
+    names = ticker.get('names') or []
+    if not names:
+        return ''
+    text = f"{ticker.get('kind') or 'Package'} {ticker.get('current', 0):,}/{ticker.get('total', 0):,}"
+    if ticker.get('rate'):
+        text += f" ({ticker['rate']:.0f}/min)"
+    return text + ': ' + ', '.join(names[-6:])
+
+
+def activity_text(view):
+    """Measured CPU, disk, network and memory rates; empty without counters."""
+    activity = view.get('activity') or {}
+    current = activity.get('current') or {}
+    if not activity.get('available') or 'cpu' not in current:
+        return activity.get('error') or ''
+    fmt = model.format_rate
+    text = (f"CPU {current['cpu'] * 100:3.0f}%   disk write {fmt(current['disk_write']).strip()}"
+            f"   read {fmt(current['disk_read']).strip()}   net in {fmt(current['net_rx']).strip()}"
+            f"   out {fmt(current['net_tx']).strip()}")
+    if 'zfs_write' in current:
+        text += f"   ZFS writes {fmt(current['zfs_write']).strip()}"
+    memory = current.get('memory') or {}
+    if memory.get('total'):
+        text += f"\nMemory {model.format_bytes(memory['used'])} of {model.format_bytes(memory['total'])}"
+        if 'arc' in memory:
+            text += f"; ARC {model.format_bytes(memory['arc'])}"
+    if (view.get('target') or {}).get('encrypted'):
+        text += '\nEvery pool write shown passes through GELI encryption.'
+    return text
 
 
 def run_gui():  # pragma: no cover - needs a Wayland session
@@ -475,7 +509,12 @@ def run_gui():  # pragma: no cover - needs a Wayland session
     bar = Gtk.ProgressBar(show_text=False)
     details = Gtk.Label(xalign=0, wrap=True)
     recent = Gtk.Label(xalign=0, selectable=True)
-    for widget in (phase, bar, details, recent):
+    stages = Gtk.Label(xalign=0)
+    ticker = Gtk.Label(xalign=0, wrap=True)
+    activity = Gtk.Label(xalign=0, wrap=True)
+    for widget in (stages, activity):
+        widget.get_style_context().add_class('monospace')
+    for widget in (phase, bar, stages, details, ticker, activity, recent):
         box.pack_start(widget, False, False, 0)
     finish = Gtk.Box(spacing=8)
     reboot = Gtk.Button(label='Reboot into Daemonarchy')
@@ -523,6 +562,9 @@ def run_gui():  # pragma: no cover - needs a Wayland session
         else:
             bar.set_fraction(view['fraction'])
         details.set_text('\n'.join(view['details']))
+        stages.set_text(stages_text(view))
+        ticker.set_text(ticker_text(view))
+        activity.set_text(activity_text(view))
         if view['done']:
             recent.set_text('' if view['succeeded'] else '\n'.join(view['recent']))
             finish.set_visible(view['succeeded'])

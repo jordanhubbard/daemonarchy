@@ -12,7 +12,9 @@ work=$(mktemp -d /var/tmp/daemonarchy-live-audit.XXXXXX)
 device=''
 mounted=false
 devfs_mounted=false
+tmp_mounted=false
 cleanup() {
+  if "$tmp_mounted"; then umount "$work/root/tmp"; fi
   if "$devfs_mounted"; then umount "$work/root/dev"; fi
   if "$mounted"; then umount "$work/root"; fi
   [ -z "$device" ] || mdconfig -d -u "$device"
@@ -27,6 +29,9 @@ mount -t cd9660 -o ro "/dev/$device" "$work/root"
 mounted=true
 mount -t devfs devfs "$work/root/dev"
 devfs_mounted=true
+# The image is read-only cd9660; tmux needs a writable /tmp for its socket.
+mount -t tmpfs -o size=16m tmpfs "$work/root/tmp"
+tmp_mounted=true
 chroot "$work/root" /bin/sh -s -- "$mode" <<'AUDIT'
 set -eu
 PATH=/bin:/sbin:/usr/bin:/usr/sbin:/usr/local/bin:/usr/local/sbin
