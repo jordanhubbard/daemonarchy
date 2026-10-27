@@ -86,6 +86,13 @@ class AnswerTests(unittest.TestCase):
         self.assertEqual((free['free_start'], free['install_size_mib']), ('1000', '30000'))
         self.assertNotIn('partition_index', free)
 
+    def test_sound_choice_reaches_the_answers(self):
+        self.assertEqual(gui.build_request(answers())['sound'], '')
+        for mode in ('on', 'quiet', 'off'):
+            self.assertEqual(gui.build_request(answers(sound=mode))['sound'], mode)
+        self.assertEqual(gui.build_request(answers(sound='loud'))['sound'], '')
+        self.assertIn('sound_mode=$sound', BACKEND)
+
     def test_every_backend_error_routes_to_a_screen(self):
         self.assertTrue(BACKEND_ERRORS)
         for name in BACKEND_ERRORS:

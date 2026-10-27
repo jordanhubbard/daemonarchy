@@ -85,7 +85,7 @@ FIELD_PAGES = dict(
     username='account', password='account', password_confirmation='account', full_name='account',
     email_address='account', hostname='account', timezone='account',
     network='network', address='network', gateway='network', dns='network', ssid='network',
-    ssh_enable='options', install_ports='options', install_src='options', checkouts='options',
+    ssh_enable='options', install_ports='options', install_src='options', checkouts='options', sound='options',
     disk='disk', disk_snapshot='disk', install_mode='disk', efi_index='disk', partition_index='disk',
     free_start='disk', install_size_mib='disk', encrypt_installation='disk',
     confirm_partition='review')
@@ -128,6 +128,7 @@ def build_request(answers):
     flags = ('ssh_enable', 'install_ports', 'install_src', 'encrypt_installation')
     request = {key: str(answers.get(key, '')) for key in text}
     request.update({key: bool(answers.get(key, False)) for key in flags})
+    request['sound'] = answers.get('sound', '') if answers.get('sound', '') in ('on', 'quiet', 'off') else ''
     mode = request['install_mode']
     if mode in ('partition', 'free_space'):
         request['efi_index'] = str(answers.get('efi_index', ''))
@@ -308,6 +309,19 @@ def run_gui():  # pragma: no cover - needs a Wayland session
         volume.connect('value-changed', sound_changed)
         for widget in (sound_label, volume, mute):
             buttons.pack_start(widget, False, False, 0)
+
+    def sound_choice():
+        """The choice for the installed system: muted means off; otherwise a mode
+        chosen on purpose (automatic silences live in the status file, not here)."""
+        if sound is None:
+            return ''
+        try:
+            settings = sound.read_settings(sound.runtime_dir() / 'settings')
+        except Exception:  # noqa: BLE001
+            return ''
+        if settings.get('muted'):
+            return 'off'
+        return settings.get('mode', '')
     pages = {}
 
     def page(name, title):
@@ -630,6 +644,7 @@ def run_gui():  # pragma: no cover - needs a Wayland session
     box.pack_start(finish, False, False, 0)
 
     def collect():
+        answers['sound'] = sound_choice()
         answers.update(
             keyboard=keyboard.get_active_id() or '', username=username.get_text(), password=password.get_text(),
             password_confirmation=confirm.get_text(), full_name=full_name.get_text(), email_address=email.get_text(),
