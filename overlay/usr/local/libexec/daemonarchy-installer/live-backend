@@ -407,7 +407,10 @@ cmd_write_conf() {
   flag encrypt_installation
   # The sound choice made with the installer's Mute button carries over, as the
   # text configurator's Sound: entry does. Empty keeps the installed default.
-  field sound
+  sound=''
+  if jq -e 'has("sound")' <<<"$request" >/dev/null; then
+    field sound
+  fi
   [[ $sound =~ ^(on|quiet|off)?$ ]] || invalid sound 'Choose on, quiet or off for sound.'
   sound_mode=$sound
   cuda_step
