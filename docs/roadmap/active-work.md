@@ -990,9 +990,11 @@ remains open; report files do not establish a passing gate.
 - **Conclusion:** Package registration and progress do not establish completion; preserve the interrupted target and controller evidence, then qualify a storage correction and complete native installation and desktop acceptance.
 - **Depends on:** none
 - **Implementation:**
-  - [ ] Reproduce and isolate ANS2 fatal I/O, preserve exact input and recovery identities, implement an independently tested correction, then repeat fresh-image installation and hardware checks.
+  - [x] Reproduce and isolate the ANS2 fatal I/O and implement a tested correction. The fault is the driver releasing command IDs before the CQ head doorbell acknowledges their completions; see daemonarchy-src PR 34 and docs/testing-macbookpro16-1-nvme-20261026.md.
+  - [ ] Select the correction into the source integration branch, then repeat fresh-image installation, package integrity and hardware checks with a release kernel that contains it.
 - **Evidence:**
   - [ ] 2026-10-22 physical reproduction, exact cached package recovery under four trackers, and full integrity after a forced power-off are recorded in docs/testing-macbookpro16-1-installer-20261022.md. Instrumented Navi14 tests isolate a graphics-queue initialization boundary. A 2026-10-23 FreeBSD-current review produced an isolated native-compiling NVMe candidate with upstream reset recovery, but it is not selected or hardware qualified. Storage cause, false-success explanation and complete hardware acceptance remain open.
+  - [x] 2026-10-26: the ANS2 fatal status (CSTS.CFS) reproduces in seconds with raw random writes at queue depth 4 or more, on both the 1.1.1 and 1.3.1 kernels, so it is not a 1.3.1 regression. Acknowledging each completion through the CQ head doorbell before its command ID can be reused, and never repeating an unchanged doorbell write, passed 2.4M QD-8 and 4.8M QD-48 random writes, the original 3-round stress, and 5 rounds over all 1,906 cached packages, with no recovery events. The machine now boots that kernel by default. Recorded in docs/testing-macbookpro16-1-nvme-20261026.md; fresh-image installation and the false-success explanation remain open.
 
 ### [ ] HW-003 — Acquire and install required laptop firmware
 

@@ -153,6 +153,15 @@ the existing installation merely to resume packages. No reset cause or
 fully qualified 1.1.1 installer result is established despite the later desktop
 login on the repaired installation.
 
+The internal T2 SSD (ANS2, `106b:2005`) raised a fatal controller status
+under concurrent writes on both the 1.1.1 and 1.3.1 kernels. That fault
+interrupted package installation. The cause is the order in which the driver
+acknowledged completions, and a driver fix is under review; see the
+[October 26 NVMe record](testing-macbookpro16-1-nvme-20261026.md). Kernels
+without the fix can avoid most failures with `hw.nvme.io_trackers=4`, but
+this is only a workaround: queue depths of 4 and 8 still faulted in raw-write
+tests.
+
 Use named sysctl keys on this machine: broad `sysctl -a` enumeration previously
 triggered a confirmed LinuxKPI `sysctl_handle_attr()` general-protection fault.
 The [dated investigation](testing-macbookpro16-1.md) records what was repaired
