@@ -21,6 +21,12 @@ on:
       - 'tests/recover-retained-package-inventory.py'
       - 'overlay/usr/local/libexec/daemonarchy-installer/install'
       - 'overlay/usr/local/libexec/daemonarchy-installer/package-repository'
+      - 'tests/docs-release-sync.py'
+      - 'scripts/release-current.py'
+      - 'release/**'
+      - '**.md'
+      - 'literate.project.json'
+      - 'overlay/usr/local/share/daemonarchy-installer/checkouts.json'
       - 'test-bhyve.sh'
   pull_request:
     paths:
@@ -42,6 +48,12 @@ on:
       - 'tests/recover-retained-package-inventory.py'
       - 'overlay/usr/local/libexec/daemonarchy-installer/install'
       - 'overlay/usr/local/libexec/daemonarchy-installer/package-repository'
+      - 'tests/docs-release-sync.py'
+      - 'scripts/release-current.py'
+      - 'release/**'
+      - '**.md'
+      - 'literate.project.json'
+      - 'overlay/usr/local/share/daemonarchy-installer/checkouts.json'
       - 'test-bhyve.sh'
   workflow_dispatch:
 
@@ -49,6 +61,20 @@ permissions:
   contents: read
 
 jobs:
+  # Current-state documentation must agree with release/current.json, the
+  # record of the latest published release. Needs only the standard library.
+  docs-release-sync:
+    runs-on: ubuntu-latest
+    steps:
+      - uses: actions/checkout@v4
+      - uses: actions/setup-python@v5
+        with:
+          python-version: '3.13'
+      - name: Documentation and release media agree
+        env:
+          PYTHONDONTWRITEBYTECODE: '1'
+        run: python3 tests/docs-release-sync.py -v
+
   controls:
     runs-on: ubuntu-latest
     steps:

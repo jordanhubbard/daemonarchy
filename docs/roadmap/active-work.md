@@ -241,7 +241,7 @@ lifecycle authority.
   - [ ] Useful readable metrics, genuine waiting/failure states, resize and reduced-motion behavior, bounded cost and native console demonstrations.
   - [ ] A full installation of the exact 1.4 image on the physical console, including the MacBookPro16,1 with no function keys, using only the tmux keys for the log, diagnostics, a shell and remote-debug approval.
   - [ ] The same stages and metrics in the graphical installer (LIVE-001) from `progress-model.py`.
-  - [ ] Every phase's flourish and sound seen and heard on the exact 1.4 image with a real audio device (loader splash visual only), mute/volume/mode controls working, and serial, unattended and no-device runs silent with the install result unchanged ([A16](1.4-coverage-ledger.md#acceptance-rows)).
+  - [ ] Every phase's flourish and sound seen and heard on the exact 1.4 image with a real audio device (loader splash visual only), mute/volume/mode controls working, and serial, unattended and no-device runs silent with the install result unchanged ([A17](1.4-coverage-ledger.md#acceptance-rows)).
 
 ### [ ] PKG-001 — Implement the release package DAG and safe parallel transactions
 
@@ -368,6 +368,7 @@ lifecycle authority.
 - **Depends on:** ADOPT-002,UI-001,PKG-001,GUI-001,DEBUG-001,HW-001,SRC-001,COMP-001
 - **Implementation:**
   - [x] Inventory current roadmap and queue obligations in [the 1.2.0 completion ledger](release-1.2.0.md), including inherited Bluetooth, enterprise Wi-Fi, dual-boot, bhyve and physical trust/graphics gaps.
+  - [x] Keep release media and documentation in sync: [`release/current.json`](../../release/current.json) records the latest published release and all its image types and asset digests; `scripts/release-current.py` updates and checks it against GitHub; `tests/docs-release-sync.py` runs in the release-controls workflow and fails on a current-state document that names an older release as current, an older image name, checksum or size, or an unreleased version as available. HACKING.md's release step 3 is the checklist. The 1.4.0 publication must pass it ([ledger row A16](1.4-coverage-ledger.md)).
   - [ ] Contribute and qualify upstream FreeBSD platform and retained execution support; bind private native workers and VM supervision; complete backlog implementations and acceptance; run the exact final release through Literate AI and verify publication.
 - **Evidence:**
   - [ ] Every inherited backlog obligation has direct completion evidence; native and virtual/physical acceptance match exact final artifacts; full LitAI verification and release gates pass; published new release and immutable assets are verified.
@@ -1050,7 +1051,8 @@ remains open; report files do not establish a passing gate.
   - [ ] Qualify deliberate pre-driver/later panic, hard-reset retention, normal boot, transport faults and safe native-driver takeover; package the controller and separate 1.4 diagnostic image in isolated output roots.
 - **Evidence:**
   - [ ] Complete the plan's native/UEFI loader, boot-block, forced-mountroot, panic, disk-boot, fault and recovery matrix with exact artifact identities and the earliest covered stage stated honestly.
-  - [ ] Retain independent pre-driver panic/reset captures, successful normal boot and actual MSI built-in-NIC evidence. Preserve controller logs on loss; do not repeat exhausted ACPI/SMP/panic tunable comparisons or infer a reset cause from silence.
+  - [ ] Retain independent pre-driver panic/reset captures, successful normal boot and actual MSI built-in-NIC evidence.
+- **Reset-surviving boot trace (MSI):** The MSI's RTL8125 has no early kernel backend, so a [hardware trace stick](../boottrace.md) records each SYSINIT, device probe/attach, config hook, mountroot and panic in the UEFI variable `DaemonarchyBootTrace` before the step runs (opt-in `debug.boottrace=1`; coarse by default within a `QueryVariableInfo` byte budget, `debug.boottrace.from=N` zooms in). The loader files each boot's trace on the stick's `DATRACE` partition and boots the next queued experiment unattended; `tools/windows/read-boottrace.ps1` is the Windows fallback. The loader change also accepts UNDI 3.1 ROMs reporting minor version 0x10 (the MSI's RTL8125). The [first MSI run](../testing-1.4-boottrace-20261027.md#first-physical-run-msi-raider-18-hx-ai-ami-e1824ims317) proved the loop on AMI E1824IMS.317 but found only 55 KiB of NVRAM free; 64-byte breadcrumbs and an 8–16 KiB reserve now fit about 250 steps from `SI_SUB_CONFIGURE` in that space (QEMU with a store filled to 52 KiB). The dedicated image is tracked as DEBUG-004. Preserve controller logs on loss; do not repeat exhausted ACPI/SMP/panic tunable comparisons or infer a reset cause from silence.
 
 ### [ ] ARCH-001 — Add aarch64 as a second supported architecture for 1.4.0
 
@@ -1106,3 +1108,15 @@ remains open; report files do not establish a passing gate.
 - **Evidence:**
   - [ ] Exact-image VM matrix: several NICs with only one offering DHCP, DHCP DNS broken, public DNS blocked with a user resolver, ICMP blocked, a wrong clock fixed by NTP and then by hand, and an unattended CIDATA run, with the retained network-check logs.
   - [ ] The MacBookPro16,1 BCM4364 path on physical hardware: offline firmware first, Wi-Fi-first ordering with no cable, then DNS and clock over Wi-Fi.
+
+### [ ] DEBUG-004 — Ship a hardware bring-up trace image for developers and agentic researchers
+
+- **Priority:** P1
+- **Owner:** diagnostics, owned FreeBSD source and release integration
+- **Direction:** Master a separate hardware bring-up / trace image (daemonarchy-hwtrace-VERSION-amd64.img) beside the install/live ISO: boottrace kernel and modules, the boottrace loader with the unattended experiment cycle as its only behaviour, /boot/d presets, a rescue root that saves dmesg/sysctl/pciconf/devinfo/acpidump to DATRACE when a boot reaches init, and the DATRACE queue/trace partition.
+- **Conclusion:** Unattended cycling cannot coexist with the install ISO's interactive menu, so the trace loop is its own image type; the standard ISO keeps at most the interactive single traced boot.
+- **Depends on:** DEBUG-003
+- **Implementation:**
+  - [ ] build-hwtrace-image.sh on the FreeBSD builder; tools/boottrace/stick.py for queues and traces; release-asset handling when published
+- **Evidence:**
+  - [ ] QEMU/OVMF multi-boot checks with a crowded NVRAM store; physical MSI Raider iterations

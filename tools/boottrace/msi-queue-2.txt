@@ -1,0 +1,14 @@
+# Second MSI queue (after the first run showed only 55 KiB of NVRAM free).
+# Fine-grained breadcrumbs from SI_SUB_CONFIGURE (the default from_sub).
+
+[legacy-off]
+read-conf /boot/d/1
+kern.panic_reboot_wait_time=15
+
+[defaults]
+kern.panic_reboot_wait_time=15
+
+[legacy-off-one-cpu]
+read-conf /boot/d/1
+kern.smp.disabled=1
+kern.panic_reboot_wait_time=15

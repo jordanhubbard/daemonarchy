@@ -1,0 +1,5 @@
+Hardware bring-up presets, for queue lines such as "read-conf /boot/d/1".
+1: legacy ISA devices off, verbose boot and per-SYSINIT console output
+2: 1 + no HPET (LAPIC/TSC timers only)
+3: 2 + one CPU
+4: 1 + no ACPI SPMC, hlt idle

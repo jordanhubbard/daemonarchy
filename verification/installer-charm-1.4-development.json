@@ -1,7 +1,7 @@
 {
   "schema": "daemonarchy/installer-charm-development@1",
   "work_item": "UI-001",
-  "acceptance_row": "A16",
+  "acceptance_row": "A17",
   "release": "1.4.0",
   "recorded": "2026-10-27",
   "scope": "Charm and sound across the installer phases on controller and native FreeBSD pseudo-terminals, and the OSS write path on a FreeBSD 16 host's real HDMI pcm device. No 1.4 image was built, no installation was run and nothing was heard on an exact image.",

@@ -4,11 +4,17 @@ Product goals and completeness are in root `PROJECT.md`; build and release
 commands remain in root `HACKING.md`. This index makes the retained evidence
 reachable without changing its historical scope.
 
+The current release is **1.3.1**: start with its
+[release notes](release-1.3.1.md) and the [getting-started guide](getting-started.md).
+Its published identity is recorded in
+[`release/current.json`](../release/current.json); documents dated or named for
+another version are historical records. 1.4 entries describe work in development.
+
 - [Application note: MacBook Pro 16-inch (2019)](application-note-macbookpro16-1.md)
 - [MacBookPro16,1 physical acceptance for 1.3.1](testing-macbookpro16-1-1.3.1.md)
 - [Daemonarchy 1.3.1 release notes and evidence](release-1.3.1.md)
 - [Product architecture and acceptance traceability](architecture/design-traceability.md)
-- [Enterprise Wi-Fi (1.1 / 1.1.1)](enterprise-wifi.md)
+- [Enterprise Wi-Fi](enterprise-wifi.md)
 - [FreeBSD application and menu policy](freebsd-application-policy.md)
 - [Pinned package dependency graphs](package-dag.md)
 - [Native package resolution checks](native-package-plan.md)
@@ -16,14 +22,16 @@ reachable without changing its historical scope.
 - [1.3.1 package repository key rotation](package-repository-key-rotation-1.3.1.md)
 - [Getting started with Daemonarchy](getting-started.md)
 - [Hardware quirks](hardware-quirks.md)
+- [Hardware trace stick: reset-surviving boot trace](boottrace.md)
+- [Hardware trace stick: QEMU/OVMF checks, October 27](testing-1.4-boottrace-20261027.md)
 - [Optional ports and system source: space estimate](optional-source-sizing.md)
-- [Daemonarchy 1.1.0](release-1.1.0.md)
+- [Daemonarchy 1.1.0 release notes (historical)](release-1.1.0.md)
 - [Installer remote agent debug mode](remote-agent-debug.md)
 - [EFI loader cannot find loader.lua](repair-efi-root.md)
 - [Installation logs and the rescue console](rescue-console.md)
 - [Active work](roadmap/active-work.md)
 - [Historical 1.3.2 network debugging plan](roadmap/release-1.3.2.md)
-- [1.4.0 Literate AI cross-repository build and release orchestration](roadmap/release-1.4.0.md)
+- [1.4.0 plan: Literate AI cross-repository build and release orchestration](roadmap/release-1.4.0.md)
 - [aarch64 inventory and VMware worker bring-up (ARCH-001)](aarch64.md)
 - [1.1.1-to-1.3.1 application package reuse inventory](evidence/release-1.3.1-package-reuse-inventory.md)
 - [Earlier 1.3.1 diagnostics scope and preflight evidence](roadmap/release-1.3.1.md)
@@ -32,7 +40,7 @@ reachable without changing its historical scope.
 - [Complete FreeBSD source and ports Component coverage](roadmap/freebsd-components.md)
 - [Native Component execution and build performance](roadmap/build-performance.md)
 - [Parallel native workspace and executor selection](roadmap/native-workspace.md)
-- [Manual certificate enrollment for 1.1 and 1.1.1](secure-boot.md)
+- [Manual Secure Boot certificate enrollment](secure-boot.md)
 - [1.1 BIOS development checks](testing-1.1-bios.md)
 - [Bluetooth audio development checks](testing-1.1-bluetooth-audio.md)
 - [Final 1.1 image qualification](testing-1.1-final-image.md)
@@ -60,12 +68,12 @@ reachable without changing its historical scope.
 - [Unpublished 1.2.0 plan and worker model](roadmap/release-1.2.0.md)
 
 - [1.2 loader test ISO and qualification](testing-1.2-test-iso.md)
-- [1.4 network-debug native rerun, October 26](testing-1.4-network-debug-20261026.md)
+- [1.4 development: network-debug native rerun, October 26](testing-1.4-network-debug-20261026.md)
 
 - [NetGDB peer-close patch for human review](contributions/netgdb-peer-close.md)
 
 - [Measured installer progress](installer-progress.md)
-- [1.4 install screen demos](demos/installer-visuals/README.md)
+- [Upcoming 1.4 install screen demos](demos/installer-visuals/README.md)
 
 - [Package reuse provenance inventory](package-reuse-inventory.md)
 

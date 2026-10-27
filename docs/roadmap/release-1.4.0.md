@@ -288,6 +288,21 @@ their `net_*` answers and stop with a clear message instead of prompting. When
 public or user DNS replaced broken DHCP DNS, the installed system keeps it.
 See [NET-001](active-work.md#net-001-make-the-installer-network-bring-up-proactive-and-robust).
 
+## Hardware bring-up trace image
+
+1.4 adds a second image type for Daemonarchy developers and agentic
+researchers: `daemonarchy-hwtrace-<version>-amd64.img`. It is built by
+`build-hwtrace-image.sh` and is not a mode of the install ISO. It carries the
+following:
+- the boottrace kernel and the loader's unattended experiment cycle
+- the `/boot/d` presets
+- a rescue root that saves diagnostics when a boot reaches init
+- a `DATRACE` partition for the queue, traces and dumps
+
+The install ISO never auto-cycles. Its loader offers at most the interactive
+single traced boot. Publishing the image needs its own release-asset entry.
+See [DEBUG-004](active-work.md#debug-004-ship-a-hardware-bring-up-trace-image-for-developers-and-agentic-researchers).
+
 ## Headline: a live, measured install screen
 
 A real MacBookPro16,1 installation of 1.3.1 showed almost no visible
@@ -423,6 +438,14 @@ Nothing animated or audible implies progress that was not observed.
   diagnostics, a shell and remote-debug approval with tmux keys only, keep
   remote debugging up from the configurator to the end, and confirm the
   graphical installer shows the same stages and metrics.
+- [ ] Bring release media and documentation into sync before calling 1.4.0
+  published: update `release/current.json` from the verified published
+  release with `scripts/release-current.py update`, covering every published
+  image type (each architecture's installer and the separate hardware-trace
+  bring-up image), then pass `tests/docs-release-sync.py` in CI and complete
+  the HACKING.md release checklist for the README download section, release
+  notes, checksums, image names, every current-state document and the image's
+  own shipped documentation and data.
 - [ ] On the exact 1.4 image, with a real audio device on the physical console
   and in a VM, hear and record every phase's flourish and sound: loader
   splash (visual only), boot chime, configurator transitions, network and

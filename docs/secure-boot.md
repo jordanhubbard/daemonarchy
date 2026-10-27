@@ -1,11 +1,16 @@
 # Manual Secure Boot certificate enrollment
 
-The 1.1 candidate includes the production manual-enrollment profile. Stable
-1.0.1 requires Secure Boot to be disabled. Use only the production certificate
-from the matching candidate/release; never enroll a disposable development key.
-See [the exact image results](testing-1.1-final-image.md) and
-[boot-chain test record](testing-1.1-secureboot.md). Physical firmware enrollment
-and retained-operating-system checks remain unqualified.
+The current release, [1.3.1](release-1.3.1.md), ships the production
+manual-enrollment profile with a new public certificate,
+`daemonarchy-1.3.1.der` (and `daemonarchy-1.3.1.pem`), published with the
+[GitHub release](https://github.com/jordanhubbard/daemonarchy/releases/tag/daemonarchy-1.3.1).
+Use only the production certificate from the matching release; never enroll a
+disposable development key. The signed boot bundle and exact ISO were verified,
+but firmware enforcement of the published ISO, physical firmware enrollment and
+retained-operating-system checks remain unqualified. The
+[boot-chain test record](testing-1.1-secureboot.md) holds the earlier development
+evidence. Earlier releases: 1.0.1 requires Secure Boot to be disabled; 1.1 and
+1.1.1 use the 1.1 certificate described below.
 
 The release provides its public signing certificate in DER form and its
 SHA-256 fingerprint with the release. The private key stays on the protected
@@ -18,20 +23,17 @@ images using these signature databases; adding a Daemonarchy certificate does
 not require replacing the platform owner. See the
 [UEFI Secure Boot specification](https://uefi.org/specs/UEFI/2.11/32_Secure_Boot_and_Driver_Signing.html).
 
-The 1.1.1 refresh retains the same production signing authority and certificate filenames; an already trusted matching certificate does not require a new enrollment merely because the release number changes. New OSVERSION `1600028` boot bundles and drivers must still match their own snapshot. See [the 1.1.1 record](testing-1.1.1.md).
+## 1.3.1 certificate
 
-The production `daemonarchy-1.1.der` SHA-256 is
-`111539a7fb7178cea65f3e2fc50ea00839d045324a4272ce190e4733a9c118dd`.
-
-## 1.3.1 replacement candidate
-
-The 1.1 signing private key has not been found on the release build host. A
-replacement 1.3.1 key and public certificate have been prepared on the protected
-native signer. The private key is not an ISO or repository input. The candidate
-`daemonarchy-1.3.1.der` SHA-256 and X.509 SHA-256 fingerprint are
-`ee140e7a68d566d37a96ea49ac68238d2e039c1172eb896ab69bff189d70b733`.
-This identifies a prepared candidate, not an enrolled or qualified release
-authority. On firmware with generic UEFI db enrollment, add this certificate
+The 1.1 signing private key has not been found on the release build host, so
+1.3.1 introduced a replacement key and public certificate, prepared on the
+protected native signer. The private key is not an ISO or repository input. The
+published `daemonarchy-1.3.1.der` SHA-256 and X.509 SHA-256 fingerprint are
+`ee140e7a68d566d37a96ea49ac68238d2e039c1172eb896ab69bff189d70b733`; the
+`daemonarchy-1.3.1.pem` file SHA-256 is
+`26009db078d352318c06f1ea5cf7b5650dfd32137518f3a6fecd20802de2fb79`. Enrolling
+the 1.1 certificate does not authorize 1.3.1 boot files; enroll this certificate
+as well. On firmware with generic UEFI db enrollment, add it
 while retaining the 1.1 and platform certificates, then run the physical
 enforcement, recovery and negative tests below before claiming that profile.
 
@@ -58,6 +60,19 @@ actual T2 policy for each hardware test. Do not claim firmware enforcement from
 an OVMF test, a successful signed-bundle check, or a FreeBSD boot under
 No Security. The db enrollment contract remains applicable only to firmware
 that exposes a compatible enrollment mechanism.
+
+<!-- release-sync: history -->
+## Earlier 1.1 certificate
+
+The 1.1.1 refresh retained the 1.1 production signing authority and certificate
+filenames; an already trusted matching certificate did not require a new
+enrollment for 1.1.1. Its OSVERSION `1600028` boot bundles and drivers matched
+their own snapshot. See [the 1.1.1 record](testing-1.1.1.md) and
+[the 1.1 image results](testing-1.1-final-image.md).
+
+The production `daemonarchy-1.1.der` SHA-256 is
+`111539a7fb7178cea65f3e2fc50ea00839d045324a4272ce190e4733a9c118dd`.
+<!-- /release-sync -->
 
 ## Enrollment contract
 
@@ -107,7 +122,7 @@ the original boot selection usable. The installed `daemonarchy-secureboot` helpe
 activation; [HACKING.md](https://github.com/jordanhubbard/daemonarchy/blob/main/HACKING.md#secure-boot-development) shows the commands.
 The [upgrade record](testing-1.1-upgrade.md) distinguishes development and
 production-authority tests. These tools cover maintenance of the pinned
-snapshot and loader protocol, not a base/ABI migration. In particular, a 1.1.1 maintenance bundle does not replace an older system's base/kernel or make older driver bytes compatible. The application-feed adoption helper checks actual kernel and userland versions before identity changes; automatic `pkg install -y` alone does not reject newer-OS packages.
+snapshot and loader protocol, not a base/ABI migration. In particular, a maintenance bundle, such as one for the OSVERSION `1600029` 1.3.1 snapshot, does not replace an older system's base/kernel or make older driver bytes compatible. The application-feed adoption helper checks actual kernel and userland versions before identity changes; automatic `pkg install -y` alone does not reject newer-OS packages.
 
 Certificate rotation must add the replacement certificate before switching to
 artifacts signed with it. Keep the previous certificate until the replacement

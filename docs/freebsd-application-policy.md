@@ -62,9 +62,10 @@ checks are separate release gates; passing these tests alone is not a GUI or
 Linuxulator acceptance claim.
 
 
-The 1.1.1 source/ports refresh retains this policy. Its installer verifies
-package-file integrity and dependencies before recording installation success;
-its adoption helper checks the actual base and kernel against candidate
+The current 1.3.1 release retains this policy, as did the 1.1.1 refresh. Since
+1.1.1 the installer verifies package-file integrity and dependencies before
+recording installation success, and the adoption helper checks the actual base and kernel against candidate
 OSVERSION metadata before changing repository identities. These checks do not
-convert an older base to the new snapshot. See [the qualification record](testing-1.1.1.md)
-for that release's exact package, image and runtime results.
+convert an older base to the new snapshot. See the [1.3.1 release notes](release-1.3.1.md)
+and the earlier [1.1.1 qualification record](testing-1.1.1.md) for each release's
+exact package, image and runtime results.
