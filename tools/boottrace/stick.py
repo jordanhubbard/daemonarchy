@@ -41,6 +41,18 @@ import uuid
 
 TAG = "Daemonarchy boottrace stick v1\n"
 LABEL = "DATRACE"
+# The loader rewrites these files in place and never allocates clusters
+# (a firmware FAT cache may not reach the disk before the kernel writes).
+SLOTS = 200
+SLOT_SIZE = 16384
+STATE_SIZE = 512
+EMPTY = b"(empty trace slot)\n"
+
+
+def padded(data, size):
+    if len(data) > size:
+        raise ValueError("content does not fit its preallocated file")
+    return data + b"\n" * (size - len(data))
 BASIC_DATA = uuid.UUID("ebd0a0a2-b9e5-4433-87c0-68b6b72699c7")
 
 
@@ -151,8 +163,13 @@ def read_state(vol):
 
 
 def write_state(vol, state):
-    vol.write("STATE.TXT", ("next=%d\ntraces=%d\npending=%s\n" % (
-        state["next"], state["traces"], state["pending"])).encode())
+    vol.write("STATE.TXT", padded(("next=%d\ntraces=%d\npending=%s\n" % (
+        state["next"], state["traces"], state["pending"])).encode(), STATE_SIZE))
+
+
+def empty_slots(vol):
+    for i in range(1, SLOTS + 1):
+        vol.write("TRACES/%04d.TXT" % i, padded(EMPTY, SLOT_SIZE))
 
 
 def cmd_add_partition(args):
@@ -186,8 +203,10 @@ def cmd_init(args):
     vol.write("DATRACE.TAG", TAG.encode())
     vol.mkdir("QUEUE")
     vol.mkdir("TRACES")
+    vol.mkdir("DUMPS")
+    empty_slots(vol)
     write_state(vol, {"next": 1, "traces": 0, "pending": ""})
-    print("initialized; empty queue")
+    print("initialized: %d trace slots, empty queue" % SLOTS)
 
 
 def cmd_queue(args):
@@ -199,8 +218,7 @@ def cmd_queue(args):
         vol.remove("QUEUE/" + name)
     state = read_state(vol)
     if args.reset_traces:
-        for name in vol.listdir("TRACES"):
-            vol.remove("TRACES/" + name)
+        empty_slots(vol)
         state["traces"] = 0
     for i, e in enumerate(experiments, 1):
         body = "# experiment: %s\n%s\n" % (e["name"], "\n".join(e["lines"]))
@@ -234,15 +252,20 @@ def cmd_traces(args):
     names = [n for n in vol.listdir("TRACES") if n.endswith(".TXT")]
     if args.out:
         Path(args.out).mkdir(parents=True, exist_ok=True)
+    names = names[:read_state(vol)["traces"]] if len(names) >= SLOTS else names
+    shown = 0
     for name in names:
-        text = vol.read("TRACES/" + name).decode("utf-8", "replace")
+        text = vol.read("TRACES/" + name).decode("utf-8", "replace").rstrip("\n") + "\n"
+        if text.startswith(EMPTY.decode()):
+            continue
+        shown += 1
         exp, status, last = summarize(text)
         print(f"{name}: experiment {exp}\n    {status}\n    last step: {last}")
         if args.all:
             print(text)
         if args.out:
             (Path(args.out) / name).write_text(text)
-    if not names:
+    if not shown:
         print("no traces filed")
 
 

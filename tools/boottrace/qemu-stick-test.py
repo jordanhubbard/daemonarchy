@@ -43,6 +43,8 @@ def main():
     ap.add_argument("--silence", type=float, default=120)
     ap.add_argument("--accel", default="tcg")
     ap.add_argument("--memory", default="2048")
+    ap.add_argument("--bus", choices=("usb", "ahci"), default="usb",
+                    help="attach the stick as a USB disk (default) or SATA")
     args = ap.parse_args()
     if not os.path.exists(args.vars):
         sys.exit("create the vars file first (copy OVMF_VARS)")
@@ -55,9 +57,10 @@ def main():
         "-cpu", "max", "-smp", "2", "-m", args.memory,
         "-drive", f"if=pflash,format=raw,readonly=on,file={args.code}",
         "-drive", f"if=pflash,format=raw,file={args.vars}",
-        "-device", "qemu-xhci,id=xhci",
         "-drive", f"if=none,id=stick,format=raw,file={args.image}",
-        "-device", "usb-storage,bus=xhci.0,drive=stick,removable=on",
+        *(["-device", "qemu-xhci,id=xhci",
+           "-device", "usb-storage,bus=xhci.0,drive=stick,removable=on"]
+          if args.bus == "usb" else ["-device", "ide-hd,drive=stick,bus=ide.0"]),
         "-display", "none", "-serial", f"file:{args.log}",
         "-qmp", f"unix:{sock},server=on,wait=off", "-net", "none"])
     boots, last_size, last_change = 1, 0, time.monotonic()

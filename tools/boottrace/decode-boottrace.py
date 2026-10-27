@@ -19,6 +19,8 @@ import sys
 import uuid
 
 VARNAME = "DaemonarchyBootTrace"
+STEP_VARNAME = "DBTStep"
+STEP = struct.Struct("<IIIIIHH40s")
 GUID = uuid.UUID("9262df38-e448-4c99-bdd0-e70eada0faa1")
 MAGIC = b"DBTRACE1"
 HEADER = struct.Struct("<8sHHHHIIIIIIIIIIII64s")
@@ -29,7 +31,7 @@ STATUS = {1: "INCOMPLETE: the kernel never reached init (hang or reset)",
           2: "complete: the kernel reached init",
           3: "PANIC: the kernel panicked"}
 FLAGS = {0x1: "loader-seen", 0x2: "budget-exhausted", 0x4: "write-error",
-         0x8: "fine-window", 0x10: "test-armed", 0x20: "saved-to-usb"}
+         0x8: "fine-window", 0x10: "test-armed", 0x20: "saved-to-usb", 0x40: "thinned"}
 AUTH_VAR_GUID = uuid.UUID("aaf32c78-947b-439a-a180-2e144ec37792")
 VAR_GUID = uuid.UUID("ddcf3616-3275-4164-98b6-fe85707ffe7d")
 VAR_HDR = struct.Struct("<HBBIQ16sIII16s")   # authenticated, 60 bytes
@@ -45,7 +47,7 @@ def decode(data):
         raise ValueError("record shorter than its header")
     (magic, version, header_size, crumb_size, crumb_count, record_size,
      seq, status, flags, steps, resume_from, msg_len, uptime_ms,
-     nv_left_kb, budget_writes, nv_used_kb, _res, kernel) = HEADER.unpack_from(data)
+     nv_left_kb, budget_writes, nv_used_kb, step_writes, kernel) = HEADER.unpack_from(data)
     if magic != MAGIC or version != 1:
         raise ValueError("not a version 1 boot trace record")
     need = header_size + crumb_count * crumb_size + msg_len
@@ -66,9 +68,18 @@ def decode(data):
             "steps": steps, "resume_from": resume_from,
             "uptime_ms": uptime_ms, "nv_left_kb": nv_left_kb,
             "budget_writes": budget_writes, "nv_used_kb": nv_used_kb,
+            "step_writes": step_writes,
             "kernel": cstr(kernel),
             "record_size": record_size, "crumbs": crumbs,
             "messages": messages}
+
+
+def decode_step(data):
+    if data is None or len(data) < STEP.size:
+        return None
+    seq, index, a, b, ms, kind, cpu, text = STEP.unpack_from(data)
+    return {"seq": seq, "index": index, "ms": ms, "kind": KINDS.get(kind, "?"),
+            "cpu": cpu, "subsystem": a, "order": b, "text": cstr(text)}
 
 
 def crumb_line(c):
@@ -80,19 +91,24 @@ def crumb_line(c):
     return line
 
 
-def report(rec):
+def report(rec, step=None):
     out = ["Daemonarchy boot trace (EFI variable %s, write #%u)" % (VARNAME, rec["seq"]),
            "Status: " + rec["status_text"]]
-    if rec["crumbs"]:
+    newest = rec["crumbs"][-1]["index"] if rec["crumbs"] else 0
+    if step and step["index"] > newest and rec["status"] == 1:
+        out.append("Last step: " + crumb_line(step))
+        out.append("      (breadcrumb #%u; the full record below is from step #%u)"
+                   % (step["seq"], rec["steps"]))
+    elif rec["crumbs"]:
         out.append("Last step: " + crumb_line(rec["crumbs"][-1]))
     out.append("Kernel: " + rec["kernel"])
-    out.append("Steps seen: %u, last write at %.3fs, NVRAM free at start %u KiB, "
-               "%u KiB written, budget %u full writes, flags %s" % (
+    out.append("Steps seen: %u, last full write at %.3fs, NVRAM free at start %u KiB, "
+               "%u KiB written, %u breadcrumbs (budget ~%u), flags %s" % (
                    rec["steps"], rec["uptime_ms"] / 1000, rec["nv_left_kb"],
-                   rec["nv_used_kb"], rec["budget_writes"],
+                   rec["nv_used_kb"], rec["step_writes"], rec["budget_writes"],
                    ",".join(rec["flag_names"]) or "none"))
     if rec["resume_from"] == 0xFFFFFFFF:
-        out.append("Persisted: coarse steps only (zoom in with debug.boottrace.from=N)")
+        out.append("Persisted: coarse before debug.boottrace.from_sub, every step after it")
     else:
         out.append("Persisted: every step from #%u" % rec["resume_from"])
     out.append("Recent steps (oldest first):")
@@ -102,10 +118,10 @@ def report(rec):
     return "\n".join(out) + "\n"
 
 
-def scan_vars(blob):
-    """Return (copies, live_data) for the trace in an EDK2 variable store."""
+def scan_vars(blob, varname=VARNAME):
+    """Return (copies, live_data) for a trace variable in an EDK2 store."""
     guid_bytes = GUID.bytes_le
-    name = (VARNAME + "\0").encode("utf-16-le")
+    name = (varname + "\0").encode("utf-16-le")
     for store_guid, hdr in ((AUTH_VAR_GUID, VAR_HDR), (VAR_GUID, VAR_HDR_PLAIN)):
         at = blob.find(store_guid.bytes_le)
         if at < 0:
@@ -137,12 +153,18 @@ def main(argv=None):
                     help="path is an EDK2/OVMF variable store")
     ap.add_argument("--efivarfs", action="store_true",
                     help="path is a Linux efivarfs file (attribute prefix)")
+    ap.add_argument("--step", help="breadcrumb file (raw, or efivarfs with --efivarfs)")
     ap.add_argument("--json", action="store_true")
     args = ap.parse_args(argv)
     with open(args.path, "rb") as f:
         blob = f.read()
-    copies = None
+    copies = step = None
+    if args.step:
+        with open(args.step, "rb") as f:
+            raw = f.read()
+        step = decode_step(raw[4:] if args.efivarfs else raw)
     if args.vars:
+        step = decode_step(scan_vars(blob, STEP_VARNAME)[1])
         copies, blob = scan_vars(blob)
         if blob is None:
             print("no live %s variable (%d stored copies)" % (VARNAME, copies))
@@ -152,10 +174,11 @@ def main(argv=None):
     rec = decode(blob)
     if args.json:
         rec["stored_copies"] = copies
+        rec["breadcrumb"] = step
         json.dump(rec, sys.stdout, indent=1)
         print()
     else:
-        sys.stdout.write(report(rec))
+        sys.stdout.write(report(rec, step))
         if copies is not None:
             print("(variable store holds %d copies of the trace)" % copies)
     return 0

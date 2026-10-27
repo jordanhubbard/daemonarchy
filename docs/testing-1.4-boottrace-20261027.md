@@ -1,7 +1,7 @@
-# Hardware trace stick: QEMU/OVMF checks, October 27
+# Hardware trace stick: QEMU/OVMF checks and first MSI run, October 27
 
-These checks cover the [hardware trace stick](boottrace.md) loop under
-virtualization only. No MSI or other physical firmware result exists yet.
+These checks cover the [hardware trace stick](boottrace.md) loop: runs 1
+to 5 under QEMU/OVMF, then the first physical run on the MSI Raider.
 
 ## Artifacts
 
@@ -84,8 +84,73 @@ compacted NVRAM and stopped with "Experiment 0001 reached init".
 `STATE.TXT` read `next=2`, and the other four queue entries stay for the
 MSI.
 
+## First physical run: MSI Raider 18 HX AI, AMI E1824IMS.317
+
+This is the first real-hardware evidence. The interim stick
+(`daemonarchy-1.4.0-live3-hwtrace-amd64.img`) ran all five queued
+experiments unattended on the MSI, with USB first in the boot order:
+
+- The kernel's NVRAM writes worked.
+- The loader filed `TRACES/0001`..`0005` on `DATRACE` through the AMI
+  firmware's FAT driver.
+- The queue advanced and `STATE.TXT` ended at `next=6`.
+
+Every trace was unusable for the same reason. The store reported only
+**55 KiB free** at the start of every boot, below the then 64 KiB reserve.
+Each boot therefore left one minimal record at step 1198
+(`module_register_init`, `SI_SUB_DRIVERS`), long before the hang that
+follows ISA probing (`sc0 failed to probe on isa1`, at the end of
+`SI_SUB_CONFIGURE`).
+
+That build only printed the compaction outcome on screen, so whether
+compaction ran on the AMI firmware is unknown. The constant 55 KiB is
+consistent with a store that is mostly valid data rather than garbage.
+
+## Run 4: a crowded store (52 KiB free)
+
+The fix gives every step a 64-byte breadcrumb (`DBTStep`). Full records are
+kept for checkpoints, panic and completion. The reserve is now a quarter of
+the maximum variable size (8 to 16 KiB), and fine tracing starts at
+`SI_SUB_CONFIGURE`. To reproduce the MSI's situation, the OVMF store was
+filled with 187 KiB of test-only variables, leaving 52 KiB free.
+
+- **Hang injected at `initclocks` (`SI_SUB_CLOCKS`):** reported as the last
+  step from breadcrumb #192, about 140 bytes per breadcrumb; with the 8 KiB
+  reserve, 188 breadcrumbs and 31 KiB written.
+- **Normal boot:** completed with 270 breadcrumbs. Per-device probes were
+  dropped at 60% of the budget (flag `thinned`).
+- **Compaction made things worse.** Loader compaction, sized from the
+  record, left 27 KiB free for the next boot, against 52 KiB without it.
+  It is now opt-in (`boottrace_compact`). Without it, OVMF reclaimed by
+  itself: the following boot started with 56 KiB free.
+
+## Run 5: the dedicated hardware trace image
+
+The image was `daemonarchy-hwtrace-1.4.0-dev2-amd64.img`, built by
+`build-hwtrace-image.sh` (391 MB) with `-S` for a serial console. It was
+attached as SATA, because QEMU's USB storage emulation failed the rescue
+root's writes, and the store was again filled to 52 KiB free.
+
+- **Experiment 0001 (hang at `initclocks`):** filed INCOMPLETE with that
+  last step.
+- **Experiment 0002:** reached init. The rescue root saved `dmesg`,
+  `sysctl -a`, `kenv`, `kldstat`, `pciconf`, `devinfo` and `acpidump`
+  output to `DUMPS/0002/`.
+- **Next boot:** the loader stopped with "Experiment 0002 reached init".
+  `fsck.fat` found `DATRACE` clean.
+
+An earlier run of the same image without in-place writes left `DATRACE`
+with cross-linked clusters. OVMF's FAT driver had not written its FAT
+updates before the kernel started, so the kernel's DUMPS/ writes reused
+clusters the loader had just allocated. The loader now rewrites
+preallocated files in place.
+
+The delivered MSI image is the non-serial build of the same artifacts,
+queued with `tools/boottrace/msi-queue-2.txt`: sha256
+`35113148851413424810bbb1ea9618d79c184683c160511b3ef9f2a43c5f6def`.
+
 ## Not covered
 
-Physical firmware (AMI NVRAM behaviour, runtime write cost, FAT driver
-binding of the `DATRACE` partition), bhyve, Secure Boot, and the optional
-wired-console loop.
+A physical trace that reaches the MSI's real failure point; the AMI firmware's
+reclaim behaviour and runtime write cost; the dedicated image on physical
+USB; bhyve; Secure Boot; and the optional wired-console loop.

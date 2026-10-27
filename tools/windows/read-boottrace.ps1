@@ -97,7 +97,7 @@ function Get-CString([byte[]]$Bytes, [int]$Offset, [int]$Length) {
     return [Text.Encoding]::UTF8.GetString($Bytes, $Offset, $end - $Offset)
 }
 
-function Format-BootTrace([byte[]]$d) {
+function Format-BootTrace([byte[]]$d, [byte[]]$step) {
     $magic = [Text.Encoding]::ASCII.GetString($d, 0, 8)
     if ($d.Length -lt 128 -or $magic -ne 'DBTRACE1' -or [BitConverter]::ToUInt16($d, 8) -ne 1) {
         throw "The variable does not hold a version 1 Daemonarchy boot trace."
@@ -108,7 +108,7 @@ function Format-BootTrace([byte[]]$d) {
     $u = { param($o) [BitConverter]::ToUInt32($d, $o) }
     $seq = & $u 20; $status = & $u 24; $flags = & $u 28; $steps = & $u 32
     $resume = & $u 36; $msgLen = & $u 40; $uptime = & $u 44
-    $nvLeft = & $u 48; $budget = & $u 52; $nvUsed = & $u 56
+    $nvLeft = & $u 48; $budget = & $u 52; $nvUsed = & $u 56; $stepWrites = & $u 60
     $kernel = Get-CString $d 64 64
     if ($hdrSize + $crumbCount * $crumbSize + $msgLen -gt $d.Length) {
         throw "The boot trace record is truncated or inconsistent."
@@ -118,7 +118,7 @@ function Format-BootTrace([byte[]]$d) {
                      3 = 'PANIC: the kernel panicked' }[[int]$status]
     if (-not $statusText) { $statusText = 'unknown' }
     $kinds = @{ 1 = 'sysinit'; 2 = 'probe'; 3 = 'attach'; 4 = 'hook'; 5 = 'event'; 6 = 'panic'; 7 = 'complete' }
-    $flagNames = @{ 1 = 'loader-seen'; 2 = 'budget-exhausted'; 4 = 'write-error'; 8 = 'fine-window'; 16 = 'test-armed'; 32 = 'saved-to-usb' }
+    $flagNames = @{ 1 = 'loader-seen'; 2 = 'budget-exhausted'; 4 = 'write-error'; 8 = 'fine-window'; 16 = 'test-armed'; 32 = 'saved-to-usb'; 64 = 'thinned' }
     $fl = ($flagNames.Keys | Sort-Object | Where-Object { $flags -band $_ } | ForEach-Object { $flagNames[$_] }) -join ','
     if (-not $fl) { $fl = 'none' }
 
@@ -139,11 +139,20 @@ function Format-BootTrace([byte[]]$d) {
     $out = New-Object System.Collections.Generic.List[string]
     $out.Add("Daemonarchy boot trace (EFI variable $VarName, write #$seq)")
     $out.Add("Status: $statusText")
-    if ($crumbs) { $out.Add("Last step: " + @($crumbs)[-1]) }
+    $newest = 0
+    if ($crumbCount -gt 0) { $newest = [BitConverter]::ToUInt32($d, $hdrSize + ($crumbCount - 1) * $crumbSize) }
+    if ($step -and $step.Length -ge 64 -and [BitConverter]::ToUInt32($step, 4) -gt $newest -and $status -eq 1) {
+        $sk = $kinds[[int][BitConverter]::ToUInt16($step, 20)]; if (-not $sk) { $sk = '?' }
+        $sms = [BitConverter]::ToUInt32($step, 16)
+        $sl = '#{0} {1}.{2:D3}s cpu{3} {4}: {5}' -f [BitConverter]::ToUInt32($step, 4), [math]::Floor($sms / 1000), ($sms % 1000), [BitConverter]::ToUInt16($step, 22), $sk, (Get-CString $step 24 40)
+        if ($sk -eq 'sysinit') { $sl += ' [sub 0x{0:x} order 0x{1:x}]' -f [BitConverter]::ToUInt32($step, 8), [BitConverter]::ToUInt32($step, 12) }
+        $out.Add("Last step: $sl")
+        $out.Add(('      (breadcrumb #{0}; the full record below is from step #{1})' -f [BitConverter]::ToUInt32($step, 0), $steps))
+    } elseif ($crumbs) { $out.Add("Last step: " + @($crumbs)[-1]) }
     if ($flags -band 2) { $out.Add("NOTE: the NVRAM write budget ran out at step #$steps, before the failure. Rerun with debug.boottrace.from set just before that step.") }
     $out.Add("Kernel: $kernel")
-    $out.Add(('Steps seen: {0}, last write at {1:N3}s, NVRAM free at start {2} KiB, {3} KiB written, budget {4} full writes, flags {5}' -f $steps, ($uptime / 1000.0), $nvLeft, $nvUsed, $budget, $fl))
-    if ($resume -eq [uint32]::MaxValue) { $out.Add('Persisted: coarse steps only (zoom in with debug.boottrace.from=N)') }
+    $out.Add(('Steps seen: {0}, last full write at {1:N3}s, NVRAM free at start {2} KiB, {3} KiB written, {4} breadcrumbs (budget ~{5}), flags {6}' -f $steps, ($uptime / 1000.0), $nvLeft, $nvUsed, $stepWrites, $budget, $fl))
+    if ($resume -eq [uint32]::MaxValue) { $out.Add('Persisted: coarse before debug.boottrace.from_sub, every step after it') }
     else { $out.Add("Persisted: every step from #$resume") }
     $out.Add("Recent steps (oldest first):")
     foreach ($c in $crumbs) { $out.Add("  $c") }
@@ -168,7 +177,9 @@ if ($null -eq $data) {
 
 $stamp = Get-Date -Format 'yyyyMMdd-HHmmss'
 New-Item -ItemType Directory -Force -Path $OutDir | Out-Null
-$text = Format-BootTrace $data
+$stepErr = 0
+$stepData = [DaemonarchyFirmware]::Read('DBTStep', $VarGuid, [ref]$stepErr)
+$text = Format-BootTrace $data $stepData
 $txt = Join-Path $OutDir "DaemonarchyBootTrace-$stamp.txt"
 $bin = Join-Path $OutDir "DaemonarchyBootTrace-$stamp.bin"
 [IO.File]::WriteAllText($txt, $text, (New-Object Text.UTF8Encoding($false)))
@@ -178,6 +189,7 @@ Write-Host "Saved: $txt"
 Write-Host "Raw:   $bin"
 
 if ($Clear) {
+    [void][DaemonarchyFirmware]::Delete('DBTStep', $VarGuid)
     $rc = [DaemonarchyFirmware]::Delete($VarName, $VarGuid)
     if ($rc -ne 0) { throw (New-Object System.ComponentModel.Win32Exception($rc)) }
     Write-Host "The boot trace variable was cleared."

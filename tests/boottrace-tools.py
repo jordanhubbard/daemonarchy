@@ -35,7 +35,7 @@ def record(status=1, flags=0, msgs=b"atrtc0: Warning: Couldn't map I/O.\n"):
     ]
     header = struct.pack("<8sHHHHIIIIIIIIIIII64s", b"DBTRACE1", 1, 128, 96,
                          len(crumbs), 0, 7, status, flags, 42, 0xFFFFFFFF, len(msgs),
-                         1250, 200, 150, 12, 0, b"FreeBSD 16.0-CURRENT #0 test")
+                         1250, 200, 150, 12, 3, b"FreeBSD 16.0-CURRENT #0 test")
     data = header + b"".join(crumbs) + msgs
     return data[:16] + struct.pack("<I", len(data)) + data[20:]
 
@@ -54,8 +54,14 @@ class Decoder(unittest.TestCase):
         self.assertIn("Last step: #42 1.250s cpu1 attach: attach atrtc0 on isa1", text)
         self.assertIn("[sub 0x3800000 order 0x0]", text)
         self.assertIn("Couldn't map I/O", text)
-        self.assertIn("200 KiB, 12 KiB written", text)
-        self.assertIn("Persisted: coarse steps only", text)
+        self.assertIn("200 KiB, 12 KiB written, 3 breadcrumbs", text)
+        self.assertIn("Persisted: coarse before debug.boottrace.from_sub", text)
+
+    def test_breadcrumb_is_newer(self):
+        step = struct.pack("<IIIIIHH40s", 9, 57, 0x4800000, 0, 2000, 1, 0, b"initclocks")
+        text = decoder.report(decoder.decode(record()), decoder.decode_step(step))
+        self.assertIn("Last step: #57 2.000s cpu0 sysinit: initclocks [sub 0x4800000", text)
+        self.assertIn("breadcrumb #9; the full record below is from step #42", text)
 
     def test_rejects_truncation(self):
         with self.assertRaises(ValueError):
@@ -98,8 +104,10 @@ class Stick(unittest.TestCase):
         q = Path(self.dir, "q.txt")
         q.write_text("[one]\nread-conf /boot/d/1\n[two]\nhint.hpet.0.disabled=1\n")
         self.run_cli("queue", self.dir, str(q))
-        self.assertEqual(Path(self.dir, "STATE.TXT").read_text(),
-                         "next=1\ntraces=0\npending=\n")
+        self.assertEqual(Path(self.dir, "STATE.TXT").read_text().rstrip("\n"),
+                         "next=1\ntraces=0\npending=")
+        self.assertEqual(Path(self.dir, "STATE.TXT").stat().st_size, stick.STATE_SIZE)
+        self.assertEqual(Path(self.dir, "TRACES", "0200.TXT").stat().st_size, stick.SLOT_SIZE)
         self.assertIn("hint.hpet.0.disabled=1",
                       Path(self.dir, "QUEUE", "0002.CNF").read_text())
         # A loader-filed trace stays across a requeue unless reset.
@@ -108,10 +116,11 @@ class Stick(unittest.TestCase):
         Path(self.dir, "STATE.TXT").write_text("next=2\ntraces=1\npending=0001\n")
         self.run_cli("queue", self.dir, str(q))
         self.assertTrue(Path(self.dir, "TRACES", "0001.TXT").exists())
-        self.assertEqual(Path(self.dir, "STATE.TXT").read_text(),
-                         "next=1\ntraces=1\npending=\n")
+        self.assertEqual(Path(self.dir, "STATE.TXT").read_text().rstrip("\n"),
+                         "next=1\ntraces=1\npending=")
         self.run_cli("queue", self.dir, str(q), "--reset-traces")
-        self.assertFalse(Path(self.dir, "TRACES", "0001.TXT").exists())
+        self.assertTrue(Path(self.dir, "TRACES", "0001.TXT").read_bytes().startswith(stick.EMPTY))
+        self.assertEqual(Path(self.dir, "TRACES", "0001.TXT").stat().st_size, stick.SLOT_SIZE)
 
 
 @unittest.skipUnless(shutil.which("pwsh"), "PowerShell is not installed")
@@ -125,14 +134,14 @@ class WindowsReader(unittest.TestCase):
             body = script[script.index("function Get-CString"):script.index(
                 "[DaemonarchyFirmware]::EnablePrivilege()")]
             body = "$VarName = 'DaemonarchyBootTrace'\n" + body + \
-                f"\nFormat-BootTrace ([IO.File]::ReadAllBytes('{raw}'))\n"
+                f"\nFormat-BootTrace ([IO.File]::ReadAllBytes('{raw}')) $null\n"
             out = subprocess.run(["pwsh", "-NoProfile", "-Command", body],
                                  capture_output=True, text=True, check=True).stdout
             self.assertIn("Last step: #42 1.250s cpu1 attach: attach atrtc0", out)
             self.assertIn("[sub 0x3800000 order 0x0]", out)
             self.assertIn("Couldn't map I/O", out)
-            self.assertIn("200 KiB, 12 KiB written", out)
-            self.assertIn("Persisted: coarse steps only", out)
+            self.assertIn("200 KiB, 12 KiB written, 3 breadcrumbs", out)
+            self.assertIn("Persisted: coarse before debug.boottrace.from_sub", out)
 
 
 if __name__ == "__main__":

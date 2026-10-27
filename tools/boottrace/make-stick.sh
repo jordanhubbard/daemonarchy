@@ -57,6 +57,7 @@ debug.boottrace="1"
 boot_verbose="YES"
 boottrace_conf="$preset"
 boottrace_label="$preset preset"
+boottrace_stick="YES"
 # Hardware trace stick workflow: file the last trace, run the next experiment.
 boottrace_autocycle="$autocycle"
 boottrace_autocycle_delay="5"

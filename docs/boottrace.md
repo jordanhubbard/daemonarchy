@@ -3,9 +3,15 @@
 When a machine hangs or resets during kernel startup with nothing on screen
 that explains why (the MSI Raider 18 HX AI A2XWIG in
 [hardware quirks](hardware-quirks.md#msi-raider-18-hx-ai-a2xwig-early-installer-reset)),
-the boottrace kernel records each startup step in a UEFI NVRAM variable
-before the step runs. A stick-based loop then files every boot's trace on
-the stick and boots the next queued experiment, unattended.
+the boottrace kernel records each startup step in UEFI NVRAM before the step
+runs. The **hardware bring-up trace image**
+(`daemonarchy-hwtrace-<version>-amd64.img`, built by `build-hwtrace-image.sh`)
+then runs an unattended loop. Each boot files the previous trace on the
+stick and boots the next queued experiment. The image is a separate product
+image type, not a mode of the install ISO. The install ISO's loader keeps at
+most the interactive single traced boot and never cycles. HACKING.md
+("Hardware bring-up trace image") gives the build and operator procedure;
+this page describes the mechanism.
 
 ## One-time setup at the machine
 
@@ -23,6 +29,11 @@ empty, the loader shows **HARDWARE TRACE: STOPPED** with the reason and
 waits at the `OK` prompt. Pressing a key during the 5 s countdown gives the
 normal menu instead; its **Hardware trace** entry (`W`) runs one cycle by
 hand.
+
+When a boot reaches init, the image's rescue root saves bring-up
+diagnostics before it reboots. It writes `dmesg -a`, `sysctl -a`, `kenv`,
+`kldstat`, `pciconf -lvbc`, `devinfo -vr` and `acpidump -dt` to
+`DUMPS/<experiment>/`, and the next boot stops the loop.
 
 Then unplug the stick and bring it to the controller host. Remove it only
 when the loader is at the STOPPED prompt or the machine is off.
@@ -84,36 +95,61 @@ the step on NVRAM.
 
 ### NVRAM budget and zooming in
 
-UEFI variable stores append a copy on every write and most firmware cannot
-reclaim space until the next boot, so each boot spends at most the free
-space reported by `QueryVariableInfo` minus a 64 KiB reserve. By default
-only **coarse** steps are persisted: the first SYSINIT of each subsystem,
-every attach, hinted probes, hooks and events. The message-buffer tail in
-each record shrinks as the budget drains, and two full-size writes stay
-reserved for completion, panic or the budget stop. A coarse trace names the
-subsystem or device where the boot stopped; the next experiment sets
-`debug.boottrace.from=N` (N a little below the last step number shown) to
-persist every step from there. If the budget runs out first, the trace says
-so and gives the `from` value to use.
+UEFI variable stores append a copy on every write, and most firmware cannot
+reclaim space until a later boot. A laptop store can be nearly full: the
+MSI Raider (AMI E1824IMS.317) reports only 55 KiB free. Each boot therefore
+spends the free space `QueryVariableInfo` reports, less a reserve. The
+reserve is a quarter of the maximum variable size, kept between 8 and
+16 KiB.
 
-One variable, `DaemonarchyBootTrace`
-`{9262df38-e448-4c99-bdd0-e70eada0faa1}` (NV+BS+RT), is overwritten in
-place with a sequence number. Writing stops at completion. With
-`debug.boottrace` unset the kernel neither reads nor writes it.
+The kernel writes two variables (same GUID):
+
+- `DBTStep` is written before every persisted step. It is a 64-byte
+  breadcrumb holding the sequence, step number, subsystem and order, kind,
+  time and a 40-character name. It costs about 140 bytes of store on OVMF,
+  and the kernel measures the real cost on the second write. About 250 to
+  300 fit in 40 KiB.
+- `DaemonarchyBootTrace` is the full record: newest breadcrumbs plus the
+  message-buffer tail. It is written at the first opportunity, when the
+  fine-grained region starts, every 64 breadcrumbs while more than half the
+  budget is left, and at panic, completion or the budget stop. Two full
+  writes are always reserved.
+
+Readers show whichever of the two is newer.
+
+Before `debug.boottrace.from_sub` (default `0x3800000`, `SI_SUB_CONFIGURE`)
+only the first SYSINIT of each subsystem is persisted. From there, every
+SYSINIT, attach, config hook and each device's first probe is persisted.
+Hinted (fixed-class) probes are always persisted. Per-device probes stop
+once 60% of the budget is spent (flag `thinned`).
+
+To zoom in, move `from_sub` later or set `debug.boottrace.from=N` to persist
+every step from step N. If the budget runs out, the trace says so and names
+the step.
+
+Each trace file also records the boot-time store figures. Compare the
+"NVRAM free at start" of successive traces to see whether the firmware
+reclaims on its own. `boottrace_compact="YES"` makes the loader try to
+force a reclaim by rewriting a scratch variable. It is off by default:
+under OVMF, with a crowded store, it left less space (27 KiB instead of
+52 KiB).
 
 ### Tunables
 
 | Tunable | Default | Meaning |
 | --- | --- | --- |
 | `debug.boottrace` | 0 | enable tracing |
-| `debug.boottrace.from` | coarse | persist every step from step N |
-| `debug.boottrace.probes` | 1 | 0 none, 1 hinted probes, 2 every driver probe attempt (fine mode) |
-| `debug.boottrace.msgbuf` | 1536 | message-buffer bytes per full record (max 3072) |
-| `debug.boottrace.crumbs` | 8 | breadcrumbs per record (max 16) |
-| `debug.boottrace.reserve_kb` | 64 | NVRAM left untouched |
-| `debug.boottrace.max_writes` | 0 | cap on full-size writes (0: space only) |
+| `debug.boottrace.from_sub` | `0x3800000` | persist every step once this SYSINIT subsystem starts |
+| `debug.boottrace.from` | - | persist every step from step N |
+| `debug.boottrace.probes` | 1 | 0 none; 1 hinted probes plus each device's first; 2 every driver attempt |
+| `debug.boottrace.reserve_kb` | auto | NVRAM left untouched (auto: max variable / 4, 8..16 KiB) |
+| `debug.boottrace.full_every` | 64 | full-record checkpoint interval in breadcrumbs (0 off) |
+| `debug.boottrace.msgbuf` | 1024 | message-buffer bytes per full record (max 3072; 512 in a cramped store) |
+| `debug.boottrace.crumbs` | 6 | breadcrumbs per full record (max 16; 4 in a cramped store) |
+| `debug.boottrace.max_writes` | 0 | cap the budget at N breadcrumbs (0: space only) |
 | `debug.boottrace.test_hang` | - | **test only**: SYSINIT function, device or hook name to stop at |
 | `debug.boottrace.test_reset` | 0 | **test only**: 1 triple-fault, 2 panic, instead of spinning with interrupts off |
+| `hwtrace.shell` | - | trace image: `YES` gives a shell after the diagnostics instead of a reboot |
 
 ## Other ways to read a trace
 
@@ -124,8 +160,9 @@ place with a sequence number. Writing stops at completion. With
 - **Windows** (the MSI resets into Windows when the stick is not first):
   from an elevated PowerShell,
   `powershell -ExecutionPolicy Bypass -File tools\windows\read-boottrace.ps1`
-  writes `DaemonarchyBootTrace-*.txt` and `.bin` to the desktop; `-Clear`
-  deletes the variable afterwards.
+  reads `DaemonarchyBootTrace` and `DBTStep` and writes
+  `DaemonarchyBootTrace-*.txt` and `.bin` to the desktop; `-Clear` deletes
+  both variables afterwards.
 - **Linux:** `tools/boottrace/decode-boottrace.py --efivarfs
   /sys/firmware/efi/efivars/DaemonarchyBootTrace-9262df38-e448-4c99-bdd0-e70eada0faa1`;
   `--vars` decodes a QEMU OVMF vars file and counts stored copies.
@@ -138,14 +175,15 @@ place with a sequence number. Writing stops at completion. With
   precedence when both are set. This network path has not been exercised
   yet; the MSI stick image does not enable it.
 
-## Building a stick
+## Building the image
 
-`tools/boottrace/make-stick.sh` remasters a live ISO: it adds the boottrace
-kernel as `/boot/kernel.bt/kernel` (the default kernel; modules still load
-from `/boot/kernel`), the boottrace loader on the ESP and as
-`/boot/loader.efi`, the matching Lua, `loader.conf` settings, a 256 MiB
-`DATRACE` partition and, with `-q`, an initial queue. El Torito is not kept:
-write the image to a USB stick and boot it with UEFI.
+`build-hwtrace-image.sh` builds the image on the FreeBSD builder from a
+boottrace kernel, the boottrace loader and Lua, and the release ISO the
+kernel matches; see HACKING.md. `tools/boottrace/make-stick.sh` is the
+earlier interim remaster of a live ISO. It was used for the first MSI
+iterations and adds the same stick settings (`boottrace_stick`,
+`boottrace_autocycle`) to a copy of the ISO.
 `tools/boottrace/qemu-stick-test.py` drives an image through several boots
 under QEMU/OVMF with a persistent vars file, resetting silent boots the way
-the MSI firmware does.
+the MSI firmware does. `--bus ahci` attaches the stick as SATA, because
+QEMU's USB storage emulation rejected the rescue root's writes.
