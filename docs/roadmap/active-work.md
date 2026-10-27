@@ -1047,7 +1047,8 @@ remains open; report files do not establish a passing gate.
   - [ ] Qualify deliberate pre-driver/later panic, hard-reset retention, normal boot, transport faults and safe native-driver takeover; package the controller and separate 1.4 diagnostic image in isolated output roots.
 - **Evidence:**
   - [ ] Complete the plan's native/UEFI loader, boot-block, forced-mountroot, panic, disk-boot, fault and recovery matrix with exact artifact identities and the earliest covered stage stated honestly.
-  - [ ] Retain independent pre-driver panic/reset captures, successful normal boot and actual MSI built-in-NIC evidence. Preserve controller logs on loss; do not repeat exhausted ACPI/SMP/panic tunable comparisons or infer a reset cause from silence.
+  - [ ] Retain independent pre-driver panic/reset captures, successful normal boot and actual MSI built-in-NIC evidence.
+- **Reset-surviving boot trace (MSI):** The MSI's RTL8125 has no early kernel backend, so a [hardware trace stick](../boottrace.md) records each SYSINIT, device probe/attach, config hook, mountroot and panic in the UEFI variable `DaemonarchyBootTrace` before the step runs (opt-in `debug.boottrace=1`; coarse by default within a `QueryVariableInfo` byte budget, `debug.boottrace.from=N` zooms in). The loader files each boot's trace on the stick's `DATRACE` partition and boots the next queued experiment unattended; `tools/windows/read-boottrace.ps1` is the Windows fallback. The loader change also accepts UNDI 3.1 ROMs reporting minor version 0x10 (the MSI's RTL8125). QEMU/OVMF multi-boot checks only; no MSI trace exists yet. Preserve controller logs on loss; do not repeat exhausted ACPI/SMP/panic tunable comparisons or infer a reset cause from silence.
 
 ### [ ] ARCH-001 — Add aarch64 as a second supported architecture for 1.4.0
 
