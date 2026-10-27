@@ -164,6 +164,8 @@ nb_hook_run() {
   timeout "$(network_step_bound "$1")" "$NB_EXEC" "$@"
 }
 nb_hook_show() { :; }
+# Replies are JSON on stdout: no result marks here (the GTK page plays its own sounds).
+nb_hook_result() { :; }
 nb_hook_dns_prompt() {
   nb_set need dns
   nb_fail 'No DNS server answered a direct lookup. Enter a DNS server that works on this network.'
@@ -403,6 +405,14 @@ cmd_write_conf() {
   flag install_ports
   flag install_src
   flag encrypt_installation
+  # The sound choice made with the installer's Mute button carries over, as the
+  # text configurator's Sound: entry does. Empty keeps the installed default.
+  sound=''
+  if jq -e 'has("sound")' <<<"$request" >/dev/null; then
+    field sound
+  fi
+  [[ $sound =~ ^(on|quiet|off)?$ ]] || invalid sound 'Choose on, quiet or off for sound.'
+  sound_mode=$sound
   cuda_step
   checkout_options_prepare "$ISO_SHARE/checkouts.json" >/dev/null 2>&1 || invalid checkouts 'Invalid checkout selection'
 

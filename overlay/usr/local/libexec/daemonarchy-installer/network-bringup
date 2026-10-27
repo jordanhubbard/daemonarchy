@@ -1040,6 +1040,9 @@ nb_hook_clock_prompt() {
   nb_fail "The system clock is wrong and network time did not answer. Set the firmware clock to UTC, or allow NTP to pool.ntp.org."
 }
 nb_hook_wifi_join() { nb_hook_run wifi-join; }
+# Called with the step and its status after every step, before its report;
+# the configurator marks the result on screen and plays a sound.
+nb_hook_result() { :; }
 
 nb_fail() {
   nb_set failure "$*"
@@ -1059,6 +1062,7 @@ nb_report_name() {
 nb_run() { # step...: run, then show what it found
   local status
   nb_hook_run "$@" && status=0 || status=$?
+  nb_hook_result "$1" "$status"
   nb_hook_show "$(nb_report_name "$1")"
   return "$status"
 }

@@ -36,6 +36,12 @@ demo = importlib.util.module_from_spec(demo_spec)
 demo_spec.loader.exec_module(demo)
 WRAPPER = ROOT/'overlay/usr/local/libexec/daemonarchy-installer/dashboard'
 SHARE = ROOT/'overlay/usr/local/share/daemonarchy-installer'
+LIBEXEC = ROOT/'overlay/usr/local/libexec/daemonarchy-installer'
+sound = ui.sound
+charm = ui.charm
+# Every test that starts a screen gets a private sound directory, so a player
+# or setting on the test host is never touched.
+SOUND_ROOT = tempfile.TemporaryDirectory(prefix='daemonarchy-sound-test-')
 
 
 def metric(current=1, total=3):
@@ -288,9 +294,14 @@ class MeasuredProgressTests(unittest.TestCase):
 def clean_env():
     env = dict(os.environ)
     for name in ('NO_COLOR', 'COLORTERM', 'DAEMONARCHY_REDUCED_MOTION', 'DAEMONARCHY_CONSOLE',
-                 'DAEMONARCHY_COLOR', 'DAEMONARCHY_GLYPHS', 'DAEMONARCHY_PROGRESS_STYLE'):
+                 'DAEMONARCHY_COLOR', 'DAEMONARCHY_GLYPHS', 'DAEMONARCHY_PROGRESS_STYLE',
+                 'DAEMONARCHY_SOUND', 'DAEMONARCHY_SOUND_DEVICE', 'DAEMONARCHY_UNATTENDED'):
         env.pop(name, None)
     env['LANG'] = 'C.UTF-8'
+    env['DAEMONARCHY_SOUND_DIR'] = tempfile.mkdtemp(dir=SOUND_ROOT.name)
+    env['DAEMONARCHY_SOUND_KLD'] = 'off'
+    # Never the host's real audio device; tests that play use a file instead.
+    env['DAEMONARCHY_SOUND_DEVICE'] = '/nonexistent/daemonarchy-test-dsp'
     return env
 
 
@@ -829,6 +840,26 @@ class TmuxWindowControlTests(unittest.TestCase):
             tty.send(b'\x04exit\r')  # exit closes the pane, as in tmux
             self.until(tty, lambda: len(self.windows()) == 1)
 
+    def test_sound_keys_and_status_line(self):
+        pcm = self.root/'dsp.raw'
+        env = dict(DAEMONARCHY_SOUND='on', DAEMONARCHY_SOUND_DEVICE=f'file:{pcm}', DAEMONARCHY_SOUND_DIR=str(self.root/'sound'))
+        self.addCleanup(sound.stop, dict(DAEMONARCHY_SOUND_DIR=env['DAEMONARCHY_SOUND_DIR']))
+        with self.screen(**env) as tty:
+            self.started(tty)
+            self.assertEqual(self.tmux('show', '-gv', '@sound').strip(), '♪70%')
+            keys = self.tmux('list-keys', '-N', '-T', 'prefix')
+            for text in ('Sound: mute or unmute', 'Sound: volume up', 'Sound: volume down', 'Sound: ambient'):
+                self.assertIn(text, keys)
+            self.press(tty, self.PREFIX + b'm')
+            self.until(tty, lambda: self.tmux('show', '-gv', '@sound').strip() == '♪ muted')
+            self.press(tty, self.PREFIX + b'm', self.PREFIX + b'+')
+            self.until(tty, lambda: self.tmux('show', '-gv', '@sound').strip() == '♪80%')
+            self.press(tty, self.PREFIX + b'-', self.PREFIX + b'-')
+            self.until(tty, lambda: self.tmux('show', '-gv', '@sound').strip() == '♪60%')
+            self.until(tty, lambda: '♪ 60%' in self.capture('install:0.0'))
+            # The player started with the screen; volume feedback reached the (file) device.
+            self.until(tty, lambda: pcm.exists() and pcm.stat().st_size > 0)
+
     def test_completion_waits_for_open_shell_then_reports_the_result(self):
         with self.screen() as tty:
             self.started(tty)
@@ -902,6 +933,393 @@ class TmuxWindowControlTests(unittest.TestCase):
             self.status.write_text('0\n')
             self.assertEqual(tty.exit_code(), 0)
 
+
+
+class FakeClient:
+    """Records cues instead of sending them."""
+
+    def __init__(self):
+        self.cues, self.levels = [], []
+
+    def play(self, cue, **params):
+        self.cues.append(cue)
+        return True
+
+    def ambient(self, levels):
+        self.levels.append(levels)
+        return True
+
+
+def event_log(*rows):
+    return [dict(serial=index + 1, **row) for index, row in enumerate(rows)]
+
+
+class SoundEventTests(unittest.TestCase):
+    """Sounds and flourishes come from the model's events, which come from real markers."""
+
+    def test_model_events_follow_markers_packages_and_the_result(self):
+        with tempfile.TemporaryDirectory() as directory:
+            log, status = Path(directory)/'log', Path(directory)/'status'
+            log.write_text('@@phase disk\n@@step partition 1\n@@step pool 2\n@@phase base\n@@phase install\n'
+                           + ''.join(f'[{i}/120] Installing p{i}-1.0...\n' for i in range(1, 61)))
+            now = [1000.0]
+            monitor = model.Monitor(log, status, source=None, clock=lambda: now[0])
+            monitor.poll()
+            kinds = [(e['kind'], e.get('stage')) for e in monitor.snapshot()['events']]
+            self.assertEqual(kinds[:6], [('stage-start', 'partition'), ('stage-done', 'partition'),
+                                         ('stage-start', 'pool'), ('stage-done', 'pool'),
+                                         ('stage-start', 'base'), ('stage-done', 'base')])
+            packages = [e for e in monitor.snapshot()['events'] if e['kind'] == 'packages']
+            self.assertEqual((packages[-1]['current'], packages[-1]['total']), (60, 120))
+            self.assertTrue(packages[-1]['milestone'])  # 50 was crossed
+            # Nothing happens with time alone, until a genuine wait is announced once.
+            serial = monitor.events.serial
+            now[0] += model.WAITING - 1
+            monitor.poll()
+            self.assertEqual(monitor.events.serial, serial)
+            now[0] += 2
+            monitor.poll()
+            monitor.poll()
+            self.assertEqual([e['kind'] for e in monitor.snapshot()['events'][-1:]], ['waiting'])
+            self.assertEqual(monitor.events.serial, serial + 1)
+            status.write_text('3\n')
+            monitor.poll()
+            done = monitor.snapshot()['events'][-1]
+            self.assertEqual((done['kind'], done['result'], done['succeeded']), ('done', 3, False))
+
+    def test_event_to_sound_mapping(self):
+        client = FakeClient()
+        clock = [0.0]
+        director = sound.Director(client, clock=lambda: clock[0])
+        history = event_log(dict(kind='stage-start', stage='base'))
+        director.feed(dict(events=history))
+        self.assertEqual(client.cues, [], 'a screen that starts late does not replay history')
+        rows = history
+        new = [dict(serial=2, kind='stage-done', stage='base'), dict(serial=3, kind='stage-start', stage='packages'),
+               dict(serial=4, kind='packages', current=49, total=120, milestone=False),
+               dict(serial=5, kind='packages', current=50, total=120, milestone=True),
+               dict(serial=6, kind='warning', text='x'), dict(serial=7, kind='waiting', seconds=21),
+               dict(serial=8, kind='done', result=0, succeeded=True)]
+        director.feed(dict(events=rows + new))
+        self.assertEqual(client.cues, ['stage_done', 'stage', 'tick', 'milestone', 'net_fail', 'attract', 'fanfare'],
+                         'the 50th package is a milestone; a burst of package lines is one blip')
+        clock[0] += 1
+        director.feed(dict(events=rows + new + [dict(serial=9, kind='packages', current=51, total=120)]))
+        self.assertEqual(client.cues[-1], 'tick')
+        failed = sound.Director(FakeClient())
+        failed.feed(dict(events=[dict(serial=4, kind='done', result=1, succeeded=False)]))
+        self.assertEqual(failed.client.cues, ['error'], 'a known result is announced even to a late screen')
+        self.assertEqual(sound.Director.cues_for(dict(kind='failed')), [('error', {})])
+
+    def test_ambient_levels_are_measured_activity_only(self):
+        self.assertIsNone(sound.ambient_levels({}))
+        idle = sound.ambient_levels(dict(current=dict(cores=[0.0, 0.0], disk_write=0, disk_read=0, net_rx=0, net_tx=0),
+                                         peaks={}))
+        self.assertEqual(idle, dict(cpu=0.0, disk=0.0, net=0.0))
+        busy = sound.ambient_levels(snapshot()['activity'])
+        self.assertGreater(busy['disk'], 0.5)
+        ambient = sound.Ambient()
+        block = [0.0] * 4096
+        ambient.update(idle, 0.0)
+        ambient.fill(block, 0, 0.0)
+        self.assertEqual(max(map(abs, block)), 0.0, 'no measured activity, no music')
+        ambient.update(busy, 0.0)
+        ambient.fill(block, 4096, 0.0)
+        self.assertGreater(max(map(abs, block)), 0.0)
+        block = [0.0] * 4096
+        ambient.fill(block, 8192 * 10, 5.0)  # measurements stopped arriving
+        self.assertFalse(ambient.active(5.0))
+
+    def test_flourishes_start_only_from_events(self):
+        visuals = ui.Visuals(ui.Glyphs(True), logo=[])
+        base = snapshot()
+        visuals.advance(dict(base, events=event_log(dict(kind='stage-start', stage='base', label='Base sets'))))
+        self.assertIsNone(visuals.card, 'history is not a new stage')
+        visuals.advance(dict(base, events=event_log(dict(kind='stage-start', stage='base', label='Base sets'),
+                                                    dict(kind='stage-done', stage='base', label='Base sets'),
+                                                    dict(kind='packages', what='install', current=100, total=900,
+                                                         milestone=True))))
+        self.assertIn('base', visuals.flash)
+        self.assertEqual(visuals.milestone[0], '100 packages')
+        self.assertIsNone(visuals.finale)
+        visuals.advance(dict(base, done=True, succeeded=True, result=0,
+                             events=event_log(*[dict(kind='x')] * 3, dict(kind='done', result=0, succeeded=True))))
+        self.assertEqual(visuals.finale[0], True)
+        # The shimmer moves only with measured activity.
+        still = ui.Visuals(ui.Glyphs(True), logo=[])
+        quiet = dict(base, activity=dict(base['activity'], current={}, peaks={}))
+        for _ in range(5):
+            still.advance(quiet)
+            time.sleep(0.01)
+        self.assertEqual(still.shimmer, 0.0)
+        reduced = ui.Visuals(ui.Glyphs(True), reduced=True, logo=[])
+        for _ in range(3):
+            reduced.advance(base)
+        self.assertEqual(reduced.shimmer, 0.0)
+
+    def test_finale_card_and_mascot_render_in_every_size(self):
+        args = type('Args', (), dict(style='spectrum', log=Path('/nonexistent/log')))()
+        for unicode in (True, False):
+            for rows, cols in ((8, 20), (24, 80), (40, 140), (60, 200)):
+                app = ui.App(None, args, dict(DAEMONARCHY_GLYPHS='unicode' if unicode else 'ascii', TERM='xterm'),
+                             False, True, False)
+                app.visuals.seen = 0
+                for snap in (snapshot(events=event_log(dict(kind='stage-start', stage='base', label='Base sets'))),
+                             snapshot(done=True, succeeded=True, result=0, title='Daemonarchy is installed.',
+                                      events=event_log(dict(kind='stage-start', stage='base', label='Base sets'),
+                                                       dict(kind='done', result=0, succeeded=True)))):
+                    for _ in range(3):
+                        app.visuals.advance(snap)
+                        canvas = app.frame(cols, rows, snap)
+                    self.assertTrue(all(len(row) == cols for row in canvas.chars))
+                    text = '\n'.join(canvas.plain())
+                    if not unicode:
+                        self.assertTrue(text.isascii(), text)
+                if rows >= 24:
+                    self.assertIn('Daemonarchy is installed', text)
+                if cols >= 140:
+                    self.assertTrue(any(c in text for c in ('▀█▄▄▄█▀', '\\_____/')), 'the mascot stands top right')
+
+
+class SoundControlTests(unittest.TestCase):
+    def env(self, **extra):
+        return dict(clean_env(), **extra)
+
+    def test_mode_resolution_and_automatic_silence(self):
+        resolve = sound.resolve
+        env = self.env()
+        self.assertEqual(resolve(env, {}, '', 'vt', True), ('on', 'default'))
+        self.assertEqual(resolve(env, {}, '', 'serial', True)[0], 'off')
+        self.assertEqual(resolve(env, {}, '', 'none', True)[0], 'off')
+        self.assertEqual(resolve(env, {}, '', 'vt', False), ('off', 'no audio device'))
+        unattended = self.env(DAEMONARCHY_UNATTENDED='1')
+        self.assertIn('unattended', resolve(unattended, {}, '', 'vt', True)[1])
+        self.assertEqual(resolve(unattended, {}, 'on', 'vt', True)[0], 'on', 'the loader can ask for sound')
+        self.assertEqual(resolve(self.env(DAEMONARCHY_UNATTENDED='1', DAEMONARCHY_SOUND='quiet'), {}, '', 'vt', True)[0],
+                         'quiet', 'so can the CIDATA answers')
+        self.assertEqual(resolve(env, {}, 'off', 'vt', True)[0], 'off')
+        self.assertEqual(resolve(env, dict(mode='quiet'), 'off', 'vt', True)[0], 'quiet', 'the installer choice wins')
+        self.assertEqual(sound.console_kind({}, '/dev/ttyu0'), 'serial')
+        self.assertEqual(sound.console_kind({}, '/dev/ttyv0'), 'vt')
+        self.assertEqual(sound.console_kind({'TERM': 'vt100'}, '/dev/ttyv0'), 'serial')
+        self.assertEqual(sound.console_kind({}, ''), 'none')
+        self.assertEqual(sound.console_kind({'WAYLAND_DISPLAY': 'wayland-1'}, ''), 'vt')
+
+    def test_mute_volume_ambient_and_labels(self):
+        device = tempfile.NamedTemporaryFile(prefix='dsp-')
+        self.addCleanup(device.close)
+        env = self.env(DAEMONARCHY_SOUND='on', DAEMONARCHY_SOUND_DEVICE=f'file:{device.name}')
+        self.addCleanup(sound.stop, env)
+        state = sound.State(env)
+        self.assertEqual(state.label(), '♪ 70%')
+        self.assertEqual(sound.ctl('toggle-mute', env).label(), '♪ muted')
+        self.assertEqual(sound.ctl('toggle-mute', env).label(), '♪ 70%')
+        for _ in range(6):
+            state = sound.ctl('up', env)
+        self.assertEqual(state.volume, 100)
+        for _ in range(12):
+            state = sound.ctl('down', env)
+        self.assertEqual((state.volume, state.muted, state.audible()), (0, True, False))
+        sound.ctl('up', env)
+        self.assertEqual(sound.ctl('ambient', env).ambient, False)
+        self.assertEqual(sound.ctl('ambient', env).ambient, True)
+        chosen = dict(env)
+        del chosen['DAEMONARCHY_SOUND']
+        quiet = sound.ctl('mode=quiet', chosen)
+        self.assertEqual(quiet.label(), '♪ quiet 10%')
+        client = sound.Client(chosen)
+        self.assertFalse(client.wants('tick'), 'quiet keeps only the moments that matter')
+        self.assertTrue(client.wants('fanfare'))
+        with self.assertRaises(ValueError):
+            sound.ctl('mode=loud', env)
+        off = sound.State(self.env(DAEMONARCHY_SOUND='off'))
+        self.assertFalse(off.audible())
+        self.assertIn('off', off.label(False))
+        self.assertTrue(off.label(False).isascii())
+
+    def test_sending_never_blocks_or_fails(self):
+        env = self.env(DAEMONARCHY_SOUND='on')
+        client = sound.Client(env)
+        started = time.monotonic()
+        for _ in range(500):
+            self.assertFalse(client.play('tick'))  # no player: dropped
+        # A player that never reads: its queue fills and further cues are dropped, never waited on.
+        directory = Path(env['DAEMONARCHY_SOUND_DIR'])
+        directory.mkdir(parents=True, exist_ok=True)
+        stalled = socket_bound(directory/'sock')
+        try:
+            results = [client.play('fanfare') for _ in range(5000)]
+            self.assertTrue(results[0])
+            self.assertFalse(results[-1])
+        finally:
+            stalled.close()
+        self.assertLess(time.monotonic() - started, 3.0)
+        self.assertFalse(client.play('no-such-cue'))
+
+    def test_player_writes_oss_pcm_and_respects_mute(self):
+        with tempfile.TemporaryDirectory() as directory:
+            pcm = Path(directory)/'dsp.raw'
+            env = self.env(DAEMONARCHY_SOUND='on', DAEMONARCHY_SOUND_DEVICE=f'file:{pcm}')
+            run = lambda *argv: subprocess.run([sys.executable, str(LIBEXEC/'sound.py'), *argv], env=env,
+                                               capture_output=True, text=True, timeout=10)
+            try:
+                self.assertEqual(run('ensure').returncode, 0)
+                self.assertEqual(run('play', 'stage_done').returncode, 0)
+                expected = len(sound.render('stage_done')) * 2
+                deadline = time.monotonic() + 5
+                while (not pcm.exists() or pcm.stat().st_size < expected) and time.monotonic() < deadline:
+                    time.sleep(0.05)
+                self.assertGreaterEqual(pcm.stat().st_size, expected)
+                written = -1
+                while written != pcm.stat().st_size and time.monotonic() < deadline + 5:
+                    written = pcm.stat().st_size  # Let the cue (and the wall-clock padding) finish.
+                    time.sleep(0.5)
+                run('ctl', 'mute')
+                run('play', 'fanfare')
+                time.sleep(0.6)
+                self.assertEqual(pcm.stat().st_size, written, 'muted: nothing reaches the device')
+                self.assertIn('muted', run('label', '--long').stdout)
+            finally:
+                run('stop')
+
+    def test_player_stays_while_used_and_exits_when_left_alone(self):
+        with tempfile.TemporaryDirectory() as directory:
+            env = self.env(DAEMONARCHY_SOUND='on', DAEMONARCHY_SOUND_DEVICE=f'file:{directory}/dsp.raw')
+            player = subprocess.Popen([sys.executable, str(LIBEXEC/'sound.py'), 'serve', '--idle-exit', '1'], env=env,
+                                      stdout=subprocess.DEVNULL, stderr=subprocess.DEVNULL)
+            self.addCleanup(lambda: player.poll() is None and player.kill())
+            client = sound.Client(env)
+            deadline = time.monotonic() + 2.5
+            while time.monotonic() < deadline:
+                client._send(dict(hello=1))  # what Director.feed's keepalive sends
+                time.sleep(0.3)
+            self.assertIsNone(player.poll(), 'a front end that keeps in touch keeps the player')
+            self.assertEqual(player.wait(timeout=5), 0, 'left alone, the player exits by itself')
+            self.assertFalse((Path(env['DAEMONARCHY_SOUND_DIR'])/'pid').exists())
+
+    def test_no_device_or_a_broken_device_is_silent_and_reported(self):
+        env = self.env(DAEMONARCHY_SOUND='on', DAEMONARCHY_SOUND_DEVICE='/nonexistent/dsp')
+        self.assertFalse(sound.ensure(env))
+        self.assertEqual(sound.State(env).label(), '♪ off (no audio device)')
+        with tempfile.TemporaryDirectory() as directory:
+            env = self.env(DAEMONARCHY_SOUND='on', DAEMONARCHY_SOUND_DEVICE=directory)  # open() fails
+            player = sound.Player(env)
+            self.assertFalse(player.device.open())
+            player.status('off', player.device.error)
+            self.assertIn('audio device unavailable', sound.State(env).label())
+        env = self.env()
+        self.assertEqual(sound.resolve(env, {}, '', 'serial', True)[0], 'off')
+        self.assertFalse(sound.ensure(dict(env, TERM='vt100')))
+
+    def test_an_install_finishes_the_same_with_sound_broken(self):
+        with tempfile.TemporaryDirectory() as directory:
+            log, status = Path(directory)/'log', Path(directory)/'status'
+            log.write_text('@@phase base\n@@phase install\n[1/2] Installing a-1...\n[2/2] Installing b-1...\n')
+            status.write_text('5\n')
+            sound_dir = Path(directory)/'not-a-directory'
+            sound_dir.write_text('')
+            env = dict(clean_env(), DAEMONARCHY_SOUND='on', DAEMONARCHY_SOUND_DIR=str(sound_dir),
+                       DAEMONARCHY_SOUND_DEVICE='/nonexistent/dsp')
+            result = subprocess.run([sys.executable, str(SCRIPT), str(log), str(status), '--style', 'plain'],
+                                    env=env, capture_output=True, timeout=20)
+            self.assertEqual(result.returncode, 5)
+            self.assertIn(b'Installer stopped (exit 5)', result.stdout)
+            self.assertEqual(result.stderr, b'')
+
+    def test_screen_keys_mute_and_set_the_volume(self):
+        with tempfile.TemporaryDirectory() as directory:
+            log, status = Path(directory)/'log', Path(directory)/'status'
+            log.write_text('@@phase base\n@@progress ' + json.dumps(metric(1)) + '\n')
+            env = dict(clean_env(), TERM='xterm-256color', DAEMONARCHY_SOUND='on', DAEMONARCHY_CELEBRATE='0')
+            settings = Path(env['DAEMONARCHY_SOUND_DIR'])/'settings'
+            with Terminal([str(log), str(status)], env, 30, 120) as tty:
+                tty.wait_screen('♪ 70%')
+                tty.send(b'm')
+                tty.wait_screen('♪ muted')
+                self.assertIn('muted=1', settings.read_text())
+                tty.send(b'm+')
+                tty.wait_screen('♪ 80%')
+                tty.send(b'--')
+                tty.wait_screen('♪ 60%')
+                tty.send(b'a')
+                tty.wait_screen('ambient off')
+                status.write_text('0\n')
+                self.assertEqual(tty.exit_code(), 0)
+
+    def test_previews_and_raw_chimes_are_real_pcm(self):
+        for name in sound.CUES:
+            samples = sound.render(name)
+            self.assertGreater(len(samples), sound.RATE * 0.01, name)
+            self.assertLess(len(samples), sound.RATE * 3, name)
+            peak = max(abs(v) for v in samples)
+            self.assertTrue(500 < peak < 32767, (name, peak))
+            self.assertIn(name, sound.DESCRIPTIONS)
+        self.assertNotEqual(sound.render('tick', step=1), sound.render('tick', step=2), 'the ticker walks a scale')
+        with tempfile.TemporaryDirectory() as directory:
+            written = sound.preview(directory)
+            self.assertEqual(len(written), len(sound.CUES) + 2)
+            header = (Path(directory)/'tour.wav').read_bytes()[:44]
+            self.assertEqual((header[:4], header[8:16]), (b'RIFF', b'WAVEfmt '))
+            self.assertEqual(struct.unpack('<HHI', header[20:28]), (1, 1, sound.RATE))
+        raw = sound.raw8k(sound.render('boot'))
+        self.assertAlmostEqual(len(raw) / 8000, len(sound.render('boot')) / sound.RATE, delta=0.01)
+
+
+def socket_bound(path):
+    import socket as socket_module
+    server = socket_module.socket(socket_module.AF_UNIX, socket_module.SOCK_DGRAM)
+    server.bind(str(path))
+    return server
+
+
+class CharmTests(unittest.TestCase):
+    def charm(self, *argv, **extra):
+        env = dict(clean_env(), TERM='xterm-256color', DAEMONARCHY_SOUND='off', **extra)
+        return subprocess.run([sys.executable, str(LIBEXEC/'charm.py'), *argv], env=env, capture_output=True,
+                              text=True, timeout=10)
+
+    def test_flourishes_print_plain_text_off_a_terminal_and_never_fail(self):
+        self.assertEqual(self.charm('transition', 'Select install disk').stdout, 'Select install disk\n')
+        self.assertRegex(self.charm('result', 'ok', 'DNS', '--left', '2').stdout, r'^  (?:√|ok) DNS\n$')
+        self.assertRegex(self.charm('result', 'fail', 'Clock').stdout, r'^(?:×|x) Clock\n$')
+        self.assertEqual(self.charm('result', 'ok', 'DNS', LANG='C', LC_ALL='C').stdout, 'ok DNS\n')
+        self.assertIn('nda0 will be destroyed', self.charm('warn', 'All data on nda0 will be destroyed.').stdout)
+        for argv in (('no-such-command',), ('result',), ('attract', '--logo', '/nonexistent')):
+            self.assertEqual(self.charm(*argv).returncode, 0)
+        wrapper = subprocess.run(['/bin/sh', str(LIBEXEC/'charm'), 'transition', 'x'], env=dict(clean_env(), PATH='/nonexistent'),
+                                 capture_output=True, text=True)
+        self.assertEqual(wrapper.returncode, 1, 'without Python the caller falls back to plain text')
+
+    def test_flourishes_on_a_terminal_are_short_and_reduced_motion_is_static(self):
+        for reduced in ('', '1'):
+            with self.subTest(reduced=reduced):
+                env = dict(clean_env(), TERM='xterm-256color', DAEMONARCHY_SOUND='off', DAEMONARCHY_REDUCED_MOTION=reduced)
+                started = time.monotonic()
+                with Terminal(['warn', 'All partitions on nda0 will be destroyed.'], env, 10, 80,
+                              command=[sys.executable, str(LIBEXEC/'charm.py')]) as tty:
+                    self.assertEqual(tty.exit_code(), 0)
+                    self.assertIn('All partitions on nda0 will be destroyed.', tty.text())
+                elapsed = time.monotonic() - started
+                self.assertLess(elapsed, 3.0)
+                if reduced:
+                    self.assertNotIn(b'\033[0;1;38;5', tty.captured, 'no pulses, no color changes')
+
+    def test_mascot_and_fireworks_are_bounded(self):
+        for unicode in (True, False):
+            for expression in charm.MASCOT_UNICODE:
+                frame = charm.mascot_frame(expression, unicode)
+                self.assertEqual(len(frame), charm.MASCOT_H)
+                self.assertTrue(all(len(row) <= charm.MASCOT_W for row in frame))
+                if not unicode:
+                    self.assertTrue(''.join(frame).isascii())
+        fireworks = charm.Fireworks(40, 10)
+        for _ in range(60):
+            fireworks.step(0.1)
+        cells = list(fireworks.cells())
+        self.assertTrue(cells)
+        self.assertTrue(all(0 <= x < 40 and 0 <= y < 10 for x, y, _c, _s in cells))
+        self.assertEqual(charm.mascot_expression(0, 'working', 0.0, reduced=True), 'idle')
+        self.assertEqual(charm.mascot_expression(3.0, 'happy'), 'happy')
 
 class CostTests(unittest.TestCase):
     def test_drawing_cost_is_bounded(self):

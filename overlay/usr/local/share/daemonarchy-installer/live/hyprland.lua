@@ -26,5 +26,8 @@ hl.bind("SUPER + Q", hl.dsp.window.close())
 hl.bind("SUPER + W", hl.dsp.window.close())
 
 hl.on("hyprland.start", function()
+  -- The greeting chime (sound.py; silent without an audio device or with
+  -- daemonarchy.sound=off), then the installer.
+  hl.exec_cmd("/usr/local/libexec/daemonarchy-installer/sound chime greeting")
   hl.exec_cmd(installer)
 end)

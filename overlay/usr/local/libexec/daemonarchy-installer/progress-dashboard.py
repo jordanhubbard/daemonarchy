@@ -3,8 +3,16 @@
 
 The screen shows the install engine's stage timeline, measured counters, a
 ticker of the packages native pkg reports, and live activity from kernel
-counters (disk, network, CPU, memory, ZFS). Motion on the screen comes only
-from those real observations; there is no estimated percentage.
+counters (disk, network, CPU, memory, ZFS). Meters and graphs move only with
+those real observations; there is no estimated percentage.
+
+Flourishes follow the model's events: a stage card and a sound when a stage
+starts, a sparkle when one finishes, a blip per reported package and a
+fanfare with fireworks only for the installer's own successful result. The
+banner shimmers at a pace set by measured activity, the mascot's trident
+keeps time with it, and after a long genuine wait the mascot says so. Sound
+(sound.py) is optional: m mutes, + and - set the volume, a toggles the
+ambient layer; in tmux the same keys follow C-b.
 
 On the console the screen runs as window 0 of a locked-down tmux session
 (install-screen): Ctrl-b opens splits and windows for the install log,
@@ -35,6 +43,18 @@ def _load(name, filename):
 
 
 model = _load('daemonarchy_progress_model', 'progress-model.py')
+
+
+def _optional(name, filename):
+    """Sound and charm are extras: the screen works without them."""
+    try:
+        return _load(name, filename)
+    except (OSError, ImportError, SyntaxError):
+        return None
+
+
+sound = _optional('daemonarchy_sound', 'sound.py')
+charm = _optional('daemonarchy_charm', 'charm.py')
 
 # The live desktop's graphical installer imports these names from this file.
 PHASES, clean, integer = model.PHASES, model.clean, model.integer
@@ -305,11 +325,50 @@ class Visuals:
         self.ticker_serial = 0
         self.ticker_shift = 0.0
         self.last = time.monotonic()
+        # Flourishes, each started by a model event (see effects()).
+        self.seen = None
+        self.card = None  # (label, started)
+        self.flash = {}  # stage key -> until
+        self.milestone = ('', 0.0)  # (text, until)
+        self.note_until = 0.0
+        self.shimmer = 0.0
+        self.fireworks = None
+        self.finale = None  # (succeeded, started)
+        self.mood = 'idle'
+        self.level = 0.0
+        self.visual_box = None
+
+    def effects(self, snap, now):
+        """Start flourishes for events this screen has not shown yet."""
+        events = snap.get('events') or []
+        if self.seen is None:
+            self.seen = max((e['serial'] for e in events), default=0)
+            events = [e for e in events if e['kind'] == 'done']  # A late start shows only a known result.
+        for event in events:
+            if event['serial'] <= self.seen and event['kind'] != 'done':
+                continue
+            self.seen = max(self.seen, event['serial'])
+            kind = event['kind']
+            if kind == 'stage-start':
+                self.card = (event.get('label', ''), now)
+            elif kind == 'stage-done':
+                self.flash[event.get('stage')] = now + 1.5
+            elif kind == 'packages':
+                self.note_until = now + 0.15
+                if event.get('milestone'):
+                    what = 'packages' if event.get('what') == 'install' else 'downloads'
+                    self.milestone = (f"{event.get('current', 0):,} {what}", now + 2.0)
+            elif kind == 'done' and self.finale is None:
+                self.finale = (bool(event.get('succeeded')), now)
+                self.card = None
 
     def advance(self, snap):
         now = time.monotonic()
         dt = max(0.0, min(0.5, now - self.last))
         self.last = now
+        self.effects(snap, now)
+        if self.finale and self.finale[0] and not self.reduced and self.fireworks is not None:
+            self.fireworks.step(dt, spawning=now - self.finale[1] < 6.0)
         for key, target in self.targets(snap).items():
             if self.reduced:
                 self.shown[key] = target
@@ -335,6 +394,18 @@ class Visuals:
             self.ticker_shift *= math.exp(-dt * 5.0)
             if self.ticker_shift < 0.5 or self.reduced:
                 self.ticker_shift = 0.0
+        # The banner shimmer moves only as fast as the machine is measured to work.
+        levels = [v for k, v in self.shown.items() if not k.startswith('cpu')] or [0.0]
+        self.level = max(levels + [sum(v for k, v in self.shown.items() if k.startswith('cpu'))
+                                   / max(1, len([k for k in self.shown if k.startswith('cpu')]))])
+        if not self.reduced:
+            self.shimmer += dt * 9.0 * self.level
+        if snap.get('done'):
+            self.mood = 'happy' if snap.get('succeeded') else 'sad'
+        elif snap.get('idle', 0) >= model.WAITING:
+            self.mood = 'waiting'
+        else:
+            self.mood = 'working'
 
     def targets(self, snap):
         activity = snap['activity']
@@ -482,13 +553,19 @@ class Visuals:
 
     def banner(self, canvas, x, y, w, h):
         if self.logo and h >= len(self.logo) and w >= max(len(row) for row in self.logo):
+            # The gradient drifts with measured activity; an idle machine leaves it still.
             for index, row in enumerate(self.logo):
-                color = gradient(LOGO, index / max(1, len(self.logo) - 1))
+                t = (index / max(1, len(self.logo) - 1) + self.shimmer * 0.02) % 2.0
+                color = gradient(LOGO, 2.0 - t if t > 1.0 else t)
                 canvas.put(x + (w - max(len(r) for r in self.logo)) // 2, y + index, row, (color, None, True))
             return len(self.logo)
         text = ' D A E M O N A R C H Y ' if w >= 40 else 'DAEMONARCHY'
+        glint = int(self.shimmer) % (len(text) + 12) if not self.reduced and self.level > 0.02 else -99
         for index, char in enumerate(text[:w]):
-            canvas.put(x + index, y, char, (gradient(LOGO, index / max(1, len(text) - 1)), None, True))
+            color = gradient(LOGO, index / max(1, len(text) - 1))
+            if abs(index - glint) <= 1:
+                color = WHITE if index == glint else mix(color, WHITE, 0.5)
+            canvas.put(x + index, y, char, (color, None, True))
         return 1
 
     def timeline(self, canvas, x, y, w, h, snap):
@@ -510,10 +587,18 @@ class Visuals:
             active = next((i for i, l in enumerate(lines_) if any(r['state'] == 'active' for r, _ in l)), 0)
             start = max(0, min(active, len(lines_) - h))
             lines_ = lines_[start:start + h]
+        now = time.monotonic()
+        spark = '☼' if self.g.unicode else '*'
         for index, line in enumerate(lines_):
             cx = x
             for row, text in line:
-                canvas.put(cx, y + index, text, (colors[row['state']], None, row['state'] in ('active', 'failed')), w - (cx - x))
+                style = (colors[row['state']], None, row['state'] in ('active', 'failed'))
+                if self.flash.get(row['key'], 0) > now and row['state'] == 'done':
+                    # A finished stage sparkles briefly (the stage_done sound plays with it).
+                    lit = self.reduced or int((self.flash[row['key']] - now) * 6) % 2 == 0
+                    style = (WHITE if lit else GREEN, None, True)
+                    text = spark + text[1:]
+                canvas.put(cx, y + index, text, style, w - (cx - x))
                 cx += len(text) + 2
         return len(lines_)
 
@@ -603,8 +688,18 @@ class Visuals:
             return 0
         verb = 'Installing' if ticker['kind'] == 'install' else 'Downloaded'
         rate = f"  {ticker['rate']:.0f}/min" if ticker['rate'] else ''
-        label = f"{verb} {ticker['current']:,}/{ticker['total']:,}{rate} "
+        now = time.monotonic()
+        note = ('♪' if self.g.unicode else '*') if now < self.note_until else ' '
+        label = f"{note}{verb} {ticker['current']:,}/{ticker['total']:,}{rate} "
         canvas.put(x, y, label, (YELLOW, None, True), w)
+        text, until = self.milestone
+        if text and now < until:
+            spark = '☼' if self.g.unicode else '*'
+            banner = f' {spark} {text} {spark} '
+            lit = self.reduced or int((until - now) * 5) % 2 == 0
+            canvas.put(x + len(label), y, banner, (WHITE if lit else YELLOW, PURPLE if lit else None, True),
+                       max(0, w - len(label)))
+            label += banner
         room = w - len(label)
         if room <= 4:
             return 1
@@ -622,29 +717,107 @@ class Visuals:
             return
         top = y
         bottom = y + h
+        full_w = w
+        self.visual_box = None
         # Always: the stage, then measured counters; everything else as room allows.
         visual_min = 6
         want_logo = self.logo and h >= len(self.logo) + 34 and w >= 75
+        mascot = None
+        if charm and w >= 110 and h >= 20:
+            # The mascot stands at the top right; the header text makes room for it.
+            mascot = (x + w - charm.MASCOT_W, y + (len(self.logo) - charm.MASCOT_H if want_logo else 0))
+            if not want_logo:
+                w -= charm.MASCOT_W + 1
         if want_logo:
-            y += self.banner(canvas, x, y, w, len(self.logo)) + 1
+            y += self.banner(canvas, x, y, full_w if mascot is None else full_w - charm.MASCOT_W - 1,
+                             len(self.logo)) + 1
         elif h >= 14:
             y += self.banner(canvas, x, y, w, 1)
         y += self.timeline(canvas, x, y, w, 2 if h >= 12 else 1, snap)
         if y < bottom:
             y += self.status(canvas, x, y, w, max(1, min(5, bottom - y - (6 if h >= 14 else 0))), snap)
+        if mascot is not None:
+            self.draw_mascot(canvas, *mascot, snap)
+            y = max(y, mascot[1] + charm.MASCOT_H)
+        w = full_w
         remaining = bottom - y
         ticker_rows = 1 if snap['ticker']['names'] and remaining >= 2 else 0
         metric_rows = min(4, max(0, remaining - ticker_rows - (visual_min if remaining >= visual_min + 4 else 0)))
         visual_rows = remaining - ticker_rows - metric_rows - (1 if remaining > 12 else 0)
         if visual_rows >= 4 and w >= 20:
             gap = 1 if remaining > 12 else 0
-            y += gap + self.visual(canvas, x, y + gap, w, visual_rows, snap, style)
+            used = self.visual(canvas, x, y + gap, w, visual_rows, snap, style)
+            self.visual_box = (x, y + gap, w, used)
+            y += gap + used
         if metric_rows:
             y += self.metrics(canvas, x, y, w, metric_rows, snap)
         if ticker_rows and y < bottom:
             # Directly under the meters; a spare row first when there is room.
             self.ticker(canvas, x, min(bottom - 1, y + 1), w, 1, snap)
-        del top
+        self.overlays(canvas, x, top, w, h, snap)
+
+    # -- flourishes
+
+    def draw_mascot(self, canvas, x, y, snap):
+        expression = charm.mascot_expression(time.monotonic(), self.mood, self.level, self.reduced)
+        for row, text in enumerate(charm.mascot_frame(expression, self.g.unicode)):
+            for col, char in enumerate(text):
+                canvas.put(x + col, y + row, char, (charm.mascot_style(char, row, col), None, True))
+
+    def centered(self, canvas, box, row, text, style, frame_style):
+        bx, by, bw, bh = box
+        text = text[:max(0, bw - 6)]
+        width = len(text) + 4
+        left = bx + (bw - width) // 2
+        g = self.g
+        canvas.put(left, by + row - 1, g.corners[0] + g.h * (width - 2) + g.corners[1], frame_style)
+        canvas.put(left, by + row, g.v + ' ' + text + ' ' + g.v, frame_style)
+        canvas.put(left + 2, by + row, text, style)
+        canvas.put(left, by + row + 1, g.corners[2] + g.h * (width - 2) + g.corners[3], frame_style)
+
+    def overlays(self, canvas, x, y, w, h, snap):
+        now = time.monotonic()
+        box = self.visual_box
+        spark = '☼' if self.g.unicode else '*'
+        if self.finale:
+            succeeded, started = self.finale
+            area = box or (x, y, w, h)
+            if succeeded:
+                if self.fireworks is None and charm and not self.reduced:
+                    self.fireworks = charm.Fireworks(area[2], area[3])
+                if self.fireworks is not None:
+                    for px, py, char, color in self.fireworks.cells(self.g.unicode):
+                        canvas.put(area[0] + px, area[1] + py, char, (color, None, True))
+                if area[3] >= 5:
+                    t = (now - started) * 0.5
+                    color = gradient(LOGO, (t % 2.0) if (t % 2.0) <= 1 else 2 - t % 2.0) if not self.reduced else GREEN
+                    self.centered(canvas, area, area[3] // 2, f'{spark} Daemonarchy is installed {spark}',
+                                  (WHITE, None, True), (color, None, True))
+            elif area[3] >= 5:
+                lit = self.reduced or now - started > 1.5 or int((now - started) * 4) % 2 == 0
+                self.centered(canvas, area, area[3] // 2, snap['title'],
+                              (WHITE if lit else RED, RED if lit else None, True), (RED, None, True))
+            return
+        if self.card and box and box[3] >= 5:
+            label, started = self.card
+            age = now - started
+            if age < 1.6:
+                text = f'{spark} {label} {spark}'
+                if not self.reduced and age < 0.25:
+                    keep = max(1, int(len(text) * age / 0.25))
+                    middle = len(text) // 2
+                    text = ' ' * (middle - keep // 2) + text[middle - keep // 2:middle - keep // 2 + keep]
+                    text = text.ljust(len(f'{spark} {label} {spark}'))
+                fade = (not self.reduced) and age > 1.3
+                self.centered(canvas, box, 2, text, ((GRAY if fade else WHITE), None, True),
+                              ((DIM if fade else CYAN), None, True))
+            else:
+                self.card = None
+        if self.mood == 'waiting' and box and box[3] >= 4:
+            idle = model.format_elapsed(snap.get('idle', 0))
+            text = (f' {spark} Still working: no new progress report for {idle}. '
+                    'The graphs show live activity; nothing here is estimated. ')
+            canvas.put(box[0] + 1, box[1] + box[3] - 1, text[:max(0, box[2] - 2)], (YELLOW, None, False))
 
     def visual(self, canvas, x, y, w, h, snap, style):
         h = min(h, 24)
@@ -762,6 +935,15 @@ class App:
         self.input = b''
         self.input_at = 0.0
         self.quit = None
+        self.started = time.monotonic()
+        self.director = None
+        self.sound_state = None
+        if sound is not None:
+            try:
+                self.director = sound.Director(sound.Client(env))
+                self.sound_state = self.director.client.state
+            except Exception:  # noqa: BLE001 - the screen never depends on sound.
+                self.director = None
 
     def load_logo(self):
         if not self.glyphs.unicode:
@@ -816,12 +998,39 @@ class App:
             self.say(f'Visual style: {self.style}')
         elif key in ('?', 'h'):
             self.say(self.keys_hint(), 8)
+        elif key in ('m', '+', '=', '-', 'a') and sound is not None:
+            action = {'m': 'toggle-mute', '+': 'up', '=': 'up', '-': 'down', 'a': 'ambient'}[key]
+            try:
+                state = sound.ctl(action, self.env)
+                if self.director:
+                    self.director.client.checked = 0.0
+                ambient = state.ambient and state.mode == 'on'
+                self.say(state.label(self.glyphs.unicode) + (f"  ambient {'on' if ambient else 'off'}"
+                                                             if key == 'a' else ''))
+            except (OSError, ValueError) as error:
+                self.say('Sound control unavailable: ' + clean(error))
+
+    def feed_sound(self, snap):
+        if self.director is not None:
+            try:
+                self.director.feed(snap)
+            except Exception:  # noqa: BLE001 - sound never affects the installation or the screen.
+                self.director = None
+
+    def sound_label(self, short=False):
+        if self.sound_state is None:
+            return ''
+        try:
+            state = self.director.client._fresh() if self.director else self.sound_state
+        except OSError:
+            return ''
+        return state.short(self.glyphs.unicode) if short else state.label(self.glyphs.unicode)
 
     def keys_hint(self):
         if self.tmux.active:
             return ('C-b c new window  C-b % / C-b " split  C-b G log  C-b H diagnostics  '
-                    'C-b R remote debug  C-b ? all keys  v style')
-        return 'v style. Window controls need tmux, which is not available here.'
+                    'C-b R remote debug  C-b m mute  C-b +/- volume  C-b ? all keys  v style')
+        return 'v style  m mute  +/- volume  a ambient. Window controls need tmux, which is not available here.'
 
     # -- frames
 
@@ -845,8 +1054,23 @@ class App:
         canvas = Canvas(width, height)
         self.visuals.draw(canvas, 0, 0, width, height - 1, snap, self.style)
         text, color = self.footer(snap)
-        canvas.put(0, height - 1, text[:max(0, width - 1)], (color, None, False))
+        label = self.sound_label(short=width < 100)
+        room = width - 1
+        # The sound state sits at the right; an important message keeps the whole row.
+        important = text != self.keys_hint()
+        if label and room - len(label) - 2 >= (len(text) if important else 20):
+            room -= len(label) + 2
+            muted = 'muted' in label or ' off' in label
+            canvas.put(width - 1 - len(label), height - 1, label, (GRAY if muted else PURPLE, None, not muted))
+        canvas.put(0, height - 1, text[:max(0, room)], (color, None, False))
         return canvas
+
+    def curtain(self, canvas):
+        """The screen opens like a curtain, rows appearing top to bottom (0.45 s)."""
+        age = time.monotonic() - self.started
+        if not self.reduced and age < 0.45:
+            for row in range(int(canvas.height * age / 0.45), canvas.height):
+                canvas.fill(0, row, canvas.width, 1)
 
     def render(self, snap):
         size = os.get_terminal_size(sys.stdout.fileno())
@@ -858,6 +1082,7 @@ class App:
             out.append('\033[0m\033[2J')
         self.visuals.advance(snap)
         canvas = self.frame(width, height, snap)
+        self.curtain(canvas)
         out.extend(canvas.changes(self.previous, self.colors))
         self.previous = canvas
         if out:
@@ -870,8 +1095,19 @@ class App:
 
 def run_plain(monitor, style):
     previous = None
+    director = None
+    if sound is not None:
+        try:
+            director = sound.Director(sound.Client())
+        except Exception:  # noqa: BLE001
+            director = None
     while True:
         monitor.poll()
+        if director is not None:
+            try:
+                director.feed(monitor.snapshot())
+            except Exception:  # noqa: BLE001 - sound never affects the installation.
+                director = None
         state = monitor.state
         idle = monitor.idle_seconds() >= 5
         key = state.key(), idle, monitor.result
@@ -967,6 +1203,11 @@ def run(args):
             keyboard, saved = False, None
     app = App(monitor, args, env, console, True, keyboard)
     fps = 1.0 if app.reduced else max(1.0, min(20.0, float(env.get('DAEMONARCHY_FPS', '10') or 10)))
+    try:
+        celebrate = max(0.0, min(30.0, float(env.get('DAEMONARCHY_CELEBRATE', '') or (2.0 if app.reduced else 4.0))))
+    except ValueError:
+        celebrate = 4.0
+    celebrate_until, held_input = None, 0.0
     code, finished = 1, False
     try:
         sys.stdout.write('\033[?1049h\033[?25l\033[2J')
@@ -977,7 +1218,9 @@ def run(args):
             now = time.monotonic()
             if now >= next_frame:
                 started = time.monotonic()
-                app.render(monitor.snapshot())
+                snap = monitor.snapshot()
+                app.feed_sound(snap)
+                app.render(snap)
                 cost = time.monotonic() - started
                 # Bound CPU: never spend more than about a quarter of the time drawing.
                 next_frame = now + max(1.0 / fps, cost * 4)
@@ -985,11 +1228,18 @@ def run(args):
                 code = app.quit
                 break
             if monitor.result is not None and not app.waiting_for_panes():
-                state = monitor.state
-                code = monitor.result if monitor.result else (1 if state.warning or state.failed else 0)
-                finished = True
-                app.render(monitor.snapshot())
-                break
+                if celebrate_until is None:
+                    # Hold the finale (fireworks and fanfare, or the failure) briefly; any key skips it.
+                    celebrate_until = time.monotonic() + celebrate
+                    held_input = app.input_at
+                if time.monotonic() >= celebrate_until or app.input_at != held_input:
+                    state = monitor.state
+                    code = monitor.result if monitor.result else (1 if state.warning or state.failed else 0)
+                    finished = True
+                    snap = monitor.snapshot()
+                    app.feed_sound(snap)
+                    app.render(snap)
+                    break
             timeout = max(0.0, min(next_frame - time.monotonic(), 0.1))
             if app.input and time.monotonic() - app.input_at > 0.05:
                 app.handle_input(final=True)

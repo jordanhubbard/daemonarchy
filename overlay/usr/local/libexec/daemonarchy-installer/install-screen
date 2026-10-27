@@ -6,10 +6,11 @@
 #
 # tmux provides the window controls with its default Ctrl-b keys (see
 # install-tmux.conf): splits and windows for the install log, diagnostics,
-# remote debugging and shells. Nothing needs function keys or a virtual
-# console switch. The installation runs outside this session, so closing
-# panes, windows or the whole session never touches it. Without tmux, or
-# if the session cannot start, the plain progress screen runs instead.
+# remote debugging and shells, and C-b m / C-b + / C-b - for sound.
+# Nothing needs function keys or a virtual console switch. The installation
+# runs outside this session, so closing panes, windows or the whole session
+# never touches it. Without tmux, or if the session cannot start, the plain
+# progress screen runs instead.
 set -u
 here=$(cd "$(dirname "$0")" && pwd)
 share=${ISO_SHARE:-/usr/local/share/daemonarchy-installer}
@@ -43,6 +44,9 @@ fi
 
 log=$1 status_file=$2
 shift 2
+# Sound is optional and never waited for: start the player if this console
+# may make noise (sound.py decides; serial, headless and no-device stay silent).
+"$python" "$here/sound.py" ensure >/dev/null 2>&1 </dev/null || true
 case ${TERM:-dumb} in
   dumb|vt100|vt102|vt220|ansi|cons25|unknown) progress_direct "$log" "$status_file" "$@" ;;
 esac
@@ -67,6 +71,7 @@ elif [[ ${COLORTERM:-} == truecolor || ${COLORTERM:-} == 24bit ]]; then
 fi
 [[ ${NO_COLOR+set} == set ]] && color=none
 
+sound_label=$("$python" "$here/sound.py" label 2>/dev/null </dev/null) || sound_label=
 exit_file=$(mktemp "${TMPDIR:-/tmp}/daemonarchy-screen.XXXXXX") || progress_direct "$log" "$status_file" "$@"
 trap 'rm -f "$exit_file"' EXIT
 tmux -L "$socket" kill-server 2>/dev/null || true
@@ -81,6 +86,7 @@ if ! tmux -L "$socket" -f "$share/install-tmux.conf" \
 fi
 progress_pane=$(tmux -L "$socket" display-message -p -t install:0.0 '#{pane_id}')
 tmux -L "$socket" set -g @progress "$progress_pane" \; set -g @exit_file "$exit_file" \; \
+  set -g @sound "$sound_label" \; \
   select-pane -t "$progress_pane" -T progress \; \
   set -p -t "$progress_pane" remain-on-exit on \; \
   set-hook -g pane-died "run-shell -b '$BASH $here/install-screen pane-died $socket #{hook_pane}'"

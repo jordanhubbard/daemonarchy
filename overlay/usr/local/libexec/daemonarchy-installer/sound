@@ -1,0 +1,13 @@
+#!/bin/sh
+# Shell entry to sound.py for the configurator, launch and rc scripts.
+# Without Python it exits 1 and does nothing; callers treat that as "no
+# sound" or fall back to plain text. The installation never depends on it.
+# See sound.py for the commands.
+here=$(dirname "$0")
+for python in "${DAEMONARCHY_PYTHON:-}" python3.12 python3.11 python3; do
+  [ -n "$python" ] || continue
+  if command -v "$python" >/dev/null 2>&1; then
+    exec "$python" "$here/sound.py" "$@"
+  fi
+done
+exit 1

@@ -7,7 +7,9 @@ the same /tmp/daemonarchy-install.conf, starts the same install engine, and
 renders that engine's log through the shared progress model
 (progress-model.py) that the console screen also uses: the same stages,
 package ticker, download bytes and system activity. Meters show only
-measured work.
+measured work. It plays the same sounds for the same events as the console
+screen (sound.py's Director over the model's event stream) and flashes the
+same moments: a stage starting, the disk warning, the installer's result.
 
 Nothing here touches a disk: the only disk-changing request is "install",
 sent after the operator confirms, and live-backend checks it again.
@@ -33,6 +35,49 @@ def _load(name, filename):
 
 
 model = _load('daemonarchy_progress_model', 'progress-model.py')
+try:
+    sound = _load('daemonarchy_sound', 'sound.py')
+except (OSError, ImportError, SyntaxError):  # Sound is optional.
+    sound = None
+
+# Animations for the progress page. GTK 3 CSS keyframes; each one is started
+# by an event from the shared model, never by a timer.
+CSS = b"""
+@keyframes daemonarchy-flash { from { background-color: #845df9; color: #ffffff; } to { background-color: transparent; } }
+@keyframes daemonarchy-pulse { from { background-color: #c01c28; color: #ffffff; } to { background-color: transparent; color: #c01c28; } }
+@keyframes daemonarchy-glow { 0% { color: #ff4646; } 50% { color: #e6328c; } 100% { color: #845df9; } }
+.daemonarchy-flash { animation: daemonarchy-flash 1.5s ease-out 1; border-radius: 6px; }
+.daemonarchy-warning { animation: daemonarchy-pulse 0.3s ease-in-out 6 alternate; font-weight: bold; border-radius: 6px; }
+.daemonarchy-celebrate { animation: daemonarchy-glow 1.2s ease-in-out infinite alternate; font-weight: bold; }
+.daemonarchy-failed { color: #c01c28; font-weight: bold; }
+.daemonarchy-banner { font-size: 28px; font-weight: 900; letter-spacing: 6px; }
+"""
+LOGO_COLORS = ('#ff4646', '#f23c6e', '#e6328c', '#b447c2', '#845df9')
+
+
+def banner_markup(text='DAEMONARCHY'):
+    """The wordmark in the logo's red to purple gradient."""
+    spans = []
+    for index, char in enumerate(text):
+        color = LOGO_COLORS[min(len(LOGO_COLORS) - 1, index * len(LOGO_COLORS) // max(1, len(text)))]
+        spans.append(f'<span foreground="{color}">{char}</span>')
+    return ''.join(spans)
+
+
+def page_effects(events, seen):
+    """Which flourishes the progress page shows for new events: (seen, effects)."""
+    effects = []
+    for event in events or ():
+        if event['serial'] <= seen:
+            continue
+        seen = event['serial']
+        if event['kind'] == 'stage-start':
+            effects.append('flash')
+        elif event['kind'] == 'done':
+            effects.append('celebrate' if event.get('succeeded') else 'failed')
+        elif event['kind'] in ('warning', 'failed'):
+            effects.append('failed' if event['kind'] == 'failed' else 'flash')
+    return seen, effects
 
 PAGES = ('welcome', 'keyboard', 'account', 'network', 'options', 'disk', 'review', 'progress')
 FIELD_PAGES = dict(
@@ -40,7 +85,7 @@ FIELD_PAGES = dict(
     username='account', password='account', password_confirmation='account', full_name='account',
     email_address='account', hostname='account', timezone='account',
     network='network', address='network', gateway='network', dns='network', ssid='network',
-    ssh_enable='options', install_ports='options', install_src='options', checkouts='options',
+    ssh_enable='options', install_ports='options', install_src='options', checkouts='options', sound='options',
     disk='disk', disk_snapshot='disk', install_mode='disk', efi_index='disk', partition_index='disk',
     free_start='disk', install_size_mib='disk', encrypt_installation='disk',
     confirm_partition='review')
@@ -83,6 +128,7 @@ def build_request(answers):
     flags = ('ssh_enable', 'install_ports', 'install_src', 'encrypt_installation')
     request = {key: str(answers.get(key, '')) for key in text}
     request.update({key: bool(answers.get(key, False)) for key in flags})
+    request['sound'] = answers.get('sound', '') if answers.get('sound', '') in ('on', 'quiet', 'off') else ''
     mode = request['install_mode']
     if mode in ('partition', 'free_space'):
         request['efi_index'] = str(answers.get('efi_index', ''))
@@ -187,11 +233,41 @@ def activity_text(view):
 def run_gui():  # pragma: no cover - needs a Wayland session
     import gi
     gi.require_version('Gtk', '3.0')
+    gi.require_version('Gdk', '3.0')
     from gi.repository import GLib, Gtk
+
+    from gi.repository import Gdk
 
     backend = Backend()
     answers = dict(install_mode='whole_disk', ssh_enable=False, install_ports=False,
                    install_src=False, encrypt_installation=False)
+
+    provider = Gtk.CssProvider()
+    provider.load_from_data(CSS)
+    Gtk.StyleContext.add_provider_for_screen(Gdk.Screen.get_default(), provider,
+                                             Gtk.STYLE_PROVIDER_PRIORITY_APPLICATION)
+    client = director = None
+    if sound is not None:
+        try:
+            sound.ensure()
+            client = sound.Client()
+            director = sound.Director(client)
+        except Exception:  # noqa: BLE001 - the installer never depends on sound.
+            client = director = None
+
+    def cue(name):
+        if client is not None:
+            try:
+                client.play(name)
+            except Exception:  # noqa: BLE001
+                pass
+
+    def flourish(widget, css_class, seconds=None):
+        context = widget.get_style_context()
+        context.remove_class(css_class)
+        context.add_class(css_class)
+        if seconds:
+            GLib.timeout_add(int(seconds * 1000), lambda: context.remove_class(css_class) or False)
 
     window = Gtk.Window(title='Install Daemonarchy')
     window.set_default_size(900, 640)
@@ -210,6 +286,42 @@ def run_gui():  # pragma: no cover - needs a Wayland session
     buttons.pack_end(forward, False, False, 0)
     buttons.pack_end(back, False, False, 0)
     terminal.connect('clicked', lambda *_: subprocess.Popen([TERMINAL]))
+    # Sound: mute and volume, the same settings as the console's C-b m and C-b +/-.
+    if sound is not None:
+        state = sound.State()
+        mute = Gtk.ToggleButton(label='Mute', active=state.muted)
+        volume = Gtk.Scale.new_with_range(Gtk.Orientation.HORIZONTAL, 0, 100, 10)
+        volume.set_value(state.volume)
+        volume.set_size_request(120, -1)
+        volume.set_draw_value(False)
+        sound_label = Gtk.Label(label=state.label())
+
+        def sound_changed(*_):
+            settings = sound.read_settings(sound.runtime_dir() / 'settings')
+            settings.update(muted=mute.get_active(), volume=int(volume.get_value()))
+            sound.write_settings(sound.runtime_dir() / 'settings', settings)
+            if client is not None:
+                client.reload()
+                client.checked = 0.0
+            sound_label.set_text(sound.State().label())
+            cue('volume')
+        mute.connect('toggled', sound_changed)
+        volume.connect('value-changed', sound_changed)
+        for widget in (sound_label, volume, mute):
+            buttons.pack_start(widget, False, False, 0)
+
+    def sound_choice():
+        """The choice for the installed system: muted means off; otherwise a mode
+        chosen on purpose (automatic silences live in the status file, not here)."""
+        if sound is None:
+            return ''
+        try:
+            settings = sound.read_settings(sound.runtime_dir() / 'settings')
+        except Exception:  # noqa: BLE001
+            return ''
+        if settings.get('muted'):
+            return 'off'
+        return settings.get('mode', '')
     pages = {}
 
     def page(name, title):
@@ -249,6 +361,10 @@ def run_gui():  # pragma: no cover - needs a Wayland session
 
     # Welcome.
     box = page('welcome', 'Daemonarchy live desktop')
+    wordmark = Gtk.Label(xalign=0)
+    wordmark.set_markup(banner_markup())
+    wordmark.get_style_context().add_class('daemonarchy-banner')
+    box.pack_start(wordmark, False, False, 0)
     box.pack_start(Gtk.Label(xalign=0, wrap=True, label=(
         "Omarchy's desktop spliced onto FreeBSD's daemon" + (f" · {facts.get('version')}" if facts.get('version') else '')
         + '.\nThis desktop runs from the installer media and memory. No disk is changed until you '
@@ -375,6 +491,8 @@ def run_gui():  # pragma: no cover - needs a Wayland session
 
     def show_network(status):
         view = network_view(status)
+        if view['checked'] and (view['online'], view['checked']) != (online['value'], online['checked']):
+            cue('net_ok' if view['online'] else 'net_fail')
         online['value'], online['checked'] = view['online'], view['checked']
         network_status.set_text(view['status'])
         findings.set_text('\n'.join(view['findings']))
@@ -526,6 +644,7 @@ def run_gui():  # pragma: no cover - needs a Wayland session
     box.pack_start(finish, False, False, 0)
 
     def collect():
+        answers['sound'] = sound_choice()
         answers.update(
             keyboard=keyboard.get_active_id() or '', username=username.get_text(), password=password.get_text(),
             password_confirmation=confirm.get_text(), full_name=full_name.get_text(), email_address=email.get_text(),
@@ -549,6 +668,8 @@ def run_gui():  # pragma: no cover - needs a Wayland session
             f"Keyboard: {keyboard.get_active_text()}", f"SSH: {'on' if answers['ssh_enable'] else 'off'}",
             f"Encrypt: {'yes' if answers['encrypt_installation'] else 'no'}", f"Disk: {answers['disk']}")))
         warning.set_markup('<b>%s</b>' % GLib.markup_escape_text(confirmation_text(answers)))
+        flourish(warning, 'daemonarchy-warning', 2.0)
+        cue('warn')
         typed.get_parent().set_visible(answers['install_mode'] == 'partition')
         understood.set_active(False)
 
@@ -556,6 +677,20 @@ def run_gui():  # pragma: no cover - needs a Wayland session
 
     def poll_progress():
         view = progress['model'].poll()
+        if director is not None:
+            try:
+                director.feed(view)
+            except Exception:  # noqa: BLE001 - sound never affects the installation.
+                pass
+        progress['seen'], effects = page_effects(view.get('events'), progress.get('seen', 0))
+        for effect in effects:
+            if effect == 'flash':
+                flourish(stages, 'daemonarchy-flash', 1.6)
+                flourish(phase, 'daemonarchy-flash', 1.6)
+            elif effect == 'celebrate':
+                flourish(phase, 'daemonarchy-celebrate')
+            elif effect == 'failed':
+                flourish(phase, 'daemonarchy-failed')
         phase.set_text(view['title'])
         if view['fraction'] is None:
             bar.set_fraction(0)
@@ -588,7 +723,10 @@ def run_gui():  # pragma: no cover - needs a Wayland session
         if not started:
             return
         say('')
+        cue('commit')
         progress['model'] = InstallProgress(started['log'], started['status'])
+        # Events already in the log when the page opens are history, not news.
+        progress['seen'] = max((e['serial'] for e in progress['model'].poll().get('events') or ()), default=0)
         stack.set_visible_child_name('progress')
         finish.set_visible(False)
         update_buttons()
@@ -613,6 +751,8 @@ def run_gui():  # pragma: no cover - needs a Wayland session
             refresh_network()
         if following == 'review':
             show_review()
+        else:
+            cue('whoosh')
         stack.set_visible_child_name(following)
         update_buttons()
 

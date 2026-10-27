@@ -331,6 +331,28 @@ same stages and metrics from the same producer. See
 [UI-001](active-work.md#ui-001-deliver-measured-retro-installer-visualizers) and
 [installer progress](../installer-progress.md).
 
+On 2026-10-27 the operator asked for much more charm and for sound: "a lot of
+pizazz", more interesting to watch through every phase, using sounds
+liberally, and "animations should make noise". Every phase now has a
+flourish and a sound tied to something real: the loader's animated splash
+(visual only; UEFI has no reliable audio), the welcome screen's boot chime
+and idle animation while it waits for the operator, typed-in screen
+transitions, a sparkling mark and a sound for each network and firmware
+check result, a pulsing disk-commit warning with a klaxon, a stage card and
+sound when each install stage starts, a sparkle when it finishes, a ticker
+blip per reported package and a fanfare every 50, an optional chiptune layer
+whose loudness follows the measured CPU, disk and network rates, a mascot
+whose trident keeps time with measured activity and who says so during a
+genuine wait, fireworks and a fanfare only for the installer's own
+successful result, and a chime with an animated welcome on the installed
+system's first boot and the live desktop. Sounds are synthesized by
+`sound.py` and played through OSS (`/dev/dsp`) by a separate player that the
+installer never waits for; `C-b m` mutes, `C-b +`/`C-b -` set the volume and
+the configurator and `daemonarchy.sound=on|quiet|off` choose the mode. Sound
+is off on serial and headless consoles, in unattended installs unless asked,
+and without an audio device; a sound failure never affects an installation.
+Nothing animated or audible implies progress that was not observed.
+
 ## Delivery sequence and acceptance
 
 - [ ] Inventory all selected fork revisions, tools, workers, actions and outputs;
@@ -424,6 +446,15 @@ same stages and metrics from the same producer. See
   the HACKING.md release checklist for the README download section, release
   notes, checksums, image names, every current-state document and the image's
   own shipped documentation and data.
+- [ ] On the exact 1.4 image, with a real audio device on the physical console
+  and in a VM, hear and record every phase's flourish and sound: loader
+  splash (visual only), boot chime, configurator transitions, network and
+  firmware results, disk-commit warning, stage cards, package blips and
+  milestones, ambient layer, completion fanfare (or the error sound), the
+  installed system's first-boot welcome and the live desktop greeting.
+  Mute, volume and the configurator choice work; serial, headless,
+  unattended and no-device runs stay silent; a broken or missing device
+  never changes the install's result.
 
 Completion requires working cross-release reuse, a distributed multi-repository
 flow and retained receipts, not a renamed wrapper around the current serial
