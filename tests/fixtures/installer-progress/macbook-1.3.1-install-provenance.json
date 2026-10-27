@@ -1,0 +1,24 @@
+{
+  "schema": "daemonarchy/installer-log-fixture-provenance@1",
+  "description": "Install log retained from a real Daemonarchy 1.3.1 installation on an Intel MacBookPro16,1, collected from the target's /var/log/daemonarchy-install.log on 2026-10-26. The installation stopped while pkg was extracting package 976 of 1188; no installer result was written.",
+  "source_archive": "target-state.tgz (operator-retained, not committed)",
+  "source_archive_sha256": "5b4c66b165769095b8896fcfd49496d45971614c75586c29cd2f6c4b02f244a0",
+  "source_member": "var/log/daemonarchy-install.log",
+  "source_sha256": "9ef8f07eb53ff7d33d589a0b978bee18844d3e7d28740a600b473ac37d9eb957",
+  "source_bytes": 269145,
+  "fixture": "macbook-1.3.1-install.log",
+  "fixture_sha256": "2c4af7712f727528243584f51de85f37fe26d1227aa4af3622f1b32102fd0cfd",
+  "scrubber": "scripts/scrub-install-log.py",
+  "scrub_replacements": {"boot-entry": 3, "temporary": 2, "account": 0, "digest": 0, "email": 0, "home": 0, "ipv4": 0, "ipv6": 0, "mac": 0, "ssid": 0, "uuid": 0, "operator-usernames": 0},
+  "scrub_notes": "Two random temporary-directory suffixes and three firmware boot entries naming other installed operating systems were generalized. The log contains no account name (the user stage was never reached), no network address, MAC, SSID, e-mail address or digest. tests/installer-progress.py re-checks the fixture for those patterns.",
+  "observed": {
+    "phases": ["disk", "base", "loader", "config", "fetch", "install"],
+    "storage_milestones": "3 of 3",
+    "release_archives": "3 of 3",
+    "downloads_reported": "931 of 931",
+    "last_package_position": "976 of 1188",
+    "last_package": "suitesparse-cholmod-5.3.5",
+    "installer_result": null
+  },
+  "limits": "A replay checks how the screen reads real pkg output and stage markers. It does not reproduce the original timing (this log predates @@step timestamps), qualify an installation or explain why the installation stopped."
+}

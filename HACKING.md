@@ -729,6 +729,21 @@ normal SSH configuration and live-USB-to-target key isolation remain separate.
 `sudo bash tests/remote-debug-reboot.sh` exercises retained approval, stable host
 pinning, legacy listener adoption, reused PIDs, repeated resumption and revocation
 on an isolated server (default port 23452).
+`sudo bash tests/remote-debug-background.sh` checks a listener kept in the
+background through the installation (`listen` then `b`, or `background`): it
+survives its console view and the console's Ctrl-C and hangups, new agents are
+approved or denied with `pending`/`approve`/`deny` without a second virtual
+console, a later `listen` attaches, and `stop` revokes it (default port 23461).
+
+### Install screen
+
+`PYTHONDONTWRITEBYTECODE=1 python3 tests/installer-progress.py` runs the install
+screen's model, rendering, PTY and real tmux checks (the tmux cases skip without
+tmux). On FreeBSD with `/usr/src`, `python3 tests/vt-console-colors.py` builds
+sys/teken and checks how vt(4) draws the screen's real output, directly and
+through tmux; set `VT_RENDER_OUT=DIR` to keep HTML renderings.
+`scripts/installer-visuals-demo.py` records a replay of an install log through
+the real screen as an asciinema cast; see docs/installer-progress.md.
 
 ### Continuous diagnostics
 

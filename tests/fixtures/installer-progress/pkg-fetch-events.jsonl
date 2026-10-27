@@ -1,0 +1,223 @@
+{ "type": "INFO_FETCH_BEGIN", "data": { "url": "https://pkg.FreeBSD.org/FreeBSD:16:amd64/latest/meta.conf" }}
+{ "type": "INFO_PROGRESS_START", "data": {}}
+{ "type": "INFO_PROGRESS_TICK", "data": { "current": 168, "total" : 168}}
+{ "type": "INFO_FETCH_FINISHED", "data": { "url": "https://pkg.FreeBSD.org/FreeBSD:16:amd64/latest/meta.conf" }}
+{ "type": "INFO_FETCH_BEGIN", "data": { "url": "https://pkg.FreeBSD.org/FreeBSD:16:amd64/latest/data.pkg" }}
+{ "type": "INFO_PROGRESS_START", "data": {}}
+{ "type": "INFO_PROGRESS_TICK", "data": { "current": 8192, "total" : 9848753}}
+{ "type": "INFO_PROGRESS_TICK", "data": { "current": 253952, "total" : 9848753}}
+{ "type": "INFO_PROGRESS_TICK", "data": { "current": 516096, "total" : 9848753}}
+{ "type": "INFO_PROGRESS_TICK", "data": { "current": 778240, "total" : 9848753}}
+{ "type": "INFO_PROGRESS_TICK", "data": { "current": 1040384, "total" : 9848753}}
+{ "type": "INFO_PROGRESS_TICK", "data": { "current": 1302528, "total" : 9848753}}
+{ "type": "INFO_PROGRESS_TICK", "data": { "current": 1564672, "total" : 9848753}}
+{ "type": "INFO_PROGRESS_TICK", "data": { "current": 1826816, "total" : 9848753}}
+{ "type": "INFO_PROGRESS_TICK", "data": { "current": 2088960, "total" : 9848753}}
+{ "type": "INFO_PROGRESS_TICK", "data": { "current": 2351104, "total" : 9848753}}
+{ "type": "INFO_PROGRESS_TICK", "data": { "current": 2613248, "total" : 9848753}}
+{ "type": "INFO_PROGRESS_TICK", "data": { "current": 2875392, "total" : 9848753}}
+{ "type": "INFO_PROGRESS_TICK", "data": { "current": 3137536, "total" : 9848753}}
+{ "type": "INFO_PROGRESS_TICK", "data": { "current": 3399680, "total" : 9848753}}
+{ "type": "INFO_PROGRESS_TICK", "data": { "current": 3661824, "total" : 9848753}}
+{ "type": "INFO_PROGRESS_TICK", "data": { "current": 3923968, "total" : 9848753}}
+{ "type": "INFO_PROGRESS_TICK", "data": { "current": 4186112, "total" : 9848753}}
+{ "type": "INFO_PROGRESS_TICK", "data": { "current": 4448256, "total" : 9848753}}
+{ "type": "INFO_PROGRESS_TICK", "data": { "current": 4710400, "total" : 9848753}}
+{ "type": "INFO_PROGRESS_TICK", "data": { "current": 4972544, "total" : 9848753}}
+{ "type": "INFO_PROGRESS_TICK", "data": { "current": 5234688, "total" : 9848753}}
+{ "type": "INFO_PROGRESS_TICK", "data": { "current": 5496832, "total" : 9848753}}
+{ "type": "INFO_PROGRESS_TICK", "data": { "current": 5758976, "total" : 9848753}}
+{ "type": "INFO_PROGRESS_TICK", "data": { "current": 6021120, "total" : 9848753}}
+{ "type": "INFO_PROGRESS_TICK", "data": { "current": 6283264, "total" : 9848753}}
+{ "type": "INFO_PROGRESS_TICK", "data": { "current": 6545408, "total" : 9848753}}
+{ "type": "INFO_PROGRESS_TICK", "data": { "current": 6807552, "total" : 9848753}}
+{ "type": "INFO_PROGRESS_TICK", "data": { "current": 7069696, "total" : 9848753}}
+{ "type": "INFO_PROGRESS_TICK", "data": { "current": 7331840, "total" : 9848753}}
+{ "type": "INFO_PROGRESS_TICK", "data": { "current": 7593984, "total" : 9848753}}
+{ "type": "INFO_PROGRESS_TICK", "data": { "current": 7856128, "total" : 9848753}}
+{ "type": "INFO_PROGRESS_TICK", "data": { "current": 8118272, "total" : 9848753}}
+{ "type": "INFO_PROGRESS_TICK", "data": { "current": 8380416, "total" : 9848753}}
+{ "type": "INFO_PROGRESS_TICK", "data": { "current": 8642560, "total" : 9848753}}
+{ "type": "INFO_PROGRESS_TICK", "data": { "current": 8904704, "total" : 9848753}}
+{ "type": "INFO_PROGRESS_TICK", "data": { "current": 9166848, "total" : 9848753}}
+{ "type": "INFO_PROGRESS_TICK", "data": { "current": 9428992, "total" : 9848753}}
+{ "type": "INFO_PROGRESS_TICK", "data": { "current": 9691136, "total" : 9848753}}
+{ "type": "INFO_PROGRESS_TICK", "data": { "current": 9848753, "total" : 9848753}}
+{ "type": "INFO_FETCH_FINISHED", "data": { "url": "https://pkg.FreeBSD.org/FreeBSD:16:amd64/latest/data.pkg" }}
+
+
+
+
+{ "type": "INFO_PROGRESS_START", "data": {}}
+{ "type": "QUERY_YESNO", "data": {"msg": "Newer FreeBSD version for package zip:
+To ignore this error set IGNORE_OSVERSION=yes
+- package: 1600029
+- running userland: 1600028
+Ignore the mismatch and continue? ","default": "0"}}
+{ "type": "INFO_PROGRESS_TICK", "data": { "current": 10, "total" : 38409}}
+{ "type": "INFO_PROGRESS_TICK", "data": { "current": 120, "total" : 38409}}
+{ "type": "INFO_PROGRESS_TICK", "data": { "current": 440, "total" : 38409}}
+{ "type": "INFO_PROGRESS_TICK", "data": { "current": 760, "total" : 38409}}
+{ "type": "INFO_PROGRESS_TICK", "data": { "current": 1080, "total" : 38409}}
+{ "type": "INFO_PROGRESS_TICK", "data": { "current": 1400, "total" : 38409}}
+{ "type": "INFO_PROGRESS_TICK", "data": { "current": 1720, "total" : 38409}}
+{ "type": "INFO_PROGRESS_TICK", "data": { "current": 2040, "total" : 38409}}
+{ "type": "INFO_PROGRESS_TICK", "data": { "current": 2360, "total" : 38409}}
+{ "type": "INFO_PROGRESS_TICK", "data": { "current": 2680, "total" : 38409}}
+{ "type": "INFO_PROGRESS_TICK", "data": { "current": 3000, "total" : 38409}}
+{ "type": "INFO_PROGRESS_TICK", "data": { "current": 3320, "total" : 38409}}
+{ "type": "INFO_PROGRESS_TICK", "data": { "current": 3640, "total" : 38409}}
+{ "type": "INFO_PROGRESS_TICK", "data": { "current": 3960, "total" : 38409}}
+{ "type": "INFO_PROGRESS_TICK", "data": { "current": 4280, "total" : 38409}}
+{ "type": "INFO_PROGRESS_TICK", "data": { "current": 4600, "total" : 38409}}
+{ "type": "INFO_PROGRESS_TICK", "data": { "current": 4920, "total" : 38409}}
+{ "type": "INFO_PROGRESS_TICK", "data": { "current": 5240, "total" : 38409}}
+{ "type": "INFO_PROGRESS_TICK", "data": { "current": 5560, "total" : 38409}}
+{ "type": "INFO_PROGRESS_TICK", "data": { "current": 5880, "total" : 38409}}
+{ "type": "INFO_PROGRESS_TICK", "data": { "current": 6200, "total" : 38409}}
+{ "type": "INFO_PROGRESS_TICK", "data": { "current": 6520, "total" : 38409}}
+{ "type": "INFO_PROGRESS_TICK", "data": { "current": 6840, "total" : 38409}}
+{ "type": "INFO_PROGRESS_TICK", "data": { "current": 7160, "total" : 38409}}
+{ "type": "INFO_PROGRESS_TICK", "data": { "current": 7480, "total" : 38409}}
+{ "type": "INFO_PROGRESS_TICK", "data": { "current": 7800, "total" : 38409}}
+{ "type": "INFO_PROGRESS_TICK", "data": { "current": 8120, "total" : 38409}}
+{ "type": "INFO_PROGRESS_TICK", "data": { "current": 8440, "total" : 38409}}
+{ "type": "INFO_PROGRESS_TICK", "data": { "current": 8760, "total" : 38409}}
+{ "type": "INFO_PROGRESS_TICK", "data": { "current": 9080, "total" : 38409}}
+{ "type": "INFO_PROGRESS_TICK", "data": { "current": 9400, "total" : 38409}}
+{ "type": "INFO_PROGRESS_TICK", "data": { "current": 9720, "total" : 38409}}
+{ "type": "INFO_PROGRESS_TICK", "data": { "current": 10040, "total" : 38409}}
+{ "type": "INFO_PROGRESS_TICK", "data": { "current": 10360, "total" : 38409}}
+{ "type": "INFO_PROGRESS_TICK", "data": { "current": 10680, "total" : 38409}}
+{ "type": "INFO_PROGRESS_TICK", "data": { "current": 11000, "total" : 38409}}
+{ "type": "INFO_PROGRESS_TICK", "data": { "current": 11320, "total" : 38409}}
+{ "type": "INFO_PROGRESS_TICK", "data": { "current": 11640, "total" : 38409}}
+{ "type": "INFO_PROGRESS_TICK", "data": { "current": 11960, "total" : 38409}}
+{ "type": "INFO_PROGRESS_TICK", "data": { "current": 12280, "total" : 38409}}
+{ "type": "INFO_PROGRESS_TICK", "data": { "current": 12600, "total" : 38409}}
+{ "type": "INFO_PROGRESS_TICK", "data": { "current": 12920, "total" : 38409}}
+{ "type": "INFO_PROGRESS_TICK", "data": { "current": 13240, "total" : 38409}}
+{ "type": "INFO_PROGRESS_TICK", "data": { "current": 13560, "total" : 38409}}
+{ "type": "INFO_PROGRESS_TICK", "data": { "current": 13880, "total" : 38409}}
+{ "type": "INFO_PROGRESS_TICK", "data": { "current": 14200, "total" : 38409}}
+{ "type": "INFO_PROGRESS_TICK", "data": { "current": 14520, "total" : 38409}}
+{ "type": "INFO_PROGRESS_TICK", "data": { "current": 14840, "total" : 38409}}
+{ "type": "INFO_PROGRESS_TICK", "data": { "current": 15160, "total" : 38409}}
+{ "type": "INFO_PROGRESS_TICK", "data": { "current": 15480, "total" : 38409}}
+{ "type": "INFO_PROGRESS_TICK", "data": { "current": 15800, "total" : 38409}}
+{ "type": "INFO_PROGRESS_TICK", "data": { "current": 16120, "total" : 38409}}
+{ "type": "INFO_PROGRESS_TICK", "data": { "current": 16440, "total" : 38409}}
+{ "type": "INFO_PROGRESS_TICK", "data": { "current": 16760, "total" : 38409}}
+{ "type": "INFO_PROGRESS_TICK", "data": { "current": 17080, "total" : 38409}}
+{ "type": "INFO_PROGRESS_TICK", "data": { "current": 17400, "total" : 38409}}
+{ "type": "INFO_PROGRESS_TICK", "data": { "current": 17720, "total" : 38409}}
+{ "type": "INFO_PROGRESS_TICK", "data": { "current": 18040, "total" : 38409}}
+{ "type": "INFO_PROGRESS_TICK", "data": { "current": 18360, "total" : 38409}}
+{ "type": "INFO_PROGRESS_TICK", "data": { "current": 18680, "total" : 38409}}
+{ "type": "INFO_PROGRESS_TICK", "data": { "current": 19000, "total" : 38409}}
+{ "type": "INFO_PROGRESS_TICK", "data": { "current": 19320, "total" : 38409}}
+{ "type": "INFO_PROGRESS_TICK", "data": { "current": 19640, "total" : 38409}}
+{ "type": "INFO_PROGRESS_TICK", "data": { "current": 19960, "total" : 38409}}
+{ "type": "INFO_PROGRESS_TICK", "data": { "current": 20280, "total" : 38409}}
+{ "type": "INFO_PROGRESS_TICK", "data": { "current": 20600, "total" : 38409}}
+{ "type": "INFO_PROGRESS_TICK", "data": { "current": 20920, "total" : 38409}}
+{ "type": "INFO_PROGRESS_TICK", "data": { "current": 21240, "total" : 38409}}
+{ "type": "INFO_PROGRESS_TICK", "data": { "current": 21560, "total" : 38409}}
+{ "type": "INFO_PROGRESS_TICK", "data": { "current": 21880, "total" : 38409}}
+{ "type": "INFO_PROGRESS_TICK", "data": { "current": 22200, "total" : 38409}}
+{ "type": "INFO_PROGRESS_TICK", "data": { "current": 22520, "total" : 38409}}
+{ "type": "INFO_PROGRESS_TICK", "data": { "current": 22840, "total" : 38409}}
+{ "type": "INFO_PROGRESS_TICK", "data": { "current": 23160, "total" : 38409}}
+{ "type": "INFO_PROGRESS_TICK", "data": { "current": 23480, "total" : 38409}}
+{ "type": "INFO_PROGRESS_TICK", "data": { "current": 23800, "total" : 38409}}
+{ "type": "INFO_PROGRESS_TICK", "data": { "current": 24120, "total" : 38409}}
+{ "type": "INFO_PROGRESS_TICK", "data": { "current": 24440, "total" : 38409}}
+{ "type": "INFO_PROGRESS_TICK", "data": { "current": 24760, "total" : 38409}}
+{ "type": "INFO_PROGRESS_TICK", "data": { "current": 25080, "total" : 38409}}
+{ "type": "INFO_PROGRESS_TICK", "data": { "current": 25400, "total" : 38409}}
+{ "type": "INFO_PROGRESS_TICK", "data": { "current": 25720, "total" : 38409}}
+{ "type": "INFO_PROGRESS_TICK", "data": { "current": 26040, "total" : 38409}}
+{ "type": "INFO_PROGRESS_TICK", "data": { "current": 26360, "total" : 38409}}
+{ "type": "INFO_PROGRESS_TICK", "data": { "current": 26680, "total" : 38409}}
+{ "type": "INFO_PROGRESS_TICK", "data": { "current": 27000, "total" : 38409}}
+{ "type": "INFO_PROGRESS_TICK", "data": { "current": 27320, "total" : 38409}}
+{ "type": "INFO_PROGRESS_TICK", "data": { "current": 27640, "total" : 38409}}
+{ "type": "INFO_PROGRESS_TICK", "data": { "current": 27960, "total" : 38409}}
+{ "type": "INFO_PROGRESS_TICK", "data": { "current": 28280, "total" : 38409}}
+{ "type": "INFO_PROGRESS_TICK", "data": { "current": 28600, "total" : 38409}}
+{ "type": "INFO_PROGRESS_TICK", "data": { "current": 28920, "total" : 38409}}
+{ "type": "INFO_PROGRESS_TICK", "data": { "current": 29240, "total" : 38409}}
+{ "type": "INFO_PROGRESS_TICK", "data": { "current": 29560, "total" : 38409}}
+{ "type": "INFO_PROGRESS_TICK", "data": { "current": 29880, "total" : 38409}}
+{ "type": "INFO_PROGRESS_TICK", "data": { "current": 30200, "total" : 38409}}
+{ "type": "INFO_PROGRESS_TICK", "data": { "current": 30520, "total" : 38409}}
+{ "type": "INFO_PROGRESS_TICK", "data": { "current": 30840, "total" : 38409}}
+{ "type": "INFO_PROGRESS_TICK", "data": { "current": 31160, "total" : 38409}}
+{ "type": "INFO_PROGRESS_TICK", "data": { "current": 31480, "total" : 38409}}
+{ "type": "INFO_PROGRESS_TICK", "data": { "current": 31800, "total" : 38409}}
+{ "type": "INFO_PROGRESS_TICK", "data": { "current": 32120, "total" : 38409}}
+{ "type": "INFO_PROGRESS_TICK", "data": { "current": 32440, "total" : 38409}}
+{ "type": "INFO_PROGRESS_TICK", "data": { "current": 32760, "total" : 38409}}
+{ "type": "INFO_PROGRESS_TICK", "data": { "current": 33080, "total" : 38409}}
+{ "type": "INFO_PROGRESS_TICK", "data": { "current": 33400, "total" : 38409}}
+{ "type": "INFO_PROGRESS_TICK", "data": { "current": 33720, "total" : 38409}}
+{ "type": "INFO_PROGRESS_TICK", "data": { "current": 34040, "total" : 38409}}
+{ "type": "INFO_PROGRESS_TICK", "data": { "current": 34360, "total" : 38409}}
+{ "type": "INFO_PROGRESS_TICK", "data": { "current": 34680, "total" : 38409}}
+{ "type": "INFO_PROGRESS_TICK", "data": { "current": 35000, "total" : 38409}}
+{ "type": "INFO_PROGRESS_TICK", "data": { "current": 35320, "total" : 38409}}
+{ "type": "INFO_PROGRESS_TICK", "data": { "current": 35640, "total" : 38409}}
+{ "type": "INFO_PROGRESS_TICK", "data": { "current": 35960, "total" : 38409}}
+{ "type": "INFO_PROGRESS_TICK", "data": { "current": 36280, "total" : 38409}}
+{ "type": "INFO_PROGRESS_TICK", "data": { "current": 36600, "total" : 38409}}
+{ "type": "INFO_PROGRESS_TICK", "data": { "current": 36920, "total" : 38409}}
+{ "type": "INFO_PROGRESS_TICK", "data": { "current": 37240, "total" : 38409}}
+{ "type": "INFO_PROGRESS_TICK", "data": { "current": 37560, "total" : 38409}}
+{ "type": "INFO_PROGRESS_TICK", "data": { "current": 37880, "total" : 38409}}
+{ "type": "INFO_PROGRESS_TICK", "data": { "current": 38200, "total" : 38409}}
+{ "type": "INFO_PROGRESS_TICK", "data": { "current": 38409, "total" : 38409}}
+{ "type": "INFO_INCREMENTAL_UPDATE", "data": {"name": "FreeBSD-ports", "processed": 38409}}
+
+{ "type": "INFO_FETCH_BEGIN", "data": { "url": "https://pkg.FreeBSD.org/FreeBSD:16:amd64/kmods_latest/data.pkg" }}
+{ "type": "INFO_PROGRESS_START", "data": {}}
+{ "type": "INFO_PROGRESS_TICK", "data": { "current": 8192, "total" : 44785}}
+{ "type": "INFO_PROGRESS_TICK", "data": { "current": 44785, "total" : 44785}}
+{ "type": "INFO_FETCH_FINISHED", "data": { "url": "https://pkg.FreeBSD.org/FreeBSD:16:amd64/kmods_latest/data.pkg" }}
+
+
+
+
+{ "type": "INFO_PROGRESS_START", "data": {}}
+{ "type": "INFO_PROGRESS_TICK", "data": { "current": 10, "total" : 285}}
+{ "type": "INFO_PROGRESS_TICK", "data": { "current": 50, "total" : 285}}
+{ "type": "INFO_PROGRESS_TICK", "data": { "current": 285, "total" : 285}}
+{ "type": "INFO_INCREMENTAL_UPDATE", "data": {"name": "FreeBSD-ports-kmods", "processed": 285}}
+
+{ "type": "INFO_FETCH_BEGIN", "data": { "url": "https://github.com/jordanhubbard/daemonarchy/releases/download/packages-16-amd64-1.1.1/meta.conf" }}
+{ "type": "INFO_PROGRESS_START", "data": {}}
+{ "type": "INFO_PROGRESS_TICK", "data": { "current": 168, "total" : 168}}
+{ "type": "INFO_FETCH_FINISHED", "data": { "url": "https://github.com/jordanhubbard/daemonarchy/releases/download/packages-16-amd64-1.1.1/meta.conf" }}
+
+
+
+{ "type": "INFO_FETCH_BEGIN", "data": { "url": "https://pkg.FreeBSD.org/FreeBSD:16:amd64/latest/All/Hashed/utf8proc-2.12.0~2$yzqqmhq1.pkg" }}
+{ "type": "INFO_PROGRESS_START", "data": {}}
+{ "type": "INFO_PROGRESS_TICK", "data": { "current": 8192, "total" : 88146}}
+{ "type": "INFO_PROGRESS_TICK", "data": { "current": 57344, "total" : 88146}}
+{ "type": "INFO_PROGRESS_TICK", "data": { "current": 88146, "total" : 88146}}
+{ "type": "INFO_FETCH_FINISHED", "data": { "url": "https://pkg.FreeBSD.org/FreeBSD:16:amd64/latest/All/Hashed/utf8proc-2.12.0~2$yzqqmhq1.pkg" }}
+
+{ "type": "INFO_FETCH_BEGIN", "data": { "url": "https://pkg.FreeBSD.org/FreeBSD:16:amd64/latest/All/Hashed/libevent-2.1.13~2$arhtnr7q.pkg" }}
+{ "type": "INFO_PROGRESS_START", "data": {}}
+{ "type": "INFO_PROGRESS_TICK", "data": { "current": 8192, "total" : 359068}}
+{ "type": "INFO_PROGRESS_TICK", "data": { "current": 229376, "total" : 359068}}
+{ "type": "INFO_PROGRESS_TICK", "data": { "current": 359068, "total" : 359068}}
+{ "type": "INFO_FETCH_FINISHED", "data": { "url": "https://pkg.FreeBSD.org/FreeBSD:16:amd64/latest/All/Hashed/libevent-2.1.13~2$arhtnr7q.pkg" }}
+
+{ "type": "INFO_FETCH_BEGIN", "data": { "url": "https://pkg.FreeBSD.org/FreeBSD:16:amd64/latest/All/Hashed/tmux-3.8~2$tj6676a5.pkg" }}
+{ "type": "INFO_PROGRESS_START", "data": {}}
+{ "type": "INFO_PROGRESS_TICK", "data": { "current": 8192, "total" : 603611}}
+{ "type": "INFO_PROGRESS_TICK", "data": { "current": 131072, "total" : 603611}}
+{ "type": "INFO_PROGRESS_TICK", "data": { "current": 393216, "total" : 603611}}
+{ "type": "INFO_PROGRESS_TICK", "data": { "current": 603611, "total" : 603611}}
+{ "type": "INFO_FETCH_FINISHED", "data": { "url": "https://pkg.FreeBSD.org/FreeBSD:16:amd64/latest/All/Hashed/tmux-3.8~2$tj6676a5.pkg" }}
