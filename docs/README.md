@@ -62,6 +62,7 @@ reachable without changing its historical scope.
 - [NetGDB peer-close patch for human review](contributions/netgdb-peer-close.md)
 
 - [Measured installer progress](installer-progress.md)
+- [1.4 install screen demos](demos/installer-visuals/README.md)
 
 - [Package reuse provenance inventory](package-reuse-inventory.md)
 

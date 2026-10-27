@@ -84,11 +84,29 @@ wpa_network() {
 }
 
 # Mark the start of a stage for the install screen (daemonarchy-installer/
-# dashboard), which follows this log.
+# dashboard), which follows this log. @@step carries the wall-clock start so a
+# screen that reads the log late still shows each stage's real elapsed time.
+step() {
+  printf '@@step %s %s\n' "$1" "$(date +%s)"
+}
+
 phase() {
   diagnostics_phase "$1"
   printf '@@phase %s\n' "$1"
+  case $1 in
+    disk) step partition ;;
+    install) step packages ;;
+    user) step account ;;
+    *) step "$1" ;;
+  esac
   log "$2"
+}
+
+# Name the target disk and pool so the screen's activity meters measure them.
+# Device and pool names only; never a path, label or credential.
+target() {
+  [[ $2 =~ ^[A-Za-z][A-Za-z0-9_.:-]{0,63}$ ]] || return 0
+  printf '@@target %s %s\n' "$1" "$2"
 }
 
 # Only report completed operations. Labels and phases are fixed protocol values;
@@ -190,10 +208,12 @@ validate_install_layout
 layout_backup=$(mktemp)
 gpart backup "$disk" >"$layout_backup" 2>/dev/null || : >"$layout_backup"
 phase disk "Preparing the selected installation space on $disk"
+target disk "${disk#/dev/}"
 progress_count disk 0 3
 apply_install_layout
 progress_count disk 1 3
 if [[ $encrypt_installation == true ]]; then
+  step encrypt
   log "Encrypting the ZFS partition"
   passfile=$(mktemp)
   printf '%s' "$password" >"$passfile"
@@ -210,6 +230,8 @@ if [[ $encrypt_installation == true ]]; then
   zfs_dev=$zfs_dev.eli
 fi
 
+step pool
+target pool "$POOL"
 log "Creating the ZFS pool"
 zpool create -f -o altroot="$TARGET" -O compress=lz4 -O atime=off -m none "$POOL" "$zfs_dev"
 zfs create -o mountpoint=none "$POOL/ROOT"

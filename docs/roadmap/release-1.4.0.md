@@ -6,6 +6,7 @@
 - **Completion / archival evidence:** pending exact native VM operation/fault matrix and physical hardware capture, cross-repository locks and receipts, artifact reuse, exact diagnostic image/feed qualification and published release verification.
 - **Tracking:** [network debugging issue #33](https://github.com/jordanhubbard/daemonarchy/issues/33), [source issue #21](https://github.com/jordanhubbard/daemonarchy-src/issues/21), [build issue #39](https://github.com/jordanhubbard/daemonarchy/issues/39), [aarch64 issue #62](https://github.com/jordanhubbard/daemonarchy/issues/62), [1.4.0 milestone](https://github.com/jordanhubbard/daemonarchy/milestone/3).
 - **Owning queue item:** [DEBUG-003](active-work.md#debug-003-deliver-bidirectional-loader-mountroot-and-panic-network-debugging-for-14).
+- **Headline feature:** a live, measured install screen ([UI-001](active-work.md#ui-001-deliver-measured-retro-installer-visualizers), P1 by operator direction on 2026-10-26).
 - **Supporting queue item:** [PERF-002](active-work.md#perf-002-coordinate-all-daemonarchy-repositories-through-literate-ai-workers-in-140) owns the build and release path.
 - **Architectures:** amd64 and aarch64; [ARCH-001](active-work.md#arch-001-add-aarch64-as-a-second-supported-architecture-for-140) owns aarch64. Virtual machines are the aarch64 test bed for now.
 - **Acceptance coverage:** [row-by-row owner, dependency and evidence ledger](1.4-coverage-ledger.md) tracks every 1.4 requirement and its exact proof.
@@ -284,6 +285,34 @@ their `net_*` answers and stop with a clear message instead of prompting. When
 public or user DNS replaced broken DHCP DNS, the installed system keeps it.
 See [NET-001](active-work.md#net-001-make-the-installer-network-bring-up-proactive-and-robust).
 
+## Headline: a live, measured install screen
+
+A real MacBookPro16,1 installation of 1.3.1 showed almost no visible
+progress: "installation is still running" and then nothing until it ended.
+For 1.4 the operator made a dazzling, truthful install screen a headline
+feature. It stays alive in every stage with real activity: disk throughput and
+IOPS for the target, network rates, per-core CPU, memory, and ZFS writes and
+GELI where cheap. It shows a timeline of the stages (partition, encrypt, ZFS
+pool, base sets, boot loader, configure, download, packages, account, verify)
+with each stage's elapsed time from the installer's own markers, a scrolling
+ticker of the package names pkg reports with count and total, and a
+Winamp-style spectrum and scope driven by measured I/O rates, in 256-color
+gradients with the Daemonarchy logo. Nothing invents a completion percentage
+or time remaining. The FreeBSD vt(4) console is the primary target: it gets
+the 16 vt colors and never 24-bit color, which vt(4) misparses. Plain output,
+reduced motion, small terminals, VT100/serial and SSH keep working.
+
+Nothing may depend on function keys or a virtual console switch, which many
+laptops (including the Touch Bar MacBookPro16,1) cannot use. The screen runs
+as window 0 of a locked-down tmux session with tmux's default `Ctrl-b` keys:
+splits and windows show the install log, diagnostics, console-approved remote
+debugging or a shell, while the installation keeps running and window 0
+cannot be closed. Remote debugging can stay up from the configurator through
+the installation. The live desktop's graphical installer (LIVE-001) shows the
+same stages and metrics from the same producer. See
+[UI-001](active-work.md#ui-001-deliver-measured-retro-installer-visualizers) and
+[installer progress](../installer-progress.md).
+
 ## Delivery sequence and acceptance
 
 - [ ] Inventory all selected fork revisions, tools, workers, actions and outputs;
@@ -361,6 +390,14 @@ See [NET-001](active-work.md#net-001-make-the-installer-network-bring-up-proacti
   by NTP and then by hand, and an unattended CIDATA install. Then complete
   the MacBookPro16,1 path with no cable: offline BCM4364 firmware, Wi-Fi
   first, then DNS and the clock over Wi-Fi.
+- [ ] Install the exact 1.4 image on the physical vt(4) console and in a VM
+  with a serial console while recording the install screen: every stage shows
+  live measured activity and its elapsed time, the package ticker follows pkg,
+  no element shows an invented percentage, and waits and failures are shown as
+  such. On the MacBookPro16,1 with no function keys, open the log,
+  diagnostics, a shell and remote-debug approval with tmux keys only, keep
+  remote debugging up from the configurator to the end, and confirm the
+  graphical installer shows the same stages and metrics.
 
 Completion requires working cross-release reuse, a distributed multi-repository
 flow and retained receipts, not a renamed wrapper around the current serial

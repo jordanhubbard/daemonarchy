@@ -1095,17 +1095,54 @@ write_install_conf() {
   } >"$DAEMONARCHY_INSTALL_CONF"
 }
 
+# Console-approved remote debugging that keeps running through the install.
+# Everything here is reached with ordinary keys; no function key or second
+# virtual console is needed (many laptops have neither).
+remote_debug_background() {
+  local remote_debug
+  remote_debug="$(dirname "$0")/remote-debug"
+  if ! "$remote_debug" status >/dev/null 2>&1; then
+    gum confirm --default=false --affirmative "Start remote access" --negative "Back" \
+      "Start console-approved SSH access on port 2222? Approved agents get a root shell. It keeps running during the installation; the install screen (key r) approves new agents." || return 0
+  fi
+  "$remote_debug" background 2222 || echo 'Remote debug could not start. Configure the network first.'
+  echo
+  echo 'Press Return to return to the menu.'
+  IFS= read -r _ </dev/tty || true
+}
+
+remote_debug_approvals() {
+  local remote_debug request id fingerprint requests=()
+  remote_debug="$(dirname "$0")/remote-debug"
+  mapfile -t requests < <("$remote_debug" pending 2>/dev/null)
+  for request in "${requests[@]}"; do
+    id=${request%% *} fingerprint=${request#* }
+    if gum confirm --default=false --affirmative "Approve" --negative "Deny" \
+        "Agent pairing request: $fingerprint. Does it match the fingerprint your agent gave you?"; then
+      "$remote_debug" approve "$id"
+    else
+      "$remote_debug" deny "$id"
+    fi
+  done
+}
+
 greeter
 while true; do
   clear_logo
   if [[ $(kenv smbios.system.product 2>/dev/null || true) == MacBookPro16,1 ]]; then
-    options=('Install Daemonarchy' 'Prepare MacBook Wi-Fi firmware' 'Remote agent debug' 'Configure network' 'Exit to shell')
+    options=('Install Daemonarchy' 'Prepare MacBook Wi-Fi firmware' 'Remote agent debug' 'Remote debug in the background' 'Configure network' 'Exit to shell')
   else
-    options=('Install Daemonarchy' 'Remote agent debug' 'Configure network' 'Exit to shell')
+    options=('Install Daemonarchy' 'Remote agent debug' 'Remote debug in the background' 'Configure network' 'Exit to shell')
+  fi
+  pending_pairings=$("$(dirname "$0")/remote-debug" pending 2>/dev/null | wc -l | tr -d ' ')
+  if [[ ${pending_pairings:-0} -gt 0 ]]; then
+    options=("Approve remote agent pairing ($pending_pairings waiting)" "${options[@]}")
   fi
   action=$(gum choose --header 'Installer options' "${options[@]}") || exit 1
   case "$action" in
     'Install Daemonarchy') break ;;
+    'Remote debug in the background') remote_debug_background ;;
+    'Approve remote agent pairing'*) remote_debug_approvals ;;
     'Remote agent debug')
       "$(dirname "$0")/remote-debug" || {
         echo 'Remote debug could not start. Press Return to return to the menu.'

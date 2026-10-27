@@ -220,7 +220,7 @@ chmod 0755 "$stage"/overlay/usr/local/libexec/daemonarchy-installer/* \
 
 echo "==> Building the image"
 # shellcheck disable=SC2086 # the architecture's kernel driver packages, if any
-printf '%s\n' bash gum jq ttfx tzupdate pkg wifi-firmware-kmod $image_kernel_packages 7-zip >"$stage/live-packages"
+printf '%s\n' bash gum tmux jq ttfx tzupdate pkg wifi-firmware-kmod $image_kernel_packages 7-zip >"$stage/live-packages"
 printf '%s\n' "$live_python" >>"$stage/live-packages"
 # Trim only the live root. The untouched base.txz still installs a complete
 # development system, and optional source/ports checkouts remain downloadable.

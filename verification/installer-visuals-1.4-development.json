@@ -1,0 +1,113 @@
+{
+  "schema": "daemonarchy/installer-visuals-development@1",
+  "work_item": "UI-001",
+  "release": "1.4.0",
+  "recorded": "2026-10-26",
+  "scope": "Install screen model, rendering, tmux window controls, background remote debugging and vt(4) color behavior on controller and native FreeBSD pseudo-terminals. No 1.4 image was built and no installation was run.",
+  "operator_direction": [
+    "Raise UI-001 to P1 as a 1.4 headline feature after a real MacBookPro16,1 1.3.1 install showed almost no visible progress.",
+    "Keep the honesty rule: never invent a completion percentage.",
+    "Nothing the user needs may depend on function keys or a virtual console switch.",
+    "Use tmux windowing and default Ctrl-b controls; window 0 is the progress view."
+  ],
+  "controller": {
+    "host": "Linux, Python 3.15, tmux next-3.7",
+    "command": "PYTHONDONTWRITEBYTECODE=1 python3 tests/installer-progress.py",
+    "tests": 32,
+    "passed": 32,
+    "failed": 0,
+    "skipped": 0
+  },
+  "native": {
+    "target": {
+      "os": "FreeBSD",
+      "release": "16.0-CURRENT",
+      "architecture": "amd64",
+      "python": "3.12",
+      "tmux": "3.7c"
+    },
+    "runs": [
+      {
+        "command": "python3.12 tests/installer-progress.py",
+        "tests": 32,
+        "passed": 32,
+        "failed": 0,
+        "skipped": 0
+      },
+      {
+        "command": "python3.12 tests/vt-console-colors.py (sys/teken from /usr/src)",
+        "tests": 4,
+        "passed": 4,
+        "failed": 0
+      },
+      {
+        "command": "sudo bash tests/remote-debug-background.sh",
+        "result": "PASS"
+      },
+      {
+        "command": "sudo bash tests/remote-debug-session.sh (existing, regression)",
+        "result": "PASS"
+      }
+    ]
+  },
+  "portable_regressions": [
+    "tests/network-bringup.sh",
+    "tests/network-diagnostics.sh",
+    "tests/installer-wifi-timing.sh",
+    "tests/enterprise-wifi-options.sh",
+    "tests/remote-debug-network.sh",
+    "tests/remote-debug-cli.sh",
+    "tests/remote-debug-progress.sh",
+    "tests/apple-firmware-offline.sh",
+    "tests/install-integrity.sh",
+    "tests/live-image-budget.sh"
+  ],
+  "findings": {
+    "vt_colors": "vt(4) (sys/teken) accepts 38;5;N and reduces it to 16 colors with teken_256to16; it does not implement 38;2;R;G;B and reads R, G and B as separate SGR attributes (underline, bright background via blink, reverse). The console therefore receives direct 16-color output, and tmux is told the console has 16 colors.",
+    "vt_glyphs": "The default vt font (vt_font_default.c) and terminus-b32 cover the block eighths, shades, box drawing and braille used by the screen; vgarom fonts do not.",
+    "vt_switch_keys": "The us vt keymap binds console switching to Alt+F1-F12 (scr01-scr12) and Print Screen (nscr/pscr) only, none of which the MacBookPro16,1 has; vidcontrol -s N works from a shell.",
+    "tmux_in_closure": "tmux 3.8 is already a run dependency of the desktop closure (installed on the MacBook); adding it to the live set costs about 4 MiB with libevent and utf8proc."
+  },
+  "source_sha256": {
+    "overlay/usr/local/libexec/daemonarchy-installer/progress-model.py": "2b58c9babed63506b545682119c20c6698a1af957cdaa3d8765dfc8eeefc7be5",
+    "overlay/usr/local/libexec/daemonarchy-installer/progress-dashboard.py": "a096482f174f95e7f6a27f948ede0484739357828e5d6c33f0042009cb0cb26c",
+    "overlay/usr/local/libexec/daemonarchy-installer/install-screen": "13ac9d78a5f2f4601e0f2d91a76539e1d8c8ea8ddc69abf669c259cf9853a7b3",
+    "overlay/usr/local/libexec/daemonarchy-installer/install-views": "75bda3ebea92c24507d8e4536322f9384a87df71c2efae3f11048ab63800b3f0",
+    "overlay/usr/local/libexec/daemonarchy-installer/dashboard": "73eb8e8484141d073cbdb91681886f33deeb7291bbf3eca5dccb24a0d923a34f",
+    "overlay/usr/local/libexec/daemonarchy-installer/install": "3ee7712199b017a38a9b9194112d86e63352a67580817b48279997b1ff9c97bb",
+    "overlay/usr/local/libexec/daemonarchy-installer/remote-debug": "6d7e8d080c52e5263f8f11d56a34c16811534ce4d2342064980d5cd5464d741e",
+    "overlay/usr/local/libexec/daemonarchy-installer/configurator": "b36deb55ed0546675c54f73ce90bab8c9c57c18dd15de1e57879ef7d06733b4e",
+    "overlay/usr/local/share/daemonarchy-installer/install-tmux.conf": "8b31a800deceb57b72a4928ec9a6b9f8c14dc4adbde50c6c19fb32aa349720a2",
+    "build-iso.sh": "35d1a0de9802e8d5a3e82eae51822b9860d83d35d7c4a687a8530a9da442ba2d",
+    "tests/installer-progress.py": "f37318f720f008999482ebe65cb418f6c6734c1973018b48ef1962289047cf89",
+    "tests/vt-console-colors.py": "4e893d6198b30d4316c6f278b3b22ad0bee07072e7df0c869425fc5a8fbdea56",
+    "tests/vt-teken-render.c": "efcbabd82c9fdc46cba468e08518ce04877dc847c8f096f6b491be4a96947dfb",
+    "tests/remote-debug-background.sh": "a8a9683ba9608e8fec2be08a1cd81db9f60a5bc77f46e86fad21824d89c03126",
+    "tests/remote-debug-session.sh": "7e96a83e4e05689812a0d653441095eb4e9cc093ca619c42a40b0f679a4816cd",
+    "tests/live-image-runtime.sh": "3d71b401190ebc4051f9a097503461185207ceaa7973ccef1509d63c856f9cef",
+    "tests/fixtures/installer-progress/macbook-1.3.1-install.log": "2c4af7712f727528243584f51de85f37fe26d1227aa4af3622f1b32102fd0cfd",
+    "tests/fixtures/installer-progress/macbook-1.3.1-install-provenance.json": "5d7747aad17c74a42ac4c7261aa7bdf61b57c3fce2f3abd8b90045079734089e",
+    "scripts/installer-visuals-demo.py": "f8995f1cc2bf30c90143d8ac94c857c1d52d7844a35a6e1fb3d3e20d7c872f2e",
+    "scripts/scrub-install-log.py": "f8389b58e970243aa9899a1d9389ceb17090345210233973ca013de3b43b44d0"
+  },
+  "demo_sha256": {
+    "docs/demos/installer-visuals/console-spectrum.cast": "20e570b2b8189a6a207ad2dcc448dc43111d023b415f836c853081cecc312360",
+    "docs/demos/installer-visuals/console-spectrum.html": "2859be5f9ac248b7cc4c35b6215ad424498d2833d6ebbde62d5ce33926d45bbb",
+    "docs/demos/installer-visuals/console-tmux.cast": "865f2c84bf32c26f65c056ff6c703a8dc039d59d6bc69c0d8ec239633c2ee3dd",
+    "docs/demos/installer-visuals/console-tmux.html": "a16e084a4d7d40c07ea7e08117bee572f02672c15bc6b67fb494f959c7975bc5",
+    "docs/demos/installer-visuals/serial-vt100.cast": "352b277399bf584b5f9b760820807a1153abe2e52540fa2ac2aca0049faa90c2",
+    "docs/demos/installer-visuals/serial-vt100.html": "167604a231a213339976fc3172c907d3f975b7fef7ce4bf23c4e4a54c61d102a",
+    "docs/demos/installer-visuals/ssh-256color-tmux.cast": "aec96a9dc760c3a65625bf62d879827fbff532f669cfa99c43153e7dc38754de"
+  },
+  "physical_console_qualified": false,
+  "full_native_install_qualified": false,
+  "graphical_installer_connected": false,
+  "product_receipt": false,
+  "release_qualified": false,
+  "remaining": [
+    "Build the 1.4 image with tmux in the live set and run tests/live-image-runtime.sh against it",
+    "Full installation on the physical vt(4) console, including the MacBookPro16,1 without function keys",
+    "Installation in a VM with a serial console",
+    "Connect the LIVE-001 GTK progress page to progress-model.InstallProgress"
+  ]
+}
