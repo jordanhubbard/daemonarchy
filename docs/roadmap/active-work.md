@@ -1148,4 +1148,3 @@ remains open; report files do not establish a passing gate.
   - [ ] Declare per-candidate and total boot budgets before qualification; retain timestamped installed rc/DHCP traces and prove offline boot meets its budget. Late links recover without delaying boot.
 - **Evidence:**
   - [ ] Pending exact-image multi-NIC, absent/no-carrier Ethernet, Wi-Fi-only, late link, competing DHCP and offline boot timing tests.
-
