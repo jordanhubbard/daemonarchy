@@ -2,6 +2,16 @@
 
 ## Unreleased
 
+### Planned for 1.4.0
+
+- GPU-001: cross-vendor glmark2 diagnostics and a Daemonarchy showcase with
+  measured renderer evidence and physical FreeBSD AMD, NVIDIA and Intel MacBook
+  checks; software fallback is explicitly separate from GPU qualification.
+- NET-002: diagnose installed-boot DHCP waits on missing/disconnected Ethernet
+  and deliver bounded first-usable-interface selection with one route/DNS owner
+  and bounded offline boot, separately from installer NET-001. These entries
+  record planned scope, not implementation or acceptance; DEBUG-003 remains P0.
+
 ### Changed
 
 - Current-state documentation now tracks the published 1.3.1 release. The

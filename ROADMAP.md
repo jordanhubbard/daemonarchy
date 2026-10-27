@@ -40,6 +40,17 @@ once, prove DNS with direct lookups, make the clock usable, fetch missing
 firmware and fall back to Wi-Fi first when no cable works, in one pipeline for
 the text, graphical and unattended installers. See [NET-001](docs/roadmap/active-work.md#net-001-make-the-installer-network-bring-up-proactive-and-robust).
 
+Add cross-vendor GPU diagnostics with glmark2 and an impressive Daemonarchy
+showcase, recording the actual renderer, vendor, driver, API, FPS and frame
+times on physical AMD, NVIDIA and Intel MacBook FreeBSD systems. Software
+fallback is explicit and does not qualify GPU acceleration (GPU-001, issue #101).
+
+Make installed boot use the first usable connected interface without waiting
+for missing or unplugged Ethernet: bounded parallel DHCP, one route/DNS owner,
+bounded offline boot and retained failure diagnostics. Trace installed boot
+separately from installer NET-001 (NET-002, issue #102, related to #80).
+These are planned 1.4 items; DEBUG-003 remains P0.
+
 ## Unpublished 1.2.0 plan: owned source builds and complete Component coverage
 
 No 1.2.0 production release was published. The 1.3.1 changelog covers work
