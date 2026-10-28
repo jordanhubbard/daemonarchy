@@ -182,6 +182,7 @@ refused "a JSON array is refused" bad_request serve_raw agent '["status"]'
 refused "an unknown op is refused" bad_request serve_raw agent '{"op":"exec","cmd":"id"}'
 refused "an op with odd characters is refused" bad_request serve_raw agent '{"op":"list;id"}'
 refused "a key not in keys.conf is refused" forbidden serve_raw stranger '{"op":"list"}'
+check "the audit log keeps a printable copy of a refused request" grep -q 'key=agent .*result=bad_request request="sh -c id"' "$ROOT/var/audit.log"
 check "the client cannot reach a key with no authorized_keys line" sh -c "! '$REMOTE' stranger list"
 
 # --- happy path: queued -> running -> done; fetch; ETA ---------------------

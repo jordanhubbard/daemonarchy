@@ -86,7 +86,12 @@ audit() {
 # fail CODE MESSAGE: refuse or report an error and exit.
 PARTIAL_JOB=
 fail() {
-	audit "result=$1"
+	if [ "$MODE" = serve ]; then
+		# what was refused, printable and truncated, for the audit trail
+		audit "result=$1 request=\"$(printf '%s' "${REQ:-}" | tr -c 'A-Za-z0-9 ._:/{}=,+-' '?' | cut -c1-160)\""
+	else
+		audit "result=$1"
+	fi
 	if [ -n "$PARTIAL_JOB" ]; then
 		chmod -R u+w "$PARTIAL_JOB" 2>/dev/null
 		rm -rf "$PARTIAL_JOB"
@@ -542,6 +547,8 @@ cmd_supervise() {
 				fi
 				outs=$(printf '%s' "$outs" | jq -c --arg o "$o" --arg h "$(sha256f "$J/out/$o")" '. + {($o): $h}')
 			done
+		elif [ "$rc" = killed ]; then
+			reason="ended by a signal"
 		else
 			reason="exit $rc"
 		fi
@@ -703,6 +710,7 @@ rq() {
 
 cmd_serve() {
 	MODE=serve
+	REQ=${SSH_ORIGINAL_COMMAND:-}
 	[ "${1:-}" = --key ] && [ $# -eq 2 ] || fail refused "serve requires --key NAME"
 	KEY_NAME=$2
 	is_name "$KEY_NAME" || fail refused "malformed key name"
@@ -711,7 +719,6 @@ cmd_serve() {
 	[ -n "$line" ] || fail forbidden "key $KEY_NAME is not authorized"
 	ROLES=$(printf '%s\n' "$line" | awk '{ print $2 }')
 	KEY_FP=$(printf '%s\n' "$line" | awk '{ print $3 }')
-	REQ=${SSH_ORIGINAL_COMMAND:-}
 	[ ${#REQ} -le 16384 ] || fail bad_request "request too long"
 	printf '%s' "$REQ" | jq -e 'type == "object" and (.op | type == "string")' >/dev/null 2>&1 ||
 	    fail bad_request "the worker speaks only its JSON protocol; no command, shell or PTY is available to this key"
