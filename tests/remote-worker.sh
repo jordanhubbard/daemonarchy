@@ -61,8 +61,12 @@ cleanup() {
 }
 trap cleanup EXIT INT TERM
 
+# Recipes installed read-only, as install.sh installs them.
+cp -R "$here/tools/worker/recipes" "$T/recipes"
+find "$T/recipes" -type f -exec chmod 0444 {} +
 cat >"$ETC/worker.conf" <<EOF
 job_root=$ROOT
+recipes_dir=$T/recipes
 max_jobs=1
 free_floor_mb=1
 cancel_grace=2
@@ -224,6 +228,9 @@ refused "a newline smuggling a second parameter is refused" bad_request serve_ra
 refused "a pin for an undeclared input is refused" invalid_param serve_raw agent '{"op":"submit","recipe":"sample","pins":{"src":"0123456789012345678901234567890123456789"}}'
 refused "a missing required pin is refused" invalid_param serve_raw agent '{"op":"submit","recipe":"src-world-kernel"}'
 refused "a short pin is refused" invalid_param serve_raw agent '{"op":"submit","recipe":"src-world-kernel","pins":{"src":"abc123"}}'
+mv "$T/recipes/sample/cleanup.sh" "$T/recipes/sample/cleanup.sh.away"
+check "a recipe with a missing script fails the submit" sh -c "serve_out=\$(SSH_ORIGINAL_COMMAND='{\"op\":\"submit\",\"recipe\":\"sample\"}' '$W' serve --key agent); printf '%s' \"\$serve_out\" | jq -e '.message == \"recipe script sample/cleanup.sh missing\"'"
+mv "$T/recipes/sample/cleanup.sh.away" "$T/recipes/sample/cleanup.sh"
 check "no refused submit created a job" test "$(find "$ROOT/jobs" -mindepth 1 -maxdepth 1 -type d | wc -l)" -eq 2
 
 # --- failed -> retry (from the failed step, earlier steps kept) -----------

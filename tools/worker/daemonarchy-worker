@@ -84,8 +84,13 @@ audit() {
 }
 
 # fail CODE MESSAGE: refuse or report an error and exit.
+PARTIAL_JOB=
 fail() {
 	audit "result=$1"
+	if [ -n "$PARTIAL_JOB" ]; then
+		chmod -R u+w "$PARTIAL_JOB" 2>/dev/null
+		rm -rf "$PARTIAL_JOB"
+	fi
 	if [ "$MODE" = serve ]; then
 		jq -n -c --arg e "$1" --arg m "$2" '{ok:false,error:$e,message:$m}'
 	else
@@ -999,12 +1004,14 @@ op_submit() {
 	J=$JOBS/$ID
 	REQ_JOB=$ID
 	mkdir "$J" || fail error "cannot create job directory"
+	PARTIAL_JOB=$J
 	mkdir "$J/steps" "$J/log" "$J/out" "$J/work" "$J/recipe"
 	cp "$rf" "$J/recipe.json"
 	for p in $(jq -r '.steps[] | .run, (.cleanup // empty)' "$rf"); do
 		is_relpath "$p" || fail error "recipe script path $p is not confined"
+		[ -e "$J/recipe/$p" ] && continue
 		mkdir -p "$J/recipe/$(dirname "$p")"
-		cp "$recipes_dir/$p" "$J/recipe/$p" || fail error "recipe script $p missing"
+		cp "$recipes_dir/$p" "$J/recipe/$p" 2>/dev/null || fail error "recipe script $p missing"
 	done
 	jq -n -c --arg id "$ID" --arg r "$recipe" --argjson v "$(jq .version "$rf")" \
 	    --arg rh "$(sha256f "$rf")" --argjson p "$params" --argjson pin "$pins" \
@@ -1019,6 +1026,7 @@ op_submit() {
 		n=$((n + 1))
 	done
 	echo queued | put "$J/state"
+	PARTIAL_JOB=
 	ev "submitted by key $KEY_NAME ($KEY_FP): recipe $recipe params $params pins $pins"
 	kick
 	ok --arg id "$ID" --arg s "$(get_state)" '{ok:true, job:$id, state:$s}'
