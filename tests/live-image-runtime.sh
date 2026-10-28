@@ -71,6 +71,7 @@ for path in /usr/freebsd-dist/base.txz /usr/freebsd-dist/kernel.txz /usr/freebsd
   /usr/local/libexec/daemonarchy-installer/charm \
   /usr/local/libexec/daemonarchy-installer/sound-setup \
   /usr/local/share/daemonarchy-installer/greeting/daemonarchy_greeting \
+  /usr/local/share/daemonarchy-installer/clock/daemonarchy_clock \
   /usr/local/libexec/daemonarchy-installer/pkg-events \
   /usr/local/share/daemonarchy-installer/install-tmux.conf \
   /usr/local/share/daemonarchy-installer/omarchy-wifi-enterprise \

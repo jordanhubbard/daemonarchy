@@ -362,6 +362,13 @@ EOF
 if $macbook_bcm4364; then
   echo 'kld_list="if_brcmfmac"' >>"$TARGET/etc/rc.conf"
 fi
+# A clock floor: T2 MacBooks reload the hardware clock from the T2 at every
+# power-on (January 1970) and ignore what the system writes to it.
+install -d -m 0755 "$TARGET/usr/local/etc/rc.d" "$TARGET/usr/local/etc/cron.d" "$TARGET/var/db/daemonarchy"
+install -m 0555 "$ISO_SHARE/clock/daemonarchy_clock" "$TARGET/usr/local/etc/rc.d/daemonarchy_clock"
+printf '# Record the time for daemonarchy_clock'"'"'s boot-time floor.\n*/15\t*\t*\t*\t*\troot\t/usr/local/etc/rc.d/daemonarchy_clock save\n' \
+  >"$TARGET/usr/local/etc/cron.d/daemonarchy-clock"
+touch "$TARGET/var/db/daemonarchy/clock"
 # GPU modules are loaded by daemonarchy-graphics after SSH, not early kld.
 [[ -n $vt_keymap ]] && echo "keymap=\"${vt_keymap%.kbd}\"" >>"$TARGET/etc/rc.conf"
 
