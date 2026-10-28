@@ -1,0 +1,49 @@
+# Daemonarchy (NET-002): sourced by dhclient-script(8) before it acts.
+#
+# daemonarchy-netselect alone publishes the IPv4 default route and
+# /etc/resolv.conf, so concurrent leases on several interfaces cannot race to
+# overwrite each other. These overrides keep everything else dhclient-script
+# does per interface (address, non-default static routes, hostname, captive
+# portal); dhclient-exit-hooks hands each result to daemonarchy-netselect.
+# Removing this file and dhclient-exit-hooks restores FreeBSD's behavior.
+
+if [ -x /usr/local/libexec/daemonarchy-netselect ]; then
+	# No interface publishes the default route or DNS by itself.
+	is_default_interface() { return 1; }
+	add_new_resolv_conf() { return 0; }
+
+	# Routes other than the default still belong to the lease's interface.
+	daemonarchy_routes() { # add|delete classless static
+		local verb=$1 pairs
+		classless_routes=''
+		if [ -n "$2" ]; then
+			fill_classless_routes "$2"
+			pairs=$classless_routes
+		else
+			pairs=$3
+		fi
+		set -- $pairs
+		while [ $# -gt 1 ]; do
+			if [ "$1" != default ]; then
+				if [ "$verb" = add ] && [ "$2" = 0.0.0.0 ]; then
+					route add "$1" -iface "$interface"
+				else
+					route "$verb" "$1" "$2"
+				fi
+			fi
+			shift; shift
+		done
+	}
+	add_new_routes() {
+		# RFC 3442: classless routes replace the static routes option.
+		daemonarchy_routes add "$new_classless_routes" "$new_static_routes"
+		if [ "$new_subnet_mask" = 255.255.255.255 ] && [ -n "$new_routers" ]; then
+			set -- $new_routers
+			route add "$1" -iface "$interface" >/dev/null 2>&1
+		fi
+	}
+	delete_old_routes() {
+		daemonarchy_routes delete "$old_classless_routes" "$old_static_routes"
+		arp_flush
+	}
+fi

@@ -417,6 +417,31 @@ installed_resolver() {
   cp /etc/resolv.conf "$TARGET/etc/resolv.conf"
 }
 
+# DHCP at boot (NET-002): every dhclient runs in the background, so a port
+# with a link but no DHCP server no longer holds devd(8) (which runs its
+# actions one at a time) and delays the other interfaces' clients. Boot waits
+# at most 10 seconds for the first usable connection, or 5 seconds when no
+# DHCP interface has a carrier; a later lease or link still comes up after
+# login. daemonarchy-netselect is the single owner of the default route and
+# resolv.conf: the first interface whose gateway answers (and, if possible,
+# whose DNS server answers) keeps them, and losing leases cannot overwrite it.
+installed_boot_dhcp() {
+  local src=$ISO_SHARE/netselect
+  {
+    echo
+    echo '# Bounded boot with the first usable connection (daemonarchy-netselect).'
+    echo 'background_dhclient="YES"'
+    echo 'defaultroute_delay="10"'
+    echo 'defaultroute_carrier_delay="5"'
+  } >>"$TARGET/etc/rc.conf"
+  install -d -m 0755 "$TARGET/usr/local/libexec" "$TARGET/usr/local/etc/devd" "$TARGET/usr/local/etc/newsyslog.conf.d"
+  install -m 0555 "$src/daemonarchy-netselect" "$TARGET/usr/local/libexec/daemonarchy-netselect"
+  install -m 0444 "$src/dhclient-enter-hooks" "$TARGET/etc/dhclient-enter-hooks"
+  install -m 0444 "$src/dhclient-exit-hooks" "$TARGET/etc/dhclient-exit-hooks"
+  install -m 0444 "$src/daemonarchy-netselect.conf" "$TARGET/usr/local/etc/devd/daemonarchy-netselect.conf"
+  printf '/var/log/daemonarchy-net.log\t644\t3\t100\t*\tJC\n' >"$TARGET/usr/local/etc/newsyslog.conf.d/daemonarchy-net.conf"
+}
+
 # The network the installer used carries over. Wired DHCP (the default, and
 # what an autoinstall without network settings gets) covers every Ethernet port,
 # so a cable plugged in later just works; a static address stays on the port
@@ -438,6 +463,7 @@ case ${net_mode:-dhcp} in
       printf 'wlans_%s="wlan0"\n' "$net_if"
       echo 'ifconfig_wlan0="WPA DHCP"'
     } >>"$TARGET/etc/rc.conf"
+    installed_boot_dhcp
     umask 077
     if [[ -n ${wifi_enterprise_profile:-} ]]; then
       "$ISO_SHARE/omarchy-wifi-enterprise" --install "$TARGET" "$wifi_enterprise_profile"
@@ -449,6 +475,7 @@ case ${net_mode:-dhcp} in
     ;;
   *)
     printf '\nifconfig_DEFAULT="DHCP"\n' >>"$TARGET/etc/rc.conf"
+    installed_boot_dhcp
     installed_resolver
     ;;
 esac

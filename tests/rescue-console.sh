@@ -34,6 +34,17 @@ ticks=0
 monitor_desktop >"$work/nodriver.out"
 [[ $ticks == 0 ]]
 grep -q 'No supported desktop graphics driver' "$work/nodriver.out"
+# The menu clears ttyv0; the reason must be redrawn with it, and the logs
+# view must include the rescue log.
+(
+  tty() { echo /dev/ttyv0; }
+  rescue_font() { :; }
+  rescue_menu no </dev/null >"$work/nodriver-menu"
+)
+grep -q 'No supported desktop graphics driver' "$work/nodriver-menu"
+echo 'rescue log line' >"$rescue_log"
+(dmesg() { :; }; rescue_logs) >"$work/logs.out"
+grep -qx 'rescue log line' "$work/logs.out"
 rm "$graphics_nodriver"
 # A session that starts successfully and later crashes gets a fresh grace period.
 ticks=0
