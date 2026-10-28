@@ -1,0 +1,159 @@
+#!/bin/sh
+#
+# daemonarchy-t2link: the Apple T2 controller's internal USB link (NET-001,
+# NET-002). Installed by the Daemonarchy installer as
+# /usr/local/libexec/daemonarchy-t2link.
+#
+# On T2 Macs (MacBookPro16,1 and the other 2018-2020 models) bridgeOS shows
+# up as a USB CDC-NCM device: cdce(4) attached to USB 05ac:8233, with an
+# Ethernet interface ueN that always has a link and never a DHCP server. It
+# is a private link to the T2, not a network path. The T2's services (the
+# Touch ID sensor's BiometricKit among them) answer on IPv6 link-local there,
+# so the link is brought up with IPv6 link-local only, no IPv4 and no DHCP,
+# and it is never a default-route or DNS candidate.
+#
+# The USB vendor and product decide; the interface number varies with attach
+# order. The fixed MAC address ac:de:48:00:11:22 is a cross-check only: a
+# different one is logged, not acted on.
+#
+#   daemonarchy-t2link is IF        true when IF is the T2 link
+#   daemonarchy-t2link list         the T2 link interfaces
+#   daemonarchy-t2link rc-vars      rc.conf assignments for them (sourced via
+#                                   /usr/local/etc/rc.conf.d/network/)
+#   daemonarchy-t2link attach cdceN devd: configure the link once ueN exists
+#   daemonarchy-t2link configure IF stop dhclient, drop IPv4, IPv6 link-local
+#   daemonarchy-t2link status       what the T2 link looks like now
+
+PATH=${PATH:+$PATH:}/sbin:/bin:/usr/sbin:/usr/bin
+
+T2_LOG=${NETSELECT_LOG:-/var/log/daemonarchy-net.log}
+T2_DHCLIENT_PIDDIR=${T2LINK_DHCLIENT_PIDDIR:-/var/run/dhclient}
+T2_ATTACH_WAIT=${T2LINK_ATTACH_WAIT:-20}   # half-second steps
+T2_KILL=${T2LINK_KILL:-kill}
+T2_VENDOR=0x05ac
+T2_PRODUCT=0x8233
+T2_MAC=ac:de:48:00:11:22
+T2_INET6='inet6 -ifdisabled auto_linklocal'
+
+t2_log() {
+	printf '%s %s\n' "$(date -u '+%Y-%m-%dT%H:%M:%SZ')" "$*" >>"$T2_LOG" 2>/dev/null
+}
+
+t2_valid_ifname() {
+	case $1 in
+	''|*[!a-z0-9_]*) return 1 ;;
+	[a-z]*[0-9]) return 0 ;;
+	esac
+	return 1
+}
+
+# cdceN attached to the T2's USB vendor and product.
+t2_is_cdce() {
+	local pnp
+	case $1 in cdce[0-9]*) ;; *) return 1 ;; esac
+	t2_valid_ifname "$1" || return 1
+	pnp=$(sysctl -n "dev.cdce.${1#cdce}.%pnpinfo" 2>/dev/null) || return 1
+	case " $pnp " in *" vendor=$T2_VENDOR "*) ;; *) return 1 ;; esac
+	case " $pnp " in *" product=$T2_PRODUCT "*) return 0 ;; esac
+	return 1
+}
+
+t2_parent() { sysctl -n "net.ue.${1#ue}.%parent" 2>/dev/null; }
+
+t2_is() {
+	case $1 in ue[0-9]*) ;; *) return 1 ;; esac
+	t2_valid_ifname "$1" || return 1
+	t2_is_cdce "$(t2_parent "$1")"
+}
+
+t2_list() {
+	local ifc
+	for ifc in $(ifconfig -l 2>/dev/null); do
+		t2_is "$ifc" && echo "$ifc"
+	done
+	return 0
+}
+
+# rc.conf for each T2 link: up, IPv6 link-local, and no DHCP, so neither
+# rc.d/netif nor devd's LINK_UP rule (service dhclient quietstart) starts
+# dhclient there even with ifconfig_DEFAULT="DHCP".
+t2_rc_vars() {
+	local ifc
+	for ifc in $(t2_list); do
+		printf 'ifconfig_%s="up"\nifconfig_%s_ipv6="%s"\n' "$ifc" "$ifc" "$T2_INET6"
+	done
+}
+
+t2_mac() { ifconfig "$1" ether 2>/dev/null | awk '$1 == "ether" { print $2; exit }'; }
+
+t2_stop_dhclient() {
+	local ifc=$1 pidfile pid
+	pidfile=$T2_DHCLIENT_PIDDIR/dhclient.$ifc.pid
+	[ -r "$pidfile" ] || return 0
+	pid=$(cat "$pidfile" 2>/dev/null)   # dhclient writes no trailing newline
+	case $pid in ''|*[!0-9]*) return 0 ;; esac
+	case $(ps -p "$pid" -o command= 2>/dev/null) in
+	"dhclient: $ifc"|"dhclient: $ifc "*|*"dhclient "*" $ifc")
+		$T2_KILL "$pid" 2>/dev/null && t2_log "$ifc: stopped dhclient $pid (Apple T2 internal link)"
+		;;
+	esac
+	return 0
+}
+
+t2_configure() {
+	local ifc=$1 addr mac
+	if ! t2_is "$ifc"; then
+		t2_log "$ifc is not the Apple T2 internal link; left alone"
+		return 1
+	fi
+	t2_stop_dhclient "$ifc"
+	for addr in $(ifconfig "$ifc" inet 2>/dev/null | awk '$1 == "inet" { print $2 }'); do
+		ifconfig "$ifc" inet "$addr" -alias 2>/dev/null && t2_log "$ifc: removed IPv4 address $addr"
+	done
+	ifconfig "$ifc" up
+	ifconfig "$ifc" $T2_INET6
+	mac=$(t2_mac "$ifc")
+	[ "$mac" = "$T2_MAC" ] ||
+	    t2_log "$ifc: MAC ${mac:-unknown} differs from the usual $T2_MAC; the USB ids decide"
+	t2_log "$ifc: Apple T2 internal link ($(t2_parent "$ifc"), USB 05ac:8233), IPv6 link-local only, no DHCP"
+}
+
+# devd attach for cdceN: the ue interface is created just after the device.
+t2_attach() {
+	local dev=$1 i=0 ifc
+	t2_is_cdce "$dev" || return 0
+	while [ $i -lt "$T2_ATTACH_WAIT" ]; do
+		for ifc in $(t2_list); do
+			[ "$(t2_parent "$ifc")" = "$dev" ] && { t2_configure "$ifc"; return; }
+		done
+		sleep 0.5
+		i=$((i + 1))
+	done
+	t2_log "$dev: Apple T2 internal link attached, but no ue interface appeared"
+	return 1
+}
+
+t2_status() {
+	local ifc ll v4 dhcp found=no
+	for ifc in $(t2_list); do
+		found=yes
+		ll=$(ifconfig "$ifc" inet6 2>/dev/null | awk '$1 == "inet6" && $2 ~ /^fe80:/ { print $2; exit }')
+		v4=$(ifconfig "$ifc" inet 2>/dev/null | awk '$1 == "inet" { print $2 }')
+		dhcp=none
+		pgrep -qf "dhclient: $ifc( |\$)" && dhcp=running
+		echo "$ifc: Apple T2 internal link ($(t2_parent "$ifc"), USB 05ac:8233, MAC $(t2_mac "$ifc")):" \
+		    "IPv6 link-local ${ll:-missing}, IPv4 $(echo ${v4:-none}), dhclient $dhcp;" \
+		    'never a route or DNS candidate'
+	done
+	[ $found = yes ] || echo 'no Apple T2 internal link'
+}
+
+case $1 in
+is) t2_is "$2" ;;
+list) t2_list ;;
+rc-vars) t2_rc_vars ;;
+attach) t2_attach "$2" ;;
+configure) t2_configure "$2" ;;
+status) t2_status ;;
+*) echo "usage: ${0##*/} is IF|list|rc-vars|attach cdceN|configure IF|status" >&2; exit 64 ;;
+esac

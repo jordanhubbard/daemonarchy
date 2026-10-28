@@ -19,6 +19,19 @@
   resolv.conf, failing over on link loss. Covered by
   `tests/installed-boot-network.sh`; exact-image and physical timing are
   pending.
+- NET-001/NET-002: the Apple T2 controller's internal USB link (cdce on USB
+  `05ac:8233`, the MacBookPro16,1 `ue0`) is no longer treated as Ethernet. The
+  installer leaves it out of DHCP, route and DNS choice, and every install adds
+  `daemonarchy-t2link` (a devd attach rule on the USB ids and an
+  `rc.conf.d/network` fragment) so it carries IPv6 link-local only, with no
+  IPv4 and no dhclient, whatever its interface number. Checked by hand on the
+  MacBook without a reboot; covered by `tests/network-bringup.sh` and
+  `tests/installed-boot-network.sh`.
+- HW-004: T2 Touch ID through fprintd. The ports tree's new
+  `security/t2-touchid` (KaiT2en's bridge, disabled by default) reached the
+  MacBook's Secure Enclave over the T2 link, which reported the expected
+  locked, empty inventory on a Mac without macOS. Login by finger needs
+  macOS-enrolled fingers; the enabling procedure is documented but untested.
 
 ### Changed
 

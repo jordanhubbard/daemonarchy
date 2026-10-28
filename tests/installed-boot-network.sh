@@ -18,7 +18,8 @@ export W
 
 fail() { echo "FAIL: $*" >&2; [[ -f $work/net.log ]] && tail -n 30 "$work/net.log" >&2; exit 1; }
 
-sh -n "$src/daemonarchy-netselect" "$src/dhclient-enter-hooks" "$src/dhclient-exit-hooks"
+sh -n "$src/daemonarchy-netselect" "$src/dhclient-enter-hooks" "$src/dhclient-exit-hooks" \
+  "$src/daemonarchy-t2link" "$src/daemonarchy-t2link.rc.conf"
 command -v flock >/dev/null || fail 'flock(1) is needed for the lockf shim'
 
 # ---------------------------------------------------------------- shims
@@ -28,9 +29,32 @@ shim() { cat >"$work/bin/$1"; chmod +x "$work/bin/$1"; }
 shim ifconfig <<'EOF'
 #!/bin/sh
 ifc=$1
+[ "$ifc" = -l ] && { ls "$W" | sed -n 's/^link\.//p' | tr '\n' ' '; echo; exit 0; }
 [ -f "$W/link.$ifc" ] || { echo "ifconfig: interface $ifc does not exist" >&2; exit 1; }
+if [ "$2" = inet ] && [ $# -gt 2 ]; then
+	echo "ifconfig $*" >>"$W/calls"
+	[ "$4" = -alias ] && rm -f "$W/addr.$ifc"
+	exit 0
+fi
 if [ "$2" = inet ]; then
 	[ -f "$W/addr.$ifc" ] && printf '\tinet %s netmask 0xffffff00 broadcast 192.0.2.255\n' "$(cat "$W/addr.$ifc")"
+	exit 0
+fi
+if [ "$2" = inet6 ] && [ $# -gt 2 ]; then
+	echo "ifconfig $*" >>"$W/calls"
+	echo "fe80::aede:48ff:fe00:1122%$ifc" >"$W/ll.$ifc"
+	exit 0
+fi
+if [ "$2" = inet6 ]; then
+	[ -f "$W/ll.$ifc" ] && printf '\tinet6 %s prefixlen 64 scopeid 0x5\n' "$(cat "$W/ll.$ifc")"
+	exit 0
+fi
+if [ "$2" = ether ]; then
+	[ -f "$W/mac.$ifc" ] && printf '\tether %s\n' "$(cat "$W/mac.$ifc")"
+	exit 0
+fi
+if [ "$2" = up ]; then
+	echo "ifconfig $*" >>"$W/calls"
 	exit 0
 fi
 case $(cat "$W/link.$ifc") in
@@ -92,7 +116,25 @@ fi
 EOF
 shim sysctl <<'EOF'
 #!/bin/sh
-[ "$*" = '-n kern.boottime' ] && echo "{ sec = $(cat "$W/boot"), usec = 0 } Tue Oct 27 09:00:00 2026"
+case "$*" in
+'-n kern.boottime') echo "{ sec = $(cat "$W/boot"), usec = 0 } Tue Oct 27 09:00:00 2026" ;;
+'-n net.ue.'*'.%parent') x=${2#net.ue.}; cat "$W/ue-parent.${x%%.*}" 2>/dev/null ;;
+'-n dev.cdce.'*'.%pnpinfo') x=${2#dev.cdce.}; cat "$W/pnp.${x%%.*}" 2>/dev/null ;;
+*) exit 1 ;;
+esac
+EOF
+shim ps <<'EOF'
+#!/bin/sh
+# ps -p PID -o command=
+cat "$W/ps.$2" 2>/dev/null
+EOF
+shim kill <<'EOF'
+#!/bin/sh
+echo "kill $*" >>"$W/calls"
+EOF
+shim pgrep <<'EOF'
+#!/bin/sh
+exit 1
 EOF
 shim lockf <<'EOF'
 #!/bin/sh
@@ -105,7 +147,10 @@ EOF
 
 netselect=$work/daemonarchy-netselect
 cp "$src/daemonarchy-netselect" "$netselect"
-chmod +x "$netselect"
+t2link=$work/daemonarchy-t2link
+cp "$src/daemonarchy-t2link" "$t2link"
+chmod +x "$netselect" "$t2link"
+export NETSELECT_T2LINK=$t2link T2LINK_DHCLIENT_PIDDIR=$work/run T2LINK_ATTACH_WAIT=2 T2LINK_KILL=$work/bin/kill
 export PATH=$work/bin:$PATH
 export NETSELECT_STATE=$work/state NETSELECT_LOG=$work/net.log NETSELECT_RESOLV=$work/resolv.conf
 export NETSELECT_GATEWAY_TIMEOUT=1 NETSELECT_DNS_TIMEOUT=1
@@ -146,6 +191,12 @@ grep -q 'defaultroute_carrier_delay="5"' "$work/installed_boot_dhcp" || fail 'no
 for f in daemonarchy-netselect dhclient-enter-hooks dhclient-exit-hooks daemonarchy-netselect.conf; do
   grep -q "\$src/$f" "$work/installed_boot_dhcp" || fail "installer does not install $f"
 done
+# The T2 link handling goes on every install, whatever the network mode.
+[[ $(grep -c '^installed_t2_link$' "$install") == 1 ]] || fail 'installer does not set up the T2 link at top level'
+awk '/^installed_t2_link\(\) \{/,/^\}/' "$install" >"$work/installed_t2_link"
+for f in daemonarchy-t2link daemonarchy-t2link.conf daemonarchy-t2link.rc.conf; do
+  grep -q "\$src/$f\"" "$work/installed_t2_link" || fail "installer does not install $f"
+done
 [[ $(awk '/^  wifi\)/,/;;/' "$install" | grep -c installed_boot_dhcp) == 1 ]] || fail 'Wi-Fi install lacks the boot settings'
 [[ $(awk '/^  \*\)/,/;;/' "$install" | grep -c installed_boot_dhcp) == 1 ]] || fail 'DHCP install lacks the boot settings'
 [[ $(awk '/^  static\)/,/;;/' "$install" | grep -c installed_boot_dhcp) == 0 ]] || fail 'static install got DHCP settings'
@@ -156,9 +207,14 @@ TARGET=$work/target ISO_SHARE=$here/overlay/usr/local/share/daemonarchy-installe
 mkdir -p "$TARGET/etc"; : >"$TARGET/etc/rc.conf"
 # shellcheck source=/dev/null
 source "$work/installed_boot_dhcp"
+# shellcheck source=/dev/null
+source "$work/installed_t2_link"
 installed_boot_dhcp
+installed_t2_link
 for f in usr/local/libexec/daemonarchy-netselect etc/dhclient-enter-hooks etc/dhclient-exit-hooks \
-  usr/local/etc/devd/daemonarchy-netselect.conf usr/local/etc/newsyslog.conf.d/daemonarchy-net.conf; do
+  usr/local/etc/devd/daemonarchy-netselect.conf usr/local/etc/newsyslog.conf.d/daemonarchy-net.conf \
+  usr/local/libexec/daemonarchy-t2link usr/local/etc/devd/daemonarchy-t2link.conf \
+  usr/local/etc/rc.conf.d/network/daemonarchy-t2link; do
   [[ -s $TARGET/$f ]] || fail "installer did not write $f"
 done
 grep -qx 'defaultroute_delay="10"' "$TARGET/etc/rc.conf" || fail 'rc.conf lacks the total budget'
@@ -190,7 +246,8 @@ echo 10.0.0.5 >"$W/addr.em0"; gateway 10.0.0.1 em0; dns_ok 10.0.0.1
 
 # ---------------------------------------------------------------- 3. several NICs, one DHCP server
 
-# The MacBookPro16,1 case: ue0 has a link but no DHCP server; wlan0 works.
+# A port with a link but no DHCP server; wlan0 works. (This was the
+# MacBookPro16,1 ue0 case before the T2 link was recognized: see section 8.)
 world
 nic ue0 up; nic em0 up; nic wlan0 up; gateway 192.168.1.1 wlan0; dns_ok 192.168.1.1
 ended ue0 FAIL                      # dhclient gives up on ue0 (in the background)
@@ -286,7 +343,8 @@ start=$(date +%s)
 (($(date +%s) - start <= 2)) || fail 'offline elect was not immediate'
 [[ $(owner) == none && $(route_if) == none && $(writes) == 0 ]] || fail 'offline boot changed routes'
 [[ $(nameservers) == 192.0.2.250 ]] || fail 'offline boot rewrote resolv.conf'
-"$netselect" status | grep -q '^owner: none' || fail 'status does not report offline'
+"$netselect" status >"$work/status"   # whole output: grep -q under pipefail could SIGPIPE it
+grep -q '^owner: none' "$work/status" || fail 'status does not report offline'
 
 # A default route that DHCP does not manage (defaultrouter=) is left alone.
 world
@@ -294,6 +352,99 @@ nic em0 up; gateway 10.0.0.1 em0; dns_ok 10.0.0.53
 echo '192.0.2.1 re0' >"$W/default"
 lease em0 10.0.0.5 10.0.0.1 10.0.0.53
 [[ $(route_if) == re0 && $(writes) == 0 ]] || fail 'a static default route was replaced'
+
+# ---------------------------------------------------------------- 8. Apple T2 internal link
+
+# MacBookPro16,1: the T2 controller is cdce(4) on USB 05ac:8233 (MAC
+# ac:de:48:00:11:22), with a link and never a DHCP server. Here it attached
+# after the USB Ethernet adapter, so it is ue1: the USB ids decide.
+usb_nic() { # ueN parent [vendor product]
+  echo "$2" >"$W/ue-parent.${1#ue}"
+  [[ -n ${3:-} ]] && echo "vendor=$3 product=$4 devclass=0x00 devsubclass=0x00 sernum=\"0\" release=0x0201 mode=host intclass=0x02 intsubclass=0x0d intprotocol=0x00" \
+    >"$W/pnp.${2#cdce}"
+  return 0
+}
+t2_world() {
+  world
+  mkdir -p "$work/run"; rm -f "$work/run"/*
+  nic ue0 up; nic ue1 up; nic ue2 up; nic wlan0 up
+  usb_nic ue0 axe0
+  usb_nic ue1 cdce0 0x05ac 0x8233; echo ac:de:48:00:11:22 >"$W/mac.ue1"
+  usb_nic ue2 cdce1 0x05ac 0x12a8   # iPhone tethering: Apple and cdce, but not the T2
+}
+t2_world
+"$t2link" is ue1 || fail 'T2 link not recognized'
+for i in ue0 ue2 wlan0 em0 'ue1;x'; do "$t2link" is "$i" && fail "$i taken for the T2 link"; done
+[[ $("$t2link" list) == ue1 ]] || fail "T2 list: $("$t2link" list)"
+[[ $("$t2link" rc-vars) == $'ifconfig_ue1="up"\nifconfig_ue1_ipv6="inet6 -ifdisabled auto_linklocal"' ]] ||
+  fail "rc-vars: $("$t2link" rc-vars)"
+# rc.conf.d/network/daemonarchy-t2link, as load_rc_config sources it, against
+# network.subr's ifconfig_IF lookup (get_if_var falls back to ifconfig_DEFAULT).
+(
+  set +u
+  # shellcheck disable=SC2034 # read by the eval below, as network.subr does
+  ifconfig_DEFAULT=DHCP
+  # shellcheck source=/dev/null
+  . <(sed "s|/usr/local/libexec/daemonarchy-t2link|$t2link|g" "$src/daemonarchy-t2link.rc.conf")
+  for i in ue0 ue1 ue2; do eval "echo $i \${ifconfig_$i:-\$ifconfig_DEFAULT} \${ifconfig_${i}_ipv6:-}"; done
+) >"$work/rcvars"
+[[ $(cat "$work/rcvars") == $'ue0 DHCP\nue1 up inet6 -ifdisabled auto_linklocal\nue2 DHCP' ]] ||
+  fail "rc.conf.d fragment gave: $(cat "$work/rcvars")"
+# devd: keyed on the USB attach, never on an interface name.
+# shellcheck disable=SC2016 # $device-name is devd's variable, matched literally
+grep -q 'device-name[[:space:]]*"cdce\[0-9\]+"' "$src/daemonarchy-t2link.conf" &&
+  grep -q 'match "vendor"[[:space:]]*"0x05ac"' "$src/daemonarchy-t2link.conf" &&
+  grep -q 'match "product"[[:space:]]*"0x8233"' "$src/daemonarchy-t2link.conf" &&
+  grep -qF 't2link attach $device-name' "$src/daemonarchy-t2link.conf" || fail 'devd rule is not keyed on USB 05ac:8233'
+! grep -Eq '\bue[0-9]' "$src/daemonarchy-t2link.conf" "$src/daemonarchy-t2link.rc.conf" || fail 'an interface number is hard-coded'
+
+# devd attach: the boot-time dhclient goes, IPv4 goes, IPv6 link-local comes.
+printf 4242 >"$work/run/dhclient.ue1.pid"   # as dhclient writes it: no newline
+echo 'dhclient: ue1 (dhclient)' >"$W/ps.4242"
+echo 4343 >"$work/run/dhclient.ue0.pid"; echo 'dhclient: ue0 (dhclient)' >"$W/ps.4343"
+echo 169.254.7.7 >"$W/addr.ue1"
+"$t2link" attach cdce0 || fail 'attach failed'
+grep -qx 'kill 4242' "$W/calls" || fail 'dhclient on the T2 link was not stopped'
+! grep -q 'kill 4343' "$W/calls" || fail 'dhclient on another interface was stopped'
+grep -qx 'ifconfig ue1 inet 169.254.7.7 -alias' "$W/calls" || fail 'IPv4 left on the T2 link'
+grep -qx 'ifconfig ue1 inet6 -ifdisabled auto_linklocal' "$W/calls" || fail 'T2 link not IPv6 link-local'
+! grep -Eq 'ifconfig ue[02] ' "$W/calls" || fail 'another interface was reconfigured'
+grep -q 'ue1: Apple T2 internal link (cdce0, USB 05ac:8233), IPv6 link-local only, no DHCP' "$work/net.log" || fail 'T2 link not logged'
+! grep -q 'differs from the usual' "$work/net.log" || fail 'expected MAC flagged'
+# Other devices, and a T2 whose interface never appears, change nothing.
+: >"$W/calls"
+"$t2link" attach cdce1; "$t2link" attach axe0
+[[ ! -s $W/calls ]] || fail 'attach of another USB device reconfigured something'
+rm -f "$W/ue-parent.1"
+! "$t2link" attach cdce0 || fail 'attach without an interface reported success'
+grep -q 'cdce0: Apple T2 internal link attached, but no ue interface appeared' "$work/net.log" || fail 'missing interface not logged'
+! "$t2link" configure ue0 || fail 'configure accepted a non-T2 interface'
+[[ ! -s $W/calls ]] || fail 'a non-T2 interface was reconfigured'
+echo cdce0 >"$W/ue-parent.1"
+# An unexpected MAC is logged, not acted on.
+echo 02:00:00:00:00:01 >"$W/mac.ue1"
+"$t2link" configure ue1 && grep -q 'ue1: MAC 02:00:00:00:00:01 differs' "$work/net.log" || fail 'MAC cross-check'
+
+# netselect: a lease reported for the T2 link is never a candidate, and an
+# older candidate record for it is dropped and the route moves on.
+t2_world
+gateway 192.168.1.1 wlan0; dns_ok 192.168.1.1
+gateway 169.254.1.1 ue1; dns_ok 169.254.1.53
+lease ue1 169.254.1.5 169.254.1.1 169.254.1.53
+[[ $(owner) == none && $(route_if) == none && ! -e $work/state/cand.ue1 ]] || fail 'the T2 link became a candidate'
+grep -q 'ue1 BOUND ignored: Apple T2 internal link' "$work/net.log" || fail 'ignored T2 lease not logged'
+[[ $(nameservers) == 192.0.2.250 ]] || fail 'the T2 link touched resolv.conf'
+lease wlan0 192.168.1.20 192.168.1.1 192.168.1.1
+[[ $(owner) == wlan0 && $(route_if) == wlan0 ]] || fail 'Wi-Fi beside the T2 link did not get the route'
+printf 'status=lease\naddress=169.254.1.5\ngateway=169.254.1.1\nclass=3\nseq=0\n' >"$work/state/cand.ue1"
+"$netselect" elect
+[[ $(owner) == wlan0 ]] || fail 'a stale T2 candidate was elected'
+lease ue1 169.254.1.5 169.254.1.1 169.254.1.53 RENEW
+[[ ! -e $work/state/cand.ue1 && $(owner) == wlan0 ]] || fail 'stale T2 candidate kept'
+"$t2link" configure ue1
+"$netselect" status >"$work/status"
+grep -qx 'ue1: Apple T2 internal link (cdce0, USB 05ac:8233, MAC ac:de:48:00:11:22): IPv6 link-local fe80::aede:48ff:fe00:1122%ue1, IPv4 none, dhclient none; never a route or DNS candidate' "$work/status" ||
+  fail "status: $(cat "$work/status")"
 
 # ---------------------------------------------------------------- dhclient hooks
 

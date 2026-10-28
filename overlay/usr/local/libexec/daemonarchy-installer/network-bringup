@@ -170,10 +170,37 @@ nb_interface_kind() {
   case " $path " in *" uhub"*|*" usbus"*) echo usb ;; *) echo wired ;; esac
 }
 
+# The Apple T2 controller's internal USB link: cdce(4) on USB 05ac:8233, a ueN
+# interface (the number varies) with a link and never a DHCP server. It is
+# bridgeOS, not a network, so it is never a DHCP, route or DNS candidate; it
+# keeps IPv6 link-local only, which the Touch ID bridge uses. The USB ids
+# decide; the fixed MAC ac:de:48:00:11:22 is only a cross-check in the log.
+nb_t2_link() {
+  local parent pnp
+  [[ $1 =~ ^ue([0-9]+)$ ]] || return 1
+  parent=$(sysctl -n "net.ue.${BASH_REMATCH[1]}.%parent" 2>/dev/null) || return 1
+  [[ $parent =~ ^cdce([0-9]+)$ ]] || return 1
+  pnp=$(sysctl -n "dev.cdce.${BASH_REMATCH[1]}.%pnpinfo" 2>/dev/null) || return 1
+  [[ " $pnp " == *" vendor=0x05ac "* && " $pnp " == *" product=0x8233 "* ]]
+}
+
+nb_t2_prepare() {
+  local ifc=$1 addr mac
+  nb_stop_dhclient "$ifc"
+  for addr in $(ifconfig "$ifc" inet 2>/dev/null | awk '$1 == "inet" { print $2 }'); do
+    ifconfig "$ifc" inet "$addr" -alias >/dev/null 2>&1 && nb_log "$ifc: removed IPv4 address $addr"
+  done
+  ifconfig "$ifc" inet6 -ifdisabled auto_linklocal up >/dev/null 2>&1
+  mac=$(ifconfig "$ifc" ether 2>/dev/null | awk '$1 == "ether" { print $2; exit }')
+  [[ $mac == ac:de:48:00:11:22 ]] || nb_log "$ifc: MAC ${mac:-unknown} differs from the usual T2 address; the USB ids decide"
+  nb_log "$ifc: Apple T2 internal link (USB 05ac:8233), IPv6 link-local only, not a network candidate"
+}
+
 nb_wired_candidates() {
   local ifc
   for ifc in $(ifconfig -l ether 2>/dev/null); do
     nb_pseudo_driver "$ifc" && continue
+    nb_t2_link "$ifc" && continue
     printf '%s\n' "$ifc"
   done
 }
@@ -223,9 +250,15 @@ nb_unattached_usb() {
 }
 
 nb_discover() {
-  local ifc kind link desc count=0 radios summary=() label
+  local ifc kind link desc count=0 radios summary=() label t2=()
   nb_begin discover
   : >"$NB_STATE/interfaces"
+  for ifc in $(ifconfig -l ether 2>/dev/null); do
+    nb_t2_link "$ifc" || continue
+    nb_t2_prepare "$ifc"
+    t2+=("$ifc")
+  done
+  nb_set t2_links "${t2[*]}"
   while read -r ifc; do
     [[ -n $ifc ]] || continue
     kind=$(nb_interface_kind "$ifc")
@@ -253,6 +286,9 @@ nb_discover() {
   else
     nb_say 'No network adapter is attached yet. A USB Ethernet adapter or phone tethering is enough to install.'
   fi
+  for ifc in "${t2[@]}"; do
+    nb_say "$ifc is the Apple T2 controller's internal link, not a network connection; it is left out (IPv6 link-local only, for Touch ID)."
+  done
   while IFS=$'\t' read -r ifc kind desc; do
     [[ -n $ifc ]] || continue
     nb_say "$desc ($ifc) has no driver attached yet; it may need firmware. The installer will try to load it."
