@@ -1,0 +1,253 @@
+{
+  "schema": "daemonarchy/msi-capture-candidate@1",
+  "candidate": "daemonarchy-hwtrace-1.4.0-dev10-amd64.img",
+  "candidate_sha256": "0cc3ab9358a975dc5b2209dc4995092a699308bf8eb0782af2c540f47cafedc5",
+  "candidate_bytes": 391153152,
+  "unqueued_sha256": "d8f3776d64ff8df687038d645fff7c21bceb4eb2b044d17a56d17458cded88a6",
+  "previous_candidate": "daemonarchy-hwtrace-1.4.0-dev8-amd64.img",
+  "reserved_version_skipped": "dev9 (live6)",
+  "msi_finding": "dev8: experiment 1 stock-uefi hung at attach atrtc0@acpi0; experiment 2 hw.atrtc.enabled=0 reached init with no VGA hint (src #45 works); acpi0 system resources own I/O port 0x70 as one byte, atrtc requests 0x70-0x71",
+  "dev8_hardware_results": {
+    "record": "https://github.com/jordanhubbard/daemonarchy/pull/114",
+    "bios": "E1824IMS.317",
+    "experiments": {
+      "0001": {
+        "name": "stock-uefi",
+        "settings": [
+          "kern.panic_reboot_wait_time=15"
+        ],
+        "result": "hung",
+        "last_step": "#1981 2.860s cpu8 attach: attach atrtc0@acpi0 atrtc handle=\\_SB_.",
+        "trace_sha256": "4a745a88c4a8fd8a6f6fac37cf9c88119e0036b30d7a80a72a1883183fed5b39"
+      },
+      "0002": {
+        "name": "stock-uefi-atrtc-off",
+        "settings": [
+          "hw.atrtc.enabled=0",
+          "kern.panic_reboot_wait_time=15"
+        ],
+        "result": "reached init; DUMPS/0002 saved",
+        "trace_sha256": "53c59fb80260ce865c73d7126d871aa5a6f956faf0460ad3ea8668ec177550bc",
+        "dmesg_sha256": "e5cd5e8dc691ebc5e0fc1f0fda983c5a02475b745338ae617dd59a0479a5d6f7",
+        "devinfo_sha256": "1294420c777df49fe1db282fcfef980421a86d352ea28b7b395e10d59d0bd8b1",
+        "devinfo_acpi0_io_port_0x70": "single byte 0x70",
+        "dmesg": [
+          "atrtc0 failed to probe at port 0x70 irq 8 on isa1",
+          "efirtc0: providing initial system time"
+        ]
+      },
+      "0003": {
+        "name": "vga-hint-atrtc-on",
+        "result": "not run; cycle stopped at the first boot that reached init"
+      }
+    },
+    "stick_written": false
+  },
+  "kernel_source": {
+    "repository": "jordanhubbard/daemonarchy-src",
+    "base_branch": "daemonarchy",
+    "stacked_on": "https://github.com/jordanhubbard/daemonarchy-src/pull/45",
+    "stacked_on_commit": "24261b7146d7f4091b2e48eefbef0debad606f01",
+    "fix_branch": "fix/atrtc-uefi-conflict",
+    "fix_commit": "0400aa21dc6e7e82de292282beac455d4561f1bb",
+    "fix_pr": "https://github.com/jordanhubbard/daemonarchy-src/pull/46",
+    "tree": "ed689179deb51adab28d2e93dd4f1436b4c5ecb8",
+    "changed_files": [
+      "sys/x86/isa/atrtc.c"
+    ],
+    "tunable": "hw.atrtc.force_on_conflict=1 restores the stock behaviour",
+    "config": "GENERIC",
+    "build_host": "madmax FreeBSD builder guest, 16.0-CURRENT d63d77f4eb3c",
+    "method": "config + make -j16 kernel with the builder guest host toolchain; the first make stopped on a missing generated vdso_offsets.h (parallel ordering), the same make rerun in place finished",
+    "compile_errors": 0,
+    "compile_warnings": 0,
+    "i386_atrtc_o": "compiles in an i386 GENERIC kernel directory (-target i386-unknown-freebsd16.0) with -Werror, 0 warnings (single object only)"
+  },
+  "image_builder": {
+    "script": "build-hwtrace-image.sh",
+    "product_commit": "cc4e373830837abac09186e328b546db585a699e",
+    "identical_to_dev8_builder": true,
+    "serial_console": false,
+    "extra_conf": false,
+    "release_iso": "1.4.0-live3",
+    "release_iso_sha256": "bd3c12932bb93ae00cf5db26836532eab1480d69dae412062ee810a2c08e70b0"
+  },
+  "assembly": {
+    "boot/kernel/kernel": "41dc22228ec59dfe7c0449d6ef13b606ac5cddf554087e3e4bae571235866e03",
+    "boot/loader.efi": "335cf3cef067ab960a7fcd43cd9deba0158462b3902cc38f177d07ef77a32fb1",
+    "lua": {
+      "splash.lua": "3f9054953db3d556042a892612e727c00a4daeff96cdb1ebd4a1587ac7699c45",
+      "netdebug.lua": "c9da2b5a31a48daa0eb7b3262103fbd7153f863eb63adb4d5fef2c52b11f59d7",
+      "menu.lua": "5d16efefee4422447a81222de5624684341e11a0ec4e049fb5f7c134de744847"
+    },
+    "lua_identical_to_dev8": true,
+    "boot_trace_menu_key": "i"
+  },
+  "initial_state": {
+    "next": 1,
+    "traces": 0,
+    "pending": "",
+    "epoch": 396552766
+  },
+  "queue_file": "tools/boottrace/msi-dev10-queue.txt",
+  "queues": {
+    "QUEUE/0001.CNF": {
+      "sha256": "3f33a8f01f4194f6d293155e45cecec319ffdcb82a183378ef367d97579e6c12",
+      "experiment": "# experiment: atrtc-force"
+    },
+    "QUEUE/0002.CNF": {
+      "sha256": "63c83fc0ecbc6e28772ac2d3b58058b9bf5c1c89dfe5a118b7dd2a2bffee7584",
+      "experiment": "# experiment: atrtc-force-noclock"
+    },
+    "QUEUE/0003.CNF": {
+      "sha256": "65aacdc338dbd4e863da857088dbb7ce91067b86a281a46eecd66e63095866cf",
+      "experiment": "# experiment: stock-fix"
+    }
+  },
+  "boottrace_from_sub": "default SI_SUB_CONFIGURE (0x3800000); not queued",
+  "controls": {
+    "block_map": "PASS:201 files"
+  },
+  "native_vm": {
+    "transport": "QEMU xHCI usb-storage",
+    "machine": "q35,smm=on",
+    "cpu": "Westmere",
+    "acceleration": "TCG",
+    "host": "arm64 Linux",
+    "harness": "tools/boottrace/qemu-stick-test.py --silence 400",
+    "conflict_table": {
+      "source": "tools/boottrace/qemu/rtc-0x70-conflict.asl",
+      "aml_sha256": "5e77ea0a716a1237d0467f528095e0c518f3c3c89fd2a144a65ab1de2f4386da",
+      "qemu_args": [
+        "-acpitable",
+        "file=tools/boottrace/qemu/rtc-0x70-conflict.aml"
+      ],
+      "effect": "devinfo: acpi0 owns I/O port 0x70 (one byte) via acpi_sysresource1 at \\_SB_.RTCC"
+    },
+    "runs": {
+      "exact_candidate_copy": {
+        "conflict_table": false,
+        "experiment": "atrtc-force",
+        "result": "reached init; DUMPS/0001 saved; TRACES/0001.TXT filed via raw blocks; loader stopped",
+        "dmesg_atrtc": "atrtc0: <AT realtime clock> port 0x70-0x77 irq 8 on acpi0",
+        "final_state": {
+          "next": 2,
+          "traces": 1,
+          "pending": "",
+          "epoch": 396552766
+        },
+        "trace_sha256": "c7ac3f96b33359fb9891a81b66497f298bc29a9482f04fc253de6689801ce7f7",
+        "dmesg_sha256": "439b9250bf2e0ac48bc70a9983b2e65303b7bca7a69088f469d55543d034c4ea",
+        "serial_sha256": "c35277064bc18b075b928cfe82e0c400fdcb341a37aeb005b6ad70cdc592c711"
+      },
+      "event_order_copy": {
+        "conflict_table": false,
+        "serial_sha256": "14a305dbb308713fd174f78466c7064668979d69cc30706bd56927d0cc80c8ab",
+        "traces": {
+          "stock-fix-hang-cmos-handler": {
+            "knob": "debug.boottrace.test_hang=\"atrtc: ACPI CMOS handler installed\"",
+            "sha256": "e28f623c26a26390a1531ce478363bd277028ed87608ff237fbfb572bcc508ba",
+            "status": "Status: INCOMPLETE: the kernel never reached init (hang or reset)",
+            "breadcrumbs": [
+              "attach atrtc0@acpi0",
+              "atrtc: atrtc0 alloc ports 0x70-0x71",
+              "atrtc: ports 0x70-0x71 allocated",
+              "atrtc: sel 0x0a: in 0x84,out 0x70",
+              "atrtc: wr 0x0a=0x29: out 0x71,in 0x84",
+              "atrtc: sel 0x0b: in 0x84,out 0x70",
+              "atrtc: wr 0x0b=0x02: out 0x71,in 0x84",
+              "atrtc: start done",
+              "atrtc: clock_register",
+              "atrtc: alloc IRQ 8 (rid 0)",
+              "atrtc: bus_setup_intr IRQ 8",
+              "atrtc: bus_bind_intr IRQ 8 to cpu 0",
+              "atrtc: et_register RTC",
+              "atrtc: attach done",
+              "atrtc: install ACPI CMOS handler",
+              "atrtc: ACPI CMOS handler installed"
+            ]
+          },
+          "stock-fix": {
+            "sha256": "dcb6da9ec02ba7e00ec5f4bfe595d122df4c688fa9d7128441c7382bdbe7a97c",
+            "status": "Status: complete: the kernel reached init",
+            "dmesg_sha256": "175641549e67ca72cdf1a4551fefe493c7b23acbab6f98f883dc01aa1ea7de8d"
+          }
+        }
+      },
+      "conflict_copy": {
+        "conflict_table": true,
+        "serial_sha256": "23587a6e639a5c7b9f29ed02bacd2703617d0b4359368799e0a00e8310722930",
+        "traces": {
+          "conflict-hang-declining": {
+            "knob": "debug.boottrace.test_hang=\"atrtc: UEFI port conflict, declining\"",
+            "sha256": "45e855568f0724dc16c42855f371da9a21ded17923c99af4c2502cf9689dfc7a",
+            "status": "Status: INCOMPLETE: the kernel never reached init (hang or reset)",
+            "steps": [
+              "attach atrtc0@acpi0",
+              "atrtc: atrtc0 alloc ports 0x70-0x71",
+              "atrtc: ports 0x70-0x71 NOT allocated",
+              "atrtc: UEFI port conflict, declining"
+            ]
+          },
+          "conflict-force-hang-et": {
+            "knob": "hw.atrtc.force_on_conflict=1, debug.boottrace.test_hang=\"atrtc: et_register RTC\"",
+            "sha256": "80a0544e80f778d5140cd25731d0fe0c9fbb22deb9a15bb7f6ac0ebc7dad7a99",
+            "status": "Status: INCOMPLETE: the kernel never reached init (hang or reset)",
+            "steps": [
+              "atrtc: ports 0x70-0x71 NOT allocated",
+              "atrtc: port conflict, forced on",
+              "atrtc: sel 0x0a: in 0x84,out 0x70",
+              "atrtc: wr 0x0a=0x29: out 0x71,in 0x84",
+              "atrtc: sel 0x0b: in 0x84,out 0x70",
+              "atrtc: wr 0x0b=0x02: out 0x71,in 0x84",
+              "atrtc: start done",
+              "atrtc: clock_register",
+              "atrtc: alloc IRQ 8 (rid 0)",
+              "atrtc: bus_setup_intr IRQ 8",
+              "atrtc: bus_bind_intr IRQ 8 to cpu 0",
+              "atrtc: et_register RTC"
+            ]
+          },
+          "stock-fix": {
+            "sha256": "8e0458878faed092ed5a30b1ffe2927c1685d7eab1fe6925daa404d2b5461bd9",
+            "status": "Status: complete: the kernel reached init",
+            "dmesg_sha256": "08804c4e3535bfdb03943ffd35d8614d7fa6dcd5cf707dcdc45964c331472e82",
+            "devinfo_sha256": "e96b9a94a2f1b6286d154667c0a2356fb1817b3d1107b0f3bdfb44da4f94aa86",
+            "dmesg": [
+              "atrtc0: <AT realtime clock> port 0x70-0x77 irq 8 on acpi0",
+              "atrtc0: I/O ports 0x70-0x71 are claimed by another device; not touching the RTC on this UEFI boot (hw.atrtc.force_on_conflict=1 overrides)",
+              "device_attach: atrtc0 attach returned 6",
+              "atrtc0: <AT realtime clock> at port 0x70 irq 8 on isa0",
+              "atrtc0: I/O ports 0x70-0x71 are claimed by another device; not touching the RTC on this UEFI boot (hw.atrtc.force_on_conflict=1 overrides)",
+              "device_attach: atrtc0 attach returned 6",
+              "efirtc0: providing initial system time"
+            ]
+          }
+        },
+        "final_state": {
+          "next": 4,
+          "traces": 3,
+          "pending": ""
+        }
+      },
+      "conflict_force_copy": {
+        "conflict_table": true,
+        "experiment": "atrtc-force",
+        "result": "reached init; QEMU emulates the RTC behind the unallocated ports",
+        "dmesg": [
+          "atrtc0: <AT realtime clock> port 0x70-0x77 irq 8 on acpi0",
+          "atrtc0: Warning: Couldn't map I/O."
+        ],
+        "trace_sha256": "f7b3a83e9625a3e1d47ea20cb0e419f90c7c37b1db3e4ab23ee1e0d128d2588d",
+        "dmesg_sha256": "9eeddc90f49426cd1b3b07d90732b9346948e634786c4b4e43797aa3c5219935",
+        "devinfo_sha256": "b1dc2542df4e729b4063cc995cfd883c7498cbc5248fdb0d5de1697b03c1a53c",
+        "serial_sha256": "55ed47bb198e84cb009626298a6723ac5c9010961fee466bb3c1b1876e1723ce"
+      }
+    },
+    "known_vm_noise": "retried usb-storage READ(10)/WRITE(10) CAM errors, also present in dev4, dev7 and dev8 VM logs"
+  },
+  "signed": false,
+  "physical_msi_qualified": false,
+  "usb_written": false,
+  "canonical_lifecycle_receipt": false
+}
