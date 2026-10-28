@@ -1,0 +1,142 @@
+{
+  "schema": "daemonarchy/msi-capture-candidate@1",
+  "candidate": "daemonarchy-hwtrace-1.4.0-dev7-amd64.img",
+  "candidate_sha256": "8a703f99ab4919bd1c3117ee1f6c8b68ee544175a29db8debcb271bbbd64cd6e",
+  "candidate_bytes": 391153152,
+  "unqueued_sha256": "6b7f54c12ee1cca9e529c3dc103f37ef55e2cd1a6317e94d2857c1ce22a7e42e",
+  "previous_candidate": "daemonarchy-hwtrace-1.4.0-dev5-amd64.img",
+  "msi_finding": "dev5: all four experiments reset about 9 s after probe vga0@isa1",
+  "kernel_source": {
+    "repository": "jordanhubbard/daemonarchy-src",
+    "base_branch": "daemonarchy",
+    "base_commit": "b582921ee9281237ae4aac6ddc98f8450b817136",
+    "fix_branch": "fix/isavga-legacy-skip",
+    "fix_commit": "499dab77fe9c632bc217dc9ce14aa1a71c426c12",
+    "fix_pr": "https://github.com/jordanhubbard/daemonarchy-src/pull/42",
+    "local_merge_tree": "2c55e25960907f8d519e69c8faf083421dc07270",
+    "config": "GENERIC",
+    "method": "config + make -j3 kernel with the FreeBSD builder host toolchain",
+    "compile_errors": 0,
+    "compile_warnings": 0
+  },
+  "image_builder": {
+    "script": "build-hwtrace-image.sh",
+    "product_commit": "2066e62ef899eeb7acfdd4cc3c7b4bf2afc81704",
+    "serial_console": false,
+    "extra_conf": false,
+    "release_iso": "1.4.0-live3",
+    "release_iso_sha256": "bd3c12932bb93ae00cf5db26836532eab1480d69dae412062ee810a2c08e70b0"
+  },
+  "assembly": {
+    "boot/kernel/kernel": "90543cb5310c7f50ecf0303569156bcc9e366cec58b4aff155ad2e458e1d1a50",
+    "boot/loader.efi": "048a1f092cc6f4909bd12a95b6dfc431defb25f796b21cfd8bb3af3c6e5ab678",
+    "lua": {
+      "splash.lua": "3f9054953db3d556042a892612e727c00a4daeff96cdb1ebd4a1587ac7699c45",
+      "netdebug.lua": "c9da2b5a31a48daa0eb7b3262103fbd7153f863eb63adb4d5fef2c52b11f59d7",
+      "menu.lua": "5d16efefee4422447a81222de5624684341e11a0ec4e049fb5f7c134de744847"
+    },
+    "boot_trace_menu_key": "i",
+    "preset_boot_d_1_present": true
+  },
+  "initial_state": {
+    "next": 1,
+    "traces": 0,
+    "pending": "",
+    "epoch": 1763775401
+  },
+  "queues": {
+    "QUEUE/0001.CNF": {
+      "sha256": "e2119af07cd421603c1c7fdd6108fb53b9646e6926185119c49388363f422784",
+      "experiment": "# experiment: vga-disabled"
+    },
+    "QUEUE/0002.CNF": {
+      "sha256": "3903df1cc9efca510597bb835fbdbc9f0422377327d004680e38a3474c2f9608",
+      "experiment": "# experiment: vga-disabled-legacy-off"
+    },
+    "QUEUE/0003.CNF": {
+      "sha256": "f8117f21cb728db3d39a4e9e249f9900fcb9b648b3f7fb0bb864b782c0c45c63",
+      "experiment": "# experiment: fadt-only"
+    },
+    "QUEUE/0004.CNF": {
+      "sha256": "060aca4cfcfe1b76b54e4f8b1e2e12cecb2bbdc26ec20176fe55423205c1791f",
+      "experiment": "# experiment: vga-disabled-one-cpu"
+    }
+  },
+  "controls": {
+    "block_map": "PASS:201 files"
+  },
+  "native_vm": {
+    "transport": "QEMU xHCI usb-storage",
+    "machine": "q35,smm=on",
+    "cpu": "Westmere",
+    "acceleration": "TCG",
+    "host": "arm64 Linux",
+    "harness": "tools/boottrace/qemu-stick-test.py",
+    "runs": {
+      "exact_candidate_copy": {
+        "serial_override": false,
+        "experiment": "vga-disabled",
+        "result": "reached init; DUMPS/0001 saved; TRACES/0001.TXT filed via raw blocks, read-back ok; loader stopped",
+        "trace_status": "Status: complete: the kernel reached init",
+        "dmesg_isa": [
+          "sc0 failed to probe on isa0",
+          "atrtc0 failed to probe at port 0x70 irq 8 on isa0",
+          "attimer0: <AT timer> at port 0x40 on isa0"
+        ],
+        "vga0_probed": false,
+        "final_state": {
+          "next": 2,
+          "traces": 1,
+          "pending": "",
+          "epoch": 1763775401
+        },
+        "trace_sha256": "37cd2b79f1805156a2fd563995153c15656c74b0cd3c1bf74c2f956881aa7c44"
+      },
+      "serial_test_vga_disabled": {
+        "experiment": "vga-disabled",
+        "result": "reached init; vga0 not probed",
+        "trace_sha256": "c9d22cc8e7f13a2d02b3e374feb4296d58a7bb77d4a865504d7faa35677c0bda",
+        "serial_sha256": "2c6e31cfb9e3d0ca0b8cb0a443ab1ac9ba5334747a5349f49bd815e3c3eb36c1"
+      },
+      "serial_test_fadt_only": {
+        "experiment": "fadt-only",
+        "result": "reached init; vga0 failed to probe on isa0",
+        "qemu_fadt_iapc_boot_arch": "{8042}",
+        "trace_sha256": "4d3ac639d48fbfbc7d67a25b5f4bedc706ad72671070e3abb0df2d9568de4739",
+        "serial_sha256": "bd8deff2854619cf4673cbe4f3f7b9f7b113773cc78cbcab2fafbeb126d2a6aa"
+      },
+      "serial_test_isa_hang": {
+        "knob": "debug.boottrace.test_hang=attimer0",
+        "serial_sha256": "db8cfccd9c1a259a0695fe09ade025ddf00343dcb1d90b733846b6f55ecdf597",
+        "traces": {
+          "vga-disabled-hang-attimer0": {
+            "sha256": "068fd4f397399fe1fb7fa18a3542d043c42af5ad1fec98bb6ae5afd200c3916b",
+            "status": "Status: INCOMPLETE: the kernel never reached init (hang or reset)",
+            "steps": [
+              "#3565 13.118s cpu0 event: isavga: hint.vga.0.disabled, not probing",
+              "#3566 13.638s cpu0 probe: probe sc0@isa0 sc",
+              "#3567 13.699s cpu0 probe: probe atrtc0@isa0 atrtc",
+              "#3568 13.713s cpu0 probe: probe attimer0@isa0 attimer"
+            ]
+          },
+          "fadt-only-hang-attimer0": {
+            "sha256": "967f047044888808b3fc4dff0e066111eed7170de2c48face51bfeb61ecd2c10",
+            "status": "Status: INCOMPLETE: the kernel never reached init (hang or reset)",
+            "steps": [
+              "#3565 13.022s cpu0 event: isavga: FADT boot flags 0x0002",
+              "#3566 13.539s cpu0 probe: probe sc0@isa0 sc",
+              "#3567 13.602s cpu0 probe: probe vga0@isa0 vga",
+              "#3568 13.615s cpu0 probe: probe atrtc0@isa0 atrtc",
+              "#3569 13.627s cpu0 probe: probe attimer0@isa0 attimer"
+            ]
+          }
+        }
+      }
+    },
+    "known_vm_noise": "retried usb-storage READ(10)/WRITE(10) CAM errors, also present in dev4 VM logs"
+  },
+  "signed": false,
+  "physical_msi_qualified": false,
+  "usb_written": false,
+  "canonical_lifecycle_receipt": false
+}
