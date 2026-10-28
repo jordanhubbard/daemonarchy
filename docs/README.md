@@ -23,6 +23,7 @@ another version are historical records. 1.4 entries describe work in development
 - [Getting started with Daemonarchy](getting-started.md)
 - [Hardware quirks](hardware-quirks.md)
 - [Hardware trace stick: reset-surviving boot trace](boottrace.md)
+- [Lua-repaired live4: exact TUI/live-mode boot checks](testing-1.4-live4-lua4-20261028.md)
 - [Hardware trace stick: QEMU/OVMF checks, October 27](testing-1.4-boottrace-20261027.md)
 - [Optional ports and system source: space estimate](optional-source-sizing.md)
 - [Daemonarchy 1.1.0 release notes (historical)](release-1.1.0.md)

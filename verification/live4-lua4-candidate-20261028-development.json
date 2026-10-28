@@ -1,0 +1,206 @@
+{
+  "schema": "daemonarchy/live-lua-candidate-development@1",
+  "recorded_at": "2026-10-28T01:16:20.614975+00:00",
+  "scope": "Unsigned development ISO: exact-image TUI and live-mode boot smoke, with safe no-GPU fallback; not installation or release qualification.",
+  "parent_image": {
+    "name": "daemonarchy-1.4.0-live4-amd64.iso",
+    "sha256": "56684b8d877a51b34a3027252abd2c55c63598112ea0416479e5a0654f0ea31e",
+    "product_revision": "17123ca1d692566a4d6f98f83d3684e91ee46d13",
+    "source_world_revision": "74f81f1949d503caa8306a0d060242a13ae49fff",
+    "record_pr": "https://github.com/jordanhubbard/daemonarchy/pull/100"
+  },
+  "overlay_sources": {
+    "splash_and_netdebug": {
+      "revision": "95eb020f9bb769b9f0ecb53b60470104bf7324c6",
+      "pr": "https://github.com/jordanhubbard/daemonarchy-src/pull/40"
+    },
+    "menu": {
+      "revision": "3d08a192a457f715664934fc84c461ae08c7615b",
+      "pr": "https://github.com/jordanhubbard/daemonarchy-src/pull/41"
+    },
+    "retained_header_fix_pr": "https://github.com/jordanhubbard/daemonarchy-src/pull/39"
+  },
+  "artifacts": [
+    {
+      "name": "daemonarchy-1.4.0-live4-lua4-amd64.iso",
+      "bytes": 3505989632,
+      "sha256": "fd0ac2c85f428af6bcad260ea2a166816153b28c80ab244c92abf38085b9578e"
+    },
+    {
+      "name": "daemonarchy-1.4.0-live4-lua4-amd64.iso.xz",
+      "bytes": 1572734780,
+      "sha256": "14bcd8355299fa0e4c750ab0a4d467e0b94cd8b238f63a6acc51a7e4da1fbd29"
+    }
+  ],
+  "archive_integrity_test_passed": true,
+  "archive_decompresses_to_tested_iso": true,
+  "filesystem_audit": {
+    "candidate": "daemonarchy-1.4.0-live4-lua4-amd64.iso",
+    "candidate_sha256": "fd0ac2c85f428af6bcad260ea2a166816153b28c80ab244c92abf38085b9578e",
+    "candidate_bytes": 3505989632,
+    "nodes_verified": 62424,
+    "regular_files_verified": 56815,
+    "all_modes_owners_types_links_match_parent": true,
+    "duplicate_paths_rejected": true,
+    "root_mode": "0755",
+    "only_parent_shared_extents_used": true,
+    "formatter_generated_directory_copied_as_input": false,
+    "changed_files": [
+      "boot/lua/menu.lua",
+      "boot/lua/netdebug.lua",
+      "boot/lua/splash.lua"
+    ],
+    "eltorito": "et_platform=default;et_system=i386;et_lba=5140;et_sectors=4\net_platform=efi;et_system=i386;et_lba=20;et_sectors=20480\n",
+    "rejected_prior_candidates": [
+      "lua1 metadata/RRIP extraction",
+      "lua2 expanded storage/raw budget",
+      "lua3 duplicate generated .rr_moved directory"
+    ]
+  },
+  "preservation": {
+    "critical_retained_files_sha256": {
+      "boot/kernel/kernel": "88f70f8dad2c8cc922976065ffa508a9fe0a257252ced38a0673511848b8b051",
+      "boot/loader.efi": "d2762e8674ca60569f25cbab89d70954a4af98fb4c80442093f0f50b585d5fab",
+      "usr/freebsd-dist/base.txz": "24341ec5c3cb346dd6b685a40303616495c39d1712c869e2f1f4a5aff9bf110b",
+      "usr/freebsd-dist/kernel.txz": "4c18fb839617faba66dc7810c0a6e42de0fa860b005c6be5ea2af52d1c9e8133",
+      "usr/freebsd-dist/lib32.txz": "391904eb0f2624a14a44e5bb0546e5195157f533e81d35c42b1879e219ea5edd",
+      "usr/freebsd-dist/MANIFEST": "77da2f533cdf598fa06b59fd843a2b0689fd6da9b8bf02c5069eb7f3acb4dee8"
+    },
+    "overlay_files": {
+      "boot/lua/menu.lua": {
+        "before_sha256": "88b16f963aaab0235d4db4275cf783561a3fdaac911ddcc31ff85b200be5a932",
+        "after_sha256": "5d16efefee4422447a81222de5624684341e11a0ec4e049fb5f7c134de744847"
+      },
+      "boot/lua/netdebug.lua": {
+        "before_sha256": "f621b3242cb9b68d7dc657aa23b90dbd1a514c5fddb2676d474a243dfa4d2646",
+        "after_sha256": "c9da2b5a31a48daa0eb7b3262103fbd7153f863eb63adb4d5fef2c52b11f59d7"
+      },
+      "boot/lua/splash.lua": {
+        "before_sha256": "28cfe1d6f0738771ebb61b73d792c016198a8775a2f972c845a220afcd1dbb02",
+        "after_sha256": "3f9054953db3d556042a892612e727c00a4daeff96cdb1ebd4a1587ac7699c45"
+      }
+    },
+    "private_inventory_sha256": {
+      "logical-parent-metadata.json": "67165c2295e6b820b1ff6088b75a2587c7b2ca07142ce4ea4f2fed86dcc72336",
+      "logical-parent-file-sha256.json": "a6281984b87ac46d87a258ac672d954e0a8a4cd688523268231a5099edd01e51",
+      "logical-candidate-file-sha256.json": "727a5614c8934973e7abe509b8e5d4061ce75aaa313fa5ea8bc52c74098d5931",
+      "parent-shared-extents.json": "d3d4925cb8cbf977e63fb4bd56cc2fd8c65b1f40e54c24bca5c461735bc386d5",
+      "extent-restoration.json": "94cb05a6c69f5ec6c1288bf0b1b4bf453b7dab73745020c474debc938db6a477"
+    }
+  },
+  "producer_tools_observed": {
+    "native_system": "FreeBSD 16.0-CURRENT amd64",
+    "tools": {
+      "makefs": {
+        "sha256": "5a281c3692a66e779a4f2790dabd421dbf4fa05d07ffd7d0bd1eacdcb6836c71"
+      },
+      "mkimg": {
+        "sha256": "fd4f75e08e0da0a49e796f6d130633672aa600f3d259a40fb964a1d7495a372e"
+      },
+      "etdump": {
+        "sha256": "666f53b91f04b0cdd8edbac290b9c00f2cb5878e4b2f3667322853aa6d80b833"
+      },
+      "tar": {
+        "sha256": "fcc2db6cb47205c09060341cca2acb6992cac9b778920c27610d0bb949b1b839"
+      },
+      "python3.12": {
+        "sha256": "70ee7d47f2edfb701a51af3467caf5cd1f1271dfcf5a80671c74abf8cffc2c08"
+      }
+    }
+  },
+  "producer_closure_complete": false,
+  "source_or_package_compilation_invoked": false,
+  "package_installation_invoked_for_assembly": false,
+  "vm_cases": [
+    {
+      "case": "tui-default-enter",
+      "driver_pass": true,
+      "runtime_checks": {
+        "root-mode-rc": true,
+        "live-traversal-rc": true,
+        "tui-flag-rc": true
+      },
+      "kernel_source_revision_observed": "74f81f1949d5",
+      "target_before_sha256": "07d217ebccc55480b7afa191674ec5da87f2d14efbc04dbc7e40efe345f16776",
+      "target_after_sha256": "07d217ebccc55480b7afa191674ec5da87f2d14efbc04dbc7e40efe345f16776",
+      "image_sha256": "fd0ac2c85f428af6bcad260ea2a166816153b28c80ab244c92abf38085b9578e",
+      "evidence_sha256": {
+        "result.txt": "4d4445c7d5b6546dd0af0a50db746049b15f547fa4260d2c726240dca4d59212",
+        "serial.log": "f99122d6a7ae062de737ceeeddf73f5c0c921c305d12df2878d64c4ac0994568",
+        "serial.txt": "2afc39d59d05547e6c54f7b9d261d5dc1500b9d3123104e1209f67c7c4b60e22",
+        "boot-menu.png": "6b277979bbb5ed7e11709eca314b9388142a973034c4ac823702588138be0226"
+      },
+      "physical_hardware_qualified": false,
+      "installation_executed": false,
+      "canonical_lifecycle_receipt": false,
+      "target_bytes": 17179869184
+    },
+    {
+      "case": "live-desktop-key-T",
+      "driver_pass": true,
+      "runtime_checks": {
+        "root-mode-rc": true,
+        "live-traversal-rc": true,
+        "live-flag-rc": true,
+        "live-ready-rc": true
+      },
+      "kernel_source_revision_observed": "74f81f1949d5",
+      "target_before_sha256": "07d217ebccc55480b7afa191674ec5da87f2d14efbc04dbc7e40efe345f16776",
+      "target_after_sha256": "07d217ebccc55480b7afa191674ec5da87f2d14efbc04dbc7e40efe345f16776",
+      "target_bytes": 17179869184,
+      "image_sha256": "fd0ac2c85f428af6bcad260ea2a166816153b28c80ab244c92abf38085b9578e",
+      "evidence_sha256": {
+        "result.txt": "5a304d9b3fc6f1ab1cdc8e972c930026a681f0fa80c84e1bd0412cbb600253fa",
+        "serial.log": "e3dc16eb65f95767be2e4f29979ca75a204b8297f4c9d79b3802cb7baf86a2c0",
+        "serial.txt": "0a6682f2394ac8861880798977d0fb506f1c8f6fa5040552efcdff48b4fd1384",
+        "boot-menu.png": "6b277979bbb5ed7e11709eca314b9388142a973034c4ac823702588138be0226"
+      },
+      "physical_hardware_qualified": false,
+      "installation_executed": false,
+      "desktop_rendering_qualified": false,
+      "canonical_lifecycle_receipt": false,
+      "observed_gpu_behavior": "No supported bhyve desktop GPU; live-mode initialization ready, safe fallback to TUI."
+    }
+  ],
+  "graphics_observation": {
+    "backend": "QEMU OVMF TCG, VGA-only, no serial device",
+    "exact_image_sha256": "fd0ac2c85f428af6bcad260ea2a166816153b28c80ab244c92abf38085b9578e",
+    "frames": 224,
+    "animation_and_menu_observed": true,
+    "selected_frames_sha256": {
+      "f0055.png": "0ade277fbdea034d1bdd0585f7a4f4636782b229a27abc2cb7705871836890eb",
+      "f0060.png": "6e86915af5088b70e8dcf0f967dc854a22cccc85f76f0a4bb89ee102a3252be2",
+      "f0100.png": "0cadc9bd42f2bee2a22c2c2b400c91a2afd2bd6e6c2db9aa9e26b2e32fdaa537"
+    },
+    "guest_exited": true
+  },
+  "composed_lua_controls": {
+    "stdlib_guard_files": 20,
+    "stdlib_guard": "pass",
+    "splash_no_table_or_math_controls": "pass"
+  },
+  "rejected_attempts_preserved": [
+    "xorriso could not replay hidden UEFI boot image",
+    "lua1 extraction root mode and RRIP path loss",
+    "lua2 expanded shared rescue storage exceeded raw budget",
+    "lua3 duplicated formatter-generated relocation directory",
+    "serial-only bhyve driver could not observe post-splash menu; final cases select through actual framebuffer"
+  ],
+  "remaining_gaps": [
+    "installed base.txz retains old Lua; installer copies only branding after extraction",
+    "Inherited optional source-checkout catalogue/feed mismatch is retained, not repaired or retested.",
+    "real GPU desktop rendering and audio",
+    "new-kernel external GPU/Wi-Fi modules",
+    "installation and installed-system boot",
+    "physical hardware and Secure Boot",
+    "canonical retained native action custody, input closure and lifecycle receipt"
+  ],
+  "hardware_qualified": false,
+  "installation_qualified": false,
+  "desktop_rendering_qualified": false,
+  "cache_admission": false,
+  "canonical_lifecycle_receipt": false,
+  "release_qualified": false,
+  "signed": false,
+  "published": false
+}
