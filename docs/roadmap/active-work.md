@@ -1170,3 +1170,23 @@ remains open; report files do not establish a passing gate.
   - [ ] security/t2-touchid in daemonarchy-ports pins upstream 16b58080ebc8542d7b11486a45722350f277ed33 (GPL-3.0-or-later with the 7(b) attribution term, LICENSE installed) and patches it for FreeBSD: libinput Esc monitoring is Linux-only (dropped elsewhere; a prompt ends on a match or the 10 s window), /sys and ip(8) discovery become net.ue/dev.cdce sysctls and ndp(8), /proc/net/if_inet6 becomes ifconfig inet6, /proc/net/unix becomes sockstat -luw, SO_BINDTODEVICE is Linux-only (the link-local scope id selects the interface); the systemd units become rc.d t2_touchid (t2_touchid_enable=NO by default), which also runs fprintd with FP_VIRTUAL_DEVICE_STORAGE and --no-timeout because D-Bus activation cannot pass the variable; libfprint gains a default-on VIRTUAL option (-Ddrivers=all) so the virtual_device_storage driver exists. The product side (daemonarchy-t2link, NET-001/NET-002) keeps the T2 link IPv6 link-local only with no DHCP.
 - **Evidence:**
   - [ ] 2026-10-28 MacBookPro16,1 transport test with the package installed and the daemon run by hand (application note, Touch ID section); amd64 poudriere build of security/t2-touchid, security/libfprint and security/fprintd on the fast builder. Pending: a Mac with macOS-enrolled fingers and an unlocked SEP, fprintd-list/fprintd-verify through the virtual device, then PAM for login, sudo, SDDM and hyprlock, suspend/resume and T2 power-loss behavior.
+
+### [ ] WORKER-001 — Run long builds on durable SSH-controlled remote workers
+
+- **Priority:** P1 for 1.4.0
+- **Owner:** remote worker (tools/worker), its release payload and the builder hosts
+- **Direction:** Move job supervision onto each builder so multi-hour builds run with no client connected, and control them only over SSH with forced-command keys.
+- **Conclusion:** Design and implementation notes are in docs/remote-worker.md: recipes from the repository, checkpointed steps, pause/drain/resume/cancel/retry, per-key roles, no new listener, no signing keys on workers. The worker, the client, the rc.d service and the sample recipes are implemented in tools/worker with hosted tests. They are deployed on the amd64 builder, the KVM-hosted builder guest and the aarch64 worker, which have run sample workloads only, including reboot recovery on the aarch64 worker ([record](../testing-remote-worker-20261028.md)). No real build has run through the worker.
+- **Release / tracking:** 1.4.0. Ships on the media, off by default; the project's own builds use the same worker and recipes.
+- **Depends on:** None; complements PERF-002 (LitAI workers could submit to it).
+- **Implementation:**
+  - [x] Implement daemonarchy-worker and daemonarchy-remote (POSIX sh + jq) with the rc.d service, keys.conf roles, forced-command authorized_keys, the recipe format and the sample and sample-long recipes, with hosted tests of every state transition, refused actions per role, path confinement, a simulated reboot with auto-resume and a disconnecting `log -f` (tests/remote-worker.sh in CI).
+  - [ ] Recipes for real builds: src-world-kernel is written but has not run; hwtrace-image is not written; the sudoers-listed root wrappers are not implemented.
+  - [ ] Install the worker on the 1.4 media off by default (rc.d disabled, no keys), with `enable`, `key add/remove` and `disable`; document it in getting-started.md and HACKING.md.
+  - [ ] Add release-sets, live-iso, poudriere-bulk and vm-qualify recipes.
+- **Evidence:**
+  - [x] Sample workloads on the three builders: `sample` submitted, completed and fetched with hashes verified on each; `sample-long` on the amd64 builder survived a client disconnect during `log -f`, then pause/resume, drain/resume, cancel and retry from the cancelled step; the forced-command key got no shell, PTY, forwarding, sftp or scp.
+  - [ ] On the amd64 FreeBSD builder, a real src-world-kernel job survives client disconnect, drain/resume and a builder reboot mid-step, and refuses actions outside each key's role.
+  - [x] A builder rebooted mid-step auto-resumes its job: sample-long on the aarch64 worker, recovered after a graceful `shutdown -r` and after an ungraceful `reboot -q` using the per-boot id in /var/run, with the interrupted step rerun and earlier steps kept.
+  - [ ] The candidate image installs the worker and leaves it disabled; enabling it on an installed system and adding a key works as documented.
+  - [ ] A full candidate is built through the worker alone.

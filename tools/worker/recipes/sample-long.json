@@ -1,0 +1,24 @@
+{
+  "name": "sample-long",
+  "version": 1,
+  "description": "Ten steps of about a minute each that print progress; for testing pause, drain, cancel, retry and reboot recovery.",
+  "min_free_mb": 1,
+  "params": {
+    "step_seconds": {"type": "int", "min": 1, "max": 600, "default": "60", "help": "seconds per step"},
+    "fail_step": {"type": "int", "min": 0, "max": 10, "default": "0", "help": "step number that exits 1 (0: none)"},
+    "fail_mode": {"type": "enum", "values": ["always", "once"], "default": "once"}
+  },
+  "inputs": {},
+  "steps": [
+    {"name": "tick-01", "run": "sample/long.sh", "outputs": ["tick-01.txt"], "retry": true, "resource": "light", "cleanup": "sample/cleanup.sh"},
+    {"name": "tick-02", "run": "sample/long.sh", "outputs": ["tick-02.txt"], "retry": true, "resource": "light", "cleanup": "sample/cleanup.sh"},
+    {"name": "tick-03", "run": "sample/long.sh", "outputs": ["tick-03.txt"], "retry": true, "resource": "light", "cleanup": "sample/cleanup.sh"},
+    {"name": "tick-04", "run": "sample/long.sh", "outputs": ["tick-04.txt"], "retry": true, "resource": "light", "cleanup": "sample/cleanup.sh"},
+    {"name": "tick-05", "run": "sample/long.sh", "outputs": ["tick-05.txt"], "retry": true, "resource": "light", "cleanup": "sample/cleanup.sh"},
+    {"name": "tick-06", "run": "sample/long.sh", "outputs": ["tick-06.txt"], "retry": true, "resource": "light", "cleanup": "sample/cleanup.sh"},
+    {"name": "tick-07", "run": "sample/long.sh", "outputs": ["tick-07.txt"], "retry": true, "resource": "light", "cleanup": "sample/cleanup.sh"},
+    {"name": "tick-08", "run": "sample/long.sh", "outputs": ["tick-08.txt"], "retry": true, "resource": "light", "cleanup": "sample/cleanup.sh"},
+    {"name": "tick-09", "run": "sample/long.sh", "outputs": ["tick-09.txt"], "retry": true, "resource": "light", "cleanup": "sample/cleanup.sh"},
+    {"name": "tick-10", "run": "sample/long.sh", "outputs": ["tick-10.txt", "sample-long-output.txt"], "retry": true, "resource": "light", "cleanup": "sample/cleanup.sh"}
+  ]
+}
