@@ -1,0 +1,248 @@
+{
+  "schema": "daemonarchy/live-candidate-development@1",
+  "queue_items": [
+    "UI-001",
+    "LIVE-001",
+    "DEBUG-004",
+    "SRC-001"
+  ],
+  "ledger_rows": [
+    "A17",
+    "H3"
+  ],
+  "recorded_at": "2026-10-28T12:00:00Z",
+  "follows": "docs/testing-1.4-live4-20261027.md (live4 method)",
+  "record": "docs/testing-1.4-live5-20261028.md",
+  "scope": "Development evidence only: an unsigned amd64 1.4 release candidate (live5) for the operator's final hardware checks, built from merged sources with a kernel, loader and world from our own daemonarchy-src build, and the dedicated hwtrace image (dev6, empty queue). Native and Linux tests, runtime audit, bhyve TUI and live (T) boots, a full unattended bhyve install with installed-boot checks, QEMU/OVMF welcome and splash captures, and an hwtrace QEMU loop. Nothing was signed, published, admitted to the release graph or produced under LitAI custody; no desktop rendering, real audio or physical hardware run.",
+  "signing": "None. No private key was present or used. build-iso.sh ran with only the public 1.3.1 package key (PACKAGE_REPOSITORY_PUBLIC_KEY) and no Secure Boot inputs; the src checkout packages were created without pkg repo signing; pkg-repo-dependencies.sh (fixture signing) was not run.",
+  "worker": {
+    "role": "native build worker (not admitted)",
+    "identity": "daemon.local, FreeBSD 16.0-CURRENT amd64, 8 CPUs, 7.9 GB; address kept out of this record",
+    "workspace": "/usr/daemonarchy/live5-20261028 (live1 and live4 only read)",
+    "evidence_sha256sums": "126bf8d1852a69ec7634f0b09718269269bdf8dce0d4212fd80afd3e22dd5c12",
+    "evidence_files": 341,
+    "excluded_from_sums": "vm/install/disk.img (40 GiB installed VM disk) and cidata.img"
+  },
+  "inputs": {
+    "product": {
+      "repo": "jordanhubbard/daemonarchy",
+      "revision": "2066e62ef899eeb7acfdd4cc3c7b4bf2afc81704",
+      "ref": "origin/main",
+      "modified": false,
+      "since_live4": [
+        "#99 raw-block stick writes",
+        "#103 GPU/network roadmap",
+        "#104 MSI dev5 record",
+        "#105 lua4 record",
+        "#106 daemonarchy_clock clock floor",
+        "#107 no-driver console"
+      ]
+    },
+    "source": {
+      "repo": "jordanhubbard/daemonarchy-src",
+      "branch": "daemonarchy",
+      "built_revision": "b582921ee9281237ae4aac6ddc98f8450b817136",
+      "modified": false,
+      "includes": [
+        "#34 QUIRK_APPLE_ACK_EACH_CPL",
+        "#35 boottrace",
+        "#36 loader splash",
+        "#37 vtnet header tag BUS_DMA_ALLOCNOW",
+        "#38 raw-block boottrace writes, loader NVRAM self-report, breadcrumb ring",
+        "#39 boottrace header self-contained",
+        "#40 splash/netdebug without table/math, stdlib guard",
+        "#41 Boot Trace key i"
+      ],
+      "recipe": "live4 recipe (build-source-d63d77f4-20261024.sh steps) at -j8, fresh --depth 1 clone, clean objdir; evidence/build-source-live5.sh",
+      "times_utc": {
+        "world": "05:43:13-09:05:24",
+        "kernel": "09:05:24-09:19:27",
+        "sets": "09:19:27-09:28:02"
+      },
+      "freebsd_version": 1600029,
+      "manifest_sha256": "c301ca6344fdbc13096d20e236233aec4daf866a6a97d92900773cceb2a93273",
+      "sets_sha256": {
+        "base.txz": "ebf59269c77e358e3eacf886a678b70115603bdc767dfbd8b9703b1e2061e7c0",
+        "kernel.txz": "94850ef656d476461bdbbbb3f4d6857d0ef3368daaa790be85dd06308a588ae8",
+        "lib32.txz": "56a39cab5d8f2e7544faeea11ec2362011a6a045505d148520067d743be1fce0"
+      },
+      "kernel_identity": "FreeBSD 16.0-CURRENT #0 daemonarchy-b582921ee928: Wed Oct 28 02:09:39 PDT 2026"
+    },
+    "jail": "16live5b5829 (isolated poudriere-etc; tar=live5 base.txz, kernel.txz and lib32.txz extracted, /usr/src from the built tree). jail-live5.sh exited 141 (SIGPIPE from strings|grep -m1 under pipefail) after the jail was complete; its remaining checks pass in jail-live5-finish.log",
+    "packages": {
+      "repository": "isolated copy of live1's verified 1.3.1 repository plus sudo, 1,470 files identical to live1's and live4's copies, packagesite.pkg 0756ee090a8940006aecd0dc7c834f62184912a248d239a6920183fee78dcd19",
+      "bulk_needed": false,
+      "reason": "no package list or port changed on main since live4; #106/#107 are overlay shell scripts; daemonarchy-ports amd64 unchanged",
+      "kernel_bound_modules": "built against d63d77f4 kernel sources, not rebuilt; not exercised"
+    },
+    "checkout_catalog": {
+      "sha256": "773adaac33e4cc9d5fde227c680a9a5882f57efd5a34cdf34028d0455963dbde",
+      "ports": "1.3.1 entry unchanged",
+      "src": "receipt for b582921ee928 (archive 29949ef0581c89ebaecb448197dee33f40944480b946706a71fbd77ac8f55c5d, 2 parts, tracking daemonarchy); packages unsigned and unpublished",
+      "limitation": "repository_url still names checkouts-16-amd64-1.3.1-r2, so the optional /usr/src download fails on live5"
+    }
+  },
+  "artifacts": [
+    {
+      "name": "daemonarchy-1.4.0-live5-amd64.iso",
+      "bytes": 3506483200,
+      "sha256": "c3c83983b4d40ea564913941cd5999220f2122466ce3d83cb39c5e75aa367e60",
+      "budget_bytes": 3758096384
+    },
+    {
+      "name": "daemonarchy-1.4.0-live5-amd64.iso.xz",
+      "bytes": 1573067372,
+      "sha256": "cab26478c38596d68f276694aedd091c816d4808cd4b04036232e8b25fde7707",
+      "limit_bytes": 2147483648
+    },
+    {
+      "name": "daemonarchy-hwtrace-1.4.0-dev6-amd64.img",
+      "bytes": 391153152,
+      "sha256": "be39683ca8c0df40a9da272ce1fb86a7b3a2177f599d51d2cda08bafcfc61dc7",
+      "queue": "empty (next 0001 of 0); SLOTS.MAP 201 contiguous files"
+    },
+    {
+      "name": "daemonarchy-hwtrace-1.4.0-dev6-amd64.img (-S serial test copy, not delivered)",
+      "bytes": 391153152,
+      "sha256": "1185839b51aa47c9f9b0f96080b582ee5d3b19b0afe69e259cb3b22ef2e47988"
+    }
+  ],
+  "delivery": "/home/jkh/daemonarchy-isos on the controller; .iso.sha256 lists both the ISO and the .xz; every copy verified after transfer",
+  "image_build": {
+    "command": "build-iso.sh JAIL=16live5b5829 PTREE=macbookefb8 NAME=daemonarchy-1.4.0-live5-amd64 PREVIEW_LABEL='1.4 preview live5' with isolated POUDRIERE_ETC/DATA, SET_CACHE_DIR=live5 source sets, the development catalogue and the 1.3.1 package tag and public key",
+    "start": "2026-10-28T09:30:50Z",
+    "end": "2026-10-28T09:57:15Z",
+    "iso_repository_packages": 263,
+    "live_root_packages": 267,
+    "live_usr_local_mib": {
+      "before_trim": 2748,
+      "after_trim": 1641
+    },
+    "hwtrace": "build-hwtrace-image.sh -I live5 ISO -k obj GENERIC kernel -l loader_lua.efi -L src/stand/lua -V 1.4.0-dev6 (and -S copy)"
+  },
+  "content_checks": {
+    "kernel_sha256": "bbceb537d5285c280c9dc1d5f82baed3d85ce390efc8b64bfd04cdc2733ee7a8",
+    "loader_efi_sha256": "95f624f116df597a69102f696bc0e9d7483119dd590be6d8054dd386847e8363",
+    "lua_sha256": {
+      "splash.lua": "3f9054953db3d556042a892612e727c00a4daeff96cdb1ebd4a1587ac7699c45",
+      "netdebug.lua": "c9da2b5a31a48daa0eb7b3262103fbd7153f863eb63adb4d5fef2c52b11f59d7",
+      "menu.lua": "5d16efefee4422447a81222de5624684341e11a0ec4e049fb5f7c134de744847"
+    },
+    "live_kernel_equals_built_and_kernel_txz": true,
+    "live_loader_equals_loader_lua_efi_and_base_txz": true,
+    "iso_lua_equals_source_tree": "19 of 19 source files identical to b582921ee928; brand-daemonarchy.lua is the product's",
+    "base_txz_lua_equals_live": true,
+    "nvme_t2_quirks": "0x24f0 (QUIRK_APPLE_ACK_EACH_CPL set)",
+    "vtnet_header_tag_flags": "0x6 (BUS_DMA_COHERENT|BUS_DMA_ALLOCNOW); under sudo the script used GNU objdump and printed nothing; rerun with base objdump (kernel-checks-user.txt)",
+    "boottrace_symbols": "dbt_start, dbt_sysinit, dbt_device, dbt_hook, dbt_complete, dbt_panic and debug.boottrace present",
+    "menu_keys": "Boot trace alias {i, I} (menu.lua); Try Daemonarchy alias {t, T} (brand-daemonarchy.lua)",
+    "stdlib_guard_on_image": "PASS: 20 loader Lua files use no missing standard library (stdlib-test.lua from b582921ee928 over the ISO's /boot/lua); splash-test.lua PASS on the ISO's splash.lua",
+    "clock_payload": "clock/daemonarchy_clock f547069d5e8cfedda7ceb11330c3658cf01154dea813f17b7509f4d1d6c6a5b3 equals the product; installer installs rc.d script and cron.d entry",
+    "no_driver_payload": "graphics-service and daemonarchy-rescue equal the product files (nodriver marker and reason)"
+  },
+  "tests": {
+    "runtime_audit": "tests/live-image-runtime.sh: pass (FreeBSD, root)",
+    "native_freebsd": {
+      "pass": [
+        "installer-progress.py (with native pkg fetch)",
+        "live-installer.py",
+        "vt-console-colors.py",
+        "boottrace-tools.py",
+        "secureboot-options.sh",
+        "installer-charm.sh",
+        "installer-clock.sh",
+        "remote-debug-background.sh",
+        "remote-debug-session.sh",
+        "remote-debug-reboot.sh",
+        "remote-debug-observe.sh",
+        "remote-debug-cli.sh",
+        "live-desktop.sh",
+        "live-image-budget.sh",
+        "release-set-cache.sh",
+        "clock-floor.sh",
+        "graphics-startup.sh",
+        "rescue-console.sh",
+        "disk-layout.sh",
+        "shared-disk.sh",
+        "boot-environment-mounts.sh",
+        "rescue-setup.sh",
+        "checkout-packages.sh",
+        "efi-boot-image.sh (live5 jail /boot)",
+        "rescue-boot-image.sh (live5 base.txz and /boot)"
+      ],
+      "not_run": {
+        "pkg-repo-dependencies.sh": "signs a fixture repository; this candidate signs nothing"
+      }
+    },
+    "linux": "same per-test results as live4's sweep plus clock-floor.sh pass; portable tests pass, FreeBSD-only tests refuse, qemu-desktop.py/qemu-unlock-geli.py are harness modules, release-input-graph.py/release-qa-plan.py need literate_ai"
+  },
+  "vm_boots": {
+    "bhyve": [
+      {
+        "case": "tui (attempt 1, driver r1)",
+        "result": "harness failure, retained",
+        "notes": "serial copy of the loader stopped after 5,166 bytes inside the splash; VNC showed the full menu with no countdown; guest destroyed by the driver; target unchanged"
+      },
+      {
+        "case": "tui (driver r2)",
+        "result": "pass",
+        "notes": "kernel #0 daemonarchy-b582921ee928; boottrace 0 steps; launch/configurator on ttyv0; fixed /boot/lua digests; tmux install screen dry run exit 0; on ttyu0 sound status mode=off reason='serial console'; target 07d217eb... unchanged"
+      },
+      {
+        "case": "live (key T, driver r3)",
+        "result": "pass",
+        "notes": "T sent within the 3 s countdown on serial and via VNC; daemonarchy_live=YES; tmpfs layers and ready; no unionfs; live-gpu fallback to TUI; boottrace 0 steps; target unchanged (live4 defect menu-key-t fixed)"
+      }
+    ],
+    "bhyve_full_install": {
+      "result": "pass",
+      "driver": "evidence/test-bhyve-live5.sh (main's test-bhyve.sh plus clock/no-driver checks and a VNC capture)",
+      "install_seconds": 2846,
+      "package_feed": "public packages-16-amd64-1.3.1 (read only)",
+      "installed": "daemonarchy_clock rc.d (0555, equals product), cron.d */15 root daemonarchy_clock save, /var/db/daemonarchy/clock; service rcvar enabled; save advanced the record",
+      "no_driver": "bhyve fbuf (no DRM driver): daemonarchy_graphics_modules=\"\"; /var/run/daemonarchy-graphics.nodriver present, .ready absent; graphics log 'No supported desktop graphics driver for this display; staying on the console.'; sddm not running (rc.conf.d/sddm), no Hyprland, no DRM module; rescue log records the reason",
+      "installed_lua": "fixed splash/menu/netdebug digests; Boot trace alias i",
+      "clock_observation": "first installed-boot syslog time 10:37:56Z, 4 s after the install-time record 10:37:52Z although the boot was ~47 min later; correct 11:25:54Z at check time; consistent with the floor raising a local-time bhyve RTC, but the console line was not captured"
+    },
+    "qemu_ovmf_tcg": {
+      "result": "pass",
+      "notes": "welcome screen captured (1.3.1 (1.4 preview live5)); HDA pcm0, vt player sound.py serve mode=on; on ttyu0 sound ensure started no second player and sound status mode=off reason='serial console'; null audio backend; target unchanged"
+    },
+    "qemu_vga_splash": {
+      "result": "pass",
+      "notes": "VGA-only: frames 56-72 of 1,478 show the wordmark, animated mascot and tagline, then the branded menu with T and i; with a serial port OVMF shows a literal [?25l above the wordmark (cosmetic)"
+    },
+    "hwtrace_qemu_ovmf": {
+      "result": "pass",
+      "notes": "SATA; 0001 hang at configure_first filed INCOMPLETE #1680; 0002 normal reached init #3800 with DUMPS/0002 (8 files); raw-block writes via SLOTS.MAP; loader HARDWARE TRACE: STOPPED; DATRACE fsck clean"
+    }
+  },
+  "findings": [
+    {
+      "id": "rescue-reason-cleared",
+      "summary": "daemonarchy-rescue prints the no-driver reason, waits up to 15 s, then rescue_menu clears ttyv0; the VNC capture of the installed system shows only the menu. The reason is kept in /var/log/daemonarchy-rescue.log, which menu entry 3 does not show.",
+      "fix": "none here"
+    },
+    {
+      "id": "bhyve-serial-splash-stall",
+      "summary": "Once in three bhyve boots the serial copy of the splash stopped and the loader stalled at the menu without a countdown; QEMU does not copy the splash to serial.",
+      "fix": "none here; check once on hardware with firmware console redirection"
+    },
+    {
+      "id": "ovmf-cursor-sequence",
+      "summary": "With a serial port, OVMF's text console prints [?25l above the splash wordmark.",
+      "fix": "cosmetic"
+    }
+  ],
+  "permission_denials": [],
+  "remaining_gaps": [
+    "desktop rendering and graphical installer (no DRM GPU in these VMs)",
+    "real audio",
+    "kernel-bound GPU/Wi-Fi modules on this kernel",
+    "physical MacBookPro16,1 (T2 NVMe, clock floor) and MSI runs",
+    "Secure Boot",
+    "optional /usr/src checkout",
+    "hwtrace dev6 on physical USB",
+    "signing and publication (operator)"
+  ]
+}
