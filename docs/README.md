@@ -27,6 +27,7 @@ another version are historical records. 1.4 entries describe work in development
 - [Hardware trace stick: QEMU/OVMF checks, October 27](testing-1.4-boottrace-20261027.md)
 - [Hardware trace stick: raw-block writes, self-report and ring, October 27](testing-1.4-hwtrace-rawblock-20261027.md)
 - [MSI capture candidate dev5: exact USB VM evidence](testing-msi-dev5-20261027.md)
+- [MSI capture candidate dev7: legacy VGA probe skip](testing-msi-dev7-20261028.md)
 - [Optional ports and system source: space estimate](optional-source-sizing.md)
 - [Daemonarchy 1.1.0 release notes (historical)](release-1.1.0.md)
 - [Installer remote agent debug mode](remote-agent-debug.md)
