@@ -1,0 +1,51 @@
+#!/bin/sh
+#
+# PROVIDE: daemonarchy_worker
+# REQUIRE: LOGIN sshd
+# KEYWORD: shutdown
+#
+# Daemonarchy remote build worker (WORKER-001).  Off by default:
+#   daemonarchy_worker_enable="NO"	set by 'daemonarchy-worker enable'
+#   daemonarchy_worker_user="dbuild"	account jobs run as
+#
+# start: recover jobs whose supervisor is gone (a reboot or crash) and
+#        auto-resume the ones that were running; start queued jobs.
+# stop:  stop live jobs; running ones resume at the next start.
+# The worker opens no network socket; clients reach it only through sshd.
+
+. /etc/rc.subr
+
+name=daemonarchy_worker
+rcvar=daemonarchy_worker_enable
+desc="Daemonarchy remote build worker"
+
+load_rc_config $name
+
+: "${daemonarchy_worker_enable:=NO}"
+: "${daemonarchy_worker_user:=dbuild}"
+
+command=/usr/local/bin/daemonarchy-worker
+start_cmd=daemonarchy_worker_start
+stop_cmd=daemonarchy_worker_stop
+status_cmd=daemonarchy_worker_status
+extra_commands=status
+
+worker_as_user() {
+	su -m "$daemonarchy_worker_user" -c "$command $1"
+}
+
+daemonarchy_worker_start() {
+	echo "Starting ${name}."
+	worker_as_user boot
+}
+
+daemonarchy_worker_stop() {
+	echo "Stopping ${name}."
+	worker_as_user stop-all
+}
+
+daemonarchy_worker_status() {
+	$command request '{"op":"list"}' | /usr/local/bin/jq -r '.jobs[] | "\(.id) \(.state)"'
+}
+
+run_rc_command "$1"

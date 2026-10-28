@@ -1,0 +1,395 @@
+#!/bin/sh
+# shellcheck disable=SC2016
+# daemonarchy-remote: control Daemonarchy build workers over SSH (WORKER-001).
+# Client side.  Needs only ssh, jq, tar and a SHA-256 tool, so it runs on
+# Linux, macOS and FreeBSD without a Daemonarchy install.
+#
+# usage: daemonarchy-remote [--json] [--config FILE] HOST COMMAND [ARGS]
+#        daemonarchy-remote [--json] all list [--all]
+#        daemonarchy-remote hosts
+#
+# commands:
+#   hello                                   key, roles and worker version
+#   recipes                                 recipes and their typed parameters
+#   submit RECIPE [--pin NAME=SHA ...] [--param KEY=VALUE ...]
+#   list [--all]
+#   status JOB
+#   log JOB [-f] [--step N]
+#   pause JOB | drain JOB | resume JOB | cancel JOB
+#   retry JOB [--from-step N]
+#   fetch JOB [PATH ...] --to DIR           tar of out/, checked against the job's hashes
+#   prune JOB [--all]                       remove work/ (or the whole job with --all)
+#
+# Hosts come from ~/.config/daemonarchy/remote.conf (or $DAEMONARCHY_REMOTE_CONF):
+#   NAME  USER@ADDRESS  [port=N] [jump=HOST] [hostkeyalias=NAME]
+#                       [identity=FILE] [knownhosts=FILE]
+# The default identity is ~/.ssh/daemonarchy-worker-ed25519.
+
+set -u
+
+JSON=0
+CONF=${DAEMONARCHY_REMOTE_CONF:-${XDG_CONFIG_HOME:-$HOME/.config}/daemonarchy/remote.conf}
+SSH=${DAEMONARCHY_REMOTE_SSH:-ssh}
+PROG=daemonarchy-remote
+
+die() {
+	printf '%s: %s\n' "$PROG" "$*" >&2
+	exit 2
+}
+usage() {
+	sed -n '4,27p' "$0" | sed 's/^# \{0,1\}//' >&2
+	exit 2
+}
+
+command -v jq >/dev/null 2>&1 || die "jq is required"
+
+while [ $# -gt 0 ]; do
+	case $1 in
+	--json)
+		JSON=1
+		shift
+		;;
+	--config)
+		[ $# -ge 2 ] || usage
+		CONF=$2
+		shift 2
+		;;
+	-h | --help) usage ;;
+	*) break ;;
+	esac
+done
+[ $# -ge 1 ] || usage
+
+expand() {
+	case $1 in
+	"~"/*) printf '%s/%s\n' "$HOME" "${1#\~/}" ;;
+	*) printf '%s\n' "$1" ;;
+	esac
+}
+
+host_names() {
+	[ -f "$CONF" ] || die "no client config $CONF"
+	awk '!/^[ \t]*#/ && NF >= 2 { print $1 }' "$CONF"
+}
+
+# host_args NAME: set SSH_ARGS (newline-separated) for a configured host.
+host_args() {
+	[ -f "$CONF" ] || die "no client config $CONF"
+	line=$(awk -v h="$1" '!/^[ \t]*#/ && $1 == h { print; exit }' "$CONF")
+	[ -n "$line" ] || die "host $1 is not in $CONF"
+	set -f
+	# shellcheck disable=SC2086
+	set -- $line
+	set +f
+	dest=$2
+	shift 2
+	identity=$HOME/.ssh/daemonarchy-worker-ed25519
+	SSH_ARGS="-T
+-e
+none
+-o
+BatchMode=yes
+-o
+IdentitiesOnly=yes
+-o
+ForwardAgent=no
+-o
+ForwardX11=no
+-o
+ClearAllForwardings=yes
+-o
+ConnectTimeout=30
+-o
+ServerAliveInterval=30
+-o
+LogLevel=ERROR"
+	for opt in "$@"; do
+		k=${opt%%=*}
+		v=${opt#*=}
+		case $k in
+		port) SSH_ARGS="$SSH_ARGS
+-p
+$v" ;;
+		jump) SSH_ARGS="$SSH_ARGS
+-J
+$v" ;;
+		hostkeyalias) SSH_ARGS="$SSH_ARGS
+-o
+HostKeyAlias=$v" ;;
+		knownhosts) SSH_ARGS="$SSH_ARGS
+-o
+UserKnownHostsFile=$(expand "$v")" ;;
+		identity) identity=$(expand "$v") ;;
+		*) die "unknown option $k for host $1 in $CONF" ;;
+		esac
+	done
+	SSH_ARGS="$SSH_ARGS
+-i
+$identity
+$dest"
+}
+
+# call HOST REQUEST: run one protocol request; stdout is the worker's reply.
+call() {
+	host_args "$1"
+	old_ifs=$IFS
+	IFS='
+'
+	# shellcheck disable=SC2086
+	set -- $SSH_ARGS "$2"
+	IFS=$old_ifs
+	"$SSH" "$@"
+}
+
+is_job() {
+	case $1 in '' | -* | *[!A-Za-z0-9-]*) die "malformed job id: $1" ;; esac
+}
+
+sha256_local() {
+	if command -v sha256sum >/dev/null 2>&1; then
+		sha256sum "$1" | cut -d' ' -f1
+	elif command -v shasum >/dev/null 2>&1; then
+		shasum -a 256 "$1" | cut -d' ' -f1
+	else
+		sha256 -q "$1"
+	fi
+}
+
+# show_error FILE_OR_TEXT: print a worker error reply readably.
+show_error() {
+	printf '%s' "$1" | jq -r --arg h "$HOST" '"daemonarchy-remote: \($h): \(.error // "error"): \(.message // .)"' >&2 2>/dev/null ||
+	    printf '%s: %s: %s\n' "$PROG" "$HOST" "$1" >&2
+}
+
+JQ_DUR='def dur: if . == null then "-" elif . < 60 then "\(.)s" elif . < 3600 then "\(. / 60 | floor)m\(. % 60)s" else "\(. / 3600 | floor)h\((. % 3600) / 60 | floor)m" end;'
+
+render() {
+	# $1: op, stdin: reply
+	case $1 in
+	hello) jq -r '"\(.host) (\(.os), \(.arch)): worker \(.version), protocol \(.protocol); key \(.key) roles \(.roles | join(","))"' ;;
+	recipes) jq -r '.recipes[] | "\(.name) v\(.version): \(.description)\n  steps: \(.steps | join(" -> "))\n" +
+	    ([.params | to_entries[] | "  --param \(.key)=<\(.value.type)\(if .value.type == "enum" then " " + (.value.values | join("|")) elif .value.type == "int" then " \(.value.min)..\(.value.max)" else "" end)> default \(.value.default // "none")\(if .value.help then "  # " + .value.help else "" end)"] | join("\n")) +
+	    (if (.inputs | length) > 0 then "\n" + ([.inputs | keys[] | "  --pin \(.)=<commit>"] | join("\n")) else "" end)' ;;
+	submit) jq -r '"submitted \(.job) (\(.state))"' ;;
+	list) jq -r --arg h "${2:-}" '.jobs[] | [(if $h != "" then $h else empty end), .id, .state, (.step // "-" | tostring), .submitter, .updated] | join("  ")' ;;
+	status) jq -r "$JQ_DUR"'
+	    "job      \(.job.id)",
+	    "recipe   \(.job.recipe) v\(.job.recipe_version)   params \(.job.params | to_entries | map("\(.key)=\(.value)") | join(" "))",
+	    (if (.job.pins | length) > 0 then "pins     \(.job.pins | to_entries | map("\(.key)=\(.value)") | join(" "))" else empty end),
+	    "state    \(.state)\(if .run.paused_mode then " (\(.run.paused_mode))" else "" end)\(if .stale then " [no live supervisor]" else "" end)\(if .run.reason then "  -- \(.run.reason)" else "" end)",
+	    "submitted \(.job.submitted) by \(.job.submitter.key)   updated \(.run.updated)",
+	    "eta      \(if .eta_seconds == null then "unknown (no history)" else (.eta_seconds | dur) end)",
+	    "steps:",
+	    (.steps[] | "  \(.n)\t\(.name)\t\(.state)\t\(if .duration then (.duration | dur) else "" end)\t\(if .attempts > 1 then "attempts \(.attempts)" else "" end)\(if .reason then " \(.reason)" else "" end)"),
+	    (if ([.steps[].outputs | keys[]] | length) > 0 then "outputs:", (.steps[].outputs | to_entries[] | "  \(.key)  sha256:\(.value)") else empty end)' ;;
+	*) jq -r '"\(.job): \(.state)\(if .message then " -- " + .message else "" end)\(if .pruned then " (pruned \(.pruned))" else "" end)"' ;;
+	esac
+}
+
+# simple OP: request/reply with text or JSON output
+simple() {
+	op=$1
+	req=$2
+	reply=$(call "$HOST" "$req")
+	rc=$?
+	if [ $rc -ne 0 ]; then
+		if [ $JSON = 1 ]; then printf '%s\n' "$reply"; else show_error "$reply"; fi
+		exit $rc
+	fi
+	if [ $JSON = 1 ]; then printf '%s\n' "$reply"; else printf '%s\n' "$reply" | render "$op"; fi
+}
+
+HOST=$1
+shift
+case $HOST in
+hosts)
+	host_names
+	exit 0
+	;;
+all)
+	[ "${1:-}" = list ] || die "'all' supports only list"
+	shift
+	allflag=false
+	[ "${1:-}" = --all ] && allflag=true
+	req=$(jq -n -c --argjson a $allflag '{op:"list", all:$a}')
+	status=0
+	for h in $(host_names); do
+		if reply=$(call "$h" "$req"); then
+			if [ $JSON = 1 ]; then
+				printf '%s\n' "$reply" | jq -c --arg h "$h" '. + {host:$h}'
+			else
+				printf '%s\n' "$reply" | render list "$h"
+			fi
+		else
+			HOST=$h
+			show_error "${reply:-unreachable}"
+			status=1
+		fi
+	done
+	exit $status
+	;;
+esac
+[ $# -ge 1 ] || usage
+cmd=$1
+shift
+
+case $cmd in
+hello | recipes)
+	simple "$cmd" "$(jq -n -c --arg o "$cmd" '{op:$o}')"
+	;;
+submit)
+	[ $# -ge 1 ] || usage
+	recipe=$1
+	shift
+	params='{}'
+	pins='{}'
+	while [ $# -gt 0 ]; do
+		case $1 in
+		--param | --pin)
+			[ $# -ge 2 ] || usage
+			case $2 in *=*) ;; *) die "$1 needs KEY=VALUE" ;; esac
+			k=${2%%=*}
+			v=${2#*=}
+			if [ "$1" = --param ]; then
+				params=$(printf '%s' "$params" | jq -c --arg k "$k" --arg v "$v" '. + {($k): $v}')
+			else
+				pins=$(printf '%s' "$pins" | jq -c --arg k "$k" --arg v "$v" '. + {($k): $v}')
+			fi
+			shift 2
+			;;
+		*) die "unknown submit option $1" ;;
+		esac
+	done
+	simple submit "$(jq -n -c --arg r "$recipe" --argjson p "$params" --argjson q "$pins" '{op:"submit", recipe:$r, params:$p, pins:$q}')"
+	;;
+list)
+	a=false
+	[ "${1:-}" = --all ] && a=true
+	simple list "$(jq -n -c --argjson a $a '{op:"list", all:$a}')"
+	;;
+status | pause | drain | resume | cancel)
+	[ $# -eq 1 ] || usage
+	is_job "$1"
+	simple "$cmd" "$(jq -n -c --arg o "$cmd" --arg j "$1" '{op:$o, job:$j}')"
+	;;
+retry)
+	[ $# -ge 1 ] || usage
+	is_job "$1"
+	job=$1
+	shift
+	if [ "${1:-}" = --from-step ]; then
+		[ $# -eq 2 ] || usage
+		simple retry "$(jq -n -c --arg j "$job" --arg s "$2" '{op:"retry", job:$j, from_step:$s}')"
+	else
+		simple retry "$(jq -n -c --arg j "$job" '{op:"retry", job:$j}')"
+	fi
+	;;
+prune)
+	[ $# -ge 1 ] || usage
+	is_job "$1"
+	a=false
+	[ "${2:-}" = --all ] && a=true
+	simple prune "$(jq -n -c --arg j "$1" --argjson a $a '{op:"prune", job:$j, all:$a}')"
+	;;
+log)
+	[ $# -ge 1 ] || usage
+	is_job "$1"
+	job=$1
+	shift
+	follow=false
+	step=
+	while [ $# -gt 0 ]; do
+		case $1 in
+		-f | --follow)
+			follow=true
+			shift
+			;;
+		--step)
+			[ $# -ge 2 ] || usage
+			step=$2
+			shift 2
+			;;
+		*) die "unknown log option $1" ;;
+		esac
+	done
+	req=$(jq -n -c --arg j "$job" --argjson f $follow --arg s "$step" '{op:"log", job:$j, follow:$f} + (if $s != "" then {step:$s} else {} end)')
+	if [ $follow = true ]; then
+		# The worker streams JSON lines; leaving (Ctrl-C, a dropped link or a
+		# killed client) never signals the job.
+		if [ $JSON = 1 ]; then
+			call "$HOST" "$req"
+		else
+			call "$HOST" "$req" | jq --unbuffered -r '
+			    if .t == "line" then .text
+			    elif .t == "end" then "== job \(.state)"
+			    elif .ok == false then ("daemonarchy-remote: \(.error): \(.message)\n" | halt_error(3))
+			    else empty end'
+		fi
+		exit
+	fi
+	tmp=$(mktemp "${TMPDIR:-/tmp}/daemonarchy-remote.XXXXXX") || exit 1
+	trap 'rm -f "$tmp"' EXIT
+	call "$HOST" "$req" >"$tmp"
+	rc=$?
+	if [ $rc -ne 0 ]; then
+		show_error "$(cat "$tmp")"
+		exit $rc
+	fi
+	if [ $JSON = 1 ]; then jq -R -c '{t:"line", text:.}' <"$tmp"; else cat "$tmp"; fi
+	;;
+fetch)
+	[ $# -ge 1 ] || usage
+	is_job "$1"
+	job=$1
+	shift
+	to=
+	paths='[]'
+	while [ $# -gt 0 ]; do
+		case $1 in
+		--to)
+			[ $# -ge 2 ] || usage
+			to=$2
+			shift 2
+			;;
+		*)
+			paths=$(printf '%s' "$paths" | jq -c --arg p "$1" '. + [$p]')
+			shift
+			;;
+		esac
+	done
+	[ -n "$to" ] || die "fetch needs --to DIR"
+	mkdir -p "$to" || exit 1
+	tmp=$(mktemp "${TMPDIR:-/tmp}/daemonarchy-remote.XXXXXX") || exit 1
+	trap 'rm -f "$tmp" "$tmp.st"' EXIT
+	call "$HOST" "$(jq -n -c --arg j "$job" --argjson p "$paths" '{op:"fetch", job:$j, paths:$p}')" >"$tmp"
+	rc=$?
+	if [ $rc -ne 0 ]; then
+		show_error "$(cat "$tmp")"
+		exit $rc
+	fi
+	# bsdtar and GNU tar both refuse ".." members and strip leading "/".
+	tar -xf "$tmp" -C "$to" || die "cannot unpack the fetched archive"
+	call "$HOST" "$(jq -n -c --arg j "$job" '{op:"status", job:$j}')" >"$tmp.st" || die "cannot read job status to verify hashes"
+	checked=0
+	bad=0
+	for row in $(jq -r '[.steps[].outputs | to_entries[]] | .[] | "\(.key)=\(.value)"' "$tmp.st"); do
+		f=${row%%=*}
+		want=${row#*=}
+		[ -f "$to/$f" ] || continue
+		got=$(sha256_local "$to/$f")
+		if [ "$got" = "$want" ]; then
+			checked=$((checked + 1))
+		else
+			bad=$((bad + 1))
+			printf '%s: %s: sha256 %s, job recorded %s\n' "$PROG" "$f" "$got" "$want" >&2
+		fi
+	done
+	if [ $JSON = 1 ]; then
+		jq -n -c --arg j "$job" --arg to "$to" --argjson c $checked --argjson b $bad '{ok:($b == 0), job:$j, to:$to, verified:$c, mismatched:$b}'
+	else
+		printf 'fetched %s into %s: %s output(s) match the recorded sha256, %s mismatch\n' "$job" "$to" "$checked" "$bad"
+	fi
+	[ $bad -eq 0 ]
+	;;
+*) die "unknown command $cmd" ;;
+esac
