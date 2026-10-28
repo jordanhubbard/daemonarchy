@@ -1155,3 +1155,23 @@ remains open; report files do not establish a passing gate.
   - [ ] Retain timestamped installed rc/DHCP traces from the exact image and prove offline boot meets its budget.
 - **Evidence:**
   - [ ] Pending exact-image multi-NIC, absent/no-carrier Ethernet, Wi-Fi-only, late link, competing DHCP and offline boot timing tests, with boot-to-usable times against the 1.3.1 baseline. No VM or physical run has exercised the change; the MacBookPro16,1 `ue0` + `wlan0` case needs a physical boot.
+
+### [ ] WORKER-001 — Run long builds on durable SSH-controlled remote workers
+
+- **Priority:** P1 for 1.4.0
+- **Owner:** remote worker (tools/worker), its release payload and the builder hosts
+- **Direction:** Move job supervision onto each builder so multi-hour builds run with no client connected, and control them only over SSH with forced-command keys.
+- **Conclusion:** Design and implementation notes are in docs/remote-worker.md: recipes from the repository, checkpointed steps, pause/drain/resume/cancel/retry, per-key roles, no new listener, no signing keys on workers. The worker, the client, the rc.d service and the sample recipes are implemented in tools/worker with hosted tests. They are deployed on the amd64 builder, the KVM-hosted builder guest and the aarch64 worker, which have run sample workloads only, including reboot recovery on the aarch64 worker ([record](../testing-remote-worker-20261028.md)). No real build has run through the worker.
+- **Release / tracking:** 1.4.0. Ships on the media, off by default; the project's own builds use the same worker and recipes.
+- **Depends on:** None; complements PERF-002 (LitAI workers could submit to it).
+- **Implementation:**
+  - [x] Implement daemonarchy-worker and daemonarchy-remote (POSIX sh + jq) with the rc.d service, keys.conf roles, forced-command authorized_keys, the recipe format and the sample and sample-long recipes, with hosted tests of every state transition, refused actions per role, path confinement, a simulated reboot with auto-resume and a disconnecting `log -f` (tests/remote-worker.sh in CI).
+  - [ ] Recipes for real builds: src-world-kernel is written but has not run; hwtrace-image is not written; the sudoers-listed root wrappers are not implemented.
+  - [ ] Install the worker on the 1.4 media off by default (rc.d disabled, no keys), with `enable`, `key add/remove` and `disable`; document it in getting-started.md and HACKING.md.
+  - [ ] Add release-sets, live-iso, poudriere-bulk and vm-qualify recipes.
+- **Evidence:**
+  - [x] Sample workloads on the three builders: `sample` submitted, completed and fetched with hashes verified on each; `sample-long` on the amd64 builder survived a client disconnect during `log -f`, then pause/resume, drain/resume, cancel and retry from the cancelled step; the forced-command key got no shell, PTY, forwarding, sftp or scp.
+  - [ ] On the amd64 FreeBSD builder, a real src-world-kernel job survives client disconnect, drain/resume and a builder reboot mid-step, and refuses actions outside each key's role.
+  - [x] A builder rebooted mid-step auto-resumes its job: sample-long on the aarch64 worker, recovered after a graceful `shutdown -r` and after an ungraceful `reboot -q` using the per-boot id in /var/run, with the interrupted step rerun and earlier steps kept.
+  - [ ] The candidate image installs the worker and leaves it disabled; enabling it on an installed system and adding a key works as documented.
+  - [ ] A full candidate is built through the worker alone.

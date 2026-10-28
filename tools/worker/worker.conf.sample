@@ -1,0 +1,19 @@
+# /usr/local/etc/daemonarchy-worker/worker.conf (sh syntax, root-owned).
+# 'daemonarchy-worker enable' writes one with these defaults when none exists.
+
+# Jobs, history and the audit log live here; dbuild's home directory.
+job_root=/usr/daemonarchy/worker
+worker_user=dbuild
+# Jobs that may run at once; more stay queued.
+max_jobs=1
+# A step does not start with less free space than this (a recipe may ask more).
+free_floor_mb=4096
+# Seconds between SIGTERM and SIGKILL on cancel; limit for cleanup hooks.
+cancel_grace=30
+cleanup_timeout=600
+# Holds the per-boot id when /proc (linprocfs) is not mounted.
+run_dir=/var/run/daemonarchy-worker
+# Where recipe inputs are fetched from.  Clients pin commits; never URLs.
+remote_product=https://github.com/jordanhubbard/daemonarchy.git
+remote_src=https://github.com/jordanhubbard/daemonarchy-src.git
+remote_ports=https://github.com/jordanhubbard/daemonarchy-ports.git

@@ -42,6 +42,8 @@ another version are historical records. 1.4 entries describe work in development
 - [Earlier 1.3.1 diagnostics scope and preflight evidence](roadmap/release-1.3.1.md)
 - [Owned FreeBSD source builds](source-builds.md)
 - [Disposable QEMU worker ownership](native-qemu-worker.md)
+- [Remote build worker (design and implementation, planned for 1.4.0)](remote-worker.md)
+- [Remote build worker: hosted tests and sample workloads, October 28](testing-remote-worker-20261028.md)
 - [Complete FreeBSD source and ports Component coverage](roadmap/freebsd-components.md)
 - [Native Component execution and build performance](roadmap/build-performance.md)
 - [Parallel native workspace and executor selection](roadmap/native-workspace.md)

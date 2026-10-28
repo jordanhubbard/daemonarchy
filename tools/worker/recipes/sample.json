@@ -1,0 +1,19 @@
+{
+  "name": "sample",
+  "version": 1,
+  "description": "Three short steps that sleep, print and write a small output; can fail on demand. For testing the worker, not for builds.",
+  "min_free_mb": 1,
+  "params": {
+    "delay": {"type": "int", "min": 0, "max": 120, "default": "2", "help": "seconds each step sleeps"},
+    "fail_step": {"type": "int", "min": 0, "max": 3, "default": "0", "help": "step number that exits 1 (0: none)"},
+    "fail_mode": {"type": "enum", "values": ["always", "once"], "default": "always", "help": "once: only the first attempt of fail_step fails"},
+    "label": {"type": "name", "default": "sample", "help": "word written into the output"},
+    "note": {"type": "path", "default": "notes/sample.txt", "help": "scratch file, relative to the job's work directory"}
+  },
+  "inputs": {},
+  "steps": [
+    {"name": "prepare", "run": "sample/step.sh", "outputs": [], "retry": true, "resource": "light", "cleanup": "sample/cleanup.sh"},
+    {"name": "compute", "run": "sample/step.sh", "outputs": ["compute.txt"], "retry": true, "resource": "light", "cleanup": "sample/cleanup.sh"},
+    {"name": "package", "run": "sample/step.sh", "outputs": ["sample-output.txt"], "retry": true, "resource": "light", "cleanup": "sample/cleanup.sh"}
+  ]
+}
