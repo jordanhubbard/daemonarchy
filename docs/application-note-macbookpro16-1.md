@@ -206,7 +206,8 @@ no boot has run with these files.
 
 KaiT2en's `t2-touchid` bridges the sensor to stock fprintd through libfprint's
 virtual storage device, and Daemonarchy's ports tree packages it as
-`security/t2-touchid` (disabled by default; see [HW-004](roadmap/active-work.md)).
+`security/t2-touchid` ([ports PR #33](https://github.com/jordanhubbard/daemonarchy-ports/pull/33);
+disabled by default; see [HW-004](roadmap/active-work.md)).
 The fingers must be enrolled under macOS: the bridge never enrolls, it only
 binds a macOS-enrolled identity to a FreeBSD account. The Secure Enclave also
 reports a locked, empty inventory until the macOS account password has
