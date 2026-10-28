@@ -58,6 +58,7 @@ another version are historical records. 1.4 entries describe work in development
 - [Hyprland in QEMU: VirtIO DRM development checks](testing-1.1-vm-graphics.md)
 - [LIVE-001 live desktop preview: native build and bhyve cases, October 26](testing-1.4-live-desktop-20261026.md)
 - [LIVE-001 live desktop under QEMU/VirGL: desktop, fallback, network parity and graphical install, October 27](testing-1.4-live-desktop-virgl-20261027.md)
+- [1.4 live4 development candidate (own-source kernel and loader) and hwtrace dev3, October 27](testing-1.4-live4-20261027.md)
 - [Daemonarchy 1.1.1 refresh](testing-1.1.1.md)
 - [MacBookPro16,1 first-boot investigation](testing-macbookpro16-1.md)
 - [MacBook installer fatal NVMe investigation, October 22](testing-macbookpro16-1-installer-20261022.md)

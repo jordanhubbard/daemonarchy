@@ -1,0 +1,222 @@
+{
+  "schema": "daemonarchy/live-candidate-development@1",
+  "queue_items": [
+    "UI-001",
+    "LIVE-001",
+    "DEBUG-004",
+    "SRC-001"
+  ],
+  "ledger_rows": [
+    "A15",
+    "A17",
+    "H3"
+  ],
+  "recorded_at": "2026-10-27T20:01:00Z",
+  "follows": "docs/testing-1.4-live-desktop-virgl-20261027.md (live2/live3 method)",
+  "record": "docs/testing-1.4-live4-20261027.md",
+  "scope": "Development evidence only: an unsigned amd64 1.4 live/installer candidate (live4) built with a kernel, loader and world from our own daemonarchy-src build, and the dedicated hwtrace image (dev3). Native tests, runtime audit, bhyve and QEMU/OVMF boots to the installer. Nothing was signed, published, admitted to the release graph or produced under LitAI custody; no installation, desktop rendering, real audio or physical hardware run.",
+  "signing": "None. No private key was present or used. build-iso.sh ran with only the public 1.3.1 package key (PACKAGE_REPOSITORY_PUBLIC_KEY) and no Secure Boot inputs; the src checkout packages were created without pkg repo signing; pkg-repo-dependencies.sh (fixture signing) was not run.",
+  "worker": {
+    "role": "native build worker (not admitted)",
+    "identity": "daemon.local, FreeBSD 16.0-CURRENT amd64, 8 CPUs, 7.9 GB; address kept out of this record",
+    "workspace": "/usr/daemonarchy/live4-20261027 (live1/live2/live3 only read; their evidence SHA256SUMS unchanged)",
+    "evidence_sha256sums": "3ed6ac7d9d6d83a47766fad0f9db567c472d8553c28c14032f5f2b24eba25234",
+    "evidence_files": 188
+  },
+  "inputs": {
+    "product": {
+      "repo": "jordanhubbard/daemonarchy",
+      "revision": "17123ca1d692566a4d6f98f83d3684e91ee46d13",
+      "ref": "origin/main",
+      "modified": false
+    },
+    "source": {
+      "repo": "jordanhubbard/daemonarchy-src",
+      "built_revision": "74f81f1949d503caa8306a0d060242a13ae49fff",
+      "built_branch": "fix/boottrace-header-types (not merged)",
+      "base": {
+        "branch": "daemonarchy",
+        "revision": "f4d86dc786eb23d1956708aae669eb38153bb112",
+        "includes": [
+          "#34 QUIRK_APPLE_ACK_EACH_CPL",
+          "#35 boottrace kernel/loader",
+          "#36 loader splash",
+          "#37 vtnet header tag BUS_DMA_ALLOCNOW"
+        ]
+      },
+      "delta": "sys/sys/daemonarchy_boottrace.h: #include <sys/types.h> (3 lines)",
+      "attempt1": "buildworld at f4d86dc786eb failed in tools/build/test-includes: sys/daemonarchy_boottrace.h unknown type name 'uint16_t'; log in evidence/attempt1/",
+      "recipe": "/usr/daemonarchy/build-source-d63d77f4-20261024.sh (reproduced the 1.3.1 sets byte for byte) at -j8; attempt 2 used -DNO_CLEAN over attempt 1's objdir",
+      "times_utc": {
+        "world": "15:50:01-18:24:43",
+        "kernel": "18:24:44-18:45:07",
+        "sets": "18:45:07-18:54:09"
+      },
+      "freebsd_version": 1600029,
+      "sets_sha256": {
+        "base.txz": "24341ec5c3cb346dd6b685a40303616495c39d1712c869e2f1f4a5aff9bf110b",
+        "kernel.txz": "4c18fb839617faba66dc7810c0a6e42de0fa860b005c6be5ea2af52d1c9e8133",
+        "lib32.txz": "391904eb0f2624a14a44e5bb0546e5195157f533e81d35c42b1879e219ea5edd"
+      },
+      "kernel_identity": "FreeBSD 16.0-CURRENT #0 74f81f1949d5: Tue Oct 27 11:29:12 PDT 2026"
+    },
+    "jail": "16live4f4d86 (isolated poudriere-etc; tar=live4 base.txz, kernel.txz and lib32.txz extracted, /usr/src from the built tree)",
+    "packages": {
+      "repository": "isolated copy of live1's verified 1.3.1 repository plus sudo, 1,470 files identical, packagesite.pkg 0756ee090a8940006aecd0dc7c834f62184912a248d239a6920183fee78dcd19",
+      "ports": "b785784219af455a9ce4fd70c59bc96ba77f469f (tree macbookefb8 + brcmfmac131fix overlay)",
+      "ports_daemonarchy_head": "ea7ff722adee2c0ba98e49900a991fb33b61aeb1 (#30, aarch64-only metadata; not needed for amd64)",
+      "kernel_bound_modules": "built against d63d77f4 kernel sources, not rebuilt; KBI they use unchanged by the source delta; not exercised"
+    },
+    "checkout_catalog": {
+      "sha256": "8f37f65a50acee58e6d915d44cd687e7f83c8047488380e72ee92aec0860ecb6",
+      "ports": "1.3.1 entry unchanged (b785784219af)",
+      "src": "receipt for 74f81f1949d5 from scripts/build-checkout-packages.py (archive 96cc1f43a1b22df5ebe80a2814d525a54c872f034427673a4f866a29bda459c1); packages unsigned and unpublished",
+      "limitation": "repository_url still names checkouts-16-amd64-1.3.1-r2, so the optional /usr/src download fails on live4"
+    }
+  },
+  "artifacts": [
+    {
+      "name": "daemonarchy-1.4.0-live4-amd64.iso",
+      "bytes": 3505987584,
+      "sha256": "56684b8d877a51b34a3027252abd2c55c63598112ea0416479e5a0654f0ea31e",
+      "budget_bytes": 3758096384
+    },
+    {
+      "name": "daemonarchy-1.4.0-live4-amd64.iso.xz",
+      "bytes": 1572748628,
+      "sha256": "e8dbd825557b00830f97475803c2537f75f6bd2531beea9c5c5c71de5f32fda0",
+      "limit_bytes": 2147483648
+    },
+    {
+      "name": "daemonarchy-hwtrace-1.4.0-dev3-amd64.img",
+      "bytes": 391153152,
+      "sha256": "f4aec0e6a2e205cf0ca268bb9a2aa3eb12ec0db0af1e1ac5e2fce9e83f3ef99a"
+    },
+    {
+      "name": "daemonarchy-hwtrace-1.4.0-dev3-amd64.img (-S serial test copy, not delivered)",
+      "bytes": 391153152,
+      "sha256": "97f402ccaa6fbc982f0e3e2a099e30ae969c21ebeb531d0a69a398b8c4bb95ae"
+    }
+  ],
+  "image_build": {
+    "command": "build-iso.sh JAIL=16live4f4d86 PTREE=macbookefb8 NAME=daemonarchy-1.4.0-live4-amd64 PREVIEW_LABEL='1.4 preview live4' with isolated POUDRIERE_ETC/DATA, SET_CACHE_DIR=live4 source sets, the development catalogue and the 1.3.1 package tag and public key",
+    "start": "2026-10-27T18:58:27Z",
+    "end": "2026-10-27T19:31:23Z",
+    "iso_repository_packages": 263,
+    "live_root_packages": 267,
+    "live_usr_local_mib": {
+      "before_trim": 2747,
+      "after_trim": 1640
+    }
+  },
+  "content_checks": {
+    "kernel_sha256": "88f70f8dad2c8cc922976065ffa508a9fe0a257252ced38a0673511848b8b051",
+    "loader_efi_sha256": "d2762e8674ca60569f25cbab89d70954a4af98fb4c80442093f0f50b585d5fab",
+    "splash_lua_sha256": "28cfe1d6f0738771ebb61b73d792c016198a8775a2f972c845a220afcd1dbb02",
+    "live_kernel_equals_kernel_txz": true,
+    "live_loader_equals_base_txz": true,
+    "nvme_t2_quirks": {
+      "live4": "0x24f0 (QUIRK_APPLE_ACK_EACH_CPL set)",
+      "1.3.1": "0x04f0"
+    },
+    "vtnet_header_tag_flags": {
+      "live4": "0x6 (BUS_DMA_COHERENT|BUS_DMA_ALLOCNOW)",
+      "1.3.1": "0x4"
+    },
+    "boottrace_symbols": "dbt_start, dbt_sysinit, dbt_device, dbt_hook, dbt_complete, dbt_panic and debug.boottrace present (absent in 1.3.1)",
+    "loader": "Revision 3.1 built 2026-10-27; splash.lua present and called from loader.lua; menu has the Boot Trace entry"
+  },
+  "tests": {
+    "runtime_audit": "tests/live-image-runtime.sh: pass (FreeBSD, root)",
+    "native_freebsd": {
+      "pass": [
+        "installer-progress.py (with native pkg fetch)",
+        "live-installer.py",
+        "vt-console-colors.py",
+        "boottrace-tools.py",
+        "secureboot-options.sh",
+        "installer-charm.sh",
+        "installer-clock.sh",
+        "remote-debug-background.sh",
+        "remote-debug-session.sh",
+        "remote-debug-reboot.sh",
+        "remote-debug-observe.sh",
+        "remote-debug-cli.sh",
+        "live-desktop.sh",
+        "live-image-budget.sh",
+        "release-set-cache.sh",
+        "disk-layout.sh",
+        "shared-disk.sh",
+        "boot-environment-mounts.sh",
+        "rescue-setup.sh",
+        "checkout-packages.sh",
+        "efi-boot-image.sh (live4 jail /boot)",
+        "rescue-boot-image.sh (live4 base.txz and /boot)"
+      ],
+      "not_run": {
+        "pkg-repo-dependencies.sh": "signs a fixture repository; this candidate signs nothing"
+      }
+    },
+    "linux": "all portable tests pass; FreeBSD-only tests refuse to run on Linux",
+    "efi_fixture_qemu": "live4 loader ran Lua and loaded /boot/kernel/kernel on console=comconsole (fixture's expected stop at the prompt); no splash"
+  },
+  "vm_boots": {
+    "bhyve": [
+      {
+        "case": "tui",
+        "result": "pass",
+        "notes": "kernel #0 74f81f1949d5; tmux install screen dry run exit 0; on ttyu0 sound ensure started no player, sound status mode=off reason='serial console'; target 07d217eb... unchanged"
+      },
+      {
+        "case": "live (menu entry 2)",
+        "result": "pass",
+        "notes": "daemonarchy_live=YES, tmpfs layers and ready, no unionfs, GPU fallback to TUI; target unchanged"
+      },
+      {
+        "case": "live (key T)",
+        "result": "defect",
+        "notes": "T selected the new Boot Trace entry (debug.boottrace.status 2, 3406 steps, 8 writes) instead of the live desktop; target unchanged"
+      }
+    ],
+    "qemu_ovmf_tcg": {
+      "result": "pass",
+      "notes": "welcome screen captured (1.3.1 (1.4 preview live4)); HDA pcm0 attached, vt player sound.py serve mode=on; on ttyu0 sound ensure started no second player and sound status mode=off reason='serial console'; null audio backend, nothing heard; no splash on serial; target unchanged"
+    },
+    "hwtrace_qemu_ovmf": {
+      "result": "pass",
+      "notes": "SATA; 0001 hang at configure_first filed INCOMPLETE #1680; 0002 normal reached init #3800 with DUMPS/0002 (8 files); loader HARDWARE TRACE: STOPPED; DATRACE fsck clean"
+    }
+  },
+  "defects": [
+    {
+      "id": "splash-loader-libs",
+      "summary": "The loader splash never draws: the loader Lua has no table or math library and splash.lua calls math.max and table.concat; splash.run contains the error. No splash frame appeared on a video-only QEMU console with loader_brand=daemonarchy, console=efi.",
+      "fix": "daemonarchy-src fix/splash-loader-libs 4b8b13242715ea645de1943217bdaec354778245 (not merged; test fails on the merged splash.lua, passes on the fix)",
+      "related": "stand/lua/netdebug.lua also uses table.insert/table.unpack (not exercised)"
+    },
+    {
+      "id": "menu-key-t",
+      "summary": "src#35's Boot Trace entry and the product's Try Daemonarchy live entry both alias t/T; T boots with boot trace. The live desktop is reachable on live4 only as entry 2.",
+      "fix": "none yet; one alias must change"
+    },
+    {
+      "id": "boottrace-header-types",
+      "summary": "buildworld at the daemonarchy head failed in test-includes; sys/daemonarchy_boottrace.h was not self-contained.",
+      "fix": "daemonarchy-src fix/boottrace-header-types 74f81f1949d503caa8306a0d060242a13ae49fff (not merged; built into live4)"
+    }
+  ],
+  "permission_denials": [
+    "gh pr create for daemonarchy-src fix/boottrace-header-types was refused by the permission check; both src branches are pushed and ready to open"
+  ],
+  "remaining_gaps": [
+    "installation",
+    "desktop rendering (no DRM GPU in these VMs)",
+    "real audio",
+    "kernel-bound GPU/Wi-Fi modules on the new kernel",
+    "physical MacBookPro16,1 T2 NVMe and MSI runs",
+    "Secure Boot",
+    "optional /usr/src checkout",
+    "hwtrace dev3 on physical USB",
+    "signing and publication (operator)"
+  ]
+}
