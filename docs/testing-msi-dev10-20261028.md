@@ -241,6 +241,34 @@ QEMU's usb-storage reported retried `READ(10)`/`WRITE(10)` CAM errors in
 every run, as in dev4, dev7 and dev8. The DUMPS and traces were still
 written.
 
+## dev10 hardware results
+
+The operator ran the dev10 stick on the MSI on 2026-10-28. All three
+experiments were filed through raw blocks (SLOTS.MAP), with read-back ok.
+
+| Queue | Experiment | Result | Last step |
+|---|---|---|---|
+| 0001 | `atrtc-force` | hang | `#1986 0.822s cpu8 event: atrtc: sel 0x0a: in 0x84,out 0x70` |
+| 0002 | `atrtc-force-noclock` | hang | `#1986 0.851s cpu8 event: atrtc: sel 0x0a: in 0x84,out 0x70` |
+| 0003 | `stock-fix` | reached init | `#12841 12.316s cpu0 complete: boot complete: root mounted, executing init` |
+
+Before the hang, both forced runs logged `alloc ports 0x70-0x71`,
+`ports 0x70-0x71 NOT allocated` and `port conflict, forced on`. The last
+event is recorded before the first CMOS register select in `atrtc_start`,
+the delay read of port `0x84` and the index write to `0x70`. That access
+hangs the machine, with or without the IRQ 8 event timer
+(`hint.atrtc.0.clock=0`). So the legacy CMOS port access is the cause, not
+the RTC interrupt.
+
+`stock-fix` declined the RTC on the port conflict. `efirtc0` provided the
+time, and the boot reached init with stock settings and no VGA or RTC hint.
+Together with src#45, this is the first MSI boot of the Daemonarchy kernel
+to init without hints. The trace SHA-256 values are:
+
+- `0001.TXT` `020e6dd5465963ce604f74a685182d99804d9d17c2969f02fc313a39f888e391`
+- `0002.TXT` `03d4e9a2fd88d90b249d2b1adaec6b10bc0ecc366e8bf03a10b649c5bd2918ac`
+- `0003.TXT` `50a7c1945b4eb5a8586a5f5782ecd1e983cbab62db26ed2337c3f2e1471105cf`
+
 ## Readiness and limits
 
 The queued, never-booted candidate and its `.sha256` are in the private image
@@ -248,9 +276,7 @@ directory, and the hash was re-verified there. The kernel, loader, build
 logs, serial logs, vars files, traces and DUMPS are retained privately. No
 USB device was written, and the image is not signed.
 
-The MSI result is pending. The fix has not run on the MSI. If `atrtc-force`
-hangs, its last breadcrumb names the RTC step. The QEMU conflict table
-shows only that the decline path is taken when `0x70` is claimed alone. It
-cannot show what the MSI does with the old path. This record is VM evidence
-only. It does not claim a native profile, a lifecycle receipt or release
-qualification.
+The MSI hardware results are above. They cover kernel startup to init on
+the hwtrace image only, not the installer, the desktop, the NVIDIA driver or
+an installed system. This record does not claim a native profile, a
+lifecycle receipt or release qualification.

@@ -5,9 +5,10 @@ diagnostic is not a validated workaround or an automatically applied setting.
 
 ## MSI Raider 18 HX AI A2XWIG: early installer reset
 
-Status: **boot blocked; the AT RTC (`atrtc0`) attach is the remaining
-known hang**. Reported 2026-10-15; boot video reviewed 2026-10-18. The
-legacy VGA probe hang is fixed in the dev8 kernel; see
+Status: **kernel reaches init with stock settings in the dev10 trace
+image; installer and desktop not yet tested**. Reported 2026-10-15; boot
+video reviewed 2026-10-18. The legacy VGA probe hang is fixed by src#45
+and the AT RTC (`atrtc0`) port-conflict hang by src#46; see
 [trace-stick findings](#trace-stick-findings-dev5-to-dev8) below.
 
 | Identification | Tested configuration |
@@ -148,8 +149,12 @@ The candidate fix, daemonarchy-src
 RTC alone on amd64 UEFI boots when its ports cannot be allocated, and
 efirtc keeps the time. `hw.atrtc.force_on_conflict=1` restores the stock
 behaviour. The [dev10 record](testing-msi-dev10-20261028.md) carries it,
-together with boot-trace events before each RTC hardware access. As of
-this record the fix has not run on the MSI.
+together with boot-trace events before each RTC hardware access. On the
+MSI (2026-10-28), the forced old path hung at the first CMOS register
+select (`in 0x84`, `out 0x70`) with or without the RTC interrupt. With the
+fix, the stock configuration reached init with no VGA or RTC hint. src#45
+and src#46 are merged into `daemonarchy`. The installer, desktop and NVIDIA
+driver on this machine are not yet tested.
 
 ### Related report
 
