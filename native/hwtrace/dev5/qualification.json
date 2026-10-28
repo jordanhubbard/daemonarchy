@@ -1,0 +1,106 @@
+{
+  "schema": "daemonarchy/msi-capture-candidate@1",
+  "candidate": "daemonarchy-hwtrace-1.4.0-dev5-amd64.img",
+  "candidate_sha256": "7300f20205e2882c245790e74bded607100460e73236286e0536a4fbd6ce2afe",
+  "candidate_bytes": 391153152,
+  "parent_image": "daemonarchy-hwtrace-1.4.0-dev4-amd64.img",
+  "parent_sha256": "4961797855eee29c5a5f78f884bbebf7303ae6a28ece91ebc227d99180942e39",
+  "lua_sources": {
+    "splash_and_netdebug": "95eb020f9bb769b9f0ecb53b60470104bf7324c6",
+    "menu": "3d08a192a457f715664934fc84c461ae08c7615b"
+  },
+  "assembly": {
+    "kernel_and_loader_unchanged": {
+      "boot/kernel/kernel": "12482ac842b55a168a5c3cad93960a8c7b4693ede6532e0ef1fe09110204f3e4",
+      "boot/loader.efi": "fbdb431c819881adc0b89683e6501ab718bdb89bddbb755233b7e5945b7ce015"
+    },
+    "lua": {
+      "splash.lua": "3f9054953db3d556042a892612e727c00a4daeff96cdb1ebd4a1587ac7699c45",
+      "netdebug.lua": "c9da2b5a31a48daa0eb7b3262103fbd7153f863eb63adb4d5fef2c52b11f59d7",
+      "menu.lua": "5d16efefee4422447a81222de5624684341e11a0ec4e049fb5f7c134de744847"
+    }
+  },
+  "initial_state": {
+    "next": 1,
+    "traces": 0,
+    "pending": "",
+    "epoch": 286014978
+  },
+  "queue_retained_exactly": true,
+  "queues": {
+    "QUEUE/0001.CNF": {
+      "sha256": "51eb7d5cef58d8a55d50c0f6e9c0fdb9553f9071d33b643f686cf0209b6a4b1e",
+      "experiment": "# experiment: no-isa-hints"
+    },
+    "QUEUE/0002.CNF": {
+      "sha256": "b51a4fc11a0686198812f3d6e15ab3e5ac139f804bf4e02feeb297676cfdba51",
+      "experiment": "# experiment: no-isa-bus"
+    },
+    "QUEUE/0003.CNF": {
+      "sha256": "8b2b4a7b46d95b490cd1802b249086aadcb945368dc3c861ff6a66dea97c412e",
+      "experiment": "# experiment: no-isa-hints-one-cpu"
+    },
+    "QUEUE/0004.CNF": {
+      "sha256": "b6467c0b8a7d77b3485febf15e467702823a4807bfcd9835c9597e4e1513356c",
+      "experiment": "# experiment: rtc-vga-only"
+    }
+  },
+  "controls": {
+    "composed_stdlib_guard": "PASS:19 Lua files",
+    "composed_splash_tests": "PASS",
+    "block_map": "PASS:201 files"
+  },
+  "native_vm": {
+    "transport": "QEMU xHCI usb-storage",
+    "cpu": "Westmere",
+    "acceleration": "TCG",
+    "serial_override": false,
+    "boot1_seconds": 90,
+    "boot2_seconds": 45,
+    "powercycle_between_boots": true,
+    "final_state": {
+      "next": 3,
+      "traces": 1,
+      "pending": "0002",
+      "epoch": 286014978
+    },
+    "first_trace_sha256": "abc8e4f87a69bf8a112d69bbc36189f93cc67661dfebe809aa2389ca85990c0f",
+    "trace_excerpt": [
+      "Daemonarchy hardware trace 0001",
+      "experiment: 0001",
+      "settings (\\QUEUE\\0001.CNF):",
+      "  # experiment: no-isa-hints",
+      "  read-conf /boot/d/1",
+      "  unset hint.vga.0.at",
+      "  unset hint.sc.0.at",
+      "  unset hint.atkbdc.0.at",
+      "  unset hint.atkbd.0.at",
+      "  unset hint.psm.0.at",
+      "  unset hint.atrtc.0.at",
+      "  unset hint.attimer.0.at",
+      "  unset hint.uart.0.at",
+      "  unset hint.uart.1.at"
+    ],
+    "trace_status_lines": [
+      "loader previous: cycle 1 (epoch 286014978) reached 'booting'; stick raw blocks (SLOTS.MAP); flags 0x9",
+      "loader now: cycle 2, stick via raw blocks (SLOTS.MAP) (201 mapped files, read-back via the whole disk)",
+      "Status: INCOMPLETE: the kernel never reached init (hang or reset)",
+      "Last step: #3929 47.110s cpu0 attach: attach umass0@uhub0 umass "
+    ],
+    "screenshots_sha256": {
+      "usb-30s.ppm": "21ab4b7663d6678d356635c6de71cf9a9d92b878fd03037cfe3818f977836ab3",
+      "usb-90s.ppm": "65dc2b3c20a6834377ac099b0a7e6a89d7285186b010c3b007d43c003456043a",
+      "usb-second-45s.ppm": "7b2f2d3f5532d4c16aaacd5dc0934f70cfcaa9c40569e5dec763a3b4106b33d4"
+    }
+  },
+  "physical_msi_qualified": false,
+  "usb_written": false,
+  "canonical_lifecycle_receipt": false,
+  "interactive_menu": {
+    "actual_candidate_copy": true,
+    "countdown_cancel": "QMP space at 6.5 seconds",
+    "result": "EFI menu rendered without Lua exception",
+    "branding_fallback": "optional gfx-daemonarchy include unavailable",
+    "screenshot_sha256": "a2ea298049fc99bb8f086b790f0178a69c0c3e4110a665eb34176f055ef389a9"
+  }
+}
