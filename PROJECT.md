@@ -159,6 +159,16 @@ Use [the active queue](docs/roadmap/active-work.md) for stable work IDs, owners,
 dependencies and acceptance checklists. [ROADMAP.md](ROADMAP.md) is the human
 release/feature overview; it does not independently override completion status.
 
+GPU-001 adds planned 1.4 glmark2 diagnostics and a Daemonarchy showcase, with
+actual renderer/vendor/driver/API, FPS and frame-time evidence on physical
+AMD, NVIDIA and Intel MacBook FreeBSD hardware. Software fallback does not
+qualify acceleration. NET-002 separately traces installed-boot delays from
+missing/disconnected Ethernet and plans bounded first-usable-interface DHCP
+with serialized route/DNS publication and bounded offline boot, related to
+installer NET-001. Both remain unimplemented and unqualified; see the
+[1.4 plan](docs/roadmap/release-1.4.0.md) and acceptance rows A18/A19.
+DEBUG-003 retains P0 priority.
+
 ## Completed work
 
 [CHANGELOG.md](CHANGELOG.md) records published history. The 1.3.1 release shipped
