@@ -14,8 +14,9 @@ stop_cmd=:
 daemonarchy_graphics_start()
 {
     ready=/var/run/daemonarchy-graphics.ready
+    nodriver=/var/run/daemonarchy-graphics.nodriver
     log=/var/log/daemonarchy-graphics.log
-    rm -f "$ready"
+    rm -f "$ready" "$nodriver"
     if [ "$(kenv -q boot_safe 2>/dev/null)" = YES ] ||
         [ "$(kenv -q daemonarchy_rescue 2>/dev/null)" = YES ] ||
         ! checkyesno sddm_enable; then
@@ -38,6 +39,14 @@ daemonarchy_graphics_start()
         echo "Loading $module after SSH startup" >>"$log"
         kldstat -q -n "$module.ko" || kldload "$module" >>"$log" 2>&1 || return 1
     done
+    if [ -z "$drm_drivers" ]; then
+        # The desktop (Hyprland under SDDM) needs a DRM/KMS device. Without a
+        # supported driver (VirtualBox, QEMU standard VGA or QXL) SDDM would
+        # hold a black screen; stay on the ttyv0 rescue console, which says why.
+        echo 'No supported desktop graphics driver for this display; staying on the console.' >>"$log"
+        touch "$nodriver"
+        return 0
+    fi
     if [ -n "$drm_drivers" ]; then
         # kldload can succeed after device_attach failed. DRM may even leave
         # character nodes behind. Non-verbose devinfo lists attached devices;

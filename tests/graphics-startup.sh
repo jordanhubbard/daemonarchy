@@ -9,6 +9,7 @@ trap 'rm -rf "$work"' EXIT
 # only its state/log paths; native rc ordering is checked separately.
 eval "$(sed -n '/^daemonarchy_graphics_start()$/,/^}$/p' "$here/overlay/usr/local/libexec/daemonarchy-installer/graphics-service" |
   sed -e "s|ready=/var/run/daemonarchy-graphics.ready|ready=$work/ready|" \
+      -e "s|nodriver=/var/run/daemonarchy-graphics.nodriver|nodriver=$work/nodriver|" \
       -e "s|log=/var/log/daemonarchy-graphics.log|log=$work/log|" \
       -e "s|/dev/dri/|$work/dri/|g" \
       -e 's|/usr/sbin/devinfo|devinfo|g')"
@@ -54,15 +55,23 @@ daemonarchy_graphics_modules='linux linux64 i915kms nvidia-drm'
 attached_devices=$'    drmn0\n    nvidia0'
 daemonarchy_graphics_start
 [[ -f $work/ready ]]
-# BIOS/no-driver and Linux ABI-only paths need no DRM device inventory.
+# No desktop driver (VirtualBox, QEMU standard VGA or QXL; Linux ABI only):
+# the desktop cannot run, so graphics stays unready and SDDM stays off rather
+# than holding a black screen (#88, #89). The marker lets the rescue console
+# say why; a later run with a driver clears it.
 for modules in '' 'linux linux64'; do
   reset_case
   daemonarchy_graphics_modules=$modules
   devinfo_ok=NO attached_devices=''
   rm -rf "$work/dri"
   daemonarchy_graphics_start
-  [[ -f $work/ready ]]
+  [[ ! -e $work/ready && -e $work/nodriver ]]
+  grep -q 'No supported desktop graphics driver' "$work/log"
 done
+reset_case
+daemonarchy_graphics_modules=nvidia-drm
+daemonarchy_graphics_start
+[[ -f $work/ready && ! -e $work/nodriver ]]
 for disabled in safe sddm ssh; do
   reset_case
   case $disabled in safe) safe=YES ;; sddm) sddm_enable=NO ;; ssh) ssh_ready=NO ;; esac

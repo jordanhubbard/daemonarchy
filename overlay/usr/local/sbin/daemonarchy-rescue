@@ -9,6 +9,7 @@ boot_quiet_wait=15
 boot_quiet_seconds=2
 debug_state=/var/db/daemonarchy/remote-debug
 debug_command=/usr/local/sbin/daemonarchy-debug
+graphics_nodriver=/var/run/daemonarchy-graphics.nodriver
 
 rescue_record() {
   umask 077
@@ -59,6 +60,12 @@ rescue_reason() {
   if [ "$(cat "$state_dir/status" 2>/dev/null)" != complete ]; then
     printf 'Installation did not complete. Last recorded stage: %s\n' \
       "$(cat "$state_dir/phase" 2>/dev/null || echo unknown)"
+    return 0
+  fi
+  if [ -e "$graphics_nodriver" ]; then
+    echo 'No supported desktop graphics driver was found for this display, so the'
+    echo 'graphical desktop is off. Virtual machines need a virtio-gpu (QEMU) display;'
+    echo 'VirtualBox and QEMU standard VGA or QXL adapters are not supported.'
     return 0
   fi
   return 1
