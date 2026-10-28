@@ -1,0 +1,355 @@
+#!/bin/sh
+#
+# daemonarchy-netselect: the one owner of the installed system's IPv4 default
+# route and /etc/resolv.conf when interfaces use DHCP (NET-002).
+# Installed by the Daemonarchy installer as /usr/local/libexec/daemonarchy-netselect.
+#
+# FreeBSD starts one dhclient per interface when its link comes up (devd), so
+# several leases can arrive in any order. Unmodified, each dhclient-script adds
+# a default route if none exists and rewrites resolv.conf, so whichever lease
+# lands first or last wins. Here the dhclient hooks hand every lease event to
+# this program instead; it checks the candidate outside any lock, then, under
+# one lock, records it and decides which interface owns the route and DNS:
+#
+#   usable   a lease with a gateway that answers ARP on that interface (the
+#            same proof as the installer's NET-001 pipeline; ICMP is never
+#            required). Class 3 when one of the lease's DNS servers answers a
+#            direct query (any rcode: the server is reachable), class 2 when
+#            none answers, class 1 when the gateway did not answer ARP.
+#   owner    the first interface to reach the best class keeps ownership
+#            while it stays valid; an equal class never takes over (no
+#            flapping between competing valid leases), a strictly better
+#            class does. When the owner's link drops or its lease ends, the
+#            next best valid candidate takes over at once.
+#   losers   keep their address and their background dhclient (late-link
+#            recovery) but never publish a route or DNS servers.
+#
+# Budgets (declared in docs/roadmap/active-work.md, NET-002): a candidate check
+# takes at most NETSELECT_GATEWAY_TIMEOUT + NETSELECT_DNS_TIMEOUT seconds
+# (1 + 2); the boot itself waits at most defaultroute_delay (10 s) for the
+# first owner, and 5 s (defaultroute_carrier_delay) when no DHCP interface
+# has a carrier.
+#
+#   daemonarchy-netselect lease IF REASON STATUS ADDRESS GATEWAY "DNS..." "SEARCH..."
+#   daemonarchy-netselect link-down IF      (devd)
+#   daemonarchy-netselect elect             re-run the decision
+#   daemonarchy-netselect status            candidates, owner and timings
+#
+# Diagnostics: /var/log/daemonarchy-net.log (timestamped, with seconds since
+# boot) and per-boot state in /var/run/daemonarchy-net.
+
+PATH=${PATH:+$PATH:}/sbin:/bin:/usr/sbin:/usr/bin
+
+NS_STATE=${NETSELECT_STATE:-/var/run/daemonarchy-net}
+NS_LOG=${NETSELECT_LOG:-/var/log/daemonarchy-net.log}
+NS_RESOLV=${NETSELECT_RESOLV:-/etc/resolv.conf}
+NS_DNS_NAME=${NETSELECT_DNS_NAME:-pkg.FreeBSD.org}
+NS_GATEWAY_TIMEOUT=${NETSELECT_GATEWAY_TIMEOUT:-1}
+NS_DNS_TIMEOUT=${NETSELECT_DNS_TIMEOUT:-2}
+NS_LOCK_TIMEOUT=${NETSELECT_LOCK_TIMEOUT:-15}
+
+ns_now() { date +%s; }
+
+# Seconds since boot, for boot-to-usable timings.
+ns_uptime() {
+	local boot
+	boot=$(sysctl -n kern.boottime 2>/dev/null | sed -n 's/^{ sec = \([0-9]*\),.*/\1/p')
+	[ -n "$boot" ] && echo $(($(ns_now) - boot)) || echo '?'
+}
+
+ns_log() {
+	printf '%s +%ss %s\n' "$(date -u '+%Y-%m-%dT%H:%M:%SZ')" "$(ns_uptime)" "$*" >>"$NS_LOG" 2>/dev/null
+}
+
+ns_valid_ifname() {
+	case $1 in
+	''|*[!a-z0-9_]*) return 1 ;;
+	[a-z]*[0-9]) return 0 ;;
+	esac
+	return 1
+}
+
+ns_valid_ipv4() {
+	local IFS=.
+	case $1 in
+	''|*[!0-9.]*|*..*|.*|*.) return 1 ;;
+	esac
+	set -- $1
+	[ $# -eq 4 ] || return 1
+	[ "$1" -le 255 ] && [ "$2" -le 255 ] && [ "$3" -le 255 ] && [ "$4" -le 255 ] &&
+	    [ "$1" -ne 0 ] && [ "$1" -ne 127 ] && [ "$1" -lt 224 ]
+}
+
+# key=value records, one per line; values never contain newlines.
+ns_get() { sed -n "s/^$2=//p" "$1" 2>/dev/null | head -n 1; }
+
+# The same classification as the installer's nb_link_state.
+ns_link() {
+	case $(ifconfig "$1" 2>/dev/null | sed -n 's/.*status: //p' | head -n 1) in
+	active|associated) echo up ;;
+	'no carrier') echo no-carrier ;;
+	'') ifconfig "$1" >/dev/null 2>&1 && echo unknown || echo absent ;;
+	*) echo down ;;
+	esac
+}
+
+ns_has_address() {
+	ifconfig "$1" inet 2>/dev/null | grep -q "inet $2 "
+}
+
+# A gateway that blocks ICMP still answers ARP; an ARP entry is the proof.
+ns_gateway_ok() {
+	ping -c 1 -t "$NS_GATEWAY_TIMEOUT" -S "$2" "$3" >/dev/null 2>&1
+	arp -n "$3" 2>/dev/null |
+	    grep -Eq " at ([[:xdigit:]]{1,2}:){5}[[:xdigit:]]{1,2} on $1( |$)"
+}
+
+# Query up to three of the lease's DNS servers at once from the lease's
+# address. Prints "server:rcode" for each server that answered at all.
+ns_dns_answers() {
+	local addr=$1 dir server n=0
+	shift
+	dir=$(mktemp -d "$NS_STATE/dns.XXXXXX") || return 0
+	for server; do
+		ns_valid_ipv4 "$server" || continue
+		[ $n -lt 3 ] || break
+		(timeout "$NS_DNS_TIMEOUT" drill -I "$addr" "@$server" "$NS_DNS_NAME" A 2>/dev/null |
+		    sed -n 's/.*rcode: \([A-Z]*\).*/\1/p' | head -n 1 >"$dir/$server") &
+		n=$((n + 1))
+	done
+	wait
+	for server; do
+		[ -s "$dir/$server" ] && printf '%s:%s\n' "$server" "$(cat "$dir/$server")"
+	done
+	rm -rf "$dir"
+}
+
+# ---------------------------------------------------------------- events
+
+# Check one lease outside the lock, then commit it under the lock.
+ns_lease() {
+	local ifc=$1 reason=$2 status=$3 addr=$4 gw=$5 dns=$6 search=$7
+	local pending link gw_ok=no answers ok_servers='' rcodes='' class=0 a
+	ns_valid_ifname "$ifc" || return 1
+	mkdir -p "$NS_STATE"
+	pending=$NS_STATE/pending.$ifc.$$
+	case $reason in
+	BOUND|RENEW|REBIND|REBOOT) ;;
+	TIMEOUT) [ "$status" = 0 ] || reason=TIMEOUT-FAIL ;;
+	esac
+	case $reason in
+	BOUND|RENEW|REBIND|REBOOT|TIMEOUT)
+		ns_valid_ipv4 "$addr" || { ns_log "$ifc $reason ignored: no valid address"; return 0; }
+		gw=${gw%% *}
+		ns_valid_ipv4 "$gw" || gw=''
+		link=$(ns_link "$ifc")
+		if [ -n "$gw" ] && ns_gateway_ok "$ifc" "$addr" "$gw"; then
+			gw_ok=yes
+			class=2
+		elif [ -n "$gw" ]; then
+			class=1
+		fi
+		answers=$(ns_dns_answers "$addr" $dns)
+		for a in $answers; do
+			ok_servers="$ok_servers ${a%%:*}"
+			rcodes="$rcodes $a"
+		done
+		[ $class -eq 2 ] && [ -n "$ok_servers" ] && class=3
+		{
+			echo status=lease
+			echo reason=$reason
+			echo address=$addr
+			echo gateway=$gw
+			echo gateway_ok=$gw_ok
+			echo dns=$(echo $dns)
+			echo dns_ok=$(echo $ok_servers)
+			echo dns_rcodes=$(echo $rcodes)
+			echo search=$(echo $search | tr -cd 'A-Za-z0-9. -')
+			echo link=$link
+			echo class=$class
+		} >"$pending"
+		ns_log "$ifc $reason address=$addr gateway=${gw:-none} gateway_arp=$gw_ok dns=[$(echo $dns)] answered=[$(echo $rcodes)] link=$link class=$class"
+		;;
+	*)
+		printf 'status=gone\nreason=%s\nclass=0\n' "$reason" >"$pending"
+		ns_log "$ifc $reason: lease ended"
+		;;
+	esac
+	ns_locked commit "$ifc" "$pending"
+}
+
+ns_link_down() {
+	local ifc=$1 pending
+	ns_valid_ifname "$ifc" || return 1
+	[ -f "$NS_STATE/cand.$ifc" ] || return 0
+	pending=$NS_STATE/pending.$ifc.$$
+	{ grep -Ev '^(status|reason|link)=' "$NS_STATE/cand.$ifc"; printf 'status=link-down\nreason=LINK_DOWN\nlink=down\n'; } >"$pending"
+	ns_log "$ifc link down"
+	ns_locked commit "$ifc" "$pending"
+}
+
+# Everything that reads or writes the owner, the route or resolv.conf runs
+# here, one process at a time.
+ns_locked() {
+	mkdir -p "$NS_STATE"
+	lockf -k -t "$NS_LOCK_TIMEOUT" "$NS_STATE/lock" "$0" _locked "$@" || {
+		ns_log "lock not acquired within ${NS_LOCK_TIMEOUT}s for $*"
+		rm -f "$3"
+		return 1
+	}
+}
+
+# ---------------------------------------------------------------- under the lock
+
+ns_commit() {
+	local ifc=$1 pending=$2 cand=$NS_STATE/cand.$1 seq
+	[ -f "$pending" ] || return 0
+	if [ "$(ns_get "$pending" status)" = lease ]; then
+		# First-usable order: a candidate keeps its place while it holds
+		# the same address, and joins the back of the line otherwise.
+		seq=''
+		if [ "$(ns_get "$cand" status)" = lease ] &&
+		    [ "$(ns_get "$cand" address)" = "$(ns_get "$pending" address)" ]; then
+			seq=$(ns_get "$cand" seq)
+		fi
+		if [ -z "$seq" ]; then
+			seq=$(($(cat "$NS_STATE/seq" 2>/dev/null || echo 0) + 1))
+			echo $seq >"$NS_STATE/seq"
+		fi
+		echo seq=$seq >>"$pending"
+	fi
+	mv -f "$pending" "$cand"
+	ns_elect
+}
+
+ns_valid_candidate() {
+	local ifc=$1 cand=$NS_STATE/cand.$1
+	[ "$(ns_get "$cand" status)" = lease ] || return 1
+	[ "$(ns_get "$cand" class)" -ge 1 ] 2>/dev/null || return 1
+	case $(ns_link "$ifc") in up|unknown) ;; *) return 1 ;; esac
+	ns_has_address "$ifc" "$(ns_get "$cand" address)"
+}
+
+ns_default_route() { # prints "gateway interface"
+	route -n get -inet default 2>/dev/null |
+	    awk '/gateway:/ { g = $2 } /interface:/ { i = $2 } END { if (i != "") print g, i }'
+}
+
+ns_write_resolv() {
+	local ifc=$1 cand=$NS_STATE/cand.$1 servers search tmp server
+	servers=$(ns_get "$cand" dns_ok)
+	[ -n "$servers" ] || servers=$(ns_get "$cand" dns)
+	[ -n "$servers" ] || return 0
+	search=$(ns_get "$cand" search)
+	tmp=$NS_STATE/resolv.conf.new
+	{
+		echo "# Generated by daemonarchy-netselect for $ifc"
+		[ -n "$search" ] && echo "search $search"
+		for server in $servers; do echo "nameserver $server"; done
+		[ -f /etc/resolv.conf.tail ] && cat /etc/resolv.conf.tail
+	} >"$tmp"
+	if cmp -s "$tmp" "$NS_RESOLV"; then
+		rm -f "$tmp"
+	else
+		# Same directory as the target only when it is writable; resolv.conf
+		# may be a symbolic link to /var or /tmp.
+		cat "$tmp" >"$NS_RESOLV.netselect" && mv -f "$NS_RESOLV.netselect" "$NS_RESOLV" ||
+		    cat "$tmp" >"$NS_RESOLV"
+		rm -f "$tmp"
+		ns_log "resolv.conf: $(echo $servers) (from $ifc)"
+	fi
+}
+
+ns_publish_route() {
+	local ifc=$1 gw current cur_gw cur_if
+	gw=$(ns_get "$NS_STATE/cand.$ifc" gateway)
+	current=$(ns_default_route)
+	cur_gw=${current% *} cur_if=${current#* }
+	[ -n "$current" ] && [ "$cur_gw" = "$gw" ] && [ "$cur_if" = "$ifc" ] && return 0
+	if [ -n "$current" ] && [ ! -f "$NS_STATE/cand.$cur_if" ]; then
+		ns_log "default route via $cur_if is not DHCP-managed; left alone"
+		return 0
+	fi
+	if [ -n "$current" ]; then
+		route -q change default "$gw" >/dev/null 2>&1 || {
+			route -q delete default >/dev/null 2>&1
+			route -q add default "$gw" >/dev/null 2>&1
+		}
+	else
+		route -q add default "$gw" >/dev/null 2>&1
+	fi && ns_log "default route via $gw ($ifc)" ||
+	    ns_log "could not set the default route via $gw ($ifc)"
+}
+
+ns_elect() {
+	local cand ifc class seq owner owner_class best='' best_class=0 best_seq=0 current
+	owner=$(cat "$NS_STATE/owner" 2>/dev/null)
+	owner_class=0
+	if [ -n "$owner" ] && ns_valid_candidate "$owner"; then
+		owner_class=$(ns_get "$NS_STATE/cand.$owner" class)
+	elif [ -n "$owner" ]; then
+		ns_log "owner $owner is no longer usable ($(ns_get "$NS_STATE/cand.$owner" reason))"
+	fi
+	for cand in "$NS_STATE"/cand.*; do
+		[ -f "$cand" ] || continue
+		ifc=${cand##*/cand.}
+		ns_valid_candidate "$ifc" || continue
+		class=$(ns_get "$cand" class)
+		seq=$(ns_get "$cand" seq)
+		if [ "$class" -gt "$best_class" ] ||
+		    { [ "$class" -eq "$best_class" ] && [ "$seq" -lt "$best_seq" ]; }; then
+			best=$ifc best_class=$class best_seq=$seq
+		fi
+	done
+	# The first owner keeps ownership unless a strictly better class exists.
+	if [ "$owner_class" -gt 0 ] && [ "$best_class" -le "$owner_class" ]; then
+		best=$owner
+	fi
+	if [ -z "$best" ]; then
+		current=$(ns_default_route)
+		if [ -n "$current" ] && [ -f "$NS_STATE/cand.${current#* }" ]; then
+			route -q delete default >/dev/null 2>&1
+			ns_log "no usable interface: removed the default route via ${current#* }"
+		fi
+		[ -n "$owner" ] && ns_log 'no usable interface; offline until a link or lease returns'
+		rm -f "$NS_STATE/owner"
+		return 0
+	fi
+	if [ "$best" != "$owner" ]; then
+		echo "$best" >"$NS_STATE/owner"
+		ns_log "owner $best (class $(ns_get "$NS_STATE/cand.$best" class)) replaces ${owner:-none}"
+		if [ ! -f "$NS_STATE/first-usable" ]; then
+			echo "$best $(ns_uptime)" >"$NS_STATE/first-usable"
+			ns_log "first usable interface $best $(ns_uptime)s after boot"
+		fi
+	fi
+	ns_publish_route "$best"
+	ns_write_resolv "$best"
+}
+
+ns_status() {
+	local cand
+	echo "owner: $(cat "$NS_STATE/owner" 2>/dev/null || echo none)"
+	[ -f "$NS_STATE/first-usable" ] &&
+	    echo "first usable: $(cut -d' ' -f1 "$NS_STATE/first-usable"), $(cut -d' ' -f2 "$NS_STATE/first-usable")s after boot"
+	for cand in "$NS_STATE"/cand.*; do
+		[ -f "$cand" ] || continue
+		echo "${cand##*/cand.}: $(tr '\n' ' ' <"$cand")"
+	done
+	echo "log: $NS_LOG"
+}
+
+case $1 in
+lease) shift; ns_lease "$@" ;;
+link-down) ns_link_down "$2" ;;
+elect) ns_locked elect ;;
+status) ns_status ;;
+_locked)
+	shift
+	case $1 in
+	commit) ns_commit "$2" "$3" ;;
+	elect) ns_elect ;;
+	esac
+	;;
+*) echo "usage: ${0##*/} lease|link-down|elect|status" >&2; exit 64 ;;
+esac

@@ -11,6 +11,14 @@
   and deliver bounded first-usable-interface selection with one route/DNS owner
   and bounded offline boot, separately from installer NET-001. These entries
   record planned scope, not implementation or acceptance; DEBUG-003 remains P0.
+  Code-level implementation: DHCP and Wi-Fi installs run every dhclient in the
+  background (a port with a link but no DHCP server no longer holds devd and
+  the other ports' clients), wait at most 10 seconds at boot for the first
+  usable connection (5 with no carrier), and install `daemonarchy-netselect`
+  with dhclient hooks so one serialized owner publishes the default route and
+  resolv.conf, failing over on link loss. Covered by
+  `tests/installed-boot-network.sh`; exact-image and physical timing are
+  pending.
 
 ### Changed
 

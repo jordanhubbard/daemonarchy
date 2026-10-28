@@ -130,6 +130,8 @@ Open the network panel with **Super + Ctrl + W**, or click the network icon in t
 
 A cable is enough. If a wireless card is present and no Wi-Fi switch appears, FreeBSD has no driver for that card.
 
+*Upcoming 1.4.0* (not in the 1.3.1 image, and not yet timed on hardware): startup no longer waits on an unplugged or unanswered Ethernet port. The installed system waits at most 10 seconds for a network at startup (5 seconds when nothing is plugged in or joined) and uses the first connection whose router answers, preferring one whose DNS server also answers. A cable plugged in or a Wi-Fi network joined later is used as soon as it gets an address. If the connection in use goes down, another working one takes over. `daemonarchy-netselect status` shows which connection is in use, and `/var/log/daemonarchy-net.log` records each connection's result with the seconds since startup.
+
 ## 8. Sound
 
 Open the sound panel with **Super + Ctrl + A**, or click the speaker icon. Pick where sound plays (speakers, headphones, HDMI) and which microphone records, and set the volume. The volume keys on your keyboard work as well.

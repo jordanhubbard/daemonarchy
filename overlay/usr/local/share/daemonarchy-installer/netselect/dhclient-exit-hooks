@@ -1,0 +1,25 @@
+# Daemonarchy (NET-002): sourced by dhclient-script(8) as it exits.
+#
+# Hand every lease result to daemonarchy-netselect, the single owner of the
+# default route and /etc/resolv.conf (see dhclient-enter-hooks).
+
+if [ -x /usr/local/libexec/daemonarchy-netselect ]; then
+	case $reason in
+	BOUND|RENEW|REBIND|REBOOT|TIMEOUT|EXPIRE|FAIL|STOP|RELEASE)
+		# RFC 3442: a classless default route overrides the routers option.
+		daemonarchy_gateway=${new_routers%% *}
+		if [ -n "$new_classless_routes" ]; then
+			classless_routes=''
+			fill_classless_routes "$new_classless_routes"
+			set -- $classless_routes
+			while [ $# -gt 1 ]; do
+				[ "$1" = default ] && { daemonarchy_gateway=$2; break; }
+				shift; shift
+			done
+		fi
+		/usr/local/libexec/daemonarchy-netselect lease "$interface" "$reason" \
+		    "$exit_status" "$new_ip_address" "$daemonarchy_gateway" \
+		    "$new_domain_name_servers" "${new_domain_search:-$new_domain_name}"
+		;;
+	esac
+fi

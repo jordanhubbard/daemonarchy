@@ -160,6 +160,14 @@ On the same October 27 boot, built-in Wi-Fi associated to a 5 GHz WPA network
 and obtained its address by DHCP on `wlan0`, and SDDM started Hyprland on the
 Radeon Pro 5500M (`amdgpu`, 3072×1920).
 
+That installed 1.3.1 system also showed USB Ethernet `ue0` with a link but no
+address. From FreeBSD's sources, such a port makes devd(8) hold a foreground
+dhclient for up to 60 seconds, which delays the Wi-Fi client, while boot waits
+up to 30 seconds for a default route. This has not been timed on this machine.
+Installations from 1.4 run DHCP clients in the background and let
+`daemonarchy-netselect` choose the first usable connection
+([NET-002](roadmap/active-work.md)); only stubbed tests cover that change so far.
+
 ## Other limits and investigation
 
 The later installer retry reproduced a fatal NVMe status during package
