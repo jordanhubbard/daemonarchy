@@ -23,6 +23,7 @@ another version are historical records. 1.4 entries describe work in development
 - [Getting started with Daemonarchy](getting-started.md)
 - [Hardware quirks](hardware-quirks.md)
 - [Hardware trace stick: reset-surviving boot trace](boottrace.md)
+- [1.4 live5 unsigned release candidate and hwtrace dev6, October 28](testing-1.4-live5-20261028.md)
 - [Lua-repaired live4: exact TUI/live-mode boot checks](testing-1.4-live4-lua4-20261028.md)
 - [Hardware trace stick: QEMU/OVMF checks, October 27](testing-1.4-boottrace-20261027.md)
 - [Hardware trace stick: raw-block writes, self-report and ring, October 27](testing-1.4-hwtrace-rawblock-20261027.md)
