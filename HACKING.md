@@ -808,8 +808,14 @@ sh build-hwtrace-image.sh -I daemonarchy-1.4.0-amd64.iso \
     -k obj/GENERIC/kernel -l loader_lua.efi -L src/stand/lua \
     -V 1.4.0-1 -o out
 # -m "msdosfs ..." picks modules (default msdosfs); -s sets the DATRACE
-# size in MiB (default 256); -S adds a serial console for VM tests.
+# size in MiB (default 256); -S adds a serial console for VM tests;
+# -x EXTRA.conf appends test knobs to loader.conf (never for a published
+# image).
 ```
+
+The builder needs Python 3 (`python3` or `python3.12`): it runs
+`tools/boottrace/stick.py write-map` on the assembled image, which fails the
+build unless `STATE.TXT` and every `TRACES/` slot are contiguous.
 
 The result is `out/daemonarchy-hwtrace-<version>-amd64.img` (about 390 MB)
 and its `.sha256`. It has three GPT partitions:
@@ -823,10 +829,25 @@ and its `.sha256`. It has three GPT partitions:
     and `acpidump -dt` output to `DATRACE/DUMPS/<experiment>/` and reboots.
     The queue line `hwtrace.shell=YES` gives a shell instead.
 - `DATRACE`: a FAT32 volume with `DATRACE.TAG`, `STATE.TXT`, `QUEUE/`,
-  `TRACES/` and `DUMPS/`.
+  `TRACES/`, `DUMPS/` and `SLOTS.MAP`.
+
+`SLOTS.MAP` is the block map: the byte offset and size, inside the
+partition, of `STATE.TXT` and each preallocated `TRACES/NNNN.TXT` slot,
+with the partition's start and length and a checksum. The loader rewrites
+those sectors through `EFI_BLOCK_IO`, flushes the partition and the disk,
+and reads them back through the disk's BlockIo. It does not write through
+the firmware FAT driver. On the MSI Raider, FAT-driver writes were
+acknowledged, read back from the driver's cache, and never reached the
+stick. `stick.py check-map IMAGE` verifies a map, and `write-map` rewrites
+it. A stick without a map, such as one made by an older builder, falls back
+to the FAT driver.
 
 `tools/boottrace/qemu-stick-test.py IMAGE --vars VARS.fd --log LOG` boots an
 image under QEMU/OVMF. It resets silent boots the way laptop firmware does.
+On an arm64 host, add `--cpu Westmere` (x86 TCG). For the failure tests,
+build an image with `-S -x knobs.conf`, where `knobs.conf` holds
+`boottrace_test_drop="fat"`, `"raw"` or `"all"`. The loader then
+acknowledges those writes without making them, which imitates the MSI.
 
 ### Experiments
 
@@ -856,7 +877,10 @@ debug.boottrace.from_sub=0x4800000
 ```
 
 `queue` replaces the queue and keeps filed traces; `--reset-traces` deletes
-them.
+them. It also starts a new queue generation (`epoch=` in `STATE.TXT`).
+`stick.py` rewrites `STATE.TXT` and the slots in place: raw through the map
+on an image or device, and without truncation on a mounted volume. Their
+sectors therefore never move.
 
 ### At the machine
 
@@ -864,7 +888,14 @@ them.
    stays off.
 2. Attach the stick and power on. Every boot and every firmware reset runs
    the next experiment. The loader shows **HARDWARE TRACE: STOPPED** when a
-   boot reached init or the queue is empty.
+   boot reached init or the queue is empty. It also stops with **STICK
+   WRITES ARE NOT PERSISTING** when its NVRAM self-report (`DBTLoader`)
+   says the previous cycle wrote `STATE.TXT` but the stick does not hold
+   it. In that case the last kernel trace stays in NVRAM; read it with
+   `boottrace show` or the Windows reader. It also stops when the same
+   experiment would be staged a third time in a row
+   (`boottrace_max_repeat`, default 2). A new `stick.py queue` or
+   `boottrace clear` starts over.
 3. Detach the stick and bring it back. Read `TRACES/` with `stick.py traces`
    and `DUMPS/`, write the next queue and reattach.
 
@@ -877,8 +908,16 @@ a reserve. The reserve is a quarter of the maximum variable size, kept
 between 8 and 16 KiB; `debug.boottrace.reserve_kb` overrides it.
 
 Each step writes a 64-byte breadcrumb, which costs about 140 bytes of store,
-so roughly 250 to 300 fit in 40 KiB. The full record with the message tail
-is written only at checkpoints, panic and completion. By default, steps
+so roughly 250 to 300 fit in 40 KiB. Breadcrumbs go to a ring of 16
+variables, `DBTStep00` to `DBTStep15` (`debug.boottrace.ring`), overwritten
+in place. The newest 16 steps before a hang are therefore always on NVRAM,
+and the live footprint stays about 2 KiB. Every 32 breadcrumbs, the kernel
+reads `QueryVariableInfo` again. When the firmware has freed space at
+runtime, the budget grows. When the budget runs low, it persists every 2nd,
+then every 4th step, and so on, instead of stopping. The last breadcrumb
+therefore lands near the hang, and the trace says so (flag `strided`). The
+full record with the message tail is written only at checkpoints, panic and
+completion. By default, steps
 before `debug.boottrace.from_sub` (`SI_SUB_CONFIGURE`) are persisted only at
 subsystem boundaries; after it, every SYSINIT, attach, config hook and each
 device's first probe is. To zoom in:
@@ -901,8 +940,10 @@ PowerShell:
 powershell -ExecutionPolicy Bypass -File tools\windows\read-boottrace.ps1
 ```
 
-It reads both variables (`DaemonarchyBootTrace` and `DBTStep`) and writes a
-text and a raw copy to the desktop; `-Clear` deletes them.
+It reads `DaemonarchyBootTrace`, the breadcrumb ring (`DBTStep00`..; older
+kernels wrote a single `DBTStep`) and the loader's `DBTLoader`
+self-report. It writes a text and a raw copy to the desktop; `-Clear`
+deletes the trace variables.
 
 ## Releasing
 
