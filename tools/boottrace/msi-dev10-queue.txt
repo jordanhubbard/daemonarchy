@@ -1,0 +1,16 @@
+# hwtrace dev10 queue (MSI Raider 18 HX, atrtc 0x70 conflict).
+# The diagnostic experiments run first; the cycle stops at the first boot
+# that reaches init.  The default debug.boottrace.from_sub (SI_SUB_CONFIGURE)
+# already persists every step of the atrtc attach.
+
+[atrtc-force]
+hw.atrtc.force_on_conflict=1
+kern.panic_reboot_wait_time=15
+
+[atrtc-force-noclock]
+hw.atrtc.force_on_conflict=1
+hint.atrtc.0.clock=0
+kern.panic_reboot_wait_time=15
+
+[stock-fix]
+kern.panic_reboot_wait_time=15

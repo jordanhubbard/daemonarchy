@@ -48,6 +48,10 @@ def main():
     ap.add_argument("--memory", default="2048")
     ap.add_argument("--bus", choices=("usb", "ahci"), default="usb",
                     help="attach the stick as a USB disk (default) or SATA")
+    ap.add_argument("--qemu-arg", action="append", default=[],
+                    metavar="ARG",
+                    help="extra QEMU argument, repeatable (e.g. "
+                         "--qemu-arg=-acpitable --qemu-arg=file=t.aml)")
     args = ap.parse_args()
     if not os.path.exists(args.vars):
         sys.exit("create the vars file first (copy OVMF_VARS)")
@@ -66,7 +70,8 @@ def main():
            "-device", "usb-storage,bus=xhci.0,drive=stick,removable=on"]
           if args.bus == "usb" else ["-device", "ide-hd,drive=stick,bus=ide.0"]),
         "-display", "none", "-serial", f"file:{args.log}",
-        "-qmp", f"unix:{sock},server=on,wait=off", "-net", "none"])
+        "-qmp", f"unix:{sock},server=on,wait=off", "-net", "none",
+        *args.qemu_arg])
     boots, last_size, last_change = 1, 0, time.monotonic()
     seen = 0
     try:

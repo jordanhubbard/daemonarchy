@@ -5,8 +5,11 @@ diagnostic is not a validated workaround or an automatically applied setting.
 
 ## MSI Raider 18 HX AI A2XWIG: early installer reset
 
-Status: **boot blocked; cause unresolved**. Reported 2026-10-15; boot video
-reviewed 2026-10-18.
+Status: **kernel reaches init with stock settings in the dev10 trace
+image; installer and desktop not yet tested**. Reported 2026-10-15; boot
+video reviewed 2026-10-18. The legacy VGA probe hang is fixed by src#45
+and the AT RTC (`atrtc0`) port-conflict hang by src#46; see
+[trace-stick findings](#trace-stick-findings-dev5-to-dev8) below.
 
 | Identification | Tested configuration |
 | --- | --- |
@@ -113,6 +116,45 @@ variable before it runs, files each boot's trace on the stick and boots the
 next queued experiment; with the stick first in the boot order the loop is
 unattended. Its first queue starts from the `/boot/d/1` legacy-ISA-off
 preset that produced `sc0 failed to probe on isa1` as the last visible line.
+
+### Trace-stick findings, dev5 to dev8
+
+These results come from the reset-surviving trace stick on the same laptop,
+now on BIOS E1824IMS.317. Each one names the image whose record holds the
+traces.
+
+- **Legacy VGA probe (fixed).** Every dev5 experiment reset after the step
+  `probe vga0@isa1`, even with all ISA hints removed. dev7 experiment 1
+  (`hint.vga.0.disabled=1`, `hw.atrtc.enabled=0`) reached init. The FADT
+  boot flags are only `{8042,NO_ASPM}`, so the firmware does not announce
+  "no VGA". daemonarchy-src
+  [#45](https://github.com/jordanhubbard/daemonarchy-src/pull/45) skips the
+  legacy VGA probe on every amd64 UEFI boot. dev8 carries it, and its
+  experiment 2 reached init with no VGA hint
+  ([dev7 record](testing-msi-dev7-20261028.md),
+  [dev8 record](https://github.com/jordanhubbard/daemonarchy/pull/114)).
+- **AT RTC attach (remaining blocker).** dev8 experiment 1, with no knobs,
+  hung with the last step `#1981 2.860s attach atrtc0@acpi0`. dev8
+  experiment 2 set only `hw.atrtc.enabled=0` and reached init; `efirtc0`
+  then provided the time of day.
+- **The I/O port 0x70 conflict.** In the dev8 experiment 2 dumps, `acpi0`
+  (its system resources) owns I/O port `0x70` as a single byte, while
+  atrtc requests `0x70-0x71`. That allocation cannot succeed, which matches
+  the `atrtc0: Warning: Couldn't map I/O.` line in the October video. The
+  stock driver then programs the RTC anyway. The ISA-hinted instance also
+  fails: dmesg shows `atrtc0 failed to probe at port 0x70 irq 8 on isa1`.
+
+The candidate fix, daemonarchy-src
+[#46](https://github.com/jordanhubbard/daemonarchy-src/pull/46), leaves the
+RTC alone on amd64 UEFI boots when its ports cannot be allocated, and
+efirtc keeps the time. `hw.atrtc.force_on_conflict=1` restores the stock
+behaviour. The [dev10 record](testing-msi-dev10-20261028.md) carries it,
+together with boot-trace events before each RTC hardware access. On the
+MSI (2026-10-28), the forced old path hung at the first CMOS register
+select (`in 0x84`, `out 0x70`) with or without the RTC interrupt. With the
+fix, the stock configuration reached init with no VGA or RTC hint. src#45
+and src#46 are merged into `daemonarchy`. The installer, desktop and NVIDIA
+driver on this machine are not yet tested.
 
 ### Related report
 

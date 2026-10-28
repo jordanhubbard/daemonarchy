@@ -30,6 +30,7 @@ another version are historical records. 1.4 entries describe work in development
 - [MSI capture candidate dev5: exact USB VM evidence](testing-msi-dev5-20261027.md)
 - [MSI capture candidate dev7: legacy VGA probe skip](testing-msi-dev7-20261028.md)
 - [MSI capture candidate dev8: no legacy VGA probe on UEFI boots](testing-msi-dev8-20261028.md)
+- [MSI capture candidate dev10: AT RTC left alone on a UEFI port conflict](testing-msi-dev10-20261028.md)
 - [Optional ports and system source: space estimate](optional-source-sizing.md)
 - [Daemonarchy 1.1.0 release notes (historical)](release-1.1.0.md)
 - [Installer remote agent debug mode](remote-agent-debug.md)
