@@ -78,3 +78,35 @@ Physical MSI raw-block persistence, reset/USB-cache behaviour and the four kerne
 experiments remain untested. No native profile, lifecycle receipt or release
 qualification is claimed. Prior images, packages, object trees and evidence are
 preserved.
+
+
+## USB delivery, October 28 UTC
+
+The coordinator completed the physical write at 00:10:17 UTC. The
+[sanitized delivery record](../native/hwtrace/dev5/usb-delivery.json) binds the
+exact image and image-length readback SHA-256, both
+`7300f20205e2882c245790e74bded607100460e73236286e0536a4fbd6ce2afe`,
+over 391153152 bytes. This checks the written image prefix, not a claim that
+the complete larger USB device equals the image.
+
+The overwritten prefix and a separate final 128 KiB were preserved privately
+before writing. The previous prefix digest matches the retained dev4 parent;
+the unrelated device tail stayed unchanged. The coordinator verified device
+identity privately, closed the exclusive writer and completed its cache flush
+and readback before the following independent read-only checks:
+
+- Actual STATE.TXT bytes match the pristine candidate: next 1, zero traces,
+  empty pending, epoch 286014978.
+- All four queue names and contents match the candidate.
+- SLOTS.MAP matches the FAT extents for all 201 mapped files.
+- All 200 preallocated trace slots are byte-identical empty placeholders.
+- Partitions were unmounted; all verification file handles have closed.
+
+The earlier assembly record's `usb_written: false` describes that earlier
+test stage. The delivery record records the subsequent physical write.
+Serial numbers, device nodes and private backup paths are intentionally omitted
+from committed evidence. The coordinator owns final safe ejection.
+
+The stick is prepared for the physical experiment. The MSI's firmware, raw
+writes across its resets and the four kernel experiments remain pending; this
+delivery check is not a native lifecycle or release receipt.
