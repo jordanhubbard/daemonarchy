@@ -324,8 +324,14 @@ total boot budgets before testing; offline boot must finish within its budget.
 Keep timestamps and failed-candidate diagnostics, and compare boot-to-usable
 time against the baseline. Exact-image tests cover absent/disconnected
 Ethernet, Wi-Fi-only boot, multiple NICs with one DHCP server, competing leases,
-late link, failed DHCP/DNS and fully offline boot. No fix or timing improvement
-is claimed by this plan.
+late link, failed DHCP/DNS and fully offline boot.
+
+The source-level diagnosis and the code-level change are recorded under NET-002
+in the [active queue](active-work.md): installed DHCP clients now run in the
+background, boot waits at most 10 seconds (5 with no carrier) for the first
+owner, and `daemonarchy-netselect` alone publishes the default route and
+resolv.conf. These are covered by stubbed tests only; no exact-image timing or
+improvement is claimed yet.
 
 ## Hardware bring-up trace image
 

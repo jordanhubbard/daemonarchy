@@ -76,6 +76,8 @@ on:
       - 'overlay/usr/local/libexec/daemonarchy-installer/network-addresses'
       - 'overlay/usr/local/libexec/daemonarchy-installer/launch'
       - 'tests/network-bringup.sh'
+      - 'tests/installed-boot-network.sh'
+      - 'overlay/usr/local/share/daemonarchy-installer/netselect/**'
       - 'tests/network-diagnostics.sh'
       - 'tests/installer-wifi-timing.sh'
       - 'tests/enterprise-wifi-options.sh'
@@ -166,6 +168,8 @@ on:
       - 'overlay/usr/local/libexec/daemonarchy-installer/network-addresses'
       - 'overlay/usr/local/libexec/daemonarchy-installer/launch'
       - 'tests/network-bringup.sh'
+      - 'tests/installed-boot-network.sh'
+      - 'overlay/usr/local/share/daemonarchy-installer/netselect/**'
       - 'tests/network-diagnostics.sh'
       - 'tests/installer-wifi-timing.sh'
       - 'tests/enterprise-wifi-options.sh'
@@ -251,10 +255,11 @@ jobs:
           python3 tests/apple-firmware-offline.py -v
           bash tests/apple-firmware-offline.sh
           bash tests/live-image-budget.sh
-      - name: Installer network bring-up (NET-001)
+      - name: Installer network bring-up (NET-001) and installed boot networking (NET-002)
         run: |
           bash -n overlay/usr/local/libexec/daemonarchy-installer/network-bringup overlay/usr/local/libexec/daemonarchy-installer/launch
           bash tests/network-bringup.sh
+          bash tests/installed-boot-network.sh
           bash tests/network-diagnostics.sh
           bash tests/installer-wifi-timing.sh
           bash tests/enterprise-wifi-options.sh
