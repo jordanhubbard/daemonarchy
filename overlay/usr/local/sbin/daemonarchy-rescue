@@ -124,6 +124,8 @@ rescue_logs() {
   for name in status phase requested-user ssh-requested exit-code started-utc updated-utc; do
     [ ! -f "$state_dir/$name" ] || { printf '%s: ' "$name"; cat "$state_dir/$name"; }
   done
+  echo '=== Rescue log (last 20 lines) ==='
+  tail -n 20 "$rescue_log" 2>/dev/null || true
   echo '=== Installer log (last 100 lines) ==='
   tail -n 100 /var/log/daemonarchy-install.log 2>/dev/null || true
   echo '=== Current kernel messages (last 80 lines) ==='
@@ -176,6 +178,8 @@ rescue_menu() {
         remote_label='Unpair remote debugging agent'
       fi
     fi
+    # Keep the reason on screen: the clear above would otherwise erase it.
+    rescue_reason || true
     cat <<MENU
 
 Daemonarchy rescue
