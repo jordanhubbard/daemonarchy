@@ -288,6 +288,45 @@ their `net_*` answers and stop with a clear message instead of prompting. When
 public or user DNS replaced broken DHCP DNS, the installed system keeps it.
 See [NET-001](active-work.md#net-001-make-the-installer-network-bring-up-proactive-and-robust).
 
+## Cross-vendor GPU diagnostics and showcase
+
+GPU-001 ([issue #101](https://github.com/jordanhubbard/daemonarchy/issues/101))
+adds glmark2 diagnostics and a visually impressive Daemonarchy showcase to 1.4.
+Record the exact image and package bytes, physical GPU/PCI identity, actual
+renderer, vendor, active driver and graphics API, resolution/settings, measured
+FPS and frame times, and retained logs and visual evidence. On hybrid systems,
+prove which GPU renders the workload. Explicitly label software fallback such
+as llvmpipe; successful software rendering never qualifies GPU acceleration.
+
+Physical FreeBSD checks are required on AMD, NVIDIA and the Intel MacBook;
+record its actual selected renderer rather than assuming Intel graphics from
+its CPU. Qualify accelerated rendering and the diagnostic fallback separately.
+Prefer verified retained packages. SuperTuxKart is an optional existing
+alternative, not required new-build scope. Implementation and physical
+qualification remain pending; DEBUG-003 retains P0 priority.
+
+## Connected-interface installed boot
+
+NET-002 ([issue #102](https://github.com/jordanhubbard/daemonarchy/issues/102))
+addresses the reported boot delay waiting for DHCP on nonexistent or
+unplugged Ethernet. Trace installed rc/service and DHCP timing separately from
+[NET-001's installer pipeline](https://github.com/jordanhubbard/daemonarchy/issues/80)
+before assigning the cause. Skip missing/no-carrier interfaces, start bounded
+parallel DHCP attempts on usable candidates, and use the first usable connected
+interface without waiting for all others. A lease alone is insufficient: record
+address, route and DNS checks without requiring ICMP or a public Internet
+endpoint for local-network readiness.
+
+One owner must serialize default-route and DNS publication; losing candidates
+must not overwrite the winner. Stop or isolate losing attempts and preserve
+late-link recovery without blocking boot. Declare finite per-candidate and
+total boot budgets before testing; offline boot must finish within its budget.
+Keep timestamps and failed-candidate diagnostics, and compare boot-to-usable
+time against the baseline. Exact-image tests cover absent/disconnected
+Ethernet, Wi-Fi-only boot, multiple NICs with one DHCP server, competing leases,
+late link, failed DHCP/DNS and fully offline boot. No fix or timing improvement
+is claimed by this plan.
+
 ## Hardware bring-up trace image
 
 1.4 adds a second image type for Daemonarchy developers and agentic
@@ -455,6 +494,18 @@ Nothing animated or audible implies progress that was not observed.
   Mute, volume and the configurator choice work; serial, headless,
   unattended and no-device runs stay silent; a broken or missing device
   never changes the install's result.
+
+
+- [ ] Run glmark2 diagnostics and the Daemonarchy showcase on physical AMD,
+  NVIDIA and Intel MacBook FreeBSD systems using the exact 1.4 image. Retain
+  actual GPU/renderer/vendor/driver/API, settings, FPS and frame times plus
+  visual evidence; label software fallback without calling it GPU qualification
+  (GPU-001, A18). SuperTuxKart remains an optional existing alternative.
+- [ ] Trace installed boot separately from NET-001 and prove bounded
+  first-usable-interface selection across missing/no-carrier Ethernet,
+  Wi-Fi-only, multi-NIC, competing DHCP, late-link and offline cases. Retain
+  boot-to-usable timings, declared budgets and failures; prove route/DNS
+  publication has one owner and no losing-candidate races (NET-002, A19).
 
 Completion requires working cross-release reuse, a distributed multi-repository
 flow and retained receipts, not a renamed wrapper around the current serial

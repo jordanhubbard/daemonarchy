@@ -1123,3 +1123,31 @@ remains open; report files do not establish a passing gate.
   - `daemonarchy-hwtrace-1.4.0-dev3-amd64.img` (`f4aec0e6…`, unsigned) was built by main's `build-hwtrace-image.sh` from the live4 ISO and that ISO's kernel and loader (daemonarchy-src `74f81f1949d5`). Its serial copy under QEMU/OVMF filed a `configure_first` hang as INCOMPLETE and a normal boot to init with DUMPS, then stopped ([record](../testing-1.4-live4-20261027.md)).
 - **Evidence:**
   - [ ] QEMU/OVMF multi-boot checks with a crowded NVRAM store; physical MSI Raider iterations
+
+### [ ] GPU-001 — Qualify cross-vendor GPU diagnostics and a Daemonarchy showcase
+
+- **Priority:** P1
+- **Owner:** desktop and physical hardware qualification
+- **Direction:** Add glmark2 diagnostics and a visually impressive Daemonarchy showcase with exact renderer evidence on AMD, NVIDIA and the Intel MacBook under FreeBSD.
+- **Conclusion:** Planned 1.4 work; software fallback is diagnostic only and physical GPU qualification remains pending.
+- **Depends on:** LIVE-001
+- **Release / tracking:** 1.4.0; [issue #101](https://github.com/jordanhubbard/daemonarchy/issues/101); acceptance row A18. DEBUG-003 remains P0.
+- **Implementation:**
+  - [ ] Select retained packages where possible; record renderer/vendor/driver/API and measured FPS/frame times; SuperTuxKart is an optional existing alternative.
+  - [ ] Identify the actual selected GPU on hybrid hardware; retain exact-image/package identities and settings. Software fallback never qualifies acceleration.
+- **Evidence:**
+  - [ ] Pending exact-image AMD, NVIDIA and Intel MacBook physical FreeBSD checks, explicit software-fallback classification and retained logs/visual evidence.
+
+### [ ] NET-002 — Boot with the first usable connected interface without waiting for disconnected Ethernet
+
+- **Priority:** P1
+- **Owner:** installed-system networking and compatibility integration
+- **Direction:** Trace installed boot separately from installer NET-001; skip missing/no-carrier interfaces and race bounded candidate DHCP safely.
+- **Conclusion:** Planned 1.4 work; the reported disconnected-Ethernet boot delay is not yet diagnosed or fixed.
+- **Depends on:** NET-001 (shared installer semantics; installed-boot diagnosis is a separate boundary).
+- **Release / tracking:** 1.4.0; [issue #102](https://github.com/jordanhubbard/daemonarchy/issues/102), related to [#80](https://github.com/jordanhubbard/daemonarchy/issues/80); acceptance row A19. DEBUG-003 remains P0.
+- **Implementation:**
+  - [ ] First usable connected interface wins; serialize route/DNS publication, bound offline boot and retain failed-candidate diagnostics.
+  - [ ] Declare per-candidate and total boot budgets before qualification; retain timestamped installed rc/DHCP traces and prove offline boot meets its budget. Late links recover without delaying boot.
+- **Evidence:**
+  - [ ] Pending exact-image multi-NIC, absent/no-carrier Ethernet, Wi-Fi-only, late link, competing DHCP and offline boot timing tests.
