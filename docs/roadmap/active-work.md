@@ -1155,3 +1155,20 @@ remains open; report files do not establish a passing gate.
   - [ ] Retain timestamped installed rc/DHCP traces from the exact image and prove offline boot meets its budget.
 - **Evidence:**
   - [ ] Pending exact-image multi-NIC, absent/no-carrier Ethernet, Wi-Fi-only, late link, competing DHCP and offline boot timing tests, with boot-to-usable times against the 1.3.1 baseline. No VM or physical run has exercised the change; the MacBookPro16,1 `ue0` + `wlan0` case needs a physical boot.
+
+### [ ] WORKER-001 — Run long builds on durable SSH-controlled remote workers
+
+- **Priority:** P1 for 1.4.0
+- **Owner:** remote worker (tools/worker), its release payload and the builder hosts
+- **Direction:** Move job supervision onto each builder so multi-hour builds run with no client connected, and control them only over SSH with forced-command keys.
+- **Conclusion:** Design in docs/remote-worker.md: recipes from the repository, checkpointed steps, pause/drain/resume/cancel/retry, per-key roles, no new listener, no signing keys on workers. Not implemented.
+- **Release / tracking:** 1.4.0. Ships on the media, off by default; the project's own builds use the same worker and recipes.
+- **Depends on:** None; complements PERF-002 (LitAI workers could submit to it).
+- **Implementation:**
+  - [ ] Implement daemonarchy-worker and daemonarchy-remote with rc.d service, keys.conf roles and src-world-kernel and hwtrace-image recipes, with hosted state-transition tests.
+  - [ ] Install the worker on the 1.4 media off by default (rc.d disabled, no keys), with `enable`, `key add/remove` and `disable`; document it in getting-started.md and HACKING.md.
+  - [ ] Add release-sets, live-iso, poudriere-bulk and vm-qualify recipes.
+- **Evidence:**
+  - [ ] On the amd64 FreeBSD builder, a real src-world-kernel job survives client disconnect, drain/resume and a builder reboot mid-step, and refuses actions outside each key's role.
+  - [ ] The candidate image installs the worker and leaves it disabled; enabling it on an installed system and adding a key works as documented.
+  - [ ] A full candidate is built through the worker alone.
