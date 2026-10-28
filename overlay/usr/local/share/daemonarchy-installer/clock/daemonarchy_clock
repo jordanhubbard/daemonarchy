@@ -1,0 +1,58 @@
+#!/bin/sh
+#
+# PROVIDE: daemonarchy_clock
+# REQUIRE: FILESYSTEMS
+# BEFORE: ntpdate ntpd LOGIN
+# KEYWORD: nojail shutdown
+#
+# A floor for the system clock when the hardware clock cannot be trusted.
+# Installed by the Daemonarchy installer.
+#
+# On Apple T2 machines the firmware reloads the time-of-day clock from the
+# T2 at every power-on and ignores what the operating system writes to the
+# EFI or CMOS clock, so FreeBSD starts in January 1970 until ntpd steps it.
+# This script records the time at shutdown and every 15 minutes (cron.d)
+# and, at boot, moves a clock that is behind the record forward to it. The
+# result is never earlier than the last time the system was up; ntpd still
+# makes it exact once the network is reachable.
+#
+#   daemonarchy_clock_enable="NO"   in rc.conf turns it off
+
+. /etc/rc.subr
+
+name=daemonarchy_clock
+rcvar=daemonarchy_clock_enable
+desc="Keep the clock from starting before the last recorded time"
+start_cmd="${name}_start"
+stop_cmd="${name}_save"
+extra_commands="save"
+save_cmd="${name}_save"
+
+load_rc_config $name
+: ${daemonarchy_clock_enable:="YES"}
+: ${daemonarchy_clock_file:="/var/db/daemonarchy/clock"}
+
+daemonarchy_clock_start()
+{
+	local saved now
+
+	saved=$(stat -f %m "$daemonarchy_clock_file" 2>/dev/null)
+	if [ -z "$saved" ]; then
+		daemonarchy_clock_save
+		return 0
+	fi
+	now=$(date +%s)
+	if [ "$now" -lt "$saved" ]; then
+		# date(1) also writes the hardware clocks; harmless where they
+		# are ignored, and correct where they are not.
+		date -f %s "$saved" >/dev/null &&
+		    echo "Clock was behind the last recorded time; set to $(date)."
+	fi
+}
+
+daemonarchy_clock_save()
+{
+	mkdir -p "${daemonarchy_clock_file%/*}" && touch "$daemonarchy_clock_file"
+}
+
+run_rc_command "$1"

@@ -41,7 +41,10 @@ def main():
     ap.add_argument("--log", required=True)
     ap.add_argument("--boots", type=int, default=8)
     ap.add_argument("--silence", type=float, default=120)
-    ap.add_argument("--accel", default="tcg")
+    ap.add_argument("--accel", default="tcg",
+                    help="tcg (default; multi-threaded) or kvm")
+    ap.add_argument("--cpu", default="max",
+                    help="CPU model (x86 TCG on an arm64 host: Westmere)")
     ap.add_argument("--memory", default="2048")
     ap.add_argument("--bus", choices=("usb", "ahci"), default="usb",
                     help="attach the stick as a USB disk (default) or SATA")
@@ -53,8 +56,9 @@ def main():
         if os.path.exists(p):
             os.unlink(p)
     qemu = subprocess.Popen([
-        "qemu-system-x86_64", "-machine", "q35,accel=" + args.accel,
-        "-cpu", "max", "-smp", "2", "-m", args.memory,
+        "qemu-system-x86_64", "-machine", "q35,smm=on",
+        "-accel", args.accel + (",thread=multi" if args.accel == "tcg" else ""),
+        "-cpu", args.cpu, "-smp", "2", "-m", args.memory,
         "-drive", f"if=pflash,format=raw,readonly=on,file={args.code}",
         "-drive", f"if=pflash,format=raw,file={args.vars}",
         "-drive", f"if=none,id=stick,format=raw,file={args.image}",

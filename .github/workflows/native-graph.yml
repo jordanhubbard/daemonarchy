@@ -45,6 +45,8 @@ on:
       - 'overlay/usr/local/libexec/daemonarchy-installer/install-integrity'
       - 'tests/installer-progress.py'
       - 'tests/installer-charm.sh'
+      - 'tests/clock-floor.sh'
+      - 'overlay/usr/local/share/daemonarchy-installer/clock/**'
       - 'tests/install-integrity.sh'
       - 'tests/fixtures/installer-progress/**'
       - 'literate.release.json'
@@ -133,6 +135,8 @@ on:
       - 'overlay/usr/local/libexec/daemonarchy-installer/install-integrity'
       - 'tests/installer-progress.py'
       - 'tests/installer-charm.sh'
+      - 'tests/clock-floor.sh'
+      - 'overlay/usr/local/share/daemonarchy-installer/clock/**'
       - 'tests/install-integrity.sh'
       - 'tests/fixtures/installer-progress/**'
       - 'literate.release.json'
@@ -222,6 +226,7 @@ jobs:
           command -v tmux >/dev/null || sudo apt-get install -y tmux
           python3 tests/installer-progress.py
           bash tests/installer-charm.sh
+          bash tests/clock-floor.sh
           bash tests/install-integrity.sh
       - name: Live desktop controls (LIVE-001)
         env:

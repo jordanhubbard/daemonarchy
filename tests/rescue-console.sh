@@ -27,6 +27,14 @@ desktop_ready() { return 1; }
 monitor_desktop >"$work/failed"
 [[ $ticks == 3 ]]
 grep -q 'graphical login or desktop is not running' "$work/failed"
+# No supported desktop driver: the menu says why at once, without waiting.
+graphics_nodriver=$work/nodriver
+touch "$graphics_nodriver"
+ticks=0
+monitor_desktop >"$work/nodriver.out"
+[[ $ticks == 0 ]]
+grep -q 'No supported desktop graphics driver' "$work/nodriver.out"
+rm "$graphics_nodriver"
 # A session that starts successfully and later crashes gets a fresh grace period.
 ticks=0
 desktop_ready() { [[ $ticks -lt 4 ]]; }

@@ -1,0 +1,50 @@
+{
+  "schema": "daemonarchy/msi-usb-delivery-check@1",
+  "observed_utc": "2026-10-28T00:11:25.116080+00:00",
+  "image_prefix_scope_bytes": 391153152,
+  "private_write_record_sha256": "84d325247dfef56058313aa54801f5fcae053deffc5d24d9b6d3d32650c56c4f",
+  "write_observation": {
+    "started_utc": "2026-10-28T00:08:38Z",
+    "finished_utc": "2026-10-28T00:10:17Z",
+    "image": "daemonarchy-hwtrace-1.4.0-dev5-amd64.img",
+    "image_bytes": 391153152,
+    "image_sha256": "7300f20205e2882c245790e74bded607100460e73236286e0536a4fbd6ce2afe",
+    "readback_sha256": "7300f20205e2882c245790e74bded607100460e73236286e0536a4fbd6ce2afe",
+    "completed": true,
+    "previous_prefix_sha256": "4961797855eee29c5a5f78f884bbebf7303ae6a28ece91ebc227d99180942e39",
+    "previous_tail_sha256": "03559b6829472ced87223ea2b8f4feb0022b404e092fd800d53cccfc0cc2c724",
+    "unrelated_tail_unchanged": true,
+    "physical_msi_qualified": false
+  },
+  "prior_evidence_preserved": {
+    "overwritten_prefix_backup_bytes": 391153152,
+    "separate_final_device_bytes_backup": 131072,
+    "prior_prefix_matches_dev4_parent": true
+  },
+  "read_only_postwrite_checks": {
+    "schema": "daemonarchy/msi-postwrite-readonly-check@1",
+    "read_only": true,
+    "map_verified": true,
+    "mapped_files": 201,
+    "actual_state_verified": {
+      "next": 1,
+      "traces": 0,
+      "pending": "",
+      "epoch": 286014978
+    },
+    "state_sha256": "427541f6ad5afd038dbe547ed05fc61e7539c75f45cd2fb2ae0d0007feb1474d",
+    "queues_sha256": {
+      "QUEUE/0001.CNF": "51eb7d5cef58d8a55d50c0f6e9c0fdb9553f9071d33b643f686cf0209b6a4b1e",
+      "QUEUE/0002.CNF": "b51a4fc11a0686198812f3d6e15ab3e5ac139f804bf4e02feeb297676cfdba51",
+      "QUEUE/0003.CNF": "8b2b4a7b46d95b490cd1802b249086aadcb945368dc3c861ff6a66dea97c412e",
+      "QUEUE/0004.CNF": "b6467c0b8a7d77b3485febf15e467702823a4807bfcd9835c9597e4e1513356c"
+    },
+    "empty_trace_slots_verified": 200,
+    "physical_msi_qualified": false
+  },
+  "partitions_unmounted_before_checks": true,
+  "device_identity_verified_privately": true,
+  "serial_and_device_path_omitted": true,
+  "physical_msi_qualified": false,
+  "canonical_lifecycle_receipt": false
+}

@@ -133,6 +133,33 @@ Keep wired USB Ethernet available for installation and remote debugging while
 the new Wi-Fi installer path is tested. Do not treat unrelated USB Wi-Fi adapters
 as qualified without testing their exact chipset and driver.
 
+## System clock
+
+Every power-on starts the clock in January 1970. Measured on October 27 on the
+installed 1.3.1 system (signed 1.3.1 plus the [T2 NVMe fix](testing-macbookpro16-1-nvme-20261026.md)
+kernel):
+
+- At boot `efirtc0` provides the initial time and reads `1970-01-17 01:46:11`;
+  with `hint.efirtc.0.disabled="1"`, `atrtc0` reads the same clock
+  (`1970-01-17 01:49:03` three minutes later). The value advances with real
+  time between boots.
+- While the system runs, writes to both clocks work: EFI `SetTime` returns
+  success and `GetTime` reads the new value back, and the CMOS registers hold
+  the time FreeBSD wrote after `ntpd` stepped the clock.
+- At the next power-on both read the 1970-based value again. The firmware
+  reloads the time-of-day clock from the T2 and ignores what the operating
+  system wrote, so no FreeBSD clock driver change can make it persist.
+
+`ntpd_sync_on_start` corrects the clock within seconds when the network is
+reachable. Installations from 1.4 also add `daemonarchy_clock`, which records
+the time at shutdown and every 15 minutes and, at boot, moves a clock that is
+behind the record forward to it, so an offline boot starts no earlier than
+the last time the system was up. `daemonarchy_clock_enable="NO"` turns it off.
+
+On the same October 27 boot, built-in Wi-Fi associated to a 5 GHz WPA network
+and obtained its address by DHCP on `wlan0`, and SDDM started Hyprland on the
+Radeon Pro 5500M (`amdgpu`, 3072×1920).
+
 ## Other limits and investigation
 
 The later installer retry reproduced a fatal NVMe status during package
