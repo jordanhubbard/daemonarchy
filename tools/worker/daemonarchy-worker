@@ -556,6 +556,7 @@ cmd_supervise() {
 			step_update "$n" --arg t "$(now)" --argjson e "$t1" --argjson d $((t1 - t0)) --argjson o "$outs" \
 			    '.state = "done" | .exit = 0 | .ended = $t | .ended_at = $e | .duration = $d | .outputs = $o'
 			history_add "$(recipe_step "$n" name)" $((t1 - t0))
+			run_update '.current_step = null'
 			job_unlock
 			ev "step $n done in $((t1 - t0))s"
 			continue
@@ -611,12 +612,14 @@ interrupt_job() {
 			sleep 2
 			pg_signal KILL "$pg"
 		fi
+		# Only a step that was still running is interrupted and cleaned up; a
+		# reboot just after a step finished must not undo that step's work.
 		if [ "$(step_get "$n" state)" = running ]; then
 			step_update "$n" --arg t "$(now)" '.state = "interrupted" | .ended = $t | .reason = "interrupted"'
+			job_unlock
+			run_cleanup "$n" interrupted
+			job_lock
 		fi
-		job_unlock
-		run_cleanup "$n" interrupted
-		job_lock
 	fi
 	if [ "$st" = cancelling ]; then
 		set_state cancelled

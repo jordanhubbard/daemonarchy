@@ -354,6 +354,20 @@ check "sample-long completes" wait_state "$j3" done 60
 check "the queued job ran after it" wait_state "$jq2" done 30
 check "final output fetched" sh -c "'$REMOTE' reader fetch '$j3' sample-long-output.txt --to '$T/fetch3' && test \$(wc -l <'$T/fetch3/sample-long-output.txt') -eq 10"
 
+# --- a reboot just after a step finished does not clean that step up --------
+# Recreate the moment: a done step is still the current step, the job still
+# says running, and its supervisor is gone.
+jb=$(submit agent submit sample --param delay=0)
+wait_state "$jb" done 30
+echo running >"$ROOT/jobs/$jb/state"
+jq '.current_step = 3 | .supervisor_pid = 999999' "$ROOT/jobs/$jb/run.json" >"$T/run.json" && mv "$T/run.json" "$ROOT/jobs/$jb/run.json"
+echo boot-3b >"$T/bootid"
+export DAEMONARCHY_WORKER_BOOT_ID=boot-3b
+"$W" boot >/dev/null 2>&1
+check "a reboot at a step boundary leaves the done step alone" sh -c "! grep -q interrupted '$ROOT/jobs/$jb/work/cleanup.log' 2>/dev/null"
+check "the job auto-resumes and finishes" wait_state "$jb" done 30
+check "without rerunning the done step" test "$(stepf "$jb" 3 attempts)" = 1
+
 # --- a drained job stays parked across a reboot -----------------------------
 j4=$(submit agent submit sample-long --param step_seconds=1)
 wait_step_running "$j4" 2 30
