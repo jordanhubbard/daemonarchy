@@ -11,6 +11,8 @@ free_floor_mb=4096
 # Seconds between SIGTERM and SIGKILL on cancel; limit for cleanup hooks.
 cancel_grace=30
 cleanup_timeout=600
+# Holds the per-boot id when /proc (linprocfs) is not mounted.
+run_dir=/var/run/daemonarchy-worker
 # Where recipe inputs are fetched from.  Clients pin commits; never URLs.
 remote_product=https://github.com/jordanhubbard/daemonarchy.git
 remote_src=https://github.com/jordanhubbard/daemonarchy-src.git

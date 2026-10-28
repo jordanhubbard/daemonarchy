@@ -36,6 +36,8 @@ worker_as_user() {
 
 daemonarchy_worker_start() {
 	echo "Starting ${name}."
+	# per-boot id directory; cleanvar empties /var/run at boot
+	install -d -o "$daemonarchy_worker_user" -m 0755 /var/run/daemonarchy-worker
 	worker_as_user boot
 }
 

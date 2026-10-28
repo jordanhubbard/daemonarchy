@@ -52,6 +52,7 @@ free_floor_mb=4096
 cancel_grace=30
 cleanup_timeout=600
 heartbeat=5
+run_dir=/var/run/daemonarchy-worker
 keys_conf=$CONF_DIR/keys.conf
 keys_dir=$CONF_DIR/keys
 remote_product=https://github.com/jordanhubbard/daemonarchy.git
@@ -128,13 +129,25 @@ is_relpath() {
 	done
 }
 
+# An identifier that changes on every boot and on nothing else.  Linux and
+# FreeBSD with linprocfs have one; otherwise the first worker process after a
+# boot creates one under run_dir, which rc.d/cleanvar empties at boot.
+# (kern.boottime is not used: it moves whenever the clock is stepped.)
 boot_id() {
 	if [ -n "$BOOT_ID_OVERRIDE" ]; then
 		printf '%s\n' "$BOOT_ID_OVERRIDE"
 	elif [ -r /proc/sys/kernel/random/boot_id ]; then
 		cat /proc/sys/kernel/random/boot_id
+	elif [ -d "$run_dir" ] && [ -w "$run_dir" ]; then
+		if [ ! -s "$run_dir/boot_id" ]; then
+			od -An -N16 -tx1 /dev/urandom | tr -d ' \n' >"$run_dir/boot_id.$$"
+			echo >>"$run_dir/boot_id.$$"
+			ln "$run_dir/boot_id.$$" "$run_dir/boot_id" 2>/dev/null || :
+			rm -f "$run_dir/boot_id.$$"
+		fi
+		cat "$run_dir/boot_id"
 	else
-		sysctl -n kern.boottime | sed -n 's/^{ sec = \([0-9]*\),.*/\1/p'
+		sysctl -n kern.boottime | sed -n 's/^{ sec = \([0-9]*\),.*/boottime-\1/p'
 	fi
 }
 
@@ -1264,6 +1277,7 @@ cmd_enable() {
 		chown root:wheel "$job_root" "$CONF_DIR" "$keys_conf" "$keys_dir"
 		chmod 0755 "$job_root"
 		chown "$worker_user:$worker_user" "$JOBS" "$VAR" "$VAR/history"
+		install -d -o "$worker_user" -g "$worker_user" -m 0755 "$run_dir"
 	fi
 	: >"$CONF_DIR/enabled"
 	regen_authorized_keys
