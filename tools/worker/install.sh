@@ -25,4 +25,4 @@ find "$prefix/share/daemonarchy-worker/recipes.new" -type d -exec chmod 0555 {} 
 chmod -R u+w "$prefix/share/daemonarchy-worker/recipes" 2>/dev/null || :
 rm -rf "$prefix/share/daemonarchy-worker/recipes"
 mv "$prefix/share/daemonarchy-worker/recipes.new" "$prefix/share/daemonarchy-worker/recipes"
-echo "installed daemonarchy-worker into ${destdir:-/}usr/local (not enabled)"
+echo "installed daemonarchy-worker into ${destdir}/usr/local (not enabled)"

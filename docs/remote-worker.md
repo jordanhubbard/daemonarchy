@@ -2,7 +2,8 @@
 
 Status: the worker, the client, the rc.d service and the sample recipes are
 implemented in `tools/worker/`, with hosted tests. They are deployed on the three
-project builders, which have run sample workloads only
+project builders, which have run sample workloads only, including reboot
+recovery on the aarch64 worker
 ([testing record](testing-remote-worker-20261028.md)). No real build has run
 through the worker yet. Tracked as [WORKER-001](roadmap/active-work.md),
 targeted at 1.4.0. [Implementation](#implementation) records the choices and
@@ -390,8 +391,14 @@ running jobs resume at the next start.
 - The root wrappers listed in `sudoers` (installworld into a staging root,
   mdconfig, poudriere, bhyve) are not implemented. Only unprivileged recipes
   can run.
-- A reboot of a builder mid-step is covered only by the hosted simulation.
-  No builder has been rebooted with a job running.
+- Reboot recovery has been tested with sample jobs on the aarch64 worker,
+  with both a graceful and an ungraceful reboot, and in the hosted
+  simulation. The amd64 builder has not been rebooted with a job running.
+- `JOB_ROOT/var/audit.log` has no rotation: every request adds two lines, so
+  a client that polls often makes it grow. A `newsyslog` entry is needed.
+- Recovery after a reboot runs as soon as rc.d starts the worker. A step
+  that needs the network, such as `fetch-src`, may start before the network
+  is up and fail. It can then be retried.
 - The worker is not yet part of the image payload or the installer, and has
   no manual page. `getting-started.md` and `HACKING.md` do not describe it.
 - ETAs come from the last five durations of each recipe step on the host. A

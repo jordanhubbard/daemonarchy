@@ -18,9 +18,9 @@ group, changing the boot id and running the rc.d `start` hook
 (`daemonarchy-worker boot`). The recipes are installed read-only, as
 `install.sh` installs them.
 
-Result on Linux (dash as `/bin/sh`): **126 passed, 0 failed**, in about 50
-seconds. The test ran six times while being developed, and the last three
-runs passed in full. CI runs it with `shellcheck`
+Result on Linux (dash as `/bin/sh`): **130 passed, 0 failed**, in about 50
+seconds, at worker commit `c2c90f0`. The step-boundary reboot check fails on
+the previous worker and passes on this one. CI runs it with `shellcheck`
 (`.github/workflows/remote-worker.yml`).
 
 | Area | Checks |
@@ -33,15 +33,15 @@ runs passed in full. CI runs it with `shellcheck`
 | States | queued → running → done. running → failed, then retry from the failed step, keeping earlier steps. Retry `--from-step 1` of a done job. running → paused (frozen) → running. running → draining → paused (drained) → running. running → cancelling → cancelled, then retry `--from-step`. queued → cancelled. paused (drained) → cancelled. |
 | Checkpoints | A done step whose output hash changed runs again. Pause stops every process in the step's group, and a frozen step writes nothing. Resume does not restart the step. |
 | Cleanup hook | Runs on fail, cancel and interrupt. |
-| Reboot | After a simulated reboot, status flags a running job as having no supervisor, and rc start auto-resumes it. The interrupted step reruns as attempt 2 and earlier steps are kept. A frozen job becomes `interrupted` and waits for `resume`. A drained job stays `paused`. |
+| Reboot | After a simulated reboot, status flags a running job as having no supervisor, and rc start auto-resumes it. The interrupted step reruns as attempt 2 and earlier steps are kept. A frozen job becomes `interrupted` and waits for `resume`. A drained job stays `paused`. A reboot just after a step finished does not run that step's cleanup hook or rerun the step. |
 | `log -f` | The client's session is killed. The worker's follower exits within a few heartbeats, and the job keeps running. |
 | Other | The queue holds a second job while one runs (`max_jobs=1`). Prune of a live job is refused. Prune removes `work/` and keeps `out/`, and `--all` removes the job. `disable` refuses every key, empties `authorized_keys` and drains the running job. |
 
 ## Deployment
 
 Each builder ran `tools/worker/install.sh` and then `daemonarchy-worker enable`,
-which creates the `dbuild` user. The worker was at commit `301ad2a`; the amd64
-builder had `61a4316` first, and was updated after the bug described below. One client key was registered with
+which creates the `dbuild` user. The builders were updated by re-running
+`install.sh` as fixes landed, and all three end at worker commit `c2c90f0`. One client key was registered with
 `daemonarchy-worker key add jkh-agent --role read,operate,submit`.
 `daemonarchy-worker doctor` passed every check on all three hosts.
 
@@ -56,11 +56,18 @@ its `authorized_keys` and the job root itself are owned by root, and `jobs/`
 and `var/` are owned by `dbuild`. The rc.d service is enabled
 (`daemonarchy_worker_enable=YES`).
 
-The first submit on the amd64 builder found a bug. Recipe scripts install as
-`0444`, and the three `sample` steps share `sample/step.sh`, so the second
-copy into the job failed and left a partial job directory. The worker now
-copies a shared script once and removes a failed submit's job directory, and
-the hosted test uses read-only recipes.
+The builders found two bugs that the hosted test had missed:
+
+- **Read-only recipes.** Recipe scripts install as `0444`, and the three
+  `sample` steps share `sample/step.sh`. On the amd64 builder the second copy
+  into the job failed and left a partial job directory. The worker now
+  copies a shared script once and removes a failed submit's job directory.
+  The hosted test now uses read-only recipes.
+- **Cleanup at a step boundary.** An ungraceful reboot of the aarch64 worker
+  landed just after a step finished, and recovery ran that done step's
+  cleanup hook as `interrupted`. In `src-world-kernel` that would delete the
+  staging root the next step needs. Recovery now cleans up only a step that
+  was still running, and a hosted test recreates the boundary.
 
 ## Sample workloads
 
@@ -96,7 +103,11 @@ Job `20261028T211346Z-sample-long-41a9fd`: ten steps of 60 s each.
 | 21:16:09 | `resume` | restarted at step 3, the first step not done |
 | 21:16:25 | `cancel` mid-step 3 | `cancelled`; step 3 `cancelled`; the step log ends with `cleanup hook: step 3 (tick-03) result cancelled` |
 | 21:16:30 | `retry --from-step 3` | `running`; steps 1 and 2 kept |
-| FINISH_TIME | finished | FINISH_RESULT |
+| 21:24:36 | finished | `done`; step 3 on attempt 2, every other step on attempt 1; `sample-long-output.txt` fetched and its SHA-256 matched (`555ab642882f3c1bf1ae5be81d9781a83ad1df2ae046741d54ab45861a097f29`), listing ten ticks |
+
+This run used worker commit `301ad2a`. That version reported the cancelled
+step's reason as `exit killed` even though SIGTERM ended the group within 3 s.
+It now says `ended by a signal`.
 
 On the `fast` guest, a short `sample-long` job (`step_seconds=20`) was paused
 to capture the whole process group. All six members were stopped: the step
@@ -121,20 +132,29 @@ These commands used the client key against the amd64 builder's real sshd.
 | fetch of job `../../../etc` | `bad_request: malformed job id` |
 | `'{"op":"status","job":"x"}; id'` | `bad_request`: not a JSON object |
 
-### Reboot test
+### Reboot tests on the aarch64 worker
 
-**Not run.** The aarch64 worker is the only builder approved for a reboot,
-and it was not idle during this session: another agent was building upstream
-`src.txz` sets there (a base pass and then a patched pass). The rule for this
-round allows a reboot only when that host runs nothing else important, so
-reboot recovery is covered only by the hosted simulation. The aarch64 worker
-is also the host where a reboot would test the `/var/run` boot id rather
-than linprocfs.
+The aarch64 worker is the only builder approved for a reboot. Another agent
+had been building upstream `src.txz` sets on it earlier in the session. The
+reboots waited until that run had finished and no other user process was
+left, and the on-disk kernel and the active boot environment matched the
+running ones. This host has no linprocfs, so its boot id is the
+`/var/run/daemonarchy-worker/boot_id` file, and every reboot changed it.
+
+| Reboot | Worker | Job | What happened |
+|---|---|---|---|
+| `shutdown -r now` (graceful) | `fa7a748` | `20261028T142604Z-sample-long-808fd6` (30 s steps) | Landed in step 3, because step 2 ended during the pre-check. rc.d `stop` interrupted step 3 and ran its cleanup hook. rc.d `start` auto-resumed the job under the new boot id: step 3 ran again as attempt 2, and steps 1 and 2 were kept. |
+| `reboot -q` (no rc shutdown scripts) | `fa7a748` | same job | Landed just after step 7 finished. At boot the job was found without a live supervisor and auto-resumed at step 8, so step 7 was not rerun. This is where the boundary bug showed: step 7's cleanup hook ran. The job finished `done`. |
+| `reboot -q`, mid-step | `c2c90f0` | `20261028T143702Z-sample-long-1498c6` (40 s steps) | Landed about 10 s into step 2. Nothing ran at shutdown. At boot, 19 s after power-on, the job was marked `interrupted (was running; auto-resume true)`, step 2's cleanup hook ran, and the job auto-resumed: step 2 ran as attempt 2 and step 1 was kept. The job finished `done` with only step 2 on attempt 2. Its `sample-long-output.txt` (ten ticks) was fetched, and its SHA-256 `97fcbeca789632ec086bb1faa6c7bcfad10013fb9f5ef7e426966c6a08d3b63d` matched. |
+
+These are sample workloads on the aarch64 worker. The design's evidence item,
+which asks for a real `src-world-kernel` job surviving a reboot on the amd64
+builder, is still open.
 
 ## Not covered
 
 - `src-world-kernel` was written and not run. `hwtrace-image` and the other
   build recipes do not exist, and neither do the root wrappers.
-- No builder was rebooted with a job running.
+- The amd64 builder and the `fast` guest were not rebooted (not permitted).
 - Real workloads were not moved to the worker.
 - Nothing was signed or published.

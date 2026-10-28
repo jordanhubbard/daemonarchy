@@ -1161,7 +1161,7 @@ remains open; report files do not establish a passing gate.
 - **Priority:** P1 for 1.4.0
 - **Owner:** remote worker (tools/worker), its release payload and the builder hosts
 - **Direction:** Move job supervision onto each builder so multi-hour builds run with no client connected, and control them only over SSH with forced-command keys.
-- **Conclusion:** Design and implementation notes are in docs/remote-worker.md: recipes from the repository, checkpointed steps, pause/drain/resume/cancel/retry, per-key roles, no new listener, no signing keys on workers. The worker, the client, the rc.d service and the sample recipes are implemented in tools/worker with hosted tests. They are deployed on the amd64 builder, the KVM-hosted builder guest and the aarch64 worker, which have run sample workloads only ([record](../testing-remote-worker-20261028.md)). No real build has run through the worker.
+- **Conclusion:** Design and implementation notes are in docs/remote-worker.md: recipes from the repository, checkpointed steps, pause/drain/resume/cancel/retry, per-key roles, no new listener, no signing keys on workers. The worker, the client, the rc.d service and the sample recipes are implemented in tools/worker with hosted tests. They are deployed on the amd64 builder, the KVM-hosted builder guest and the aarch64 worker, which have run sample workloads only, including reboot recovery on the aarch64 worker ([record](../testing-remote-worker-20261028.md)). No real build has run through the worker.
 - **Release / tracking:** 1.4.0. Ships on the media, off by default; the project's own builds use the same worker and recipes.
 - **Depends on:** None; complements PERF-002 (LitAI workers could submit to it).
 - **Implementation:**
@@ -1172,6 +1172,6 @@ remains open; report files do not establish a passing gate.
 - **Evidence:**
   - [x] Sample workloads on the three builders: `sample` submitted, completed and fetched with hashes verified on each; `sample-long` on the amd64 builder survived a client disconnect during `log -f`, then pause/resume, drain/resume, cancel and retry from the cancelled step; the forced-command key got no shell, PTY, forwarding, sftp or scp.
   - [ ] On the amd64 FreeBSD builder, a real src-world-kernel job survives client disconnect, drain/resume and a builder reboot mid-step, and refuses actions outside each key's role.
-  - [ ] A builder rebooted mid-step auto-resumes its job (hosted simulation only so far).
+  - [x] A builder rebooted mid-step auto-resumes its job: sample-long on the aarch64 worker, recovered after a graceful `shutdown -r` and after an ungraceful `reboot -q` using the per-boot id in /var/run, with the interrupted step rerun and earlier steps kept.
   - [ ] The candidate image installs the worker and leaves it disabled; enabling it on an installed system and adding a key works as documented.
   - [ ] A full candidate is built through the worker alone.
