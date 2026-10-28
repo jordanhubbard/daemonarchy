@@ -15,18 +15,24 @@
 #                whose /etc/rc saves dmesg, sysctl, kenv, kldstat, pciconf,
 #                devinfo and acpidump output to DATRACE when a boot
 #                reaches init
-#   3  DATRACE   FAT32: DATRACE.TAG, STATE.TXT, QUEUE/, TRACES/, DUMPS/
+#   3  DATRACE   FAT32: DATRACE.TAG, STATE.TXT, QUEUE/, TRACES/, DUMPS/,
+#                SLOTS.MAP (where STATE.TXT and each TRACES/ slot live, so
+#                the loader rewrites their sectors through EFI_BLOCK_IO
+#                instead of the firmware FAT driver)
 #
-# Runs on the FreeBSD builder (makefs, mkimg, bsdtar).  The world pieces
+# Runs on the FreeBSD builder (makefs, mkimg, bsdtar, Python 3 for the
+# block map).  The world pieces
 # (rescue, a few diagnostic tools and libraries, modules) come from the
 # release ISO the kernel matches.  Queue experiments afterwards with
 # tools/boottrace/stick.py queue IMAGE EXPERIMENTS (any host with mtools).
 #
 # usage: build-hwtrace-image.sh -I RELEASE.iso -k KERNEL -l LOADER.efi
 #            -L LUADIR -V VERSION [-o OUTDIR] [-m "MODULE ..."] [-s DATA-MIB]
-#            [-S] [-Z]
+#            [-S] [-Z] [-x EXTRA.conf]
 #   -S  also use a serial console (VM testing)
 #   -Z  also write the published form, .img.xz with its .sha256
+#   -x  append EXTRA.conf to loader.conf (test knobs such as
+#       boottrace_test_drop; never for a published image)
 #
 # Output: OUTDIR/daemonarchy-hwtrace-VERSION-amd64.img and its .sha256.
 set -eu
@@ -34,12 +40,14 @@ set -eu
 usage() { sed -n '/^# usage:/,/^set -eu/p' "$0" | sed '$d'; exit 64; }
 here=$(cd "$(dirname "$0")" && pwd)
 iso= kernel= loader= luadir= version= outdir=. datamib=256 serial= compress=
+extra=
 modules="msdosfs"
-while getopts I:k:l:L:V:o:m:s:SZ opt; do
+while getopts I:k:l:L:V:o:m:s:SZx: opt; do
 	case $opt in
 	I) iso=$OPTARG ;; k) kernel=$OPTARG ;; l) loader=$OPTARG ;;
 	L) luadir=$OPTARG ;; V) version=$OPTARG ;; o) outdir=$OPTARG ;;
-	m) modules=$OPTARG ;; s) datamib=$OPTARG ;; S) serial=1 ;; Z) compress=1 ;; *) usage ;;
+	m) modules=$OPTARG ;; s) datamib=$OPTARG ;; S) serial=1 ;; Z) compress=1 ;;
+	x) extra=$OPTARG ;; *) usage ;;
 	esac
 done
 [ -n "$iso" ] && [ -n "$kernel" ] && [ -n "$loader" ] && [ -n "$luadir" ] &&
@@ -48,6 +56,8 @@ case $version in
 *[!A-Za-z0-9.+-]*|'') echo "invalid version: $version" >&2; exit 64 ;;
 esac
 [ "$(uname -s)" = FreeBSD ] || { echo "run on the FreeBSD builder" >&2; exit 1; }
+py=$(command -v python3 || command -v python3.12 || command -v python3.11) ||
+    { echo "Python 3 is needed for the block map" >&2; exit 1; }
 name=daemonarchy-hwtrace-$version-amd64.img
 out=$outdir/$name
 [ -e "$out" ] && { echo "refusing to overwrite $out" >&2; exit 1; }
@@ -110,6 +120,7 @@ boottrace_label="/boot/d/1 preset"
 EOF
 [ -n "$serial" ] && printf '%s\n' 'boot_multicons="YES"' \
     'boot_serial="YES"' >>"$root/boot/loader.conf"
+[ -n "$extra" ] && cat "$extra" >>"$root/boot/loader.conf"
 printf 'daemonarchy-hwtrace %s\n' "$version" >"$root/boot/version"
 
 makefs -t ffs -B little -o version=2,minfree=0,label=HWTROOT \
@@ -122,15 +133,22 @@ makefs -t msdos -s 40m -o fat_type=16,volume_label=EFISYS \
     "$work/esp.img" "$work/esp"
 
 # Preallocated files, rewritten in place by the loader (see stick.py):
-# 200 trace slots of 16 KiB and a 512-byte STATE.TXT, newline padded.
+# 200 trace slots of 16 KiB and a 512-byte STATE.TXT, newline padded, and
+# a 16 KiB SLOTS.MAP filled in after the image is assembled.  A fresh
+# makefs allocates each file contiguously; write-map checks that.
 mkdir -p "$work/data/QUEUE" "$work/data/TRACES" "$work/data/DUMPS"
 printf 'Daemonarchy boottrace stick v1\n' >"$work/data/DATRACE.TAG"
 pad() { # pad FILE SIZE
 	dd if=/dev/zero bs="$(( $2 - $(stat -f %z "$1") ))" count=1 2>/dev/null |
 	    tr '\0' '\n' >>"$1"
 }
-printf 'next=1\ntraces=0\npending=\n' >"$work/data/STATE.TXT"
+# epoch: the queue generation the loader's NVRAM self-report belongs to.
+printf 'next=1\ntraces=0\npending=\nepoch=%u\n' \
+    "$(( $(od -An -N4 -tu4 /dev/urandom) % 2147483647 + 1 ))" \
+    >"$work/data/STATE.TXT"
 pad "$work/data/STATE.TXT" 512
+printf '(block map not written yet)\n' >"$work/data/SLOTS.MAP"
+pad "$work/data/SLOTS.MAP" 16384
 printf '(empty trace slot)\n' >"$work/slot"
 pad "$work/slot" 16384
 i=1
@@ -140,11 +158,15 @@ while [ $i -le 200 ]; do
 done
 makefs -t msdos -s "${datamib}m" -o fat_type=32,sectors_per_cluster=4,volume_label=DATRACE \
     "$work/data.img" "$work/data"
+# makefs reports "too few clusters for FAT32" yet exits 0 (seen with -s 64).
+[ -s "$work/data.img" ] || { echo "makefs did not create DATRACE; use -s 256 or more" >&2; exit 1; }
 
 mkdir -p "$outdir"
 mkimg -s gpt -f raw -p efi/EFISYS:="$work/esp.img" \
     -p freebsd-ufs/HWTROOT:="$work/root.ufs" \
     -p ms-basic-data/DATRACE:="$work/data.img" -o "$out"
+# Record where STATE.TXT and the trace slots are; fails unless contiguous.
+"$py" "$here/tools/boottrace/stick.py" write-map "$out"
 (cd "$outdir" && sha256 -r "$name" | awk '{ print $1 "  " $2 }' >"$name.sha256")
 cat "$out.sha256"
 if [ -n "$compress" ]; then
