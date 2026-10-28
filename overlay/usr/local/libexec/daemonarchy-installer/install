@@ -442,6 +442,20 @@ installed_boot_dhcp() {
   printf '/var/log/daemonarchy-net.log\t644\t3\t100\t*\tJC\n' >"$TARGET/usr/local/etc/newsyslog.conf.d/daemonarchy-net.conf"
 }
 
+# The Apple T2 controller's internal USB link (cdce on USB 05ac:8233, NET-001
+# and NET-002) is never DHCP, a route or DNS: IPv6 link-local only, for the
+# Touch ID bridge. Installed for every network mode; it does nothing on a
+# machine without a T2.
+installed_t2_link() {
+  local src=$ISO_SHARE/netselect
+  install -d -m 0755 "$TARGET/usr/local/libexec" "$TARGET/usr/local/etc/devd" "$TARGET/usr/local/etc/rc.conf.d/network"
+  install -m 0555 "$src/daemonarchy-t2link" "$TARGET/usr/local/libexec/daemonarchy-t2link"
+  install -m 0444 "$src/daemonarchy-t2link.conf" "$TARGET/usr/local/etc/devd/daemonarchy-t2link.conf"
+  install -m 0444 "$src/daemonarchy-t2link.rc.conf" "$TARGET/usr/local/etc/rc.conf.d/network/daemonarchy-t2link"
+}
+
+installed_t2_link
+
 # The network the installer used carries over. Wired DHCP (the default, and
 # what an autoinstall without network settings gets) covers every Ethernet port,
 # so a cable plugged in later just works; a static address stays on the port

@@ -1,6 +1,6 @@
 # Application note: MacBook Pro 16-inch (2019)
 
-Updated October 24, 2026. Model: **MacBookPro16,1**, Apple T2, Intel Core
+Updated October 28, 2026. Model: **MacBookPro16,1**, Apple T2, Intel Core
 i9-9880H.
 
 **Current release:** 1.3.1 (OSVERSION `1600029`) carries the graphics, T2
@@ -160,13 +160,133 @@ On the same October 27 boot, built-in Wi-Fi associated to a 5 GHz WPA network
 and obtained its address by DHCP on `wlan0`, and SDDM started Hyprland on the
 Radeon Pro 5500M (`amdgpu`, 3072×1920).
 
-That installed 1.3.1 system also showed USB Ethernet `ue0` with a link but no
-address. From FreeBSD's sources, such a port makes devd(8) hold a foreground
-dhclient for up to 60 seconds, which delays the Wi-Fi client, while boot waits
-up to 30 seconds for a default route. This has not been timed on this machine.
-Installations from 1.4 run DHCP clients in the background and let
-`daemonarchy-netselect` choose the first usable connection
-([NET-002](roadmap/active-work.md)); only stubbed tests cover that change so far.
+That installed 1.3.1 system also showed `ue0` with a link but no address. It
+is not USB Ethernet: see [the T2 internal link](#the-t2-internal-link-and-touch-id)
+below. From FreeBSD's sources, a port with a link and no DHCP server makes
+devd(8) hold a foreground dhclient for up to 60 seconds, which delays the Wi-Fi
+client, while boot waits up to 30 seconds for a default route. This has not
+been timed on this machine. Installations from 1.4 run DHCP clients in the
+background, let `daemonarchy-netselect` choose the first usable connection
+([NET-002](roadmap/active-work.md)), and never run DHCP on the T2 link; only
+stubbed tests and the hand check below cover that so far.
+
+## The T2 internal link and Touch ID
+
+`ue0` on this machine is the Apple T2 controller's internal USB link to
+bridgeOS: `cdce0: <Apple Inc. Apple T2 Controller>` on `usbus3` (the T2 BCE
+virtual host controller), USB vendor `0x05ac`, product `0x8233`, with the fixed
+MAC address `ac:de:48:00:11:22`. It always has a link and never a DHCP server.
+The T2 answers on IPv6 link-local at `fe80::aede:48ff:fe33:4455` (MAC
+`ac:de:48:33:44:55`); its RemoteXPC service listens on TCP 59602 and
+advertises BiometricKit, the Touch ID sensor's service. The USB Ethernet
+adapter is `axe0`/`ue1` here, but the numbers follow attach order, so
+Daemonarchy identifies the T2 link by its USB ids and uses the MAC only as a
+cross-check.
+
+From 1.4 (NET-001, NET-002) the installer leaves the T2 link out of network
+discovery, DHCP, route and DNS choice, and every installed system gets
+`daemonarchy-t2link`: a devd rule on the cdce attach for `05ac:8233` and an
+`rc.conf.d/network` fragment that give the link `inet6 -ifdisabled
+auto_linklocal`, no IPv4 and no dhclient, whatever its number.
+`daemonarchy-netselect status` lists it as never a route or DNS candidate.
+
+Checked by hand on October 28 on the installed 1.3.1 system, without a reboot
+and without touching `ue1` or `wlan0`: the files were installed, FreeBSD's own
+`network.subr` reported no DHCP for `ue0` (and DHCP still for `ue1` and
+`wlan0`), devd's `service dhclient quietstart ue0` refused to start a client,
+the boot-time dhclient on `ue0` was stopped and `ue0` came up with
+`fe80::aede:48ff:fe00:1122`, and the T2 answered ping and its RemoteXPC port.
+One slip: a `SIGHUP` meant to make devd reread its rules stopped devd (devd
+treats `SIGHUP` as a request to exit) for about ten seconds until
+`service devd start` restarted it with the new rule; the SSH session over
+`ue1` was not affected. The devd rule has not yet fired on a real attach, and
+no boot has run with these files.
+
+### Touch ID (HW-004)
+
+KaiT2en's `t2-touchid` bridges the sensor to stock fprintd through libfprint's
+virtual storage device, and Daemonarchy's ports tree packages it as
+`security/t2-touchid` ([ports PR #33](https://github.com/jordanhubbard/daemonarchy-ports/pull/33);
+disabled by default; see [HW-004](roadmap/active-work.md)).
+The fingers must be enrolled under macOS: the bridge never enrolls, it only
+binds a macOS-enrolled identity to a FreeBSD account. The Secure Enclave also
+reports a locked, empty inventory until the macOS account password has
+unlocked its biometric keybag once since the T2 last powered on (the
+before-first-unlock gate); rebooting FreeBSD does not power-cycle the T2, but
+a real power loss does.
+
+This MacBook has no macOS (the whole disk is Daemonarchy), so only the
+transport was tested, on October 28 with the package installed and the daemon
+started by hand. Discovery found `ue0` from its USB ids and the T2 from the
+neighbour table; RemoteXPC advertised `com.apple.eos.BiometricKit` on port
+49166 within 0.4 s; the BiometricKit session (sensor reset, readiness and the
+FDR calibration load) opened in 4 to 8 seconds. In two of three runs the
+first attempt timed out instead (`EAGAIN` from the 8-second read timeout,
+after about 9 seconds); the daemon retries, and its second attempt succeeded. The Secure Enclave's answers, for macOS user ids
+501, 502 and 503 alike:
+
+| Query | Status | Data |
+| --- | --- | --- |
+| `SKS_LOCK_STATE` | 0 | `0x15` |
+| `PROVISIONING_STATE` | 0 | `5` |
+| `USER_IDENTITIES` | 0 | empty (no enrolled finger) |
+| `GET_FREE_IDENTITY_COUNT` | 0 | `0` |
+| `REQUEST_MAX_IDENTITY_COUNT` | 0 | `5` |
+| `GET_ENABLED_FOR_UNLOCK` | 0 | `0` |
+| `GET_SENSOR_INFO` | 0 | `01000000 0c000000 03000000` |
+| `GET_IDENTITY_RECORDS` | 0 | empty |
+
+The daemon then searched macOS user ids 501 to 520, found no enrolled finger
+and reported that the Secure Enclave is locked or empty. It was stopped
+afterwards and is not enabled; PAM, SDDM and the lock screen were not changed.
+A login by finger needs macOS installed beside Daemonarchy, fingers enrolled
+there, and a macOS login after each T2 power loss.
+
+### Enabling Touch ID (not yet tested end to end)
+
+This is the intended procedure. No part of it after the transport check above
+has run on hardware.
+
+1. Install the bridge and fprintd; libfprint must be built with its virtual
+   devices (the `VIRTUAL` option, on by default in Daemonarchy's ports tree):
+   `pkg install t2-touchid`.
+2. In macOS, enroll the fingers and log in once.
+3. In `/etc/rc.conf`, enable the bridge and bind the macOS-enrolled fingers
+   to your account (or run `fprintd-enroll -f <finger> <user>` and touch the
+   sensor once instead):
+
+   ```sh
+   t2_touchid_enable="YES"
+   t2_touchid_bind_user="<user>"
+   ```
+
+   Then `service t2_touchid start` and check `fprintd-list <user>` and
+   `fprintd-verify <user>`. The rc script runs fprintd itself with
+   `FP_VIRTUAL_DEVICE_STORAGE` set, because D-Bus activation starts it with a
+   clean environment; stopping the bridge stops that fprintd, and PAM then
+   falls through to the password.
+4. Add pam_fprintd before the password module of each service that should
+   accept a finger. Keep a root shell open while testing, so that a broken PAM
+   file cannot lock you out:
+   - sudo, in `/usr/local/etc/pam.d/sudo`, and console login, in
+     `/etc/pam.d/login`, before `auth include system`:
+
+     ```text
+     auth		sufficient	/usr/local/lib/security/pam_fprintd.so
+     ```
+
+   - SDDM, at the top of the `auth` section of `/usr/local/etc/pam.d/sddm`
+     (the same line). The greeter may then wait for the finger, or the
+     match window, before it accepts the password.
+   - hyprlock: either the same line at the top of `/usr/local/etc/pam.d/hyprlock`,
+     or hyprlock's own fprintd support in `hyprlock.conf`
+     (`auth { fingerprint { enabled = true } }`), which leaves PAM unchanged.
+
+There is no Escape key to cancel a scan on FreeBSD (upstream reads it
+through libinput on Linux); a prompt ends when the finger matches or after
+the 10-second match window, and an unreachable T2 falls back to the password
+after 15 seconds. Suspend and resume are not handled specially: without
+logind, the bridge notices a dead session by its timeout.
 
 ## Other limits and investigation
 

@@ -60,7 +60,13 @@ ifconfig() {
     '-l ether') tr '\n' ' ' <"$work/w/ether"; echo ;;
     -C) echo 'bridge epair gif lo tap tun vlan wlan' ;;
     *' inet') [[ -f $work/w/addr.$1 ]] && printf '\tinet %s netmask 0xffffff00\n' "$(cat "$work/w/addr.$1")"; return 0 ;;
-    *' up') [[ $2 == inet ]] && { call "ifconfig $*"; echo "${3%/*}" >"$work/w/addr.$1"; }; return 0 ;;
+    *' up')
+      [[ $2 == inet ]] && { call "ifconfig $*"; echo "${3%/*}" >"$work/w/addr.$1"; }
+      [[ $2 == inet6 ]] && call "ifconfig $*"
+      return 0
+      ;;
+    *' ether') [[ -f $work/w/mac.$1 ]] && printf '\tether %s\n' "$(cat "$work/w/mac.$1")"; return 0 ;;
+    *' inet '*' -alias') call "ifconfig $*"; rm -f "$work/w/addr.$1"; return 0 ;;
     'wlan0 destroy') rm -f "$work/w/wlan-parent"; return 0 ;;
     'wlan0 create wlandev '*) call "ifconfig $*"; echo "$4" >"$work/w/wlan-parent" ;;
     *)
@@ -136,6 +142,8 @@ sysctl() {
     '-n kern.module_path') echo '/boot/kernel;/boot/modules' ;;
     kern.module_path=*) call "sysctl $*" ;;
     -n\ dev.*.%desc) echo "Adapter ${2#dev.}" ;;
+    -n\ net.ue.*.%parent) cat "$work/w/ue-parent.${2#net.ue.}" 2>/dev/null || return 1 ;;
+    -n\ dev.cdce.*.%pnpinfo) cat "$work/w/pnp.${2#dev.cdce.}" 2>/dev/null || return 1 ;;
     *) return 1 ;;
   esac
 }
@@ -149,8 +157,8 @@ kldload() {
   return 0
 }
 devctl() { call "devctl $*"; }
-ps() { echo "dhclient: ${work##*/} (dhclient)"; }
-kill() { :; }
+ps() { [[ -f $work/w/ps.$2 ]] && cat "$work/w/ps.$2" || echo "dhclient: ${work##*/} (dhclient)"; }
+kill() { call "kill $*"; }
 fwget() { bounded fwget "$@"; cat "$work/w/fwget" 2>/dev/null; }
 pkg() {
   if [[ $1 == info ]]; then grep -qx "$3" "$work/w/installed" 2>/dev/null; return; fi
@@ -200,6 +208,46 @@ grep -q "BCM4364 802.11ac Wireless Network Adapter (pci0:3:0:0) has no driver" "
 grep -Eq 'bridge0|tap0|vlan5|epair0a|lo0|0c0330' "$NB_STATE/report.discover" "$NB_STATE/unattached" && fail 'pseudo or non-network device shown'
 nb_valid_ipv4 192.168.1.1 && ! nb_valid_ipv4 300.1.1.1 && ! nb_valid_ipv4 127.0.0.1 &&
   ! nb_valid_ipv4 1.2.3 && ! nb_valid_ipv4 '1.1.1.1; rm' || fail 'IPv4 validation'
+
+# ---------------------------------------------------------------- 1b. Apple T2 internal link
+
+# MacBookPro16,1: the T2 controller is cdce(4) on USB 05ac:8233 with a link and
+# never a DHCP server. Here the USB Ethernet adapter attached first, so the T2
+# link is ue1: the USB ids decide, not the interface number.
+usb_nic() { # ueN parent [vendor product]
+  echo "$2" >"$work/w/ue-parent.${1#ue}.%parent"
+  [[ -n ${3:-} ]] && echo "vendor=$3 product=$4 devclass=0x00 devsubclass=0x00 mode=host intclass=0x02 intsubclass=0x0d" \
+    >"$work/w/pnp.${2#cdce}.%pnpinfo"
+  return 0
+}
+world
+nic ue0 up 192.168.7.20 192.168.7.1 192.168.7.53
+nic ue1 up
+nic ue2 up 172.20.10.2 172.20.10.1 172.20.10.1
+usb_nic ue0 axe0
+usb_nic ue1 cdce0 0x05ac 0x8233; echo ac:de:48:00:11:22 >"$work/w/mac.ue1"
+usb_nic ue2 cdce1 0x05ac 0x12a8   # iPhone tethering: also Apple, also cdce
+echo 4242 >"$work/run/dhclient.ue1.pid"; echo 'dhclient: ue1 (dhclient)' >"$work/w/ps.4242"
+echo 169.254.3.3 >"$work/w/addr.ue1"   # anything IPv4 left on the link goes
+nb_reset; nb_discover
+nb_t2_link ue1 && ! nb_t2_link ue0 && ! nb_t2_link ue2 && ! nb_t2_link em0 || fail 'T2 link detection'
+[[ $(cut -f1 "$NB_STATE/interfaces" | tr '\n' ' ') == 'ue0 ue2 ' ]] || fail 'the T2 link was offered as a network adapter'
+[[ $(nb_get t2_links) == ue1 ]] || fail 'T2 link not recorded'
+grep -q "ue1 is the Apple T2 controller's internal link" "$NB_STATE/report.discover" || fail 'T2 link not explained'
+called 'kill 4242' || fail 'the boot-time dhclient on the T2 link was left running'
+called 'ifconfig ue1 inet 169.254.3.3 -alias' || fail 'IPv4 left on the T2 link'
+called 'ifconfig ue1 inet6 -ifdisabled auto_linklocal up' || fail 'T2 link not brought up for IPv6 link-local'
+called 'ifconfig ue[02] inet6' && fail 'IPv6 link-local forced on an ordinary USB adapter'
+nb_dhcp || fail 'no primary next to the T2 link'
+called 'dhclient ue1' && fail 'DHCP probed the T2 link'
+[[ $(nb_get primary) == ue0 && $(grep -c '^route add default' "$work/w/calls") == 1 ]] || fail 'T2 link affected the primary'
+grep -q '^ue1' "$NB_STATE/report.dhcp" && fail 'T2 link reported as a DHCP result'
+# A T2 link with an unexpected MAC is still the T2 link (logged only).
+world
+nic ue0 up; usb_nic ue0 cdce0 0x05ac 0x8233; echo 02:00:00:00:00:01 >"$work/w/mac.ue0"
+nb_reset; nb_discover
+[[ ! -s $NB_STATE/interfaces ]] || fail 'T2 link with another MAC was offered'
+grep -q 'ue0: MAC 02:00:00:00:00:01 differs' "$NB_LOG" || fail 'MAC cross-check not logged'
 
 # ---------------------------------------------------------------- 2. several NICs, one DHCP
 

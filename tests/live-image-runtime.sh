@@ -76,6 +76,9 @@ for path in /usr/freebsd-dist/base.txz /usr/freebsd-dist/kernel.txz /usr/freebsd
   /usr/local/share/daemonarchy-installer/netselect/dhclient-enter-hooks \
   /usr/local/share/daemonarchy-installer/netselect/dhclient-exit-hooks \
   /usr/local/share/daemonarchy-installer/netselect/daemonarchy-netselect.conf \
+  /usr/local/share/daemonarchy-installer/netselect/daemonarchy-t2link \
+  /usr/local/share/daemonarchy-installer/netselect/daemonarchy-t2link.conf \
+  /usr/local/share/daemonarchy-installer/netselect/daemonarchy-t2link.rc.conf \
   /usr/local/libexec/daemonarchy-installer/pkg-events \
   /usr/local/share/daemonarchy-installer/install-tmux.conf \
   /usr/local/share/daemonarchy-installer/omarchy-wifi-enterprise \

@@ -23,6 +23,9 @@
 #            next best valid candidate takes over at once.
 #   losers   keep their address and their background dhclient (late-link
 #            recovery) but never publish a route or DNS servers.
+#   T2 link  the Apple T2 controller's internal USB link (cdce on USB
+#            05ac:8233, see daemonarchy-t2link) is never a candidate, even
+#            if a lease were reported for it.
 #
 # Budgets (declared in docs/roadmap/active-work.md, NET-002): a candidate check
 # takes at most NETSELECT_GATEWAY_TIMEOUT + NETSELECT_DNS_TIMEOUT seconds
@@ -47,6 +50,7 @@ NS_DNS_NAME=${NETSELECT_DNS_NAME:-pkg.FreeBSD.org}
 NS_GATEWAY_TIMEOUT=${NETSELECT_GATEWAY_TIMEOUT:-1}
 NS_DNS_TIMEOUT=${NETSELECT_DNS_TIMEOUT:-2}
 NS_LOCK_TIMEOUT=${NETSELECT_LOCK_TIMEOUT:-15}
+NS_T2LINK=${NETSELECT_T2LINK:-/usr/local/libexec/daemonarchy-t2link}
 
 ns_now() { date +%s; }
 
@@ -93,6 +97,11 @@ ns_link() {
 	esac
 }
 
+# The Apple T2 internal link: never a route or DNS candidate (NET-001).
+ns_t2_link() {
+	[ -x "$NS_T2LINK" ] && "$NS_T2LINK" is "$1"
+}
+
 ns_has_address() {
 	ifconfig "$1" inet 2>/dev/null | grep -q "inet $2 "
 }
@@ -132,6 +141,11 @@ ns_lease() {
 	local pending link gw_ok=no answers ok_servers='' rcodes='' class=0 a
 	ns_valid_ifname "$ifc" || return 1
 	mkdir -p "$NS_STATE"
+	if ns_t2_link "$ifc"; then
+		ns_log "$ifc $reason ignored: Apple T2 internal link, never a route or DNS candidate"
+		[ -f "$NS_STATE/cand.$ifc" ] && ns_locked drop "$ifc"
+		return 0
+	fi
 	pending=$NS_STATE/pending.$ifc.$$
 	case $reason in
 	BOUND|RENEW|REBIND|REBOOT) ;;
@@ -225,6 +239,7 @@ ns_commit() {
 ns_valid_candidate() {
 	local ifc=$1 cand=$NS_STATE/cand.$1
 	[ "$(ns_get "$cand" status)" = lease ] || return 1
+	ns_t2_link "$ifc" && return 1
 	[ "$(ns_get "$cand" class)" -ge 1 ] 2>/dev/null || return 1
 	case $(ns_link "$ifc") in up|unknown) ;; *) return 1 ;; esac
 	ns_has_address "$ifc" "$(ns_get "$cand" address)"
@@ -336,6 +351,7 @@ ns_status() {
 		[ -f "$cand" ] || continue
 		echo "${cand##*/cand.}: $(tr '\n' ' ' <"$cand")"
 	done
+	[ -x "$NS_T2LINK" ] && "$NS_T2LINK" status | grep -v '^no Apple T2'
 	echo "log: $NS_LOG"
 }
 
@@ -348,6 +364,7 @@ _locked)
 	shift
 	case $1 in
 	commit) ns_commit "$2" "$3" ;;
+	drop) rm -f "$NS_STATE/cand.$2"; ns_elect ;;
 	elect) ns_elect ;;
 	esac
 	;;
