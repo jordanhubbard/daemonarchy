@@ -1,0 +1,131 @@
+{
+  "schema": "daemonarchy/msi-capture-candidate@1",
+  "candidate": "daemonarchy-hwtrace-1.4.0-dev8-amd64.img",
+  "candidate_sha256": "5d4413fff991c6ccd1e22c823e6e9c6c3067539ab41b73c0125545c99022a3dc",
+  "candidate_bytes": 391153152,
+  "unqueued_sha256": "faa04e40270d00dc47ed4fde41fc0ab8be6d2a9ccfd7ec138f4696c2ef295e0e",
+  "previous_candidate": "daemonarchy-hwtrace-1.4.0-dev7-amd64.img",
+  "msi_finding": "dev7: experiment 1 vga-disabled (hint.vga.0.disabled=1, hw.atrtc.enabled=0) reached init; dev5 hung at probe vga0@isa1; MSI FADT IAPC_BOOT_ARCH is {8042,NO_ASPM}, no NO_VGA",
+  "kernel_source": {
+    "repository": "jordanhubbard/daemonarchy-src",
+    "base_branch": "daemonarchy",
+    "base_commit": "bac4c23caca",
+    "base_includes": [
+      "https://github.com/jordanhubbard/daemonarchy-src/pull/42",
+      "https://github.com/jordanhubbard/daemonarchy-src/pull/44"
+    ],
+    "fix_branch": "fix/isavga-skip-uefi",
+    "fix_commit": "24261b7146d7f4091b2e48eefbef0debad606f01",
+    "fix_pr": "https://github.com/jordanhubbard/daemonarchy-src/pull/45",
+    "tree": "96a4223c9ea288e7776a123126fdaf85b9912fe6",
+    "config": "GENERIC",
+    "build_host": "madmax FreeBSD builder guest, 16.0-CURRENT d63d77f4eb3c",
+    "method": "config + make -j16 kernel with the builder guest host toolchain",
+    "compile_errors": 0,
+    "compile_warnings": 0,
+    "i386_vga_isa_o": "compiles in an i386 GENERIC kernel directory with -Werror, 0 warnings (single object only)"
+  },
+  "image_builder": {
+    "script": "build-hwtrace-image.sh",
+    "product_commit": "cc4e373830837abac09186e328b546db585a699e",
+    "identical_to_dev7_builder": true,
+    "serial_console": false,
+    "extra_conf": false,
+    "release_iso": "1.4.0-live3",
+    "release_iso_sha256": "bd3c12932bb93ae00cf5db26836532eab1480d69dae412062ee810a2c08e70b0"
+  },
+  "assembly": {
+    "boot/kernel/kernel": "9a4f3f379b02bc180c0f7b174ba8ce95a9c78b5429dc8d4f8cde34f29667fa6f",
+    "boot/loader.efi": "dc6d7f71d5fd42c1b3783b7e2c6413b2b4985f3652fdc72e2c675fd2718e48f5",
+    "lua": {
+      "splash.lua": "3f9054953db3d556042a892612e727c00a4daeff96cdb1ebd4a1587ac7699c45",
+      "netdebug.lua": "c9da2b5a31a48daa0eb7b3262103fbd7153f863eb63adb4d5fef2c52b11f59d7",
+      "menu.lua": "5d16efefee4422447a81222de5624684341e11a0ec4e049fb5f7c134de744847"
+    },
+    "boot_trace_menu_key": "i",
+    "preset_boot_d_1_present": true
+  },
+  "initial_state": {
+    "next": 1,
+    "traces": 0,
+    "pending": "",
+    "epoch": 1810113917
+  },
+  "queues": {
+    "QUEUE/0001.CNF": {
+      "sha256": "6f8e3b4a92983d5916f56e7f1c064acd02b238d65ccc921deaacdb5e56f0033c",
+      "experiment": "# experiment: stock-uefi"
+    },
+    "QUEUE/0002.CNF": {
+      "sha256": "d7f8e24a3a008b7d33bbe658b15405aee26eeeba4f4c7310b7c806dd50642041",
+      "experiment": "# experiment: stock-uefi-atrtc-off"
+    },
+    "QUEUE/0003.CNF": {
+      "sha256": "84f369fa0bcdd68adbf510117a0a16c8d46ef01ab80ce4c1911c3d8b61ce7ac9",
+      "experiment": "# experiment: vga-hint-atrtc-on"
+    }
+  },
+  "controls": {
+    "block_map": "PASS:201 files"
+  },
+  "native_vm": {
+    "transport": "QEMU xHCI usb-storage",
+    "machine": "q35,smm=on",
+    "cpu": "Westmere",
+    "acceleration": "TCG",
+    "host": "arm64 Linux",
+    "harness": "tools/boottrace/qemu-stick-test.py",
+    "runs": {
+      "exact_candidate_copy": {
+        "serial_override": false,
+        "experiment": "stock-uefi",
+        "result": "reached init; DUMPS/0001 saved; TRACES/0001.TXT filed via raw blocks, read-back ok; loader stopped",
+        "trace_status": "Status: complete: the kernel reached init",
+        "dmesg_isa": [
+          "sc0 failed to probe on isa0",
+          "attimer0: <AT timer> at port 0x40 on isa0"
+        ],
+        "vga0_probed": false,
+        "kenv_vga_settings": false,
+        "final_state": {
+          "next": 2,
+          "traces": 1,
+          "pending": "",
+          "epoch": 1810113917
+        },
+        "trace_sha256": "369136c744cdb29c6a73b81f06970c7c24515c291f4238cbc19ccb77da484861",
+        "dmesg_sha256": "dfdfb7b872512d0114bf321472c8cd7ef160fe3a5b09a3cace2ba83d85bf4d61",
+        "serial_sha256": "a721c945405093af011e5300e444bae5bfd406b4027783610145f4033b416779"
+      },
+      "isa_hang_requeued_copy": {
+        "knob": "debug.boottrace.test_hang=attimer0",
+        "serial_sha256": "c61593e732d123047cf6a932cc764db7328da6aa572f1ea61ec8222be0d878b2",
+        "traces": {
+          "stock-uefi-hang-attimer0": {
+            "sha256": "385be7c5e3d141883155e362b8096ad7e6eb96b4822b8f7df0b8099a7b661176",
+            "status": "Status: INCOMPLETE: the kernel never reached init (hang or reset)",
+            "steps": [
+              "#3561 13.335s cpu1 event: isavga: UEFI boot, not probing legacy VGA",
+              "#3562 13.900s cpu1 probe: probe sc0@isa0 sc",
+              "#3563 13.921s cpu1 probe: probe attimer0@isa0 attimer"
+            ]
+          },
+          "vga-hint-hang-attimer0": {
+            "sha256": "1d27016dea195079cb0280575e0b70699c4fa6fdccab7e2fc263969d675f2f6a",
+            "status": "Status: INCOMPLETE: the kernel never reached init (hang or reset)",
+            "steps": [
+              "#3561 13.316s cpu1 event: isavga: hint.vga.0.disabled, not probing",
+              "#3562 13.876s cpu1 probe: probe sc0@isa0 sc",
+              "#3563 13.899s cpu1 probe: probe attimer0@isa0 attimer"
+            ]
+          }
+        }
+      }
+    },
+    "known_vm_noise": "retried usb-storage READ(10)/WRITE(10) CAM errors, also present in dev4 and dev7 VM logs"
+  },
+  "signed": false,
+  "physical_msi_qualified": false,
+  "usb_written": false,
+  "canonical_lifecycle_receipt": false
+}
