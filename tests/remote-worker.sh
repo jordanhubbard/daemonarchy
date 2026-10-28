@@ -367,7 +367,7 @@ check "cancel of a drained job" sh -c "'$REMOTE' operator cancel '$j4' | grep -q
 
 # --- prune -------------------------------------------------------------------
 refused "prune of a live job is refused" invalid_state serve_raw agent "{\"op\":\"prune\",\"job\":\"$(submit agent submit sample-long --param step_seconds=5)\"}"
-check "prune removes work/" sh -c "'$REMOTE' operator prune '$j1' | grep -q 'pruned work' && test ! -e '$ROOT/jobs/$j1/work/label'"
+check "prune removes work/" sh -c "'$REMOTE' operator prune '$j1' | grep -q 'pruned work/' && test ! -e '$ROOT/jobs/$j1/work/label'"
 check "outputs survive a work prune" test -f "$ROOT/jobs/$j1/out/sample-output.txt"
 check "prune --all removes the job" sh -c "'$REMOTE' operator prune '$j1' --all >/dev/null && test ! -e '$ROOT/jobs/$j1'"
 

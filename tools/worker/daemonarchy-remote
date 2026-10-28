@@ -182,7 +182,8 @@ render() {
 	    "steps:",
 	    (.steps[] | "  \(.n)\t\(.name)\t\(.state)\t\(if .duration then (.duration | dur) else "" end)\t\(if .attempts > 1 then "attempts \(.attempts)" else "" end)\(if .reason then " \(.reason)" else "" end)"),
 	    (if ([.steps[].outputs | keys[]] | length) > 0 then "outputs:", (.steps[].outputs | to_entries[] | "  \(.key)  sha256:\(.value)") else empty end)' ;;
-	*) jq -r '"\(.job): \(.state)\(if .message then " -- " + .message else "" end)\(if .pruned then " (pruned \(.pruned))" else "" end)"' ;;
+	prune) jq -r '"\(.job): pruned \(if .pruned == "all" then "the whole job" else "work/" end)"' ;;
+	*) jq -r '"\(.job): \(.state)\(if .message then " -- " + .message else "" end)"' ;;
 	esac
 }
 

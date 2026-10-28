@@ -738,7 +738,11 @@ cmd_request() {
 	REQ=$1
 	printf '%s' "$REQ" | jq -e 'type == "object"' >/dev/null 2>&1 || fail bad_request "request is not a JSON object"
 	REQ_OP=$(rq op) || fail bad_request "malformed op"
-	role_for_op "$REQ_OP" >/dev/null || fail bad_request "unknown op"
+	need=$(role_for_op "$REQ_OP") || fail bad_request "unknown op"
+	# Jobs must never start as root: only reads are allowed to root here.
+	if [ "$(id -u)" = 0 ] && [ "$need" != read ]; then
+		fail forbidden "run $REQ_OP as the worker user: su -m $worker_user -c '$SELF request ...'"
+	fi
 	dispatch
 }
 
@@ -1297,8 +1301,8 @@ cmd_enable() {
 	say "enabled: job root $job_root, user $worker_user"
 }
 
-cmd_disable() {
-	need_root disable
+# Drain every running job; runs as the worker user so job files keep their owner.
+cmd_drain_all() {
 	MODE='admin'
 	for d in "$JOBS"/*/; do
 		[ -f "$d/state" ] || continue
@@ -1314,6 +1318,16 @@ cmd_disable() {
 			job_unlock
 		)
 	done
+}
+
+cmd_disable() {
+	need_root disable
+	MODE='admin'
+	if [ "$FAKE_ADMIN" = 0 ]; then
+		su -m "$worker_user" -c "$SELF _drain_all"
+	else
+		cmd_drain_all
+	fi
 	rm -f "$CONF_DIR/enabled"
 	regen_authorized_keys
 	if [ "$FAKE_ADMIN" = 0 ] && command -v sysrc >/dev/null 2>&1; then
@@ -1454,6 +1468,7 @@ boot) cmd_boot ;;
 stop-all) cmd_stop_all ;;
 _supervise) cmd_supervise "$@" ;;
 _step) cmd_step "$@" ;;
+_drain_all) cmd_drain_all ;;
 version) echo "daemonarchy-worker $WORKER_VERSION (protocol $WORKER_PROTOCOL)" ;;
 *)
 	MODE='admin'

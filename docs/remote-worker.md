@@ -1,7 +1,12 @@
 # Remote build worker (design note)
 
-Status: design, not implemented. Tracked as [WORKER-001](roadmap/active-work.md),
-targeted at 1.4.0.
+Status: the worker, the client, the rc.d service and the sample recipes are
+implemented in `tools/worker/`, with hosted tests. They are deployed on the three
+project builders, which have run sample workloads only
+([testing record](testing-remote-worker-20261028.md)). No real build has run
+through the worker yet. Tracked as [WORKER-001](roadmap/active-work.md),
+targeted at 1.4.0. [Implementation](#implementation) records the choices and
+the remaining gaps.
 
 Daemonarchy builds take hours: a world build is about 3.5 hours on the
 FreeBSD builder, and a candidate with its VM checks takes most of a day. Today
@@ -40,7 +45,7 @@ system and off until the owner enables it and authorizes a key.
 
 ## Non-goals (first version)
 
-- Scheduling across hosts in 1.4. Each builder has its own queue; a client queries
+- Scheduling across hosts in the planned 1.4. Each builder has its own queue; a client queries
   several builders. A coordinator can come later (see
   [PERF-002](roadmap/active-work.md)).
 - Signing or publishing. Signing keys never reach a worker; the operator signs
@@ -176,7 +181,7 @@ Threats considered:
 
 ## On an installed system
 
-The 1.4 media installs `daemonarchy-worker` and `daemonarchy-remote`,
+The planned 1.4 media installs `daemonarchy-worker` and `daemonarchy-remote`,
 the rc.d service (`daemonarchy_worker_enable="NO"`), the recipes and a
 manual page. The service is not enabled. The `dbuild` user and the sudo
 wrappers are created only on enable:
@@ -209,7 +214,7 @@ repository.
 
 ## Delivery plan
 
-The worker is a 1.4.0 deliverable: steps 1 to 3 are required before the 1.4
+The worker is planned as a 1.4.0 deliverable: steps 1 to 3 are required before the 1.4
 selection is locked, and step 4 by the 1.4.0 release.
 
 1. This note, and the WORKER-001 work item.
@@ -225,5 +230,172 @@ selection is locked, and step 4 by the 1.4.0 release.
    by default; document it in `getting-started.md` and `HACKING.md`; and
    check on the candidate image that it is installed and not enabled.
 4. The `release-sets`, `live-iso`, `poudriere-bulk` and `vm-qualify` recipes,
-   then a full candidate run through the worker alone. The 1.4.0 release
-   notes name the worker and point at this procedure.
+   then a full candidate run through the worker alone. The planned 1.4.0
+   release notes name the worker and point at this procedure.
+
+## Implementation
+
+The first implementation covers delivery steps 2 and 3, using sample workloads.
+
+### Files
+
+| Path | Installed as |
+|---|---|
+| `tools/worker/daemonarchy-worker` | `/usr/local/bin/daemonarchy-worker` (builder side; forced command, admin, rc.d hooks, supervisors) |
+| `tools/worker/daemonarchy-remote` | `/usr/local/bin/daemonarchy-remote` (client; needs only `ssh`, `jq`, `tar` and a SHA-256 tool) |
+| `tools/worker/rc.d/daemonarchy_worker` | `/usr/local/etc/rc.d/daemonarchy_worker` (`daemonarchy_worker_enable="NO"` by default) |
+| `tools/worker/recipes/` | `/usr/local/share/daemonarchy-worker/recipes/` (read-only) |
+| `tools/worker/worker.conf.sample` | `/usr/local/etc/daemonarchy-worker/worker.conf.sample` |
+| `tools/worker/install.sh` | installs the above under `DESTDIR`; enables nothing |
+| `tests/remote-worker.sh` | hosted test, run by `.github/workflows/remote-worker.yml` with shellcheck |
+
+### Language
+
+The worker and the client are written in POSIX sh with `jq`. Python 3 is not
+used, for three reasons:
+
+- The client has to run on a stock Linux, macOS or FreeBSD machine with
+  only `ssh` and `jq`, and Python 3 is not always installed there.
+- The builders are not uniform: the amd64 builder has `python3.12` but no
+  `python3`.
+- Every hard part of the worker uses base-system tools. `daemon(8)` (or
+  `setsid(1)` on Linux) starts processes in a new session, `kill` signals a
+  process group, `mkdir` makes an atomic lock, and `jq` reads and writes the
+  JSON state.
+
+sh would have become unwieldy if requests were parsed in the shell. Instead,
+every request field goes through `jq` and is checked with `case` patterns,
+which match the whole string, newlines included. Nothing the client sends is
+ever evaluated.
+
+### Protocol
+
+- **Requests.** A request is one JSON object, which the client passes as the
+  SSH command. sshd puts it in `SSH_ORIGINAL_COMMAND`, and the forced command
+  `daemonarchy-worker serve --key NAME` parses it with `jq`. Anything that
+  is not a JSON object with a known `op` is refused with exit status 3. That
+  covers an empty command (a login), `sh -c ...`, `sftp` and `scp`.
+- **Replies.** Replies are single JSON objects. Two operations stream
+  instead: `log` without `-f` sends the raw text, and `fetch` sends a tar of
+  `out/`.
+- **Following a log.** `log -f` sends JSON lines (`line`, `hb`, `end`) and a
+  heartbeat every 5 seconds while the job is quiet. When the client
+  disconnects, the next heartbeat fails to write and the follower exits.
+  Following never touches the job.
+- **Roles.** `read` allows hello, recipes, list, status, log and fetch.
+  `operate` adds pause, drain, resume, cancel, retry and prune. `submit`
+  allows submit. A key with `operate` or `submit` can also read.
+- **Audit.** Every request is logged with its key name and fingerprint in
+  `JOB_ROOT/var/audit.log`.
+- **Hardening.** `authorized_keys` and `.ssh` are generated from `keys.conf`
+  by `key add/remove` and owned by root. The worker's home is the job root,
+  also owned by root, so a job running as `dbuild` cannot add a key.
+- **Typed parameters.** Parameters are `int` (with a range), `enum`, `bool`,
+  `name`, `sha` and `path`. A `path` parameter is a relative path with no
+  empty, `.` or `..` component, and the step receives it as an absolute path
+  under the job's `work/`.
+- **Pins and step environment.** Pins name inputs the recipe declares, and
+  their remote URLs come only from the builder's `worker.conf`. Each step
+  runs under `env -i`, with its parameters as `P_<name>` and its pins as
+  `PIN_<name>`.
+
+### Recipe format
+
+A recipe is `recipes/NAME.json`:
+
+- `name` and `version`
+- `params`: name to `{type, default, min, max, values, help}`
+- `inputs`: name to `{required}`
+- `min_free_mb`
+- `requires`: `{commands, paths}`, which `doctor` checks
+- `steps`: each step has a `name` and a `run` script relative to `recipes/`.
+  It can also give `env` (fixed by the recipe), `outputs` (relative to
+  `out/`), a `cleanup` script, `retry` and `resource`.
+
+On submit, the recipe and its scripts are copied into the job, so a job is
+not affected by a later install.
+
+There are three recipes:
+
+- `sample`: three short steps. It can fail on demand, either always or only
+  once, and writes a small output.
+- `sample-long`: ten steps of `step_seconds` each, 60 seconds by default.
+- `src-world-kernel`: fetches the pinned src commit, then runs buildworld
+  and buildkernel, a `-DNO_ROOT` install into a staging root, and builds
+  `base.txz` and `kernel.txz`. It has not been run yet.
+
+### Supervision
+
+`submit` and `resume` start a per-job supervisor with `daemon -f`, or
+`setsid -f` on Linux. The supervisor starts each step runner the same way, so
+the step runner leads its own session and process group, and its PID is the
+group ID.
+
+- **Checking steps.** The supervisor checks each second for the step's exit
+  file and whether its process group is alive.
+- **Pause and cancel.** Pause sends SIGSTOP to the group. Cancel sends
+  SIGTERM and SIGCONT, then SIGKILL after `cancel_grace` seconds, then runs the
+  step's cleanup hook. The hook also runs when a step fails or is
+  interrupted.
+- **Finishing a step.** A step is done when it exits 0 and every declared
+  output exists. The worker then records the output's SHA-256. Before each
+  step, it checks the hashes of the steps already done, and reruns from any
+  step whose output changed.
+- **Queue.** `max_jobs` jobs run at once; the rest stay `queued`. An explicit
+  `resume` or `retry`, or an auto-resume, starts at once.
+- **Free space.** A step does not start below `free_floor_mb`, or below the
+  recipe's `min_free_mb`.
+
+### Reboot and stop
+
+The rc.d `start` runs `daemonarchy-worker boot` as the worker user. Any job in
+an active state (`running`, `pausing`, `paused` frozen, `draining` or
+`cancelling`) whose supervisor is not alive in the current boot becomes
+`interrupted`. The worker kills what is left of the current step's process
+group and runs the step's cleanup hook.
+
+What happens next depends on the state before the reboot:
+
+| State before the reboot | After |
+|---|---|
+| `running` | `interrupted`, then auto-resumed at its first step that is not done |
+| `paused` (frozen) | `interrupted`; waits for `resume` |
+| `draining` | `interrupted`; waits for `resume` |
+| `paused` (drained) | stays `paused`; no process was left |
+| `cancelling` | `cancelled` |
+
+A frozen job matches the design: a reboot turns it into `interrupted`. The
+design does not say whether an interrupted job that the operator had paused
+or was draining should auto-resume. Auto-resuming it would undo the
+operator's pause or the drain before maintenance, so it waits for `resume`.
+
+The rc.d `stop` (also at shutdown) interrupts live jobs in the same way, so
+running jobs resume at the next start.
+
+"Alive in the current boot" compares a boot id stored with the supervisor:
+
+- **With /proc.** Linux, and FreeBSD with linprocfs mounted at `/proc`, use
+  `/proc/sys/kernel/random/boot_id`.
+- **Without /proc.** Otherwise the first worker process after a boot writes
+  a random id to `/var/run/daemonarchy-worker/boot_id`. `rc.d/cleanvar`
+  deletes files under `/var/run` at boot.
+- **Not used.** `kern.boottime` moves when the clock is stepped, so it would
+  make live supervisors look dead.
+
+### Gaps before a real release build
+
+- `src-world-kernel` has not run on a builder. The `hwtrace-image`,
+  `release-sets`, `live-iso`, `poudriere-bulk` and `vm-qualify` recipes do
+  not exist.
+- The root wrappers listed in `sudoers` (installworld into a staging root,
+  mdconfig, poudriere, bhyve) are not implemented. Only unprivileged recipes
+  can run.
+- A reboot of a builder mid-step is covered only by the hosted simulation.
+  No builder has been rebooted with a job running.
+- The worker is not yet part of the image payload or the installer, and has
+  no manual page. `getting-started.md` and `HACKING.md` do not describe it.
+- ETAs come from the last five durations of each recipe step on the host. A
+  first run has no ETA.
+- `fetch` can run while a job is running. It returns whatever is in `out/`
+  at that moment, and the client checks each file against the hashes
+  recorded so far.
