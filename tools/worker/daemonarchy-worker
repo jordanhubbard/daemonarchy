@@ -1,0 +1,1487 @@
+#!/bin/sh
+# shellcheck disable=SC2016,SC1010,SC2030,SC2031,SC2015
+# (jq filters are single-quoted on purpose; job loops use subshells on purpose)
+# daemonarchy-worker: durable build jobs on a Daemonarchy builder, controlled
+# only over SSH with forced-command keys (WORKER-001, docs/remote-worker.md).
+#
+# Builder side.  POSIX sh plus jq; no daemon listens on the network.
+#
+#   daemonarchy-worker serve --key NAME      forced command for one worker key
+#   daemonarchy-worker enable|disable        administration (root)
+#   daemonarchy-worker key add NAME --role R[,R] < key.pub | key list | key remove NAME
+#   daemonarchy-worker doctor [--recipe NAME]
+#   daemonarchy-worker boot | stop-all       rc.d start / stop hooks (worker user)
+#   daemonarchy-worker request JSON          one protocol request as the local admin
+#
+# Internal: _supervise JOB, _step JOB N.
+
+set -u
+umask 022
+
+WORKER_PROTOCOL=1
+WORKER_VERSION=0.1.0
+# tools/worker/install.sh rewrites this to 1.  An installed copy uses fixed
+# paths and ignores every DAEMONARCHY_WORKER_* environment override.
+WORKER_INSTALLED=0
+
+PATH=/sbin:/bin:/usr/sbin:/usr/bin:/usr/local/sbin:/usr/local/bin
+export PATH
+
+case $0 in
+/*) SELF=$0 ;;
+*) SELF=$(cd "$(dirname "$0")" && pwd)/$(basename "$0") ;;
+esac
+SELF_DIR=$(dirname "$SELF")
+
+if [ "$WORKER_INSTALLED" = 1 ]; then
+	WORKER_CONF=/usr/local/etc/daemonarchy-worker/worker.conf
+	recipes_dir=/usr/local/share/daemonarchy-worker/recipes
+	BOOT_ID_OVERRIDE=
+else
+	WORKER_CONF=${DAEMONARCHY_WORKER_CONF:-/usr/local/etc/daemonarchy-worker/worker.conf}
+	recipes_dir=$SELF_DIR/recipes
+	BOOT_ID_OVERRIDE=${DAEMONARCHY_WORKER_BOOT_ID:-}
+fi
+CONF_DIR=$(dirname "$WORKER_CONF")
+
+# Defaults; worker.conf (root-owned, sh syntax) may override them.
+job_root=/usr/daemonarchy/worker
+worker_user=dbuild
+max_jobs=1
+free_floor_mb=4096
+cancel_grace=30
+cleanup_timeout=600
+heartbeat=5
+run_dir=/var/run/daemonarchy-worker
+keys_conf=$CONF_DIR/keys.conf
+keys_dir=$CONF_DIR/keys
+remote_product=https://github.com/jordanhubbard/daemonarchy.git
+remote_src=https://github.com/jordanhubbard/daemonarchy-src.git
+remote_ports=https://github.com/jordanhubbard/daemonarchy-ports.git
+if [ -r "$WORKER_CONF" ]; then
+	# shellcheck disable=SC1090
+	. "$WORKER_CONF"
+fi
+JOBS=$job_root/jobs
+VAR=$job_root/var
+
+# serve: JSON replies on stdout; admin: text on stderr
+MODE='admin'
+KEY_NAME=-
+KEY_FP=-
+REQ_OP=-
+REQ_JOB=-
+
+# ---------------------------------------------------------------- helpers
+
+now() { date -u +%Y-%m-%dT%H:%M:%SZ; }
+epoch() { date +%s; }
+
+audit() {
+	[ -d "$VAR" ] && [ -w "$VAR" ] || return 0
+	printf '%s key=%s fp=%s op=%s job=%s %s\n' "$(now)" "$KEY_NAME" "$KEY_FP" \
+	    "$REQ_OP" "$REQ_JOB" "$*" >>"$VAR/audit.log" 2>/dev/null || :
+}
+
+# fail CODE MESSAGE: refuse or report an error and exit.
+PARTIAL_JOB=
+fail() {
+	if [ "$MODE" = serve ]; then
+		# what was refused, printable and truncated, for the audit trail
+		audit "result=$1 request=\"$(printf '%s' "${REQ:-}" | tr -c 'A-Za-z0-9 ._:/{}=,+-' '?' | cut -c1-160)\""
+	else
+		audit "result=$1"
+	fi
+	if [ -n "$PARTIAL_JOB" ]; then
+		chmod -R u+w "$PARTIAL_JOB" 2>/dev/null
+		rm -rf "$PARTIAL_JOB"
+	fi
+	if [ "$MODE" = serve ]; then
+		jq -n -c --arg e "$1" --arg m "$2" '{ok:false,error:$e,message:$m}'
+	else
+		printf 'daemonarchy-worker: %s: %s\n' "$1" "$2" >&2
+	fi
+	case $1 in
+	forbidden | refused | bad_request | invalid_param | invalid_state | not_found) exit 3 ;;
+	*) exit 1 ;;
+	esac
+}
+
+say() { [ "$MODE" = admin ] && printf '%s\n' "$*"; return 0; }
+
+is_name() {
+	case $1 in '' | .* | *[!A-Za-z0-9._-]*) return 1 ;; esac
+	[ ${#1} -le 64 ]
+}
+is_int() {
+	case $1 in '' | *[!0-9]*) return 1 ;; esac
+	[ ${#1} -le 9 ]
+}
+is_sha() {
+	case $1 in '' | *[!0-9a-f]*) return 1 ;; esac
+	[ ${#1} -eq 40 ] || [ ${#1} -eq 64 ]
+}
+is_jobid() {
+	case $1 in '' | -* | *[!A-Za-z0-9-]*) return 1 ;; esac
+	[ ${#1} -le 96 ]
+}
+# A relative path with no empty, "." or ".." component: it cannot leave the
+# directory it is resolved against.
+is_relpath() {
+	case $1 in '' | /* | */ | *//* | *[!A-Za-z0-9._/-]*) return 1 ;; esac
+	[ ${#1} -le 255 ] || return 1
+	_rp_rest=$1
+	while :; do
+		_rp_seg=${_rp_rest%%/*}
+		case $_rp_seg in '' | . | ..) return 1 ;; esac
+		[ "$_rp_seg" = "$_rp_rest" ] && return 0
+		_rp_rest=${_rp_rest#*/}
+	done
+}
+
+# An identifier that changes on every boot and on nothing else.  Linux and
+# FreeBSD with linprocfs have one; otherwise the first worker process after a
+# boot creates one under run_dir, which rc.d/cleanvar empties at boot.
+# (kern.boottime is not used: it moves whenever the clock is stepped.)
+boot_id() {
+	if [ -n "$BOOT_ID_OVERRIDE" ]; then
+		printf '%s\n' "$BOOT_ID_OVERRIDE"
+	elif [ -r /proc/sys/kernel/random/boot_id ]; then
+		cat /proc/sys/kernel/random/boot_id
+	elif [ -d "$run_dir" ] && [ -w "$run_dir" ]; then
+		if [ ! -s "$run_dir/boot_id" ]; then
+			od -An -N16 -tx1 /dev/urandom | tr -d ' \n' >"$run_dir/boot_id.$$"
+			echo >>"$run_dir/boot_id.$$"
+			ln "$run_dir/boot_id.$$" "$run_dir/boot_id" 2>/dev/null || :
+			rm -f "$run_dir/boot_id.$$"
+		fi
+		cat "$run_dir/boot_id"
+	else
+		sysctl -n kern.boottime | sed -n 's/^{ sec = \([0-9]*\),.*/boottime-\1/p'
+	fi
+}
+
+sha256f() {
+	if command -v sha256 >/dev/null 2>&1; then
+		sha256 -q "$1"
+	elif command -v sha256sum >/dev/null 2>&1; then
+		sha256sum "$1" | cut -d' ' -f1
+	else
+		shasum -a 256 "$1" | cut -d' ' -f1
+	fi
+}
+
+# Start a command detached in its own session and process group, with no
+# controlling terminal: its pid is its process group id.
+spawn() {
+	if [ "$(uname -s)" = FreeBSD ]; then
+		daemon -f "$@"
+	else
+		setsid -f "$@" </dev/null >/dev/null 2>&1
+	fi
+}
+
+pg_alive() { [ -n "$1" ] && kill -s 0 -- "-$1" 2>/dev/null; }
+pg_signal() { [ -n "$2" ] && kill -s "$1" -- "-$2" 2>/dev/null; }
+
+# Directory locks: mkdir is atomic everywhere.  A lock whose holder died is
+# taken over.
+lock_take() {
+	_lk=$1
+	_n=0
+	while ! mkdir "$_lk" 2>/dev/null; do
+		_holder=$(cat "$_lk/pid" 2>/dev/null || :)
+		if [ -n "$_holder" ] && ! kill -0 "$_holder" 2>/dev/null; then
+			rm -rf "$_lk"
+			continue
+		fi
+		_n=$((_n + 1))
+		[ $_n -gt 600 ] && fail busy "lock $_lk held by ${_holder:-?}"
+		sleep 0.1
+	done
+	echo $$ >"$_lk/pid"
+}
+lock_drop() { rm -rf "$1"; }
+
+job_lock() { lock_take "$J/.lock"; }
+job_unlock() { lock_drop "$J/.lock"; }
+
+# atomic file replacement from stdin
+put() { cat >"$1.tmp.$$" && mv -f "$1.tmp.$$" "$1"; }
+
+get_state() { cat "$J/state" 2>/dev/null || echo unknown; }
+set_state() {
+	printf '%s\n' "$1" | put "$J/state"
+	run_update --arg s "$1" --arg t "$(now)" '.updated = $t | .state_since = $t'
+}
+
+run_get() { jq -r --arg k "$1" '.[$k] // empty | tostring' "$J/run.json"; }
+# run_update [jq options] FILTER: update run.json in place.
+run_update() {
+	jq "$@" "$J/run.json" >"$J/run.json.tmp.$$" && mv -f "$J/run.json.tmp.$$" "$J/run.json"
+}
+
+step_file() { printf '%s/steps/%s.json\n' "$J" "$1"; }
+step_get() { jq -r --arg k "$2" '.[$k] // empty | tostring' "$(step_file "$1")"; }
+# step_update N [jq options] FILTER
+step_update() {
+	_sf=$(step_file "$1")
+	shift
+	jq "$@" "$_sf" >"$_sf.tmp.$$" && mv -f "$_sf.tmp.$$" "$_sf"
+}
+
+nsteps() { jq '.steps | length' "$J/recipe.json"; }
+recipe_step() { jq -r --argjson n "$1" --arg k "$2" '.steps[$n-1][$k] // empty | if type=="array" then .[] else tostring end' "$J/recipe.json"; }
+
+ev() { printf '%s == %s\n' "$(now)" "$*" >>"$J/log/job.log"; }
+
+sup_alive() {
+	_pid=$(run_get supervisor_pid)
+	_bid=$(run_get boot_id)
+	[ -n "$_pid" ] && [ "$_bid" = "$(boot_id)" ] && kill -0 "$_pid" 2>/dev/null
+}
+
+is_terminal() { case $1 in done | failed | cancelled) return 0 ;; esac; return 1; }
+
+free_mb() { df -Pk "$1" | awk 'NR==2 { printf "%d\n", $4 / 1024 }'; }
+
+load_job() {
+	is_jobid "$1" || fail bad_request "malformed job id"
+	J=$JOBS/$1
+	ID=$1
+	REQ_JOB=$1
+	[ -f "$J/job.json" ] || fail not_found "no job $1"
+}
+
+first_pending() {
+	_n=1
+	_t=$(nsteps)
+	while [ $_n -le "$_t" ]; do
+		[ "$(step_get $_n state)" = done ] || {
+			echo $_n
+			return 0
+		}
+		_n=$((_n + 1))
+	done
+}
+
+# A done step whose recorded outputs no longer hash the same runs again, with
+# every later step.
+verify_done_steps() {
+	_n=1
+	_t=$(nsteps)
+	while [ $_n -le "$_t" ]; do
+		if [ "$(step_get $_n state)" = done ]; then
+			_bad=
+			for _o in $(jq -r '.outputs // {} | keys[]' "$(step_file $_n)"); do
+				_want=$(jq -r --arg o "$_o" '.outputs[$o]' "$(step_file $_n)")
+				if [ ! -f "$J/out/$_o" ] || [ "$(sha256f "$J/out/$_o")" != "$_want" ]; then
+					_bad=$_o
+					break
+				fi
+			done
+			if [ -n "$_bad" ]; then
+				ev "step $_n output $_bad changed since it was recorded; rerunning from step $_n"
+				reset_steps_from $_n
+				return 0
+			fi
+		fi
+		_n=$((_n + 1))
+	done
+}
+
+reset_steps_from() {
+	_n=$1
+	_t=$(nsteps)
+	while [ "$_n" -le "$_t" ]; do
+		for _o in $(recipe_step "$_n" outputs); do rm -f "$J/out/$_o"; done
+		step_update "$_n" --arg s pending '.state = $s | .outputs = {} | del(.exit, .ended, .ended_at, .duration, .reason)'
+		_n=$((_n + 1))
+	done
+}
+
+# Build the clean step environment as positional parameters for env -i.
+step_env() {
+	_n=$1
+	set -- PATH=/sbin:/bin:/usr/sbin:/usr/bin:/usr/local/sbin:/usr/local/bin \
+	    LC_ALL=C HOME="$J/work" JOB_ID="$ID" JOB_DIR="$J" WORK_DIR="$J/work" \
+	    OUT_DIR="$J/out" STEP="$_n" STEP_NAME="$(recipe_step "$_n" name)"
+	ENV_ARGS=
+	for _a in "$@"; do ENV_ARGS="$ENV_ARGS$_a
+"; done
+	# typed parameters; path parameters become absolute paths under work/
+	ENV_ARGS="$ENV_ARGS$(jq -r --arg w "$J/work" --slurpfile r "$J/recipe.json" '
+	    .params | to_entries[] |
+	    if $r[0].params[.key].type == "path" then "P_\(.key)=\($w)/\(.value)"
+	    else "P_\(.key)=\(.value)" end' "$J/job.json")
+"
+	ENV_ARGS="$ENV_ARGS$(jq -r '.pins | to_entries[] | "PIN_\(.key)=\(.value)"' "$J/job.json")
+"
+	for _in in $(jq -r '.inputs // {} | keys[]' "$J/recipe.json"); do
+		_url=
+		eval "_url=\${remote_$_in:-}"
+		ENV_ARGS="${ENV_ARGS}REMOTE_$_in=$_url
+"
+	done
+	ENV_ARGS="$ENV_ARGS$(jq -r --argjson n "$_n" '.steps[$n-1].env // {} | to_entries[] | "\(.key)=\(.value)"' "$J/recipe.json")
+"
+}
+
+# run_env SCRIPT [extra VAR=value]: run a recipe script with only the step
+# environment.  Values never pass through a shell.
+run_env() {
+	_script=$1
+	shift
+	_old_ifs=$IFS
+	IFS='
+'
+	# shellcheck disable=SC2086
+	set -- $ENV_ARGS "$@" /bin/sh "$_script"
+	IFS=$_old_ifs
+	env -i "$@"
+}
+
+run_cleanup() {
+	_n=$1
+	_result=$2
+	_c=$(recipe_step "$_n" cleanup)
+	[ -n "$_c" ] || return 0
+	step_env "$_n"
+	ev "step $_n cleanup hook ($_result)"
+	(
+		cd "$J/work" || exit 1
+		_old_ifs=$IFS
+		IFS='
+'
+		# shellcheck disable=SC2086
+		set -- $ENV_ARGS STEP_RESULT="$_result" timeout "$cleanup_timeout" /bin/sh "$J/recipe/$_c"
+		IFS=$_old_ifs
+		env -i "$@"
+	) >>"$J/log/$_n.log" 2>&1 </dev/null
+	_crc=$?
+	step_update "$_n" --argjson c "$_crc" '.cleanup_exit = $c'
+	ev "step $_n cleanup hook exit $_crc"
+}
+
+history_add() {
+	_h=$VAR/history/$(jq -r .recipe "$J/job.json")
+	mkdir -p "$_h"
+	echo "$2" >>"$_h/$1"
+}
+history_mean() {
+	_h=$VAR/history/$(jq -r .recipe "$J/job.json")/$1
+	[ -s "$_h" ] || return 0
+	tail -n 5 "$_h" | awk '{ s += $1; n++ } END { if (n) printf "%d\n", s / n }'
+}
+
+# ---------------------------------------------------------------- queue
+
+active_count() {
+	_c=0
+	for _d in "$JOBS"/*/; do
+		[ -f "$_d/state" ] || continue
+		case $(cat "$_d/state") in
+		running | pausing | draining | cancelling) _c=$((_c + 1)) ;;
+		paused) [ "$(jq -r '.paused_mode // ""' "$_d/run.json")" = frozen ] && _c=$((_c + 1)) ;;
+		esac
+	done
+	echo $_c
+}
+
+# Start queued jobs, oldest first, while slots are free.
+kick() {
+	[ -d "$JOBS" ] || return 0
+	lock_take "$VAR/queue.lock"
+	for _d in "$JOBS"/*/; do
+		[ -f "$_d/state" ] || continue
+		[ "$(cat "$_d/state")" = queued ] || continue
+		[ "$(active_count)" -lt "$max_jobs" ] || break
+		(
+			J=${_d%/}
+			ID=$(basename "$J")
+			job_lock
+			if [ "$(get_state)" = queued ]; then
+				set_state running
+				run_update --arg t "$(now)" '.started = (.started // $t)'
+				ev "started from the queue"
+				spawn "$SELF" _supervise "$ID"
+			fi
+			job_unlock
+		)
+	done
+	lock_drop "$VAR/queue.lock"
+}
+
+# Caller holds the job lock and has checked that no supervisor is alive.
+start_supervisor() {
+	set_state running
+	run_update '.paused_mode = null | .auto_resume = null'
+	spawn "$SELF" _supervise "$ID"
+}
+
+# ---------------------------------------------------------------- supervisor
+
+cmd_supervise() {
+	is_jobid "$1" || exit 2
+	ID=$1
+	J=$JOBS/$ID
+	[ -d "$J" ] || exit 2
+	exec </dev/null >>"$J/log/supervisor.log" 2>&1
+	job_lock
+	if [ "$(get_state)" != running ] || sup_alive; then
+		job_unlock
+		exit 0
+	fi
+	run_update --argjson p $$ --arg b "$(boot_id)" '.supervisor_pid = $p | .boot_id = $b'
+	job_unlock
+	ev "supervisor $$ running"
+
+	while :; do
+		verify_done_steps
+		n=$(first_pending)
+		job_lock
+		st=$(get_state)
+		if [ -z "$n" ]; then
+			case $st in
+			running | draining | pausing | paused)
+				set_state done
+				run_update --arg t "$(now)" '.finished = $t | .finished_at = (now | floor) | .current_step = null'
+				ev "job done"
+				;;
+			cancelling)
+				set_state cancelled
+				run_update --arg t "$(now)" '.finished = $t | .finished_at = (now | floor)'
+				ev "job cancelled after its last step finished"
+				;;
+			esac
+			job_unlock
+			break
+		fi
+		case $st in
+		running) ;;
+		draining | paused | pausing)
+			set_state paused
+			run_update '.paused_mode = "drained" | .current_step = null'
+			ev "parked at the step boundary before step $n (drained)"
+			job_unlock
+			break
+			;;
+		cancelling)
+			set_state cancelled
+			run_update --arg t "$(now)" '.finished = $t | .finished_at = (now | floor) | .current_step = null'
+			ev "job cancelled at the step boundary before step $n"
+			job_unlock
+			break
+			;;
+		*)
+			job_unlock
+			break
+			;;
+		esac
+		need=$free_floor_mb
+		rneed=$(jq -r '.min_free_mb // 0' "$J/recipe.json")
+		[ "$rneed" -gt "$need" ] && need=$rneed
+		have=$(free_mb "$J")
+		if [ "$have" -lt "$need" ]; then
+			step_update "$n" --arg r "free space ${have} MB below the ${need} MB floor" '.state = "failed" | .reason = $r'
+			set_state failed
+			run_update --arg t "$(now)" --arg r "free space ${have} MB below the ${need} MB floor" '.finished = $t | .finished_at = (now | floor) | .reason = $r'
+			ev "step $n not started: free space ${have} MB below the ${need} MB floor"
+			job_unlock
+			break
+		fi
+		t0=$(epoch)
+		step_update "$n" --arg t "$(now)" --argjson e "$t0" \
+		    '.state = "running" | .attempts = ((.attempts // 0) + 1) | .started = $t | .started_at = $e | del(.exit, .ended, .ended_at, .duration, .reason, .cleanup_exit)'
+		run_update --argjson n "$n" '.current_step = $n | .reason = null'
+		rm -f "$J/steps/$n.rc" "$J/steps/$n.pgid"
+		job_unlock
+		ev "step $n $(recipe_step "$n" name) start (attempt $(step_get "$n" attempts))"
+
+		spawn "$SELF" _step "$ID" "$n"
+		i=0
+		while [ ! -s "$J/steps/$n.pgid" ] && [ $i -lt 100 ]; do
+			sleep 0.2
+			i=$((i + 1))
+		done
+		pg=$(cat "$J/steps/$n.pgid" 2>/dev/null || :)
+		signalled=0
+		deadline=0
+		rc=
+		while :; do
+			if [ -e "$J/steps/$n.rc" ]; then
+				rc=$(cat "$J/steps/$n.rc")
+				break
+			fi
+			if ! pg_alive "$pg"; then
+				sleep 0.5
+				[ -e "$J/steps/$n.rc" ] && continue
+				rc=killed
+				break
+			fi
+			if [ "$(get_state)" = cancelling ]; then
+				if [ $signalled = 0 ]; then
+					ev "step $n: SIGTERM to process group $pg"
+					pg_signal TERM "$pg"
+					pg_signal CONT "$pg"
+					signalled=1
+					deadline=$(($(epoch) + cancel_grace))
+				elif [ "$(epoch)" -ge $deadline ]; then
+					ev "step $n: SIGKILL to process group $pg after ${cancel_grace}s"
+					pg_signal KILL "$pg"
+				fi
+			fi
+			sleep 1
+		done
+		t1=$(epoch)
+
+		job_lock
+		st=$(get_state)
+		reason=
+		if [ "$rc" = 0 ]; then
+			outs='{}'
+			for o in $(recipe_step "$n" outputs); do
+				if [ ! -f "$J/out/$o" ]; then
+					reason="declared output $o missing"
+					break
+				fi
+				outs=$(printf '%s' "$outs" | jq -c --arg o "$o" --arg h "$(sha256f "$J/out/$o")" '. + {($o): $h}')
+			done
+		elif [ "$rc" = killed ]; then
+			reason="ended by a signal"
+		else
+			reason="exit $rc"
+		fi
+		if [ -z "$reason" ]; then
+			step_update "$n" --arg t "$(now)" --argjson e "$t1" --argjson d $((t1 - t0)) --argjson o "$outs" \
+			    '.state = "done" | .exit = 0 | .ended = $t | .ended_at = $e | .duration = $d | .outputs = $o'
+			history_add "$(recipe_step "$n" name)" $((t1 - t0))
+			run_update '.current_step = null'
+			job_unlock
+			ev "step $n done in $((t1 - t0))s"
+			continue
+		fi
+		if [ "$st" = cancelling ]; then result=cancelled; else result=failed; fi
+		step_update "$n" --arg s "$result" --arg t "$(now)" --argjson e "$t1" --arg r "$reason" --arg x "$rc" \
+		    '.state = $s | .exit = $x | .ended = $t | .ended_at = $e | .reason = $r'
+		job_unlock
+		ev "step $n $result ($reason)"
+		run_cleanup "$n" "$result"
+		job_lock
+		set_state "$result"
+		run_update --arg t "$(now)" --arg r "step $n: $reason" '.finished = $t | .finished_at = (now | floor) | .reason = $r'
+		ev "job $result"
+		job_unlock
+		break
+	done
+	kick
+}
+
+# The step runner is the leader of the step's process group.
+cmd_step() {
+	is_jobid "$1" && is_int "$2" || exit 2
+	ID=$1
+	n=$2
+	J=$JOBS/$ID
+	exec </dev/null
+	echo $$ | put "$J/steps/$n.pgid"
+	run=$(recipe_step "$n" name)
+	script=$J/recipe/$(recipe_step "$n" run)
+	step_env "$n"
+	cd "$J/work" || exit 2
+	{
+		run_env "$script" 2>&1
+		echo $? >"$J/steps/$n.rc.tmp"
+	} | tee -a "$J/log/$n.log" | awk -v p="[$n $run] " '{ print p $0; fflush() }' >>"$J/log/job.log"
+	mv -f "$J/steps/$n.rc.tmp" "$J/steps/$n.rc"
+}
+
+# ---------------------------------------------------------------- interrupt
+
+# interrupt_job: the job's supervisor is gone (reboot, crash or stop-all).
+# Caller holds the job lock.  Leaves the job interrupted, or cancelled when a
+# cancel was in progress.
+interrupt_job() {
+	st=$(get_state)
+	n=$(run_get current_step)
+	if [ -n "$n" ] && [ -f "$(step_file "$n")" ]; then
+		pg=$(cat "$J/steps/$n.pgid" 2>/dev/null || :)
+		if [ "$(run_get boot_id)" = "$(boot_id)" ] && pg_alive "$pg"; then
+			pg_signal TERM "$pg"
+			pg_signal CONT "$pg"
+			sleep 2
+			pg_signal KILL "$pg"
+		fi
+		# Only a step that was still running is interrupted and cleaned up; a
+		# reboot just after a step finished must not undo that step's work.
+		if [ "$(step_get "$n" state)" = running ]; then
+			step_update "$n" --arg t "$(now)" '.state = "interrupted" | .ended = $t | .reason = "interrupted"'
+			job_unlock
+			run_cleanup "$n" interrupted
+			job_lock
+		fi
+	fi
+	if [ "$st" = cancelling ]; then
+		set_state cancelled
+		run_update --arg t "$(now)" '.finished = $t | .finished_at = (now | floor) | .current_step = null'
+		ev "job cancelled (interrupted while cancelling)"
+		return 0
+	fi
+	if [ "$st" = running ]; then auto=true; else auto=false; fi
+	set_state interrupted
+	run_update --argjson a $auto --arg w "$st" '.auto_resume = $a | .interrupted_from = $w | .current_step = null | .paused_mode = null | .supervisor_pid = null'
+	ev "job interrupted (was $st; auto-resume $auto)"
+}
+
+# rc.d start: recover after a reboot or a lost supervisor, then auto-resume.
+cmd_boot() {
+	[ -d "$JOBS" ] || exit 0
+	[ -f "$CONF_DIR/enabled" ] || {
+		say "worker not enabled"
+		exit 0
+	}
+	for d in "$JOBS"/*/; do
+		[ -f "$d/state" ] || continue
+		(
+			J=${d%/}
+			ID=$(basename "$J")
+			job_lock
+			st=$(get_state)
+			case $st in
+			running | pausing | paused | draining | cancelling)
+				if [ "$st" = paused ] && [ "$(run_get paused_mode)" = drained ]; then
+					:
+				elif ! sup_alive; then
+					interrupt_job
+				fi
+				;;
+			esac
+			if [ "$(get_state)" = interrupted ] && [ "$(run_get auto_resume)" = true ]; then
+				ev "auto-resume after restart (boot $(boot_id))"
+				start_supervisor
+				say "auto-resumed $ID"
+			fi
+			job_unlock
+		)
+	done
+	kick
+}
+
+# rc.d stop: stop every live job; running ones auto-resume at the next start.
+cmd_stop_all() {
+	[ -d "$JOBS" ] || exit 0
+	for d in "$JOBS"/*/; do
+		[ -f "$d/state" ] || continue
+		(
+			J=${d%/}
+			ID=$(basename "$J")
+			job_lock
+			case $(get_state) in
+			running | pausing | paused | draining | cancelling)
+				if sup_alive; then
+					kill -s TERM "$(run_get supervisor_pid)" 2>/dev/null
+					run_update '.supervisor_pid = null'
+					interrupt_job
+					say "stopped $ID"
+				fi
+				;;
+			esac
+			job_unlock
+		)
+	done
+}
+
+# ---------------------------------------------------------------- protocol
+
+role_for_op() {
+	case $1 in
+	hello | recipes | list | status | log | fetch) echo read ;;
+	pause | drain | resume | cancel | retry | prune) echo operate ;;
+	submit) echo submit ;;
+	*) return 1 ;;
+	esac
+}
+
+# rq FIELD: one scalar request field as text, empty when absent.
+rq() {
+	printf '%s' "$REQ" | jq -r --arg f "$1" '
+	    if has($f) then .[$f] |
+	        if type == "string" or type == "number" or type == "boolean" then tostring
+	        elif type == "null" then empty else error("field \($f) is not a scalar") end
+	    else empty end'
+}
+
+cmd_serve() {
+	MODE=serve
+	REQ=${SSH_ORIGINAL_COMMAND:-}
+	[ "${1:-}" = --key ] && [ $# -eq 2 ] || fail refused "serve requires --key NAME"
+	KEY_NAME=$2
+	is_name "$KEY_NAME" || fail refused "malformed key name"
+	[ -f "$CONF_DIR/enabled" ] || fail refused "worker is not enabled on this host"
+	line=$(awk -v k="$KEY_NAME" '$1 == k { print; exit }' "$keys_conf" 2>/dev/null)
+	[ -n "$line" ] || fail forbidden "key $KEY_NAME is not authorized"
+	ROLES=$(printf '%s\n' "$line" | awk '{ print $2 }')
+	KEY_FP=$(printf '%s\n' "$line" | awk '{ print $3 }')
+	[ ${#REQ} -le 16384 ] || fail bad_request "request too long"
+	printf '%s' "$REQ" | jq -e 'type == "object" and (.op | type == "string")' >/dev/null 2>&1 ||
+	    fail bad_request "the worker speaks only its JSON protocol; no command, shell or PTY is available to this key"
+	REQ_OP=$(rq op) || fail bad_request "malformed op"
+	case $REQ_OP in *[!a-z]* | '') fail bad_request "malformed op" ;; esac
+	need=$(role_for_op "$REQ_OP") || fail bad_request "unknown op $REQ_OP"
+	case ",$ROLES," in
+	*",$need,"*) ;;
+	*",operate,"*) [ "$need" = read ] || fail forbidden "key $KEY_NAME lacks role $need for $REQ_OP" ;;
+	*",submit,"*) [ "$need" = read ] || fail forbidden "key $KEY_NAME lacks role $need for $REQ_OP" ;;
+	*) fail forbidden "key $KEY_NAME lacks role $need for $REQ_OP" ;;
+	esac
+	[ -d "$JOBS" ] || fail error "job root $JOBS missing; run daemonarchy-worker enable"
+	dispatch
+}
+
+# `request JSON` lets the local administrator use the protocol on the host.
+cmd_request() {
+	[ $# -eq 1 ] || fail bad_request "usage: daemonarchy-worker request JSON"
+	MODE=serve
+	KEY_NAME=local-admin
+	KEY_FP=local
+	ROLES=read,operate,submit
+	REQ=$1
+	printf '%s' "$REQ" | jq -e 'type == "object"' >/dev/null 2>&1 || fail bad_request "request is not a JSON object"
+	REQ_OP=$(rq op) || fail bad_request "malformed op"
+	need=$(role_for_op "$REQ_OP") || fail bad_request "unknown op"
+	# Jobs must never start as root: only reads are allowed to root here.
+	if [ "$(id -u)" = 0 ] && [ "$need" != read ]; then
+		fail forbidden "run $REQ_OP as the worker user: su -m $worker_user -c '$SELF request ...'"
+	fi
+	dispatch
+}
+
+dispatch() {
+	audit "request"
+	case $REQ_OP in
+	hello) op_hello ;;
+	recipes) op_recipes ;;
+	list) op_list ;;
+	status) op_status ;;
+	log) op_log ;;
+	fetch) op_fetch ;;
+	submit) op_submit ;;
+	pause) op_pause ;;
+	drain) op_drain ;;
+	resume) op_resume ;;
+	cancel) op_cancel ;;
+	retry) op_retry ;;
+	prune) op_prune ;;
+	esac
+}
+
+ok() {
+	audit "result=ok $*"
+	jq -n -c "$@"
+}
+
+op_hello() {
+	ok --arg v "$WORKER_VERSION" --argjson p $WORKER_PROTOCOL --arg k "$KEY_NAME" --arg r "$ROLES" \
+	    --arg h "$(uname -n)" --arg a "$(uname -m)" --arg o "$(uname -sr)" \
+	    '{ok:true, version:$v, protocol:$p, key:$k, roles:($r|split(",")), host:$h, arch:$a, os:$o}'
+}
+
+op_recipes() {
+	for f in "$recipes_dir"/*.json; do
+		[ -f "$f" ] && cat "$f"
+	done | jq -s -c '{ok:true, recipes: map({name, version, description, params, inputs: (.inputs // {}), steps: [.steps[].name]})}'
+	audit "result=ok"
+}
+
+job_summary() {
+	# $1: job directory
+	jq -c --arg s "$(cat "$1/state")" --slurpfile r "$1/run.json" '{id, recipe, submitted, submitter: .submitter.key,
+	    state: $s, step: $r[0].current_step, updated: $r[0].updated, reason: $r[0].reason}' "$1/job.json"
+}
+
+op_list() {
+	all=$(rq all)
+	cutoff=$(($(epoch) - 86400))
+	for d in "$JOBS"/*/; do
+		[ -f "$d/job.json" ] || continue
+		d=${d%/}
+		st=$(cat "$d/state")
+		if [ "$all" != true ] && is_terminal "$st"; then
+			fin=$(jq -r '.finished_at // 0' "$d/run.json")
+			[ "$fin" -lt $cutoff ] && [ "$fin" != 0 ] && continue
+		fi
+		job_summary "$d"
+	done | jq -s -c '{ok:true, jobs: sort_by(.id)}'
+	audit "result=ok"
+}
+
+op_status() {
+	load_job "$(rq job)"
+	st=$(get_state)
+	stale=false
+	case $st in
+	running | pausing | draining | cancelling) sup_alive || stale=true ;;
+	esac
+	# ETA from recorded durations of this recipe's steps on this host
+	eta=0
+	n=1
+	t=$(nsteps)
+	nowe=$(epoch)
+	while [ $n -le "$t" ]; do
+		s=$(step_get $n state)
+		if [ "$s" != done ]; then
+			m=$(history_mean "$(recipe_step $n name)")
+			if [ -z "$m" ]; then
+				eta=null
+				break
+			fi
+			if [ "$s" = running ]; then
+				el=$((nowe - $(step_get $n started_at)))
+				r=$((m - el))
+				[ $r -lt 0 ] && r=0
+				eta=$((eta + r))
+			else
+				eta=$((eta + m))
+			fi
+		fi
+		n=$((n + 1))
+	done
+	is_terminal "$st" && eta=0
+	cat "$J"/steps/*.json | jq -s -c --slurpfile j "$J/job.json" --slurpfile r "$J/run.json" \
+	    --arg s "$st" --argjson stale $stale --argjson eta "$eta" --arg now "$(now)" \
+	    '{ok:true, now:$now, job:$j[0], state:$s, stale:$stale, eta_seconds:$eta, run:$r[0], steps: sort_by(.n)}'
+	audit "result=ok"
+}
+
+op_log() {
+	load_job "$(rq job)"
+	step=$(rq step)
+	follow=$(rq follow)
+	if [ -n "$step" ]; then
+		is_int "$step" && [ "$step" -ge 1 ] && [ "$step" -le "$(nsteps)" ] || fail invalid_param "no step $step"
+		f=$J/log/$step.log
+	else
+		f=$J/log/job.log
+	fi
+	[ -f "$f" ] || : >>"$f"
+	audit "result=ok follow=${follow:-false}"
+	if [ "$follow" != true ]; then
+		cat "$f"
+		exit 0
+	fi
+	follow_log "$f"
+}
+
+# Stream a log as JSON lines until the job ends or the client goes away.
+# Heartbeats make a vanished client visible within $heartbeat seconds even
+# when the job is quiet; following never signals the job.
+follow_log() {
+	f=$1
+	trap '' PIPE
+	tmp=$(mktemp "${TMPDIR:-/tmp}/dw-follow.XXXXXX") || exit 1
+	trap 'rm -f "$tmp" "$tmp.c"' EXIT
+	size=$(wc -c <"$f")
+	off=$((size - $(tail -n 200 "$f" | wc -c)))
+	[ $off -lt 0 ] && off=0
+	idle=0
+	while :; do
+		size=$(wc -c <"$f")
+		st=$(get_state)
+		if [ "$size" -gt $off ]; then
+			tail -c +$((off + 1)) "$f" | head -c $((size - off)) >"$tmp"
+			len=$(wc -c <"$tmp")
+			if [ "$(tail -c 1 "$tmp" | od -An -c | tr -d ' ')" != '\n' ] && ! is_terminal "$st"; then
+				part=$(tail -n 1 "$tmp" | wc -c)
+				len=$((len - part))
+				if [ $len -le 0 ]; then
+					if [ "$part" -lt 65536 ]; then
+						sleep 1
+						continue
+					fi
+					len=$(wc -c <"$tmp")
+				fi
+				head -c "$len" "$tmp" >"$tmp.c"
+				mv -f "$tmp.c" "$tmp"
+			fi
+			jq -R -c '{t:"line", text:.}' <"$tmp" || exit 0
+			off=$((off + len))
+			idle=0
+			continue
+		fi
+		if is_terminal "$st" || [ "$st" = interrupted ] || { [ "$st" = paused ] && [ "$(run_get paused_mode)" = drained ]; }; then
+			printf '{"t":"end","state":"%s"}\n' "$st" || exit 0
+			exit 0
+		fi
+		idle=$((idle + 1))
+		if [ $idle -ge "$heartbeat" ]; then
+			printf '{"t":"hb","state":"%s","time":"%s"}\n' "$st" "$(now)" || exit 0
+			idle=0
+		fi
+		sleep 1
+	done
+}
+
+op_fetch() {
+	load_job "$(rq job)"
+	paths=$(printf '%s' "$REQ" | jq -r '(.paths // []) | if type != "array" then error("paths") else .[] | tostring end') ||
+	    fail bad_request "paths must be an array of strings"
+	set --
+	if [ -z "$paths" ]; then
+		set -- .
+	else
+		old_ifs=$IFS
+		IFS='
+'
+		for p in $paths; do
+			is_relpath "$p" || fail invalid_param "path $p is not a relative path inside out/"
+			[ -e "$J/out/$p" ] || fail not_found "no output $p"
+			set -- "$@" "$p"
+		done
+		IFS=$old_ifs
+	fi
+	audit "result=ok"
+	tar -cf - -C "$J/out" -- "$@"
+}
+
+# Validate and normalise submit parameters against the recipe.
+check_param() {
+	rf=$1
+	k=$2
+	v=$3
+	ty=$(jq -r --arg k "$k" '.params[$k].type // empty' "$rf")
+	[ -n "$ty" ] || fail invalid_param "recipe has no parameter $k"
+	case $ty in
+	int)
+		is_int "$v" || fail invalid_param "$k must be an integer"
+		lo=$(jq -r --arg k "$k" '.params[$k].min // 0' "$rf")
+		hi=$(jq -r --arg k "$k" '.params[$k].max // 999999999' "$rf")
+		[ "$v" -ge "$lo" ] && [ "$v" -le "$hi" ] || fail invalid_param "$k must be between $lo and $hi"
+		;;
+	enum)
+		jq -e --arg k "$k" --arg v "$v" '.params[$k].values | index($v) != null' "$rf" >/dev/null ||
+		    fail invalid_param "$k must be one of $(jq -r --arg k "$k" '.params[$k].values | join(", ")' "$rf")"
+		;;
+	bool) case $v in true | false) ;; *) fail invalid_param "$k must be true or false" ;; esac ;;
+	name) is_name "$v" || fail invalid_param "$k must be a name ([A-Za-z0-9._-], up to 64)" ;;
+	sha) is_sha "$v" || fail invalid_param "$k must be a 40- or 64-digit lowercase hex commit" ;;
+	path) is_relpath "$v" || fail invalid_param "$k must be a relative path inside the job directory" ;;
+	*) fail error "recipe parameter $k has unknown type $ty" ;;
+	esac
+}
+
+op_submit() {
+	recipe=$(rq recipe) || fail bad_request "malformed recipe"
+	is_name "$recipe" || fail bad_request "malformed recipe name"
+	rf=$recipes_dir/$recipe.json
+	[ -f "$rf" ] || fail not_found "no recipe $recipe"
+	printf '%s' "$REQ" | jq -e '
+	    def clean: type == "string" and (test("[\\t\\n\\r]") | not);
+	    ((.params // {}) | type == "object" and all(to_entries[]; (.key | clean) and (.value | clean)))
+	    and ((.pins // {}) | type == "object" and all(to_entries[]; (.key | clean) and (.value | clean)))' >/dev/null 2>&1 ||
+	    fail bad_request "params and pins must be objects of strings"
+	params='{}'
+	pairs=$(printf '%s' "$REQ" | jq -r '(.params // {}) | to_entries[] | "\(.key)\t\(.value)"')
+	old_ifs=$IFS
+	IFS='
+'
+	for pair in $pairs; do
+		k=${pair%%	*}
+		v=${pair#*	}
+		is_name "$k" || fail invalid_param "malformed parameter name"
+		check_param "$rf" "$k" "$v"
+		params=$(printf '%s' "$params" | jq -c --arg k "$k" --arg v "$v" '. + {($k): $v}')
+	done
+	IFS=$old_ifs
+	# defaults for the rest
+	params=$(jq -c --argjson p "$params" '[.params | to_entries[] | select(.value.default != null) | {key, value: (.value.default | tostring)}] | from_entries + $p' "$rf")
+	missing=$(jq -r --argjson p "$params" '.params | to_entries[] | .key as $k | select(($p | has($k)) | not) | $k' "$rf" | head -n 1)
+	[ -z "$missing" ] || fail invalid_param "parameter $missing is required"
+	pins='{}'
+	pairs=$(printf '%s' "$REQ" | jq -r '(.pins // {}) | to_entries[] | "\(.key)\t\(.value)"')
+	IFS='
+'
+	for pair in $pairs; do
+		k=${pair%%	*}
+		v=${pair#*	}
+		is_name "$k" || fail invalid_param "malformed pin name"
+		jq -e --arg k "$k" '(.inputs // {}) | has($k)' "$rf" >/dev/null || fail invalid_param "recipe has no input $k"
+		is_sha "$v" || fail invalid_param "pin $k must be a full commit hash"
+		pins=$(printf '%s' "$pins" | jq -c --arg k "$k" --arg v "$v" '. + {($k): $v}')
+	done
+	IFS=$old_ifs
+	missing=$(jq -r --argjson p "$pins" '(.inputs // {}) | to_entries[] | select(.value.required != false) | .key as $k | select(($p | has($k)) | not) | $k' "$rf" | head -n 1)
+	[ -z "$missing" ] || fail invalid_param "pin for input $missing is required"
+
+	stamp=$(date -u +%Y%m%dT%H%M%SZ)
+	rnd=$(od -An -N3 -tx1 /dev/urandom | tr -d ' \n')
+	ID=$stamp-$(printf '%s' "$recipe" | tr -c 'A-Za-z0-9-' '-')-$rnd
+	J=$JOBS/$ID
+	REQ_JOB=$ID
+	mkdir "$J" || fail error "cannot create job directory"
+	PARTIAL_JOB=$J
+	mkdir "$J/steps" "$J/log" "$J/out" "$J/work" "$J/recipe"
+	cp "$rf" "$J/recipe.json"
+	for p in $(jq -r '.steps[] | .run, (.cleanup // empty)' "$rf"); do
+		is_relpath "$p" || fail error "recipe script path $p is not confined"
+		[ -e "$J/recipe/$p" ] && continue
+		mkdir -p "$J/recipe/$(dirname "$p")"
+		cp "$recipes_dir/$p" "$J/recipe/$p" 2>/dev/null || fail error "recipe script $p missing"
+	done
+	jq -n -c --arg id "$ID" --arg r "$recipe" --argjson v "$(jq .version "$rf")" \
+	    --arg rh "$(sha256f "$rf")" --argjson p "$params" --argjson pin "$pins" \
+	    --arg k "$KEY_NAME" --arg fp "$KEY_FP" --arg t "$(now)" --arg h "$(uname -n)" \
+	    --arg wv "$WORKER_VERSION" \
+	    '{id:$id, recipe:$r, recipe_version:$v, recipe_sha256:$rh, params:$p, pins:$pin,
+	      submitter:{key:$k, fingerprint:$fp}, submitted:$t, host:$h, worker_version:$wv}' | put "$J/job.json"
+	jq -n -c --arg t "$(now)" '{updated:$t, state_since:$t, current_step:null}' | put "$J/run.json"
+	n=1
+	for name in $(jq -r '.steps[].name' "$rf"); do
+		jq -n -c --argjson n $n --arg name "$name" '{n:$n, name:$name, state:"pending", attempts:0, outputs:{}}' | put "$J/steps/$n.json"
+		n=$((n + 1))
+	done
+	echo queued | put "$J/state"
+	PARTIAL_JOB=
+	ev "submitted by key $KEY_NAME ($KEY_FP): recipe $recipe params $params pins $pins"
+	kick
+	ok --arg id "$ID" --arg s "$(get_state)" '{ok:true, job:$id, state:$s}'
+}
+
+reply_state() { ok --arg id "$ID" --arg s "$(get_state)" --arg m "$1" '{ok:true, job:$id, state:$s, message:$m}'; }
+refuse_state() {
+	job_unlock
+	fail invalid_state "$1"
+}
+
+op_pause() {
+	load_job "$(rq job)"
+	job_lock
+	st=$(get_state)
+	[ "$st" = running ] || refuse_state "cannot pause a $st job"
+	sup_alive || refuse_state "job has no live supervisor; it is interrupted, not running"
+	n=$(run_get current_step)
+	pg=$(cat "$J/steps/$n.pgid" 2>/dev/null || :)
+	if [ -n "$n" ] && pg_alive "$pg"; then
+		set_state pausing
+		pg_signal STOP "$pg"
+		set_state paused
+		run_update '.paused_mode = "frozen"'
+		ev "paused: SIGSTOP to step $n process group $pg"
+		job_unlock
+		reply_state "step $n frozen with SIGSTOP"
+	else
+		set_state draining
+		ev "pause between steps: draining instead"
+		job_unlock
+		reply_state "no step running; the job will park at the step boundary"
+	fi
+}
+
+op_drain() {
+	load_job "$(rq job)"
+	job_lock
+	st=$(get_state)
+	case $st in
+	running) ;;
+	paused)
+		[ "$(run_get paused_mode)" = frozen ] || refuse_state "job is already drained"
+		n=$(run_get current_step)
+		pg_signal CONT "$(cat "$J/steps/$n.pgid" 2>/dev/null)"
+		;;
+	*) refuse_state "cannot drain a $st job" ;;
+	esac
+	set_state draining
+	ev "draining: the job parks after the current step"
+	job_unlock
+	reply_state "the current step finishes, then the job parks in paused"
+}
+
+op_resume() {
+	load_job "$(rq job)"
+	job_lock
+	st=$(get_state)
+	case $st in
+	paused)
+		if [ "$(run_get paused_mode)" = frozen ] && sup_alive; then
+			n=$(run_get current_step)
+			pg_signal CONT "$(cat "$J/steps/$n.pgid" 2>/dev/null)"
+			set_state running
+			run_update '.paused_mode = null'
+			ev "resumed: SIGCONT to step $n"
+			job_unlock
+			reply_state "step $n continued"
+			return
+		fi
+		sup_alive && refuse_state "job is still parking; try again shortly"
+		;;
+	draining)
+		set_state running
+		ev "drain withdrawn"
+		job_unlock
+		reply_state "drain withdrawn"
+		return
+		;;
+	interrupted) ;;
+	running)
+		sup_alive && refuse_state "job is already running"
+		interrupt_job
+		;;
+	queued)
+		job_unlock
+		kick
+		reply_state "queued"
+		return
+		;;
+	*) refuse_state "cannot resume a $st job; use retry" ;;
+	esac
+	ev "resume: restarting at the first step not done"
+	start_supervisor
+	job_unlock
+	reply_state "restarted at the first step not done"
+}
+
+op_cancel() {
+	load_job "$(rq job)"
+	job_lock
+	st=$(get_state)
+	case $st in
+	running | pausing | paused | draining)
+		if sup_alive && [ -n "$(run_get current_step)" ]; then
+			set_state cancelling
+			ev "cancel requested"
+			job_unlock
+			reply_state "SIGTERM, then SIGKILL after ${cancel_grace}s, then the step's cleanup hook"
+			return
+		fi
+		if sup_alive; then
+			set_state cancelling
+			job_unlock
+			reply_state "cancelling at the step boundary"
+			return
+		fi
+		[ "$st" = paused ] && [ "$(run_get paused_mode)" = drained ] || interrupt_job
+		;;
+	queued | interrupted | failed) ;;
+	*) refuse_state "cannot cancel a $st job" ;;
+	esac
+	set_state cancelled
+	run_update --arg t "$(now)" '.finished = $t | .finished_at = (now | floor) | .current_step = null'
+	ev "job cancelled (no step running)"
+	job_unlock
+	reply_state "cancelled"
+}
+
+op_retry() {
+	load_job "$(rq job)"
+	from=$(rq from_step)
+	job_lock
+	st=$(get_state)
+	case $st in
+	failed | cancelled | interrupted | done) ;;
+	paused) [ "$(run_get paused_mode)" = drained ] || refuse_state "job is frozen; resume or cancel it first" ;;
+	*) refuse_state "cannot retry a $st job" ;;
+	esac
+	sup_alive && refuse_state "job still has a live supervisor"
+	if [ -n "$from" ]; then
+		is_int "$from" && [ "$from" -ge 1 ] && [ "$from" -le "$(nsteps)" ] || refuse_state "no step $from"
+	else
+		from=$(first_pending)
+		[ -n "$from" ] || refuse_state "every step is done; give --from-step"
+	fi
+	reset_steps_from "$from"
+	run_update '.finished = null | .reason = null'
+	ev "retry from step $from"
+	start_supervisor
+	job_unlock
+	reply_state "retrying from step $from"
+}
+
+op_prune() {
+	load_job "$(rq job)"
+	all=$(rq all)
+	job_lock
+	st=$(get_state)
+	is_terminal "$st" || refuse_state "prune needs a done, failed or cancelled job (this one is $st)"
+	if [ "$all" = true ]; then
+		chmod -R u+w "$J" 2>/dev/null
+		job_unlock
+		rm -rf "$J"
+		ok --arg id "$ID" '{ok:true, job:$id, pruned:"all"}'
+		return
+	fi
+	chmod -R u+w "$J/work" 2>/dev/null
+	rm -rf "$J/work"
+	mkdir "$J/work"
+	ev "work/ pruned"
+	job_unlock
+	ok --arg id "$ID" '{ok:true, job:$id, pruned:"work"}'
+}
+
+# ---------------------------------------------------------------- admin
+
+need_root() {
+	# An uninstalled copy (the hosted tests) never creates users or touches
+	# rc.conf when DAEMONARCHY_WORKER_FAKE_ADMIN=1, even as root.
+	if [ "$WORKER_INSTALLED" = 0 ] && [ "${DAEMONARCHY_WORKER_FAKE_ADMIN:-0}" = 1 ]; then
+		FAKE_ADMIN=1
+	elif [ "$(id -u)" != 0 ]; then
+		[ "$WORKER_INSTALLED" = 1 ] && fail refused "$1 must run as root"
+		FAKE_ADMIN=1
+	else
+		FAKE_ADMIN=0
+	fi
+}
+
+regen_authorized_keys() {
+	ak_dir=$job_root/.ssh
+	mkdir -p "$ak_dir"
+	{
+		echo "# Generated by daemonarchy-worker from $keys_conf; edit with 'daemonarchy-worker key'."
+		if [ -f "$CONF_DIR/enabled" ] && [ -f "$keys_conf" ]; then
+			awk '!/^#/ && NF >= 2 { print $1 }' "$keys_conf" | while read -r k; do
+				[ -f "$keys_dir/$k.pub" ] || continue
+				printf 'restrict,command="%s serve --key %s" %s daemonarchy-worker:%s\n' \
+				    "$SELF" "$k" "$(awk '{ print $1, $2; exit }' "$keys_dir/$k.pub")" "$k"
+			done
+		fi
+	} | put "$ak_dir/authorized_keys"
+	chmod 0644 "$ak_dir/authorized_keys"
+	chmod 0755 "$ak_dir"
+}
+
+write_default_conf() {
+	[ -f "$WORKER_CONF" ] && return 0
+	mkdir -p "$CONF_DIR"
+	cat >"$WORKER_CONF" <<EOF
+# daemonarchy-worker configuration (sh syntax; root-owned).
+job_root=$job_root
+worker_user=$worker_user
+max_jobs=$max_jobs
+free_floor_mb=$free_floor_mb
+cancel_grace=$cancel_grace
+cleanup_timeout=$cleanup_timeout
+remote_product=$remote_product
+remote_src=$remote_src
+remote_ports=$remote_ports
+EOF
+}
+
+cmd_enable() {
+	need_root enable
+	while [ $# -gt 0 ]; do
+		case $1 in
+		--job-root)
+			job_root=$2
+			shift 2
+			;;
+		--user)
+			worker_user=$2
+			shift 2
+			;;
+		*) fail bad_request "enable: unknown option $1" ;;
+		esac
+	done
+	case $job_root in /*) ;; *) fail bad_request "job root must be absolute" ;; esac
+	is_name "$worker_user" || fail bad_request "bad user name"
+	JOBS=$job_root/jobs
+	VAR=$job_root/var
+	write_default_conf
+	mkdir -p "$keys_dir"
+	[ -f "$keys_conf" ] || printf '# NAME ROLES FINGERPRINT\n' >"$keys_conf"
+	chmod 0644 "$keys_conf"
+	mkdir -p "$job_root" "$JOBS" "$VAR/history"
+	if [ "$FAKE_ADMIN" = 0 ]; then
+		if ! id "$worker_user" >/dev/null 2>&1; then
+			pw groupadd "$worker_user" 2>/dev/null || :
+			pw useradd "$worker_user" -g "$worker_user" -d "$job_root" -s /bin/sh \
+			    -c "Daemonarchy build worker" -w no || fail error "cannot create user $worker_user"
+			say "created user $worker_user"
+		fi
+		chown root:wheel "$job_root" "$CONF_DIR" "$keys_conf" "$keys_dir"
+		chmod 0755 "$job_root"
+		chown "$worker_user:$worker_user" "$JOBS" "$VAR" "$VAR/history"
+		install -d -o "$worker_user" -g "$worker_user" -m 0755 "$run_dir"
+	fi
+	: >"$CONF_DIR/enabled"
+	regen_authorized_keys
+	if [ "$FAKE_ADMIN" = 0 ] && command -v sysrc >/dev/null 2>&1; then
+		sysrc daemonarchy_worker_enable=YES >/dev/null
+		sysrc daemonarchy_worker_user="$worker_user" >/dev/null
+		service daemonarchy_worker start || :
+	fi
+	say "enabled: job root $job_root, user $worker_user"
+}
+
+# Drain every running job; runs as the worker user so job files keep their owner.
+cmd_drain_all() {
+	MODE='admin'
+	for d in "$JOBS"/*/; do
+		[ -f "$d/state" ] || continue
+		(
+			J=${d%/}
+			ID=$(basename "$J")
+			job_lock
+			if [ "$(get_state)" = running ]; then
+				set_state draining
+				ev "draining: worker disabled"
+				say "draining $ID"
+			fi
+			job_unlock
+		)
+	done
+}
+
+cmd_disable() {
+	need_root disable
+	MODE='admin'
+	if [ "$FAKE_ADMIN" = 0 ]; then
+		su -m "$worker_user" -c "$SELF _drain_all"
+	else
+		cmd_drain_all
+	fi
+	rm -f "$CONF_DIR/enabled"
+	regen_authorized_keys
+	if [ "$FAKE_ADMIN" = 0 ] && command -v sysrc >/dev/null 2>&1; then
+		sysrc daemonarchy_worker_enable=NO >/dev/null
+	fi
+	say "disabled: no key is accepted; running jobs drain"
+}
+
+cmd_key() {
+	sub=${1:-}
+	[ $# -gt 0 ] && shift
+	case $sub in
+	list)
+		[ -f "$keys_conf" ] && awk '!/^#/ && NF' "$keys_conf"
+		return 0
+		;;
+	add)
+		need_root "key add"
+		name=${1:-}
+		is_name "$name" || fail bad_request "usage: key add NAME --role read[,operate][,submit] < key.pub"
+		shift
+		[ "${1:-}" = --role ] && [ $# -eq 2 ] || fail bad_request "key add needs --role"
+		roles=$2
+		old_ifs=$IFS
+		IFS=,
+		for r in $roles; do
+			case $r in read | operate | submit) ;; *) fail bad_request "unknown role $r" ;; esac
+		done
+		IFS=$old_ifs
+		pub=$(head -n 1)
+		case $pub in
+		ssh-ed25519\ * | ecdsa-sha2-*\ * | ssh-rsa\ * | sk-ssh-ed25519@openssh.com\ *) ;;
+		*) fail bad_request "stdin must be one public key line with no options" ;;
+		esac
+		mkdir -p "$keys_dir"
+		printf '%s\n' "$pub" | awk '{ print $1, $2 }' >"$keys_dir/$name.pub.new"
+		fp=$(ssh-keygen -l -E sha256 -f "$keys_dir/$name.pub.new" 2>/dev/null | awk '{ print $2 }')
+		[ -n "$fp" ] || {
+			rm -f "$keys_dir/$name.pub.new"
+			fail bad_request "not a valid public key"
+		}
+		mv -f "$keys_dir/$name.pub.new" "$keys_dir/$name.pub"
+		chmod 0644 "$keys_dir/$name.pub"
+		[ -f "$keys_conf" ] || printf '# NAME ROLES FINGERPRINT\n' >"$keys_conf"
+		awk -v k="$name" '$1 != k' "$keys_conf" >"$keys_conf.new"
+		printf '%s %s %s\n' "$name" "$roles" "$fp" >>"$keys_conf.new"
+		mv -f "$keys_conf.new" "$keys_conf"
+		chmod 0644 "$keys_conf"
+		regen_authorized_keys
+		say "key $name ($fp) roles $roles"
+		;;
+	remove)
+		need_root "key remove"
+		name=${1:-}
+		is_name "$name" || fail bad_request "usage: key remove NAME"
+		awk -v k="$name" '$1 != k' "$keys_conf" >"$keys_conf.new"
+		mv -f "$keys_conf.new" "$keys_conf"
+		chmod 0644 "$keys_conf"
+		rm -f "$keys_dir/$name.pub"
+		regen_authorized_keys
+		say "key $name removed"
+		;;
+	*) fail bad_request "usage: key add|list|remove" ;;
+	esac
+}
+
+cmd_doctor() {
+	recipe=
+	[ "${1:-}" = --recipe ] && recipe=${2:-}
+	bad=0
+	check() {
+		if eval "$2" >/dev/null 2>&1; then
+			printf 'ok    %s\n' "$1"
+		else
+			printf 'FAIL  %s\n' "$1"
+			bad=$((bad + 1))
+		fi
+	}
+	check "jq installed" "command -v jq"
+	check "tar, awk, od, tail, head" "command -v tar && command -v awk && command -v od && command -v tail && command -v head"
+	check "sha256 tool" "command -v sha256 || command -v sha256sum || command -v shasum"
+	if [ "$(uname -s)" = FreeBSD ]; then
+		check "daemon(8)" "command -v daemon"
+	else
+		check "setsid(1)" "command -v setsid"
+	fi
+	check "timeout(1)" "command -v timeout"
+	check "worker enabled ($CONF_DIR/enabled)" "test -f '$CONF_DIR/enabled'"
+	check "job root $JOBS exists" "test -d '$JOBS'"
+	check "worker user $worker_user exists" "id '$worker_user'"
+	check "keys.conf readable" "test -r '$keys_conf'"
+	if [ -f "$job_root/.ssh/authorized_keys" ]; then
+		check "authorized_keys holds only restricted forced-command keys" \
+		    "awk '!/^#/ && NF && !/^restrict,command=\"/ { bad = 1 } END { exit bad }' '$job_root/.ssh/authorized_keys'"
+		[ "$(uname -s)" = FreeBSD ] &&
+		    check "authorized_keys and .ssh are root-owned" \
+		    "test \"\$(stat -f %Su '$job_root/.ssh/authorized_keys' '$job_root/.ssh' '$job_root' | sort -u)\" = root"
+	fi
+	if [ -d "$JOBS" ]; then
+		printf 'info  free space at %s: %s MB (floor %s MB)\n' "$JOBS" "$(free_mb "$JOBS")" "$free_floor_mb"
+	fi
+	printf 'info  boot id %s\n' "$(boot_id)"
+	for r in "$recipes_dir"/*.json; do
+		[ -f "$r" ] || continue
+		name=$(jq -r .name "$r")
+		[ -n "$recipe" ] && [ "$recipe" != "$name" ] && continue
+		for c in $(jq -r '.requires.commands // [] | .[]' "$r"); do
+			check "recipe $name needs command $c" "command -v '$c'"
+		done
+		for p in $(jq -r '.requires.paths // [] | .[]' "$r"); do
+			check "recipe $name needs path $p" "test -e '$p'"
+		done
+		for i in $(jq -r '.inputs // {} | keys[]' "$r"); do
+			u=
+			eval "u=\${remote_$i:-}"
+			check "recipe $name input $i has a configured remote" "test -n '$u'"
+		done
+	done
+	[ $bad -eq 0 ]
+}
+
+# ---------------------------------------------------------------- main
+
+[ $# -ge 1 ] || {
+	sed -n '2,16p' "$SELF" >&2
+	exit 2
+}
+cmd=$1
+shift
+case $cmd in
+serve) cmd_serve "$@" ;;
+request) cmd_request "$@" ;;
+enable) cmd_enable "$@" ;;
+disable) cmd_disable "$@" ;;
+key) cmd_key "$@" ;;
+doctor) cmd_doctor "$@" ;;
+boot) cmd_boot ;;
+stop-all) cmd_stop_all ;;
+_supervise) cmd_supervise "$@" ;;
+_step) cmd_step "$@" ;;
+_drain_all) cmd_drain_all ;;
+version) echo "daemonarchy-worker $WORKER_VERSION (protocol $WORKER_PROTOCOL)" ;;
+*)
+	MODE='admin'
+	fail bad_request "unknown command $cmd"
+	;;
+esac

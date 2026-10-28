@@ -1,0 +1,42 @@
+name: Remote build worker checks
+
+on:
+  push:
+    paths:
+      - '.github/workflows/remote-worker.yml'
+      - 'tools/worker/**'
+      - 'tests/remote-worker.sh'
+  pull_request:
+    paths:
+      - '.github/workflows/remote-worker.yml'
+      - 'tools/worker/**'
+      - 'tests/remote-worker.sh'
+  workflow_dispatch:
+
+permissions:
+  contents: read
+
+jobs:
+  # WORKER-001: daemonarchy-worker and daemonarchy-remote are POSIX sh with
+  # jq.  The hosted test runs a fake builder with a simulated sshd forced
+  # command; native evidence comes from the builders (docs/testing-remote-worker-*.md).
+  remote-worker:
+    runs-on: ubuntu-latest
+    steps:
+      - uses: actions/checkout@v4
+      - name: Syntax and shellcheck
+        run: |
+          w=tools/worker
+          sh -n $w/daemonarchy-worker $w/daemonarchy-remote $w/install.sh $w/rc.d/daemonarchy_worker tests/remote-worker.sh
+          for f in $w/recipes/*/*.sh; do sh -n "$f"; done
+          for f in $w/recipes/*.json; do jq -e '.name and .version and (.steps | length > 0)' "$f" >/dev/null; done
+          shellcheck -s sh $w/daemonarchy-worker $w/daemonarchy-remote $w/install.sh $w/recipes/*/*.sh tests/remote-worker.sh
+          shellcheck -s sh -e SC1091,SC2034 $w/rc.d/daemonarchy_worker
+      - name: Hosted state-transition, role and confinement tests
+        run: sh tests/remote-worker.sh
+      - name: Install into a staging root leaves the worker disabled
+        run: |
+          DESTDIR="$RUNNER_TEMP/stage" sh tools/worker/install.sh
+          grep -q '^WORKER_INSTALLED=1$' "$RUNNER_TEMP/stage/usr/local/bin/daemonarchy-worker"
+          test ! -e "$RUNNER_TEMP/stage/usr/local/etc/daemonarchy-worker/enabled"
+          grep -q 'daemonarchy_worker_enable:=NO' "$RUNNER_TEMP/stage/usr/local/etc/rc.d/daemonarchy_worker"

@@ -1,0 +1,22 @@
+{
+  "name": "src-world-kernel",
+  "version": 1,
+  "description": "Fetch the pinned src commit, then buildworld, buildkernel, an unprivileged (-DNO_ROOT) install into a staging root, and base.txz/kernel.txz sets.",
+  "min_free_mb": 40960,
+  "requires": {"commands": ["git", "make", "tar", "xz", "cc"]},
+  "params": {
+    "target_arch": {"type": "enum", "values": ["amd64", "aarch64"], "default": "amd64", "help": "TARGET_ARCH; TARGET follows from it"},
+    "kernconf": {"type": "name", "default": "GENERIC", "help": "kernel configuration in sys/<target>/conf"},
+    "jobs": {"type": "int", "min": 0, "max": 256, "default": "0", "help": "make -j; 0 uses every CPU"}
+  },
+  "inputs": {
+    "src": {"required": true, "help": "Daemonarchy FreeBSD source commit"}
+  },
+  "steps": [
+    {"name": "fetch-src", "run": "lib/fetch-input.sh", "env": {"INPUT": "src"}, "outputs": ["src.commit"], "retry": true, "resource": "network"},
+    {"name": "buildworld", "run": "src-world-kernel/build.sh", "env": {"ACTION": "buildworld"}, "outputs": ["buildworld.done"], "retry": true, "resource": "cpu"},
+    {"name": "buildkernel", "run": "src-world-kernel/build.sh", "env": {"ACTION": "buildkernel"}, "outputs": ["buildkernel.done"], "retry": true, "resource": "cpu"},
+    {"name": "stage", "run": "src-world-kernel/build.sh", "env": {"ACTION": "stage"}, "outputs": ["stage.done"], "retry": true, "resource": "io", "cleanup": "src-world-kernel/cleanup.sh"},
+    {"name": "sets", "run": "src-world-kernel/build.sh", "env": {"ACTION": "sets"}, "outputs": ["base.txz", "kernel.txz", "build-info.txt"], "retry": true, "resource": "io"}
+  ]
+}
