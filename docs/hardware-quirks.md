@@ -5,11 +5,13 @@ diagnostic is not a validated workaround or an automatically applied setting.
 
 ## MSI Raider 18 HX AI A2XWIG: early installer reset
 
-Status: **kernel reaches init with stock settings in the dev10 trace
-image; installer and desktop not yet tested**. Reported 2026-10-15; boot
-video reviewed 2026-10-18. The legacy VGA probe hang is fixed by src#45
-and the AT RTC (`atrtc0`) port-conflict hang by src#46; see
-[trace-stick findings](#trace-stick-findings-dev5-to-dev8) below.
+Status: **installs and runs the desktop with Daemonarchy 1.4.0** (operator
+tests, October 29, 2026). The earlier reset was fixed by src#45 (no legacy VGA
+probe on UEFI boots) and src#46 (AT RTC left alone on a port conflict). The
+four faults found afterwards on this machine, and their fixes, are in
+[1.4.0 on this machine](#140-on-this-machine) below. Reported 2026-10-15; boot
+video reviewed 2026-10-18; see also the
+[trace-stick findings](#trace-stick-findings-dev5-to-dev8).
 
 | Identification | Tested configuration |
 | --- | --- |
@@ -34,6 +36,27 @@ The operator is using this same laptop for the current test conversation;
 rebooting it into a USB test interrupts that session. Diagnostic instructions
 should be available before leaving Windows. Windows machine/account identifiers
 are unnecessary for identifying this quirk.
+
+### 1.4.0 on this machine
+
+Tested October 29, 2026, with Secure Boot off and the BIOS in its factory
+RAID (Intel VMD) mode, and again with VMD disabled. The CPU is an Arrow
+Lake-HX part with an Arrow Lake-S PCH, an Intel iGPU (8086:7d67) and an
+RTX 5080 Laptop GPU (10de:2c19).
+
+| Symptom | Cause | Fix |
+| --- | --- | --- |
+| The installer reports no disk to install on. | With VMD enabled the NVMe drive is hidden behind the VMD controller (8086:ad0b). `vmd(4)` refused its bus-offset setting 3 (`Unknown bus offset`); Linux treats 3 like 2. | daemonarchy-src#47 maps setting 3 to bus 224 like setting 2. The drive appears and installs in both RAID and non-RAID mode. |
+| After installing, the screen stays black. | `i915kms` resolved `enable_guc` to 0 on this Arrow Lake iGPU, which wedges the GPU (`GT0: Enabling uc failed`); Hyprland then aborted in `initEGL` and took the SDDM greeter with it. | The installer sets `compat.linuxkpi.i915_enable_guc=3` for Meteor Lake and Arrow Lake graphics (PR #128), loading `mtl_guc_70.bin`. |
+| The touchpad does not move the pointer. | The touchpad (ELAN 04F3:31FD, I2C-HID) sits behind PCH I2C controller 0, 8086:7f4c, which `ig4(4)` did not recognise. | daemonarchy-src#48 adds the ID. The touchpad attaches as a five-contact click-pad. Only function 0x7f4c was seen on hardware. |
+| The touchpad reports `Interrupt setup failed` and `Using sampling mode`. | The I2C-HID interrupt is not wired through; the driver polls. | Works, at a polling cost. Not fixed. |
+
+The built-in keyboard and Intel Wi-Fi (`iwlwifi`) work. The NVIDIA driver
+595.104.02 loads and `nvidia-smi` reports the GPU. The installer offers CUDA
+and cudalab on this machine: CUDA 13.2 runs a kernel on the RTX 5080 (compute
+capability 12.0) through the Linuxulator with the UVM shim. Unified Memory
+(`cudaMallocManaged`) crashes and is not supported. Linux's ARL004 interrupt
+ordering workaround for the VMD controller is not ported.
 
 ### RTC comparison prompted by the video
 
