@@ -529,6 +529,8 @@ packages=(pkg bash sudo daemonarchy chromium octopkg wifi-firmware-kmod "${gpu_e
 if $macbook_bcm4364; then
   packages+=(if_brcmfmac-kmod)
 fi
+# cudalab draws through X11, which the Wayland session provides with Xwayland.
+[[ $install_cuda != true ]] || packages+=(xwayland)
 pkg_target update -f
 if [[ $package_repository_tag != "$package_repository_stable_tag" ]]; then
   pkg_target rquery -r Daemonarchy-Dependencies '%n' omarchy | grep -qx omarchy || {
