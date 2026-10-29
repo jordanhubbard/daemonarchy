@@ -1,12 +1,16 @@
 #!/usr/local/bin/bash
-# Optional compute tools, separate from the hardware's desktop driver.
+# With a supported NVIDIA display GPU (gpu_nvidia, set by gpu_select) the
+# installer offers CUDA and cudalab, defaulting to yes, and downloads them over
+# the network during installation (they are never carried on the media). An
+# unattended install that does not say otherwise takes the default. Without
+# such a GPU the selection is refused.
 cuda_options_prepare() {
-  install_cuda=${install_cuda:-false}
+  install_cuda=${install_cuda:-${gpu_nvidia:-false}}
   [[ $install_cuda == true || $install_cuda == false ]] || {
     echo 'install_cuda must be true or false' >&2; return 1;
   }
-  if [[ $install_cuda == true ]]; then
-    echo 'CUDA/Cudalab is awaiting version-specific native Linuxulator qualification; it is not included in this release.' >&2
+  if [[ $install_cuda == true ]] && ! ${gpu_nvidia:-false}; then
+    echo 'CUDA and cudalab need a supported NVIDIA GPU, and none was detected.' >&2
     return 1
   fi
 }

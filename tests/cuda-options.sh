@@ -32,7 +32,14 @@ for hardware in intel amd nvidia mixed legacy audio unknown; do
     : >"$work/prompts"
     cuda_step >"$work/messages" 2>&1
     expected=false
-    [[ ! -s $work/prompts ]]
+    if [[ $hardware == nvidia || $hardware == mixed ]]; then
+      # Offered with a yes default; only an explicit decline turns it off.
+      [[ -s $work/prompts ]]
+      grep -q 'CUDA and cudalab' "$work/prompts"
+      [[ $answer != 0 ]] || expected=true
+    else
+      [[ ! -s $work/prompts ]]
+    fi
     [[ $install_cuda == "$expected" ]]
     checkout_options_prepare "$work/absent"
     bytes=21474836480
@@ -52,11 +59,19 @@ for hardware in intel amd nvidia mixed legacy audio unknown; do
     fi
   done
 done
-unset install_cuda
+unset install_cuda gpu_nvidia
 cuda_options_prepare
 [[ $install_cuda == false ]]
 install_cuda=true gpu_nvidia=false
 ! cuda_options_prepare
+# An unattended install takes the default (yes) with an NVIDIA GPU, and honours an explicit no.
+unset install_cuda; gpu_nvidia=true
+cuda_options_prepare
+[[ $install_cuda == true ]]
+install_cuda=false gpu_nvidia=true
+cuda_options_prepare
+[[ $install_cuda == false ]]
+gpu_nvidia=false
 install_cuda=invalid
 ! cuda_options_prepare
 
@@ -78,4 +93,4 @@ umount() { echo "$1" >>"$work/unmounted"; }
 cuda_unmount_target /mnt
 printf '%s\n' /mnt/compat/linux/home /mnt/compat/linux/dev/shm /mnt/compat/linux/dev >"$work/expected"
 cmp "$work/expected" "$work/unmounted"
-echo 'PASS: unqualified compute selection withheld, default menu, space and mount cleanup'
+echo 'PASS: CUDA offered (default yes) with an NVIDIA GPU and refused without, menu, space and mount cleanup'

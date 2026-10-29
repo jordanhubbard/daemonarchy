@@ -83,8 +83,18 @@ extract_rootfs() {
   done < <(find "$image" -type f)
 }
 
+# The Linuxulator's filesystem cannot hold file capabilities, so rpm's
+# cap_set_file fails (shadow-utils' newgidmap). Tell dnf not to set them.
+dnf_no_caps() {
+  local conf=$linux_root/etc/dnf/dnf.conf
+  [[ -f $conf ]] || return 0
+  grep -q '^tsflags=.*nocaps' "$conf" && return 0
+  awk '{ print } /^\[main\]/ { print "tsflags=nocaps" }' "$conf" >"$conf.new" && mv "$conf.new" "$conf"
+}
+
 bootstrap_dnf() {
-  linux_shell 'command -v dnf' >/dev/null 2>&1 && return 0
+  # A dnf that exists but cannot run (an interrupted earlier unpack) is not usable.
+  linux_shell 'dnf --version' >/dev/null 2>&1 && return 0
   command -v rpm2cpio >/dev/null 2>&1 || pkg install -y rpm4
   local release tmp archive layer
   release=$(awk -F= '$1 == "VERSION_ID" { gsub(/"/, "", $2); print $2 }' "$linux_root/etc/os-release")
@@ -98,19 +108,33 @@ bootstrap_dnf() {
   extract_rootfs "$tmp/image" "$tmp/root"
   [[ -x $tmp/root/usr/bin/dnf ]] || fail 'Could not unpack a Rocky Linux root that contains dnf.'
   cp /etc/resolv.conf /etc/hosts "$tmp/root/etc/"
-  chroot "$tmp/root" /bin/bash -lc "dnf --releasever '$release' -y install dnf-plugins-core && dnf --releasever '$release' -y download --resolve --alldeps --downloaddir /root/DNF dnf dnf-plugins-core"
+  chroot "$tmp/root" /bin/bash -lc "dnf --releasever '$release' -y install dnf-plugins-core cpio && dnf --releasever '$release' -y download --resolve --alldeps --downloaddir /root/DNF dnf dnf-plugins-core"
+  # /compat/linux has symlinked directories (run, lib64, ...), which bsdcpio
+  # refuses to extract through. The Rocky image's own GNU cpio resolves them
+  # inside a chroot, so mount /compat/linux there and unpack with that.
+  mkdir -p "$tmp/root/mnt/linux"
+  mount -t nullfs "$linux_root" "$tmp/root/mnt/linux"
   while IFS= read -r layer; do
-    rpm2cpio "$layer" | (cd "$linux_root" && cpio -idmu)
+    if ! rpm2cpio "$layer" | chroot "$tmp/root" /bin/bash -c 'cd /mnt/linux && cpio -idmu --quiet'; then
+      umount "$tmp/root/mnt/linux" || true
+      fail "Unpacking $layer failed."
+    fi
   done < <(find "$tmp/root/root/DNF" -name '*.rpm' -type f)
+  umount "$tmp/root/mnt/linux"
   rm -rf "$tmp"
   cp /etc/resolv.conf /etc/hosts "$linux_root/etc/"
+  dnf_no_caps
   linux_shell "update-ca-trust && dnf --releasever '$release' -y update"
 }
 
 install_toolkit() {
   local release
+  dnf_no_caps
   release=$(awk -F= '$1 == "VERSION_ID" { gsub(/"/, "", $2); print $2 }' "$linux_root/etc/os-release")
-  linux_shell "dnf --releasever '$release' -y install dnf-plugins-core gcc-c++ ninja-build git pkgconf-pkg-config libglvnd-devel libglvnd-glx which make tar gzip ca-certificates curl"
+  # ninja-build and some -devel packages live in Rocky's CRB repository.
+  linux_shell "dnf --releasever '$release' -y install dnf-plugins-core"
+  linux_shell "dnf config-manager --set-enabled crb"
+  linux_shell "dnf --releasever '$release' -y install dnf-plugins-core gcc-c++ ninja-build git pkgconf-pkg-config libglvnd-devel libglvnd-glx which make tar gzip ca-certificates curl libX11-devel libXext-devel libXcursor-devel libXi-devel libXfixes-devel libXrandr-devel libXScrnSaver-devel libXtst-devel libxkbcommon-devel wayland-devel libdrm-devel mesa-libgbm-devel mesa-libEGL-devel"
   if ! linux_shell 'test -x /usr/bin/clang-format || test -x /usr/bin/clang-format-17'; then
     linux_shell "dnf --releasever '$release' -y install clang-tools-extra" || true
   fi
@@ -210,7 +234,8 @@ if [[ ! -d \$HOME/src/cudalab/.git ]]; then
   git clone $(q "$cudalab_url") "\$HOME/src/cudalab"
 fi
 cd "\$HOME/src/cudalab"
-cmake --preset dev
+# Rocky 9's libXi predates the gesture API this SDL3 uses; XInput2 only adds touch gestures.
+cmake --preset dev -DSDL_X11_XINPUT=OFF
 cmake --build --preset dev
 export LD_PRELOAD=/usr/local/lib/daemonarchy/dummy-uvm.so
 $launch
