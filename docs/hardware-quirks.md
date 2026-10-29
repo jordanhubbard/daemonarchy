@@ -181,6 +181,8 @@ suspend and the NVMe fix below are not part of that claim. See the
 [1.3.1 release notes](release-1.3.1.md) and
 [MacBook acceptance record](testing-macbookpro16-1-1.3.1.md).
 
+**Sound:** the MacBookPro16,1's built-in speakers, microphones and headphone jack have no driver. Only the HDMI audio outputs and USB audio devices appear. See the [MacBook application note](application-note-macbookpro16-1.md#sound).
+
 Read the [MacBook application note](application-note-macbookpro16-1.md) and
 [installer investigation](testing-macbookpro16-1-installer-20261022.md) for the
 Radeon Pro 5500M and BCM4364 Wi-Fi evidence. The EFI framebuffer overlap fix

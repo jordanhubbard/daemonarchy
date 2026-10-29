@@ -288,6 +288,30 @@ the 10-second match window, and an unreachable T2 falls back to the password
 after 15 seconds. Suspend and resume are not handled specially: without
 logind, the bridge notices a dead session by its timeout.
 
+## Sound
+
+Built-in sound does not work on the MacBookPro16,1. This was observed on a
+development live image (kernel `#1 f6f30e8e1713`) on 2026-10-29 and applies to
+every Daemonarchy image so far.
+
+- The internal speakers, microphones and headphone jack are on the T2's audio
+  function (PCI `106b:1803`, "Apple Audio Device", `pci0:4:0:3`). No FreeBSD
+  driver attaches to it, so no `pcm` device exists for it. The T2's
+  `apple_bce(4)` function (`106b:1801`) does attach, but nothing implements
+  audio on top of it.
+- The only audio devices the kernel registers are the six HDMI outputs of the
+  Radeon Pro 5500M (`pcm0` to `pcm5`, "ATI R6xx (HDMI)"). `pcm0` is the default
+  (`hw.snd.default_unit=0`), so with no HDMI or DisplayPort sink connected every
+  sound goes nowhere.
+- USB audio devices should work through `snd_uaudio(4)`, which is loaded. This
+  has not been tested on this MacBook.
+
+The installer's sounds (boot chime, result marks, the install screen's sound
+layer) and the desktop's sounds are therefore silent on this machine unless an
+HDMI sink or a USB audio device is connected. That is a hardware-support gap,
+not a fault in the installer's sound code, which is tested without a device. A
+driver for the T2 audio function is needed before built-in sound can work.
+
 ## Other limits and investigation
 
 The later installer retry reproduced a fatal NVMe status during package
