@@ -84,7 +84,8 @@ extract_rootfs() {
 }
 
 bootstrap_dnf() {
-  linux_shell 'command -v dnf' >/dev/null 2>&1 && return 0
+  # A dnf that exists but cannot run (an interrupted earlier unpack) is not usable.
+  linux_shell 'dnf --version' >/dev/null 2>&1 && return 0
   command -v rpm2cpio >/dev/null 2>&1 || pkg install -y rpm4
   local release tmp archive layer
   release=$(awk -F= '$1 == "VERSION_ID" { gsub(/"/, "", $2); print $2 }' "$linux_root/etc/os-release")
@@ -98,10 +99,19 @@ bootstrap_dnf() {
   extract_rootfs "$tmp/image" "$tmp/root"
   [[ -x $tmp/root/usr/bin/dnf ]] || fail 'Could not unpack a Rocky Linux root that contains dnf.'
   cp /etc/resolv.conf /etc/hosts "$tmp/root/etc/"
-  chroot "$tmp/root" /bin/bash -lc "dnf --releasever '$release' -y install dnf-plugins-core && dnf --releasever '$release' -y download --resolve --alldeps --downloaddir /root/DNF dnf dnf-plugins-core"
+  chroot "$tmp/root" /bin/bash -lc "dnf --releasever '$release' -y install dnf-plugins-core cpio && dnf --releasever '$release' -y download --resolve --alldeps --downloaddir /root/DNF dnf dnf-plugins-core"
+  # /compat/linux has symlinked directories (run, lib64, ...), which bsdcpio
+  # refuses to extract through. The Rocky image's own GNU cpio resolves them
+  # inside a chroot, so mount /compat/linux there and unpack with that.
+  mkdir -p "$tmp/root/mnt/linux"
+  mount -t nullfs "$linux_root" "$tmp/root/mnt/linux"
   while IFS= read -r layer; do
-    rpm2cpio "$layer" | (cd "$linux_root" && cpio -idmu)
+    if ! rpm2cpio "$layer" | chroot "$tmp/root" /bin/bash -c 'cd /mnt/linux && cpio -idmu --quiet'; then
+      umount "$tmp/root/mnt/linux" || true
+      fail "Unpacking $layer failed."
+    fi
   done < <(find "$tmp/root/root/DNF" -name '*.rpm' -type f)
+  umount "$tmp/root/mnt/linux"
   rm -rf "$tmp"
   cp /etc/resolv.conf /etc/hosts "$linux_root/etc/"
   linux_shell "update-ca-trust && dnf --releasever '$release' -y update"

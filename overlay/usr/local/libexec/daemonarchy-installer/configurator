@@ -941,9 +941,21 @@ ssh_step() {
 # Optional development trees are downloaded only when selected.
 install_ports=false install_src=false install_cuda=false
 cuda_step() {
-  # Keep the answer format stable while native Linuxulator qualification is
-  # pending. Do not offer an application that has not passed on FreeBSD.
+  # Offered only with a supported NVIDIA display GPU, and then selected by default.
+  local inventory
+  inventory=$(mktemp)
+  pciconf -l >"$inventory"
+  gpu_select "$inventory" "$ISO_SHARE/gpu-ids" >/dev/null 2>&1 || true
+  rm -f "$inventory"
   install_cuda=false
+  ! ${gpu_nvidia:-false} || {
+    step "CUDA"
+    say --foreground 8 "CUDA 13.2 and the cudalab demos are downloaded over the network during installation."
+    if gum confirm --default=true --affirmative "Install" --negative "Skip" "Install CUDA and cudalab for the NVIDIA GPU (about 5 GB download; allow 16 GiB extra)?"; then
+      install_cuda=true
+    fi
+  }
+  cuda_options_prepare
 }
 
 checkout_step() {

@@ -41,7 +41,8 @@ for path in (root / 'default/omarchy/omarchy-menu.jsonc', root / 'vendor/omarchy
     for key, row in entries.items():
         assert not key.startswith(('install.aur', 'update.channel', 'setup.default.agent',
                                    'trigger.tests.network-speedtest', 'trigger.tests.disk-speedtest')), key
-        assert 'cudalab' not in key, key
+        # Cudalab is offered with an NVIDIA GPU and installed by default there.
+        assert 'cudalab' not in key or Path('/usr/local/share/applications/cudalab.desktop').exists(), key
         assert not any(word in row.get('action', '') for word in ('plymouth', 'docker', 'windows-vm', 'install-dev-env')), key
     if 'install.package' in entries:
         assert entries['install.package']['action'] == 'uwsm-app -- octopkg'
