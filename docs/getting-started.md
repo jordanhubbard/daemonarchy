@@ -4,41 +4,41 @@ This guide takes you from a download to a working desktop, and through the thing
 
 Daemonarchy is the [Omarchy](https://omarchy.org) desktop running on [FreeBSD](https://www.freebsd.org). If you are curious how it is put together, or want to change it, read the [hacking guide](https://github.com/jordanhubbard/daemonarchy/blob/main/HACKING.md) when you are done here.
 
-This guide covers Daemonarchy 1.3.1, the latest release. The [download page](https://github.com/jordanhubbard/daemonarchy/blob/main/README.md#download) identifies what is published; the [1.3.1 release notes](release-1.3.1.md) record the image, its hardware status and outstanding qualification. Read them before choosing hardware. Features marked *upcoming 1.4.0* below are in development and not in the 1.3.1 image.
+This guide covers Daemonarchy 1.4.0, the latest release. The [download page](https://github.com/jordanhubbard/daemonarchy/blob/main/README.md#download) identifies what is published; the [1.4.0 release notes](release-1.4.0.md) record the image, its hardware status and outstanding qualification. Read them before choosing hardware. Features marked *upcoming 1.4.0* below are in development and not in the 1.3.1 image.
 
 ![The Daemonarchy desktop, with the System > FreeBSD menu open](images/desktop.png)
 
 ## What you need
 
 - A 64-bit x86 PC with UEFI or legacy BIOS.
-- A USB stick of 4 GB or more. Writing the image erases it.
+- A USB stick of 4 GB or more (the image is 3.5 GB once decompressed). Writing the image erases it.
 - A disk or installation region of 40 GB or more. Whole-disk mode erases the selected disk. You can instead replace a selected GPT partition or use existing free space. The installer does not shrink filesystems; create space from the other operating system first.
 - A network connection during installation. Wired Ethernet or personal Wi-Fi is the simplest path. On a MacBookPro16,1 the Broadcom Wi-Fi needs Apple firmware, which the installer acquires from Apple's recovery image or from local media before it changes the disk; without staged firmware, a temporary wired connection is needed to download it. The [enterprise Wi-Fi configuration](enterprise-wifi.md) is implemented, but real enterprise authentication remains unqualified.
-- Graphics supported by the packaged FreeBSD drivers. The image includes NVIDIA drivers; the RTX 4090 driver/compute probes passed, while its installed desktop remains unqualified. The MacBookPro16,1's Navi14 graphics reached a usable desktop on the 1.3.1 development installation. QEMU with VirtIO/VirGL passed actual Hyprland checks. Read the [hardware quirks](hardware-quirks.md), especially the ASRock, MSI Raider (which still resets during early kernel startup) and T2 MacBook observations.
+- Graphics supported by the packaged FreeBSD drivers. The image includes NVIDIA drivers, and with an NVIDIA GPU the installer offers CUDA and cudalab (selected by default; it downloads them during the install). The MacBookPro16,1's Navi14 graphics reach a usable desktop. The MSI Raider 18 HX installs and runs the desktop (see its [1.4.0 results](hardware-quirks.md#140-on-this-machine)). QEMU with VirtIO/VirGL passes actual Hyprland checks. Read the [hardware quirks](hardware-quirks.md), especially the ASRock and T2 MacBook observations.
 
 ## 1. Download the image
 
-Get the `.iso` and matching `.sha256` from the [download page](https://github.com/jordanhubbard/daemonarchy/blob/main/README.md#download). GitHub **latest** selects stable 1.3.1. Read its [release notes](release-1.3.1.md) before installing: publication does not establish physical-hardware compatibility or completion of the final installation matrix.
+Get the `.iso.xz` and matching `.sha256` from the [download page](https://github.com/jordanhubbard/daemonarchy/blob/main/README.md#download). GitHub **latest** selects stable 1.4.0. Read its [release notes](release-1.4.0.md) before installing: publication does not establish physical-hardware compatibility or completion of the final installation matrix.
 
 Checking the download is optional but quick. In a terminal, in the folder you saved both files to:
 
-- macOS: `shasum -a 256 -c daemonarchy-*.iso.sha256`
-- Linux: `sha256sum -c daemonarchy-*.iso.sha256`
-- FreeBSD: `sha256 -c "$(cut -d' ' -f1 daemonarchy-*.iso.sha256)" daemonarchy-*.iso`
-- Windows (PowerShell): `Get-FileHash daemonarchy-*.iso`, then compare the result with the number in the `.sha256` file.
+- macOS: `shasum -a 256 -c daemonarchy-*.iso.xz.sha256`
+- Linux: `sha256sum -c daemonarchy-*.iso.xz.sha256`
+- FreeBSD: `sha256 -c "$(cut -d' ' -f1 daemonarchy-*.iso.xz.sha256)" daemonarchy-*.iso.xz`
+- Windows (PowerShell): `Get-FileHash daemonarchy-*.iso.xz`, then compare the result with the number in the `.sha256` file.
 
-From the upcoming 1.4.0, the image downloads xz-compressed as `daemonarchy-<version>-<arch>.iso.xz`, which is much smaller. Its `.iso.xz.sha256` file checks the compressed download, so use the same commands with `.iso.xz` in place of `.iso` (for example `sha256sum -c daemonarchy-*.iso.xz.sha256`).
+The image downloads xz-compressed as `daemonarchy-<version>-<arch>.iso.xz`, which is much smaller than the 3.5 GB image. Its `.iso.xz.sha256` file checks the compressed download, so use the same commands with `.iso.xz` in place of `.iso` (for example `sha256sum -c daemonarchy-*.iso.xz.sha256`).
 
 ## 2. Write it to a USB stick
 
 The image is copied to the stick byte for byte; copying the file onto the stick like a document does not work.
 
-- **Any system, the easy way:** [balenaEtcher](https://etcher.balena.io). Pick the `.iso`, pick the stick, press Flash.
+- **Any system, the easy way:** [balenaEtcher](https://etcher.balena.io). Pick the `.iso.xz`, pick the stick, press Flash.
 - **Windows:** [Rufus](https://rufus.ie) works too; when it asks, choose **DD image mode**.
-- **macOS:** find the stick with `diskutil list` (say it is `/dev/disk4`), then `diskutil unmountDisk /dev/disk4` and `sudo dd if=daemonarchy-1.3.1-amd64.iso of=/dev/rdisk4 bs=1m`.
-- **Linux:** find the stick with `lsblk` (say `/dev/sdb`), then `sudo dd if=daemonarchy-1.3.1-amd64.iso of=/dev/sdb bs=1M status=progress conv=fsync`.
+- **macOS:** find the stick with `diskutil list` (say it is `/dev/disk4`), then `diskutil unmountDisk /dev/disk4` and `xz -dc daemonarchy-1.4.0-amd64.iso.xz | sudo dd of=/dev/rdisk4 bs=1m`.
+- **Linux:** find the stick with `lsblk` (say `/dev/sdb`), then `xz -dc daemonarchy-1.4.0-amd64.iso.xz | sudo dd of=/dev/sdb bs=1M status=progress conv=fsync`.
 
-For the upcoming 1.4.0 and later `.iso.xz` images, balenaEtcher can flash the compressed file directly. For `dd`, decompress while writing instead of passing `if=`: `xz -dc daemonarchy-<version>-amd64.iso.xz | sudo dd of=/dev/rdisk4 bs=1m` on macOS, or `xz -dc daemonarchy-<version>-amd64.iso.xz | sudo dd of=/dev/sdb bs=1M status=progress conv=fsync` on Linux. FreeBSD and most Linux systems include `xz`; on macOS install it with Homebrew (`brew install xz`). If another tool will not accept the `.xz`, extract the `.iso` first, for example with [7-Zip](https://www.7-zip.org) on Windows.
+balenaEtcher can flash the compressed file directly. For `dd`, decompress while writing instead of passing `if=`: `xz -dc daemonarchy-<version>-amd64.iso.xz | sudo dd of=/dev/rdisk4 bs=1m` on macOS, or `xz -dc daemonarchy-<version>-amd64.iso.xz | sudo dd of=/dev/sdb bs=1M status=progress conv=fsync` on Linux. FreeBSD and most Linux systems include `xz`; on macOS install it with Homebrew (`brew install xz`). If another tool will not accept the `.xz`, extract the `.iso` first, for example with [7-Zip](https://www.7-zip.org) on Windows.
 
 Be sure of the device name: `dd` overwrites whatever you point it at.
 

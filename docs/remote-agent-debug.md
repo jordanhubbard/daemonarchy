@@ -6,7 +6,7 @@ enable debug mode, and approve the agent's temporary SSH key. No installation
 starts automatically and debug mode does not select or format a target disk.
 
 Pairing was introduced in 1.1, and 1.1.1 added Pair/Unpair recovery and
-continuous diagnostics. In the current 1.3.1, an approval and the agent identity
+continuous diagnostics. In 1.3.1 and the current 1.4.0, an approval and the agent identity
 survive reboot until revoked, and the desktop network menu shows the listener
 state and offers revocation. Older images need the matching helpers copied in
 before these newer commands are available; installing a newer kernel is not

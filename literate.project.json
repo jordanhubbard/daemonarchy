@@ -1,7 +1,7 @@
 {
   "schema": "urn:literate-ai:schema:v2:project-definition",
   "project_id": "daemonarchy",
-  "version": "1.3.1",
+  "version": "1.4.0",
   "profile": "canonical",
   "agent_skill": "SKILL.md",
   "component_roots": [

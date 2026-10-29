@@ -1,8 +1,8 @@
 # Daemonarchy public signing material
 
-The current release, 1.3.1, uses a replacement certificate,
-`daemonarchy-1.3.1.der` and `daemonarchy-1.3.1.pem`, published with
-[its GitHub release](https://github.com/jordanhubbard/daemonarchy/releases/tag/daemonarchy-1.3.1)
+The current release, 1.4.0, uses the same replacement certificate as 1.3.1,
+published as `daemonarchy-1.4.0.der` and `daemonarchy-1.4.0.pem` with
+[its GitHub release](https://github.com/jordanhubbard/daemonarchy/releases/tag/daemonarchy-1.4.0)
 rather than committed here; its fingerprint and enrollment steps are in
 [the Secure Boot guide](../../docs/secure-boot.md#131-certificate). This
 directory keeps the earlier 1.1 certificate, which 1.1 and 1.1.1 systems trust.

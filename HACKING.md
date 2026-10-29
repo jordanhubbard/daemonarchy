@@ -2,8 +2,8 @@
 
 How to build a Daemonarchy image yourself, change the installer, the ports, or the artwork, and test and release the result. [README.md](README.md) says what Daemonarchy is; this is for working on it.
 
-Latest published release: **1.3.1** ([`release/current.json`](release/current.json)),
-daemonarchy-src `d63d77f4eb3cc29e16510f7bdec73602e27c2844` (OSVERSION `1600029`),
+Latest published release: **1.4.0** ([`release/current.json`](release/current.json)),
+daemonarchy-src `06e5befc60319b8a72f746dac31e01dbe75ae702` (OSVERSION `1600029`),
 daemonarchy-ports `b785784219af455a9ce4fd70c59bc96ba77f469f` on `main`. Keep base,
 kernel, jail, drivers, optional source checkout and signed manifests on that
 selection. The [1.3.1 release notes](docs/release-1.3.1.md) record its qualification
@@ -25,7 +25,7 @@ complete declared gate report. The latter must continue to report a missing
 current native receipt until ADOPT-002 qualifies native execution and release custody.
 No generated source, native qualification or publication permission follows from
 a metadata check. Keep signing keys and private worker evidence outside Git.
-For the 1.3.1 native release path, `scripts/release-check-1.3.1.py` requires the
+For the native release path, `scripts/release-check-1.3.1.py` requires the
 current LitAI authority and locks plus a separately retained, hashed native
 build record. Its release record must bind `native_evidence_sha256`; set
 `DAEMONARCHY_NATIVE_RECORD` and `DAEMONARCHY_NATIVE_EVIDENCE_ROOT` to the
@@ -259,7 +259,7 @@ space than a cached installer-only rebuild. Check resources before dispatching.
    ./build-iso.sh
    ```
 
-   The image is named after the version of the `daemonarchy` package it carries: `daemonarchy-<version>-<arch>.iso`, for example `daemonarchy-1.3.1-amd64.iso`. Set `NAME` to override.
+   The image is named after the version of the `daemonarchy` package it carries: `daemonarchy-<version>-<arch>.iso`, for example `daemonarchy-1.4.0-amd64.iso` (published xz-compressed as `.iso.xz`). Set `NAME` to override.
 
    The image and its `.sha256` land in `/usr/local/poudriere/data/images`.
 
@@ -971,8 +971,8 @@ It copies `origins.sh` and itself to the build host (`BUILD_HOST`, default `free
 
 The signing key is `/usr/local/etc/daemonarchy/pkg-repo.key` on the build host. Make it once with `pkg-repo.sh keygen`, and commit the public key it prints as `overlay/usr/local/share/daemonarchy-installer/daemonarchy.pub`. Keep a copy of the private key somewhere safe. If it is lost, a new key has to be put on every installed system by hand.
 
-The 1.3.1 candidate uses a separate versioned feed and new key because the old
-private key is unavailable on the current build host. Follow
+The 1.3.1 release used a separate versioned feed and a new key because the old
+private key was unavailable on the build host. Follow
 [the rotation plan](docs/package-repository-key-rotation-1.3.1.md) before
 publishing or changing an installed repository configuration.
 
@@ -1052,10 +1052,11 @@ coordinated operation.
    assets unchanged. The 1.3.1
    candidate rotates that certificate because the previous private signing key
    is unavailable; do not reuse the 1.1 certificate names for a different key.
-   For 1.3.1, after the exact build and hardware gates pass:
+   For 1.4.0, after the exact build and QA gates pass (the staged assets are
+   verified first with `scripts/verify-release-assets.py`, see below):
 
    ```
-   gh release create daemonarchy-1.3.1 --target <exact-reviewed-commit> --latest --title "Daemonarchy 1.3.1" --notes-file notes.md daemonarchy-1.3.1-amd64.iso daemonarchy-1.3.1-amd64.iso.sha256 daemonarchy-1.3.1-boot.txz daemonarchy-1.3.1-boot.txz.sig daemonarchy-1.3.1.pem daemonarchy-1.3.1.der
+   gh release create daemonarchy-1.4.0 --target <exact-reviewed-commit> --latest --title "Daemonarchy 1.4.0" --notes-file notes.md daemonarchy-1.4.0-amd64.iso.xz daemonarchy-1.4.0-amd64.iso.xz.sha256 daemonarchy-1.4.0-boot.txz daemonarchy-1.4.0-boot.txz.sig daemonarchy-1.4.0.pem daemonarchy-1.4.0.der
    ```
 
    Verify the exact uploaded asset names, sizes and SHA-256 digests. Keep

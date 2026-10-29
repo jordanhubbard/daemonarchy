@@ -3,14 +3,17 @@
 Updated October 28, 2026. Model: **MacBookPro16,1**, Apple T2, Intel Core
 i9-9880H.
 
-**Current release:** 1.3.1 (OSVERSION `1600029`) carries the graphics, T2
-keyboard and BCM4364 Wi-Fi work described below, including the framebuffer and
-keyboard fixes and verified Apple firmware acquisition in the installer. The
-operator confirmed that all pre-production checks passed on this MacBook; an
-additional physical run of the final public ISO was waived. Suspend, the NVMe
-fault and firmware-enforced Secure Boot remain open. See the
-[1.3.1 release notes](release-1.3.1.md) and
-[MacBook acceptance record](testing-macbookpro16-1-1.3.1.md).
+**Current release:** 1.4.0 (OSVERSION `1600029`) carries the graphics, T2
+keyboard and BCM4364 Wi-Fi work described below. 1.4.0 adds a signed Secure Boot
+boot profile to the image, so the installer can stage the Apple firmware again,
+and keeps the T2's internal USB link out of DHCP. The operator's tests of this
+cycle's development images installed the system and passed the firmware
+signature check; the final 1.4.0 image was not physically rerun before
+publication. The machine has no sound (see below), and suspend, the NVMe fault
+and firmware-enforced Secure Boot remain open. See the
+[1.4.0 release notes](release-1.4.0.md); the earlier
+[1.3.1 MacBook acceptance record](testing-macbookpro16-1-1.3.1.md) keeps its
+scope.
 
 The investigation below began with the 1.1 candidate installation on
 OSVERSION `1600027`; the earlier 1.1.1 release used `1600028`. The

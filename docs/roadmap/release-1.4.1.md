@@ -1,7 +1,7 @@
 # 1.4.1 plan: deferred from 1.4
 
-**Status:** planned. Opened on 2026-10-29 by operator decision. Work starts when
-1.4 is published.
+**Status:** planned. Opened on 2026-10-29 by operator decision; 1.4.0 is
+published.
 
 1.4 supports forward installs and `pkg`-based upgrades of a running system. The
 items below were 1.4 acceptance rows. They moved here so they no longer block
@@ -65,6 +65,17 @@ items below were 1.4 acceptance rows. They moved here so they no longer block
   less. Acceptance: the 10x figure on both physical machines, the signed-feed
   verification unchanged, and the package set still installing a working
   desktop.
+
+- **Loose ends found in 1.4.0.** The MSI touchpad runs in polling mode (the I2C-HID
+  interrupt is not wired through). Only I2C controller 0 (`8086:7f4c`) of the
+  Arrow Lake-S PCH is recognised in `ig4`, so a touchpad on another function would
+  not attach. Linux's ARL004 interrupt-ordering workaround for the VMD controller
+  is not ported; stress the RAID-mode NVMe path before relying on it. The VMD-
+  disabled mode was not retested. CUDA Unified Memory (`cudaMallocManaged`)
+  crashes through the Linuxulator, and cudalab builds against SDL 3.2 because 3.4
+  needs a newer libXi than Rocky 9. The CUDA step of the installer ran only by
+  hand on a running system; run it inside the installer on an NVIDIA machine.
+  Physical reruns of the exact 1.4.0 image on the MSI and MacBook are still owed.
 
 ## Not changed
 

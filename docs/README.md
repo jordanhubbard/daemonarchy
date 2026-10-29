@@ -4,8 +4,8 @@ Product goals and completeness are in root `PROJECT.md`; build and release
 commands remain in root `HACKING.md`. This index makes the retained evidence
 reachable without changing its historical scope.
 
-The current release is **1.3.1**: start with its
-[release notes](release-1.3.1.md) and the [getting-started guide](getting-started.md).
+The current release is **1.4.0**: start with its
+[release notes](release-1.4.0.md) and the [getting-started guide](getting-started.md).
 Its published identity is recorded in
 [`release/current.json`](../release/current.json); documents dated or named for
 another version are historical records. 1.4 entries describe work in development.
@@ -31,6 +31,7 @@ another version are historical records. 1.4 entries describe work in development
 - [MSI capture candidate dev7: legacy VGA probe skip](testing-msi-dev7-20261028.md)
 - [MSI capture candidate dev8: no legacy VGA probe on UEFI boots](testing-msi-dev8-20261028.md)
 - [MSI capture candidate dev10: AT RTC left alone on a UEFI port conflict](testing-msi-dev10-20261028.md)
+- [1.4.0 test record](testing-1.4.0.md)
 - [Optional ports and system source: space estimate](optional-source-sizing.md)
 - [Daemonarchy 1.1.0 release notes (historical)](release-1.1.0.md)
 - [Installer remote agent debug mode](remote-agent-debug.md)
