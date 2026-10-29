@@ -190,7 +190,7 @@ vm() {
 			echo "VM timed out; see $WORK/$log" >&2
 			exit 1
 		fi
-		if [ "$log" = install.log ] && grep -aq 'FAILED\|panic:' install.log; then
+		if [ "$log" = install.log ] && grep -aq 'FAILED\|panic:\|Installation exited with status [1-9]' install.log; then
 			kill "$pid"
 			wait "$pid" 2>/dev/null || true
 			: >qemu.pid
@@ -264,7 +264,12 @@ check() {
 }
 as_root() { echo $PASSWORD | sudo -S -p "" "\$@"; }
 check "sudo works for tester" "as_root true"
-check "booted using $BOOT_MODE firmware" "sysctl -n machdep.bootmethod | grep -ix $BOOT_MODE"
+if [ "$ARCH" = x86_64 ]; then
+	check "booted using $BOOT_MODE firmware" "sysctl -n machdep.bootmethod | grep -ix $BOOT_MODE"
+else
+	# arm64 has no machdep.bootmethod; UEFI is the only way it boots.
+	check "booted using UEFI firmware" "sysctl -n machdep.efi_map >/dev/null 2>&1 || kenv -q efi-map-header >/dev/null 2>&1 || test -d /boot/efi || test -e /dev/efi"
+fi
 if [ "$ARCH" = x86_64 ]; then
 	check "BIOS boot partition present" "gpart show vtbd0 | grep -q freebsd-boot"
 fi
