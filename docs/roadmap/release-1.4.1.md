@@ -34,6 +34,22 @@ items below were 1.4 acceptance rows. They moved here so they no longer block
   (network fetch, ZFS extraction, post-install scripts or `ldconfig` runs;
   measure on the installer before designing), and whether to ship a
   pre-extracted tree for the largest packages instead.
+- **Why an Omarchy install takes about ten minutes and ours takes much
+  longer.** First measurement, from the live8 GPU-backed QEMU install on
+  madmax (one run, `work8/install.log`): the fetch phase took 2565 s and the
+  package install 141 s of a 2715 s install. 784 of 930 archives and 3.78 GB
+  had been fetched when the log ends at the install phase, about 1.5 MB/s
+  through QEMU user networking; 1186 packages (16 GiB installed) are
+  installed. So on that run the time is the download, not the install, and
+  the DAG-ordered install above would save little by itself; parallel fetch
+  and a smaller or local package set matter more. The ISO already carries
+  the Daemonarchy repository (`file://`); the bulk comes from
+  `pkg.FreeBSD.org`. Things to compare against Omarchy before drawing
+  conclusions: its package count and download size, parallel downloads and
+  nearby mirrors on the Arch side, and compression. Hours on real hardware
+  (Wi-Fi, one connection) are reported but not measured here; the next step is
+  timing a fetch on the MSI and MacBook, then choosing between parallel
+  fetch, a smaller default set, and shipping the large packages on the ISO.
 
 ## Not changed
 
