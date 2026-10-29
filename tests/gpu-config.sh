@@ -51,6 +51,12 @@ gpu_write_config "$work/nvidia"
 grep -qx 'hw.nvidiadrm.modeset="1"' "$work/nvidia/boot/loader.conf"
 grep -qx 'export GBM_BACKEND=nvidia-drm' "$work/nvidia/usr/local/share/uwsm/env.d/90-daemonarchy-nvidia"
 grep -qx 'linux_enable="YES"' "$work/nvidia/etc/rc.conf"
+select_gpu 'vgapci0@pci0:0:2:0: class=0x030000 vendor=0x8086 device=0x7d67' 'vgapci1@pci0:1:0:0: class=0x030000 vendor=0x10de device=0x2c19'
+check "$gpu_intel_guc" true
+mkdir -p "$work/arl/boot" "$work/arl/etc"
+touch "$work/arl/etc/rc.conf"
+gpu_write_config "$work/arl"
+grep -qx 'compat.linuxkpi.i915_enable_guc="3"' "$work/arl/boot/loader.conf"
 select_gpu 'vgapci0@pci0:0:2:0: class=0x030000 vendor=0x8086 device=0x3e9b'
 check "$kld_list" i915kms
 check "$gpu_vulkan" true

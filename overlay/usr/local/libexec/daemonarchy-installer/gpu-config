@@ -17,7 +17,7 @@ gpu_select() {
   local inventory=$1 ids=$2 vendor device subvendor subdevice module family
   [[ -r $inventory && -s $ids ]] || { echo 'Missing GPU inventory or selection table' >&2; return 1; }
   gpu_modules=() gpu_packages=() gpu_userspace_packages=()
-  gpu_nvidia=false gpu_other=false gpu_navi14=false gpu_vulkan=false gpu_virtio=false
+  gpu_nvidia=false gpu_other=false gpu_navi14=false gpu_vulkan=false gpu_virtio=false gpu_intel_guc=false
   gpu_kms_packages >/dev/null || return 1
   while read -r vendor device subvendor subdevice; do
     module='' family=''
@@ -38,6 +38,13 @@ gpu_select() {
         fi
         ;;
     esac
+    # Meteor Lake and Arrow Lake graphics cannot start without the GuC. The
+    # driver's automatic setting resolves to off here, which leaves the GPU
+    # wedged, so Hyprland cannot create an EGL context and the screen stays
+    # black. Mask 3 loads the GuC and HuC (verified on a MSI Raider 18 HX).
+    if [[ $vendor == 8086 && $device =~ ^(7d40|7d41|7d45|7d51|7d55|7d60|7d67|7dd1|7dd5)$ ]]; then
+      gpu_intel_guc=true
+    fi
     case "$module" in
       nvidia-drm) gpu_nvidia=true; gpu_vulkan=true ;;
       amdgpu|i915kms) gpu_other=true; gpu_vulkan=true ;;
@@ -151,6 +158,9 @@ if [ "$(kenv -q boot_safe 2>/dev/null)" = YES ] ||
     sddm_enable=NO
 fi
 EOF_SDDM
+  if $gpu_intel_guc; then
+    printf '\ncompat.linuxkpi.i915_enable_guc="3"\n' >>"$target/boot/loader.conf"
+  fi
   if $gpu_nvidia; then
     printf '\nhw.nvidiadrm.modeset="1"\n' >>"$target/boot/loader.conf"
     # The ports disable fbdev by default; do not copy Linux fbdev/GSP options.
