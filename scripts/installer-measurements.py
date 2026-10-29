@@ -112,7 +112,8 @@ def load_context(path: Path) -> dict:
 
     target = context["target"]
     require(isinstance(target, dict) and set(target) == {
-        "cache_mode", "kind", "link_mbps", "machine_class", "storage", "worker_identity", "worker_id"
+        "cache_mode", "kind", "link_mbps", "link_measurement", "machine_class",
+        "storage", "worker_identity", "worker_id"
     }, "complete target context required")
     require(target["kind"] in {"physical", "virtual"}, "invalid target kind")
     require(target["cache_mode"] in {"network", "iso", "attached", "mixed"},
@@ -121,7 +122,13 @@ def load_context(path: Path) -> dict:
         require(isinstance(target[name], str) and re.fullmatch(r"[A-Za-z0-9][A-Za-z0-9._-]{0,63}", target[name]),
                 f"invalid target {name}")
     exact_identity(target["worker_identity"], "worker")
-    nonnegative(target["link_mbps"], "link speed")
+    require(target["link_measurement"] in {"measured", "unknown"},
+            "invalid link measurement state")
+    if target["link_measurement"] == "measured":
+        require(nonnegative(target["link_mbps"], "link speed") > 0,
+                "measured link speed must be positive")
+    else:
+        require(target["link_mbps"] is None, "unknown link speed must be null")
     return context
 
 
@@ -144,7 +151,9 @@ def parse_log(raw: bytes) -> dict:
 
     steps: list[tuple[str, int]] = []
     names: set[str] = set()
-    package_totals: dict[str, int] = {}
+    package_totals: dict[tuple[str, str], int] = {}
+    package_total_events: list[dict] = []
+    current_step = None
     extracted_current = extracted_total = 0
     fetch_archives = fetch_bytes = 0
     completed_fetch_archives = completed_fetch_bytes = 0
@@ -157,13 +166,19 @@ def parse_log(raw: bytes) -> dict:
             require(not steps or epoch >= steps[-1][1], "installer step clock moved backward")
             names.add(name)
             steps.append((name, epoch))
+            current_step = name
             continue
         match = PACKAGE_TOTAL.fullmatch(line)
         if match:
             action, total = match.group(1), int(match.group(2))
-            require(action not in package_totals or package_totals[action] == total,
-                    f"declared {action} package total changed")
-            package_totals[action] = total
+            require(current_step is not None, "package total precedes installer step")
+            key = (current_step, action)
+            require(key not in package_totals or package_totals[key] == total,
+                    f"declared {action} package total changed within {current_step}")
+            if key not in package_totals:
+                package_total_events.append({"step": current_step, "action": action,
+                                             "packages": total})
+            package_totals[key] = total
             continue
         match = EXTRACT.match(line)
         if match:
@@ -203,7 +218,7 @@ def parse_log(raw: bytes) -> dict:
     return {
         "steps": steps,
         "step_names": names,
-        "declared_package_totals": package_totals,
+        "declared_package_totals": package_total_events,
         "extracted_packages": extracted_current,
         "extraction_total": extracted_total,
         "reported_fetch_attempts": fetch_attempts,
@@ -260,6 +275,9 @@ def measure(diagnostics: Path, log: Path, context_path: Path) -> dict:
         "phase_span_seconds": completed_epoch - first_epoch,
         "phases": phases,
         "package_observations": parsed,
+        "context_quality": {
+            "link_condition_known": context["target"]["link_measurement"] == "measured",
+        },
         "limitations": (
             "Timing and progress observation only; this record grants no installation, "
             "package, lifecycle, hardware, or release acceptance."

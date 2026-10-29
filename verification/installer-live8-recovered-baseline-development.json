@@ -1,0 +1,71 @@
+{
+  "schema": "daemonarchy/recovered-installer-observation@1",
+  "recorded_utc": "2026-10-29T23:25:30Z",
+  "source": {
+    "release": "1.4.0",
+    "image_identity": "sha256:09aa374960d33ffddcc8b7464425118f3316c2c0d7d3e4dc0c96448d2984e03e",
+    "image_size_bytes": 3507156992,
+    "source_disk_reopened_copy_on_write": true,
+    "source_disk_modified": false,
+    "target_kind": "virtual",
+    "machine_class": "qemu-kvm-x86_64",
+    "storage": "zfs-raw-image",
+    "cache_mode": "network",
+    "link_measurement": "unknown"
+  },
+  "identities": {
+    "measurement": "sha256:bf75a426868dc2f7377f462c86a9bebc3aa1e1db51ae5db9c41bed73aa77b359",
+    "context": "sha256:5d25d8c5d4f721398fe9efa978eab957943bba5aca1094697fd8b8eea4b0a317",
+    "selection": "sha256:886c2db04421cbf695679656ca89faa195cbf15d2e3c6cd715838ec4eb119a5a",
+    "catalogues": "sha256:e8630123a6cd479a7de2b6936570124781c0e368bac18d191b37093e5a6bdd5e",
+    "installer_log": "sha256:616af0d88977976c7f5b2c427f15616c162f88a66223bf22d3da3b58d8090a98",
+    "desktop_evidence_sha256": "c7a2c871edf9953414cd2b50893ba28194d1a5dc3f0b41bb0a903ae4f817d4ea",
+    "measurement_observer_sha256": "209b493353e99fc43d2cb47091395fefc93ceab0cb41c2b8951aff1f42c0c33b",
+    "context_builder_sha256": "8764bdde8af0de6c6a688f5b278d7289c70e8f53635d8bc73f7a4b27109a8727"
+  },
+  "terminal": {
+    "status": "complete",
+    "exit_status": 0,
+    "started_utc": "2026-10-29T05:49:42Z",
+    "completed_utc": "2026-10-29T06:35:29Z",
+    "wall_time_seconds": 2747,
+    "phase_seconds": {
+      "base": 8,
+      "config": 1,
+      "fetch": 2565,
+      "packages": 141,
+      "finish": 32
+    }
+  },
+  "packages": {
+    "installed_package_count": 1189,
+    "selected_download_bytes": 5553478434,
+    "installed_bytes": 16847424955,
+    "declared_desktop_transaction_packages": 1186,
+    "measured_fetch_archives": 784,
+    "measured_fetch_bytes": 3778340358,
+    "measured_fetch_attempts": 1
+  },
+  "controls": {
+    "terminal_diagnostics_recovered": true,
+    "native_repository_databases_recovered": true,
+    "install_time_iso_catalogue_recovered": true,
+    "post_install_refreshed_catalogue_replaced": true,
+    "repository_annotation_reviewed": true,
+    "installed_packages_joined_to_retained_catalogues": true,
+    "current_scripts_replayed_byte_identical_outputs": true,
+    "desktop_evidence_retained": true,
+    "link_condition_known": false
+  },
+  "acceptance": {
+    "equivalent_link_baseline": false,
+    "installation_acceptance_granted": false,
+    "hardware_acceptance_granted": false,
+    "release_acceptance_granted": false
+  },
+  "limitations": [
+    "The original host-link rate was not measured, so this observation cannot satisfy the required equivalent-link baseline.",
+    "The exact detailed package inventory and raw recovered native evidence remain in retained worker storage; this repository record carries their content identities and aggregate observations.",
+    "Historical successful installation and desktop evidence do not qualify a 1.4.1 candidate."
+  ]
+}

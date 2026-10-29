@@ -46,12 +46,15 @@ items below were 1.4 acceptance rows. They moved here so they no longer block
   measure on the installer before designing), and whether to ship a
   pre-extracted tree for the largest packages instead.
 - **Why an Omarchy install takes about ten minutes and ours takes much
-  longer.** First measurement, from the live8 GPU-backed QEMU install on
-  madmax (one run, `work8/install.log`): the fetch phase took 2565 s and the
-  package install 141 s of a 2715 s install. 784 of 930 archives and 3.78 GB
-  had been fetched when the log ends at the install phase, about 1.5 MB/s
-  through QEMU user networking; 1186 packages (16 GiB installed) are
-  installed. So on that run the time is the download, not the install, and
+  longer.** The retained live8 GPU-backed QEMU disk now has a
+  [content-identified recovered observation](../../verification/installer-live8-recovered-baseline-development.json):
+  the fetch phase took 2,565 s and package installation 141 s of a 2,747 s
+  terminal diagnostic interval. The event pipe measured 784 of 930 network
+  archives and 3,778,340,358 bytes; exact native catalogues identify the 1,189
+  installed packages as a 5,553,478,434-byte archive closure and 16,847,424,955
+  installed bytes. The original run did not measure its host link, so this is a
+  historical design observation, not the required equivalent-link VM baseline.
+  On that run the time is the download, not the install, and
   the DAG-ordered install above would save little by itself; parallel fetch
   and a smaller or local package set matter more. The ISO already carries
   the Daemonarchy repository (`file://`); the bulk comes from

@@ -404,14 +404,37 @@ python3 scripts/installer-measurements.py \
   --output evidence/measurement.json
 ```
 
+When the target repository databases and an installed `pkg query` manifest are
+retained, derive the selection and context rather than transcribing package
+counts or sizes:
+
+```sh
+python3 scripts/installer-baseline-context.py \
+  --image daemonarchy.iso \
+  --package-evidence evidence/guest-install-evidence.tar \
+  --installed-manifest evidence/installed-package-manifest.txt \
+  --target evidence/target.json \
+  --inventory-output evidence/package-selection.json \
+  --context-output evidence/context.json
+```
+
+Use `--replace-catalogue ID=packagesite.pkg` when a post-install update replaced
+the repository database that actually supplied the install, and
+`--repository-alias INSTALLED=SOURCE` only for a reviewed repository annotation
+performed by the installer. Both choices become part of the selection identity.
+The builder refuses packages absent from the retained catalogues and ambiguous
+archive identities. A historical run may record `link_measurement: unknown` and
+`link_mbps: null`; its timing remains useful, but it is not an equivalent-link
+acceptance baseline.
+
 The context binds the exact image and package-selection/catalogue identities,
 image and package bytes, worker identity, machine/storage class, measured link
-speed and whether package bytes came from the network, ISO, attached media or a
-mixture. The output is create-only and content-identified. It retains terminal
-failure as failure and refuses incomplete success, repeated/backward stage
-clocks or ambiguous context. This is comparable timing evidence, not installation
-or release acceptance; keep the native log, integrity diagnostics and desktop
-acceptance separately.
+speed (or an explicit historical unknown) and whether package bytes came from
+the network, ISO, attached media or a mixture. The output is create-only and
+content-identified. It retains terminal failure as failure and refuses incomplete
+success, repeated/backward stage clocks or ambiguous context. This is comparable
+timing evidence, not installation or release acceptance; keep the native log,
+integrity diagnostics and desktop acceptance separately.
 
 - **The install screen** can be tried without an install: `dashboard` draws from a log file, so feed it one. Run it in a 160x50 terminal (the console's size) with `ISO_SHARE` pointing at a directory holding `logo.txt`, and append `@@phase <name>` lines, `Number of packages to be fetched: N`, `Fetching <pkg>: ... done`, and `[ n/N] Installing <pkg>...` lines to the log; it exits with the number written to the status file.
 - **`install`** reads its answers from `$DAEMONARCHY_INSTALL_CONF`; the keys are what `configurator`'s `write_install_conf` writes. An unattended install takes the same file from a FAT drive labelled `CIDATA`, which is how both test scripts run.
