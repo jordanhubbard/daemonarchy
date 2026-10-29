@@ -3,7 +3,8 @@
 # Install-test a Daemonarchy ISO under QEMU, for hosts without bhyve (Linux,
 # macOS, or a non-x86 machine, where the x86 guest is emulated; expect two to
 # three hours there). Needs qemu-system-x86_64, x86 OVMF firmware, an
-# OpenSSH client, and either mkfs.fat/mtools or xorriso for CIDATA; no root.
+# OpenSSH client (ARCH=aarch64 uses qemu-system-aarch64 and AArch64 edk2
+# firmware instead, always UEFI, with the 'virt' machine), and either mkfs.fat/mtools or xorriso for CIDATA; no root.
 #
 #   1. boot the ISO with a blank 40 GB disk and a CIDATA drive holding an
 #      unattended daemonarchy-install.conf; the installer powers off when done
@@ -29,7 +30,17 @@ if [ "$ENCRYPT_INSTALLATION" = true ]; then
 fi
 ISO=$(realpath "${1:?usage: test-qemu.sh daemonarchy.iso}")
 WORK=${WORK:-$PWD/daemonarchy-qemu}
-OVMF=${OVMF:-/usr/share/ovmf/OVMF.fd}
+ARCH=${ARCH:-x86_64}
+case "$ARCH" in
+	x86_64) OVMF=${OVMF:-/usr/share/ovmf/OVMF.fd} ;;
+	aarch64)
+		# Homebrew (Apple silicon), then Debian/Ubuntu's qemu-efi-aarch64.
+		for fw in /opt/homebrew/share/qemu/edk2-aarch64-code.fd /usr/share/qemu-efi-aarch64/QEMU_EFI.fd; do
+			[ -r "$fw" ] && break
+		done
+		OVMF=${OVMF:-$fw} ;;
+	*) echo 'ARCH must be x86_64 or aarch64' >&2; exit 1 ;;
+esac
 UEFI_CODE=${UEFI_CODE:-}
 UEFI_VARS_TEMPLATE=${UEFI_VARS_TEMPLATE:-}
 UEFI_SECUREBOOT=${UEFI_SECUREBOOT:-false}
@@ -56,7 +67,9 @@ case "$BOOT_MODE" in
 		else
 			[ -r "$OVMF" ] || { echo "UEFI firmware not found: $OVMF" >&2; exit 1; }
 		fi ;;
-	bios) ;; # QEMU's default SeaBIOS firmware.
+	bios)
+		[ "$ARCH" = x86_64 ] || { echo 'BOOT_MODE=bios exists only for x86_64' >&2; exit 1; }
+		;; # QEMU's default SeaBIOS firmware.
 	*) echo "BOOT_MODE must be uefi or bios" >&2; exit 1 ;;
 esac
 case "$UEFI_SECUREBOOT" in true|false) ;; *) echo 'UEFI_SECUREBOOT must be true or false' >&2; exit 1 ;; esac
@@ -66,10 +79,23 @@ fi
 
 # Emulated guests get a CPU model without AVX: QEMU's emulation of AVX2 has
 # faulted inside ZFS's SHA-256 routines. With KVM, use the host's CPU.
-if [ -w /dev/kvm ] && [ "$(uname -m)" = x86_64 ]; then
-	accel="-accel kvm -cpu host"
+if [ "$ARCH" = aarch64 ]; then
+	machine=virt,gic-version=max
+	qemu=qemu-system-aarch64
+	if [ "$(uname -m)" = arm64 ] || [ "$(uname -m)" = aarch64 ]; then
+		# Apple silicon uses HVF (no /dev/kvm); Linux arm64 uses KVM.
+		if [ -w /dev/kvm ]; then accel="-accel kvm -cpu host"; else accel="-accel hvf -cpu host"; fi
+	else
+		accel="-accel tcg,thread=multi -cpu max"
+	fi
 else
-	accel="-accel tcg,thread=multi -cpu Westmere"
+	machine=q35,smm=on
+	qemu=qemu-system-x86_64
+	if [ -w /dev/kvm ] && [ "$(uname -m)" = x86_64 ]; then
+		accel="-accel kvm -cpu host"
+	else
+		accel="-accel tcg,thread=multi -cpu Westmere"
+	fi
 fi
 
 mkdir -p "$WORK"
@@ -108,11 +134,13 @@ EOF
 if command -v mkfs.fat >/dev/null && command -v mcopy >/dev/null; then
 	cidata_drive=file=cidata.img,if=none,id=ci,format=raw
 	cidata_device=ide-hd
+	[ "$ARCH" = x86_64 ] || cidata_device=scsi-hd
 	mkfs.fat -C -F 16 -n CIDATA cidata.img 32768 >/dev/null
 	mcopy -i cidata.img daemonarchy-install.conf ::/
 elif command -v xorriso >/dev/null; then
 	cidata_drive=file=cidata.img,if=none,id=ci,format=raw,media=cdrom,readonly=on
 	cidata_device=ide-cd
+	[ "$ARCH" = x86_64 ] || cidata_device=scsi-cd
 	mkdir cidata
 	cp daemonarchy-install.conf cidata/
 	xorriso -as mkisofs -quiet -V CIDATA -o cidata.img cidata >cidata.log 2>&1
@@ -134,14 +162,19 @@ vm() {
 		fi
 	fi
 	if [ -n "$VIRGL_RENDER_NODE" ]; then
-		set -- -device virtio-vga-gl -display "egl-headless,rendernode=$VIRGL_RENDER_NODE" \
+		if [ "$ARCH" = aarch64 ]; then gpu=virtio-gpu-gl-pci; else gpu=virtio-vga-gl; fi
+		set -- -device "$gpu" -display "egl-headless,rendernode=$VIRGL_RENDER_NODE" \
 			-vnc "$VNC_LISTEN" -device qemu-xhci,id=desktop-usb \
 			-device usb-tablet,bus=desktop-usb.0 "$@"
+	elif [ "$ARCH" = aarch64 ]; then
+		# The installer autologs in on ttyv0 only, and 'virt' has no VGA, so
+		# without a display device the guest has only the serial console.
+		set -- -device virtio-gpu-pci -display none "$@"
 	else
 		set -- -display none "$@"
 	fi
 	# shellcheck disable=SC2086
-	qemu-system-x86_64 -machine q35,smm=on $accel -smp 4 -m "$MEM" \
+	$qemu -machine $machine $accel -smp 4 -m "$MEM" \
 		-no-reboot -monitor none -qmp "unix:$log.qmp.sock,server=on,wait=off" \
 		-serial "file:$log" \
 		-drive file=disk.img,if=virtio,format=raw,cache=unsafe "$@" >"$log.qemu" 2>&1 &
@@ -173,11 +206,21 @@ vm() {
 
 echo "==> Installing from $ISO (log: $WORK/install.log)"
 start=$(date +%s)
-vm install.log \
-	-device ahci,id=ahci0 \
-	-drive "file=$ISO,if=none,id=cd,media=cdrom,readonly=on" -device ide-cd,drive=cd,bus=ahci0.0,bootindex=1 \
-	-drive "$cidata_drive" -device "$cidata_device,drive=ci,bus=ahci0.1" \
-	-netdev user,id=n0 -device virtio-net-pci,netdev=n0
+# edk2's AArch64 firmware has no AHCI driver, so the 'virt' machine gets
+# virtio-scsi for the ISO and CIDATA instead.
+if [ "$ARCH" = x86_64 ]; then
+	vm install.log \
+		-device ahci,id=ahci0 \
+		-drive "file=$ISO,if=none,id=cd,media=cdrom,readonly=on" -device ide-cd,drive=cd,bus=ahci0.0,bootindex=1 \
+		-drive "$cidata_drive" -device "$cidata_device,drive=ci,bus=ahci0.1" \
+		-netdev user,id=n0 -device virtio-net-pci,netdev=n0
+else
+	vm install.log \
+		-device virtio-scsi-pci,id=scsi0 \
+		-drive "file=$ISO,if=none,id=cd,media=cdrom,readonly=on" -device scsi-cd,drive=cd,bus=scsi0.0,bootindex=1 \
+		-drive "$cidata_drive" -device "$cidata_device,drive=ci,bus=scsi0.0" \
+		-netdev user,id=n0 -device virtio-net-pci,netdev=n0
+fi
 grep -aq 'Daemonarchy is installed' install.log || { echo "the install did not finish; see $WORK/install.log" >&2; exit 1; }
 echo "    installed in $(( ($(date +%s) - start) / 60 )) minutes"
 
@@ -222,7 +265,9 @@ check() {
 as_root() { echo $PASSWORD | sudo -S -p "" "\$@"; }
 check "sudo works for tester" "as_root true"
 check "booted using $BOOT_MODE firmware" "sysctl -n machdep.bootmethod | grep -ix $BOOT_MODE"
-check "BIOS boot partition present" "gpart show vtbd0 | grep -q freebsd-boot"
+if [ "$ARCH" = x86_64 ]; then
+	check "BIOS boot partition present" "gpart show vtbd0 | grep -q freebsd-boot"
+fi
 if [ "$UEFI_SECUREBOOT" = true ]; then
 	check "firmware Secure Boot enabled" "test \$(as_root efivar -p -N -b -n 8be4df61-93ca-11d2-aa0d-00e098032b8c-SecureBoot | od -An -tu1 | tr -d '[:space:]') = 1"
 	check "verified kernel selected" "kenv kernelname | grep -q '/boot/kernel.secure/kernel'"
