@@ -197,8 +197,9 @@ distribution check.
    not qualify the selected product or release.
 4. **Assemble and qualify one release.** Derive the signed feeds, boot bundle,
    installer ISO, checksums, documentation and GitHub asset selection from the
-   same locked plan. Bind native tests, fresh VM installation, upgrade/rollback
-   and scoped physical hardware checks to those exact artifact bytes. Keep the
+   same locked plan. Bind native tests, fresh VM installation and scoped physical
+   hardware checks to those exact artifact bytes. Image-based upgrade and
+   rollback checks are 1.4.1 scope. Keep the
    existing signing keys and private worker details outside committed metadata.
 
 ## Second architecture: aarch64
@@ -220,7 +221,7 @@ as a worker only after the usual capacity and identity checks. Run Daemonarchy
 installer and boot tests in separate VMware guests rather than nested inside
 the build worker, so a failed test cannot disturb build state. Record the Mac
 model, macOS and VMware versions, guest firmware and virtual devices with
-each result. Cover installation, boot, upgrade, rollback, the desktop and the
+each result. Cover installation, boot, the desktop and the
 network-debugging path where the virtual NIC supports it. A virtual result
 qualifies only virtual operation.
 
@@ -287,6 +288,7 @@ unattended installers share this one pipeline. Unattended installs honor
 their `net_*` answers and stop with a clear message instead of prompting. When
 public or user DNS replaced broken DHCP DNS, the installed system keeps it.
 See [NET-001](active-work.md#net-001-make-the-installer-network-bring-up-proactive-and-robust).
+The exact-image VM network matrix (ledger A14) is deferred to [1.4.1](release-1.4.1.md).
 
 ## Cross-vendor GPU diagnostics and showcase
 
@@ -456,12 +458,12 @@ Nothing animated or audible implies progress that was not observed.
   least ten times faster. Record 1.1.1 and 1.3.1 observed timings separately
   from these normalized comparisons so earlier retries or hardware waivers
   cannot inflate a claimed speedup.
-- [ ] Install the exact image in a fresh VM, exercise upgrade and rollback,
-  complete the release's physical hardware matrix, publish through the
+- [ ] Install the exact image in a fresh VM (image-based upgrade and rollback
+  are 1.4.1 scope), complete the release's physical hardware matrix, publish through the
   LitAI-controlled release plan and independently verify the tag and assets.
 - [ ] Build, sign and publish the aarch64 products, feeds and installer image
   through the same graph, cache and custody rules as amd64. Pass the aarch64
-  virtual-machine install, boot, upgrade, rollback, desktop and network-debug
+  virtual-machine install, boot, desktop and network-debug
   matrix on the exact aarch64 bytes, then record scoped results for each
   enlisted Apple silicon laptop and execution mode.
 - [ ] Boot the exact 1.4 image to the live desktop in a VM without writing to
