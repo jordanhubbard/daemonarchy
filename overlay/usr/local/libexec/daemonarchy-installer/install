@@ -728,8 +728,13 @@ done
 if [[ $install_cuda == true ]]; then
   phase cuda "Installing CUDA and building cudalab"
   cuda_setup_started=true
-  chroot "$TARGET" /usr/local/sbin/daemonarchy-linux-cuda setup
-  chroot "$TARGET" /usr/local/sbin/daemonarchy-linux-cuda prepare-cudalab "$username"
+  # An optional network download must not fail the whole installation: report it
+  # and leave the command to run again from the installed system.
+  if ! { chroot "$TARGET" /usr/local/sbin/daemonarchy-linux-cuda setup &&
+         chroot "$TARGET" /usr/local/sbin/daemonarchy-linux-cuda prepare-cudalab "$username"; }; then
+    echo 'CUDA and cudalab could not be installed. The system is installed without them; after the first boot, run:' >&2
+    echo '  sudo daemonarchy-linux-cuda setup && sudo daemonarchy-linux-cuda prepare-cudalab '"$username" >&2
+  fi
   cuda_unmount_target "$TARGET"
   cuda_setup_started=false
 fi
