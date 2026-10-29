@@ -234,8 +234,14 @@ if [[ ! -d \$HOME/src/cudalab/.git ]]; then
   git clone $(q "$cudalab_url") "\$HOME/src/cudalab"
 fi
 cd "\$HOME/src/cudalab"
-# Rocky 9's libXi predates the gesture API this SDL3 uses; XInput2 only adds touch gestures.
-cmake --preset dev -DSDL_X11_XINPUT=OFF
+# cudalab's pinned SDL 3.4.0 needs a newer libXi than Rocky 9 has, so build
+# its last 3.2 release instead (same API for cudalab's use).
+if [[ ! -d \$HOME/src/SDL-3.2 ]]; then
+  curl -fsSL https://github.com/libsdl-org/SDL/archive/refs/tags/release-3.2.20.tar.gz | tar -xz -C "\$HOME/src"
+  mv "\$HOME/src/SDL-release-3.2.20" "\$HOME/src/SDL-3.2"
+fi
+rm -rf build/dev
+cmake --preset dev -DFETCHCONTENT_SOURCE_DIR_SDL3="\$HOME/src/SDL-3.2"
 cmake --build --preset dev
 export LD_PRELOAD=/usr/local/lib/daemonarchy/dummy-uvm.so
 $launch
