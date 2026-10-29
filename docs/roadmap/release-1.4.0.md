@@ -1,6 +1,9 @@
 # 1.4.0: network debugging and an incremental release graph
 
-- **Status:** published October 29, 2026; see the [release notes](../release-1.4.0.md) and what moved to [1.4.1](release-1.4.1.md)
+- **Status:** partial
+- **Publication:** published October 29, 2026; see the
+  [release notes](../release-1.4.0.md) and what moved to
+  [1.4.1](release-1.4.1.md).
 - **Release scope:** 1.4.0; no 1.4 build or release qualification is claimed.
 - **Priority:** P0 network debugging from boot blocks and loader through `mountroot>`, early kernel and panic. Distributed/incremental build work supports this release.
 - **Completion / archival evidence:** pending exact native VM operation/fault matrix and physical hardware capture, cross-repository locks and receipts, artifact reuse, exact diagnostic image/feed qualification and published release verification.

@@ -391,6 +391,28 @@ offline reuse, damaged-entry repair and rejection of a corrupt replacement.
 
 The installer flow lives in `overlay/`, primarily as Bash helpers. An installer-only change needs a new image (`./build-iso.sh`) and runtime validation; it can reuse the already qualified package set.
 
+For 1.4.1 performance baselines, copy the terminal target's
+`/var/db/daemonarchy/install` directory and
+`/var/log/daemonarchy-install.log`, then create a reviewed context that uses the
+`daemonarchy/installer-measurement-context@1` schema and run:
+
+```sh
+python3 scripts/installer-measurements.py \
+  --diagnostics evidence/install \
+  --log evidence/daemonarchy-install.log \
+  --context evidence/context.json \
+  --output evidence/measurement.json
+```
+
+The context binds the exact image and package-selection/catalogue identities,
+image and package bytes, worker identity, machine/storage class, measured link
+speed and whether package bytes came from the network, ISO, attached media or a
+mixture. The output is create-only and content-identified. It retains terminal
+failure as failure and refuses incomplete success, repeated/backward stage
+clocks or ambiguous context. This is comparable timing evidence, not installation
+or release acceptance; keep the native log, integrity diagnostics and desktop
+acceptance separately.
+
 - **The install screen** can be tried without an install: `dashboard` draws from a log file, so feed it one. Run it in a 160x50 terminal (the console's size) with `ISO_SHARE` pointing at a directory holding `logo.txt`, and append `@@phase <name>` lines, `Number of packages to be fetched: N`, `Fetching <pkg>: ... done`, and `[ n/N] Installing <pkg>...` lines to the log; it exits with the number written to the status file.
 - **`install`** reads its answers from `$DAEMONARCHY_INSTALL_CONF`; the keys are what `configurator`'s `write_install_conf` writes. An unattended install takes the same file from a FAT drive labelled `CIDATA`, which is how both test scripts run.
 - **`configurator`** sources Omarchy's setup form from the `omarchy` package at build time (`build-iso.sh` extracts it), so the account, hostname, and timezone questions follow Omarchy's.
