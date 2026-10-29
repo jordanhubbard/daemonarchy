@@ -21,6 +21,19 @@ items below were 1.4 acceptance rows. They moved here so they no longer block
   and rollback** (part of [ledger A11](1.4-coverage-ledger.md)). Nice to have.
   `pkg upgrade` of a running system is unaffected and stays in scope for every
   release.
+- **Faster package installation in the installer.** Installing packages takes
+  hours, and `pkg install` fetches and extracts them largely in sequence. The
+  plan: fetch in parallel up front (a worker pool over the whole closure,
+  since downloads have no ordering constraint), then install along the
+  dependency DAG from the leaves up, so a package never waits on one that is
+  not yet installed and independent subtrees run together. The catalogue
+  closure tooling in `tests/package-dag.py` and `scripts/` already computes the
+  DAG. Open questions to settle first: whether `pkg add` of many packages
+  concurrently is safe (it takes a database lock, so extraction may need to be
+  parallel while registration is serialised), where the time actually goes
+  (network fetch, ZFS extraction, post-install scripts or `ldconfig` runs;
+  measure on the installer before designing), and whether to ship a
+  pre-extracted tree for the largest packages instead.
 
 ## Not changed
 
