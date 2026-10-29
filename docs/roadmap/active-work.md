@@ -1203,7 +1203,51 @@ remains open; report files do not establish a passing gate.
 - **Completion prerequisites:** none
 - **Implementation:**
   - [ ] Retain equivalent per-phase baselines; carry the selected authenticated closure on the ISO or attached cache; fetch any remainder through bounded authenticated acquisition; parallelize only independently safe extraction while serializing package registration and conflicting side effects; measure and qualify the exact candidate.
+  - [ ] Compare the exact Daemonarchy and Omarchy default installation
+    manifests, not just elapsed time: retain package identities, dependency
+    closure, archive and installed bytes, package categories, default/optional
+    selections and the marginal cost of Daemonarchy-only packages. Reproduce
+    Omarchy's 10-15 minute path under a recorded link/cache context or retain
+    its authoritative install plan and measurements when equivalent execution
+    is unavailable. Use the comparison to distinguish delivery latency from a
+    materially larger selected system before trimming or redesigning transport.
   - **Measurement checkpoint:** `scripts/installer-measurements.py` binds a terminal installer diagnostic bundle and log to the exact image, package selection/catalogue, physical or virtual worker, storage, link speed and cache mode. It reports content-identified stage durations, package counts and pkg event-pipe bytes without granting installation or release acceptance. Portable refusal checks cover incomplete stages, inconsistent terminal state, ambiguous context, repeated clocks and evidence overwrite. Native baselines remain open.
   - **Recovered live8 observation:** The retained 1.4.0 VM disk was reopened through a disposable copy-on-write overlay and its terminal diagnostics, native repository databases, installed manifest, integrity logs and desktop evidence were retained without changing the source disk. `scripts/installer-baseline-context.py` joined all 1,189 installed package identities to the native catalogues, replacing the post-install-refreshed `Daemonarchy` DB with the immutable catalogue inside the exact ISO and preserving the installer's reviewed `Daemonarchy-Dependencies` annotation. The content-identified observation is 2,747 seconds total: 2,565 fetch, 141 package install and 32 finish; 784 measured network archives transferred 3,778,340,358 bytes, while the complete selected closure is 5,553,478,434 archive bytes and 16,847,424,955 installed bytes. The original run did not measure its host link, so `link_condition_known` is false and this is not one of the required equivalent-link baselines. See the [development record](../../verification/installer-live8-recovered-baseline-development.json).
 - **Evidence:**
   - [ ] At least 10x lower total install time on both physical machines against retained same-machine baselines, exact VM regression, unchanged signature/hash and installed-integrity checks, working desktop, and safe refusal/recovery for missing or corrupt cache, interruption, low disk, and transaction failure.
+  - [ ] Content-identified Omarchy/Daemonarchy manifest comparison accounts for
+    package-count and byte deltas by category and identifies how much of the
+    observed hours-versus-minutes gap comes from selection size, delivery,
+    extraction/registration and post-install work.
+
+### [ ] GAME-001 — Add playable classic arcade games to the installer
+
+- **Priority:** P1 (1.4.1)
+- **Release:** 1.4.1
+- **GitHub issue:** [#137](https://github.com/jordanhubbard/daemonarchy/issues/137)
+- **Owner:** installer Component with LIVE-001 graphical integration
+- **Direction:** Offer approximately five or six small playable classic-arcade homages during a running installation, including a Space Invaders-style fixed shooter, through the installer existing text and graphical experience.
+- **Conclusion:** Reuse the installer renderer, palette, terminal capability detection, input, resize, reduced-motion and sound infrastructure while installation remains authoritative; ship only original names, code, artwork and generated sound, with no ROMs or copied assets.
+- **Depends on:** UI-001; integrate with LIVE-001 and do not weaken INSTALL-PERF-001.
+- **Completion prerequisites:** none
+- **Implementation:**
+  - [ ] Select and document a legally safe portfolio of approximately five or
+    six mechanics, including the fixed shooter. Build one bounded shared game
+    runtime over common renderer, input and audio interfaces.
+  - [ ] Add launch, suspend, resume and exit paths that return immediately to
+    live progress. Critical prompts and terminal outcomes interrupt or end play
+    without losing the progress/log stream.
+  - [ ] Preserve small-terminal, 16-color, reduced-motion, mute, no-audio,
+    serial, SSH and unattended behavior; hide or explicitly refuse games where
+    input or presentation cannot be isolated safely.
+  - [ ] Package and crash-isolate the games on the image with bounded CPU,
+    memory and storage so game failure cannot change the installation result.
+- **Evidence:**
+  - [ ] Exact-image native FreeBSD runs launch every game during different
+    network, disk, package and finish stages and preserve installation integrity
+    and desktop results equal to a no-game control.
+  - [ ] vt(4), graphical installer, tmux input ownership, resize, 16-color,
+    reduced-motion, mute/no-device, prompt preemption and crash recovery pass.
+  - [ ] Measured CPU, memory and elapsed-time overhead is bounded with no
+    material INSTALL-PERF-001 regression; asset/license provenance and an audit
+    for absent third-party ROMs/assets are retained.
