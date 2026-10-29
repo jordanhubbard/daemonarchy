@@ -234,7 +234,8 @@ if [[ ! -d \$HOME/src/cudalab/.git ]]; then
   git clone $(q "$cudalab_url") "\$HOME/src/cudalab"
 fi
 cd "\$HOME/src/cudalab"
-cmake --preset dev
+# Rocky 9's libXi predates the gesture API this SDL3 uses; XInput2 only adds touch gestures.
+cmake --preset dev -DSDL_X11_XINPUT=OFF
 cmake --build --preset dev
 export LD_PRELOAD=/usr/local/lib/daemonarchy/dummy-uvm.so
 $launch
