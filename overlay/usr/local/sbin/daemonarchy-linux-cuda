@@ -134,7 +134,7 @@ install_toolkit() {
   # ninja-build and some -devel packages live in Rocky's CRB repository.
   linux_shell "dnf --releasever '$release' -y install dnf-plugins-core"
   linux_shell "dnf config-manager --set-enabled crb"
-  linux_shell "dnf --releasever '$release' -y install dnf-plugins-core gcc-c++ ninja-build git pkgconf-pkg-config libglvnd-devel libglvnd-glx which make tar gzip ca-certificates curl"
+  linux_shell "dnf --releasever '$release' -y install dnf-plugins-core gcc-c++ ninja-build git pkgconf-pkg-config libglvnd-devel libglvnd-glx which make tar gzip ca-certificates curl libX11-devel libXext-devel libXcursor-devel libXi-devel libXfixes-devel libXrandr-devel libXScrnSaver-devel libXtst-devel libxkbcommon-devel wayland-devel libdrm-devel mesa-libgbm-devel mesa-libEGL-devel"
   if ! linux_shell 'test -x /usr/bin/clang-format || test -x /usr/bin/clang-format-17'; then
     linux_shell "dnf --releasever '$release' -y install clang-tools-extra" || true
   fi
