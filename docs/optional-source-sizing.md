@@ -7,21 +7,21 @@ catalogue. See [the build and runtime instructions](https://github.com/jordanhub
 The seed packages contain no full historical repository; users can deepen
 history explicitly with Git.
 
-## Current 1.3.1 shallow packages
+## Current 1.4.0 shallow packages
 
 The checked-in [catalogue](../overlay/usr/local/share/daemonarchy-installer/checkouts.json)
 is byte-identical to the one published with the
-[1.3.1 checkout feed](https://github.com/jordanhubbard/daemonarchy/releases/tag/checkouts-16-amd64-1.3.1-r2)
-(SHA-256 `c9909b88a6d9817ad01b2c96107b5a2eb2c67c3c993fe059e86b74134f89ca5c`).
-It selects daemonarchy-ports `b785784219af455a9ce4fd70c59bc96ba77f469f` and
-daemonarchy-src `d63d77f4eb3cc29e16510f7bdec73602e27c2844`, both on `main`. A
-native FreeBSD `pkg` client accepted the feed's signed catalogue; see the
-[1.3.1 release notes](release-1.3.1.md).
+[1.4.0 checkout feed](https://github.com/jordanhubbard/daemonarchy/releases/tag/checkouts-16-amd64-1.4.0)
+(SHA-256 `fd4932b4673e3f6156c2a9aeed614b1257dd36bbcaa1459281a5d3789652211b`).
+It selects daemonarchy-ports `b785784219af455a9ce4fd70c59bc96ba77f469f` on
+`main` and daemonarchy-src `06e5befc60319b8a72f746dac31e01dbe75ae702` on
+`daemonarchy`. A QEMU install of the 1.4.0 image installed both checkouts from
+this feed; see the [1.4.0 release notes](release-1.4.0.md).
 
 | Selection | Package download, bytes | Extracted content including `.git`, bytes | Peak free-space allowance, bytes |
 | --- | ---: | ---: | ---: |
 | Ports | 238,227,784 | 732,991,869 | 3,918,238,282 |
-| System source | 718,019,739 | 1,932,460,458 | 6,930,664,679 |
+| System source | 718,298,281 | 1,933,136,999 | 6,933,131,901 |
 
 <!-- release-sync: history -->
 The earlier 1.1.1 catalogue selected ports `f7d7ee897405dcb8ce87e674588a4e1b3bfba00e`

@@ -1,6 +1,6 @@
 {
   "schema": 1,
-  "repository_url": "https://github.com/jordanhubbard/daemonarchy/releases/download/checkouts-16-amd64-1.3.1-r2",
+  "repository_url": "https://github.com/jordanhubbard/daemonarchy/releases/download/checkouts-16-amd64-1.4.0",
   "trees": {
     "ports": {
       "revision": "b785784219af455a9ce4fd70c59bc96ba77f469f",
@@ -23,30 +23,31 @@
       "tracking_branch": "main"
     },
     "src": {
-      "revision": "d63d77f4eb3cc29e16510f7bdec73602e27c2844",
-      "branch": "main",
+      "revision": "06e5befc60319b8a72f746dac31e01dbe75ae702",
+      "branch": "daemonarchy",
       "remote": "https://github.com/jordanhubbard/daemonarchy-src.git",
       "depth": 1,
-      "archive_sha256": "700d75ad5f8b319e14e08b0ee73a1499284b9e06dfa732e5a846a982f1dc13c9",
-      "archive_bytes": 723309503,
-      "expanded_bytes": 1932460458,
-      "required_bytes": 6930664679,
+      "archive_sha256": "a0766b0de1936fe3ececf173d2cacf5856f9a9def97a96a0747e5fb0f7304e37",
+      "archive_bytes": 723629234,
+      "expanded_bytes": 1933136999,
+      "required_bytes": 6933131901,
       "parts": [
         {
-          "package": "daemonarchy-src-checkout-000-20261023.gd63d77f4eb3c",
-          "file": "/usr/local/share/daemonarchy/checkouts/src/d63d77f4eb3cc29e16510f7bdec73602e27c2844/part-000",
-          "sha256": "5075e8bb5908739af78f262f52c7c55e9f26abae530e14db2f67535bf264c2dc",
+          "package": "daemonarchy-src-checkout-000-20261029.g06e5befc6031",
+          "file": "/usr/local/share/daemonarchy/checkouts/src/06e5befc60319b8a72f746dac31e01dbe75ae702/part-000",
+          "sha256": "ae4af26b42a7e8275973d3f17b96faaf4019f9e80beaea69b6916166356b417d",
           "bytes": 536870912,
-          "download_bytes": 536791091
+          "download_bytes": 536705733
         },
         {
-          "package": "daemonarchy-src-checkout-001-20261023.gd63d77f4eb3c",
-          "file": "/usr/local/share/daemonarchy/checkouts/src/d63d77f4eb3cc29e16510f7bdec73602e27c2844/part-001",
-          "sha256": "1953f2325b70a349a770c4210f235627ed858804efbf921108ef2ede33e45c40",
-          "bytes": 186438591,
-          "download_bytes": 181228648
+          "package": "daemonarchy-src-checkout-001-20261029.g06e5befc6031",
+          "file": "/usr/local/share/daemonarchy/checkouts/src/06e5befc60319b8a72f746dac31e01dbe75ae702/part-001",
+          "sha256": "4085b9bc9fa25b5171bafb14500373026a19c86e7e9ea08ecf176deedc4864fd",
+          "bytes": 186758322,
+          "download_bytes": 181592548
         }
-      ]
+      ],
+      "tracking_branch": "daemonarchy"
     }
   }
 }

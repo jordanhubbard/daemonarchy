@@ -194,15 +194,16 @@ results rather than replacing the configuration that reproduced this failure.
 
 ## Apple T2 MacBook Pro: graphics, Wi-Fi and resets
 
-**Current release:** 1.3.1 carries the MacBookPro16,1 work below: Navi14
+**Current release:** 1.4.0 carries the MacBookPro16,1 work below: Navi14
 graphics, the built-in T2 keyboard and trackpad, and BCM4364 Wi-Fi with
 firmware acquired from Apple recovery media or local media before the disk is
-changed. The operator confirmed that all pre-production checks passed on this
-MacBook; an additional physical run of the final public ISO was waived, so the
-final ISO bytes have not been installed on it. Firmware-enforced Secure Boot,
-suspend and the NVMe fix below are not part of that claim. See the
-[1.3.1 release notes](release-1.3.1.md) and
-[MacBook acceptance record](testing-macbookpro16-1-1.3.1.md).
+changed. 1.4.0 adds a signed Secure Boot boot profile to the image so the
+installer can stage and verify that firmware. The operator's tests of this
+cycle's development images installed it; the final 1.4.0 image was not
+physically rerun before publication, and the MacBook has no sound. Firmware-enforced
+Secure Boot, suspend and the NVMe fix below are not part of that claim. See the
+[1.4.0 release notes](release-1.4.0.md) and the earlier
+[1.3.1 MacBook acceptance record](testing-macbookpro16-1-1.3.1.md).
 
 **Sound:** the MacBookPro16,1's built-in speakers, microphones and headphone jack have no driver. Only the HDMI audio outputs and USB audio devices appear. See the [MacBook application note](application-note-macbookpro16-1.md#sound).
 

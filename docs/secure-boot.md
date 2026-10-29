@@ -1,9 +1,9 @@
 # Manual Secure Boot certificate enrollment
 
-The current release, [1.3.1](release-1.3.1.md), ships the production
-manual-enrollment profile with a new public certificate,
-`daemonarchy-1.3.1.der` (and `daemonarchy-1.3.1.pem`), published with the
-[GitHub release](https://github.com/jordanhubbard/daemonarchy/releases/tag/daemonarchy-1.3.1).
+The current release, [1.4.0](release-1.4.0.md), ships the production
+manual-enrollment profile with the same public certificate as 1.3.1, published
+as `daemonarchy-1.4.0.der` (and `daemonarchy-1.4.0.pem`) with the
+[GitHub release](https://github.com/jordanhubbard/daemonarchy/releases/tag/daemonarchy-1.4.0).
 Use only the production certificate from the matching release; never enroll a
 disposable development key. The signed boot bundle and exact ISO were verified,
 but firmware enforcement of the published ISO, physical firmware enrollment and

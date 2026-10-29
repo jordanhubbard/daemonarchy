@@ -40,8 +40,10 @@ The operator assigns **1.4 P0** to bidirectional network debugging from the
 boot blocks and loader through a forced `mountroot>` prompt, early kernel
 startup and panic under DEBUG-003 and
 [issue #33](https://github.com/jordanhubbard/daemonarchy/issues/33). The
-[1.4 plan](docs/roadmap/release-1.4.0.md) owns the current scope; the
-[1.3.2 plan](docs/roadmap/release-1.3.2.md) retains historical design work.
+[1.4 plan](docs/roadmap/release-1.4.0.md) owns the scope;
+<!-- release-sync: history -->
+the [1.3.2 plan](docs/roadmap/release-1.3.2.md) retains historical design work.
+<!-- /release-sync -->
 The enabled plain-debug mode requires no SSH, new key or pairing. It must
 support remote input as well as output at each claimed stage, bounded polling
 in early/panic contexts and orderly native-NIC takeover. Preserve the
@@ -77,9 +79,9 @@ original source authority in place, preserving all 272 tracked source entries at
 its reviewed commit. Native retained-project execution and release enforcement
 require separate demonstrated integration.
 
-The current product release is 1.3.1, published October 25, 2026. Its published
+The current product release is 1.4.0, published October 29, 2026. Its published
 artifact identity is recorded in [`release/current.json`](release/current.json)
-and its actual qualification scope in the [release notes](docs/release-1.3.1.md);
+and its actual qualification scope in the [release notes](docs/release-1.4.0.md);
 the earlier 1.1.1 keeps its [record](docs/testing-1.1.1.md).
 Product responsibilities and current acceptance coverage are mapped in
 [the architecture](docs/architecture/design-traceability.md). G7 remains unfinished:

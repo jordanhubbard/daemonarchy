@@ -481,6 +481,7 @@ was signed or published.
   - It has 360 payloads.
   - With `FreeBSD:16:aarch64` `latest`, it resolves the installer set without
     Chromium: 939 packages, 294 of them from this feed.
+<!-- release-sync: history -->
 - **ISO.** origin/main's `build-iso.sh` built `daemonarchy-1.3.1-aarch64-dev.iso`
   unchanged, with `ARCH=aarch64` and the d63d77f4 sets.
   - The `.iso` is 1,269,610,496 bytes (`6d6f1fe3…`). The `.iso.xz` is
@@ -490,6 +491,7 @@ was signed or published.
     the amd64 checkout feed: no aarch64 checkout feed exists.
   - The worker needed `jq` and `bash` installed.
   - `tests/live-image-runtime.sh` passed.
+<!-- /release-sync -->
 - **Boot.** `qemu-system-aarch64` 11.1.2 with its EDK2 firmware (TCG,
   virtio-gpu) booted the image to the installer welcome screen, whose preview
   label reads "aarch64 development build, unsigned". With a USB keyboard,

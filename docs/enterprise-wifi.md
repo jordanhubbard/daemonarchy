@@ -40,7 +40,7 @@ failures. Form tests cover enterprise selection, hidden networks and failed
 joins. These checks do not establish a successful association or an EAP
 exchange against a real access point.
 
-Introduced in 1.1, the implementation carries forward into 1.1.1 and the current 1.3.1; a source/package refresh does not supply new radio evidence. Native qualification still needs both EAP methods on a test network,
+Introduced in 1.1, the implementation carries forward into 1.1.1, 1.3.1 and the current 1.4.0; a source/package refresh does not supply new radio evidence. Native qualification still needs both EAP methods on a test network,
 rejection of an untrusted server certificate and wrong server domain,
 reconnection after reboot, and inspection of native logs for credential
 disclosure. The operator approved publication with this limitation disclosed; configuration tests alone do not complete enterprise Wi-Fi qualification. See the earlier [1.1.1 record](testing-1.1.1.md); 1.3.1 adds no enterprise Wi-Fi radio evidence.

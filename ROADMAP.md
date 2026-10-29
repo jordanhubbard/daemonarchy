@@ -387,7 +387,7 @@ retain their original scope. The implementation is incomplete.
 
 ## 1.2: earlier network debugging
 
-The following records the earlier scope and inspection baseline; use the 1.3.2
+The following records the earlier scope and inspection baseline; use the 1.4
 plan above for current implementation status and scheduling.
 
 Loader and early-kernel network-debugging changes are deferred to **1.2**.

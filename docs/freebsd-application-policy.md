@@ -50,9 +50,12 @@ Linuxulator receipt before inclusion: exact package/artifact and checksum, FreeB
 and Linux userspace versions, actual launch and core-function results, and any
 GPU/audio/network dependencies. A download, pkg origin, compatibility wrapper or
 mocked test is insufficient. Moving `latest` Linux downloads are not defaults.
-Cursor/OpenCode first-run Linux downloaders are disabled until qualified. Cudalab
-remains an optional hardware qualification item and is not installed or advertised
-by the default desktop package.
+Cursor/OpenCode first-run Linux downloaders are disabled until qualified. Since
+1.4.0, with a supported NVIDIA GPU the installer offers CUDA 13.2 and cudalab,
+selected by default and downloaded over the network during installation; the
+default desktop package alone neither installs nor advertises them. CUDA ran a
+kernel on an RTX 5080 through the Linuxulator on the MSI Raider 18 HX; Unified
+Memory crashes and is not supported.
 
 Validation covers the actual upstream 4.0.4 menu, router dispatch and exit status,
 unsupported command guards, existing-user MIME/Docker migration, and real native
@@ -62,7 +65,7 @@ checks are separate release gates; passing these tests alone is not a GUI or
 Linuxulator acceptance claim.
 
 
-The current 1.3.1 release retains this policy, as did the 1.1.1 refresh. Since
+The current 1.4.0 release retains this policy, as did 1.3.1 and the 1.1.1 refresh. Since
 1.1.1 the installer verifies package-file integrity and dependencies before
 recording installation success, and the adoption helper checks the actual base and kernel against candidate
 OSVERSION metadata before changing repository identities. These checks do not
