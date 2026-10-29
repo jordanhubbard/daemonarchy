@@ -161,6 +161,8 @@ main() {
       printf 'GBM_BACKEND=nvidia-drm\n__GLX_VENDOR_LIBRARY_NAME=nvidia\n' >"$LIVE_STATE/desktop.env"
     fi
   fi
+  # Meteor Lake and Arrow Lake need the GuC; see gpu-config.
+  ! $gpu_intel_guc || kenv compat.linuxkpi.i915_enable_guc=3 >/dev/null
   for module in "${gpu_modules[@]}"; do
     kldstat -q -n "$module.ko" || kldload "$module" || fail "cannot load $module"
   done
