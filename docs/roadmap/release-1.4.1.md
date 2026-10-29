@@ -50,6 +50,21 @@ items below were 1.4 acceptance rows. They moved here so they no longer block
   (Wi-Fi, one connection) are reported but not measured here; the next step is
   timing a fetch on the MSI and MacBook, then choosing between parallel
   fetch, a smaller default set, and shipping the large packages on the ISO.
+- **Target: install at least 10 times faster.** Baseline first: time the
+  whole install (fetch, extraction, registration, post-install) on the MSI,
+  the MacBookPro16,1 and a VM, with a fixed package set and a recorded link
+  speed, and keep the numbers in `docs/`. The 10x is measured against that
+  baseline, not against the 45 minutes of the one VM run above. The VM run
+  shows why a faster scheduler alone cannot reach it: 3.78 GB at 1.5 MB/s is
+  most of the time. The plan, in order of expected gain: (1) take the
+  download out of the install path by carrying the closure on the ISO or an
+  attached local cache, so a first install reads from media; (2) fetch
+  whatever remains in parallel from a nearby mirror; (3) extract in parallel
+  along the dependency DAG and serialise only registration; (4) trim the
+  default package set (1186 packages, 16 GiB installed) so the install does
+  less. Acceptance: the 10x figure on both physical machines, the signed-feed
+  verification unchanged, and the package set still installing a working
+  desktop.
 
 ## Not changed
 
