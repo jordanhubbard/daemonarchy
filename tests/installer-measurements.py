@@ -34,6 +34,7 @@ def context():
             "worker_identity": IDENTITY,
             "storage": "nvme-zfs",
             "link_mbps": 1000,
+            "link_measurement": "measured",
             "cache_mode": "network",
         },
     }
@@ -89,6 +90,7 @@ class InstallerMeasurements(unittest.TestCase):
             self.assertEqual(result["package_observations"]["reported_fetch_attempts"], 1)
             self.assertEqual(result["package_observations"]["extracted_packages"], 3)
             self.assertEqual(result["context_identity"], m.content_identity(context()))
+            self.assertTrue(result["context_quality"]["link_condition_known"])
             self.assertRegex(result["identity"], r"^sha256:[0-9a-f]{64}$")
             self.assertIn("grants no", result["limitations"])
 
@@ -134,6 +136,16 @@ class InstallerMeasurements(unittest.TestCase):
             with self.assertRaisesRegex(ValueError, "duplicate JSON key"):
                 m.measure(diagnostics, log_path, context_path)
 
+        with tempfile.TemporaryDirectory() as temporary:
+            root = Path(temporary)
+            diagnostics, log_path, context_path = self.fixture(root)
+            unknown = context()
+            unknown["target"]["link_mbps"] = None
+            unknown["target"]["link_measurement"] = "unknown"
+            context_path.write_text(json.dumps(unknown))
+            result = m.measure(diagnostics, log_path, context_path)
+            self.assertFalse(result["context_quality"]["link_condition_known"])
+
     def test_retries_count_all_measured_transfer_and_clock_bounds_refuse(self):
         event = '@@fetch {"schema":"daemonarchy/pkg-fetch@1","archives":%d,"bytes":%d,' \
                 '"file":"","file_bytes":0,"file_total":0}'
@@ -157,6 +169,32 @@ class InstallerMeasurements(unittest.TestCase):
             fixture = self.fixture(root, status="failed", exit_status=7,
                                    log="@@step partition 1793303990\n")
             with self.assertRaisesRegex(ValueError, "precedes diagnostic start"):
+                m.measure(*fixture)
+
+    def test_separate_package_transactions_remain_distinct(self):
+        with tempfile.TemporaryDirectory() as temporary:
+            root = Path(temporary)
+            log = "\n".join((
+                "@@step fetch 1793304000",
+                "Number of packages to be installed: 1",
+                "@@step packages 1793304050",
+                "Number of packages to be installed: 3",
+            )) + "\n"
+            result = m.measure(*self.fixture(root, status="failed", exit_status=7, log=log))
+            self.assertEqual(result["package_observations"]["declared_package_totals"], [
+                {"step": "fetch", "action": "installed", "packages": 1},
+                {"step": "packages", "action": "installed", "packages": 3},
+            ])
+
+        with tempfile.TemporaryDirectory() as temporary:
+            root = Path(temporary)
+            log = "\n".join((
+                "@@step fetch 1793304000",
+                "Number of packages to be fetched: 3",
+                "Number of packages to be fetched: 4",
+            )) + "\n"
+            fixture = self.fixture(root, status="failed", exit_status=7, log=log)
+            with self.assertRaisesRegex(ValueError, "changed within fetch"):
                 m.measure(*fixture)
 
     def test_output_is_create_only(self):

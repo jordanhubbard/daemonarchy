@@ -13,6 +13,8 @@ on:
       - 'tests/release-measurements.py'
       - 'scripts/installer-measurements.py'
       - 'tests/installer-measurements.py'
+      - 'scripts/installer-baseline-context.py'
+      - 'tests/installer-baseline-context.py'
       - 'scripts/release-qa-plan.py'
       - 'tests/release-qa-plan.py'
       - 'scripts/verified-artifact-cache.py'
@@ -42,6 +44,8 @@ on:
       - 'tests/release-measurements.py'
       - 'scripts/installer-measurements.py'
       - 'tests/installer-measurements.py'
+      - 'scripts/installer-baseline-context.py'
+      - 'tests/installer-baseline-context.py'
       - 'scripts/release-qa-plan.py'
       - 'tests/release-qa-plan.py'
       - 'scripts/verified-artifact-cache.py'
@@ -134,6 +138,7 @@ jobs:
             tests/package-reuse-inventory.py \
             tests/release-measurements.py \
             tests/installer-measurements.py \
+            tests/installer-baseline-context.py \
             tests/release-qa-plan.py \
             tests/verified-artifact-cache.py \
             tests/signed-package-snapshot.py \
