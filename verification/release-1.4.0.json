@@ -2,7 +2,7 @@
   "schema": "daemonarchy/release-inputs@1",
   "version": "1.4.0",
   "tag": "daemonarchy-1.4.0",
-  "installer_commit": "f0c92081f576d21930924bfe22bf9c56d95b4306",
+  "installer_commit": "608506450844ceb08c2af499b1d8056496062674",
   "source_commit": "06e5befc60319b8a72f746dac31e01dbe75ae702",
   "osversion": 1600029,
   "ports_commit": "b785784219af455a9ce4fd70c59bc96ba77f469f",
@@ -15,12 +15,12 @@
   "evidence_status": "published release record",
   "assets": {
     "daemonarchy-1.4.0-amd64.iso.xz": [
-      1590680308,
-      "sha256:6ddc8a5d388a1d35ecbeb25312de1e57ba0f6474db7016c1179ca7e1cda5558c"
+      1590611892,
+      "sha256:fcaf5e1db17b57a37d01f3db5cefac5794a83b4fe38de2ee926953b9778c7cf6"
     ],
     "daemonarchy-1.4.0-amd64.iso.xz.sha256": [
       97,
-      "sha256:917f5924220a79ca9e923037a9cea908e9f6e5f27f1685a45590363b8cd3581c"
+      "sha256:d383318af5934c546e521cac3b6c7f9dc926028cb72e72ad433a8a2ec8a13c82"
     ],
     "daemonarchy-1.4.0-boot.txz": [
       10496400,
