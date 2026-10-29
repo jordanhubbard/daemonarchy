@@ -1,5 +1,43 @@
 # Changelog
 
+## 1.4.0 (2026-10-29)
+
+Base: FreeBSD 16.0-CURRENT (OSVERSION `1600029`), daemonarchy-src `06e5befc`,
+ports `b7857842`. Application feed `packages-16-amd64-1.4.0`, checkout feed
+`checkouts-16-amd64-1.4.0`. See the [release notes](docs/release-1.4.0.md).
+
+### Added
+
+- MSI Raider 18 HX support: `vmd(4)` accepts bus-offset setting 3, so the NVMe
+  drive behind Intel VMD is visible to the installer (src#47); `ig4(4)`
+  attaches to the Arrow Lake-S PCH I2C controller `8086:7f4c`, which carries
+  the touchpad (src#48); and the installer forces the GuC on for Meteor Lake
+  and Arrow Lake graphics (`compat.linuxkpi.i915_enable_guc=3`, PR #128), without
+  which the desktop never started.
+- A signed Secure Boot boot profile in the image, so the MacBookPro16,1 installer
+  can stage and verify the BCM4364 Wi-Fi firmware.
+- CUDA 13.2 and cudalab, offered by default on NVIDIA hardware and downloaded
+  over the network at install time; a failed download does not fail the install
+  (PRs #130, #131 and #132). Unified Memory is not supported.
+- `test-qemu.sh` runs aarch64 images (`ARCH=aarch64`).
+- The ISO is published xz-compressed.
+
+### Changed
+
+- The Apple T2 internal USB link is kept out of DHCP, route and DNS choice, and
+  installed systems have a clock floor (NET-001/NET-002).
+- Eleven packages in the signed feed: cliamp, herdr, omacalc, omacut,
+  omarchy-nvim, omasnap, omawrite, owe, owe-lockfeed, ttfx and usage.
+
+### Not in 1.4.0
+
+- The exact-image installer network matrix and image-based upgrade and rollback
+  moved to 1.4.1, with a target of a ten times faster install
+  ([plan](docs/roadmap/release-1.4.1.md)).
+- aarch64 is not published: the arm64 image boots in QEMU but its package feed
+  has no Chromium or Hyprland.
+- The MacBookPro16,1 has no sound (no driver for the T2 audio function).
+
 ## Unreleased
 
 ### Planned for 1.4.0
