@@ -120,6 +120,9 @@ bootstrap_dnf() {
 install_toolkit() {
   local release
   release=$(awk -F= '$1 == "VERSION_ID" { gsub(/"/, "", $2); print $2 }' "$linux_root/etc/os-release")
+  # ninja-build and some -devel packages live in Rocky's CRB repository.
+  linux_shell "dnf --releasever '$release' -y install dnf-plugins-core"
+  linux_shell "dnf config-manager --set-enabled crb"
   linux_shell "dnf --releasever '$release' -y install dnf-plugins-core gcc-c++ ninja-build git pkgconf-pkg-config libglvnd-devel libglvnd-glx which make tar gzip ca-certificates curl"
   if ! linux_shell 'test -x /usr/bin/clang-format || test -x /usr/bin/clang-format-17'; then
     linux_shell "dnf --releasever '$release' -y install clang-tools-extra" || true
