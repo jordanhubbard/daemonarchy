@@ -1,7 +1,18 @@
 # 1.4.1 plan: deferred from 1.4
 
-**Status:** planned. Opened on 2026-10-29 by operator decision; 1.4.0 is
-published.
+- **Status:** active
+- **Owning queue item:** [INSTALL-PERF-001](active-work.md#install-perf-001-make-exact-image-installation-at-least-10x-faster)
+- **Supporting queue items:** [PKG-001](active-work.md#pkg-001-implement-the-release-package-dag-and-safe-parallel-transactions),
+  [NET-001](active-work.md#net-001-make-the-installer-network-bring-up-proactive-and-robust)
+- **Completion / archival evidence:** pending exact-image MSI, MacBookPro16,1
+  and VM baselines; 10x physical improvement; exact network matrix; integrity,
+  desktop and failure/recovery acceptance.
+
+Opened on 2026-10-29 by operator decision; 1.4.0 is published.
+
+The measured installation target is tracked as
+[INSTALL-PERF-001](active-work.md#install-perf-001-make-exact-image-installation-at-least-10x-faster)
+and [issue #134](https://github.com/jordanhubbard/daemonarchy/issues/134).
 
 1.4 supports forward installs and `pkg`-based upgrades of a running system. The
 items below were 1.4 acceptance rows. They moved here so they no longer block

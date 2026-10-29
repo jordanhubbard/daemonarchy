@@ -11,6 +11,8 @@ on:
       - 'tests/package-reuse-inventory.py'
       - 'scripts/release-measurements.py'
       - 'tests/release-measurements.py'
+      - 'scripts/installer-measurements.py'
+      - 'tests/installer-measurements.py'
       - 'scripts/release-qa-plan.py'
       - 'tests/release-qa-plan.py'
       - 'scripts/verified-artifact-cache.py'
@@ -38,6 +40,8 @@ on:
       - 'tests/package-reuse-inventory.py'
       - 'scripts/release-measurements.py'
       - 'tests/release-measurements.py'
+      - 'scripts/installer-measurements.py'
+      - 'tests/installer-measurements.py'
       - 'scripts/release-qa-plan.py'
       - 'tests/release-qa-plan.py'
       - 'scripts/verified-artifact-cache.py'
@@ -129,6 +133,7 @@ jobs:
             tests/release-input-graph.py \
             tests/package-reuse-inventory.py \
             tests/release-measurements.py \
+            tests/installer-measurements.py \
             tests/release-qa-plan.py \
             tests/verified-artifact-cache.py \
             tests/signed-package-snapshot.py \

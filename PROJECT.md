@@ -97,6 +97,15 @@ performance improvement or canonical per-unit Component execution result.
 
 ## Current work
 
+INSTALL-PERF-001 (issue #134) is the first planned 1.4.1 development program. It
+requires equivalent exact-image installer baselines on the MSI, MacBookPro16,1
+and a VM, then at least a 10x total-time improvement on both physical machines.
+The initial observer binds terminal diagnostics to exact image, package closure,
+worker, storage, network and cache context; native measurements and the package
+path changes remain open. PKG-001 retains exact catalogue, acquisition and safe
+transaction ownership. A larger ISO, an unpinned ambient cache or parallel pkg
+database writers cannot substitute for those acceptance boundaries.
+
 The current directing goal is DEV-001: provide an operator-ready development
 system using editable `/usr/src` and `/usr/ports` checkouts from the owned forks,
 with build, incremental rebuild, test, package, ISO creation and installation

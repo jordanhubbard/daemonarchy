@@ -1190,3 +1190,19 @@ remains open; report files do not establish a passing gate.
   - [x] A builder rebooted mid-step auto-resumes its job: sample-long on the aarch64 worker, recovered after a graceful `shutdown -r` and after an ungraceful `reboot -q` using the per-boot id in /var/run, with the interrupted step rerun and earlier steps kept.
   - [ ] The candidate image installs the worker and leaves it disabled; enabling it on an installed system and adding a key works as documented.
   - [ ] A full candidate is built through the worker alone.
+
+### [ ] INSTALL-PERF-001 — Make exact-image installation at least 10x faster
+
+- **Priority:** P0 (1.4.1 headline)
+- **Release:** 1.4.1
+- **GitHub issue:** [#134](https://github.com/jordanhubbard/daemonarchy/issues/134)
+- **Owner:** installer and package-engine Components
+- **Direction:** Measure the exact 1.4.1 package path, remove bulk network transfer from the install critical path, then safely parallelize remaining acquisition and transaction work.
+- **Conclusion:** Baseline first on the MSI, MacBookPro16,1 and a VM. Carry the authenticated closure on local media where possible; preserve exact package identities, signed-feed verification, transaction safety, recovery and working-desktop acceptance.
+- **Depends on:** PKG-001
+- **Completion prerequisites:** none
+- **Implementation:**
+  - [ ] Retain equivalent per-phase baselines; carry the selected authenticated closure on the ISO or attached cache; fetch any remainder through bounded authenticated acquisition; parallelize only independently safe extraction while serializing package registration and conflicting side effects; measure and qualify the exact candidate.
+  - **Measurement checkpoint:** `scripts/installer-measurements.py` binds a terminal installer diagnostic bundle and log to the exact image, package selection/catalogue, physical or virtual worker, storage, link speed and cache mode. It reports content-identified stage durations, package counts and pkg event-pipe bytes without granting installation or release acceptance. Portable refusal checks cover incomplete stages, inconsistent terminal state, ambiguous context, repeated clocks and evidence overwrite. Native baselines remain open.
+- **Evidence:**
+  - [ ] At least 10x lower total install time on both physical machines against retained same-machine baselines, exact VM regression, unchanged signature/hash and installed-integrity checks, working desktop, and safe refusal/recovery for missing or corrupt cache, interruption, low disk, and transaction failure.
