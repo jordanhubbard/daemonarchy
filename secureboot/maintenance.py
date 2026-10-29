@@ -22,6 +22,7 @@ SOURCE_OSVERSIONS = {
     "faac40107e936c2e133bd938ca56097d3cfed1c4": 1600029,
     "d63d77f4eb3cc29e16510f7bdec73602e27c2844": 1600029,
     "68512eda0d047bba542749b26e5ce1926a5c2ef1": 1600029,
+    "f6f30e8e17139e03f1262cc48a5f8acb829bb467": 1600029,
 }
 BASE = "bdcfeac3e1cb8ce3f05c32d8a7ad3597deb48bdf"  # Historical 1.1.1 pin.
 MANAGED = {
