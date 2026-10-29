@@ -5,6 +5,24 @@ Use [the active queue](docs/roadmap/active-work.md) for stable work IDs and
 acceptance status, and [the architecture](docs/architecture/design-traceability.md)
 for Component ownership. This file remains the release and feature overview.
 
+## 1.4.1: faster installation and playable arcade interludes
+
+Make the exact-image installer at least ten times faster on both physical
+targets by retaining equivalent baselines and removing bulk network delivery
+from the critical path without weakening package identity, integrity or
+recovery. See [the 1.4.1 plan](docs/roadmap/release-1.4.1.md) and
+[INSTALL-PERF-001](docs/roadmap/active-work.md#install-perf-001-make-exact-image-installation-at-least-10x-faster).
+
+Add a curated set of approximately five or six playable classic-arcade homages
+during installation, including a Space Invaders-style fixed shooter. Games use
+the installer's existing ANSI/fancy graphical renderer, palette, input, resize,
+reduced-motion and sound infrastructure. Installation continues in the
+background and always owns critical prompts, errors, progress, diagnostics and
+the final result. Original names, code and assets avoid ROM, trademark and
+licensing problems. See
+[GAME-001](docs/roadmap/active-work.md#game-001-add-playable-classic-arcade-games-to-the-installer)
+and [issue #137](https://github.com/jordanhubbard/daemonarchy/issues/137).
+
 ## 1.4.0: P0 network debugging and an incremental release graph
 
 First deliver bidirectional plain-mode network debugging across boot blocks,

@@ -3,10 +3,12 @@
 - **Status:** active
 - **Owning queue item:** [INSTALL-PERF-001](active-work.md#install-perf-001-make-exact-image-installation-at-least-10x-faster)
 - **Supporting queue items:** [PKG-001](active-work.md#pkg-001-implement-the-release-package-dag-and-safe-parallel-transactions),
-  [NET-001](active-work.md#net-001-make-the-installer-network-bring-up-proactive-and-robust)
+  [NET-001](active-work.md#net-001-make-the-installer-network-bring-up-proactive-and-robust),
+  [GAME-001](active-work.md#game-001-add-playable-classic-arcade-games-to-the-installer)
 - **Completion / archival evidence:** pending exact-image MSI, MacBookPro16,1
   and VM baselines; 10x physical improvement; exact network matrix; integrity,
-  desktop and failure/recovery acceptance.
+  desktop and failure/recovery acceptance; exact-image game/runtime isolation
+  and no-regression evidence.
 
 Opened on 2026-10-29 by operator decision; 1.4.0 is published.
 
@@ -19,6 +21,18 @@ items below were 1.4 acceptance rows. They moved here so they no longer block
 1.4. None of them is claimed as done by 1.4.
 
 ## Scope
+
+- **Playable classic-arcade interludes**
+  ([GAME-001](active-work.md#game-001-add-playable-classic-arcade-games-to-the-installer),
+  [issue #137](https://github.com/jordanhubbard/daemonarchy/issues/137)). Ship
+  approximately five or six small original arcade homages in the installer,
+  including a Space Invaders-style fixed shooter. Reuse the existing installer
+  text and graphical renderer, palette, input, resize, reduced-motion and sound
+  infrastructure rather than adding a parallel UI stack. Installation continues
+  authoritatively in the background; prompts, approvals, errors, diagnostics and
+  completion preempt play. Qualify vt(4), the graphical installer, small/16-color
+  terminals, mute/no-device behavior, game failure recovery and bounded resource
+  use. Do not ship ROMs, copied assets, protected names or incompatible code.
 
 - **Exact-image installer network matrix** ([ledger A14](1.4-coverage-ledger.md),
   [NET-001](active-work.md#net-001-make-the-installer-network-bring-up-proactive-and-robust)).
@@ -58,12 +72,20 @@ items below were 1.4 acceptance rows. They moved here so they no longer block
   the DAG-ordered install above would save little by itself; parallel fetch
   and a smaller or local package set matter more. The ISO already carries
   the Daemonarchy repository (`file://`); the bulk comes from
-  `pkg.FreeBSD.org`. Things to compare against Omarchy before drawing
-  conclusions: its package count and download size, parallel downloads and
-  nearby mirrors on the Arch side, and compression. Hours on real hardware
+  `pkg.FreeBSD.org`. A first source-level comparison at Omarchy `quattro`
+  commit `225dcb80ef1ced9436f27eb34ff140659d3956dd` finds 163 explicit packages
+  in the x86 default `omarchy-base.packages`; Omarchy documents that x86
+  installs this base list alone and that its ISO builder creates an offline
+  mirror from the package lists. Daemonarchy's 1,189 figure is a resolved
+  installed closure, so 163 versus 1,189 is not yet a valid package-count
+  ratio. Retain and compare Omarchy's resolved dependency closure, archive and
+  installed bytes, offline-media coverage, compression and default/optional
+  categories against Daemonarchy's content-identified closure before drawing
+  conclusions. Also compare parallel downloads and mirror locality. Hours on real hardware
   (Wi-Fi, one connection) are reported but not measured here; the next step is
-  timing a fetch on the MSI and MacBook, then choosing between parallel
-  fetch, a smaller default set, and shipping the large packages on the ISO.
+  resolving that manifest and timing equivalent fetch/install paths on the MSI
+  and MacBook, then choosing between parallel fetch, a smaller default set, and
+  shipping the large packages on the ISO.
 - **Target: install at least 10 times faster.** Baseline first: time the
   whole install (fetch, extraction, registration, post-install) on the MSI,
   the MacBookPro16,1 and a VM, with a fixed package set and a recorded link

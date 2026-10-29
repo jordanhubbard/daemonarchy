@@ -106,6 +106,14 @@ path changes remain open. PKG-001 retains exact catalogue, acquisition and safe
 transaction ownership. A larger ISO, an unpinned ambient cache or parallel pkg
 database writers cannot substitute for those acceptance boundaries.
 
+GAME-001 (issue #137) adds approximately five or six playable classic-arcade
+homages to the 1.4.1 installer, including a Space Invaders-style fixed shooter.
+The games run inside the installer context through its existing text and
+graphical rendering, input and sound infrastructure while installation remains
+authoritative in the background. They may not hide prompts or results, weaken
+diagnostics, consume installation input unexpectedly or materially regress the
+INSTALL-PERF-001 target. Original assets and legally safe mechanics are required.
+
 The current directing goal is DEV-001: provide an operator-ready development
 system using editable `/usr/src` and `/usr/ports` checkouts from the owned forks,
 with build, incremental rebuild, test, package, ISO creation and installation
