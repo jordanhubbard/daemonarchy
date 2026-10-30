@@ -9,9 +9,9 @@ trap 'rm -rf "$work"' EXIT
 commit=0123456789abcdef0123456789abcdef01234567
 
 # --- dry run: every step is shown, nothing runs or is created --------------------------
-out=$(WORK=$work/w MAIN_COMMIT=$commit bash "$script" --dry-run preflight packages feed catalogue iso verify qa 2>&1)
+out=$(WORK=$work/w MAIN_COMMIT=$commit bash "$script" --dry-run preflight packages secureboot feed resolve catalogue iso verify qa 2>&1)
 for expect in '== packages' 'build-release-packages.sh' ' seed' ' bulk' ' identity' '== feed' 'pkg-repo.sh' \
-              '== catalogue' '== iso' 'build-iso.sh' '== verify' '== qa' 'test-qemu.sh' \
+              '== secureboot' 'resign-boot-bundle.sh' '== resolve' 'check-install-resolution.sh' '== catalogue' '== iso' 'build-iso.sh' '== verify' '== qa' 'test-qemu.sh' \
               "EXPECTED_PACKAGE_REPOSITORY_TAG=packages-16-amd64-1.4.1"; do
   grep -qF -- "$expect" <<<"$out" || { echo "dry run is missing '$expect'" >&2; echo "$out" >&2; exit 1; }
 done

@@ -6,13 +6,15 @@
 #
 #   preflight   tools, the main commit, disk space, the state file     (builder)
 #   packages    kernel-bound modules, NVIDIA, omarchy, daemonarchy      (builder, hours)
+#   secureboot  regenerate the module inventory; re-sign the boot bundle only if it changed (builder)
 #   feed        collect and sign the application feed, print the upload plan (builder)
+#   resolve     prove the MSI and MacBook selections resolve from the image's own repositories (builder)
 #   catalogue   check the checkout catalogue against the source and ports revisions (builder)
 #   iso         build the ISO from a clean checkout of MAIN_COMMIT      (builder, ~26 min)
 #   verify      xz test, hashes, size budget, version string, ISO contents (builder)
 #   qa          copy the ISO to QA_HOST and run test-qemu.sh there      (QA host, ~35 min)
 #   sticks      write the ISO to the named USB sticks and verify by read-back (workstation)
-#   all         preflight packages feed catalogue iso verify qa  (never sticks, never publishes)
+#   all         preflight packages secureboot feed resolve catalogue iso verify qa  (never sticks, never publishes)
 #   status      print the state file
 #
 # Nothing here uploads to GitHub or signs with a release key except `feed`, which signs
@@ -46,6 +48,8 @@ SECUREBOOT_CERTIFICATE=${SECUREBOOT_CERTIFICATE:-/usr/daemonarchy/boot-replaceme
 SIGN_KEY=${SIGN_KEY:-/usr/local/etc/daemonarchy/pkg-repo-next.key}
 BUILT_PACKAGES_FILE=${BUILT_PACKAGES_FILE:-$WORK/built-141.txt}
 FEED_OUT=${FEED_OUT:-$WORK/feed-$PACKAGE_REPOSITORY_TAG}
+CLOSURE_DIR=${CLOSURE_DIR:-/tmp/closure/out/packages-16-amd64-1.4.1-upstream}
+SB_DIR=${SB_DIR:-/usr/daemonarchy/sb16}
 XZ_BUDGET=${XZ_BUDGET:-2147483648}                # a GitHub release asset must stay under 2 GiB
 QA_HOST=${QA_HOST:-madmax.local}
 QA_USER=${QA_USER:-jkh}
@@ -110,6 +114,23 @@ step_packages() {
     run env WORK="$WORK" JAIL="$JAIL" PTREE="$PTREE" BUILT_OUT="$BUILT_PACKAGES_FILE" "$product/scripts/build-release-packages.sh" "$sub"
   done
   state_mark packages
+}
+
+step_secureboot() {
+  step_enabled secureboot || return 0
+  fetch_product
+  local product=$WORK/product-$(short)
+  run env S="$SB_DIR" CACHE="$SET_CACHE_DIR" PACKAGES="$WORK/poudriere-data/packages/$JAIL-$PTREE/.latest/All" \
+      REV="$SOURCE_REVISION" "$product/scripts/resign-boot-bundle.sh" sign
+  state_mark secureboot
+}
+
+step_resolve() {
+  step_enabled resolve || return 0
+  fetch_product
+  local product=$WORK/product-$(short)
+  run "$product/scripts/check-install-resolution.sh" "$WORK/poudriere-data/packages/$JAIL-$PTREE" "$FEED_OUT" "$CLOSURE_DIR" all
+  state_mark resolve
 }
 
 step_feed() {
@@ -296,9 +317,9 @@ main() {
   local s
   for s in "${steps[@]}"; do
     case $s in
-      all) step_preflight; step_packages; step_feed; step_catalogue; step_iso; step_verify; step_qa ;;
+      all) step_preflight; step_packages; step_secureboot; step_feed; step_resolve; step_catalogue; step_iso; step_verify; step_qa ;;
       status) [ -f "$STATE" ] && cat "$STATE" || echo 'no state yet' ;;
-      preflight | packages | feed | catalogue | iso | verify | qa) "step_$s" ;;
+      preflight | packages | secureboot | feed | resolve | catalogue | iso | verify | qa) "step_$s" ;;
       *) fail "unknown step: $s" ;;
     esac
   done

@@ -27,7 +27,9 @@ prints the file). The steps run on the amd64 builder, except `qa` (the QEMU host
 | --- | --- |
 | `preflight` | Tools present, `MAIN_COMMIT` reachable on the remote, 30 GB free. |
 | `packages` | Origins list, seeded package set, poudriere dry run and bulk, built list, module identity. |
+| `secureboot` | Regenerates the Secure Boot module inventory for the rebuilt set; re-signs the boot bundle only if the inventory changed. |
 | `feed` | Collects the application feed (`pkg-repo.sh build`), signs it on the builder, writes the upload plan. |
+| `resolve` | `pkg install -n` of the MSI and MacBook selections against the ISO repository plus the two feeds, with pkg.FreeBSD.org not configured. |
 | `catalogue` | Checks the checkout catalogue names the source and ports revisions being released. |
 | `iso` | Builds the ISO from a clean checkout of `MAIN_COMMIT`. About 26 minutes. |
 | `verify` | `xz -t`, both digests, the 2 GiB asset budget, and the installer version inside the image. |
