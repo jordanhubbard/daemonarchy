@@ -51,10 +51,10 @@ cmp "$work/expected" "$work/order"
 # run before them, and completion must not re-verify afterwards.
 install=$here/overlay/usr/local/libexec/daemonarchy-installer/install
 line() { grep -n -m1 -- "$1" "$install" | cut -d: -f1; }
-verify=$(line '^install_verify_package_integrity ')
+verify=$(line '^traced package_integrity ')
 support=$(line '^cuda_install_support ')
 cuda=$(line '^  phase cuda ')
-record=$(line '^install_record_completion ')
+record=$(line '^traced pool_sync_commit ')
 [[ -n $verify && -n $support && -n $cuda && -n $record ]]
 (( verify < support && support < cuda && cuda < record ))
 [[ $(grep -c '^cuda_install_support ' "$install") == 1 ]]

@@ -1,0 +1,115 @@
+#!/usr/local/bin/bash
+# Sourced by install. A microsecond-resolution trace of the installation for
+# performance tuning and for LLM readers; see docs/install-trace.md.
+#
+# One JSON object per line. Values are fixed labels, names, counts and times:
+# never a command line, path, answer or credential, so the trace is safe to
+# keep with the other diagnostics and to hand to a reader.
+install_trace_file=
+install_trace_start_us=0
+install_trace_phase=none
+install_trace_phase_us=0
+declare -A install_trace_op_us=()
+
+# Microseconds since the Unix epoch. EPOCHREALTIME is bash 5's wall clock.
+trace_now() {
+  local now=${EPOCHREALTIME//[.,]/}
+  printf '%s' "$now"
+}
+
+# Strip what would break the JSON line; quote anything that is not an integer.
+trace_value() {
+  local value=$1
+  if [[ $value =~ ^-?[0-9]+$ ]]; then
+    printf '%s' "$value"
+    return
+  fi
+  value=${value//\\/\\\\}
+  value=${value//\"/\\\"}
+  value=${value//[[:cntrl:]]/ }
+  printf '"%s"' "${value:0:300}"
+}
+
+# trace_event EVENT [KEY VALUE]...
+trace_event() {
+  [[ -n $install_trace_file ]] || return 0
+  local event=$1 now line key
+  shift
+  now=$(trace_now)
+  line=$(printf '{"t_us":%s,"since_start_us":%s,"event":"%s","phase":"%s"' \
+    "$now" "$((now - install_trace_start_us))" "$event" "$install_trace_phase")
+  while (( $# >= 2 )); do
+    key=$1
+    [[ $key =~ ^[a-z_][a-z0-9_]*$ ]] || { shift 2; continue; }
+    line+=$(printf ',"%s":%s' "$key" "$(trace_value "$2")")
+    shift 2
+  done
+  printf '%s}\n' "$line" >>"$install_trace_file" 2>/dev/null || true
+}
+
+trace_init() {
+  install_trace_file=$1
+  : >"$install_trace_file" 2>/dev/null || { install_trace_file=; return 0; }
+  chmod 600 "$install_trace_file" 2>/dev/null || true
+  install_trace_start_us=$(trace_now)
+  export DAEMONARCHY_TRACE_FILE=$install_trace_file DAEMONARCHY_TRACE_START_US=$install_trace_start_us
+  trace_event trace_start schema daemonarchy/install-trace@1 \
+    image_version "$(cat "${ISO_SHARE:-/nonexistent}/version" 2>/dev/null || echo unknown)" \
+    kernel "$(uname -r 2>/dev/null || echo unknown)" arch "$(uname -m 2>/dev/null || echo unknown)"
+}
+
+# Entering a phase closes the previous one with its duration.
+trace_phase() {
+  local now
+  now=$(trace_now)
+  if [[ $install_trace_phase != none ]]; then
+    trace_event phase_end name "$install_trace_phase" dur_us "$((now - install_trace_phase_us))"
+  fi
+  install_trace_phase=$1 install_trace_phase_us=$now
+  trace_event phase_begin name "$1"
+}
+
+# trace_begin LABEL ... trace_end LABEL [STATUS]: bracket one operation without
+# changing how the shell runs it (a wrapper function would defeat set -e).
+trace_begin() {
+  install_trace_op_us[$1]=$(trace_now)
+  trace_event op_begin op "$1"
+}
+trace_end() {
+  local label=$1 status=${2:-0} started=${install_trace_op_us[$1]:-}
+  [[ -n $started ]] || return 0
+  trace_event op_end op "$label" status "$status" dur_us "$(($(trace_now) - started))"
+  unset 'install_trace_op_us[$label]'
+}
+
+# traced LABEL COMMAND...: run an external command under trace_begin/trace_end.
+# Its status is returned unchanged, so set -e still applies at the call site.
+# Do not pass a shell function that relies on set -e inside its own body: bash
+# ignores set -e there when the call is part of an || list. Bracket such a
+# function with trace_begin and trace_end instead.
+traced() {
+  local label=$1 status=0
+  shift
+  trace_begin "$label"
+  "$@" || status=$?
+  trace_end "$label" "$status"
+  return "$status"
+}
+
+# Close the trace: the open phase, then the outcome of the whole installation.
+trace_finish() {
+  local status=$1 now
+  [[ -n $install_trace_file ]] || return 0
+  now=$(trace_now)
+  if [[ $install_trace_phase != none ]]; then
+    trace_event phase_end name "$install_trace_phase" dur_us "$((now - install_trace_phase_us))"
+    install_trace_phase=none
+  fi
+  trace_event exit status "$status" dur_us "$((now - install_trace_start_us))"
+}
+
+# Keep a copy with the installed system's other diagnostics.
+trace_save() {
+  [[ -n $install_trace_file && -f $install_trace_file ]] || return 0
+  install -m 600 "$install_trace_file" "$1" 2>/dev/null || true
+}
