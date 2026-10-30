@@ -7,8 +7,9 @@
 #   check-install-resolution.sh ISO_PACKAGES_DIR APP_FEED_DIR CLOSURE_DIR [msi|macbook|all]
 #
 #   ISO_PACKAGES_DIR  the poudriere package directory the ISO is built from (All/*.pkg)
-#   APP_FEED_DIR      the staged application feed (packages + packagesite.pkg)
-#   CLOSURE_DIR       the staged closure shard (packages + packagesite.pkg)
+#   APP_FEED_DIR      the application feed: a staged directory, or the https URL of the published
+#                     release (only its catalogue is fetched; nothing is installed)
+#   CLOSURE_DIR       the closure shard: a staged directory or its published release URL
 #
 # Run as root on a FreeBSD host with pkg and the target ABI. The selections mirror what
 # gpu-config chooses: the MSI (Intel Arrow Lake iGPU + NVIDIA, CUDA, Wi-Fi) and the
@@ -46,10 +47,13 @@ done
 pkg repo -q "$work/iso" >/dev/null
 echo "ISO repository: $(ls "$work/iso/All" | wc -l | tr -d ' ') packages"
 
+# A directory is a staged feed; an http(s) URL is a published release.
+repo_url() { case $1 in http://* | https://*) echo "$1" ;; *) echo "file://$1" ;; esac; }
+
 cat >"$work/repos/repos.conf" <<EOF
 Daemonarchy: { url: "file://$work/iso", signature_type: "none", priority: 10, enabled: yes }
-Daemonarchy-Dependencies: { url: "file://$app", signature_type: "none", priority: 9, enabled: yes }
-Daemonarchy-Closure: { url: "file://$closure", signature_type: "none", priority: 5, enabled: yes }
+Daemonarchy-Dependencies: { url: "$(repo_url "$app")", signature_type: "none", priority: 9, enabled: yes }
+Daemonarchy-Closure: { url: "$(repo_url "$closure")", signature_type: "none", priority: 5, enabled: yes }
 EOF
 
 resolve() {

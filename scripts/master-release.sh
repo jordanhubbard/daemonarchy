@@ -49,6 +49,9 @@ SIGN_KEY=${SIGN_KEY:-/usr/local/etc/daemonarchy/pkg-repo-next.key}
 BUILT_PACKAGES_FILE=${BUILT_PACKAGES_FILE:-$WORK/built-141.txt}
 FEED_OUT=${FEED_OUT:-$WORK/feed-$PACKAGE_REPOSITORY_TAG}
 CLOSURE_DIR=${CLOSURE_DIR:-/tmp/closure/out/packages-16-amd64-1.4.1-upstream}
+# resolve can run against the published releases instead of the staged directories:
+APP_FEED_URL=${APP_FEED_URL:-}
+CLOSURE_URL=${CLOSURE_URL:-}
 SB_DIR=${SB_DIR:-/usr/daemonarchy/sb16}
 XZ_BUDGET=${XZ_BUDGET:-2147483648}                # a GitHub release asset must stay under 2 GiB
 QA_HOST=${QA_HOST:-madmax.local}
@@ -129,7 +132,7 @@ step_resolve() {
   step_enabled resolve || return 0
   fetch_product
   local product=$WORK/product-$(short)
-  run "$product/scripts/check-install-resolution.sh" "$WORK/poudriere-data/packages/$JAIL-$PTREE" "$FEED_OUT" "$CLOSURE_DIR" all
+  run "$product/scripts/check-install-resolution.sh" "$WORK/poudriere-data/packages/$JAIL-$PTREE" "${APP_FEED_URL:-$FEED_OUT}" "${CLOSURE_URL:-$CLOSURE_DIR}" all
   state_mark resolve
 }
 
