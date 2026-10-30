@@ -247,7 +247,7 @@
     {
       "path": "overlay/usr/local/bin/daemonarchy-cudalab",
       "owner": "release",
-      "sha256": "f02ace128709fae861825dc019f52eb527991d5c0c276bc41591d7f1abbbb5c8",
+      "sha256": "689db5bdc145a40d3d31a436f49a61cd8d673fc9da2de491d5abffd3b8c34b72",
       "executable": true
     },
     {

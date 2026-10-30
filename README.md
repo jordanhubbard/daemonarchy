@@ -234,8 +234,8 @@ window closes (`CUDALAB_FOREGROUND=1` keeps it attached). The FreeBSD NVIDIA dri
 has no memory pools, so `cudaMallocAsync` fails with "operation not supported";
 the launcher builds a small library that falls back to `cudaMalloc` and preloads
 it, which is what lets the Choreograph demo start. Sound goes through PulseAudio
-(the desktop's PipeWire answers on its socket) when the Linux SDL was built with
-it, which needs the client headers that `daemonarchy-linux-cuda setup` installs;
+(the desktop's PipeWire answers on its socket, which the launcher hands to
+libpulse by path) when the Linux SDL was built with it, which needs the client headers that `daemonarchy-linux-cuda setup` installs;
 otherwise, or if that driver fails at start, Cudalab runs with SDL's silent driver.
 
 ## Source
