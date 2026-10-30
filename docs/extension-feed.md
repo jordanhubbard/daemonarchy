@@ -3,7 +3,7 @@
 Installer extensions (the four arcade games first) are **not** baked into the ISO. They are published as
 compressed, content-identified, signed bundles on a GitHub release, listed by a signed compressed
 index, and downloaded during the installation when the user chooses them. This page is the format and
-the tooling; the installer side is described in [arcade-games.md](arcade-games.md).
+the tooling; the installer side is described in [installer-extensions.md](installer-extensions.md).
 
 ## What is published
 

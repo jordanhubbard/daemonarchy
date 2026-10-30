@@ -297,9 +297,16 @@ class TmuxBackend(Backend):
         except (OSError, socket.timeout):
             window.gone = True
 
-    def spawn(self, title, argv):
-        """Run `argv` in a new, selected tmux window (the run's own window). Returns its window id."""
-        code, out = self._run("new-window", "-P", "-F", "#{window_id}", *self._target(), "-n", clean_title(title),
+    def spawn(self, title, argv, env=None):
+        """Run `argv` in a new, selected tmux window (the run's own window). Returns its window id.
+
+        `env` names variables to set for the new window (tmux -e); the window otherwise gets the session's.
+        """
+        extra = []
+        for key, value in sorted((env or {}).items()):
+            if re.match(r"^[A-Z][A-Z0-9_]*$", key):
+                extra += ["-e", f"{key}={value}"]
+        code, out = self._run("new-window", "-P", "-F", "#{window_id}", *extra, *self._target(), "-n", clean_title(title),
                               shlex.join(argv))
         if code == 0 and TMUX_ID.match(out):
             self.created.add(out)

@@ -15,7 +15,7 @@ ROOT = Path(__file__).resolve().parents[1]
 sys.path.insert(0, str(ROOT / "overlay/usr/local/lib/daemonarchy-visual"))
 from daemonarchy_visual import plugin  # noqa: E402
 
-GAMES = ROOT / "overlay/usr/local/share/daemonarchy-games"
+GAMES = ROOT / "extensions/games"
 
 
 def main():

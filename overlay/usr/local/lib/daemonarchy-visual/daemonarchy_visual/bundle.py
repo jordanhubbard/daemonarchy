@@ -56,6 +56,10 @@ class BundleError(Exception):
     """Something about a feed, index or bundle is not acceptable; the message says what."""
 
 
+class Unreachable(BundleError):
+    """The feed could not be reached (no network, DNS, timeout, refused). Nothing was received to judge."""
+
+
 def sha256_bytes(data):
     return hashlib.sha256(data).hexdigest()
 
@@ -435,7 +439,7 @@ def fetch(url, dest, max_bytes, trace=None, name=None, timeout=30, opener=urllib
         raise
     except (OSError, ValueError) as error:
         status = type(error).__name__
-        raise BundleError(f"could not download {name or url}: {type(error).__name__}") from error
+        raise Unreachable(f"could not download {name or url}: {type(error).__name__}") from error
     finally:
         trace.event("ext_fetch", name=name or os.path.basename(url), bytes=got,
                     dur_us=int((time.monotonic() - started) * 1e6), status=status)

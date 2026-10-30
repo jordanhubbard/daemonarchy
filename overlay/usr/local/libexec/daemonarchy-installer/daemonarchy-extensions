@@ -1,0 +1,467 @@
+#!/usr/bin/env python3
+"""Installer extensions: optional extras that are downloaded when you choose them.
+
+  daemonarchy-extensions menu [category]   list what is available and run what you choose (q leaves)
+  daemonarchy-extensions run ID            run one extension that is already downloaded and verified
+  daemonarchy-extensions list              what the feed offers and what is already downloaded
+
+The four arcade games are the first extensions. Nothing is on the install media: the menu fetches the
+feed's signed, compressed index over the network, checks its signature against the public key this image
+already pins for its package repository, and shows each extension's name, description, size, source and
+whether the network is needed. Choosing one downloads its compressed bundle, verifies it (size, SHA-256,
+signature, bounded decompression, safe extraction, manifest against the signed index) and only then runs it
+in its own window: a new tmux window when the installer's tmux session is present, otherwise this terminal.
+Downloaded extensions live only in /tmp of the live environment (DAEMONARCHY_EXTENSIONS_CACHE) and are not
+installed onto the target system. Fetch time and bytes go into the install trace.
+
+An extension is a separate low-priority process. It never reads or changes installation state, progress,
+prompts or the outcome. The install screen asks extensions to stop by creating the preempt file
+(DAEMONARCHY_GAMES_PREEMPT, default /tmp/daemonarchy-games.preempt) when the installation finishes or fails
+or a remote-debug pairing request needs the operator; every window checks it every frame, the process is
+killed at once, and the extra windows it opened close with it. While another tmux window is showing, an
+extension is suspended: no simulation, no drawing, no CPU. DAEMONARCHY_GAMES=off disables the menu.
+Sound goes through the installer's player (sound.py) and follows its mute, volume and quiet mode.
+"""
+import importlib.util
+import json
+import os
+import platform
+import re
+import subprocess
+import sys
+import threading
+import time
+from pathlib import Path
+
+HERE = Path(__file__).resolve().parent
+sys.path.insert(0, str(HERE.parents[1] / 'lib' / 'daemonarchy-visual'))
+import daemonarchy_visual as sdk  # noqa: E402
+from daemonarchy_visual import bundle, caps as sdk_caps, effects, palette, plugin, windows  # noqa: E402
+from daemonarchy_visual.input import FdSource, Raw  # noqa: E402
+
+SHARE = Path(os.environ.get('ISO_SHARE', '/usr/local/share/daemonarchy-installer'))
+CACHE = Path(os.environ.get('DAEMONARCHY_EXTENSIONS_CACHE', '/tmp/daemonarchy-extensions'))
+PREEMPT = Path(os.environ.get('DAEMONARCHY_GAMES_PREEMPT', '/tmp/daemonarchy-games.preempt'))
+SELF = Path(__file__).resolve()
+CATEGORY_ORDER = ('Games', 'Tools', 'Visuals')
+ARCH = {'x86_64': 'amd64', 'amd64': 'amd64', 'arm64': 'aarch64', 'aarch64': 'aarch64'}
+REPOSITORY = re.compile(r'^[A-Za-z0-9._-]{1,39}/[A-Za-z0-9._-]{1,100}$')
+# SDK cue names to the installer player's cue names (sound.py). Unknown names stay silent.
+CUE_MAP = dict(click='click', select='select', blip='tick', laser='game_laser', hit='game_hit',
+               explode='game_explode', bounce='game_bounce', pickup='game_pickup', levelup='game_levelup',
+               gameover='game_gameover', win='game_win')
+
+
+def preempted():
+    return PREEMPT.exists()
+
+
+# ---------------------------------------------------------------- the feed
+
+def feed_tag(share=None):
+    """extensions-<os>-<arch>-<image version>, for example extensions-16-amd64-1.4.1."""
+    share = Path(share or SHARE)
+    try:
+        version = (share / 'version').read_text().split()[0]
+    except (OSError, IndexError):
+        return None
+    arch = ARCH.get(platform.machine())
+    major = platform.release().split('.')[0]
+    tag = f'extensions-{major}-{arch}-{version}' if arch else ''
+    return tag if bundle.FEED.match(tag) else None
+
+
+class Feed:
+    """Where this image's extensions come from and the key that vouches for them."""
+
+    def __init__(self, env=None):
+        env = os.environ if env is None else env
+        self.tag = feed_tag()
+        self.pubkey = SHARE / 'daemonarchy.pub'
+        self.base = env.get('DAEMONARCHY_EXTENSIONS_URL', '')
+        if not self.base and self.tag:
+            try:
+                repo = json.loads((SHARE / 'extensions.json').read_text()).get('repository', '')
+            except (OSError, ValueError):
+                repo = ''
+            if REPOSITORY.match(repo or ''):
+                self.base = f'https://github.com/{repo}/releases/download/{self.tag}'
+        self.base = self.base.rstrip('/')
+
+    def unavailable(self):
+        if not self.tag:
+            return 'This image has no release version, so there is no extension feed for it.'
+        if not self.pubkey.is_file():
+            return 'This image has no pinned repository key, so extensions cannot be verified and are unavailable.'
+        if not self.base:
+            return 'No extension feed is configured for this image.'
+        return None
+
+    def index(self, trace):
+        """Download and verify the index. Raises bundle.Unreachable offline, bundle.BundleError if it is not trusted."""
+        directory = CACHE / 'index'
+        directory.mkdir(parents=True, exist_ok=True)
+        path = directory / bundle.INDEX_NAME
+        bundle.fetch(f'{self.base}/{bundle.INDEX_NAME}', str(path), bundle.MAX_INDEX_BYTES, trace, timeout=10)
+        bundle.fetch(f'{self.base}/{bundle.INDEX_NAME}.sig', str(path) + '.sig', 4096, trace, timeout=10)
+        started = time.monotonic()
+        try:
+            return bundle.verified_index(str(path), str(self.pubkey), self.tag)
+        finally:
+            trace.event('ext_verify', name=bundle.INDEX_NAME, dur_us=int((time.monotonic() - started) * 1e6))
+
+    def obtain(self, entry, trace):
+        """Download, verify and unpack one bundle into the cache; returns the loaded plugin."""
+        info = entry['bundle']
+        directory = CACHE / 'bundles'
+        directory.mkdir(parents=True, exist_ok=True)
+        path = directory / info['file']
+        try:
+            bundle.fetch(f"{self.base}/{info['file']}", str(path), info['bytes'], trace, timeout=30)
+            bundle.fetch(f"{self.base}/{info['file']}.sig", str(path) + '.sig', 4096, trace, timeout=30)
+            started = time.monotonic()
+            raw = bundle.verify_bundle(str(path), entry, str(self.pubkey))
+            bundle.extract(raw, entry, str(installed_root()))
+            plugin.write_index(str(installed_root()))
+            trace.event('ext_verify', name=info['file'], dur_us=int((time.monotonic() - started) * 1e6), bytes=info['raw_bytes'])
+        finally:
+            for leftover in (path, Path(str(path) + '.sig')):
+                try:
+                    leftover.unlink()
+                except OSError:
+                    pass
+        registry = plugin.Registry(str(installed_root()))
+        if entry['id'] not in registry.plugins:
+            raise bundle.BundleError(f"{entry['id']}: {registry.refused.get(entry['id'], 'was not loaded')}")
+        return registry.plugins[entry['id']]
+
+
+def installed_root():
+    return CACHE / 'installed'
+
+
+def cached_plugins():
+    root = installed_root()
+    if not root.is_dir():
+        return {}
+    return plugin.Registry(str(root)).plugins
+
+
+# ---------------------------------------------------------------- what the menu shows
+
+def human(size):
+    return f'{size / 1024:.1f} KB' if size >= 1024 else f'{size} B'
+
+
+def catalog(feed, trace):
+    """(rows, notice). A row has everything the menu shows; the notice says why the list may be short."""
+    have = cached_plugins()
+    rows, notice = [], ''
+    problem = feed.unavailable()
+    index = None
+    if problem:
+        notice = problem
+    elif os.environ.get('DAEMONARCHY_GAMES') != 'off':
+        try:
+            index = feed.index(trace)
+        except bundle.Unreachable:
+            notice = ('No network, so the feed cannot be listed. Extensions already downloaded are shown. '
+                      'Configure the network from the installer options, then open Extensions again.')
+        except bundle.BundleError as error:
+            notice = f'The extension feed was refused and nothing from it will run: {error}'
+    if index:
+        for entry in index['extensions']:
+            ok = entry['id'] in have and have[entry['id']].version == entry['version']
+            rows.append(dict(id=entry['id'], name=entry['name'], description=entry['description'],
+                             category=entry['category'], type=entry['type'], entry=entry, cached=ok,
+                             size=human(entry['bundle']['bytes']), unpacked=human(entry['bundle']['raw_bytes']),
+                             source=f"GitHub release {feed.tag}" if not ok else 'already downloaded',
+                             network='cached' if ok else 'download', min_size=tuple(entry['min_size']),
+                             capabilities=entry['capabilities']))
+    else:
+        for ext_id, p in sorted(have.items()):
+            rows.append(dict(id=ext_id, name=p.name, description=p.description, category=bundle.CATEGORIES.get(p.type, 'Tools'),
+                             type=p.type, entry=None, cached=True, size='cached', unpacked='', source='already downloaded',
+                             network='cached', min_size=p.min_size, capabilities=list(p.capabilities)))
+    rows.sort(key=lambda r: (CATEGORY_ORDER.index(r['category']) if r['category'] in CATEGORY_ORDER else 9, r['name']))
+    return rows, notice
+
+
+class Menu(sdk.Scene):
+    title = 'Extensions'
+    min_size = (60, 16)
+
+    def __init__(self, rows, notice, category=None):
+        self.rows, self.notice = rows, notice
+        self.index = 0
+        for position, row in enumerate(rows):
+            if category and row['category'].lower() == category.lower():
+                self.index = position
+                break
+        self.age, self.chosen = 0.0, None
+
+    def update(self, dt, ctx, actions):
+        self.age += dt
+        if not self.rows:
+            return
+        for action in actions:
+            if action == 'up':
+                self.index = (self.index - 1) % len(self.rows)
+                ctx.audio.cue('click')
+            elif action == 'down':
+                self.index = (self.index + 1) % len(self.rows)
+                ctx.audio.cue('click')
+            elif action in ('select', 'fire'):
+                row = self.rows[self.index]
+                need = row['min_size']
+                if need and (ctx.width < need[0] or ctx.height < need[1]):
+                    self.notice = (f"{row['name']} needs a terminal of at least {need[0]}x{need[1]}; "
+                                   f'this one is {ctx.width}x{ctx.height}.')
+                    continue
+                ctx.audio.cue('select')
+                self.chosen, self.done = row, True
+
+    def draw(self, canvas, ctx):
+        width = canvas.width
+        effects.gradient_text(canvas, max(0, (width - 21) // 2), 1, 'DAEMONARCHY EXTENSIONS', palette.LOGO,
+                              0.0 if ctx.reduced else self.age * 0.1)
+        canvas.put(2, 3, 'Optional extras, downloaded when you choose them. The installation keeps running.',
+                   (palette.GRAY, None, False))
+        canvas.put(2, 5, f"{'':2}{'NAME':<14}{'SIZE':<10}{'NETWORK':<10}DESCRIPTION", (palette.DIM, None, True))
+        row_y, category = 6, None
+        for position, row in enumerate(self.rows):
+            if row['category'] != category:
+                category = row['category']
+                canvas.put(2, row_y, ('── ' if ctx.glyphs.unicode else '-- ') + category, (palette.CYAN, None, True))
+                row_y += 1
+            selected = position == self.index
+            marker = ('▶ ' if ctx.glyphs.unicode else '> ') if selected else '  '
+            style = (palette.WHITE, None, True) if selected else (palette.GRAY, None, False)
+            line = f"{marker}{row['name']:<14}{row['size']:<10}{row['network']:<10}{row['description']}"
+            canvas.put(2, row_y, line[:max(0, width - 4)], style)
+            row_y += 1
+        if self.rows:
+            row = self.rows[self.index]
+            if row['network'] == 'download':
+                network = f"needed to download {row['size']} ({row['unpacked']} unpacked); it is verified before it runs"
+            else:
+                network = 'not needed: already downloaded and verified'
+            detail = [f"Source:  {row['source']}", f'Network: {network}',
+                      f"Runs in: its own window; needs {row['min_size'][0]}x{row['min_size'][1]}; "
+                      f"capabilities {', '.join(row['capabilities'])}"]
+            for offset, text in enumerate(detail):
+                canvas.put(2, canvas.height - 9 + offset, text[:max(0, width - 4)], (palette.GRAY, None, False))
+        else:
+            canvas.put(2, 8, 'Nothing is available.', (palette.GRAY, None, False))
+        for offset, text in enumerate(wrap(self.notice, max(10, width - 6))[:4]):
+            canvas.put(2, canvas.height - 5 + offset, text, (palette.YELLOW, None, True))
+        canvas.put(2, canvas.height - 1, 'Up/Down choose   Return run   q leave', (palette.GRAY, None, False))
+
+    def plain_lines(self, ctx):
+        return ['Extensions need an interactive color terminal.']
+
+
+def wrap(text, width):
+    words, lines, line = text.split(), [], ''
+    for word in words:
+        if len(line) + len(word) + 1 > width:
+            lines.append(line)
+            line = word
+        else:
+            line = f'{line} {word}'.strip()
+    return lines + ([line] if line else [])
+
+
+class Busy(sdk.Scene):
+    """Shown while a bundle downloads and verifies in a worker thread."""
+
+    min_size = None
+
+    def __init__(self, text, worker):
+        self.text, self.worker, self.age = text, worker, 0.0
+
+    def update(self, dt, ctx, actions):
+        self.age += dt
+        self.done = not self.worker.is_alive()
+
+    def draw(self, canvas, ctx):
+        dots = '.' * (1 + int(self.age * 3) % 3)
+        text = self.text + dots
+        canvas.put(max(0, (canvas.width - len(text)) // 2), canvas.height // 2, text, (palette.WHITE, None, True))
+
+    def plain_lines(self, ctx):
+        return [self.text]
+
+
+# ---------------------------------------------------------------- sound, visibility, running
+
+class Visibility:
+    """True while this tmux window is the one being shown; checked twice a second."""
+
+    def __init__(self, env):
+        self.pane, self.visible, self.checked = env.get('TMUX_PANE', ''), True, 0.0
+
+    def suspended(self):
+        if not self.pane:
+            return False
+        now = time.monotonic()
+        if now - self.checked >= 0.5:
+            self.checked = now
+            try:
+                shown = subprocess.run(['tmux', 'display-message', '-p', '-t', self.pane, '#{window_active}'],
+                                       capture_output=True, text=True, timeout=1, check=False).stdout.strip()
+                self.visible = shown != '0'
+            except (OSError, subprocess.SubprocessError):
+                self.visible = True
+        return not self.visible
+
+
+def sound_audio(env):
+    """The installer's player as SDK audio; silence if it is not there. Never waits for a device."""
+    try:
+        spec = importlib.util.spec_from_file_location('daemonarchy_sound', HERE / 'sound.py')
+        module = importlib.util.module_from_spec(spec)
+        spec.loader.exec_module(module)
+        client = module.Client(dict(env))
+    except Exception:  # noqa: BLE001 - sound is never required.
+        return sdk.NullAudio()
+
+    def play(name, **params):
+        cue = CUE_MAP.get(name)
+        if cue:
+            client.play(cue)
+    return sdk.ThreadedAudio(play)
+
+
+def say(text):
+    sys.stdout.write(text + '\n')
+    sys.stdout.flush()
+
+
+class Session:
+    def __init__(self, env):
+        self.env = env
+        self.caps = sdk.detect(dict(env), sys.stdout)
+        self.visibility = Visibility(env)
+        self.audio = sound_audio(env)
+        self.source = FdSource(sys.stdin.fileno())
+        self.options = dict(preempt=preempted, suspended=self.visibility.suspended,
+                            size=lambda: sdk_caps.size(sys.stdout))
+
+    def run_plugin_here(self, p):
+        backend = windows.choose_backend(self.caps, self.env)
+        return plugin.run_plugin(p, self.caps, sys.stdout, self.source, self.audio, backend=backend, **self.options)
+
+    def launch(self, p):
+        """Give the extension its own window: tmux new-window when available, else this terminal."""
+        backend = windows.choose_backend(self.caps, self.env)
+        if getattr(backend, 'can_spawn', False):
+            handle = backend.spawn(p.name, [sys.executable, '-I', str(SELF), 'run', p.id],
+                                   env={k: v for k, v in self.env.items()
+                                        if k in ('ISO_SHARE', 'DAEMONARCHY_EXTENSIONS_CACHE', 'DAEMONARCHY_GAMES_PREEMPT',
+                                                 'DAEMONARCHY_COLOR', 'DAEMONARCHY_CONSOLE', 'DAEMONARCHY_SOUND',
+                                                 'DAEMONARCHY_REDUCED_MOTION', 'DAEMONARCHY_GAMES', 'DAEMONARCHY_PYTHON')})
+            if handle:
+                return f'{p.name} is open in its own window (C-b w lists windows, C-b 0 returns to the progress screen).'
+        result = self.run_plugin_here(p)
+        if result.reason in ('preempted', 'eof'):
+            return None
+        failed = result.result.get('failed') if isinstance(result.result, dict) else None
+        return f'{p.name} stopped: {failed}.' if failed else ''
+
+    def obtain(self, feed, row, trace):
+        """Download and verify in a worker thread while the screen says so. Returns (plugin or None, notice)."""
+        outcome = {}
+
+        def work():
+            try:
+                outcome['plugin'] = feed.obtain(row['entry'], trace)
+            except bundle.Unreachable:
+                outcome['notice'] = f"No network: {row['name']} could not be downloaded. Nothing was run."
+            except bundle.BundleError as error:
+                outcome['notice'] = f"{row['name']} was refused and did not run: {error}"
+        worker = threading.Thread(target=work, daemon=True)
+        worker.start()
+        result = sdk.run_scene(Busy(f"Downloading and verifying {row['name']} ({row['size']})", worker), self.caps, sys.stdout,
+                               self.source, self.audio, fps=10, **self.options)
+        worker.join(timeout=60)
+        if result.reason == 'preempted':
+            return None, None
+        return outcome.get('plugin'), outcome.get('notice', '')
+
+
+def stop_message(result):
+    if result.reason == 'preempted':
+        say('The installation needs your attention; extensions have stopped.')
+    return 0
+
+
+def run(command, argument, env):
+    feed, trace = Feed(env), bundle.Trace()
+    if command == 'list':
+        rows, notice = catalog(feed, trace)
+        for row in rows:
+            say(f"{row['id']}\t{row['category']}\t{row['name']}\t{row['size']}\t{row['network']}\t{row['source']}\t{row['description']}")
+        if notice:
+            sys.stderr.write(notice + '\n')
+        return 0
+    if env.get('DAEMONARCHY_GAMES') == 'off':
+        say('Extensions are turned off (DAEMONARCHY_GAMES=off).')
+        return 0
+    caps = sdk.detect(dict(env), sys.stdout)
+    if caps.plain or not sys.stdin.isatty():
+        say('Extensions need an interactive color terminal.')
+        return 0
+    if preempted():
+        say('The installation needs your attention; extensions are not available right now.')
+        return 0
+    try:
+        os.nice(19)      # an extension must never compete with the installation for CPU
+    except OSError:
+        pass
+    if command == 'run':
+        p = cached_plugins().get(argument or '')
+        if p is None:
+            say(f'{argument} has not been downloaded and verified; open the Extensions menu to get it.')
+            return 2
+        with Raw(sys.stdin.fileno()):
+            return stop_message(Session(env).run_plugin_here(p))
+    say('Checking the extension feed...')
+    session = Session(env)
+    category = argument
+    with Raw(sys.stdin.fileno()):
+        rows, notice = catalog(feed, trace)
+        while True:
+            menu = Menu(rows, notice, category)
+            result = sdk.run_scene(menu, session.caps, sys.stdout, session.source, session.audio, fps=15, **session.options)
+            if result.reason != 'done' or menu.chosen is None:
+                return stop_message(result)
+            row = menu.chosen
+            chosen = cached_plugins().get(row['id']) if row['cached'] else None
+            if chosen is None:
+                chosen, problem = session.obtain(feed, row, trace)
+                if chosen is None and problem is None:          # the installation needs the screen
+                    return stop_message(sdk.scene.RunResult('preempted'))
+                if chosen is None:
+                    notice = problem
+                    continue
+                row.update(cached=True, network='cached', source='already downloaded')
+            launched = session.launch(chosen)
+            if launched is None:
+                return stop_message(sdk.scene.RunResult('preempted'))
+            notice = launched
+
+
+def main(argv):
+    command = argv[1] if len(argv) > 1 else 'menu'
+    if command not in ('menu', 'run', 'list'):
+        sys.stderr.write(__doc__)
+        return 2
+    try:
+        return run(command, argv[2] if len(argv) > 2 else None, os.environ)
+    except KeyboardInterrupt:
+        return 0
+
+
+if __name__ == '__main__':
+    sys.exit(main(sys.argv))
