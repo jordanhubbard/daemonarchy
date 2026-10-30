@@ -665,7 +665,6 @@ mkdir -p "$TARGET/usr/local/share/daemonarchy-installer"
 cp "$ISO_SHARE/checkouts.json" "$TARGET/usr/local/share/daemonarchy-installer/checkouts.json"
 install -m 0755 /usr/local/sbin/daemonarchy-checkouts "$TARGET/usr/local/sbin/daemonarchy-checkouts"
 ln -sf ../sbin/daemonarchy-checkouts "$TARGET/usr/local/bin/daemonarchy-checkouts"
-cuda_install_support "$TARGET" "$ISO_SHARE"
 checkout_url=$(jq -er '.repository_url' "$ISO_SHARE/checkouts.json")
 [[ $checkout_url =~ ^https://github.com/jordanhubbard/daemonarchy/releases/download/[a-zA-Z0-9._-]+$ ]] || { echo 'Invalid checkout repository URL' >&2; exit 1; }
 cat >"$TARGET/usr/local/etc/pkg/repos/Daemonarchy-Checkouts.conf" <<EOF
@@ -725,6 +724,14 @@ done
 
 # ---------------------------------------------------------------- network services
 
+# Verify the package files before the optional CUDA additions. They replace the
+# desktop's vendor menu and, through Rocky's dnf, files that linux-rl9 packages
+# own, so a check made after them would report that work as corruption (and pkg
+# aborts on a path that became a directory).
+log "Checking installed package files."
+install_verify_package_integrity "$diagnostics_dir/package-integrity.log" pkg_target
+cuda_install_support "$TARGET" "$ISO_SHARE"
+
 if [[ $install_cuda == true ]]; then
   phase cuda "Installing CUDA and building cudalab"
   cuda_setup_started=true
@@ -765,8 +772,8 @@ for package in daemonarchy omarchy sddm hyprland; do
 done
 [[ -f $TARGET/var/lib/sddm/state.conf && -x $TARGET/usr/local/bin/bash ]]
 secureboot_verify_target "$TARGET"
-log "Checking installed package files and committing the target pool."
-install_record_verified_completion "$POOL" "$diagnostics_dir/package-integrity.log" pkg_target
+log "Committing the target pool."
+install_record_completion "$POOL"
 log "Installation configuration complete; exporting the target pool."
 diagnostics_stop
 umount "$TARGET/dev"
