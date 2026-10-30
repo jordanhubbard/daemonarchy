@@ -1083,6 +1083,13 @@ coordinated operation.
 
 1. Tag daemonarchy-desktop `v<version>`, set `DISTVERSION` in `x11-wm/daemonarchy` to it and run `make makesum`, then build the packages and the image as above, publish the packages, and run a test.
 
+   The release version lives in one place, the `VERSION` file. Change it with
+   `python3 scripts/version.py set X.Y.Z` before building (`show` and `show
+   --json` read it, `check` verifies the copy in `literate.project.json`).
+   `build-iso.sh` takes the installer screen's version line and the default
+   image name from it, not from the `daemonarchy` package, which is reused
+   across releases. Bump it in the same change that starts a release cycle.
+
 2. Finish required review/checks, merge and synchronize the installer source,
    then tag the exact reviewed commit. Publish a normal stable GitHub release
    `daemonarchy-<version>`, marked latest. Standard public assets are the ISO,
