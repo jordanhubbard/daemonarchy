@@ -128,6 +128,20 @@ items below were 1.4 acceptance rows. They moved here so they no longer block
   upstream catalogue lacks `chromium` and `hyprland`, so mirroring alone does
   not fix the arm64 install: those packages must also be built. Licences for
   redistribution are checked before anything is published.
+
+  **This is now a mandatory part of publishing and installing 1.4.1, not an
+  option** (operator decision, 2026-10-30), because `pkg.FreeBSD.org` dropped a
+  package one day after 1.4.0 and every fresh install failed. The release
+  process hosts the whole installer closure (fixed roots plus the GPU, Wi-Fi and
+  CUDA selection roots; amd64 today: 1,221 packages, 786 of them upstream, 3.49
+  GiB) as signed, versioned, non-latest feed releases before the ISO is tested;
+  the release-inputs record carries them (`closure_feeds`) and
+  `verify-release-assets.py` refuses a 1.4.1 record without them; the ISO build
+  refuses a missing, unsigned or non-resolving feed; the installer prefers the
+  feed (16 connections for ours, 4 for the pkg.FreeBSD.org fallback, from the
+  MSI's measurements) and records the source of every archive in the trace; and
+  the upstream-drift check is a release gate with a closure-refresh step. The
+  checklist is in HACKING.md.
 - **Target: install at least 10 times faster.** Baseline first: time the
   whole install (fetch, extraction, registration, post-install) on the MSI,
   the MacBookPro16,1 and a VM, with a fixed package set and a recorded link

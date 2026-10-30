@@ -52,6 +52,10 @@ on:
       - 'tests/parallel-fetch.py'
       - 'scripts/package-feed-stage.py'
       - 'tests/package-feed-stage.py'
+      - 'scripts/check-closure-feed.sh'
+      - 'tests/closure-feed-check.sh'
+      - 'scripts/verify-release-assets.py'
+      - 'tests/release-asset-names.py'
       - 'scripts/install-trace-baseline.py'
       - 'tests/install-trace-baseline.py'
       - 'verification/install-baselines/**'
@@ -113,6 +117,10 @@ on:
       - 'tests/parallel-fetch.py'
       - 'scripts/package-feed-stage.py'
       - 'tests/package-feed-stage.py'
+      - 'scripts/check-closure-feed.sh'
+      - 'tests/closure-feed-check.sh'
+      - 'scripts/verify-release-assets.py'
+      - 'tests/release-asset-names.py'
       - 'scripts/install-trace-baseline.py'
       - 'tests/install-trace-baseline.py'
       - 'verification/install-baselines/**'
@@ -171,6 +179,8 @@ jobs:
         env:
           PYTHONDONTWRITEBYTECODE: '1'
         run: python3 tests/parallel-fetch.py -v
+      - name: Closure feed gate
+        run: sh tests/closure-feed-check.sh
       - name: Package feed staging
         env:
           PYTHONDONTWRITEBYTECODE: '1'

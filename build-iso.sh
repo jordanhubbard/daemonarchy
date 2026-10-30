@@ -133,6 +133,22 @@ pkg repo -q "$share/repo" >/dev/null
 echo "    $(ls "$share/repo/All" | wc -l | tr -d ' ') packages"
 echo "$ABI" >"$share/ABI"
 
+# A release image must carry a closure feed that works (PKG-002, HACKING.md):
+# every shard answers, its catalogue is signed with this release's key, and the
+# installer's roots resolve from the ISO, our application feed and the shards with
+# pkg.FreeBSD.org disabled. REQUIRE_PACKAGE_MIRROR=yes makes a missing or broken
+# feed fatal; release builds set it.
+if [ "${REQUIRE_PACKAGE_MIRROR:-no}" = yes ]; then
+    [ -n "${PACKAGE_MIRROR_URLS:-}" ] || {
+        echo 'REQUIRE_PACKAGE_MIRROR=yes needs PACKAGE_MIRROR_URLS: a release image must carry its closure feed' >&2; exit 1; }
+    dependencies_url=
+    [ "$PACKAGE_REPOSITORY_TAG" = "packages-16-$ARCH" ] ||
+        dependencies_url=https://github.com/jordanhubbard/daemonarchy/releases/download/$PACKAGE_REPOSITORY_TAG
+    echo "==> Checking the closure feed resolves the installer's packages"
+    ISO_REPO="$share/repo" PUBKEY="$PACKAGE_REPOSITORY_PUBLIC_KEY" MIRROR_URLS="$PACKAGE_MIRROR_URLS" \
+        ABI="$ABI" DEPENDENCIES_URL="$dependencies_url" sh "$here/scripts/check-closure-feed.sh"
+fi
+
 # Accounts the packages create, which the installer must not hand to a user.
 for pkgfile in "$packages"/All/*.pkg; do
 	pkg query -F "$pkgfile" '%U'
