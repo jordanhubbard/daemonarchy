@@ -107,6 +107,9 @@ transaction ownership. A larger ISO, an unpinned ambient cache or parallel pkg
 database writers cannot substitute for those acceptance boundaries.
 PKG-002 (issue #142) self-hosts the installer's package closure for both
 architectures; its first measurement tool is `scripts/package-mirror-plan.py`.
+The carried queue items were audited on 2026-10-30
+([release-1.4.1-audit.md](docs/roadmap/release-1.4.1-audit.md)): TESTISO-001 is closed, nine items
+need the external framework, hardware or research work and are proposed to leave 1.4.1.
 
 VISUAL-SDK-001 (issue #139) extracts the installer's text and graphical
 rendering, animation/effects, input and audio presentation surface into an

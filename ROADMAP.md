@@ -20,6 +20,8 @@ recovery. See [the 1.4.1 plan](docs/roadmap/release-1.4.1.md) and
 
 PKG-002 ([issue #142](https://github.com/jordanhubbard/daemonarchy/issues/142)) moves the installer's
 packages off pkg.FreeBSD.org onto signed Daemonarchy feeds for both architectures.
+The [1.4.1 audit](docs/roadmap/release-1.4.1-audit.md) records the evidence and remaining work
+for every other carried item, and which of them repository work alone cannot finish.
 
 Extract the installer's ANSI and graphical rendering, palette, animation,
 effects, input and audio surface into a separately packaged standard SDK. A
