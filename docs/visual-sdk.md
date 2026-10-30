@@ -6,7 +6,7 @@ is a second host that has nothing to do with installation. The SDK keeps no
 installation state and performs no privileged operation: a host passes in
 observations and decides what an action means.
 
-API version 1.0. `daemonarchy_visual.compatible("1.0")` tells a host or plugin
+API version 1.1. `daemonarchy_visual.compatible("1.0")` tells a host or plugin
 whether this SDK can serve the version it was written for. A minor release only
 adds names; a major release may remove or change them, and the old major keeps
 working in an installed image until that image is replaced.
@@ -17,11 +17,12 @@ working in an installed image until that image is replaced.
 | --- | --- | --- |
 | Capabilities | `caps` | `detect()` negotiates color depth (`none`, 8, 16, 256, truecolor), glyph set (Unicode or ASCII), reduced motion, plain (serial, dumb terminals, pipes) and size. Nothing is silently approximated: a host reads the result. The FreeBSD `vt(4)` console never gets 256-color or truecolor sequences. |
 | Palette | `palette`, `glyphs` | named palettes, `gradient`, `Colors(depth).sgr(style)`, `Glyphs(unicode)` with an ASCII twin. |
-| Canvas and screen | `canvas` | `Canvas` (text, fill, lines, boxes, sprites, bars, clipped), `Screen` (writes only changed cells, clears on resize, never writes the bottom-right cell, restores the terminal). |
+| Canvas and screen | `canvas` | `Canvas` (text, fill, lines, boxes, sprites, bars, clipped), `Screen` (writes only changed cells, clears on resize, never writes the bottom-right cell, restores the terminal; `alt=True` uses the alternate screen; `full=False` with `origin` and `size` is an overlay that animates part of a screen the host printed and leaves the cursor alone). |
 | Layout | `layout` | `Rect` with `inset`, `split_h`, `split_v`, `centered`. |
 | Motion | `timeline`, `effects` | injected clocks (`MonotonicClock`, `ManualClock`), `Tween` with easing, `Timeline` callbacks, seeded `Particles` and `Fireworks`, typed text, gradient text. |
 | Input | `input` | `decode_keys` (bytes to keys), `KeyMap` (keys to actions), `FdSource` (non-blocking reads), `ListSource` (scripted input for tests). Actions: `up down left right fire pause select back quit mute help`. |
 | Audio | `audio` | `Audio.cue(name)` never blocks, never raises, is never required, and honours mute. `ThreadedAudio` wraps a blocking backend with a bounded queue. Standard cues: `click select blip laser hit explode bounce pickup levelup gameover win`. |
+| Inline effects | `inline` | line-oriented flourishes printed between a host's own prompts: `type_line`, `result_line`, `pulse_line`. Plain terminals and reduced motion get the final text at once. |
 | Scenes | `scene` | `Scene` (`update`, `draw`, `plain_lines`) and `run_scene`, which owns timing, input, resize, pause, mute, preemption and restoring the terminal. |
 
 ## Behaviour a host can rely on
@@ -37,6 +38,18 @@ working in an installed image until that image is replaced.
 - **Long stalls** (a suspended window) are clamped to 0.1 s of simulation.
 - **Sound** is a request: mute, no device, serial and SSH all mean silence, and
   nothing in the SDK waits for it.
+
+## The installer is the first consumer
+
+The install screen (`progress-dashboard.py`) draws every frame through `Canvas` and
+`Screen`, takes color depth, glyphs, palettes, gradients and key decoding from the SDK,
+and keeps no private copy of them. The flourishes (`charm.py`: title typing, result
+sparkles, the disk warning pulses, the first-boot celebration and the welcome
+animation) are built on `inline`, `Fireworks`, scenes and an overlay `Screen`. The
+mascot art and the installer's layout stay installer content; how they are drawn is the
+SDK's. `tests/visual-sdk.py` fails if the installer defines its own `Canvas`, `Colors`,
+`Glyphs`, `Fireworks`, `color_depth`, `gradient` or `decode_keys` again. Prompts are
+`gum` forms, a third-party tool outside this SDK; the SDK draws what surrounds them.
 
 ## Privilege boundary
 

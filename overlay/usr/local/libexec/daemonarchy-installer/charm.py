@@ -20,12 +20,21 @@ import importlib.util
 import math
 import os
 from pathlib import Path
-import random
 import signal
 import sys
-import time
 
 HERE = Path(__file__).resolve().parent
+# The visual SDK ships beside libexec (/usr/local/lib/daemonarchy-visual). Every flourish here is drawn
+# with it: capability detection, effects, canvas, screens and inline text effects.
+SDK_PATH = HERE.parents[1] / 'lib' / 'daemonarchy-visual'
+if str(SDK_PATH) not in sys.path:
+    sys.path.insert(0, str(SDK_PATH))
+import daemonarchy_visual as sdk  # noqa: E402
+from daemonarchy_visual import effects as sdk_effects  # noqa: E402
+from daemonarchy_visual.palette import (CYAN, DIM, GRAY, GREEN, LOGO, MAGENTA, PURPLE, RED, SPARKS,  # noqa: E402
+                                        WHITE, YELLOW)
+
+Fireworks = sdk.Fireworks  # the SDK's seeded particle fireworks; kept here under its old name
 
 # ------------------------------------------------------------------ the mascot
 #
@@ -81,12 +90,6 @@ MASCOT_ASCII = dict(
 )
 MASCOT_W, MASCOT_H = 12, 5
 
-RED, MAGENTA, PURPLE = (255, 70, 70), (230, 50, 140), (132, 93, 249)
-WHITE, YELLOW, GRAY, DIM = (240, 240, 240), (255, 220, 0), (150, 150, 150), (90, 90, 100)
-GREEN, CYAN = (0, 220, 90), (0, 230, 255)
-LOGO = (RED, MAGENTA, PURPLE)
-SPARKS = (YELLOW, (255, 120, 0), CYAN, (255, 60, 220), GREEN, WHITE)
-
 
 def mascot_style(char, row, col=0):
     """Color for one mascot cell: red horns, a yellow trident, white eyes, a purple face."""
@@ -120,49 +123,6 @@ def mascot_expression(now, mood='idle', level=0.0, reduced=False):
     return 'blink' if now % 4.0 < 0.15 else 'idle'
 
 
-# ------------------------------------------------------------------ fireworks
-
-class Fireworks:
-    """Particle bursts for a successful result. Seeded, so recordings repeat."""
-
-    def __init__(self, width, height, seed=1993):
-        self.width, self.height = max(1, width), max(1, height)
-        self.random = random.Random(seed)
-        self.particles = []
-        self.next_burst = 0.0
-        self.age = 0.0
-
-    def burst(self):
-        r = self.random
-        x, y = r.uniform(0.15, 0.85) * self.width, r.uniform(0.15, 0.6) * self.height
-        color = r.choice(SPARKS)
-        for index in range(18):
-            angle = 2 * math.pi * index / 18 + r.uniform(-0.1, 0.1)
-            speed = r.uniform(6, 14)
-            self.particles.append([x, y, math.cos(angle) * speed, math.sin(angle) * speed * 0.5,
-                                   r.uniform(0.9, 1.6), color])
-
-    def step(self, dt, spawning=True):
-        self.age += dt
-        if spawning and self.age >= self.next_burst:
-            self.burst()
-            self.next_burst = self.age + self.random.uniform(0.35, 0.7)
-        alive = []
-        for p in self.particles:
-            p[0] += p[2] * dt
-            p[1] += p[3] * dt
-            p[3] += 6.0 * dt  # gravity
-            p[4] -= dt
-            if p[4] > 0 and 0 <= p[0] < self.width and 0 <= p[1] < self.height:
-                alive.append(p)
-        self.particles = alive
-
-    def cells(self, unicode=True):
-        chars = ('☼', '*', '+', '·') if unicode else ('@', '*', '+', '.')
-        for x, y, _vx, _vy, life, color in self.particles:
-            stage = 0 if life > 1.2 else 1 if life > 0.8 else 2 if life > 0.4 else 3
-            yield int(x), int(y), chars[stage], color if stage < 3 else DIM
-
 
 # ------------------------------------------------------------------ terminal helpers
 
@@ -190,34 +150,14 @@ def play(cue):
 
 
 class Term:
-    """Where and how to draw: color depth, glyphs, motion."""
+    """Where and how to draw: the SDK's negotiated capabilities, plus the stream and a way to write."""
 
     def __init__(self, env=None, stream=None):
-        self.env = dict(os.environ if env is None else env)
         self.out = stream or sys.stdout
-        term = self.env.get('TERM', '')
-        self.tty = hasattr(self.out, 'isatty') and self.out.isatty()
-        self.plain = (not self.tty or term in ('', 'dumb', 'vt100', 'vt102', 'vt220', 'ansi', 'cons25')
-                      or self.env.get('DAEMONARCHY_CHARM') == 'off')
-        self.reduced = self.env.get('DAEMONARCHY_REDUCED_MOTION', '').lower() in ('1', 'yes', 'true')
-        try:
-            tty = os.ttyname(self.out.fileno()) if self.tty else ''
-        except (OSError, ValueError, AttributeError):
-            tty = ''
-        console = self.env.get('DAEMONARCHY_CONSOLE', 'vt' if tty.startswith('/dev/ttyv') else '') == 'vt'
-        try:
-            dashboard = _load('daemonarchy_progress_dashboard', 'progress-dashboard.py')
-            depth = dashboard.color_depth(self.env, console) if not self.plain else 'none'
-            self.colors = dashboard.Colors(depth)
-            self.unicode = dashboard.unicode_ok(self.env, console)
-            self.gradient = dashboard.gradient
-        except Exception:  # noqa: BLE001
-            self.colors, self.unicode, self.gradient = None, False, None
-
-    def sgr(self, fg=None, bold=False, bg=None):
-        if self.colors is None:
-            return ''
-        return self.colors.sgr((fg, bg, bold))
+        self.caps = sdk.detect(env, self.out)
+        self.colors = sdk.Colors(self.caps.depth)
+        self.plain, self.reduced, self.unicode = self.caps.plain, self.caps.reduced, self.caps.unicode
+        self.clock = sdk.MonotonicClock()
 
     def write(self, text):
         try:
@@ -227,158 +167,118 @@ class Term:
             pass
 
     def size(self):
-        try:
-            size = os.get_terminal_size(self.out.fileno())
-            return size.columns, size.lines
-        except (OSError, ValueError, AttributeError):
-            return 80, 24
-
-
-def _sleep(seconds):
-    if seconds > 0:
-        time.sleep(seconds)
+        return self.caps.width, self.caps.height
 
 
 def transition(term, title, left=0):
     """The screen title typed in, with a whoosh."""
     play('whoosh')
-    pad = ' ' * max(0, left)
-    if term.plain or term.reduced:
-        term.write(pad + title + '\n')
-        return
-    step = min(0.018, 0.3 / max(1, len(title)))
-    term.write(pad)
-    for index, char in enumerate(title):
-        color = term.gradient(LOGO, index / max(1, len(title) - 1)) if term.gradient else None
-        term.write(term.sgr(color, True) + char)
-        _sleep(step)
-    term.write(term.sgr() + '\n')
+    sdk.inline.type_line(term.caps, term.colors, term.write, term.clock, title, left, LOGO)
 
 
 def result(term, ok, text, left=0):
     """A check result: a mark that sparkles once, then stays."""
     play('net_ok' if ok else 'net_fail')
-    pad = ' ' * max(0, left)
-    mark = ('√' if ok else '×') if term.unicode else ('ok' if ok else 'x')
-    color = GREEN if ok else RED
-    if term.plain or term.reduced:
-        term.write(f'{pad}{mark} {text}\n')
-        return
-    sparkle = ('☼', '*', '+', mark) if term.unicode else ('*', '+', '.', mark)
-    for index, char in enumerate(sparkle):
-        last = index == len(sparkle) - 1
-        term.write('\r' + pad + term.sgr(color if last else YELLOW, True) + char + term.sgr()
-                   + ' ' + term.sgr(WHITE if last else GRAY) + text + term.sgr())
-        _sleep(0 if last else 0.05)
-    term.write('\n')
+    sdk.inline.result_line(term.caps, term.colors, term.write, term.clock, ok, text, left)
 
 
 def warn(term, text, left=0):
     """The disk commit warning: three red pulses with the klaxon; the text stays bold red."""
     play('warn')
-    pad = ' ' * max(0, left)
-    mark = '▲' if term.unicode else '!'
-    line = f' {mark} {text} {mark} '
-    if term.plain or term.reduced:
-        term.write(f'{pad}{line}\n')
-        return
-    for pulse in range(6):
-        on = pulse % 2 == 0
-        style = term.sgr(WHITE, True, RED) if on else term.sgr(RED, True)
-        term.write('\r' + pad + style + line + term.sgr())
-        _sleep(0.15)
-    term.write('\r' + pad + term.sgr(WHITE, True, RED) + line + term.sgr() + '\n')
+    sdk.inline.pulse_line(term.caps, term.colors, term.write, term.clock, text, left)
+
+
+class Cheer(sdk.Scene):
+    """Sparkles around a title, a happy mascot, fireworks. Decorative, short, and over by itself."""
+
+    def __init__(self, title, subtitle=''):
+        self.title, self.subtitle = title, subtitle
+        self.age = 0.0
+
+    def start(self, ctx):
+        self.top = max(1, ctx.height // 2 - 4)
+        self.fireworks = Fireworks(ctx.width, max(1, self.top + 6))
+        self.duration = 0.0 if ctx.reduced else 1.6
+
+    def update(self, dt, ctx, actions):
+        self.age += dt
+        if not ctx.reduced:
+            self.fireworks.step(1 / 15)
+        self.done = self.age >= self.duration  # reduced motion: one frame, then done
+
+    def draw(self, canvas, ctx):
+        width, top = canvas.width, self.top
+        if not ctx.reduced:
+            for x, y, char, color in self.fireworks.cells(ctx.glyphs.unicode):
+                if 0 <= x < width - 1 and 0 <= y < canvas.height - 1:
+                    canvas.put(x, y, char, (color, None, False))
+        canvas.sprite(max(0, (width - MASCOT_W) // 2), top - 6, mascot_frame('happy', ctx.glyphs.unicode),
+                      lambda char, row, col: (mascot_style(char, row, col), None, True), transparent=None)
+        sdk_effects.gradient_text(canvas, max(0, (width - len(self.title)) // 2), top, self.title, LOGO,
+                                  self.age * 0.6)
+        if self.subtitle:
+            canvas.put(max(0, (width - len(self.subtitle)) // 2), top + 2, self.subtitle, (GRAY, None, False))
+
+    def plain_lines(self, ctx):
+        return [self.title] + ([self.subtitle] if self.subtitle else [])
 
 
 def cheer(term, title, subtitle=''):
     """A short celebration: sparkles around a title, the greeting chime, a happy mascot."""
     play('greeting')
-    if term.plain:
-        term.write(title + ('\n' + subtitle if subtitle else '') + '\n')
-        return
-    width, height = term.size()
-    frame = mascot_frame('happy', term.unicode)
-    top = max(1, height // 2 - 4)
-    left = max(0, (width - len(title)) // 2)
-    term.write('\033[?25l\033[2J')
-    fireworks = Fireworks(width, max(1, top + 6))
-    started = time.monotonic()
-    duration = 0.0 if term.reduced else 1.6
-    while True:
-        now = time.monotonic() - started
-        out = ['\033[H\033[2J'] if not term.reduced else ['\033[H']
-        if not term.reduced:
-            fireworks.step(1 / 15)
-            for x, y, char, color in fireworks.cells(term.unicode):
-                if 0 <= x < width - 1 and 0 <= y < height - 1:
-                    out.append(f'\033[{y + 1};{x + 1}H' + term.sgr(color) + char)
-        for row, text in enumerate(frame):
-            out.append(f'\033[{top + row - 6};{max(1, (width - MASCOT_W) // 2)}H')
-            out.extend(term.sgr(mascot_style(c, row, col), True) + c for col, c in enumerate(text))
-        shift = now * 0.6
-        out.append(f'\033[{top + 1};{left + 1}H')
-        for index, char in enumerate(title):
-            color = term.gradient(LOGO, (index / max(1, len(title) - 1) + shift) % 1.0) if term.gradient else None
-            out.append(term.sgr(color, True) + char)
-        if subtitle:
-            out.append(f'\033[{top + 3};{max(1, (width - len(subtitle)) // 2 + 1)}H' + term.sgr(GRAY) + subtitle)
-        out.append(term.sgr())
-        term.write(''.join(out))
-        if now >= duration:
-            break
-        _sleep(1 / 15)
-    term.write(f'\033[{min(height, top + 5)};1H\033[?25h' + term.sgr())
+    caps = term.caps
+    sdk.run_scene(Cheer(title, subtitle), caps, term.out, sdk.NoInput(), clock=term.clock, fps=15, keep=True)
+    if not caps.plain:
+        top = max(1, caps.height // 2 - 4)
+        term.write(f'\033[{min(caps.height, top + 5)};1H\033[?25h' + term.colors.sgr())
+
+
+class Attract(sdk.Scene):
+    """The welcome screen's idle animation while it waits for Return.
+
+    The logo's colors drift slowly and the mascot blinks and looks around. It is
+    decorative only: the screen is waiting for the operator, and says so.
+    """
+
+    def __init__(self, logo, mascot_x):
+        self.logo, self.mascot_x, self.age = logo, mascot_x, 0.0
+        self.mascot_y = max(0, len(logo) - MASCOT_H)
+
+    def update(self, dt, ctx, actions):
+        self.age += dt
+
+    def draw(self, canvas, ctx):
+        shift = 0.0 if ctx.reduced else self.age * 0.08
+        for row, text in enumerate(self.logo):
+            t = (row / max(1, len(self.logo) - 1) + shift) % 2.0
+            t = 2.0 - t if t > 1.0 else t
+            canvas.put(0, row, text, (sdk.gradient(LOGO, t), None, True))
+        if self.mascot_x is not None:
+            expression = mascot_expression(self.age, 'waiting', reduced=ctx.reduced)
+            canvas.sprite(self.mascot_x, self.mascot_y, mascot_frame(expression, ctx.glyphs.unicode),
+                          lambda char, row, col: (mascot_style(char, row, col), None, True), transparent=None)
 
 
 def attract(term, logo_path, top=1, tagline_row=None):
-    """The welcome screen's idle animation while it waits for Return.
-
-    The logo's colors drift slowly and the mascot blinks and looks around.
-    It is decorative only: the screen is waiting for the operator, and says so.
-    """
     if term.plain:
         return
     try:
         logo = [row.rstrip('\n') for row in Path(logo_path).read_text(encoding='utf-8').splitlines()][:24]
     except (OSError, UnicodeError):
         return
-    width, height = term.size()
+    width, _height = term.size()
     logo_w = max((len(row) for row in logo), default=0)
     left = max(0, (width - logo_w) // 2)
+    mascot_x = logo_w + 3 if left + logo_w + 3 + MASCOT_W < width else None
+    region_w = (mascot_x + MASCOT_W) if mascot_x is not None else logo_w
     stop = []
     signal.signal(signal.SIGTERM, lambda *_: stop.append(1))
     signal.signal(signal.SIGINT, lambda *_: stop.append(1))
-    mascot_x = left + logo_w + 3 if left + logo_w + 3 + MASCOT_W < width else None
-    mascot_y = top + max(0, len(logo) - MASCOT_H)
-    previous = {}
-    started = time.monotonic()
-    fps = 1.0 if term.reduced else 8.0
-    try:
-        while not stop:
-            now = time.monotonic() - started
-            out = []
-            shift = 0.0 if term.reduced else now * 0.08
-            for row, text in enumerate(logo):
-                t = (row / max(1, len(logo) - 1) + shift) % 2.0
-                t = 2.0 - t if t > 1.0 else t
-                color = term.gradient(LOGO, t) if term.gradient else None
-                code = term.sgr(color, True)
-                if previous.get(row) != code:  # Only rows whose color changed are redrawn.
-                    previous[row] = code
-                    out.append(f'\033[{top + row};{left + 1}H{code}{text}{term.sgr()}')
-            if mascot_x is not None:
-                expression = mascot_expression(now, 'waiting', reduced=term.reduced)
-                if previous.get('mascot') != expression:
-                    previous['mascot'] = expression
-                    for row, text in enumerate(mascot_frame(expression, term.unicode)):
-                        out.append(f'\033[{mascot_y + row};{mascot_x + 1}H')
-                        out.extend(term.sgr(mascot_style(c, row, col), True) + c for col, c in enumerate(text))
-                        out.append(term.sgr())
-            if out:
-                term.write(''.join(out))
-            time.sleep(1 / fps)
-    finally:
-        term.write(term.sgr())
+    # An overlay: only the logo and mascot cells are drawn, and the host's own text and cursor are left alone.
+    screen = sdk.Screen(term.out, term.colors, origin=(left, top - 1), full=False, size=(max(1, region_w), len(logo)))
+    sdk.run_scene(Attract(logo, mascot_x), term.caps, term.out, sdk.NoInput(), clock=term.clock,
+                  fps=1.0 if term.reduced else 8.0, preempt=lambda: bool(stop), screen=screen, keep=True)
+    term.write(term.colors.sgr())
 
 
 def main(argv=None):

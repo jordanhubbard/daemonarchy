@@ -5,6 +5,7 @@ import importlib.machinery
 import importlib.util
 import io
 from pathlib import Path
+import re
 import sys
 import unittest
 
@@ -62,8 +63,8 @@ class CapabilityTests(unittest.TestCase):
 
     def test_api_compatibility(self):
         self.assertTrue(sdk.compatible("1.0"))
-        self.assertTrue(sdk.compatible((1, 0)))
-        self.assertFalse(sdk.compatible("1.1"))
+        self.assertTrue(sdk.compatible((1, 1)))
+        self.assertFalse(sdk.compatible("1.2"))
         self.assertFalse(sdk.compatible("2.0"))
         self.assertFalse(sdk.compatible("x"))
 
@@ -340,6 +341,106 @@ class SceneTests(unittest.TestCase):
         sdk.run_scene(Probe(), caps.Capabilities(depth="none", width=60, height=20), out,
                       sdk_input.ListSource([[]] * 5), clock=Jumpy())
         self.assertTrue(all(dt <= scene.MAX_STEP for dt in steps))
+
+
+class OverlayAndInlineTests(unittest.TestCase):
+    def test_overlay_draws_only_its_region_and_never_clears(self):
+        out = io.StringIO()
+        screen = sdk.Screen(out, sdk.Colors("none"), origin=(10, 5), full=False, size=(6, 2))
+        screen.enter()
+        c = screen.canvas(200, 50)
+        self.assertEqual((c.width, c.height), (6, 2))
+        c.put(0, 0, "ab")
+        c.put(5, 1, "z")
+        screen.present(c)
+        text = out.getvalue()
+        self.assertNotIn("2J", text)
+        self.assertIn("\033[6;11H", text)           # row 5, column 10 (0-based) is 1-based 6;11
+        self.assertIn("z", text)                    # the bottom-right cell of an overlay is written
+        screen.leave()
+        self.assertNotIn("2J", out.getvalue())
+        self.assertNotIn("?25", out.getvalue())   # an overlay leaves the host's cursor alone
+
+    def test_alternate_screen_enters_and_restores(self):
+        out = io.StringIO()
+        screen = sdk.Screen(out, sdk.Colors("none"), alt=True)
+        screen.enter()
+        self.assertTrue(out.getvalue().startswith("\033[?1049h"))
+        screen.leave()
+        self.assertTrue(out.getvalue().endswith("\033[?25h\033[?1049l"))
+        self.assertNotIn("\033[2J\033[H", out.getvalue())
+
+    def test_overlay_scene_and_keep_leave_the_screen_alone(self):
+        out = Tty()
+        screen = sdk.Screen(out, sdk.Colors("none"), origin=(0, 3), full=False, size=(12, 1))
+        result = sdk.run_scene(Counter(), caps.Capabilities(depth="none", width=60, height=20), out,
+                               sdk.NoInput(), clock=timeline.ManualClock(), screen=screen, max_frames=3)
+        self.assertEqual(result.reason, "done")
+        self.assertNotIn("2J", out.getvalue())
+        out2 = Tty()
+        sdk.run_scene(Counter(), caps.Capabilities(depth="none", width=60, height=20), out2,
+                      sdk.NoInput(), clock=timeline.ManualClock(), keep=True)
+        self.assertNotIn("\033[2J\033[H", out2.getvalue().split("\033[?25l")[1].split("\033[2J", 1)[1])
+
+    def test_no_input_never_ends(self):
+        source = sdk.NoInput()
+        self.assertEqual(source.poll(), [])
+        self.assertFalse(source.eof)
+
+    def lines(self, plain=False, reduced=False, unicode=True):
+        out = []
+        c = caps.Capabilities(depth="256", plain=plain, reduced=reduced, unicode=unicode)
+        return c, sdk.Colors(c.depth), out.append, timeline.ManualClock(), out
+
+    def test_inline_flourishes_degrade_to_plain_text(self):
+        for kwargs in ({"plain": True}, {"reduced": True}):
+            c, colors, write, clock, out = self.lines(**kwargs)
+            sdk.inline.type_line(c, colors, write, clock, "Title", 2)
+            sdk.inline.result_line(c, colors, write, clock, True, "DNS", 2)
+            sdk.inline.result_line(c, colors, write, clock, False, "Clock")
+            sdk.inline.pulse_line(c, colors, write, clock, "Careful")
+            self.assertEqual("".join(out), "  Title\n  √ DNS\n× Clock\n ▲ Careful ▲ \n")
+            self.assertEqual(clock.now(), 0.0)
+            self.assertNotIn("\033", "".join(out))
+        c, colors, write, clock, out = self.lines(unicode=False, plain=True)
+        sdk.inline.result_line(c, colors, write, clock, True, "DNS")
+        self.assertEqual("".join(out), "ok DNS\n")
+
+    def test_inline_flourishes_animate_briefly_and_end_clean(self):
+        c, colors, write, clock, out = self.lines()
+        sdk.inline.type_line(c, colors, write, clock, "Select install disk")
+        sdk.inline.result_line(c, colors, write, clock, True, "DNS")
+        sdk.inline.pulse_line(c, colors, write, clock, "All data will be destroyed")
+        text = "".join(out)
+        self.assertTrue(text.endswith("\033[0m\n"))
+        self.assertLess(clock.now(), 1.6)
+        self.assertGreater(clock.now(), 0.5)
+        self.assertEqual(text.count("\n"), 3)
+
+
+class InstallerConsumesSdkTests(unittest.TestCase):
+    """The installer is the SDK's first consumer: no private rendering path may sit beside it."""
+
+    LIBEXEC = ROOT / "overlay/usr/local/libexec/daemonarchy-installer"
+    PRIVATE = re.compile(r"^(?:class (?:Canvas|Colors|Glyphs|Fireworks|Particles|Screen)\b"
+                         r"|def (?:color_depth|unicode_ok|gradient|mix|decode_keys|xterm256)\b"
+                         r"|VT16\s*=)", re.M)
+
+    def test_no_private_copies_of_sdk_pieces_in_the_installer(self):
+        for path in sorted(self.LIBEXEC.glob("*.py")):
+            self.assertIsNone(self.PRIVATE.search(path.read_text()), f"{path.name} defines what the SDK provides")
+
+    def test_dashboard_and_charm_draw_through_the_sdk(self):
+        for name in ("progress-dashboard.py", "charm.py"):
+            text = (self.LIBEXEC / name).read_text()
+            self.assertIn("daemonarchy_visual", text, name)
+        # Neither takes over the screen with its own escape sequences: the SDK's Screen does that.
+        for name in ("progress-dashboard.py", "charm.py"):
+            self.assertNotIn("[2J", (self.LIBEXEC / name).read_text(), name)
+            self.assertNotIn("[?25l", (self.LIBEXEC / name).read_text(), name)
+
+    def test_sdk_ships_beside_libexec_where_the_installer_looks(self):
+        self.assertTrue((self.LIBEXEC.parents[1] / "lib/daemonarchy-visual/daemonarchy_visual/__init__.py").is_file())
 
 
 class SampleHostTests(unittest.TestCase):

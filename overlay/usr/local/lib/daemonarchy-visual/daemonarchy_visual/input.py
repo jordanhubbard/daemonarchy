@@ -125,3 +125,12 @@ class ListSource:
             return []
         step = self.script.pop(0)
         return [step] if isinstance(step, str) else list(step)
+
+
+class NoInput:
+    """A source with no input that never ends: for animations whose host reads the keyboard itself."""
+
+    eof = False
+
+    def poll(self, timeout=0.0):
+        return []

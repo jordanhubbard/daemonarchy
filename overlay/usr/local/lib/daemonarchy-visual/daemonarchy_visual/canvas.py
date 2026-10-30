@@ -72,9 +72,15 @@ class Canvas:
     def rows(self, colors):
         return [self.serialize(c, s, colors) for c, s in zip(self.chars, self.styles)]
 
-    def changes(self, previous, colors):
-        """Terminal output that turns the previous frame into this one, cell ranges only."""
+    def changes(self, previous, colors, origin=(0, 0), full=True):
+        """Terminal output that turns the previous frame into this one, cell ranges only.
+
+        `origin` is where this canvas's top-left cell sits on the terminal (0-based column, row), so a
+        canvas can cover a region. `full` says the canvas fills the terminal; only then is the
+        bottom-right cell skipped, because writing it scrolls some terminals.
+        """
         out = []
+        ox, oy = origin
         for y in range(self.height):
             chars, styles = self.chars[y], self.styles[y]
             if previous is not None:
@@ -86,11 +92,11 @@ class Canvas:
                             if chars[i] != old_chars[i] or styles[i] != old_styles[i])
             else:
                 first, last = 0, self.width - 1
-            if y == self.height - 1:
+            if full and y == self.height - 1:
                 last = min(last, self.width - 2)  # Never write the bottom-right cell: some terminals scroll.
             if last < first:
                 continue
-            out.append(f"\033[{y + 1};{first + 1}H"
+            out.append(f"\033[{y + 1 + oy};{first + 1 + ox}H"
                        + self.serialize(chars[first:last + 1], styles[first:last + 1], colors) + "\033[0m")
         return out
 
@@ -99,24 +105,45 @@ class Canvas:
 
 
 class Screen:
-    """Owns the terminal region: sizes the canvas, diffs frames and restores the terminal on exit."""
+    """Owns a terminal region: sizes the canvas, diffs frames and restores the terminal on exit.
 
-    def __init__(self, out, colors):
+    By default the region is the whole terminal (cleared on entry and size changes). `Screen(out,
+    colors, origin=(x, y), full=False)` is an overlay: it draws only inside its canvas at that
+    position and never clears, so a host can animate part of a screen it printed itself.
+    `alt=True` runs a full screen on the terminal's alternate screen, restored on leave.
+    """
+
+    def __init__(self, out, colors, origin=(0, 0), full=True, size=None, alt=False):
         self.out, self.colors = out, colors
+        self.origin, self.full, self.fixed, self.alt = origin, full, size, alt
         self.previous = None
         self.size = None
         self.entered = False
 
     def canvas(self, width, height):
+        if self.fixed:
+            return Canvas(*self.fixed)  # an overlay has the size of its region, not of the terminal
+        if not self.full:
+            return Canvas(max(1, width), max(1, height))
         return Canvas(max(10, min(width, 400)), max(3, min(height, 200)))
 
     def enter(self):
         self.entered = True
-        self._write("\033[?25l\033[0m\033[2J")  # hide the cursor, clear
+        # A full screen hides the cursor and clears; an overlay leaves both to its host.
+        if self.full:
+            self._write(("\033[?1049h" if self.alt else "") + "\033[?25l\033[0m\033[2J")
+        else:
+            self._write("\033[0m")
 
-    def leave(self):
+    def leave(self, clear=True):
+        """Reset attributes and show the cursor; clear the terminal too unless `clear` is false."""
         if self.entered:
-            self._write("\033[0m\033[?25h\033[2J\033[H")
+            if self.full:
+                # The alternate screen restores the user's screen by itself; otherwise optionally clear.
+                tail = "\033[?1049l" if self.alt else ("\033[2J\033[H" if clear else "")
+                self._write("\033[0m\033[?25h" + tail)
+            else:
+                self._write("\033[0m")
         self.entered = False
 
     def present(self, canvas):
@@ -125,8 +152,9 @@ class Screen:
         if self.size != (canvas.width, canvas.height):
             self.size = (canvas.width, canvas.height)
             self.previous = None
-            pieces.append("\033[0m\033[2J")
-        pieces.extend(canvas.changes(self.previous, self.colors))
+            if self.full:
+                pieces.append("\033[0m\033[2J")
+        pieces.extend(canvas.changes(self.previous, self.colors, self.origin, self.full))
         self.previous = canvas
         if pieces:
             self._write("".join(pieces))

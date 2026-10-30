@@ -8,7 +8,8 @@ decides what an action means.
 
 Versioning: API_VERSION is (major, minor). A minor release only adds names; a
 major release may remove or change them. A host or plugin asks for the version
-it was written against with `compatible("1.0")`.
+it was written against with `compatible("1.0")`; 1.1 added `inline`, overlay screens, `NoInput`
+and `run_scene(keep=, screen=)`.
 """
 
 from .caps import Capabilities, detect
@@ -18,17 +19,18 @@ from .canvas import Canvas, Screen
 from .layout import Rect
 from .timeline import ManualClock, MonotonicClock, Timeline, Tween
 from .effects import Fireworks, Particles
-from .input import ACTIONS, KeyMap, decode_keys
+from .input import ACTIONS, KeyMap, NoInput, decode_keys
+from . import inline
 from .audio import Audio, NullAudio, ThreadedAudio
 from .scene import Scene, run_scene
 
-API_VERSION = (1, 0)
-__version__ = "1.0.0"
+API_VERSION = (1, 1)
+__version__ = "1.1.0"
 
 __all__ = [
     "ACTIONS", "API_VERSION", "Audio", "Canvas", "Capabilities", "Colors", "Fireworks", "Glyphs", "KeyMap",
-    "ManualClock", "MonotonicClock", "NullAudio", "Particles", "Rect", "Scene", "Screen", "ThreadedAudio",
-    "Timeline", "Tween", "compatible", "decode_keys", "detect", "gradient", "mix", "run_scene",
+    "ManualClock", "MonotonicClock", "NoInput", "NullAudio", "Particles", "Rect", "Scene", "Screen", "ThreadedAudio",
+    "Timeline", "Tween", "compatible", "decode_keys", "detect", "gradient", "inline", "mix", "run_scene",
 ]
 
 
