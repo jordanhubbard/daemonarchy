@@ -32,6 +32,11 @@ on:
       - 'scripts/package-mirror-plan.py'
       - 'tests/package-mirror-plan.py'
       - 'tests/install-trace.py'
+      - 'overlay/usr/local/bin/daemonarchy-gpu-report'
+      - 'tests/gpu-report.py'
+      - 'tests/fixtures/gpu-report/**'
+      - 'scripts/build-timing-record.py'
+      - 'tests/build-timing-record.py'
       - 'tests/visual-sdk.py'
       - 'tests/plugins-and-games.py'
       - 'tests/sdk-windows.py'
@@ -102,6 +107,11 @@ on:
       - 'scripts/package-mirror-plan.py'
       - 'tests/package-mirror-plan.py'
       - 'tests/install-trace.py'
+      - 'overlay/usr/local/bin/daemonarchy-gpu-report'
+      - 'tests/gpu-report.py'
+      - 'tests/fixtures/gpu-report/**'
+      - 'scripts/build-timing-record.py'
+      - 'tests/build-timing-record.py'
       - 'tests/visual-sdk.py'
       - 'tests/plugins-and-games.py'
       - 'tests/sdk-windows.py'
@@ -172,6 +182,14 @@ jobs:
         env:
           PYTHONDONTWRITEBYTECODE: '1'
         run: python3 tests/install-trace.py -v
+      - name: GPU report
+        env:
+          PYTHONDONTWRITEBYTECODE: '1'
+        run: python3 tests/gpu-report.py -v
+      - name: Build timing record
+        env:
+          PYTHONDONTWRITEBYTECODE: '1'
+        run: python3 tests/build-timing-record.py -v
       - name: Visual SDK
         env:
           PYTHONDONTWRITEBYTECODE: '1'

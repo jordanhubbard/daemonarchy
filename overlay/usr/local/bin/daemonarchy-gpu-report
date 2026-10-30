@@ -1,0 +1,238 @@
+#!/usr/bin/env python3
+"""Report which GPU the desktop really renders on, and whether that is accelerated.
+
+  daemonarchy-gpu-report [--json] [--from DIR]
+
+Collects, where present: pciconf -lv (display devices), kldstat (GPU drivers),
+eglinfo -B (every EGL platform and device), eglinfo -B -p wayland and glxinfo -B
+for the running session, and nvidia-smi. For each renderer it records vendor,
+renderer string, GL/GLES/EGL versions and a classification:
+
+  hardware   a real GPU driver
+  software   llvmpipe, softpipe, lavapipe, swrast: never counts as acceleration
+  virtual    a virtual GPU (virgl, VMware SVGA, Parallels): accelerated by the host
+
+The session renderer (the one the desktop actually uses) is matched to the PCI
+display device it runs on, which matters on hybrid laptops. Exit status: 0 the
+session renders on hardware or a virtual GPU, 2 it fell back to software, 3 nothing
+could be determined. --from DIR reads saved outputs (pciconf.txt, kldstat.txt,
+eglinfo-default.txt, eglinfo-wayland.txt, glxinfo.txt, nvidia-smi.csv) instead of
+running the commands; missing files are skipped. Read-only; it opens no window.
+"""
+import json
+import os
+from pathlib import Path
+import re
+import subprocess
+import sys
+
+SOFTWARE = re.compile(r"llvmpipe|softpipe|lavapipe|swrast|software rasterizer|software renderer", re.I)
+VIRTUAL = re.compile(r"virgl|svga3d|vmware|virtio|parallels|virtualbox|vboxvga", re.I)
+VENDORS = {"0x8086": "Intel", "0x10de": "NVIDIA", "0x1002": "AMD", "0x1022": "AMD", "0x15ad": "VMware", "0x1af4": "Virtio"}
+DRIVER_MODULES = re.compile(r"\b(i915kms|amdgpu|radeonkms|nvidia-drm|nvidia-modeset|nvidia|drm|virtio_gpu|vmwgfx)\.ko\b")
+
+
+def classify(renderer):
+    if not renderer:
+        return "unknown"
+    if SOFTWARE.search(renderer):
+        return "software"
+    if VIRTUAL.search(renderer):
+        return "virtual"
+    return "hardware"
+
+
+def vendor_of(text):
+    for name in ("NVIDIA", "Intel", "AMD", "ATI", "Radeon", "Apple", "Mesa"):
+        if re.search(name, text or "", re.I):
+            return {"ATI": "AMD", "Radeon": "AMD"}.get(name, name)
+    return None
+
+
+def parse_pciconf(text):
+    """Display-class devices from `pciconf -lv`."""
+    gpus = []
+    for block in re.split(r"(?m)^(?=\S+@pci)", text):
+        head = re.match(r"(\S+@pci\S*):\s+class=(0x[0-9a-f]+).*?vendor=(0x[0-9a-f]+) device=(0x[0-9a-f]+)", block)
+        if not head or not head.group(2).startswith("0x03"):
+            continue
+        name = re.search(r"device\s+= '([^']*)'", block)
+        vendor = re.search(r"vendor\s+= '([^']*)'", block)
+        gpus.append(dict(device=head.group(1), vendor_id=head.group(3), device_id=head.group(4),
+                         vendor=VENDORS.get(head.group(3)) or (vendor.group(1) if vendor else head.group(3)),
+                         name=name.group(1) if name else ""))
+    return gpus
+
+
+def parse_kldstat(text):
+    return sorted(set(m.group(1) for m in DRIVER_MODULES.finditer(text)))
+
+
+def parse_egl(text):
+    """EGL platforms and devices from `eglinfo -B`; the lines of stderr noise are ignored."""
+    blocks, current = [], None
+    for raw in text.splitlines():
+        line = raw.strip()
+        header = re.match(r"^(?:(Device #\d+)|([A-Za-z0-9 ]+?) platform):$", line)
+        if header and not line.startswith("Platform Device"):
+            current = dict(platform=header.group(1) or header.group(2))
+            blocks.append(current)
+            continue
+        if current is None or ":" not in line:
+            continue
+        key, _, value = line.partition(":")
+        value = value.strip()
+        if key == "EGL vendor string":
+            current["egl_vendor"] = value
+        elif key == "EGL API version":
+            current["egl_version"] = value
+        elif key == "OpenGL core profile renderer":
+            current["renderer"] = value
+        elif key == "OpenGL core profile vendor":
+            current["gl_vendor"] = value
+        elif key == "OpenGL core profile version":
+            current["gl_version"] = value
+        elif key == "OpenGL ES profile version":
+            current["gles_version"] = value
+    for block in blocks:
+        block["class"] = classify(block.get("renderer"))
+        block["vendor"] = vendor_of(block.get("gl_vendor") or block.get("renderer") or block.get("egl_vendor"))
+    return blocks
+
+
+def parse_glx(text):
+    info = {}
+    for line in text.splitlines():
+        line = line.strip()
+        for key, name in (("direct rendering", "direct"), ("Accelerated", "accelerated"), ("OpenGL renderer string", "renderer"),
+                          ("OpenGL vendor string", "gl_vendor"), ("OpenGL core profile version string", "gl_version")):
+            if line.startswith(key + ":"):
+                info[name] = line.split(":", 1)[1].strip()
+    if info.get("renderer"):
+        info["class"] = classify(info["renderer"])
+        if info.get("accelerated", "").lower() == "no":
+            info["class"] = "software"
+        info["vendor"] = vendor_of(info.get("gl_vendor") or info["renderer"])
+    return info
+
+
+def parse_nvidia_smi(text):
+    rows = []
+    for line in text.splitlines()[1:]:
+        cells = [c.strip() for c in line.split(",")]
+        if len(cells) >= 4 and cells[0].isdigit():
+            rows.append(dict(index=int(cells[0]), name=cells[1], driver=cells[2], bus=cells[3]))
+    return rows
+
+
+def session_renderer(egl, glx, wayland_session):
+    """The renderer the desktop uses: the session's own Wayland/X11 view first."""
+    for block in wayland_session:
+        if block.get("renderer"):
+            return dict(via="wayland", **block)
+    if glx.get("renderer"):
+        return dict(via="x11", renderer=glx["renderer"], vendor=glx.get("vendor"), gl_version=glx.get("gl_version"),
+                    **{"class": glx["class"]})
+    for block in egl:
+        if block["platform"] == "GBM" and block.get("renderer"):
+            return dict(via="gbm (no session; first GBM device)", **block)
+    return None
+
+
+def build_report(inputs):
+    gpus = parse_pciconf(inputs.get("pciconf", ""))
+    egl = parse_egl(inputs.get("eglinfo-default", ""))
+    wayland = [b for b in parse_egl(inputs.get("eglinfo-wayland", "")) if b["platform"] == "Wayland"]
+    glx = parse_glx(inputs.get("glxinfo", ""))
+    nvidia = parse_nvidia_smi(inputs.get("nvidia-smi", ""))
+    session = session_renderer(egl, glx, wayland)
+    devices = [b for b in egl if b["platform"].startswith("Device #") and b.get("renderer")]
+    report = dict(gpus=gpus, drivers=parse_kldstat(inputs.get("kldstat", "")), hybrid=len(gpus) > 1,
+                  egl_devices=[{k: v for k, v in b.items() if k in ("platform", "renderer", "vendor", "class", "gl_version", "gles_version", "egl_version")}
+                               for b in devices],
+                  nvidia_smi=nvidia, session=None, verdict="unknown")
+    if session:
+        selected = next((g for g in gpus if g["vendor"] == session.get("vendor")), None)
+        report["session"] = dict(via=session["via"], renderer=session.get("renderer"), vendor=session.get("vendor"),
+                                 api_version=session.get("gl_version"), classification=session["class"],
+                                 gpu=selected["name"] if selected else None, pci=selected["device"] if selected else None)
+        report["verdict"] = {"software": "software-fallback", "hardware": "accelerated", "virtual": "accelerated"}.get(session["class"], "unknown")
+    software_devices = [d for d in report["egl_devices"] if d["class"] == "software"]
+    report["software_devices_present"] = bool(software_devices)
+    return report
+
+
+def render(report):
+    lines = ["GPU report"]
+    for gpu in report["gpus"]:
+        lines.append(f"  PCI {gpu['device']:<10} {gpu['vendor']:<7} {gpu['name']}")
+    if report["drivers"]:
+        lines.append("  Kernel modules: " + ", ".join(report["drivers"]))
+    for row in report["nvidia_smi"]:
+        lines.append(f"  nvidia-smi: {row['name']} driver {row['driver']} bus {row['bus']}")
+    for dev in report["egl_devices"]:
+        lines.append(f"  EGL {dev['platform']:<10} {dev['class']:<8} {dev['renderer']}")
+    session = report["session"]
+    if session:
+        on = f" on {session['gpu']} ({session['pci']})" if session["gpu"] else ""
+        lines.append(f"  Session renders with: {session['renderer']}  [{session['classification']}, via {session['via']}]{on}")
+        if session["api_version"]:
+            lines.append(f"  API: {session['api_version']}")
+    else:
+        lines.append("  Session renderer: not determined (no Wayland/X11 session or no eglinfo/glxinfo)")
+    if report["hybrid"]:
+        lines.append("  Hybrid graphics: more than one GPU is present; only the one named above is used by the desktop.")
+    lines.append(f"  Verdict: {report['verdict']}" +
+                 ("  (software rendering never counts as acceleration)" if report["verdict"] == "software-fallback" else ""))
+    return "\n".join(lines)
+
+
+def run(argv, env=None, timeout=30):
+    try:
+        done = subprocess.run(argv, capture_output=True, text=True, timeout=timeout, env=env)
+        return done.stdout + (done.stderr if argv[0] in ("eglinfo", "glxinfo") else "")
+    except (OSError, subprocess.SubprocessError):
+        return ""
+
+
+def collect_live():
+    env = dict(os.environ)
+    inputs = {"pciconf": run(["pciconf", "-lv"]), "kldstat": run(["kldstat"]),
+              "eglinfo-default": run(["eglinfo", "-B"], env),
+              "nvidia-smi": run(["nvidia-smi", "--query-gpu=index,name,driver_version,pci.bus_id", "--format=csv"])}
+    if env.get("WAYLAND_DISPLAY") and env.get("XDG_RUNTIME_DIR"):
+        inputs["eglinfo-wayland"] = run(["eglinfo", "-B", "-p", "wayland"], env)
+    if env.get("DISPLAY"):
+        inputs["glxinfo"] = run(["glxinfo", "-B"], env)
+    return inputs
+
+
+def collect_saved(directory):
+    inputs = {}
+    for key in ("pciconf", "kldstat", "eglinfo-default", "eglinfo-wayland", "glxinfo", "nvidia-smi"):
+        for name in (f"{key}.txt", f"{key}.csv"):
+            path = Path(directory) / name
+            if path.is_file():
+                inputs[key] = path.read_text(errors="replace")
+    return inputs
+
+
+def main(argv):
+    as_json = "--json" in argv
+    source = None
+    if "--from" in argv:
+        index = argv.index("--from")
+        if index + 1 >= len(argv):
+            print(__doc__, file=sys.stderr)
+            return 3
+        source = argv[index + 1]
+    if any(a not in ("--json", "--from", source) for a in argv):
+        print(__doc__, file=sys.stderr)
+        return 3
+    report = build_report(collect_saved(source) if source else collect_live())
+    print(json.dumps(report, indent=2) if as_json else render(report))
+    return {"accelerated": 0, "software-fallback": 2}.get(report["verdict"], 3)
+
+
+if __name__ == "__main__":
+    sys.exit(main(sys.argv[1:]))

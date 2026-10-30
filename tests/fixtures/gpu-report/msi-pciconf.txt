@@ -1,0 +1,8 @@
+vgapci0@pci0:0:2:0:	class=0x030000 rev=0x06 hdr=0x00 vendor=0x8086 device=0x7d67 subvendor=0x1462 subdevice=0x1456
+    vendor     = 'Intel Corporation'
+    device     = 'Arrow Lake-S [Intel Graphics]'
+    class      = display
+vgapci1@pci0:1:0:0:	class=0x030000 rev=0xa1 hdr=0x00 vendor=0x10de device=0x2c19 subvendor=0x1462 subdevice=0x1456
+    vendor     = 'NVIDIA Corporation'
+    device     = 'GB203M / GN22 [GeForce RTX 5080 Max-Q / Mobile]'
+    class      = display
