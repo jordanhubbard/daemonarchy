@@ -4,11 +4,12 @@
 - **Owning queue item:** [INSTALL-PERF-001](active-work.md#install-perf-001-make-exact-image-installation-at-least-10x-faster)
 - **Supporting queue items:** [PKG-001](active-work.md#pkg-001-implement-the-release-package-dag-and-safe-parallel-transactions),
   [NET-001](active-work.md#net-001-make-the-installer-network-bring-up-proactive-and-robust),
+  [VISUAL-SDK-001](active-work.md#visual-sdk-001-extract-a-reusable-installer-visual-sdk-and-plugin-runtime),
   [GAME-001](active-work.md#game-001-add-playable-classic-arcade-games-to-the-installer)
 - **Completion / archival evidence:** pending exact-image MSI, MacBookPro16,1
   and VM baselines; 10x physical improvement; exact network matrix; integrity,
-  desktop and failure/recovery acceptance; exact-image game/runtime isolation
-  and no-regression evidence.
+  desktop and failure/recovery acceptance; independently consumable visual SDK;
+  exact-image plugin/game isolation and no-regression evidence.
 
 Opened on 2026-10-29 by operator decision; 1.4.0 is published.
 
@@ -22,13 +23,25 @@ items below were 1.4 acceptance rows. They moved here so they no longer block
 
 ## Scope
 
+- **Reusable visual SDK and plugin runtime**
+  ([VISUAL-SDK-001](active-work.md#visual-sdk-001-extract-a-reusable-installer-visual-sdk-and-plugin-runtime),
+  [issue #139](https://github.com/jordanhubbard/daemonarchy/issues/139)).
+  Split the shared text and graphical renderer, palettes, animation/effects,
+  input actions, resize/reduced-motion behavior and audio cues out of the
+  installer into a separately packaged, versioned SDK. Define trusted,
+  content-identified animation/effect, visualizer and game plugins with bounded
+  resources, explicit capabilities and preemptible lifecycle. Prove the SDK in
+  a non-installer host. The installer remains the authoritative privileged host:
+  plugins cannot mutate progress, hide prompts or outcomes, or import ambient
+  executable content.
+
 - **Playable classic-arcade interludes**
   ([GAME-001](active-work.md#game-001-add-playable-classic-arcade-games-to-the-installer),
   [issue #137](https://github.com/jordanhubbard/daemonarchy/issues/137)). Ship
   approximately five or six small original arcade homages in the installer,
-  including a Space Invaders-style fixed shooter. Reuse the existing installer
-  text and graphical renderer, palette, input, resize, reduced-motion and sound
-  infrastructure rather than adding a parallel UI stack. Installation continues
+  including a Space Invaders-style fixed shooter. Load them through the
+  VISUAL-SDK-001 game plugin contract rather than direct installer imports or a
+  parallel UI stack. Installation continues
   authoritatively in the background; prompts, approvals, errors, diagnostics and
   completion preempt play. Qualify vt(4), the graphical installer, small/16-color
   terminals, mute/no-device behavior, game failure recovery and bounded resource

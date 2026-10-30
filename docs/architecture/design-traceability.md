@@ -15,6 +15,15 @@ buildable or generated artifacts. Existing source remains implementation authori
 | G6, G8, G9 | [Release](https://github.com/jordanhubbard/daemonarchy/blob/main/components/release/component.md) | ISO/feed/checkouts assembly, pinned-tree discovery and publication scripts; planned complete source/ports Component execution | Full-tree ownership, per-unit pkg provenance, variant-aware selected closures and measured build/packaging improvement; exact artifacts and native/VM/hardware evidence |
 | G3, G7 | [Package engine](https://github.com/jordanhubbard/daemonarchy/blob/main/components/package-engine/component.md) | Pinned catalogue graph collector; current installer uses its existing package operations | Complete release DAG, native solver acceptance, coordinated parallel installation, failure/retry/recovery and measured performance |
 
+VISUAL-SDK-001 plans a new shared presentation boundary between the Installer
+and Desktop Components. Until that extraction is implemented and accepted, the
+existing installer sources remain authority. The target boundary is a separately
+packaged, versioned SDK for text and graphical rendering, animation/effects,
+input actions and audio cues plus trusted animation, visualizer and game plugin
+contracts. Installer progress and privileged operations remain owned by the
+Installer Component; a non-installer sample host and independent package
+lifecycle are required before the SDK is considered reusable.
+
 ## Source custody and repository boundaries
 
 [The retained baseline](../../verification/retained-inputs.json) records every
@@ -134,7 +143,7 @@ the public repository paths so mutable resolver mutexes are not documentation
 assets. Source
 indexing is disabled. Future framework updates must preserve these boundaries.
 
-<!-- literate-ai:authority-reviewed sha256:b7309b5ee0831015c17843e300d2fd04efdfeb6a7aeb0531974929966d0b6e28 -->
+<!-- literate-ai:authority-reviewed sha256:89883e491d063a6178fbd6fb4e8b27921248c31f0118100abc83b8fde57bec7a -->
 
 
 ## Rechecking preservation
