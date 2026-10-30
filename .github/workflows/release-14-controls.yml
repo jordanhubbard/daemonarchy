@@ -36,10 +36,13 @@ on:
       - 'tests/plugins-and-games.py'
       - 'tests/sdk-windows.py'
       - 'tests/extension-bundles.py'
+      - 'tests/installer-extensions.py'
+      - 'extensions/**'
+      - 'overlay/usr/local/libexec/daemonarchy-installer/daemonarchy-extensions'
+      - 'overlay/usr/local/libexec/daemonarchy-installer/configurator'
+      - 'overlay/usr/local/libexec/daemonarchy-installer/progress-dashboard.py'
       - 'scripts/extension-bundle.py'
       - 'scripts/seal-games.py'
-      - 'overlay/usr/local/share/daemonarchy-games/**'
-      - 'overlay/usr/local/libexec/daemonarchy-installer/daemonarchy-games'
       - 'sdk/**'
       - 'overlay/usr/local/lib/daemonarchy-visual/**'
       - 'scripts/install-trace-summary.py'
@@ -94,10 +97,13 @@ on:
       - 'tests/plugins-and-games.py'
       - 'tests/sdk-windows.py'
       - 'tests/extension-bundles.py'
+      - 'tests/installer-extensions.py'
+      - 'extensions/**'
+      - 'overlay/usr/local/libexec/daemonarchy-installer/daemonarchy-extensions'
+      - 'overlay/usr/local/libexec/daemonarchy-installer/configurator'
+      - 'overlay/usr/local/libexec/daemonarchy-installer/progress-dashboard.py'
       - 'scripts/extension-bundle.py'
       - 'scripts/seal-games.py'
-      - 'overlay/usr/local/share/daemonarchy-games/**'
-      - 'overlay/usr/local/libexec/daemonarchy-installer/daemonarchy-games'
       - 'sdk/**'
       - 'overlay/usr/local/lib/daemonarchy-visual/**'
       - 'scripts/install-trace-summary.py'
@@ -160,6 +166,7 @@ jobs:
           python3 -I tests/plugins-and-games.py -v
           python3 -I tests/sdk-windows.py -v
           python3 -I tests/extension-bundles.py -v
+          python3 -I tests/installer-extensions.py -v
       - name: Parallel package fetch
         env:
           PYTHONDONTWRITEBYTECODE: '1'

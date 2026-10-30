@@ -24,7 +24,7 @@ working in an installed image until that image is replaced.
 | Audio | `audio` | `Audio.cue(name)` never blocks, never raises, is never required, and honours mute. `ThreadedAudio` wraps a blocking backend with a bounded queue. Standard cues: `click select blip laser hit explode bounce pickup levelup gameover win`. |
 | Inline effects | `inline` | line-oriented flourishes printed between a host's own prompts: `type_line`, `result_line`, `pulse_line`. Plain terminals and reduced motion get the final text at once. |
 | Arcade helpers | `arcade` | a fixed simulation step, a centered playfield, a HUD that compacts on narrow terminals, banners. |
-| Plugins | `plugin` | content-identified, capability-scoped, preemptible, failure-isolated scenes that run in their own process; see [arcade-games.md](arcade-games.md). |
+| Plugins | `plugin` | content-identified, capability-scoped, preemptible, failure-isolated scenes that run in their own process; see [installer-extensions.md](installer-extensions.md). |
 | Windows | `windows` | extra windows for extensions: open, close, resize, select, list and set a title, mediated by the host; tmux, inline-panel and refusing backends. See below. |
 | Scenes | `scene` | `Scene` (`update`, `draw`, `plain_lines`) and `run_scene`, which owns timing, input, resize, pause, mute, preemption and restoring the terminal. |
 

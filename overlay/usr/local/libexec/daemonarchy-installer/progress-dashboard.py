@@ -781,7 +781,9 @@ class App:
             self.style = STYLES[(STYLES.index(self.style) + 1) % len(STYLES)]
             self.say(f'Visual style: {self.style}')
         elif key == 'g':
-            self.open_games()
+            self.open_extensions('games')
+        elif key == 'x':
+            self.open_extensions()
         elif key in ('?', 'h'):
             self.say(self.keys_hint(), 8)
         elif key in ('m', '+', '=', '-', 'a') and sound is not None:
@@ -796,27 +798,27 @@ class App:
             except (OSError, ValueError) as error:
                 self.say('Sound control unavailable: ' + clean(error))
 
-    # -- games: a separate low-priority process in its own tmux window (daemonarchy-games)
+    # -- extensions: a separate low-priority process in its own tmux window (daemonarchy-extensions)
 
     def games_preempt_path(self):
         return Path(self.env.get('DAEMONARCHY_GAMES_PREEMPT', '/tmp/daemonarchy-games.preempt'))
 
-    def open_games(self):
-        """g: open the arcade in a tmux window. It never touches the installation."""
+    def open_extensions(self, category=None):
+        """g or x: open the Extensions menu in a tmux window (g at the Games category). It never touches the installation."""
         if self.env.get('DAEMONARCHY_GAMES') == 'off':
-            return self.say('Games are turned off.')
+            return self.say('Extensions are turned off.')
         if not self.tmux.active:
-            return self.say('Games need the tmux windows, which are not available here.')
+            return self.say('Extensions need the tmux windows, which are not available here.')
         if self.monitor.result is not None:
             return self.say('The installation has finished.')
         if self.games_preempt_path().exists():
             return self.say('The installation needs your attention first.')
         python = self.env.get('DAEMONARCHY_PYTHON') or sys.executable
         try:
-            subprocess.run(['tmux', 'new-window', '-n', 'games', f'{python} {HERE}/daemonarchy-games menu'],
-                           capture_output=True, timeout=3, check=False)
+            command = f'{python} {HERE}/daemonarchy-extensions menu' + (f' {category}' if category else '')
+            subprocess.run(['tmux', 'new-window', '-n', 'extensions', command], capture_output=True, timeout=3, check=False)
         except (OSError, subprocess.SubprocessError):
-            self.say('Could not open the games window.')
+            self.say('Could not open the extensions window.')
 
     def games_control(self, snap):
         """Ask the games to stop whenever the installation or the operator's attention needs the screen."""
@@ -847,12 +849,14 @@ class App:
         elif self.games_asked is None:
             self.games_asked = now
         elif now - self.games_asked > 1.5 and not self.games_killed and self.tmux.active:
-            # Backstop: a game window still open well after the request is closed for it.
+            # Backstop: an extensions menu window still open well after the request is closed for it. Each
+            # extension's own window ends itself on the preempt file, and takes its extra windows with it.
             self.games_killed = True
-            try:
-                subprocess.run(['tmux', 'kill-window', '-t', '=games'], capture_output=True, timeout=3, check=False)
-            except (OSError, subprocess.SubprocessError):
-                pass
+            for name in ('extensions', 'games'):
+                try:
+                    subprocess.run(['tmux', 'kill-window', '-t', '=' + name], capture_output=True, timeout=3, check=False)
+                except (OSError, subprocess.SubprocessError):
+                    pass
 
     def feed_sound(self, snap):
         if self.director is not None:
@@ -873,8 +877,8 @@ class App:
     def keys_hint(self):
         if self.tmux.active:
             return ('C-b c new window  C-b % / C-b " split  C-b G log  C-b H diagnostics  '
-                    'C-b R remote debug  C-b g games  C-b m mute  C-b +/- volume  C-b ? all keys  v style')
-        return 'v style  m mute  +/- volume  a ambient. Window controls and games need tmux, which is not available here.'
+                    'C-b R remote debug  C-b e extensions  C-b g games  C-b m mute  C-b +/- volume  C-b ? all keys  v style')
+        return 'v style  m mute  +/- volume  a ambient. Window controls and extensions need tmux, which is not available here.'
 
     # -- frames
 

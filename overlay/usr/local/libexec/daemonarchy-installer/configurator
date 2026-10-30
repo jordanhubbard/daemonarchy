@@ -1205,6 +1205,12 @@ sound_step() {
   sleep 1
 }
 
+# Optional extras (games, tools) that are downloaded when chosen. They never become part of the installation;
+# the menu says plainly when the network is needed, and returns here either way.
+extensions_step() {
+  "$(dirname "$0")/daemonarchy-extensions" menu || true
+}
+
 configurator_main() {
   local sound_option
   greeter
@@ -1212,9 +1218,9 @@ configurator_main() {
     clear_logo
     sound_option="Sound: $("$SOUND" label --long 2>/dev/null </dev/null || echo unavailable)"
     if [[ $(kenv smbios.system.product 2>/dev/null || true) == MacBookPro16,1 ]]; then
-      options=('Install Daemonarchy' 'Prepare MacBook Wi-Fi firmware' 'Remote agent debug' 'Remote debug in the background' 'Configure network' "$sound_option" 'Exit to shell')
+      options=('Install Daemonarchy' 'Prepare MacBook Wi-Fi firmware' 'Remote agent debug' 'Remote debug in the background' 'Configure network' 'Extensions (games and tools, downloaded when chosen)' "$sound_option" 'Exit to shell')
     else
-      options=('Install Daemonarchy' 'Remote agent debug' 'Remote debug in the background' 'Configure network' "$sound_option" 'Exit to shell')
+      options=('Install Daemonarchy' 'Remote agent debug' 'Remote debug in the background' 'Configure network' 'Extensions (games and tools, downloaded when chosen)' "$sound_option" 'Exit to shell')
     fi
     pending_pairings=$("$(dirname "$0")/remote-debug" pending 2>/dev/null | wc -l | tr -d ' ')
     if [[ ${pending_pairings:-0} -gt 0 ]]; then
@@ -1233,6 +1239,7 @@ configurator_main() {
         ;;
       'Configure network') network_bringup_auto; network_step allow-offline ;;
       'Prepare MacBook Wi-Fi firmware') apple_firmware_step optional ;;
+      'Extensions'*) extensions_step ;;
       'Sound: '*) sound_step ;;
       'Exit to shell') exit 1 ;;
     esac

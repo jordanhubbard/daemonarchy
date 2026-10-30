@@ -24,7 +24,7 @@ sys.path.insert(0, str(LIB))
 import daemonarchy_visual as sdk  # noqa: E402
 from daemonarchy_visual import bundle, plugin  # noqa: E402
 
-GAMES = ROOT / "overlay/usr/local/share/daemonarchy-games"
+GAMES = ROOT / "extensions/games"
 SCRIPT = ROOT / "scripts/extension-bundle.py"
 FEED = "extensions-16-amd64-1.4.1"
 
