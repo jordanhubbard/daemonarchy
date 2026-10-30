@@ -12,6 +12,7 @@ from .canvas import Screen
 from .glyphs import Glyphs
 from .palette import Colors, GRAY, WHITE
 from .timeline import MonotonicClock
+from .windows import ExtensionWindows
 
 
 class Context:
@@ -23,6 +24,7 @@ class Context:
         self.glyphs = Glyphs(caps.unicode)
         self.audio = audio or NullAudio()
         self.clock = clock or MonotonicClock()
+        self.windows = ExtensionWindows()   # requests to the host; only an extension with `window` is answered
 
     @property
     def reduced(self):

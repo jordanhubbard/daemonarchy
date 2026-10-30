@@ -25,16 +25,17 @@ import time
 from . import compatible
 from .canvas import Canvas
 from .scene import Scene, run_scene
+from .windows import WindowManager
 
 SCHEMA = "daemonarchy/visual-plugin@1"
 INDEX_SCHEMA = "daemonarchy/visual-plugin-index@1"
 KINDS = ("game", "animation", "visualizer")
-CAPABILITIES = ("draw", "input", "audio")
+CAPABILITIES = ("draw", "input", "audio", "window")
 ID = re.compile(r"^[a-z][a-z0-9-]{1,31}$")
 ENTRY = re.compile(r"^[A-Za-z0-9_][A-Za-z0-9_.-]{0,63}\.py$")
 HEX = re.compile(r"^[0-9a-f]{64}$")
-LIMIT_BOUNDS = dict(fps=(1, 30), memory_mb=(96, 512), cpu_seconds=(10, 3600), frame_ms=(20, 1000))
-DEFAULT_LIMITS = dict(fps=15, memory_mb=192, cpu_seconds=900, frame_ms=250)
+LIMIT_BOUNDS = dict(fps=(1, 30), memory_mb=(96, 512), cpu_seconds=(10, 3600), frame_ms=(20, 1000), windows=(1, 4))
+DEFAULT_LIMITS = dict(fps=15, memory_mb=192, cpu_seconds=900, frame_ms=250, windows=2)
 CHILD = os.path.join(os.path.dirname(os.path.abspath(__file__)), "plugin_child.py")
 MAX_REPLY = 1 << 20
 
@@ -192,13 +193,23 @@ class Failed(Exception):
     pass
 
 
+class WindowShape:
+    """The size a window's frame is validated against."""
+
+    def __init__(self, width, height):
+        self.width, self.height = width, height
+
+
 class RemoteScene(Scene):
     """A scene whose logic runs in the plugin's process. The host's run_scene drives it like any scene."""
 
-    def __init__(self, plugin, clock=None):
+    def __init__(self, plugin, clock=None, backend=None):
         self.plugin, self.title = plugin, plugin.name
         self.min_size = plugin.min_size or None
         self.clock = clock
+        # Windows are the host's to give: the manager enforces the capability, the count, sizes and ownership.
+        self.windows = WindowManager(backend, allowed="window" in plugin.capabilities,
+                                     max_windows=plugin.limits["windows"]) if backend is not None else None
         self.proc = None
         self.frame = None
         self.failure = None
@@ -223,6 +234,8 @@ class RemoteScene(Scene):
         self.stop()
 
     def stop(self):
+        if self.windows is not None:
+            self.windows.close_all()
         proc, self.proc = self.proc, None
         if proc is not None:
             try:
@@ -241,6 +254,15 @@ class RemoteScene(Scene):
         try:
             tick = {"t": dt, "a": [a for a in actions if "input" in self.plugin.capabilities],
                     "w": ctx.width, "h": ctx.height}
+            if self.windows is not None:
+                self.windows.primary.update(cols=ctx.width, rows=ctx.height)
+                from_windows = self.windows.poll()
+                selected = self.windows.selected
+                if selected and self.windows.backend.name == "inline":   # the front panel has the keyboard
+                    from_windows.setdefault(selected, []).extend(tick["a"])
+                    tick["a"] = []
+                tick["ev"] = self.windows.take_events()
+                tick["wa"] = {str(w): a for w, a in from_windows.items() if "input" in self.plugin.capabilities}
             self.proc.stdin.write(json.dumps(tick) + "\n")
             self.proc.stdin.flush()
         except (OSError, ValueError):
@@ -260,6 +282,10 @@ class RemoteScene(Scene):
             if "e" in reply:
                 return self.fail("plugin raised " + str(reply["e"])[:40])
             self.frame = self.decode(reply, ctx)
+            if self.windows is not None:
+                self.windows.handle(reply.get("o", []))
+                self.windows.set_frames({int(w): self.decode(f, WindowShape(*self.windows.sizes()[int(w)]))
+                                         for w, f in reply.get("F", {}).items() if int(w) in self.windows.windows})
             for cue in reply.get("c", [])[:16]:
                 if "audio" in self.plugin.capabilities and isinstance(cue, str):
                     ctx.audio.cue(cue)
@@ -295,16 +321,20 @@ class RemoteScene(Scene):
         return decoded
 
     def draw(self, canvas, ctx):
-        if self.frame is None:
-            return
-        for y, row in enumerate(self.frame):
-            for x, text, style in row:
-                canvas.put(x, y, text, style)
+        if self.frame is not None:
+            for y, row in enumerate(self.frame):
+                for x, text, style in row:
+                    canvas.put(x, y, text, style)
+        if self.windows is not None and self.windows.backend.name == "inline":
+            self.windows.backend.compose(canvas, self.windows.windows.values())
 
 
-def run_plugin(plugin, caps, out, source, audio=None, clock=None, fps=None, **kwargs):
-    """Run a plugin under the host's loop. Returns a RunResult; a plugin failure is `result={"failed": reason}`."""
-    scene = RemoteScene(plugin, clock)
+def run_plugin(plugin, caps, out, source, audio=None, clock=None, fps=None, backend=None, **kwargs):
+    """Run a plugin under the host's loop. Returns a RunResult; a plugin failure is `result={"failed": reason}`.
+
+    `backend` is a windows backend (see windows.choose_backend) for a plugin that has the `window` capability.
+    """
+    scene = RemoteScene(plugin, clock, backend)
     try:
         return run_scene(scene, caps, out, source, audio, clock, fps=fps or plugin.limits["fps"], **kwargs)
     finally:
