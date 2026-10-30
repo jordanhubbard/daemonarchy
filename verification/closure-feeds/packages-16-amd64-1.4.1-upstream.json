@@ -1,0 +1,3167 @@
+[
+  {
+    "tag": "packages-16-amd64-1.4.1-upstream",
+    "assets": {
+      "Box2D-3.1.1.pkg": [
+        156817,
+        "sha256:5bb9b39f98ec81462c9b9258f1892f0cb4e54b8059e1ce5bdeb18c56e8568c1f"
+      ],
+      "Gentium-7.000.pkg": [
+        3262070,
+        "sha256:3516e5333b261525000da1782240e1ff4d9c0f08c784fd6b3ec1bc7d6d132bd0"
+      ],
+      "ImageMagick7-7.1.2.34.pkg": [
+        9599590,
+        "sha256:5266dac2c6cdf1184f0a8d6a1fdeb3d78f019cd148a8f77a632b153fe17c1e0d"
+      ],
+      "Imath-3.2.3_1.pkg": [
+        5127851,
+        "sha256:00764638771ec710aedab9dc02282c493d3177bc6dcde1833562f41c225102b8"
+      ],
+      "abseil-20250127.1_2.pkg": [
+        1155861,
+        "sha256:8e1a6c51b323f0c24855c3ab766d3fb737ce1c2fa5024634c7c5c5f2b7f5556e"
+      ],
+      "adwaita-icon-theme-47.0.pkg": [
+        533950,
+        "sha256:435b0ce6c52cffb8dc372d4c68f5c3743a180e4f612a6b647bb77efc960fd193"
+      ],
+      "adwaita-icon-theme-legacy-46.2.pkg": [
+        2178188,
+        "sha256:2987cd69646969e039709134fbcaa7b47b56efd2d60a86154f9b42cc1e361fff"
+      ],
+      "alsa-lib-1.2.16.1.pkg": [
+        557135,
+        "sha256:9180578e5d8982d2375fc4be8be5df7f4725df8453b865a682fc682001a024bc"
+      ],
+      "alsa-plugins-1.2.12_2.pkg": [
+        29618,
+        "sha256:50c74c8422b1f61f954b3cfeb89757601f6f799bfa73c3846f376b986585fc54"
+      ],
+      "aom-3.15.2.pkg": [
+        3660333,
+        "sha256:6bee7be7370609c5ca03d9eafde9326657c7c745f375c5f6d42ef1d298644f0e"
+      ],
+      "apr-1.7.6.1.6.3.pkg": [
+        526514,
+        "sha256:8fc7bc4b2687cf83dfdb5551270ca82f4cb0782d77c73a4e9b5451247a0232b2"
+      ],
+      "aquamarine-0.15.1.pkg": [
+        466712,
+        "sha256:45a8f289d603724eddac75e58357645520c32cb079bada48330410567696b382"
+      ],
+      "aspell-0.60.8.2.1.pkg": [
+        848094,
+        "sha256:08be2288574fa4139686a32cdc767bd4ebe109c60c8b1239b1f0c08fc8b78edb"
+      ],
+      "assimp-6.0.5.pkg": [
+        2786329,
+        "sha256:cc5406e2665de001bd8d7f12d98c041550b639aa7babd2cf32b7ee3bf48ab6c5"
+      ],
+      "at-spi2-core-2.60.4.pkg": [
+        619336,
+        "sha256:142dabc4549cc54f8cf17d795f4013bfc9b505689d1aa5d3fd9ed1c0754dbfb4"
+      ],
+      "autoconf-archive-2024.10.16.pkg": [
+        449107,
+        "sha256:8ae808cda31ed143b8b339b78025be58c459467e810b1ad7b1b508fcc25a036e"
+      ],
+      "avahi-0.8.pkg": [
+        1404,
+        "sha256:8b309300c6e9621ac3d6c52be57f6a73412d24e6b96746473a40707fef555818"
+      ],
+      "avahi-app-0.8_6.pkg": [
+        386547,
+        "sha256:994d0a860692499f85a672763f0318dfc13581712badb222720a61b61bb2f91d"
+      ],
+      "avahi-autoipd-0.8_2.pkg": [
+        27926,
+        "sha256:d00d7a3a0e9688bb578ce62e7ac50f03baf4c57590a51386dfebd44036475291"
+      ],
+      "avahi-gtk3-0.8_2.pkg": [
+        39624,
+        "sha256:6fac39c00de0d5dd892c04cb7c70dd8b67f048bb4c75d2b7ae64d570bd3d6af3"
+      ],
+      "avahi-header-0.8_2.pkg": [
+        12081,
+        "sha256:bc7ac8bb10fd6ba8f964a346047b93e73237cba8c14683e38f5f136f281b14e0"
+      ],
+      "bash-5.3.20.pkg": [
+        1944669,
+        "sha256:5f1bc44ee241b615e667bca9acae6afbd11199869f0b2cc145b77c8e236237c8"
+      ],
+      "bash-completion-2.18.0.2.pkg": [
+        253678,
+        "sha256:b48dc7e2be94ad5f041c5664e0bb3129268a9b1b01aae018541d099b40daaffa"
+      ],
+      "bash-completion-freebsd-1.6.1.pkg": [
+        7657,
+        "sha256:640239966371814242b8e0411b68953b392da24db649f6797e426fb07363885d"
+      ],
+      "bash-completion-zfs-2.4.1.pkg": [
+        4504,
+        "sha256:2ea0e5de013f916f5a5702bd20028d5d33e7a8b61613febd8b05278fae8c1618"
+      ],
+      "basu-0.2.1.pkg": [
+        216569,
+        "sha256:bc077493761ac58f0bc89a77b3c1a4d96b95ddaadb31da3d38fc22f6889c91fa"
+      ],
+      "bat-0.26.1_6.pkg": [
+        2355692,
+        "sha256:ee99fd0775af2b1c412f1c94370616a4968adea35cc696af13393b6c7d3db544"
+      ],
+      "binutils-2.44.1.pkg": [
+        15279087,
+        "sha256:89d56927d638452db64507e408434489a24ad6b05ddd0f20f27ffe5d2f20fec9"
+      ],
+      "boost-libs-1.92.0.pkg": [
+        16844778,
+        "sha256:91a63e426b9ddbf508b44995f6ddeb1f25710cf4b18f973f304998582c83a0b8"
+      ],
+      "brotli-1.2.1.1.pkg": [
+        397428,
+        "sha256:117a8357729f986a8f384302634a8f85604ecd09cc929a54fd3e5673a53003fc"
+      ],
+      "btop-1.4.8.pkg": [
+        492187,
+        "sha256:a2d02d077d3efbadaa9bec7d967dab8cbab3174a2a85b1046d90ac5d6e70ae74"
+      ],
+      "cairo-1.18.6.3.pkg": [
+        810261,
+        "sha256:6aaaad7dbe84acf47cc9fafe3a57fae80c1f749b4bfa08f4493707cdb39ff223"
+      ],
+      "cantarell-fonts-0.311.pkg": [
+        111658,
+        "sha256:987a22d6a058a562492ad6dfd93c7f5cc9821f8faddc38333cff1f2d8609adac"
+      ],
+      "ceres-solver-2.2.0_15.pkg": [
+        9059710,
+        "sha256:d8e8bc183c9fb4534842e953439eb583cc8cc4cb5846ffc8d10dfff8ce62ac8c"
+      ],
+      "cgif-0.5.4.pkg": [
+        14143,
+        "sha256:9b890fb91967192ef637b00348545222a77a2e2d9d5bed06132bffd89961cb6f"
+      ],
+      "clucene-2.3.3.4_21.pkg": [
+        796280,
+        "sha256:42c3ae94de164dfb7f43bab4970800caf2d45832340c82e274bb453ee8558ffa"
+      ],
+      "cmrt-1.0.6_2.pkg": [
+        183901,
+        "sha256:92981a0d7eee405f83c763913da0f872a61f31d125243ef0cb6f6b1dfab0447f"
+      ],
+      "corepack-0.36.0.pkg": [
+        111033,
+        "sha256:dd05f415d069841ae39975feda397d169b52b117efc55ac99f691ded259b3d0d"
+      ],
+      "coreutils-9.12.pkg": [
+        3326315,
+        "sha256:92f31ab4d379d1790d90ba38bfb7dccfe069dfb598f3fdc9865f768d89408eee"
+      ],
+      "crosextrafonts-caladea-20130214_4.pkg": [
+        91750,
+        "sha256:eb3013f97d8bd1de2b877cde52ca88d116e36d55975c11258df27e43531e8ccb"
+      ],
+      "crosextrafonts-carlito-20130920_4.pkg": [
+        814393,
+        "sha256:a7471aaf9aec9bb102909a287f2cf525c55e096debb70c256317e386dd32f960"
+      ],
+      "cups-2.4.20.pkg": [
+        5666655,
+        "sha256:5e8748b460e35bb694c066e9757ec179b05a9996b946dc344decff416b5e4f6f"
+      ],
+      "cyrus-sasl-2.1.28_6.pkg": [
+        1065666,
+        "sha256:11d878bbb4ea23f72c121e7de9474c540e52e6c5b3338038e06463e2d6b9d18a"
+      ],
+      "data.pkg": [
+        243560,
+        "sha256:9dda2dd21abad19991b8ce2deaad6fc344b3fc7363bd550d2cf8eb44c65fac6b"
+      ],
+      "dav1d-1.5.4_1.pkg": [
+        672981,
+        "sha256:3a14637c0ab1a0b5e7ffb2b2354c1f1ee491aba9fe3f89735648f63b5f41cf9e"
+      ],
+      "dbus-1.16.2_4.1.pkg": [
+        324560,
+        "sha256:491faee8488cc3e350a3d54e77037b21ee52c7e700e52e19b2c28fecebe5703d"
+      ],
+      "dbus-glib-0.116.pkg": [
+        174739,
+        "sha256:c88959d84092d4f8e4b31fe8e544d6e0ca1f7e2bfae2693206e1cd7202e14cc7"
+      ],
+      "dconf-0.49.0.pkg": [
+        92318,
+        "sha256:25df2f11beb6a02826e8466a295061bff4e5d5d9bcf20e2edfcd03bc8b8b4ef2"
+      ],
+      "dejavu-2.37_4.pkg": [
+        2762914,
+        "sha256:8fb4f9ddcbc9a8f43e2af66e831774090c66220a5178d055feceb969f742c168"
+      ],
+      "deno-2.9.7_3.pkg": [
+        88571339,
+        "sha256:8afd58e8449c86262210666ab7505fa138291b0355adb764ba7a181d51570cf3"
+      ],
+      "desktop-file-utils-0.28.pkg": [
+        50093,
+        "sha256:cd9a8d040d94abe735064c7034da2ea37afabafa381b93faef631d9698685d77"
+      ],
+      "dmidecode-3.7.pkg": [
+        86141,
+        "sha256:a660e7db26d4543a03094b7982003e31d9f64815f2a37a5cc1a854cebf0726b0"
+      ],
+      "docbook-1.5.pkg": [
+        1209,
+        "sha256:a2b3bf1da1a97bff5fdfec8faa53730ecb2d6be35286e72b7b99819b3a4d571c"
+      ],
+      "docbook-sgml-4.5_1.pkg": [
+        144554,
+        "sha256:b1182aca140f22edded011eb96bd12e76a35c2dc4fc90daf656165a30b62636a"
+      ],
+      "docbook-xml-5.0_3.pkg": [
+        564898,
+        "sha256:c54841d0f54d776b017249d5679352f33a3d8507b39765b46c8097e4127a9785"
+      ],
+      "docbook-xsl-1.79.1_1.1.pkg": [
+        20688922,
+        "sha256:151b3d662691bfde5cfe0e42ecd5904e2ce22a1a2b0a7ad86f21471230886a4b"
+      ],
+      "dotconf-1.4.1_1.pkg": [
+        49094,
+        "sha256:02a0e2ba39e68d2b98126c2b15123bfad6923aed97a6f8b292d043d9f60f3de7"
+      ],
+      "dotnet-host-9.0.14.pkg": [
+        39858,
+        "sha256:fad6b951b3589e9b7cf2f295492cff25cf7e74f5cd1aa807ed374db999a367de"
+      ],
+      "double-conversion-3.4.0.pkg": [
+        54001,
+        "sha256:d85dc38a21cb958d8c68106decbcf273919f3f394a598686722cb2c1386fa0e1"
+      ],
+      "dua-cli-2.34.0_4.pkg": [
+        1011485,
+        "sha256:161773198bff6810c091b5540d95629f8eb4aa83c3a5c7c890fe8132091fea48"
+      ],
+      "duktape-lib-2.7.0_1.pkg": [
+        257256,
+        "sha256:989cf301db36ca5bb7a0e18e67c95891a66c7316d0c27f1d6ae75dba3127593f"
+      ],
+      "dvdauthor-0.7.2.20211105_6.pkg": [
+        183613,
+        "sha256:b6e8d58c03ba58f0a4607bdc50ea8bca9b6d368189f7502be83f0823b4620163"
+      ],
+      "ebook-tools-0.2.2_9.pkg": [
+        25621,
+        "sha256:02fd6e5e8d047061d2a4930172a8f8d5081c291169e105a62969a0ee88219345"
+      ],
+      "ebur128-0.1.10_17.pkg": [
+        409722,
+        "sha256:cb2ba0eaf80c9f75b0edde5a83045c57064c5c2049179f9fb84073245e18e318"
+      ],
+      "edk2-bhyve-g202508_3.pkg": [
+        1353220,
+        "sha256:91d396d27b7abe2092a022c74551d8c748cbf1573fc72f14cdebbc2292bd19c4"
+      ],
+      "egl-wayland-1.1.24.pkg": [
+        36519,
+        "sha256:1273bf41557d6b7e72bb2c8c03b5ddf5e08486fab86ebe136acf83fc9cd1e875"
+      ],
+      "egl-wayland2-1.0.2.pkg": [
+        37488,
+        "sha256:395171f94b563ed6cdbe4ec4a5727528d16aed7ae26eda572af698c75e130b6c"
+      ],
+      "egl-x11-1.0.6.pkg": [
+        42729,
+        "sha256:2e5217ffc0af1e98e08598ae9e7038553434d502531e6d580b860005cc4d8ed4"
+      ],
+      "enchant2-2.8.16.pkg": [
+        80229,
+        "sha256:4ed12c927ac95680eb0bd8abe2166d8740583c055b0a339452e1f95abc154d47"
+      ],
+      "encodings-1.1.0.1.pkg": [
+        581635,
+        "sha256:57b1b54ffb865b5c6369bb0f98465a4a82f8613b63e6dd601a083b362fb0ac10"
+      ],
+      "espeak-ng-1.52.0_1.pkg": [
+        11794816,
+        "sha256:23945fef60de2272ba0a03a3995c0077fa4b2d0450def6006359b6cee5733e36"
+      ],
+      "exempi-2.6.6.pkg": [
+        1012556,
+        "sha256:570376f6ab8ad7b28dc9552a7c34525e89cb01a33c711feb88e6e38924477d5f"
+      ],
+      "exfat-utils-1.4.0_1.pkg": [
+        59872,
+        "sha256:c816a9a354753e05e8ab4f34f0b734e8cf877aa15cc97541d93726ba399c64e7"
+      ],
+      "exiv2-0.28.9.1.pkg": [
+        3039449,
+        "sha256:18a2bf0730a8aa3296da607f3c8e40ff497500bc4a9c70066376b79bd16dca6d"
+      ],
+      "expat-2.9.0.pkg": [
+        138265,
+        "sha256:f058ffa41766e5736dc3c19f7c581c4f86a1c1ff313e60b1b0c1d104005364a3"
+      ],
+      "eza-0.23.5_3.pkg": [
+        952179,
+        "sha256:134e9372e8dcf43e041bd62cc0b8c60c95c80a508edcdf62af74a678dfc42e45"
+      ],
+      "fakeroot-2.1.4.pkg": [
+        86767,
+        "sha256:81d64481007e0411434e5b0431262511c2db6371015898eaba681be4f6fe8c7d"
+      ],
+      "fastfetch-2.70.0.pkg": [
+        568317,
+        "sha256:2bbbc4dc91db43a2b245bd30759cde7728be7c824f2dfa7b1dc33abe7b5a508b"
+      ],
+      "fcft-3.3.3.pkg": [
+        91524,
+        "sha256:2e2fd4240670630437318355297418ad70ad668f55e8681e55b3b4e81124caba"
+      ],
+      "fcitx5-5.1.23.pkg": [
+        8859506,
+        "sha256:d076e50fefdc3fe8223aac24cc8f4d0c14da98fb867d9e7bdf4a261fde919400"
+      ],
+      "fcitx5-gtk-common-5.1.7_1.pkg": [
+        30851,
+        "sha256:32fb76aea965e7cf45df882130d0b82c5c1ccf6273b0f2ba64a5ee4ad8649000"
+      ],
+      "fcitx5-gtk3-5.1.7_1.pkg": [
+        54336,
+        "sha256:b0e28351792b882010f378a4457a7c8c787dc879de53ca591ccd51612366eedb"
+      ],
+      "fcitx5-qt-common-5.1.16.pkg": [
+        25242,
+        "sha256:eb1f08f16f9444be5ebebac25a60c6dd9199690bbf5e4ff853c07fe3a2e7897e"
+      ],
+      "fd-find-10.5.0_2.pkg": [
+        1067591,
+        "sha256:b12c156a1480b51c05c87400654f8353f3ad114c32367163e677dfc56620478d"
+      ],
+      "fdk-aac-3.0.0.pkg": [
+        1520580,
+        "sha256:8625154d5b73a15f3f5d401223d50843a41d750e6efd1cf46244651482ebb48c"
+      ],
+      "ffmpeg-9.0.2_3.1.pkg": [
+        13141538,
+        "sha256:01d055037ccce2a2fa3dd4b3fc4764290014cf83acde44e494a454a5a637ae3b"
+      ],
+      "ffmpegthumbnailer-2.3.1.pkg": [
+        84902,
+        "sha256:c2291bbf3d1c3aac875cbd84773b72e9f856b37065e3f240414b17296637c030"
+      ],
+      "ffnvcodec-headers-13.0.19.0.pkg": [
+        70451,
+        "sha256:326b8ffb825775f3d01510f7136c8dab96bce93b734cb6a3d8d7f095c388deec"
+      ],
+      "fftw3-3.3.11.pkg": [
+        867156,
+        "sha256:0712c8d2fc2cae7012353a2a29eb6ccad65af5da3126f2769669c7dcb974c307"
+      ],
+      "fftw3-float-3.3.11.pkg": [
+        802875,
+        "sha256:4311d884846c392529858e1962ac8d12dc1fd194649478d9b8997a3b75425fe6"
+      ],
+      "findutils-4.11.0.pkg": [
+        571222,
+        "sha256:448526462a69f087abe70535f8ed6b592412726e58b50d97af0f016cc1d987d9"
+      ],
+      "flac-1.5.0.1.pkg": [
+        721038,
+        "sha256:c853e55b124833283ecbb714d097c15e9a07d8d64fc6f4b5b3c81a83c6272d76"
+      ],
+      "flock-2.41.5.pkg": [
+        24841,
+        "sha256:3ba0fece2cc1ad59b5d9abe3adcaf06824c375300b57f77e12c6ff2f3a6de52a"
+      ],
+      "font-awesome-7.2.0.pkg": [
+        316550,
+        "sha256:786729c8c7e4f72343ced2584081821acc2b5b1db15e7624f018049d3da23441"
+      ],
+      "font-bh-ttf-1.0.4.pkg": [
+        300747,
+        "sha256:80783cfc09f51a307e5782f382234de3e150f45aa02e24f9f437958453d01c90"
+      ],
+      "font-misc-ethiopic-1.0.5.pkg": [
+        137656,
+        "sha256:d1962f966e2767cb3819c21869cfec7c05068936f81719ed90bca81624879c27"
+      ],
+      "font-misc-meltho-1.0.4.pkg": [
+        803593,
+        "sha256:e9b46c18fcf14f4f712ab7e0d02d8c068c73a62b0ae6201bd130bf256f2ba2fc"
+      ],
+      "fontconfig-2.18.3.1.pkg": [
+        496162,
+        "sha256:85187bcc65179f6d616d0e765b19440fa83d42dc27a849024de6298cb305c130"
+      ],
+      "foot-1.28.0.pkg": [
+        340643,
+        "sha256:056deb3a94d8b1c1c2e767636325bc8fc60ad6421f0b465794364044ab5142c9"
+      ],
+      "freeglut-3.8.0.pkg": [
+        337281,
+        "sha256:c9a5db4503ca33554e030bdcf81a117940dfcdd3314416c4f8b4d6fb7eeb0880"
+      ],
+      "freetype2-2.14.3.pkg": [
+        1248691,
+        "sha256:af72f62f1d492e388d0b1ba3392e64226b6f339602e779e6a085ea70a082fe66"
+      ],
+      "freexl-2.0.0.pkg": [
+        53214,
+        "sha256:b5694ff7779be40edfb7423e48bb3e57e61dd649e30feeb8922b31121db9f9f6"
+      ],
+      "frei0r-3.4.0.pkg": [
+        540603,
+        "sha256:d9b87e53a1ae5f9d5e3028c75f3b7ed2e179601123160a49efd5edc9b0a34a58"
+      ],
+      "frei0r-plugins-cairo-3.4.0.pkg": [
+        30032,
+        "sha256:50da95b3e6b9d34f5838073077c4f11ad1fe42e548307ed544c2c2efc4aa84eb"
+      ],
+      "frei0r-plugins-gavl-3.4.0.pkg": [
+        48920,
+        "sha256:666569b73570e3d67c1d71914c2e177e4ecdc9e340ddf9ed58028a3aea11cf47"
+      ],
+      "fribidi-1.0.17.pkg": [
+        88876,
+        "sha256:12648ea4743b12ff3aeea3f74372ff1c00338d890591122fef199be4fe07facb"
+      ],
+      "fstrm-0.6.1_1.pkg": [
+        71296,
+        "sha256:50d7213257165438a8fea10cb53b862ddd54f6d0e5ac95257559b8e7240cb891"
+      ],
+      "fusefs-libs3-3.18.3.pkg": [
+        118151,
+        "sha256:613b835145db5d5b4c94f0bd42fd5ddd6ba831f99d03eeadc2aaf5b144d19450"
+      ],
+      "gamin-0.1.10_10.pkg": [
+        57298,
+        "sha256:6080edefbbd8f72e87d7d737bcd998807b71503a76d35c3c5775e7915f904f0d"
+      ],
+      "gavl-2.0.1.pkg": [
+        3527285,
+        "sha256:f826b2a829e299826a798467daafc2b6dff827f486be6e840e25147edd1ff527"
+      ],
+      "gawk-5.4.1_1.pkg": [
+        1564665,
+        "sha256:c483a250aa367d95de003b0ea8eb2db8d0473ba0052d84b2d2c161218a823010"
+      ],
+      "gcc14-14.2.0_7.pkg": [
+        98572096,
+        "sha256:d4683bf86c61668ee8c4265d77610800569ea29ac615866d941ff9ade107aeec"
+      ],
+      "gcr-4.4.0.1.pkg": [
+        599844,
+        "sha256:bba3dbe194da8b8ca52ecdcc4ca054d78840c50885e5d6a7995eed1d8a0e8ae2"
+      ],
+      "gcr3-3.41.2.pkg": [
+        782363,
+        "sha256:adbe3446d5ebee3e6608c5f774fb90d11b0bc85aa6f4836288d0737a53318631"
+      ],
+      "gdbm-1.26.pkg": [
+        257189,
+        "sha256:23cc3f8ed9fae79a487ee13bae02aede62a8521a05c8b2a628618b13dab29180"
+      ],
+      "gdcm-3.0.24_2.pkg": [
+        2094181,
+        "sha256:eef3b21f6e479179a741f0707f5892b4f653ab0743eb11f450576bf70d38906d"
+      ],
+      "gdk-pixbuf2-2.44.1.pkg": [
+        1794906,
+        "sha256:1adf39aa6585873af5e99b619bec8d5076f266bc4497dfbf73984b4bcc1bea10"
+      ],
+      "geos-3.15.0.pkg": [
+        1825307,
+        "sha256:ec7ced1a04bda8a8b7857331f485306a36e6132193ebf98ea9ff9cee31721dd0"
+      ],
+      "getopt-2.42.4.pkg": [
+        28340,
+        "sha256:98d4e1cfe35d12cdf80abbfc3b4822bf2d35cb7fc753151277c6fddc182c19d2"
+      ],
+      "gettext-runtime-1.0_1.pkg": [
+        307472,
+        "sha256:f5764420babd624aa354beb1abe1806a54520b10d68a78f39f3f365487f9b595"
+      ],
+      "gettext-tools-1.0.pkg": [
+        3921219,
+        "sha256:866855c21f89da4649a7c90e11ea31ddb7abb5681cf3b48aa5fae03b7d796027"
+      ],
+      "gexiv2-0.14.7.pkg": [
+        134329,
+        "sha256:51ea2b5b547e6a80c081cd96270cdaf7bd47a9fb85b2be69f7ad86a234de11c4"
+      ],
+      "gflags-2.3.1.pkg": [
+        122384,
+        "sha256:aade06ccda4c8311f0230a49a90a4a8478979a45bfd6ed25d3eb4a2d4fb866f2"
+      ],
+      "ghostscript10-10.08.0.pkg": [
+        9190791,
+        "sha256:2fe249e5a886ada51b7ce29011639f0e755623652c17b8ba736ec0e3e0f01cbd"
+      ],
+      "giflib-6.1.3.pkg": [
+        244415,
+        "sha256:e40fcf4d9155e16e9e9137b839fa7ea1ec1df86094a821dc3972326272d08a0e"
+      ],
+      "gjs-1.82.3.pkg": [
+        393919,
+        "sha256:3e6e6cce37d45040f08e7a3858f78403f8649309b7a100a612b44e6bd7802ac9"
+      ],
+      "glew-2.3.1.pkg": [
+        503970,
+        "sha256:a46e83a6c632f697c6fb54fc9934ad51bdeebb594622641ddb99eac11337aebd"
+      ],
+      "glib-2.88.3.2.pkg": [
+        11234432,
+        "sha256:a8a613d8aac7ad6b3fe309e2a696b5dc6e595d4900dbeb3aeeab98514c8dc5ac"
+      ],
+      "glog-0.7.1_1.pkg": [
+        112300,
+        "sha256:c12e4ed517bf7dbfd6781f80f1786d363f55e4c3c23e1c0ecfe20f3540809b8e"
+      ],
+      "gmmlib-22.10.0.pkg": [
+        280016,
+        "sha256:85d4b10ca60aac62b5caca6018f33795ed7163da20acae32b4b973e3470baf5e"
+      ],
+      "gmp-6.3.0.pkg": [
+        515916,
+        "sha256:aa80385bf4ca0ccf2ca2b5a28ab032ab030b7c6698fb54e25682de4df9204d63"
+      ],
+      "gnome-autoar-0.4.5.pkg": [
+        75679,
+        "sha256:c2f8a7a80acba47b26c40ec9cd1a12e8d05d9918752ef90b05fa6728ffeea1fc"
+      ],
+      "gnome-desktop-44.5.pkg": [
+        303474,
+        "sha256:f6d6f51a124147090312600925ebde0ec049625e16347e197c9ad9feaeda4c0f"
+      ],
+      "gnome-keyring-48.0.pkg": [
+        860166,
+        "sha256:cf5f8e357e8e4cb8e55138821d4a98ef83a7ff7089579e0b64bb9e07badb6f4b"
+      ],
+      "gnome-themes-extra-3.28_5.pkg": [
+        2652354,
+        "sha256:73fd3b0ff91aae5c7cf4c77018877a4f0279c1e0178086887df398770e525245"
+      ],
+      "gnome_subr-1.0.pkg": [
+        2122,
+        "sha256:e6162fa11f98fb53fce2667b538c028b3495672133b6803ccbbabec779352745"
+      ],
+      "gnugrep-3.12.pkg": [
+        286465,
+        "sha256:1bdef2349cba6170086870feb1a990c530f6991380d344d872194b0dd6f96eef"
+      ],
+      "gnupg-2.5.24.pkg": [
+        2883960,
+        "sha256:673005451947311f440702413f2c059c95dc61ded62781370fa943fe4ce61c77"
+      ],
+      "gnutls-3.8.13.pkg": [
+        2873635,
+        "sha256:36a27a2d1304cd1a18592d8142431bdfdb2e4af4e1e2c6f0ae4f4ad115409036"
+      ],
+      "gobject-introspection-1.86.0.1.pkg": [
+        665831,
+        "sha256:ffc89bbdfaa2d0e46d0a08c6175bd8396c10dc0140370403de85b6b6957230d7"
+      ],
+      "googletest-1.16.0.pkg": [
+        377085,
+        "sha256:dc07dab2e8de1af67c640aa5ed74460dfde15ef228fd66a2136a85bb60ae887f"
+      ],
+      "gpgme-2.2.0.pkg": [
+        345388,
+        "sha256:05ec0d22d1d26d1ba70076d99566b9537688fa7535fd1f567353c6a198875de3"
+      ],
+      "gpgmepp-2.2.0.pkg": [
+        151351,
+        "sha256:86e710af39d14cf6dd4c1558d0b6dd4773cf0805eb3e9450db3ca3a89918a09e"
+      ],
+      "graphene-1.10.8_1.pkg": [
+        201848,
+        "sha256:4cb075e48262977120fc0007d16b8c9f153e6ffd4a06e3382ca294a00181364a"
+      ],
+      "graphite2-1.3.15_1.pkg": [
+        100267,
+        "sha256:3f65af1b86fa9bffc30b9caaec766aece354e239970fa7b2597ff23f3337fd47"
+      ],
+      "grim-1.5.0.pkg": [
+        17879,
+        "sha256:f5af096a5ccda73ec1baf623c7370f1b6d836b522aea156a0ace17148cdff8f5"
+      ],
+      "gsed-4.10.pkg": [
+        364786,
+        "sha256:dd0d50a757ef0361b181e098c9e963264614402a051c2f305a0cb9ffb0111862"
+      ],
+      "gsettings-desktop-schemas-47.1_2.pkg": [
+        750377,
+        "sha256:9cf1d1aef1944bea8461a7762b53b20def55ad16a84c0ab84fe7d18b6fc47a5b"
+      ],
+      "gsfonts-8.11_8.pkg": [
+        4282191,
+        "sha256:9f97eb5028103d97bbc381370a20ab10d8ef34dd69c9d7e8d6081b19129cca01"
+      ],
+      "gsm-1.0.24.pkg": [
+        50699,
+        "sha256:59d04972aa41dfa4be6ade55c2777443b43d89ce86150c92ef1987a6fb54d158"
+      ],
+      "gspell-1.14.3.pkg": [
+        114082,
+        "sha256:c5420103a8110b788b0896ffc982c56a04c52e540e8e0fd39b4141cd62e5226a"
+      ],
+      "gstreamer1-1.28.8_1.pkg": [
+        2143905,
+        "sha256:4889b7d8a0d409efca186e5f260a56d95d462c8688380ae7a6c62469f92b6051"
+      ],
+      "gstreamer1-libav-1.28.8.pkg": [
+        105447,
+        "sha256:06c3d8f78b1661af643672db12ff6c608ddd9681d936507819a72b72d5ef45fd"
+      ],
+      "gstreamer1-plugins-1.28.8.pkg": [
+        2111800,
+        "sha256:6c203cf3d58d6ad01dd510aef2d4fa1aa0768c81165afef1c51abb2921cfb380"
+      ],
+      "gstreamer1-plugins-a52dec-1.28.8.pkg": [
+        18837,
+        "sha256:78fcbd7f17963829262cdd9ca5bc1548b136a0675cc2fd16e853884b0029aa33"
+      ],
+      "gstreamer1-plugins-bad-1.28.8.pkg": [
+        2313186,
+        "sha256:be8928d8839fee95b3f65e440b96e87b463bd307c625999eea9a59cebf283d99"
+      ],
+      "gstreamer1-plugins-dts-1.28.8.pkg": [
+        18067,
+        "sha256:0f1b74576d80d5cc83117c5042d08f138f97a9fa4d3fc0ec77d33030dfc3c4ca"
+      ],
+      "gstreamer1-plugins-dvdread-1.28.8.pkg": [
+        27754,
+        "sha256:352ee5f67eb4eb6f7662a04227802c653ce4d347fe8201980d0925894f2105f1"
+      ],
+      "gstreamer1-plugins-gl-1.28.8.pkg": [
+        418214,
+        "sha256:691b2ea58f3ecaae6bd941f06a03fa19e2bf3ee168eb7e5ab0cb58e6db3d0aeb"
+      ],
+      "gstreamer1-plugins-ogg-1.28.8.pkg": [
+        98369,
+        "sha256:79e6c4c3975329f9a9be2d51d34e7cc62e28e2c3a236a1b7028fc63590d83841"
+      ],
+      "gstreamer1-plugins-pango-1.28.8.pkg": [
+        41317,
+        "sha256:e6ec6f580840f84e0cccc789390014696d8d95ec8cbf0da23735b2b615491c0a"
+      ],
+      "gstreamer1-plugins-resindvd-1.28.8.pkg": [
+        73923,
+        "sha256:e79b946002bee95bc284579bad01d097b6d69b099e415fabfe863c13e779ee6a"
+      ],
+      "gstreamer1-plugins-theora-1.28.8.pkg": [
+        31815,
+        "sha256:d825765832a85df30930985f75c875f78ed96117a6f8d95fbe97a233efdf4cb3"
+      ],
+      "gstreamer1-plugins-ugly-1.28.8.pkg": [
+        126900,
+        "sha256:6b20b23e9119ddbca92228f7267fa7ff50070e30c1b63c205a10e2815ab538b3"
+      ],
+      "gstreamer1-plugins-vorbis-1.28.8.pkg": [
+        31112,
+        "sha256:d2cd561a218d7da6f62813ec17119b290b56198b716e643cb692dc95ae52cb2a"
+      ],
+      "gtk-doc-1.36.1.pkg": [
+        242505,
+        "sha256:8c4123e1eb80eb90cd887d37971991c3d83dbaf336029dab20cbe70b71e7a536"
+      ],
+      "gtk-update-icon-cache-3.24.42.pkg": [
+        89080,
+        "sha256:7eaa855d15a752a6b7088bd0bee6772a8a7d7ebb4a34e9271559af3d41ea15d3"
+      ],
+      "gtk2-2.24.33_1.pkg": [
+        6038905,
+        "sha256:e6bb34a993209a3105fdf673a5d72ac28dd5f6eb378f87517aad6cca103058ef"
+      ],
+      "gtk3-3.24.52.pkg": [
+        13460057,
+        "sha256:248204f9025f48bc6b1c25b614199ca76c0980687fb7a2334141774957edea5b"
+      ],
+      "gtk4-4.20.4.pkg": [
+        15746519,
+        "sha256:442b96ea065d0d6832cf4c8a6f8f35fd392ca8474be74f72a786542c44a056cb"
+      ],
+      "gtk4-layer-shell-1.3.0.pkg": [
+        57444,
+        "sha256:9825e4b3fc4815f219a2c9df89431ed5fb5df069824f660f100a383295dca6d5"
+      ],
+      "gtksourceview4-4.8.4_1.pkg": [
+        909796,
+        "sha256:439ce63fb21a52b67bb6eae96b8d2601418886de01dfcb94a6db29e103e493d7"
+      ],
+      "harfbuzz-14.6.0.pkg": [
+        1604470,
+        "sha256:e29845dba5c9fd379dc8db1b949d29f86fde573e4d5ceec4c093ed9e425fc36a"
+      ],
+      "harfbuzz-icu-14.6.0.pkg": [
+        6472,
+        "sha256:a3806c000e618c0247483030e131aa1edfa95cd2a27ea7ee1225fe13d205d7d9"
+      ],
+      "hdf5-1.12.2_2.1.pkg": [
+        12797034,
+        "sha256:f46d415d3aa6c0cdbb9206c22e0c7aa7acf35252dfc8ebbf0bb5e4af2c2ebd7e"
+      ],
+      "hdr_histogram-0.11.10.pkg": [
+        42643,
+        "sha256:5968620d63944a2576322b81016d76345c2c3b6bcf3c7e82d3157efc5e334da8"
+      ],
+      "hicolor-icon-theme-0.18.pkg": [
+        17854,
+        "sha256:3338ac09cd83e9f281ce250090c9d251527501f9101511a83e0b9eec16ce82af"
+      ],
+      "highway-1.4.0.pkg": [
+        1047817,
+        "sha256:fadfdea3161908ce9834fee8094351cfef7ae6a4e273af710a3d9b4e54f4b328"
+      ],
+      "hunspell-1.7.2_1.pkg": [
+        526881,
+        "sha256:9ee1d29952f24916827b09a01c11840d348ade1212bb64af8705cbf64cd33591"
+      ],
+      "hwdata-0.412.1.pkg": [
+        1782393,
+        "sha256:cab95ccf949d688248d454b5015fe2da71b89b00d868586618f1cb497eadf7af"
+      ],
+      "hyphen-2.8.8.pkg": [
+        73746,
+        "sha256:4167490b01652fbd837d7e5cfd114042ee5b0f332c99f9707fbb11daffe805b3"
+      ],
+      "hyprcursor-0.1.13.pkg": [
+        163086,
+        "sha256:fb86c78c81cf5095117a9158eb89558bc02d83af70d48bd2000214f617fa01b2"
+      ],
+      "hyprgraphics-0.5.1_3.pkg": [
+        76468,
+        "sha256:78b25045ecbf619a9a054cb42189ab69e72c78bdfef8d68fa1dedbf62317b8cc"
+      ],
+      "hyprland-0.56.2_2.pkg": [
+        51248444,
+        "sha256:8d9f5374d7bc0eeeebd83cbd5f6527a9564ddaee411060e58624c65e6ac49a51"
+      ],
+      "hyprland-guiutils-0.2.2_1.pkg": [
+        133879,
+        "sha256:72b86a0f0e70096af00bfad598d784363ab81d180a02fbbf8160e66ab17a0d00"
+      ],
+      "hyprlang-0.6.8_3.pkg": [
+        107661,
+        "sha256:291cff487080cff444d8d75e7796d3455074f6049b5b0439de341ac6064ec320"
+      ],
+      "hyprpicker-0.4.7_1.pkg": [
+        88215,
+        "sha256:65be95438b89c8efd08a830e154df2345eb3bd867bb7757cc501c16a0fdf9ca0"
+      ],
+      "hyprtoolkit-0.6.0_1.pkg": [
+        519475,
+        "sha256:babbe7b2c36392f4b7f74d01f8fe02040144c08ec25e9b604e06a6e881b31fd9"
+      ],
+      "hyprutils-0.14.3.pkg": [
+        194225,
+        "sha256:4348968f163a744bd412a1f8523705bd5f2bb1bad1104a629bf77452c423e142"
+      ],
+      "hyprwire-0.3.1_2.pkg": [
+        165402,
+        "sha256:6398c94dc35c84a0562904c566897779c99d918664125d6f103d01beb4c3181f"
+      ],
+      "icu-76.1.1.pkg": [
+        13622303,
+        "sha256:25fdfd1a6dbb52088b4bd0d46390675575ca0820f7b04fbecc350ec449ade8af"
+      ],
+      "imv-5.0.1.pkg": [
+        68901,
+        "sha256:617b8fedfccba057169d8a5544cba7be029f3096accdd006977f98f42b654f74"
+      ],
+      "indexinfo-0.3.1_1.pkg": [
+        6092,
+        "sha256:b51012f5e2d04d76f7af1581999bbce6427f0549454bd25a33e19aae556e7e11"
+      ],
+      "inih-62.pkg": [
+        17631,
+        "sha256:e7c7d57ca3b9fad4017edef15ee39635e3902b5e667278ea375f09fa9c666e15"
+      ],
+      "iniparser-4.3.2.pkg": [
+        86579,
+        "sha256:5b12d14711451b0dd1d72fc022d8b688b619284a120f311720bac71dcd3c12a0"
+      ],
+      "inotify-tools-4.25.9.0_1.pkg": [
+        61665,
+        "sha256:8681f6aec5f1931c5b2537439ec59856bb8baf8280d1cc7027b4739c54782cfe"
+      ],
+      "iso-codes-4.20.1.pkg": [
+        3906123,
+        "sha256:f70851721a2dcd918ec6d6391b7cf8dae1fa9b3582398a1ae3e7d88773f6a89b"
+      ],
+      "iso8879-1986_3.pkg": [
+        15473,
+        "sha256:7340a583774b4141472cbf4e357653d26b30cf393823c7c57bc9e68af5289f62"
+      ],
+      "iwmbt-firmware-20251111.pkg": [
+        4958853,
+        "sha256:51e55f2416e9abab8f4683b74445af2791d31e72957a9780253d62a66bb20395"
+      ],
+      "jackit-1.9.22_3.pkg": [
+        481156,
+        "sha256:a94a713d6713d4ff760d05e63338dcd7aea972901bd0423901163fa50eeea046"
+      ],
+      "jansson-2.15.1_1.pkg": [
+        65266,
+        "sha256:85eab29d150ea0dbc5420362c9f86718532aba71bbaa236e3dc26dbd18085d19"
+      ],
+      "jasper-4.2.9.pkg": [
+        439295,
+        "sha256:e4631c88bc4781068067da829bc45c8aa8c70778c57fb0355baa6fff9b771eee"
+      ],
+      "javavmwrapper-2.7.10_2.pkg": [
+        17536,
+        "sha256:3971f4926e582a1d85416d7261fcde92d30a8affadd397d5978ee408c0f91952"
+      ],
+      "jbig2dec-0.20_1.pkg": [
+        100065,
+        "sha256:2060d80f8dfa59857f97c7903b4db177446bc1767a26d5141b6a14f465630ad6"
+      ],
+      "jbigkit-2.1_3.pkg": [
+        80990,
+        "sha256:776513f5bac5a11ec0efb6147b33a2d71dc2ce8a1d96b194b67128d17ae728b6"
+      ],
+      "jpeg-turbo-3.1.4.1.pkg": [
+        472171,
+        "sha256:7f1940408f8fc18454aab362666bb2a717092adda4fd046f25a94cdfeb3f2fa1"
+      ],
+      "jq-1.8.2.pkg": [
+        346496,
+        "sha256:4d497acd6afbf890fe8db7956cac1cc50bcabd27e16bfe902afe7fa07cdac9ab"
+      ],
+      "json-c-0.19_1.pkg": [
+        78018,
+        "sha256:92c0483ce2c67c05f560920dfb0161e1901cd9f782188a6b53c04d451b67fe74"
+      ],
+      "json-glib-1.10.8.pkg": [
+        1316204,
+        "sha256:9d277eb7ab566029af281efa7444b4b14e6a107e94b2ce06ba9ac6a08bedfc29"
+      ],
+      "jsoncpp-1.9.8.pkg": [
+        138705,
+        "sha256:8a7f7462c182b0bacdc5577bfe24b5acb87327c2de47bec1ad335bd7db4f72e4"
+      ],
+      "kf6-extra-cmake-modules-6.31.0.pkg": [
+        501892,
+        "sha256:430ed6f7c7fbb849cf26010e0235aa57dbeb79372c3e985e8f0728d8c3ab8414"
+      ],
+      "lame-4.0.pkg": [
+        357651,
+        "sha256:7196400df98dbb5e8c7fd23406f86a3d80cf24b7002037d4ffae4c909a7da7b9"
+      ],
+      "lcms2-2.19.1.pkg": [
+        2562804,
+        "sha256:8dd0816a44b32f231d19fd8da67e88bac22868331a58a954a44c61269206c25a"
+      ],
+      "leptonica-1.87.0.pkg": [
+        1285283,
+        "sha256:5e3c83139b84f1326d1d9d09bda01e0b7309321fa6fcc566fbb1cff90568ff9a"
+      ],
+      "lerc-4.2.0.pkg": [
+        173601,
+        "sha256:8409f8ede172039525801a33018c8858d26bdc1dde3f6830e36a089324344e74"
+      ],
+      "libGLU-9.0.3.pkg": [
+        226160,
+        "sha256:7ebe6f5514a32f30f9f4c4c140a218baaf27044ad791b621000eb353e8f409df"
+      ],
+      "libICE-1.1.2.1.pkg": [
+        101126,
+        "sha256:129ee318b03cc7542aa87cfc45b8e2433cbaf22c9f0ea1b5675fdeb7a39606a9"
+      ],
+      "libSM-1.2.6.1.pkg": [
+        26984,
+        "sha256:4bfe1f499bc4c7a4b4d2d3c633eb43068ee89b274c0f3ac87be7ab66a18650df"
+      ],
+      "libX11-1.8.14.1.pkg": [
+        1770417,
+        "sha256:668a1338ab286194531705d692ed76f0705c26d718482d006e9ff7e4f0b59846"
+      ],
+      "libXScrnSaver-1.2.5.pkg": [
+        15368,
+        "sha256:d7723b983bdbaad283c8de4bee3cfb32843464098e67bc1e26e516e96cd028e9"
+      ],
+      "libXau-1.0.12.pkg": [
+        12989,
+        "sha256:629c96ba28858f7135a47b881968640bd17668c1943e2af68579d8475bc6dbdf"
+      ],
+      "libXaw-1.0.16.2.pkg": [
+        515181,
+        "sha256:8b6bde29f427034b2dd4b0f546bfe01b042f62514765aeb92d045a5952d9c478"
+      ],
+      "libXcomposite-0.4.7.1.pkg": [
+        12163,
+        "sha256:49a1c9facf529c08daa20641c9272e4c38a5f4486c7145094ff61764f1106e9d"
+      ],
+      "libXcursor-1.2.3.pkg": [
+        46142,
+        "sha256:0d0fb305e019b2dd0a3b49c254d22ec29ee0c3630536b7355e9d0ca3d1cd7f73"
+      ],
+      "libXdamage-1.1.7.pkg": [
+        7689,
+        "sha256:df40105340be116ae5bbb7452d18ec8f001d5a7e2646f599730081334ea0ba61"
+      ],
+      "libXdmcp-1.1.5.pkg": [
+        17057,
+        "sha256:114f0c449ede4c542d1924627d9612796c361ec7077777bfa162b76d0472254d"
+      ],
+      "libXext-1.3.7.1.pkg": [
+        102552,
+        "sha256:ecbb203316b0f8566ec1537b73eb874e0097436b1d75db0a3d6c0a97366258da"
+      ],
+      "libXfixes-6.0.2.pkg": [
+        16068,
+        "sha256:1c053385f6e6e0d82b43c2348147c35b9a01cfe572acfebdb5d280cd98881bb7"
+      ],
+      "libXfont2-2.0.9.pkg": [
+        147728,
+        "sha256:7f0f636e78b2bb034fa72d2b2d0f75a518279ca7f21f05cae3f15c0f9af68cd9"
+      ],
+      "libXft-2.3.9.pkg": [
+        82939,
+        "sha256:bd29fb401f3270a0ebd2f7e293beec121348c525251656b09839bb9d8f624799"
+      ],
+      "libXi-1.8.4.1.pkg": [
+        134437,
+        "sha256:4c3cedec2a9f6c244b373634face9547117fa03385d8376c6c061d00cf445975"
+      ],
+      "libXinerama-1.1.6.1.pkg": [
+        10717,
+        "sha256:07af4a3173f583e0f372d8f989894e598261e8d4e1899f1a2e3af06eea0ea66b"
+      ],
+      "libXmu-1.3.1.1.pkg": [
+        106960,
+        "sha256:e6aa5aadc2387372f14603503c46d1604ab4243dd4bab3addf77fba81d60e1a6"
+      ],
+      "libXpm-3.5.20.pkg": [
+        96809,
+        "sha256:e84adf9e373f98d9cff0d42fac4633f404e4c4c2cd8278ca56f66b7c323f00b8"
+      ],
+      "libXpresent-1.0.2.pkg": [
+        18856,
+        "sha256:490ba8640be3073384ec7f9d377265cbda72506b66f32f386bfa34edf1f3bad0"
+      ],
+      "libXrandr-1.5.5.pkg": [
+        33030,
+        "sha256:1efa63497324bedaf33d170d1b2eb5fe2d1ff3ee6bec49ea838524ff37b379c2"
+      ],
+      "libXrender-0.9.13.pkg": [
+        34725,
+        "sha256:0c836c163154e27844a454991b56910347473f0435c3200452633037de8dde18"
+      ],
+      "libXres-1.2.3.pkg": [
+        11600,
+        "sha256:34cf580ab9aa9801784ef07bd5482682fd355976d2df219c0ebaa9fb73bc6a6a"
+      ],
+      "libXt-1.3.1.1.pkg": [
+        493033,
+        "sha256:d1362a1fcd4734b4df2009316d7de96d3c95ecb4fd6dc506169ed0a433a2c732"
+      ],
+      "libXtst-1.2.6.pkg": [
+        21211,
+        "sha256:7431eed759fa29148ef21e3c2b9de4d3adb9affbec6e7ed0df1bf557183f7877"
+      ],
+      "libXv-1.0.13.1.pkg": [
+        38375,
+        "sha256:be2f31168d19fcbdaac38f06f4261a51b862e4dd1870c62da5c473bd3b9e5aaf"
+      ],
+      "libXxf86dga-1.1.7.pkg": [
+        21931,
+        "sha256:3dac9b22d953989b9da0b75ee68bbf388cc92146096cd5308597b754944741a9"
+      ],
+      "libXxf86vm-1.1.7.pkg": [
+        17901,
+        "sha256:b8a5a853c9aa69f699d0434d108329679e1b7c49993eb8425bc9f71adb9a9e0a"
+      ],
+      "liba52-0.8.0_2.pkg": [
+        58289,
+        "sha256:77f3ccb8cc66920eca1cbeca328ab742b3ba6bfc9e23ed43acc2eb1e8db28233"
+      ],
+      "libabw-0.1.4.pkg": [
+        94019,
+        "sha256:bfddedd14f284366ef771f8af80f564806a4541cd93707d19f051276de34807a"
+      ],
+      "libaccounts-glib-1.27_1.pkg": [
+        130676,
+        "sha256:367944a39292a17b7fc7581a31f998586981b349c8b00dd4f767dc3aec4e9d02"
+      ],
+      "libada-3.4.4.pkg": [
+        260679,
+        "sha256:f9743c7e66233742739eb909a0412ed49b4c8a9ee7edbd107caaf83bca51d82d"
+      ],
+      "libaec-1.1.7.pkg": [
+        29617,
+        "sha256:efcf40d1e2e8907ee6245572950ecf8b60eca30259eb0ccc76b15bb9ece43ace"
+      ],
+      "libao-1.2.0_7.pkg": [
+        56792,
+        "sha256:d7c0400846628f1b43345355314d1451926ba909433eb40677ab0771d5090987"
+      ],
+      "libarchive-3.8.8.1.pkg": [
+        553489,
+        "sha256:5e25e82c4d01dfa9bfbf880099e7883682f393fe3bd146e0c0ebba5525bd613a"
+      ],
+      "libass-0.17.5.pkg": [
+        123750,
+        "sha256:45adc5ad905d2230493c6529c87c70549d6283f36f5e5334ea7fb83950fdb6ca"
+      ],
+      "libassuan-3.0.2.pkg": [
+        86437,
+        "sha256:b24f1614ff48043258566c7140e521cca1658b4697d03f0734341a8391b834d2"
+      ],
+      "libavif-1.4.2.pkg": [
+        282740,
+        "sha256:ffbb9a929f68eddff4bc6f6503729d56583a5d36097f67d5e1cc1a1ec71ae4cd"
+      ],
+      "libb2-0.98.1_1.pkg": [
+        44628,
+        "sha256:95bbbb57349bb6e626012a3cf393a7c969e11e274a566e7082a10856535d5dd2"
+      ],
+      "libbluray-1.5.1.1.pkg": [
+        158864,
+        "sha256:6b696f4911fe8017e8e9d864db7b68b24e776e1e45b75bdf8bc7fc6af2eb6370"
+      ],
+      "libcanberra-0.30_12.pkg": [
+        45499,
+        "sha256:e9a1cae41360d88a6ffafe31db49bea5d2fbc6b5cd8e4ee94ef3e0e65f40cec6"
+      ],
+      "libcdio-2.3.0.pkg": [
+        282565,
+        "sha256:b869e38b7af791fa2a074e68fcd9697bb5e8bc6f67b3d54f3aa4af304a63a355"
+      ],
+      "libcdio-paranoia-10.2.2.0.2.pkg": [
+        97872,
+        "sha256:57c1321d4f34d93a21c4274597fb2aaf39b8a99ec17a0edb8f0aadb0b7b56b3e"
+      ],
+      "libcdr01-0.1.9.pkg": [
+        377966,
+        "sha256:fbe1d8e8daa5cfcb54436230a999b04a6e3b8d8811c65b37332fab614f3ccdec"
+      ],
+      "libcjson-1.7.19_1.pkg": [
+        40679,
+        "sha256:1920668eb826f330cd459b6c46971e2eb0c6e1b97d334dc588f434e56f9e4742"
+      ],
+      "libcloudproviders-0.4.0.pkg": [
+        46536,
+        "sha256:d5eba642fec36ab65a051b1836a6d9cb8e1b088f46735a344978c8c07ead3378"
+      ],
+      "libcue-2.3.0.pkg": [
+        28962,
+        "sha256:90ef8c600db507ca4cf5334f237ac75163b06e7b06ba2725ec977aee975eaf68"
+      ],
+      "libdaemon-0.14_1.pkg": [
+        36801,
+        "sha256:44befb8dd17619110bc0a876542dfdba80a3002a42eb71ff77b561b72db42247"
+      ],
+      "libdatachannel-0.24.6.pkg": [
+        804211,
+        "sha256:cb93390fe9e24446732ba2e076e031716ab2e410dbae30abcbce26a67dc12cbb"
+      ],
+      "libdatrie-0.2.14_1.pkg": [
+        42091,
+        "sha256:4cbfad5a8da05d8f99481f88a81b3b598f8034e9a3dc3e592586ad0c6d767dc0"
+      ],
+      "libdc1394-2.2.7.pkg": [
+        157767,
+        "sha256:94807ca366b5b3dc0dcea6792c0255ce0259c4b81da480e5cf0cb98f348e366a"
+      ],
+      "libdca-0.0.7_1.pkg": [
+        124697,
+        "sha256:9e570d06a16a6a4544a2bba431345cf917691243e34ebece79b26bb8bb56741c"
+      ],
+      "libdecor-0.2.5.pkg": [
+        60728,
+        "sha256:7efc6f1581cd6a0e13600c68309a9147bee6d23d4046b21470d66d79b8a2c0da"
+      ],
+      "libdeflate-1.26.pkg": [
+        88214,
+        "sha256:06e1636f8293457ca9b5a972c42c13f72e3c8d066b3e77823b3ba13018dfa855"
+      ],
+      "libdisplay-info-0.4.0.pkg": [
+        123471,
+        "sha256:6f8431dcca75c4dac1990d1bd9193d60e0b858ca88261a84c61eb4aff27242cb"
+      ],
+      "libdmtx-0.7.5_1.pkg": [
+        77666,
+        "sha256:c10959e32d5ac8cc9898aa81b6412efca3624c66bf08e860b43490e9dbfce45a"
+      ],
+      "libdrm-2.4.134.1.pkg": [
+        293440,
+        "sha256:1a73f3ec98ca437b994e4e16b21b256244ec6878cfbb25ad2f086a84314e86e8"
+      ],
+      "libdvbpsi-1.3.3.pkg": [
+        122740,
+        "sha256:91ada420f939f49a1a3c0669ffdea6c2e92306d4be9ac7d6803bd71669f16e0c"
+      ],
+      "libdvdnav-7.0.0.pkg": [
+        63337,
+        "sha256:13d212dc513c9235b15928cc2dbe904a1cbb5193ed3905d691efaf3ec0d03275"
+      ],
+      "libdvdread-7.1.1.pkg": [
+        97749,
+        "sha256:0d5df1446e4b44d84ef1e99fc828f255cb5b5822841bd08d3f781643abfd3f95"
+      ],
+      "libe-book-0.1.4.pkg": [
+        778856,
+        "sha256:dfa2232acef784e7bb463ea5e8e9daea6bdcf1878fae30935f10d46d7adabf5d"
+      ],
+      "libebml-1.4.7.pkg": [
+        75842,
+        "sha256:5c78ea3db31e830db624b7917fe13903b6dbcb3b180264f2473395b9d2270999"
+      ],
+      "libedit-3.1.20260512.1.pkg": [
+        157930,
+        "sha256:0aa84a5980c5a4494859385e11b0f68e13f050bb9e3fd698d7cf57e11437db81"
+      ],
+      "libei-1.6.0.pkg": [
+        112189,
+        "sha256:74bc0acab13e9aca1b357a7d6c41dd9b92910bed1c73376ebd1f9e4b792103bf"
+      ],
+      "libepoll-shim-0.0.20240608.pkg": [
+        22292,
+        "sha256:bd16d794bab53c2fc745b91fa81395acba6c788f1f5cf2240083d1b658f3d645"
+      ],
+      "libepoxy-1.5.10.pkg": [
+        317373,
+        "sha256:267670e34594f7deedb461fb90166c7fcd715c931dd88815a1d68ae389f3c4ee"
+      ],
+      "libepubgen-0.1.1_1.pkg": [
+        121320,
+        "sha256:409cec9dba3869de7239e2943488953ef9b86c31554f73cff99e6efe01fbb404"
+      ],
+      "liberation-fonts-ttf-2.1.5.2.pkg": [
+        1602827,
+        "sha256:a7fde9b1ef1d76b4e6db73e3cff65aa3c53aa73debed83aeda284926986e1943"
+      ],
+      "libetonyek01-0.1.13_1.1.pkg": [
+        623067,
+        "sha256:83e31128d4acee3c3c9b6e3e2972037e7a84b15e33ce517a262a8690c07a86a8"
+      ],
+      "libevdev-1.13.2.pkg": [
+        60031,
+        "sha256:e0bf1f51757b46de21993eb0661273a4f8542f94cdb97409436390bceeee82e0"
+      ],
+      "libevent-2.1.13.pkg": [
+        359068,
+        "sha256:41afdc0af5c25328e4526640c3213d314f16fd9bd4f0c670334b00aa7248bbe4"
+      ],
+      "libexif-0.6.26.pkg": [
+        580100,
+        "sha256:32e77aae0995d1c8e547bca187e7ef9984b2c4d8a60053a58e7d0b8f946a52aa"
+      ],
+      "libexttextcat-3.4.8.pkg": [
+        230830,
+        "sha256:cd84bab0e4d6bdb666d81fd9061f638d4864266ea2bd7d20fd157a7cc2508b9b"
+      ],
+      "libffi-3.8.0.pkg": [
+        57415,
+        "sha256:14d1ebaab11fa6af6a900df18ac4f7f779142d1c8f336d88a5efa42dab0c8080"
+      ],
+      "libfmt-12.1.0.pkg": [
+        185119,
+        "sha256:656b9c8f52b2704b280b50a26bf4aa8421f2cb578b93031daa618f5f3477a105"
+      ],
+      "libfontenc-1.1.9.pkg": [
+        22357,
+        "sha256:1516ba6b78bd654f36ab622d1b1f5ce59f5d2a6e999e46b877bdf9dbf861cf82"
+      ],
+      "libfreehand-0.1.4.pkg": [
+        258799,
+        "sha256:d42bfae09c6ca3ad77ba9b29afe64c5aca43ce174178c0fb46113f3cc37f8b48"
+      ],
+      "libfyaml-0.9.6_1.pkg": [
+        574563,
+        "sha256:8354d759e24e9789d65e2edadcb81440fcab90a9e50f064366c1ce0cb628344e"
+      ],
+      "libgcrypt-1.12.4.pkg": [
+        1260502,
+        "sha256:6a7bf16ff1e381790429f1e8ac2ab353de729fd40054d77f049f7c3a1f0ee380"
+      ],
+      "libgd-2.3.3_13.1.pkg": [
+        227256,
+        "sha256:64962c71903117f75548dfcc48f9224995f4088882556ad910fdab0ab37bb059"
+      ],
+      "libgit2-1.9.7.pkg": [
+        807011,
+        "sha256:6e91ed46691d9685fd3ab47d7a121406d09d5f68ce09ba7e189d0468e55bb659"
+      ],
+      "libglade2-2.6.4_14.pkg": [
+        73045,
+        "sha256:dabaa1744564b1e41f774575bf7076f1bb0ff6a287aa7ee92e8983f14752d246"
+      ],
+      "libglvnd-1.7.0.pkg": [
+        398431,
+        "sha256:73feddf3e4501e40f48b8de4f2b323508ca42093e960aeb1fc3b868fd3fce84e"
+      ],
+      "libgpg-error-1.61.pkg": [
+        399482,
+        "sha256:3a41586df0a3ad702f1c1dbd07cf8727a3f0b5e5c3a8b8b63640e0a6c406592d"
+      ],
+      "libgsf-1.14.58.pkg": [
+        432291,
+        "sha256:5316b670f04106979f6ccc20a4eb6385276b0bb4ca473821b65bea90ec25672d"
+      ],
+      "libgudev-237.pkg": [
+        51850,
+        "sha256:5d6b66fadfc91fbe304392c9267c4ac97e9c557adf66c00c6e9ddcfd85049403"
+      ],
+      "libgusb-0.4.9_1.pkg": [
+        1161195,
+        "sha256:ef5638af1ef1435c811512fcde77de8adb833e7ea3bb3e3e88d5da401fa2fba1"
+      ],
+      "libgxps-0.3.2_3.pkg": [
+        92677,
+        "sha256:e40dcdde1b3449cf6e2e07d85b63c05ae52494089cf804d8c074e81109afded6"
+      ],
+      "libhandy-1.8.3.pkg": [
+        438543,
+        "sha256:9334570e073fbb402f3a3f106e7957e93519e9e9d8982b0b4fc0a59ac0f3a90a"
+      ],
+      "libheif-1.23.6.pkg": [
+        886873,
+        "sha256:c018dac07b388f84744428b2522e6eed4d27ff0e22fad51072f6682cdcb331fe"
+      ],
+      "libiconv-1.18_1.pkg": [
+        756818,
+        "sha256:db12d4726347295c9850176f2904eb0bf9cb431fb02eac29b5b9c766a12b4790"
+      ],
+      "libid3tag-0.16.4.pkg": [
+        42864,
+        "sha256:c950aba0fa12e71ddcb9c94fb01b3cf596b7a8e9660cb14ffd13f133cfdf8e14"
+      ],
+      "libidn-1.44.pkg": [
+        285645,
+        "sha256:dd1278df80ae7bea67839bdf19238e3b9c24ca5d8b8e1dd0c7e4472af026c633"
+      ],
+      "libidn2-2.3.8.pkg": [
+        164816,
+        "sha256:33c2613cb3d6a1ade10ec8fd944e86db88e1bbaa67b4b80bcd293c558f5159d2"
+      ],
+      "libinotify-20240724_3.pkg": [
+        28251,
+        "sha256:1ba4596299e81fcc64032b2f25d3cbe1a45b25dbdb961989d8d52899b91b6e9b"
+      ],
+      "libinput-1.31.1_1.pkg": [
+        348123,
+        "sha256:d28246a5dc4bd1d12b4c9ba090cd1f485643284a2b86e89dc3e3c67439d202f0"
+      ],
+      "libiptcdata-1.0.4_2.pkg": [
+        59465,
+        "sha256:5e26c88c843ab194e6ddddb9efa776bdde550578d4bc642bf88c8ada73e4f3db"
+      ],
+      "libixion-0.20.0_4.pkg": [
+        370866,
+        "sha256:f62c7cf544a85c8e9c76a7872cd263444f5887489049cfd13d45d8e9146cf2f6"
+      ],
+      "libjpeg-turbo-3.1.4.1.pkg": [
+        414690,
+        "sha256:fed59cfc652fac5707cf65ff96d6f8c98aa03e312ee190dca237d1f6598441cd"
+      ],
+      "libjxl-0.12.0.pkg": [
+        2028625,
+        "sha256:031555bd5f77cd72663d85dbada984ea038a9d491ada849a28ec65df77775feb"
+      ],
+      "libksba-1.8.1.pkg": [
+        206276,
+        "sha256:070c358c3528ac2224b089c9cb1c6e2f1fe6b97af936d86ae2365bf23a8c4eaa"
+      ],
+      "liblangtag-0.6.7_1.pkg": [
+        324398,
+        "sha256:1796f7f05defcd06e2bc3be1ca31c8e57486f4c3e23907d62888ba2408f9869d"
+      ],
+      "liblqr-1-0.4.2.pkg": [
+        45983,
+        "sha256:fb34ca1662d0524a5d2d24f05fd21c4e6c2216006cfa41338c1db1bc197cf9b0"
+      ],
+      "libltdl-2.6.2.pkg": [
+        41971,
+        "sha256:49beb8f3ca321801af9a3f54c04313ec0aad02030661032e85d0c442cb2e13ed"
+      ],
+      "liblz4-1.10.0_2.1.pkg": [
+        182731,
+        "sha256:530ac8ebd79c0bb57c4ba0f04e4dcebc27d26ba6e1a5d7c9ab00ce4fa6531f1b"
+      ],
+      "libmad-0.16.4.pkg": [
+        76756,
+        "sha256:dbe377e1fbd37ef013ff03fd5103d200749c9ca6f270c26e5e2a41dc9ec44778"
+      ],
+      "libmatroska-1.7.2.pkg": [
+        140897,
+        "sha256:64cf72ddfd4b803f0dd4cf691cde79b0aa0cf27a66f8a6f9ed6b3014f2f5b358"
+      ],
+      "libmicrohttpd-1.0.10.pkg": [
+        257466,
+        "sha256:c03a60c9dc32f0206f5ac4cda0c6ab2c24adca2ff235f1d6c60a31f11f98a278"
+      ],
+      "libmng-2.0.3_3.pkg": [
+        243092,
+        "sha256:c9f2f2bdb3a0753dcb5d831bb51237e5a39762e4476750198e4c65f0c46a993e"
+      ],
+      "libmspub01-0.1.5.pkg": [
+        144264,
+        "sha256:d615cb5e47001f52d11a356cf140ba0660bf5ba346356fe5b2f52f6b092dd5b9"
+      ],
+      "libmtdev-1.1.7.pkg": [
+        21821,
+        "sha256:a8d9b553d856ba259f5850c9033814c06d343224baa05fcae00cc4b4e47fc4f6"
+      ],
+      "libmtp-1.1.23.pkg": [
+        314502,
+        "sha256:19c4f70eba3cafacb900093c0fac5f0a62535ebd87b29f18a7ff260d4430bfb7"
+      ],
+      "libmwaw03-0.3.23.pkg": [
+        2240312,
+        "sha256:e62689f18a67a42e23f466ee93323585e69350a73ede615894832309d988cfdd"
+      ],
+      "libnfs-5.0.2_1.pkg": [
+        242028,
+        "sha256:c4cb3d576d95ac2836713629e17daafe9069b3b1e63ea72026c4f4f884516415"
+      ],
+      "libnghttp2-1.70.0.pkg": [
+        140507,
+        "sha256:8963dcfffc34c536ea910a0ed7763d820967e2121137f203ddfe8cbf42a33003"
+      ],
+      "libnghttp3-1.18.0.pkg": [
+        126958,
+        "sha256:1d1f903215538683ae527070c6763088905508bb9fe54eb43c282a22c6b363c5"
+      ],
+      "libngtcp2-1.25.0.pkg": [
+        277241,
+        "sha256:42e8e0513cd6cd2c8dc7a354d90cb73337768c0460986c0e2c397404b9e666c4"
+      ],
+      "libnotify-0.8.8.pkg": [
+        47263,
+        "sha256:ee6f010cca1c4b0c41df3d2e2fd9dd20187b96f27d402446660445c5371f1b88"
+      ],
+      "libnsbmp-0.1.7.pkg": [
+        12564,
+        "sha256:bf46c1377e0ba1e580a271387da421cdb4c900adf74edd7f4e3a4f75c8293b4b"
+      ],
+      "libnsgif-1.0.0.pkg": [
+        18621,
+        "sha256:0f6480120d5c3d9eae4052174382bb481904fe2db8ab96cc84ea764e1066c9d5"
+      ],
+      "libnumbertext-1.0.11.pkg": [
+        225553,
+        "sha256:b505654c167e3396f0594d56d64fdcbf47c107c9b90cac16b41743ebc95700f3"
+      ],
+      "libodfgen01-0.1.8_3.pkg": [
+        277614,
+        "sha256:6fbeaa59bcfb6ae3c1c0234237cd16e89b242cf6517d204a44d5d4e1ef87b969"
+      ],
+      "libogg-1.3.6.4.pkg": [
+        203184,
+        "sha256:c83564b993e2c1b820e6761167369417490920841f732975a9e2b81a1c1b42d3"
+      ],
+      "liborcus-0.21.0_3.pkg": [
+        1473977,
+        "sha256:f5860cc65d5bde03e26c4b0a74c42874786c08aa91c4873b7724ae273cb626d7"
+      ],
+      "libpagemaker-0.0.4_11.pkg": [
+        64940,
+        "sha256:449a2ed24eb966eeff83e5660a698d026115871ffb1e4852e83d185da4d9f134"
+      ],
+      "libpaper-1.1.28_1.pkg": [
+        26702,
+        "sha256:5dbb8392d9139c94f3af0c3b8e6d99964ea0b910dd731a380d95222d02d05203"
+      ],
+      "libpci-3.15.0.pkg": [
+        80909,
+        "sha256:225d9a5082dd10d48aa0896333c2b24c6a1d1dc49fd6ff8dab2155d9807c6770"
+      ],
+      "libpciaccess-0.19.pkg": [
+        18068,
+        "sha256:73a522d0cd55159ac79f3f174778746aa4be1a15fcfbc97b1dc09748d06c25af"
+      ],
+      "libplacebo-7.387.0.pkg": [
+        582697,
+        "sha256:a088c840065de3803e308145ae477fd52dbcf4aff3b4a48723c3be00751e2e74"
+      ],
+      "libportal-0.11.0.pkg": [
+        108945,
+        "sha256:4df5b18a3c886563d137925f52b073734503efd09a5cf402e28cbb4d251bfabc"
+      ],
+      "libportal-gtk4-0.11.0.pkg": [
+        13475,
+        "sha256:d4e18030f085d8b986212583d2cb79f99bcd0728bc90861a069c43b04d92e717"
+      ],
+      "libpsl-0.23.3.pkg": [
+        69048,
+        "sha256:d19940c32d7f2a1ba3079580516853bf0965497c0d71eb26d8f5dd77c3fb4519"
+      ],
+      "libqrencode-4.1.1.pkg": [
+        55602,
+        "sha256:ce0f2da13f2c4a40439b0797fe47ab419e3c74c8ea9033465a8e1e5d48f959f8"
+      ],
+      "libqxp-0.0.0_25.pkg": [
+        104308,
+        "sha256:c16352ab6334cb12ea55ff5b146ecd5769ef916200a1f5da6267307d2bf98556"
+      ],
+      "libraqm-0.11.0.pkg": [
+        39817,
+        "sha256:a28513308f6e032b0a9deeb556f8601788d033b9a828969d3637f123c69e608d"
+      ],
+      "libraw-0.22.2.pkg": [
+        673518,
+        "sha256:ecc363ee3555588bc983af868a994eaef58127fa20fa00bbe63e8f5f0f071671"
+      ],
+      "librevenge-0.0.6.pkg": [
+        222996,
+        "sha256:49115ea5bda4de2b2e0ce3f7b9de68cdaaeb4e7933006e88e90b726540522a5d"
+      ],
+      "librist-0.2.20.pkg": [
+        168144,
+        "sha256:de6fb06d39a03b65b60e99737a085b63098968563e460a59c33a0575bae06a8f"
+      ],
+      "librsvg2-rust-2.62.3_3.pkg": [
+        3212411,
+        "sha256:53dcb055428f421b7740ac529f0e233c294637c4d5f7c3970c860519c20771fd"
+      ],
+      "librttopo-1.1.0.pkg": [
+        344765,
+        "sha256:1687d61bc0d8f796e1e9b5d82c57ad76e4b00f08db4b7c5c5d1586096e7870a4"
+      ],
+      "libsamplerate-0.2.2_1.pkg": [
+        1387791,
+        "sha256:19a60e431cc446f74dc3237056fe2e82f77c8f8f2848895daf38d9836b9ac6b8"
+      ],
+      "libsecret-0.21.7_2.pkg": [
+        1332943,
+        "sha256:68b61e1fc22d71e1c9b60f4344989ce278a3852e6a186f950065e612bbad8e67"
+      ],
+      "libsndfile-1.2.2.20251216.pkg": [
+        327357,
+        "sha256:76c10e6c51ade7c84b55b4e7f6a81c3f439cfd0c2c2174af0b4bb02899535048"
+      ],
+      "libsoxr-0.1.3_3.pkg": [
+        106716,
+        "sha256:796373ff8358ee18d0302c9574b5336bd78451f3e105272ea6241bd3590d0a60"
+      ],
+      "libspectre-0.2.12_1.pkg": [
+        56385,
+        "sha256:6e115fd45bfa4b8c837adcb72b5c31df088673a1071e439c426f430a98e821cc"
+      ],
+      "libspng-0.7.4.pkg": [
+        51285,
+        "sha256:79dc8769c5439ece0fb75887cc6b3ffaaf55aa4bd2abc27ce26f9c29fb839336"
+      ],
+      "libsrtp2-2.8.1.pkg": [
+        47898,
+        "sha256:0bb915472fba71451b6b9a18713ab3556cc8c89563c8369fc8dcf2041709fb8d"
+      ],
+      "libssh2-1.11.1_1.3.pkg": [
+        256284,
+        "sha256:801ab8d12ff5d4d1faddd21be73c76edebaab5965ac510ba8351be1cf4e5ae7e"
+      ],
+      "libstaroffice-0.0.8.pkg": [
+        712617,
+        "sha256:fa5626192f02039d46f6b3c8fe080b17c4392d5bada0bdba5ecbb9df2ea528d9"
+      ],
+      "libsunacl-1.0.1_1.pkg": [
+        8097,
+        "sha256:2ff275c7b5ccceb5002093251ad442233e6ab909e73c1d8e319789d19a33cdf5"
+      ],
+      "libsysinfo-0.0.3_3.pkg": [
+        30005,
+        "sha256:8bed972f4c1e741b7dfbd6b27ed5e737815f59527c69951f38b614e76ed1e9d2"
+      ],
+      "libtasn1-4.21.0.pkg": [
+        185257,
+        "sha256:2bbdc8e51ae66171a402ee858076f3a165c19b02520d915f128dc4371ff6e56b"
+      ],
+      "libtextstyle-1.0.pkg": [
+        488867,
+        "sha256:737a398863a2b152e3a8f04dfa13fc4e3e0011aa8e28b813df65d46680584f04"
+      ],
+      "libthai-0.1.30.pkg": [
+        189111,
+        "sha256:9657f4cfcb0300dabf05526ff2253dbf32ec90c4fcbffdf396c3a9f12f85ad72"
+      ],
+      "libtheora-1.2.0_1.pkg": [
+        202039,
+        "sha256:f5440ef6610f257d6517a8437614ce1934303e50a9ddb2b6d082855d9c7a6a0d"
+      ],
+      "libublio-20070103_3.pkg": [
+        14581,
+        "sha256:8a79f1b2e7fcbc86d1e9e6623079759167b570bf434b9d13c82176138cc125a4"
+      ],
+      "libudev-devd-0.7.0.pkg": [
+        23044,
+        "sha256:e96a30c23b62577c07eab8277464153a25db517d128bd704ac406dfeee310074"
+      ],
+      "libudfread-1.2.0.pkg": [
+        25971,
+        "sha256:f3bb7c5679aa42199154e8a2fa78ba0f4ccb4d5c9c25f70e54e2d1fb97638986"
+      ],
+      "libultrahdr-2.0.2.pkg": [
+        385791,
+        "sha256:f13e15c9e64380bbb782fae8e15f9fb428afb423513e23b63b6830b2eea5bd45"
+      ],
+      "libunibreak-7.0.1.pkg": [
+        28813,
+        "sha256:1308e77ee0aa06e12f9c2a4618bf38007ae99b0773ed1852e85e86521b1e4a3d"
+      ],
+      "libunistring-1.4.2.pkg": [
+        766250,
+        "sha256:c207328d2ba0dccf2a95ca360893a7b6f428787786ed63198ec21508066ed7b2"
+      ],
+      "libunwind-20250904.pkg": [
+        216735,
+        "sha256:e2ed354cf41173e55d1c1fa46b64dd759e2b2f4a4bb80ff09695aaf24a48cad1"
+      ],
+      "liburcu-0.15.7.pkg": [
+        184678,
+        "sha256:b4cf3cadef9033a38b9de50dd5048881e66e3e884de975b98e01da3abd27635d"
+      ],
+      "libuuid-2.42.4.pkg": [
+        50629,
+        "sha256:94cdf87bf1af958b38ac197a48e89d37c44af178259e032dfa9b601a4c14834e"
+      ],
+      "libuv-1.52.1_1.pkg": [
+        145868,
+        "sha256:e1b1201c621cc579276a3de303a2063934e0661de0bcbef027fd91f893c92d55"
+      ],
+      "libv4l-1.23.0_5.pkg": [
+        410531,
+        "sha256:00ab4804336e6d0e150af406c36090d661df7301965e700187fdbce5b5a559e1"
+      ],
+      "libva-2.24.1.pkg": [
+        207129,
+        "sha256:814cb2c607caf9caee6a3dd62f52a7e05d74d49335345597dd108ccb5b6c7fa5"
+      ],
+      "libva-intel-driver-2.4.5.pkg": [
+        1087548,
+        "sha256:61d87a806e9b112ac6a17df0a70c72a457dba820fc5ff211e07a5625d1a93765"
+      ],
+      "libva-intel-hybrid-driver-1.0.2_3.pkg": [
+        438188,
+        "sha256:871c54f66dd7fe1d80901e15ea907dd28fabbcccec6bc14904ea353528615461"
+      ],
+      "libva-intel-media-driver-26.1.5.pkg": [
+        142227499,
+        "sha256:2a6105e71a3f9b668d8f7a5a9874f517190975e46dabdb5b7a967d93bbb2f3f3"
+      ],
+      "libvdpau-1.5.pkg": [
+        66782,
+        "sha256:fc8add6380512b05c989af1ce3dc3e1fe6ad6836dcfa5a8dbe2795aaf6e0445c"
+      ],
+      "libvisio01-0.1.11.pkg": [
+        214577,
+        "sha256:404cb1e7c7037e77c36a2b2207a50daa4f035e3b6f6c07fd9b320e6b041001ac"
+      ],
+      "libvorbis-1.3.7_2.3.pkg": [
+        410268,
+        "sha256:d6a3ad6a37a7b0724a0f745640ab44290c5775254211b2f0b7b8ce205be76ef9"
+      ],
+      "libvpl-2.17.0.pkg": [
+        5592672,
+        "sha256:8dcb0d8338ec8de899f700159c586fa17295e6bd2a30e683be660658c12f9193"
+      ],
+      "libvpx-1.17.0.pkg": [
+        1566018,
+        "sha256:eff6fb1c6052a95f6ad8b69e102d0037a81bcdc6c92831f41b680fd9b715d6f2"
+      ],
+      "libvterm-0.3.3.pkg": [
+        68328,
+        "sha256:baa0d5c33304be021c9b0403c5ebc1112b0d137dd2bb72009d9c32f306264f79"
+      ],
+      "libwacom-2.19.1.pkg": [
+        200247,
+        "sha256:dbe8e61aba1047b5761002d623174832c184177495306334cb82e33900418aa3"
+      ],
+      "libwmf-0.2.16.pkg": [
+        1950859,
+        "sha256:8763610e3511d9b917316683f868a137dae65ecac64e053542232e2b6d349f3e"
+      ],
+      "libwpd010-0.10.3_7.pkg": [
+        190003,
+        "sha256:9e152b389bca63e9feeef0997303a1acc7ed77ece199cb7427d7a792527fb675"
+      ],
+      "libwpg03-0.3.4.pkg": [
+        67124,
+        "sha256:a82bf4990a58b62e7bed6d931de65479c2a0a73f259e10daef4784b70a33dfc4"
+      ],
+      "libwps-0.4.14.pkg": [
+        770991,
+        "sha256:cd9b972a132833038e29477802b02dece34d4b53fed33e90b7b4bf2d2ba24c85"
+      ],
+      "libx264-0.165.3223_1.pkg": [
+        671433,
+        "sha256:f2b5fab8fcf3686901b7f5d12936a7ce51ec2f072e53a5a021cbd872c0c6726e"
+      ],
+      "libxcb-1.17.0.pkg": [
+        1188364,
+        "sha256:96bcf079f705ef0edeb14a08c5c73e32deb14c257db14f5c39344c8c5dcde275"
+      ],
+      "libxcvt-0.1.3.pkg": [
+        9691,
+        "sha256:fac17495409dfc98002ff2244bc93a5de79ad6c6f1752841a1fb330dfc4b9965"
+      ],
+      "libxkbcommon-1.13.2.pkg": [
+        313304,
+        "sha256:ee0d90edd376139419478f0c93eb4547fa2872d0d2efd37d500045b94ee972b6"
+      ],
+      "libxkbfile-1.2.0.pkg": [
+        77305,
+        "sha256:93149485896ab48a87fe2104502c8adc3e53d3d7491b6a900ced6c831d07152b"
+      ],
+      "libxml2-2.15.4.pkg": [
+        930367,
+        "sha256:fa5080f31472b71191ffb912b81f30e8133dee8ee012a53a5fa6bd7f278bf891"
+      ],
+      "libxmlb-0.3.27.pkg": [
+        154299,
+        "sha256:90e7bf9e9ee92666396977126636e438908f35fff2d8604cd35ed8439be04533"
+      ],
+      "libxshmfence-1.3.3.pkg": [
+        6123,
+        "sha256:81a28ed5d08702e067866099f6d219f61d9778a91c855659cd6f30d2d9018eb8"
+      ],
+      "libxslt-1.1.45.pkg": [
+        299641,
+        "sha256:07a0574b7a7447f3f02c798da28aac892e71ff9ebc913ea68327af3362ad5382"
+      ],
+      "libyaml-0.2.5.pkg": [
+        78616,
+        "sha256:a50234b50d952cd7ba4f16e62179a615a12bf336191919ee0f3a4e53abb69438"
+      ],
+      "libyuv-0.0.1973.pkg": [
+        409943,
+        "sha256:7458aebdcabc5158c06da941b1baefd6f89817de2a000bef7146ff1391968528"
+      ],
+      "libzip-1.12.1.pkg": [
+        270150,
+        "sha256:57e31ce0e0651aee7018e3fbf27138fbecc688ee8addd9ddaf438c04f787c13a"
+      ],
+      "libzmf-0.0.2_30.pkg": [
+        75851,
+        "sha256:490013b0aa56e2a0d146571ecc95cec7cfba7358440182072df50673c40e50ab"
+      ],
+      "linux-rl9-elfutils-libelf-0.194.pkg": [
+        243265,
+        "sha256:c16329ff7aef5a6c28a5c4967de5d0d653feda0c8618566d7de727291548dc6e"
+      ],
+      "linux-rl9-elfutils-libs-0.194.pkg": [
+        563474,
+        "sha256:f5d568b192f59efb06b9d3d0042377b382c0e7ce49e28937d62dd387e6e795e2"
+      ],
+      "linux-rl9-expat-2.5.0_8.pkg": [
+        180190,
+        "sha256:25474529ab65559fa2bfedec5c480a44e79d65115bf1cb04626965503aea7c17"
+      ],
+      "linux-rl9-fontconfig-2.14.0_2.pkg": [
+        370264,
+        "sha256:aa66fc4f1996b80974518a50d71c4b0116fccca519fc7b056eca13b3de8c6829"
+      ],
+      "linux-rl9-freetype-2.10.4_3.pkg": [
+        716596,
+        "sha256:49b483db8f3474e5d2ac14ad4ebe181dccfbe57caeae0b9e7386d12a6a32bf3f"
+      ],
+      "linux-rl9-graphite2-1.3.14_1.pkg": [
+        144529,
+        "sha256:216290f421a0ef3178281efcd9926c025739eb389b2ef2b6fbadd5fcd8cbe283"
+      ],
+      "linux-rl9-harfbuzz-2.7.4_2.pkg": [
+        1164951,
+        "sha256:d911dbe159eda905480f6e275ddde69b95f1543e98153e1d2232c788026cd101"
+      ],
+      "linux-rl9-imageformats-libs-1_2.pkg": [
+        2308015,
+        "sha256:dc00f699dbfe546ee793967afe599a7189c7b681d8a83dc7b12d44d2de277ab5"
+      ],
+      "linux-rl9-libgcrypt-1.10.0_2.pkg": [
+        853346,
+        "sha256:430fd2cc506771e4c747c5db7a71ee8219580899f2f253d6a9ed331c173b1039"
+      ],
+      "linux-rl9-libgpg-error-1.42_1.pkg": [
+        258422,
+        "sha256:b95f219fc622865247bd0d63daf4ea2b0842023b34991b667902182bbef2dc4f"
+      ],
+      "linux-rl9-libjxl-0.7.2.pkg": [
+        994448,
+        "sha256:52e0b945b5322116f4faa5463d8380ddfc8f27096dad78565d64021aae4efde5"
+      ],
+      "linux-rl9-libxml2-2.9.13_10.pkg": [
+        1387211,
+        "sha256:0bdd367925ae53bbaddb773e05b4528e9ffc506dcf6610edff98667abe2df2c7"
+      ],
+      "linux-rl9-lz4-1.9.3_1.pkg": [
+        165922,
+        "sha256:2b81368478a428475a76703b064182fa4ed59bd8a6416dda107220be45f10b06"
+      ],
+      "linux-rl9-nspr-4.36.0_1.pkg": [
+        241735,
+        "sha256:4f39e5f54c181aefab410ee4c7d42e14d52225229932b664137ea18444bfe707"
+      ],
+      "linux-rl9-nss-3.112.0.pkg": [
+        3002748,
+        "sha256:45454d19d57dca57fa6dcf9dc288959cc4ab10a2990c24882a919a1ee4ac9a17"
+      ],
+      "linux-rl9-python39-3.9.25.pkg": [
+        14264062,
+        "sha256:1c9b54dfd821a47559816736ee1bf7c0ad4f069f3bb30efbf8e5afe48a92b53e"
+      ],
+      "linux-rl9-systemd-libs-252_13.pkg": [
+        1205914,
+        "sha256:0af0f707f6e11f81421d7453e1c1670f44ccb6e15a90539a957daa4563719d34"
+      ],
+      "linux-rl9-xorg-libs-7.7_7.pkg": [
+        4429534,
+        "sha256:f3d854cf2c2428548a316360a07d4189e1735ec18e2490e1cbb3c2f3331b30c9"
+      ],
+      "linux_base-rl9-9.8_1.pkg": [
+        60219665,
+        "sha256:b4008d3f0f026f3c85cfc637ddf0091c9f248df77745f8dd2416aa016d7dc79f"
+      ],
+      "linuxlibertine-g-20120116_2.pkg": [
+        3370071,
+        "sha256:b90abeeb1546bb2890eefa41fa5a321d0221166d50592d73fb62f61f070ba616"
+      ],
+      "llhttp-9.4.3.pkg": [
+        43695,
+        "sha256:a1f4b5dbc9ca5e3bec6568b78c8b82694a332fc415636315dc3d8f492a353b87"
+      ],
+      "llvm19-19.1.7_4.pkg": [
+        282444619,
+        "sha256:ced590b4e2e6933d96af3e7162cc8b83673b3b1f5cd5a252310ac67519663a5a"
+      ],
+      "lp_solve-5.5.2.5_1.pkg": [
+        547694,
+        "sha256:b942c58fa9d5adf0e07fc341976c66761ac0ee7b688dfb0296bba1e78ed6e593"
+      ],
+      "lua51-5.1.5_10.pkg": [
+        183672,
+        "sha256:769ffe1613ce5d16337140d9c711d459dcc2cec14829fd2283f87b09fe5d1c0a"
+      ],
+      "lua51-bitop-1.0.4.pkg": [
+        4197,
+        "sha256:26a00b5b4c11423f33160cda334ace3913235e1eafb315812b6b81ed9686932e"
+      ],
+      "lua51-lpeg-1.1.0.pkg": [
+        26730,
+        "sha256:5f8cbbb77140c75af003f54f0a4b3f1d1e5df2c6fb5d653551b4b4183c95ce08"
+      ],
+      "lua53-5.3.6_1.pkg": [
+        307751,
+        "sha256:741515111c2b929a78d74d1edf4bf1a8a2934fe96827fb00935bfd3587107309"
+      ],
+      "lua54-5.4.8.pkg": [
+        354616,
+        "sha256:4bf043a3fbb74306f6f71afd6714253e0d8c321dae439523f2d3e7ba825ea0b5"
+      ],
+      "lua55-5.5.1.pkg": [
+        368681,
+        "sha256:4e0a2c7a63ef5e849e4c53abc9eeb2b682b0dee8fbf3b4e78d27d2d674105db7"
+      ],
+      "luajit-2.1.0.20260908.pkg": [
+        499177,
+        "sha256:799eb3ba4aa2d997f77aa9ba6e6c9138ed06100790386ead80adf4f25151f1f7"
+      ],
+      "luv-1.53.0.0.pkg": [
+        93561,
+        "sha256:e24ab419a0919aae80c10da0ce64633cd1cb584374b5d841d40ff5e5c6fb87f5"
+      ],
+      "lzo2-2.10_2.pkg": [
+        129577,
+        "sha256:6ce9e9a829185f4010808d73ee38a4b34c366110e577dd065724a0820a759b40"
+      ],
+      "mariadb118-client-11.8.9.pkg": [
+        2637151,
+        "sha256:de01f032e7a737195f9f3c7746f50e2e74dc37be1424f55987814fc165356094"
+      ],
+      "matio-1.6.0.pkg": [
+        287027,
+        "sha256:aad9f10ba38cd04c9656e5bf6f5cf3d42b631b1635a17a1fd03da52584b43084"
+      ],
+      "mbedtls3-3.6.7.pkg": [
+        1303555,
+        "sha256:0845171a646c086fb128a6beb46b02a83c3b950e5ebdc3f6e46300fe20dbc2bf"
+      ],
+      "md4c-0.6.0.pkg": [
+        82603,
+        "sha256:538a67625b56c8f7524b42542dc8bb78958d8d9e2168aa181f3213b7bd3bccbd"
+      ],
+      "mesa-demos-9.0.0.pkg": [
+        10332592,
+        "sha256:aaae9456e7fac8da46b1ae9ec6d352de2bbba683bcef05af2c5520445c4c1840"
+      ],
+      "mesa-dri-26.2.2_1.pkg": [
+        9592087,
+        "sha256:b19312fa73709dc2624351928ba9055dd84bcff70becec1d59391086b3fcaf84"
+      ],
+      "mesa-libs-26.2.2_1.pkg": [
+        10103342,
+        "sha256:98ff0599db01ab5796f65186c256b2059a503f274f2fc13064681ce87d3f947b"
+      ],
+      "meson-1.12.1.1.pkg": [
+        2381184,
+        "sha256:8174fbc50a90fcf9762befbb95c84fcfad808d683ae50420aad6dbf4a3c969ae"
+      ],
+      "meta": [
+        168,
+        "sha256:ca7f091a4f9eccbf537a966a0d4d555cdfc4de34ad5be5c96a12c4485130664c"
+      ],
+      "meta.conf": [
+        168,
+        "sha256:ca7f091a4f9eccbf537a966a0d4d555cdfc4de34ad5be5c96a12c4485130664c"
+      ],
+      "minizip-1.3.2_1.pkg": [
+        49268,
+        "sha256:75d4b95122cfaef0ed88ee16310c5d3cdd440b2b09596a97ade6c6dd65f4457c"
+      ],
+      "mise-2026.9.15_1.pkg": [
+        32475635,
+        "sha256:71c60598cb76b00c67420ebaa94c282f4253f0a7af1364fd73a521665e969d50"
+      ],
+      "mkfontscale-1.2.4.pkg": [
+        22848,
+        "sha256:791dc6d9ea70813b67ba67057211c891f00ea38e7e13a21b1ed1d9f2c621bb04"
+      ],
+      "mlt7-7.42.0_1.pkg": [
+        838503,
+        "sha256:280da5e84ea2e06deb0e68f0ace2b07e8b607db087294bf35c770c085947fd90"
+      ],
+      "movit-1.7.2.pkg": [
+        378469,
+        "sha256:c4c4d96e1bcf43f980f9d391a2101602adad17a3525813b949823f7cff890e7f"
+      ],
+      "mpc-1.4.1.pkg": [
+        126277,
+        "sha256:c530f9a7745949f9bd023c7bf8e58d41ac8d61d8e7f699b7ee44f94ef06c0101"
+      ],
+      "mpdecimal-4.0.1.pkg": [
+        160297,
+        "sha256:31bd5b266b2a482ea4ca1b6795171e7e5d60b8b6b44313d810908e197cbe6d5a"
+      ],
+      "mpfr-4.2.2.1.pkg": [
+        527559,
+        "sha256:e8ba16d7ac67ddc5bb28d7f23c8dcd57f3e92747144d17345492a283b54dff46"
+      ],
+      "mpg123-1.33.7.pkg": [
+        360147,
+        "sha256:bc56887eb99aef2da9585edc531bb463ddac49e7be0832b8d77a7da1d59b87fe"
+      ],
+      "mpv-0.41.0_3.1.pkg": [
+        1670161,
+        "sha256:599d74271191ebceb1bb9c21c95edc23695adfaf43cf4e9035a7ac2def248f45"
+      ],
+      "mpv-mpris-1.3.pkg": [
+        14135,
+        "sha256:f2d1361e4845a5057db076bab1738e4906d97c311b44437d4e0084009a844d2a"
+      ],
+      "msgpack-c-7.0.2.pkg": [
+        38120,
+        "sha256:032f5fd7a8f610d71488afacc29def1cc8df7b31e96675427da1673562b09159"
+      ],
+      "muparser-2.3.5.pkg": [
+        173746,
+        "sha256:4a934093cec53231cfd871b2fc13a5adb3cd8e16ba2e04771e7c423ec4ecc3a3"
+      ],
+      "mythes-1.2.4_7.pkg": [
+        12033,
+        "sha256:406451b1af9b5a48b8d909379275f28597cf40df8b1d44a49be8aeee6702b763"
+      ],
+      "nbytes-0.1.4.pkg": [
+        13916,
+        "sha256:94991bb53b58adaeda8ec39078deb6cfa9e65e86342584172e6e78ab88dfb473"
+      ],
+      "neovim-0.12.6.pkg": [
+        8440960,
+        "sha256:4285d03bd2c7438e8cec8f3fd439b5284d43945e6ff31b78f320b9f260f898db"
+      ],
+      "nerd-fonts-jetbrainsmono-3.5.1.pkg": [
+        12256771,
+        "sha256:f1b86b388dd7445ba325e8ee034f295b1ea3734279d926c6559a68921e374658"
+      ],
+      "nettle-3.10.2.pkg": [
+        1745587,
+        "sha256:d88705296f84827550ae663fbd7c90a236a58553042afbc69e5623224ad662e5"
+      ],
+      "ninja-1.13.2.4.pkg": [
+        137446,
+        "sha256:a345137c523593d9382c1ed0d7280e8699340739c1062ab0a0d1bbdc103faf3d"
+      ],
+      "noto-2.0.pkg": [
+        1653,
+        "sha256:75496af731d2f15c392b8794c3fad84cfc958749a7c7789a1e5473cbbc04c06b"
+      ],
+      "noto-basic-2.0_4.pkg": [
+        1515,
+        "sha256:912802c1107076c293fcf79a856d2af31b33615c03e87d33741ce0239685ddcf"
+      ],
+      "noto-emoji-2.051.pkg": [
+        9626204,
+        "sha256:17940b7f4733b05adf58c13f2e06d90719c87e0a0f82a3feae1601a45e3a2bf5"
+      ],
+      "noto-extra-2.0_7.pkg": [
+        1888,
+        "sha256:0732f4e3d6693fef6254e8b0730d89f2695a7e2f03ed6a094e2d35fc09170698"
+      ],
+      "noto-hk-2.004.pkg": [
+        1421,
+        "sha256:015b7f9ad2ed905cca4df57edad09c389137b48df0659ee8f3c6ce7837e4e3f8"
+      ],
+      "noto-jp-2.004.pkg": [
+        1408,
+        "sha256:236f595744e5fa8b24f47e8a42a0ddb4c1596e8c1d9f86568a9f8b32da2f63ae"
+      ],
+      "noto-kr-2.004.pkg": [
+        1411,
+        "sha256:192d43575d576cc8fbdfa40b9114ff13608ba10519ab0ec0b872eb75899ecba9"
+      ],
+      "noto-kufi-arabic-2.110.pkg": [
+        442867,
+        "sha256:801c2f443364a600aebec8819b3c30703f41daa818f7c2c93c8226d3a53a0688"
+      ],
+      "noto-music-2.003.pkg": [
+        48235,
+        "sha256:c14a9497e83b96469f5b1b8b0203e46a64b36c62609fac8ea18cae16dd1e33ec"
+      ],
+      "noto-naskh-arabic-2.021.pkg": [
+        311703,
+        "sha256:0d855ee57b161f894496b0dd03ba119a1a3c86226ad05afd67dd634243fe3af7"
+      ],
+      "noto-naskh-arabic-ui-2.017.pkg": [
+        269203,
+        "sha256:9e61f6722111de08b966b91840cd8fefb63456ed76c58a2467d58f46fb8e581b"
+      ],
+      "noto-sans-2.015.pkg": [
+        11641522,
+        "sha256:6276be83577985c6b7205f7c5c632515ae420637036d5b4e30a93f16da497b5e"
+      ],
+      "noto-sans-arabic-2.013.pkg": [
+        1800020,
+        "sha256:0bcc88b31f778663cbeb7be3befed8fba2841cfcec348cbf53a1d625730fe1d2"
+      ],
+      "noto-sans-arabic-ui-2.011.pkg": [
+        2111300,
+        "sha256:6874d28c6385292efe30e7d085c240af389c6ebf7fdb40c72f396ebfbdde2580"
+      ],
+      "noto-sans-armenian-2.008.pkg": [
+        256549,
+        "sha256:ce16c192178621b0e5fa8823248232a0e2f854382e47eb5cf18f5839304c8a2e"
+      ],
+      "noto-sans-bengali-3.011.pkg": [
+        1194168,
+        "sha256:a2214715ca6ef90c3c853a1a84c5bf19807445e5f3d340b4cebe993825765dcc"
+      ],
+      "noto-sans-cham-2.005.pkg": [
+        92976,
+        "sha256:8f8ad5a40d3ab783dc768fd4e1ce50052d6672b5052c1b7b31318d737ce69443"
+      ],
+      "noto-sans-cherokee-2.001.pkg": [
+        321277,
+        "sha256:4fdc847358225fb179163e8befb9656b59ab7e3067d1372bd06cb75f86355cb1"
+      ],
+      "noto-sans-devanagari-2.007.pkg": [
+        3244176,
+        "sha256:a5ab4da68019a5b29ed7c04e976a012a80c2283e5918bde03305d193ef176203"
+      ],
+      "noto-sans-ethiopic-2.102.pkg": [
+        1986656,
+        "sha256:c14addcde7e9e60cc75793a847278dd4c6cf7bb84899c2f5f213b6f0d46bd9ba"
+      ],
+      "noto-sans-georgian-2.005.pkg": [
+        537655,
+        "sha256:c53f28dce53acff598d61bad46c3074719208a395a416bcda4a7b50996e105ff"
+      ],
+      "noto-sans-hebrew-3.001.pkg": [
+        169819,
+        "sha256:b47f3e6cc9d9b01f5cefe1bf14f7428a55733c578a6f9f2de6ecaf22521ab8e5"
+      ],
+      "noto-sans-hk-2.004.pkg": [
+        138042446,
+        "sha256:9ed8e07fddb87a88595fa61d7e40fd809541078c3b53f17e3997868fc0da3328"
+      ],
+      "noto-sans-jp-2.004.pkg": [
+        132045548,
+        "sha256:f47e74027c017ada00fbfe5a72bf0f14141b19e9dae7cae64b5daa251d44614a"
+      ],
+      "noto-sans-kannada-2.006.pkg": [
+        1287926,
+        "sha256:a2c76ccfe7ba0974e74aba7b3ad43c2d14d8e23734104d6c3ea53a2d2bc0f6fb"
+      ],
+      "noto-sans-khmer-2.004.pkg": [
+        647645,
+        "sha256:4ab9e74cac1ba6d5b7af902c764a457c7914103f863be6cc74064ec18434611d"
+      ],
+      "noto-sans-kr-2.004.pkg": [
+        130884277,
+        "sha256:b50821f1a3742b32d2a680a6c3e4c8b3ea76033278360fe620b7a2eade01ac1e"
+      ],
+      "noto-sans-lao-2.003.pkg": [
+        275526,
+        "sha256:1087b2eb4eaa9a6b8a8ce7b79f05f1d5834ef534b8a0101c662fc15509bece47"
+      ],
+      "noto-sans-math-3.000.pkg": [
+        414224,
+        "sha256:090ac82920e50e0653ccc1a9afe18119213f6db8c0066541eabe907894c5221e"
+      ],
+      "noto-sans-mono-2.014_1.pkg": [
+        5056043,
+        "sha256:0380ec2eb54bb8cdc56569330a6e82326ce8dddc3fae39c08350391da5152a88"
+      ],
+      "noto-sans-myanmar-2.107.pkg": [
+        1571190,
+        "sha256:176e360773a9f0e9e8dc88534c2a421843383be118a6225a2ea15195e30caa9e"
+      ],
+      "noto-sans-runic-2.002.pkg": [
+        9097,
+        "sha256:a67333c37e3dbd67e87e14c6c91b49a5c990aec5c9594fbed7b3e54e83367f19"
+      ],
+      "noto-sans-sc-2.004.pkg": [
+        151890851,
+        "sha256:bdd4ce1d0cfc2b4a962360bd3ce5a0129bcfe32e2417a9262e5ccd1e6171b473"
+      ],
+      "noto-sans-sign-writing-2.005.pkg": [
+        1299014,
+        "sha256:bee9a964e9093390eef60e53c5fa5a2b4494972c279e077f9658bf0bb7af2bd5"
+      ],
+      "noto-sans-sinhala-3.000.pkg": [
+        4266293,
+        "sha256:a8263cc54043a3f2bb6ff3cce82c06aa59a1fa2f41cc877435c8e376f2610fb5"
+      ],
+      "noto-sans-symbols-2.008_1.pkg": [
+        581877,
+        "sha256:723d153d35d6c5b45dcd71ebe0ff8404069aa93789d73cc1f6362006d3c99b49"
+      ],
+      "noto-sans-symbols2-2.008.pkg": [
+        280873,
+        "sha256:87facefd632cd387f66603489ac0e529a3896f5c32806ef6bad96cc2d96cb66d"
+      ],
+      "noto-sans-tamil-2.004.pkg": [
+        753063,
+        "sha256:f979a36c838a41cf5586f9000c8ae74581eecc1b75d1bf81ed0f7c29e65d3fe3"
+      ],
+      "noto-sans-tc-2.004.pkg": [
+        138017618,
+        "sha256:fbd35d7a8e435dcc0d671c6d9d1feb3e29167f061e5775fa021b5c28ed427173"
+      ],
+      "noto-sans-telugu-2.005.pkg": [
+        2614451,
+        "sha256:1da95e92faaac94841000a812422b4a0b0c847761197eb6bddcdd4cdb337b01f"
+      ],
+      "noto-sans-thai-2.002.pkg": [
+        270685,
+        "sha256:00c1a7731388e7db14ab8876e9fc0e0b929eb2c6cceb3ad8a59e1affc63cfc0d"
+      ],
+      "noto-sc-2.004.pkg": [
+        1411,
+        "sha256:4454bfa18476de04d678634124facb2e95ada065b59e4d73ec637393c2e92b0a"
+      ],
+      "noto-serif-2.015.pkg": [
+        13414155,
+        "sha256:47bfb988ad4418462d05c627dc68a514acfd2422e9b57eea5f5ea151e0b78e79"
+      ],
+      "noto-serif-armenian-2.008.pkg": [
+        280606,
+        "sha256:4ffd5a536b7d03a66758c225f3b770f6a384659c20471311eb1e43644fdac4ca"
+      ],
+      "noto-serif-bengali-3.000.pkg": [
+        2402025,
+        "sha256:00a2ef74c0e27336798cb6d0a905acbdd0c8222141f8d174b70dc8c99876eaff"
+      ],
+      "noto-serif-devanagari-2.006.pkg": [
+        2005511,
+        "sha256:b9af3f44a0892cd8504dda9fb48306b64e5829d73fac54f431558a21032050c7"
+      ],
+      "noto-serif-display-2.009.pkg": [
+        12279426,
+        "sha256:74cfc729edda7fc46f43c2b555d8f46e27c79453e3290678ed3221da29dc2c90"
+      ],
+      "noto-serif-ethiopic-2.102.pkg": [
+        2499049,
+        "sha256:6bcec4f68398d11f6dc1890f3b4aa1832600bf42a3312dc3210d537e6c831d2a"
+      ],
+      "noto-serif-georgian-2.003.pkg": [
+        667185,
+        "sha256:bef3a399343f852c5967a24ad7e32932022bc0b05d8fde9ddb32bd65cceef61e"
+      ],
+      "noto-serif-hebrew-2.004.pkg": [
+        233490,
+        "sha256:40f46be844fdfccb389340df4e0d3f0eee2098d507d0633b76bb94e82f79f57b"
+      ],
+      "noto-serif-hk-2.003.pkg": [
+        161367570,
+        "sha256:e6ba2cf04930d8ace148d62e2114f85f5457d61755cc137f2d5eb0ad3ecaff89"
+      ],
+      "noto-serif-jp-2.003.pkg": [
+        152253837,
+        "sha256:7dc548df2adf35d7a0973395509e5ea94efdd3ce611a0952ee0e3dffe2dbc925"
+      ],
+      "noto-serif-kannada-2.005.pkg": [
+        387827,
+        "sha256:0797df4b7eb6ab0167f5b362998e99f5463fa46f03583e298420705b1880f172"
+      ],
+      "noto-serif-khmer-2.004.pkg": [
+        965228,
+        "sha256:ea5d6a28d6c25ee4307701b1eab0cd1b8ebca041196c26fd87c317a9964a1f70"
+      ],
+      "noto-serif-kr-2.003.pkg": [
+        153226035,
+        "sha256:8e0a3252ad7e00449b73e224fb1e0d858f5e0c1038cbeb7164b8d5e5cd1ae0c2"
+      ],
+      "noto-serif-lao-2.003.pkg": [
+        333683,
+        "sha256:9290c929c045db2b78c1f4e289ab0dbcddb2709159fac700f0540968b7706b32"
+      ],
+      "noto-serif-myanmar-2.106.pkg": [
+        1768424,
+        "sha256:304d29e5cf75979ead7858a6b25790b07f33993fa5c06e7d1755e5d80848b741"
+      ],
+      "noto-serif-sc-2.003.pkg": [
+        181010598,
+        "sha256:f2b37461b74133f0e7ff8be7af86eee7fdea56333f8bf557fc6512641802dd83"
+      ],
+      "noto-serif-sinhala-2.007.pkg": [
+        2183712,
+        "sha256:fabd4c83113e3814b3c856db2dda7949ed54914215a3cb7a3f75f7cf1fe8f958"
+      ],
+      "noto-serif-tamil-2.004.pkg": [
+        1420622,
+        "sha256:b4e28f56038aea9a7b47c31cf193262fc81ca88ec7c9af47fa45d895e7960e02"
+      ],
+      "noto-serif-tc-2.003.pkg": [
+        161464226,
+        "sha256:e0a3c559305dd9f31c024609372bcb530c1a52051acae8bb11347e54fd1500a4"
+      ],
+      "noto-serif-telugu-2.005.pkg": [
+        603951,
+        "sha256:46224b2040638df18265463c9d2467175c67c767de6743e42d9d46e476746c97"
+      ],
+      "noto-serif-thai-2.002.pkg": [
+        356060,
+        "sha256:e38b8fa8799b40542eba61d8befb4d978cd9e2eab6441006b650ad6ea6d8b59a"
+      ],
+      "noto-tc-2.004.pkg": [
+        1408,
+        "sha256:e4146e33bbfd2a94c6a4c773f2045bf05f7ec5117c7e5b07580e18323cedf3f0"
+      ],
+      "npth-1.8.pkg": [
+        22934,
+        "sha256:2992026ec2f5cd5e63ebbfa9a6306699aadbd7f281555da4e465486891a3ef71"
+      ],
+      "nspr-4.39.pkg": [
+        266636,
+        "sha256:9914a5e3aa1b41a3bd78279532ee72e6b787c5ca85b0b164c863958ad9590495"
+      ],
+      "nss_mdns-0.14.1.20200624_1.pkg": [
+        28398,
+        "sha256:52547e529a652dcee3a12e03788bd1ae73b4d0b079462bb070f392090cb8baae"
+      ],
+      "oniguruma-6.9.10.pkg": [
+        258698,
+        "sha256:c4b06f751e28fc3126d627b6b90c739c85fd5ce6846294ac298ce6b7b6cef478"
+      ],
+      "openblas-0.3.34_1.2.pkg": [
+        8954462,
+        "sha256:b866ce190078d47e1069273b2f56095ac275d0c23c230940bfe87a50a4b90bf8"
+      ],
+      "opencl-3.1.1.pkg": [
+        92513,
+        "sha256:7c21b354fd3ca43d3902aaa6aa786235f6f1c05caf85fbf8516dfbaad6bf6096"
+      ],
+      "openexr-3.4.16.pkg": [
+        909123,
+        "sha256:205a750f6f21759ceb54d14ad8111ae1e05db699125574fafb12eee0a564c2b8"
+      ],
+      "openh264-2.6.0_1.2.pkg": [
+        674995,
+        "sha256:dec36324f728eab69793b1798e27a3cae5a86c9934a735ec6fd738372361a4e7"
+      ],
+      "openjdk25-25.0.5.0.3.1.f.1.pkg": [
+        193775710,
+        "sha256:e17c20db3457b91f6d410a16b2a715b8f1656d2bc0eca9f5a078f88b8e23addf"
+      ],
+      "openjpeg-2.5.4_2.pkg": [
+        339567,
+        "sha256:bc377f9fceb931e5a6d533abd8c26571eb25e01cb429ceadbaa9159b0ec66172"
+      ],
+      "openjph-0.32.0.pkg": [
+        241215,
+        "sha256:7ad3c978d3ea9bf8e346157354782c2013604d4b9842c0099a9cd818c9dd9a7e"
+      ],
+      "openldap26-client-2.6.16.pkg": [
+        1127050,
+        "sha256:00dd2cf79da04010d9021038594b9d52b807cad7fe1876c0201b98c4756a721a"
+      ],
+      "opentimelineio-0.18.1.pkg": [
+        248926,
+        "sha256:1935d94ff2a389cd3edadef26c798694fa9ff1ba840cef6db9fc808794d2468c"
+      ],
+      "opus-1.6.1.pkg": [
+        4452419,
+        "sha256:06c501b5078e54cc15f77656887c7c97bd46357bd60ada4fed567adebf3534b8"
+      ],
+      "opusfile-0.12_1.pkg": [
+        87508,
+        "sha256:3a5a3adad1f604a73ee08c217f1c7dffcbdd328ebc3287f2a4241bdb2d94edec"
+      ],
+      "orc-0.4.44.pkg": [
+        624151,
+        "sha256:357bf46560715ce6917978a6afc63a1cccb0ee20adb741d9de8ae2cd68e181f7"
+      ],
+      "osinfo-db-20260812.pkg": [
+        247370,
+        "sha256:d9c2bf0927faefe999d39003349081bdbb232235d50e9af6f28a09f63e42cfd7"
+      ],
+      "p11-kit-0.26.5_1.pkg": [
+        718398,
+        "sha256:e46b8444ea9c4129de1ee5ca4bbdac6d817f4a83de93cf41b74de58940d13f7f"
+      ],
+      "p5-Authen-SASL-2.2100.pkg": [
+        48715,
+        "sha256:77c9cfca35292270071fae5dd6f5004844dbf40d0a1fe27aef47c1d28090a160"
+      ],
+      "p5-Cpanel-JSON-XS-4.52.pkg": [
+        118626,
+        "sha256:906e58c5af8e5b0deb85591d2ea0ddeb09ae9126f7342ba23aeadf2002b48c38"
+      ],
+      "p5-Crypt-URandom-0.55.pkg": [
+        17947,
+        "sha256:585679e18d191ff5d441a05a219f99611ef551b1dd038783e3ee805cbd96928f"
+      ],
+      "p5-Digest-HMAC-1.05.pkg": [
+        15339,
+        "sha256:ddcb2e7e5266eeb76cf85b7c0566a031de13e6adc3a0891e9a717cbebb3d0f89"
+      ],
+      "p5-Error-0.17030.pkg": [
+        27747,
+        "sha256:09120bf2f04a89e8804626a77011c73506d96c10d352c3ff048be27eaf83a03d"
+      ],
+      "p5-HTTP-CookieJar-0.014.pkg": [
+        16710,
+        "sha256:2c683da1685bb70dad33e3dc90a00e8872f39113165a583134176b6570909e6d"
+      ],
+      "p5-HTTP-Date-6.08.pkg": [
+        11903,
+        "sha256:5514f43012e3a70f528ed6e669b9db7f171f781b0da761dd4c66ad36d800a645"
+      ],
+      "p5-HTTP-Tiny-0.096.pkg": [
+        40321,
+        "sha256:e0425649e699feb0004eaad7f64759a96fa3b61b494810df4463ce421372403c"
+      ],
+      "p5-IO-Socket-SSL-2.099.pkg": [
+        202858,
+        "sha256:e884c7edf5acd9b0e02644e32aaed3c0a701f2d8bee87e89c0b01a7c194f1aa3"
+      ],
+      "p5-JSON-XS-4.04.pkg": [
+        82353,
+        "sha256:4eb55d8a3dab95589319529f6bb1f45218782df64d69a43cf9a03c69765d84d7"
+      ],
+      "p5-MIME-Base32-1.303.pkg": [
+        8676,
+        "sha256:30000ae75aed3f0ccaf9e7fad3d8de06f4c1acf3acf903f3f9905cbdf286cda0"
+      ],
+      "p5-MIME-Base64-3.16.pkg": [
+        22589,
+        "sha256:b27497963c21ff68a1456cce2ab27fa8c83abd9348dace27eb29601f6a4d0edf"
+      ],
+      "p5-Mozilla-CA-20261020.pkg": [
+        108499,
+        "sha256:467e2cc20ad8e77e2cc28a3171f8863c7634f22ab9e4a3d1039c01d0199abe5e"
+      ],
+      "p5-Net-SSLeay-1.94.pkg": [
+        289112,
+        "sha256:9b346916ec429f4f4492ed5e3612f8100fb9432184f6ef60c2e7bd97f647d999"
+      ],
+      "p5-TimeDate-2.35.1.pkg": [
+        62749,
+        "sha256:e3b445a27ef369c2bd0953b64b65400702cecc00c23a90165e65734ea22eaf60"
+      ],
+      "p5-Types-Serialiser-1.01.pkg": [
+        12645,
+        "sha256:48014cdf46095a4c26a7b6b99ffdef552bb10fc7d054a4193bff7eabdcc82282"
+      ],
+      "p5-URI-5.34.pkg": [
+        108344,
+        "sha256:043e5a83d7cf65e6b48266f209fbd4e6ffac81803cb42220cea0cdab5293b28b"
+      ],
+      "p5-XML-Dumper-0.81_1.pkg": [
+        16228,
+        "sha256:6fecf5f42d326ea38ad0a27a1e5efe14a0d03f6c8b6941bd5178f1bfd71520d9"
+      ],
+      "p5-XML-LibXML-2.0213.1.pkg": [
+        288337,
+        "sha256:4b659e669326f34cf8589af114a1387510539b87f062e4722ac34a89ff3b1f48"
+      ],
+      "p5-XML-NamespaceSupport-1.12.pkg": [
+        17028,
+        "sha256:ab3cf79c2d3a851357e65cab90266ab086e6211d04fed561b4ed68273bd6abf7"
+      ],
+      "p5-XML-Parser-2.47.pkg": [
+        157392,
+        "sha256:290d57b596a51243dd6b946e99c101693a65ff28d96bc72a80e14a8c261286dc"
+      ],
+      "p5-XML-SAX-1.02.pkg": [
+        47172,
+        "sha256:01a4ce1cdcb9842a4240f7ac14a92ab66f65e9102e64b5092805f0ba77b47a8b"
+      ],
+      "p5-XML-SAX-Base-1.09.pkg": [
+        22695,
+        "sha256:c880770b5fd03907538ff59b12ea9d63f50e25f69056fa89bd4aee341eeaadcc"
+      ],
+      "p5-common-sense-3.75.pkg": [
+        8934,
+        "sha256:5c4cb6d84323ca086aa7a77052a89abbcbe7aee1729ac3b884aea0e7008d6bf4"
+      ],
+      "packagesite.pkg": [
+        243554,
+        "sha256:413b2fac865e2a13db7d23837b7db3711890bf2f13778d1cd014d8516c0873c4"
+      ],
+      "pango-1.57.1.pkg": [
+        2132864,
+        "sha256:18365fa786b184c6086dcefc3e1d62e16ab20ce8f39ece057f46850bf7ee0caf"
+      ],
+      "pcaudiolib-1.3.pkg": [
+        20060,
+        "sha256:b1ad0cf13f33ff7bf090bdc605503610166a37cda741aa6080147fdb66c75957"
+      ],
+      "pciids-20260922.pkg": [
+        307394,
+        "sha256:7ce9fd126fcce913550b733a20b2fdb74681040968a6065b0a21156a75860b5b"
+      ],
+      "pcre2-10.49.pkg": [
+        1518965,
+        "sha256:b6738a72b7a7e5acc3f502e7366dbe51e688780e0179d9a034c24abd0b293db4"
+      ],
+      "perl5-5.42.3.pkg": [
+        16747370,
+        "sha256:0e7accda3e73b27c0d66983c42145a9b8be7819a4cfa6780250adf6da3bee4c3"
+      ],
+      "pinentry-1.3.3.pkg": [
+        18554,
+        "sha256:19e1f8cdb78de0a6f9dd54cf8f51515cc5edaa7c012c3d585d7181042bc3075d"
+      ],
+      "pinentry-curses-1.3.3.pkg": [
+        39657,
+        "sha256:e192fdf3c68e38407402e31d38c2e54e17b4c89c4ed196a0827805c9534d07ab"
+      ],
+      "pinentry-gnome-1.3.3.pkg": [
+        42797,
+        "sha256:966303aeb215ea5c95fdcc4d1e7f331f95e5da546e51906b699b7299dc90625b"
+      ],
+      "pipewire-1.6.9.pkg": [
+        2098977,
+        "sha256:74a5e357f76ae522bd51f8b7cd3053c00768c4b88bd3c289154bb044bc241ecb"
+      ],
+      "pipewire-spa-oss-g20260807_2.pkg": [
+        572938,
+        "sha256:560e404b0b8e8d1f28e73cddae185be4d96caaa6d2e815480676278583cacfc7"
+      ],
+      "pixman-0.46.4.pkg": [
+        279573,
+        "sha256:63d87af8eddd2c50819df5c3c3e669c5e4686bae302aa6cd556cae2133c4bec2"
+      ],
+      "pkgconf-3.0.9.1.pkg": [
+        144538,
+        "sha256:64952613039740870538b48b500e6eb7dda582049a269bd2dfc6eadee5cee533"
+      ],
+      "plocate-1.1.22.pkg": [
+        140083,
+        "sha256:89833b1dc53ea1a68b2f23f5a158b5e5130ed81d93934759911c226c158508f0"
+      ],
+      "png-1.6.59_1.pkg": [
+        314875,
+        "sha256:4dac178450e6ebae62b696b3da776c3277256ec750b5e4bc9f31f4efef2b7f15"
+      ],
+      "poppler-data-0.4.12.pkg": [
+        2000265,
+        "sha256:e86f54f3a762e14f3425bc2cc042ff834bc0c387f0d625292d09e3d8377dba7a"
+      ],
+      "popt-1.19.2.pkg": [
+        45102,
+        "sha256:f7c1c853c4df6a8d340681c53b24da4a91870b9fe4071a2e9f4784e4afb7a331"
+      ],
+      "portaudio-19.6.0_8.1.pkg": [
+        190439,
+        "sha256:f895784a1c5598c3b1cb73873db91e114a6b22b44d8eebc343a1ab69c008b6c7"
+      ],
+      "postgresql18-client-18.6.pkg": [
+        3929677,
+        "sha256:1a8ba718ae6fcbc3839128c66d26bd205df062829fd9ccf71465d86995d3aecd"
+      ],
+      "protobuf-29.6.1.pkg": [
+        2617675,
+        "sha256:b21a6eca0f963242fb41597fd3a6d3964bc9724c53de05eb9601368f04ca3ff6"
+      ],
+      "protobuf-c-1.5.2.pkg": [
+        152416,
+        "sha256:1f04bf32004b0467b95c42ef4a55f38b5ca5194552f9fff36a24dede4d505982"
+      ],
+      "pugixml-1.16.pkg": [
+        94973,
+        "sha256:fe354608beb68754efd4ac5c3cfb5d805bc2742ee55db49989ac043b726edf3b"
+      ],
+      "py312-aioquic-1.3.0_1.pkg": [
+        235298,
+        "sha256:b536f76cfbff2f058731cfc66e818b9ca5301c996b3076cbd1b007dc7396d894"
+      ],
+      "py312-anyio-4.15.1.pkg": [
+        301361,
+        "sha256:9c374965d53b019e111b7c9bb5b46ce9618f2b42df7fb64b1ec3fab23c484b26"
+      ],
+      "py312-async_generator-1.10_1.pkg": [
+        51116,
+        "sha256:6c55c6f4eeb8b22b13d5e7550369d1eeb101ca830b1f2a6e53d928c00d6bb3d8"
+      ],
+      "py312-attrs-26.1.0.pkg": [
+        113761,
+        "sha256:fa18f494ba8df3825171a9d845bd6c80278698747b1a6677a0278b4bfd5d4180"
+      ],
+      "py312-boost-libs-1.92.0.pkg": [
+        201198,
+        "sha256:b6147f7b0e35b4ceba2223da3e817242209952dd5ac65036e0ac792178f38587"
+      ],
+      "py312-certifi-2026.7.22.pkg": [
+        138006,
+        "sha256:f23214be879bcbdc427d04d12d9d454e45ee06d0e74358f5eaed2b534bacc6ea"
+      ],
+      "py312-cffi-2.1.1.pkg": [
+        288856,
+        "sha256:d95adc638923711e991f0f87e37c08cd7dd35f731beb5467d63950c19a613943"
+      ],
+      "py312-charset-normalizer-3.5.1.pkg": [
+        230432,
+        "sha256:bba0b3951cc8ae4cf19dcad9352d3a19a53e480c359d8ff0d11134a96f4254f6"
+      ],
+      "py312-cryptography-50.0.1_1.1.pkg": [
+        1625828,
+        "sha256:8b204b3c933750091b7911a7b9c994b2bce28134ac23b6228ed2116b4149d783"
+      ],
+      "py312-dbus-1.4.0_1.pkg": [
+        5171009,
+        "sha256:0b8c6dd073bb6345b23511717f6023d69e96d75815e08aa6ed600958c5b5fdcc"
+      ],
+      "py312-dnspython-2.9.0.1.pkg": [
+        596832,
+        "sha256:7b3fe6a5d5fcf2f56fc20635f233a8962628a09b5dd05e3b54abea1e100bb424"
+      ],
+      "py312-docopt-0.6.2_2.pkg": [
+        32883,
+        "sha256:8905ec1b48328697d78b5ad723e2ff06609403412ca46af3e969fb011452d5b8"
+      ],
+      "py312-h11-0.16.0.pkg": [
+        58266,
+        "sha256:0145df6972f30c6d57d483885a5eb4e955c52a57589146fa14860a82fae98299"
+      ],
+      "py312-h2-4.4.1.pkg": [
+        109938,
+        "sha256:70d4af1e598fd44b7d3fafdae1e31b90f282cace009e659e5826387c72d445fe"
+      ],
+      "py312-hpack-4.2.0.pkg": [
+        61919,
+        "sha256:a5b1b12abbd193067f6df17141add2264f46069fd9f6d31dd0961ece3c194328"
+      ],
+      "py312-httpcore-1.0.9.pkg": [
+        119402,
+        "sha256:2dfd031c6be59c55831b77491a7ef04f76347714bfb639f20ebfdcdf1510590b"
+      ],
+      "py312-httpx-0.28.1_2.pkg": [
+        161826,
+        "sha256:91d22d2ba68ecd5a59f24feda11623d0162731d99bfef3be9bc75762e6a41cf4"
+      ],
+      "py312-hyperframe-6.1.0.pkg": [
+        26181,
+        "sha256:660350b66af35bee07978649efbfcb70b89b73433da3ad407cdc3932ad6cb593"
+      ],
+      "py312-idna-3.20.pkg": [
+        91533,
+        "sha256:6933d99ba567cd8286f0dc7a7367095514312a389bee4a5b4826363de456c584"
+      ],
+      "py312-libevdev-0.11_2.pkg": [
+        39495,
+        "sha256:39a56d08f56d1f88faf2b13303b5523f15df2bdf7c2f1db3af108f8310bae038"
+      ],
+      "py312-markdown-3.10.3.pkg": [
+        188261,
+        "sha256:b9cee5ceb9e8bb860e82204a085cd715285993edbf8f007e1f8e8cdd9991f0f1"
+      ],
+      "py312-mutagen-1.48.1.pkg": [
+        397922,
+        "sha256:8b5f94d971d1ed4891279fa1b0a9d5b8dd60fad57871a2e54d82958d2151ccce"
+      ],
+      "py312-numpy-2.4.6_1.1.pkg": [
+        20366891,
+        "sha256:95816e033873b20c05f80f295fa9a5ebb68963832f3496ab1891ad8e18724387"
+      ],
+      "py312-outcome-1.3.0_2.pkg": [
+        14993,
+        "sha256:fe77a3e1b18690b35ce980828a5c55a3be51564d6d7665cf763fb172359d0727"
+      ],
+      "py312-packaging-26.3.pkg": [
+        245212,
+        "sha256:e1b2c79f53a8f6964f2eafc905aa791a98a7caac7dc36689a394da079026742c"
+      ],
+      "py312-poetry-core-2.5.0.pkg": [
+        817614,
+        "sha256:fd4ae9ce1c8c330f0bdbf1ccdc81bf8ad81cbea1f30e2eebf5a7c28e10bd23e7"
+      ],
+      "py312-pycairo-1.29.1.pkg": [
+        121199,
+        "sha256:aad02155548cd0a0da1ff993305de28a14d40b049b715415b616ee21bbbdf0f5"
+      ],
+      "py312-pycparser-3.0.pkg": [
+        105288,
+        "sha256:2ffb138e647baf7aef8fb86a2229d044f188b6a47c46f578b29f5c44ac7f4880"
+      ],
+      "py312-pycryptodomex-3.24.1.pkg": [
+        1677112,
+        "sha256:3fad703db3ed3ee0494aa36e1f7b88c692afc1cb3bbd3b3dced983225bcfaad7"
+      ],
+      "py312-pycups-2.0.4.pkg": [
+        77047,
+        "sha256:e527a886d8a0dc3e92fecc5ecbbfbb3edf7608690680536a1b3c10ecc6c8a555"
+      ],
+      "py312-pygments-2.21.0.pkg": [
+        2015772,
+        "sha256:0484e95b352e7841193973aebe7ebb1aefda083265f1588e4424739550fe5106"
+      ],
+      "py312-pygobject-3.58.0.pkg": [
+        328037,
+        "sha256:547a1e806581b2e9e5fde285ae30659b66785134382a2db98fe8a6a0daf2dcdf"
+      ],
+      "py312-pylsqpack-0.3.24.pkg": [
+        85197,
+        "sha256:213812f8230761b6f9ec45f324755b9469af01ac2d10b84ff43fc50882d90604"
+      ],
+      "py312-pyopenssl-26.4.0.1.pkg": [
+        102021,
+        "sha256:f833491c94a9cd9fbf491bda586b09c82c03dd0d0d77335258745b24e4c80e6f"
+      ],
+      "py312-pysocks-1.7.1_1.pkg": [
+        32281,
+        "sha256:4c5b6ef1dd80353985341b2049675ecda5039e0ff835cb8b91f41b41994fa088"
+      ],
+      "py312-pyudev-0.24.1_1.pkg": [
+        77859,
+        "sha256:e9641251914ac8e1a38dfce9f851b219ac887dcb1dd05c8935c944191b5d7bcd"
+      ],
+      "py312-pyyaml-6.0.3_1.pkg": [
+        185899,
+        "sha256:29a8017aa4ea186b1175f55fd5f53ac73384bdea88a9b13bf586067d1c56a138"
+      ],
+      "py312-requests-2.34.2.pkg": [
+        139796,
+        "sha256:9e038166ef1ff0a11cf5c3083e5d74fb1c8c6b66ec4fa80214ed8c877ec656de"
+      ],
+      "py312-service-identity-26.1.0.pkg": [
+        20625,
+        "sha256:11911923b650896be36f0c93294d3bfc415d0e64dde8a03f19c5bccf883aa7e3"
+      ],
+      "py312-setuptools-63.1.0_3.pkg": [
+        1450745,
+        "sha256:069ee15a11210ce898028e97e17ad4e65dba5a33938e476ea1efa216fcfed9c3"
+      ],
+      "py312-six-1.17.0.pkg": [
+        26896,
+        "sha256:6c14257ff1b0a076a027318b417dc06e60f76668ece9077a6a3f78ac3e43dad9"
+      ],
+      "py312-sniffio-1.3.1.pkg": [
+        13427,
+        "sha256:a7053b5fa46b4a0a58c13c5b1483df7e7ec86817a24cf2b0eeb4df81a4436710"
+      ],
+      "py312-socksio-1.0.0_1.pkg": [
+        23866,
+        "sha256:c02e9ceeafa684cda36655aba04f99663526675278353febbe2c05f2cc1f57d3"
+      ],
+      "py312-sortedcontainers-2.4.0_1.pkg": [
+        50978,
+        "sha256:bebe643f406ac6c81153a13e4bf5a12100ab49ccdb694a432efaf55489d73a74"
+      ],
+      "py312-sqlite3-3.12.15_10.pkg": [
+        42956,
+        "sha256:e3809237f342d83b3d644fc9092f65a069419f6f5a1b07ab9e46384a9710919e"
+      ],
+      "py312-trio-0.34.0.pkg": [
+        1089878,
+        "sha256:82e6b6946134d8f23753b76fce4b69f18c570402a1df76069b4acb3bb6da14db"
+      ],
+      "py312-truststore-0.10.4_1.pkg": [
+        38717,
+        "sha256:0358efb0870773915ccfb611a73232a0e5d96e2248feb939c0132c038a8cf08a"
+      ],
+      "py312-typing-extensions-4.16.0.pkg": [
+        91321,
+        "sha256:7762adf59a04c2ea57095c3b8b7fefb9f2a1ef9f3ba128c286e013a90310b17b"
+      ],
+      "py312-urllib3-2.8.0.1.pkg": [
+        243738,
+        "sha256:4897a8cae937abef1d6fc89e89571fd80e78cab5a18b7f2b62019e9421ad1568"
+      ],
+      "py312-yt-dlp-ejs-0.8.0.pkg": [
+        51269,
+        "sha256:374cf3dc067d9d0ccf8495baf200333d680a4959d3c2f9cb3262491ff176b7e0"
+      ],
+      "pygobject-common-3.58.0.pkg": [
+        16389,
+        "sha256:a3b7663af4940bf0ea9f87da7c75784d581825c896ee0fc8c8d07f11d51e5e95"
+      ],
+      "python312-3.12.15.pkg": [
+        40692648,
+        "sha256:f33d50ba95676d59fbd1c3afd3462349d1c3ab2353c5e50299050ccf56289e5f"
+      ],
+      "qhull-8.0.2_3.1.pkg": [
+        966845,
+        "sha256:f968d13c321ff64a65874e11032dddd6f9d523be2b4d73bf7ae3db7dc5dfe084"
+      ],
+      "qpdf-11.10.1.2.pkg": [
+        981856,
+        "sha256:d6ce2231c06614ded9c935b2e2578329bd1da90eb363e1ac8248a1a728a1e5fe"
+      ],
+      "qr-code-generator-1.8.0.pkg": [
+        62659,
+        "sha256:60a935847fc22f054c5b50b19d345b08b4578f451b388e6623301c9bcdeaf203"
+      ],
+      "qt5-core-5.15.19p96.pkg": [
+        2488214,
+        "sha256:e371b1caef79cd887d2f48f868e032d0b9eff435613a521356f17c2219414030"
+      ],
+      "qt5-dbus-5.15.19p96.pkg": [
+        319660,
+        "sha256:a3974b1ab55fcb1fc526e56f32ca459e6a32e5a42c421e0e012f7f205209f209"
+      ],
+      "qt5-gui-5.15.19p96.pkg": [
+        3842373,
+        "sha256:8025aed6e3649b4009c16c9f1faa2909938b4419408eba58e5981585318fc172"
+      ],
+      "qt5-network-5.15.19p96.pkg": [
+        627594,
+        "sha256:aa978d31be304542bfce6260883af1b48fa15790158bb063813319ed9d9f264e"
+      ],
+      "qt5-svg-5.15.19p5.pkg": [
+        151174,
+        "sha256:28180fdf7c6098db8caf5376a2d0ce82f7b969d76cd609d19d1843d07a86ac13"
+      ],
+      "qt5-widgets-5.15.19p96.pkg": [
+        2677772,
+        "sha256:9bc156746204b492cedf0b0720f46de3d453e7f1d13985229b69bf0a63e7e2e1"
+      ],
+      "qt5-x11extras-5.15.19p0.pkg": [
+        21862,
+        "sha256:bb42c1cb41ee9b86ba58edf5645e97cc866d61540cf0dbf8b4b41e041895c222"
+      ],
+      "re2-20251105.pkg": [
+        294973,
+        "sha256:a06d760d907b06fd351a91d942294bd2696ba29a7b687849737418f5dab7ed3d"
+      ],
+      "readline-8.3.6.pkg": [
+        489117,
+        "sha256:f96b8103eaaae609dc135dfbee9c67f0e74f421cae1bb862b27a194552a62de9"
+      ],
+      "recordmydesktop-0.3.8.1_10.pkg": [
+        47349,
+        "sha256:2f4135deb6bcaa8d1ed297ec40398ad24c83afd4800ed7777b3b9624840f7677"
+      ],
+      "ripgrep-15.2.0_2.pkg": [
+        1382499,
+        "sha256:b43dc378d6202c659e39787b791fb4bb73fef27772c57b02314f0a7beee78fff"
+      ],
+      "rnnoise-0.2.pkg": [
+        1235604,
+        "sha256:c55f81fb409928ef2876854741c12793c925d009fd93193c8186b241f8b8b241"
+      ],
+      "rtlbt-firmware-20251111.pkg": [
+        557313,
+        "sha256:22088b52fcee3036eef16cd844eee38ad74a7dbdcd18223cc64836e7f4ebefce"
+      ],
+      "rttr-0.9.6.16_3.pkg": [
+        264027,
+        "sha256:44a1831228bcf3de4708eed68c98d16fc3d2ba34bddaf785548c264ddf214dc6"
+      ],
+      "ruby-3.4.9_2.1.pkg": [
+        10332559,
+        "sha256:1ea1132679e5bbfd04a3603896a33ffcf80a7c034ab6da2fcfcc9cd647f068ff"
+      ],
+      "schilybase-2024.03.21_1.pkg": [
+        607400,
+        "sha256:c636ee5bae1d982208be4768a7b00a24d1857e720d5b9e14910eac45e970528a"
+      ],
+      "sdbus-cpp-2.3.1.pkg": [
+        207220,
+        "sha256:640f08f3e70c957f47b5e0bd6b8f8e643f23a1e1c8ab59e07d30822c8609ac8b"
+      ],
+      "sdl2-2.32.10_2.pkg": [
+        1424552,
+        "sha256:42b8f5219b9328b75aaf42a6d46e9472739e31368b9f2630d2336824e1a056b7"
+      ],
+      "sdl2_ttf-2.24.0.pkg": [
+        50053,
+        "sha256:17b34b4e07f14c5c24d5a1f88b3f094a74921388c55040087d92a770f5eefb9b"
+      ],
+      "sdocbook-xml-1.1_2.2.pkg": [
+        16803,
+        "sha256:b93faf7aeebbb05fcaccb6245775ed93ee513e370ead644afba8d360cd6c13ba"
+      ],
+      "seatd-0.9.3_1.pkg": [
+        38615,
+        "sha256:c1d76af65e0518404c5be0bf6276962475db4deb86dfe175c2e945ae0824eafa"
+      ],
+      "serf-1.3.10_1.pkg": [
+        96334,
+        "sha256:d9842d62fd8fa028fe3c25ae49d2dc3951f5c53d84f9ec9fef130451ec0c4182"
+      ],
+      "setsid-2.37.pkg": [
+        5624,
+        "sha256:4931a5d8902216e60e85eb4847f8ba88ae265a063eb7931b65f69c3e55720e76"
+      ],
+      "setxkbmap-1.3.5.pkg": [
+        12144,
+        "sha256:f2ad8cd3a5c37594e563b5b2be68d17bc9acc5f75922ece7ded1806fd8b7148f"
+      ],
+      "sfcgal-2.3.0_2.pkg": [
+        3622021,
+        "sha256:eb3e216bd6c16f25adc4857df222bfa4898a9243d067d0cf7e8e6c589eafaf9a"
+      ],
+      "shaderc-2026.4_1.pkg": [
+        3712687,
+        "sha256:4e842ca8f3d82cddb4cb24fb4d1fd901042e0e8a1644f4a6e04d3e6adc6f461b"
+      ],
+      "shared-mime-info-2.4_2.pkg": [
+        632898,
+        "sha256:fe03aed2dd6d61a909809e09fcdd6ae299ec1db80990a6b1bbdd93d9b429a706"
+      ],
+      "simdjson-5.0.5.pkg": [
+        461968,
+        "sha256:c9277dc710932ae1e2fa6baf2a4da5a4954007daff38f784300a89c79956d359"
+      ],
+      "slurp-1.6.0.pkg": [
+        17762,
+        "sha256:af2c9143c58c8369beeeff54f135826d04a16d1bb70a4a3ffa960723920955fc"
+      ],
+      "sndio-1.10.0_1.pkg": [
+        125127,
+        "sha256:0bfbcf1418961abfee06a82d03acbdbf1f842e1ab12c84d870856425b7e0c84c"
+      ],
+      "snowballstemmer-3.1.1.pkg": [
+        173891,
+        "sha256:2f7159f4b4bf6db450c81555005df44105837658f0fd762dba723962761e8346"
+      ],
+      "socat-1.8.1.3.pkg": [
+        226172,
+        "sha256:8816e8dae615d93227444f48ae888fbedbe6da78562cf9fef856852ff145650d"
+      ],
+      "source-code-pro-ttf-2.042.pkg": [
+        667335,
+        "sha256:d0f13d745c904d807010f575cbf50d3c064bceb801371a342865c97c85cd5324"
+      ],
+      "sox-14.4.2.20210509_7.pkg": [
+        394434,
+        "sha256:17c12b50c954dd7dbfc575225547ed356e469175ff21ea8af0f8a98ba90656c6"
+      ],
+      "spdlog-1.17.0.pkg": [
+        170619,
+        "sha256:5a2b757064b406c747667a32d8b61c90248513a8ac019838ebfa547a829d5a18"
+      ],
+      "speex-1.2.1_1.1.pkg": [
+        120813,
+        "sha256:6a470dbf2d7d4b206bfe5cf383b4ffae32e93545019270627000663671e5b399"
+      ],
+      "speexdsp-1.2.1.pkg": [
+        81776,
+        "sha256:bba59ae175726fb0008b9c51ab937ba2f76211d630881daf18c379a707f18b6c"
+      ],
+      "spidermonkey128-128.14.0_9.pkg": [
+        15019046,
+        "sha256:d8da4155f9b849228d833b6130f322809e42ad1a2804d4302ae1bac6f083583f"
+      ],
+      "spirv-llvm-translator-llvm19-19.1.23.pkg": [
+        980798,
+        "sha256:5a5a5ece0c7839d241b36dd6bbb0e719ba5caccc816888e63d3d00a58a026d80"
+      ],
+      "spirv-tools-2026.4.pkg": [
+        4910147,
+        "sha256:265f0d39445dbe13aad35185da82d2b029fa16ce1b7a32d7e8f2a9e7aff43c48"
+      ],
+      "sqlite3-3.53.4.1.pkg": [
+        1397840,
+        "sha256:d5d899529ffa8cbc5cce521f8c847c77bc6287c906eb3d5c795bafd55bd74e52"
+      ],
+      "srt-1.5.7_1.pkg": [
+        475628,
+        "sha256:f4acbb9e6392e2d513babf16fe1b9337f15a96274647e7394091fa167ebbe4ec"
+      ],
+      "starship-1.27.0.pkg": [
+        3355204,
+        "sha256:1dfdee260e42918a5b836ff2f4bcf69932dd0ff33d8c6d8056dcb1eae40b328c"
+      ],
+      "sudo-1.9.17p2_2.pkg": [
+        1833756,
+        "sha256:0bb4609309b3a4a229c76df033ba8e7ae6dbb11f2d02739e731c485a793222e2"
+      ],
+      "suitesparse-amd-3.3.4.pkg": [
+        287155,
+        "sha256:47e8d66c0cceab3972b0515c9428dea879711ebc26eb7cbe71d6b626fca94118"
+      ],
+      "suitesparse-camd-3.3.5.pkg": [
+        277594,
+        "sha256:657b2ff1c454c907bbc2f2a5e77f20b5a3b2239b4b9b4f582d04a4f7eb41c575"
+      ],
+      "suitesparse-ccolamd-3.3.5.pkg": [
+        39064,
+        "sha256:7e4609fecfdc0e823d015b04ee50463237843828b5e80a94eda1dd072672574f"
+      ],
+      "suitesparse-cholmod-5.3.5.pkg": [
+        1685506,
+        "sha256:d68e2d4b1b149c10b6ad1c18056f9799bf4cc210360f5aac3df2c244674c5b36"
+      ],
+      "suitesparse-colamd-3.3.5.pkg": [
+        29905,
+        "sha256:d081a262f4258f1e1da6b3c02e47fe34ba83567c186316f98058d01787a5db18"
+      ],
+      "suitesparse-config-7.14.1.pkg": [
+        45372,
+        "sha256:e401e5b8f38be3481b468a48f3d5d7e5caab44760681082bd36bc129aba11dc2"
+      ],
+      "suitesparse-cxsparse-4.4.2.pkg": [
+        124758,
+        "sha256:f8863f207c574725f102522be636fef54ba6a07f9860fcbca5acd8712847bdd5"
+      ],
+      "suitesparse-spqr-4.3.6_1.pkg": [
+        396980,
+        "sha256:152ebda2606a923cc340309c9f32a27d6d363c9ac777cfe682afc0ecd1285e05"
+      ],
+      "svt-av1-4.2.0.pkg": [
+        2110460,
+        "sha256:79dc1794f5c9a0a4fdc980f3473a755284e4254dec8224dd0c9387ea00fb1118"
+      ],
+      "swhplugins-0.4.17.pkg": [
+        377862,
+        "sha256:2da254dacb80446a427164cee4a88456efeb33b6f30945258533860ef490e4e9"
+      ],
+      "taglib-2.3.2.pkg": [
+        528610,
+        "sha256:efc873a7f97ff4826df2f5a9f2916232a59f91d1ab004f1676c40d8a9950e5c3"
+      ],
+      "talloc-2.4.1_1.pkg": [
+        50768,
+        "sha256:e914296bad8422260f0aafe4ee8765de116409592075f26b1b212646966f87fa"
+      ],
+      "tdb-1.4.9_1.1.pkg": [
+        86357,
+        "sha256:64f2f7c5eb552a260295e007340f594f2fe9619f29a49a026b97050510ae4585"
+      ],
+      "terminfo-db-20250719.pkg": [
+        380838,
+        "sha256:f16808c8e5ba74339685db153a7a775a30bb2bf2ef8419941391ce82149f13e2"
+      ],
+      "tesseract-data-4.1.0.pkg": [
+        443763703,
+        "sha256:e1a27670e5a77f18929a728272ed112bb3780287d04bcc52aa55a324bcdd6552"
+      ],
+      "tevent-0.15.0_2.pkg": [
+        60101,
+        "sha256:3fee3750833aa242b1f1d629fac3eb95eb42cb09ae783feb92f858ff6ec33c9c"
+      ],
+      "tiff-4.7.2.pkg": [
+        1260680,
+        "sha256:2883d6bbf17b9ab588306f078e50a1747ea64635d8fe1abceb2f87f2e05bc216"
+      ],
+      "tldr-1.13.1_4.pkg": [
+        1209070,
+        "sha256:b87e5ae2833c875c542fbb7819772cbe33ae5e07269d6407a56d6c970162740b"
+      ],
+      "tmux-3.8.pkg": [
+        603611,
+        "sha256:0bb3d3e13c20192f9698bc82513a919e8d00b4d86b8006e407e4c03bc65f42c1"
+      ],
+      "tomlplusplus-3.4.0.pkg": [
+        171334,
+        "sha256:76d7cc60896d1ec3d10962676fad906a4d58a02b5106a0f32b274843795185c5"
+      ],
+      "totem-pl-parser-3.26.7.pkg": [
+        117992,
+        "sha256:91abd42784ae103f25e99972cfd8ff45b3da48e5b4e0b9ce6729846fb816e3f0"
+      ],
+      "tree-2.3.2.pkg": [
+        63897,
+        "sha256:0b16ae645845a3d7d543b5af1632bb98f05e98a3c7332c5c34c273c43727efa9"
+      ],
+      "tree-sitter-0.27.1.pkg": [
+        132811,
+        "sha256:983b435029f04cbf854f15e5cd678ac0cdd70455db59ae19df2d159c2108d130"
+      ],
+      "tree-sitter-cli-0.26.13_2.pkg": [
+        2389803,
+        "sha256:1e4d860a5d06510c39792ddb0cf6f2739ffe43b683878cc50591f9306d77d7a6"
+      ],
+      "twemoji-color-font-ttf-15.1.0.pkg": [
+        3835829,
+        "sha256:911b4392b9e60e1a6b47e2c607be8846ea83bced3e4073881b01b567d6c05b07"
+      ],
+      "twolame-0.4.0_5.pkg": [
+        117485,
+        "sha256:16291d3ed264f8e7035e68be59025aecc9d4716199fb280dce75e03a018b83c5"
+      ],
+      "uchardet-0.0.8_1.pkg": [
+        126513,
+        "sha256:361954b34436247a43f86293891ffd3ad9bdded5148232b07064ff03152fe0f1"
+      ],
+      "unibilium-2.1.4.pkg": [
+        108743,
+        "sha256:d5729a5fbbb52707c234b8240958ab5493b258df4b6d808de33027d3ade6a2ab"
+      ],
+      "upnp-1.14.31.1.pkg": [
+        556863,
+        "sha256:ce7daebfc76f5f92982a165c09917ed1a06b48eeebdf3c452a74da227850d0ac"
+      ],
+      "uriparser-1.0.2.pkg": [
+        468360,
+        "sha256:f4762a200ed3e5faeb74af114bfaec8ab7515f7825e9ec37d30f6545983a253a"
+      ],
+      "urw-base35-fonts-20200910.pkg": [
+        8764024,
+        "sha256:b603aa77dcb85dd251dcb711bceded77bf68ae4050c43f7791a221998c56e037"
+      ],
+      "usbhid-dump-1.4.pkg": [
+        32948,
+        "sha256:4c3019ba082cfaa5cf15c19e2cdac73c2e46ea27fdc4ea1a4670dbca28bf20cc"
+      ],
+      "usbids-20260626.pkg": [
+        221309,
+        "sha256:31a5045d50a114a6a6567391ddb85471a653f64c35259e326fc8bd9c5419ef23"
+      ],
+      "usbutils-0.91.pkg": [
+        55706,
+        "sha256:55a40c31c02d534b424eee453f5d7419a3ded2f8c4125b92fd203a16ad17b1ee"
+      ],
+      "utf8proc-2.12.0.pkg": [
+        88146,
+        "sha256:e218f73fb64cec5dddaf857ee2e5db4bf2b16ceebc152389c89644d4f46ea167"
+      ],
+      "uvwasi-0.0.23.pkg": [
+        44502,
+        "sha256:c209608d012244d438ac0d8e230007c9a9d47fb0112ac7220163e701d604aa12"
+      ],
+      "vid.stab-1.1.2.pkg": [
+        99635,
+        "sha256:f92e32f5b56e9109d2a17b82066ca38e5df50901dc41e82c4f7cc9eb73da6555"
+      ],
+      "virtual_oss_bluetooth-1600029.pkg": [
+        18889,
+        "sha256:7397433255a6726cf55371c2cde5c2cc2afef8f831ec0fbc563f1691bac2b695"
+      ],
+      "vm-bhyve-1.7.5.pkg": [
+        70095,
+        "sha256:07531a7d5532ca702f5bdaa9c743716dbd4368069a98f6059ad00a58f7cdca31"
+      ],
+      "vmaf-3.2.1.pkg": [
+        522135,
+        "sha256:ae84cb7bb0a9df852ffaca7e952db375312f6b1e5411f661d64b33aa4c22f83f"
+      ],
+      "vulkan-headers-1.4.365.pkg": [
+        1855764,
+        "sha256:2b1d3b3b71e93b36e95704cfef34b2c9e0fbadf16d2e57025b9d94062ff29826"
+      ],
+      "vulkan-loader-1.4.365.pkg": [
+        179159,
+        "sha256:b6be010d67615a291af3371abaa14ac4fb4ea65473961db82a0e75ccc805cbb3"
+      ],
+      "wayland-1.26.0.pkg": [
+        150893,
+        "sha256:74bd9f69eff786ff55c50ab55d8060cf6bc9e39544246ea27de2fa09828ba5a5"
+      ],
+      "wayland-protocols-1.49.pkg": [
+        141749,
+        "sha256:61d487798ac906931c9a8251a50e966451adcb9a3ae8097389775c756088906b"
+      ],
+      "webp-1.6.0.pkg": [
+        492439,
+        "sha256:7b322bc8ddaaad1296f56ac1877f86520f2e68a05a39d1e2a92c8168c0184ab0"
+      ],
+      "webp-pixbuf-loader-0.2.7.1.pkg": [
+        9279,
+        "sha256:16f0b65e98efab8c7d58d4a36c67787087c1381a54db1bcd83c93153907fe3d1"
+      ],
+      "webrtc-audio-processing-1.3_1.pkg": [
+        568321,
+        "sha256:bfe36428d48de263473581defa9077394c60dc50de632b50f861cea92f4a5613"
+      ],
+      "whois-5.5.7_1.pkg": [
+        72208,
+        "sha256:046e8f97d8225747c2eac2dd91f3e353726c8e8c8dc6f887124546cb0f526df9"
+      ],
+      "wireplumber-0.5.17.pkg": [
+        459792,
+        "sha256:1c3e2de31da13d843d067601ef08bb8d2d051a9de3053b6322f55f22760a79fa"
+      ],
+      "wl-clipboard-2.3.0.pkg": [
+        42312,
+        "sha256:0470b133c065db6d7b5702b1164094dfa0621ce7515aa79c421e2e13ecc9ed9d"
+      ],
+      "wmctrl-fork-1.09.02.pkg": [
+        24754,
+        "sha256:8836865c129ab39485a9d606f24d3ac757efb0636e5d30504dc42f86db782e9f"
+      ],
+      "woff2-1.0.2_5.pkg": [
+        61335,
+        "sha256:f236c2502e6e1112b0d81a56e3774b7fa65395708d2009ce8be2ffec0292662d"
+      ],
+      "wtype-0.5.pkg": [
+        9391,
+        "sha256:46f26a0c316c2e85efb2bdd4b41696359424fc3df7525f325a0bd9df17615afe"
+      ],
+      "x265-4.3.pkg": [
+        2344366,
+        "sha256:58a02fa13f38d5588f0b1eec8b6399ce5dde81f91b68e13cc6966c8180173f5b"
+      ],
+      "xauth-1.1.5.pkg": [
+        24272,
+        "sha256:d0ba6c1f2455841d1c80136f6e0a491af632dbcbeecbe69a0ae0c95262048a5e"
+      ],
+      "xbitmaps-1.1.4.pkg": [
+        25759,
+        "sha256:d1c1d9753eed99a95a2556da7caac9e22586fd62749ac2bf54284035d2b2dc06"
+      ],
+      "xcb-imdkit-1.0.9_1.pkg": [
+        343230,
+        "sha256:e7249c3de3ea3c306b629c373d7d05c6215ac560b6a06f1646f34cb5aea3205e"
+      ],
+      "xcb-util-0.4.1.1.pkg": [
+        14829,
+        "sha256:81b423122dcaff0dc3f46d357422267f3ea1457ef600f80af8b61af735ae1893"
+      ],
+      "xcb-util-cursor-0.1.6.pkg": [
+        15315,
+        "sha256:d81b9a2c49d18b2696e15e0bcc95b2f9af011c554ef05023607a71b394d775d4"
+      ],
+      "xcb-util-errors-1.0.1.pkg": [
+        16145,
+        "sha256:ecd92b9f3180b5fe49e197e726a4398de12bd6f8b31d1f263ca7815be16f6860"
+      ],
+      "xcb-util-image-0.4.1.pkg": [
+        20722,
+        "sha256:861023252f01a554cd5583fca575821c5ddc82acd21a87a3bfdd0e045abf4dd5"
+      ],
+      "xcb-util-keysyms-0.4.1.pkg": [
+        8848,
+        "sha256:3cbc75937b5fb258a7dc20b4ce15368fd49f59a4b4110a2ddb0f0a2c814b3df2"
+      ],
+      "xcb-util-renderutil-0.3.10.pkg": [
+        10666,
+        "sha256:73564916a1984e8c46d561a771c2774624abbda5da452aaaa32432879bcd66bc"
+      ],
+      "xcb-util-wm-0.4.2.pkg": [
+        45572,
+        "sha256:5eca8473e39c3979d41d37db047442f86a3f24711c3094cac6596be2d90fe400"
+      ],
+      "xcur2png-0.7.1.pkg": [
+        23402,
+        "sha256:9904e697d8369cd05c7827b3b7b9226d2973d2755f47e6f56e10ce98ff5950f3"
+      ],
+      "xdg-terminal-exec-0.14.3.pkg": [
+        24418,
+        "sha256:a6aa250514dd020bca42509094be8b7cc4a3095150b905932f641153dc154f1f"
+      ],
+      "xdg-user-dirs-0.20.pkg": [
+        46010,
+        "sha256:d0056eb6e8295a2dbcfb498a9719c14d0d64daf940784ecacca09e0313b2ae2c"
+      ],
+      "xdg-utils-1.2.1.pkg": [
+        60171,
+        "sha256:b6f053a29d2dab952ae0da86db3060fbecb4be9b3efc975bf4a529e34450f4f9"
+      ],
+      "xdpyinfo-1.4.0.pkg": [
+        15957,
+        "sha256:240552a5e18eaf94ffaebb2506a158239b6b651110cf5df4759276c6a1efcbcb"
+      ],
+      "xerces-c3-3.3.0.pkg": [
+        2334499,
+        "sha256:b9319c33c8a43731b08eeb0f9d3309ac872d44c4e15f10fc0e9d62e85f690fdc"
+      ],
+      "xkbcomp-1.5.0.pkg": [
+        86698,
+        "sha256:36cc9c507528dd16d48bef2fb7e29c47e44b5d0ed1f3eccbb1974ec37cd6f725"
+      ],
+      "xkeyboard-config-2.48.pkg": [
+        916342,
+        "sha256:58f03e6951e4574617069ae42f12a2791ee4fb42fd968a622715f279bd638a64"
+      ],
+      "xmessage-1.0.7.pkg": [
+        11056,
+        "sha256:520aea2e977a2bf44066d8df479cfed986383dc08ab2d53ed734e76b43eb54a2"
+      ],
+      "xmlcatmgr-2.2_4.pkg": [
+        23618,
+        "sha256:fad82376e7de84d7e703cef14336d458d729ee15ca313992db13c425b3efa6fd"
+      ],
+      "xmlcharent-0.3_2.pkg": [
+        14531,
+        "sha256:2779585ca405660cba73a1a58ab3386667e26128d7602c14f0255f5a3029a862"
+      ],
+      "xorg-fonts-truetype-7.7_1.pkg": [
+        1170,
+        "sha256:32cae648e1c9f1ec8e93f31707d34ffed179427737262b1ef34ba76bcce1babc"
+      ],
+      "xorg-server-21.1.25.1.pkg": [
+        1629837,
+        "sha256:5803f1052d4e9b4e1e1991870fedea2355734af365e8584f704d10b540f64b76"
+      ],
+      "xorgproto-2026.1.pkg": [
+        248414,
+        "sha256:ee5cae6719d88f30bc45d0304c5d35f5b24cae6ed0d3412ece1e9e2377299c64"
+      ],
+      "xprop-1.2.8.pkg": [
+        25668,
+        "sha256:a084918f5c36388c7933cf372062b2e7c0308dffe336927d779deca0c3674fa9"
+      ],
+      "xrandr-1.5.4.pkg": [
+        36606,
+        "sha256:42a9a2d11fe88aaaf26a537fc803446402ea0b72cfb77a3a998c0f0e6c68841b"
+      ],
+      "xrdb-1.2.3.pkg": [
+        19785,
+        "sha256:55b8ec1017fb387bafc64cda2ea4e756c9580f0f28f7aea4d05a880b82207f14"
+      ],
+      "xset-1.2.6.pkg": [
+        19334,
+        "sha256:d72a78a2c116b2ed4ec3781bd6acfc28e04d07a23329471f5cc21381a0286037"
+      ],
+      "xsetroot-1.1.4.pkg": [
+        10670,
+        "sha256:9fc843f0b10a1cfce4bf6f9c2656c579bb6cf68ca2be40f6d9e18db87fb20e1d"
+      ],
+      "xwayland-24.1.14.1.pkg": [
+        937207,
+        "sha256:d9473acc714d9ef0393eb64e187a137c7af8f72ecc3bf08a8713235174b41b24"
+      ],
+      "xxhash-0.8.4.pkg": [
+        109518,
+        "sha256:144a53c23fa92c88204febd13991a46fdf00c54cdf8621d9a6608d93807b3291"
+      ],
+      "yajl-2.1.0.pkg": [
+        69212,
+        "sha256:dc2a31039a81b3da55c9e2e7827d003d8816b2e50043f90094ff113d257e054f"
+      ],
+      "yaru-icon-theme-25.10.3.pkg": [
+        26633449,
+        "sha256:cf951faee3ef0855a1154d1b7c12aac42908fed7e5814f716a319faf2eb712f6"
+      ],
+      "yyjson-0.13.0.pkg": [
+        139897,
+        "sha256:a4b9d489c278fd1a15af73d95abad11c31deeee8f6737f747dcf18cedeff0e5a"
+      ],
+      "zbar-0.23.90_8.pkg": [
+        231965,
+        "sha256:3bfeaad0bff0c05ab2b75c7e4a200dee639d4564d37babc61aef79d80fd5cad2"
+      ],
+      "zip-3.0_6.pkg": [
+        233533,
+        "sha256:9d1251779d1c9cf57cf918651e46c796b0ef6eaadae71cb29f0948497b30777e"
+      ],
+      "zoxide-0.10.0_1.pkg": [
+        402295,
+        "sha256:99dc267fe23c405849d311ecaeda4211cef88d0c364c3fdd52510a3d6de121ef"
+      ],
+      "zstd-1.5.7_2.pkg": [
+        525665,
+        "sha256:e38626a8340e0513fd05ac4b26b77edfec255bd8daf26472c91fe3e392597b8d"
+      ],
+      "zxing-cpp-3.1.1.pkg": [
+        841105,
+        "sha256:b8670a9e20573410a8b0fedef253a71df3ec56d2c8edc791ea30551a1550542a"
+      ]
+    }
+  }
+]
