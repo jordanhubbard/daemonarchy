@@ -90,11 +90,12 @@ cmd_bulk() {
 }
 
 cmd_built() {
-  local logdir built
-  logdir=$POUDRIERE_DATA/logs/bulk/$JAIL-$PTREE/latest
-  built=$logdir/.poudriere.ports.built
-  [ -s "$built" ] || { echo "No successful-build record at $built" >&2; exit 1; }
-  { [ -z "$PREVIOUS_BUILT" ] || cat "$PREVIOUS_BUILT"; awk '{ print $1, $2 }' "$built"; } \
+  local logroot records
+  logroot=$POUDRIERE_DATA/logs/bulk/$JAIL-$PTREE
+  # Every bulk run for this set (a second pass after a fix counts): their records are a union.
+  records=$(ls "$logroot"/20*/.poudriere.ports.built 2>/dev/null || true)
+  [ -n "$records" ] || { echo "No successful-build records under $logroot" >&2; exit 1; }
+  { [ -z "$PREVIOUS_BUILT" ] || cat "$PREVIOUS_BUILT"; cat $records; } \
     | awk 'NF >= 2 { print $1, $2 }' | sort -u >"$BUILT_OUT"
   # A package superseded in this run leaves the old name behind: keep only names present in the set.
   local keep
@@ -119,11 +120,13 @@ cmd_identity() {
   for f in "$new"/*.pkg; do
     name=$(basename "$f")
     pkg query -F "$f" '%Fp' 2>/dev/null | grep -q '^/boot/modules/.*\.ko$' || continue
-    oldf=$(ls "$old"/"${name%%-[0-9]*}"-[0-9]*.pkg 2>/dev/null | head -1 || true)
+    # The same file name in the previous set if there is one (same version), else the previous version.
+    if [ -e "$old/$name" ]; then oldf=$old/$name
+    else oldf=$(ls "$old"/"${name%%-[0-9]*}"-[0-9]*.pkg 2>/dev/null | head -1 || true); fi
     while read -r path; do
-      newsha=$(tar -xOf "$f" ".$path" 2>/dev/null | sha256 -q)
+      newsha=$(tar -xOf "$f" "$path" 2>/dev/null | sha256 -q)
       oldsha=-
-      [ -z "$oldf" ] || oldsha=$(tar -xOf "$oldf" ".$path" 2>/dev/null | sha256 -q || echo -)
+      [ -z "$oldf" ] || oldsha=$(tar -xOf "$oldf" "$path" 2>/dev/null | sha256 -q || echo -)
       if [ "$oldsha" = - ]; then result=new; added=$((added + 1))
       elif [ "$oldsha" = "$newsha" ]; then result=identical; same=$((same + 1))
       else result=DIFFERENT; diff=$((diff + 1)); fi

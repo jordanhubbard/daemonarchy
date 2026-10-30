@@ -49,6 +49,10 @@ sign() {
   if check; then return 0; fi
   [ -d "$FW" ] && [ -f "$CERT" ] && [ -f "$KEY" ] || { echo 'missing firmware stage, certificate or key' >&2; exit 1; }
   umask 077
+  local stamp
+  stamp=$(date +%Y%m%d%H%M%S)
+  # prepare-boot-tree.sh needs a fresh staging root: keep the previous one beside it.
+  if [ -e "$ROOT" ]; then mv "$ROOT" "$ROOT.before-$stamp"; fi
   /bin/sh "$P/prepare-boot-tree.sh" "$CACHE" "$B" "$ROOT"
   mv "$INV.new" "$INV"
   $PY "$S/product/scripts/import-apple-bcm4364-firmware.py" --verify-stage --model MacBookPro16,1 --destination "$FW"
@@ -59,6 +63,10 @@ sign() {
   if tar -tf "$BUNDLE.new" | grep -E 'firmware/|\.key$|\.pem$'; then
     echo 'PRIVATE MATERIAL IN PUBLIC BUNDLE' >&2
     exit 1
+  fi
+  if [ -f "$BUNDLE" ]; then
+    cp -p "$BUNDLE" "$BUNDLE.before-$stamp"
+    cp -p "$BUNDLE.sig" "$BUNDLE.sig.before-$stamp" 2>/dev/null || true
   fi
   mv "$BUNDLE.new" "$BUNDLE"
   mv "$BUNDLE.new.sig" "$BUNDLE.sig"
