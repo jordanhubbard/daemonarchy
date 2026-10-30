@@ -7,6 +7,11 @@ for Component ownership. This file remains the release and feature overview.
 
 ## 1.4.1: faster installation and playable arcade interludes
 
+1.4.1 is also the patch-before-announce release for 1.4.0: it fixes the install
+failure on NVIDIA hardware (verification now runs before the optional CUDA
+additions), and by operator decision every open item in
+[active-work.md](docs/roadmap/active-work.md) is carried into it.
+
 Make the exact-image installer at least ten times faster on both physical
 targets by retaining equivalent baselines and removing bulk network delivery
 from the critical path without weakening package identity, integrity or
