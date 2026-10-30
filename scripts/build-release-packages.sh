@@ -90,11 +90,12 @@ cmd_bulk() {
 }
 
 cmd_built() {
-  local logdir built
-  logdir=$POUDRIERE_DATA/logs/bulk/$JAIL-$PTREE/latest
-  built=$logdir/.poudriere.ports.built
-  [ -s "$built" ] || { echo "No successful-build record at $built" >&2; exit 1; }
-  { [ -z "$PREVIOUS_BUILT" ] || cat "$PREVIOUS_BUILT"; awk '{ print $1, $2 }' "$built"; } \
+  local logroot records
+  logroot=$POUDRIERE_DATA/logs/bulk/$JAIL-$PTREE
+  # Every bulk run for this set (a second pass after a fix counts): their records are a union.
+  records=$(ls "$logroot"/20*/.poudriere.ports.built 2>/dev/null || true)
+  [ -n "$records" ] || { echo "No successful-build records under $logroot" >&2; exit 1; }
+  { [ -z "$PREVIOUS_BUILT" ] || cat "$PREVIOUS_BUILT"; cat $records; } \
     | awk 'NF >= 2 { print $1, $2 }' | sort -u >"$BUILT_OUT"
   # A package superseded in this run leaves the old name behind: keep only names present in the set.
   local keep
