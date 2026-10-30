@@ -17,4 +17,18 @@ grep -q 'Cudalab build complete' <<<"$build"
 bash -n <<<"$build"
 [[ -f $here/overlay/usr/local/share/daemonarchy-installer/uvm_ioctl_override.c ]]
 grep -q 'NV_UVM_INITIALIZE' "$here/overlay/usr/local/share/daemonarchy-installer/uvm_ioctl_override.c"
+# dnf downloads in parallel (the CUDA phase is network-bound), once, under [main].
+dnf_root=$(mktemp -d)
+trap 'rm -rf "$dnf_root"' EXIT
+mkdir -p "$dnf_root/etc/dnf"
+printf '[main]\ngpgcheck=1\n' >"$dnf_root/etc/dnf/dnf.conf"
+linux_root=$dnf_root
+dnf_no_caps
+dnf_parallel
+dnf_parallel
+check "$(grep -c '^max_parallel_downloads=16$' "$dnf_root/etc/dnf/dnf.conf")" 1
+check "$(sed -n 2p "$dnf_root/etc/dnf/dnf.conf")" 'max_parallel_downloads=16'
+grep -q '^tsflags=nocaps$' "$dnf_root/etc/dnf/dnf.conf"
 echo 'PASS: Linux CUDA toolkit pin and UVM shim'
+echo 'PASS: dnf downloads in parallel'
+

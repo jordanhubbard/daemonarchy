@@ -92,6 +92,17 @@ dnf_no_caps() {
   awk '{ print } /^\[main\]/ { print "tsflags=nocaps" }' "$conf" >"$conf.new" && mv "$conf.new" "$conf"
 }
 
+# dnf downloads three packages at a time unless told otherwise. The CUDA toolkit
+# is about 5 GB over many files and one connection carries only a few MiB/s, so
+# the install's CUDA phase (11.5 minutes on the MSI) is mostly waiting on the
+# network; sixteen parallel downloads is the ceiling dnf accepts that helps.
+dnf_parallel() {
+  local conf=$linux_root/etc/dnf/dnf.conf
+  [[ -f $conf ]] || return 0
+  grep -q '^max_parallel_downloads=' "$conf" && return 0
+  awk '{ print } /^\[main\]/ { print "max_parallel_downloads=16" }' "$conf" >"$conf.new" && mv "$conf.new" "$conf"
+}
+
 bootstrap_dnf() {
   # A dnf that exists but cannot run (an interrupted earlier unpack) is not usable.
   linux_shell 'dnf --version' >/dev/null 2>&1 && return 0
@@ -124,12 +135,14 @@ bootstrap_dnf() {
   rm -rf "$tmp"
   cp /etc/resolv.conf /etc/hosts "$linux_root/etc/"
   dnf_no_caps
+  dnf_parallel
   linux_shell "update-ca-trust && dnf --releasever '$release' -y update"
 }
 
 install_toolkit() {
   local release
   dnf_no_caps
+  dnf_parallel
   release=$(awk -F= '$1 == "VERSION_ID" { gsub(/"/, "", $2); print $2 }' "$linux_root/etc/os-release")
   # ninja-build and some -devel packages live in Rocky's CRB repository.
   linux_shell "dnf --releasever '$release' -y install dnf-plugins-core"
