@@ -44,6 +44,7 @@ credentials, network names, addresses, paths or command lines.
 | `disk_sample` | sampler | `name` (device), `reads`, `writes`, `read_kib`, `write_kib`, `qlen`, `svc_s`, `busy_s`, per-interval `d_*`; only devices that moved |
 | `cpu_sample` | sampler | `user`, `nice`, `system`, `interrupt`, `idle` (percent over the interval), `free_mib`, `load1` |
 | `device_event` | sampler | `kind` (`attach`, `detach`, `notify`), `device`, or `system`/`subsystem`/`type` for notifications such as link up and down |
+| `ext_fetch` | extensions | `name` (the downloaded extension file), compressed `bytes`, `dur_us`, `status` (`ok`, `refused` or an error name): one per index or bundle downloaded when the user chooses an extension; see [extension-feed.md](extension-feed.md) |
 | `exit` | installer | `status`, `dur_us` (whole installation) |
 
 The sampler runs once a second (`DAEMONARCHY_TRACE_INTERVAL` changes it) from

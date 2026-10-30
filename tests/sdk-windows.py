@@ -319,7 +319,7 @@ def make(root, pid, source, caps=("draw", "input", "window"), limits=None):
     d = Path(root) / pid
     d.mkdir(parents=True, exist_ok=True)
     (d / "game.py").write_text(source)
-    manifest = dict(schema=plugin.SCHEMA, id=pid, name=pid.title(), version="1.0.0", kind="game", api="1.3", entry="game.py",
+    manifest = dict(schema=plugin.SCHEMA, id=pid, name=pid.title(), version="1.0.0", type="game", api="1.3", entry="game.py",
                     entry_sha256="0" * 64, capabilities=list(caps), limits=limits or {})
     (d / "manifest.json").write_text(json.dumps(manifest))
     plugin.seal_manifest(str(d))

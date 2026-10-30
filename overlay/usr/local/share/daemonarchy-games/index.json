@@ -1,16 +1,16 @@
 {
   "plugins": {
     "hordeshot": {
-      "manifest_sha256": "8f0b60f90d66ddbdd747ffe5b54724f14024ca43195c70492a6d7f2b57fd5720"
+      "manifest_sha256": "ee7e0f100387f4ea336b2b68d77d359533b4ee2c5894479ed5d0103c13984eab"
     },
     "rockdrift": {
-      "manifest_sha256": "fc5b5ffaeb0db035c885928bd5e9822feeaaad7ed4b4d4fdaa8db132c81fc3af"
+      "manifest_sha256": "1ef7ff2aa33c46a8e918079cb26a8787633fc04f908fd4389aa762c49b03b3ea"
     },
     "shatter": {
-      "manifest_sha256": "1d6dec5901c9c5d6a1ffadc4ccd05670b8e50b7c4a2ca0b2dc3be22212da5753"
+      "manifest_sha256": "4fa8f49241d4420c794e26767a59547c195ab20f7b8fc94878685b306c2627c8"
     },
     "wyrm": {
-      "manifest_sha256": "532f3752c1b017b4655519594008955ececcb8fb26dfa64ad3a75c7aaa16a4aa"
+      "manifest_sha256": "f294d4d5ec08b79124a37e1c338097eeef7c30d5edc625ff0be8c2372afb5ef4"
     }
   },
   "schema": "daemonarchy/visual-plugin-index@1"

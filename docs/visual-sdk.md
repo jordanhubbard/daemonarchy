@@ -6,7 +6,7 @@ is a second host that has nothing to do with installation. The SDK keeps no
 installation state and performs no privileged operation: a host passes in
 observations and decides what an action means.
 
-API version 1.3. `daemonarchy_visual.compatible("1.0")` tells a host or plugin
+API version 1.3 (the extension bundle module needs no API change). `daemonarchy_visual.compatible("1.0")` tells a host or plugin
 whether this SDK can serve the version it was written for. A minor release only
 adds names; a major release may remove or change them, and the old major keeps
 working in an installed image until that image is replaced.
