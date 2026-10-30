@@ -148,5 +148,23 @@ class StageTests(unittest.TestCase):
             f.stage()
 
 
+class RecordedFeeds(unittest.TestCase):
+    def test_every_recorded_feed_is_valid_and_matches_its_file_name(self):
+        verifier_loader = importlib.machinery.SourceFileLoader("v2", str(ROOT / "scripts/verify-release-assets.py"))
+        verifier_spec = importlib.util.spec_from_loader(verifier_loader.name, verifier_loader)
+        verifier = importlib.util.module_from_spec(verifier_spec)
+        verifier_loader.exec_module(verifier)
+        records = sorted((ROOT / "verification/closure-feeds").glob("*.json"))
+        self.assertTrue(records)
+        for path in records:
+            entries = json.loads(path.read_text())
+            feeds = verifier.closure_feeds({"version": "1.4.1", "closure_feeds": entries})
+            self.assertEqual(list(feeds), [path.stem], path.name)
+            assets = feeds[path.stem]
+            self.assertLessEqual(len(assets), 1000)
+            self.assertTrue(all(name.endswith(".pkg") or name in ("meta", "meta.conf") for name in assets))
+            self.assertTrue(all(entry[0] < 2 * 2**30 for entry in assets.values()), "an asset exceeds GitHub's 2 GiB limit")
+
+
 if __name__ == "__main__":
     unittest.main()
