@@ -110,7 +110,10 @@ die() { say "Cudalab could not be built: $*"; return 1; }
 build() {
   mkdir -p "$data" "$state" || return 1
   [[ -x $linux_root/bin/bash ]] || { die "the Linux compatibility layer is not installed ($linux_root)."; return 1; }
-  [[ -e $linux_root/usr/local/cuda ]] || { die "the CUDA toolkit is not installed. Run: sudo daemonarchy-linux-cuda setup"; return 1; }
+  # Ask the Linux side: /usr/local/cuda is a symlink into the Linux root's own
+  # /etc/alternatives, which dangles when looked at from the FreeBSD side.
+  lx "$data" 'test -x /usr/local/cuda/bin/nvcc' \
+    || { die "the CUDA toolkit is not installed. Run: sudo daemonarchy-linux-cuda setup"; return 1; }
 
   say "==> Checking out Cudalab $cl_commit"
   if [[ ! -d $src/.git ]]; then

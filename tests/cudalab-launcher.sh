@@ -14,7 +14,8 @@ count() { grep -c -- "$1" "$2" 2>/dev/null || true; }
 
 # --- the fake Linux root
 linux=$work/linux
-mkdir -p "$linux/bin" "$linux/usr/local/cuda" "$linux/usr/local/lib/daemonarchy"
+mkdir -p "$linux/bin" "$linux/usr/local/lib/daemonarchy"
+ln -s /etc/alternatives/cuda "$linux/usr/local/cuda"   # dangles from the FreeBSD side, as on the MSI
 : >"$linux/usr/local/lib/daemonarchy/dummy-uvm.so"
 cat >"$linux/bin/bash" <<'STUB'
 #!/usr/bin/env bash
@@ -22,6 +23,7 @@ cat >"$linux/bin/bash" <<'STUB'
 cmd=$2
 echo "$cmd" >>"$LX_LOG"
 case $cmd in
+  *"test -x /usr/local/cuda/bin/nvcc"*) [[ -z ${LX_NO_CUDA:-} ]] ;;
   *"git status --porcelain"*) [[ -z ${LX_DIRTY:-} ]] || echo ' M examples/cosmos.cu' ;;
   *"git clone"*) mkdir -p src/.git src/examples; : >src/CMakePresets.json ;;
   *"git checkout"*) : ;;
@@ -170,10 +172,9 @@ LX_DIRTY=1 run --build-only
 
 # --- no CUDA toolkit: say how to get it, build nothing
 fresh
-mv "$linux/usr/local/cuda" "$linux/usr/local/cuda.off"
-if run --build-only 2>/dev/null; then echo 'built without a CUDA toolkit' >&2; exit 1; fi
+if LX_NO_CUDA=1 run --build-only 2>/dev/null; then echo 'built without a CUDA toolkit' >&2; exit 1; fi
 grep -q 'daemonarchy-linux-cuda setup' "$work/home/.local/state/cudalab/build.log"
-mv "$linux/usr/local/cuda.off" "$linux/usr/local/cuda"
 [[ ! -f $stamp ]]
+! grep -q 'git clone' "$work/lx.log"
 
 echo 'PASS: Cudalab virtual app builds once, becomes the real app and chain-launches it'
