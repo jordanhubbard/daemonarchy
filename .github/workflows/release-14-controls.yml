@@ -32,6 +32,9 @@ on:
       - 'scripts/package-mirror-plan.py'
       - 'tests/package-mirror-plan.py'
       - 'tests/install-trace.py'
+      - 'tests/visual-sdk.py'
+      - 'sdk/**'
+      - 'overlay/usr/local/lib/daemonarchy-visual/**'
       - 'scripts/install-trace-summary.py'
       - 'overlay/usr/local/libexec/daemonarchy-installer/install-trace'
       - 'overlay/usr/local/libexec/daemonarchy-installer/install-trace-sampler'
@@ -73,6 +76,9 @@ on:
       - 'scripts/package-mirror-plan.py'
       - 'tests/package-mirror-plan.py'
       - 'tests/install-trace.py'
+      - 'tests/visual-sdk.py'
+      - 'sdk/**'
+      - 'overlay/usr/local/lib/daemonarchy-visual/**'
       - 'scripts/install-trace-summary.py'
       - 'overlay/usr/local/libexec/daemonarchy-installer/install-trace'
       - 'overlay/usr/local/libexec/daemonarchy-installer/install-trace-sampler'
@@ -114,6 +120,10 @@ jobs:
         env:
           PYTHONDONTWRITEBYTECODE: '1'
         run: python3 tests/install-trace.py -v
+      - name: Visual SDK
+        env:
+          PYTHONDONTWRITEBYTECODE: '1'
+        run: python3 -I tests/visual-sdk.py -v
 
   controls:
     runs-on: ubuntu-latest
