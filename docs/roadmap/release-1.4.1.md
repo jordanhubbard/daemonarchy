@@ -182,7 +182,11 @@ items below were 1.4 acceptance rows. They moved here so they no longer block
   remaining acceptance rows open; by operator decision on 2026-10-30 all open
   items in [active-work.md](active-work.md) carry `Release: 1.4.1`:
   ADOPT-002, UI-001, PKG-001, GUI-001, SRC-001, DEBUG-001, HW-001, RELEASE-001, COMP-001, PERF-001, PERF-002, DEV-001, TESTISO-001, HW-002, HW-003, DEBUG-002, DEBUG-003, ARCH-001, LIVE-001, NET-001, DEBUG-004, GPU-001, NET-002, HW-004, WORKER-001. None is claimed done by 1.4.0. They keep their own
-  evidence requirements; this list is scope, not progress.
+  evidence requirements; this list is scope, not progress. The
+  [audit](release-1.4.1-audit.md) states, item by item, what evidence exists, what
+  remains, what the operator must run on the laptops, and which items cannot be
+  completed by repository work in this release (framework- and hardware-blocked),
+  with a proposed disposition for the operator to decide.
 - **Cudalab as a virtual app.** On the MSI the Cudalab entry built and then showed
   nothing. Reproduced on the machine: the menu entry rebuilt the whole app on every
   launch (`rm -rf build/dev`, sudo, a chroot, three nullfs mounts), and the finished

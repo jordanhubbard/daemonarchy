@@ -1,0 +1,113 @@
+{
+  "schema": "daemonarchy/build-timing-baseline@1",
+  "label": "rev2-1.4.1-pipeline-20261030",
+  "host": "daemon.local",
+  "revision": "303b3646270ffa4bf7cec65c5c1d28bd8000cbce",
+  "make_jobs": 8,
+  "ncpu": 8,
+  "incremental": "yes",
+  "pipeline_exit": 0,
+  "steps": [
+    {
+      "step": "source",
+      "start": "2026-10-30T06:25:29Z",
+      "end": "2026-10-30T06:26:20Z",
+      "seconds": 51
+    },
+    {
+      "step": "world",
+      "start": "2026-10-30T06:26:20Z",
+      "end": "2026-10-30T06:40:58Z",
+      "seconds": 878
+    },
+    {
+      "step": "kernel",
+      "start": "2026-10-30T06:40:58Z",
+      "end": "2026-10-30T06:51:20Z",
+      "seconds": 622
+    },
+    {
+      "step": "sets",
+      "start": "2026-10-30T06:51:20Z",
+      "end": "2026-10-30T07:01:21Z",
+      "seconds": 601
+    },
+    {
+      "step": "setup",
+      "start": "2026-10-30T07:01:21Z",
+      "end": "2026-10-30T07:01:21Z",
+      "seconds": 0
+    },
+    {
+      "step": "product",
+      "start": "2026-10-30T07:01:21Z",
+      "end": "2026-10-30T07:01:25Z",
+      "seconds": 4
+    },
+    {
+      "step": "jail",
+      "start": "2026-10-30T07:01:25Z",
+      "end": "2026-10-30T07:03:59Z",
+      "seconds": 154
+    },
+    {
+      "step": "repo",
+      "start": "2026-10-30T07:03:59Z",
+      "end": "2026-10-30T07:04:02Z",
+      "seconds": 3
+    },
+    {
+      "step": "secureboot-source",
+      "start": "2026-10-30T07:04:02Z",
+      "end": "2026-10-30T07:09:16Z",
+      "seconds": 314
+    },
+    {
+      "step": "secureboot-build",
+      "start": "2026-10-30T07:09:16Z",
+      "end": "2026-10-30T07:16:38Z",
+      "seconds": 442
+    },
+    {
+      "step": "secureboot-sign",
+      "start": "2026-10-30T07:16:38Z",
+      "end": "2026-10-30T07:17:40Z",
+      "seconds": 62
+    },
+    {
+      "step": "checkout",
+      "start": "2026-10-30T07:17:40Z",
+      "end": "2026-10-30T07:24:07Z",
+      "seconds": 387
+    },
+    {
+      "step": "done-pipeline",
+      "start": "2026-10-30T07:24:07Z"
+    }
+  ],
+  "total_seconds": 3518,
+  "notes": [
+    "World and kernel were rebuilt on the retained live7 object tree after the post-1.4 upstream sync (mostly libarchive: about 300 of the 533 changed files).",
+    "The same pipeline built the release sets, the jail, the signed Secure Boot bundle and the src checkout packages."
+  ],
+  "limits": [
+    "One run on one machine; not a repeated measurement.",
+    "A step's duration is the gap between marker timestamps, so it includes everything that step ran.",
+    "Incremental: the object tree from earlier builds was reused; a clean build takes longer."
+  ],
+  "world_build_seconds": 874,
+  "separate_phases": [
+    {
+      "step": "iso-build-1",
+      "start": "2026-10-30T04:19:54Z",
+      "end": "2026-10-30T04:46:17Z",
+      "seconds": 1583
+    },
+    {
+      "step": "iso-build-2",
+      "start": "2026-10-30T05:27:23Z",
+      "end": "2026-10-30T05:54:04Z",
+      "seconds": 1601
+    }
+  ]
+}
