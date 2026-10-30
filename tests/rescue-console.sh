@@ -228,6 +228,23 @@ rm -f "$debug_command.live" "$debug_command.calls"
   rescue_wait_boot_output() { :; }
   rescue_record() { :; }
   rescue_menu() { :; }
+  # The watchdog never ends by design; its own test follows.
+  rescue_watch_debug() { :; }
   rescue_main monitor
+)
+# The watchdog reconciles on every pass, survives a failed pass and never ends on its own.
+(
+  debug_watch_seconds=0
+  ticks=0
+  printf '#!/bin/sh\ncase "$1" in\nreconcile) echo reconcile >>"$0.calls"; [ "$(wc -l <"$0.calls")" -ne 2 ] ;;\nesac\n' >"$debug_command"
+  rm -f "$debug_command.calls"
+  sleep() { ticks=$((ticks + 1)); [[ $ticks -lt 4 ]] || exit 0; }
+  # The loop only stops by this stub ending its own subshell.
+  (rescue_watch_debug >"$work/watch.log" 2>&1) || true
+  [[ $(wc -l <"$debug_command.calls") -eq 4 ]]
+  grep -q 'reconcile failed' "$work/watch.log"
+  # No debugger installed: nothing to watch, and no error.
+  mv "$debug_command" "$debug_command.away"
+  rescue_watch_debug
 )
 echo 'PASS: interrupted install, GUI timeout/crash, authenticated pairing/unpairing, menu toggle and boot-to-menu without input'

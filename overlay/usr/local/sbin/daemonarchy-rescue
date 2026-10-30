@@ -131,6 +131,19 @@ rescue_resume_debug() {
   [ "$had_grant" != yes ] || rescue_note 'grant removed (explicit stop or Unpair); not resuming'
 }
 
+# The resume loop above ends when the grant is removed and never starts when there
+# was none at boot, yet a grant can be created or removed from the desktop at any
+# time. This loop never ends: each pass clears a listener left behind by a removed
+# session, restarts one that stopped answering, resumes an approved one, and
+# republishes the status the desktop shows (which carries its own timestamp).
+rescue_watch_debug() {
+  [ -x "$debug_command" ] || return 0
+  while :; do
+    "$debug_command" reconcile || rescue_note 'reconcile failed'
+    sleep "${debug_watch_seconds:-10}"
+  done
+}
+
 monitor_desktop() {
   rescue_reason && return 0
   remaining=$startup_wait
@@ -244,6 +257,7 @@ rescue_main() {
     monitor)
       # This grant was approved at the root console before the preceding reboot.
       # Resume it before waiting for a desktop, without deleting crash evidence.
+      rescue_watch_debug </dev/null >>"$rescue_log" 2>&1 &
       rescue_resume_debug </dev/null >>"$rescue_log" 2>&1 &
       echo 'Waiting for graphical login; this console shows recovery options if it fails.'
       monitor_desktop

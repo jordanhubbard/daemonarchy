@@ -68,7 +68,9 @@ grep -qx "port=$port" "$public_dir/status" || fail 'public listener port missing
 grep -qx 'Grant: yes' "$work/status-running" || fail 'detailed status missed retained grant'
 grep -qx 'Approved agent: yes' "$work/status-running" || fail 'detailed status missed approved agent'
 grep -qx 'Listener: yes' "$work/status-running" || fail 'detailed status missed running listener'
-[[ $(wc -l <"$public_dir/status") -eq 6 ]] || fail 'public status exposed unexpected fields'
+[[ $(wc -l <"$public_dir/status") -eq 8 ]] || fail 'public status exposed unexpected fields'
+grep -qx 'state=listening' "$public_dir/status" || fail 'public state is not listening'
+grep -Eq '^updated=[0-9]+$' "$public_dir/status" || fail 'public status has no timestamp'
 [[ $(stat -f %Lp "$public_dir/status") == 644 ]] || fail 'public status is not readable by the desktop'
 su -m nobody -c "grep -qx 'grant=1' '$public_dir/status'" || fail 'desktop user cannot read public status'
 # Adopt the running legacy listener without changing its host pin or approval.

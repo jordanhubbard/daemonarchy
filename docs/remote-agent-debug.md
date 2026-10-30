@@ -113,6 +113,38 @@ reused PID cannot terminate an unrelated process. Existing diagnostic logs are
 retained. Older 1.1.1 helpers require Unpair/Pair after a stale session; update
 both `remote-debug` and `daemonarchy-rescue` to obtain resumption.
 
+### Debugger states, leases and the watchdog
+
+The helper derives one state from what is actually running, never from the
+files it last wrote, and publishes it as `state=` in
+`/var/run/daemonarchy-debug.status` (with `updated=`, the time of publication):
+
+| state | meaning | what clears it |
+| --- | --- | --- |
+| `unpaired` | no grant, no listener | Pair |
+| `orphaned` | no grant, but a listener from a removed session still holds the port | `daemonarchy-debug reconcile`; a new Pair also ends it |
+| `stopped` | grant held, listener not running | Resume, or the watchdog |
+| `degraded` | listener running but it does not complete an SSH banner (it accepts TCP and then closes or stays silent) | the watchdog restarts it with the retained approval |
+| `listening` | listener answers SSH, no agent attached | |
+| `attached` | listener answers and an agent holds a live lease | |
+
+`listener=1` is published only for `listening` and `attached`: a listener that
+does not answer SSH is not reported as listening. An attachment renews a lease
+every 10 seconds while its connection lives and the lease lapses after 45
+seconds, which ends the attachment. The listener also drops silent peers
+(`ClientAliveInterval 15`, three misses). A status whose `updated` is older than
+a minute means the publisher stopped; a reader must show it as unknown, not as
+the last state.
+
+`daemonarchy-debug reconcile` makes one watchdog pass: it ends an orphaned
+listener, restarts a degraded one, resumes a stopped one, and republishes. The
+rescue console runs it every ten seconds for as long as it is up, including when
+there was no grant at boot and after one is removed, so a grant created or
+removed from the desktop panel is always followed by a correct status. Removing a
+grant ends every listener of that session, found by exact command line when the
+pid file is already gone; an interactive `listen` view leaves when its grant is
+removed from elsewhere.
+
 ## For the agent
 
 Use a temporary key for the session and tell the user its SHA-256 fingerprint:
