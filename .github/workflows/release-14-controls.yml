@@ -37,6 +37,9 @@ on:
       - 'tests/sdk-windows.py'
       - 'tests/extension-bundles.py'
       - 'tests/installer-extensions.py'
+      - 'tests/installer-sdk-audit.py'
+      - 'overlay/usr/local/libexec/daemonarchy-installer/charm.py'
+      - 'overlay/usr/local/libexec/daemonarchy-installer/install-views'
       - 'extensions/**'
       - 'overlay/usr/local/libexec/daemonarchy-installer/daemonarchy-extensions'
       - 'overlay/usr/local/libexec/daemonarchy-installer/configurator'
@@ -102,6 +105,9 @@ on:
       - 'tests/sdk-windows.py'
       - 'tests/extension-bundles.py'
       - 'tests/installer-extensions.py'
+      - 'tests/installer-sdk-audit.py'
+      - 'overlay/usr/local/libexec/daemonarchy-installer/charm.py'
+      - 'overlay/usr/local/libexec/daemonarchy-installer/install-views'
       - 'extensions/**'
       - 'overlay/usr/local/libexec/daemonarchy-installer/daemonarchy-extensions'
       - 'overlay/usr/local/libexec/daemonarchy-installer/configurator'
@@ -175,6 +181,7 @@ jobs:
           python3 -I tests/sdk-windows.py -v
           python3 -I tests/extension-bundles.py -v
           python3 -I tests/installer-extensions.py -v
+          python3 -I tests/installer-sdk-audit.py -v
       - name: Parallel package fetch
         env:
           PYTHONDONTWRITEBYTECODE: '1'

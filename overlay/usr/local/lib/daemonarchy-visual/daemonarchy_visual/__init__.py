@@ -10,7 +10,7 @@ Versioning: API_VERSION is (major, minor). A minor release only adds names; a
 major release may remove or change them. A host or plugin asks for the version
 it was written against with `compatible("1.0")`; 1.1 added `inline`, overlay screens, `NoInput`
 and `run_scene(keep=, screen=)`; 1.2 added `arcade` helpers and the `plugin` runtime (import them as
-submodules); 1.3 added `windows` (open, close, resize, select, list and title, mediated by the host).
+submodules); 1.3 added `windows` (open, close, resize, select, list and title, mediated by the host); 1.4 added `ansi`.
 """
 
 from .caps import Capabilities, detect
@@ -24,15 +24,15 @@ from .input import ACTIONS, KeyMap, NoInput, decode_keys
 from . import inline
 from .audio import Audio, NullAudio, ThreadedAudio
 from .scene import Scene, run_scene
-from . import windows
+from . import ansi, windows
 
-API_VERSION = (1, 3)
-__version__ = "1.3.0"
+API_VERSION = (1, 4)
+__version__ = "1.4.0"
 
 __all__ = [
     "ACTIONS", "API_VERSION", "Audio", "Canvas", "Capabilities", "Colors", "Fireworks", "Glyphs", "KeyMap",
     "ManualClock", "MonotonicClock", "NoInput", "NullAudio", "Particles", "Rect", "Scene", "Screen", "ThreadedAudio",
-    "Timeline", "Tween", "compatible", "decode_keys", "detect", "gradient", "inline", "mix", "run_scene", "windows",
+    "Timeline", "Tween", "compatible", "decode_keys", "detect", "gradient", "inline", "mix", "run_scene", "ansi", "windows",
 ]
 
 

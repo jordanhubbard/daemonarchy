@@ -1293,7 +1293,7 @@ remains open; report files do not establish a passing gate.
     input or presentation cannot be isolated safely.
   - [ ] Package and crash-isolate the games on the image with bounded CPU,
     memory and storage so game failure cannot change the installation result.
-- **Progress:** four original games (Hordeshot, Shatter, Rockdrift, Wyrm) run as hash-verified, capability-scoped plugins in their own processes, opened from the install screen with `g` or `C-b g` in a `games` tmux window; the install screen stops them when the installation finishes or fails or a pairing request needs the operator, and they are suspended while another window shows ([installer-extensions.md](../installer-extensions.md)). 71 unit and process tests pass on Linux. Not verified: play on a FreeBSD `vt(4)` console or real hardware, the privilege drop and resource limits on FreeBSD, tmux suspension there, or the exact-image runs the evidence below requires.
+- **Progress:** four original games (Hordeshot, Shatter, Rockdrift, Wyrm) are the first installer extensions ([EXT-001](#ext-001--installer-extensions-menu-sdk-windows-signed-compressed-feed)): not on the ISO, downloaded from a signed compressed feed when chosen from the Extensions menu and run in their own windows, hash-verified, capability-scoped and failure-isolated, stopped by the install screen when the installation finishes or fails or a pairing request needs the operator, and suspended while another window shows ([installer-extensions.md](../installer-extensions.md)). Verified on Linux and on FreeBSD 16.0-CURRENT (a plugin started as root runs as `nobody`, unable to write or fork). Not verified: play on a `vt(4)` console or real hardware, the feed published on GitHub, or the exact-image runs the evidence below requires.
 - **Evidence:**
   - [ ] Exact-image native FreeBSD runs launch every game during different
     network, disk, package and finish stages and preserve installation integrity
@@ -1303,6 +1303,27 @@ remains open; report files do not establish a passing gate.
   - [ ] Measured CPU, memory and elapsed-time overhead is bounded with no
     material INSTALL-PERF-001 regression; asset/license provenance and an audit
     for absent third-party ROMs/assets are retained.
+
+### [ ] EXT-001 — Installer extensions: menu, SDK windows, signed compressed feed
+
+- **Priority:** P1 (1.4.1)
+- **Release:** 1.4.1
+- **GitHub issue:** [#161](https://github.com/jordanhubbard/daemonarchy/issues/161)
+- **Owner:** installer and release Components
+- **Direction:** Generalise the games into installer extensions: install-time plugins that do work inside the installer when the user chooses them. The installer gets an Extensions menu; every run has its own tmux-compatible window; extensions are downloaded from GitHub at install time, never carried on the ISO.
+- **Conclusion:** The installation stays authoritative: extensions never read or change progress, prompts or the outcome, and the installation preempts them. Distribution is compressed, content-identified and signed with the repository key the image already pins, verified before anything runs.
+- **Depends on:** VISUAL-SDK-001; the package-repository signing key already pinned on the image.
+- **Completion prerequisites:** none
+- **Implementation:**
+  - [x] SDK windows (open, close, resize, select, list, title, with resize and close events), host-mediated and bounded, with tmux, inline-panel and refusing backends ([visual-sdk.md](../visual-sdk.md)).
+  - [x] The Extensions menu (name, description, size, source, network needed), reachable from the welcome/options screen, the progress screen and tmux; every run in its own window; the games as its first category ([installer-extensions.md](../installer-extensions.md)).
+  - [x] Bundle format, compressed index, signing and verification (size, SHA-256, signature, bounded decompression, safe extraction, manifest against the signed index), the builder and the staging tool, and fetch with time and bytes in the install trace ([extension-feed.md](../extension-feed.md)).
+  - [x] The four games out of the ISO and into the feed.
+  - [ ] Publish the staged feed (`extensions-16-amd64-1.4.1`, `extensions-16-aarch64-1.4.1`) as non-latest releases signed with the release key, and record its asset table.
+  - [ ] Decide and, if wanted, build an SDK form layer so `gum` prompts can be replaced one screen at a time (see the decision in installer-extensions.md).
+- **Evidence:**
+  - [ ] An install from the exact image against the published feed: choose a game, see the download and verification, play it in its own window, the install result unchanged; once with the network blocked, showing the offline message; once with a corrupted bundle, refused.
+  - [ ] The same on the MSI and the MacBookPro16,1, on the `vt(4)` console and over SSH.
 
 ### [ ] VISUAL-SDK-001 — Extract a reusable installer visual SDK and plugin runtime
 
@@ -1339,7 +1360,7 @@ remains open; report files do not establish a passing gate.
     plugin contracts without keeping a parallel installer-private rendering
     tree. Preserve original asset/code/license provenance and independently
     owned package and uninstall boundaries.
-- **Progress:** SDK 1.2 is in the tree ([visual-sdk.md](../visual-sdk.md)): capability negotiation, canvas and screens (overlay and alternate screen), layout, motion and effects, input actions, audio cues, scenes, the plugin runtime and arcade helpers, a sample host that is not the installer, and 42 unit tests. The install screen (`progress-dashboard.py`) and its flourishes (`charm.py`) draw through it with no private copies (a test enforces that). Verified on Linux only: not yet on a FreeBSD `vt(4)` console, serial or SSH, and `gum` prompts remain a third-party tool outside the SDK.
+- **Progress:** SDK 1.4 is in the tree ([visual-sdk.md](../visual-sdk.md)): capability negotiation, canvas and screens (overlay and alternate screen), layout, motion and effects, input actions, audio cues, scenes, the plugin runtime, arcade helpers, host-mediated windows (open, close, resize, select, list, title), `ansi` helpers, a sample host that is not the installer, and 43 unit tests. The install screen, its flourishes, the welcome frame and the logo, the log and diagnostics views and the Extensions menu all draw through it; `tests/installer-sdk-audit.py` allows only the listed remaining escape sites and fails on new ones. Still outside the SDK, by decision ([installer-extensions.md](../installer-extensions.md)): `gum` prompts, the optional `ttfx` effect on the welcome screen, the install log's colour prefix, and the live desktop's GTK installer. Verified on Linux and (SDK, plugin, window and installer-extension suites) on FreeBSD 16.0-CURRENT; not on a `vt(4)` console, serial or SSH on real hardware.
 - **Evidence:**
   - [ ] Native FreeBSD exact-image tests prove plugin discovery, version and
     capability refusal, lifecycle/preemption, resize and backend changes, input

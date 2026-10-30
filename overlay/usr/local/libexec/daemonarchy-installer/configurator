@@ -75,8 +75,7 @@ measure_terminal
 
 clear_logo() {
   measure_terminal
-  printf "\033[H\033[2J"
-  gum style --foreground 1 --padding "1 0 0 $PADDING_LEFT" "$(<"$LOGO_PATH")"
+  "$CHARM" logo --logo "$LOGO_PATH" --left "$PADDING_LEFT" 2>/dev/null || { clear; cat "$LOGO_PATH"; }
 }
 
 # The same welcome frame the Arch ISO opens on: logo, tagline, one button.
@@ -97,19 +96,12 @@ greeter() {
   tagline_row=$((top + logo_h + 2))
   hint_row=$((top + logo_h + 4))
 
-  printf '\033[?25l\033[H\033[2J'
-
-  printf '\033[%d;1H' "$logo_row"
-  gum style --foreground 1 --padding "0 0 0 $PADDING_LEFT" "$(<"$LOGO_PATH")"
-
   tagline="Omarchy's desktop spliced onto FreeBSD's daemon"
   [[ -r $ISO_SHARE/version ]] && tagline="$tagline · $(<"$ISO_SHARE/version")"
-  tpad=$(((cols - ${#tagline}) / 2)); ((tpad < 0)) && tpad=0
-  printf '\033[%d;%dH%s' "$tagline_row" "$((tpad + 1))" "$tagline"
-
   hint="Press Return for installer options"
-  hpad=$(((cols - ${#hint}) / 2)); ((hpad < 0)) && hpad=0
-  printf '\033[%d;%dH\033[2m%s\033[0m' "$hint_row" "$((hpad + 1))" "$hint"
+  # Drawn by the visual SDK through charm; this script only does the layout arithmetic.
+  "$CHARM" welcome --logo "$LOGO_PATH" --logo-row "$logo_row" --tagline-row "$tagline_row" --hint-row "$hint_row" \
+    --tagline "$tagline" --hint "$hint" 2>/dev/null || { clear; cat "$LOGO_PATH"; printf '\n%s\n%s\n' "$tagline" "$hint"; }
 
   # The boot chime with the welcome frame.
   cue boot
@@ -144,7 +136,7 @@ greeter() {
     wait "$anim" 2>/dev/null || true
   fi
   stty sane </dev/tty 2>/dev/null || true
-  printf '\033[0m\033[H\033[2J\033[?25h'
+  "$CHARM" restore 2>/dev/null || clear
 }
 
 abort() {

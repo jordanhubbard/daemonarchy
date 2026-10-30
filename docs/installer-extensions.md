@@ -79,12 +79,27 @@ Put its directory under `extensions/` with a `manifest.json`, seal it (`scripts/
 [extension-feed.md](extension-feed.md)). It appears in the menu once the feed is published and the image can
 reach it; nothing in the ISO changes.
 
+## What the installer still draws outside the SDK, and the decision
+
+The installer's own screens draw through the visual SDK: the progress screen, every flourish, the welcome frame
+and the logo, the log and diagnostics views, and this menu. `tests/installer-sdk-audit.py` allows only the
+hand-written terminal escapes listed here and fails on any new one. What remains outside, and why:
+
+| Outside the SDK | What it is | Decision |
+| --- | --- | --- |
+| `gum` prompts (about 50 uses in `configurator`: choose, input, confirm, spin, style, table) | the installer's forms: disk, network, account, Wi-Fi, firmware, sound | **Keep for 1.4.1.** They are a third-party widget layer with tested line editing, secret entry and keyboard handling on the console, and replacing them rewrites every setup form in the install path; the risk is not justified in a patch release. The SDK draws everything around them. A follow-up (EXT-001) is an SDK form layer (choose, input, secret, confirm) that replaces one screen at a time, starting with the screens that have no secret input. |
+| `ttfx` colorshift on the welcome screen | an optional third-party text effect that runs only when installed | Keep; the SDK's own attract animation runs when it is absent. |
+| The install log's colour prefix (`install`'s `log()`) | a log line format the progress screen parses and strips | Keep; it is a protocol, not a screen. |
+| Coloured status dots in the network menu's labels | item text inside a `gum` choice | Goes with the `gum` decision. |
+| The live desktop's graphical installer (GTK) | a separate toolkit for the desktop session | Out of scope for a terminal SDK; it shares the installer's rules, checks and answer file, not its drawing. |
+| `sound.py` | the audio backend and daemon | It is the backend the SDK's audio cues use through an adapter; the installer's own sounds call it directly, which is a backend rather than a rendering path. |
+
 ## Verification status
 
 Linux: `tests/installer-extensions.py` (22 tests: a signed feed served locally, the menu and launcher on a
 pseudo-terminal, download-on-choose, the cached second run, offline, wrong key, missing key, tampered bundle,
 undersized terminal, preemption, and the real tmux own-window launch), `tests/extension-bundles.py` (27),
-`tests/sdk-windows.py` (27), `tests/plugins-and-games.py` (58), `tests/visual-sdk.py` (42) and the installer
+`tests/sdk-windows.py` (27), `tests/plugins-and-games.py` (58), `tests/visual-sdk.py` (43), `tests/installer-sdk-audit.py` (8) and the installer
 progress tests (54). FreeBSD 16.0-CURRENT (daemon.local, tmux 3.7c): the window, SDK and plugin suites pass and a
 plugin started as root runs as `nobody`, unable to write or fork. Not verified: a `vt(4)` console or serial/SSH
 on real hardware, the published feed on GitHub (it is staged, not yet published), or any extension played on

@@ -38,6 +38,15 @@ items below were 1.4 acceptance rows. They moved here so they no longer block
   visualization, so it is the SDK's first consumer and no private rendering
   path remains beside it.
 
+- **Installer extensions**
+  ([EXT-001](active-work.md#ext-001--installer-extensions-menu-sdk-windows-signed-compressed-feed),
+  [issue #161](https://github.com/jordanhubbard/daemonarchy/issues/161)). The games become
+  the first extensions of a general mechanism: an Extensions menu in the installer, a window for
+  every run, SDK window verbs (open, close, resize, select, list, title), and a signed, compressed,
+  versioned feed on GitHub that the installer downloads from when the user chooses an extension.
+  Nothing is carried on the ISO. See [installer-extensions.md](../installer-extensions.md) and
+  [extension-feed.md](../extension-feed.md).
+
 - **Playable classic-arcade interludes**
   ([GAME-001](active-work.md#game-001-add-playable-classic-arcade-games-to-the-installer),
   [issue #137](https://github.com/jordanhubbard/daemonarchy/issues/137)). Ship at
