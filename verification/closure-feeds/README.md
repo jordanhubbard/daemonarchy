@@ -15,11 +15,17 @@ into its `closure_feeds` field; from 1.4.1 the verifier refuses a record without
 | Record | What it is |
 | --- | --- |
 | `packages-16-amd64-1.4.1-upstream` | The signed upstream snapshot of the amd64 installer closure: the 786 FreeBSD packages (3.49 GiB) the ISO's own packages and our application feed do not carry, plus the catalogue (`data.pkg`, `packagesite.pkg`, `meta`, `meta.conf`): 790 assets, 3,751,899,650 bytes, all zstd except the two 168-byte pkg config files. Signed with the release pkg repository key (public key SHA-256 `67986b40…74ef7`). Upstream FreeBSD builds redistributed unchanged; the licence review is open (PKG-002). |
+| `packages-16-aarch64-1.4.1-upstream` | The signed upstream snapshot of the aarch64 installer closure: the 552 FreeBSD `FreeBSD:16:aarch64` packages (3.04 GiB) that our application feed and the ISO's own packages do not carry, plus the catalogue: 556 assets, 3,262,241,578 bytes, all zstd except the two 168-byte pkg config files. Same release pkg repository key as the amd64 shard. The installer's aarch64 roots (`pkg bash sudo daemonarchy octopkg wifi-firmware-kmod vulkan-loader mesa-dri`) resolve to 989 packages with nothing unsatisfied; the aarch64 default browser, Epiphany, adds five packages that are staged as a second shard and not yet published. Upstream FreeBSD builds redistributed unchanged; the licence review is open (PKG-002). |
 
 **Published 2026-10-30** as its own non-latest release, `packages-16-amd64-1.4.1-upstream`
 (not a draft; `daemonarchy-1.4.0` is still the latest release). `package-feed-upload.py
 verify` re-downloaded and hashed all 790 assets against this record's manifest and
 passed. Publishing the feed is not a release: no 1.4.1 image or release exists yet.
+
+The aarch64 shard was published the same day as its own non-latest release,
+`packages-16-aarch64-1.4.1-upstream` (556 assets, verified by the operator). The
+catalogue files in the public release match the staged, signed ones byte for byte
+(`meta` `ca7f091a…`, `packagesite.pkg` `c3343e75…`, `data.pkg` `c645da12…`).
 
 Upstream can move before the image is built. If a package the closure needs
 changes or goes, stage the next snapshot as a new tag (never edit a published one) and
