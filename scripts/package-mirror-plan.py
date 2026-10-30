@@ -73,8 +73,11 @@ def shards(entries):
     return bins
 
 
-def plan(roots, catalogues):
+def plan(roots, catalogues, upstream=None):
+    """`upstream` names the catalogues whose packages the self-hosted feed must carry; by
+    default every catalogue after the first. Our own feeds and the ISO's packages are not hosted again."""
     sources = list(catalogues.items())
+    upstream = set(upstream) if upstream else {name for name in catalogues} - {next(iter(catalogues), None)}
     chosen, missing = closure(roots, sources)
     by_source = {}
     for source, entry in chosen.values():
@@ -84,8 +87,12 @@ def plan(roots, catalogues):
         row["installed_bytes"] += entry.get("flatsize", 0)
     licences = Counter(lic for _, entry in chosen.values() for lic in entry.get("licenses", ["unknown"]))
     # A shard set is only needed for what the self-hosted feed would newly carry.
-    hosted = [entry for source, entry in chosen.values() if source != next(iter(catalogues), None)]
+    hosted = [entry for source, entry in chosen.values() if source in upstream]
+    names = {name for name, (source, _entry) in chosen.items() if source in upstream}
     return {
+        "hosted": sorted(({"name": e["name"], "version": e.get("version", ""), "sum": e.get("sum", ""),
+                           "pkgsize": e["pkgsize"], "path": e.get("path", "")}
+                          for e in hosted if e["name"] in names), key=lambda row: row["name"]),
         "roots": sorted(roots),
         "closure_packages": len(chosen),
         "closure_archive_bytes": sum(row["archive_bytes"] for row in by_source.values()),
@@ -93,7 +100,7 @@ def plan(roots, catalogues):
         "by_source": by_source,
         "unsatisfied": missing,
         "licences": dict(sorted(licences.items(), key=lambda kv: -kv[1])),
-        "shards": [{"assets": s["assets"], "bytes": s["bytes"]} for s in shards(hosted)],
+        "shards": [{"assets": s["assets"], "bytes": s["bytes"], "packages": sorted(s["packages"])} for s in shards(hosted)],
     }
 
 
@@ -101,6 +108,8 @@ def main(argv=None):
     parser = argparse.ArgumentParser(description=__doc__, formatter_class=argparse.RawDescriptionHelpFormatter)
     parser.add_argument("--root", action="append", required=True)
     parser.add_argument("--catalogue", action="append", required=True, metavar="NAME=PATH_OR_URL")
+    parser.add_argument("--upstream", action="append", metavar="NAME",
+                        help="catalogue whose packages the self-hosted feed carries (default: every one after the first)")
     parser.add_argument("--json", action="store_true")
     parser.add_argument("--fail-on-unsatisfied", action="store_true",
                         help="exit 1 if any root or dependency has no catalogue (upstream drift)")
@@ -110,7 +119,7 @@ def main(argv=None):
         for item in args.catalogue:
             name, _, location = item.partition("=")
             catalogues[name] = load_catalogue(location, Path(tmp))
-    result = plan(args.root, catalogues)
+    result = plan(args.root, catalogues, args.upstream)
     status = 1 if args.fail_on_unsatisfied and result["unsatisfied"] else 0
     if args.json:
         print(json.dumps(result, indent=2))

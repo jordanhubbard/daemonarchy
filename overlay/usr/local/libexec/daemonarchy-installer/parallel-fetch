@@ -1,8 +1,8 @@
 #!/usr/bin/env python3
 """Fetch a resolved package plan with several pkg processes at once.
 
-  parallel-fetch --plan FILE --cache DIR [--workers N] [--batch K] [--attempts A]
-                 [--skip-repo NAME]... -- PKG-COMMAND...
+  parallel-fetch --plan FILE --cache DIR [--workers N] [--repo-workers REPO=N]...
+                 [--batch K] [--attempts A] [--skip-repo NAME]... -- PKG-COMMAND...
 
 PKG-COMMAND is the whole pkg invocation up to the sub-command, for example
 `env ASSUME_ALWAYS_YES=yes pkg -r /mnt -o REPOS_DIR=...`. The plan is the text
@@ -14,7 +14,12 @@ where `pkg install` expects it. Nothing is installed.
 
 Per-connection throughput to the package mirror is the limit on a fast link, so
 N processes move roughly N times the bytes while there are enough archives to
-keep them busy. A mirror error on an archive is common at that rate (about half
+keep them busy. How many is right depends on the host, so each repository has
+its own cap (--repo-workers): measured on the MSI's wired link, pkg.FreeBSD.org
+peaked at about 4 streams and throttled beyond that (12.9 MiB/s at 4, 7.6 at 16),
+while GitHub release assets kept scaling to 16-24 (3.1 MiB/s at 1, 21 at 16).
+Batches never mix repositories, and the trace's `download` and `fetch_batch`
+events say which repository each archive came from. A mirror error on an archive is common at that rate (about half
 of the batches in a measured 8-worker run saw one), so the pool checks the cache
 for each wanted archive and retries just the ones that failed, singly, with
 exponential backoff, without ever pausing the other workers. A deterministic
@@ -172,20 +177,26 @@ def error_class(text):
 
 class Pool:
     def __init__(self, items, pkg_command, cache, trace, out, workers=8, per_batch=4, attempts=6,
-                 sizes=None, clock=time.monotonic, interval=0.25):
+                 sizes=None, clock=time.monotonic, interval=0.25, repo_workers=None):
         self.items, self.pkg_command, self.cache, self.trace, self.out = items, pkg_command, cache, trace, out
         self.workers, self.per_batch, self.attempts = max(1, workers), per_batch, max(1, attempts)
+        self.caps = {name: max(1, n) for name, n in (repo_workers or {}).items()}
         self.sizes, self.clock, self.interval = sizes or {}, clock, interval
         self.ids = {i['id'] for i in items}
+        self.repo_of = {i['id']: i['repo'] for i in items}
         self.lock = threading.Condition()
         self.reported, self.assigned, self.last_done = {}, {}, {}
         self.archives = self.done_bytes = 0
         self.last_emit = float('-inf')
         self.fatal = None
-        self.active = 0
+        self.active = collections.Counter()
         self.busy_us = self.start_us = 0
-        self.ready, self.delayed, self.tries = collections.deque(), [], collections.Counter()
+        self.ready, self.delayed, self.tries = collections.defaultdict(collections.deque), [], collections.Counter()
         self.sequence = 0
+
+    def workers_for(self, repo):
+        """Connections allowed to one repository: a mirror throttles, our own feed does not."""
+        return self.caps.get(repo, self.workers)
 
     # -- progress -------------------------------------------------------------------
     def emit(self, name='', file_bytes=0, force=False):
@@ -215,24 +226,26 @@ class Pool:
                 self.done_bytes += size
                 self.busy_us += max(now_us - start, 0)
                 newest = identifier
-                self.trace.event('download', name=identifier, bytes=size, dur_us=max(now_us - start, 0), worker=worker)
+                self.trace.event('download', name=identifier, bytes=size, dur_us=max(now_us - start, 0), worker=worker,
+                                 repo=self.repo_of.get(identifier, ''))
             partial_bytes = sum(s for i, s in partial.items() if i not in self.reported)
         self.emit(newest, partial_bytes, force=bool(newest))
 
     # -- scheduling -----------------------------------------------------------------
-    def next_batch(self):
-        """A batch whose time has come, or None when everything is finished or given up."""
+    def next_batch(self, repo):
+        """A batch of this repository whose time has come, or None when its work is done or given up."""
         with self.lock:
             while True:
                 if self.fatal:
                     return None
                 now = self.clock()
                 while self.delayed and self.delayed[0][0] <= now:
-                    self.ready.append(heapq.heappop(self.delayed)[2])
-                if self.ready:
-                    self.active += 1
-                    return self.ready.popleft()
-                if not self.delayed and not self.active:
+                    _when, _seq, name, batch = heapq.heappop(self.delayed)
+                    self.ready[name].append(batch)
+                if self.ready[repo]:
+                    self.active[repo] += 1
+                    return self.ready[repo].popleft()
+                if not self.active[repo] and not any(entry[2] == repo for entry in self.delayed):
                     return None
                 wait = (self.delayed[0][0] - now) if self.delayed else 0.5
                 self.lock.wait(min(max(wait, 0.01), 0.5))
@@ -248,7 +261,7 @@ class Pool:
         else:
             delay = 0.0
         self.sequence += 1
-        heapq.heappush(self.delayed, (self.clock() + delay, self.sequence, [item]))
+        heapq.heappush(self.delayed, (self.clock() + delay, self.sequence, item['repo'], [item]))
         return True
 
     def run_batch(self, worker, batch):
@@ -265,14 +278,15 @@ class Pool:
         except OSError as error:
             status, text = 127, str(error)
         missing = [i for i in batch if not cached(self.cache, i['id'])]
-        fields = dict(worker=worker, packages=len(ids), status=status, dur_us=self.trace.now_us() - started)
+        repo = batch[0]['repo']
+        fields = dict(worker=worker, repo=repo, packages=len(ids), status=status, dur_us=self.trace.now_us() - started)
         if missing or status:
             fields['error'] = error_class(text)
         self.trace.event('fetch_batch', **fields)
         match = DETERMINISTIC.search(text)
         named = {m.group(1) for m in FAILED_ARCHIVE.finditer(text)}
         with self.lock:
-            self.active -= 1
+            self.active[repo] -= 1
             if match and missing:
                 line = next((l for l in text.splitlines() if match.group(0) in l), match.group(0))
                 self.fatal = self.fatal or line.strip()[:300]
@@ -283,9 +297,9 @@ class Pool:
                     self.gave_up.append(item['id'])
             self.lock.notify_all()
 
-    def worker(self, number):
+    def worker(self, number, repo):
         while True:
-            batch = self.next_batch()
+            batch = self.next_batch(repo)
             if batch is None:
                 return
             self.run_batch(number, batch)
@@ -294,10 +308,19 @@ class Pool:
         self.start_us = self.trace.now_us()
         self.gave_up = []
         pending = [i for i in self.items if not cached(self.cache, i['id'])]
+        by_repo = collections.defaultdict(list)
+        for item in pending:
+            by_repo[item['repo']].append(item)
         self.trace.event('fetch_pool_begin', workers=self.workers, packages=len(self.items), pending=len(pending))
-        self.ready.extend(make_batches(pending, self.sizes, self.per_batch))
-        threads = [threading.Thread(target=self.worker, args=(n,), daemon=True)
-                   for n in range(min(self.workers, max(len(self.ready), 1)))]
+        threads, number = [], 0
+        for repo, group in sorted(by_repo.items()):
+            batches = make_batches(group, self.sizes, self.per_batch)
+            self.ready[repo].extend(batches)
+            count = min(self.workers_for(repo), len(batches))
+            self.trace.event('fetch_repo', repo=repo, packages=len(group), batches=len(batches), workers=count)
+            for _ in range(count):
+                threads.append(threading.Thread(target=self.worker, args=(number, repo), daemon=True))
+                number += 1
         for thread in threads:
             thread.start()
         while any(t.is_alive() for t in threads):
@@ -318,14 +341,23 @@ def main(argv):
     parser = argparse.ArgumentParser(description=__doc__, formatter_class=argparse.RawDescriptionHelpFormatter)
     parser.add_argument('--plan', required=True, help='pkg install -n output ("-" for stdin)')
     parser.add_argument('--cache', required=True, help="pkg's cache directory for the target")
-    parser.add_argument('--workers', type=int, default=int(os.environ.get('DAEMONARCHY_FETCH_WORKERS', '8')))
+    parser.add_argument('--workers', type=int, default=int(os.environ.get('DAEMONARCHY_FETCH_WORKERS', '16')))
     parser.add_argument('--batch', type=int, default=4, help='small packages per pkg process')
     parser.add_argument('--attempts', type=int, default=6, help='tries for one archive before giving up on it')
     parser.add_argument('--skip-repo', action='append', default=[], help='repository whose packages need no fetch')
+    parser.add_argument('--repo-workers', action='append', default=[], metavar='REPO=N',
+                        help='connections for one repository (overrides --workers for it)')
     parser.add_argument('command', nargs=argparse.REMAINDER)
     args = parser.parse_args(argv)
     command = args.command[1:] if args.command[:1] == ['--'] else args.command
-    if not command or not 1 <= args.workers <= 32:
+    caps = {}
+    for item in args.repo_workers:
+        name, _, count = item.partition('=')
+        if not name or not count.isdigit() or not 1 <= int(count) <= 64:
+            parser.print_usage(sys.stderr)
+            return 2
+        caps[name] = int(count)
+    if not command or not 1 <= args.workers <= 64:
         parser.print_usage(sys.stderr)
         return 2
     text = sys.stdin.read() if args.plan == '-' else open(args.plan, encoding='utf-8', errors='replace').read()
@@ -337,7 +369,7 @@ def main(argv):
     trace = Trace(os.environ.get('DAEMONARCHY_TRACE_FILE'), int(start) if start.isdigit() else 0)
     os.makedirs(args.cache, exist_ok=True)
     pool = Pool(items, command, args.cache, trace, sys.stdout, args.workers, args.batch, args.attempts,
-                sizes=load_sizes(command))
+                sizes=load_sizes(command), repo_workers=caps)
     missing = pool.run()
     if pool.fatal:
         print(f'parallel-fetch: {pool.fatal}', file=sys.stderr)

@@ -560,6 +560,8 @@ Daemonarchy: {
 }
 EOF
 package_repository_write_dependencies "$repos/dependencies.conf" "$ISO_SHARE/daemonarchy.pub"
+# A signed snapshot of the upstream packages, when this image carries one.
+package_repository_write_mirror "$repos/mirror.conf" "$ISO_SHARE/daemonarchy.pub" "$ISO_SHARE/package-mirror" "${package_repository_arch:-amd64}"
 pkg_command=(env ASSUME_ALWAYS_YES=yes IGNORE_OSVERSION=yes pkg -r "$TARGET" -o REPOS_DIR="$repos" -o ABI="$ABI")
 pkg_target() {
   "${pkg_command[@]}" "$@"
@@ -645,13 +647,15 @@ fi
 # DAEMONARCHY_FETCH_WORKERS=1 turns this off.
 fetched_in_parallel=false
 fetch_python=$(command -v python3.12 || command -v python3 || true)
-if [[ -n $fetch_python && ${DAEMONARCHY_FETCH_WORKERS:-8} != 1 ]]; then
+if [[ -n $fetch_python && ${DAEMONARCHY_FETCH_WORKERS:-16} != 1 ]]; then
   pkg_cache=$(pkg_target config PKG_CACHEDIR 2>/dev/null | tail -n 1)
   [[ -n $pkg_cache ]] || pkg_cache=$TARGET/var/cache/pkg
   parallel_status=0
   traced pkg_fetch_parallel "$fetch_python" "$(dirname "$0")/parallel-fetch" \
     --plan "$resolve_log" --cache "$pkg_cache" --skip-repo Daemonarchy \
-    --workers "${DAEMONARCHY_FETCH_WORKERS:-8}" -- "${pkg_command[@]}" -o FETCH_TIMEOUT=60 \
+    --workers "${DAEMONARCHY_FETCH_WORKERS:-16}" \
+    --repo-workers "FreeBSD=${DAEMONARCHY_FETCH_FREEBSD_WORKERS:-4}" \
+    -- "${pkg_command[@]}" -o FETCH_TIMEOUT=60 \
     || parallel_status=$?
   case $parallel_status in
     0) fetched_in_parallel=true ;;

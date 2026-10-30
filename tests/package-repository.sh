@@ -75,5 +75,29 @@ if package_repository_tag_validate packages-16-aarch64-1.4.0 2>/dev/null; then
     echo 'The default amd64 validation accepted an aarch64 tag' >&2
     exit 1
 fi
+# A signed snapshot of the upstream packages: preferred when listed, skipped
+# (never fatal) when it does not answer, ignored when it is not one of ours.
+base=https://github.com/jordanhubbard/daemonarchy/releases/download
+package_mirror_probe() { case "$1" in *upstream-down) return 1 ;; *) return 0 ;; esac; }
+rm -f "$work/mirror.conf"
+package_repository_write_mirror "$work/mirror.conf" /public/key "$work/no-such-list"
+[ ! -e "$work/mirror.conf" ]
+printf '%s\n' "$base/packages-16-amd64-1.4.1-upstream-1" "$base/packages-16-amd64-1.4.1-upstream-down" \
+    "$base/packages-16-amd64-1.4.1-upstream-2" 'https://evil.example/packages-16-amd64-x' \
+    "$base/packages-16-aarch64-1.4.1-upstream-1" "$base/packages-16-amd64-bad;rm" '' >"$work/package-mirror"
+package_repository_write_mirror "$work/mirror.conf" /public/key "$work/package-mirror" 2>"$work/mirror.err"
+grep -qx 'Daemonarchy-Mirror-1: {' "$work/mirror.conf"
+grep -qx 'Daemonarchy-Mirror-2: {' "$work/mirror.conf"
+[ "$(grep -c '^Daemonarchy-Mirror-' "$work/mirror.conf")" = 2 ]
+grep -q 'upstream-1"' "$work/mirror.conf" && grep -q 'upstream-2"' "$work/mirror.conf"
+! grep -q 'upstream-down\|evil\|aarch64\|rm' "$work/mirror.conf"
+grep -q 'signature_type: "pubkey"' "$work/mirror.conf" && grep -q 'pubkey: "/public/key"' "$work/mirror.conf"
+grep -q 'priority: 5' "$work/mirror.conf"
+grep -q 'did not answer' "$work/mirror.err" && grep -q 'not one of ours' "$work/mirror.err"
+# aarch64 images take only aarch64 shards.
+rm -f "$work/mirror.conf"
+package_repository_write_mirror "$work/mirror.conf" /public/key "$work/package-mirror" aarch64 2>/dev/null
+[ "$(grep -c '^Daemonarchy-Mirror-' "$work/mirror.conf")" = 1 ] && grep -q 'packages-16-aarch64-1.4.1-upstream-1' "$work/mirror.conf"
+echo 'PASS: package mirror shards are preferred, validated, per architecture, and skipped when they do not answer'
 echo 'PASS: stable fallback, candidate feed selection and invalid metadata rejection'
 echo 'PASS: per-architecture feed families never cross'

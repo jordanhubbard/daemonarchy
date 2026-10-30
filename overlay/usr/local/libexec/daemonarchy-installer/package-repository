@@ -33,6 +33,46 @@ package_repository_prepare() {
     package_repository_tag_validate "$package_repository_tag" "$package_repository_arch"
 }
 
+# A self-hosted, signed snapshot of the upstream packages (PKG-002): shards of a
+# GitHub release feed, one URL per line in the image's package-mirror file. pkg.
+# FreeBSD.org's `latest` moves under an image (it dropped a package one day after
+# a release), so an image that carries a mirror list prefers the snapshot it was
+# built against and keeps pkg.FreeBSD.org only as the fallback. A shard that does
+# not answer is left out, never fatal. No list, no mirror, no change.
+package_mirror_probe() { # URL: does the shard's catalogue answer?
+    fetch -q -T 20 -o /dev/null "$1/meta.conf"
+}
+
+package_repository_write_mirror() { # conf-file public-key mirror-list-file [architecture, default amd64]
+    [ -s "$3" ] || return 0
+    local url number=0 arch=${4:-amd64}
+    while IFS= read -r url; do
+        [ -n "$url" ] || continue
+        case "$url" in
+            https://github.com/jordanhubbard/daemonarchy/releases/download/packages-16-"$arch"-?*) ;;
+            *) echo 'Ignoring a package mirror URL that is not one of ours' >&2; continue ;;
+        esac
+        case "${url##*/}" in
+            *[!A-Za-z0-9._-]*) echo 'Ignoring an invalid package mirror URL' >&2; continue ;;
+        esac
+        if ! package_mirror_probe "$url"; then
+            echo "Package mirror ${url##*/} did not answer; using pkg.FreeBSD.org for its packages" >&2
+            continue
+        fi
+        number=$((number + 1))
+        cat >>"$1" <<EOF
+Daemonarchy-Mirror-$number: {
+  url: "$url",
+  signature_type: "pubkey",
+  pubkey: "$2",
+  priority: 5,
+  enabled: yes
+}
+EOF
+    done <"$3"
+    return 0
+}
+
 package_repository_write_dependencies() {
     package_repository_tag_validate "$package_repository_tag" "${package_repository_arch:-amd64}" || return 1
     [ "$package_repository_tag" != "packages-16-${package_repository_arch:-amd64}" ] || return 0

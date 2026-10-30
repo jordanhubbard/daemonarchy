@@ -139,6 +139,84 @@ class ReleaseAssetNames(unittest.TestCase):
             assets.verify(self.path, directory)
 
 
+class ClosureFeeds(ReleaseAssetNames):
+    CERT = "daemonarchy-1.4.1.pem"
+    ISO = "daemonarchy-1.4.1-amd64.iso.xz"
+
+    def feed(self, tag="packages-16-amd64-1.4.1-upstream", extra=None, drop=()):
+        names = ["bash-5.3.9.pkg", "meta", "meta.conf", "data.pkg", "packagesite.pkg"]
+        assets = {n: [10, "sha256:" + "d" * 64] for n in names if n not in drop}
+        assets.update(extra or {})
+        return {"tag": tag, "assets": assets}
+
+    def write(self, feeds="unset"):
+        record = self.record(self.CERT, "1.4.1", self.ISO)
+        if feeds != "unset":
+            record["closure_feeds"] = feeds
+        self.path.write_text(json.dumps(record) + "\n")
+        return record
+
+    def test_141_requires_closure_feeds(self):
+        self.write()
+        with self.assertRaisesRegex(ValueError, "must record the closure feeds"):
+            assets.read_record(self.path)
+
+    def test_140_and_earlier_need_none(self):
+        self.record("daemonarchy-1.4.0.pem", "1.4.0", "daemonarchy-1.4.0-amd64.iso.xz")
+        assets.read_record(self.path)
+
+    def test_valid_closure_feed_is_accepted(self):
+        self.write([self.feed()])
+        record, _ = assets.read_record(self.path)
+        self.assertEqual(list(assets.closure_feeds(record)), ["packages-16-amd64-1.4.1-upstream"])
+
+    def test_bad_feeds_are_refused(self):
+        cases = {
+            "tag": [self.feed(tag="latest")],
+            "duplicate": [self.feed(), self.feed()],
+            "raw payload": [self.feed(extra={"bash.txz": [1, "sha256:" + "d" * 64]})],
+            "raw iso": [self.feed(extra={"image.iso": [1, "sha256:" + "d" * 64]})],
+            "no catalogue": [self.feed(drop=("data.pkg",))],
+            "no meta.conf": [self.feed(drop=("meta.conf",))],
+            "wrong architecture": [self.feed(tag="packages-16-aarch64-1.4.1-upstream")],
+            "bad digest": [self.feed(extra={"zstd-1.pkg": [1, "sha256:zz"]})],
+            "empty": [],
+        }
+        for label, feeds in cases.items():
+            self.write(feeds)
+            with self.subTest(label), self.assertRaises(ValueError):
+                assets.read_record(self.path)
+
+    def test_staged_feed_must_match_and_hold_no_private_key(self):
+        feed = self.feed()
+        base = Path(self.temporary.name) / "closure"
+        shard = base / feed["tag"]
+        shard.mkdir(parents=True)
+        for name in list(feed["assets"]):
+            content = b"x" * 10
+            (shard / name).write_bytes(content)
+            feed["assets"][name] = [len(content), "sha256:" + hashlib.sha256(content).hexdigest()]
+        self.write([feed])
+        record, _ = assets.read_record(self.path)
+        feeds = assets.closure_feeds(record)
+        subprocess = __import__("subprocess")
+        original = subprocess.run
+        try:   # data.pkg/packagesite.pkg here are not real archives: stub tar to an empty readable member
+            assets.subprocess.run = lambda *a, **k: subprocess.CompletedProcess(a, 0, b"", b"")
+            assets.verify_closure_directory(feeds, base)
+            (shard / "extra.pkg").write_bytes(b"x")
+            with self.assertRaisesRegex(ValueError, "differ from the record"):
+                assets.verify_closure_directory(feeds, base)
+            (shard / "extra.pkg").unlink()
+            (shard / "meta.conf").write_bytes(b"-----BEGIN PRIVATE KEY-----")
+            with self.assertRaisesRegex(ValueError, "size or type differs|digest differs"):
+                assets.verify_closure_directory(feeds, base)
+        finally:
+            assets.subprocess.run = original
+        with self.assertRaisesRegex(ValueError, "pass --closure-assets"):
+            assets.verify_closure_directory(feeds, None)
+
+
 class HardwareTraceImage(ReleaseAssetNames):
     def test_140_may_publish_hwtrace_image(self):
         self.record("daemonarchy-1.4.0.pem", "1.4.0", "daemonarchy-1.4.0-amd64.iso.xz",

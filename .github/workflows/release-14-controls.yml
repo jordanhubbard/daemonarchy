@@ -45,6 +45,8 @@ on:
       - 'overlay/usr/local/libexec/daemonarchy-installer/install-trace-sampler'
       - 'overlay/usr/local/libexec/daemonarchy-installer/parallel-fetch'
       - 'tests/parallel-fetch.py'
+      - 'scripts/package-feed-stage.py'
+      - 'tests/package-feed-stage.py'
       - 'scripts/install-trace-baseline.py'
       - 'tests/install-trace-baseline.py'
       - 'verification/install-baselines/**'
@@ -99,6 +101,8 @@ on:
       - 'overlay/usr/local/libexec/daemonarchy-installer/install-trace-sampler'
       - 'overlay/usr/local/libexec/daemonarchy-installer/parallel-fetch'
       - 'tests/parallel-fetch.py'
+      - 'scripts/package-feed-stage.py'
+      - 'tests/package-feed-stage.py'
       - 'scripts/install-trace-baseline.py'
       - 'tests/install-trace-baseline.py'
       - 'verification/install-baselines/**'
@@ -155,6 +159,10 @@ jobs:
         env:
           PYTHONDONTWRITEBYTECODE: '1'
         run: python3 tests/parallel-fetch.py -v
+      - name: Package feed staging
+        env:
+          PYTHONDONTWRITEBYTECODE: '1'
+        run: python3 tests/package-feed-stage.py -v
       - name: Install baselines and comparison
         env:
           PYTHONDONTWRITEBYTECODE: '1'
