@@ -29,7 +29,7 @@ chmod +x "$work/bin/pkg" "$work/bin/fetch"
 
 base=https://github.com/jordanhubbard/daemonarchy/releases/download
 run() {
-	env PATH="$work/bin:$PATH" STUB_LOG="$work/plan.log" ISO_REPO="$work/iso" PUBKEY="${PUBKEY:-$work/key.pub}" \
+	env PATH="$work/bin:$PATH" ARCH="${ARCH:-amd64}" STUB_LOG="$work/plan.log" ISO_REPO="$work/iso" PUBKEY="${PUBKEY:-$work/key.pub}" \
 	    MIRROR_URLS="${MIRROR_URLS:-$base/packages-16-amd64-1.4.1-upstream}" ABI=FreeBSD:16:amd64 \
 	    sh "$here/scripts/check-closure-feed.sh" "$@" 2>&1
 }
@@ -44,6 +44,14 @@ case $out in *"closure feed accepted: 1 shard(s), 1036 packages"*) ;; *) echo "N
 grep -q 'drm-612-kmod' "$work/plan.log" && grep -q 'nvidia-driver' "$work/plan.log"
 ! grep -q 'other' "$work/plan.log"
 grep -q 'mesa-dri' "$work/plan.log" && grep -q 'xwayland' "$work/plan.log" && grep -q 'tigervnc' "$work/plan.log" || true
+
+# aarch64 roots: Epiphany instead of Chromium, and no xwayland (the installer adds it only for CUDA, amd64-only).
+out=$(ARCH=aarch64 run)
+case $out in *"closure feed accepted"*) ;; *) echo "aarch64 not accepted: $out" >&2; exit 1 ;; esac
+grep -q 'epiphany' "$work/plan.log" && grep -q 'mesa-dri' "$work/plan.log"
+! grep -q 'xwayland' "$work/plan.log" && ! grep -q 'chromium' "$work/plan.log"
+out=$(run)
+grep -q 'xwayland' "$work/plan.log" && grep -q 'chromium' "$work/plan.log"
 
 STUB_FETCH=fail expect_refusal 'a silent shard' 'does not answer'
 STUB_UPDATE=bad expect_refusal 'an unsigned or wrongly signed catalogue' 'unsigned, signed with another key'
