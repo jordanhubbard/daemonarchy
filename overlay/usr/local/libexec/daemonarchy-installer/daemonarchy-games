@@ -1,0 +1,204 @@
+#!/usr/bin/env python3
+"""Games for the wait: a menu and the installer's arcade plugins.
+
+  daemonarchy-games menu        pick a game (Up/Down, Return, q leaves)
+  daemonarchy-games play ID     run one game
+  daemonarchy-games list        the games that are sealed and available
+
+Runs in its own tmux window beside the install screen (C-b g, or g on the progress screen). It is
+a separate low-priority process: it can never start, stop or change the installation, and it does
+not read the installation's state. The install screen asks it to stop by creating the preempt
+file (DAEMONARCHY_GAMES_PREEMPT, default /tmp/daemonarchy-games.preempt): when the installation
+finishes or fails, or when a remote-debug pairing request needs the operator. The file is checked
+every frame; the game process is killed at once and this window closes. While another tmux
+window is showing, the game is suspended: no simulation, no drawing, no CPU.
+
+Games are plugins (see daemonarchy_visual.plugin): hash-verified, capability-scoped, each in its
+own process with memory, CPU and privilege limits. DAEMONARCHY_GAMES=off disables all of it.
+Sound goes through the installer's player (sound.py) and follows its mute, volume and quiet mode.
+"""
+import importlib.util
+import os
+from pathlib import Path
+import subprocess
+import sys
+import time
+
+HERE = Path(__file__).resolve().parent
+sys.path.insert(0, str(HERE.parents[1] / 'lib' / 'daemonarchy-visual'))
+import daemonarchy_visual as sdk  # noqa: E402
+from daemonarchy_visual import caps as sdk_caps, effects, palette, plugin  # noqa: E402
+from daemonarchy_visual.input import FdSource, Raw  # noqa: E402
+
+ROOT = Path(os.environ.get('DAEMONARCHY_GAMES_ROOT', HERE.parents[1] / 'share' / 'daemonarchy-games'))
+PREEMPT = Path(os.environ.get('DAEMONARCHY_GAMES_PREEMPT', '/tmp/daemonarchy-games.preempt'))
+# SDK cue names to the installer player's cue names (sound.py). Unknown names stay silent.
+CUE_MAP = dict(click='click', select='select', blip='tick', laser='game_laser', hit='game_hit',
+               explode='game_explode', bounce='game_bounce', pickup='game_pickup', levelup='game_levelup',
+               gameover='game_gameover', win='game_win')
+
+
+def preempted():
+    return PREEMPT.exists()
+
+
+class Visibility:
+    """True while this tmux window is the one being shown; checked twice a second."""
+
+    def __init__(self, env):
+        self.pane, self.visible, self.checked = env.get('TMUX_PANE', ''), True, 0.0
+
+    def suspended(self):
+        if not self.pane:
+            return False
+        now = time.monotonic()
+        if now - self.checked >= 0.5:
+            self.checked = now
+            try:
+                shown = subprocess.run(['tmux', 'display-message', '-p', '-t', self.pane, '#{window_active}'],
+                                       capture_output=True, text=True, timeout=1, check=False).stdout.strip()
+                self.visible = shown != '0'
+            except (OSError, subprocess.SubprocessError):
+                self.visible = True
+        return not self.visible
+
+
+def sound_audio(env):
+    """The installer's player as SDK audio; silence if it is not there. Never waits for a device."""
+    try:
+        spec = importlib.util.spec_from_file_location('daemonarchy_sound', HERE / 'sound.py')
+        module = importlib.util.module_from_spec(spec)
+        spec.loader.exec_module(module)
+        client = module.Client(dict(env))
+    except Exception:  # noqa: BLE001 - sound is never required.
+        return sdk.NullAudio()
+
+    def play(name, **params):
+        cue = CUE_MAP.get(name)
+        if cue:
+            client.play(cue)
+    return sdk.ThreadedAudio(play)
+
+
+class Menu(sdk.Scene):
+    title = 'Games'
+    min_size = (40, 12)
+
+    def __init__(self, games, caps):
+        self.games, self.caps = games, caps
+        self.index, self.age, self.notice = 0, 0.0, ''
+        self.chosen = None
+
+    def update(self, dt, ctx, actions):
+        self.age += dt
+        for action in actions:
+            if action == 'up':
+                self.index = (self.index - 1) % len(self.games)
+                ctx.audio.cue('click')
+            elif action == 'down':
+                self.index = (self.index + 1) % len(self.games)
+                ctx.audio.cue('click')
+            elif action in ('select', 'fire'):
+                game = self.games[self.index]
+                need = game.min_size
+                if need and (ctx.width < need[0] or ctx.height < need[1]):
+                    self.notice = f'{game.name} needs a terminal of at least {need[0]}x{need[1]}; this one is {ctx.width}x{ctx.height}.'
+                    continue
+                ctx.audio.cue('select')
+                self.chosen, self.done = game, True
+
+    def draw(self, canvas, ctx):
+        width = canvas.width
+        effects.gradient_text(canvas, max(0, (width - 18) // 2), 1, 'DAEMONARCHY ARCADE', palette.LOGO,
+                              0.0 if ctx.reduced else self.age * 0.1)
+        canvas.put(max(0, (width - 34) // 2), 3, 'The installation keeps running meanwhile.', (palette.GRAY, None, False))
+        top = 5
+        for row, game in enumerate(self.games):
+            marker = ('▶ ' if ctx.glyphs.unicode else '> ') if row == self.index else '  '
+            style = (palette.WHITE, None, True) if row == self.index else (palette.GRAY, None, False)
+            line = f'{marker}{game.name:<12} {game.description}'
+            canvas.put(2, top + row * 2, line[:max(0, width - 4)], style)
+            if game.min_size:
+                canvas.put(4, top + row * 2 + 1, f'needs {game.min_size[0]}x{game.min_size[1]}', (palette.DIM, None, False))
+        if self.notice:
+            canvas.put(2, canvas.height - 3, self.notice[:max(0, width - 4)], (palette.YELLOW, None, True))
+        canvas.put(2, canvas.height - 1, 'Up/Down choose   Return play   q leave', (palette.GRAY, None, False))
+
+    def plain_lines(self, ctx):
+        return ['Games need an interactive color terminal.']
+
+
+def say(text):
+    sys.stdout.write(text + '\n')
+    sys.stdout.flush()
+
+
+def run(command, argument, env):
+    registry = plugin.Registry(str(ROOT))
+    games = sorted(registry.plugins.values(), key=lambda p: p.name)
+    if command == 'list':
+        for game in games:
+            say(f'{game.id}\t{game.name}\t{game.description}')
+        for name, reason in sorted(registry.refused.items()):
+            sys.stderr.write(f'refused {name}: {reason}\n')
+        return 0
+    if env.get('DAEMONARCHY_GAMES') == 'off':
+        say('Games are turned off (DAEMONARCHY_GAMES=off).')
+        return 0
+    caps = sdk.detect(dict(env), sys.stdout)
+    if caps.plain or not sys.stdin.isatty():
+        say('Games need an interactive color terminal.')
+        return 0
+    if not games:
+        say('No games are available on this image.')
+        for name, reason in sorted(registry.refused.items()):
+            sys.stderr.write(f'refused {name}: {reason}\n')
+        return 0
+    try:
+        os.nice(19)      # a game must never compete with the installation for CPU
+    except OSError:
+        pass
+    visibility, audio = Visibility(env), sound_audio(env)
+    source = FdSource(sys.stdin.fileno())
+    options = dict(preempt=preempted, suspended=visibility.suspended, size=lambda: sdk_caps.size(sys.stdout))
+    notice = ''
+    with Raw(sys.stdin.fileno()):
+        if command == 'play':
+            game = registry.plugins.get(argument or '')
+            if game is None:
+                say(f'No such game: {argument}')
+                return 2
+            result = plugin.run_plugin(game, caps, sys.stdout, source, audio, **options)
+            return stop_message(result)
+        while True:
+            menu = Menu(games, caps)
+            menu.notice = notice
+            result = sdk.run_scene(menu, caps, sys.stdout, source, audio, fps=15, **options)
+            if result.reason != 'done' or menu.chosen is None:
+                return stop_message(result)
+            result = plugin.run_plugin(menu.chosen, caps, sys.stdout, source, audio, **options)
+            if result.reason in ('preempted', 'eof'):
+                return stop_message(result)
+            failed = result.result.get('failed') if isinstance(result.result, dict) else None
+            notice = f'{menu.chosen.name} stopped: {failed}.' if failed else ''
+
+
+def stop_message(result):
+    if result.reason == 'preempted':
+        say('The installation needs your attention; the games have stopped.')
+    return 0
+
+
+def main(argv):
+    command = argv[1] if len(argv) > 1 else 'menu'
+    if command not in ('menu', 'play', 'list'):
+        sys.stderr.write(__doc__)
+        return 2
+    try:
+        return run(command, argv[2] if len(argv) > 2 else None, os.environ)
+    except KeyboardInterrupt:
+        return 0
+
+
+if __name__ == '__main__':
+    sys.exit(main(sys.argv))

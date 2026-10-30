@@ -6,7 +6,7 @@ is a second host that has nothing to do with installation. The SDK keeps no
 installation state and performs no privileged operation: a host passes in
 observations and decides what an action means.
 
-API version 1.1. `daemonarchy_visual.compatible("1.0")` tells a host or plugin
+API version 1.2. `daemonarchy_visual.compatible("1.0")` tells a host or plugin
 whether this SDK can serve the version it was written for. A minor release only
 adds names; a major release may remove or change them, and the old major keeps
 working in an installed image until that image is replaced.
@@ -23,6 +23,8 @@ working in an installed image until that image is replaced.
 | Input | `input` | `decode_keys` (bytes to keys), `KeyMap` (keys to actions), `FdSource` (non-blocking reads), `ListSource` (scripted input for tests). Actions: `up down left right fire pause select back quit mute help`. |
 | Audio | `audio` | `Audio.cue(name)` never blocks, never raises, is never required, and honours mute. `ThreadedAudio` wraps a blocking backend with a bounded queue. Standard cues: `click select blip laser hit explode bounce pickup levelup gameover win`. |
 | Inline effects | `inline` | line-oriented flourishes printed between a host's own prompts: `type_line`, `result_line`, `pulse_line`. Plain terminals and reduced motion get the final text at once. |
+| Arcade helpers | `arcade` | a fixed simulation step, a centered playfield, a HUD that compacts on narrow terminals, banners. |
+| Plugins | `plugin` | content-identified, capability-scoped, preemptible, failure-isolated scenes that run in their own process; see [arcade-games.md](arcade-games.md). |
 | Scenes | `scene` | `Scene` (`update`, `draw`, `plain_lines`) and `run_scene`, which owns timing, input, resize, pause, mute, preemption and restoring the terminal. |
 
 ## Behaviour a host can rely on
@@ -31,8 +33,8 @@ working in an installed image until that image is replaced.
   `Scene.plain_lines` once; no cursor addressing is sent.
 - **Reduced motion** (`DAEMONARCHY_REDUCED_MOTION=1`) is visible to scenes as
   `ctx.reduced`; the SDK's own effects stop animating and scenes should too.
-- **Small terminals** (under 40 columns or 16 rows) show "Terminal too small"
-  instead of the scene, and the scene is not updated.
+- **Small terminals** (under 40 columns or 16 rows, or below a scene's `min_size`) show
+  "Terminal too small" and the size needed instead of the scene, and the scene is not updated.
 - **Preemption**: `run_scene(..., preempt=fn)` stops at the next frame when `fn()`
   is true. A scene cannot refuse. Hosts use this for prompts, errors and completion.
 - **Long stalls** (a suspended window) are clamped to 0.1 s of simulation.

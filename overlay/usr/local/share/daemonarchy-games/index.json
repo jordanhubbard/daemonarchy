@@ -1,0 +1,17 @@
+{
+  "plugins": {
+    "hordeshot": {
+      "manifest_sha256": "8f0b60f90d66ddbdd747ffe5b54724f14024ca43195c70492a6d7f2b57fd5720"
+    },
+    "rockdrift": {
+      "manifest_sha256": "fc5b5ffaeb0db035c885928bd5e9822feeaaad7ed4b4d4fdaa8db132c81fc3af"
+    },
+    "shatter": {
+      "manifest_sha256": "1d6dec5901c9c5d6a1ffadc4ccd05670b8e50b7c4a2ca0b2dc3be22212da5753"
+    },
+    "wyrm": {
+      "manifest_sha256": "532f3752c1b017b4655519594008955ececcb8fb26dfa64ad3a75c7aaa16a4aa"
+    }
+  },
+  "schema": "daemonarchy/visual-plugin-index@1"
+}

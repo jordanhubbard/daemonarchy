@@ -582,10 +582,66 @@ def cue_tick(step=0):
     return Buffer(0.06).add(0, tone(pitch(name), 0.045, 'square', 0.06, duty=0.125, decay=True, release=0.01))
 
 
+# Game cues (daemonarchy-games). Original, generated, short, and never in quiet mode.
+
+def cue_game_laser():
+    return Buffer(0.14).add(0, tone(pitch('A6'), 0.12, 'square', 0.07, duty=0.25, decay=True,
+                                    slide=pitch('A4'), release=0.02))
+
+
+def cue_game_hit():
+    b = Buffer(0.25)
+    b.add(0, noise(0.2, 0.16, low=200, high=2500))
+    b.add(0, tone(pitch('E3'), 0.22, 'square', 0.10, decay=True, slide=pitch('A2')))
+    return b
+
+
+def cue_game_explode():
+    b = Buffer(0.45)
+    b.add(0, noise(0.42, 0.22, low=100, high=3000))
+    b.add(0, tone(pitch('A2'), 0.4, 'triangle', 0.15, decay=True, slide=pitch('A1')))
+    return b
+
+
+def cue_game_bounce():
+    return Buffer(0.08).add(0, tone(pitch('E5'), 0.06, 'triangle', 0.12, decay=True, release=0.01))
+
+
+def cue_game_pickup():
+    b = Buffer(0.2)
+    b.add(0, tone(pitch('C6'), 0.06, 'square', 0.07, duty=0.25, decay=True))
+    b.add(0.06, tone(pitch('G6'), 0.1, 'square', 0.07, duty=0.25, decay=True))
+    return b
+
+
+def cue_game_levelup():
+    b = Buffer(0.5)
+    for i, name in enumerate(('C5', 'E5', 'G5', 'C6')):
+        b.add(i * 0.08, tone(pitch(name), 0.12, 'square', 0.07, duty=0.25, decay=True))
+    return b
+
+
+def cue_game_gameover():
+    b = Buffer(0.9)
+    for i, name in enumerate(('E4', 'C4', 'A3')):
+        b.add(i * 0.2, tone(pitch(name), 0.28, 'triangle', 0.13, decay=True))
+    return b
+
+
+def cue_game_win():
+    b = Buffer(0.7)
+    for i, name in enumerate(('G5', 'C6', 'E6', 'G6')):
+        b.add(i * 0.1, tone(pitch(name), 0.25, 'square', 0.07, duty=0.25, decay=True))
+    return b
+
+
 CUES = dict(boot=cue_boot, fanfare=cue_fanfare, error=cue_error, warn=cue_warn, commit=cue_commit,
             stage=cue_stage, stage_done=cue_stage_done, milestone=cue_milestone, net_ok=cue_net_ok,
             net_fail=cue_net_fail, whoosh=cue_whoosh, click=cue_click, select=cue_select,
-            greeting=cue_greeting, volume=cue_volume, attract=cue_attract, tick=cue_tick)
+            greeting=cue_greeting, volume=cue_volume, attract=cue_attract, tick=cue_tick,
+            game_laser=cue_game_laser, game_hit=cue_game_hit, game_explode=cue_game_explode,
+            game_bounce=cue_game_bounce, game_pickup=cue_game_pickup, game_levelup=cue_game_levelup,
+            game_gameover=cue_game_gameover, game_win=cue_game_win)
 DESCRIPTIONS = dict(
     boot='boot chime: the installer has started on this console',
     stage='an install stage started (installer @@phase/@@step marker)',
@@ -603,7 +659,15 @@ DESCRIPTIONS = dict(
     click='key feedback',
     greeting='first boot of the installed system and the live desktop greeting',
     volume='volume or mute feedback',
-    attract='a genuine wait: no new progress report for a while')
+    attract='a genuine wait: no new progress report for a while',
+    game_laser='a game: a shot',
+    game_hit='a game: a hit on the player',
+    game_explode='a game: something destroyed',
+    game_bounce='a game: a bounce',
+    game_pickup='a game: food or a bonus',
+    game_levelup='a game: the next level',
+    game_gameover='a game: the game is over',
+    game_win='a game: a perfect game')
 
 _cache = {}
 

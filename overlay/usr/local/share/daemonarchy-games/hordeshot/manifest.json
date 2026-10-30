@@ -1,0 +1,26 @@
+{
+  "api": "1.2",
+  "capabilities": [
+    "draw",
+    "input",
+    "audio"
+  ],
+  "description": "A fixed shooter: a cannon against a descending horde, one shot at a time.",
+  "entry": "game.py",
+  "entry_sha256": "a102e81d14cd29912fc34a295281891d86a7fe31efc97a15f0d4e645111272ef",
+  "id": "hordeshot",
+  "kind": "game",
+  "limits": {
+    "cpu_seconds": 1800,
+    "fps": 20,
+    "frame_ms": 250,
+    "memory_mb": 192
+  },
+  "min_size": [
+    50,
+    24
+  ],
+  "name": "Hordeshot",
+  "schema": "daemonarchy/visual-plugin@1",
+  "version": "1.0.0"
+}

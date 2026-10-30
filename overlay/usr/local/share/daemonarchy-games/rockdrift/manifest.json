@@ -1,0 +1,26 @@
+{
+  "api": "1.2",
+  "capabilities": [
+    "draw",
+    "input",
+    "audio"
+  ],
+  "description": "An asteroid field: a drifting ship, rocks that split and a screen that wraps.",
+  "entry": "game.py",
+  "entry_sha256": "e3aebc7825492ca6ccc201c64d77e5acd96f6f141b006a123890497087f77f83",
+  "id": "rockdrift",
+  "kind": "game",
+  "limits": {
+    "cpu_seconds": 1800,
+    "fps": 20,
+    "frame_ms": 250,
+    "memory_mb": 192
+  },
+  "min_size": [
+    58,
+    24
+  ],
+  "name": "Rockdrift",
+  "schema": "daemonarchy/visual-plugin@1",
+  "version": "1.0.0"
+}

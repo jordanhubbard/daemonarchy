@@ -41,6 +41,7 @@ class Scene:
     title = ""
     done = False
     result = None
+    min_size = None   # (columns, rows) the scene needs; below it the loop shows a message and does not update
 
     def start(self, ctx):
         pass
@@ -117,8 +118,9 @@ def run_scene(scene, caps, out, source, audio=None, clock=None, fps=15, preempt=
                 ctx.clock.sleep(0.25)
                 continue
             canvas = screen.canvas(caps.width, caps.height)
-            if caps.small and screen.full:
-                text = "Terminal too small"[:canvas.width]
+            need = scene.min_size
+            if screen.full and (caps.small or (need and (caps.width < need[0] or caps.height < need[1]))):
+                text = (f"Terminal too small: need {need[0]}x{need[1]}" if need else "Terminal too small")[:canvas.width]
                 canvas.put(max(0, (canvas.width - len(text)) // 2), canvas.height // 2, text, (WHITE, None, True))
             else:
                 if not paused:

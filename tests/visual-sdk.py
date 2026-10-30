@@ -63,8 +63,8 @@ class CapabilityTests(unittest.TestCase):
 
     def test_api_compatibility(self):
         self.assertTrue(sdk.compatible("1.0"))
-        self.assertTrue(sdk.compatible((1, 1)))
-        self.assertFalse(sdk.compatible("1.2"))
+        self.assertTrue(sdk.compatible((1, 2)))
+        self.assertFalse(sdk.compatible("1.3"))
         self.assertFalse(sdk.compatible("2.0"))
         self.assertFalse(sdk.compatible("x"))
 

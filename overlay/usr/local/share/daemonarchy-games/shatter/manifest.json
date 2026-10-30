@@ -1,0 +1,26 @@
+{
+  "api": "1.2",
+  "capabilities": [
+    "draw",
+    "input",
+    "audio"
+  ],
+  "description": "Brick breaking: a paddle, a ball and a wall to take apart.",
+  "entry": "game.py",
+  "entry_sha256": "395b33b9dd7e0815ef11df1f6e12f52b59382230774e526cf308d3a002ed0bca",
+  "id": "shatter",
+  "kind": "game",
+  "limits": {
+    "cpu_seconds": 1800,
+    "fps": 20,
+    "frame_ms": 250,
+    "memory_mb": 192
+  },
+  "min_size": [
+    42,
+    24
+  ],
+  "name": "Shatter",
+  "schema": "daemonarchy/visual-plugin@1",
+  "version": "1.0.0"
+}
