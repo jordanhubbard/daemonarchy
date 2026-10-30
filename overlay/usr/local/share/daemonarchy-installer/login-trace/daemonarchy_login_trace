@@ -1,0 +1,53 @@
+#!/bin/sh
+#
+# PROVIDE: daemonarchy_login_trace
+# REQUIRE: FILESYSTEMS
+# BEFORE: sddm LOGIN
+# KEYWORD: nojail shutdown
+#
+# Time the path from the login screen to a usable desktop. Installed by the
+# Daemonarchy installer.
+#
+# Runs from boot until the first desktop is up, then exits, and appends one
+# JSON line (milestone names and times only) to
+# /var/log/daemonarchy-login-trace.jsonl. See /usr/local/libexec/daemonarchy-login-trace.
+#
+#   daemonarchy_login_trace_enable="NO"   in rc.conf turns it off
+
+. /etc/rc.subr
+
+name=daemonarchy_login_trace
+rcvar=daemonarchy_login_trace_enable
+desc="Record how long a login takes to reach the desktop"
+start_cmd="${name}_start"
+stop_cmd="${name}_stop"
+status_cmd="${name}_status"
+
+load_rc_config $name
+: ${daemonarchy_login_trace_enable:="YES"}
+: ${daemonarchy_login_trace_program:="/usr/local/libexec/daemonarchy-login-trace"}
+pidfile=/var/run/${name}.pid
+
+daemonarchy_login_trace_start()
+{
+	[ -x "$daemonarchy_login_trace_program" ] || return 0
+	daemon -f -p "$pidfile" "$daemonarchy_login_trace_program"
+}
+
+daemonarchy_login_trace_stop()
+{
+	[ -f "$pidfile" ] || return 0
+	kill "$(cat "$pidfile")" 2>/dev/null
+	rm -f "$pidfile"
+}
+
+daemonarchy_login_trace_status()
+{
+	if [ -f "$pidfile" ] && kill -0 "$(cat "$pidfile")" 2>/dev/null; then
+		echo "$name is running as pid $(cat "$pidfile")."
+	else
+		echo "$name is not running (it exits once the first desktop is up)."
+	fi
+}
+
+run_rc_command "$1"

@@ -37,6 +37,8 @@ on:
       - 'tests/fixtures/gpu-report/**'
       - 'scripts/build-timing-record.py'
       - 'tests/build-timing-record.py'
+      - 'tests/login-trace.py'
+      - 'overlay/usr/local/libexec/daemonarchy-installer/login-trace'
       - 'tests/visual-sdk.py'
       - 'tests/plugins-and-games.py'
       - 'tests/sdk-windows.py'
@@ -112,6 +114,8 @@ on:
       - 'tests/fixtures/gpu-report/**'
       - 'scripts/build-timing-record.py'
       - 'tests/build-timing-record.py'
+      - 'tests/login-trace.py'
+      - 'overlay/usr/local/libexec/daemonarchy-installer/login-trace'
       - 'tests/visual-sdk.py'
       - 'tests/plugins-and-games.py'
       - 'tests/sdk-windows.py'
@@ -190,6 +194,10 @@ jobs:
         env:
           PYTHONDONTWRITEBYTECODE: '1'
         run: python3 tests/build-timing-record.py -v
+      - name: Login trace
+        env:
+          PYTHONDONTWRITEBYTECODE: '1'
+        run: python3 tests/login-trace.py -v
       - name: Visual SDK
         env:
           PYTHONDONTWRITEBYTECODE: '1'
