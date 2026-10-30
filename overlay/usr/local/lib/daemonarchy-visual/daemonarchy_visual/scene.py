@@ -67,7 +67,7 @@ MAX_STEP = 0.1  # A long stall (a suspended window) never becomes one huge simul
 
 
 def run_scene(scene, caps, out, source, audio=None, clock=None, fps=15, preempt=None, size=None,
-              suspended=None, max_frames=None):
+              suspended=None, max_frames=None, keep=False, screen=None):
     """Run `scene` until it is done, the user quits, the host preempts it, or input ends.
 
     caps        Capabilities (plain terminals get `plain_lines` once and the loop returns)
@@ -76,6 +76,8 @@ def run_scene(scene, caps, out, source, audio=None, clock=None, fps=15, preempt=
     preempt     callable -> True to stop at once (prompts, errors and completion use this)
     size        callable -> (width, height), consulted every frame so a resize reflows
     suspended   callable -> True while the scene is not visible: no update, no drawing
+    keep        leave the last frame on screen instead of clearing it when the scene ends
+    screen      a Screen to draw on; pass an overlay Screen to animate part of a screen the host printed
     """
     ctx = Context(caps, audio, clock)
     if caps.plain:
@@ -86,7 +88,7 @@ def run_scene(scene, caps, out, source, audio=None, clock=None, fps=15, preempt=
         except (OSError, ValueError):
             pass
         return RunResult("plain")
-    screen = Screen(out, ctx.colors)
+    screen = screen or Screen(out, ctx.colors)
     frame_time = 1.0 / max(1, fps)
     paused, frames, last = False, 0, ctx.clock.now()
     scene.start(ctx)
@@ -115,7 +117,7 @@ def run_scene(scene, caps, out, source, audio=None, clock=None, fps=15, preempt=
                 ctx.clock.sleep(0.25)
                 continue
             canvas = screen.canvas(caps.width, caps.height)
-            if caps.small:
+            if caps.small and screen.full:
                 text = "Terminal too small"[:canvas.width]
                 canvas.put(max(0, (canvas.width - len(text)) // 2), canvas.height // 2, text, (WHITE, None, True))
             else:
@@ -131,5 +133,5 @@ def run_scene(scene, caps, out, source, audio=None, clock=None, fps=15, preempt=
             spent = ctx.clock.now() - now
             ctx.clock.sleep(frame_time - spent)
     finally:
-        screen.leave()
+        screen.leave(clear=not keep)
         ctx.audio.close()

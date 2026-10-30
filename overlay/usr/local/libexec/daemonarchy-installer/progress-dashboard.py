@@ -33,6 +33,16 @@ import termios
 import time
 
 HERE = Path(__file__).resolve().parent
+# The visual SDK ships beside libexec (/usr/local/lib/daemonarchy-visual); this screen is its first consumer.
+SDK_PATH = HERE.parents[1] / 'lib' / 'daemonarchy-visual'
+if str(SDK_PATH) not in sys.path:
+    sys.path.insert(0, str(SDK_PATH))
+from daemonarchy_visual.caps import color_depth, unicode_ok  # noqa: E402
+from daemonarchy_visual.canvas import Canvas, Screen  # noqa: E402
+from daemonarchy_visual.glyphs import Glyphs  # noqa: E402
+from daemonarchy_visual.input import KEYS, decode_keys  # noqa: E402
+from daemonarchy_visual.palette import (CYAN, DIM, GRAY, GREEN, LOGO, PURPLE, RED, SCOPE, VT16, WHITE,  # noqa: E402
+                                        WINAMP, YELLOW, Colors, gradient, mix)
 
 
 def _load(name, filename):
@@ -98,208 +108,7 @@ def lines(state, style, width, idle=False, result=None):
     return [clean(line, width) for line in output]
 
 
-# ------------------------------------------------------------------ color
-
-# FreeBSD vt(4)'s default palette (sys/dev/vt/colors/vt_termcolors.c), in ANSI order.
-VT16 = [(0, 0, 0), (128, 0, 0), (0, 128, 0), (196, 161, 0), (51, 102, 163), (128, 0, 128), (0, 128, 128),
-        (191, 191, 191), (46, 51, 54), (255, 0, 0), (0, 255, 0), (255, 255, 0), (115, 158, 207),
-        (255, 0, 255), (0, 255, 255), (255, 255, 255)]
-
-
-def color_depth(env, console):
-    """none, 8, 16, 256 or truecolor.
-
-    vt(4) parses 38;5;N but quantizes it to its 16-color palette, and it does
-    not implement 38;2;R;G;B: teken reads R, G and B as separate attributes
-    (bold, underline, blink, reverse...). The console therefore gets direct
-    16-color output, and truecolor is never sent to it.
-    """
-    forced = env.get('DAEMONARCHY_COLOR', '')
-    term = env.get('TERM', '')
-    if 'NO_COLOR' in env or forced == 'none':
-        return 'none'
-    if forced in ('8', '16', '256'):
-        depth = forced
-    elif forced == 'truecolor':
-        depth = 'truecolor'
-    elif term in ('vt100', 'vt102', 'vt220', 'ansi', 'cons25') or term.startswith('vt'):
-        depth = '8'
-    elif '256color' in term:
-        depth = '256'
-        if env.get('COLORTERM', '').lower() in ('truecolor', '24bit'):
-            depth = 'truecolor'
-    else:
-        depth = '16'
-    if console and depth in ('256', 'truecolor'):
-        depth = '16'
-    return depth
-
-
-class Colors:
-    def __init__(self, depth):
-        self.depth = depth
-        self.cache = {}
-
-    @staticmethod
-    def nearest(rgb, palette):
-        r, g, b = rgb
-        return min(range(len(palette)), key=lambda i: (palette[i][0] - r) ** 2 * 3 + (palette[i][1] - g) ** 2 * 4
-                   + (palette[i][2] - b) ** 2 * 2)
-
-    @staticmethod
-    def xterm256(rgb):
-        def level(v):
-            return 0 if v < 48 else 1 if v < 115 else (v - 35) // 40
-        r, g, b = (min(5, level(v)) for v in rgb)
-        cube = 16 + 36 * r + 6 * g + b
-        steps = (0, 95, 135, 175, 215, 255)
-        cube_rgb = (steps[r], steps[g], steps[b])
-        gray = max(0, min(23, (sum(rgb) // 3 - 8) // 10))
-        gray_rgb = (8 + gray * 10,) * 3
-        def distance(other):
-            return sum((x - y) ** 2 for x, y in zip(rgb, other))
-        return cube if distance(cube_rgb) <= distance(gray_rgb) else 232 + gray
-
-    def sgr(self, style):
-        """style = (fg, bg, bold), colors as RGB tuples or None."""
-        if style in self.cache:
-            return self.cache[style]
-        fg, bg, bold = style
-        codes = ['0']
-        if bold:
-            codes.append('1')
-        if self.depth != 'none':
-            for rgb, base in ((fg, 30), (bg, 40)):
-                if rgb is None:
-                    continue
-                if self.depth == 'truecolor':
-                    codes.append(f'{base + 8};2;{rgb[0]};{rgb[1]};{rgb[2]}')
-                elif self.depth == '256':
-                    codes.append(f'{base + 8};5;{self.xterm256(rgb)}')
-                elif self.depth == '16':
-                    index = self.nearest(rgb, VT16)
-                    codes.append(str(base + index if index < 8 else base + 60 + index - 8))
-                else:
-                    codes.append(str(base + self.nearest(rgb, VT16[:8])))
-        value = '\033[' + ';'.join(codes) + 'm'
-        self.cache[style] = value
-        return value
-
-
-# ------------------------------------------------------------------ glyphs
-
-class Glyphs:
-    def __init__(self, unicode):
-        self.unicode = unicode
-        if unicode:
-            self.levels = ' ▁▂▃▄▅▆▇█'
-            self.h, self.v = '─', '│'
-            self.corners = '╭╮╰╯'
-            self.full, self.empty, self.cap = '█', '░', '▀'
-            self.icons = dict(done='●', active='▶', pending='○', skipped='·', failed='✗')
-            self.dot = '·'
-        else:
-            self.levels = ' .:-=+*#%'
-            self.h, self.v = '-', '|'
-            self.corners = '++++'
-            self.full, self.empty, self.cap = '#', '.', '-'
-            self.icons = dict(done='*', active='>', pending='o', skipped='-', failed='x')
-            self.dot = '|'
-
-
-def unicode_ok(env, console):
-    forced = env.get('DAEMONARCHY_GLYPHS', '')
-    if forced in ('ascii', 'unicode'):
-        return forced == 'unicode'
-    term = env.get('TERM', '')
-    if term in ('vt100', 'vt102', 'vt220', 'ansi', 'cons25', 'dumb'):
-        return False
-    if console:
-        return True  # vt(4) is UTF-8 and its fonts carry block, box and braille glyphs.
-    locale = ' '.join(env.get(name, '') for name in ('LC_ALL', 'LC_CTYPE', 'LANG')).upper()
-    return 'UTF-8' in locale or 'UTF8' in locale
-
-
-# ------------------------------------------------------------------ canvas
-
-class Canvas:
-    def __init__(self, width, height):
-        self.width, self.height = width, height
-        self.chars = [[' '] * width for _ in range(height)]
-        self.styles = [[None] * width for _ in range(height)]
-
-    def put(self, x, y, text, style=None, width=None):
-        if not 0 <= y < self.height or x >= self.width:
-            return
-        limit = self.width if width is None else min(self.width, x + width)
-        row, styles = self.chars[y], self.styles[y]
-        for char in text:
-            if x >= limit:
-                break
-            if x >= 0:
-                row[x] = char
-                styles[x] = style
-            x += 1
-
-    def fill(self, x, y, w, h, char=' ', style=None):
-        for row in range(max(0, y), min(self.height, y + h)):
-            self.put(x, row, char * max(0, w), style)
-
-    @staticmethod
-    def serialize(chars, styles, colors):
-        parts, current = [], object()
-        for char, style in zip(chars, styles):
-            if style != current:
-                parts.append(colors.sgr(style or (None, None, False)))
-                current = style
-            parts.append(char)
-        return ''.join(parts)
-
-    def rows(self, colors):
-        return [self.serialize(c, s, colors) for c, s in zip(self.chars, self.styles)]
-
-    def changes(self, previous, colors):
-        """Terminal output that turns the previous frame into this one, cell ranges only."""
-        out = []
-        for y in range(self.height):
-            chars, styles = self.chars[y], self.styles[y]
-            if previous is not None:
-                old_chars, old_styles = previous.chars[y], previous.styles[y]
-                if chars == old_chars and styles == old_styles:
-                    continue
-                first = next(i for i in range(self.width) if chars[i] != old_chars[i] or styles[i] != old_styles[i])
-                last = next(i for i in range(self.width - 1, -1, -1) if chars[i] != old_chars[i] or styles[i] != old_styles[i])
-            else:
-                first, last = 0, self.width - 1
-            if y == self.height - 1:
-                last = min(last, self.width - 2)  # Never write the bottom-right cell: some terminals scroll.
-            if last < first:
-                continue
-            out.append(f'\033[{y + 1};{first + 1}H' + self.serialize(chars[first:last + 1], styles[first:last + 1], colors) + '\033[0m')
-        return out
-
-    def plain(self):
-        return [''.join(row) for row in self.chars]
-
-
-def mix(a, b, t):
-    t = max(0.0, min(1.0, t))
-    return tuple(int(x + (y - x) * t) for x, y in zip(a, b))
-
-
-def gradient(stops, t):
-    # Quantized to 12 steps so neighbouring cells share one color sequence.
-    t = round(max(0.0, min(1.0, t)) * 12) / 12
-    span = len(stops) - 1
-    index = min(span - 1, int(t * span))
-    return mix(stops[index], stops[index + 1], t * span - index)
-
-
-WINAMP = ((0, 210, 70), (180, 230, 0), (255, 220, 0), (255, 120, 0), (255, 40, 40))
-SCOPE = ((0, 220, 255), (120, 120, 255), (255, 60, 220))
-LOGO = ((255, 70, 70), (230, 50, 140), (132, 93, 249))
-WHITE, GRAY, DIM = (240, 240, 240), (150, 150, 150), (90, 90, 100)
-CYAN, GREEN, RED, YELLOW, PURPLE = (0, 230, 255), (0, 220, 90), (255, 60, 60), (255, 220, 0), (132, 93, 249)
+# Color, glyphs, the canvas and gradients come from the visual SDK (imported above).
 
 
 def norm_rate(value, peak, floor):
@@ -846,42 +655,7 @@ class Visuals:
 
 # ------------------------------------------------------------------ input
 
-KEYS = {b'\x1b[A': 'up', b'\x1b[B': 'down', b'\x1b[C': 'right', b'\x1b[D': 'left', b'\x1bOA': 'up',
-        b'\x1bOB': 'down', b'\x1b[5~': 'pgup', b'\x1b[6~': 'pgdn', b'\x1b[H': 'home', b'\x1b[F': 'end',
-        b'\x1b[1~': 'home', b'\x1b[4~': 'end', b'\x1b[Z': 'backtab'}
-
-
-def decode_keys(buffer, final=False):
-    """Split terminal input into keys. Returns (keys, unconsumed)."""
-    keys = []
-    while buffer:
-        if buffer[:1] == b'\x1b':
-            for sequence, name in KEYS.items():
-                if buffer.startswith(sequence):
-                    keys.append(name)
-                    buffer = buffer[len(sequence):]
-                    break
-            else:
-                match = re.match(rb'\x1b\[[0-9;?]*[ -/]*[@-~]|\x1bO.', buffer)
-                if match:
-                    buffer = buffer[match.end():]  # Unknown sequence: ignore.
-                elif len(buffer) == 1 and not final:
-                    break  # Maybe the start of a sequence; wait briefly.
-                else:
-                    keys.append('esc')
-                    buffer = buffer[1:]
-            continue
-        byte = buffer[0]
-        buffer = buffer[1:]
-        if byte == 9:
-            keys.append('tab')
-        elif byte in (10, 13):
-            keys.append('enter')
-        elif byte == 3:
-            keys.append('ctrl-c')
-        elif 32 <= byte < 127:
-            keys.append(chr(byte))
-    return keys, buffer
+# Key decoding comes from the visual SDK (imported above).
 
 
 # ------------------------------------------------------------------ tmux
@@ -917,6 +691,16 @@ class Tmux:
 
 # ------------------------------------------------------------------ application
 
+class _Utf8Out:
+    """The console gets UTF-8 whatever the locale says; the SDK's Screen writes text."""
+
+    def write(self, text):
+        sys.stdout.buffer.write(text.encode('utf-8', 'replace'))
+
+    def flush(self):
+        sys.stdout.flush()
+
+
 class App:
     def __init__(self, monitor, args, env, console, interactive, keyboard):
         self.monitor, self.args, self.env = monitor, args, env
@@ -928,8 +712,7 @@ class App:
         self.glyphs = Glyphs(unicode_ok(env, console))
         self.visuals = Visuals(self.glyphs, self.reduced, self.load_logo() if interactive else [])
         self.tmux = Tmux(env)
-        self.previous = None
-        self.size = None
+        self.screen = Screen(_Utf8Out(), self.colors, alt=True)
         self.message, self.message_until = '', 0.0
         self.interrupt_at = 0.0
         self.input = b''
@@ -1075,19 +858,10 @@ class App:
     def render(self, snap):
         size = os.get_terminal_size(sys.stdout.fileno())
         width, height = max(10, min(size.columns, 400)), max(3, min(size.lines, 200))
-        out = []
-        if (width, height) != self.size:
-            self.size = (width, height)
-            self.previous = None
-            out.append('\033[0m\033[2J')
         self.visuals.advance(snap)
         canvas = self.frame(width, height, snap)
         self.curtain(canvas)
-        out.extend(canvas.changes(self.previous, self.colors))
-        self.previous = canvas
-        if out:
-            sys.stdout.buffer.write(''.join(out).encode('utf-8', 'replace'))
-            sys.stdout.flush()
+        self.screen.present(canvas)  # writes only what changed; clears when the size changes
 
     def waiting_for_panes(self):
         return self.monitor.result is not None and self.tmux.other_panes() > 0
@@ -1210,8 +984,7 @@ def run(args):
     celebrate_until, held_input = None, 0.0
     code, finished = 1, False
     try:
-        sys.stdout.write('\033[?1049h\033[?25l\033[2J')
-        sys.stdout.flush()
+        app.screen.enter()
         next_frame = 0.0
         while True:
             monitor.poll()
@@ -1253,16 +1026,18 @@ def run(args):
     except InterruptedError as error:
         code = 128 + error.args[0]
     except (OSError, ValueError) as error:
-        sys.stdout.write('\033[0m\033[?25h\033[?1049l')
+        app.screen.leave()
         print('Dashboard unavailable: ' + clean(error), file=sys.stderr)
         code = 1
         app = None
     finally:
         if saved is not None:
             termios.tcsetattr(sys.stdin.fileno(), termios.TCSANOW, saved)  # TCSADRAIN waits for a pty reader
-        sys.stdout.write('\033[0m\033[?25h\033[?1049l\n')
+        if app is not None:
+            app.screen.leave()
+        sys.stdout.write('\n')
         if app is not None and monitor.result is not None:
-            width = app.size[0] if app.size else 80
+            width = app.screen.size[0] if app.screen.size else 80
             sys.stdout.write('\n'.join(final_summary(monitor, app.style, width)) + '\n')
         sys.stdout.flush()
     return code, finished
