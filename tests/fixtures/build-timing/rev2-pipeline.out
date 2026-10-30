@@ -1,0 +1,27 @@
+== source 2026-10-30T06:25:29Z
+clean-source
+== world 2026-10-30T06:26:20Z
+== kernel 2026-10-30T06:40:58Z
+FreeBSD 16.0-CURRENT #3 303b3646270f: Thu Oct 29 23:49:09 PDT 2026
+== sets 2026-10-30T06:51:20Z
+FreeBSD 16.0-CURRENT #3 303b3646270f: Thu Oct 29 23:49:09 PDT 2026
+./boot/kernel/kernel: Write error: Broken pipe
+tar: Error exit delayed from previous errors
+kernel-set-is-built-kernel
+== setup 2026-10-30T07:01:21Z
+== product 2026-10-30T07:01:21Z
+== jail 2026-10-30T07:01:25Z
+jail-kernel-is-built-kernel
+== repo 2026-10-30T07:03:59Z
+== secureboot-source 2026-10-30T07:04:02Z
+clean-sb-source
+== secureboot-build 2026-10-30T07:09:16Z
+== secureboot-sign 2026-10-30T07:16:38Z
+Prepared clean boot payload and maintenance helper; no QA probes or signing key included
+Certificate will not expire
+Signed loader, boot manifest and runtime manifest; no private key copied.
+Created daemonarchy-1.4.1-boot.txz and detached signature; no private key copied
+PASS: signed bundle and installed boot files match
+== checkout 2026-10-30T07:17:40Z
+== done-pipeline 2026-10-30T07:24:07Z
+pipeline-exit=0

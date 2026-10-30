@@ -22,6 +22,7 @@ another version are historical records. 1.4 entries describe work in development
 - [1.3.1 package repository key rotation](package-repository-key-rotation-1.3.1.md)
 - [Getting started with Daemonarchy](getting-started.md)
 - [Hardware quirks](hardware-quirks.md)
+- [GPU report: which GPU the desktop uses](gpu-report.md)
 - [Hardware trace stick: reset-surviving boot trace](boottrace.md)
 - [1.4 live5 unsigned release candidate and hwtrace dev6, October 28](testing-1.4-live5-20261028.md)
 - [1.4 live7 unsigned acceptance candidate, October 29](testing-1.4-live7-20261029.md)

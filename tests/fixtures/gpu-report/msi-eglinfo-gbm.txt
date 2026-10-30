@@ -1,0 +1,18 @@
+GBM platform:
+EGL API version: 1.5
+EGL vendor string: Mesa Project
+EGL version string: 1.5
+EGL client APIs: OpenGL OpenGL_ES 
+OpenGL core profile vendor: Intel
+OpenGL core profile renderer: Mesa Intel(R) Graphics (ARL)
+OpenGL core profile version: 4.6 (Core Profile) Mesa 26.2.2
+OpenGL core profile shading language version: 4.60
+OpenGL compatibility profile vendor: Intel
+OpenGL compatibility profile renderer: Mesa Intel(R) Graphics (ARL)
+OpenGL compatibility profile version: 4.6 (Compatibility Profile) Mesa 26.2.2
+OpenGL compatibility profile shading language version: 4.60
+OpenGL ES profile vendor: Intel
+OpenGL ES profile renderer: Mesa Intel(R) Graphics (ARL)
+OpenGL ES profile version: OpenGL ES 3.2 Mesa 26.2.2
+OpenGL ES profile shading language version: OpenGL ES GLSL ES 3.20
+

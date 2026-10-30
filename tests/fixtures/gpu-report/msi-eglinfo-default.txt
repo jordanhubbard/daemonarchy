@@ -1,0 +1,120 @@
+error: XDG_RUNTIME_DIR is invalid or not set in the environment.
+error: XDG_RUNTIME_DIR is invalid or not set in the environment.
+error: XDG_RUNTIME_DIR is invalid or not set in the environment.
+error: XDG_RUNTIME_DIR is invalid or not set in the environment.
+error: XDG_RUNTIME_DIR is invalid or not set in the environment.
+MESA-EGL: warning: pci id for fd 23: 10de:2c19, driver (null)
+pci id for fd 25: 10de:2c19, driver (null)
+pci id for fd 26: 10de:2c19, driver (null)
+MESA-EGL: warning: egl: failed to create dri2 screen
+MESA-EGL: warning: pci id for fd 23: 10de:2c19, driver (null)
+pci id for fd 25: 10de:2c19, driver (null)
+pci id for fd 26: 10de:2c19, driver (null)
+MESA-EGL: warning: egl: failed to create dri2 screen
+MESA-EGL: warning: pci id for fd 23: 10de:2c19, driver (null)
+GBM platform:
+EGL API version: 1.5
+EGL vendor string: Mesa Project
+EGL version string: 1.5
+EGL client APIs: OpenGL OpenGL_ES 
+OpenGL core profile vendor: Intel
+OpenGL core profile renderer: Mesa Intel(R) Graphics (ARL)
+OpenGL core profile version: 4.6 (Core Profile) Mesa 26.2.2
+OpenGL core profile shading language version: 4.60
+OpenGL compatibility profile vendor: Intel
+OpenGL compatibility profile renderer: Mesa Intel(R) Graphics (ARL)
+OpenGL compatibility profile version: 4.6 (Compatibility Profile) Mesa 26.2.2
+OpenGL compatibility profile shading language version: 4.60
+OpenGL ES profile vendor: Intel
+OpenGL ES profile renderer: Mesa Intel(R) Graphics (ARL)
+OpenGL ES profile version: OpenGL ES 3.2 Mesa 26.2.2
+OpenGL ES profile shading language version: OpenGL ES GLSL ES 3.20
+
+Wayland platform:
+eglinfo: eglInitialize failed
+
+X11 platform:
+eglinfo: eglInitialize failed
+
+Surfaceless platform:
+EGL API version: 1.5
+EGL vendor string: NVIDIA
+EGL version string: 1.5
+EGL client APIs: OpenGL_ES OpenGL
+OpenGL core profile vendor: NVIDIA Corporation
+OpenGL core profile renderer: NVIDIA GeForce RTX 5080 Laptop GPU/PCIe/SSE2
+OpenGL core profile version: 4.6.0 NVIDIA 595.104.02
+OpenGL core profile shading language version: 4.60 NVIDIA
+OpenGL compatibility profile vendor: NVIDIA Corporation
+OpenGL compatibility profile renderer: NVIDIA GeForce RTX 5080 Laptop GPU/PCIe/SSE2
+OpenGL compatibility profile version: 4.6.0 NVIDIA 595.104.02
+OpenGL compatibility profile shading language version: 4.60 NVIDIA
+OpenGL ES profile vendor: NVIDIA Corporation
+OpenGL ES profile renderer: NVIDIA GeForce RTX 5080 Laptop GPU/PCIe/SSE2
+OpenGL ES profile version: OpenGL ES 3.2 NVIDIA 595.104.02
+OpenGL ES profile shading language version: OpenGL ES GLSL ES 3.20
+
+Device platform:
+Device #0:
+
+Platform Device platform:
+EGL API version: 1.5
+EGL vendor string: NVIDIA
+EGL version string: 1.5
+EGL client APIs: OpenGL_ES OpenGL
+OpenGL core profile vendor: NVIDIA Corporation
+OpenGL core profile renderer: NVIDIA GeForce RTX 5080 Laptop GPU/PCIe/SSE2
+OpenGL core profile version: 4.6.0 NVIDIA 595.104.02
+OpenGL core profile shading language version: 4.60 NVIDIA
+OpenGL compatibility profile vendor: NVIDIA Corporation
+OpenGL compatibility profile renderer: NVIDIA GeForce RTX 5080 Laptop GPU/PCIe/SSE2
+OpenGL compatibility profile version: 4.6.0 NVIDIA 595.104.02
+OpenGL compatibility profile shading language version: 4.60 NVIDIA
+OpenGL ES profile vendor: NVIDIA Corporation
+OpenGL ES profile renderer: NVIDIA GeForce RTX 5080 Laptop GPU/PCIe/SSE2
+OpenGL ES profile version: OpenGL ES 3.2 NVIDIA 595.104.02
+OpenGL ES profile shading language version: OpenGL ES GLSL ES 3.20
+
+Device #1:
+
+Platform Device platform:
+EGL API version: 1.5
+EGL vendor string: Mesa Project
+EGL version string: 1.5
+EGL client APIs: OpenGL OpenGL_ES 
+OpenGL core profile vendor: Intel
+OpenGL core profile renderer: Mesa Intel(R) Graphics (ARL)
+OpenGL core profile version: 4.6 (Core Profile) Mesa 26.2.2
+OpenGL core profile shading language version: 4.60
+OpenGL compatibility profile vendor: Intel
+OpenGL compatibility profile renderer: Mesa Intel(R) Graphics (ARL)
+OpenGL compatibility profile version: 4.6 (Compatibility Profile) Mesa 26.2.2
+OpenGL compatibility profile shading language version: 4.60
+OpenGL ES profile vendor: Intel
+OpenGL ES profile renderer: Mesa Intel(R) Graphics (ARL)
+OpenGL ES profile version: OpenGL ES 3.2 Mesa 26.2.2
+OpenGL ES profile shading language version: OpenGL ES GLSL ES 3.20
+
+Device #2:
+
+Platform Device platform:
+eglinfo: eglInitialize failed
+
+Device #3:
+
+Platform Device platform:
+EGL API version: 1.5
+EGL vendor string: Mesa Project
+EGL version string: 1.5
+EGL client APIs: OpenGL OpenGL_ES 
+OpenGL core profile vendor: Mesa
+OpenGL core profile renderer: llvmpipe (LLVM 19.1.7, 256 bits)
+OpenGL core profile version: 4.6 (Core Profile) Mesa 26.2.2
+OpenGL core profile shading language version: 4.60
+OpenGL compatibility profile vendor: Mesa
+OpenGL compatibility profile renderer: llvmpipe (LLVM 19.1.7, 256 bits)
+OpenGL compatibility profile version: 4.6 (Compatibility Profile) Mesa 26.2.2
+OpenGL compatibility profile shading language version: 4.60
+OpenGL ES profile vendor: Mesa
+OpenGL ES profile renderer: llvmpipe (LLVM 19.1.7, 256 bits)
+OpenGL ES profile version: OpenGL ES 3.2 Mesa 26.2.2
