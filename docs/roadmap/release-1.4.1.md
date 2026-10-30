@@ -72,7 +72,8 @@ items below were 1.4 acceptance rows. They moved here so they no longer block
   Done means a Windows game and Steam each launch from the Apps menu on a
   fresh install of the final image on the MSI. Packages for this need new
   application and closure feed revisions and a new ISO. Not started; it is not
-  claimed as done.
+  claimed as done. Operator order 2026-10-30: the current 1.4.1 ISOs ship first and
+  this goes into the next re-roll.
 
 - **Exact-image installer network matrix** ([ledger A14](1.4-coverage-ledger.md),
   [NET-001](active-work.md#net-001-make-the-installer-network-bring-up-proactive-and-robust)).
