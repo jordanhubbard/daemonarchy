@@ -12,6 +12,8 @@ check "$(linux_cuda_spec)" '595.104.02 cuda-toolkit-13-2'
 ! grep -nE 'cudalab_script|prepare_desktop|mount_nullfs|rm -rf build' "$here/overlay/usr/local/sbin/daemonarchy-linux-cuda"
 grep -q 'daemonarchy-cudalab --build-only' "$here/overlay/usr/local/sbin/daemonarchy-linux-cuda"
 grep -q 'su -m "$user"' "$here/overlay/usr/local/sbin/daemonarchy-linux-cuda"
+# Real sound: SDL builds its PulseAudio backend only when the client headers are there.
+grep -q 'pulseaudio-libs-devel' "$here/overlay/usr/local/sbin/daemonarchy-linux-cuda"
 [[ -f $here/overlay/usr/local/share/daemonarchy-installer/uvm_ioctl_override.c ]]
 grep -q 'NV_UVM_INITIALIZE' "$here/overlay/usr/local/share/daemonarchy-installer/uvm_ioctl_override.c"
 # dnf downloads in parallel (the CUDA phase is network-bound), once, under [main].

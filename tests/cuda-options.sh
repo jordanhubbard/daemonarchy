@@ -56,9 +56,13 @@ for hardware in intel amd nvidia mixed legacy audio unknown; do
       grep -q 'uwsm-app -- daemonarchy-cudalab' "$target/usr/local/share/omarchy/vendor/omarchy-menu.jsonc"
       grep -qx 'Exec=daemonarchy-cudalab' "$target/usr/local/share/applications/cudalab.desktop"
       grep -qx 'Terminal=false' "$target/usr/local/share/applications/cudalab.desktop"
+      # The Apps entry names an icon, and the image ships it where the icon theme looks.
+      grep -qx 'Icon=cudalab' "$target/usr/local/share/applications/cudalab.desktop"
+      grep -q '<svg' "$target/usr/local/share/icons/hicolor/scalable/apps/cudalab.svg"
     else
       [[ ! -e $target/usr/local/bin/daemonarchy-cudalab ]]
       [[ ! -e $target/usr/local/share/applications/cudalab.desktop ]]
+      [[ ! -e $target/usr/local/share/icons/hicolor/scalable/apps/cudalab.svg ]]
       ! grep -Ei 'nvidia|cuda' "$target/usr/local/share/omarchy/vendor/omarchy-menu.jsonc"
     fi
   done

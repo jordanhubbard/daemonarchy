@@ -218,6 +218,26 @@ directly. In 1.4.0 the launcher rebuilt cudalab on every launch and then exited
 at once on machines with no sound device, so it appeared to open nothing; the
 virtual app that replaces it is in development for 1.4.1.
 
+The wrapper stays in `/usr/local/bin`; the built program is a side binary under
+`~/.local/share/cudalab`. A first build uses a pinned cudalab revision known to
+build and run here. `daemonarchy-cudalab --update` moves past it: if the checkout
+has no local changes it fetches, fast-forwards to the tip of upstream's default
+branch, rebuilds, and keeps that build (later launches and `--rebuild` stay on it;
+a failed update leaves the previous build working). Local changes in the checkout
+are never touched. Deleting the side binary or running `daemonarchy-cudalab
+--rebuild` rebuilds it, and `daemonarchy-cudalab --status` says which commit is
+built and whether it is pinned, updated or has local changes.
+
+The app's output is kept in `~/.local/state/cudalab/app.log`, and a notification
+says so if it stops with an error. Started from a terminal it detaches, so that
+window closes (`CUDALAB_FOREGROUND=1` keeps it attached). The FreeBSD NVIDIA driver
+has no memory pools, so `cudaMallocAsync` fails with "operation not supported";
+the launcher builds a small library that falls back to `cudaMalloc` and preloads
+it, which is what lets the Choreograph demo start. Sound goes through PulseAudio
+(the desktop's PipeWire answers on its socket) when the Linux SDL was built with
+it, which needs the client headers that `daemonarchy-linux-cuda setup` installs;
+otherwise, or if that driver fails at start, Cudalab runs with SDL's silent driver.
+
 ## Source
 
 Daemonarchy is built from these repositories:

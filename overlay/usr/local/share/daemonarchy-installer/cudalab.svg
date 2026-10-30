@@ -1,0 +1,26 @@
+<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 256 256" width="256" height="256">
+  <title>Cudalab</title>
+  <defs>
+    <linearGradient id="bg" x1="0" y1="0" x2="1" y2="1">
+      <stop offset="0" stop-color="#1c2a1a"/>
+      <stop offset="1" stop-color="#0b120b"/>
+    </linearGradient>
+    <radialGradient id="glow" cx="0.5" cy="0.5" r="0.5">
+      <stop offset="0" stop-color="#76b900" stop-opacity="0.55"/>
+      <stop offset="1" stop-color="#76b900" stop-opacity="0"/>
+    </radialGradient>
+  </defs>
+  <rect x="8" y="8" width="240" height="240" rx="52" fill="url(#bg)"/>
+  <circle cx="128" cy="132" r="104" fill="url(#glow)"/>
+  <!-- an isometric cube: top, left and right faces -->
+  <path d="M128 52 L196 90 L128 128 L60 90 Z" fill="#a6e22e"/>
+  <path d="M60 90 L128 128 L128 206 L60 168 Z" fill="#5c9400"/>
+  <path d="M196 90 L128 128 L128 206 L196 168 Z" fill="#76b900"/>
+  <!-- the grid of parallel threads on the top face -->
+  <g stroke="#1c2a1a" stroke-width="3" stroke-linecap="round" opacity="0.8">
+    <path d="M94 71 L162 109"/>
+    <path d="M162 71 L94 109"/>
+  </g>
+  <path d="M128 52 L196 90 L128 128 L60 90 Z" fill="none" stroke="#d7f58a" stroke-width="3" stroke-linejoin="round"/>
+  <path d="M128 128 L128 206" stroke="#d7f58a" stroke-width="3" stroke-linecap="round" opacity="0.6"/>
+</svg>

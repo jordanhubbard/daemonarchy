@@ -25,16 +25,20 @@ echo "$cmd" >>"$LX_LOG"
 echo "$PATH" >>"$LX_PATH_LOG"
 case $cmd in
   *"test -x /usr/local/cuda/bin/nvcc"*) [[ -z ${LX_NO_CUDA:-} ]] ;;
+  *"gcc -shared"*) : >cudalab-async-fallback.so ;;
+  *"pulse/pulseaudio.h"*) [[ -z ${LX_NO_PULSE:-} ]] ;;
   *"git status --porcelain"*) [[ -z ${LX_DIRTY:-} ]] || echo ' M examples/cosmos.cu' ;;
-  *"git clone"*) mkdir -p src/.git src/examples; : >src/CMakePresets.json ;;
-  *"git checkout"*) : ;;
+  *"git clone"*) mkdir -p src/.git src/examples; : >src/CMakePresets.json; echo "${LX_CLONE_HEAD:-1111111111111111111111111111111111111111}" >src/.head ;;
+  *"git merge --ff-only"*) [[ -z ${LX_NO_FF:-} ]] && echo "${LX_REMOTE_TIP:-2222222222222222222222222222222222222222}" >.head ;;
+  *"git rev-parse HEAD"*) cat .head ;;
+  *"git checkout"*) sed -n "s/.*--detach '\([0-9a-f]*\)'.*/\1/p" <<<"$cmd" >.head ;;
   *curl*) mkdir -p SDL-3.2 ;;
   *"cmake --preset release"*) mkdir -p build/release ;;
   *"cmake --build"*)
     sleep "${LX_BUILD_SLEEP:-0}"
     [[ -z ${LX_FAIL_BUILD:-} ]] || { echo 'nvcc fatal: stub build failure' >&2; exit 1; }
     mkdir -p build/release/examples
-    printf '#!/bin/sh\necho "args=$* preload=${LD_PRELOAD:-} audio=${SDL_AUDIODRIVER:-} video=${SDL_VIDEODRIVER:-} cwd=$(pwd)" >> "%s"\n' "$APP_OUT" >build/release/cudalab
+    printf '#!/bin/sh\necho "args=$* preload=${LD_PRELOAD:-} audio=${SDL_AUDIODRIVER:-} video=${SDL_VIDEODRIVER:-} cwd=$(pwd)" >> "%s"\necho hello-from-app\n[ -z "$LX_APP_FAIL" ] || exit 3\n[ -z "$LX_APP_FAIL_REAL_AUDIO" ] || [ "$SDL_AUDIODRIVER" = dummy ] || exit 1\n' "$APP_OUT" >build/release/cudalab
     chmod +x build/release/cudalab ;;
 esac
 STUB
@@ -67,7 +71,7 @@ stamp=$work/home/.local/share/cudalab/built
 grep -q "^cl_commit=$pin\$" "$launcher"
 ! grep -n 'rm -rf build' "$launcher"
 ! grep -nE '^[^#]*(sudo -|exec sudo|chroot |mount -t)' "$launcher"
-grep -q 'SDL_AUDIODRIVER:-dummy' "$launcher"
+grep -qx 'audio_default=pulseaudio,pipewire,dummy' "$launcher"
 
 # --- virtual before the first launch
 fresh
@@ -92,9 +96,11 @@ check "$(count '/usr/local/bin/cmake --build --preset release' "$work/lx.log")" 
 grep -qx '/usr/local/cuda/bin:/usr/bin:/bin' "$work/path.log"
 check "$(wc -l <"$work/app.out" | tr -d ' ')" 1
 grep -q 'args=--demo cuda-cosmos ' "$work/app.out"
-grep -q 'audio=dummy' "$work/app.out"
+grep -q 'audio=pulseaudio,pipewire,dummy ' "$work/app.out"
 grep -q 'video=x11' "$work/app.out"
-grep -q 'preload=/usr/local/lib/daemonarchy/dummy-uvm.so' "$work/app.out"
+grep -q 'preload=/usr/local/lib/daemonarchy/dummy-uvm.so:.*/cudalab/lib/cudalab-async-fallback.so ' "$work/app.out"
+check "$(count 'gcc -shared' "$work/lx.log")" 1                    # built once, not on every launch
+grep -q 'hello-from-app' "$work/home/.local/state/cudalab/app.log"   # the app's output is kept
 grep -q 'cwd=.*/cudalab/src' "$work/app.out"
 grep -q '==> Checking out Cudalab' "$work/home/.local/state/cudalab/build.log"
 
@@ -184,4 +190,220 @@ grep -q 'daemonarchy-linux-cuda setup' "$work/home/.local/state/cudalab/build.lo
 [[ ! -f $stamp ]]
 ! grep -q 'git clone' "$work/lx.log"
 
-echo 'PASS: Cudalab virtual app builds once, becomes the real app and chain-launches it'
+# ======================================================= --update, and which commit is built
+tip=2222222222222222222222222222222222222222
+srcdir=$work/home/.local/share/cudalab/src
+grep -q -- '--update' "$launcher"
+
+# --- the stamp says what was built and where it came from
+fresh
+run --build-only
+grep -qx "commit=$pin" "$stamp"
+grep -qx 'source=pinned' "$stamp"
+grep -qx "pin=$pin" "$stamp"
+grep -q "pinned" <<<"$(run --status)"
+run --status | grep -q -- '--update'
+
+# --- a record from before --update (no source line) is a pinned build and stays valid
+sed -i '/^source=/d; /^pin=/d' "$stamp"
+[[ $(run --status) == real* ]]
+before=$(wc -l <"$work/lx.log")
+run cuda-cosmos
+check "$(wc -l <"$work/lx.log" | tr -d ' ')" "$before"
+sed -i "s/^commit=.*/commit=$tip/" "$stamp"           # a pinned build of another revision is not this launcher's
+[[ $(run --status) == virtual* ]]
+
+# --- --update: fetch, fast-forward to the tip, rebuild, record the commit actually built
+fresh
+run --build-only
+before=$(count 'cmake --build' "$work/lx.log")
+run --update
+grep -qx "commit=$tip" "$stamp"
+grep -qx 'source=updated' "$stamp"
+grep -qx "pin=$pin" "$stamp"
+check "$(count 'cmake --build' "$work/lx.log")" "$((before + 1))"
+grep -q 'git fetch --quiet origin && ' "$work/lx.log"
+grep -q 'git merge --ff-only --quiet origin/HEAD' "$work/lx.log"
+[[ ! -s $work/app.out ]]                              # an update opens nothing
+[[ ! -s $work/foot.log ]]
+grep -q "updated with --update" <<<"$(run --status)"
+grep -q "$tip" <<<"$(run --status)"
+
+# --- the update is not discarded on the next launch, and launches go straight to it
+before=$(wc -l <"$work/lx.log")
+run cuda-cosmos
+check "$(wc -l <"$work/lx.log" | tr -d ' ')" "$before"
+check "$(wc -l <"$work/app.out" | tr -d ' ')" 1
+grep -qx "commit=$tip" "$stamp"
+
+# --- --rebuild and a deleted binary rebuild the SAME updated commit, not the pin
+: >"$work/lx.log"
+run --rebuild
+grep -qx "commit=$tip" "$stamp"
+grep -qx 'source=updated' "$stamp"
+grep -q "git checkout --quiet --detach '$tip'" "$work/lx.log"
+! grep -q "detach '$pin'" "$work/lx.log"
+: >"$work/lx.log"
+rm -f "$srcdir/build/release/cudalab"
+[[ $(run --status) == virtual* ]]
+run --build-only
+grep -qx "commit=$tip" "$stamp"
+grep -q "git checkout --quiet --detach '$tip'" "$work/lx.log"
+[[ $(run --status) == real* ]]
+
+# --- a failed update (no fast-forward, or a failed build) leaves the previous app working
+fresh
+run --build-only
+cp "$stamp" "$work/stamp.before"
+if LX_NO_FF=1 run --update; then echo 'a failed update reported success' >&2; exit 1; fi
+cmp "$stamp" "$work/stamp.before"
+[[ $(run --status) == real* ]]
+run cuda-cosmos
+check "$(wc -l <"$work/app.out" | tr -d ' ')" 1
+grep -q 'could not fast-forward' "$work/home/.local/state/cudalab/build.log"
+: >"$work/lx.log"
+if LX_FAIL_BUILD=1 run --update; then echo 'a failed update build reported success' >&2; exit 1; fi
+cmp "$stamp" "$work/stamp.before"
+grep -q "git checkout --quiet --detach '$pin'" "$work/lx.log"     # sources put back on the built commit
+check "$(cat "$srcdir/.head")" "$pin"
+grep -q 'previous Cudalab' "$work/home/.local/state/cudalab/build.log"
+[[ $(run --status) == real* ]]
+
+# --- local changes are never touched by --update: built as they are, recorded as local
+fresh
+run --build-only
+: >"$work/lx.log"
+LX_DIRTY=1 run --update
+! grep -q 'git merge' "$work/lx.log"
+! grep -q 'git fetch' "$work/lx.log"
+! grep -q 'git checkout' "$work/lx.log"
+grep -qx "commit=$pin" "$stamp"
+grep -qx 'source=local' "$stamp"
+grep -q 'your local changes' <<<"$(run --status)"
+grep -q 'Not updated' "$work/home/.local/state/cudalab/build.log"
+before=$(wc -l <"$work/lx.log")
+run cuda-cosmos                                         # a local build is kept, not rebuilt at the pin
+check "$(wc -l <"$work/lx.log" | tr -d ' ')" "$before"
+
+# --- --update on a machine that never built: clones, goes to the tip, builds
+fresh
+run --update
+grep -qx "commit=$tip" "$stamp"
+grep -qx 'source=updated' "$stamp"
+check "$(count 'git clone' "$work/lx.log")" 1
+
+# --- two updates at once update once; an update does not start while a build runs
+fresh
+run --build-only
+LX_BUILD_SLEEP=2 TERM_STUB=no-such-terminal run --update &
+first=$!
+sleep 1
+second=$(TERM_STUB=no-such-terminal run --update 2>&1) || { echo 'the second update failed' >&2; exit 1; }
+grep -q 'already being built' <<<"$second"
+wait "$first"
+check "$(count 'git merge --ff-only' "$work/lx.log")" 1
+
+# ======================================================= the app: audio, fallback, handoff, log
+# --- the cudaMallocAsync fallback really interposes (a fake libcudart without memory pools)
+if command -v cc >/dev/null 2>&1; then
+  sed -n "/<<'CSOURCE'/,/^CSOURCE\$/p" "$launcher" | sed '1d;$d' >"$work/fallback.c"
+  grep -q 'cudaMallocAsync' "$work/fallback.c"
+  cc -shared -fPIC -O2 -Wall -Werror -o "$work/fallback.so" "$work/fallback.c" -ldl
+  cat >"$work/fakecuda.c" <<'C'
+#include <stddef.h>
+int cudaMallocAsync(void **p, size_t n, void *s) { (void)p; (void)n; (void)s; return 801; }
+int cudaFreeAsync(void *p, void *s) { (void)p; (void)s; return 801; }
+static char arena[64];
+static int freed;
+int cudaMalloc(void **p, size_t n) { (void)n; *p = arena; return 0; }
+int cudaFree(void *p) { if (p == arena) freed++; return 0; }
+int freed_count(void) { return freed; }
+C
+  cat >"$work/user.c" <<'C'
+#include <stddef.h>
+int cudaMallocAsync(void **, size_t, void *);
+int cudaFreeAsync(void *, void *);
+int freed_count(void);
+int main(void) {
+  void *p = 0;
+  if (cudaMallocAsync(&p, 32, 0) != 0 || !p) return 1;   /* the pool is unsupported: must fall back */
+  if (cudaFreeAsync(p, 0) != 0) return 2;                   /* and the free must match the allocation */
+  return freed_count() == 1 ? 0 : 3;
+}
+C
+  cc -shared -fPIC -o "$work/libfakecuda.so" "$work/fakecuda.c"
+  cc -o "$work/user" "$work/user.c" -L"$work" -lfakecuda
+  ! LD_LIBRARY_PATH=$work "$work/user"                                  # without it: the demo fails
+  LD_LIBRARY_PATH=$work LD_PRELOAD=$work/fallback.so "$work/user"       # with it: it runs
+fi
+
+# --- the fallback library is built on the first build, and rebuilt if its source changes
+fresh
+run --build-only
+[[ -f $work/home/.local/share/cudalab/lib/cudalab-async-fallback.so ]]
+check "$(count 'gcc -shared' "$work/lx.log")" 1
+echo '/* old source */' >"$work/home/.local/share/cudalab/lib/cudalab-async-fallback.c"
+run cuda-cosmos
+check "$(count 'gcc -shared' "$work/lx.log")" 2
+run cuda-cosmos
+check "$(count 'gcc -shared' "$work/lx.log")" 2
+
+# --- an app built before the fallback existed gets it at its next launch, without rebuilding
+fresh
+run --build-only
+rm -rf "$work/home/.local/share/cudalab/lib"
+: >"$work/lx.log"
+run cuda-cosmos
+check "$(count 'cmake --build' "$work/lx.log")" 0
+check "$(count 'gcc -shared' "$work/lx.log")" 1
+grep -q 'cudalab-async-fallback.so ' "$work/app.out"
+
+# --- a sound driver the user chose is honoured
+fresh
+run --build-only
+SDL_AUDIODRIVER=alsa run cuda-cosmos
+grep -q 'audio=alsa ' "$work/app.out"
+
+# --- a real sound driver that fails right away must not cost the user the app
+fresh
+run --build-only
+LX_APP_FAIL_REAL_AUDIO=1 run cuda-cosmos
+check "$(wc -l <"$work/app.out" | tr -d ' ')" 2
+grep -q 'audio=pulseaudio,pipewire,dummy ' <(sed -n 1p "$work/app.out")
+grep -q 'audio=dummy ' <(sed -n 2p "$work/app.out")
+grep -q 'trying the silent audio driver' "$work/home/.local/state/cudalab/app.log"
+
+# --- an app that stops with an error says so, and the log keeps its output
+fresh
+run --build-only
+status=0
+err=$(LX_APP_FAIL=1 run cuda-cosmos 2>&1 >/dev/null) || status=$?
+check "$status" 3
+grep -q 'Cudalab stopped with an error' <<<"$err"
+grep -q 'stopped with status 3' "$work/home/.local/state/cudalab/app.log"
+grep -q 'hello-from-app' "$work/home/.local/state/cudalab/app.log"
+
+# --- from a terminal the app is detached: the launcher returns and the window can close
+fresh
+run --build-only
+CUDALAB_DETACH=1 run cuda-cosmos
+for _ in 1 2 3 4 5 6 7 8 9 10 11 12 13 14 15 16 17 18 19 20; do [[ -s $work/app.out ]] && break; sleep 0.25; done
+[[ -s $work/app.out ]]
+[[ ! -d $work/home/.local/state/cudalab/lock ]]
+
+# --- the first build in a terminal window hands the window over to the app
+fresh
+CUDALAB_DETACH=1 TERM_STUB=no-such-terminal run cuda-cosmos
+for _ in 1 2 3 4 5 6 7 8 9 10 11 12 13 14 15 16 17 18 19 20; do [[ -s $work/app.out ]] && break; sleep 0.25; done
+[[ -f $stamp ]]
+grep -q 'args=--demo cuda-cosmos ' "$work/app.out"
+
+# --- the build tells a machine without PulseAudio headers how to get sound
+fresh
+LX_NO_PULSE=1 run --build-only
+grep -q 'No PulseAudio headers' "$work/home/.local/state/cudalab/build.log"
+fresh
+run --build-only
+! grep -q 'No PulseAudio headers' "$work/home/.local/state/cudalab/build.log"
+
+echo 'PASS: Cudalab virtual app builds once, becomes the real app and chain-launches it, and --update moves it forward'

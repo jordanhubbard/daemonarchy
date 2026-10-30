@@ -4,7 +4,8 @@
 #   daemonarchy-cudalab [DEMO | --demo DEMO | OPTION...]   open Cudalab
 #   daemonarchy-cudalab --build-only                       build it now, open nothing
 #   daemonarchy-cudalab --rebuild                          forget the build and build again
-#   daemonarchy-cudalab --status                           say which state it is in
+#   daemonarchy-cudalab --update                           build the newest upstream Cudalab
+#   daemonarchy-cudalab --status                           say what is built, and from which commit
 #
 # Cudalab has no FreeBSD package: it is a Linux program built with CUDA, so it is
 # compiled here, once, under the Linuxulator, on the user's own machine.
@@ -21,8 +22,32 @@
 # the user's own ~/.local/share/cudalab because Cudalab compiles in the path of
 # its sources and saves demo edits into their examples/ directory.
 #
+# The wrapper stays in /usr/local/bin; the built program is a "side binary" under
+# ~/.local/share/cudalab/src/build/release. Delete it (or run --rebuild) and the next
+# launch builds it again.
+#
+# Which Cudalab is built. A first build uses the PINNED commit below, a revision known
+# to build and run here. --update is how to move past it: if the checkout has no local
+# changes it fetches, fast-forwards to the tip of the upstream default branch, builds,
+# and records the commit actually built. That "updated" build is kept: later launches
+# do not go back to the pin, and --rebuild (or a deleted binary) rebuilds the same
+# commit. Local changes in the checkout are never touched: they are built as they are
+# (recorded as "local"). The record is ~/.local/share/cudalab/built; --status reads it.
+# A failed --update leaves the previous build working.
+#
 # Failure is not fatal: the app stays virtual, the log says why
 # (~/.local/state/cudalab/build.log), and the next launch tries again.
+#
+# The running app. Started from the desktop it is the launcher's own child; started
+# from a terminal (a shell, or a terminal window the desktop opened) it is detached, so
+# that window closes and the app takes over (CUDALAB_FOREGROUND=1 keeps it attached).
+# Its output goes to ~/.local/state/cudalab/app.log, and a notification says so if it
+# stops with an error. Two things make it work on the FreeBSD NVIDIA driver:
+#   - cudaMallocAsync, which the driver does not support, falls back to cudaMalloc
+#     (a small library built here and preloaded; Choreograph needs it);
+#   - sound goes through PulseAudio when SDL has it and the desktop's server answers,
+#     and falls back to SDL's silent driver otherwise, or when the app stops within
+#     seconds of starting with a real driver.
 set -uo pipefail
 
 # Pinned to a revision that builds and runs on the RTX 5080 (compute_120) with CUDA
@@ -41,6 +66,8 @@ src=$data/src
 exe=$src/build/release/cudalab
 stamp=$data/built
 log=$state/build.log
+applog=$state/app.log
+fallback_lib=$data/lib/cudalab-async-fallback
 lock=$state/lock
 shim=/usr/local/lib/daemonarchy/dummy-uvm.so
 terminal=${CUDALAB_TERMINAL:-foot}      # the window for the first build
@@ -55,9 +82,25 @@ note() {
   printf 'cudalab: %s %s\n' "$1" "${2:-}" >&2
 }
 
+update_mode=false   # --update: go to the newest upstream commit instead of the pin
+
+# A value from the build record (commit, source, built); empty when there is none.
+stamp_value() { sed -n "s/^$1=//p" "$stamp" 2>/dev/null | head -1; }
+
+# Built means the record names a real commit and the program is there. A pinned build
+# must be the pin this launcher carries (a launcher update that moves the pin rebuilds);
+# an updated or local build stays as it is. Records from before --update have no
+# source line and are pinned builds.
 is_built() {
-  [[ -x $exe && -d $(dirname "$exe")/examples && -f $stamp ]] && grep -qx "commit=$cl_commit" "$stamp" 2>/dev/null
+  [[ -x $exe && -d $(dirname "$exe")/examples && -f $stamp ]] || return 1
+  local commit source
+  commit=$(stamp_value commit)
+  source=$(stamp_value source)
+  [[ $commit =~ ^[0-9a-f]{40}$ ]] || return 1
+  [[ ${source:-pinned} != pinned || $commit == "$cl_commit" ]]
 }
+# An update always builds, even when a build is already in place.
+already_built() { ! $update_mode && is_built; }
 
 # lx DIR COMMAND...: run a command line as this user under the Linuxulator. The
 # Linux program sees the same absolute paths we do.
@@ -76,18 +119,129 @@ lx() {
       "$linux_root/bin/bash" -c "$*" )
 }
 
-# Open the real app. Only the Linux program gets the UVM shim in LD_PRELOAD: a
-# native FreeBSD program cannot load it.
+# The source of the stream-ordered allocator fallback. The FreeBSD NVIDIA driver has no
+# memory pools, so cudaMallocAsync fails with "operation not supported" and Cudalab's
+# Choreograph demo (which allocates its named buffers that way) exits at once. Preloaded
+# ahead of libcudart, this tries the real call and falls back to cudaMalloc/cudaFree.
+fallback_source() {
+  cat <<'CSOURCE'
+/* Stream-ordered allocator fallback for Cudalab under the FreeBSD Linuxulator.
+ *
+ * The FreeBSD NVIDIA driver does not implement the memory pools behind
+ * cudaMallocAsync: the call fails with cudaErrorNotSupported (801), and so does
+ * Cudalab's Choreograph demo, which allocates its named buffers that way. Preloaded
+ * ahead of libcudart, this tries the real call first and, when the pool is not
+ * supported, allocates with cudaMalloc and releases with cudaFree (both wait for
+ * work already queued on the device, so the ordering Cudalab relies on holds).
+ * Where the real call works, nothing changes. */
+#define _GNU_SOURCE
+#include <dlfcn.h>
+#include <stddef.h>
+
+typedef int (*alloc_fn)(void **, size_t, void *);
+typedef int (*free_fn)(void *, void *);
+typedef int (*sync_alloc_fn)(void **, size_t);
+typedef int (*sync_free_fn)(void *);
+
+/* 0 = not yet known, 1 = the pool works, -1 = it does not */
+static int pool_state;
+
+int cudaMallocAsync(void **ptr, size_t size, void *stream) {
+  alloc_fn real = (alloc_fn)dlsym(RTLD_NEXT, "cudaMallocAsync");
+  sync_alloc_fn plain = (sync_alloc_fn)dlsym(RTLD_NEXT, "cudaMalloc");
+  int status = 801;
+  if (pool_state >= 0 && real) {
+    status = real(ptr, size, stream);
+    if (status == 0) {
+      pool_state = 1;
+      return 0;
+    }
+  }
+  if (pool_state == 1 || !plain)
+    return status;
+  pool_state = -1;
+  return plain(ptr, size);
+}
+
+int cudaFreeAsync(void *ptr, void *stream) {
+  free_fn real = (free_fn)dlsym(RTLD_NEXT, "cudaFreeAsync");
+  sync_free_fn plain = (sync_free_fn)dlsym(RTLD_NEXT, "cudaFree");
+  if (pool_state == -1 && plain)
+    return plain(ptr);
+  return real ? real(ptr, stream) : 801;
+}
+CSOURCE
+}
+
+# Build the fallback library under the Linux root's gcc, once (and again if its source
+# changes). Not having it only costs the demos that need it, so a failure is not fatal.
+ensure_fallback() {
+  local dir
+  dir=$(dirname "$fallback_lib")
+  mkdir -p "$dir" "$state" 2>/dev/null || return 1
+  if [[ -f $fallback_lib.so ]] && fallback_source | cmp -s - "$fallback_lib.c"; then
+    return 0
+  fi
+  fallback_source >"$fallback_lib.c"
+  rm -f "$fallback_lib.so"
+  lx "$dir" "gcc -shared -fPIC -O2 -o '$fallback_lib.so.new' '$fallback_lib.c' -ldl && mv -f '$fallback_lib.so.new' '$fallback_lib.so'" >>"$log" 2>&1 \
+    || { rm -f "$fallback_lib.so.new" "$fallback_lib.so"; return 1; }
+}
+
+# One run of the Linux program with a given SDL audio driver list. Only the Linux program
+# gets LD_PRELOAD: a native FreeBSD program cannot load these libraries.
+app_once() {
+  local audio=$1 preload=() libs=''
+  shift
+  [[ -f $linux_root$shim ]] && libs=$shim
+  [[ -f $fallback_lib.so ]] && libs=${libs:+$libs:}$fallback_lib.so
+  [[ -n $libs ]] && preload=("LD_PRELOAD=$libs")
+  env "DISPLAY=${DISPLAY:-:0}" "SDL_VIDEODRIVER=${SDL_VIDEODRIVER:-x11}" "SDL_AUDIODRIVER=$audio" \
+    __GLX_VENDOR_LIBRARY_NAME=nvidia CUDAToolkit_ROOT=/usr/local/cuda "${preload[@]}" "$exe" "$@" >>"$applog" 2>&1
+}
+
+# SDL takes a comma-separated list and skips the drivers it was not built with or that
+# cannot reach a server. The desktop runs PipeWire (with its PulseAudio socket); the
+# Linux SDL cannot reach FreeBSD's sound devices directly, and without any driver Cudalab
+# refuses to start ("No available audio device"), so the silent driver ends the list.
+audio_default=pulseaudio,pipewire,dummy
+
+run_app_watched() {
+  local audio=${SDL_AUDIODRIVER:-$audio_default} start=$SECONDS status
+  find "$applog" -size +1024k -delete 2>/dev/null
+  printf '== %s: cudalab %s (audio: %s)\n' "$(date '+%F %T')" "$*" "$audio" >>"$applog"
+  app_once "$audio" "$@"
+  status=$?
+  if ((status != 0)) && [[ -z ${SDL_AUDIODRIVER:-} && $audio != dummy ]] && ((SECONDS - start < 20)); then
+    # A real sound driver that fails right at the start must not cost the user the app.
+    printf '== stopped with status %s within seconds; trying the silent audio driver\n' "$status" >>"$applog"
+    start=$SECONDS
+    app_once dummy "$@"
+    status=$?
+  fi
+  if ((status != 0)); then
+    printf '== stopped with status %s\n' "$status" >>"$applog"
+    note 'Cudalab stopped with an error' "Exit status $status. Details: $applog"
+  fi
+  return "$status"
+}
+
+# Open the real app and end. From a terminal (the desktop's terminal window, or a shell)
+# the app is detached, so that window closes and the app takes over.
 run_app() {
-  local preload=()
-  release_lock                     # exec below replaces this shell: its exit trap would never run
-  [[ -f $linux_root$shim ]] && preload=("LD_PRELOAD=$shim")
+  local status
+  ensure_fallback || true
+  release_lock
+  mkdir -p "$state"
   cd "$src" || exit 1
-  # A Linux SDL cannot reach FreeBSD's sound devices and Cudalab refuses to start
-  # without an audio device ("No available audio device"), so give it a silent one.
-  exec env "DISPLAY=${DISPLAY:-:0}" "SDL_VIDEODRIVER=${SDL_VIDEODRIVER:-x11}" \
-    "SDL_AUDIODRIVER=${SDL_AUDIODRIVER:-dummy}" __GLX_VENDOR_LIBRARY_NAME=nvidia \
-    CUDAToolkit_ROOT=/usr/local/cuda "${preload[@]}" "$exe" "$@"
+  if [[ ${CUDALAB_DETACH:-} == 1 ]] || { [[ -z ${CUDALAB_FOREGROUND:-} ]] && { [[ -t 0 ]] || [[ -t 1 ]]; }; }; then
+    ( trap '' HUP; run_app_watched "$@" ) </dev/null >/dev/null 2>&1 &
+    disown 2>/dev/null
+    exit 0
+  fi
+  run_app_watched "$@"
+  status=$?
+  exit "$status"
 }
 
 lock_owned=false
@@ -122,23 +276,41 @@ build() {
   lx "$data" 'test -x /usr/local/cuda/bin/nvcc' \
     || { die "the CUDA toolkit is not installed. Run: sudo daemonarchy-linux-cuda setup"; return 1; }
 
-  say "==> Checking out Cudalab $cl_commit"
+  # What to build: the pin, unless --update asks for the tip or an earlier --update
+  # chose a commit (read before --rebuild forgot the record).
+  local target=$cl_commit dirty=false head source
+  if ! $update_mode && [[ $prior_source == updated && $prior_commit =~ ^[0-9a-f]{40}$ ]]; then
+    target=$prior_commit
+  fi
+  if $update_mode; then say '==> Updating Cudalab to the newest upstream revision'; else say "==> Checking out Cudalab $target"; fi
   if [[ ! -d $src/.git ]]; then
     rm -rf "$src"
     lx "$data" "git clone --quiet '$repo_url' src" || { die "could not clone $repo_url (is the network up?)."; return 1; }
   fi
-  if [[ -z $(lx "$src" 'git status --porcelain' 2>/dev/null) ]]; then
-    lx "$src" "git cat-file -e '$cl_commit^{commit}' 2>/dev/null || git fetch --quiet origin '$cl_commit' 2>/dev/null || git fetch --quiet origin; git checkout --quiet --detach '$cl_commit'" \
-      || { die "could not check out $cl_commit."; return 1; }
+  if [[ -n $(lx "$src" 'git status --porcelain' 2>/dev/null) ]]; then
+    dirty=true
+    say '    Local changes in the sources are kept; building them as they are.'
+    ! $update_mode || say '    (Not updated: commit or discard them first.)'
+  elif $update_mode; then
+    lx "$src" "git fetch --quiet origin && { git remote set-head origin --auto >/dev/null 2>&1 || true; } && git merge --ff-only --quiet origin/HEAD" \
+      || { die "could not fast-forward to the upstream default branch (is the network up? has the checkout diverged?)."; return 1; }
   else
-    say "    Local changes in the sources are kept; building them as they are."
+    lx "$src" "git cat-file -e '$target^{commit}' 2>/dev/null || git fetch --quiet origin '$target' 2>/dev/null || git fetch --quiet origin; git checkout --quiet --detach '$target'" \
+      || { die "could not check out $target."; return 1; }
   fi
+  head=$(lx "$src" 'git rev-parse HEAD' 2>/dev/null) && [[ $head =~ ^[0-9a-f]{40}$ ]] \
+    || { die "could not tell which commit was checked out."; return 1; }
+  say "    Cudalab $head"
 
   if [[ ! -d $data/SDL-3.2 ]]; then
     say "==> Fetching SDL 3.2"
     lx "$data" "rm -rf '$sdl_dir' && curl -fsSL '$sdl_url' | tar -xz && mv '$sdl_dir' SDL-3.2" \
       || { die "could not fetch SDL 3.2."; return 1; }
   fi
+
+  lx "$data" 'test -e /usr/include/pulse/pulseaudio.h' \
+    || say "    No PulseAudio headers in the Linux root: Cudalab will run silent. Run 'sudo daemonarchy-linux-cuda setup', then 'daemonarchy-cudalab --rebuild'."
+  ensure_fallback || say '    (The cudaMallocAsync fallback did not build; Choreograph will not start.)'
 
   say "==> Configuring (Release, CUDA)"
   # The Linux ninja, by path: cmake would otherwise find FreeBSD's, whose children are FreeBSD's too.
@@ -149,9 +321,25 @@ build() {
 
   [[ -x $exe && -d $(dirname "$exe")/examples ]] || { die "the build finished without producing the app."; return 1; }
   # The real app is in place: record it, atomically, so the launcher stops being virtual.
-  printf 'commit=%s\nbuilt=%s\nexe=%s\n' "$cl_commit" "$(date -u +%Y-%m-%dT%H:%M:%SZ)" "$exe" >"$stamp.new" \
+  # pinned: the launcher's tested revision; updated: chosen by --update; local: the user's own edits.
+  if $dirty; then source=local; elif $update_mode || [[ $head != "$cl_commit" ]]; then source=updated; else source=pinned; fi
+  printf 'commit=%s\nsource=%s\npin=%s\nbuilt=%s\nexe=%s\n' "$head" "$source" "$cl_commit" "$(date -u +%Y-%m-%dT%H:%M:%SZ)" "$exe" >"$stamp.new" \
     && mv -f "$stamp.new" "$stamp"
-  say "==> Cudalab is ready."
+  say "==> Cudalab is ready ($source, $head)."
+}
+
+# build, plus: a failed --update leaves the previous build working, so put the sources
+# back on the commit that build was made from.
+build_or_restore() {
+  build && return 0
+  if $update_mode && is_built; then
+    local previous
+    previous=$(stamp_value commit)
+    [[ -n $(lx "$src" 'git status --porcelain' 2>/dev/null) ]] \
+      || lx "$src" "git checkout --quiet --detach '$previous'" >/dev/null 2>&1 || true
+    say "The update did not finish; the previous Cudalab ($previous) is still in place."
+  fi
+  return 1
 }
 
 # The build as the window shows it: a clear heading, live output kept in the log,
@@ -162,7 +350,7 @@ build_window() {
   say 'This takes a few minutes. Cudalab opens by itself when it is done.'
   say "Log: $log"
   say ''
-  build 2>&1 | tee -a "$log"
+  build_or_restore 2>&1 | tee -a "$log"
   local status=${PIPESTATUS[0]}
   if ((status != 0)); then
     say ''
@@ -190,12 +378,29 @@ parse_args() {
   done
 }
 
+prior_source= prior_commit=
 main() {
+  prior_source=$(stamp_value source)      # what an earlier build chose, before --rebuild forgets it
+  prior_commit=$(stamp_value commit)
   case ${1:-} in
     --status)
-      if is_built; then say "real app: $exe (cudalab $cl_commit)"; else say "virtual app: not built yet (will build cudalab $cl_commit on first launch)"; fi
+      if is_built; then
+        local commit source
+        commit=$(stamp_value commit)
+        source=$(stamp_value source)
+        say "real app: $exe"
+        case ${source:-pinned} in
+          pinned) say "  built from cudalab $commit: pinned, the revision this launcher was tested with" ;;
+          updated) say "  built from cudalab $commit: updated with --update (the pinned revision is $cl_commit)" ;;
+          local) say "  built from cudalab $commit plus your local changes in $src" ;;
+        esac
+        say "  built $(stamp_value built); newest upstream: daemonarchy-cudalab --update"
+      else
+        say "virtual app: not built yet (will build cudalab $cl_commit, the pinned revision, on first launch)"
+      fi
       return 0 ;;
-    --rebuild) rm -f "$stamp"; shift; set -- --build-only "$@" ;;
+    --rebuild) rm -f "$stamp" "$src/build/release/CMakeCache.txt"; shift; set -- --build-only "$@" ;;
+    --update) update_mode=true; shift; set -- --build-only "$@" ;;
     --build-window) build_window; return $? ;;      # run by the launcher inside its window
   esac
 
@@ -203,7 +408,7 @@ main() {
   [[ ${1:-} == --build-only ]] && { build_only=true; shift; }
   parse_args "$@"
 
-  if is_built; then
+  if already_built; then
     $build_only && { say 'Cudalab is already built.'; return 0; }
     run_app "${launch_args[@]}"
   fi
@@ -214,14 +419,18 @@ main() {
     return 0
   fi
   # Another launcher may have finished while we waited for the lock.
-  if is_built; then
+  if already_built; then
     $build_only && return 0
     run_app "${launch_args[@]}"
   fi
 
   mkdir -p "$state"
   if $build_only; then
-    build >>"$log" 2>&1
+    if [[ -t 1 ]]; then
+      build_or_restore 2>&1 | tee -a "$log"
+      return "${PIPESTATUS[0]}"
+    fi
+    build_or_restore >>"$log" 2>&1
     return $?
   elif [[ -t 1 ]]; then
     build 2>&1 | tee -a "$log"
