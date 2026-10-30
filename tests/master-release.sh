@@ -1,0 +1,68 @@
+#!/usr/bin/env bash
+# The mastering runbook: dry run shows every step, and the stick writer refuses unsafe devices.
+set -euo pipefail
+here=$(cd "$(dirname "$0")/.." && pwd)
+script=$here/scripts/master-release.sh
+bash -n "$script"
+work=$(mktemp -d)
+trap 'rm -rf "$work"' EXIT
+commit=0123456789abcdef0123456789abcdef01234567
+
+# --- dry run: every step is shown, nothing runs or is created --------------------------
+out=$(WORK=$work/w MAIN_COMMIT=$commit bash "$script" --dry-run preflight packages feed catalogue iso verify qa 2>&1)
+for expect in '== packages' 'build-release-packages.sh' ' seed' ' bulk' ' identity' '== feed' 'pkg-repo.sh' \
+              '== catalogue' '== iso' 'build-iso.sh' '== verify' '== qa' 'test-qemu.sh' \
+              "EXPECTED_PACKAGE_REPOSITORY_TAG=packages-16-amd64-1.4.1"; do
+  grep -qF -- "$expect" <<<"$out" || { echo "dry run is missing '$expect'" >&2; echo "$out" >&2; exit 1; }
+done
+[[ ! -e $work/w ]]
+# A bad commit is refused before anything else.
+! MAIN_COMMIT=nothex WORK=$work/w bash "$script" preflight >/dev/null 2>&1
+! bash "$script" bogus >/dev/null 2>&1
+
+# --- sticks -----------------------------------------------------------------------------
+# A fake lsblk: name -> "NAME SIZE TRAN SERIAL TYPE".
+cat >"$work/lsblk" <<'EOF'
+#!/bin/sh
+for last; do :; done
+case $last in
+  /dev/sdb) echo 'sdb 125829120000 usb GOODSERIAL1 disk' ;;
+  /dev/sdc) echo 'sdc 8053063680 usb GOODSERIAL2 disk' ;;
+  /dev/sdd) echo 'sdd 125829120000 sata SATASERIAL disk' ;;
+  /dev/sda) echo 'sda 256060514304 usb 03A0423110011698 disk' ;;
+  /dev/sde) echo 'sde 1000000 usb TINYSERIAL disk' ;;
+  /dev/sdf) echo 'sdf 125829120000 usb GOODSERIAL3 part' ;;
+  /dev/sdg) echo 'sdg 500107862016 usb BIGSERIAL disk' ;;
+  *) exit 1 ;;
+esac
+EOF
+chmod +x "$work/lsblk"
+printf 'daemonarchy test image\n' | xz -c >"$work/image.iso.xz"
+sha=$(printf 'x' | sha256sum | cut -d' ' -f1)
+refuse() {
+  local why=$1; shift
+  if LSBLK=$work/lsblk STATE=$work/state bash "$script" --dry-run sticks --iso "$work/image.iso.xz" \
+       --raw-sha256 "$sha" --raw-size 3553460224 "$@" >"$work/refused" 2>&1; then
+    echo "accepted ($why): $*" >&2; cat "$work/refused" >&2; exit 1
+  fi
+  grep -q "$why" "$work/refused" || { echo "wrong refusal for $*: wanted '$why'" >&2; cat "$work/refused" >&2; exit 1; }
+}
+refuse 'deny list' --device /dev/sda:03A0423110011698
+refuse 'not a USB' --device /dev/sdd:SATASERIAL
+refuse 'smaller than' --device /dev/sde:TINYSERIAL
+refuse 'not a whole disk' --device /dev/sdf:GOODSERIAL3
+refuse 'over the' --device /dev/sdg:BIGSERIAL
+refuse "not the 'WRONG' you named" --device /dev/sdc:WRONG
+refuse 'whole-disk device path' --device /dev/sdb1:GOODSERIAL1
+refuse 'cannot read' --device /dev/sdx:NOPE
+refuse 'at least one'
+refuse '/dev/NAME:SERIAL' --device sdb:GOODSERIAL1
+# One bad device in the list stops the whole run before any write.
+refuse 'deny list' --device /dev/sdc:GOODSERIAL2 --device /dev/sda:03A0423110011698
+
+# Two good sticks: the dry run prints the writes (and reads back) and writes nothing.
+good=$(LSBLK=$work/lsblk STATE=$work/state bash "$script" --dry-run sticks --iso "$work/image.iso.xz" \
+        --raw-sha256 "$sha" --raw-size 3553460224 --device /dev/sdb:GOODSERIAL1 --device /dev/sdc:GOODSERIAL2 2>&1)
+grep -q 'of=./dev/sdb' <<<"$good" && grep -q 'of=./dev/sdc' <<<"$good"
+! grep -q 'sda' <<<"$good"
+echo 'master-release checks passed'
