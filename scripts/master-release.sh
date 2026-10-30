@@ -47,14 +47,10 @@ SECUREBOOT_BUNDLE=${SECUREBOOT_BUNDLE:-/usr/daemonarchy/sb16/daemonarchy-1.4.1-b
 SECUREBOOT_CERTIFICATE=${SECUREBOOT_CERTIFICATE:-/usr/daemonarchy/boot-replacement-candidate-public-20261024/daemonarchy-1.3.1.pem}
 SIGN_KEY=${SIGN_KEY:-/usr/local/etc/daemonarchy/pkg-repo-next.key}
 BUILT_PACKAGES_FILE=${BUILT_PACKAGES_FILE:-$WORK/built-141.txt}
-FEED_OUT=${FEED_OUT:-$WORK/feed-$PACKAGE_REPOSITORY_TAG}
 CLOSURE_DIR=${CLOSURE_DIR:-/tmp/closure/out/packages-16-amd64-1.4.1-upstream}
 # resolve can run against the published releases instead of the staged directories:
 APP_FEED_URL=${APP_FEED_URL:-}
 CLOSURE_URL=${CLOSURE_URL:-}
-# A release image carries its closure feed (PKG-002): the installer prefers it to pkg.FreeBSD.org, and
-# build-iso.sh refuses the build unless that feed resolves the installer's packages on its own.
-PACKAGE_MIRROR_URLS=${PACKAGE_MIRROR_URLS:-https://github.com/jordanhubbard/daemonarchy/releases/download/$PACKAGE_REPOSITORY_TAG-upstream}
 REQUIRE_PACKAGE_MIRROR=${REQUIRE_PACKAGE_MIRROR:-yes}
 SB_DIR=${SB_DIR:-/usr/daemonarchy/sb16}
 XZ_BUDGET=${XZ_BUDGET:-2147483648}                # a GitHub release asset must stay under 2 GiB
@@ -143,9 +139,14 @@ step_resolve() {
 
 step_feed() {
   step_enabled feed || return 0
+  # pkg-repo.sh build empties its output directory first: never aim it at a staged feed.
+  if ! $DRY_RUN && [ -n "$(ls -A "$FEED_OUT" 2>/dev/null)" ]; then
+    fail "$FEED_OUT already holds a staged feed; use another PACKAGE_REPOSITORY_TAG or FEED_OUT"
+  fi
   fetch_product
   local product=$WORK/product-$(short) plan=$FEED_OUT.plan.txt
   run env ARCH=amd64 JAIL="$JAIL" PTREE="$PTREE" TAG="$PACKAGE_REPOSITORY_TAG" KEY="$SIGN_KEY" OUT="$FEED_OUT" \
+      PACKAGES_DIR="$WORK/poudriere-data/packages/$JAIL-$PTREE" \
       BUILT_PACKAGES_FILE="$BUILT_PACKAGES_FILE" sh "$product/pkg-repo.sh" build
   if ! $DRY_RUN; then
     {
@@ -347,6 +348,12 @@ main() {
   done
   # shellcheck disable=SC1090
   [ -z "$CONFIG" ] || . "$CONFIG"
+  # Defaults that follow the tag come after the config, which sets the tag.
+  FEED_OUT=${FEED_OUT:-$WORK/feed-$PACKAGE_REPOSITORY_TAG}
+  # A release image carries its closure feed (PKG-002): the installer prefers it to pkg.FreeBSD.org, and
+  # build-iso.sh refuses the build unless that feed resolves the installer's packages on its own.
+  # The shard belongs to the release, so a revision suffix (-r2) does not name another one.
+  PACKAGE_MIRROR_URLS=${PACKAGE_MIRROR_URLS:-https://github.com/jordanhubbard/daemonarchy/releases/download/${PACKAGE_REPOSITORY_TAG%-r[0-9]*}-upstream}
   [ "${#steps[@]}" -gt 0 ] || { sed -n '2,32p' "$0" >&2; exit 2; }
   local s
   for s in "${steps[@]}"; do
