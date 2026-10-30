@@ -1,9 +1,60 @@
 # Installer progress
 
 The install screen shows what the installation is doing while it runs. Every
-moving element measures something real. Nothing turns elapsed time into a
-completion percentage or an estimated time remaining, and only the installer's
-result file says whether the installation succeeded.
+counter measures something real, and the two figures that cannot be measured, the
+overall percentage and the time left, are labelled estimates and say what they
+are built from. Only the installer's result file says whether the installation
+succeeded.
+
+## The header
+
+The first rows are always visible, with the logo shown or not and at small
+sizes, and say where the installation stands:
+
+```
+elapsed 0:12:34   stage 7 of 11: Download   ≈27% done (estimate)   about 0:31:20 left (estimate from measured rates)
+packages 345 of 1,217 installed   downloaded 1.04 of 3.63 GiB at 1.8 MiB/s
+```
+
+| Figure | Kind | How it is made |
+| --- | --- | --- |
+| elapsed (H:MM:SS, running) | measured | from the first stage's start, using the installer's own clock in the `@@step` markers |
+| stage N of M | measured | the stage list; M includes an optional stage the machine will run (CUDA on an NVIDIA GPU) from the start, so it does not change when that stage begins |
+| packages X of Y installed | measured | X is the number of distinct packages pkg reports **extracted**, clamped to Y; Y is the plan's package count, or, until it exists, pkg's own `Number of packages to be installed` or `[n/N]` |
+| downloaded A of B GiB | measured | A is the bytes received (`@@fetch`, summed across pkg runs, since each run restarts its counter); B is the plan's `download_bytes`. Until the plan exists B is pkg's rounded figure and is marked `≈`. When the download stage ends B becomes what was received |
+| MiB/s | measured | bytes over the last ten seconds of real time; shown only after at least three seconds of samples |
+| overall percent | **estimate** | each stage is weighted by what it took in a real install (the baseline below) and counts its measured progress inside it: bytes received, packages extracted, archives expanded. It only moves forward; an estimate revised downward holds until the work catches up. 100% only when the installer reports success |
+| time left | **estimate** | per unfinished stage, what is left: the download from the average rate since it began, the packages from the average extraction rate, anything else from the baseline. The label says which: `estimate from measured rates` or `estimate from baseline`. Nothing is shown as known when no rate exists yet |
+
+The baseline is a real complete install on an MSI Raider 18 (49.6 minutes, 824
+archives and 3,721 MiB at 1.79 MiB/s, 1,217 packages): disk 0.6 s, base 12.6 s,
+boot loader 0.1 s, configure 0.6 s, download 2,075 s, packages 152 s, account 31 s,
+CUDA 691 s, finish 2 s. It is only the starting expectation; measured rates replace it.
+
+The installer sends the totals once the package plan resolves, as one log line:
+`@@plan {"schema":"daemonarchy/install-plan@1","packages":N,"archives":N,"download_bytes":B,"installed_bytes":I}`,
+and the `@@fetch` lines carry bytes of that total. A malformed plan is ignored with a warning.
+Until it arrives the screen falls back to pkg's own `Number of packages to be
+fetched`, `N GiB to be downloaded` (not the figure printed for the small bootstrap
+install that comes first) and `[n/N]` lines.
+
+## The timeline
+
+Each stage with when it started (offset from the first stage), how long it took or
+has taken, and how long it is expected to take: what it took if done, a
+measured-rate projection for the download and packages while they run, and the
+baseline for stages still to come. A tall screen shows the table (STAGE, STARTED,
+TOOK / ELAPSED, EXPECTED); a shorter one shows the same as chips (`Download
+12:34/~34:35`, `Packages ~2:32`). `t` cycles auto, table and chips.
+
+## The package ticker belongs to its phase
+
+The ticker (the names pkg is processing and its `n/N`) is shown only in the phase that fed
+it. After the install phase it is history and is hidden: it used to keep its last label,
+"Installing 1,217/1,217", through the account, CUDA and verify stages, which took about
+12 of the 50 minutes. Those stages show the latest log line instead, and the header keeps
+the final package count. `tests/installer-progress-stats.py` replays a trimmed copy of that
+real log, live, through the model and the dashboard, and fails on that symptom.
 
 ## What each element measures
 
@@ -12,7 +63,7 @@ result file says whether the installation succeeded.
 | Stage timeline: Partition, Encrypt, ZFS pool, Base sets, Boot loader, Configure, Download, Packages, Account, (Checkouts, CUDA), Verify | The stage that is running, the stages finished, and each stage's elapsed time. Encrypt shows as skipped when the disk is not encrypted. Optional stages appear only when they run. | `@@phase` and `@@step NAME EPOCH` markers that `install` prints when a stage starts. The epoch is the installer's own clock, so a screen that reads the log late still shows real stage times. Older logs without `@@step` use the time the screen read the marker. |
 | Measured counter and bar | Storage preparation milestones, release archives expanded, downloads that native pkg reported complete, or the package position pkg is processing. The bar fills only as that counter advances. | `@@progress` events and native pkg output. pkg's non-terminal `Fetching NAME: ..... done` lines now count as completed downloads; earlier screens required a `100%` that only a terminal gets. |
 | Download bytes | During the download stage: bytes received for finished archives plus the one in progress, the number of archives finished, the current archive's bytes of its size, and pkg's own rounded total ("about 5 GiB", labelled as pkg's estimate). The attempt number appears on a retry. No percentage is computed from pkg's rounded total. | pkg's event pipe: `install` runs `pkg -o EVENT_PIPE=FIFO fetch`, and `pkg-events` turns `INFO_FETCH_BEGIN`/`INFO_PROGRESS_TICK`/`INFO_FETCH_FINISHED` for archives under `/All/` into `@@fetch` lines in the log (about four a second). pkg's non-terminal output prints only dots, so before this the stage had no byte measurement. |
-| Package ticker | The names of the packages pkg reports, newest on the right, with `n/N` and the observed rate per minute. A rate appears only after ten seconds of real reports. | pkg's `[n/N] Installing NAME...` lines, and `Fetching NAME: ... done` during the download stage. |
+| Package ticker | In the download and install phases only: the names of the packages pkg reports, newest on the right, with `n/N` (the position pkg is on) and the observed rate per minute. A rate appears only after ten seconds of real reports. | pkg's `[n/N] Installing NAME...` lines, and `Fetching NAME: ... done` during the download stage. |
 | Spectrum | One bar per CPU core (eight bars at most; more cores are averaged in groups), plus disk write, disk read, I/O operations per second, network in and network out, and ZFS logical writes when the pool is known. Bars scale to the busiest rate seen so far on a logarithmic axis; the numbers under the visuals are exact. Peak caps hold the highest recent value and fall slowly, as in Winamp. | Kernel counters sampled four times a second: `kern.cp_times`, `kern.devstat.all`, the interface MIB (`net.link.generic.ifdata`), `vm.stats`, `kstat.zfs.misc.arcstats.size`, and `kstat.zfs.POOL.dataset.*.nwritten` once a second. Memory disks (the live image) and pass-through devices are excluded. The installer names its target disk and pool with `@@target`, so the meters measure that disk. |
 | Scope | The last minute of disk-write and network-in rates as oscilloscope traces (braille dots, two samples per character). | The same samples. |
 | Activity lines | Exact rates: disk write and read, I/O per second, ZFS logical write rate, network in and out with the busiest interface, CPU cores and load, memory in use, ZFS ARC size. On an encrypted install, a line notes that every pool write shown is encrypted by GELI AES-XTS on the target disk (GELI has no cheap counter of its own; all pool I/O passes through it). | As above. |

@@ -38,6 +38,10 @@ on:
       - 'tests/extension-bundles.py'
       - 'tests/installer-extensions.py'
       - 'tests/installer-sdk-audit.py'
+      - 'tests/installer-progress-stats.py'
+      - 'tests/fixtures/installer-progress/msi-install-1.4.1.*'
+      - 'overlay/usr/local/libexec/daemonarchy-installer/progress-model.py'
+      - 'docs/installer-progress.md'
       - 'overlay/usr/local/libexec/daemonarchy-installer/charm.py'
       - 'overlay/usr/local/libexec/daemonarchy-installer/install-views'
       - 'extensions/**'
@@ -108,6 +112,10 @@ on:
       - 'tests/extension-bundles.py'
       - 'tests/installer-extensions.py'
       - 'tests/installer-sdk-audit.py'
+      - 'tests/installer-progress-stats.py'
+      - 'tests/fixtures/installer-progress/msi-install-1.4.1.*'
+      - 'overlay/usr/local/libexec/daemonarchy-installer/progress-model.py'
+      - 'docs/installer-progress.md'
       - 'overlay/usr/local/libexec/daemonarchy-installer/charm.py'
       - 'overlay/usr/local/libexec/daemonarchy-installer/install-views'
       - 'extensions/**'
@@ -186,6 +194,7 @@ jobs:
           python3 -I tests/extension-bundles.py -v
           python3 -I tests/installer-extensions.py -v
           python3 -I tests/installer-sdk-audit.py -v
+          python3 -I tests/installer-progress-stats.py -v
       - name: Parallel package fetch
         env:
           PYTHONDONTWRITEBYTECODE: '1'
