@@ -108,10 +108,10 @@ gpu_arch=riscv64
 refuses gpu_select "$work/pci" "$ids"
 
 # www/chromium has no aarch64 package: the installer must not select it there, or
-# every arm64 install fails at package resolution.
+# every arm64 install fails at package resolution; Epiphany is the aarch64 browser.
 install_script=$here/overlay/usr/local/libexec/daemonarchy-installer/install
-! grep -E '^packages=\(.*chromium' "$install_script"
-grep -qE '^\[\[ \$image_arch == aarch64 \]\] \|\| packages\+=\(chromium\)$' "$install_script"
+! grep -E '^packages=\(.*(chromium|epiphany)' "$install_script"
+grep -qE '^if \[\[ \$image_arch == aarch64 \]\]; then packages\+=\(epiphany\); else packages\+=\(chromium\); fi$' "$install_script"
 
 echo 'PASS: per-architecture image defaults, EFI fallback names, GPU selection and request validation'
 echo 'PASS: chromium is selected on amd64 only'

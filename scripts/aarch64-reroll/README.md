@@ -19,6 +19,12 @@ resumed.
 | `step5-collect.sh` | worker | the unsigned application feed from every package poudriere built (`pkg-repo.sh collect`) |
 | `step6-iso.sh` | worker | the arm64 ISO with `build-iso.sh ARCH=aarch64` |
 | `fetch-closure.sh` | signing host | the upstream archives of the closure shard, fetched with `parallel-fetch` for the aarch64 ABI |
+| `aarch64-ports.list` | worker | the 34 origins `step3-bulk.sh` builds (the aarch64 `ISO_ORIGINS`, the live packages and the installer set); `x11-themes/aether` is on it and fails, as documented |
+
+A later addition to the installer's roots (Epiphany, the aarch64 default browser) is a
+delta shard, not a new run: resolve with the extra root, keep only the packages absent
+from the published shard, fetch them with `parallel-fetch`, and stage them under the next
+tag (`-upstream-2`) with `package-feed-stage.py stage`. Published tags are immutable.
 
 Signing never happens on the worker: the release key stays on the signing host.
 Move the unsigned feed there, run `pkg repo FEED KEY`, and bring back only the

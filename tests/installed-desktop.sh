@@ -1,9 +1,8 @@
 #!/bin/sh
 # Native installed-system checks; GUI/hardware acceptance remains separate.
 set -eu
-# chromium has no aarch64 package, so an arm64 desktop has no default browser.
-browser=true; [ "$(uname -m)" != arm64 ] || browser=false
-! $browser || pkg info -e chromium
+# chromium has no aarch64 package: an arm64 desktop's default browser is Epiphany.
+if [ "$(uname -m)" = arm64 ]; then pkg info -e epiphany; else pkg info -e chromium; fi
 pkg info -e octopkg
 command -v daemonarchy >/dev/null
 command -v octopkg >/dev/null
@@ -29,7 +28,7 @@ import gi
 gi.require_version('GioUnix', '2.0')
 from gi.repository import GioUnix
 import platform
-browser = () if platform.machine() in ('arm64', 'aarch64') else ('chromium-browser.desktop',)
+browser = ('org.gnome.Epiphany.desktop',) if platform.machine() in ('arm64', 'aarch64') else ('chromium-browser.desktop',)
 for desktop in browser + ('octopkg.desktop', 'foot.desktop', 'imv.desktop', 'mpv.desktop'):
     info = GioUnix.DesktopAppInfo.new(desktop)
     assert info is not None, desktop
