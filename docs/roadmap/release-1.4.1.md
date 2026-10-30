@@ -183,6 +183,22 @@ items below were 1.4 acceptance rows. They moved here so they no longer block
   items in [active-work.md](active-work.md) carry `Release: 1.4.1`:
   ADOPT-002, UI-001, PKG-001, GUI-001, SRC-001, DEBUG-001, HW-001, RELEASE-001, COMP-001, PERF-001, PERF-002, DEV-001, TESTISO-001, HW-002, HW-003, DEBUG-002, DEBUG-003, ARCH-001, LIVE-001, NET-001, DEBUG-004, GPU-001, NET-002, HW-004, WORKER-001. None is claimed done by 1.4.0. They keep their own
   evidence requirements; this list is scope, not progress.
+- **Cudalab as a virtual app.** On the MSI the Cudalab entry built and then showed
+  nothing. Reproduced on the machine: the menu entry rebuilt the whole app on every
+  launch (`rm -rf build/dev`, sudo, a chroot, three nullfs mounts), and the finished
+  program exited with status 1 and `cudalab: No available audio device` because the
+  Linux SDL cannot reach FreeBSD sound devices; the floating terminal closed with
+  it, hiding the message. Running the same executable as the desktop user straight
+  under the Linuxulator (no root, chroot or mounts) with `SDL_AUDIODRIVER=dummy`
+  opened its window and compiled both kernels for `compute_120`. The launcher
+  `daemonarchy-cudalab` is now a virtual app: it builds a pinned cudalab once into
+  `~/.local/share/cudalab` in a first-run window, records the build, and
+  chain-launches it; later launches open the app directly. The installer's CUDA step
+  runs the same builder, a failed build stays virtual and retries, and two launches
+  at once build once. Verified in `tests/cudalab-launcher.sh` against a fake Linux
+  root and, for the run and the headless build, on the MSI (see the
+  pull request); the first-run window on a fresh install is still to be exercised
+  on hardware.
 - **Loose ends found in 1.4.0.** The MSI touchpad runs in polling mode (the I2C-HID
   interrupt is not wired through). Only I2C controller 0 (`8086:7f4c`) of the
   Arrow Lake-S PCH is recognised in `ig4`, so a touchpad on another function would

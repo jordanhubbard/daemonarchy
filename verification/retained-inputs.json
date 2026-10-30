@@ -247,7 +247,7 @@
     {
       "path": "overlay/usr/local/bin/daemonarchy-cudalab",
       "owner": "release",
-      "sha256": "5d46d251b4de4682ae40aa46b4ba6bf4a01d996efd7b3fb1f64a0104bedb5b87",
+      "sha256": "55cb10bbfa44f0017cef2bf142c1924a81ed3b494421750b9ae002b744ef2164",
       "executable": true
     },
     {
@@ -391,7 +391,7 @@
     {
       "path": "overlay/usr/local/sbin/daemonarchy-linux-cuda",
       "owner": "release",
-      "sha256": "5d3b0dd12f90c8d0c451eebcfbfc8c534d00fe10a56312fab49f2e4aae73fdb5",
+      "sha256": "3961c96b2f23753bc43b00d2c8fec323f4ba85fcf89f90a916153afd7bac30d9",
       "executable": true
     },
     {
@@ -415,7 +415,7 @@
     {
       "path": "overlay/usr/local/share/daemonarchy-installer/cudalab.desktop",
       "owner": "installer",
-      "sha256": "3bc5aecf16df20eedbb8fc2cf2c0d91aac9e14cc11fed6b502ca671e2de07c67",
+      "sha256": "46488a12d8bfceafb159a4a9d08a01c45b1ab8ef2996c80bac6bd75d9f94aea2",
       "executable": false
     },
     {
@@ -445,7 +445,7 @@
     {
       "path": "overlay/usr/local/share/daemonarchy-installer/omarchy-menu.jsonc",
       "owner": "desktop",
-      "sha256": "983e8c7a9456bc00091bc1ebd8dbe837ce6902586543c14bba08c0f805134254",
+      "sha256": "7f78ea513e04e99da64520a2c400a14afae5041955e29a18555c3e17361c2b1e",
       "executable": false
     },
     {

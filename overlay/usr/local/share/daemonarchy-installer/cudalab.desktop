@@ -3,7 +3,12 @@ Type=Application
 Name=Cudalab
 GenericName=CUDA Studio
 Comment=Live CUDA graphics on NVIDIA: cosmos, oceans, glass, and tensor cores
-Exec=daemonarchy-cudalab cuda-cosmos
-Terminal=true
+Exec=daemonarchy-cudalab
+Terminal=false
 Categories=Graphics;
 Keywords=cuda;nvidia;gpu;
+Actions=Cosmos;
+
+[Desktop Action Cosmos]
+Name=CUDA Cosmos
+Exec=daemonarchy-cudalab cuda-cosmos

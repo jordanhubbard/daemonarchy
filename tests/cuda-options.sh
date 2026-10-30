@@ -52,6 +52,10 @@ for hardware in intel amd nvidia mixed legacy audio unknown; do
       [[ -x $target/usr/local/bin/daemonarchy-cudalab ]]
       [[ -f $target/usr/local/share/applications/cudalab.desktop ]]
       grep -q 'system.freebsd.cudalab' "$target/usr/local/share/omarchy/vendor/omarchy-menu.jsonc"
+      # Opened as an app (no terminal), through the stable launcher that builds on first use.
+      grep -q 'uwsm-app -- daemonarchy-cudalab' "$target/usr/local/share/omarchy/vendor/omarchy-menu.jsonc"
+      grep -qx 'Exec=daemonarchy-cudalab' "$target/usr/local/share/applications/cudalab.desktop"
+      grep -qx 'Terminal=false' "$target/usr/local/share/applications/cudalab.desktop"
     else
       [[ ! -e $target/usr/local/bin/daemonarchy-cudalab ]]
       [[ ! -e $target/usr/local/share/applications/cudalab.desktop ]]

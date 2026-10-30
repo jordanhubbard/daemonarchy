@@ -209,6 +209,15 @@ after the first boot to try again. An unattended install takes the default; set
 supported. Without an NVIDIA GPU the option is not shown and
 `install_cuda=true` is refused.
 
+cudalab has no FreeBSD package: it is a Linux program built with CUDA. The
+Cudalab entry in Apps is a launcher, `daemonarchy-cudalab`, that works as a
+virtual app. It builds a pinned cudalab under the Linuxulator for the user the
+first time it is needed (the installer's CUDA step does that, so a machine that
+took the offer has it ready), and every launch after that opens the built app
+directly. In 1.4.0 the launcher rebuilt cudalab on every launch and then exited
+at once on machines with no sound device, so it appeared to open nothing; the
+virtual app that replaces it is in development for 1.4.1.
+
 ## Source
 
 Daemonarchy is built from these repositories:

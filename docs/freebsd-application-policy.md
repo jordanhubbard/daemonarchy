@@ -57,6 +57,20 @@ default desktop package alone neither installs nor advertises them. CUDA ran a
 kernel on an RTX 5080 through the Linuxulator on the MSI Raider 18 HX; Unified
 Memory crashes and is not supported.
 
+cudalab is delivered as a virtual app, not a package, because it must be compiled
+with CUDA inside the Linuxulator and a poudriere port cannot do that. The stable
+launcher `daemonarchy-cudalab`, run as the desktop user with no sudo, chroot or
+mount, checks out a pinned cudalab commit into the user's own
+`~/.local/share/cudalab` (cudalab compiles in its source path and saves demo edits
+into `examples/`), builds the Release preset with nvcc and SDL 3.2 in a first-run
+window, records the build, and chain-launches it; later launches open the built
+app directly. The installer's CUDA step runs the same builder
+(`daemonarchy-linux-cuda prepare-cudalab USER`), and a failed build leaves the
+virtual app in place to retry. The Linux SDL cannot reach FreeBSD sound devices and
+cudalab refuses to start without an audio device, so the launcher runs it with
+`SDL_AUDIODRIVER=dummy`; `LD_PRELOAD` of the UVM shim is given only to the Linux
+executable, never to a native FreeBSD program.
+
 Validation covers the actual upstream 4.0.4 menu, router dispatch and exit status,
 unsupported command guards, existing-user MIME/Docker migration, and real native
 FreeBSD GIO process launches with quoted options and URLs containing percent,

@@ -10,6 +10,6 @@
   "system.freebsd.jails": {"icon":"󰆧","label":"Jails","description":"Lightweight FreeBSD containers","action":"omarchy-launch-floating-terminal-with-presentation daemonarchy-jail"},
   "system.freebsd.vms": {"icon":"󰍹","label":"Virtual Machines","description":"Run other operating systems with bhyve","action":"omarchy-launch-floating-terminal-with-presentation daemonarchy-vm"},
   "system.freebsd.hack": {"icon":"󰵮","label":"Hack on Daemonarchy","description":"Get the sources and run the desktop from your own checkout","action":"omarchy-launch-floating-terminal-with-presentation daemonarchy-dev-setup"},
-  "system.freebsd.cudalab": {"icon":"󰢮","label":"Cudalab","description":"Live CUDA graphics demos on the NVIDIA GPU","action":"omarchy-launch-floating-terminal-with-presentation daemonarchy-cudalab"},
+  "system.freebsd.cudalab": {"icon":"󰢮","label":"Cudalab","description":"Live CUDA graphics demos on the NVIDIA GPU","action":"uwsm-app -- daemonarchy-cudalab"},
   "system.freebsd.dtrace": {"icon":"󰓅","label":"Trace the System","description":"See what the system is doing right now with DTrace","action":"omarchy-launch-floating-terminal-with-presentation daemonarchy-dtrace"},
 }
