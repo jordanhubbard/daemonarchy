@@ -80,9 +80,10 @@ pkg_run update -f >"$work/update.log" 2>&1 || {
 
 # The roots the installer resolves: the fixed set, plus every GPU, Wi-Fi and
 # firmware package the ISO carries (its own packages need their dependencies too).
-roots="pkg bash sudo daemonarchy octopkg wifi-firmware-kmod xwayland vulkan-loader mesa-dri ${EXTRA_ROOTS:-}"
-# chromium has no aarch64 package: the installer selects epiphany there instead.
-case ${ARCH:-amd64} in aarch64) roots="$roots epiphany" ;; *) roots="$roots chromium" ;; esac
+roots="pkg bash sudo daemonarchy octopkg wifi-firmware-kmod vulkan-loader mesa-dri ${EXTRA_ROOTS:-}"
+# chromium has no aarch64 package: the installer selects epiphany there instead. xwayland is a root only
+# where the installer adds it: for CUDA (overlay installer `install`, `install_cuda`), which is amd64-only.
+case ${ARCH:-amd64} in aarch64) roots="$roots epiphany" ;; *) roots="$roots chromium xwayland" ;; esac
 for file in "$ISO_REPO"/All/*.pkg; do
 	name=$(pkg query -F "$file" '%n')
 	case "$name" in
