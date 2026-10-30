@@ -31,6 +31,11 @@ on:
       - 'tests/version-sync.py'
       - 'scripts/package-mirror-plan.py'
       - 'tests/package-mirror-plan.py'
+      - 'tests/install-trace.py'
+      - 'scripts/install-trace-summary.py'
+      - 'overlay/usr/local/libexec/daemonarchy-installer/install-trace'
+      - 'overlay/usr/local/libexec/daemonarchy-installer/install-trace-sampler'
+      - 'overlay/usr/local/libexec/daemonarchy-installer/pkg-events'
       - 'scripts/release-current.py'
       - 'release/**'
       - '**.md'
@@ -67,6 +72,11 @@ on:
       - 'tests/version-sync.py'
       - 'scripts/package-mirror-plan.py'
       - 'tests/package-mirror-plan.py'
+      - 'tests/install-trace.py'
+      - 'scripts/install-trace-summary.py'
+      - 'overlay/usr/local/libexec/daemonarchy-installer/install-trace'
+      - 'overlay/usr/local/libexec/daemonarchy-installer/install-trace-sampler'
+      - 'overlay/usr/local/libexec/daemonarchy-installer/pkg-events'
       - 'scripts/release-current.py'
       - 'release/**'
       - '**.md'
@@ -100,6 +110,10 @@ jobs:
         env:
           PYTHONDONTWRITEBYTECODE: '1'
         run: python3 tests/package-mirror-plan.py -v
+      - name: Installer trace
+        env:
+          PYTHONDONTWRITEBYTECODE: '1'
+        run: python3 tests/install-trace.py -v
 
   controls:
     runs-on: ubuntu-latest

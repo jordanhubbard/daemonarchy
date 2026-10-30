@@ -17,6 +17,12 @@ catalogues are not. Each line written is
 where archives and bytes cover archives pkg finished in this run, plus the
 bytes of the one in progress. Lines are rate-limited to about four a second,
 and every finished archive writes one.
+
+When DAEMONARCHY_TRACE_FILE names the installer's trace (docs/install-trace.md),
+this also appends one JSON line per pkg event that has a measurable extent:
+`download` for each finished archive (name, bytes, dur_us) and `pkg_event` for
+every other begin/finish/install/extract event with its type and package name.
+Progress ticks are not traced. Only names, counts and times are written.
 """
 import json
 import os
@@ -26,6 +32,37 @@ import sys
 import time
 
 SCHEMA = 'daemonarchy/pkg-fetch@1'
+
+
+class Trace:
+    """Append-only JSON lines in the installer's trace file; a no-op without one."""
+
+    def __init__(self, path=None, start_us=0, now_us=lambda: time.time_ns() // 1000):
+        self.path, self.start_us, self.now_us = path, start_us, now_us
+
+    def event(self, event_name, /, **fields):
+        if not self.path:
+            return
+        now = self.now_us()
+        row = dict(t_us=now, since_start_us=now - self.start_us, event=event_name, source='pkg-events')
+        row.update(fields)
+        try:
+            with open(self.path, 'a', encoding='utf-8') as out:
+                out.write(json.dumps(row, separators=(',', ':')) + '\n')
+        except OSError:
+            pass
+
+
+def event_name(data):
+    """The package a pkg event is about: its archive name, or the pkg's own name."""
+    if not isinstance(data, dict):
+        return ''
+    name = archive_name(data.get('url'))
+    if not name and isinstance(data.get('pkg'), dict):
+        name = data['pkg'].get('name')
+    if not name and isinstance(data.get('pkg'), str):
+        name = data['pkg']
+    return ''.join(c for c in str(name or '') if c.isascii() and c.isprintable())[:80]
 
 
 def archive_name(url):
@@ -40,8 +77,10 @@ def archive_name(url):
 
 
 class Converter:
-    def __init__(self, write, clock=time.monotonic, interval=0.25):
+    def __init__(self, write, clock=time.monotonic, interval=0.25, trace=None):
         self.write, self.clock, self.interval = write, clock, interval
+        self.trace = trace or Trace()
+        self.file_started = None
         self.archives = 0
         self.done_bytes = 0
         self.file = None
@@ -62,8 +101,13 @@ class Converter:
         if not isinstance(event, dict):
             return
         kind, data = event.get('type'), event.get('data') or {}
+        if (isinstance(kind, str) and kind.replace('_', '').isalnum() and kind.isupper()
+                and kind not in ('INFO_PROGRESS_TICK', 'INFO_PROGRESS_START')
+                and kind not in ('INFO_FETCH_BEGIN', 'INFO_FETCH_FINISHED')):
+            self.trace.event('pkg_event', type=kind, name=event_name(data))
         if kind == 'INFO_FETCH_BEGIN':
             self.file = archive_name(data.get('url'))
+            self.file_started = self.trace.now_us()
             self.file_bytes = self.file_total = 0
             if self.file:
                 self.emit(force=True)
@@ -74,6 +118,9 @@ class Converter:
                 self.emit()
         elif kind == 'INFO_FETCH_FINISHED':
             if self.file and archive_name(data.get('url')) == self.file:
+                total = self.file_total or self.file_bytes
+                self.trace.event('download', name=self.file, bytes=total,
+                                 dur_us=self.trace.now_us() - (self.file_started or self.trace.now_us()))
                 self.archives += 1
                 self.done_bytes += self.file_total or self.file_bytes
                 self.file, self.file_bytes, self.file_total = None, 0, 0
@@ -124,7 +171,10 @@ def main(argv):
     def write(text):
         sys.stdout.write(text)
         sys.stdout.flush()
-    converter = Converter(write)
+    trace_path = os.environ.get('DAEMONARCHY_TRACE_FILE')
+    start = os.environ.get('DAEMONARCHY_TRACE_START_US', '')
+    trace = Trace(trace_path, int(start) if start.isdigit() else 0)
+    converter = Converter(write, trace=trace)
     try:
         for event in events(chunks()):
             if isinstance(event, dict) and event.get('type') == 'DAEMONARCHY_END':

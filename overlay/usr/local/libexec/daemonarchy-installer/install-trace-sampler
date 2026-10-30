@@ -1,0 +1,227 @@
+#!/usr/bin/env python3
+"""Sample the machine into the installer's trace while the installation runs.
+
+  install-trace-sampler run [INTERVAL_SECONDS]   until SIGTERM; default 1 second
+  install-trace-sampler probe HOST...            time DNS, connect, TLS and first byte
+
+Appends JSON lines to the file named by DAEMONARCHY_TRACE_FILE (see
+docs/install-trace.md); without it nothing is written. Events:
+
+  net_sample    per interface that moved: cumulative and per-interval bytes/packets/errors
+  disk_sample   per device that moved: cumulative and per-interval transfers, KiB, busy time
+  cpu_sample    user/nice/system/interrupt/idle percent over the interval, free memory, load
+  device_event  devd attach, detach and notifications (link up/down, device nodes)
+  net_probe     per host: dns_us, connect_us, tls_us, first_byte_us, status
+
+Only counters, device and interface names, and times are written. No addresses,
+network names, user data or credentials, and no command lines.
+"""
+import json
+import os
+import re
+import socket
+import ssl
+import subprocess
+import sys
+import threading
+import time
+
+NAME = re.compile(r'^[A-Za-z][A-Za-z0-9_.:-]{0,31}$')
+DEVD_KEYS = ('system', 'subsystem', 'type', 'cdev')
+
+
+class Trace:
+    def __init__(self, path=None, start_us=0, now_us=lambda: time.time_ns() // 1000):
+        self.path, self.start_us, self.now_us = path, start_us, now_us
+        self.lock = threading.Lock()
+
+    def event(self, event_name, /, **fields):
+        if not self.path:
+            return
+        now = self.now_us()
+        row = dict(t_us=now, since_start_us=now - self.start_us, event=event_name, source='install-trace-sampler')
+        row.update(fields)
+        try:
+            with self.lock, open(self.path, 'a', encoding='utf-8') as out:
+                out.write(json.dumps(row, separators=(',', ':')) + '\n')
+        except OSError:
+            pass
+
+
+def parse_netstat(text):
+    """netstat -ibn link rows -> {interface: {ibytes, obytes, ipkts, opkts, ierrs, oerrs}}."""
+    result = {}
+    for line in text.splitlines():
+        fields = line.split()
+        if len(fields) < 11 or '<Link#' not in line:
+            continue
+        name = fields[0].rstrip('*')
+        counters = fields[-8:]
+        if name.startswith('lo') or not NAME.match(name) or not all(c.isdigit() for c in counters):
+            continue
+        ipkts, ierrs, _idrop, ibytes, opkts, oerrs, obytes, _coll = map(int, counters)
+        result[name] = dict(ipkts=ipkts, ierrs=ierrs, ibytes=ibytes, opkts=opkts, oerrs=oerrs, obytes=obytes)
+    return result
+
+
+def parse_iostat(text):
+    """iostat -x -I -d -> {device: {reads, writes, read_kib, write_kib, qlen, svc_s, busy_s}}."""
+    result = {}
+    for line in text.splitlines():
+        fields = line.split()
+        if len(fields) != 8 or not NAME.match(fields[0]) or fields[0].startswith(('pass', 'device')):
+            continue
+        try:
+            reads, writes, read_kib, write_kib, qlen, svc, busy = (float(f) for f in fields[1:])
+        except ValueError:
+            continue
+        result[fields[0]] = dict(reads=int(reads), writes=int(writes), read_kib=int(read_kib),
+                                 write_kib=int(write_kib), qlen=int(qlen), svc_s=round(svc, 3), busy_s=round(busy, 3))
+    return result
+
+
+def parse_devd(line):
+    """One devd line -> a small dict, or None. Attach and detach carry only the device name."""
+    line = line.strip()
+    if not line:
+        return None
+    kind = {'+': 'attach', '-': 'detach', '!': 'notify'}.get(line[0])
+    if not kind:
+        return None
+    if kind != 'notify':
+        device = line[1:].split(' ', 1)[0]
+        return dict(kind=kind, device=device) if NAME.match(device) else None
+    row = dict(kind=kind)
+    for item in line[1:].split():
+        key, _, value = item.partition('=')
+        if key in DEVD_KEYS and re.match(r'^[A-Za-z0-9_.:-]{1,48}$', value):
+            row[key] = value
+    return row if len(row) > 1 else None
+
+
+def cpu_percent(before, after):
+    delta = [b - a for a, b in zip(before, after)]
+    total = sum(delta) or 1
+    return {name: round(100 * d / total, 1) for name, d in zip(('user', 'nice', 'system', 'interrupt', 'idle'), delta)}
+
+
+def sysctl(name):
+    try:
+        return subprocess.run(['sysctl', '-n', name], capture_output=True, text=True, timeout=5).stdout.split()
+    except (OSError, subprocess.SubprocessError):
+        return []
+
+
+def run_text(argv):
+    try:
+        return subprocess.run(argv, capture_output=True, text=True, timeout=10).stdout
+    except (OSError, subprocess.SubprocessError):
+        return ''
+
+
+def diff_rows(trace, event, now, last, last_us, interval_keys):
+    """Emit one event per name whose counters moved; return the new baseline."""
+    elapsed = max(trace.now_us() - last_us, 1) if last_us else 0
+    for name, row in now.items():
+        before = last.get(name)
+        if before is None:
+            continue
+        delta = {f'd_{k}': row[k] - before[k] for k in interval_keys}
+        if any(delta.values()):
+            trace.event(event, name=name, interval_us=elapsed, **row, **delta)
+    return now
+
+
+def sample_loop(trace, interval, stop):
+    nets, disks = {}, {}
+    cpu_before = [int(x) for x in sysctl('kern.cp_time')]
+    page = int((sysctl('hw.pagesize') or ['4096'])[0])
+    last_us = trace.now_us()
+    while not stop.wait(interval):
+        now = trace.now_us()
+        nets = diff_rows(trace, 'net_sample', parse_netstat(run_text(['netstat', '-ibn'])), nets, last_us,
+                         ('ibytes', 'obytes', 'ipkts', 'opkts', 'ierrs', 'oerrs')) if nets else parse_netstat(run_text(['netstat', '-ibn']))
+        disks = diff_rows(trace, 'disk_sample', parse_iostat(run_text(['iostat', '-x', '-I', '-d'])), disks, last_us,
+                          ('reads', 'writes', 'read_kib', 'write_kib')) if disks else parse_iostat(run_text(['iostat', '-x', '-I', '-d']))
+        cpu_after = [int(x) for x in sysctl('kern.cp_time')]
+        if len(cpu_before) == len(cpu_after) == 5:
+            free = (sysctl('vm.stats.vm.v_free_count') or ['0'])[0]
+            load = (sysctl('vm.loadavg') or ['', '0'])
+            load1 = next((x for x in load if re.match(r'^\d+\.\d+$', x)), '0')
+            trace.event('cpu_sample', interval_us=now - last_us, free_mib=int(free) * page // 2**20,
+                        load1=float(load1), **cpu_percent(cpu_before, cpu_after))
+        cpu_before, last_us = cpu_after, now
+
+
+def devd_loop(trace, stop, path='/var/run/devd.seqpacket.pipe'):
+    try:
+        sock = socket.socket(socket.AF_UNIX, socket.SOCK_SEQPACKET)
+        sock.connect(path)
+        sock.settimeout(1.0)
+    except OSError:
+        return
+    while not stop.is_set():
+        try:
+            data = sock.recv(8192)
+        except socket.timeout:
+            continue
+        except OSError:
+            return
+        if not data:
+            return
+        for line in data.decode('utf-8', 'replace').splitlines():
+            row = parse_devd(line)
+            if row:
+                trace.event('device_event', **row)
+
+
+def probe(trace, host, timeout=8.0):
+    """Time one HTTPS request to a fixed host, phase by phase."""
+    row = {'host': host}
+    try:
+        t0 = time.monotonic()
+        addr = socket.getaddrinfo(host, 443, type=socket.SOCK_STREAM)[0]
+        t1 = time.monotonic()
+        sock = socket.create_connection(addr[4][:2], timeout=timeout)
+        t2 = time.monotonic()
+        tls = ssl.create_default_context().wrap_socket(sock, server_hostname=host)
+        t3 = time.monotonic()
+        tls.sendall(f'HEAD / HTTP/1.1\r\nHost: {host}\r\nConnection: close\r\n\r\n'.encode())
+        head = tls.recv(64)
+        t4 = time.monotonic()
+        tls.close()
+        status = re.match(rb'HTTP/\d(?:\.\d)? (\d{3})', head)
+        row.update(dns_us=int((t1 - t0) * 1e6), connect_us=int((t2 - t1) * 1e6), tls_us=int((t3 - t2) * 1e6),
+                   first_byte_us=int((t4 - t3) * 1e6), status=int(status.group(1)) if status else 0)
+    except (OSError, ssl.SSLError) as error:
+        row.update(error=type(error).__name__)
+    trace.event('net_probe', **row)
+
+
+def main(argv):
+    path = os.environ.get('DAEMONARCHY_TRACE_FILE')
+    start = os.environ.get('DAEMONARCHY_TRACE_START_US', '')
+    trace = Trace(path, int(start) if start.isdigit() else 0)
+    if len(argv) >= 2 and argv[1] == 'probe':
+        for host in argv[2:]:
+            if re.match(r'^[A-Za-z0-9.-]{1,253}$', host):
+                probe(trace, host)
+        return 0
+    if len(argv) >= 2 and argv[1] == 'run':
+        try:
+            interval = float(argv[2]) if len(argv) > 2 else float(os.environ.get('DAEMONARCHY_TRACE_INTERVAL', '1'))
+        except ValueError:
+            interval = 1.0
+        stop = threading.Event()
+        import signal
+        signal.signal(signal.SIGTERM, lambda *_: stop.set())
+        signal.signal(signal.SIGINT, lambda *_: stop.set())
+        threading.Thread(target=devd_loop, args=(trace, stop), daemon=True).start()
+        sample_loop(trace, max(interval, 0.1), stop)
+        return 0
+    print(__doc__, file=sys.stderr)
+    return 2
+
+
+if __name__ == '__main__':
+    raise SystemExit(main(sys.argv))

@@ -1249,6 +1249,9 @@ remains open; report files do not establish a passing gate.
 - **Depends on:** PKG-001
 - **Completion prerequisites:** none
 - **Implementation:**
+  - [ ] **Network speed first.** The download is the long pole (2,565 s of 2,747 s on the live8 run; hours on real hardware). `pkg fetch -d` runs one transfer at a time; fetch the whole resolved closure with bounded parallel workers from a signed feed we control (PKG-002), measure per-archive time and concurrency in the trace, and treat the fetch phase as the primary 10x lever before any scheduler work. Compare against the retained baseline on an equivalent link.
+  - [x] **Installer trace.** Every installation writes a microsecond-resolution trace of timed events (phases, storage and filesystem operations, base extraction, package downloads and unpacks, device events, network/disk/CPU samples and network probes) with `scripts/install-trace-summary.py` to read it; see [install-trace.md](../install-trace.md). Unit-tested from real FreeBSD counter output; a physical-hardware run to confirm every parser and the pkg unpack event names is still open.
+  - [ ] **Install weight.** Act on [install-weight-vs-omarchy.md](../install-weight-vs-omarchy.md): Omarchy installs 940 packages mostly up front but from local media, so delivery, not selection, is the gap; trim the defaults that exceed Omarchy's (all-language OCR data, full .NET SDK, per-script CJK fonts, Intel media driver on non-Intel machines, full Nerd font) and offer heavy applications as a choice.
   - [ ] Retain equivalent per-phase baselines; carry the selected authenticated closure on the ISO or attached cache; fetch any remainder through bounded authenticated acquisition; parallelize only independently safe extraction while serializing package registration and conflicting side effects; measure and qualify the exact candidate.
   - [ ] Compare the exact Daemonarchy and Omarchy default installation
     manifests, not just elapsed time: retain package identities, dependency
@@ -1273,13 +1276,13 @@ remains open; report files do not establish a passing gate.
 - **Release:** 1.4.1
 - **GitHub issue:** [#137](https://github.com/jordanhubbard/daemonarchy/issues/137)
 - **Owner:** installer Component with LIVE-001 graphical integration
-- **Direction:** Offer approximately five or six small playable classic-arcade homages during a running installation, including a Space Invaders-style fixed shooter, through the installer existing text and graphical experience.
+- **Direction:** Offer at least four (aiming for five or six) small playable classic-arcade homages during a running installation, including a Space Invaders-style fixed shooter, through the installer's text and graphical experience. Four distinct games are the minimum because they are what proves the SDK's plugin design for the installer.
 - **Conclusion:** Consume the versioned VISUAL-SDK-001 renderer, input and audio plugin contracts while installation remains authoritative; ship only original names, code, artwork and generated sound, with no ROMs or copied assets.
 - **Depends on:** VISUAL-SDK-001; integrate with LIVE-001 and do not weaken INSTALL-PERF-001.
 - **Completion prerequisites:** none
 - **Implementation:**
-  - [ ] Select and document a legally safe portfolio of approximately five or
-    six mechanics, including the fixed shooter. Build one bounded shared game
+  - [ ] Select and document a legally safe portfolio of at least four
+    mechanics (aiming for five or six), including the fixed shooter. Build one bounded shared game
     runtime over common renderer, input and audio interfaces.
   - [ ] Add launch, suspend, resume and exit paths that return immediately to
     live progress. Critical prompts and terminal outcomes interrupt or end play
@@ -1306,7 +1309,7 @@ remains open; report files do not establish a passing gate.
 - **GitHub issue:** [#139](https://github.com/jordanhubbard/daemonarchy/issues/139)
 - **Owner:** installer and desktop Components
 - **Direction:** Extract the shared rendering, effects, input and audio presentation surface into a supported standard SDK, then load installer animations, visualizers and games as versioned plugins.
-- **Conclusion:** Keep installation state and privileged operations outside the SDK; plugins consume immutable observations through capability-scoped APIs, are preemptible and failure-isolated, and the SDK must work in a non-installer host.
+- **Conclusion:** Keep installation state and privileged operations outside the SDK; plugins consume immutable observations through capability-scoped APIs, are preemptible and failure-isolated, and the SDK must work in a non-installer host. The installer must use the SDK for all of its own visualization (welcome, progress, animations, effects, prompts' presentation), so the installer is the SDK's first and most demanding consumer: no installer-private rendering path may remain beside it.
 - **Depends on:** UI-001, LIVE-001
 - **Completion prerequisites:** none
 - **Implementation:**

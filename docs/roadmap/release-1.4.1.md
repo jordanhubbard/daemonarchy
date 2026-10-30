@@ -34,13 +34,16 @@ items below were 1.4 acceptance rows. They moved here so they no longer block
   resources, explicit capabilities and preemptible lifecycle. Prove the SDK in
   a non-installer host. The installer remains the authoritative privileged host:
   plugins cannot mutate progress, hide prompts or outcomes, or import ambient
-  executable content.
+  executable content. The installer uses the SDK for all of its own
+  visualization, so it is the SDK's first consumer and no private rendering
+  path remains beside it.
 
 - **Playable classic-arcade interludes**
   ([GAME-001](active-work.md#game-001-add-playable-classic-arcade-games-to-the-installer),
-  [issue #137](https://github.com/jordanhubbard/daemonarchy/issues/137)). Ship
-  approximately five or six small original arcade homages in the installer,
-  including a Space Invaders-style fixed shooter. Load them through the
+  [issue #137](https://github.com/jordanhubbard/daemonarchy/issues/137)). Ship at
+  least four (aiming for five or six) small original arcade homages in the
+  installer, including a Space Invaders-style fixed shooter; four distinct
+  games are what prove the SDK design. Load them through the
   VISUAL-SDK-001 game plugin contract rather than direct installer imports or a
   parallel UI stack. Installation continues
   authoritatively in the background; prompts, approvals, errors, diagnostics and
@@ -100,6 +103,17 @@ items below were 1.4 acceptance rows. They moved here so they no longer block
   resolving that manifest and timing equivalent fetch/install paths on the MSI
   and MacBook, then choosing between parallel fetch, a smaller default set, and
   shipping the large packages on the ISO.
+- **Network speed first, measured by an installer trace.** The download is the
+  long pole in installing large packages, so the fetch phase is the first
+  10x lever: fetch the resolved closure with bounded parallel workers from a
+  signed feed we control, not `pkg fetch -d` one archive at a time. Every
+  installation now writes a microsecond-resolution trace of its timed events
+  (phases, filesystem and storage operations, base extraction, each package
+  download and unpack, device events, network/disk/CPU samples, DNS/TLS probes;
+  [install-trace.md](../install-trace.md)) so each change is judged on the same
+  per-operation numbers. The comparison with Omarchy is in
+  [install-weight-vs-omarchy.md](../install-weight-vs-omarchy.md): it installs
+  940 packages, mostly up front, but from local media; our 1,189 are fetched.
 - **Self-hosted packages for both architectures**
   ([PKG-002](active-work.md#pkg-002-self-host-the-installers-package-closure-for-both-architectures),
   [issue #142](https://github.com/jordanhubbard/daemonarchy/issues/142)). The
