@@ -188,6 +188,22 @@ step_iso() {
   state_mark iso
 }
 
+# On a FreeBSD builder as root: mount the built image read-only and import sqlite3 with the live
+# root's own Python (parallel-fetch needs it for exact install-plan byte totals).
+live_root_import_check() {
+  local iso=$1 md mnt
+  if [ "$(uname -s)" != FreeBSD ] || [ "$(id -u)" != 0 ]; then
+    echo "live-root import check skipped (needs a FreeBSD builder and root)" >&2
+    return 0
+  fi
+  mnt=$(mktemp -d)
+  md=$(mdconfig -a -t vnode -o readonly -f "$iso") || return 1
+  # shellcheck disable=SC2064
+  trap "umount '$mnt' 2>/dev/null; mdconfig -d -u '${md#md}' 2>/dev/null; rmdir '$mnt' 2>/dev/null" RETURN
+  mount -t cd9660 -o ro "/dev/$md" "$mnt" || return 1
+  chroot "$mnt" /usr/local/bin/python3.12 -c 'import sqlite3; c = sqlite3.connect(":memory:"); assert c.execute("select 42").fetchone()[0] == 42; print("live root: import sqlite3 ok, sqlite", sqlite3.sqlite_version)'
+}
+
 step_verify() {
   step_enabled verify || return 0
   local out=$WORK/out-$(short) xz iso want got size version
@@ -205,13 +221,15 @@ step_verify() {
   got=$(xz -dc "$xz" | { sha256 -q 2>/dev/null || sha256sum | cut -d' ' -f1; })
   [ -z "$want" ] || [ "$want" = "$got" ] || fail 'decompressed image does not match the raw .sha256'
   echo "raw_sha256=$got raw_size=$(xz -l --robot "$xz" | awk '/^totals/ { print $5 }')"
-  version=$(tr -d '[:space:]' <"$here/VERSION")
+  # The version of the commit being mastered, not of wherever this script runs from.
+  version=$(tr -d '[:space:]' <"$WORK/product-$(short)/VERSION")
   if command -v bsdtar >/dev/null; then
     [ "$(bsdtar -xOf "$iso" ./usr/local/share/daemonarchy-installer/version 2>/dev/null | head -1)" = "$version" ] \
       || fail "the image's installer version is not $version"
     # parallel-fetch reads pkg's databases with the live Python's sqlite3 module (exact @@plan byte totals).
     bsdtar -tf "$iso" 2>/dev/null | grep -q '_sqlite3' \
       || fail "the image's live Python has no sqlite3 module: add py312-sqlite3 to the live packages"
+    live_root_import_check "$iso" || fail "import sqlite3 fails in the image's live root"
   else
     echo "bsdtar not found: image version not checked" >&2
   fi
