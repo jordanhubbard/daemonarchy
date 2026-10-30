@@ -1,0 +1,186 @@
+#!/usr/local/bin/python3.12
+"""Record how long a login takes to reach a usable desktop.
+
+Run by the daemonarchy_login_trace rc service from boot until the first desktop
+is up, then exits. One JSON object is appended to
+/var/log/daemonarchy-login-trace.jsonl (schema daemonarchy/login-trace@1):
+
+  events      name -> microseconds since the Unix epoch, first time seen
+  since_login name -> milliseconds after the user's login for every later event
+  complete    true when the desktop came up, false if the watch timed out
+
+Milestones: boot, sddm, greeter_compositor, greeter_ready (login screen's
+compositor running), login (sddm-helper starts the user's session),
+ck_launch_session, dbus_run_session, user_compositor (the user's Hyprland),
+wayland_socket, monitor_ready (Hyprland's IPC reports a monitor, the first usable
+output), quickshell, xwayland.
+
+It polls ten times a second, so times have about 100 ms resolution, and it stores
+only milestone names and times: no command lines, paths, names or credentials.
+It exists to measure the login-to-desktop delay seen on the MSI (first frame
+about ten seconds after login) without disturbing it.
+"""
+import glob
+import json
+import os
+import pwd
+import socket
+import subprocess
+import sys
+import time
+
+SCHEMA = 'daemonarchy/login-trace@1'
+OUT = os.environ.get('DAEMONARCHY_LOGIN_TRACE', '/var/log/daemonarchy-login-trace.jsonl')
+POLL = float(os.environ.get('DAEMONARCHY_LOGIN_TRACE_POLL', '0.1'))
+TIMEOUT = float(os.environ.get('DAEMONARCHY_LOGIN_TRACE_TIMEOUT', '900'))
+KEEP_LINES = 200
+USER_UID = 1000
+COMPOSITORS = ('Hyprland', 'hyprland')
+
+
+def parse_ps(text):
+    """ps -axwwo pid,ppid,uid,comm,args (header line skipped) -> list of dicts."""
+    rows = []
+    for line in text.splitlines():
+        parts = line.split(None, 4)
+        if len(parts) < 4 or not all(p.isdigit() for p in parts[:3]):
+            continue
+        rows.append(dict(pid=int(parts[0]), ppid=int(parts[1]), uid=int(parts[2]),
+                         comm=parts[3], args=parts[4] if len(parts) > 4 else ''))
+    return rows
+
+
+class Recorder:
+    def __init__(self, sddm_uid):
+        self.sddm_uid = sddm_uid
+        self.events = {}
+
+    def mark(self, name, t_us):
+        self.events.setdefault(name, t_us)
+
+    def observe(self, rows, t_us, wayland_socket=False, monitor_ready=False):
+        for r in rows:
+            comm, args, uid = r['comm'], r['args'], r['uid']
+            user = uid >= USER_UID and uid != self.sddm_uid
+            if comm == 'sddm':
+                self.mark('sddm', t_us)
+            elif comm in COMPOSITORS and uid == self.sddm_uid:
+                self.mark('greeter_compositor', t_us)
+            elif comm == 'sddm-helper' and '--start' in args:
+                self.mark('greeter_ready' if '--greeter' in args else 'login', t_us)
+            elif user and 'ck-launch-session' in args.split(' -- ')[0]:
+                self.mark('ck_launch_session', t_us)
+            elif user and args.startswith('dbus-run-session'):
+                self.mark('dbus_run_session', t_us)
+            elif comm in COMPOSITORS and user:
+                self.mark('user_compositor', t_us)
+            elif comm == 'quickshell' and user:
+                self.mark('quickshell', t_us)
+            elif comm == 'Xwayland' and user:
+                self.mark('xwayland', t_us)
+        if wayland_socket:
+            self.mark('wayland_socket', t_us)
+        if monitor_ready:
+            self.mark('monitor_ready', t_us)
+
+    def done(self):
+        return {'login', 'user_compositor', 'monitor_ready', 'quickshell'} <= set(self.events)
+
+    def record(self, boot_us, complete):
+        login = self.events.get('login')
+        since = {}
+        if login is not None:
+            since = {k: round((v - login) / 1000) for k, v in self.events.items() if v >= login and k != 'login'}
+        return {'schema': SCHEMA, 'boot_us': boot_us, 'complete': complete,
+                'events': dict(sorted(self.events.items(), key=lambda kv: kv[1])),
+                'since_login_ms': dict(sorted(since.items(), key=lambda kv: kv[1]))}
+
+
+def monitors_ready():
+    """True when a user's Hyprland answers its IPC with at least one monitor."""
+    for path in glob.glob('/var/run/xdg/*/hypr/*/.socket.sock'):
+        try:
+            with socket.socket(socket.AF_UNIX, socket.SOCK_STREAM) as s:
+                s.settimeout(0.5)
+                s.connect(path)
+                s.sendall(b'j/monitors')
+                data = b''
+                while True:
+                    chunk = s.recv(65536)
+                    if not chunk:
+                        break
+                    data += chunk
+            if json.loads(data.decode('utf-8', 'replace') or '[]'):
+                return True
+        except (OSError, ValueError):
+            continue
+    return False
+
+
+def wayland_socket_up():
+    for path in glob.glob('/var/run/xdg/*/wayland-[0-9]*'):
+        if path.endswith('.lock'):
+            continue
+        try:
+            if os.stat(path).st_uid >= USER_UID:
+                return True
+        except OSError:
+            pass
+    return False
+
+
+def snapshot():
+    try:
+        # Normal headers: FreeBSD's ps prints nothing when every column header is empty.
+        out = subprocess.run(['ps', '-axwwo', 'pid,ppid,uid,comm,args'], capture_output=True,
+                             text=True, timeout=5).stdout
+    except (OSError, subprocess.SubprocessError):
+        return []
+    return parse_ps(out)
+
+
+def write(record, path=None):
+    path = path or OUT
+    try:
+        lines = []
+        if os.path.exists(path):
+            with open(path, encoding='utf-8') as f:
+                lines = f.read().splitlines()[-(KEEP_LINES - 1):]
+        lines.append(json.dumps(record, separators=(',', ':')))
+        with open(path, 'w', encoding='utf-8') as f:
+            f.write('\n'.join(lines) + '\n')
+    except OSError:
+        pass
+
+
+def now_us():
+    return time.time_ns() // 1000
+
+
+def main():
+    try:
+        sddm_uid = pwd.getpwnam('sddm').pw_uid
+    except KeyError:
+        sddm_uid = -1
+    rec = Recorder(sddm_uid)
+    boot = now_us()
+    rec.mark('boot', boot)
+    started = time.monotonic()
+    done_at = None
+    while time.monotonic() - started < TIMEOUT:
+        t = now_us()
+        ready = 'monitor_ready' in rec.events or ('user_compositor' in rec.events and monitors_ready())
+        sock = 'wayland_socket' in rec.events or wayland_socket_up()
+        rec.observe(snapshot(), t, wayland_socket=sock, monitor_ready=ready)
+        if rec.done():
+            done_at = done_at or time.monotonic()
+            if time.monotonic() - done_at >= 2.0:
+                write(rec.record(boot, True))
+                return 0
+        time.sleep(POLL)
+    write(rec.record(boot, False))
+    return 0
+
+
+if __name__ == '__main__':
+    sys.exit(main())

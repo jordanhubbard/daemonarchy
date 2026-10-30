@@ -408,6 +408,11 @@ install -m 0555 "$ISO_SHARE/clock/daemonarchy_clock" "$TARGET/usr/local/etc/rc.d
 printf '# Record the time for daemonarchy_clock'"'"'s boot-time floor.\n*/15\t*\t*\t*\t*\troot\t/usr/local/etc/rc.d/daemonarchy_clock save\n' \
   >"$TARGET/usr/local/etc/cron.d/daemonarchy-clock"
 touch "$TARGET/var/db/daemonarchy/clock"
+# Time the login-to-desktop path from the first boot on (milestones and times only;
+# see login-trace). The first login after an install shows a delay to first frame.
+install -d -m 0755 "$TARGET/usr/local/libexec"
+install -m 0555 "$(dirname "$0")/login-trace" "$TARGET/usr/local/libexec/daemonarchy-login-trace"
+install -m 0555 "$ISO_SHARE/login-trace/daemonarchy_login_trace" "$TARGET/usr/local/etc/rc.d/daemonarchy_login_trace"
 # GPU modules are loaded by daemonarchy-graphics after SSH, not early kld.
 [[ -n $vt_keymap ]] && echo "keymap=\"${vt_keymap%.kbd}\"" >>"$TARGET/etc/rc.conf"
 
