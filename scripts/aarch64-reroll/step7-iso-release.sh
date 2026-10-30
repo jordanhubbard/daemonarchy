@@ -8,6 +8,8 @@ A=/home/jkh/a141
 R=https://github.com/jordanhubbard/daemonarchy/releases/download
 state() { echo "$1 $(date -u +%Y-%m-%dT%H:%M:%SZ)" >> $A/state; }
 state iso-release-start
+# A build leaves system-immutable files in its stage; clear the flags before removing it.
+chflags -R noschg,nosunlnk $A/stage-release 2>/dev/null || true
 rm -rf $A/product-release $A/out-release $A/stage-release; mkdir -p $A/out-release $A/stage-release
 git clone -q --depth 1 https://github.com/jordanhubbard/daemonarchy.git $A/product-release
 git -C $A/product-release rev-parse HEAD > $A/product-release-rev.txt
@@ -15,8 +17,8 @@ cd $A/product-release
 set +e
 env ARCH=aarch64 JAIL=16aarch64r2 PTREE=daemonarchy141 \
   SET_CACHE_DIR=/var/cache/daemonarchy-iso-aarch64-303b364 OUTDIR=$A/out-release ISO_STAGE_PARENT=$A/stage-release \
-  CHECKOUT_CATALOG=$A/checkout-feed/checkouts.json \
-  PACKAGE_REPOSITORY_TAG=packages-16-aarch64-1.4.1 \
+  CHECKOUT_CATALOG=$A/${CHECKOUT_FEED_DIR:-checkout-feed}/checkouts.json \
+  PACKAGE_REPOSITORY_TAG=${PACKAGE_REPOSITORY_TAG:-packages-16-aarch64-1.4.1} \
   PACKAGE_REPOSITORY_PUBLIC_KEY=$A/product-release/keys/pkg-repo-1.3.1.pub \
   PACKAGE_MIRROR_URLS="$R/packages-16-aarch64-1.4.1-upstream $R/packages-16-aarch64-1.4.1-upstream-2" \
   REQUIRE_PACKAGE_MIRROR=yes \
