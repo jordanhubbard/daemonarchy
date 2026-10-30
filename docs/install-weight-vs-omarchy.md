@@ -1,19 +1,33 @@
 # Why Omarchy installs quickly and Daemonarchy slowly
 
-Written 2026-10-30 as the investigation record for INSTALL-PERF-001 and PKG-002. Sources: Omarchy `quattro`
-at `5ea3d951` (`install/omarchy-base.packages`, `install/omarchy-other.packages`,
-`bin/omarchy-install-*`), the Omarchy 4.0.4 ISO and its fresh-install manifest
-(`omarchy-iso/manifests/fresh-4.json`), Daemonarchy's 1.4.0 application feed
+Written 2026-10-30 as the investigation record for INSTALL-PERF-001 and PKG-002. Sources: Omarchy's latest
+release, v4.0.6 (2026-10-19; a 4.5.0 release candidate exists), and `quattro` at
+`5ea3d951` for the package lists (`install/omarchy-base.packages`,
+`install/omarchy-other.packages`, `bin/omarchy-install-*`); the Omarchy 4.0.4 ISO;
+a measured fresh-install manifest of an early 4.0 build
+(`omarchy-iso/manifests/fresh-4.json`, version `4.0.0.alpha`, 940 packages);
+Arch `core`/`extra` and the `omarchy` repository databases from Omarchy's
+stable mirrors; Daemonarchy's 1.4.0 application feed
 and `pkg.FreeBSD.org` `FreeBSD:16:amd64/latest`, measured with
 `scripts/package-mirror-plan.py`, and the recovered live8 install record
 (`verification/installer-live8-recovered-baseline-development.json`).
 Omarchy's "about ten minutes" is its documented figure; it was not reproduced here.
+The Omarchy package totals come from `scripts/omarchy-package-closure.py`, which resolves a
+release's lists through the Arch and Omarchy databases; `nvim` is the one root those
+databases do not carry, so the totals are a little low.
 
 ## Short answer
 
-1. **We do not install far more packages.** A fresh Omarchy 4.0.4 system has
-   **940** packages (151 explicit). Our 1.4.0 install has **1,189** (the fixed
-   roots alone resolve to 1,002), about 1.2 times as many.
+1. **We install a few more packages but about twice the bytes.** Omarchy v4.0.6
+   resolves to about **918** packages in total: its 147 base entries plus the
+   system packages (`base`, `linux-firmware`, `linux-omarchy`, `limine` and
+   friends), 2.7 GiB of archives and 7.9 GiB installed. The method was checked
+   against the one measured install: the 151 explicit packages of the `fresh-4`
+   snapshot resolve to 948 against the 940 actually installed. Our 1.4.0 install
+   has **1,189** packages (the fixed roots alone resolve to 1,002), 5.55 GiB of
+   archives and 16.8 GiB installed: about 1.3 times the packages, **2 times the
+   bytes**. The explicit lists are similar (147 for v4.0.6, 156 on `quattro`);
+   our per-package weight is not.
 2. **Omarchy installs most things up front, not on demand.** Its 156-entry base
    list includes `libreoffice-fresh`, `kdenlive`, `obs-studio`, `obsidian`,
    `chromium`, `clang`, `llvm`, `docker`, `dotnet-runtime`, `qemu-user-static-binfmt`
@@ -29,6 +43,10 @@ Omarchy's "about ten minutes" is its documented figure; it was not reproduced he
    other 3.78 GB of the 5.55 GB closure comes over the network during the
    install. On the live8 run that was 2,565 s of fetch against 141 s of package
    installation. On one Wi-Fi link on real hardware it is hours.
+
+The count itself is not the problem; the bytes are. Removing the candidates
+below would bring the installed size from about 16.8 GiB to about 11.5 GiB, nearer
+Omarchy's 7.9 GiB, though not equal to it.
 
 So moving packages on demand would shrink the ISO and the first install, but it
 is not what makes Omarchy fast. Local delivery is. The two combine: carry a

@@ -113,7 +113,7 @@ items below were 1.4 acceptance rows. They moved here so they no longer block
   [install-trace.md](../install-trace.md)) so each change is judged on the same
   per-operation numbers. The comparison with Omarchy is in
   [install-weight-vs-omarchy.md](../install-weight-vs-omarchy.md): it installs
-  940 packages, mostly up front, but from local media; our 1,189 are fetched.
+  about 918 packages (v4.0.6; 7.9 GiB installed), mostly up front, but from local media; our 1,189 packages (16.8 GiB installed) are fetched.
 - **Self-hosted packages for both architectures**
   ([PKG-002](active-work.md#pkg-002-self-host-the-installers-package-closure-for-both-architectures),
   [issue #142](https://github.com/jordanhubbard/daemonarchy/issues/142)). The
