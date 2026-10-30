@@ -187,6 +187,35 @@ class ClosureFeeds(ReleaseAssetNames):
             with self.subTest(label), self.assertRaises(ValueError):
                 assets.read_record(self.path)
 
+    def test_published_check_pages_through_hundreds_of_assets(self):
+        names = [f"p{n}-1.pkg" for n in range(250)] + ["data.pkg", "meta", "meta.conf"]
+        feed = {"tag": "packages-16-amd64-1.4.1-upstream", "assets": {n: [5, "sha256:" + "e" * 64] for n in names}}
+        self.write([feed])
+        record, _ = assets.read_record(self.path)
+        listing = [{"name": n, "size": 5, "digest": "sha256:" + "e" * 64, "state": "uploaded"} for n in names]
+        pages = []
+
+        def fake(path):
+            if path.startswith("releases/tags/"):
+                return {"tag_name": feed["tag"], "draft": False, "id": 7}
+            page = int(path.rsplit("page=", 1)[1])
+            pages.append(page)
+            return listing[(page - 1) * 100: page * 100]
+
+        original = assets.github
+        try:
+            assets.github = fake
+            assets.verify_published_closure(record, {"id": 99})
+            self.assertEqual(pages, [1, 2, 3])
+            listing[3]["state"] = "starter"
+            with self.assertRaisesRegex(ValueError, "incomplete"):
+                assets.verify_published_closure(record, {"id": 99})
+            listing[3]["state"] = "uploaded"
+            with self.assertRaisesRegex(ValueError, "non-latest"):
+                assets.verify_published_closure(record, {"id": 7})
+        finally:
+            assets.github = original
+
     def test_staged_feed_must_match_and_hold_no_private_key(self):
         feed = self.feed()
         base = Path(self.temporary.name) / "closure"

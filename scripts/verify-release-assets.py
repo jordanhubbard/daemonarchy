@@ -314,9 +314,18 @@ def verify_published_closure(record, latest):
         release = github(f"releases/tags/{tag}")
         if release.get("tag_name") != tag or release.get("draft") is not False or release.get("id") == latest.get("id"):
             raise ValueError(f"Closure feed {tag} is not a published, non-latest release")
-        observed = release.get("assets")
-        if not isinstance(observed, list) or len(observed) != len(assets):
-            raise ValueError(f"Published closure feed {tag} asset count differs")
+        # The release object lists at most 100 assets; a closure shard has hundreds.
+        observed, page = [], 1
+        while True:
+            chunk = github(f"releases/{release.get('id')}/assets?per_page=100&page={page}")
+            if not isinstance(chunk, list):
+                raise ValueError(f"Published closure feed {tag} asset listing is invalid")
+            observed += chunk
+            if len(chunk) < 100:
+                break
+            page += 1
+        if len(observed) != len(assets) or any(entry.get("state") != "uploaded" for entry in observed if isinstance(entry, dict)):
+            raise ValueError(f"Published closure feed {tag} asset count differs or an upload is incomplete")
         found = {entry.get("name"): entry for entry in observed if isinstance(entry, dict)}
         if set(found) != set(assets) or len(found) != len(observed):
             raise ValueError(f"Published closure feed {tag} asset names differ")
