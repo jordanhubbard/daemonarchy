@@ -29,6 +29,8 @@ on:
       - 'VERSION'
       - 'scripts/version.py'
       - 'tests/version-sync.py'
+      - 'scripts/package-mirror-plan.py'
+      - 'tests/package-mirror-plan.py'
       - 'scripts/release-current.py'
       - 'release/**'
       - '**.md'
@@ -63,6 +65,8 @@ on:
       - 'VERSION'
       - 'scripts/version.py'
       - 'tests/version-sync.py'
+      - 'scripts/package-mirror-plan.py'
+      - 'tests/package-mirror-plan.py'
       - 'scripts/release-current.py'
       - 'release/**'
       - '**.md'
@@ -92,6 +96,10 @@ jobs:
         env:
           PYTHONDONTWRITEBYTECODE: '1'
         run: python3 tests/version-sync.py -v
+      - name: Package mirror plan
+        env:
+          PYTHONDONTWRITEBYTECODE: '1'
+        run: python3 tests/package-mirror-plan.py -v
 
   controls:
     runs-on: ubuntu-latest

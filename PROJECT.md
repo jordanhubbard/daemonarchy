@@ -105,6 +105,8 @@ worker, storage, network and cache context; native measurements and the package
 path changes remain open. PKG-001 retains exact catalogue, acquisition and safe
 transaction ownership. A larger ISO, an unpinned ambient cache or parallel pkg
 database writers cannot substitute for those acceptance boundaries.
+PKG-002 (issue #142) self-hosts the installer's package closure for both
+architectures; its first measurement tool is `scripts/package-mirror-plan.py`.
 
 VISUAL-SDK-001 (issue #139) extracts the installer's text and graphical
 rendering, animation/effects, input and audio presentation surface into an
