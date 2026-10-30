@@ -1090,6 +1090,44 @@ coordinated operation.
    image name from it, not from the `daemonarchy` package, which is reused
    across releases. Bump it in the same change that starts a release cycle.
 
+   **Closure feeds (mandatory from 1.4.1).** The installer must not depend on
+   pkg.FreeBSD.org's moving `latest` (it dropped `tigervnc-viewer` one day after
+   1.4.0 and every fresh install failed). Each release hosts the whole installer
+   closure, upstream packages included, as signed, versioned, non-latest GitHub
+   release feeds per architecture, and the image prefers them. Before the ISO is
+   built and tested:
+   1. Resolve the closure: `scripts/package-mirror-plan.py --json --upstream FreeBSD`
+      over the ISO's package catalogue, our application feed and
+      `pkg.FreeBSD.org`, with the fixed roots plus every GPU, Wi-Fi and CUDA
+      selection root. It must report `unsatisfied: []`.
+   2. Fetch the hosted archives (`parallel-fetch`, about 4 connections to
+      pkg.FreeBSD.org) and stage them with `scripts/package-feed-stage.py stage`,
+      signed on the build host with the release's pkg repository key (the key
+      never leaves that host). It copies each archive under a GitHub-safe name,
+      builds the signed catalogue and requires its checksums to equal upstream's;
+      `verify` re-checks the shard. Shards stay under 900 packages (GitHub allows
+      1000 assets, 2 GiB each); every asset is already compressed (zstd packages and
+      the pkg catalogue); nothing uncompressed is uploaded.
+   3. `package-feed-stage.py publish-plan` writes the exact `gh` commands. The
+      operator approves it; every tag is new (`packages-16-<arch>-<version>-upstream`
+      or `-upstream-N`), `--latest=false`, never replaced in place, and packages
+      upload before the catalogue that names them. Verify with an independent
+      re-download hash check.
+   4. Record every feed's per-asset size and SHA-256 in the release-inputs record
+      (`closure_feeds`). `scripts/verify-release-assets.py --closure-assets DIR`
+      (and `--published`) refuses a 1.4.1-or-later record without them, any raw
+      payload or private key material, and a published feed that is draft, the
+      latest release, or differs in asset names, sizes or digests.
+   5. Build the ISO with `PACKAGE_MIRROR_URLS` naming the shards and
+      `REQUIRE_PACKAGE_MIRROR=yes`: `build-iso.sh` then refuses a feed that is
+      missing, not answering, unsigned, or that does not resolve the installer
+      roots with pkg.FreeBSD.org disabled (`scripts/check-closure-feed.sh`).
+   6. **Closure refresh.** `scripts/package-mirror-plan.py --fail-on-unsatisfied`
+      is a release gate and runs daily (`upstream-drift.yml`). When upstream moves
+      (a package disappears or changes soname, as `tigervnc-viewer`/`fltk` did),
+      build the missing package with our ports, add its origin to `origins.sh`, and
+      stage a new snapshot as the next `-upstream` tag; do not edit a published one.
+
 2. Finish required review/checks, merge and synchronize the installer source,
    then tag the exact reviewed commit. Publish a normal stable GitHub release
    `daemonarchy-<version>`, marked latest. Standard public assets are the ISO,
