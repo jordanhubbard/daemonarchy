@@ -197,17 +197,21 @@ step_iso() {
 # On a FreeBSD builder as root: mount the built image read-only and import sqlite3 with the live
 # root's own Python (parallel-fetch needs it for exact install-plan byte totals).
 live_root_import_check() {
-  local iso=$1 md mnt
+  local iso=$1 md mnt status=1
   if [ "$(uname -s)" != FreeBSD ] || [ "$(id -u)" != 0 ]; then
     echo "live-root import check skipped (needs a FreeBSD builder and root)" >&2
     return 0
   fi
   mnt=$(mktemp -d)
   md=$(mdconfig -a -t vnode -o readonly -f "$iso") || return 1
-  # shellcheck disable=SC2064
-  trap "umount '$mnt' 2>/dev/null; mdconfig -d -u '${md#md}' 2>/dev/null; rmdir '$mnt' 2>/dev/null" RETURN
-  mount -t cd9660 -o ro "/dev/$md" "$mnt" || return 1
-  chroot "$mnt" /usr/local/bin/python3.12 -c 'import sqlite3; c = sqlite3.connect(":memory:"); assert c.execute("select 42").fetchone()[0] == 42; print("live root: import sqlite3 ok, sqlite", sqlite3.sqlite_version)'
+  # Clean up by hand: a RETURN trap set here outlives the function and fires on later returns.
+  if mount -t cd9660 -o ro "/dev/$md" "$mnt"; then
+    chroot "$mnt" /usr/local/bin/python3.12 -c 'import sqlite3; c = sqlite3.connect(":memory:"); assert c.execute("select 42").fetchone()[0] == 42; print("live root: import sqlite3 ok, sqlite", sqlite3.sqlite_version)' && status=0
+    umount "$mnt" 2>/dev/null || true
+  fi
+  mdconfig -d -u "${md#md}" 2>/dev/null || true
+  rmdir "$mnt" 2>/dev/null || true
+  return $status
 }
 
 step_verify() {
