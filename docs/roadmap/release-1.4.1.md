@@ -130,6 +130,22 @@ items below were 1.4 acceptance rows. They moved here so they no longer block
   verification unchanged, and the package set still installing a working
   desktop.
 
+- **Install failure on NVIDIA hardware, fixed before announcement.** The 1.4.0
+  image failed on the MSI Raider at the final package integrity check when the
+  default CUDA offer was accepted: the installer had replaced the desktop's
+  vendor menu and the CUDA phase's Rocky `dnf` had replaced files owned by
+  `linux-rl9` packages, so verification reported them as corrupt and `pkg
+  check` aborted on a path that had become a directory. The MacBook, with no
+  NVIDIA GPU, never ran either step. Verification now runs before those
+  additions ([#144](https://github.com/jordanhubbard/daemonarchy/pull/144)).
+  Acceptance: a complete install of the rebuilt image on the MSI with CUDA
+  and cudalab. QEMU has no NVIDIA GPU, so only that run covers it. 1.4.0 was
+  published but not announced; 1.4.1 is the patch-before-announce release.
+- **Every other open queue item moves here.** 1.4.0 closed with its
+  remaining acceptance rows open; by operator decision on 2026-10-30 all open
+  items in [active-work.md](active-work.md) carry `Release: 1.4.1`:
+  ADOPT-002, UI-001, PKG-001, GUI-001, SRC-001, DEBUG-001, HW-001, RELEASE-001, COMP-001, PERF-001, PERF-002, DEV-001, TESTISO-001, HW-002, HW-003, DEBUG-002, DEBUG-003, ARCH-001, LIVE-001, NET-001, DEBUG-004, GPU-001, NET-002, HW-004, WORKER-001. None is claimed done by 1.4.0. They keep their own
+  evidence requirements; this list is scope, not progress.
 - **Loose ends found in 1.4.0.** The MSI touchpad runs in polling mode (the I2C-HID
   interrupt is not wired through). Only I2C controller 0 (`8086:7f4c`) of the
   Arrow Lake-S PCH is recognised in `ig4`, so a touchpad on another function would

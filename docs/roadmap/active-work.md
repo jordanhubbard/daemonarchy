@@ -96,6 +96,7 @@ Evidence: `verification/adoption-checks.json`. Native execution and release enfo
 ### [ ] ADOPT-002 — Qualify retained native execution and release enforcement
 
 - **Priority:** P1
+- **Release:** 1.4.1 (carried over; not claimed done by 1.4.0)
 - **Owner:** native lifecycle integration and framework boundary
 - **Direction:** Integrate existing FreeBSD build, test, signing and release procedures without transferring source authority.
 - **Conclusion:** Do not enable framework execution or publication until exact mixed source/assets, worker/toolchain, privileged cleanup, artifact custody and current receipt paths are demonstrated; the installed candidate provides the retained handler, while the actual product profile and native acceptance remain unfinished.
@@ -221,7 +222,7 @@ lifecycle authority.
 
 ### [ ] UI-001 — Deliver measured retro installer visualizers
 
-- **Release:** 1.4.0 headline feature; [A15 in the 1.4 ledger](1.4-coverage-ledger.md#acceptance-rows).
+- **Release:** 1.4.1 (carried from 1.4.0 headline feature; [A15 in the 1.4 ledger](1.4-coverage-ledger.md#acceptance-rows).)
 - **Priority:** P1 (raised from P2 on 2026-10-26 by operator direction)
 - **Owner:** installer and desktop Components
 - **Direction:** Use colorful Winamp-inspired ANSI animation to show useful installation stage, disk, package and network activity.
@@ -248,6 +249,7 @@ lifecycle authority.
 ### [ ] PKG-001 — Implement the release package DAG and safe parallel transactions
 
 - **Priority:** P1
+- **Release:** 1.4.1 (carried over; not claimed done by 1.4.0)
 - **Owner:** package-engine Component
 - **Direction:** Plan the complete release package closure and pursue parallel download and leaf-package installation.
 - **Conclusion:** Use exact catalogue identities and one coordinator; graph independence alone does not establish safe script, database or file-side-effect concurrency.
@@ -289,6 +291,7 @@ lifecycle authority.
 ### [ ] GUI-001 — Deliver a colorful fast graphical package manager
 
 - **Priority:** P2
+- **Release:** 1.4.1 (carried over; not claimed done by 1.4.0)
 - **Owner:** desktop and package-engine Components
 - **Direction:** Provide the same useful visual progress and parallel execution in graphical package management, contributing a port if a new application is needed.
 - **Conclusion:** Evaluate the current manager; share the transaction engine and progress semantics rather than build a competing planner.
@@ -301,6 +304,7 @@ lifecycle authority.
 ### [ ] SRC-001 — Establish owned FreeBSD source builds and packages
 
 - **Priority:** P1
+- **Release:** 1.4.1 (carried over; not claimed done by 1.4.0)
 - **Owner:** release and diagnostics Components; daemonarchy-src fork
 - **Direction:** Build modified FreeBSD-CURRENT from the owned source fork, retaining upstream provenance and coherent kernel/world/source package selections.
 - **Conclusion:** Introduce clean exact-commit native builds with isolated objects/staging, GENERIC and diagnostic profiles, pkgbase and installer-set outputs, bounded jobs and verifiable build records. Do not install on build workers or publish unsigned development outputs as releases.
@@ -319,6 +323,7 @@ lifecycle authority.
 - **Current release scheduling:** The complete network bootloader, `mountroot>`, early-kernel and panic transport, and MSI built-in-NIC capture belong to DEBUG-003 as **1.4 P0**. Prior release artifacts and the development history below retain their original scope.
 
 - **Priority:** P0 — next-release blocker
+- **Release:** 1.4.1 (carried over; not claimed done by 1.4.0)
 - **Owner:** diagnostics and verified-boot Components
 - **Direction:** Implement and qualify loader and early-kernel network debugging using a supported hard-wired NIC. The product and its runtime qualification are FreeBSD-only; implementation proceeds while parent CI is pending.
 - **Conclusion:** Existing GENERIC networking facilities do not establish loader-to-early-kernel transport; design source-fork, trust and crash coverage before claiming support.
@@ -370,6 +375,7 @@ lifecycle authority.
 ### [ ] HW-001 — Close remaining physical hardware qualification gaps
 
 - **Priority:** P1
+- **Release:** 1.4.1 (carried over; not claimed done by 1.4.0)
 - **Owner:** desktop, compatibility and diagnostics Components
 - **Direction:** Keep unresolved GPU, radio, boot and restart behavior explicit while extending physical acceptance.
 - **Conclusion:** HP desktop/application acceptance passed. On the MacBook, a refreshed graphics package and T2 keyboard test kernel reached a visible desktop and accepted a password; the pointer worked after initial lag. A private BCM4364 driver and board firmware joined WPA2, obtained DHCP and reached the gateway, and the desktop Wi-Fi panel connected. The operator confirmed on October 24 that all Intel 16-inch MacBook Pro pre-production checks passed and waived a final-ISO physical rerun. Earlier preview gaps and failures remain historical observations on their original images, not current 1.3.1 publication blockers. The final public ISO has no claimed physical run or hardware-rooted T2 attestation. Other hardware platforms and future driver improvements remain tracked here. See [preview evidence](../testing-macbookpro16-1-wifi-preview-20261022.md) and the [release decision](../../verification/macbook-release-decision-1.3.1.json).
@@ -387,6 +393,7 @@ lifecycle authority.
 - **GitHub issue:** [#11](https://github.com/jordanhubbard/daemonarchy/issues/11)
 
 - **Priority:** P1
+- **Release:** 1.4.1 (carried over; not claimed done by 1.4.0)
 - **Owner:** whole product, release and acceptance
 - **Direction:** Finish the retained backlog and publish a future release entirely through qualified Literate AI execution across the owned repositories. The original 1.2.0 milestone was not published; 1.3.1 records the intervening development but uses its separately verified native release workflow.
 - **Conclusion:** This remains a 1.4 goal. Its existence proof must include actual native build, complete declared testing, artifact custody and publication; authority-only adoption, waived backlog, or the 1.3.1 native release cannot close it.
@@ -687,6 +694,7 @@ before claiming the observer optimization resolves that release blocker.
 - **Detailed plan:** [Complete source/ports Component coverage](freebsd-components.md)
 
 - **Priority:** P1
+- **Release:** 1.4.1 (carried over; not claimed done by 1.4.0)
 - **Owner:** source and ports Component inventories; framework retained native lifecycle
 - **Direction:** Represent all of /usr/src and all of /usr/ports as Literate AI Components, not opaque external trees.
 - **Conclusion:** Require complete pinned tree ownership, native build-unit and port-origin contracts, target/options variants, dependency composition and honest per-component evidence while preserving upstream implementation authority.
@@ -710,6 +718,7 @@ before claiming the observer optimization resolves that release blocker.
 - **Detailed plan:** [Native Component execution and build performance](build-performance.md)
 
 - **Priority:** P1
+- **Release:** 1.4.1 (carried over; not claimed done by 1.4.0)
 - **Owner:** release build graph, native Component lifecycle and build-system Flavors
 - **Direction:** After establishing the source/ports graph, use LitAI to execute literal Components and substantially improve FreeBSD ISO build and packaging time; replacing make with Bazel, Buck2 or another suitable system is authorized.
 - **Conclusion:** Measure the current native baseline, establish complete package/provenance/dependency coverage, and choose execution, caching, incremental and packaging changes from evidence. Preserve exact output correctness and native acceptance; a wrapper or renamed executor is insufficient.
@@ -728,6 +737,7 @@ before claiming the observer optimization resolves that release blocker.
 - **GitHub issue:** [#39](https://github.com/jordanhubbard/daemonarchy/issues/39); [1.4.0 milestone](https://github.com/jordanhubbard/daemonarchy/milestone/3).
 - **Detailed plan:** [1.4.0 cross-repository build and release graph](release-1.4.0.md).
 - **Priority:** P1 for 1.4.0; outside the 1.3.1 release and 1.3.2 MSI acceptance paths.
+- **Release:** 1.4.1 (carried over; not claimed done by 1.4.0)
 - **Owner:** LitAI native lifecycle, owned source/ports/desktop/compatibility forks and product release integration.
 - **Direction:** Select exact commits across all owned release-input repositories, resolve their complete native build/test/package/release dependency graph, and schedule ready actions across multiple physical machines with LitAI's parallel workers and a shared verified artifact cache. Treat ports and packages as build artifacts; evaluate Bazel incremental builds, remote cache/execution and other suitable tools. FreeBSD make and Poudriere are optional executors.
 - **Fork authority:** The owned FreeBSD source and ports forks are in scope for any 1.4 build, ports, package, ABI or cache integration changes needed to deliver this flow. Keep their native contracts and reviewable FreeBSD CURRENT refreshes; land changes in each fork's main before the release selection is locked.
@@ -789,6 +799,7 @@ before claiming the observer optimization resolves that release blocker.
   attempt. [Checkpoint](../../verification/native-sdk-build-development.json).
 
 - **Priority:** P1
+- **Release:** 1.4.1 (carried over; not claimed done by 1.4.0)
 - **Owner:** release Component, source and ports forks, native framework lifecycle
 - **Direction:** Make the complete source and ports Component build, test, package, ISO creation and installation system available on the operator development workstation at /usr/src and /usr/ports, managed by Literate AI.
 - **Conclusion:** Preserve the running desktop and existing data; deploy editable fork checkouts and the qualified framework, then prove unchanged and changed-input incremental builds, tests, package provenance, ISO creation and installation against exact native inputs. Checkout availability alone does not complete this work.
@@ -927,6 +938,7 @@ before claiming the observer optimization resolves that release blocker.
 ### [ ] TESTISO-001 — Prepare the 1.2 hardware test ISO before physical qualification
 
 - **Priority:** P1
+- **Release:** 1.4.1 (carried over; not claimed done by 1.4.0)
 - **Owner:** release assembly and source/ports integration
 - **Direction:** Produce an isolated exact-input test ISO carrying the reviewed fixes before asking the operator to run hardware qualification.
 - **Conclusion:** Prepare and qualify assembly independently of final release publication; physical acceptance is downstream of the test artifact.
@@ -1014,6 +1026,7 @@ remains open; report files do not establish a passing gate.
 ### [ ] HW-002 — Diagnose MacBook installer interruption and qualify storage recovery
 
 - **Priority:** P1
+- **Release:** 1.4.1 (carried over; not claimed done by 1.4.0)
 - **Owner:** installer and diagnostics Components with native FreeBSD storage
 - **Direction:** Resolve the reproduced Apple ANS2 fatal storage event before MacBook hardware acceptance for the next release.
 - **Conclusion:** Package registration and progress do not establish completion; preserve the interrupted target and controller evidence, then qualify a storage correction and complete native installation and desktop acceptance.
@@ -1028,6 +1041,7 @@ remains open; report files do not establish a passing gate.
 ### [ ] HW-003 — Acquire and install required laptop firmware
 
 - **Priority:** P1
+- **Release:** 1.4.1 (carried over; not claimed done by 1.4.0)
 - **Owner:** installer and compatibility Components with native FreeBSD driver integration
 - **Direction:** Support laptops that need device-specific firmware during installation, including a MacBook whose macOS installation was wiped.
 - **Conclusion:** Firmware acquisition is part of installer completion when a selected built-in device requires it; a network panel cannot compensate for an unattached driver or absent firmware.
@@ -1046,6 +1060,7 @@ remains open; report files do not establish a passing gate.
 ### [ ] DEBUG-002 — Preserve approved hardware-debugging sessions across reboot
 
 - **Priority:** P1
+- **Release:** 1.4.1 (carried over; not claimed done by 1.4.0)
 - **Owner:** diagnostics and installer Components
 - **Direction:** Support repeated hardware bring-up cycles without deleting the previous grant or requiring fresh approval of the same agent.
 - **Conclusion:** Retain private approval and host identity on installed storage; refresh runtime generation, refuse unknown keys on background resume and preserve explicit revocation.
@@ -1063,6 +1078,7 @@ remains open; report files do not establish a passing gate.
 - **GitHub issue:** [#33](https://github.com/jordanhubbard/daemonarchy/issues/33), milestone **1.4.0**; source [#21](https://github.com/jordanhubbard/daemonarchy-src/issues/21), also in 1.4.0.
 - **Release scope:** [Current 1.4 plan](release-1.4.0.md) supersedes the [earlier 1.3.2 plan](release-1.3.2.md). Preserve the published 1.3.1 ISO, tags, feeds, signing material, source and native evidence. Historical product #27 closed after prerequisites merged; complete-feature acceptance remains open here.
 - **Priority:** P0
+- **Release:** 1.4.1 (carried over; not claimed done by 1.4.0)
 - **Owner:** diagnostics, owned FreeBSD source and release integration
 - **Direction:** Provide explicitly enabled plain wired console control without SSH, a new key or pairing from boot blocks/loader through a forced `mountroot>` prompt, early startup and deliberate panic. Include kernel/module selection, variables and Lua, bounded polled bidirectional transport, retained last-stage output after reset and orderly native-NIC takeover.
 - **Conclusion:** A preloaded NIC kernel module does not supply loader networking or establish the early transport. Loader-only output, inventory and initialized-driver NetGDB do not satisfy the MSI reset use case.
@@ -1083,6 +1099,7 @@ remains open; report files do not establish a passing gate.
 
 - **GitHub issue:** [#62](https://github.com/jordanhubbard/daemonarchy/issues/62), milestone **1.4.0**.
 - **Priority:** P1
+- **Release:** 1.4.1 (carried over; not claimed done by 1.4.0)
 - **Owner:** release integration, owned FreeBSD source and ports, installer and desktop packaging
 - **Direction:** Build, package, install and boot Daemonarchy for aarch64 alongside amd64 from the same selected source, ports, desktop and compatibility revisions. Use virtual machines as the qualifying test bed now; enlist Apple M1-M4 laptops as test machines only after the virtualized image passes its matrix.
 - **Conclusion:** Each architecture keeps its own artifacts, feeds, timings and evidence; amd64 results never qualify aarch64. Virtualized acceptance qualifies only virtualized operation, and a laptop result is scoped to its exact model and execution mode (hosted VM or bare metal).
@@ -1102,6 +1119,7 @@ remains open; report files do not establish a passing gate.
 
 - **GitHub issue:** [#67](https://github.com/jordanhubbard/daemonarchy/issues/67), milestone **1.4.0**.
 - **Priority:** P1
+- **Release:** 1.4.1 (carried over; not claimed done by 1.4.0)
 - **Owner:** installer, live image and desktop packaging
 - **Direction:** Add a boot option that starts a minimal Daemonarchy desktop entirely from the ISO and RAM, matching what the FreeBSD installer media already offers. It must show whether the desktop boots on the target hardware and provide enough application surface to run the complete installation graphically instead of on the TUI.
 - **Conclusion:** The live set is deliberately minimal: compositor, terminal and a graphical installer front-end over the existing install engine and configuration file, not the full application set. The read-only ISO root is made usable without unionfs: /etc, /usr/local/etc, /root and /home are copied into tmpfs at boot, and GPU payloads are added only on tmpfs layers mounted with -o union, which can add files but never replace ISO files. A unionfs probe over the ISO's /etc stopped a FreeBSD 16-CURRENT host during pw's password database rename (crash dump pending), so unionfs is not used. GPU modules come from the ISO repository, so no network is required. Nothing is written to any disk until the operator starts an installation, and a failed desktop start falls back to the TUI installer. The live account has passwordless sudo: the operator decided on 2026-10-26 that a live demo and installer controlled entirely by the person at the keyboard is not a server install, so no password prompt is needed.
@@ -1125,6 +1143,7 @@ remains open; report files do not establish a passing gate.
 
 - **GitHub issue:** [#80](https://github.com/jordanhubbard/daemonarchy/issues/80), milestone **1.4.0**.
 - **Priority:** P1
+- **Release:** 1.4.1 (carried over; not claimed done by 1.4.0)
 - **Owner:** installer, live image and unattended install
 - **Direction:** Before any disk change, find every wired, USB-tethering and wireless adapter (including devices still waiting for firmware), probe all wired ports for DHCP concurrently with bounded timeouts, choose the primary connection, prove DNS with direct lookups (DHCP servers, then Cloudflare, Google and Quad9, then a user server that must answer), make the clock usable, load missing firmware, and bring up Wi-Fi; Wi-Fi first when no cable works.
 - **Conclusion:** One shared pipeline (network-bringup) serves the text configurator, the live graphical installer and unattended CIDATA installs. DNS is proven by a record lookup sent to the server, never by ICMP. A usable clock is no earlier than the image build and inside the signing certificate validity; network time is tried before the manual clock. Every step is bounded, retryable, reported in plain language and logged; unattended installs honor net_* answers and fail with a clear message instead of prompting.
@@ -1140,6 +1159,7 @@ remains open; report files do not establish a passing gate.
 ### [ ] DEBUG-004 — Ship a hardware bring-up trace image for developers and agentic researchers
 
 - **Priority:** P1
+- **Release:** 1.4.1 (carried over; not claimed done by 1.4.0)
 - **Owner:** diagnostics, owned FreeBSD source and release integration
 - **Direction:** Master a separate hardware bring-up / trace image (daemonarchy-hwtrace-VERSION-amd64.img) beside the install/live ISO: boottrace kernel and modules, the boottrace loader with the unattended experiment cycle as its only behaviour, /boot/d presets, a rescue root that saves dmesg/sysctl/pciconf/devinfo/acpidump to DATRACE when a boot reaches init, and the DATRACE queue/trace partition.
 - **Conclusion:** Unattended cycling cannot coexist with the install ISO's interactive menu, so the trace loop is its own image type; the standard ISO keeps at most the interactive single traced boot.
@@ -1154,6 +1174,7 @@ remains open; report files do not establish a passing gate.
 ### [ ] GPU-001 — Qualify cross-vendor GPU diagnostics and a Daemonarchy showcase
 
 - **Priority:** P1
+- **Release:** 1.4.1 (carried over; not claimed done by 1.4.0)
 - **Owner:** desktop and physical hardware qualification
 - **Direction:** Add glmark2 diagnostics and a visually impressive Daemonarchy showcase with exact renderer evidence on AMD, NVIDIA and the Intel MacBook under FreeBSD.
 - **Conclusion:** Planned 1.4 work; software fallback is diagnostic only and physical GPU qualification remains pending.
@@ -1168,6 +1189,7 @@ remains open; report files do not establish a passing gate.
 ### [ ] NET-002 — Boot with the first usable connected interface without waiting for disconnected Ethernet
 
 - **Priority:** P1
+- **Release:** 1.4.1 (carried over; not claimed done by 1.4.0)
 - **Owner:** installed-system networking and compatibility integration
 - **Direction:** Trace installed boot separately from installer NET-001; skip missing/no-carrier interfaces and race bounded candidate DHCP safely.
 - **Conclusion:** Source-level diagnosis (FreeBSD 16 `libexec/rc`, `sbin/devd`, `sbin/dhclient`; not yet a timestamped trace from an installed machine): with the installed `ifconfig_DEFAULT="DHCP"`, rc.d/netif only brings ports up and devd(8) starts `dhclient` on each `LINK_UP`. devd runs actions one at a time, and a foreground dhclient on a port with a link but no DHCP server (the MacBookPro16,1 `ue0` case, which on 2026-10-28 proved to be the T2 controller's internal USB link rather than an Ethernet port; see below) keeps sending DISCOVERs for its 60-second `timeout` before it backgrounds, so later `LINK_UP` events, such as `wlan0` associating, wait behind it. Meanwhile rc.d/defaultroute waits up to `defaultroute_delay` (30 s) because a DHCP port has a carrier but no default route exists. A port with no carrier costs at most `defaultroute_carrier_delay` (5 s); an absent port costs nothing. Separately, each dhclient-script adds a default route if none exists and rewrites resolv.conf, so concurrent leases publish in arrival order with no ownership. `ntpd -g` (`ntpd_sync_on_start`) and `netwait` (disabled) do not block boot. Implemented at code level (installer + `daemonarchy-netselect`); exact-image and physical timing evidence is pending, and no speedup is claimed yet.
@@ -1185,6 +1207,7 @@ remains open; report files do not establish a passing gate.
 ### [ ] HW-004 — T2 Touch ID login through fprintd
 
 - **Priority:** P2
+- **Release:** 1.4.1 (carried over; not claimed done by 1.4.0)
 - **Owner:** MacBook hardware support: security/t2-touchid port, installed-system networking (daemonarchy-t2link) and PAM integration
 - **Direction:** Let a MacBookPro16,1 (and other Apple T2 Macs) accept a macOS-enrolled finger for login, sudo, SDDM and hyprlock through stock fprintd and pam_fprintd, using KaiT2en's t2-touchid bridge over the T2 internal link's IPv6 link-local BiometricKit service and libfprint's virtual storage device.
 - **Conclusion:** Transport works on FreeBSD: on 2026-10-28 the security/t2-touchid package (KaiT2en commit 16b58080ebc8, [ports PR #33](https://github.com/jordanhubbard/daemonarchy-ports/pull/33)), started by hand on the MacBookPro16,1, found ue0 by USB 05ac:8233, reached the T2 at fe80::aede:48ff:fe33:4455%ue0, opened BiometricKit (RemoteXPC port 59602 advertised it on 49166; sensor reset, readiness and FDR calibration load in 4-8 s, the first attempt after idle twice timing out with EAGAIN before a retry succeeded), and the Secure Enclave answered for macOS uids 501-503: SKS_LOCK_STATE 0x15, PROVISIONING_STATE 5, USER_IDENTITIES empty, GET_FREE_IDENTITY_COUNT 0, REQUEST_MAX_IDENTITY_COUNT 5, GET_ENABLED_FOR_UNLOCK 0; the daemon found no enrolled finger in uids 501-520. That is the expected locked or empty inventory: this MacBook has no macOS. Login by finger requires fingers enrolled under macOS (the bridge never enrolls, it only binds a SEP identity to a FreeBSD account) and the before-first-unlock gate: the SEP keeps its biometric keybag locked, and reports an empty inventory, until the macOS account password has unlocked it once since the T2 last powered on. The daemon was left stopped and not enabled; PAM, SDDM and the lock screen are unchanged. The enabling procedure in docs/application-note-macbookpro16-1.md is untested end to end.
@@ -1197,6 +1220,7 @@ remains open; report files do not establish a passing gate.
 ### [ ] WORKER-001 — Run long builds on durable SSH-controlled remote workers
 
 - **Priority:** P1 for 1.4.0
+- **Release:** 1.4.1 (carried over; not claimed done by 1.4.0)
 - **Owner:** remote worker (tools/worker), its release payload and the builder hosts
 - **Direction:** Move job supervision onto each builder so multi-hour builds run with no client connected, and control them only over SSH with forced-command keys.
 - **Conclusion:** Design and implementation notes are in docs/remote-worker.md: recipes from the repository, checkpointed steps, pause/drain/resume/cancel/retry, per-key roles, no new listener, no signing keys on workers. The worker, the client, the rc.d service and the sample recipes are implemented in tools/worker with hosted tests. They are deployed on the amd64 builder, the KVM-hosted builder guest and the aarch64 worker, which have run sample workloads only, including reboot recovery on the aarch64 worker ([record](../testing-remote-worker-20261028.md)). No real build has run through the worker.
