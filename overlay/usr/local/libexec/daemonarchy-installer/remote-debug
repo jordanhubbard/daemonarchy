@@ -6,6 +6,12 @@ state=/var/db/daemonarchy/remote-debug
 legacy=/var/run/daemonarchy-remote-debug
 self=/usr/local/libexec/daemonarchy-installer/remote-debug
 public_state=/var/run/daemonarchy-debug.status
+# An attachment holds a lease that its session renews every lease_refresh seconds.
+# A lease that lapses for lease_expiry seconds ends the attachment. The published
+# status carries its own timestamp so a reader can tell a stopped publisher from a
+# quiet system (the desktop treats a status older than a minute as unknown).
+lease_refresh=10
+lease_expiry=45
 
 # Keep the active personal/open Wi-Fi profile with the retained debug grant.
 # The installed system usually has its own rc.conf entry; this also recovers a
@@ -131,8 +137,21 @@ debug_session() {
   # ForceCommand runs only after successful authentication, including reconnects.
   mkdir -m 700 "$state/connected" 2>/dev/null || [[ -d $state/connected ]] || fail 'Remote access has stopped.'
   [[ -f $state/active ]] || fail 'Remote access has stopped.'
-  : >"$state/connected/$BASHPID"
-  trap 'rm -f "$state/connected/$BASHPID"; publish_public_status' EXIT
+  marker=$state/connected/$BASHPID
+  : >"$marker"
+  # Renew this attachment's lease while the connection lives. Its pid is the marker's
+  # content, so a lapsed lease can be traced to it.
+  session_pid=$BASHPID
+  heartbeat=''
+  (
+    while kill -0 "$session_pid" 2>/dev/null && [[ -f $marker ]]; do
+      touch "$marker" 2>/dev/null || break
+      sleep "$lease_refresh"
+    done
+  ) </dev/null >/dev/null 2>&1 &
+  heartbeat=$!
+  printf '%s\n' "$heartbeat" >"$marker"
+  trap 'kill "$heartbeat" 2>/dev/null; rm -f "$marker"; publish_public_status' EXIT
   trap 'exit 143' HUP TERM
   if [[ ! -f $state/progress ]] ||
       ! grep -Eq '^(Activity:|Remote debugging complete\.)' "$state/progress"; then
@@ -273,43 +292,134 @@ session_running() {
   listener_command_matches "$command" && kill -0 "$pid" 2>/dev/null
 }
 
+# Process ids of sshd listeners started with this session's exact configuration,
+# whether or not the session state that owns them still exists. Matching is by
+# exact command line, so an unrelated sshd (or reused PID) is never selected.
+listener_pids() {
+  local pid command
+  while read -r pid command; do
+    [[ $pid =~ ^[0-9]+$ ]] || continue
+    [[ $command == sshd:* || $command == /usr/sbin/sshd* ]] || continue
+    listener_command_matches "$command" && printf '%s\n' "$pid"
+  done < <(ps -axwwo pid,command 2>/dev/null | awk 'NR > 1')
+  return 0
+}
+
+# End a listener and its per-connection children, escalating if it ignores SIGTERM.
+terminate_listener() {
+  local pid=$1 tries
+  pkill -TERM -P "$pid" 2>/dev/null || true
+  kill -TERM "$pid" 2>/dev/null || true
+  for ((tries=0; tries<30; tries++)); do
+    kill -0 "$pid" 2>/dev/null || return 0
+    sleep 0.1
+  done
+  pkill -KILL -P "$pid" 2>/dev/null || true
+  kill -KILL "$pid" 2>/dev/null || true
+}
+
+# Stop every listener of ours. Used where no valid session owns one: its
+# configuration, host key and pid file may already be gone with the state
+# directory, so the pid file cannot be the only way to find it.
+kill_matching_listeners() {
+  local pid
+  for pid in $(listener_pids); do
+    terminate_listener "$pid"
+  done
+}
+
+reap_orphan_listeners() {
+  session_running || kill_matching_listeners
+}
+
+# A listener can accept TCP yet never speak SSH (for instance after its
+# configuration was deleted underneath it). Only the SSH banner proves it works.
+listener_answers() {
+  local port=$1 line=''
+  [[ $port =~ ^[0-9]{1,5}$ ]] || return 1
+  line=$(timeout 5 bash -c 'exec 3<>"/dev/tcp/127.0.0.1/$1" && IFS= read -r -t 3 line <&3 && printf "%s" "$line"' _ "$port" 2>/dev/null) || return 1
+  [[ $line == SSH-2.0-* ]]
+}
+
+# Number of live attachments. Each holds a lease, its marker's mtime, that the
+# session renews every lease_refresh seconds. An attachment whose process is
+# gone, or whose lease lapsed, is dropped and its session ended.
+live_attachments() {
+  local session pid command age mtime count=0 now helper
+  now=$(date +%s)
+  for session in "$state"/connected/*; do
+    [[ -f $session ]] || continue
+    pid=${session##*/}
+    [[ $pid =~ ^[0-9]+$ ]] || continue
+    command=$(ps -p "$pid" -o command= 2>/dev/null) || command=''
+    if [[ $command != *"$self session"* ]]; then
+      rm -f "$session"
+      continue
+    fi
+    mtime=$(stat -f %m "$session" 2>/dev/null) || mtime=0
+    age=$((now - mtime))
+    if ((age > lease_expiry)); then
+      IFS= read -r helper <"$session" || helper=''
+      [[ $helper =~ ^[0-9]+$ ]] && kill "$helper" 2>/dev/null || true
+      kill -TERM "$pid" 2>/dev/null || true
+      rm -f "$session"
+      continue
+    fi
+    count=$((count + 1))
+  done
+  printf '%s\n' "$count"
+}
+
+# The one state the debugger is in, derived from what is actually running:
+#   unpaired   no grant, no listener
+#   orphaned   no grant, but a listener of ours is still running
+#   stopped    grant held, listener not running
+#   degraded   listener running but not answering SSH
+#   listening  listener answers SSH, no agent attached
+#   attached   listener answers and an agent holds a live lease
+debug_phase() {
+  local port='' count
+  if [[ ! -f $state/active ]]; then
+    if [[ -n $(listener_pids) ]]; then echo orphaned; else echo unpaired; fi
+    return 0
+  fi
+  if ! session_running; then echo stopped; return 0; fi
+  if [[ -f $state/port ]]; then IFS= read -r port <"$state/port" || true; fi
+  if ! listener_answers "$port"; then
+    # One refused probe proves little: sshd sheds load while several agents wait for
+    # console approval (MaxStartups). Probe again, and trust a pairing in progress.
+    sleep 1
+    if ! listener_answers "$port" && [[ -z $(pending_requests) ]]; then echo degraded; return 0; fi
+  fi
+  count=$(live_attachments)
+  if ((count > 0)); then echo attached; else echo listening; fi
+}
+
 publish_public_status() {
-  local temporary grant=0 listener=0 connected=0 port='' addresses='' session pid command
+  local temporary grant=0 listener=0 connected=0 port='' addresses='' phase
   [[ $(id -u) == 0 ]] || return 1
   remember_wifi || true
+  phase=$(debug_phase)
+  case $phase in
+    listening) listener=1 ;;
+    attached) listener=1; connected=1 ;;
+  esac
   if [[ -f $state/active ]]; then
     grant=1
-    if session_running; then listener=1; fi
     if [[ -f $state/port ]]; then
       IFS= read -r port <"$state/port" || true
       [[ $port =~ ^[0-9]{1,5}$ ]] || port=''
     fi
     addresses=$(network_addresses | awk '/^[0-9.]+$/ { printf "%s%s", separator, $0; separator=" " }')
   fi
-  if [[ $listener == 1 && -d $state/connected ]]; then
-    for session in "$state"/connected/*; do
-      [[ -f $session ]] || continue
-      pid=${session##*/}
-      [[ $pid =~ ^[0-9]+$ ]] || continue
-      command=$(ps -p "$pid" -o command= 2>/dev/null) || command=''
-      if [[ $command == *"$self session"* ]]; then
-        connected=1
-      else
-        rm -f "$session"
-      fi
-    done
-  fi
   temporary=$(mktemp "${public_state%/*}/.daemonarchy-debug-status.XXXXXX") || return 1
   chmod 644 "$temporary"
   {
     printf 'schema=1\ngrant=%s\nlistener=%s\nconnected=%s\n' "$grant" "$listener" "$connected"
     printf 'addresses=%s\nport=%s\n' "$addresses" "$port"
+    printf 'state=%s\nupdated=%s\n' "$phase" "$(date +%s)"
   } >"$temporary"
-  if cmp -s "$temporary" "$public_state"; then
-    rm -f "$temporary"
-  else
-    mv -f "$temporary" "$public_state"
-  fi
+  mv -f "$temporary" "$public_state"
 }
 
 stop_session() {
@@ -346,9 +456,11 @@ stop_session() {
     fsync "${state%/*}"
   fi
   if [[ -n $pid ]]; then
-    pkill -TERM -P "$pid" 2>/dev/null || true
-    kill -TERM "$pid" 2>/dev/null || true
+    terminate_listener "$pid"
   fi
+  # The state that named the listener is gone or suspended; any listener of ours
+  # that is still running would hold the port with no way to reach or stop it.
+  kill_matching_listeners
   publish_public_status || true
 }
 
@@ -372,6 +484,9 @@ create_server() {
   validate_server_start "$port"
   port=$((10#$port))
   session_running && fail 'Another debug session is already active.'
+  # No valid session owns a listener of ours here (it would be running above), so
+  # one still bound to the port is an orphan from a session whose state was removed.
+  kill_matching_listeners
   session_created_new=yes
   if [[ -e $state || -L $state ]]; then
     [[ -d $state && ! -L $state && -O $state && $(stat -f %Lp "$state") == 700 ]] || fail 'Refusing unsafe retained debug session state.'
@@ -418,6 +533,8 @@ StrictModes yes
 UseDNS no
 LoginGraceTime 150
 MaxStartups 3:30:10
+ClientAliveInterval 15
+ClientAliveCountMax 3
 AllowAgentForwarding no
 AllowTcpForwarding no
 X11Forwarding no
@@ -470,6 +587,26 @@ debug_resume() {
   session_transition resume "$expected" "$port" >/dev/null
 }
 
+# One watchdog pass: make the running system match the grant, then publish what is
+# true. Safe to run repeatedly (the rescue console does, every few seconds):
+#   orphaned   end the leftover listener
+#   degraded   restart a listener that stopped answering SSH
+#   stopped    resume the approved listener (needs an address, as `resume` does)
+reconcile_debug() {
+  local phase
+  [[ $(id -u) == 0 && $(uname -s) == FreeBSD ]] || fail 'Requires FreeBSD root.'
+  phase=$(debug_phase)
+  case $phase in
+    orphaned) session_transition reap >/dev/null || true ;;
+    degraded)
+      session_transition suspend "$(cat "$state/generation")" >/dev/null || true
+      debug_resume || true
+      ;;
+    stopped) debug_resume || true ;;
+  esac
+  publish_public_status || true
+}
+
 resume_server() {
   [[ -f $state/active && -f $state/generation && $(cat "$state/generation") == "$1" ]] || return 0
   session_running && return 0
@@ -482,7 +619,7 @@ debug_unpair() {
 }
 
 status_details() {
-  local grant=no approval=no listener=no port='' addresses=''
+  local grant=no approval=no listener=no port='' addresses='' phase
   [[ $(id -u) == 0 && $(uname -s) == FreeBSD ]] || fail 'Requires FreeBSD root.'
   if [[ -f $state/active ]]; then
     grant=yes
@@ -490,9 +627,14 @@ status_details() {
     if [[ -f $state/port ]]; then IFS= read -r port <"$state/port" || true; fi
   fi
   session_running && listener=yes
+  phase=$(debug_phase)
   addresses=$(network_addresses | paste -sd, -)
-  printf 'Grant: %s\nApproved agent: %s\nListener: %s\nIPv4 addresses: %s\nPort: %s\n' \
-    "$grant" "$approval" "$listener" "${addresses:-none}" "${port:-none}"
+  printf 'Grant: %s\nApproved agent: %s\nListener: %s\nIPv4 addresses: %s\nPort: %s\nState: %s\n' \
+    "$grant" "$approval" "$listener" "${addresses:-none}" "${port:-none}" "$phase"
+  case $phase in
+    orphaned) echo 'A listener from a removed session is still running. Run daemonarchy-debug reconcile to clear it.' ;;
+    degraded) echo 'The listener is running but does not answer SSH. Run daemonarchy-debug reconcile to restart it.' ;;
+  esac
   if [[ $listener == no ]]; then
     if [[ $grant == no ]]; then
       echo 'No retained debugging grant. Pair from the rescue console to enable access.'
@@ -504,7 +646,7 @@ status_details() {
       echo 'The listener is stopped. Run daemonarchy-debug resume; inspect the private sshd.log if it fails.'
     fi
   fi
-  [[ $listener == yes ]]
+  [[ $phase == listening || $phase == attached ]]
 }
 
 show_status() {
@@ -614,7 +756,9 @@ debug_listen() {
   else
     echo 'Type b and Enter to keep it running in the background (for example during the install).'
   fi
-  while kill -0 "$server_pid" 2>/dev/null; do
+  # Leave when the grant is removed from elsewhere (Unpair in the desktop panel):
+  # this view must not go on believing it owns a session that no longer exists.
+  while kill -0 "$server_pid" 2>/dev/null && [[ -f $state/active ]]; do
     show_progress
     for request in "$state"/requests/*; do
       [[ -f $request ]] || continue
@@ -642,6 +786,7 @@ debug_listen() {
       break
     fi
   done
+  [[ -f $state/active ]] || echo 'Remote access was stopped from elsewhere; leaving this view.'
   if [[ $attached == yes ]]; then
     stop_server
   fi
@@ -675,6 +820,7 @@ Start console-approved remote access after networking works:
   remote-debug listen 2207     # custom port
   remote-debug unpair          # revoke access, including a stale session
   remote-debug resume          # resume a previously approved session, no prompt
+  remote-debug reconcile       # clear an orphaned listener, restart one that stopped answering
   remote-debug wifi-save       # retain the active Wi-Fi profile with this grant
   remote-debug wifi-resume     # restore saved Wi-Fi settings after a reboot
 
@@ -717,7 +863,7 @@ debug_shell() {
 }
 
 case ${1:-shell} in
-  authorize|session|resume|listen|background|status|publish-status|wifi-save|wifi-resume)
+  authorize|session|resume|reconcile|listen|background|status|publish-status|wifi-save|wifi-resume)
     if [[ $EUID == 0 && ! -e $state && ! -L $state && -f $legacy/active ]]; then
       session_transition adopt >/dev/null
     fi
@@ -730,6 +876,7 @@ case ${1:-shell} in
   _start) [[ $# == 2 ]] || exit 1; create_server "$2" ;;
   _stop) [[ $# == 2 && $(id -u) == 0 ]] || exit 1; stop_session "$2" ;;
   _suspend) [[ $# == 2 && $(id -u) == 0 ]] || exit 1; stop_session "$2" yes ;;
+  _reap) [[ $# == 1 && $(id -u) == 0 ]] || exit 1; reap_orphan_listeners ;;
   _resume) [[ $# == 3 && $(id -u) == 0 ]] || exit 1; resume_server "$2" "$3" ;;
   authorize) [[ $# == 4 ]] || exit 1; authorize "$2" "$3" "$4" ;;
   session) [[ $# == 1 ]] || exit 1; debug_session ;;
@@ -747,6 +894,7 @@ case ${1:-shell} in
   approve|deny) [[ $# == 2 ]] || fail "Usage: remote-debug $1 REQUEST"; decide_request "$1" "$2" ;;
   stop) [[ $# == 1 ]] || fail 'Usage: remote-debug stop'; debug_stop ;;
   resume) [[ $# == 1 ]] || exit 1; debug_resume ;;
+  reconcile) [[ $# == 1 ]] || exit 1; reconcile_debug ;;
   wifi-save) [[ $# == 1 && $(id -u) == 0 ]] || exit 1; debug_wifi_save ;;
   wifi-resume) [[ $# == 1 && $(id -u) == 0 ]] || exit 1; debug_wifi_resume ;;
   status)
@@ -758,5 +906,5 @@ case ${1:-shell} in
   publish-status) [[ $# == 1 && $(id -u) == 0 ]] || exit 1; publish_public_status ;;
   unpair) [[ $# == 1 ]] || fail 'Usage: remote-debug unpair'; debug_unpair ;;
   help) debug_help ;;
-  *) fail 'Usage: remote-debug [shell | listen [port] | background [port] | pending | approve ID | deny ID | stop | unpair | observe | snapshot | activity DESCRIPTION | done | help]' ;;
+  *) fail 'Usage: remote-debug [shell | listen [port] | background [port] | pending | approve ID | deny ID | stop | unpair | reconcile | observe | snapshot | activity DESCRIPTION | done | help]' ;;
 esac
