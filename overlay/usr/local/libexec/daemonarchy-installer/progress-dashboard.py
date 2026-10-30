@@ -4,7 +4,9 @@
 The screen shows the install engine's stage timeline, measured counters, a
 ticker of the packages native pkg reports, and live activity from kernel
 counters (disk, network, CPU, memory, ZFS). Meters and graphs move only with
-those real observations; there is no estimated percentage.
+those real observations. The header at the top is always visible and says which of its
+figures are measured (elapsed, stage, packages, bytes, rate) and which are labelled
+estimates (the overall percentage and the time left).
 
 Flourishes follow the model's events: a stage card and a sound when a stage
 starts, a sparkle when one finishes, a blip per reported package and a
@@ -111,6 +113,94 @@ def lines(state, style, width, idle=False, result=None):
 # Color, glyphs, the canvas and gradients come from the visual SDK (imported above).
 
 
+# ------------------------------------------------------------------ the statistics header
+
+def size_gib(value):
+    return f'{value / (1 << 30):.2f}'
+
+
+def header_fields(snap, unicode=True):
+    """The always-visible statistics, each in three widths: long, short and tiny.
+
+    Counters (elapsed, stage, packages, bytes, rate) are measured. The percentage and the time remaining are
+    estimates and are labelled as such, with the basis of the time estimate.
+    """
+    stats, tilde = snap.get('stats'), '≈' if unicode else '~'
+    done = snap.get('result') is not None
+    fields = []
+    hms = model.format_hms(snap.get('elapsed'))
+    fields.append(dict(long=[('elapsed ', 'label'), (hms, 'value')], short=[(hms, 'value')], tiny=[(hms, 'value')]))
+    if not stats:  # a snapshot from an older producer: elapsed time is all it can say
+        return fields
+    if stats['stage_count']:
+        n, m, label = stats['stage_index'], stats['stage_count'], stats['stage_label']
+        fields.append(dict(long=[('stage ', 'label'), (f'{n} of {m}', 'value')] + ([(': ', 'label'), (label, 'value')] if label else []),
+                           short=[(f'{n}/{m}', 'value')] + ([(f' {label}', 'value')] if label else []),
+                           tiny=[(f'{n}/{m}', 'value')]))
+    pct = stats['percent']
+    shown = '--' if pct is None else f'{pct:.0f}%'
+    if done:
+        fields.append(dict(long=[(shown if pct is not None else 'stopped', 'value')], short=[(shown, 'value')], tiny=[(shown, 'value')]))
+    else:
+        fields.append(dict(long=[(tilde, 'est'), (shown, 'value'), (' done (estimate)', 'est')],
+                           short=[(tilde, 'est'), (shown, 'value'), (' est.', 'est')], tiny=[(tilde, 'est'), (shown, 'value')]))
+    if not done:
+        eta = stats['eta']
+        if eta is None:
+            fields.append(dict(long=[('time left: estimating', 'est')], short=[('left: est. pending', 'est')], tiny=[('left ?', 'est')]))
+        else:
+            left = model.format_hms(eta)
+            basis = stats['eta_basis'] or 'baseline'
+            fields.append(dict(long=[('about ', 'est'), (left, 'value'), (' left', 'label'), (f' (estimate from {basis})', 'est')],
+                               short=[(tilde, 'est'), (left, 'value'), (' left (est.)', 'est')],
+                               tiny=[(tilde, 'est'), (left, 'value')]))
+    packages = stats['packages']
+    total = f"{packages['total']:,}" if packages['total'] else '?'
+    fields.append(dict(long=[('packages ', 'label'), (f"{packages['done']:,}", 'value'), (' of ', 'label'), (total, 'value'), (' installed', 'label')],
+                       short=[('pkgs ', 'label'), (f"{packages['done']:,}/{total}", 'value')],
+                       tiny=[(f"{packages['done']:,}/{total}", 'value')]))
+    data = stats['bytes']
+    approx = '' if data['exact'] or not data['total'] else tilde
+    total_text = f"{approx}{size_gib(data['total'])}" if data['total'] else '?'
+    rate = data['rate']
+    rate_long = [(' at ', 'label'), (f'{rate / (1 << 20):.1f} MiB/s', 'value')] if rate else []
+    rate_short = [(f' {rate / (1 << 20):.1f} MiB/s', 'value')] if rate else []
+    fields.append(dict(long=[('downloaded ', 'label'), (size_gib(data['done']), 'value'), (' of ', 'label'), (total_text, 'value'), (' GiB', 'label')] + rate_long,
+                       short=[(size_gib(data['done']), 'value'), ('/', 'label'), (total_text, 'value'), (' GiB', 'label')] + rate_short,
+                       tiny=[(size_gib(data['done']), 'value'), ('/', 'label'), (total_text, 'value'), ('G', 'label')]))
+    return fields
+
+
+def header_rows(fields, width, max_rows):
+    """Lay the fields out in at most `max_rows` rows of `width`: the longest form that fits, else shorter, else
+    dropping the last fields. Always returns at least one row; the first fields are the most important."""
+    gap = 3
+    for form in ('long', 'short', 'tiny'):
+        used = list(fields)
+        while used:
+            rows, row, size = [], [], 0
+            for field in used:
+                length = sum(len(text) for text, _ in field[form])
+                if row and size + gap + length > width:
+                    rows.append(row)
+                    row, size = [], 0
+                row.append(field[form])
+                size += length + (gap if size else 0)
+            rows.append(row)
+            if len(rows) <= max_rows and all(sum(len(t) for f in r for t, _ in f) + gap * (len(r) - 1) <= width for r in rows):
+                return rows
+            if form != 'tiny':
+                break
+            used = used[:-1]
+    return [[fields[0]['tiny']]] if fields else []
+
+
+def header_text(snap, width=120, unicode=True):
+    """The header as plain text (the serial view and the log of a plain run)."""
+    rows = header_rows(header_fields(snap, unicode), width, 2)
+    return ['   '.join(''.join(text for text, _ in field) for field in row) for row in rows]
+
+
 def norm_rate(value, peak, floor):
     peak = max(peak, floor)
     if value <= 0:
@@ -146,6 +236,7 @@ class Visuals:
         self.mood = 'idle'
         self.level = 0.0
         self.visual_box = None
+        self.timeline_mode = 'auto'  # auto, table or chips: t on the keyboard cycles it
 
     def effects(self, snap, now):
         """Start flourishes for events this screen has not shown yet."""
@@ -377,11 +468,56 @@ class Visuals:
             canvas.put(x + index, y, char, (color, None, True))
         return 1
 
+    def stats(self, canvas, x, y, w, h, snap):
+        """The always-visible header: elapsed, stage, percent (estimate), time left (estimate), packages, bytes."""
+        max_rows = 3 if (w < 50 and h >= 14) else 2 if h >= 10 else 1
+        rows = header_rows(header_fields(snap, self.g.unicode), w, max_rows)
+        roles = dict(label=(GRAY, None, False), value=(WHITE, None, True), est=(YELLOW, None, False), dim=(DIM, None, False))
+        for index, row in enumerate(rows[:max(1, h)]):
+            cx = x
+            for position, field in enumerate(row):
+                for text, role in field:
+                    canvas.put(cx, y + index, text, roles[role], w - (cx - x))
+                    cx += len(text)
+                cx += 3
+        return min(len(rows), max(1, h))
+
+    def chip(self, row):
+        icon, label = self.g.icons[row['state']], row['label']
+        fmt = model.format_elapsed
+        if row['state'] in ('done',) and row['elapsed'] is not None:
+            return f'{icon} {label} {fmt(row["elapsed"])}'
+        if row['state'] in ('active', 'failed') and row['elapsed'] is not None:
+            more = f'/~{fmt(row["expected"])}' if row.get('expected') else ''
+            return f'{icon} {label} {fmt(row["elapsed"])}{more}'
+        if row['state'] == 'pending' and row.get('expected'):
+            return f'{icon} {label} ~{fmt(row["expected"])}'
+        return f'{icon} {label}'
+
+    def timeline_table(self, canvas, x, y, w, h, snap):
+        """One row per stage: when it started, how long it took or has taken, and how long it is expected to take."""
+        fmt, hms = model.format_elapsed, model.format_hms
+        colors = dict(done=GREEN, active=CYAN, failed=RED, skipped=DIM, pending=GRAY)
+        canvas.put(x, y, f"  {'STAGE':<13}{'STARTED':<12}{'TOOK / ELAPSED':<18}EXPECTED", (DIM, None, True), w)
+        for index, row in enumerate(snap['stages'][:max(0, h - 1)]):
+            state = row['state']
+            started = f"+{hms(row['start'])}" if row.get('start') is not None else '-'
+            if state == 'done':
+                took, expected = fmt(row['elapsed']), ''
+            elif state in ('active', 'failed'):
+                took = fmt(row['elapsed'])
+                expected = f"~{fmt(row['expected'])} ({row['expected_source']})" if row.get('expected') else ''
+            else:
+                took = ''
+                expected = f"~{fmt(row['expected'])} ({row['expected_source']})" if row.get('expected') else ''
+            line = f"{self.g.icons[state]} {row['label']:<13}{started:<12}{took:<18}{expected}"
+            canvas.put(x, y + 1 + index, line, (colors[state], None, state in ('active', 'failed')), w)
+        return min(h, len(snap['stages']) + 1)
+
     def timeline(self, canvas, x, y, w, h, snap):
         items = []
         for row in snap['stages']:
-            elapsed = model.format_elapsed(row['elapsed']) if row['elapsed'] is not None else ''
-            items.append((row, f"{self.g.icons[row['state']]} {row['label']}" + (f' {elapsed}' if elapsed else '')))
+            items.append((row, self.chip(row)))
         colors = dict(done=GREEN, active=CYAN, failed=RED, skipped=DIM, pending=GRAY)
         lines_, line, used = [], [], 0
         for row, text in items:
@@ -415,9 +551,10 @@ class Visuals:
         rows = []
         done = snap['result'] is not None
         title_color = (GREEN if snap['succeeded'] else RED) if done else WHITE
-        elapsed = model.format_elapsed(snap['elapsed']) if snap['elapsed'] else ''
+        stage = next((r['elapsed'] for r in snap['stages'] if r['state'] == 'active'), None)
+        stage_time = model.format_elapsed(stage) if stage is not None else ''
         rows.append([(snap['title'], (title_color, None, True)),
-                     (f'   elapsed {elapsed}' if elapsed and not done else '', (GRAY, None, False))])
+                     (f'   this stage {stage_time}' if stage_time and not done else '', (GRAY, None, False))])
         meter = snap['meter']
         if meter:
             text = f"{meter['label']}: {meter['current']:,} / {meter['total']:,} {meter['unit']}"
@@ -430,6 +567,8 @@ class Visuals:
                     color = gradient(WINAMP[:3], i / max(1, bar - 1)) if i < filled else DIM
                     parts.append((self.g.full if i < filled else self.g.empty, (color, None, False)))
             rows.append(parts)
+        elif snap.get('recent') and not done:
+            rows.append([('Latest: ' + snap['recent'][-1], (GRAY, None, False))])
         else:
             rows.append([('No measured total for this stage; live activity is shown below', (GRAY, None, False))])
         if snap['item']:
@@ -528,6 +667,9 @@ class Visuals:
         bottom = y + h
         full_w = w
         self.visual_box = None
+        used = self.stats(canvas, x, y, w, h, snap)  # always, even with the logo and at small sizes
+        y += used
+        h -= used
         # Always: the stage, then measured counters; everything else as room allows.
         visual_min = 6
         want_logo = self.logo and h >= len(self.logo) + 34 and w >= 75
@@ -542,7 +684,13 @@ class Visuals:
                              len(self.logo)) + 1
         elif h >= 14:
             y += self.banner(canvas, x, y, w, 1)
-        y += self.timeline(canvas, x, y, w, 2 if h >= 12 else 1, snap)
+        table_rows = len(snap['stages']) + 1 if snap.get('stats') else 0
+        use_table = table_rows and w >= 56 and ((self.timeline_mode == 'table' and h >= table_rows + 6)
+                                 or (self.timeline_mode == 'auto' and h >= table_rows + 22))
+        if use_table:
+            y += self.timeline_table(canvas, x, y, w, table_rows, snap)
+        else:
+            y += self.timeline(canvas, x, y, w, 2 if h >= 12 else 1, snap)
         if y < bottom:
             y += self.status(canvas, x, y, w, max(1, min(5, bottom - y - (6 if h >= 14 else 0))), snap)
         if mascot is not None:
@@ -625,7 +773,7 @@ class Visuals:
         if self.mood == 'waiting' and box and box[3] >= 4:
             idle = model.format_elapsed(snap.get('idle', 0))
             text = (f' {spark} Still working: no new progress report for {idle}. '
-                    'The graphs show live activity; nothing here is estimated. ')
+                    'The graphs show live activity; only the header\'s percent and time left are estimates. ')
             canvas.put(box[0] + 1, box[1] + box[3] - 1, text[:max(0, box[2] - 2)], (YELLOW, None, False))
 
     def visual(self, canvas, x, y, w, h, snap, style):
@@ -780,6 +928,10 @@ class App:
         elif key == 'v' and not self.reduced:
             self.style = STYLES[(STYLES.index(self.style) + 1) % len(STYLES)]
             self.say(f'Visual style: {self.style}')
+        elif key == 't':
+            modes = ('auto', 'table', 'chips')
+            self.visuals.timeline_mode = modes[(modes.index(self.visuals.timeline_mode) + 1) % 3]
+            self.say(f'Timeline: {self.visuals.timeline_mode}')
         elif key == 'g':
             self.open_extensions('games')
         elif key == 'x':
@@ -877,8 +1029,8 @@ class App:
     def keys_hint(self):
         if self.tmux.active:
             return ('C-b c new window  C-b % / C-b " split  C-b G log  C-b H diagnostics  '
-                    'C-b R remote debug  C-b e extensions  C-b g games  C-b m mute  C-b +/- volume  C-b ? all keys  v style')
-        return 'v style  m mute  +/- volume  a ambient. Window controls and extensions need tmux, which is not available here.'
+                    'C-b R remote debug  C-b e extensions  C-b g games  C-b m mute  C-b +/- volume  C-b ? all keys  v style  t timeline')
+        return 'v style  t timeline  m mute  +/- volume  a ambient. Window controls and extensions need tmux, which is not available here.'
 
     # -- frames
 
@@ -952,7 +1104,8 @@ def run_plain(monitor, style):
         idle = monitor.idle_seconds() >= 5
         key = state.key(), idle, monitor.result
         if key != previous:
-            sys.stdout.write(' | '.join(lines(state, style, 120, idle, monitor.result)) + '\n')
+            header = header_text(monitor.snapshot(), 200, False)
+            sys.stdout.write(' | '.join(header + lines(state, style, 120, idle, monitor.result)) + '\n')
             sys.stdout.flush()
             previous = key
         if monitor.result is not None:
@@ -967,6 +1120,7 @@ def final_summary(monitor, style, width):
               if row['state'] in ('done', 'failed', 'active')]
     if stages:
         rows.insert(2, clean('Stages: ' + ', '.join(stages), width))
+    rows.insert(1, clean('Total time: ' + model.format_hms(state.timeline.total()), width))
     if monitor.result not in (None, 0):
         rows.append(clean('Full install log: ' + str(monitor.readers[0].path), width))
     return rows
@@ -1003,7 +1157,7 @@ def run(args):
     env = dict(os.environ)
     pins = (args.input_pin, args.repository_pin) if args.events else None
     source = None if env.get('DAEMONARCHY_ACTIVITY') == 'off' else 'auto'
-    monitor = model.Monitor(args.log, args.status, args.events, pins, source=source)
+    monitor = model.Monitor(args.log, args.status, args.events, pins, source=source, expect=model.expected_stages(env))
     interactive = args.style != 'plain' and sys.stdout.isatty() and env.get('TERM', '') not in ('', 'dumb')
 
     def stop(signum, _frame):

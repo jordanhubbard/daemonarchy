@@ -7,9 +7,14 @@ the install log through this module and render the same stages, counters,
 package ticker and system activity.
 
 Honesty rules:
-- Counters advance only on measured observations (@@progress, native pkg
-  positions, verified acquisition events). Elapsed time never becomes a
-  completion percentage, and there is no estimated time remaining.
+- Counters advance only on measured observations (@@progress, @@plan and
+  @@fetch from the installer, native pkg positions, verified acquisition
+  events). A package counts as installed only when pkg reports it extracted,
+  from distinct names, clamped to the plan.
+- The overall percentage and the time remaining are ESTIMATES and are always
+  labelled as such. They are built from the stage weights (the recorded
+  baseline of a real install, replaced by measured rates as soon as they exist)
+  and say which basis they used; nothing is invented when a rate is unknown.
 - Activity metrics are rates computed from kernel counters (devstat, ifmib,
   cp_times, vm.stats, ZFS kstats). They show that the machine is working and
   how hard; they do not claim how much of the installation is left.
@@ -52,6 +57,12 @@ PHASE_STAGE = dict(disk='partition', base='base', loader='loader', config='confi
                    fetch='fetch', install='packages', user='account',
                    checkouts='checkouts', cuda='cuda', finish='finish')
 
+# Seconds each stage took in a real complete install (MSI Raider 18, 1.4.1 candidate, 2026-10-30: 49.6 minutes,
+# 824 archives and 3,721 MiB downloaded at 1.79 MiB/s, 1,217 packages). They are the default expectation until a
+# measured rate replaces them. Stages with no recorded baseline (encrypt, checkouts) are not expected until seen.
+BASELINE = dict(partition=0.3, pool=0.3, base=12.6, loader=0.1, config=0.6, fetch=2075.0, packages=152.0,
+                account=31.0, cuda=691.0, finish=2.0)
+BASELINE_NOTE = 'baseline from a real 49.6 minute install'
 ANSI = re.compile(r'\x1b\][^\x07\x1b]*(?:\x07|\x1b\\)|\x1b\[[0-?]*[ -/]*[@-~]|\x1b[@-Z\\-_]')
 PACKAGE_LINE = re.compile(r'^\[\s*(\d+)/(\d+)\] (Installing|Extracting|Upgrading|Reinstalling|Fetching) (.+?)(?:\.\.\.|:.*)?$')
 FETCH_LINE = re.compile(r'^Fetching (\S+?):\s*(?:100%|[.\s]*done)(?:\s|$)')
@@ -59,6 +70,9 @@ REPOSITORY_FILES = {'meta.conf', 'meta', 'data', 'packagesite.pkg', 'packagesite
                     'packagesite.txz', 'data.pkg', 'filesite.pkg'}
 DEVICE = re.compile(r'^[a-z][a-z0-9]{0,14}$')
 POOL = re.compile(r'^[A-Za-z][A-Za-z0-9_.:-]{0,63}$')
+SIZE = re.compile(r'^(\d+(?:\.\d+)?) (B|KiB|MiB|GiB|TiB)$')
+SIZES = dict(B=1, KiB=1 << 10, MiB=1 << 20, GiB=1 << 30, TiB=1 << 40)
+PLAN_SCHEMA = 'daemonarchy/install-plan@1'
 
 
 def clean(value, maximum=160):
@@ -129,19 +143,22 @@ class Timeline:
         now = self.clock()
         reached = [STAGE_KEYS.index(key) for key in self.started]
         last = max(reached, default=-1)
+        origin = min(self.started.values()) if self.started else None
         rows = []
         for index, (key, label, optional) in enumerate(STAGES):
+            start = None
             if key in self.started:
                 end = self.ended.get(key, now)
                 state = 'failed' if key == self.failed else ('done' if key in self.ended else 'active')
                 elapsed = max(0.0, end - self.started[key])
+                start = max(0.0, self.started[key] - origin)
             elif index < last:
                 state, elapsed = 'skipped', None
             else:
                 state, elapsed = 'pending', None
             if optional and state in ('pending', 'skipped'):
                 continue
-            rows.append(dict(key=key, label=label, state=state, elapsed=elapsed))
+            rows.append(dict(key=key, label=label, state=state, elapsed=elapsed, start=start))
         return rows
 
     def total(self):
@@ -209,6 +226,20 @@ class Progress:
         self.lines_read = 0
         self.fetch = None  # Bytes and archives pkg's event pipe reported (@@fetch).
         self.fetch_estimate = ''  # pkg's own rounded "N GiB to be downloaded".
+        self.expect = set()  # optional stages the viewer expects (for example cuda on an NVIDIA machine)
+        self.clear_run()
+
+    def clear_run(self):
+        """What a restarted log must forget besides the stages: the plan and the measured samples."""
+        self.plan = None             # @@plan from the installer, once the package plan resolves
+        self.installed = set()       # distinct packages pkg reported extracted
+        self.install_total = None    # "Number of packages to be installed" or [N/M]'s M, in the install phase
+        self.fetch_total_archives = None
+        self.fetch_banked = 0        # bytes of earlier pkg runs: each run's counter restarts from zero
+        self.transaction = None      # what pkg last announced: 'fetch' or 'install' ("Number of packages to be ...")
+        self.percent_floor = 0.0     # the overall percentage never moves backwards
+        self.fetch_samples = deque(maxlen=240)    # (time, bytes received)
+        self.install_samples = deque(maxlen=240)  # time of each newly extracted package
 
     def phase_changed(self, phase):
         if phase not in PHASES:
@@ -220,6 +251,15 @@ class Progress:
             self.download_total = 0
             if phase in PHASE_STAGE:
                 self.timeline.begin(PHASE_STAGE[phase])
+
+    def plan_event(self, row):
+        if not isinstance(row, dict) or row.get('schema') != PLAN_SCHEMA:
+            raise ValueError('Unknown plan event')
+        values = {key: row.get(key) for key in ('packages', 'archives', 'download_bytes', 'installed_bytes')}
+        if not all(integer(v) for v in values.values()) or values['packages'] == 0:
+            raise ValueError('Invalid plan counters')
+        self.plan = values
+        self.install_total = values['packages']
 
     def step(self, text):
         parts = text.split()
@@ -252,6 +292,10 @@ class Progress:
             attempt += 1  # A retry runs pkg again and counts from zero.
         self.fetch = dict(archives=row['archives'], bytes=row['bytes'], file=clean(row.get('file', ''), 80),
                           file_bytes=row['file_bytes'], file_total=row['file_total'], attempt=attempt)
+        if previous and attempt != previous['attempt']:
+            self.fetch_banked += previous['bytes']  # a new pkg run counts from zero; keep what the last one received
+            self.fetch_samples.clear()
+        self.fetch_samples.append((self.clock(), row['bytes']))
 
     def measured(self, label, current, total, unit):
         if not integer(current) or not integer(total) or current > total or total == 0:
@@ -323,15 +367,26 @@ class Progress:
                 self.target(clean(line[9:], 80))
             elif line.startswith('@@fetch '):
                 self.fetch_event(json.loads(line[8:]))
+            elif line.startswith('@@plan '):
+                self.plan_event(json.loads(line[7:]))
             else:
                 text = clean(line, 4096)
                 if text.strip():
                     self.recent.append(text[:160])
                 estimate = re.match(r'^(\d+(?:\.\d+)? (?:B|KiB|MiB|GiB|TiB)) to be downloaded\.?$', text.strip())
-                if self.phase == 'fetch' and estimate:
+                if self.phase == 'fetch' and estimate and self.transaction != 'install':
+                    # pkg prints "N to be downloaded" for every transaction, including the small bootstrap install
+                    # that precedes the fetch plan; only a figure that does not follow an install announcement counts.
                     self.fetch_estimate = estimate[1]
+                to_install = re.search(r'Number of packages to be installed:\s*(\d+)\s*$', text)
+                if to_install:
+                    self.transaction = 'install'
+                if self.phase == 'install' and to_install and int(to_install[1]) > 0 and not self.plan:
+                    self.install_total = int(to_install[1])
                 total = re.search(r'packages to be fetched:\s*(\d+)\s*$', text)
                 if self.phase == 'fetch' and total:
+                    self.fetch_total_archives = int(total[1])
+                    self.transaction = 'fetch'
                     self.download_total = int(total[1])
                     self.downloads.clear()
                     self.meter = None
@@ -351,14 +406,141 @@ class Progress:
                     if self.phase == 'install' and verb in ('Installing', 'Extracting', 'Upgrading', 'Reinstalling'):
                         self.measured('Processing package position', current, count, 'packages')
                         self.item = name
+                        if not self.plan and not self.install_total:
+                            self.install_total = count
                         if verb != 'Extracting':
                             self.ticker.add('install', name, current, count, self.clock())
+                        elif text.rstrip().endswith('done') and name not in self.installed:
+                            # Extracted: the package is on disk. Counted once, whatever the order or repeats.
+                            self.installed.add(name)
+                            self.install_samples.append(self.clock())
         except (KeyError, TypeError, ValueError, OverflowError) as error:
             self.warning = clean(error)
 
+    # -- statistics: measured counters, and estimates that say they are estimates
+
+    def packages_view(self):
+        total = (self.plan or {}).get('packages') or self.install_total
+        done = len(self.installed)
+        if total:
+            done = min(done, total)
+        return dict(done=done, total=total, source='plan' if self.plan else ('pkg' if total else None))
+
+    def bytes_view(self, now):
+        done = self.fetch_banked + (self.fetch['bytes'] if self.fetch else 0)
+        total, exact = None, False
+        if self.plan and self.plan.get('download_bytes'):
+            total, exact = self.plan['download_bytes'], True
+        elif self.fetch_estimate:
+            match = SIZE.match(self.fetch_estimate)
+            if match:
+                total = int(float(match[1]) * SIZES[match[2]])  # pkg's own rounded figure: shown as approximate
+        fetch_done = 'fetch' in self.timeline.ended or (self.phase != 'fetch' and 'fetch' in self.timeline.started)
+        if fetch_done and done:
+            total, exact = done, True  # everything that was going to be fetched has been
+        if total:
+            done = min(done, total)
+        return dict(done=done, total=total, exact=exact, rate=self.byte_rate(now), average=self.byte_average(now))
+
+    def byte_rate(self, now, window=10.0):
+        """Bytes per second over the last few seconds of real time; None until enough real time has passed."""
+        samples = [s for s in self.fetch_samples if now - s[0] <= window]
+        if len(samples) < 2 or samples[-1][0] - samples[0][0] < 3.0 or samples[-1][1] < samples[0][1]:
+            return None
+        return (samples[-1][1] - samples[0][1]) / (samples[-1][0] - samples[0][0])
+
+    def byte_average(self, now):
+        """Bytes per second since the download began: steady enough to estimate from. None until it means something."""
+        started = self.timeline.started.get('fetch')
+        done = self.fetch_banked + (self.fetch['bytes'] if self.fetch else 0)
+        if started is None or now - started < 20.0 or done < (1 << 20):
+            return None
+        return done / (now - started)
+
+    def package_average(self, now):
+        """Packages extracted per second since the install began; None until there are enough to mean something."""
+        started = self.timeline.started.get('packages')
+        if started is None or now - started < 5.0 or len(self.installed) < 5:
+            return None
+        return len(self.installed) / (now - started)
+
+    def stats(self, rows, result, now):
+        """The header's numbers. Counters are measured; percent and time remaining are estimates and say so.
+
+        Percent weighs each stage by the baseline of a real install and counts a stage's measured progress inside
+        it (bytes received, packages extracted, archives expanded), so it only moves forward. Time remaining adds,
+        per unfinished stage, what is left: from the average measured rate once there is one, otherwise from the
+        baseline. It says which.
+        """
+        packages, data = self.packages_view(), self.bytes_view(now)
+        active = next((i for i, r in enumerate(rows) if r['state'] in ('active', 'failed')), None)
+        shown = {r['key'] for r in rows}
+        reached = max((STAGE_KEYS.index(k) for k in self.timeline.started), default=-1)
+        # Optional stages the viewer expects but that have not started (cuda on an NVIDIA machine) are part of the
+        # totals, so these do not change when the stage begins; one passed over because a later stage began is not.
+        extra = [k for k in STAGE_KEYS if k in self.expect and k not in shown and BASELINE.get(k)
+                 and STAGE_KEYS.index(k) > reached]
+        stage_count = len(rows) + len(extra)
+        if result is not None:
+            stage_index = stage_count
+        elif active is not None:
+            stage_index = active + 1
+        else:
+            stage_index = sum(1 for r in rows if r['state'] == 'done')
+        stage_label = rows[active]['label'] if active is not None else ('Done' if result is not None else '')
+
+        worked, planned, remaining, basis = 0.0, 0.0, 0.0, 'baseline'
+        for row in rows:
+            key, state, elapsed = row['key'], row['state'], row['elapsed'] or 0.0
+            weight = BASELINE.get(key)
+            if state == 'skipped':
+                continue
+            if state == 'done':
+                if weight:
+                    worked += weight
+                    planned += weight
+                continue
+            expected, left, fraction = weight, None, None
+            if state == 'active':
+                if key == 'fetch' and data['total']:
+                    fraction = min(1.0, data['done'] / data['total'])
+                    if data['average']:
+                        left, basis = max(0.0, (data['total'] - data['done']) / data['average']), 'measured rates'
+                elif key == 'packages' and packages['total']:
+                    fraction = min(1.0, packages['done'] / packages['total'])
+                    rate = self.package_average(now)
+                    if rate:
+                        left, basis = max(0.0, (packages['total'] - packages['done']) / rate), 'measured rates'
+                elif self.meter and key in ('partition', 'pool', 'base') and self.meter[2]:
+                    fraction = self.meter[1] / self.meter[2]
+                if fraction is None and expected:
+                    fraction = min(0.95, elapsed / expected)
+                if left is None and expected:
+                    left = max(0.0, expected - elapsed)
+            if weight:
+                planned += weight
+                worked += weight * (fraction or 0.0)
+            remaining += left if left is not None else (weight or 0.0)
+        for key in extra:
+            planned += BASELINE[key]
+            remaining += BASELINE[key]
+        percent = None
+        if result is not None:
+            percent = 100.0 if result == 0 else None
+        elif planned > 0 and any(r['state'] != 'pending' for r in rows):
+            # An estimate may be revised downward when a measured rate replaces an assumption; the figure shown
+            # holds until the work catches up rather than jumping backwards.
+            percent = max(self.percent_floor, min(99.0, 100.0 * worked / planned))
+            self.percent_floor = percent
+        eta = None if result is not None or active is None else remaining
+        return dict(stage_index=stage_index, stage_count=stage_count, stage_label=stage_label, percent=percent,
+                    packages=packages, bytes=data, eta=eta, eta_basis=basis if eta is not None else None,
+                    baseline=BASELINE_NOTE)
+
     def key(self):
         fetch = (self.fetch['archives'], self.fetch['bytes']) if self.fetch else None
-        return self.phase, self.meter, self.item, tuple(self.history), self.warning, self.failed, fetch
+        return (self.phase, self.meter, self.item, tuple(self.history), self.warning, self.failed, fetch,
+                len(self.installed), self.plan and tuple(self.plan.items()))
 
 
 class Tail:
@@ -382,6 +564,7 @@ class Tail:
                     state.timeline.reset()
                     state.ticker.reset()
                     state.fetch, state.fetch_estimate = None, ''
+                    state.clear_run()
                     self.offset, self.pending, self.discard = 0, b'', False
                 self.identity = identity
                 stream.seek(self.offset)
@@ -847,9 +1030,10 @@ class Monitor:
     """
 
     def __init__(self, log, status_path, events=None, pins=None, source='auto',
-                 clock=time.monotonic, wall=time.time, sample_interval=0.25):
+                 clock=time.monotonic, wall=time.time, sample_interval=0.25, expect=()):
         self.clock = clock
         self.state = Progress(pins, clock, wall)
+        self.state.expect = set(expect)
         self.readers = [Tail(log)] + ([Tail(events, True)] if events else [])
         self.status_path = Path(status_path)
         self.activity = Activity(counters() if source == 'auto' else source, sample_interval, clock=clock)
@@ -861,7 +1045,10 @@ class Monitor:
 
     def poll(self):
         old = self.state.key(), self.state.ticker.serial
-        self.drained = all([reader.poll(self.state) for reader in self.readers])
+        for _ in range(8):  # catch up on a log that grows faster than one bounded read
+            self.drained = all([reader.poll(self.state) for reader in self.readers])
+            if self.drained:
+                break
         if (self.state.key(), self.state.ticker.serial) != old:
             self.changed_at = self.clock()
         result = status(self.status_path)
@@ -876,6 +1063,25 @@ class Monitor:
     def idle_seconds(self):
         return self.clock() - self.changed_at
 
+    def expected(self, rows):
+        """Each stage row with how long it is expected to take: what it took, the baseline, or a measured projection."""
+        now, state = self.clock(), self.state
+        data, packages = state.bytes_view(now), state.packages_view()
+        out = []
+        for row in rows:
+            expected, source = BASELINE.get(row['key']), 'baseline'
+            if row['state'] == 'done':
+                expected, source = row['elapsed'], 'measured'
+            elif row['state'] == 'active' and row['key'] == 'fetch' and data['total'] and data['average']:
+                expected, source = (row['elapsed'] or 0.0) + (data['total'] - data['done']) / data['average'], 'measured rate'
+            elif row['state'] == 'active' and row['key'] == 'packages' and packages['total'] and state.package_average(now):
+                expected = (row['elapsed'] or 0.0) + (packages['total'] - packages['done']) / state.package_average(now)
+                source = 'measured rate'
+            elif row['state'] == 'skipped':
+                expected = None
+            out.append(dict(row, expected=expected, expected_source=source if expected is not None else None))
+        return out
+
     def snapshot(self):
         state = self.state
         meter = None
@@ -883,12 +1089,18 @@ class Monitor:
             label, current, total, unit = state.meter
             meter = dict(label=label, current=current, total=total, unit=unit)
         ticker = state.ticker
+        # The ticker belongs to the phase that fed it. After that phase it is history: showing its last
+        # label ("Installing 1,217/1,217") through the stages that follow would claim work that is not
+        # happening, so a ticker out of its phase has no names and the screen omits it.
+        in_phase = (ticker.kind, state.phase) in (('fetch', 'fetch'), ('install', 'install'))
+        rows = state.timeline.rows()
         return dict(
             schema='daemonarchy/installer-snapshot@1',
             phase=state.phase, title=title(state, self.result), meter=meter, item=state.item,
-            stages=state.timeline.rows(), elapsed=state.timeline.total(),
-            ticker=dict(kind=ticker.kind, names=list(ticker.names), current=ticker.current,
-                        total=ticker.total, serial=ticker.serial, rate=ticker.rate(self.clock())),
+            stages=self.expected(rows), elapsed=state.timeline.total(),
+            stats=state.stats(rows, self.result, self.clock()), plan=state.plan,
+            ticker=dict(kind=ticker.kind, names=list(ticker.names) if in_phase else [], current=ticker.current,
+                        total=ticker.total, serial=ticker.serial, rate=ticker.rate(self.clock()) if in_phase else None),
             fetch=dict(state.fetch, estimate=state.fetch_estimate) if state.fetch else None,
             activity=self.activity.view(), target=dict(disk=state.target_disk, pool=state.target_pool,
                                                        encrypted=state.encrypted),
@@ -907,7 +1119,7 @@ class InstallProgress:
     """
 
     def __init__(self, log, status_path, source='auto'):
-        self.monitor = Monitor(log, status_path, source=source)
+        self.monitor = Monitor(log, status_path, source=source, expect=expected_stages())
 
     def poll(self):
         self.monitor.poll()
@@ -960,6 +1172,33 @@ def fetch_text(fetch):
     if fetch.get('attempt', 1) > 1:
         text += f"; attempt {fetch['attempt']}"
     return text
+
+
+def expected_stages(env=None, runner=subprocess.run):
+    """Optional stages this install will probably run, so the totals do not change when they begin.
+
+    DAEMONARCHY_EXPECT_STAGES (comma separated) overrides. Otherwise: cuda when the machine has an NVIDIA GPU,
+    which is when the installer offers CUDA with a default of yes. A viewer that is wrong only makes its estimate
+    revise at the end; it never changes a measured counter.
+    """
+    env = os.environ if env is None else env
+    forced = env.get('DAEMONARCHY_EXPECT_STAGES')
+    if forced is not None:
+        return {k for k in forced.replace(' ', '').split(',') if k in STAGE_KEYS}
+    try:
+        listing = runner(['pciconf', '-l'], capture_output=True, text=True, timeout=3, check=False).stdout
+    except (OSError, subprocess.SubprocessError):
+        return set()
+    for line in listing.splitlines():
+        if 'vendor=0x10de' in line and re.search(r'class=0x03[02]0', line):
+            return {'cuda'}
+    return set()
+
+
+def format_hms(seconds):
+    """H:MM:SS for the always-visible elapsed time."""
+    seconds = max(0, int(seconds or 0))
+    return f'{seconds // 3600}:{seconds % 3600 // 60:02}:{seconds % 60:02}'
 
 
 def format_elapsed(seconds):
