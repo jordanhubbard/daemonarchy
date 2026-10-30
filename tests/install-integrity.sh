@@ -67,6 +67,12 @@ printf 'pool:sync fixture\nresult:complete 0\npool:sync fixture\n' >"$work/expec
 cmp "$work/expected" "$work/order"
 mode=good
 
+# A package the repositories no longer provide must fail before the download
+# loop, not after five retries blamed on the network.
+resolve=$(line '^if ! traced pkg_resolve ')
+fetch=$(line '^for attempt in 1 2 3 4 5')
+[[ -n $resolve && -n $fetch ]] && (( resolve < fetch ))
+
 if [[ $(uname -s) == FreeBSD && $(id -u) == 0 ]]; then
   mkdir -p "$work/stage/usr/local/share/daemonarchy-integrity-fixture" "$work/packages" "$work/root"
   printf 'verified package payload\n' >"$work/stage/usr/local/share/daemonarchy-integrity-fixture/payload"

@@ -102,6 +102,8 @@ def main(argv=None):
     parser.add_argument("--root", action="append", required=True)
     parser.add_argument("--catalogue", action="append", required=True, metavar="NAME=PATH_OR_URL")
     parser.add_argument("--json", action="store_true")
+    parser.add_argument("--fail-on-unsatisfied", action="store_true",
+                        help="exit 1 if any root or dependency has no catalogue (upstream drift)")
     args = parser.parse_args(argv)
     with tempfile.TemporaryDirectory() as tmp:
         catalogues = {}
@@ -109,9 +111,10 @@ def main(argv=None):
             name, _, location = item.partition("=")
             catalogues[name] = load_catalogue(location, Path(tmp))
     result = plan(args.root, catalogues)
+    status = 1 if args.fail_on_unsatisfied and result["unsatisfied"] else 0
     if args.json:
         print(json.dumps(result, indent=2))
-        return 0
+        return status
     gib = 2**30
     print(f"closure: {result['closure_packages']} packages, "
           f"{result['closure_archive_bytes'] / gib:.2f} GiB archives, "
@@ -121,7 +124,7 @@ def main(argv=None):
     print(f"unsatisfied: {', '.join(result['unsatisfied']) or 'none'}")
     print(f"shards for the self-hosted feed: {len(result['shards'])} "
           f"({', '.join(str(s['assets']) for s in result['shards'])} assets)")
-    return 0
+    return status
 
 
 if __name__ == "__main__":

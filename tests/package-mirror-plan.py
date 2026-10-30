@@ -2,6 +2,7 @@
 """The mirror plan follows catalogue priority, reports gaps and respects shard limits."""
 
 import importlib.util
+import json
 from pathlib import Path
 import unittest
 
@@ -43,6 +44,26 @@ class PlanTests(unittest.TestCase):
         entries = [pkg(f"p{i}", 1) for i in range(tool.MAX_ASSETS + 1)]
         bins = tool.shards(entries)
         self.assertEqual([b["assets"] for b in bins], [tool.MAX_ASSETS, 1])
+
+
+class DriftExitTests(unittest.TestCase):
+    def catalogue(self, directory, name, packages):
+        import subprocess
+        site = Path(directory) / "packagesite.yaml"
+        site.write_text("\n".join(json.dumps(p) for p in packages) + "\n")
+        out = Path(directory) / name
+        subprocess.run(["tar", "-cf", str(out), "-C", directory, "packagesite.yaml"], check=True)
+        return out
+
+    def test_fail_on_unsatisfied_reports_missing_dependency(self):
+        import tempfile
+        with tempfile.TemporaryDirectory() as tmp:
+            own = self.catalogue(tmp, "own.pkg", [pkg("app", 10, ["gone"])])
+            args = ["--root", "app", "--catalogue", f"Own={own}"]
+            self.assertEqual(tool.main(args), 0)
+            self.assertEqual(tool.main([*args, "--fail-on-unsatisfied"]), 1)
+            ok = self.catalogue(tmp, "ok.pkg", [pkg("app", 10)])
+            self.assertEqual(tool.main(["--root", "app", "--catalogue", f"Own={ok}", "--fail-on-unsatisfied"]), 0)
 
 
 if __name__ == "__main__":
