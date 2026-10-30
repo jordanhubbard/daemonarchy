@@ -46,6 +46,27 @@ install_record_verified_completion fixture "$work/check" fake_pkg
 printf 'pool:sync fixture\nresult:complete 0\npool:sync fixture\n' >"$work/expected"
 cmp "$work/expected" "$work/order"
 
+# The optional CUDA additions replace package-owned files (the vendor menu, and
+# files linux-rl9 packages own through Rocky's dnf). Package verification must
+# run before them, and completion must not re-verify afterwards.
+install=$here/overlay/usr/local/libexec/daemonarchy-installer/install
+line() { grep -n -m1 -- "$1" "$install" | cut -d: -f1; }
+verify=$(line '^install_verify_package_integrity ')
+support=$(line '^cuda_install_support ')
+cuda=$(line '^  phase cuda ')
+record=$(line '^install_record_completion ')
+[[ -n $verify && -n $support && -n $cuda && -n $record ]]
+(( verify < support && support < cuda && cuda < record ))
+[[ $(grep -c '^cuda_install_support ' "$install") == 1 ]]
+! grep -q 'install_record_verified_completion' "$install"
+: >"$work/order"
+rm -f "$work/complete"
+mode=corrupt
+install_record_completion fixture
+printf 'pool:sync fixture\nresult:complete 0\npool:sync fixture\n' >"$work/expected"
+cmp "$work/expected" "$work/order"
+mode=good
+
 if [[ $(uname -s) == FreeBSD && $(id -u) == 0 ]]; then
   mkdir -p "$work/stage/usr/local/share/daemonarchy-integrity-fixture" "$work/packages" "$work/root"
   printf 'verified package payload\n' >"$work/stage/usr/local/share/daemonarchy-integrity-fixture/payload"
