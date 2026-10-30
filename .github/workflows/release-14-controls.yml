@@ -44,6 +44,9 @@ on:
       - 'overlay/usr/local/libexec/daemonarchy-installer/install-trace-sampler'
       - 'overlay/usr/local/libexec/daemonarchy-installer/parallel-fetch'
       - 'tests/parallel-fetch.py'
+      - 'scripts/install-trace-baseline.py'
+      - 'tests/install-trace-baseline.py'
+      - 'verification/install-baselines/**'
       - 'overlay/usr/local/libexec/daemonarchy-installer/pkg-events'
       - 'scripts/release-current.py'
       - 'release/**'
@@ -94,6 +97,9 @@ on:
       - 'overlay/usr/local/libexec/daemonarchy-installer/install-trace-sampler'
       - 'overlay/usr/local/libexec/daemonarchy-installer/parallel-fetch'
       - 'tests/parallel-fetch.py'
+      - 'scripts/install-trace-baseline.py'
+      - 'tests/install-trace-baseline.py'
+      - 'verification/install-baselines/**'
       - 'overlay/usr/local/libexec/daemonarchy-installer/pkg-events'
       - 'scripts/release-current.py'
       - 'release/**'
@@ -146,6 +152,10 @@ jobs:
         env:
           PYTHONDONTWRITEBYTECODE: '1'
         run: python3 tests/parallel-fetch.py -v
+      - name: Install baselines and comparison
+        env:
+          PYTHONDONTWRITEBYTECODE: '1'
+        run: python3 tests/install-trace-baseline.py -v
 
   controls:
     runs-on: ubuntu-latest
