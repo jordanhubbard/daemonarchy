@@ -1292,6 +1292,7 @@ remains open; report files do not establish a passing gate.
     input or presentation cannot be isolated safely.
   - [ ] Package and crash-isolate the games on the image with bounded CPU,
     memory and storage so game failure cannot change the installation result.
+- **Progress:** four original games (Hordeshot, Shatter, Rockdrift, Wyrm) run as hash-verified, capability-scoped plugins in their own processes, opened from the install screen with `g` or `C-b g` in a `games` tmux window; the install screen stops them when the installation finishes or fails or a pairing request needs the operator, and they are suspended while another window shows ([arcade-games.md](../arcade-games.md)). 71 unit and process tests pass on Linux. Not verified: play on a FreeBSD `vt(4)` console or real hardware, the privilege drop and resource limits on FreeBSD, tmux suspension there, or the exact-image runs the evidence below requires.
 - **Evidence:**
   - [ ] Exact-image native FreeBSD runs launch every game during different
     network, disk, package and finish stages and preserve installation integrity
@@ -1337,6 +1338,7 @@ remains open; report files do not establish a passing gate.
     plugin contracts without keeping a parallel installer-private rendering
     tree. Preserve original asset/code/license provenance and independently
     owned package and uninstall boundaries.
+- **Progress:** SDK 1.2 is in the tree ([visual-sdk.md](../visual-sdk.md)): capability negotiation, canvas and screens (overlay and alternate screen), layout, motion and effects, input actions, audio cues, scenes, the plugin runtime and arcade helpers, a sample host that is not the installer, and 42 unit tests. The install screen (`progress-dashboard.py`) and its flourishes (`charm.py`) draw through it with no private copies (a test enforces that). Verified on Linux only: not yet on a FreeBSD `vt(4)` console, serial or SSH, and `gum` prompts remain a third-party tool outside the SDK.
 - **Evidence:**
   - [ ] Native FreeBSD exact-image tests prove plugin discovery, version and
     capability refusal, lifecycle/preemption, resize and backend changes, input

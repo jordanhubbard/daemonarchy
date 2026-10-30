@@ -713,6 +713,7 @@ class App:
         self.visuals = Visuals(self.glyphs, self.reduced, self.load_logo() if interactive else [])
         self.tmux = Tmux(env)
         self.screen = Screen(_Utf8Out(), self.colors, alt=True)
+        self.games_checked, self.games_asked, self.games_killed = 0.0, None, False
         self.message, self.message_until = '', 0.0
         self.interrupt_at = 0.0
         self.input = b''
@@ -779,6 +780,8 @@ class App:
         elif key == 'v' and not self.reduced:
             self.style = STYLES[(STYLES.index(self.style) + 1) % len(STYLES)]
             self.say(f'Visual style: {self.style}')
+        elif key == 'g':
+            self.open_games()
         elif key in ('?', 'h'):
             self.say(self.keys_hint(), 8)
         elif key in ('m', '+', '=', '-', 'a') and sound is not None:
@@ -792,6 +795,64 @@ class App:
                                                              if key == 'a' else ''))
             except (OSError, ValueError) as error:
                 self.say('Sound control unavailable: ' + clean(error))
+
+    # -- games: a separate low-priority process in its own tmux window (daemonarchy-games)
+
+    def games_preempt_path(self):
+        return Path(self.env.get('DAEMONARCHY_GAMES_PREEMPT', '/tmp/daemonarchy-games.preempt'))
+
+    def open_games(self):
+        """g: open the arcade in a tmux window. It never touches the installation."""
+        if self.env.get('DAEMONARCHY_GAMES') == 'off':
+            return self.say('Games are turned off.')
+        if not self.tmux.active:
+            return self.say('Games need the tmux windows, which are not available here.')
+        if self.monitor.result is not None:
+            return self.say('The installation has finished.')
+        if self.games_preempt_path().exists():
+            return self.say('The installation needs your attention first.')
+        python = self.env.get('DAEMONARCHY_PYTHON') or sys.executable
+        try:
+            subprocess.run(['tmux', 'new-window', '-n', 'games', f'{python} {HERE}/daemonarchy-games menu'],
+                           capture_output=True, timeout=3, check=False)
+        except (OSError, subprocess.SubprocessError):
+            self.say('Could not open the games window.')
+
+    def games_control(self, snap):
+        """Ask the games to stop whenever the installation or the operator's attention needs the screen."""
+        now = time.monotonic()
+        if now - self.games_checked < 0.5:
+            return
+        self.games_checked = now
+        reason = None
+        if snap['result'] is not None:
+            reason = 'finished'
+        else:
+            try:
+                remote = self.remote_status()
+            except OSError:
+                remote = None
+            if remote and remote['pending']:
+                reason = 'pairing'
+        path = self.games_preempt_path()
+        try:
+            if reason and not path.exists():
+                path.write_text(reason + '\n')
+            elif not reason and path.exists():
+                path.unlink()
+        except OSError:
+            pass
+        if not reason:
+            self.games_asked, self.games_killed = None, False
+        elif self.games_asked is None:
+            self.games_asked = now
+        elif now - self.games_asked > 1.5 and not self.games_killed and self.tmux.active:
+            # Backstop: a game window still open well after the request is closed for it.
+            self.games_killed = True
+            try:
+                subprocess.run(['tmux', 'kill-window', '-t', '=games'], capture_output=True, timeout=3, check=False)
+            except (OSError, subprocess.SubprocessError):
+                pass
 
     def feed_sound(self, snap):
         if self.director is not None:
@@ -812,8 +873,8 @@ class App:
     def keys_hint(self):
         if self.tmux.active:
             return ('C-b c new window  C-b % / C-b " split  C-b G log  C-b H diagnostics  '
-                    'C-b R remote debug  C-b m mute  C-b +/- volume  C-b ? all keys  v style')
-        return 'v style  m mute  +/- volume  a ambient. Window controls need tmux, which is not available here.'
+                    'C-b R remote debug  C-b g games  C-b m mute  C-b +/- volume  C-b ? all keys  v style')
+        return 'v style  m mute  +/- volume  a ambient. Window controls and games need tmux, which is not available here.'
 
     # -- frames
 
@@ -859,6 +920,7 @@ class App:
         size = os.get_terminal_size(sys.stdout.fileno())
         width, height = max(10, min(size.columns, 400)), max(3, min(size.lines, 200))
         self.visuals.advance(snap)
+        self.games_control(snap)
         canvas = self.frame(width, height, snap)
         self.curtain(canvas)
         self.screen.present(canvas)  # writes only what changed; clears when the size changes

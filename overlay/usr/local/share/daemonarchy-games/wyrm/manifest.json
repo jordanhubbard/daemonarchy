@@ -1,0 +1,26 @@
+{
+  "api": "1.2",
+  "capabilities": [
+    "draw",
+    "input",
+    "audio"
+  ],
+  "description": "A growing serpent: eat, grow, and do not meet yourself.",
+  "entry": "game.py",
+  "entry_sha256": "03911d82b8ba69f78241cc22bc1dc90d6a05a8f3fba9f45723aaeb6a594cb1f7",
+  "id": "wyrm",
+  "kind": "game",
+  "limits": {
+    "cpu_seconds": 1800,
+    "fps": 15,
+    "frame_ms": 250,
+    "memory_mb": 192
+  },
+  "min_size": [
+    50,
+    20
+  ],
+  "name": "Wyrm",
+  "schema": "daemonarchy/visual-plugin@1",
+  "version": "1.0.0"
+}
