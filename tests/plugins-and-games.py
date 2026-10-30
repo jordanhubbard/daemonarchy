@@ -736,11 +736,19 @@ class Pty:
         os.write(self.master, data)
 
     def finish(self, seconds=8):
-        try:
-            code = self.proc.wait(timeout=seconds)
-        except subprocess.TimeoutExpired:
+        # Keep draining the master while waiting: on FreeBSD a pty slave blocks
+        # at exit until its master has read the output (Linux just buffers it),
+        # as a real terminal always does.
+        end = time.monotonic() + seconds
+        code = None
+        while time.monotonic() < end:
+            self.read(0.05)
+            code = self.proc.poll()
+            if code is not None:
+                break
+        else:
             self.proc.kill()
-            code = None
+            self.proc.wait()
         self.read(0.3)
         os.close(self.master)
         return code
