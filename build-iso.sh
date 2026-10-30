@@ -269,8 +269,11 @@ printf '%s\n' "$live_python" >>"$stage/live-packages"
 # for the open drivers (GPU kernel modules come from the ISO repository at
 # boot), a terminal, fonts, and GTK 3 with Python bindings for the graphical
 # installer. GTK 4 is avoided: its media dependencies roughly double the set.
+# py-sqlite3: the live Python's sqlite3 module, which parallel-fetch reads pkg's
+# repository databases with, so the install plan carries exact byte totals.
 printf '%s\n' hyprland seatd dbus sudo mesa-dri foot dejavu gtk3 \
-    "py$(printf '%s' "$live_python" | sed 's/^python//')-pygobject" >>"$stage/live-packages"
+    "py$(printf '%s' "$live_python" | sed 's/^python//')-pygobject" \
+    "py$(printf '%s' "$live_python" | sed 's/^python//')-sqlite3" >>"$stage/live-packages"
 # poudriere image installs these from the bulk repository; name a missing
 # one here instead of failing inside the image build.
 while read -r live_package; do

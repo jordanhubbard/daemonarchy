@@ -33,9 +33,10 @@ x11/nvidia-driver x11/nvidia-kmod graphics/nvidia-drm-612-kmod x11/linux-nvidia-
 # The live desktop's packages (build-iso.sh live-packages) are installed into
 # the live root from the same poudriere repository. The desktop's own
 # dependencies already bring Hyprland, seatd, D-Bus, Mesa, foot, DejaVu, GTK 3
-# and PyGObject into the bulk; these origins are needed only by the live root.
+# and PyGObject into the bulk; these origins are needed only by the live root
+# (sudo, and py312-sqlite3 for parallel-fetch's exact install plan).
 # Add them to the bulk list with ISO_ORIGINS. They are not copied into the
 # ISO's package repository.
 LIVE_ORIGINS="
-security/sudo
+security/sudo databases/py-sqlite3@py312
 "
