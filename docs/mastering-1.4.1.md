@@ -110,6 +110,16 @@ the overlay the previous release built from, `poudriere bulk -n` against the fin
 reports nothing to build, and `hyprland`, `omarchy` and `daemonarchy` were rebuilt at the
 final revision and compared with the earlier builds (`evidence/final-compare.txt`).
 
+### The checkout catalogue
+
+The staged checkout feed is `$WORK/checkout-feed-1.4.1` (source `303b364`, ports at the final
+revision, tracking branch `main`, signed on the builder). The ISO build takes its catalogue from
+`CHECKOUT_CATALOG`, which `master-release.sh` points at that staged `checkouts.json`, so the image
+carries the right revisions without touching the repository. The repository's own
+`overlay/usr/local/share/daemonarchy-installer/checkouts.json` must name the **published** checkout
+feed (`tests/docs-release-sync.py` enforces it), so it changes only in the release pull request that
+also moves `release/current.json`: replace it with the published catalogue, byte for byte.
+
 If the revision is final as it stands:
 
 ```
