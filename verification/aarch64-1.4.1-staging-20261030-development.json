@@ -1,0 +1,119 @@
+{
+  "schema": "daemonarchy/aarch64-1.4.1-staging-development@1",
+  "queue_item": "ARCH-001",
+  "recorded_at": "2026-10-30T10:30:00Z",
+  "follows": "verification/aarch64-bulk-iso-20261027-development.json",
+  "scope": "Development evidence only: the aarch64 chain at the 1.4.1 base, staged and not published, outside LitAI custody. Nothing was uploaded to GitHub. The release signing key never left the amd64 signing host.",
+  "worker": {
+    "role": "native-build-worker (not admitted)",
+    "architecture": "aarch64",
+    "kernel": "FreeBSD 16.0-CURRENT #2 303b3646270f",
+    "logical_cpus": 8,
+    "physical_memory_bytes": 17142165504
+  },
+  "inputs": {
+    "source": {"repository": "daemonarchy-src", "revision": "303b3646270ffa4bf7cec65c5c1d28bd8000cbce", "freebsd_version": 1600029, "note": "the post-1.4 upstream sync; includes the vtnet WITNESS fix (src#37)"},
+    "ports": {"repository": "daemonarchy-ports", "branch": "daemonarchy", "revision": "0e8fb88350c7fe56adbb945d7dd266c6bf0246be", "note": "merge of ports#31; includes the aarch64 dependency fixes ports#28 to #30. The amd64 pin main b785784 is 10 commits behind and lacks them."},
+    "product": {"repository": "daemonarchy", "revision": "98b1695d8d5ed9bf333370fb621715970f021a7c", "note": "origin/main with #167 (no chromium on aarch64); a QA candidate, not the release commit"}
+  },
+  "release_sets": {
+    "cache": "/var/cache/daemonarchy-iso-aarch64-303b364",
+    "sha256": {
+      "base.txz": "f2e66bde663066536a46354610b915f0abbef3af11fde73dfa629538fa40c7ff",
+      "kernel.txz": "492dc542fa043b1955261bd1ab3d3ceb49bee642970e2023258566ee00f8f821",
+      "lib32.txz": "42f4c9f7eaad9d56e3cb26abd29ed4ac999720cc1c15423e1944c6301cb3e6f6"
+    },
+    "kernel_sha256": "4acd88a4941c27ce21007ae1ff1542bf38eaa033222c9b83ce3618519dc8ea36",
+    "timing_s": {"world": 159, "step_total": 481}
+  },
+  "bulk": {
+    "jail": "16aarch64r2 (tar method from the new sets)",
+    "ports_tree": "daemonarchy141",
+    "command": "poudriere bulk -j 16aarch64r2 -p daemonarchy141 -b latest -J 2 -f aarch64-ports.list",
+    "queued": 13,
+    "built": 12,
+    "failed": ["x11-themes/aether"],
+    "duration_s": 723,
+    "trap": "a tar-method jail records its version as '16.0-CURRENT', the earlier src-method jails '16.0-CURRENT 1600029'; without aligning .jailversion poudriere cleans all packages and would rebuild 763 of 1404"
+  },
+  "feeds": {
+    "application": {
+      "tag": "packages-16-aarch64-1.4.1",
+      "payloads": 496,
+      "signed": true,
+      "sha256": {
+        "meta": "ca7f091a4f9eccbf537a966a0d4d555cdfc4de34ad5be5c96a12c4485130664c",
+        "packagesite.pkg": "4c51894daabf71b514fca233dca983ff8a2e86bdae241bff8586d611d1b0e6b8",
+        "data.pkg": "f9a7817c8a5ea0d9e6cde6b9321c197a5a713f60622d77fe66b6e886a99492bf"
+      },
+      "signature_checks": {"pinned_public_key": "accepted, 496 packages processed", "other_key": "refused: Invalid signature, removing repository"}
+    },
+    "checkouts": {
+      "tag": "checkouts-16-aarch64-1.4.1",
+      "signed": true,
+      "src_revision": "303b3646270ffa4bf7cec65c5c1d28bd8000cbce",
+      "ports_revision": "0e8fb88350c7fe56adbb945d7dd266c6bf0246be",
+      "assets": {
+        "daemonarchy-src-checkout-000-20261029.g303b3646270f.pkg": 536725455,
+        "daemonarchy-src-checkout-001-20261029.g303b3646270f.pkg": 182057000,
+        "daemonarchy-ports-checkout-000-20261028.g0e8fb88350c7.pkg": 238187515
+      },
+      "sha256": {
+        "meta": "ca7f091a4f9eccbf537a966a0d4d555cdfc4de34ad5be5c96a12c4485130664c",
+        "packagesite.pkg": "22e96726eb6fe5195317be2a3ea414c30d1f15b2c3be3232efd52db3da58464d",
+        "data.pkg": "243183010c25e3d55e15b341419ee336d00465b5626f292abfa46a11b70be59d"
+      }
+    },
+    "closure": {
+      "tag": "packages-16-aarch64-1.4.1-upstream",
+      "closure_packages": 989,
+      "closure_archive_bytes": 4902281764,
+      "hosted_packages": 552,
+      "hosted_bytes": 3261881077,
+      "assets": 556,
+      "publish_commands": 557,
+      "signed": true,
+      "verified": "package-feed-stage.py verify: shard verified",
+      "fetch": {"workers": 4, "duration_s": 359},
+      "sha256": {
+        "meta": "ca7f091a4f9eccbf537a966a0d4d555cdfc4de34ad5be5c96a12c4485130664c",
+        "packagesite.pkg": "c3343e756323b35f2a43f7515e2bfda8844c264fc0ca118c7bd25a5480707635",
+        "data.pkg": "c645da12d1cd9a6c9309b44e2f7d42996575d5493466fc8d2439efa8b41022eb"
+      }
+    }
+  },
+  "iso": {
+    "status": "QA candidate: no closure mirror, not published",
+    "name": "daemonarchy-1.4.1-aarch64.iso",
+    "bytes": 2628749312,
+    "sha256": "0f9af36697868d91cb6ff05f3383e2b1ccc32645d38efa415755175dd0039aed",
+    "xz_bytes": 957743052,
+    "xz_sha256": "3f0675c350d40ef10f2391147e0a1bab3ddb55689942813780a8bd70c8e0ffeb",
+    "package_repository_tag": "packages-16-aarch64-1.4.1",
+    "duration_s": 1314
+  },
+  "qemu_install": {
+    "host": "qemu-system-aarch64 11.1.2, HVF, Apple silicon (12 cores), machine virt, AArch64 edk2, 6 GiB, virtio-gpu",
+    "harness": "test-qemu.sh ARCH=aarch64 with the iterative package cache pointed at a local HTTP server",
+    "result": "install completed, installed system booted under UEFI",
+    "duration_minutes": 39,
+    "packages_installed": 1157,
+    "archives_fetched": 914,
+    "fetch_minutes": 34,
+    "fetch_note": "single-connection fetch: parallel-fetch crashed on the image's Python without sqlite3 (fixed in #176)",
+    "checks_passed": 23,
+    "checks_failed": [
+      {"check": "sddm running", "reason": "no DRM/KMS driver in the guest; the base virtio_gpu VT driver is console only"},
+      {"check": "updates from the signed Daemonarchy repository", "reason": "the installed system points at the public packages-16-aarch64-1.4.1 URL, which is not published"}
+    ],
+    "evidence_sha256": {
+      "install.log": "4e4a263ba06654d57a321b6ad5940952eeceb60679641e63732030b2806465bd",
+      "boot.log": "168746206dcd9537f91871f875598093501ea814c93a1e429b94b012cdc791b5"
+    }
+  },
+  "defects_found_and_fixed": [
+    {"pr": "https://github.com/jordanhubbard/daemonarchy/pull/167", "summary": "the installer selected chromium, which has no aarch64 package; every arm64 install failed at package resolution"},
+    {"pr": "https://github.com/jordanhubbard/daemonarchy/pull/176", "summary": "parallel-fetch crashed with No module named _sqlite3 on the live image's Python; also affected amd64"}
+  ],
+  "not_run": ["upgrade", "rollback", "desktop in a VM (no KMS driver)", "network-debug", "Apple silicon laptops", "install against the public feed URLs", "a release image with the closure mirror gate"]
+}
