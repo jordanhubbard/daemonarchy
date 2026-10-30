@@ -27,9 +27,9 @@ from .canvas import Canvas
 from .scene import Scene, run_scene
 from .windows import WindowManager
 
-SCHEMA = "daemonarchy/visual-plugin@1"
+SCHEMA = "daemonarchy/extension@1"
 INDEX_SCHEMA = "daemonarchy/visual-plugin-index@1"
-KINDS = ("game", "animation", "visualizer")
+TYPES = ("game", "tool", "animation", "visualizer")
 CAPABILITIES = ("draw", "input", "audio", "window")
 ID = re.compile(r"^[a-z][a-z0-9-]{1,31}$")
 ENTRY = re.compile(r"^[A-Za-z0-9_][A-Za-z0-9_.-]{0,63}\.py$")
@@ -52,7 +52,7 @@ class Plugin:
     def __init__(self, directory, manifest):
         self.directory = directory
         self.id, self.name, self.version = manifest["id"], manifest["name"], manifest["version"]
-        self.kind, self.entry = manifest["kind"], manifest["entry"]
+        self.type, self.entry = manifest["type"], manifest["entry"]
         self.description = manifest.get("description", "")
         self.capabilities = tuple(manifest["capabilities"])
         self.limits = dict(DEFAULT_LIMITS, **manifest.get("limits", {}))
@@ -75,8 +75,8 @@ def check_manifest(manifest):
     for key in ("name", "version"):
         if not isinstance(manifest.get(key), str) or not 0 < len(manifest[key]) <= 64:
             problems.append(f"bad {key}")
-    if manifest.get("kind") not in KINDS:
-        problems.append("bad kind")
+    if manifest.get("type") not in TYPES:
+        problems.append("bad type")
     if not isinstance(manifest.get("api"), str) or not compatible(manifest["api"]):
         problems.append(f"needs SDK API {manifest.get('api')!r}")
     if not isinstance(manifest.get("entry"), str) or not ENTRY.match(manifest["entry"]):
@@ -158,8 +158,8 @@ class Registry:
             return self.refuse(name, f"unreadable entry: {error}")
         self.plugins[name] = Plugin(directory, manifest)
 
-    def list(self, kind=None):
-        return [p for p in self.plugins.values() if kind in (None, p.kind)]
+    def list(self, type=None):
+        return [p for p in self.plugins.values() if type in (None, p.type)]
 
 
 def write_index(root):

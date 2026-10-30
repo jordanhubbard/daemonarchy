@@ -423,7 +423,7 @@ class GameScenes(unittest.TestCase):
         titles = {p.name for p in registry.plugins.values()}
         self.assertEqual(len(titles), 4)
         for p in registry.plugins.values():
-            self.assertEqual(p.kind, "game")
+            self.assertEqual(p.type, "game")
             self.assertEqual(set(p.capabilities), {"draw", "input", "audio"})
         self.assertEqual(subprocess.run([sys.executable, "-I", str(ROOT / "scripts/seal-games.py"), "--check"],
                                         capture_output=True, text=True).returncode, 0)
@@ -435,7 +435,7 @@ def make_plugin(root, pid, source, caps=("draw", "input", "audio"), limits=None,
     directory = Path(root) / pid
     directory.mkdir(parents=True, exist_ok=True)
     (directory / "game.py").write_text(source)
-    manifest = dict(schema=plugin.SCHEMA, id=pid, name=pid.title(), version="1.0.0", kind="game", api=api,
+    manifest = dict(schema=plugin.SCHEMA, id=pid, name=pid.title(), version="1.0.0", type="game", api=api,
                     entry="game.py", entry_sha256="0" * 64, capabilities=list(caps), limits=limits or {})
     (directory / "manifest.json").write_text(json.dumps(manifest))
     plugin.seal_manifest(str(directory))
