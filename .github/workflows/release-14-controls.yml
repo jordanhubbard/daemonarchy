@@ -42,6 +42,8 @@ on:
       - 'scripts/install-trace-summary.py'
       - 'overlay/usr/local/libexec/daemonarchy-installer/install-trace'
       - 'overlay/usr/local/libexec/daemonarchy-installer/install-trace-sampler'
+      - 'overlay/usr/local/libexec/daemonarchy-installer/parallel-fetch'
+      - 'tests/parallel-fetch.py'
       - 'overlay/usr/local/libexec/daemonarchy-installer/pkg-events'
       - 'scripts/release-current.py'
       - 'release/**'
@@ -90,6 +92,8 @@ on:
       - 'scripts/install-trace-summary.py'
       - 'overlay/usr/local/libexec/daemonarchy-installer/install-trace'
       - 'overlay/usr/local/libexec/daemonarchy-installer/install-trace-sampler'
+      - 'overlay/usr/local/libexec/daemonarchy-installer/parallel-fetch'
+      - 'tests/parallel-fetch.py'
       - 'overlay/usr/local/libexec/daemonarchy-installer/pkg-events'
       - 'scripts/release-current.py'
       - 'release/**'
@@ -138,6 +142,10 @@ jobs:
         run: |
           python3 scripts/seal-games.py --check
           python3 -I tests/plugins-and-games.py -v
+      - name: Parallel package fetch
+        env:
+          PYTHONDONTWRITEBYTECODE: '1'
+        run: python3 tests/parallel-fetch.py -v
 
   controls:
     runs-on: ubuntu-latest
