@@ -1227,8 +1227,8 @@ remains open; report files do not establish a passing gate.
 - **GitHub issue:** [#137](https://github.com/jordanhubbard/daemonarchy/issues/137)
 - **Owner:** installer Component with LIVE-001 graphical integration
 - **Direction:** Offer approximately five or six small playable classic-arcade homages during a running installation, including a Space Invaders-style fixed shooter, through the installer existing text and graphical experience.
-- **Conclusion:** Reuse the installer renderer, palette, terminal capability detection, input, resize, reduced-motion and sound infrastructure while installation remains authoritative; ship only original names, code, artwork and generated sound, with no ROMs or copied assets.
-- **Depends on:** UI-001; integrate with LIVE-001 and do not weaken INSTALL-PERF-001.
+- **Conclusion:** Consume the versioned VISUAL-SDK-001 renderer, input and audio plugin contracts while installation remains authoritative; ship only original names, code, artwork and generated sound, with no ROMs or copied assets.
+- **Depends on:** VISUAL-SDK-001; integrate with LIVE-001 and do not weaken INSTALL-PERF-001.
 - **Completion prerequisites:** none
 - **Implementation:**
   - [ ] Select and document a legally safe portfolio of approximately five or
@@ -1251,3 +1251,51 @@ remains open; report files do not establish a passing gate.
   - [ ] Measured CPU, memory and elapsed-time overhead is bounded with no
     material INSTALL-PERF-001 regression; asset/license provenance and an audit
     for absent third-party ROMs/assets are retained.
+
+### [ ] VISUAL-SDK-001 — Extract a reusable installer visual SDK and plugin runtime
+
+- **Priority:** P1 (1.4.1)
+- **Release:** 1.4.1
+- **GitHub issue:** [#139](https://github.com/jordanhubbard/daemonarchy/issues/139)
+- **Owner:** installer and desktop Components
+- **Direction:** Extract the shared rendering, effects, input and audio presentation surface into a supported standard SDK, then load installer animations, visualizers and games as versioned plugins.
+- **Conclusion:** Keep installation state and privileged operations outside the SDK; plugins consume immutable observations through capability-scoped APIs, are preemptible and failure-isolated, and the SDK must work in a non-installer host.
+- **Depends on:** UI-001, LIVE-001
+- **Completion prerequisites:** none
+- **Implementation:**
+  - [ ] Specify a versioned public API for scenes, layout, palette and terminal
+    capability negotiation, animation timelines, transitions, particles and
+    effects, text and graphical drawing, resize, reduced motion, input actions
+    and non-blocking audio cues. Keep progress mutation, target writes, root
+    operations and installer-private state out of the API.
+  - [ ] Package the SDK independently with API documentation, compatibility and
+    deprecation policy, examples and an ordinary non-installer sample host. The
+    vt/ANSI and graphical backends must implement the same capability model;
+    small/16-color terminals, serial/headless contexts and mute/no-device modes
+    remain explicit rather than silently approximated.
+  - [ ] Define content-identified, versioned plugin manifests and discovery,
+    compatibility negotiation and load/start/suspend/resume/preempt/stop
+    lifecycle operations for animation/effect, visualizer and game plugins.
+    Search roots are explicit and trusted; the privileged installer never
+    imports ambient or user-controlled executable content into its process.
+  - [ ] Isolate plugin failure and bound CPU, memory, frame rate, storage, input
+    and audio ownership. Critical prompts, diagnostics, failure and completion
+    preempt content immediately. Unsupported API versions, undeclared
+    capabilities, malformed assets and path escapes refuse without affecting
+    the host.
+  - [ ] Migrate installer visuals and the GAME-001 portfolio to the SDK and
+    plugin contracts without keeping a parallel installer-private rendering
+    tree. Preserve original asset/code/license provenance and independently
+    owned package and uninstall boundaries.
+- **Evidence:**
+  - [ ] Native FreeBSD exact-image tests prove plugin discovery, version and
+    capability refusal, lifecycle/preemption, resize and backend changes, input
+    isolation, crash/timeout/resource-limit recovery and immutable installer
+    progress across vt(4), tmux/SSH and the graphical installer.
+  - [ ] An independently installed non-installer consumer renders representative
+    animations and effects through the public SDK; packaging, upgrade
+    compatibility, documentation and complete uninstall pass independently of
+    the installer.
+  - [ ] Exact-image comparison retains install integrity and completion with
+    bounded SDK/plugin CPU, memory, storage and elapsed-time overhead and no
+    material INSTALL-PERF-001 regression.

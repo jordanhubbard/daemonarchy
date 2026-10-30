@@ -13,13 +13,22 @@ from the critical path without weakening package identity, integrity or
 recovery. See [the 1.4.1 plan](docs/roadmap/release-1.4.1.md) and
 [INSTALL-PERF-001](docs/roadmap/active-work.md#install-perf-001-make-exact-image-installation-at-least-10x-faster).
 
+Extract the installer's ANSI and graphical rendering, palette, animation,
+effects, input and audio surface into a separately packaged standard SDK. A
+versioned plugin system loads animations, visualizers and game content through
+explicit trusted roots and capability-scoped lifecycle APIs; an ordinary
+non-installer host must also consume the SDK. The privileged installer never
+loads ambient executable content, and prompts, errors, diagnostics and terminal
+results always preempt plugins. See
+[VISUAL-SDK-001](docs/roadmap/active-work.md#visual-sdk-001-extract-a-reusable-installer-visual-sdk-and-plugin-runtime)
+and [issue #139](https://github.com/jordanhubbard/daemonarchy/issues/139).
+
 Add a curated set of approximately five or six playable classic-arcade homages
 during installation, including a Space Invaders-style fixed shooter. Games use
-the installer's existing ANSI/fancy graphical renderer, palette, input, resize,
-reduced-motion and sound infrastructure. Installation continues in the
-background and always owns critical prompts, errors, progress, diagnostics and
-the final result. Original names, code and assets avoid ROM, trademark and
-licensing problems. See
+the standard SDK and plugin contract rather than installer-private imports.
+Installation continues in the background and always owns critical prompts,
+errors, progress, diagnostics and the final result. Original names, code and
+assets avoid ROM, trademark and licensing problems. See
 [GAME-001](docs/roadmap/active-work.md#game-001-add-playable-classic-arcade-games-to-the-installer)
 and [issue #137](https://github.com/jordanhubbard/daemonarchy/issues/137).
 
