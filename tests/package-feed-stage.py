@@ -119,6 +119,24 @@ class StageTests(unittest.TestCase):
         self.assertIn("this plan was not executed", plan["notes"])
         self.assertTrue((f.out / "publish-plan.json").exists())
 
+    @with_fixture
+    def test_record_entries_are_what_the_release_verifier_accepts(self, f):
+        f.stage()
+        shard = f.out / f.prefix
+        (shard / "data.pkg").write_bytes(b"d")
+        (shard / "meta.conf").write_bytes(b"c")
+        tool.write_manifest(f.out, f.prefix, shard, sorted(PACKAGES))
+        entries = tool.closure_record(f.out)
+        self.assertEqual(entries[0]["tag"], f.prefix)
+        self.assertEqual(entries[0]["assets"]["bash-5.3.9.pkg"][0], len(PACKAGES["bash"][1]))
+        self.assertTrue(entries[0]["assets"]["bash-5.3.9.pkg"][1].startswith("sha256:"))
+        verifier_loader = importlib.machinery.SourceFileLoader("v", str(ROOT / "scripts/verify-release-assets.py"))
+        verifier_spec = importlib.util.spec_from_loader(verifier_loader.name, verifier_loader)
+        verifier = importlib.util.module_from_spec(verifier_spec)
+        verifier_loader.exec_module(verifier)
+        record = {"version": "1.4.1", "closure_feeds": entries}
+        self.assertEqual(list(verifier.closure_feeds(record)), [f.prefix])
+
     def test_tag_prefix_and_existing_output_are_validated(self):
         with self.assertRaises(ValueError):
             tool.shard_tags("latest", 1)

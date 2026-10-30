@@ -160,6 +160,16 @@ def verify(directory, manifest_path=None):
     return problems
 
 
+def closure_record(out):
+    """The release-inputs record's `closure_feeds` entries (scripts/verify-release-assets.py) for every staged shard."""
+    entries = []
+    for path in sorted(Path(out).glob("*.manifest.json")):
+        manifest = json.loads(path.read_text())
+        entries.append({"tag": manifest["tag"],
+                        "assets": {a["name"]: [a["bytes"], "sha256:" + a["sha256"]] for a in manifest["assets"]}})
+    return entries
+
+
 def publish_plan(out, repo):
     out = Path(out)
     shards, commands = [], []
@@ -199,6 +209,8 @@ def main(argv=None):
     p = sub.add_parser("publish-plan")
     p.add_argument("--out", required=True)
     p.add_argument("--repo", default="jordanhubbard/daemonarchy")
+    r = sub.add_parser("record", help="print the closure_feeds entries for the release-inputs record")
+    r.add_argument("--out", required=True)
     args = parser.parse_args(argv)
     try:
         if args.command == "stage":
@@ -213,6 +225,9 @@ def main(argv=None):
                 print(problem, file=sys.stderr)
             print("shard verified" if not problems else f"{len(problems)} problem(s)")
             return 1 if problems else 0
+        if args.command == "record":
+            print(json.dumps(closure_record(args.out), indent=2))
+            return 0
         plan = publish_plan(args.out, args.repo)
         print("\n".join(plan["commands"]))
         print(f"\n{len(plan['shards'])} shard(s); nothing was run. See {Path(args.out) / 'publish-plan.json'}.")

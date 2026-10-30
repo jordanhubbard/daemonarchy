@@ -55,6 +55,8 @@ on:
       - 'tests/parallel-fetch.py'
       - 'scripts/package-feed-stage.py'
       - 'tests/package-feed-stage.py'
+      - 'scripts/package-feed-upload.py'
+      - 'tests/package-feed-upload.py'
       - 'scripts/check-closure-feed.sh'
       - 'tests/closure-feed-check.sh'
       - 'scripts/verify-release-assets.py'
@@ -123,6 +125,8 @@ on:
       - 'tests/parallel-fetch.py'
       - 'scripts/package-feed-stage.py'
       - 'tests/package-feed-stage.py'
+      - 'scripts/package-feed-upload.py'
+      - 'tests/package-feed-upload.py'
       - 'scripts/check-closure-feed.sh'
       - 'tests/closure-feed-check.sh'
       - 'scripts/verify-release-assets.py'
@@ -192,6 +196,10 @@ jobs:
         env:
           PYTHONDONTWRITEBYTECODE: '1'
         run: python3 tests/package-feed-stage.py -v
+      - name: Package feed upload and verification
+        env:
+          PYTHONDONTWRITEBYTECODE: '1'
+        run: python3 tests/package-feed-upload.py -v
       - name: Install baselines and comparison
         env:
           PYTHONDONTWRITEBYTECODE: '1'
