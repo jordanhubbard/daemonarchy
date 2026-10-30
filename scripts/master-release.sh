@@ -52,11 +52,16 @@ CLOSURE_DIR=${CLOSURE_DIR:-/tmp/closure/out/packages-16-amd64-1.4.1-upstream}
 # resolve can run against the published releases instead of the staged directories:
 APP_FEED_URL=${APP_FEED_URL:-}
 CLOSURE_URL=${CLOSURE_URL:-}
+# A release image carries its closure feed (PKG-002): the installer prefers it to pkg.FreeBSD.org, and
+# build-iso.sh refuses the build unless that feed resolves the installer's packages on its own.
+PACKAGE_MIRROR_URLS=${PACKAGE_MIRROR_URLS:-https://github.com/jordanhubbard/daemonarchy/releases/download/$PACKAGE_REPOSITORY_TAG-upstream}
+REQUIRE_PACKAGE_MIRROR=${REQUIRE_PACKAGE_MIRROR:-yes}
 SB_DIR=${SB_DIR:-/usr/daemonarchy/sb16}
 XZ_BUDGET=${XZ_BUDGET:-2147483648}                # a GitHub release asset must stay under 2 GiB
 QA_HOST=${QA_HOST:-madmax.local}
 QA_USER=${QA_USER:-jkh}
 QA_DIR=${QA_DIR:-/tmp/daemonarchy-qa}
+QA_VIRGL_RENDER_NODE=${QA_VIRGL_RENDER_NODE:-/dev/dri/renderD128}   # the desktop check renders through VirGL
 STICK_MAX_BYTES=${STICK_MAX_BYTES:-137438953472}  # 128 GiB: refuses the 239 GB scratch disk and anything larger
 DENY_SERIALS=${DENY_SERIALS:-03A0423110011698}    # sda "toolscratch" (Samsung, 239 GB): never written
 LSBLK=${LSBLK:-lsblk}
@@ -171,7 +176,7 @@ step_iso() {
   local product=$WORK/product-$(short) out=$WORK/out-$(short)
   run mkdir -p "$out"
   if $DRY_RUN; then
-    echo "+ (cd $product && env JAIL=$JAIL PTREE=$PTREE ... sh ./build-iso.sh)"
+    echo "+ (cd $product && env JAIL=$JAIL PTREE=$PTREE PACKAGE_MIRROR_URLS=$PACKAGE_MIRROR_URLS REQUIRE_PACKAGE_MIRROR=$REQUIRE_PACKAGE_MIRROR ... sh ./build-iso.sh)"
     return 0
   fi
   ( cd "$product" && env \
@@ -181,6 +186,7 @@ step_iso() {
       SET_CACHE_DIR="$SET_CACHE_DIR" OUTDIR="$out" ISO_STAGE_PARENT="$WORK/stage" \
       CHECKOUT_CATALOG="$CHECKOUT_CATALOG" \
       PACKAGE_REPOSITORY_TAG="$PACKAGE_REPOSITORY_TAG" \
+      PACKAGE_MIRROR_URLS="$PACKAGE_MIRROR_URLS" REQUIRE_PACKAGE_MIRROR="$REQUIRE_PACKAGE_MIRROR" \
       PACKAGE_REPOSITORY_PUBLIC_KEY="$product/keys/pkg-repo-1.3.1.pub" \
       SECUREBOOT_BUNDLE="$SECUREBOOT_BUNDLE" SECUREBOOT_SIGNATURE="$SECUREBOOT_BUNDLE.sig" \
       SECUREBOOT_CERTIFICATE="$SECUREBOOT_CERTIFICATE" \
@@ -242,14 +248,14 @@ step_qa() {
   local product=$WORK/product-$(short) out=$WORK/out-$(short) xz
   run ssh "$QA_USER@$QA_HOST" "rm -rf $QA_DIR && mkdir -p $QA_DIR"
   if $DRY_RUN; then
-    echo "+ scp image and $product to $QA_HOST:$QA_DIR; test-qemu.sh with EXPECTED_PACKAGE_REPOSITORY_TAG=$PACKAGE_REPOSITORY_TAG POST_INSTALL_CHECK=tests/qemu-desktop.py"
+    echo "+ scp image and $product to $QA_HOST:$QA_DIR; test-qemu.sh with EXPECTED_PACKAGE_REPOSITORY_TAG=$PACKAGE_REPOSITORY_TAG POST_INSTALL_CHECK=tests/qemu-desktop.py VIRGL_RENDER_NODE=$QA_VIRGL_RENDER_NODE"
     return 0
   fi
   xz=$(ls "$out"/*.iso.xz | head -1)
   scp -q "$xz" "$QA_USER@$QA_HOST:$QA_DIR/"
   tar -cf - -C "$product" . | ssh "$QA_USER@$QA_HOST" "mkdir -p $QA_DIR/repo && tar -xf - -C $QA_DIR/repo"
   ssh "$QA_USER@$QA_HOST" "cd $QA_DIR && xz -dk $(basename "$xz") && cd repo && \
-      EXPECTED_PACKAGE_REPOSITORY_TAG=$PACKAGE_REPOSITORY_TAG POST_INSTALL_CHECK=tests/qemu-desktop.py \
+      EXPECTED_PACKAGE_REPOSITORY_TAG=$PACKAGE_REPOSITORY_TAG POST_INSTALL_CHECK=tests/qemu-desktop.py VIRGL_RENDER_NODE=$QA_VIRGL_RENDER_NODE \
       WORK=$QA_DIR/work sh ./test-qemu.sh ../$(basename "${xz%.xz}")" || fail 'QEMU QA failed'
   state_mark qa
 }
