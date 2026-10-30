@@ -74,6 +74,10 @@ on:
       - 'tests/release-asset-names.py'
       - 'scripts/install-trace-baseline.py'
       - 'tests/install-trace-baseline.py'
+      - 'scripts/build-release-packages.sh'
+      - 'tests/build-release-packages.sh'
+      - 'scripts/master-release.sh'
+      - 'tests/master-release.sh'
       - 'verification/install-baselines/**'
       - 'verification/closure-feeds/**'
       - 'overlay/usr/local/libexec/daemonarchy-installer/pkg-events'
@@ -156,6 +160,10 @@ on:
       - 'tests/release-asset-names.py'
       - 'scripts/install-trace-baseline.py'
       - 'tests/install-trace-baseline.py'
+      - 'scripts/build-release-packages.sh'
+      - 'tests/build-release-packages.sh'
+      - 'scripts/master-release.sh'
+      - 'tests/master-release.sh'
       - 'verification/install-baselines/**'
       - 'verification/closure-feeds/**'
       - 'overlay/usr/local/libexec/daemonarchy-installer/pkg-events'
@@ -241,6 +249,10 @@ jobs:
         env:
           PYTHONDONTWRITEBYTECODE: '1'
         run: python3 tests/install-trace-baseline.py -v
+      - name: Package build and mastering runbook
+        run: |
+          bash tests/build-release-packages.sh
+          bash tests/master-release.sh
 
   controls:
     runs-on: ubuntu-latest
