@@ -73,6 +73,13 @@ resolve=$(line '^if ! traced pkg_resolve ')
 fetch=$(line '^for attempt in 1 2 3 4 5')
 [[ -n $resolve && -n $fetch ]] && (( resolve < fetch ))
 
+# The parallel fetch runs on the resolved plan, before the serial fallback, and
+# the serial retries back off instead of sleeping a fixed ten seconds.
+parallel=$(line '^  traced pkg_fetch_parallel ')
+[[ -n $parallel ]] && (( resolve < parallel && parallel < fetch ))
+! grep -q '^  sleep 10$' "$install"
+grep -q 'sleep \$((2 \*\* attempt))' "$install"
+
 if [[ $(uname -s) == FreeBSD && $(id -u) == 0 ]]; then
   mkdir -p "$work/stage/usr/local/share/daemonarchy-integrity-fixture" "$work/packages" "$work/root"
   printf 'verified package payload\n' >"$work/stage/usr/local/share/daemonarchy-integrity-fixture/payload"

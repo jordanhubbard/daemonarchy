@@ -1,0 +1,353 @@
+#!/usr/bin/env python3
+"""Fetch a resolved package plan with several pkg processes at once.
+
+  parallel-fetch --plan FILE --cache DIR [--workers N] [--batch K] [--attempts A]
+                 [--skip-repo NAME]... -- PKG-COMMAND...
+
+PKG-COMMAND is the whole pkg invocation up to the sub-command, for example
+`env ASSUME_ALWAYS_YES=yes pkg -r /mnt -o REPOS_DIR=...`. The plan is the text
+of `pkg install -n -y PACKAGES`: its "to be INSTALLED/UPGRADED" lines name every
+package and version the transaction needs. Each worker runs
+`PKG-COMMAND fetch -y -U name-version...` against the same cache, so pkg itself
+verifies every archive against the signed catalogue and leaves the cache exactly
+where `pkg install` expects it. Nothing is installed.
+
+Per-connection throughput to the package mirror is the limit on a fast link, so
+N processes move roughly N times the bytes while there are enough archives to
+keep them busy. A mirror error on an archive is common at that rate (about half
+of the batches in a measured 8-worker run saw one), so the pool checks the cache
+for each wanted archive and retries just the ones that failed, singly, with
+exponential backoff, without ever pausing the other workers. A deterministic
+error (no such package, unreadable repository, full disk) stops at once with
+exit status 3 and its message.
+
+Exit status: 0 every archive is in the cache, 1 some are still missing after
+the retries, 2 bad usage or plan, 3 a deterministic pkg error.
+
+Progress goes to stdout as the installer's `@@fetch` lines (schema
+daemonarchy/pkg-fetch@1, at most four a second). When DAEMONARCHY_TRACE_FILE
+names the installer trace (docs/install-trace.md) it also appends one
+`download` line per archive and `fetch_pool_begin`, `fetch_batch` (with the error
+class of a failure), `fetch_retry` and `fetch_pool_end` lines. Only package
+names, counts, sizes and times are written.
+"""
+import argparse
+import collections
+import heapq
+import json
+import os
+import random
+import re
+import subprocess
+import sys
+import threading
+import time
+
+SCHEMA = 'daemonarchy/pkg-fetch@1'
+WANTED = ('New packages to be INSTALLED', 'Installed packages to be UPGRADED',
+          'Installed packages to be REINSTALLED', 'Installed packages to be DOWNGRADED')
+LINE = re.compile(r'^\t([^\s:]+): (?:\S+ -> )?(\S+?)(?: \[([^\]]+)\])?\s*$')
+# pkg messages that will repeat identically: retrying only wastes time.
+DETERMINISTIC = re.compile(
+    r'No packages matching|No packages available|cannot be opened|unable to open|'
+    r'No space left|Permission denied|missing dependency|Operation not permitted|'
+    r'Read-only file system')
+# pkg names the archive that failed: ".../All/Hashed/name-version~hash.pkg: Unknown HTTP error"
+FAILED_ARCHIVE = re.compile(r'/([^/\s]+?)~[^/\s]*\.pkg: ')
+ERROR_CLASSES = (('http', re.compile(r'HTTP error|HTTP/\d|Bad Gateway|Service Unavailable|Too Many Requests')),
+                 ('timeout', re.compile(r'[Tt]imed? ?out')),
+                 ('checksum', re.compile(r'[Cc]hecksum|size mismatch')),
+                 ('connection', re.compile(r'[Cc]onnection|resolve|No route|refused|reset')))
+PACKAGE_ID = re.compile(r'^[A-Za-z0-9_.+,-]{1,200}$')
+
+
+class Trace:
+    """Append JSON lines to the installer trace; a no-op without a trace file."""
+
+    def __init__(self, path=None, start_us=0, now_us=lambda: time.time_ns() // 1000):
+        self.path, self.start_us, self.now_us = path, start_us, now_us
+        self.lock = threading.Lock()
+
+    def event(self, event_name, /, **fields):
+        if not self.path:
+            return
+        now = self.now_us()
+        row = dict(t_us=now, since_start_us=now - self.start_us, event=event_name, source='parallel-fetch')
+        row.update(fields)
+        try:
+            with self.lock, open(self.path, 'a', encoding='utf-8') as out:
+                out.write(json.dumps(row, separators=(',', ':')) + '\n')
+        except OSError:
+            pass
+
+
+def parse_plan(text, skip_repos=()):
+    """The packages a `pkg install -n` plan would fetch: [{id, name, version, repo}]."""
+    items, seen, section = [], set(), None
+    for line in text.splitlines():
+        if not line.startswith('\t'):
+            stripped = line.rstrip(':').strip()
+            section = stripped if line.rstrip().endswith(':') and stripped else None
+            continue
+        if not section or not section.startswith(WANTED):
+            continue
+        match = LINE.match(line)
+        if not match:
+            continue
+        name, version, repo = match.groups()
+        identifier = f'{name}-{version}'
+        if repo in skip_repos or identifier in seen or not PACKAGE_ID.match(identifier):
+            continue
+        seen.add(identifier)
+        items.append(dict(id=identifier, name=name, version=version, repo=repo or ''))
+    return items
+
+
+def load_sizes(pkg_command, timeout=120):
+    """Installed size per name-version from the catalogues, to start big packages first."""
+    try:
+        out = subprocess.run([*pkg_command, 'rquery', '-U', '%n-%v %sb'], capture_output=True, text=True,
+                             timeout=timeout).stdout
+    except (OSError, subprocess.SubprocessError):
+        return {}
+    sizes = {}
+    for line in out.splitlines():
+        identifier, _, size = line.rpartition(' ')
+        if identifier and size.isdigit():
+            sizes[identifier] = int(size)
+    return sizes
+
+
+def make_batches(items, sizes, per_batch=4, big=64 << 20):
+    """Biggest first; small packages share a process, big ones run alone."""
+    ordered = sorted(items, key=lambda i: -sizes.get(i['id'], 0))
+    batches, current, weight = [], [], 0
+    for item in ordered:
+        size = sizes.get(item['id'], 0)
+        if size >= big:
+            batches.append([item])
+            continue
+        if current and (len(current) >= per_batch or weight + size > big):
+            batches.append(current)
+            current, weight = [], 0
+        current.append(item)
+        weight += size
+    if current:
+        batches.append(current)
+    return batches
+
+
+def cached(cache, identifier):
+    return os.path.exists(os.path.join(cache, identifier + '.pkg'))
+
+
+def cache_state(cache, ids):
+    """({id: bytes} complete, {id: bytes} partial) from one directory listing."""
+    complete, partial = {}, {}
+    try:
+        entries = list(os.scandir(cache))
+    except OSError:
+        return complete, partial
+    links = {e.name[:-4] for e in entries if e.name.endswith('.pkg') and '~' not in e.name and e.is_symlink()}
+    for entry in entries:
+        if '~' not in entry.name or '.pkg' not in entry.name:
+            continue
+        identifier = entry.name.split('~', 1)[0]
+        if identifier not in ids:
+            continue
+        try:
+            size = entry.stat().st_size
+        except OSError:
+            continue
+        (complete if identifier in links else partial)[identifier] = size
+    return complete, partial
+
+
+def error_class(text):
+    for name, pattern in ERROR_CLASSES:
+        if pattern.search(text):
+            return name
+    return 'other'
+
+
+class Pool:
+    def __init__(self, items, pkg_command, cache, trace, out, workers=8, per_batch=4, attempts=6,
+                 sizes=None, clock=time.monotonic, interval=0.25):
+        self.items, self.pkg_command, self.cache, self.trace, self.out = items, pkg_command, cache, trace, out
+        self.workers, self.per_batch, self.attempts = max(1, workers), per_batch, max(1, attempts)
+        self.sizes, self.clock, self.interval = sizes or {}, clock, interval
+        self.ids = {i['id'] for i in items}
+        self.lock = threading.Condition()
+        self.reported, self.assigned, self.last_done = {}, {}, {}
+        self.archives = self.done_bytes = 0
+        self.last_emit = float('-inf')
+        self.fatal = None
+        self.active = 0
+        self.busy_us = self.start_us = 0
+        self.ready, self.delayed, self.tries = collections.deque(), [], collections.Counter()
+        self.sequence = 0
+
+    # -- progress -------------------------------------------------------------------
+    def emit(self, name='', file_bytes=0, force=False):
+        now = self.clock()
+        if not force and now - self.last_emit < self.interval:
+            return
+        self.last_emit = now
+        row = dict(schema=SCHEMA, archives=self.archives, bytes=self.done_bytes + file_bytes,
+                   file=name, file_bytes=file_bytes, file_total=file_bytes)
+        self.out.write('@@fetch ' + json.dumps(row, separators=(',', ':')) + '\n')
+        self.out.flush()
+
+    def observe(self):
+        """Record newly finished archives; the watcher calls this several times a second."""
+        complete, partial = cache_state(self.cache, self.ids)
+        newest = ''
+        with self.lock:
+            for identifier, size in sorted(complete.items()):
+                if identifier in self.reported:
+                    continue
+                now_us = self.trace.now_us()
+                worker, batch_start = self.assigned.get(identifier, (0, now_us))
+                start = max(batch_start, self.last_done.get(worker, 0))
+                self.last_done[worker] = now_us
+                self.reported[identifier] = size
+                self.archives += 1
+                self.done_bytes += size
+                self.busy_us += max(now_us - start, 0)
+                newest = identifier
+                self.trace.event('download', name=identifier, bytes=size, dur_us=max(now_us - start, 0), worker=worker)
+            partial_bytes = sum(s for i, s in partial.items() if i not in self.reported)
+        self.emit(newest, partial_bytes, force=bool(newest))
+
+    # -- scheduling -----------------------------------------------------------------
+    def next_batch(self):
+        """A batch whose time has come, or None when everything is finished or given up."""
+        with self.lock:
+            while True:
+                if self.fatal:
+                    return None
+                now = self.clock()
+                while self.delayed and self.delayed[0][0] <= now:
+                    self.ready.append(heapq.heappop(self.delayed)[2])
+                if self.ready:
+                    self.active += 1
+                    return self.ready.popleft()
+                if not self.delayed and not self.active:
+                    return None
+                wait = (self.delayed[0][0] - now) if self.delayed else 0.5
+                self.lock.wait(min(max(wait, 0.01), 0.5))
+
+    def requeue(self, item, failed):
+        """Queue one archive again, alone. A failure costs an attempt and a growing pause."""
+        if failed:
+            self.tries[item['id']] += 1
+            if self.tries[item['id']] >= self.attempts:
+                return False
+            delay = min(30.0, 2.0 ** (self.tries[item['id']] - 1)) + random.random() * 0.5
+            self.trace.event('fetch_retry', name=item['id'], attempt=self.tries[item['id']], delay_ms=int(delay * 1000))
+        else:
+            delay = 0.0
+        self.sequence += 1
+        heapq.heappush(self.delayed, (self.clock() + delay, self.sequence, [item]))
+        return True
+
+    def run_batch(self, worker, batch):
+        started = self.trace.now_us()
+        with self.lock:
+            for item in batch:
+                self.assigned[item['id']] = (worker, started)
+        ids = [i['id'] for i in batch]
+        try:
+            result = subprocess.run([*self.pkg_command, 'fetch', '-y', '-U', *ids], stdin=subprocess.DEVNULL,
+                                    stdout=subprocess.PIPE, stderr=subprocess.STDOUT, text=True,
+                                    errors='replace')
+            status, text = result.returncode, result.stdout[-4000:]
+        except OSError as error:
+            status, text = 127, str(error)
+        missing = [i for i in batch if not cached(self.cache, i['id'])]
+        fields = dict(worker=worker, packages=len(ids), status=status, dur_us=self.trace.now_us() - started)
+        if missing or status:
+            fields['error'] = error_class(text)
+        self.trace.event('fetch_batch', **fields)
+        match = DETERMINISTIC.search(text)
+        named = {m.group(1) for m in FAILED_ARCHIVE.finditer(text)}
+        with self.lock:
+            self.active -= 1
+            if match and missing:
+                line = next((l for l in text.splitlines() if match.group(0) in l), match.group(0))
+                self.fatal = self.fatal or line.strip()[:300]
+            for item in () if self.fatal else missing:
+                # An archive pkg names as failed (or one fetched alone) costs an attempt;
+                # one that was only behind it in the batch is queued again for free.
+                if not self.requeue(item, failed=item['id'] in named or len(batch) == 1 or not named):
+                    self.gave_up.append(item['id'])
+            self.lock.notify_all()
+
+    def worker(self, number):
+        while True:
+            batch = self.next_batch()
+            if batch is None:
+                return
+            self.run_batch(number, batch)
+
+    def run(self):
+        self.start_us = self.trace.now_us()
+        self.gave_up = []
+        pending = [i for i in self.items if not cached(self.cache, i['id'])]
+        self.trace.event('fetch_pool_begin', workers=self.workers, packages=len(self.items), pending=len(pending))
+        self.ready.extend(make_batches(pending, self.sizes, self.per_batch))
+        threads = [threading.Thread(target=self.worker, args=(n,), daemon=True)
+                   for n in range(min(self.workers, max(len(self.ready), 1)))]
+        for thread in threads:
+            thread.start()
+        while any(t.is_alive() for t in threads):
+            self.observe()
+            time.sleep(0.1)
+        for thread in threads:
+            thread.join()
+        self.observe()
+        missing = [i for i in self.items if not cached(self.cache, i['id'])]
+        elapsed = max(self.trace.now_us() - self.start_us, 1)
+        self.trace.event('fetch_pool_end', complete=len(self.items) - len(missing), missing=len(missing),
+                         bytes=self.done_bytes, dur_us=elapsed, mean_concurrency=round(self.busy_us / elapsed, 2))
+        self.emit('', 0, force=True)
+        return missing
+
+
+def main(argv):
+    parser = argparse.ArgumentParser(description=__doc__, formatter_class=argparse.RawDescriptionHelpFormatter)
+    parser.add_argument('--plan', required=True, help='pkg install -n output ("-" for stdin)')
+    parser.add_argument('--cache', required=True, help="pkg's cache directory for the target")
+    parser.add_argument('--workers', type=int, default=int(os.environ.get('DAEMONARCHY_FETCH_WORKERS', '8')))
+    parser.add_argument('--batch', type=int, default=4, help='small packages per pkg process')
+    parser.add_argument('--attempts', type=int, default=6, help='tries for one archive before giving up on it')
+    parser.add_argument('--skip-repo', action='append', default=[], help='repository whose packages need no fetch')
+    parser.add_argument('command', nargs=argparse.REMAINDER)
+    args = parser.parse_args(argv)
+    command = args.command[1:] if args.command[:1] == ['--'] else args.command
+    if not command or not 1 <= args.workers <= 32:
+        parser.print_usage(sys.stderr)
+        return 2
+    text = sys.stdin.read() if args.plan == '-' else open(args.plan, encoding='utf-8', errors='replace').read()
+    items = parse_plan(text, set(args.skip_repo))
+    if not items:
+        print('parallel-fetch: the plan names no packages to fetch', file=sys.stderr)
+        return 2
+    start = os.environ.get('DAEMONARCHY_TRACE_START_US', '')
+    trace = Trace(os.environ.get('DAEMONARCHY_TRACE_FILE'), int(start) if start.isdigit() else 0)
+    os.makedirs(args.cache, exist_ok=True)
+    pool = Pool(items, command, args.cache, trace, sys.stdout, args.workers, args.batch, args.attempts,
+                sizes=load_sizes(command))
+    missing = pool.run()
+    if pool.fatal:
+        print(f'parallel-fetch: {pool.fatal}', file=sys.stderr)
+        return 3
+    if missing:
+        print(f'parallel-fetch: {len(missing)} of {len(items)} archives are still missing after '
+              f'{args.attempts} attempts each; the serial fetch will take them.', file=sys.stderr)
+        return 1
+    return 0
+
+
+if __name__ == '__main__':
+    raise SystemExit(main(sys.argv[1:]))

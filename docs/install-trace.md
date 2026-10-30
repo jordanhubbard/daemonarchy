@@ -34,7 +34,10 @@ credentials, network names, addresses, paths or command lines.
 | `step` | installer | `name` (a stage marker inside a phase) |
 | `op_begin`, `op_end` | installer | `op` (a fixed label such as `zpool_create`, `zfs_datasets`, `extract_base`, `newfs_efi`, `pkg_fetch_all`, `pkg_install_all`, `package_integrity`, `cuda_setup`); `op_end` adds `status` and `dur_us` |
 | `fetch_attempt` | installer | `attempt` |
-| `download` | pkg-events | `name` (archive), `bytes`, `dur_us`: one per finished package archive |
+| `download` | pkg-events or parallel-fetch | `name` (archive), `bytes`, `dur_us`: one per finished package archive. From the parallel fetch it also has `worker`, and `dur_us` is the time since that worker's previous archive finished (or its batch started), so the sum over a worker is its busy time |
+| `fetch_pool_begin`, `fetch_pool_end` | parallel-fetch | `workers`, `packages`, `pending`; the end adds `complete`, `missing`, `bytes`, `dur_us` and `mean_concurrency` (summed archive time over wall time: how many connections were really busy) |
+| `fetch_batch` | parallel-fetch | one `pkg fetch` process: `worker`, `packages`, `status`, `dur_us`, and for a failure `error` (`http`, `timeout`, `checksum`, `connection` or `other`) |
+| `fetch_retry` | parallel-fetch | an archive queued again: `name`, `attempt`, `delay_ms` (exponential backoff, so no fixed sleeps) |
 | `pkg_event` | pkg-events | `type` (pkg's event name, for example `INFO_EXTRACT`), `name` (package): install and unpack begin/finish events; progress ticks are not traced |
 | `net_probe` | sampler | `host`, `dns_us`, `connect_us`, `tls_us`, `first_byte_us`, `status` (or `error`): run once before the package fetch against `pkg.FreeBSD.org` and `github.com` |
 | `net_sample` | sampler | `name` (interface), cumulative `ibytes`, `obytes`, `ipkts`, `opkts`, `ierrs`, `oerrs`, per-interval `d_*`, `interval_us`; only interfaces that moved |
