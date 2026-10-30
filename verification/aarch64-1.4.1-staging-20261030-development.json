@@ -12,9 +12,23 @@
     "physical_memory_bytes": 17142165504
   },
   "inputs": {
-    "source": {"repository": "daemonarchy-src", "revision": "303b3646270ffa4bf7cec65c5c1d28bd8000cbce", "freebsd_version": 1600029, "note": "the post-1.4 upstream sync; includes the vtnet WITNESS fix (src#37)"},
-    "ports": {"repository": "daemonarchy-ports", "branch": "daemonarchy", "revision": "0e8fb88350c7fe56adbb945d7dd266c6bf0246be", "note": "merge of ports#31; includes the aarch64 dependency fixes ports#28 to #30. The amd64 pin main b785784 is 10 commits behind and lacks them."},
-    "product": {"repository": "daemonarchy", "revision": "98b1695d8d5ed9bf333370fb621715970f021a7c", "note": "origin/main with #167 (no chromium on aarch64); a QA candidate, not the release commit"}
+    "source": {
+      "repository": "daemonarchy-src",
+      "revision": "303b3646270ffa4bf7cec65c5c1d28bd8000cbce",
+      "freebsd_version": 1600029,
+      "note": "the post-1.4 upstream sync; includes the vtnet WITNESS fix (src#37)"
+    },
+    "ports": {
+      "repository": "daemonarchy-ports",
+      "branch": "daemonarchy",
+      "revision": "0e8fb88350c7fe56adbb945d7dd266c6bf0246be",
+      "note": "merge of ports#31; includes the aarch64 dependency fixes ports#28 to #30. The amd64 pin main b785784 is 10 commits behind and lacks them."
+    },
+    "product": {
+      "repository": "daemonarchy",
+      "revision": "98b1695d8d5ed9bf333370fb621715970f021a7c",
+      "note": "origin/main with #167 (no chromium on aarch64); a QA candidate, not the release commit"
+    }
   },
   "release_sets": {
     "cache": "/var/cache/daemonarchy-iso-aarch64-303b364",
@@ -24,7 +38,10 @@
       "lib32.txz": "42f4c9f7eaad9d56e3cb26abd29ed4ac999720cc1c15423e1944c6301cb3e6f6"
     },
     "kernel_sha256": "4acd88a4941c27ce21007ae1ff1542bf38eaa033222c9b83ce3618519dc8ea36",
-    "timing_s": {"world": 159, "step_total": 481}
+    "timing_s": {
+      "world": 159,
+      "step_total": 481
+    }
   },
   "bulk": {
     "jail": "16aarch64r2 (tar method from the new sets)",
@@ -32,7 +49,9 @@
     "command": "poudriere bulk -j 16aarch64r2 -p daemonarchy141 -b latest -J 2 -f aarch64-ports.list",
     "queued": 13,
     "built": 12,
-    "failed": ["x11-themes/aether"],
+    "failed": [
+      "x11-themes/aether"
+    ],
     "duration_s": 723,
     "trap": "a tar-method jail records its version as '16.0-CURRENT', the earlier src-method jails '16.0-CURRENT 1600029'; without aligning .jailversion poudriere cleans all packages and would rebuild 763 of 1404"
   },
@@ -46,7 +65,10 @@
         "packagesite.pkg": "4c51894daabf71b514fca233dca983ff8a2e86bdae241bff8586d611d1b0e6b8",
         "data.pkg": "f9a7817c8a5ea0d9e6cde6b9321c197a5a713f60622d77fe66b6e886a99492bf"
       },
-      "signature_checks": {"pinned_public_key": "accepted, 496 packages processed", "other_key": "refused: Invalid signature, removing repository"}
+      "signature_checks": {
+        "pinned_public_key": "accepted, 496 packages processed",
+        "other_key": "refused: Invalid signature, removing repository"
+      }
     },
     "checkouts": {
       "tag": "checkouts-16-aarch64-1.4.1",
@@ -74,11 +96,34 @@
       "publish_commands": 557,
       "signed": true,
       "verified": "package-feed-stage.py verify: shard verified",
-      "fetch": {"workers": 4, "duration_s": 359},
+      "fetch": {
+        "workers": 4,
+        "duration_s": 359
+      },
       "sha256": {
         "meta": "ca7f091a4f9eccbf537a966a0d4d555cdfc4de34ad5be5c96a12c4485130664c",
         "packagesite.pkg": "c3343e756323b35f2a43f7515e2bfda8844c264fc0ca118c7bd25a5480707635",
         "data.pkg": "c645da12d1cd9a6c9309b44e2f7d42996575d5493466fc8d2439efa8b41022eb"
+      }
+    },
+    "closure_delta": {
+      "tag": "packages-16-aarch64-1.4.1-upstream-2",
+      "purpose": "the five packages Epiphany adds to the closure; the first shard is published and tags are immutable",
+      "packages": [
+        "epiphany-47.7_3",
+        "libavif-1.4.2",
+        "libyuv-0.0.1973",
+        "webkit2-gtk_60-2.46.6_8",
+        "woff2-1.0.2_5"
+      ],
+      "bytes": 38313507,
+      "assets": 9,
+      "signed": true,
+      "verified": "package-feed-stage.py verify: shard verified",
+      "sha256": {
+        "meta": "ca7f091a4f9eccbf537a966a0d4d555cdfc4de34ad5be5c96a12c4485130664c",
+        "packagesite.pkg": "2b2ef472777a25042c071329555255b7ac327e1f77c155a732daea279d9961d0",
+        "data.pkg": "bf672f9cccefb1944c542aaa6361463f6c4430ec9bbc2d7bc66346f3a41eb4fd"
       }
     }
   },
@@ -103,8 +148,14 @@
     "fetch_note": "single-connection fetch: parallel-fetch crashed on the image's Python without sqlite3 (fixed in #176)",
     "checks_passed": 23,
     "checks_failed": [
-      {"check": "sddm running", "reason": "no DRM/KMS driver in the guest; the base virtio_gpu VT driver is console only"},
-      {"check": "updates from the signed Daemonarchy repository", "reason": "the installed system points at the public packages-16-aarch64-1.4.1 URL, which is not published"}
+      {
+        "check": "sddm running",
+        "reason": "no DRM/KMS driver in the guest; the base virtio_gpu VT driver is console only"
+      },
+      {
+        "check": "updates from the signed Daemonarchy repository",
+        "reason": "the installed system points at the public packages-16-aarch64-1.4.1 URL, which is not published"
+      }
     ],
     "evidence_sha256": {
       "install.log": "4e4a263ba06654d57a321b6ad5940952eeceb60679641e63732030b2806465bd",
@@ -112,8 +163,50 @@
     }
   },
   "defects_found_and_fixed": [
-    {"pr": "https://github.com/jordanhubbard/daemonarchy/pull/167", "summary": "the installer selected chromium, which has no aarch64 package; every arm64 install failed at package resolution"},
-    {"pr": "https://github.com/jordanhubbard/daemonarchy/pull/176", "summary": "parallel-fetch crashed with No module named _sqlite3 on the live image's Python; also affected amd64"}
+    {
+      "pr": "https://github.com/jordanhubbard/daemonarchy/pull/167",
+      "summary": "the installer selected chromium, which has no aarch64 package; every arm64 install failed at package resolution"
+    },
+    {
+      "pr": "https://github.com/jordanhubbard/daemonarchy/pull/176",
+      "summary": "parallel-fetch crashed with No module named _sqlite3 on the live image's Python; also affected amd64"
+    },
+    {
+      "summary": "default browser on aarch64: Epiphany (no Chromium or Firefox build exists upstream)"
+    }
   ],
-  "not_run": ["upgrade", "rollback", "desktop in a VM (no KMS driver)", "network-debug", "Apple silicon laptops", "install against the public feed URLs", "a release image with the closure mirror gate"]
+  "not_run": [
+    "upgrade",
+    "rollback",
+    "network-debug",
+    "Apple silicon laptops",
+    "install against the public feed URLs",
+    "a release image with the closure mirror gate",
+    "desktop in a VM (needs an arm64 kernel without vtgpu)"
+  ],
+  "qemu_install_parallel_fetch": {
+    "iso": {
+      "note": "QA candidate from origin/main with #176 and the VirtIO GPU driver (draft #179)",
+      "sha256": "bd78a2a216381ec8fddf27618227d6bfde842310423a66ec696a565c202feb53"
+    },
+    "result": "install completed, installed system booted under UEFI",
+    "duration_minutes": 11,
+    "archives_fetched": 915,
+    "checks_passed": 23,
+    "checks_failed": [
+      "sddm running",
+      "updates from the signed Daemonarchy repository"
+    ],
+    "evidence_sha256": {
+      "install.log": "5b4ca6429a5e1fadbd2dc0d617f92082658586050de5390bffe0e2e054337933",
+      "boot.log": "7a7b92b6eb47072e069c428bcde113f088cb1fec913f79c8690f385cdb8c9a0a"
+    }
+  },
+  "virtio_gpu_kms": {
+    "ports_draft": "https://github.com/jordanhubbard/daemonarchy-ports/pull/36",
+    "installer_draft": "https://github.com/jordanhubbard/daemonarchy/pull/179",
+    "build": "dmabuf, ttm, drm and virtio_gpu_drm link for aarch64 with no warnings; poudriere testport passes (stage-qa, check-plist, install, deinstall), 19 s",
+    "runtime": "installed and loaded in a QEMU/HVF guest, but no DRM device attaches: std.virt compiles vtgpu(4) into the arm64 GENERIC kernel",
+    "next": "an arm64 kernel configuration with nodevice virtio_gpu, then retest"
+  }
 }

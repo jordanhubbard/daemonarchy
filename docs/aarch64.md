@@ -183,6 +183,35 @@ and from upstream FreeBSD ports.
   Quickshell, SDDM, LibreOffice, VLC, node, Go, dotnet and `lib32.txz`. The
   arm64 16.0-CURRENT snapshot publishes `base`, `kernel` and `lib32`.
 
+## Default desktop on aarch64 (decision of 2026-10-30)
+
+The aarch64 desktop is the amd64 desktop minus what cannot be built or run there,
+plus a default browser that exists for the architecture. Nothing is dropped
+silently: each omission has a reason and a consequence.
+
+| Not on aarch64 | Why | Consequence |
+| --- | --- | --- |
+| `chromium` | no aarch64 package: the 15.1 builder kills it at 95% and main-arm64 blacklists it | replaced by Epiphany, below |
+| `aether` | its Vite frontend needs npm bindings that have no FreeBSD arm64 build | the theme editor is unavailable; switching themes still works |
+| `mise` | `BROKEN_aarch64` (conda/rattler#2226) | developer toolchains come from `pkg` directly; omarchy's first-run skips the `mise` steps (ports#29) |
+| `edk2@bhyve` | amd64-only | none on a guest |
+| `amdgpu`, `radeon`, `i915`, NVIDIA | amd64-only | no hardware GPU desktop; see the VirtIO GPU record below |
+
+**Default browser: Epiphany (GNOME Web).** `FreeBSD:16:aarch64/latest` has no
+Chromium, Firefox or any Chromium-family browser (checked 2026-10-30). It does
+carry Epiphany, Falkon, qutebrowser, Badwolf and NetSurf. Epiphany is the choice
+because WebKitGTK is already in the closure: it adds 5 packages (`epiphany`,
+`webkit2-gtk_60`, `libavif`, `libyuv`, `woff2`; 37 MiB), against 6 packages and
+83 MiB for Falkon. The installer selects it on aarch64 where it selects
+`chromium` on amd64. The five packages are not in the closure shard staged
+first, and published tags are immutable, so they ship as a second, signed shard
+(`packages-16-aarch64-1.4.1-upstream-2`, 9 files, 38 MB) that the image lists
+beside the first.
+
+Not solved: omarchy's web-app launchers run `chromium --app`; making the compat
+layer's browser choice follow the installed browser (Epiphany has an application
+mode) is a follow-up in `omarchy-freebsd`.
+
 ## What the product now does per architecture
 
 `scripts/image-architecture.sh` selects every default from `ARCH` (`amd64`
@@ -602,6 +631,39 @@ signed feed can be tested from a local HTTP server. The ISO had no closure mirro
 - Evidence kept on the QEMU host: `install.log` `4e4a263b…` and `boot.log`
   `168746…`.
 
+**VirtIO GPU on aarch64 (2026-10-30).** Gap 2 above is smaller than recorded, but
+not closed. `graphics/drm-612-kmod` already contains a VirtIO GPU DRM driver
+(freebsd/drm-kmod PR 499, carried by the Daemonarchy patch), and upstream
+`drm-kmod` lists aarch64 as supported; only the port's `ONLY_FOR_ARCHS=amd64`
+stood in the way. With the port changed to build `dmabuf ttm drm virtio` on
+aarch64 ([ports draft](https://github.com/jordanhubbard/daemonarchy-ports/pull/36)),
+all four modules link for aarch64 with no warnings and a native `poudriere
+testport` (stage-qa, check-plist, install and deinstall) passes in 19 seconds.
+The installer side is [a draft](https://github.com/jordanhubbard/daemonarchy/pull/179).
+In a QEMU guest under HVF the installer selected and installed the driver and
+the graphics service loaded it, but **no DRM device attached**, so there was no
+`/dev/dri` and SDDM stayed off:
+- `std.virt` compiles `device virtio_gpu` (`vtgpu(4)`) into the arm64 GENERIC
+  kernel. It claims the device at boot and the DRM driver (probe priority
+  `BUS_PROBE_VENDOR`, written to outrank the base driver) is never offered it.
+  On amd64 `vtgpu` is a module that is not loaded at boot, which is why it works there.
+- `hint.vtgpu.0.disabled=1` stops `vtgpu` but leaves the device childless; the
+  DRM module then does not attach.
+- Forcing the handover at runtime (`devctl detach vtgpu0`, then `devctl set
+  driver -f vtgpu0 virtio_gpu_drm`) froze the guest during the DRM attach
+  (console: `vtgpu0: detached`, then garbage). Reloading the module froze it too.
+
+The next step is an arm64 kernel configuration with `nodevice virtio_gpu`, which
+is a kernel decision, and then a retest of the DRM attach. Until then the aarch64
+image has no graphical desktop in a VM, and `sddm running` is the one expected
+failure of the QEMU checks.
+
+**A second install, with parallel fetch (2026-10-30).** The same harness against
+a QA ISO built from current `main` (which has #176) completed in **11 minutes**,
+against 39: the parallel fetch took 915 archives in about 2 minutes where the
+single connection took 34. The same 23 checks passed and the same two failed.
+`install.log` `5b4ca642…`, `boot.log` `7a7b92b6…` on the QEMU host.
+
 **What this is not.** The ISO is a QA candidate, not the release image: it was
 built without the closure mirror gate, from a product commit before the final
 mastering, and the feeds it names are not published. There is no upgrade,
@@ -641,6 +703,30 @@ Record that failure, and qualify the desktop in a QEMU or UTM guest with
 virtio-gpu, or after a KMS port. A virtual result qualifies only virtual
 operation. Apple silicon laptops are enlisted only after the virtual matrix
 passes, with each model's execution mode recorded.
+
+## Running aarch64 on Apple silicon
+
+What is verified, and what is not:
+
+- **QEMU with HVF (verified).** `qemu-system-aarch64` 11.1.2 on an M-series Mac,
+  `-machine virt,gic-version=max -accel hvf -cpu host`, AArch64 edk2 as `-bios`,
+  4 CPUs and 6 GiB, a 40 GB disk, a virtio network device and a virtio GPU. A full
+  install took 11 minutes on a 12-core host with about 9 MB/s to
+  `pkg.FreeBSD.org`. UTM drives the same QEMU. The harness needs only Homebrew:
+  `brew install qemu mtools`, then `ARCH=aarch64 sh test-qemu.sh daemonarchy.iso`
+  (it makes CIDATA with `mformat` when `mkfs.fat` is absent; `PACKAGE_CACHE_URL`
+  and the three `PACKAGE_CACHE_*_SHA256` pins test an unpublished signed feed from a
+  local HTTP server at `http://10.0.2.2:PORT`, the guest's name for the host).
+- **VMware Fusion guest (build worker, console only).** The arm64 builder is a
+  Fusion guest. It installs and builds everything, but the guest GPU has no FreeBSD
+  driver, so it has only the EFI framebuffer and cannot run the desktop. Run QEMU
+  inside it only with software emulation (TCG): the first boot test took hours.
+- **No graphical desktop in any VM yet** (see the VirtIO GPU record above).
+- **Bare metal is not supported.** There is no FreeBSD boot or GPU path for Apple
+  SoCs, so an M1 to M4 laptop is a host for virtual machines, never a target.
+
+Both a VMware guest and QEMU/HVF can run on one Mac: Fusion held the arm64
+builder while HVF ran the install tests on the same host.
 
 ## What the operator supplies
 

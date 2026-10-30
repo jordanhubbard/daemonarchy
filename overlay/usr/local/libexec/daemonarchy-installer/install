@@ -572,9 +572,10 @@ pkg_target() {
   "${pkg_command[@]}" "$@"
 }
 packages=(pkg bash sudo daemonarchy octopkg wifi-firmware-kmod "${gpu_exact_packages[@]}" "${gpu_userspace_packages[@]}")
-# www/chromium has no aarch64 package (no builder finishes it; docs/aarch64.md),
-# so an aarch64 desktop installs without the default browser.
-[[ $image_arch == aarch64 ]] || packages+=(chromium)
+# www/chromium has no aarch64 package (no builder finishes it) and neither does
+# Firefox or any Chromium-family browser (docs/aarch64.md), so an aarch64 desktop's
+# default browser is Epiphany (WebKitGTK, already in the closure).
+if [[ $image_arch == aarch64 ]]; then packages+=(epiphany); else packages+=(chromium); fi
 if $macbook_bcm4364; then
   packages+=(if_brcmfmac-kmod)
 fi
