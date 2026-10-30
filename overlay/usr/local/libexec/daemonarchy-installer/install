@@ -566,7 +566,10 @@ pkg_command=(env ASSUME_ALWAYS_YES=yes IGNORE_OSVERSION=yes pkg -r "$TARGET" -o 
 pkg_target() {
   "${pkg_command[@]}" "$@"
 }
-packages=(pkg bash sudo daemonarchy chromium octopkg wifi-firmware-kmod "${gpu_exact_packages[@]}" "${gpu_userspace_packages[@]}")
+packages=(pkg bash sudo daemonarchy octopkg wifi-firmware-kmod "${gpu_exact_packages[@]}" "${gpu_userspace_packages[@]}")
+# www/chromium has no aarch64 package (no builder finishes it; docs/aarch64.md),
+# so an aarch64 desktop installs without the default browser.
+[[ $image_arch == aarch64 ]] || packages+=(chromium)
 if $macbook_bcm4364; then
   packages+=(if_brcmfmac-kmod)
 fi
