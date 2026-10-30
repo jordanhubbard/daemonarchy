@@ -121,10 +121,13 @@ done | sort -u >"$share/reserved-users"
 echo "    $(wc -l <"$share/reserved-users" | tr -d ' ') package accounts reserved"
 
 echo "==> Taking the setup form from the omarchy package"
-# Releases are numbered by the daemonarchy package's version (semantic
-# versioning, Daemonarchy's own), without its epoch or port revision.
-daemonarchy_pkg=$(ls "$share"/repo/All/daemonarchy-[0-9]*.pkg | head -n 1)
-VERSION=$(pkg query -F "$daemonarchy_pkg" '%v' | sed -e 's/,[0-9]*$//' -e 's/_[0-9]*$//')
+# The release version is the repository's VERSION file (scripts/version.py),
+# not the daemonarchy package's: that package is reused across releases.
+VERSION=$(tr -d '[:space:]' <"$here/VERSION")
+case $VERSION in
+    [0-9]*.[0-9]*.[0-9]*) ;;
+    *) echo "VERSION must hold X.Y.Z, found '$VERSION'" >&2; exit 1 ;;
+esac
 NAME=${NAME:-daemonarchy-$VERSION-$ARCH}
 image=$(printf '%s' "$NAME" | tr -cd '[:alnum:]')
 [ -n "$image" ] && [ "${#image}" -le 32 ] || {
