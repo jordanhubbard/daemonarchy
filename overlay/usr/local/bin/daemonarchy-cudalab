@@ -1,14 +1,230 @@
 #!/usr/local/bin/bash
-# Open the Cudalab studio on the NVIDIA Linuxulator. The first launch installs
-# the CUDA toolkit. An optional argument is a demo name, such as cuda-cosmos.
-set -euo pipefail
+# Cudalab, the live CUDA studio, as a "virtual app".
+#
+#   daemonarchy-cudalab [DEMO | --demo DEMO | OPTION...]   open Cudalab
+#   daemonarchy-cudalab --build-only                       build it now, open nothing
+#   daemonarchy-cudalab --rebuild                          forget the build and build again
+#   daemonarchy-cudalab --status                           say which state it is in
+#
+# Cudalab has no FreeBSD package: it is a Linux program built with CUDA, so it is
+# compiled here, once, under the Linuxulator, on the user's own machine.
+#
+#   virtual app  no build yet. The first launch opens a window, checks out the
+#                pinned Cudalab sources, configures and builds them with cmake and
+#                nvcc, records the result, and then opens the real app.
+#   real app     built. Every later launch runs the executable directly: no
+#                build, no terminal, no sudo.
+#
+# It runs as the desktop user straight on the Linuxulator (Linux programs find
+# the user's home, the X socket and the runtime directory on their own), so
+# nothing here needs root, a chroot or a nullfs mount. Everything lives under
+# the user's own ~/.local/share/cudalab because Cudalab compiles in the path of
+# its sources and saves demo edits into their examples/ directory.
+#
+# Failure is not fatal: the app stays virtual, the log says why
+# (~/.local/state/cudalab/build.log), and the next launch tries again.
+set -uo pipefail
 
-tool=/usr/local/sbin/daemonarchy-linux-cuda
-if [[ ! -x $tool ]]; then
-  echo 'Cudalab needs an NVIDIA GPU and the Daemonarchy CUDA setup.' >&2
-  exit 1
-fi
-if [[ $(id -u) != 0 ]]; then
-  exec sudo --preserve-env=DISPLAY,XAUTHORITY,XDG_RUNTIME_DIR "$tool" cudalab "$@"
-fi
-exec "$tool" cudalab "$@"
+# Pinned to a revision that builds and runs on the RTX 5080 (compute_120) with CUDA
+# 13.2: never a moving branch tip.
+cl_commit=cba96454837ceac1c4fbbd6ba574d56da30eadbd
+repo_url=https://github.com/jordanhubbard/cudalab.git
+# Cudalab pins SDL 3.4.0, which needs a newer libXi than Rocky 9 has: build the
+# last 3.2 release (same API for Cudalab's use).
+sdl_url=https://github.com/libsdl-org/SDL/archive/refs/tags/release-3.2.20.tar.gz
+sdl_dir=SDL-release-3.2.20
+
+linux_root=${DAEMONARCHY_LINUX_ROOT:-/compat/linux}
+data=${CUDALAB_HOME:-${XDG_DATA_HOME:-$HOME/.local/share}/cudalab}
+state=${CUDALAB_STATE:-${XDG_STATE_HOME:-$HOME/.local/state}/cudalab}
+src=$data/src
+exe=$src/build/release/cudalab
+stamp=$data/built
+log=$state/build.log
+lock=$state/lock
+shim=/usr/local/lib/daemonarchy/dummy-uvm.so
+terminal=${CUDALAB_TERMINAL:-foot}      # the window for the first build
+self=$(readlink -f "$0" 2>/dev/null || echo "$0")
+
+say() { printf '%s\n' "$*"; }
+note() {
+  # A desktop notification when there is a way to show one, otherwise stderr.
+  if [[ -z ${CUDALAB_NO_NOTIFY:-} ]] && command -v notify-send >/dev/null 2>&1; then
+    notify-send -a Cudalab "$1" "${2:-}" >/dev/null 2>&1 || true
+  fi
+  printf 'cudalab: %s %s\n' "$1" "${2:-}" >&2
+}
+
+is_built() {
+  [[ -x $exe && -d $(dirname "$exe")/examples && -f $stamp ]] && grep -qx "commit=$cl_commit" "$stamp" 2>/dev/null
+}
+
+# lx DIR COMMAND...: run a command line as this user under the Linuxulator. The
+# Linux program sees the same absolute paths we do.
+lx() {
+  local dir=$1
+  shift
+  ( cd "$dir" && env "HOME=$HOME" "USER=${USER:-$(id -un)}" LANG=C.UTF-8 \
+      PATH=/usr/local/cuda/bin:/usr/local/bin:/usr/bin:/bin CUDAToolkit_ROOT=/usr/local/cuda \
+      "$linux_root/bin/bash" -c "$*" )
+}
+
+# Open the real app. Only the Linux program gets the UVM shim in LD_PRELOAD: a
+# native FreeBSD program cannot load it.
+run_app() {
+  local preload=()
+  release_lock                     # exec below replaces this shell: its exit trap would never run
+  [[ -f $linux_root$shim ]] && preload=("LD_PRELOAD=$shim")
+  cd "$src" || exit 1
+  # A Linux SDL cannot reach FreeBSD's sound devices and Cudalab refuses to start
+  # without an audio device ("No available audio device"), so give it a silent one.
+  exec env "DISPLAY=${DISPLAY:-:0}" "SDL_VIDEODRIVER=${SDL_VIDEODRIVER:-x11}" \
+    "SDL_AUDIODRIVER=${SDL_AUDIODRIVER:-dummy}" __GLX_VENDOR_LIBRARY_NAME=nvidia \
+    CUDAToolkit_ROOT=/usr/local/cuda "${preload[@]}" "$exe" "$@"
+}
+
+lock_owned=false
+release_lock() { ! $lock_owned || rm -rf "$lock"; lock_owned=false; }
+acquire_lock() {
+  [[ ${CUDALAB_LOCK_HELD:-} == 1 ]] && return 0
+  mkdir -p "$state" || return 1
+  local tries=0 pid
+  while ! mkdir "$lock" 2>/dev/null; do
+    sleep 0.2                       # let a launcher that just took it write its pid
+    pid=$(cat "$lock/pid" 2>/dev/null || true)
+    if [[ -n $pid ]] && kill -0 "$pid" 2>/dev/null; then
+      return 1                      # a live build owns it
+    fi
+    [[ -z $pid ]] && ((tries++ < 5)) && continue
+    rm -rf "$lock"                  # its owner is gone
+    ((tries++ > 8)) && return 1
+  done
+  echo $$ >"$lock/pid"
+  lock_owned=true
+  trap release_lock EXIT
+}
+
+die() { say "Cudalab could not be built: $*"; return 1; }
+
+# The whole build. Prints what it does; the caller decides where that goes.
+build() {
+  mkdir -p "$data" "$state" || return 1
+  [[ -x $linux_root/bin/bash ]] || { die "the Linux compatibility layer is not installed ($linux_root)."; return 1; }
+  [[ -e $linux_root/usr/local/cuda ]] || { die "the CUDA toolkit is not installed. Run: sudo daemonarchy-linux-cuda setup"; return 1; }
+
+  say "==> Checking out Cudalab $cl_commit"
+  if [[ ! -d $src/.git ]]; then
+    rm -rf "$src"
+    lx "$data" "git clone --quiet '$repo_url' src" || { die "could not clone $repo_url (is the network up?)."; return 1; }
+  fi
+  if [[ -z $(lx "$src" 'git status --porcelain' 2>/dev/null) ]]; then
+    lx "$src" "git cat-file -e '$cl_commit^{commit}' 2>/dev/null || git fetch --quiet origin '$cl_commit' 2>/dev/null || git fetch --quiet origin; git checkout --quiet --detach '$cl_commit'" \
+      || { die "could not check out $cl_commit."; return 1; }
+  else
+    say "    Local changes in the sources are kept; building them as they are."
+  fi
+
+  if [[ ! -d $data/SDL-3.2 ]]; then
+    say "==> Fetching SDL 3.2"
+    lx "$data" "rm -rf '$sdl_dir' && curl -fsSL '$sdl_url' | tar -xz && mv '$sdl_dir' SDL-3.2" \
+      || { die "could not fetch SDL 3.2."; return 1; }
+  fi
+
+  say "==> Configuring (Release, CUDA)"
+  lx "$src" "cmake --preset release -DBUILD_TESTING=OFF -DFETCHCONTENT_SOURCE_DIR_SDL3='$data/SDL-3.2'" \
+    || { die "cmake could not configure the sources."; return 1; }
+  say "==> Building (a few minutes, once)"
+  lx "$src" "cmake --build --preset release" || { die "the build failed."; return 1; }
+
+  [[ -x $exe && -d $(dirname "$exe")/examples ]] || { die "the build finished without producing the app."; return 1; }
+  # The real app is in place: record it, atomically, so the launcher stops being virtual.
+  printf 'commit=%s\nbuilt=%s\nexe=%s\n' "$cl_commit" "$(date -u +%Y-%m-%dT%H:%M:%SZ)" "$exe" >"$stamp.new" \
+    && mv -f "$stamp.new" "$stamp"
+  say "==> Cudalab is ready."
+}
+
+# The build as the window shows it: a clear heading, live output kept in the log,
+# and on failure a pause so the reason can be read before the window closes.
+build_window() {
+  mkdir -p "$state"
+  say 'Building Cudalab for your GPU (first run only)'
+  say 'This takes a few minutes. Cudalab opens by itself when it is done.'
+  say "Log: $log"
+  say ''
+  build 2>&1 | tee -a "$log"
+  local status=${PIPESTATUS[0]}
+  if ((status != 0)); then
+    say ''
+    say "Cudalab was not built. Details are in $log"
+    say 'Press Enter to close this window; the next launch tries again.'
+    read -r _ || true
+    return 1
+  fi
+  sleep 1
+}
+
+launch_args=()
+parse_args() {
+  local arg
+  while (($#)); do
+    arg=$1
+    shift
+    if [[ $arg == --demo && $# -ge 1 ]]; then
+      launch_args+=(--demo "$1"); shift
+    elif [[ $arg =~ ^[a-z0-9][a-z0-9-]*$ ]]; then
+      launch_args+=(--demo "$arg")            # daemonarchy-cudalab cuda-cosmos
+    else
+      launch_args+=("$arg")
+    fi
+  done
+}
+
+main() {
+  case ${1:-} in
+    --status)
+      if is_built; then say "real app: $exe (cudalab $cl_commit)"; else say "virtual app: not built yet (will build cudalab $cl_commit on first launch)"; fi
+      return 0 ;;
+    --rebuild) rm -f "$stamp"; shift; set -- --build-only "$@" ;;
+    --build-window) build_window; return $? ;;      # run by the launcher inside its window
+  esac
+
+  local build_only=false
+  [[ ${1:-} == --build-only ]] && { build_only=true; shift; }
+  parse_args "$@"
+
+  if is_built; then
+    $build_only && { say 'Cudalab is already built.'; return 0; }
+    run_app "${launch_args[@]}"
+  fi
+
+  # Virtual app: build once, with the lock held so two launches never build together.
+  if ! acquire_lock; then
+    note 'Cudalab is already being built' 'It opens by itself when the build finishes.'
+    return 0
+  fi
+  # Another launcher may have finished while we waited for the lock.
+  if is_built; then
+    $build_only && return 0
+    run_app "${launch_args[@]}"
+  fi
+
+  mkdir -p "$state"
+  if $build_only; then
+    build >>"$log" 2>&1
+    return $?
+  elif [[ -t 1 ]]; then
+    build 2>&1 | tee -a "$log"
+    [[ ${PIPESTATUS[0]} -eq 0 ]] || return 1
+  elif command -v "$terminal" >/dev/null 2>&1; then
+    # No terminal of our own (a menu or Apps launch): give the first run a window.
+    env CUDALAB_LOCK_HELD=1 "$terminal" --app-id=daemonarchy-cudalab-build \
+      --title='Building Cudalab (first run only)' "${BASH:-bash}" "$self" --build-window
+    is_built || { note 'Cudalab was not built' "See $log"; return 1; }
+  else
+    note 'Building Cudalab (first run only)' 'This takes a few minutes; it opens when done.'
+    build >>"$log" 2>&1 || { note 'Cudalab was not built' "See $log"; return 1; }
+  fi
+  run_app "${launch_args[@]}"
+}
+
+main "$@"

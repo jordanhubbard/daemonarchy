@@ -6,15 +6,12 @@ here=$(cd "$(dirname "$0")/.." && pwd)
 source "$here/overlay/usr/local/sbin/daemonarchy-linux-cuda"
 check() { [[ $1 == "$2" ]] || { echo "Expected '$2', got '$1'" >&2; exit 1; }; }
 check "$(linux_cuda_spec)" '595.104.02 cuda-toolkit-13-2'
-studio=$(DISPLAY=:0 XAUTHORITY='' XDG_RUNTIME_DIR='' cudalab_script jkh)
-grep -q 'exec ./build/dev/cudalab$' <<<"$studio"
-showcase=$(DISPLAY=:0 XAUTHORITY='' XDG_RUNTIME_DIR='' cudalab_script jkh cuda-cosmos)
-grep -q 'exec ./build/dev/cudalab --demo cuda-cosmos$' <<<"$showcase"
-build=$(cudalab_script jkh '' build)
-grep -q 'cmake --build --preset dev' <<<"$build"
-grep -q 'Cudalab build complete' <<<"$build"
-! grep -q 'exec ./build/dev/cudalab' <<<"$build"
-bash -n <<<"$build"
+# Cudalab is a virtual app built by daemonarchy-cudalab (tests/cudalab-launcher.sh); the
+# setup script no longer clones, mounts or chroots for it. It hands the user's build to that
+# launcher, as the user, so the installer and the desktop use the same builder.
+! grep -nE 'cudalab_script|prepare_desktop|mount_nullfs|rm -rf build' "$here/overlay/usr/local/sbin/daemonarchy-linux-cuda"
+grep -q 'daemonarchy-cudalab --build-only' "$here/overlay/usr/local/sbin/daemonarchy-linux-cuda"
+grep -q 'su -m "$user"' "$here/overlay/usr/local/sbin/daemonarchy-linux-cuda"
 [[ -f $here/overlay/usr/local/share/daemonarchy-installer/uvm_ioctl_override.c ]]
 grep -q 'NV_UVM_INITIALIZE' "$here/overlay/usr/local/share/daemonarchy-installer/uvm_ioctl_override.c"
 # dnf downloads in parallel (the CUDA phase is network-bound), once, under [main].

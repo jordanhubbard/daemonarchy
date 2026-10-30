@@ -12,7 +12,6 @@ set -euo pipefail
 driver_prefix=595.104.02
 toolkit_package='cuda-toolkit-13-2'
 cmake_version=3.31.8
-cudalab_url=https://github.com/jordanhubbard/cudalab.git
 marker=/var/db/daemonarchy/linux-cuda.done
 uvm_src=/usr/local/share/daemonarchy-installer/uvm_ioctl_override.c
 linux_root=/compat/linux
@@ -41,13 +40,6 @@ require_space() {
   local avail
   avail=$(df -k "$linux_root" | awk 'NR == 2 { print $4 }')
   [[ $avail =~ ^[0-9]+$ && $avail -ge 12582912 ]] || fail 'Need at least 12 GiB free for the CUDA toolkit.'
-}
-
-mount_nullfs() {
-  local src=$1 dst=$2
-  mount | awk -v dst="$dst" '$3 == dst { found=1 } END { exit !found }' && return 0
-  mkdir -p "$dst"
-  mount -t nullfs "$src" "$dst"
 }
 
 linux_shell() {
@@ -191,7 +183,7 @@ cuda_setup() {
   mkdir -p "$(dirname "$marker")"
   printf 'driver=%s\ntoolkit=%s\n' "$driver_prefix" "$toolkit_package" >"$marker"
   echo "CUDA toolkit $toolkit_package is installed in /compat/linux."
-  echo 'From a desktop session: daemonarchy-linux-cuda cudalab'
+  echo 'Cudalab builds itself on its first launch: open it from Apps, or run daemonarchy-cudalab.'
 }
 
 desktop_user() {
@@ -204,96 +196,34 @@ desktop_user() {
   fi
 }
 
-q() { printf '%q' "$1"; }
-
-prepare_desktop() {
-  local user=$1 runtime=${XDG_RUNTIME_DIR:-}
-  [[ -n ${DISPLAY:-} ]] || fail 'DISPLAY is not set. Start this from the graphical session.'
-  mount_nullfs /home "$linux_root/home"
-  if [[ -d /tmp/.X11-unix ]]; then
-    mkdir -p "$linux_root/tmp/.X11-unix"
-    mount_nullfs /tmp/.X11-unix "$linux_root/tmp/.X11-unix"
-  fi
-  if [[ -n $runtime && -d $runtime ]]; then
-    mkdir -p "$linux_root$runtime"
-    mount_nullfs "$runtime" "$linux_root$runtime"
-  fi
-  sync_user "$user"
-}
-
-cudalab_script() {
-  local user=$1 demo=${2:-} mode=${3:-run} launch
-  if [[ $mode == build ]]; then
-    launch='echo "Cudalab build complete."'
-  elif [[ -n $demo ]]; then
-    launch="exec ./build/dev/cudalab --demo $(q "$demo")"
-  else
-    launch='exec ./build/dev/cudalab'
-  fi
-  cat <<EOF
-#!/bin/bash
-set -euo pipefail
-export HOME=$(q "/home/$user")
-export USER=$(q "$user")
-export DISPLAY=$(q "${DISPLAY:-}")
-export XAUTHORITY=$(q "${XAUTHORITY:-}")
-export XDG_RUNTIME_DIR=$(q "${XDG_RUNTIME_DIR:-}")
-export SDL_VIDEODRIVER=x11
-export __GLX_VENDOR_LIBRARY_NAME=nvidia
-export CUDAToolkit_ROOT=/usr/local/cuda
-export PATH=/usr/local/cuda/bin:/usr/local/bin:\$PATH
-mkdir -p "\$HOME/src"
-if [[ ! -d \$HOME/src/cudalab/.git ]]; then
-  git clone $(q "$cudalab_url") "\$HOME/src/cudalab"
-fi
-cd "\$HOME/src/cudalab"
-# cudalab's pinned SDL 3.4.0 needs a newer libXi than Rocky 9 has, so build
-# its last 3.2 release instead (same API for cudalab's use).
-if [[ ! -d \$HOME/src/SDL-3.2 ]]; then
-  curl -fsSL https://github.com/libsdl-org/SDL/archive/refs/tags/release-3.2.20.tar.gz | tar -xz -C "\$HOME/src"
-  mv "\$HOME/src/SDL-release-3.2.20" "\$HOME/src/SDL-3.2"
-fi
-rm -rf build/dev
-cmake --preset dev -DFETCHCONTENT_SOURCE_DIR_SDL3="\$HOME/src/SDL-3.2"
-cmake --build --preset dev
-export LD_PRELOAD=/usr/local/lib/daemonarchy/dummy-uvm.so
-$launch
-EOF
-}
-
+# Build Cudalab for a user with the same builder the desktop launcher uses
+# (daemonarchy-cudalab --build-only), so a machine that took the CUDA offer opens
+# the real app on its first launch. It runs as that user straight under the
+# Linuxulator: no chroot and no mounts, and nothing is written outside the user's
+# own ~/.local. A failure leaves the launcher a virtual app that builds on demand.
 cuda_prepare_cudalab() {
   require_root
   require_nvidia_install
-  local user=${1:-} script
+  local user=${1:-}
   [[ $user =~ ^[A-Za-z_][A-Za-z0-9_-]*$ && -d /home/$user ]] || fail 'Specify an installed desktop user.'
   [[ -f $marker ]] || fail 'Run setup before preparing cudalab.'
+  [[ -x /usr/local/bin/daemonarchy-cudalab ]] || fail 'daemonarchy-cudalab is not installed.'
   ensure_linuxulator
-  mount_nullfs /home "$linux_root/home"
   sync_user "$user"
-  script=$linux_root/var/tmp/daemonarchy-cudalab-build.sh
-  mkdir -p "$linux_root/var/tmp"
-  cudalab_script "$user" '' build >"$script"
-  chmod 755 "$script"
-  linux_shell "su '$user' -s /bin/bash -c '/bin/bash /var/tmp/daemonarchy-cudalab-build.sh'"
+  su -m "$user" -c "exec env HOME=/home/$user USER=$user /usr/local/bin/daemonarchy-cudalab --build-only"
 }
 
+# The old entry point: open Cudalab as the desktop user (the launcher needs no root).
 cuda_cudalab() {
   require_root
-  local demo=${1:-} user script
+  local demo=${1:-} user
   if [[ -n $demo && ! $demo =~ ^[a-z0-9][a-z0-9-]*$ ]]; then
     fail 'Demo name must be a cudalab package name, such as cuda-cosmos.'
   fi
-  [[ -n ${DISPLAY:-} ]] || fail 'DISPLAY is not set. Start this from the graphical session.'
   [[ -f $marker ]] || cuda_setup
   user=$(desktop_user)
   [[ -d /home/$user ]] || fail "No home directory for $user."
-  ensure_linuxulator
-  prepare_desktop "$user"
-  script=$linux_root/var/tmp/daemonarchy-cudalab.sh
-  mkdir -p "$linux_root/var/tmp"
-  cudalab_script "$user" "$demo" >"$script"
-  chmod 755 "$script"
-  linux_shell "su '$user' -s /bin/bash -c '/bin/bash /var/tmp/daemonarchy-cudalab.sh'"
+  su -m "$user" -c "exec /usr/local/bin/daemonarchy-cudalab $demo"
 }
 
 cuda_help() {
@@ -301,13 +231,17 @@ cuda_help() {
 Usage: daemonarchy-linux-cuda <setup|prepare-cudalab user|cudalab [demo]>
 
 setup    Install CUDA $toolkit_package and the Cudalab build tools in the Linuxulator.
-prepare-cudalab user  Clone and build cudalab for a user without opening a window.
-cudalab  Clone, build, and run https://github.com/jordanhubbard/cudalab.git
+prepare-cudalab user  Build cudalab for a user without opening a window (what the installer runs).
+cudalab  Open Cudalab as the desktop user (same as running daemonarchy-cudalab).
          An optional demo name, such as cuda-cosmos, opens that piece.
 
+Cudalab has no FreeBSD package. daemonarchy-cudalab is a virtual app: its first
+launch checks out a pinned Cudalab, builds it under the Linuxulator and opens it;
+later launches open the built app directly.
+
 The kernel driver stays the installed FreeBSD NVIDIA driver ($driver_prefix).
-Pieces that need tensor cores run only on a GPU that has them. Start cudalab
-from the desktop session so it can use XWayland.
+Pieces that need tensor cores run only on a GPU that has them. Cudalab uses
+XWayland, so start it from the desktop session.
 EOF
 }
 

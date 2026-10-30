@@ -367,7 +367,7 @@ any scope change before calling 1.1.0 complete.
   installs `linux-nvidia-libs` at that same driver version. After the first
   boot, `daemonarchy-linux-cuda setup` installs the Rocky Linux CUDA 13.2
   toolkit inside `/compat/linux` without a Linux kernel driver. CUDA 13.3 and
-  later need a newer driver branch than 595.104.02. `daemonarchy-linux-cuda cudalab`
+  later need a newer driver branch than 595.104.02. `daemonarchy-cudalab`
   builds and runs [cudalab](https://github.com/jordanhubbard/cudalab.git) as a
   Linux program for development qualification. Installer selection and application
   menu entries remain disabled until version-specific native Linuxulator evidence
