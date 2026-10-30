@@ -25,7 +25,8 @@ trap 'rm -rf "$work"' EXIT
 ORIGINS_FILE=$work/origins bash "$script" origins >/dev/null
 [[ $(sort "$work/origins" | uniq -d | wc -l) == 0 ]]
 for origin in net/tigervnc-viewer x11-toolkits/fltk x11-wm/daemonarchy x11-wm/omarchy net/if_brcmfmac-kmod \
-              x11/nvidia-kmod graphics/drm-612-kmod security/sudo archivers/7-zip x11/quickshell; do
+              x11/nvidia-kmod graphics/drm-612-kmod security/sudo archivers/7-zip x11/quickshell \
+              databases/py-sqlite3@py312; do
   grep -qx "$origin" "$work/origins" || { echo "$origin missing from the bulk list" >&2; exit 1; }
 done
 [[ $(wc -l <"$work/origins") -ge 30 ]]

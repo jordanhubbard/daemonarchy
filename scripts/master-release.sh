@@ -206,6 +206,9 @@ step_verify() {
   if command -v bsdtar >/dev/null; then
     [ "$(bsdtar -xOf "$iso" ./usr/local/share/daemonarchy-installer/version 2>/dev/null | head -1)" = "$version" ] \
       || fail "the image's installer version is not $version"
+    # parallel-fetch reads pkg's databases with the live Python's sqlite3 module (exact @@plan byte totals).
+    bsdtar -tf "$iso" 2>/dev/null | grep -q '_sqlite3' \
+      || fail "the image's live Python has no sqlite3 module: add py312-sqlite3 to the live packages"
   else
     echo "bsdtar not found: image version not checked" >&2
   fi
