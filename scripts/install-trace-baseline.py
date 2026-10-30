@@ -80,7 +80,9 @@ def build(trace_path, context, recorded_utc=None):
     }
 
 
-def load_record(path):
+def load_record(path, context=None):
+    """A record, or a raw trace built into one. A raw trace is labelled with `context`
+    (KEY=VALUE items) so the comparison knows whether the runs are equivalent."""
     text = Path(path).read_text()
     try:
         record = json.loads(text)
@@ -88,7 +90,7 @@ def load_record(path):
             return record
     except json.JSONDecodeError:
         pass
-    return build(path, {"kind": "benchmark", "note": "raw trace"})
+    return build(path, parse_context(context) if context else {"kind": "benchmark", "note": "raw trace"})
 
 
 def by_name(rows, key):
@@ -162,6 +164,10 @@ def main(argv=None):
     c = sub.add_parser("compare")
     c.add_argument("baseline")
     c.add_argument("candidate")
+    c.add_argument("--baseline-context", nargs="+", metavar="KEY=VALUE",
+                   help="label for a baseline given as a raw trace")
+    c.add_argument("--candidate-context", nargs="+", metavar="KEY=VALUE",
+                   help="label for a candidate given as a raw trace, e.g. kind=physical machine=... workers=16")
     c.add_argument("--threshold", type=float, default=10.0)
     c.add_argument("--json", action="store_true")
     c.add_argument("--fail-on-regression", action="store_true")
@@ -177,7 +183,12 @@ def main(argv=None):
         else:
             sys.stdout.write(text)
         return 0
-    result = compare(load_record(args.baseline), load_record(args.candidate), args.threshold)
+    try:
+        baseline = load_record(args.baseline, args.baseline_context)
+        candidate = load_record(args.candidate, args.candidate_context)
+    except ValueError as error:
+        sys.exit(str(error))
+    result = compare(baseline, candidate, args.threshold)
     print(json.dumps(result, indent=2) if args.json else render(result))
     return 1 if args.fail_on_regression and result["regressions"] else 0
 

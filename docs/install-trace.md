@@ -33,6 +33,7 @@ credentials, network names, addresses, paths or command lines.
 | `phase_begin`, `phase_end` | installer | `name`; `phase_end` adds `dur_us` |
 | `step` | installer | `name` (a stage marker inside a phase) |
 | `op_begin`, `op_end` | installer | `op` (a fixed label such as `zpool_create`, `zfs_datasets`, `extract_base`, `newfs_efi`, `pkg_fetch_all`, `pkg_install_all`, `package_integrity`, `cuda_setup`); `op_end` adds `status` and `dur_us` |
+| `install_plan` | parallel-fetch | the resolved transaction, once, before the download: `packages` (installed), `archives` (fetched), `download_bytes` and `installed_bytes` from pkg's repository databases (exact), or `approximate: true` with pkg's rounded figures if those cannot be read |
 | `fetch_attempt` | installer | `attempt` |
 | `download` | pkg-events or parallel-fetch | `name` (archive), `bytes`, `dur_us`: one per finished package archive. From the parallel fetch it also has `worker`, and `dur_us` is the time since that worker's previous archive finished (or its batch started), so the sum over a worker is its busy time |
 | `fetch_pool_begin`, `fetch_pool_end` | parallel-fetch | `workers`, `packages`, `pending`; the end adds `complete`, `missing`, `bytes`, `dur_us` and `mean_concurrency` (summed archive time over wall time: how many connections were really busy) |
@@ -50,6 +51,22 @@ credentials, network names, addresses, paths or command lines.
 The sampler runs once a second (`DAEMONARCHY_TRACE_INTERVAL` changes it) from
 the start of the installer until it exits. Counters are cumulative since boot
 as FreeBSD reports them; use the `d_*` fields for rates.
+
+## Log lines for the progress screen
+
+The installer log (not the trace) carries two lines the install screen reads to
+show "X of Y packages, A of B bytes, ETA":
+
+- `@@plan {"schema":"daemonarchy/install-plan@1","packages":N,"archives":N,"download_bytes":B,"installed_bytes":I}`,
+  printed once, right after the package plan resolves and before the download, by
+  `parallel-fetch --plan-only` (whichever way the download then runs). `packages`
+  is what the transaction installs, `archives` what is fetched (the ISO's own
+  repository needs no fetch), and the bytes are exact catalogue sizes; with
+  `"approximate":true` they are pkg's rounded figures. The same numbers are the
+  trace's `install_plan` event.
+- `@@fetch {...}` (schema `daemonarchy/pkg-fetch@1`): `archives` and `bytes` finished so
+  far, and, when the plan is known, `total_archives` and `total_bytes` (the plan's
+  `archives` and `download_bytes`), so a screen can show progress against the total.
 
 ## What it answers
 

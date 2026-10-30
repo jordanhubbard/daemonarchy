@@ -1,0 +1,1742 @@
+{
+  "schema": "daemonarchy/install-baseline@1",
+  "recorded_utc": "2026-10-30T08:29:07Z",
+  "trace": {
+    "sha256": "7e934fe5d6c8f1bc8df8452dd0336270e8e19835d5be04c9cb5abb0efe442c57",
+    "bytes": 2858204,
+    "events": 13435
+  },
+  "context": {
+    "kind": "physical",
+    "machine": "MSI Raider 18 HX AI A2XWIG",
+    "storage": "NVMe 954 GB behind Intel VMD",
+    "link": "wired gigabit rge0",
+    "image": "1.4.1 candidate, no parallel fetch",
+    "cache_mode": "network",
+    "workers": "1",
+    "note": "single machine, single run, pre-parallel-fetch, wired gigabit, CUDA selected"
+  },
+  "completeness": {
+    "terminal_status": 0,
+    "phases_seen": [
+      "disk",
+      "base",
+      "loader",
+      "config",
+      "fetch",
+      "install",
+      "user",
+      "cuda",
+      "finish"
+    ],
+    "complete_install": true
+  },
+  "summary": {
+    "events": 13435,
+    "total_s": 2976.676,
+    "exit_status": 0,
+    "phases": [
+      {
+        "phase": "disk",
+        "s": 0.642
+      },
+      {
+        "phase": "base",
+        "s": 12.556
+      },
+      {
+        "phase": "loader",
+        "s": 0.149
+      },
+      {
+        "phase": "config",
+        "s": 0.569
+      },
+      {
+        "phase": "fetch",
+        "s": 2074.971
+      },
+      {
+        "phase": "install",
+        "s": 152.394
+      },
+      {
+        "phase": "user",
+        "s": 31.185
+      },
+      {
+        "phase": "cuda",
+        "s": 690.966
+      },
+      {
+        "phase": "finish",
+        "s": 2.189
+      }
+    ],
+    "operations": [
+      {
+        "op": "pkg_fetch_all",
+        "phase": "fetch",
+        "s": 2051.119,
+        "status": 0
+      },
+      {
+        "op": "cuda_setup",
+        "phase": "cuda",
+        "s": 690.708,
+        "status": 0
+      },
+      {
+        "op": "pkg_install_all",
+        "phase": "install",
+        "s": 123.488,
+        "status": 0
+      },
+      {
+        "op": "package_integrity",
+        "phase": "user",
+        "s": 31.12,
+        "status": 0
+      },
+      {
+        "op": "pkg_update_catalogues",
+        "phase": "fetch",
+        "s": 14.777,
+        "status": 0
+      },
+      {
+        "op": "extract_base",
+        "phase": "base",
+        "s": 7.179,
+        "status": 0
+      },
+      {
+        "op": "pkg_resolve",
+        "phase": "fetch",
+        "s": 4.115,
+        "status": 0
+      },
+      {
+        "op": "pkg_install_bash",
+        "phase": "fetch",
+        "s": 3.528,
+        "status": 0
+      },
+      {
+        "op": "extract_lib32",
+        "phase": "base",
+        "s": 2.513,
+        "status": 0
+      },
+      {
+        "op": "secureboot_verify",
+        "phase": "finish",
+        "s": 2.081,
+        "status": 0
+      },
+      {
+        "op": "extract_kernel",
+        "phase": "base",
+        "s": 1.696,
+        "status": 0
+      },
+      {
+        "op": "zfs_datasets",
+        "phase": "disk",
+        "s": 0.242,
+        "status": 0
+      },
+      {
+        "op": "zpool_create",
+        "phase": "disk",
+        "s": 0.165,
+        "status": 0
+      },
+      {
+        "op": "storage_layout",
+        "phase": "disk",
+        "s": 0.158,
+        "status": 0
+      },
+      {
+        "op": "cudalab_build",
+        "phase": "cuda",
+        "s": 0.114,
+        "status": 1
+      },
+      {
+        "op": "pool_sync_commit",
+        "phase": "finish",
+        "s": 0.038,
+        "status": 0
+      },
+      {
+        "op": "newfs_efi",
+        "phase": "loader",
+        "s": 0.015,
+        "status": 0
+      },
+      {
+        "op": "dns_ensure",
+        "phase": "fetch",
+        "s": 0.014,
+        "status": 0
+      },
+      {
+        "op": "bios_bootcode",
+        "phase": "loader",
+        "s": 0.006,
+        "status": 0
+      }
+    ],
+    "downloads": {
+      "count": 824,
+      "bytes": 3901571763,
+      "busy_s": 1535.21,
+      "slowest": [
+        {
+          "name": "tesseract-data-4.1.0",
+          "bytes": 443763703,
+          "s": 134.848
+        },
+        {
+          "name": "noto-sans-sc-2.004",
+          "bytes": 151890851,
+          "s": 125.019
+        },
+        {
+          "name": "llvm19-19.1.7_4",
+          "bytes": 282444619,
+          "s": 122.124
+        },
+        {
+          "name": "noto-serif-jp-2.003",
+          "bytes": 152253837,
+          "s": 75.411
+        },
+        {
+          "name": "libva-intel-media-driver-26.1.5",
+          "bytes": 142227499,
+          "s": 73.214
+        },
+        {
+          "name": "openjdk25-25.0.5.0.3+1.f.1",
+          "bytes": 193775710,
+          "s": 67.918
+        },
+        {
+          "name": "noto-sans-jp-2.004",
+          "bytes": 132045548,
+          "s": 65.151
+        },
+        {
+          "name": "noto-sans-hk-2.004",
+          "bytes": 138042446,
+          "s": 63.276
+        },
+        {
+          "name": "noto-sans-kr-2.004",
+          "bytes": 130884277,
+          "s": 54.144
+        },
+        {
+          "name": "noto-serif-sc-2.003",
+          "bytes": 181010598,
+          "s": 47.998
+        }
+      ],
+      "wall_s": 2074.662,
+      "mean_mib_per_s": 1.79,
+      "mean_concurrency": 0.74
+    },
+    "pkg_events": {
+      "count": 4920,
+      "slowest_timed": [
+        {
+          "type": "INFO_INTEGRITYCHECK",
+          "name": "",
+          "s": 15.443
+        },
+        {
+          "type": "INFO_INSTALL",
+          "name": "",
+          "s": 5.28
+        },
+        {
+          "type": "ERROR",
+          "name": "",
+          "s": 5.023
+        },
+        {
+          "type": "ERROR",
+          "name": "",
+          "s": 4.822
+        },
+        {
+          "type": "ERROR",
+          "name": "",
+          "s": 4.137
+        },
+        {
+          "type": "ERROR",
+          "name": "",
+          "s": 3.125
+        },
+        {
+          "type": "INFO_INSTALL",
+          "name": "",
+          "s": 2.467
+        },
+        {
+          "type": "INFO_EXTRACT",
+          "name": "",
+          "s": 2.353
+        },
+        {
+          "type": "INFO_INSTALL",
+          "name": "",
+          "s": 1.888
+        },
+        {
+          "type": "INFO_INSTALL",
+          "name": "",
+          "s": 1.618
+        }
+      ]
+    },
+    "io_by_phase": {
+      "none": {
+        "cpu_samples": 2948.0,
+        "rx_mib": 10520.8,
+        "tx_mib": 347.3,
+        "disk_read_mib": 1389.1,
+        "disk_write_mib": 33301.7,
+        "cpu_busy_pct": 1.3
+      }
+    },
+    "net_probes": [
+      {
+        "host": "pkg.FreeBSD.org",
+        "dns_us": 299611,
+        "connect_us": 23464,
+        "tls_us": 38909,
+        "first_byte_us": 37123,
+        "status": 200
+      },
+      {
+        "host": "github.com",
+        "dns_us": 51173,
+        "connect_us": 39869,
+        "tls_us": 50562,
+        "first_byte_us": 69757,
+        "status": 200
+      }
+    ],
+    "device_events": [
+      {
+        "s": 0.864,
+        "kind": "notify",
+        "system": "DEVFS",
+        "subsystem": "CDEV",
+        "type": "CREATE"
+      },
+      {
+        "s": 10.953,
+        "kind": "notify",
+        "system": "DEVFS",
+        "subsystem": "CDEV",
+        "type": "CREATE"
+      },
+      {
+        "s": 11.032,
+        "kind": "notify",
+        "system": "CAM",
+        "subsystem": "periph",
+        "type": "invalidate"
+      },
+      {
+        "s": 11.042,
+        "kind": "notify",
+        "system": "CAM",
+        "subsystem": "periph",
+        "type": "invalidate"
+      },
+      {
+        "s": 11.051,
+        "kind": "notify",
+        "system": "CAM",
+        "subsystem": "periph",
+        "type": "invalidate"
+      },
+      {
+        "s": 11.071,
+        "kind": "notify",
+        "system": "CAM",
+        "subsystem": "periph",
+        "type": "invalidate"
+      },
+      {
+        "s": 11.082,
+        "kind": "notify",
+        "system": "CAM",
+        "subsystem": "periph",
+        "type": "invalidate"
+      },
+      {
+        "s": 11.091,
+        "kind": "notify",
+        "system": "CAM",
+        "subsystem": "periph",
+        "type": "invalidate"
+      },
+      {
+        "s": 11.096,
+        "kind": "notify",
+        "system": "CAM",
+        "subsystem": "periph",
+        "type": "invalidate"
+      },
+      {
+        "s": 11.099,
+        "kind": "notify",
+        "system": "DEVFS",
+        "subsystem": "CDEV",
+        "type": "DESTROY"
+      },
+      {
+        "s": 11.099,
+        "kind": "notify",
+        "system": "DEVFS",
+        "subsystem": "CDEV",
+        "type": "DESTROY"
+      },
+      {
+        "s": 11.099,
+        "kind": "notify",
+        "system": "DEVFS",
+        "subsystem": "CDEV",
+        "type": "DESTROY"
+      },
+      {
+        "s": 11.099,
+        "kind": "notify",
+        "system": "DEVFS",
+        "subsystem": "CDEV",
+        "type": "DESTROY"
+      },
+      {
+        "s": 11.099,
+        "kind": "notify",
+        "system": "DEVFS",
+        "subsystem": "CDEV",
+        "type": "DESTROY"
+      },
+      {
+        "s": 11.099,
+        "kind": "notify",
+        "system": "DEVFS",
+        "subsystem": "CDEV",
+        "type": "DESTROY"
+      },
+      {
+        "s": 11.099,
+        "kind": "notify",
+        "system": "DEVFS",
+        "subsystem": "CDEV",
+        "type": "DESTROY"
+      },
+      {
+        "s": 11.099,
+        "kind": "notify",
+        "system": "DEVFS",
+        "subsystem": "CDEV",
+        "type": "DESTROY"
+      },
+      {
+        "s": 11.099,
+        "kind": "notify",
+        "system": "DEVFS",
+        "subsystem": "CDEV",
+        "type": "DESTROY"
+      },
+      {
+        "s": 11.099,
+        "kind": "notify",
+        "system": "DEVFS",
+        "subsystem": "CDEV",
+        "type": "DESTROY"
+      },
+      {
+        "s": 11.099,
+        "kind": "notify",
+        "system": "DEVFS",
+        "subsystem": "CDEV",
+        "type": "DESTROY"
+      },
+      {
+        "s": 11.099,
+        "kind": "notify",
+        "system": "DEVFS",
+        "subsystem": "CDEV",
+        "type": "DESTROY"
+      },
+      {
+        "s": 11.099,
+        "kind": "notify",
+        "system": "DEVFS",
+        "subsystem": "CDEV",
+        "type": "DESTROY"
+      },
+      {
+        "s": 11.099,
+        "kind": "notify",
+        "system": "DEVFS",
+        "subsystem": "CDEV",
+        "type": "DESTROY"
+      },
+      {
+        "s": 11.1,
+        "kind": "notify",
+        "system": "DEVFS",
+        "subsystem": "CDEV",
+        "type": "DESTROY"
+      },
+      {
+        "s": 11.1,
+        "kind": "notify",
+        "system": "DEVFS",
+        "subsystem": "CDEV",
+        "type": "DESTROY"
+      },
+      {
+        "s": 11.1,
+        "kind": "notify",
+        "system": "DEVFS",
+        "subsystem": "CDEV",
+        "type": "DESTROY"
+      },
+      {
+        "s": 11.1,
+        "kind": "notify",
+        "system": "DEVFS",
+        "subsystem": "CDEV",
+        "type": "DESTROY"
+      },
+      {
+        "s": 11.1,
+        "kind": "notify",
+        "system": "DEVFS",
+        "subsystem": "CDEV",
+        "type": "DESTROY"
+      },
+      {
+        "s": 11.1,
+        "kind": "notify",
+        "system": "DEVFS",
+        "subsystem": "CDEV",
+        "type": "DESTROY"
+      },
+      {
+        "s": 11.1,
+        "kind": "notify",
+        "system": "DEVFS",
+        "subsystem": "CDEV",
+        "type": "DESTROY"
+      },
+      {
+        "s": 11.1,
+        "kind": "notify",
+        "system": "DEVFS",
+        "subsystem": "CDEV",
+        "type": "DESTROY"
+      },
+      {
+        "s": 11.1,
+        "kind": "notify",
+        "system": "DEVFS",
+        "subsystem": "CDEV",
+        "type": "MEDIACHANGE"
+      },
+      {
+        "s": 11.1,
+        "kind": "notify",
+        "system": "GEOM",
+        "subsystem": "DEV",
+        "type": "MEDIACHANGE"
+      },
+      {
+        "s": 11.102,
+        "kind": "notify",
+        "system": "CAM",
+        "subsystem": "periph",
+        "type": "invalidate"
+      },
+      {
+        "s": 11.103,
+        "kind": "notify",
+        "system": "CAM",
+        "subsystem": "periph",
+        "type": "invalidate"
+      },
+      {
+        "s": 11.104,
+        "kind": "notify",
+        "system": "CAM",
+        "subsystem": "periph",
+        "type": "invalidate"
+      },
+      {
+        "s": 11.104,
+        "kind": "notify",
+        "system": "GEOM",
+        "subsystem": "DEV",
+        "type": "DESTROY"
+      },
+      {
+        "s": 11.105,
+        "kind": "notify",
+        "system": "GEOM",
+        "subsystem": "DEV",
+        "type": "DESTROY"
+      },
+      {
+        "s": 11.106,
+        "kind": "notify",
+        "system": "GEOM",
+        "subsystem": "DEV",
+        "type": "DESTROY"
+      },
+      {
+        "s": 11.107,
+        "kind": "notify",
+        "system": "GEOM",
+        "subsystem": "DEV",
+        "type": "DESTROY"
+      },
+      {
+        "s": 11.108,
+        "kind": "notify",
+        "system": "GEOM",
+        "subsystem": "DEV",
+        "type": "DESTROY"
+      },
+      {
+        "s": 11.109,
+        "kind": "notify",
+        "system": "GEOM",
+        "subsystem": "DEV",
+        "type": "DESTROY"
+      },
+      {
+        "s": 11.11,
+        "kind": "notify",
+        "system": "GEOM",
+        "subsystem": "DEV",
+        "type": "DESTROY"
+      },
+      {
+        "s": 11.111,
+        "kind": "notify",
+        "system": "GEOM",
+        "subsystem": "DEV",
+        "type": "DESTROY"
+      },
+      {
+        "s": 11.112,
+        "kind": "notify",
+        "system": "GEOM",
+        "subsystem": "DEV",
+        "type": "DESTROY"
+      },
+      {
+        "s": 11.113,
+        "kind": "notify",
+        "system": "GEOM",
+        "subsystem": "DEV",
+        "type": "DESTROY"
+      },
+      {
+        "s": 11.114,
+        "kind": "notify",
+        "system": "GEOM",
+        "subsystem": "DEV",
+        "type": "DESTROY"
+      },
+      {
+        "s": 11.115,
+        "kind": "notify",
+        "system": "GEOM",
+        "subsystem": "DEV",
+        "type": "DESTROY"
+      },
+      {
+        "s": 11.116,
+        "kind": "notify",
+        "system": "GEOM",
+        "subsystem": "DEV",
+        "type": "DESTROY"
+      },
+      {
+        "s": 11.117,
+        "kind": "notify",
+        "system": "GEOM",
+        "subsystem": "DEV",
+        "type": "DESTROY"
+      },
+      {
+        "s": 11.118,
+        "kind": "notify",
+        "system": "GEOM",
+        "subsystem": "DEV",
+        "type": "DESTROY"
+      },
+      {
+        "s": 11.119,
+        "kind": "notify",
+        "system": "GEOM",
+        "subsystem": "DEV",
+        "type": "DESTROY"
+      },
+      {
+        "s": 11.12,
+        "kind": "notify",
+        "system": "GEOM",
+        "subsystem": "DEV",
+        "type": "DESTROY"
+      },
+      {
+        "s": 11.121,
+        "kind": "notify",
+        "system": "GEOM",
+        "subsystem": "DEV",
+        "type": "DESTROY"
+      },
+      {
+        "s": 11.122,
+        "kind": "notify",
+        "system": "CAM",
+        "subsystem": "periph",
+        "type": "invalidate"
+      },
+      {
+        "s": 11.122,
+        "kind": "notify",
+        "system": "CAM",
+        "subsystem": "periph",
+        "type": "invalidate"
+      },
+      {
+        "s": 11.122,
+        "kind": "notify",
+        "system": "DEVFS",
+        "subsystem": "CDEV",
+        "type": "CREATE"
+      },
+      {
+        "s": 11.122,
+        "kind": "notify",
+        "system": "CAM",
+        "subsystem": "periph",
+        "type": "invalidate"
+      },
+      {
+        "s": 11.122,
+        "kind": "notify",
+        "system": "GEOM",
+        "subsystem": "DEV",
+        "type": "CREATE"
+      },
+      {
+        "s": 11.123,
+        "kind": "notify",
+        "system": "CAM",
+        "subsystem": "periph",
+        "type": "invalidate"
+      },
+      {
+        "s": 11.123,
+        "kind": "notify",
+        "system": "DEVFS",
+        "subsystem": "CDEV",
+        "type": "DESTROY"
+      },
+      {
+        "s": 11.123,
+        "kind": "notify",
+        "system": "DEVFS",
+        "subsystem": "CDEV",
+        "type": "MEDIACHANGE"
+      },
+      {
+        "s": 11.123,
+        "kind": "notify",
+        "system": "GEOM",
+        "subsystem": "DEV",
+        "type": "MEDIACHANGE"
+      },
+      {
+        "s": 11.124,
+        "kind": "notify",
+        "system": "CAM",
+        "subsystem": "periph",
+        "type": "invalidate"
+      },
+      {
+        "s": 11.124,
+        "kind": "notify",
+        "system": "CAM",
+        "subsystem": "periph",
+        "type": "invalidate"
+      },
+      {
+        "s": 11.124,
+        "kind": "notify",
+        "system": "CAM",
+        "subsystem": "periph",
+        "type": "invalidate"
+      },
+      {
+        "s": 11.124,
+        "kind": "notify",
+        "system": "GEOM",
+        "subsystem": "DEV",
+        "type": "DESTROY"
+      },
+      {
+        "s": 11.125,
+        "kind": "notify",
+        "system": "CAM",
+        "subsystem": "periph",
+        "type": "invalidate"
+      },
+      {
+        "s": 11.125,
+        "kind": "notify",
+        "system": "CAM",
+        "subsystem": "periph",
+        "type": "invalidate"
+      },
+      {
+        "s": 11.125,
+        "kind": "notify",
+        "system": "DEVFS",
+        "subsystem": "CDEV",
+        "type": "CREATE"
+      },
+      {
+        "s": 11.126,
+        "kind": "notify",
+        "system": "CAM",
+        "subsystem": "periph",
+        "type": "invalidate"
+      },
+      {
+        "s": 11.126,
+        "kind": "notify",
+        "system": "GEOM",
+        "subsystem": "DEV",
+        "type": "CREATE"
+      },
+      {
+        "s": 11.127,
+        "kind": "notify",
+        "system": "CAM",
+        "subsystem": "periph",
+        "type": "invalidate"
+      },
+      {
+        "s": 11.127,
+        "kind": "notify",
+        "system": "DEVFS",
+        "subsystem": "CDEV",
+        "type": "DESTROY"
+      },
+      {
+        "s": 11.127,
+        "kind": "notify",
+        "system": "CAM",
+        "subsystem": "periph",
+        "type": "invalidate"
+      },
+      {
+        "s": 11.127,
+        "kind": "notify",
+        "system": "CAM",
+        "subsystem": "periph",
+        "type": "invalidate"
+      },
+      {
+        "s": 11.127,
+        "kind": "notify",
+        "system": "CAM",
+        "subsystem": "periph",
+        "type": "invalidate"
+      },
+      {
+        "s": 11.127,
+        "kind": "notify",
+        "system": "DEVFS",
+        "subsystem": "CDEV",
+        "type": "CREATE"
+      },
+      {
+        "s": 11.127,
+        "kind": "notify",
+        "system": "CAM",
+        "subsystem": "periph",
+        "type": "invalidate"
+      },
+      {
+        "s": 11.127,
+        "kind": "notify",
+        "system": "GEOM",
+        "subsystem": "DEV",
+        "type": "CREATE"
+      },
+      {
+        "s": 11.128,
+        "kind": "notify",
+        "system": "DEVFS",
+        "subsystem": "CDEV",
+        "type": "CREATE"
+      },
+      {
+        "s": 11.128,
+        "kind": "notify",
+        "system": "GEOM",
+        "subsystem": "DEV",
+        "type": "CREATE"
+      },
+      {
+        "s": 11.129,
+        "kind": "notify",
+        "system": "DEVFS",
+        "subsystem": "CDEV",
+        "type": "MEDIACHANGE"
+      },
+      {
+        "s": 11.129,
+        "kind": "notify",
+        "system": "GEOM",
+        "subsystem": "DEV",
+        "type": "MEDIACHANGE"
+      },
+      {
+        "s": 11.13,
+        "kind": "notify",
+        "system": "CAM",
+        "subsystem": "periph",
+        "type": "invalidate"
+      },
+      {
+        "s": 11.13,
+        "kind": "notify",
+        "system": "CAM",
+        "subsystem": "periph",
+        "type": "invalidate"
+      },
+      {
+        "s": 11.13,
+        "kind": "notify",
+        "system": "CAM",
+        "subsystem": "periph",
+        "type": "invalidate"
+      },
+      {
+        "s": 11.13,
+        "kind": "notify",
+        "system": "GEOM",
+        "subsystem": "DEV",
+        "type": "DESTROY"
+      },
+      {
+        "s": 11.131,
+        "kind": "notify",
+        "system": "CAM",
+        "subsystem": "periph",
+        "type": "invalidate"
+      },
+      {
+        "s": 11.131,
+        "kind": "notify",
+        "system": "CAM",
+        "subsystem": "periph",
+        "type": "invalidate"
+      },
+      {
+        "s": 11.131,
+        "kind": "notify",
+        "system": "DEVFS",
+        "subsystem": "CDEV",
+        "type": "CREATE"
+      },
+      {
+        "s": 11.131,
+        "kind": "notify",
+        "system": "CAM",
+        "subsystem": "periph",
+        "type": "invalidate"
+      },
+      {
+        "s": 11.131,
+        "kind": "notify",
+        "system": "GEOM",
+        "subsystem": "DEV",
+        "type": "CREATE"
+      },
+      {
+        "s": 11.132,
+        "kind": "notify",
+        "system": "CAM",
+        "subsystem": "periph",
+        "type": "invalidate"
+      },
+      {
+        "s": 11.132,
+        "kind": "notify",
+        "system": "CAM",
+        "subsystem": "periph",
+        "type": "invalidate"
+      },
+      {
+        "s": 11.132,
+        "kind": "notify",
+        "system": "DEVFS",
+        "subsystem": "CDEV",
+        "type": "CREATE"
+      },
+      {
+        "s": 11.132,
+        "kind": "notify",
+        "system": "CAM",
+        "subsystem": "periph",
+        "type": "invalidate"
+      },
+      {
+        "s": 11.132,
+        "kind": "notify",
+        "system": "GEOM",
+        "subsystem": "DEV",
+        "type": "CREATE"
+      },
+      {
+        "s": 11.133,
+        "kind": "notify",
+        "system": "CAM",
+        "subsystem": "periph",
+        "type": "invalidate"
+      },
+      {
+        "s": 11.133,
+        "kind": "notify",
+        "system": "CAM",
+        "subsystem": "periph",
+        "type": "invalidate"
+      },
+      {
+        "s": 11.133,
+        "kind": "notify",
+        "system": "DEVFS",
+        "subsystem": "CDEV",
+        "type": "CREATE"
+      },
+      {
+        "s": 11.133,
+        "kind": "notify",
+        "system": "CAM",
+        "subsystem": "periph",
+        "type": "invalidate"
+      },
+      {
+        "s": 11.133,
+        "kind": "notify",
+        "system": "GEOM",
+        "subsystem": "DEV",
+        "type": "CREATE"
+      },
+      {
+        "s": 11.134,
+        "kind": "notify",
+        "system": "CAM",
+        "subsystem": "periph",
+        "type": "invalidate"
+      },
+      {
+        "s": 11.134,
+        "kind": "notify",
+        "system": "CAM",
+        "subsystem": "periph",
+        "type": "invalidate"
+      },
+      {
+        "s": 11.134,
+        "kind": "notify",
+        "system": "DEVFS",
+        "subsystem": "CDEV",
+        "type": "CREATE"
+      },
+      {
+        "s": 11.134,
+        "kind": "notify",
+        "system": "CAM",
+        "subsystem": "periph",
+        "type": "invalidate"
+      },
+      {
+        "s": 11.134,
+        "kind": "notify",
+        "system": "GEOM",
+        "subsystem": "DEV",
+        "type": "CREATE"
+      },
+      {
+        "s": 11.135,
+        "kind": "notify",
+        "system": "CAM",
+        "subsystem": "periph",
+        "type": "invalidate"
+      },
+      {
+        "s": 11.135,
+        "kind": "notify",
+        "system": "CAM",
+        "subsystem": "periph",
+        "type": "invalidate"
+      },
+      {
+        "s": 11.136,
+        "kind": "notify",
+        "system": "CAM",
+        "subsystem": "periph",
+        "type": "invalidate"
+      },
+      {
+        "s": 11.136,
+        "kind": "notify",
+        "system": "DEVFS",
+        "subsystem": "CDEV",
+        "type": "CREATE"
+      },
+      {
+        "s": 11.137,
+        "kind": "notify",
+        "system": "CAM",
+        "subsystem": "periph",
+        "type": "invalidate"
+      },
+      {
+        "s": 11.137,
+        "kind": "notify",
+        "system": "GEOM",
+        "subsystem": "DEV",
+        "type": "CREATE"
+      },
+      {
+        "s": 11.139,
+        "kind": "notify",
+        "system": "CAM",
+        "subsystem": "periph",
+        "type": "invalidate"
+      },
+      {
+        "s": 11.14,
+        "kind": "notify",
+        "system": "DEVFS",
+        "subsystem": "CDEV",
+        "type": "DESTROY"
+      },
+      {
+        "s": 11.14,
+        "kind": "notify",
+        "system": "DEVFS",
+        "subsystem": "CDEV",
+        "type": "DESTROY"
+      },
+      {
+        "s": 11.14,
+        "kind": "notify",
+        "system": "CAM",
+        "subsystem": "periph",
+        "type": "invalidate"
+      },
+      {
+        "s": 11.142,
+        "kind": "notify",
+        "system": "CAM",
+        "subsystem": "periph",
+        "type": "invalidate"
+      },
+      {
+        "s": 11.142,
+        "kind": "notify",
+        "system": "CAM",
+        "subsystem": "periph",
+        "type": "invalidate"
+      },
+      {
+        "s": 11.142,
+        "kind": "notify",
+        "system": "DEVFS",
+        "subsystem": "CDEV",
+        "type": "CREATE"
+      },
+      {
+        "s": 11.143,
+        "kind": "notify",
+        "system": "CAM",
+        "subsystem": "periph",
+        "type": "invalidate"
+      },
+      {
+        "s": 11.143,
+        "kind": "notify",
+        "system": "GEOM",
+        "subsystem": "DEV",
+        "type": "CREATE"
+      },
+      {
+        "s": 11.144,
+        "kind": "notify",
+        "system": "DEVFS",
+        "subsystem": "CDEV",
+        "type": "CREATE"
+      },
+      {
+        "s": 11.144,
+        "kind": "notify",
+        "system": "GEOM",
+        "subsystem": "DEV",
+        "type": "CREATE"
+      },
+      {
+        "s": 11.145,
+        "kind": "notify",
+        "system": "DEVFS",
+        "subsystem": "CDEV",
+        "type": "MEDIACHANGE"
+      },
+      {
+        "s": 11.145,
+        "kind": "notify",
+        "system": "GEOM",
+        "subsystem": "DEV",
+        "type": "MEDIACHANGE"
+      },
+      {
+        "s": 11.147,
+        "kind": "notify",
+        "system": "CAM",
+        "subsystem": "periph",
+        "type": "invalidate"
+      },
+      {
+        "s": 11.147,
+        "kind": "notify",
+        "system": "CAM",
+        "subsystem": "periph",
+        "type": "invalidate"
+      },
+      {
+        "s": 11.147,
+        "kind": "notify",
+        "system": "CAM",
+        "subsystem": "periph",
+        "type": "invalidate"
+      },
+      {
+        "s": 11.147,
+        "kind": "notify",
+        "system": "GEOM",
+        "subsystem": "DEV",
+        "type": "DESTROY"
+      },
+      {
+        "s": 11.148,
+        "kind": "notify",
+        "system": "GEOM",
+        "subsystem": "DEV",
+        "type": "DESTROY"
+      },
+      {
+        "s": 11.149,
+        "kind": "notify",
+        "system": "CAM",
+        "subsystem": "periph",
+        "type": "invalidate"
+      },
+      {
+        "s": 11.149,
+        "kind": "notify",
+        "system": "CAM",
+        "subsystem": "periph",
+        "type": "invalidate"
+      },
+      {
+        "s": 11.149,
+        "kind": "notify",
+        "system": "DEVFS",
+        "subsystem": "CDEV",
+        "type": "CREATE"
+      },
+      {
+        "s": 11.149,
+        "kind": "notify",
+        "system": "CAM",
+        "subsystem": "periph",
+        "type": "invalidate"
+      },
+      {
+        "s": 11.149,
+        "kind": "notify",
+        "system": "GEOM",
+        "subsystem": "DEV",
+        "type": "CREATE"
+      },
+      {
+        "s": 11.15,
+        "kind": "notify",
+        "system": "CAM",
+        "subsystem": "periph",
+        "type": "invalidate"
+      },
+      {
+        "s": 11.15,
+        "kind": "notify",
+        "system": "CAM",
+        "subsystem": "periph",
+        "type": "invalidate"
+      },
+      {
+        "s": 11.15,
+        "kind": "notify",
+        "system": "DEVFS",
+        "subsystem": "CDEV",
+        "type": "CREATE"
+      },
+      {
+        "s": 11.15,
+        "kind": "notify",
+        "system": "CAM",
+        "subsystem": "periph",
+        "type": "invalidate"
+      },
+      {
+        "s": 11.15,
+        "kind": "notify",
+        "system": "GEOM",
+        "subsystem": "DEV",
+        "type": "CREATE"
+      },
+      {
+        "s": 11.151,
+        "kind": "notify",
+        "system": "CAM",
+        "subsystem": "periph",
+        "type": "invalidate"
+      },
+      {
+        "s": 11.152,
+        "kind": "notify",
+        "system": "CAM",
+        "subsystem": "periph",
+        "type": "invalidate"
+      },
+      {
+        "s": 11.152,
+        "kind": "notify",
+        "system": "DEVFS",
+        "subsystem": "CDEV",
+        "type": "CREATE"
+      },
+      {
+        "s": 11.153,
+        "kind": "notify",
+        "system": "CAM",
+        "subsystem": "periph",
+        "type": "invalidate"
+      },
+      {
+        "s": 11.153,
+        "kind": "notify",
+        "system": "GEOM",
+        "subsystem": "DEV",
+        "type": "CREATE"
+      },
+      {
+        "s": 11.154,
+        "kind": "notify",
+        "system": "CAM",
+        "subsystem": "periph",
+        "type": "invalidate"
+      },
+      {
+        "s": 11.154,
+        "kind": "notify",
+        "system": "CAM",
+        "subsystem": "periph",
+        "type": "invalidate"
+      },
+      {
+        "s": 11.155,
+        "kind": "notify",
+        "system": "CAM",
+        "subsystem": "periph",
+        "type": "invalidate"
+      },
+      {
+        "s": 11.155,
+        "kind": "notify",
+        "system": "DEVFS",
+        "subsystem": "CDEV",
+        "type": "CREATE"
+      },
+      {
+        "s": 11.156,
+        "kind": "notify",
+        "system": "CAM",
+        "subsystem": "periph",
+        "type": "invalidate"
+      },
+      {
+        "s": 11.156,
+        "kind": "notify",
+        "system": "GEOM",
+        "subsystem": "DEV",
+        "type": "CREATE"
+      },
+      {
+        "s": 11.157,
+        "kind": "notify",
+        "system": "CAM",
+        "subsystem": "periph",
+        "type": "invalidate"
+      },
+      {
+        "s": 11.158,
+        "kind": "notify",
+        "system": "CAM",
+        "subsystem": "periph",
+        "type": "invalidate"
+      },
+      {
+        "s": 11.158,
+        "kind": "notify",
+        "system": "CAM",
+        "subsystem": "periph",
+        "type": "invalidate"
+      },
+      {
+        "s": 11.159,
+        "kind": "notify",
+        "system": "DEVFS",
+        "subsystem": "CDEV",
+        "type": "CREATE"
+      },
+      {
+        "s": 11.159,
+        "kind": "notify",
+        "system": "CAM",
+        "subsystem": "periph",
+        "type": "invalidate"
+      },
+      {
+        "s": 11.159,
+        "kind": "notify",
+        "system": "GEOM",
+        "subsystem": "DEV",
+        "type": "CREATE"
+      },
+      {
+        "s": 11.161,
+        "kind": "notify",
+        "system": "CAM",
+        "subsystem": "periph",
+        "type": "invalidate"
+      },
+      {
+        "s": 11.162,
+        "kind": "notify",
+        "system": "DEVFS",
+        "subsystem": "CDEV",
+        "type": "DESTROY"
+      },
+      {
+        "s": 11.163,
+        "kind": "notify",
+        "system": "DEVFS",
+        "subsystem": "CDEV",
+        "type": "DESTROY"
+      },
+      {
+        "s": 11.163,
+        "kind": "notify",
+        "system": "DEVFS",
+        "subsystem": "CDEV",
+        "type": "DESTROY"
+      },
+      {
+        "s": 11.163,
+        "kind": "notify",
+        "system": "CAM",
+        "subsystem": "periph",
+        "type": "invalidate"
+      },
+      {
+        "s": 11.164,
+        "kind": "notify",
+        "system": "CAM",
+        "subsystem": "periph",
+        "type": "invalidate"
+      },
+      {
+        "s": 11.165,
+        "kind": "notify",
+        "system": "CAM",
+        "subsystem": "periph",
+        "type": "invalidate"
+      },
+      {
+        "s": 11.165,
+        "kind": "notify",
+        "system": "DEVFS",
+        "subsystem": "CDEV",
+        "type": "CREATE"
+      },
+      {
+        "s": 11.166,
+        "kind": "notify",
+        "system": "CAM",
+        "subsystem": "periph",
+        "type": "invalidate"
+      },
+      {
+        "s": 11.166,
+        "kind": "notify",
+        "system": "GEOM",
+        "subsystem": "DEV",
+        "type": "CREATE"
+      },
+      {
+        "s": 11.168,
+        "kind": "notify",
+        "system": "DEVFS",
+        "subsystem": "CDEV",
+        "type": "CREATE"
+      },
+      {
+        "s": 11.168,
+        "kind": "notify",
+        "system": "GEOM",
+        "subsystem": "DEV",
+        "type": "CREATE"
+      },
+      {
+        "s": 11.169,
+        "kind": "notify",
+        "system": "DEVFS",
+        "subsystem": "CDEV",
+        "type": "MEDIACHANGE"
+      },
+      {
+        "s": 11.169,
+        "kind": "notify",
+        "system": "GEOM",
+        "subsystem": "DEV",
+        "type": "MEDIACHANGE"
+      },
+      {
+        "s": 11.17,
+        "kind": "notify",
+        "system": "CAM",
+        "subsystem": "periph",
+        "type": "invalidate"
+      },
+      {
+        "s": 11.17,
+        "kind": "notify",
+        "system": "CAM",
+        "subsystem": "periph",
+        "type": "invalidate"
+      },
+      {
+        "s": 11.171,
+        "kind": "notify",
+        "system": "CAM",
+        "subsystem": "periph",
+        "type": "invalidate"
+      },
+      {
+        "s": 11.171,
+        "kind": "notify",
+        "system": "GEOM",
+        "subsystem": "DEV",
+        "type": "DESTROY"
+      },
+      {
+        "s": 11.171,
+        "kind": "notify",
+        "system": "GEOM",
+        "subsystem": "DEV",
+        "type": "DESTROY"
+      },
+      {
+        "s": 11.172,
+        "kind": "notify",
+        "system": "GEOM",
+        "subsystem": "DEV",
+        "type": "DESTROY"
+      },
+      {
+        "s": 11.173,
+        "kind": "notify",
+        "system": "CAM",
+        "subsystem": "periph",
+        "type": "invalidate"
+      },
+      {
+        "s": 11.173,
+        "kind": "notify",
+        "system": "CAM",
+        "subsystem": "periph",
+        "type": "invalidate"
+      },
+      {
+        "s": 11.173,
+        "kind": "notify",
+        "system": "DEVFS",
+        "subsystem": "CDEV",
+        "type": "CREATE"
+      },
+      {
+        "s": 11.173,
+        "kind": "notify",
+        "system": "CAM",
+        "subsystem": "periph",
+        "type": "invalidate"
+      },
+      {
+        "s": 11.174,
+        "kind": "notify",
+        "system": "GEOM",
+        "subsystem": "DEV",
+        "type": "CREATE"
+      },
+      {
+        "s": 11.174,
+        "kind": "notify",
+        "system": "CAM",
+        "subsystem": "periph",
+        "type": "invalidate"
+      },
+      {
+        "s": 11.175,
+        "kind": "notify",
+        "system": "CAM",
+        "subsystem": "periph",
+        "type": "invalidate"
+      },
+      {
+        "s": 11.175,
+        "kind": "notify",
+        "system": "DEVFS",
+        "subsystem": "CDEV",
+        "type": "CREATE"
+      },
+      {
+        "s": 11.175,
+        "kind": "notify",
+        "system": "CAM",
+        "subsystem": "periph",
+        "type": "invalidate"
+      },
+      {
+        "s": 11.175,
+        "kind": "notify",
+        "system": "GEOM",
+        "subsystem": "DEV",
+        "type": "CREATE"
+      },
+      {
+        "s": 11.176,
+        "kind": "notify",
+        "system": "CAM",
+        "subsystem": "periph",
+        "type": "invalidate"
+      },
+      {
+        "s": 11.176,
+        "kind": "notify",
+        "system": "CAM",
+        "subsystem": "periph",
+        "type": "invalidate"
+      },
+      {
+        "s": 11.176,
+        "kind": "notify",
+        "system": "DEVFS",
+        "subsystem": "CDEV",
+        "type": "CREATE"
+      },
+      {
+        "s": 11.176,
+        "kind": "notify",
+        "system": "CAM",
+        "subsystem": "periph",
+        "type": "invalidate"
+      },
+      {
+        "s": 11.176,
+        "kind": "notify",
+        "system": "GEOM",
+        "subsystem": "DEV",
+        "type": "CREATE"
+      },
+      {
+        "s": 11.177,
+        "kind": "notify",
+        "system": "CAM",
+        "subsystem": "periph",
+        "type": "invalidate"
+      },
+      {
+        "s": 11.177,
+        "kind": "notify",
+        "system": "CAM",
+        "subsystem": "periph",
+        "type": "invalidate"
+      },
+      {
+        "s": 11.177,
+        "kind": "notify",
+        "system": "CAM",
+        "subsystem": "periph",
+        "type": "invalidate"
+      },
+      {
+        "s": 11.178,
+        "kind": "notify",
+        "system": "DEVFS",
+        "subsystem": "CDEV",
+        "type": "CREATE"
+      },
+      {
+        "s": 11.178,
+        "kind": "notify",
+        "system": "CAM",
+        "subsystem": "periph",
+        "type": "invalidate"
+      },
+      {
+        "s": 11.178,
+        "kind": "notify",
+        "system": "GEOM",
+        "subsystem": "DEV",
+        "type": "CREATE"
+      }
+    ]
+  },
+  "acceptance": {
+    "equivalent_link_baseline": false,
+    "installation_acceptance_granted": false
+  }
+}

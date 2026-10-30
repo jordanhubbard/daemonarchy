@@ -75,7 +75,10 @@ fetch=$(line '^for attempt in 1 2 3 4 5')
 
 # The parallel fetch runs on the resolved plan, before the serial fallback, and
 # the serial retries back off instead of sleeping a fixed ten seconds.
+plan=$(line '--plan-only')
 parallel=$(line '^  traced pkg_fetch_parallel ')
+# The @@plan line is printed after the plan resolves and before any download starts.
+[[ -n $plan ]] && (( resolve < plan && plan < parallel ))
 [[ -n $parallel ]] && (( resolve < parallel && parallel < fetch ))
 ! grep -q '^  sleep 10$' "$install"
 grep -q 'sleep \$((2 \*\* attempt))' "$install"
