@@ -48,10 +48,11 @@ reasonable time or memory. The build therefore:
 - seeds a new package directory by hard-linking the previous set and deleting only what
   must change: kernel-bound packages (`*kmod*`, the NVIDIA driver and libraries),
   `x11-wm/omarchy` and `x11-wm/daemonarchy`;
-- runs `poudriere bulk -S`, which stops recursive rebuilds, with `-O` pointing at the
-  overlay that carries the eleven Omarchy ports the previous release took from newer
-  versions than the tree (`cliamp`, `herdr`, `omacalc`, `omacut`, `omarchy-nvim`,
-  `omasnap`, `omawrite`, `owe`, `owe-lockfeed`, `ttfx`, `usage`);
+- runs `poudriere bulk -S`, which stops recursive rebuilds. The eleven Omarchy ports the
+  previous release took from an overlay (`cliamp`, `herdr`, `omacalc`, `omacut`,
+  `omarchy-nvim`, `omasnap`, `omawrite`, `owe`, `owe-lockfeed`, `ttfx`, `usage`) are in the
+  pinned ports tree since daemonarchy-ports #31 (checked byte for byte against the overlay),
+  so no overlay is needed; `OVERLAY=name` still adds one;
 - lets any package whose version changed in the tree (for example `aquamarine` with a
   new port revision) rebuild as a normal stale package.
 
@@ -96,6 +97,49 @@ new and never replaces an existing release.
 One bad device stops the run before any write. Each device is written from the verified
 `.xz` and read back; the read-back digest must equal the raw image digest the operator
 passes in. `verify` prints that digest and size.
+
+## When the ports revision is declared final
+
+One daemonarchy-ports revision serves both architectures: `release/1.4.1-ports-final`, a
+descendant of the previous pin with the aarch64 desktop-dependency changes (#28, #30,
+#31), `omarchy` 4.0.4_27 (#29's omarchy-freebsd commit), `daemonarchy` 1.4.1 and the
+`aquamarine` exit-time logger fix (#35), and none of the upstream sync. The builder's
+tree is `ports-141` (poudriere ports tree `daports141`). Evidence that the aarch64
+changes leave the amd64 packages alone: the eleven ports from #31 are byte-identical to
+the overlay the previous release built from, `poudriere bulk -n` against the final tree
+reports nothing to build, and `hyprland`, `omarchy` and `daemonarchy` were rebuilt at the
+final revision and compared with the earlier builds (`evidence/final-compare.txt`).
+
+If the revision is final as it stands:
+
+```
+# 1. stage the signed feed for the uploader (hard links; nothing is copied off the builder)
+python3 scripts/package-feed-manifest.py --feed $WORK/feed-packages-16-amd64-1.4.1 \
+    --tag packages-16-amd64-1.4.1 --out $WORK/feed-stage --title "Daemonarchy packages for FreeBSD 16 (amd64)"
+# 2. publish (operator-approved; a new tag, never the latest, nothing replaced)
+python3 scripts/package-feed-upload.py upload --out $WORK/feed-stage --notes-file feed-notes.md
+python3 scripts/package-feed-upload.py verify --out $WORK/feed-stage
+```
+
+If another ports change lands first (for example the MacBook Wi-Fi driver,
+`net/if_brcmfmac-kmod`), add its commits to `release/1.4.1-ports-final`, fast-forward
+daemonarchy-ports `main` to the new tip, and on the builder fetch and check out that tip in
+`$WORK/ports-141`, then:
+
+```
+scripts/build-release-packages.sh plan                    # read what it will rebuild
+poudriere -e $WORK/poudriere-etc bulk -S -C -b latest -j $JAIL -p $PTREE -f changed-origins.txt
+scripts/build-release-packages.sh built identity          # with BUILT_OUT and PREVIOUS_BUILT as in the packages step
+scripts/resign-boot-bundle.sh sign                        # a rebuilt module changes the signed inventory
+```
+
+A kernel-bound package such as `if_brcmfmac-kmod` is on the ISO only, so the application
+feed's files do not change and its tag stays valid. If a package that is in the feed does
+change, stage and publish a new, suffixed tag (for example `packages-16-amd64-1.4.1-r2`) and
+point the ISO build at it with `PACKAGE_REPOSITORY_TAG`; never replace an asset. Then rebuild
+the ports checkout package and catalogue at the new tip, update
+`overlay/usr/local/share/daemonarchy-installer/checkouts.json` by pull request, and run
+`scripts/master-release.sh iso verify qa`.
 
 ## Not covered here
 
