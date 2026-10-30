@@ -1,0 +1,15 @@
+[build-system]
+requires = ["setuptools>=61"]
+build-backend = "setuptools.build_meta"
+
+[project]
+name = "daemonarchy-visual"
+version = "1.0.0"
+description = "Terminal graphics, effects, input actions and sound cues, standard library only."
+requires-python = ">=3.9"
+readme = "README.md"
+
+# The package lives in the installer overlay so the ISO ships exactly what is tested here.
+[tool.setuptools]
+package-dir = { "" = "../../overlay/usr/local/lib/daemonarchy-visual" }
+packages = ["daemonarchy_visual"]
