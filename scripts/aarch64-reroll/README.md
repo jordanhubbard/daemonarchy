@@ -18,6 +18,7 @@ resumed.
 | `step4-checkout.sh` | worker | the product checkout, the src and ports checkout packages and the checkout catalogue |
 | `step5-collect.sh` | worker | the unsigned application feed from every package poudriere built (`pkg-repo.sh collect`) |
 | `step6-iso.sh` | worker | the arm64 ISO with `build-iso.sh ARCH=aarch64` |
+| `step7-iso-release.sh` | worker | the release ISO from a fresh clone of main with both published closure shards in `PACKAGE_MIRROR_URLS` and `REQUIRE_PACKAGE_MIRROR=yes` |
 | `fetch-closure.sh` | signing host | the upstream archives of the closure shard, fetched with `parallel-fetch` for the aarch64 ABI |
 | `aarch64-ports.list` | worker | the 34 origins `step3-bulk.sh` builds (the aarch64 `ISO_ORIGINS`, the live packages and the installer set); `x11-themes/aether` is on it and fails, as documented |
 
