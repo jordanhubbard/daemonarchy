@@ -158,7 +158,8 @@ class RecordedFeeds(unittest.TestCase):
         self.assertTrue(records)
         for path in records:
             entries = json.loads(path.read_text())
-            feeds = verifier.closure_feeds({"version": "1.4.1", "closure_feeds": entries})
+            arch = path.stem.split("-")[2]          # packages-16-<arch>-<version>-upstream
+            feeds = verifier.closure_feeds({"version": "1.4.1", "architectures": [arch], "closure_feeds": entries})
             self.assertEqual(list(feeds), [path.stem], path.name)
             assets = feeds[path.stem]
             self.assertLessEqual(len(assets), 1000)
