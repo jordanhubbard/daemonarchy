@@ -15,7 +15,8 @@ into its `closure_feeds` field; from 1.4.1 the verifier refuses a record without
 | Record | What it is |
 | --- | --- |
 | `packages-16-amd64-1.4.1-upstream` | The signed upstream snapshot of the amd64 installer closure: the 786 FreeBSD packages (3.49 GiB) the ISO's own packages and our application feed do not carry, plus the catalogue (`data.pkg`, `packagesite.pkg`, `meta`, `meta.conf`): 790 assets, 3,751,899,650 bytes, all zstd except the two 168-byte pkg config files. Signed with the release pkg repository key (public key SHA-256 `67986b40…74ef7`). Upstream FreeBSD builds redistributed unchanged; the licence review is open (PKG-002). |
-| `packages-16-aarch64-1.4.1-upstream` | The signed upstream snapshot of the aarch64 installer closure: the 552 FreeBSD `FreeBSD:16:aarch64` packages (3.04 GiB) that our application feed and the ISO's own packages do not carry, plus the catalogue: 556 assets, 3,262,241,578 bytes, all zstd except the two 168-byte pkg config files. Same release pkg repository key as the amd64 shard. The installer's aarch64 roots (`pkg bash sudo daemonarchy octopkg wifi-firmware-kmod vulkan-loader mesa-dri`) resolve to 989 packages with nothing unsatisfied; the aarch64 default browser, Epiphany, adds five packages that are staged as a second shard and not yet published. Upstream FreeBSD builds redistributed unchanged; the licence review is open (PKG-002). |
+| `packages-16-aarch64-1.4.1-upstream` | The signed upstream snapshot of the aarch64 installer closure: the 552 FreeBSD `FreeBSD:16:aarch64` packages (3.04 GiB) that our application feed and the ISO's own packages do not carry, plus the catalogue: 556 assets, 3,262,241,578 bytes, all zstd except the two 168-byte pkg config files. Same release pkg repository key as the amd64 shard. The installer's aarch64 roots (`pkg bash sudo daemonarchy octopkg wifi-firmware-kmod vulkan-loader mesa-dri`) resolve to 989 packages with nothing unsatisfied; the aarch64 default browser, Epiphany, adds five packages that ship as a second shard, `packages-16-aarch64-1.4.1-upstream-2`. Upstream FreeBSD builds redistributed unchanged; the licence review is open (PKG-002). |
+| `packages-16-aarch64-1.4.1-upstream-2` | The aarch64 delta shard: the five packages the default browser, Epiphany, adds to the closure (`epiphany-47.7_3`, `webkit2-gtk_60-2.46.6_8`, `libavif-1.4.2`, `libyuv-0.0.1973`, `woff2-1.0.2_5`), plus a signed catalogue for them: 9 assets, 38,323,502 bytes. Same release pkg repository key. The image lists it beside the first aarch64 shard in `PACKAGE_MIRROR_URLS`. Published tags are immutable, so these could not join the first shard. |
 
 **Published 2026-10-30** as its own non-latest release, `packages-16-amd64-1.4.1-upstream`
 (not a draft; `daemonarchy-1.4.0` is still the latest release). `package-feed-upload.py
@@ -26,6 +27,8 @@ The aarch64 shard was published the same day as its own non-latest release,
 `packages-16-aarch64-1.4.1-upstream` (556 assets, verified by the operator). The
 catalogue files in the public release match the staged, signed ones byte for byte
 (`meta` `ca7f091a…`, `packagesite.pkg` `c3343e75…`, `data.pkg` `c645da12…`).
+
+The aarch64 delta shard was published the same day as `packages-16-aarch64-1.4.1-upstream-2` (non-latest; all 9 assets re-downloaded and hashed by the operator, `daemonarchy-1.4.0` still latest). Its public catalogue matches the staged one (`packagesite.pkg` `2b2ef472…`, `data.pkg` `bf672f9c…`).
 
 Upstream can move before the image is built. If a package the closure needs
 changes or goes, stage the next snapshot as a new tag (never edit a published one) and

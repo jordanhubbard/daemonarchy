@@ -1,0 +1,43 @@
+[
+  {
+    "tag": "packages-16-aarch64-1.4.1-upstream-2",
+    "assets": {
+      "data.pkg": [
+        4831,
+        "sha256:bf672f9cccefb1944c542aaa6361463f6c4430ec9bbc2d7bc66346f3a41eb4fd"
+      ],
+      "epiphany-47.7_3.pkg": [
+        3454730,
+        "sha256:8a1975698b80c3f45de112173a5f0790fbfa4887b56bfceaa96e7751898dd659"
+      ],
+      "libavif-1.4.2.pkg": [
+        264925,
+        "sha256:50677fd520929b79781e792bcabfd78098ee7c6cc8a586b0a4a89e47f9e2c59a"
+      ],
+      "libyuv-0.0.1973.pkg": [
+        368842,
+        "sha256:af556a487ffa460577dd4527d8f24c1e86e13781dcce170ee61c9f31ba38f2eb"
+      ],
+      "meta": [
+        168,
+        "sha256:ca7f091a4f9eccbf537a966a0d4d555cdfc4de34ad5be5c96a12c4485130664c"
+      ],
+      "meta.conf": [
+        168,
+        "sha256:ca7f091a4f9eccbf537a966a0d4d555cdfc4de34ad5be5c96a12c4485130664c"
+      ],
+      "packagesite.pkg": [
+        4828,
+        "sha256:2b2ef472777a25042c071329555255b7ac327e1f77c155a732daea279d9961d0"
+      ],
+      "webkit2-gtk_60-2.46.6_8.pkg": [
+        34167340,
+        "sha256:ded07befd32c560718315f84dd3d9d212a4518f85c3021ed1ce790c3d39a9eeb"
+      ],
+      "woff2-1.0.2_5.pkg": [
+        57670,
+        "sha256:3a63aebdbffeb4075ad544c25ddafc0a9ab2e17c1686ef87f7e6883f926be6da"
+      ]
+    }
+  }
+]

@@ -203,10 +203,10 @@ carry Epiphany, Falkon, qutebrowser, Badwolf and NetSurf. Epiphany is the choice
 because WebKitGTK is already in the closure: it adds 5 packages (`epiphany`,
 `webkit2-gtk_60`, `libavif`, `libyuv`, `woff2`; 37 MiB), against 6 packages and
 83 MiB for Falkon. The installer selects it on aarch64 where it selects
-`chromium` on amd64. The five packages are not in the closure shard staged
-first, and published tags are immutable, so they ship as a second, signed shard
-(`packages-16-aarch64-1.4.1-upstream-2`, 9 files, 38 MB) that the image lists
-beside the first.
+`chromium` on amd64. The five packages are not in the first closure shard, and published tags are
+immutable, so they ship as a second, signed shard
+(`packages-16-aarch64-1.4.1-upstream-2`, 9 files, 38 MB, published) that the
+image lists beside the first.
 
 Not solved: omarchy's web-app launchers run `chromium --app`; making the compat
 layer's browser choice follow the installed browser (Epiphany has an application
