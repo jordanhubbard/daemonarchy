@@ -26,8 +26,10 @@ echo "$PATH" >>"$LX_PATH_LOG"
 case $cmd in
   *"test -x /usr/local/cuda/bin/nvcc"*) [[ -z ${LX_NO_CUDA:-} ]] ;;
   *"git status --porcelain"*) [[ -z ${LX_DIRTY:-} ]] || echo ' M examples/cosmos.cu' ;;
-  *"git clone"*) mkdir -p src/.git src/examples; : >src/CMakePresets.json ;;
-  *"git checkout"*) : ;;
+  *"git clone"*) mkdir -p src/.git src/examples; : >src/CMakePresets.json; echo "${LX_CLONE_HEAD:-1111111111111111111111111111111111111111}" >src/.head ;;
+  *"git merge --ff-only"*) [[ -z ${LX_NO_FF:-} ]] && echo "${LX_REMOTE_TIP:-2222222222222222222222222222222222222222}" >.head ;;
+  *"git rev-parse HEAD"*) cat .head ;;
+  *"git checkout"*) sed -n "s/.*--detach '\([0-9a-f]*\)'.*/\1/p" <<<"$cmd" >.head ;;
   *curl*) mkdir -p SDL-3.2 ;;
   *"cmake --preset release"*) mkdir -p build/release ;;
   *"cmake --build"*)
@@ -184,4 +186,117 @@ grep -q 'daemonarchy-linux-cuda setup' "$work/home/.local/state/cudalab/build.lo
 [[ ! -f $stamp ]]
 ! grep -q 'git clone' "$work/lx.log"
 
-echo 'PASS: Cudalab virtual app builds once, becomes the real app and chain-launches it'
+# ======================================================= --update, and which commit is built
+tip=2222222222222222222222222222222222222222
+srcdir=$work/home/.local/share/cudalab/src
+grep -q -- '--update' "$launcher"
+
+# --- the stamp says what was built and where it came from
+fresh
+run --build-only
+grep -qx "commit=$pin" "$stamp"
+grep -qx 'source=pinned' "$stamp"
+grep -qx "pin=$pin" "$stamp"
+grep -q "pinned" <<<"$(run --status)"
+run --status | grep -q -- '--update'
+
+# --- a record from before --update (no source line) is a pinned build and stays valid
+sed -i '/^source=/d; /^pin=/d' "$stamp"
+[[ $(run --status) == real* ]]
+before=$(wc -l <"$work/lx.log")
+run cuda-cosmos
+check "$(wc -l <"$work/lx.log" | tr -d ' ')" "$before"
+sed -i "s/^commit=.*/commit=$tip/" "$stamp"           # a pinned build of another revision is not this launcher's
+[[ $(run --status) == virtual* ]]
+
+# --- --update: fetch, fast-forward to the tip, rebuild, record the commit actually built
+fresh
+run --build-only
+before=$(count 'cmake --build' "$work/lx.log")
+run --update
+grep -qx "commit=$tip" "$stamp"
+grep -qx 'source=updated' "$stamp"
+grep -qx "pin=$pin" "$stamp"
+check "$(count 'cmake --build' "$work/lx.log")" "$((before + 1))"
+grep -q 'git fetch --quiet origin && ' "$work/lx.log"
+grep -q 'git merge --ff-only --quiet origin/HEAD' "$work/lx.log"
+[[ ! -s $work/app.out ]]                              # an update opens nothing
+[[ ! -s $work/foot.log ]]
+grep -q "updated with --update" <<<"$(run --status)"
+grep -q "$tip" <<<"$(run --status)"
+
+# --- the update is not discarded on the next launch, and launches go straight to it
+before=$(wc -l <"$work/lx.log")
+run cuda-cosmos
+check "$(wc -l <"$work/lx.log" | tr -d ' ')" "$before"
+check "$(wc -l <"$work/app.out" | tr -d ' ')" 1
+grep -qx "commit=$tip" "$stamp"
+
+# --- --rebuild and a deleted binary rebuild the SAME updated commit, not the pin
+: >"$work/lx.log"
+run --rebuild
+grep -qx "commit=$tip" "$stamp"
+grep -qx 'source=updated' "$stamp"
+grep -q "git checkout --quiet --detach '$tip'" "$work/lx.log"
+! grep -q "detach '$pin'" "$work/lx.log"
+: >"$work/lx.log"
+rm -f "$srcdir/build/release/cudalab"
+[[ $(run --status) == virtual* ]]
+run --build-only
+grep -qx "commit=$tip" "$stamp"
+grep -q "git checkout --quiet --detach '$tip'" "$work/lx.log"
+[[ $(run --status) == real* ]]
+
+# --- a failed update (no fast-forward, or a failed build) leaves the previous app working
+fresh
+run --build-only
+cp "$stamp" "$work/stamp.before"
+if LX_NO_FF=1 run --update; then echo 'a failed update reported success' >&2; exit 1; fi
+cmp "$stamp" "$work/stamp.before"
+[[ $(run --status) == real* ]]
+run cuda-cosmos
+check "$(wc -l <"$work/app.out" | tr -d ' ')" 1
+grep -q 'could not fast-forward' "$work/home/.local/state/cudalab/build.log"
+: >"$work/lx.log"
+if LX_FAIL_BUILD=1 run --update; then echo 'a failed update build reported success' >&2; exit 1; fi
+cmp "$stamp" "$work/stamp.before"
+grep -q "git checkout --quiet --detach '$pin'" "$work/lx.log"     # sources put back on the built commit
+check "$(cat "$srcdir/.head")" "$pin"
+grep -q 'previous Cudalab' "$work/home/.local/state/cudalab/build.log"
+[[ $(run --status) == real* ]]
+
+# --- local changes are never touched by --update: built as they are, recorded as local
+fresh
+run --build-only
+: >"$work/lx.log"
+LX_DIRTY=1 run --update
+! grep -q 'git merge' "$work/lx.log"
+! grep -q 'git fetch' "$work/lx.log"
+! grep -q 'git checkout' "$work/lx.log"
+grep -qx "commit=$pin" "$stamp"
+grep -qx 'source=local' "$stamp"
+grep -q 'your local changes' <<<"$(run --status)"
+grep -q 'Not updated' "$work/home/.local/state/cudalab/build.log"
+before=$(wc -l <"$work/lx.log")
+run cuda-cosmos                                         # a local build is kept, not rebuilt at the pin
+check "$(wc -l <"$work/lx.log" | tr -d ' ')" "$before"
+
+# --- --update on a machine that never built: clones, goes to the tip, builds
+fresh
+run --update
+grep -qx "commit=$tip" "$stamp"
+grep -qx 'source=updated' "$stamp"
+check "$(count 'git clone' "$work/lx.log")" 1
+
+# --- two updates at once update once; an update does not start while a build runs
+fresh
+run --build-only
+LX_BUILD_SLEEP=2 TERM_STUB=no-such-terminal run --update &
+first=$!
+sleep 1
+second=$(TERM_STUB=no-such-terminal run --update 2>&1) || { echo 'the second update failed' >&2; exit 1; }
+grep -q 'already being built' <<<"$second"
+wait "$first"
+check "$(count 'git merge --ff-only' "$work/lx.log")" 1
+
+echo 'PASS: Cudalab virtual app builds once, becomes the real app and chain-launches it, and --update moves it forward'
