@@ -116,7 +116,7 @@
         "webkit2-gtk_60-2.46.6_8",
         "woff2-1.0.2_5"
       ],
-      "bytes": 38313507,
+      "bytes": 38323502,
       "assets": 9,
       "signed": true,
       "verified": "package-feed-stage.py verify: shard verified",
