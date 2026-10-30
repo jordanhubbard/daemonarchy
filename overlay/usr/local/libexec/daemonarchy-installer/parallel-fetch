@@ -134,7 +134,12 @@ def load_sizes(pkg_command, timeout=120):
 def catalogue_sizes(pkg_command, timeout=60):
     """Exact (archive bytes, installed bytes) per (repository, name-version) from pkg's own
     repository databases, which `pkg update` just filled: $PKG_DBDIR/repos/NAME/db, table packages."""
-    import sqlite3
+    try:
+        import sqlite3
+    except ImportError:
+        # The live image's Python can lack _sqlite3 (the arm64 image does). Without it the
+        # plan's bytes come from pkg's rounded text and the fetch still runs in parallel.
+        return {}
     try:
         directory = subprocess.run([*pkg_command, 'config', 'PKG_DBDIR'], capture_output=True, text=True,
                                    timeout=timeout).stdout.strip().splitlines()[-1]

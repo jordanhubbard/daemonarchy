@@ -270,6 +270,28 @@ class PoolTests(unittest.TestCase):
         self.assertTrue(plan["approximate"])
         self.assertEqual((plan["download_bytes"], plan["installed_bytes"]), (940 * 1024, 4 * 1024 * 1024))
 
+    def test_a_python_without_sqlite3_still_plans_and_fetches_in_parallel(self):
+        # The live image's python3.12 has no _sqlite3 (seen on the arm64 image): the tool
+        # crashed with ModuleNotFoundError and the install fell back to one slow fetch.
+        f = Fixture()
+        stub = f.root / "nosqlite" / "sqlite3"
+        stub.mkdir(parents=True)
+        (stub / "__init__.py").write_text("raise ModuleNotFoundError(\"No module named '_sqlite3'\")\n")
+        f.env["PYTHONPATH"] = str(f.root / "nosqlite")
+        f.plan.write_text("New packages to be INSTALLED:\n\tpkg0: 1.0 [Fast]\n\tpkg1: 1.0 [Fast]\n\n"
+                          "Number of packages to be installed: 2\n\nThe process will require 4 MiB more space.\n"
+                          "2 KiB to be downloaded.\n")
+        planned = f.run("--plan-only")
+        self.assertEqual(planned.returncode, 0, planned.stderr)
+        self.assertNotIn("Traceback", planned.stderr)
+        plan = json.loads(next(l for l in planned.stdout.splitlines() if l.startswith("@@plan "))[7:])
+        self.assertTrue(plan["approximate"])
+        fetched = f.run()
+        self.assertEqual(fetched.returncode, 0, fetched.stderr)
+        self.assertNotIn("Traceback", fetched.stderr)
+        self.assertEqual(sorted(p.name for p in f.cache.glob("*.pkg") if not p.is_symlink()),
+                         ["pkg0-1.0~2$abc.pkg", "pkg1-1.0~2$abc.pkg"])
+
     def test_repo_workers_must_name_a_repository_and_a_count(self):
         f = Fixture()
         for bad in ("=3", "Slow=0", "Slow=x", "Slow"):
