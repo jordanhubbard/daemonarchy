@@ -1154,6 +1154,26 @@ coordinated operation.
    physical qualification deferrals must remain explicit limitations in the
    release notes; they never become passing results. Leave the unversioned
    stable application feed unchanged.
+
+   **The extension feed** (from 1.4.1; [extension-feed.md](docs/extension-feed.md)).
+   Installer extensions, the arcade games first, are not on the ISO: they are
+   downloaded when the user chooses them. For each architecture, stage a release
+   `extensions-<os>-<arch>-<version>` (for example `extensions-16-amd64-1.4.1`)
+   with `python3 scripts/extension-bundle.py stage extensions/games/* --out DIR
+   --feed <tag> --arch <arch> --key <signing key> --pubkey <pinned public key>`.
+   Sign with the private key whose public half the image pins as
+   `daemonarchy.pub` (the package repository key; staging with a throwaway key and
+   re-signing with `extension-bundle.py sign` changes only the `.sig` files), then
+   `extension-bundle.py verify DIR --pubkey <pinned public key> --feed <tag>`.
+   Everything published is compressed (`.tar.xz` bundles and the `.json.xz` index)
+   or a signature; record the table `extension-bundle.py table DIR` prints
+   (names, compressed and uncompressed sizes, SHA-256). Create it as a
+   **non-latest** release with a new tag, never an existing release or the
+   latest, and upload exactly those assets. Install from the exact image against
+   the published feed (download, verify, run), and once with the network blocked
+   to confirm the offline message. Rebuild and re-publish the feed whenever an
+   extension or the SDK API it needs changes.
+
    Before upload, run `python3 scripts/verify-release-assets.py --record
    verification/release-1.3.1.json --assets /path/to/staged-assets` on the six
    staged public assets. It checks exact sizes and digests, the ISO checksum

@@ -230,7 +230,7 @@ def cheer(term, title, subtitle=''):
     sdk.run_scene(Cheer(title, subtitle), caps, term.out, sdk.NoInput(), clock=term.clock, fps=15, keep=True)
     if not caps.plain:
         top = max(1, caps.height // 2 - 4)
-        term.write(f'\033[{min(caps.height, top + 5)};1H\033[?25h' + term.colors.sgr())
+        term.write(sdk.ansi.move(0, min(caps.height, top + 5) - 1) + sdk.ansi.cursor(True) + term.colors.sgr())
 
 
 class Attract(sdk.Scene):
@@ -281,6 +281,52 @@ def attract(term, logo_path, top=1, tagline_row=None):
     term.write(term.colors.sgr())
 
 
+def read_logo(path):
+    try:
+        return [row.rstrip('\n') for row in Path(path).read_text(encoding='utf-8').splitlines()][:24]
+    except (OSError, UnicodeError):
+        return []
+
+
+def welcome(term, logo_path, logo_row, tagline_row, hint_row, tagline, hint):
+    """The welcome frame: logo, tagline and one hint, centered. The caller owns the layout arithmetic."""
+    logo = read_logo(logo_path)
+    if term.plain:
+        term.write('\n'.join(logo + ['', tagline, hint]) + '\n')
+        return
+    width, _height = term.size()
+    logo_w = max((len(row) for row in logo), default=0)
+    left = max(0, (width - logo_w) // 2)
+    term.write(sdk.ansi.clear() + sdk.ansi.cursor(False))
+    screen = sdk.Screen(term.out, term.colors, origin=(0, 0), full=False, size=(width, max(1, hint_row)))
+    canvas = screen.canvas(width, hint_row)
+    for index, row in enumerate(logo):
+        canvas.put(left, logo_row - 1 + index, row, (RED, None, True))
+    canvas.put(max(0, (width - len(tagline)) // 2), tagline_row - 1, tagline, (WHITE, None, False))
+    canvas.put(max(0, (width - len(hint)) // 2), hint_row - 1, hint, (GRAY, None, False))
+    screen.enter()
+    screen.present(canvas)
+    screen.leave()
+
+
+def logo_frame(term, logo_path, left):
+    """The logo alone at the top of the options screens: clear, then draw it one row down."""
+    logo = read_logo(logo_path)
+    if term.plain:
+        term.write('\n'.join(logo) + '\n')
+        return
+    width, _height = term.size()
+    term.write(sdk.ansi.clear())
+    screen = sdk.Screen(term.out, term.colors, origin=(0, 0), full=False, size=(width, len(logo) + 1))
+    canvas = screen.canvas(width, len(logo) + 1)
+    for index, row in enumerate(logo):
+        canvas.put(left, 1 + index, row, (RED, None, True))
+    screen.enter()
+    screen.present(canvas)
+    screen.leave()
+    term.write(sdk.ansi.move(0, len(logo) + 1))
+
+
 def main(argv=None):
     argv = list(sys.argv[1:] if argv is None else argv)
     if not argv:
@@ -305,6 +351,15 @@ def main(argv=None):
             warn(term, ' '.join(rest), left)
         elif command == 'cheer' and rest:
             cheer(term, rest[0], ' '.join(rest[1:]))
+        elif command == 'welcome':
+            opts = dict(zip(rest[::2], rest[1::2]))
+            welcome(term, opts['--logo'], int(opts['--logo-row']), int(opts['--tagline-row']), int(opts['--hint-row']),
+                    opts.get('--tagline', ''), opts.get('--hint', ''))
+        elif command == 'logo':
+            opts = dict(zip(rest[::2], rest[1::2]))
+            logo_frame(term, opts['--logo'], int(opts.get('--left', left)))
+        elif command == 'restore':
+            term.write(sdk.ansi.restore())
         elif command == 'attract':
             logo, top = None, 1
             if '--logo' in rest:

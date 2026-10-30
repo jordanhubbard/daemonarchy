@@ -63,8 +63,8 @@ class CapabilityTests(unittest.TestCase):
 
     def test_api_compatibility(self):
         self.assertTrue(sdk.compatible("1.0"))
-        self.assertTrue(sdk.compatible((1, 3)))
-        self.assertFalse(sdk.compatible("1.4"))
+        self.assertTrue(sdk.compatible((1, 4)))
+        self.assertFalse(sdk.compatible("1.5"))
         self.assertFalse(sdk.compatible("2.0"))
         self.assertFalse(sdk.compatible("x"))
 
@@ -341,6 +341,19 @@ class SceneTests(unittest.TestCase):
         sdk.run_scene(Probe(), caps.Capabilities(depth="none", width=60, height=20), out,
                       sdk_input.ListSource([[]] * 5), clock=Jumpy())
         self.assertTrue(all(dt <= scene.MAX_STEP for dt in steps))
+
+
+class AnsiTests(unittest.TestCase):
+    def test_the_helpers_produce_the_standard_sequences(self):
+        from daemonarchy_visual import ansi
+        self.assertEqual(ansi.clear(), "\033[H\033[2J")
+        self.assertEqual(ansi.move(0, 0), "\033[1;1H")
+        self.assertEqual(ansi.move(9, 4), "\033[5;10H")
+        self.assertEqual((ansi.cursor(True), ansi.cursor(False)), ("\033[?25h", "\033[?25l"))
+        self.assertEqual(ansi.restore(), "\033[0m\033[H\033[2J\033[?25h")
+        self.assertEqual(ansi.title("log"), "\033]2;log\033\\")
+        self.assertEqual(ansi.title("a\x1b]0;evil\x07b"), "\033]2;a]0;evilb\033\\")
+        self.assertLessEqual(len(ansi.title("x" * 500)), 90)
 
 
 class OverlayAndInlineTests(unittest.TestCase):

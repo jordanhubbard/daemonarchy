@@ -20,6 +20,8 @@ import time
 import tty
 
 HERE = Path(__file__).resolve().parent
+sys.path.insert(0, str(HERE.parents[1] / 'lib' / 'daemonarchy-visual'))
+from daemonarchy_visual import ansi  # noqa: E402
 LOG = os.environ.get('DAEMONARCHY_INSTALL_LOG', '/tmp/daemonarchy-install.log')
 ANSI = re.compile(r'\x1b\][^\x07\x1b]*(?:\x07|\x1b\\)|\x1b\[[0-9;?]*[ -/]*[@-~]|\x1b[@-Z\\-_]')
 
@@ -53,7 +55,7 @@ def clean(text, limit=300):
 
 def title(name):
     """Label the pane, and its window when the pane is alone in it."""
-    sys.stdout.write(f'\033]2;{name}\033\\')
+    sys.stdout.write(ansi.title(name))
     sys.stdout.flush()
     if os.environ.get('TMUX') and os.environ.get('TMUX_PANE'):
         pane = os.environ['TMUX_PANE']
@@ -106,7 +108,7 @@ def diagnostics(once=False):
     title('diagnostics')
     while True:
         text = '\n'.join(snapshot())
-        sys.stdout.write('\033[H\033[2J' + text + '\n')
+        sys.stdout.write(ansi.clear() + text + '\n')
         sys.stdout.flush()
         if once:
             return 0
@@ -151,7 +153,7 @@ def chooser():
             return shell()
         for number, letter, _label, view in choices:
             if key in (number, letter):
-                sys.stdout.write('\033[H\033[2J')
+                sys.stdout.write(ansi.clear())
                 return view()
 
 
