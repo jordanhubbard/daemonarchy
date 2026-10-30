@@ -205,7 +205,8 @@ step_verify() {
   got=$(xz -dc "$xz" | { sha256 -q 2>/dev/null || sha256sum | cut -d' ' -f1; })
   [ -z "$want" ] || [ "$want" = "$got" ] || fail 'decompressed image does not match the raw .sha256'
   echo "raw_sha256=$got raw_size=$(xz -l --robot "$xz" | awk '/^totals/ { print $5 }')"
-  version=$(tr -d '[:space:]' <"$here/VERSION")
+  # The version of the commit being mastered, not of wherever this script runs from.
+  version=$(tr -d '[:space:]' <"$WORK/product-$(short)/VERSION")
   if command -v bsdtar >/dev/null; then
     [ "$(bsdtar -xOf "$iso" ./usr/local/share/daemonarchy-installer/version 2>/dev/null | head -1)" = "$version" ] \
       || fail "the image's installer version is not $version"
