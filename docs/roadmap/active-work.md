@@ -263,6 +263,29 @@ lifecycle authority.
 - **Evidence:**
   - [ ] Native dependency closure and integrity pass; real parallel installation improves measured time; side-effect conflicts, interruption and rollback are handled.
 
+
+### [ ] PKG-002 — Self-host the installer's package closure for both architectures
+
+- **Priority:** P1 (1.4.1, with INSTALL-PERF-001)
+- **Release:** 1.4.1
+- **GitHub issue:** [#142](https://github.com/jordanhubbard/daemonarchy/issues/142)
+- **Owner:** package-engine and release Components
+- **Direction:** Stop depending on `pkg.FreeBSD.org` at install time. Publish the exact, signed, versioned package closure the installer needs for each architecture as Daemonarchy release feeds on GitHub, and keep the FreeBSD mirror only as a fallback.
+- **Conclusion:** `latest` is a moving target, the mirror is a single external point of failure, and on aarch64 it does not carry `chromium` or `hyprland` at all, so the arm64 install cannot finish from it. Packages are already zstd-compressed (`tzst`) in both feeds, so compression is not a lever; delivery locality, count and parallelism are.
+- **Depends on:** PKG-001 (exact catalogues and parallel acquisition); feeds INSTALL-PERF-001 step (2).
+- **Completion prerequisites:** none
+- **Implementation:**
+  - [x] Measure the closure. `scripts/package-mirror-plan.py` resolves the installer's fixed roots (`pkg bash sudo daemonarchy chromium octopkg wifi-firmware-kmod`) through the Daemonarchy feed and a FreeBSD catalogue in priority order, and reports per-source packages and bytes, unsatisfied roots, licences and a release-shard split. First result on 2026-10-30 for amd64 (`FreeBSD:16:amd64/latest`, application feed 1.4.0): 1,004 packages, 5.13 GiB of archives, 15.53 GiB installed; 811 packages and 3.47 GiB come from pkg.FreeBSD.org and fit one release shard under GitHub's limits (about 1,000 assets and 2 GiB per asset). On `FreeBSD:16:aarch64/latest` the roots `chromium` and `hyprland` are unsatisfied. The GPU-selected packages and the CUDA/`xwayland` addition are not in these roots yet. [Test](../../tests/package-mirror-plan.py).
+  - [ ] Add the GPU-selected, Wi-Fi, CUDA and per-machine roots to the measurement and record the result per supported selection.
+  - [ ] Review redistribution licences for every package the feed would newly carry; exclude or link out anything that does not permit it.
+  - [ ] Build the aarch64 packages upstream does not publish (at least `chromium`, `hyprland`) and qualify them; amd64-only kernel modules stay out of the arm feed.
+  - [ ] Publish the closure as a signed, versioned feed per architecture (`packages-16-<arch>-<version>` style tags, sharded under the release limits), reusing the existing signing and `pkg-repo.sh` path and `scripts/verify-release-assets.py`.
+  - [ ] Point the installer at that feed first and at pkg.FreeBSD.org only as an explicit fallback; refuse unsigned or mismatched content as the existing feeds do. Keep the download path compatible with parallel fetch (PKG-001) and a local cache.
+- **Evidence:**
+  - [ ] An install on each architecture that uses only the self-hosted feed (FreeBSD mirror blocked), with unchanged signature/hash and installed-integrity checks and a working desktop.
+  - [ ] Fallback and failure behaviour: feed unreachable, shard missing, wrong key, corrupt archive.
+  - [ ] Fetch-phase time against the retained live8 baseline (2,565 s) on an equivalent link, so the gain is attributed to delivery and not to a smaller selection.
+
 ### [ ] GUI-001 — Deliver a colorful fast graphical package manager
 
 - **Priority:** P2

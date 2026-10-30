@@ -3,6 +3,7 @@
 - **Status:** active
 - **Owning queue item:** [INSTALL-PERF-001](active-work.md#install-perf-001-make-exact-image-installation-at-least-10x-faster)
 - **Supporting queue items:** [PKG-001](active-work.md#pkg-001-implement-the-release-package-dag-and-safe-parallel-transactions),
+  [PKG-002](active-work.md#pkg-002-self-host-the-installers-package-closure-for-both-architectures),
   [NET-001](active-work.md#net-001-make-the-installer-network-bring-up-proactive-and-robust),
   [VISUAL-SDK-001](active-work.md#visual-sdk-001-extract-a-reusable-installer-visual-sdk-and-plugin-runtime),
   [GAME-001](active-work.md#game-001-add-playable-classic-arcade-games-to-the-installer)
@@ -99,6 +100,20 @@ items below were 1.4 acceptance rows. They moved here so they no longer block
   resolving that manifest and timing equivalent fetch/install paths on the MSI
   and MacBook, then choosing between parallel fetch, a smaller default set, and
   shipping the large packages on the ISO.
+- **Self-hosted packages for both architectures**
+  ([PKG-002](active-work.md#pkg-002-self-host-the-installers-package-closure-for-both-architectures),
+  [issue #142](https://github.com/jordanhubbard/daemonarchy/issues/142)). The
+  installer still takes everything the ISO does not carry from
+  `pkg.FreeBSD.org/${ABI}/latest`. Packages are already zstd-compressed on
+  both sides, so the lever is where they come from. Publish the exact signed
+  closure per architecture as GitHub release feeds, sharded under the release
+  limits, and keep the FreeBSD mirror only as a fallback. First measurement
+  (`scripts/package-mirror-plan.py`): the amd64 closure of the fixed installer
+  roots is 1,004 packages and 5.13 GiB of archives, of which 811 packages and
+  3.47 GiB come from pkg.FreeBSD.org and fit one release shard. On aarch64 the
+  upstream catalogue lacks `chromium` and `hyprland`, so mirroring alone does
+  not fix the arm64 install: those packages must also be built. Licences for
+  redistribution are checked before anything is published.
 - **Target: install at least 10 times faster.** Baseline first: time the
   whole install (fetch, extraction, registration, post-install) on the MSI,
   the MacBookPro16,1 and a VM, with a fixed package set and a recorded link
