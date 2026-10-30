@@ -112,11 +112,30 @@ def main(argv):
             tick = json.loads(line)
             caps.width, caps.height = int(tick["w"]), int(tick["h"])
             actions = [a for a in tick.get("a", []) if a in sdk.ACTIONS] if wants_input else []
+            for event in tick.get("ev", []):
+                ctx.windows.apply(event)
+                if hasattr(scene, "on_window_event"):
+                    scene.on_window_event(event)
+            for wid, window_actions in tick.get("wa", {}).items():
+                if hasattr(scene, "window_actions"):
+                    scene.window_actions(int(wid), [a for a in window_actions if a in sdk.ACTIONS])
             scene.update(min(0.1, max(0.0, float(tick["t"]))), ctx, actions)
             canvas = Canvas(caps.width, caps.height)
             scene.draw(canvas, ctx)
             rows, table = encode(canvas)
             reply = {"f": rows, "s": table, "c": sink.cues, "d": bool(scene.done), "r": scene.result}
+            extra = {}
+            for wid, (cols, lines) in ctx.windows.known.items():
+                shown = Canvas(cols, lines)
+                if hasattr(scene, "draw_window"):
+                    scene.draw_window(wid, shown, ctx)
+                wrows, wtable = encode(shown)
+                extra[str(wid)] = {"f": wrows, "s": wtable}
+            if extra:
+                reply["F"] = extra
+            ops = ctx.windows.take_ops()
+            if ops:
+                reply["o"] = ops
             sink.cues = []
         except Exception as error:  # noqa: BLE001 - report the plugin's failure, then stop.
             reply = {"e": type(error).__name__}

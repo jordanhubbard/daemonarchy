@@ -6,7 +6,7 @@ is a second host that has nothing to do with installation. The SDK keeps no
 installation state and performs no privileged operation: a host passes in
 observations and decides what an action means.
 
-API version 1.2. `daemonarchy_visual.compatible("1.0")` tells a host or plugin
+API version 1.3. `daemonarchy_visual.compatible("1.0")` tells a host or plugin
 whether this SDK can serve the version it was written for. A minor release only
 adds names; a major release may remove or change them, and the old major keeps
 working in an installed image until that image is replaced.
@@ -25,6 +25,7 @@ working in an installed image until that image is replaced.
 | Inline effects | `inline` | line-oriented flourishes printed between a host's own prompts: `type_line`, `result_line`, `pulse_line`. Plain terminals and reduced motion get the final text at once. |
 | Arcade helpers | `arcade` | a fixed simulation step, a centered playfield, a HUD that compacts on narrow terminals, banners. |
 | Plugins | `plugin` | content-identified, capability-scoped, preemptible, failure-isolated scenes that run in their own process; see [arcade-games.md](arcade-games.md). |
+| Windows | `windows` | extra windows for extensions: open, close, resize, select, list and set a title, mediated by the host; tmux, inline-panel and refusing backends. See below. |
 | Scenes | `scene` | `Scene` (`update`, `draw`, `plain_lines`) and `run_scene`, which owns timing, input, resize, pause, mute, preemption and restoring the terminal. |
 
 ## Behaviour a host can rely on
@@ -40,6 +41,51 @@ working in an installed image until that image is replaced.
 - **Long stalls** (a suspended window) are clamped to 0.1 s of simulation.
 - **Sound** is a request: mute, no device, serial and SSH all mean silence, and
   nothing in the SDK waits for it.
+
+## Windows for extensions
+
+An extension (a plugin in its own process) can ask for windows. It never talks to tmux or the
+terminal: it queues requests with `ctx.windows`, the host validates and performs them, and the
+answers come back as events on a later tick.
+
+| Verb | `ctx.windows` call | Result |
+| --- | --- | --- |
+| open | `open(title, cols, rows)` returns a reference | event `opened` (`ref`, `w`, `cols`, `rows`) or `refused` |
+| close | `close(w)` | event `closed` (`w`, `by`) |
+| resize | `resize(w, cols, rows)` | event `resize` |
+| select | `select(w)` makes it the shown window (`0` is the run's own window) | event `selected` |
+| list | `list()` returns a reference | event `list` with `windows: [{w, title, cols, rows, selected}]` |
+| title | `set_title(w, text)` | none |
+
+Events also arrive when the user closes a window (`closed`, `by: "user"`) or changes its size
+(`resize`). A scene receives them through optional hooks: `on_window_event(event)`,
+`window_actions(w, actions)` for input typed in a window, and `draw_window(w, canvas, ctx)` to paint
+one (the canvas has the window's size). A test extension in `tests/sdk-windows.py` opens, resizes,
+selects, lists, retitles and closes extra windows.
+
+**What the host enforces**, whatever the extension asks: the `window` capability in the manifest
+(without it every verb is refused with `no-window-capability`); at most `limits.windows` windows per run
+(1 to 4, default 2); sizes of 20-200 columns by 6-60 rows; titles reduced to at most 40 printable
+characters with shell metacharacters removed; at most 8 requests per tick; and ownership: only
+windows it opened, plus window 0 for select, list and title (it cannot be closed or resized, because it is
+the terminal). tmux window ids come from tmux and are held by the host; the extension never supplies or
+sees one, so the installer's own windows cannot be addressed.
+
+**Backends**, chosen by `windows.choose_backend(caps)`:
+
+- `TmuxBackend`: each window is a tmux window running a viewer (`window_view.py`) that the host feeds
+  validated frames over a private unix socket (a 0700 directory). Only `new-window`, `resize-window`
+  (with `window-size manual`), `select-window`, `rename-window`, `kill-window` and `list-windows`
+  are used, only on windows this host created. A resize event is reported only after the window has
+  settled at its requested size, so startup noise is not mistaken for a user resize.
+- `InlineBackend`: no tmux. Windows are framed panels drawn inside the one terminal with a z-order;
+  `select` brings one to the front and the front panel receives the keyboard. This is a genuine
+  degradation and is shown as one.
+- `NoWindows`: serial, plain or headless. Every `open` is refused with the reason `no-windows`.
+
+Each extension run is meant to have its own window (a new tmux window, like `new-window`);
+`TmuxBackend.spawn(title, argv)` does that for a launcher, and on the inline backend the run takes over
+the one terminal.
 
 ## The installer is the first consumer
 
@@ -69,5 +115,7 @@ colors, glyphs, audio and clock.
 
 Unit-tested on Linux with scripted input and a manual clock (`tests/visual-sdk.py`):
 capability negotiation, drawing and diffing, motion, input decoding, audio, scene
-loop (pause, mute, preempt, resize, stall) and the sample host. Not yet verified
-on a FreeBSD `vt(4)` console or over serial/SSH on real hardware.
+loop (pause, mute, preempt, resize, stall) and the sample host. The window tests (27) also run against a real tmux
+server. All three suites (42 SDK, 71 plugin/game, 27 window tests) pass on FreeBSD 16.0-CURRENT with tmux 3.7c, and a plugin
+started as root runs as uid/gid 65534 with no groups, in `/`, unable to write or fork. Not yet verified: a FreeBSD `vt(4)` console
+or serial/SSH on real hardware.

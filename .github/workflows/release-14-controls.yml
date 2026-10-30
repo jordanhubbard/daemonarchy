@@ -34,6 +34,7 @@ on:
       - 'tests/install-trace.py'
       - 'tests/visual-sdk.py'
       - 'tests/plugins-and-games.py'
+      - 'tests/sdk-windows.py'
       - 'scripts/seal-games.py'
       - 'overlay/usr/local/share/daemonarchy-games/**'
       - 'overlay/usr/local/libexec/daemonarchy-installer/daemonarchy-games'
@@ -87,6 +88,7 @@ on:
       - 'tests/install-trace.py'
       - 'tests/visual-sdk.py'
       - 'tests/plugins-and-games.py'
+      - 'tests/sdk-windows.py'
       - 'scripts/seal-games.py'
       - 'overlay/usr/local/share/daemonarchy-games/**'
       - 'overlay/usr/local/libexec/daemonarchy-installer/daemonarchy-games'
@@ -148,6 +150,7 @@ jobs:
         run: |
           python3 scripts/seal-games.py --check
           python3 -I tests/plugins-and-games.py -v
+          python3 -I tests/sdk-windows.py -v
       - name: Parallel package fetch
         env:
           PYTHONDONTWRITEBYTECODE: '1'
