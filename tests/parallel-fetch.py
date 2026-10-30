@@ -197,6 +197,28 @@ class PoolTests(unittest.TestCase):
         f.plan.write_text("nothing here\n")
         self.assertEqual(f.run().returncode, 2)
 
+    def test_each_repository_has_its_own_connection_cap_and_is_named_in_the_trace(self):
+        f = Fixture(FAKE_DELAY="0.1")
+        lines = "".join(f"\t{i.rsplit('-', 1)[0]}: {i.rsplit('-', 1)[1]} [{'Slow' if n < 6 else 'Fast'}]\n"
+                        for n, i in enumerate(f.ids))
+        f.plan.write_text("New packages to be INSTALLED:\n" + lines)
+        result = f.run("--repo-workers", "Slow=1", "--repo-workers", "Fast=4", workers=8)
+        self.assertEqual(result.returncode, 0, result.stderr)
+        events = f.events()
+        caps = {e["repo"]: e["workers"] for e in events if e["event"] == "fetch_repo"}
+        self.assertEqual(caps["Slow"], 1)
+        self.assertLessEqual(caps["Fast"], 4)
+        self.assertEqual({e["repo"] for e in events if e["event"] == "download"}, {"Slow", "Fast"})
+        slow = sorted((e["t_us"] - e["dur_us"], e["t_us"]) for e in events
+                      if e["event"] == "fetch_batch" and e["repo"] == "Slow")
+        self.assertTrue(all(a_end <= b_start + 5000 for (_, a_end), (b_start, _) in zip(slow, slow[1:])),
+                        "one-connection repository ran two fetches at once")
+
+    def test_repo_workers_must_name_a_repository_and_a_count(self):
+        f = Fixture()
+        for bad in ("=3", "Slow=0", "Slow=x", "Slow"):
+            self.assertEqual(f.run("--repo-workers", bad).returncode, 2, bad)
+
     def test_trace_has_no_paths_or_commands(self):
         f = Fixture()
         f.run()

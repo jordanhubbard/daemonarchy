@@ -31,7 +31,15 @@ class PlanTests(unittest.TestCase):
         self.assertEqual(self.result["by_source"]["FreeBSD"]["archive_bytes"], 300)
 
     def test_hosted_shard_covers_only_upstream_packages(self):
-        self.assertEqual(self.result["shards"], [{"assets": 2, "bytes": 300}])
+        self.assertEqual(self.result["shards"], [{"assets": 2, "bytes": 300, "packages": ["base", "lib"]}])
+        self.assertEqual([row["name"] for row in self.result["hosted"]], ["base", "lib"])
+        self.assertEqual(self.result["hosted"][0]["pkgsize"], 200)
+
+    def test_only_named_upstream_catalogues_are_hosted(self):
+        iso = {"lib": pkg("lib", 7, ["base"])}
+        result = tool.plan(["app"], {"Iso": iso, "Own": OWN, "FreeBSD": UPSTREAM}, upstream=["FreeBSD"])
+        self.assertEqual([r["name"] for r in result["hosted"]], ["base"])      # lib comes from the ISO, tool from Own
+        self.assertEqual(result["shards"][0]["packages"], ["base"])
 
     def test_unsatisfied_root_is_reported(self):
         result = tool.plan(["app", "chromium"], {"Own": OWN, "FreeBSD": UPSTREAM})

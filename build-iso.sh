@@ -89,6 +89,25 @@ printf '%s\n' "$PACKAGE_REPOSITORY_TAG" >"$share/package-repository-tag"
 if [ -n "$PACKAGE_REPOSITORY_PUBLIC_KEY" ]; then
     cp "$PACKAGE_REPOSITORY_PUBLIC_KEY" "$share/daemonarchy.pub"
 fi
+# PACKAGE_MIRROR_URLS: the release-feed shards of the signed upstream snapshot
+# (scripts/package-feed-stage.py), space separated. The installer prefers them to
+# pkg.FreeBSD.org and falls back when one does not answer. Signed with the key
+# above, so it needs one. Unset, the image is unchanged.
+if [ -n "${PACKAGE_MIRROR_URLS:-}" ]; then
+    [ -n "$PACKAGE_REPOSITORY_PUBLIC_KEY" ] || {
+        echo 'PACKAGE_MIRROR_URLS needs PACKAGE_REPOSITORY_PUBLIC_KEY to verify the snapshot' >&2; exit 1; }
+    : >"$share/package-mirror"
+    for mirror_url in $PACKAGE_MIRROR_URLS; do
+        case "$mirror_url" in
+        https://github.com/jordanhubbard/daemonarchy/releases/download/packages-16-*-?*) ;;
+        *) echo "PACKAGE_MIRROR_URLS entry is not one of our release feeds: $mirror_url" >&2; exit 1 ;;
+        esac
+        case "${mirror_url##*/}" in
+        *[!A-Za-z0-9._-]*) echo "Invalid package mirror URL: $mirror_url" >&2; exit 1 ;;
+        esac
+        printf '%s\n' "$mirror_url" >>"$share/package-mirror"
+    done
+fi
 
 echo "==> Collecting the Omarchy package repository"
 mkdir -p "$share/repo/All"
