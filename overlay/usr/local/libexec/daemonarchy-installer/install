@@ -623,6 +623,18 @@ pkg_fetch_measured() {
   return "$status"
 }
 
+# A package or dependency that the repositories no longer provide fails the
+# same way every time, so say so now rather than retrying the download and
+# blaming the network. A dry run resolves the whole selection without fetching.
+resolve_log=$(mktemp)
+if ! traced pkg_resolve pkg_target install -n -y "${packages[@]}" >"$resolve_log" 2>&1; then
+  tail -n 40 "$resolve_log"
+  echo 'The selected packages cannot be resolved from the configured repositories (a package or dependency is missing or conflicts). This is not a network fault; downloading again will not help.' >&2
+  rm -f "$resolve_log"
+  exit 1
+fi
+rm -f "$resolve_log"
+
 # A thousand downloads over a home connection will see the odd one fail.
 # Fetch everything first, retrying: packages already in the cache are kept, so
 # each attempt picks up where the last one stopped. Then install from the cache.

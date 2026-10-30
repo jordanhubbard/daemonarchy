@@ -1,0 +1,34 @@
+name: Upstream package drift
+
+# pkg.FreeBSD.org's `latest` moves. When a package our image depends on
+# disappears or breaks there, every new install fails at the package fetch (this
+# happened to 1.4.0 when net/tigervnc-viewer was dropped after fltk moved to
+# 1.4). Resolve the installer's roots against the published application feed and
+# today's upstream catalogue each day and fail while there is still time to react.
+on:
+  schedule:
+    - cron: '17 5 * * *'
+  workflow_dispatch:
+
+jobs:
+  resolve:
+    runs-on: ubuntu-latest
+    steps:
+      - uses: actions/checkout@v4
+      - uses: actions/setup-python@v5
+        with:
+          python-version: '3.13'
+      - name: Installer roots resolve against upstream
+        env:
+          PYTHONDONTWRITEBYTECODE: '1'
+          GH_TOKEN: ${{ github.token }}
+        run: |
+          set -eu
+          tag=$(python3 -c 'import json;print(json.load(open("release/current.json"))["application_feed"])')
+          mkdir feed
+          curl -fsSL -o feed/packagesite.pkg "https://github.com/jordanhubbard/daemonarchy/releases/download/$tag/packagesite.pkg"
+          python3 scripts/package-mirror-plan.py --fail-on-unsatisfied \
+            --root pkg --root bash --root sudo --root daemonarchy --root chromium \
+            --root octopkg --root wifi-firmware-kmod \
+            --catalogue Daemonarchy=feed/packagesite.pkg \
+            --catalogue FreeBSD=https://pkg.freebsd.org/FreeBSD:16:amd64/latest/packagesite.pkg
