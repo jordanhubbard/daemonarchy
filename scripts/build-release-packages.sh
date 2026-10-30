@@ -119,11 +119,13 @@ cmd_identity() {
   for f in "$new"/*.pkg; do
     name=$(basename "$f")
     pkg query -F "$f" '%Fp' 2>/dev/null | grep -q '^/boot/modules/.*\.ko$' || continue
-    oldf=$(ls "$old"/"${name%%-[0-9]*}"-[0-9]*.pkg 2>/dev/null | head -1 || true)
+    # The same file name in the previous set if there is one (same version), else the previous version.
+    if [ -e "$old/$name" ]; then oldf=$old/$name
+    else oldf=$(ls "$old"/"${name%%-[0-9]*}"-[0-9]*.pkg 2>/dev/null | head -1 || true); fi
     while read -r path; do
-      newsha=$(tar -xOf "$f" ".$path" 2>/dev/null | sha256 -q)
+      newsha=$(tar -xOf "$f" "$path" 2>/dev/null | sha256 -q)
       oldsha=-
-      [ -z "$oldf" ] || oldsha=$(tar -xOf "$oldf" ".$path" 2>/dev/null | sha256 -q || echo -)
+      [ -z "$oldf" ] || oldsha=$(tar -xOf "$oldf" "$path" 2>/dev/null | sha256 -q || echo -)
       if [ "$oldsha" = - ]; then result=new; added=$((added + 1))
       elif [ "$oldsha" = "$newsha" ]; then result=identical; same=$((same + 1))
       else result=DIFFERENT; diff=$((diff + 1)); fi
