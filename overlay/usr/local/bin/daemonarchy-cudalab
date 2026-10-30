@@ -61,11 +61,18 @@ is_built() {
 
 # lx DIR COMMAND...: run a command line as this user under the Linuxulator. The
 # Linux program sees the same absolute paths we do.
+#
+# PATH deliberately leaves out /usr/local/bin. A path that exists only on the FreeBSD
+# side is still reachable from a Linux process (the Linuxulator falls back to the
+# native tree), so /usr/local/bin/ld, as and ninja would be FreeBSD's, and the build
+# silently mixes FreeBSD's clang and lld into a Linux toolchain and fails ("CXX compiler
+# identification is unknown"). /usr/bin and /bin come from the Linux root. cmake is the
+# one tool in /usr/local/bin that we want, and it is called by its full path.
 lx() {
   local dir=$1
   shift
   ( cd "$dir" && env "HOME=$HOME" "USER=${USER:-$(id -un)}" LANG=C.UTF-8 \
-      PATH=/usr/local/cuda/bin:/usr/local/bin:/usr/bin:/bin CUDAToolkit_ROOT=/usr/local/cuda \
+      PATH=/usr/local/cuda/bin:/usr/bin:/bin CUDAToolkit_ROOT=/usr/local/cuda \
       "$linux_root/bin/bash" -c "$*" )
 }
 
@@ -134,10 +141,11 @@ build() {
   fi
 
   say "==> Configuring (Release, CUDA)"
-  lx "$src" "cmake --preset release -DBUILD_TESTING=OFF -DFETCHCONTENT_SOURCE_DIR_SDL3='$data/SDL-3.2'" \
+  # The Linux ninja, by path: cmake would otherwise find FreeBSD's, whose children are FreeBSD's too.
+  lx "$src" "/usr/local/bin/cmake --preset release -DBUILD_TESTING=OFF -DCMAKE_MAKE_PROGRAM=/usr/bin/ninja-build -DFETCHCONTENT_SOURCE_DIR_SDL3='$data/SDL-3.2'" \
     || { die "cmake could not configure the sources."; return 1; }
   say "==> Building (a few minutes, once)"
-  lx "$src" "cmake --build --preset release" || { die "the build failed."; return 1; }
+  lx "$src" "/usr/local/bin/cmake --build --preset release" || { die "the build failed."; return 1; }
 
   [[ -x $exe && -d $(dirname "$exe")/examples ]] || { die "the build finished without producing the app."; return 1; }
   # The real app is in place: record it, atomically, so the launcher stops being virtual.

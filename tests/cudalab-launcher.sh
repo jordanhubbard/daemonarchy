@@ -22,6 +22,7 @@ cat >"$linux/bin/bash" <<'STUB'
 # Stand-in for the Linux bash: record the command, fake what it would have built.
 cmd=$2
 echo "$cmd" >>"$LX_LOG"
+echo "$PATH" >>"$LX_PATH_LOG"
 case $cmd in
   *"test -x /usr/local/cuda/bin/nvcc"*) [[ -z ${LX_NO_CUDA:-} ]] ;;
   *"git status --porcelain"*) [[ -z ${LX_DIRTY:-} ]] || echo ' M examples/cosmos.cu' ;;
@@ -52,11 +53,11 @@ chmod +x "$work/bin/footstub"
 fresh() {   # a new user home and fresh logs
   rm -rf "$work/home" "$work/lx.log" "$work/app.out" "$work/foot.log"
   mkdir -p "$work/home"
-  : >"$work/lx.log"; : >"$work/app.out"; : >"$work/foot.log"
+  : >"$work/lx.log"; : >"$work/app.out"; : >"$work/foot.log"; : >"$work/path.log"
 }
 run() {     # run LAUNCHER ARGS... in the fake environment (stdout is not a terminal)
   HOME=$work/home DAEMONARCHY_LINUX_ROOT=$linux CUDALAB_NO_NOTIFY=1 DISPLAY=:0 \
-    LX_LOG=$work/lx.log APP_OUT=$work/app.out FOOT_LOG=$work/foot.log CUDALAB_TERMINAL=${TERM_STUB:-$work/bin/footstub} \
+    LX_LOG=$work/lx.log LX_PATH_LOG=$work/path.log APP_OUT=$work/app.out FOOT_LOG=$work/foot.log CUDALAB_TERMINAL=${TERM_STUB:-$work/bin/footstub} \
     bash "$launcher" "$@" </dev/null
 }
 stamp=$work/home/.local/share/cudalab/built
@@ -81,8 +82,14 @@ check "$(count 'window: ' "$work/foot.log")" 1
 grep -q 'Building Cudalab (first run only)' "$work/foot.log"
 check "$(count 'git clone' "$work/lx.log")" 1
 grep -q "git checkout --quiet --detach '$pin'" "$work/lx.log"
-grep -q "cmake --preset release -DBUILD_TESTING=OFF -DFETCHCONTENT_SOURCE_DIR_SDL3=" "$work/lx.log"
-check "$(count 'cmake --build --preset release' "$work/lx.log")" 1
+grep -q "/usr/local/bin/cmake --preset release -DBUILD_TESTING=OFF " "$work/lx.log"
+grep -q -- "-DCMAKE_MAKE_PROGRAM=/usr/bin/ninja-build" "$work/lx.log"
+grep -q -- "-DFETCHCONTENT_SOURCE_DIR_SDL3=" "$work/lx.log"
+check "$(count '/usr/local/bin/cmake --build --preset release' "$work/lx.log")" 1
+# Every Linux command ran with a PATH free of FreeBSD's /usr/local/bin (see lx in the launcher).
+[[ -s $work/path.log ]]
+! grep -q '/usr/local/bin' "$work/path.log"
+grep -qx '/usr/local/cuda/bin:/usr/bin:/bin' "$work/path.log"
 check "$(wc -l <"$work/app.out" | tr -d ' ')" 1
 grep -q 'args=--demo cuda-cosmos ' "$work/app.out"
 grep -q 'audio=dummy' "$work/app.out"
