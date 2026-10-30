@@ -144,6 +144,37 @@ MOCK
   rescue_resume_debug </dev/null
   [[ ! -e $debug_command.calls ]]
 )
+# Every step of a boot resume is logged with a timestamp, so a boot where the
+# listener never came back leaves evidence (the caller appends this to the rescue log).
+(
+  touch "$debug_state/active"
+  rm -f "$debug_command.calls"
+  cat >"$debug_command" <<'MOCK'
+#!/bin/sh
+case $1 in
+  resume) echo resume >>"$0.calls" ;;
+  status) [ "$(wc -l <"$0.calls" 2>/dev/null || echo 0)" -ge 3 ] ;;
+esac
+MOCK
+  ticks=0
+  sleep() { ticks=$((ticks + 1)); [[ $ticks != 4 ]] || rm "$debug_state/active"; }
+  rescue_resume_debug </dev/null >"$work/resume.log" 2>&1
+  grep -Eq '^[0-9]{4}-[0-9]{2}-[0-9]{2}T[0-9:]{8}Z rescue-debug: approved grant found' "$work/resume.log"
+  grep -q 'resume attempt 1: no listener yet' "$work/resume.log"
+  grep -q 'resume attempt 2: no listener yet' "$work/resume.log"
+  grep -q 'resume attempt 3 succeeded' "$work/resume.log"
+  grep -q 'grant removed (explicit stop or Unpair); not resuming' "$work/resume.log"
+  rm -f "$debug_command.calls"
+  # No grant: one line says so and nothing runs.
+  rescue_resume_debug </dev/null >"$work/nogrant.log" 2>&1
+  grep -q 'no approved grant; nothing to resume' "$work/nogrant.log"
+  ! grep -q 'grant removed' "$work/nogrant.log"
+  # A missing debug command is logged, not silent.
+  mv "$debug_command" "$debug_command.away"
+  rescue_resume_debug </dev/null >"$work/nocmd.log" 2>&1
+  grep -q 'remote debugging cannot resume' "$work/nocmd.log"
+  mv "$debug_command.away" "$debug_command"
+)
 # The same approved grant also resumes when network readiness exceeds a minute.
 (
   touch "$debug_state/active"

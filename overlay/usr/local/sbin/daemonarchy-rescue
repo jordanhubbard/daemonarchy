@@ -71,9 +71,24 @@ rescue_reason() {
   return 1
 }
 
+# One timestamped line per event, so a boot where the listener did not come back
+# leaves evidence (this runs in the background with its output in the rescue log).
+rescue_note() {
+  printf '%s rescue-debug: %s\n' "$(date -u '+%Y-%m-%dT%H:%M:%SZ')" "$*"
+}
+
 rescue_resume_debug() {
-  [ -x "$debug_command" ] || return 0
+  [ -x "$debug_command" ] || { rescue_note "no $debug_command; remote debugging cannot resume"; return 0; }
   remaining=60
+  attempts=0
+  healthy=no
+  had_grant=no
+  if [ -f "$debug_state/active" ]; then
+    had_grant=yes
+    rescue_note 'approved grant found; resuming the listener when networking is ready'
+  else
+    rescue_note 'no approved grant; nothing to resume'
+  fi
   "$debug_command" publish-status || true
   # USB Ethernet and DHCP can become ready after the recovery console starts.
   # Retry in the background so a retained grant resumes without console input.
@@ -81,17 +96,29 @@ rescue_resume_debug() {
     "$debug_command" publish-status || true
     if "$debug_command" status >/dev/null 2>&1; then
       # Do not spawn another listener while the approved one is healthy.
+      [ "$healthy" = yes ] || rescue_note "listener is up after $attempts resume attempt(s)"
+      healthy=yes
       remaining=60
       sleep 5
       continue
     fi
+    [ "$healthy" != yes ] || rescue_note 'listener went away; resuming it'
+    healthy=no
+    attempts=$((attempts + 1))
     "$debug_command" resume || true
     if "$debug_command" status >/dev/null 2>&1; then
       # The listener can exit after a successful start. Keep watching until
       # explicit stop or Unpair removes the grant, then resume it unattended.
+      rescue_note "resume attempt $attempts succeeded"
+      healthy=yes
       remaining=60
       sleep 5
       continue
+    fi
+    # The first few failures, then about one a minute, so the log stays small
+    # but shows whether networking or the listener is what never came up.
+    if [ "$attempts" -le 5 ] || [ $((attempts % 12)) -eq 0 ]; then
+      rescue_note "resume attempt $attempts: no listener yet (addresses: $(ifconfig -a inet 2>/dev/null | awk '/inet /{printf "%s ", $2}'))"
     fi
     if [ "$remaining" -gt 0 ]; then
       remaining=$((remaining - 1))
@@ -101,6 +128,7 @@ rescue_resume_debug() {
       sleep 5
     fi
   done
+  [ "$had_grant" != yes ] || rescue_note 'grant removed (explicit stop or Unpair); not resuming'
 }
 
 monitor_desktop() {
