@@ -12,9 +12,11 @@ first native results:
   boots to the installer menu under QEMU/EDK2
   ([record](#worker-record-native-bulk-unsigned-feed-and-uefi-iso-2026-10-27)).
 
-**No signed or published aarch64 feed or image exists, and no install, VM
-matrix or laptop result exists.** Nothing here qualifies aarch64, and no amd64
-result stands in for one.
+**No aarch64 feed or image is published.** Signed feeds and an installer ISO are
+staged, and one install under QEMU with HVF on Apple silicon completed and booted
+([record](#worker-record-aarch64-staging-at-the-post-14-base-2026-10-30)). There is no upgrade,
+rollback, desktop, debugging or laptop result. Nothing here qualifies aarch64
+beyond that one install, and no amd64 result stands in for one.
 
 ## Inventory, blocking gaps first
 
@@ -518,6 +520,102 @@ was signed or published.
     - This image's kernel still has the bug until it is rebuilt with the fix.
   - No install was run, because the `packages-16-aarch64` feed is not
     published. No upgrade, rollback, desktop or debugging case was run either.
+
+### Worker record: aarch64 staging at the post-1.4 base (2026-10-30)
+
+The first complete aarch64 chain: release sets at the 1.4.1 source base, signed
+package feeds, an installer ISO, and an **end-to-end install that booted**, all
+**staged and not published**. The exact commands are in
+[`scripts/aarch64-reroll/`](../scripts/aarch64-reroll/README.md); the artifact
+identities are in
+[`aarch64-1.4.1-staging-20261030-development.json`](../verification/aarch64-1.4.1-staging-20261030-development.json).
+Nothing here is under LitAI custody, and nothing was uploaded.
+
+| Stage | Result | Time |
+| --- | --- | --- |
+| Source, world, kernel, sets | `daemonarchy-src` `303b3646270f` (the post-1.4 upstream sync, which includes the vtnet WITNESS fix, [src#37](https://github.com/jordanhubbard/daemonarchy-src/pull/37)); incremental on the retained obj tree; kernel `FreeBSD 16.0-CURRENT #2 303b3646270f`; `base.txz` `f2e66bde…`, `kernel.txz` `492dc542…`, `lib32.txz` `42f4c9f7…` | 8 min (world 159 s) |
+| Ports pin | `daemonarchy-ports` `0e8fb88350c7` (the merge of [ports#31](https://github.com/jordanhubbard/daemonarchy-ports/pull/31)) | |
+| poudriere bulk | 13 queued: 12 built, 1 failed (`x11-themes/aether`, as before); `daemonarchy-1.3.1,1` built | 12 min |
+| Application feed `packages-16-aarch64-1.4.1` | 496 payloads, 1.9 GiB, signed; `packagesite.pkg` `4c51894d…` | 30 s to collect |
+| Checkout feed `checkouts-16-aarch64-1.4.1` | src `303b3646270f` (2 packages) and ports `0e8fb88350c7`; signed | 5 min |
+| Closure shard `packages-16-aarch64-1.4.1-upstream` | 552 upstream packages, 3,261,881,077 bytes, 556 files; signed; verified | fetch 6 min |
+| ISO `daemonarchy-1.4.1-aarch64.iso` | 2,628,749,312 bytes (`0f9af366…`); `.iso.xz` 957,743,052 bytes (`3f0675c3…`) | 22 min with xz |
+| QEMU install | passed; see below | 39 min |
+
+**Which ports.** The amd64 pin, `daemonarchy-ports` `main` at `b785784`, is 10
+commits **behind** the `daemonarchy` branch and lacks the aarch64 fixes
+(ports#28 to #30: `chromium`, `aether`, `mise` and `edk2@bhyve` made
+conditional). An arm64 desktop cannot be built from it. Both architectures must
+build from one ports revision that has those fixes; the aarch64 chain used the
+`daemonarchy` branch at ports#31, which also carries the drifted-port updates.
+
+**The jail-version trap.** A first bulk dry run said "newer version of jail,
+cleaning all packages" and would have rebuilt 763 of 1,404 packages (LLVM alone
+takes over two hours). The jail made from the new sets records its version as
+`16.0-CURRENT`; the src-method jails that built the repository recorded
+`16.0-CURRENT 1600029`. Same OSVERSION, different string. Setting the copied
+repository's `.jailversion` to the new jail's string cut the dry run to the 13
+ports that really changed: cliamp, herdr, omacalc, omacut, omarchy-nvim, omasnap,
+omawrite, owe, owe-lockfeed, ttfx, usage, aether and `daemonarchy`.
+
+**Signing.** The release key stays on the amd64 signing host. The unsigned
+feeds were moved there, signed with `pkg repo`, and only the catalogue files
+came back. A pkg client given the public key the image pins accepts the
+application feed (496 packages processed); a client given another key refuses it
+("Invalid signature, removing repository").
+
+**Closure.** The installer's aarch64 roots (`pkg bash sudo daemonarchy octopkg
+wifi-firmware-kmod vulkan-loader mesa-dri`) resolve to 989 packages, 4.57 GiB of
+archives, nothing unsatisfied: 437 packages from our feed and the ISO's own
+repository, and 552 from `pkg.FreeBSD.org`'s aarch64 `latest`, which the shard
+carries so the image does not depend on a moving upstream.
+`parallel-fetch` with 4 connections moved the shard's 3.26 GB in 6 minutes
+(about 9 MB/s), against about 1 MB/s for the guest's single-connection fetch.
+
+**QEMU install.** `qemu-system-aarch64` 11.1.2 with HVF on an Apple silicon
+host (12 cores), `virt` machine, AArch64 edk2, 6 GiB, virtio-gpu, the harness
+`test-qemu.sh ARCH=aarch64` unmodified except that it now builds CIDATA with
+`mformat` when `mkfs.fat` is absent and passes the installer's iterative package
+cache (`PACKAGE_CACHE_URL` and the three metadata pins) through, so an unpublished
+signed feed can be tested from a local HTTP server. The ISO had no closure mirror.
+- The installer resolved 1,157 packages, fetched them (914 archives, 4 GiB),
+  installed them in about 3 minutes, passed the package integrity check and
+  powered off; the installed system booted under UEFI. Total 39 minutes.
+- **23 checks passed**, including: account and groups, SDDM's user, session and
+  theme, `sshd`, `avahi`, DHCP, `daemonarchy` installed, packaged files keep their
+  owners, GSettings schemas, `/bin/bash`, the selected signed application feed and
+  the staged defaults.
+- **Two checks failed, both expected.** `sddm running` fails because the guest has
+  no DRM/KMS driver (the base `virtio_gpu` VT driver is console only, and
+  `graphics/virtio-gpu-qemu-kmod` is not in the package set), so the Wayland
+  greeter cannot start. `updates from the signed Daemonarchy repository` fails
+  because the installed system points at the public
+  `packages-16-aarch64-1.4.1` URL, which is not published.
+- **Two defects found and fixed** ([#167](https://github.com/jordanhubbard/daemonarchy/pull/167),
+  [#176](https://github.com/jordanhubbard/daemonarchy/pull/176)). The installer
+  selected `chromium`, which has no aarch64 package, so every arm64 install failed
+  at package resolution (the earlier QEMU attempt stopped there). `parallel-fetch`
+  crashed with `No module named '_sqlite3'` because the live image's Python has no
+  sqlite module; the install fell back to one serial fetch, which is why the
+  download took 34 minutes. The amd64 live image does not add `py312-sqlite3`
+  either and was exposed to the same failure.
+- Evidence kept on the QEMU host: `install.log` `4e4a263b…` and `boot.log`
+  `168746…`.
+
+**What this is not.** The ISO is a QA candidate, not the release image: it was
+built without the closure mirror gate, from a product commit before the final
+mastering, and the feeds it names are not published. There is no upgrade,
+rollback, desktop-in-VM, debugging or laptop case, and no graphics: arm64 has no
+KMS driver in the package set. The aarch64 image ships without a default browser
+(`chromium`), without `aether` and without `mise` (omarchy's first-run skips it).
+
+**To publish.** The operator approves the publish plans
+(`package-feed-stage.py publish-plan`, 557 commands for the shard); then publish
+the three feeds, rebuild the ISO at the final product commit with
+`PACKAGE_MIRROR_URLS` and `REQUIRE_PACKAGE_MIRROR=yes`, rerun the QEMU install
+against the public URLs (the signed-repository and defaults checks then pass), and
+add the `.iso.xz` and its `.sha256` to the release record with
+`architectures: [amd64, aarch64]`.
 
 ### Separate VMware test guests
 

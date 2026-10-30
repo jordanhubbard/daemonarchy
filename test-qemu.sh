@@ -131,7 +131,27 @@ hostname=daemonarchy-test
 timezone=America/Los_Angeles
 ssh_enable=true
 EOF
-if command -v mkfs.fat >/dev/null && command -v mcopy >/dev/null; then
+# QA of an unpublished feed: the installer's iterative package cache (an https/http
+# URL to a signed versioned feed plus the exact SHA-256 of its three metadata files).
+if [ -n "${PACKAGE_CACHE_URL:-}" ]; then
+	: "${PACKAGE_CACHE_META_SHA256:?PACKAGE_CACHE_URL needs the three PACKAGE_CACHE_*_SHA256 pins}"
+	: "${PACKAGE_CACHE_PACKAGESITE_SHA256:?needs PACKAGE_CACHE_PACKAGESITE_SHA256}"
+	: "${PACKAGE_CACHE_DATA_SHA256:?needs PACKAGE_CACHE_DATA_SHA256}"
+	cat >>daemonarchy-install.conf <<EOF
+package_cache_url=$PACKAGE_CACHE_URL
+package_cache_meta_sha256=$PACKAGE_CACHE_META_SHA256
+package_cache_packagesite_sha256=$PACKAGE_CACHE_PACKAGESITE_SHA256
+package_cache_data_sha256=$PACKAGE_CACHE_DATA_SHA256
+EOF
+fi
+if command -v mformat >/dev/null && command -v mcopy >/dev/null && ! command -v mkfs.fat >/dev/null; then
+	# mtools alone (macOS/Homebrew has no mkfs.fat): make the FAT image with mformat.
+	cidata_drive=file=cidata.img,if=none,id=ci,format=raw
+	cidata_device=ide-hd
+	[ "$ARCH" = x86_64 ] || cidata_device=scsi-hd
+	mformat -C -v CIDATA -T 65536 -i cidata.img ::
+	mcopy -i cidata.img daemonarchy-install.conf ::/
+elif command -v mkfs.fat >/dev/null && command -v mcopy >/dev/null; then
 	cidata_drive=file=cidata.img,if=none,id=ci,format=raw
 	cidata_device=ide-hd
 	[ "$ARCH" = x86_64 ] || cidata_device=scsi-hd
