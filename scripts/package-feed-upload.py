@@ -96,7 +96,7 @@ def upload(out, repo, workers=4, retries=5, notes_file=None, sleep=time.sleep):
         tag, directory = manifest["tag"], Path(out) / manifest["tag"]
         if not release_exists(repo, tag):
             args = ["release", "create", tag, "-R", repo, LATEST_NOTE,
-                    "--title", f"Daemonarchy upstream package mirror ({tag})"]
+                    "--title", manifest.get("title", f"Daemonarchy upstream package mirror ({tag})")]
             args += ["--notes-file", str(notes_file)] if notes_file else ["--notes", "Signed upstream package snapshot for the Daemonarchy installer."]
             gh(*args)
         _release, present = list_assets(repo, tag)

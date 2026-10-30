@@ -14,8 +14,9 @@
 # Run as root on the amd64 builder. Why it is not a plain `poudriere bulk`: the
 # retained 1.4.0 set holds builds (chromium, cef, ...) made against an older
 # harfbuzz than the pinned ports tree carries. A plain bulk would call them stale
-# and rebuild chromium. `-S` stops that recursion; the Omarchy ports that were
-# newer than the tree come from an overlay (`-O`), exactly as in 1.4.0.
+# and rebuild chromium. `-S` stops that recursion. The eleven Omarchy ports that 1.4.0
+# took from an overlay (`-O`) are in the pinned ports tree since daemonarchy-ports #31,
+# so OVERLAY is normally empty; set it to build against an older tree.
 #
 # Kernel-bound packages (modules, firmware, the NVIDIA stack) are rebuilt for every
 # new kernel even when the module sources did not change, so that the evidence of
@@ -26,7 +27,7 @@ here=$(cd "$(dirname "$0")/.." && pwd)
 WORK=${WORK:-/usr/daemonarchy/rev2-20261030}
 JAIL=${JAIL:-16r2303b36}
 PTREE=${PTREE:-daports141}
-OVERLAY=${OVERLAY:-daports31}
+OVERLAY=${OVERLAY:-}                                    # optional poudriere ports overlay (-O); empty once the tree carries the ports
 FROM_SET=${FROM_SET:-16r2303b36-macbookefb8}          # previous release's package set name
 POUDRIERE_ETC=${POUDRIERE_ETC:-$WORK/poudriere-etc}
 POUDRIERE_DATA=${POUDRIERE_DATA:-$WORK/poudriere-data}
@@ -72,9 +73,12 @@ cmd_seed() {
   echo "$dst: removed $n packages to rebuild; $(ls "$dst/$real/All" | wc -l | tr -d ' ') retained"
 }
 
+overlay_args() { if [ -n "$OVERLAY" ]; then echo "-O $OVERLAY"; fi; }
+
 cmd_plan() {
   mkdir -p "$EVIDENCE"
-  poudriere -e "$POUDRIERE_ETC" bulk -n -S -O "$OVERLAY" -b latest -j "$JAIL" -p "$PTREE" -f "$ORIGINS_FILE" \
+  # shellcheck disable=SC2046
+  poudriere -e "$POUDRIERE_ETC" bulk -n -S $(overlay_args) -b latest -j "$JAIL" -p "$PTREE" -f "$ORIGINS_FILE" \
     | tee "$EVIDENCE/bulk-plan.log" | grep -E 'Deleting|Would build|Ports to build' | cut -c1-220
 }
 
@@ -82,7 +86,8 @@ cmd_bulk() {
   mkdir -p "$EVIDENCE"
   date -u '+start %Y-%m-%dT%H:%M:%SZ' >"$EVIDENCE/bulk.times"
   local code=0
-  poudriere -e "$POUDRIERE_ETC" bulk -S -O "$OVERLAY" -b latest -j "$JAIL" -p "$PTREE" -f "$ORIGINS_FILE" \
+  # shellcheck disable=SC2046
+  poudriere -e "$POUDRIERE_ETC" bulk -S $(overlay_args) -b latest -j "$JAIL" -p "$PTREE" -f "$ORIGINS_FILE" \
     >"$EVIDENCE/bulk.log" 2>&1 || code=$?
   date -u '+end %Y-%m-%dT%H:%M:%SZ' >>"$EVIDENCE/bulk.times"
   echo "$code" >"$EVIDENCE/bulk.exit"

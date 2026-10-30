@@ -68,6 +68,8 @@ on:
       - 'tests/package-feed-stage.py'
       - 'scripts/package-feed-upload.py'
       - 'tests/package-feed-upload.py'
+      - 'scripts/package-feed-manifest.py'
+      - 'tests/package-feed-manifest.py'
       - 'scripts/check-closure-feed.sh'
       - 'tests/closure-feed-check.sh'
       - 'scripts/verify-release-assets.py'
@@ -154,6 +156,8 @@ on:
       - 'tests/package-feed-stage.py'
       - 'scripts/package-feed-upload.py'
       - 'tests/package-feed-upload.py'
+      - 'scripts/package-feed-manifest.py'
+      - 'tests/package-feed-manifest.py'
       - 'scripts/check-closure-feed.sh'
       - 'tests/closure-feed-check.sh'
       - 'scripts/verify-release-assets.py'
@@ -245,6 +249,10 @@ jobs:
         env:
           PYTHONDONTWRITEBYTECODE: '1'
         run: python3 tests/package-feed-upload.py -v
+      - name: Application feed manifest
+        env:
+          PYTHONDONTWRITEBYTECODE: '1'
+        run: python3 tests/package-feed-manifest.py -v
       - name: Install baselines and comparison
         env:
           PYTHONDONTWRITEBYTECODE: '1'
