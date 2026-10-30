@@ -29,8 +29,16 @@ exit status 3 and its message.
 Exit status: 0 every archive is in the cache, 1 some are still missing after
 the retries, 2 bad usage or plan, 3 a deterministic pkg error.
 
+With --plan-only nothing is fetched: it prints one line,
+`@@plan {"schema":"daemonarchy/install-plan@1","packages":N,"archives":N,
+"download_bytes":B,"installed_bytes":I}`, for the progress screen (packages the
+transaction installs, archives it must fetch, and their exact catalogue bytes from
+pkg's repository databases; `"approximate":true` and pkg's rounded figures if those
+cannot be read), and an `install_plan` trace event.
+
 Progress goes to stdout as the installer's `@@fetch` lines (schema
-daemonarchy/pkg-fetch@1, at most four a second). When DAEMONARCHY_TRACE_FILE
+daemonarchy/pkg-fetch@1, at most four a second, with total_archives and
+total_bytes from the plan when known). When DAEMONARCHY_TRACE_FILE
 names the installer trace (docs/install-trace.md) it also appends one
 `download` line per archive and `fetch_pool_begin`, `fetch_batch` (with the error
 class of a failure), `fetch_retry` and `fetch_pool_end` lines. Only package
@@ -123,6 +131,65 @@ def load_sizes(pkg_command, timeout=120):
     return sizes
 
 
+def catalogue_sizes(pkg_command, timeout=60):
+    """Exact (archive bytes, installed bytes) per (repository, name-version) from pkg's own
+    repository databases, which `pkg update` just filled: $PKG_DBDIR/repos/NAME/db, table packages."""
+    import sqlite3
+    try:
+        directory = subprocess.run([*pkg_command, 'config', 'PKG_DBDIR'], capture_output=True, text=True,
+                                   timeout=timeout).stdout.strip().splitlines()[-1]
+    except (OSError, subprocess.SubprocessError, IndexError):
+        return {}
+    sizes = {}
+    repos = os.path.join(directory, 'repos')
+    try:
+        names = sorted(os.listdir(repos))
+    except OSError:
+        return {}
+    for repo in names:
+        path = os.path.join(repos, repo, 'db')
+        try:
+            with sqlite3.connect(f'file:{path}?mode=ro', uri=True) as db:
+                for name, version, pkgsize, flatsize in db.execute('SELECT name, version, pkgsize, flatsize FROM packages'):
+                    sizes[(repo, f'{name}-{version}')] = (int(pkgsize or 0), int(flatsize or 0))
+        except (sqlite3.Error, OSError):
+            continue
+    return sizes
+
+
+def approximate_from_text(text):
+    """pkg's own rounded 'X MiB to be downloaded' / 'more space' lines, when the databases are unreadable."""
+    unit = dict(KiB=1 << 10, MiB=1 << 20, GiB=1 << 30, TiB=1 << 40)
+    found = {}
+    for match in re.finditer(r'^([0-9.]+) (KiB|MiB|GiB|TiB) to be downloaded', text, re.M):
+        found['download_bytes'] = int(float(match.group(1)) * unit[match.group(2)])
+    for match in re.finditer(r'^The process will require ([0-9.]+) (KiB|MiB|GiB|TiB) more space', text, re.M):
+        found['installed_bytes'] = int(float(match.group(1)) * unit[match.group(2)])
+    return found
+
+
+def plan_summary(everything, to_fetch, sizes, text=''):
+    """The install plan the progress screen counts against: how many packages the transaction
+    installs, how many archives are fetched, and the exact bytes of each (catalogue sizes)."""
+    # pkg leaves the [repository] off a plan line when only one repository is configured.
+    by_id = {}
+    for (_repo, identifier), pair in sorted(sizes.items()):
+        by_id.setdefault(identifier, pair)
+
+    def size_of(item):
+        return sizes.get((item['repo'], item['id'])) or (by_id.get(item['id']) if not item['repo'] else None)
+
+    known = bool(everything) and all(size_of(i) for i in everything)
+    summary = dict(schema='daemonarchy/install-plan@1', packages=len(everything), archives=len(to_fetch))
+    if known:
+        summary['download_bytes'] = sum(size_of(i)[0] for i in to_fetch)
+        summary['installed_bytes'] = sum(size_of(i)[1] for i in everything)
+    else:
+        summary.update(approximate_from_text(text))
+        summary['approximate'] = True
+    return summary
+
+
 def make_batches(items, sizes, per_batch=4, big=64 << 20):
     """Biggest first; small packages share a process, big ones run alone."""
     ordered = sorted(items, key=lambda i: -sizes.get(i['id'], 0))
@@ -177,8 +244,9 @@ def error_class(text):
 
 class Pool:
     def __init__(self, items, pkg_command, cache, trace, out, workers=8, per_batch=4, attempts=6,
-                 sizes=None, clock=time.monotonic, interval=0.25, repo_workers=None):
+                 sizes=None, clock=time.monotonic, interval=0.25, repo_workers=None, totals=None):
         self.items, self.pkg_command, self.cache, self.trace, self.out = items, pkg_command, cache, trace, out
+        self.totals = totals or {}     # {"archives": N, "bytes": B} from the install plan, when known
         self.workers, self.per_batch, self.attempts = max(1, workers), per_batch, max(1, attempts)
         self.caps = {name: max(1, n) for name, n in (repo_workers or {}).items()}
         self.sizes, self.clock, self.interval = sizes or {}, clock, interval
@@ -206,6 +274,11 @@ class Pool:
         self.last_emit = now
         row = dict(schema=SCHEMA, archives=self.archives, bytes=self.done_bytes + file_bytes,
                    file=name, file_bytes=file_bytes, file_total=file_bytes)
+        # The plan's totals, so a screen can show "A of B archives, X of Y bytes" and an ETA.
+        if 'archives' in self.totals:
+            row['total_archives'] = self.totals['archives']
+        if 'bytes' in self.totals:
+            row['total_bytes'] = self.totals['bytes']
         self.out.write('@@fetch ' + json.dumps(row, separators=(',', ':')) + '\n')
         self.out.flush()
 
@@ -347,6 +420,8 @@ def main(argv):
     parser.add_argument('--skip-repo', action='append', default=[], help='repository whose packages need no fetch')
     parser.add_argument('--repo-workers', action='append', default=[], metavar='REPO=N',
                         help='connections for one repository (overrides --workers for it)')
+    parser.add_argument('--plan-only', action='store_true',
+                        help='print the @@plan line (schema daemonarchy/install-plan@1) and exit; fetch nothing')
     parser.add_argument('command', nargs=argparse.REMAINDER)
     args = parser.parse_args(argv)
     command = args.command[1:] if args.command[:1] == ['--'] else args.command
@@ -361,15 +436,27 @@ def main(argv):
         parser.print_usage(sys.stderr)
         return 2
     text = sys.stdin.read() if args.plan == '-' else open(args.plan, encoding='utf-8', errors='replace').read()
+    everything = parse_plan(text)
     items = parse_plan(text, set(args.skip_repo))
     if not items:
         print('parallel-fetch: the plan names no packages to fetch', file=sys.stderr)
         return 2
     start = os.environ.get('DAEMONARCHY_TRACE_START_US', '')
     trace = Trace(os.environ.get('DAEMONARCHY_TRACE_FILE'), int(start) if start.isdigit() else 0)
+    catalogue = catalogue_sizes(command)
+    wanted = [i for i in items if not cached(args.cache, i['id'])]
+    summary = plan_summary(everything, wanted, catalogue, text)
+    if args.plan_only:
+        # One line for the progress screen, one event for the trace; the log line is the contract.
+        print('@@plan ' + json.dumps(summary, separators=(',', ':')), flush=True)
+        trace.event('install_plan', **{k: v for k, v in summary.items() if k != 'schema'})
+        return 0
     os.makedirs(args.cache, exist_ok=True)
+    totals = {'archives': summary['archives']}
+    if 'download_bytes' in summary:
+        totals['bytes'] = summary['download_bytes']
     pool = Pool(items, command, args.cache, trace, sys.stdout, args.workers, args.batch, args.attempts,
-                sizes=load_sizes(command), repo_workers=caps)
+                sizes=load_sizes(command), repo_workers=caps, totals=totals)
     missing = pool.run()
     if pool.fatal:
         print(f'parallel-fetch: {pool.fatal}', file=sys.stderr)

@@ -45,6 +45,9 @@ if args[:1] == ["rquery"]:
     for line in open(os.environ["FAKE_SIZES"]).read().splitlines():
         print(line)
     sys.exit(0)
+if args[:2] == ["config", "PKG_DBDIR"]:
+    print(os.environ.get("FAKE_DBDIR", "/nonexistent"))
+    sys.exit(0)
 assert args[:3] == ["fetch", "-y", "-U"], args
 ids = args[3:]
 activity = os.path.join(cache, "..", "activity")
@@ -213,6 +216,59 @@ class PoolTests(unittest.TestCase):
                       if e["event"] == "fetch_batch" and e["repo"] == "Slow")
         self.assertTrue(all(a_end <= b_start + 5000 for (_, a_end), (b_start, _) in zip(slow, slow[1:])),
                         "one-connection repository ran two fetches at once")
+
+    def database(self, f, rows):
+        """A repository database like pkg's own: $PKG_DBDIR/repos/NAME/db, table packages."""
+        import sqlite3
+        for repo, entries in rows.items():
+            path = f.root / "dbdir" / "repos" / repo
+            path.mkdir(parents=True)
+            with sqlite3.connect(path / "db") as db:
+                db.execute("CREATE TABLE packages (name TEXT, version TEXT, pkgsize INTEGER, flatsize INTEGER)")
+                db.executemany("INSERT INTO packages VALUES (?, ?, ?, ?)", entries)
+        f.env["FAKE_DBDIR"] = str(f.root / "dbdir")
+
+    def test_plan_only_prints_exact_catalogue_bytes_and_fetches_nothing(self):
+        f = Fixture()
+        f.plan.write_text("New packages to be INSTALLED:\n\tpkg0: 1.0 [Fast]\n\tpkg1: 1.0 [Fast]\n\tisopkg: 2.0 [Daemonarchy]\n")
+        self.database(f, {"Fast": [("pkg0", "1.0", 1000, 5000), ("pkg1", "1.0", 2000, 7000)],
+                          "Daemonarchy": [("isopkg", "2.0", 400, 900)]})
+        result = f.run("--plan-only", "--skip-repo", "Daemonarchy")
+        self.assertEqual(result.returncode, 0, result.stderr)
+        line = next(l for l in result.stdout.splitlines() if l.startswith("@@plan "))
+        plan = json.loads(line[len("@@plan "):])
+        self.assertEqual(plan, {"schema": "daemonarchy/install-plan@1", "packages": 3, "archives": 2,
+                                "download_bytes": 3000, "installed_bytes": 12900})
+        self.assertEqual(list(f.cache.iterdir()), [])
+        event = next(e for e in f.events() if e["event"] == "install_plan")
+        self.assertEqual((event["packages"], event["archives"], event["download_bytes"]), (3, 2, 3000))
+
+    def test_fetch_lines_carry_the_plan_totals(self):
+        f = Fixture()
+        f.plan.write_text("New packages to be INSTALLED:\n" + "".join(f"\tpkg{n}: 1.0 [Fast]\n" for n in range(4)))
+        self.database(f, {"Fast": [(f"pkg{n}", "1.0", 1000 * (n + 1), 10) for n in range(4)]})
+        result = f.run()
+        self.assertEqual(result.returncode, 0, result.stderr)
+        rows = [json.loads(l[7:]) for l in result.stdout.splitlines() if l.startswith("@@fetch ")]
+        self.assertTrue(rows and all(r["total_archives"] == 4 and r["total_bytes"] == 10000 for r in rows))
+
+    def test_a_plan_without_repository_brackets_uses_the_only_catalogue(self):
+        f = Fixture()
+        f.plan.write_text("New packages to be INSTALLED:\n\tpkg0: 1.0\n\tpkg1: 1.0\n")   # one repository: pkg omits [name]
+        self.database(f, {"FreeBSD": [("pkg0", "1.0", 111, 1000), ("pkg1", "1.0", 222, 2000), ("other", "1", 9, 9)]})
+        plan = json.loads(next(l for l in f.run("--plan-only").stdout.splitlines() if l.startswith("@@plan "))[7:])
+        self.assertNotIn("approximate", plan)
+        self.assertEqual((plan["download_bytes"], plan["installed_bytes"]), (333, 3000))
+
+    def test_without_a_readable_catalogue_the_plan_is_marked_approximate(self):
+        f = Fixture()
+        f.plan.write_text("New packages to be INSTALLED:\n\tpkg0: 1.0 [Fast]\n\n"
+                          "Number of packages to be installed: 1\n\nThe process will require 4 MiB more space.\n"
+                          "940 KiB to be downloaded.\n")
+        result = f.run("--plan-only")
+        plan = json.loads(next(l for l in result.stdout.splitlines() if l.startswith("@@plan "))[7:])
+        self.assertTrue(plan["approximate"])
+        self.assertEqual((plan["download_bytes"], plan["installed_bytes"]), (940 * 1024, 4 * 1024 * 1024))
 
     def test_repo_workers_must_name_a_repository_and_a_count(self):
         f = Fixture()

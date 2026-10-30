@@ -119,8 +119,12 @@ class SummaryTests(unittest.TestCase):
             {"t_us": 5_000_000, "since_start_us": 4_000_000, "event": "pkg_event", "type": "INFO_EXTRACT_BEGIN", "name": "tmux"},
             {"t_us": 5_250_000, "since_start_us": 4_250_000, "event": "pkg_event", "type": "INFO_EXTRACT_FINISHED", "name": "tmux"},
             {"t_us": 6_000_000, "since_start_us": 5_000_000, "event": "exit", "phase": "none", "status": 0, "dur_us": 5_000_000},
+            {"t_us": 3_500_000, "since_start_us": 2_500_000, "event": "install_plan", "packages": 1221, "archives": 958,
+             "download_bytes": 5_000_000, "installed_bytes": 17_000_000_000},
         ]
         result = summary.summarise(rows)
+        self.assertEqual(result["plan"], {"packages": 1221, "archives": 958, "download_bytes": 5_000_000,
+                                          "installed_bytes": 17_000_000_000})
         self.assertEqual(result["total_s"], 5.0)
         self.assertEqual(result["phases"], [{"phase": "disk", "s": 2.0}])
         self.assertEqual(result["operations"][0]["op"], "zpool_create")

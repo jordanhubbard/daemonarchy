@@ -65,6 +65,10 @@ def summarise(rows, top=10):
             open_events[key] = r["t_us"]
         elif key in open_events:
             unpacks.append({"type": root, "name": r["name"], "s": seconds(r["t_us"] - open_events.pop(key))})
+    plans = [r for r in rows if r["event"] == "install_plan"]
+    if plans:
+        out["plan"] = {k: plans[0][k] for k in ("packages", "archives", "download_bytes", "installed_bytes", "approximate")
+                       if k in plans[0]}
     out["pkg_events"] = {"count": sum(1 for r in rows if r["event"] == "pkg_event"),
                          "slowest_timed": sorted(unpacks, key=lambda u: -u["s"])[:top]}
     per_phase = defaultdict(lambda: defaultdict(float))

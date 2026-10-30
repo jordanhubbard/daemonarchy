@@ -86,6 +86,20 @@ class BaselineTests(unittest.TestCase):
             self.assertEqual(tool.main(["compare", str(a), str(b), "--fail-on-regression"]), 1)
             self.assertEqual(tool.main(["compare", str(a), str(a), "--fail-on-regression"]), 0)
 
+    def test_a_raw_trace_can_be_labelled_so_the_next_run_compares_cleanly(self):
+        with tempfile.TemporaryDirectory() as tmp:
+            ctx = ["kind=physical", "machine=MSI", "link=wired", "cache_mode=network", "workers=1"]
+            baseline = tool.build(write(tmp, "a.jsonl", trace(100, 10)), tool.parse_context(ctx))
+            path = write(tmp, "b.jsonl", trace(20, 10, workers=4))
+            base = Path(tmp) / "base.json"
+            base.write_text(json.dumps(baseline))
+            candidate = ["kind=physical", "machine=MSI", "link=wired", "cache_mode=network", "workers=16"]
+            out = tool.compare(tool.load_record(base), tool.load_record(path, candidate))
+            self.assertEqual([w for w in out["warnings"] if "differs" in w], ["context workers differs ('1' vs '16'): not an equivalent comparison"])
+            self.assertEqual(tool.main(["compare", str(base), str(path), "--candidate-context", *candidate, "--json"]), 0)
+            with self.assertRaises(SystemExit):
+                tool.main(["compare", str(base), str(path), "--candidate-context", "password=x"])
+
     def test_comparison_warns_when_a_run_is_incomplete(self):
         with tempfile.TemporaryDirectory() as tmp:
             full = tool.build(write(tmp, "a.jsonl", trace(10, 10)), {"kind": "physical"})

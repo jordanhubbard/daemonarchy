@@ -635,6 +635,16 @@ if ! traced pkg_resolve pkg_target install -n -y "${packages[@]}" >"$resolve_log
   rm -f "$resolve_log"
   exit 1
 fi
+# The plan the progress screen counts against, as one `@@plan` log line: packages the
+# transaction installs, archives it fetches, and their exact catalogue bytes. Printed
+# whichever way the download runs, and recorded in the trace as `install_plan`.
+fetch_python=$(command -v python3.12 || command -v python3 || true)
+pkg_cache=$(pkg_target config PKG_CACHEDIR 2>/dev/null | tail -n 1)
+[[ -n $pkg_cache ]] || pkg_cache=$TARGET/var/cache/pkg
+if [[ -n $fetch_python ]]; then
+  "$fetch_python" "$(dirname "$0")/parallel-fetch" --plan "$resolve_log" --cache "$pkg_cache" \
+    --skip-repo Daemonarchy --plan-only -- "${pkg_command[@]}" || true
+fi
 # Time DNS, TCP, TLS and first byte to each package host before the transfer.
 if [[ -n ${trace_python:-} ]]; then
   "$trace_python" "$(dirname "$0")/install-trace-sampler" probe pkg.FreeBSD.org github.com || true
@@ -646,10 +656,7 @@ fi
 # every archive. Anything the pool cannot get is left to the serial fetch below.
 # DAEMONARCHY_FETCH_WORKERS=1 turns this off.
 fetched_in_parallel=false
-fetch_python=$(command -v python3.12 || command -v python3 || true)
 if [[ -n $fetch_python && ${DAEMONARCHY_FETCH_WORKERS:-16} != 1 ]]; then
-  pkg_cache=$(pkg_target config PKG_CACHEDIR 2>/dev/null | tail -n 1)
-  [[ -n $pkg_cache ]] || pkg_cache=$TARGET/var/cache/pkg
   parallel_status=0
   traced pkg_fetch_parallel "$fetch_python" "$(dirname "$0")/parallel-fetch" \
     --plan "$resolve_log" --cache "$pkg_cache" --skip-repo Daemonarchy \
