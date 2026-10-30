@@ -18,6 +18,19 @@ for expect in '== packages' 'build-release-packages.sh' ' seed' ' bulk' ' identi
   grep -qF -- "$expect" <<<"$out" || { echo "dry run is missing '$expect'" >&2; echo "$out" >&2; exit 1; }
 done
 [[ ! -e $work/w ]]
+# A revision tag set by the config names its own feed directory and keeps the release's closure shard.
+printf 'PACKAGE_REPOSITORY_TAG=packages-16-amd64-1.4.1-r2\n' >"$work/r2.env"
+out=$(WORK=$work/w MAIN_COMMIT=$commit bash "$script" --config "$work/r2.env" --dry-run feed iso 2>&1)
+for expect in "OUT=$work/w/feed-packages-16-amd64-1.4.1-r2 " "TAG=packages-16-amd64-1.4.1-r2" \
+              "PACKAGE_MIRROR_URLS=https://github.com/jordanhubbard/daemonarchy/releases/download/packages-16-amd64-1.4.1-upstream"; do
+  grep -qF -- "$expect" <<<"$out" || { echo "r2 dry run is missing '$expect'" >&2; echo "$out" >&2; exit 1; }
+done
+# A feed step never empties a directory that already holds a staged feed.
+mkdir -p "$work/w/feed-packages-16-amd64-1.4.1-r2" && : >"$work/w/feed-packages-16-amd64-1.4.1-r2/x.pkg"
+refused=$(WORK=$work/w MAIN_COMMIT=$commit bash "$script" --config "$work/r2.env" feed 2>&1 || true)
+grep -qF 'already holds a staged feed' <<<"$refused" || { echo "feed did not refuse a staged directory: $refused" >&2; exit 1; }
+[[ -e $work/w/feed-packages-16-amd64-1.4.1-r2/x.pkg ]]
+rm -rf "$work/w"
 # A bad commit is refused before anything else.
 ! MAIN_COMMIT=nothex WORK=$work/w bash "$script" preflight >/dev/null 2>&1
 ! bash "$script" bogus >/dev/null 2>&1
