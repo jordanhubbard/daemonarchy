@@ -25,8 +25,9 @@ ABI=${ABI:-FreeBSD:16:amd64}
 . "$here/origins.sh"
 
 base_roots='pkg bash sudo daemonarchy chromium octopkg wifi-firmware-kmod'
-msi_roots="$base_roots xwayland drm-612-kmod gpu-firmware-intel-kmod nvidia-driver nvidia-kmod nvidia-drm-612-kmod linux-nvidia-libs"
-macbook_roots="$base_roots drm-612-kmod gpu-firmware-amd-kmod-navi14 if_brcmfmac-kmod"
+kms_roots="drm-612-kmod gpu-firmware-kmod vulkan-loader mesa-dri"      # gpu_kms_packages + gpu_userspace_packages
+msi_roots="$base_roots xwayland $kms_roots nvidia-driver nvidia-kmod nvidia-drm-612-kmod linux-nvidia-libs"
+macbook_roots="$base_roots $kms_roots gpu-firmware-amd-kmod-navi14 if_brcmfmac-kmod"
 
 work=$(mktemp -d)
 trap 'rm -rf "$work"' EXIT
