@@ -1,0 +1,101 @@
+{
+  "schema": "daemonarchy/install-baseline@1",
+  "recorded_utc": "2026-10-30T07:01:00Z",
+  "trace": {
+    "sha256": "807467428791cab33bfe739fa2963624a851b759e84cdef5719fe15e8fb501c4",
+    "bytes": 68386,
+    "events": 399
+  },
+  "context": {
+    "kind": "benchmark",
+    "machine": "daemon.local HP amd64",
+    "storage": "ZFS scratch in /tmp",
+    "link": "1 GbE re0 to pkg.FreeBSD.org",
+    "cache_mode": "network",
+    "workers": "1",
+    "note": "parallel-fetch with one worker, firefox and kdenlive, 304 packages, 890 MiB, fetch only"
+  },
+  "completeness": {
+    "terminal_status": null,
+    "phases_seen": [],
+    "complete_install": false
+  },
+  "summary": {
+    "events": 399,
+    "total_s": 493.201,
+    "exit_status": null,
+    "phases": [],
+    "operations": [],
+    "downloads": {
+      "count": 304,
+      "bytes": 933524961,
+      "busy_s": 488.12,
+      "slowest": [
+        {
+          "name": "llvm19-19.1.7_4",
+          "bytes": 282444619,
+          "s": 97.9
+        },
+        {
+          "name": "gcc14-14.2.0_7",
+          "bytes": 98572096,
+          "s": 78.643
+        },
+        {
+          "name": "firefox-159.0,2",
+          "bytes": 89633995,
+          "s": 42.072
+        },
+        {
+          "name": "docbook-xsl-1.79.1_1,1",
+          "bytes": 20688922,
+          "s": 10.428
+        },
+        {
+          "name": "exiv2-0.28.9,1",
+          "bytes": 3039449,
+          "s": 9.949
+        },
+        {
+          "name": "opencv-4.13.0_10",
+          "bytes": 25902516,
+          "s": 9.643
+        },
+        {
+          "name": "py312-numpy-2.4.6_1,1",
+          "bytes": 20366891,
+          "s": 8.825
+        },
+        {
+          "name": "boost-libs-1.92.0",
+          "bytes": 16844778,
+          "s": 8.631
+        },
+        {
+          "name": "ceres-solver-2.2.0_15",
+          "bytes": 9059710,
+          "s": 8.139
+        },
+        {
+          "name": "kdenlive-26.08.2_2",
+          "bytes": 22623615,
+          "s": 7.827
+        }
+      ],
+      "wall_s": 493.096,
+      "mean_mib_per_s": 1.81,
+      "mean_concurrency": 0.99
+    },
+    "pkg_events": {
+      "count": 0,
+      "slowest_timed": []
+    },
+    "io_by_phase": {},
+    "net_probes": [],
+    "device_events": []
+  },
+  "acceptance": {
+    "equivalent_link_baseline": false,
+    "installation_acceptance_granted": false
+  }
+}

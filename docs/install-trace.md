@@ -62,6 +62,16 @@ as FreeBSD reports them; use the `d_*` fields for rates.
   transfer starts.
 - When devices attached or detached and when the link changed state.
 
+## Baselines and comparing runs
+
+`scripts/install-trace-baseline.py build TRACE --context kind=... machine=...`
+turns a trace into a `daemonarchy/install-baseline@1` record (digest of the
+trace, plain-text context, how far the run got, the summary), and `compare`
+reports per-phase and per-operation deltas, throughput and concurrency between
+two records or raw traces, warning when the contexts are not equivalent or a run
+did not complete. `--fail-on-regression` gates on a slowdown. Curated records and
+their traces live in `verification/install-baselines/`; they grant no acceptance.
+
 ## Rules for adding events
 
 Record a fixed label, a count, a size or a time. Never a command line, a path,
