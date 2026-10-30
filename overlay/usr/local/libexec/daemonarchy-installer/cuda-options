@@ -35,6 +35,10 @@ cuda_install_support() {
     install -m 0755 "$source_root/usr/local/bin/daemonarchy-cudalab" "$target/usr/local/bin/daemonarchy-cudalab"
     install -m 0644 "$share/uvm_ioctl_override.c" "$target/usr/local/share/daemonarchy-installer/uvm_ioctl_override.c"
     install -m 0644 "$share/cudalab.desktop" "$target/usr/local/share/applications/cudalab.desktop"
+    # The Apps menu looks the desktop entry's Icon=cudalab up in the icon theme. The
+    # icon is a new file beside the theme's own: nothing the icon package owns changes.
+    mkdir -p "$target/usr/local/share/icons/hicolor/scalable/apps"
+    install -m 0644 "$share/cudalab.svg" "$target/usr/local/share/icons/hicolor/scalable/apps/cudalab.svg"
     # The desktop package's vendor menu may predate this ISO. Ship the menu
     # entry with the image so System > FreeBSD shows Cudalab without a package rebuild.
     mkdir -p "$target/usr/local/share/omarchy/vendor"
@@ -44,6 +48,6 @@ cuda_install_support() {
     # optional application was not selected, including on non-NVIDIA hardware.
     mkdir -p "$target/usr/local/share/omarchy/vendor"
     sed '/"system.freebsd.cudalab":/d' "$share/omarchy-menu.jsonc" >"$target/usr/local/share/omarchy/vendor/omarchy-menu.jsonc"
-    rm -f "$target/usr/local/share/applications/cudalab.desktop"
+    rm -f "$target/usr/local/share/applications/cudalab.desktop" "$target/usr/local/share/icons/hicolor/scalable/apps/cudalab.svg"
   fi
 }

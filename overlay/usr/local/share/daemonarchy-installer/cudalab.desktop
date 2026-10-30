@@ -1,6 +1,7 @@
 [Desktop Entry]
 Type=Application
 Name=Cudalab
+Icon=cudalab
 GenericName=CUDA Studio
 Comment=Live CUDA graphics on NVIDIA: cosmos, oceans, glass, and tensor cores
 Exec=daemonarchy-cudalab

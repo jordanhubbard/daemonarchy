@@ -69,7 +69,13 @@ app directly. The installer's CUDA step runs the same builder
 virtual app in place to retry. The Linux SDL cannot reach FreeBSD sound devices and
 cudalab refuses to start without an audio device, so the launcher runs it with
 `SDL_AUDIODRIVER=dummy`; `LD_PRELOAD` of the UVM shim is given only to the Linux
-executable, never to a native FreeBSD program.
+executable, never to a native FreeBSD program. The same preload carries a small
+fallback library (built by the launcher under the Linux gcc) that answers
+`cudaMallocAsync` with `cudaMalloc` when the driver reports the stream-ordered
+allocator unsupported, as the FreeBSD driver does, as for Unified Memory; the
+Choreograph demo needs it. Audio uses SDL's `pulseaudio,pipewire,dummy` driver list
+and falls back to the silent driver, so a missing sound path never costs the user
+the app.
 
 Validation covers the actual upstream 4.0.4 menu, router dispatch and exit status,
 unsupported command guards, existing-user MIME/Docker migration, and real native

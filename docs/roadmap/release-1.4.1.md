@@ -202,7 +202,13 @@ items below were 1.4 acceptance rows. They moved here so they no longer block
   at once build once. Verified in `tests/cudalab-launcher.sh` against a fake Linux
   root and, for the run and the headless build, on the MSI (see the
   pull request); the first-run window on a fresh install is still to be exercised
-  on hardware.
+  on hardware. Found when the operator tried it on the MSI: the Choreograph demo made
+  the whole app exit (`cudalab: allocate named buffer: operation not supported`,
+  `cudaMallocAsync` is unsupported by the FreeBSD driver; fixed with a preloaded
+  fallback to `cudaMalloc`, and the app's output is now kept in `app.log`); the app
+  ran inside the terminal window that launched it (it now detaches, and the desktop
+  entry and menu no longer open a terminal); and Cudalab had no icon (it now ships
+  `cudalab.svg` in the hicolor theme).
 - **Loose ends found in 1.4.0.** The MSI touchpad runs in polling mode (the I2C-HID
   interrupt is not wired through). Only I2C controller 0 (`8086:7f4c`) of the
   Arrow Lake-S PCH is recognised in `ig4`, so a touchpad on another function would
