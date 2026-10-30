@@ -1,5 +1,10 @@
 # 1.4.1 plan: deferred from 1.4
 
+> **Update, 2026-10-30:** the nine items ADOPT-002, GUI-001, SRC-001, RELEASE-001,
+> COMP-001, PERF-002, DEV-001, DEBUG-003 and HW-004, and the MacBook Wi-Fi fix, moved
+> to the [1.4.2 plan](release-1.4.2.md) by operator decision. The list below is the
+> scope as first opened.
+
 - **Status:** active
 - **Owning queue item:** [INSTALL-PERF-001](active-work.md#install-perf-001-make-exact-image-installation-at-least-10x-faster)
 - **Supporting queue items:** [PKG-001](active-work.md#pkg-001-implement-the-release-package-dag-and-safe-parallel-transactions),

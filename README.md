@@ -18,39 +18,44 @@ limits for every release, including the initial installer snapshots.
 
 ## Download
 
-The latest stable release is **[Daemonarchy 1.4.0](https://github.com/jordanhubbard/daemonarchy/releases/tag/daemonarchy-1.4.0)** (x86-64, BIOS or UEFI), published October 29, 2026, on FreeBSD 16.0-CURRENT, OSVERSION `1600029`. Version 1.2.0 was not published; 1.3.1 followed 1.1.1 and 1.4.0 follows 1.3.1.
+The latest stable release is **[Daemonarchy 1.4.1](https://github.com/jordanhubbard/daemonarchy/releases/tag/daemonarchy-1.4.1)** (x86-64, BIOS or UEFI, and a community-validation arm64 image), published @@PUBLISHED_DATE@@, on FreeBSD 16.0-CURRENT, OSVERSION `1600029`. Version 1.2.0 was not published; 1.3.1 followed 1.1.1, 1.4.0 followed 1.3.1 and 1.4.1 follows 1.4.0.
 
-- [ISO, xz-compressed](https://github.com/jordanhubbard/daemonarchy/releases/download/daemonarchy-1.4.0/daemonarchy-1.4.0-amd64.iso.xz): 1,590,611,892 bytes. It decompresses to the 3.5 GB installer image.
-- [Checksum](https://github.com/jordanhubbard/daemonarchy/releases/download/daemonarchy-1.4.0/daemonarchy-1.4.0-amd64.iso.xz.sha256) of the compressed file: `fcaf5e1db17b57a37d01f3db5cefac5794a83b4fe38de2ee926953b9778c7cf6`.
-- The release also carries the signed Secure Boot bundle (`daemonarchy-1.4.0-boot.txz` and its `.sig`) and the public certificate in PEM and DER form.
-- Read the [1.4.0 release notes](docs/release-1.4.0.md) and their hardware status and limits before installing. The MSI Raider 18 HX and MacBookPro16,1 results come from this cycle's development images; the final image was run in QEMU, and a physical rerun of it was not done before publication. The MacBookPro16,1 has no sound.
+- [x86-64 ISO, xz-compressed](https://github.com/jordanhubbard/daemonarchy/releases/download/daemonarchy-1.4.1/daemonarchy-1.4.1-amd64.iso.xz): @@AMD64_ISO_BYTES@@ bytes.
+- [x86-64 checksum](https://github.com/jordanhubbard/daemonarchy/releases/download/daemonarchy-1.4.1/daemonarchy-1.4.1-amd64.iso.xz.sha256) of the compressed file: `@@AMD64_ISO_SHA256@@`.
+- [arm64 ISO, xz-compressed](https://github.com/jordanhubbard/daemonarchy/releases/download/daemonarchy-1.4.1/daemonarchy-1.4.1-aarch64.iso.xz): @@AARCH64_ISO_BYTES@@ bytes, UEFI only. **This is a community-validation image:** it was verified to boot and install in QEMU and nothing more. No physical aarch64 hardware was tested; there is no hardware GPU desktop, and sound and Wi-Fi are untested. See [aarch64](docs/aarch64.md) and the [release notes](docs/release-1.4.1.md#aarch64-image-community-validation), and report results as [GitHub issues](https://github.com/jordanhubbard/daemonarchy/issues).
+- [arm64 checksum](https://github.com/jordanhubbard/daemonarchy/releases/download/daemonarchy-1.4.1/daemonarchy-1.4.1-aarch64.iso.xz.sha256) of the compressed file: `@@AARCH64_ISO_SHA256@@`.
+- The release also carries the signed Secure Boot bundle (`daemonarchy-1.4.1-boot.txz` and its `.sig`, amd64 only) and the public certificate in PEM and DER form.
+- Read the [1.4.1 release notes](docs/release-1.4.1.md) and their hardware status and limits before installing. Wi-Fi and Hyprland are not guaranteed on any particular machine, and the MacBookPro16,1 Wi-Fi driver can stall in a dead associated state.
 
-Write it to a USB stick with `xz -dc daemonarchy-1.4.0-amd64.iso.xz | dd of=/dev/<usb-device> bs=1m` (`bs=1M` on Linux). Boot with Secure Boot off, or follow the manual enrollment guide to enable verified boot. The installer needs a network connection. Whole-disk installation erases the selected disk; partition mode replaces only the explicitly selected partition.
+Write it to a USB stick with `xz -dc daemonarchy-1.4.1-amd64.iso.xz | dd of=/dev/<usb-device> bs=1m` (`bs=1M` on Linux). Boot with Secure Boot off, or follow the manual enrollment guide to enable verified boot. The installer needs a network connection. Whole-disk installation erases the selected disk; partition mode replaces only the explicitly selected partition.
 
 New to Daemonarchy? [Getting started](docs/getting-started.md) walks through writing the stick, installing, and your first hour on the desktop: Wi-Fi, sound, Bluetooth, updates, and what FreeBSD adds. To build an image yourself or work on Daemonarchy, see [HACKING.md](HACKING.md).
 
 Check the [hardware quirks](docs/hardware-quirks.md) for known boot blockers and
 diagnostic notes, including the MSI Raider 18 HX AI A2XWIG results for 1.4.0.
 
-## 1.4.0 release
+## 1.4.1 release
 
-The current stable release is **1.4.0**. Its base is the Daemonarchy FreeBSD
-source fork at `06e5befc` (OSVERSION `1600029`), with ports at `b7857842`. The
-[release notes](docs/release-1.4.0.md) cover everything since 1.3.1: support for
-the MSI Raider 18 HX (NVMe behind Intel VMD, the Arrow Lake iGPU desktop and the
-touchpad), a signed Secure Boot profile that lets the MacBookPro16,1 install its
-Wi-Fi firmware again, optional CUDA and cudalab on NVIDIA hardware, a measured
-install screen and a live desktop from the media. [CHANGELOG.md](CHANGELOG.md)
-keeps the detailed history; the previous release's
+The current stable release is **1.4.1**. Its base is the Daemonarchy FreeBSD
+source fork at `303b364` (OSVERSION `1600029`), with ports at `@@PORTS_SHORT@@`. The
+[release notes](docs/release-1.4.1.md) cover everything since 1.4.0: a parallel
+package fetch from signed Daemonarchy feeds instead of pkg.FreeBSD.org, an install
+trace, an installer built on a visual SDK with four arcade games as extensions,
+cudalab as a virtual app, remote debugger leases and a watchdog, and fixes for the
+NVIDIA install failure, the live-power panic and the Aquamarine exit, plus an arm64
+image for community validation. [CHANGELOG.md](CHANGELOG.md) keeps the detailed
+history; the previous releases' [1.4.0 notes](docs/release-1.4.0.md),
 [1.3.1 notes](docs/release-1.3.1.md) and [1.1.1 qualification record](docs/testing-1.1.1.md)
 remain available.
 
 <!-- release-sync: history -->
+1.4.0 was the stable release from October 29, 2026 until 1.4.1. Its base was
+source `06e5befc` with ports at `b7857842`.
 1.3.1 was the stable release from October 25, 2026 until 1.4.0. Its base was
 source `d63d77f4` with ports at `b7857842`.
 <!-- /release-sync -->
 
-Moving an older installation to the 1.4.0 application feed requires a
+Moving an older installation to the 1.4.1 application feed requires a
 coordinated base, kernel and driver upgrade; changing the package URL alone is
 insufficient. Physical GPU, firmware, radio and retained-OS qualification
 remains explicitly recorded rather than inferred from VM tests.
@@ -112,7 +117,7 @@ pkg upgrade
 
 ## Roadmap
 
-**1.4.0 is available with documented qualification gaps; 1.4.1 is planned.** See the [roadmap](ROADMAP.md) for remaining
+**1.4.1 is available with documented qualification gaps; 1.4.2 is planned.** See the [roadmap](ROADMAP.md) for remaining
 graphics, Bluetooth, enterprise Wi-Fi, installation and boot support, upstream
 ports work, and the checks required before release. The
 [partition preview guide](docs/testing-1.1-partitions.md) covers installing into
@@ -162,7 +167,7 @@ timezone=America/Los_Angeles
 
 The machine powers off when the install finishes.
 
-*New in 1.4.0*: before touching the disk, an unattended install runs the same network check as the interactive installer, without asking anything. The check probes every cabled port for DHCP and checks DNS with direct lookups and the clock with network time. It uses Wi-Fi only if no cable works. It honors these optional answers:
+*Since 1.4.0*: before touching the disk, an unattended install runs the same network check as the interactive installer, without asking anything. The check probes every cabled port for DHCP and checks DNS with direct lookups and the clock with network time. It uses Wi-Fi only if no cable works. It honors these optional answers:
 
 ```sh
 net_mode=static            # or dhcp (the default) or wifi
@@ -216,7 +221,7 @@ first time it is needed (the installer's CUDA step does that, so a machine that
 took the offer has it ready), and every launch after that opens the built app
 directly. In 1.4.0 the launcher rebuilt cudalab on every launch and then exited
 at once on machines with no sound device, so it appeared to open nothing; the
-virtual app that replaces it is in development for 1.4.1.
+virtual app of 1.4.1 replaces it.
 
 The wrapper stays in `/usr/local/bin`; the built program is a side binary under
 `~/.local/share/cudalab`. A first build uses a pinned cudalab revision known to

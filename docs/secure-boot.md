@@ -25,6 +25,7 @@ not require replacing the platform owner. See the
 
 ## 1.3.1 certificate
 
+<!-- release-sync: history -->
 The 1.1 signing private key has not been found on the release build host, so
 1.3.1 introduced a replacement key and public certificate, prepared on the
 protected native signer. The private key is not an ISO or repository input. The
@@ -36,6 +37,9 @@ the 1.1 certificate does not authorize 1.3.1 boot files; enroll this certificate
 as well. On firmware with generic UEFI db enrollment, add it
 while retaining the 1.1 and platform certificates, then run the physical
 enforcement, recovery and negative tests below before claiming that profile.
+<!-- /release-sync -->
+
+The certificate each release publishes is `daemonarchy-<version>.pem` and `.der` in that release's assets; check the release's own digests rather than this page.
 
 ### Apple T2 MacBook limitation
 

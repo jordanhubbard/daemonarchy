@@ -1,5 +1,37 @@
 # Changelog
 
+## 1.4.1 (@@PUBLISHED_DATE@@)
+
+Base: FreeBSD 16.0-CURRENT (OSVERSION `1600029`), daemonarchy-src `303b364`,
+ports `@@PORTS_SHORT@@`. Application feeds `@@PACKAGES_AMD64_FEED@@` and
+`@@PACKAGES_AARCH64_FEED@@`, checkout feeds `@@CHECKOUTS_AMD64_FEED@@` and
+`@@CHECKOUTS_AARCH64_FEED@@`. See the [release notes](docs/release-1.4.1.md).
+
+### Added
+
+- Parallel package fetch from signed Daemonarchy feeds on GitHub (zstd packages),
+  with the whole installer closure hosted by us for amd64 and aarch64; install trace
+  and metrics.
+- The installer is built on a separately packaged visual SDK; four arcade games ship
+  as installer extensions, downloaded from signed feeds when chosen.
+- Remote debugger leases, state from reality, orphan cleanup and a watchdog.
+- Cudalab as a virtual app, with the Choreograph, icon and sound fixes and `--update`.
+- An arm64 installer image, for community validation: verified to boot and install in
+  QEMU only.
+
+### Fixed
+
+- Package integrity is verified before the optional CUDA step (the 1.4.0 NVIDIA install failure).
+- The live system no longer needs the install stick to reboot or power off (stick-pull panic).
+- Aquamarine exit-time fault.
+
+### Known limitations
+
+- The MacBookPro16,1 Wi-Fi driver can stall in a dead associated state; the fix
+  (daemonarchy-ports #37) is deferred to 1.4.2.
+- Display-driver sleeps of about 1.6 s at login; a first-login delay is under investigation.
+- aarch64: no real hardware, GPU desktop, sound or Wi-Fi result.
+
 ## 1.4.0 (2026-10-29)
 
 Base: FreeBSD 16.0-CURRENT (OSVERSION `1600029`), daemonarchy-src `06e5befc`,

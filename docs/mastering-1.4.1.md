@@ -151,6 +151,82 @@ the ports checkout package and catalogue at the new tip, update
 `overlay/usr/local/share/daemonarchy-installer/checkouts.json` by pull request, and run
 `scripts/master-release.sh iso verify qa`.
 
+## Filling in the release records once the ISOs and the r2 feeds exist
+
+The release pull request (draft) carries placeholders so that nothing unreleased reads
+as available: `@@TOKEN@@` in `README.md`, `HACKING.md`, `PROJECT.md`, `CHANGELOG.md`,
+`docs/release-1.4.1.md` and `docs/aarch64.md`, and `TODO` in `release/current.json` and
+`verification/release-1.4.1.json`. Until they are filled, `tests/docs-release-sync.py`
+fails three tests (the record is not well formed, the README download section, and the
+default checkout catalogue naming `checkouts-16-amd64-1.4.0`); that is expected and
+it is the reason the pull request must not merge yet.
+
+### The values the release owner supplies
+
+1. The eight staged release assets in one directory `ASSETS`, exactly as they will be
+   uploaded: `daemonarchy-1.4.1-{amd64,aarch64}.iso.xz` and their `.sha256`,
+   `daemonarchy-1.4.1-boot.txz`, `.sig`, `daemonarchy-1.4.1.pem` and `.der`. Sizes and
+   digests are computed from them; nobody types a digest.
+2. The installer commit (40 hex): the exact commit the ISOs were built from and the
+   release is tagged on.
+3. The ports commit (40 hex): the daemonarchy-ports revision both images were built
+   from. It must equal the ports revision in the published checkout catalogue.
+4. The four feed tags the images pin: `packages-16-amd64-1.4.1-r2`,
+   `packages-16-aarch64-1.4.1-r2`, `checkouts-16-amd64-1.4.1-r2`,
+   `checkouts-16-aarch64-1.4.1-r2` (or the unsuffixed `-1.4.1` tags if no r2 was needed).
+5. Two sentences of truth, which nothing can derive: whether the release arm64 image
+   itself was run in QEMU (`--aarch64-final-qemu`), and what physical MSI and MacBook
+   runs of the final amd64 image exist (`--physical-status`).
+6. After publication only: the publication time (`--published-at`, from
+   `gh release view daemonarchy-1.4.1 --json publishedAt`).
+
+The closure feed records (`packages-16-amd64-1.4.1-upstream`, the two aarch64
+`-upstream` shards) are already in `verification/closure-feeds/` and are copied into the
+record. If upstream moved and a new shard was staged, add its record there first.
+The extension feeds and the `-r2` application feeds are not listed in `closure_feeds`.
+`release/current.json` names the amd64 feeds (`application_feed`, `checkout_feed`); the
+aarch64 feeds are in the release record.
+
+### Procedure
+
+```
+# 0. optional: print what would be written and which tokens stay unfilled; writes nothing
+python3 scripts/fill-release-1.4.1.py --assets ASSETS --dry-run ... # same arguments as step 2
+# 1. the checkout catalogue: the overlay must be the published r2 catalogue, byte for byte
+gh release download checkouts-16-amd64-1.4.1-r2 -R jordanhubbard/daemonarchy \
+    -p checkouts.json -O overlay/usr/local/share/daemonarchy-installer/checkouts.json --clobber
+# (fill-release-1.4.1.py does this itself unless --checkouts-json is given)
+# 2. fill every record
+python3 scripts/fill-release-1.4.1.py --assets ASSETS \
+    --installer-commit INSTALLER40 --ports-commit PORTS40 \
+    --packages-amd64 packages-16-amd64-1.4.1-r2 --packages-aarch64 packages-16-aarch64-1.4.1-r2 \
+    --checkouts-amd64 checkouts-16-amd64-1.4.1-r2 --checkouts-aarch64 checkouts-16-aarch64-1.4.1-r2 \
+    --aarch64-final-qemu "..." --physical-status "..." [--published-at 2026-10-31T00:00:00Z]
+# 3. the checks
+python3 tests/docs-release-sync.py -v
+python3 scripts/verify-release-assets.py --record verification/release-1.4.1.json \
+    --assets ASSETS --closure-assets CLOSURE_DIR     # CLOSURE_DIR/<tag>/ for each closure feed tag
+```
+
+The script refuses a catalogue whose `repository_url` is not the amd64 checkout feed's
+download URL, whose source revision is not `303b3646270f...` or whose ports revision
+differs from `--ports-commit`. Because it replaces the tokens it consumes them; to redo
+a run, `git checkout -- .` the changed files first.
+
+Order around publication: fill without `--published-at`, review the diff, merge to the
+tagged commit as the approved plan says, publish (`gh release create`, not done by
+any script here), run `python3 scripts/verify-release-assets.py ... --published` and
+`python3 scripts/release-current.py check-published`, then fill `--published-at` (the
+`PUBLISHED_DATE` tokens need it) and push the last commit. If `release-current.py
+update` is used instead, pass the amd64 feed tags and re-add the arm64 feeds to the
+record; it rewrites `release/current.json` from GitHub.
+
+Two cautions. `tests/docs-release-sync.py` flags any current-state document that
+quotes a digest equal to a previous release's; the 1.4.0 and 1.3.1 certificates share
+digests, so if the 1.4.1 certificate is the same bytes, no current-state document may
+quote it. And `verify-release-assets.py` expects the amd64 Secure Boot bundle; there is
+no aarch64 bundle.
+
 ## Not covered here
 
 The arm64 image and its packages have their own plan (`docs/aarch64.md`). The closure

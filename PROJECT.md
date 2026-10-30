@@ -79,10 +79,10 @@ original source authority in place, preserving all 272 tracked source entries at
 its reviewed commit. Native retained-project execution and release enforcement
 require separate demonstrated integration.
 
-The current product release is 1.4.0, published October 29, 2026. Its published
+The current product release is 1.4.1, published @@PUBLISHED_DATE@@. Its published
 artifact identity is recorded in [`release/current.json`](release/current.json)
-and its actual qualification scope in the [release notes](docs/release-1.4.0.md);
-the earlier 1.1.1 keeps its [record](docs/testing-1.1.1.md).
+and its actual qualification scope in the [release notes](docs/release-1.4.1.md);
+the earlier 1.4.0 keeps its [notes](docs/release-1.4.0.md) and 1.1.1 keeps its [record](docs/testing-1.1.1.md).
 Product responsibilities and current acceptance coverage are mapped in
 [the architecture](docs/architecture/design-traceability.md). G7 remains unfinished:
 pinned DAG/acquisition work has scoped native evidence, and a
@@ -109,7 +109,8 @@ PKG-002 (issue #142) self-hosts the installer's package closure for both
 architectures; its first measurement tool is `scripts/package-mirror-plan.py`.
 The carried queue items were audited on 2026-10-30
 ([release-1.4.1-audit.md](docs/roadmap/release-1.4.1-audit.md)): TESTISO-001 is closed, nine items
-need the external framework, hardware or research work and are proposed to leave 1.4.1.
+need the external framework, hardware or research work and moved to 1.4.2 by operator decision
+([plan](docs/roadmap/release-1.4.2.md)).
 
 VISUAL-SDK-001 (issue #139) extracts the installer's text and graphical
 rendering, animation/effects, input and audio presentation surface into an
@@ -159,8 +160,8 @@ The [performance plan](docs/roadmap/build-performance.md)
 owns its measurements and executor decision.
 
 RELEASE-001 remains the broader release program: finish the existing backlog and
-publish through the qualified Literate AI method. The next planned minor release
-is 1.4.0 ([plan](docs/roadmap/release-1.4.0.md)); 1.2.0 was never published,
+publish through the qualified Literate AI method. The next planned release
+is 1.4.2 ([plan](docs/roadmap/release-1.4.2.md)); 1.4.0 and 1.4.1 are published ([1.4 plan](docs/roadmap/release-1.4.0.md)); 1.2.0 was never published,
 and 1.3.1 followed 1.1.1. The completion audit includes all open queue and
 roadmap acceptance, not just implementation code or a worker proof. The earlier
 [1.2.0 completion ledger](docs/roadmap/release-1.2.0.md) expands those obligations and

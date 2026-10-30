@@ -2,11 +2,11 @@
 
 How to build a Daemonarchy image yourself, change the installer, the ports, or the artwork, and test and release the result. [README.md](README.md) says what Daemonarchy is; this is for working on it.
 
-Latest published release: **1.4.0** ([`release/current.json`](release/current.json)),
-daemonarchy-src `06e5befc60319b8a72f746dac31e01dbe75ae702` (OSVERSION `1600029`),
-daemonarchy-ports `b785784219af455a9ce4fd70c59bc96ba77f469f` on `main`. Keep base,
+Latest published release: **1.4.1** ([`release/current.json`](release/current.json)),
+daemonarchy-src `303b3646270ffa4bf7cec65c5c1d28bd8000cbce` (OSVERSION `1600029`),
+daemonarchy-ports `@@PORTS_COMMIT@@` on `main`. Keep base,
 kernel, jail, drivers, optional source checkout and signed manifests on that
-selection. The [1.3.1 release notes](docs/release-1.3.1.md) record its qualification
+selection. The [1.4.1 release notes](docs/release-1.4.1.md) record its qualification
 and limits; the earlier 1.1.1 selection stays in [its record](docs/testing-1.1.1.md).
 Older image examples below must use their own retained inputs; a package update
 is not a base/ABI migration.
@@ -259,7 +259,7 @@ space than a cached installer-only rebuild. Check resources before dispatching.
    ./build-iso.sh
    ```
 
-   The image is named after the version of the `daemonarchy` package it carries: `daemonarchy-<version>-<arch>.iso`, for example `daemonarchy-1.4.0-amd64.iso` (published xz-compressed as `.iso.xz`). Set `NAME` to override.
+   The image is named after the version of the `daemonarchy` package it carries: `daemonarchy-<version>-<arch>.iso`, for example `daemonarchy-1.4.1-amd64.iso` (published xz-compressed as `.iso.xz`). Set `NAME` to override.
 
    The image and its `.sha256` land in `/usr/local/poudriere/data/images`.
 
@@ -849,9 +849,9 @@ ISO supplies `/rescue`, `pciconf`, `devinfo`, `acpidump`, their libraries
 and the modules:
 
 ```sh
-sh build-hwtrace-image.sh -I daemonarchy-1.4.0-amd64.iso \
+sh build-hwtrace-image.sh -I daemonarchy-1.4.1-amd64.iso \
     -k obj/GENERIC/kernel -l loader_lua.efi -L src/stand/lua \
-    -V 1.4.0-1 -o out
+    -V 1.4.1-1 -o out
 # -m "msdosfs ..." picks modules (default msdosfs); -s sets the DATRACE
 # size in MiB (default 256); -S adds a serial console for VM tests;
 # -x EXTRA.conf appends test knobs to loader.conf (never for a published
@@ -1142,11 +1142,12 @@ coordinated operation.
    assets unchanged. The 1.3.1
    candidate rotates that certificate because the previous private signing key
    is unavailable; do not reuse the 1.1 certificate names for a different key.
-   For 1.4.0, after the exact build and QA gates pass (the staged assets are
-   verified first with `scripts/verify-release-assets.py`, see below):
+   For 1.4.1, after the exact build and QA gates pass (the staged assets are
+   verified first with `scripts/verify-release-assets.py`, see below), the release
+   carries one image per architecture:
 
    ```
-   gh release create daemonarchy-1.4.0 --target <exact-reviewed-commit> --latest --title "Daemonarchy 1.4.0" --notes-file notes.md daemonarchy-1.4.0-amd64.iso.xz daemonarchy-1.4.0-amd64.iso.xz.sha256 daemonarchy-1.4.0-boot.txz daemonarchy-1.4.0-boot.txz.sig daemonarchy-1.4.0.pem daemonarchy-1.4.0.der
+   gh release create daemonarchy-1.4.1 --target <exact-reviewed-commit> --latest --title "Daemonarchy 1.4.1" --notes-file notes.md daemonarchy-1.4.1-amd64.iso.xz daemonarchy-1.4.1-amd64.iso.xz.sha256 daemonarchy-1.4.1-aarch64.iso.xz daemonarchy-1.4.1-aarch64.iso.xz.sha256 daemonarchy-1.4.1-boot.txz daemonarchy-1.4.1-boot.txz.sig daemonarchy-1.4.1.pem daemonarchy-1.4.1.der
    ```
 
    Verify the exact uploaded asset names, sizes and SHA-256 digests. Keep
