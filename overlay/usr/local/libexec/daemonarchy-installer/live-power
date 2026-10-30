@@ -1,0 +1,35 @@
+#!/usr/local/bin/bash
+# Reboot or power off the live system without reading the installation medium.
+#
+#   live-power prepare     copy the static reboot and halt into memory (run at start)
+#   live-power reboot
+#   live-power poweroff
+#
+# The live root is a read-only filesystem on the install stick. If the stick is
+# pulled or drops off the bus (the usual step before a reboot, so the laptop does
+# not boot it again), /sbin/shutdown can no longer be read and, on a kernel that
+# asserts on a vanished device, the machine panics. /rescue holds statically linked
+# reboot and halt; kept in tmpfs they need nothing from the medium.
+POWER_DIR=${DAEMONARCHY_POWER_DIR:-/tmp/daemonarchy-power}
+RESCUE=${DAEMONARCHY_RESCUE_DIR:-/rescue}
+
+prepare() {
+  mkdir -p "$POWER_DIR" || return 0
+  [[ -x $POWER_DIR/reboot ]] && return 0
+  # reboot and halt are one crunched binary that picks its behaviour from argv[0].
+  cp "$RESCUE/reboot" "$POWER_DIR/reboot" 2>/dev/null && ln -f "$POWER_DIR/reboot" "$POWER_DIR/halt" 2>/dev/null || true
+  return 0
+}
+
+case ${1:-} in
+  prepare) prepare ;;
+  reboot)
+    sync
+    if [[ -x $POWER_DIR/reboot ]]; then exec "$POWER_DIR/reboot"; fi
+    exec shutdown -r now ;;
+  poweroff)
+    sync
+    if [[ -x $POWER_DIR/halt ]]; then exec "$POWER_DIR/halt" -p; fi
+    exec shutdown -p now ;;
+  *) echo "usage: live-power prepare|reboot|poweroff" >&2; exit 2 ;;
+esac

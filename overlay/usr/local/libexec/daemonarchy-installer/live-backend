@@ -484,8 +484,8 @@ cmd_install() {
 cmd_power() {
   [[ $(cat "$INSTALL_STATUS" 2>/dev/null) == 0 ]] || die 'Restart is offered after a successful installation.'
   case ${1:-} in
-    reboot) shutdown -r now ;;
-    poweroff) shutdown -p now ;;
+    reboot) "$(dirname "$0")/live-power" reboot ;;
+    poweroff) "$(dirname "$0")/live-power" poweroff ;;
     *) die 'Unknown power action.' ;;
   esac
 }

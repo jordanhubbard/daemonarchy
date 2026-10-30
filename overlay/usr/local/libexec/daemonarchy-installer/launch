@@ -21,6 +21,10 @@ fi
 log=/tmp/daemonarchy-install.log
 status_file=/tmp/daemonarchy-install.status
 
+# The root filesystem is the install stick. Keep the reboot tools in memory so the
+# final reboot or power-off does not need the stick (see live-power).
+"$ISO_LIBEXEC/live-power" prepare || true
+
 # Sound (sound.py through the sound wrapper) never blocks or fails anything
 # here. The player starts only where sound is allowed: a local console with an
 # audio device, not a serial console, and not an unattended install unless
@@ -116,7 +120,7 @@ if [[ ${DAEMONARCHY_LIVE:-} != 1 ]] && find_cidata; then
   fi
   if run_install; then
     echo "Daemonarchy autoinstall finished; powering off."
-    shutdown -p now
+    "$ISO_LIBEXEC/live-power" poweroff
   else
     echo "Daemonarchy autoinstall FAILED; see $log"
   fi
@@ -128,8 +132,12 @@ sound ensure
 
 if run_install; then
   echo
-  if gum confirm --affirmative "Reboot now" --negative "Stay in the installer" "Reboot into Daemonarchy?"; then
-    shutdown -r now
-  fi
+  echo "The installation is finished. Do not remove the USB stick while this screen is up:"
+  echo "the installer runs from it. Power off first, then remove it."
+  case $(gum choose --header "What next?" \
+         "Power off (then remove the USB stick and power on)" "Reboot now" "Stay in the installer") in
+    Power*) "$ISO_LIBEXEC/live-power" poweroff ;;
+    Reboot*) "$ISO_LIBEXEC/live-power" reboot ;;
+  esac
 fi
 exec /bin/sh
