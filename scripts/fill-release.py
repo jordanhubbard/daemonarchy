@@ -59,6 +59,7 @@ def fail(message):
 def asset_names(version):
     return [f"daemonarchy-{version}-{arch}.iso.xz{suffix}"
             for arch in ("amd64", "aarch64") for suffix in ("", ".sha256")] + [
+        f"daemonarchy-hwtrace-{version}-amd64.img.xz{suffix}" for suffix in ("", ".sha256")] + [
         f"daemonarchy-{version}-boot.txz", f"daemonarchy-{version}-boot.txz.sig",
         f"daemonarchy-{version}.pem", f"daemonarchy-{version}.der"]
 
@@ -110,8 +111,8 @@ def main(argv=None):
     if not args.assets.is_dir() or {p.name for p in args.assets.iterdir()} != set(names):
         fail("--assets must be a directory holding exactly: " + ", ".join(names))
     assets = {name: [(args.assets / name).stat().st_size, "sha256:" + digest(args.assets / name)] for name in names}
-    for arch in ("amd64", "aarch64"):
-        iso = f"daemonarchy-{version}-{arch}.iso.xz"
+    for iso in [f"daemonarchy-{version}-{arch}.iso.xz" for arch in ("amd64", "aarch64")] + [
+            f"daemonarchy-hwtrace-{version}-amd64.img.xz"]:
         expected = f"{assets[iso][1][7:]}  {iso}\n".encode()
         if (args.assets / (iso + ".sha256")).read_bytes() != expected:
             fail(f"{iso}.sha256 does not cover the {iso} next to it")
@@ -160,6 +161,8 @@ def main(argv=None):
         "AMD64_ISO_SHA256": assets[f"daemonarchy-{version}-amd64.iso.xz"][1][7:],
         "AARCH64_ISO_BYTES": f"{assets[f'daemonarchy-{version}-aarch64.iso.xz'][0]:,}",
         "AARCH64_ISO_SHA256": assets[f"daemonarchy-{version}-aarch64.iso.xz"][1][7:],
+        "HWTRACE_BYTES": f"{assets[f'daemonarchy-hwtrace-{version}-amd64.img.xz'][0]:,}",
+        "HWTRACE_SHA256": assets[f"daemonarchy-hwtrace-{version}-amd64.img.xz"][1][7:],
         "PACKAGES_AMD64_FEED": feeds["packages_amd64"],
         "PACKAGES_AARCH64_FEED": feeds["packages_aarch64"],
         "CHECKOUTS_AMD64_FEED": feeds["checkouts_amd64"],

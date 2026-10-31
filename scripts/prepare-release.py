@@ -50,6 +50,7 @@ def version_tuple(text):
 def asset_names(version):
     return [f"daemonarchy-{version}-{arch}.iso.xz{suffix}"
             for arch in ("amd64", "aarch64") for suffix in ("", ".sha256")] + [
+        f"daemonarchy-hwtrace-{version}-amd64.img.xz{suffix}" for suffix in ("", ".sha256")] + [
         f"daemonarchy-{version}-boot.txz", f"daemonarchy-{version}-boot.txz.sig",
         f"daemonarchy-{version}.pem", f"daemonarchy-{version}.der"]
 
@@ -95,6 +96,7 @@ def main(argv=None):
         "aarch64_application_feed": "TODO",
         "aarch64_checkout_feed": "TODO",
         "architectures": ["amd64", "aarch64"],
+        "hwtrace": ["amd64"],
         "qualification": f"docs/release-{version}.md",
         "evidence_status": "draft: placeholders, not a release record",
         "assets": {name: [0, "sha256:TODO"] for name in sorted(asset_names(version))},
@@ -118,7 +120,9 @@ def main(argv=None):
         "application_feed": "TODO",
         "checkout_feed": "TODO",
         "images": [{"type": "installer", "arch": arch, "asset": f"daemonarchy-{version}-{arch}.iso.xz",
-                    "checksum_asset": f"daemonarchy-{version}-{arch}.iso.xz.sha256"} for arch in ("amd64", "aarch64")],
+                    "checksum_asset": f"daemonarchy-{version}-{arch}.iso.xz.sha256"} for arch in ("amd64", "aarch64")] + [
+                       {"type": "hwtrace", "arch": "amd64", "asset": f"daemonarchy-hwtrace-{version}-amd64.img.xz",
+                        "checksum_asset": f"daemonarchy-hwtrace-{version}-amd64.img.xz.sha256"}],
         "assets": {name: [0, "sha256:TODO"] for name in sorted(asset_names(version))},
         "previous_releases": previous,
     }

@@ -9,9 +9,9 @@ trap 'rm -rf "$work"' EXIT
 commit=0123456789abcdef0123456789abcdef01234567
 
 # --- dry run: every step is shown, nothing runs or is created --------------------------
-out=$(WORK=$work/w MAIN_COMMIT=$commit bash "$script" --dry-run preflight packages secureboot feed resolve catalogue iso verify qa 2>&1)
+out=$(WORK=$work/w MAIN_COMMIT=$commit bash "$script" --dry-run preflight packages secureboot feed resolve catalogue iso verify hwtrace qa 2>&1)
 for expect in '== packages' 'build-release-packages.sh' ' seed' ' bulk' ' identity' '== feed' 'pkg-repo.sh' \
-              '== secureboot' 'resign-boot-bundle.sh' '== resolve' 'check-install-resolution.sh' '== catalogue' '== iso' 'build-iso.sh' '== verify' '== qa' 'test-qemu.sh' \
+              '== secureboot' 'resign-boot-bundle.sh' '== resolve' 'check-install-resolution.sh' '== catalogue' '== iso' 'build-iso.sh' '== verify' '== hwtrace' 'build-hwtrace-image.sh' '-Z' 'assets-1.5.0' '== qa' 'test-qemu.sh' \
               "EXPECTED_PACKAGE_REPOSITORY_TAG=packages-16-amd64-1.5.0" \
               "POST_INSTALL_CHECK=/tmp/daemonarchy-qa/repo/tests/qemu-desktop.py" \
               "PACKAGE_MIRROR_URLS=https://github.com/jordanhubbard/daemonarchy/releases/download/packages-16-amd64-1.4.1-upstream" \

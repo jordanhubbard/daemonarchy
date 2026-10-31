@@ -64,6 +64,10 @@ class PrepareAndFill(unittest.TestCase):
             (self.assets / name).write_bytes(arch.encode() * 1000)
             digest = hashlib.sha256((self.assets / name).read_bytes()).hexdigest()
             (self.assets / (name + ".sha256")).write_text(f"{digest}  {name}\n")
+        hwtrace = f"daemonarchy-hwtrace-{VERSION}-amd64.img.xz"
+        (self.assets / hwtrace).write_bytes(b"hwtrace" * 1000)
+        digest = hashlib.sha256((self.assets / hwtrace).read_bytes()).hexdigest()
+        (self.assets / (hwtrace + ".sha256")).write_text(f"{digest}  {hwtrace}\n")
         for name in (f"daemonarchy-{VERSION}-boot.txz", f"daemonarchy-{VERSION}-boot.txz.sig",
                      f"daemonarchy-{VERSION}.pem", f"daemonarchy-{VERSION}.der"):
             (self.assets / name).write_bytes(name.encode())
@@ -92,7 +96,9 @@ class PrepareAndFill(unittest.TestCase):
         record = json.loads((self.root / f"verification/release-{VERSION}.json").read_text())
         self.assertEqual((record["version"], record["source_commit"]), (VERSION, SOURCE))
         self.assertEqual(record["installer_commit"], "TODO")
-        self.assertEqual(len(record["assets"]), 8)
+        self.assertEqual(len(record["assets"]), 10)
+        self.assertEqual(record["hwtrace"], ["amd64"])
+        self.assertIn(f"daemonarchy-hwtrace-{VERSION}-amd64.img.xz.sha256", record["assets"])
         self.assertTrue(all(value == [0, "sha256:TODO"] for value in record["assets"].values()))
         self.assertEqual(record["closure_feed_records"],
                          sorted(p.stem for p in (ROOT / "verification/closure-feeds").glob("packages-16-*.json")))
@@ -133,6 +139,12 @@ class PrepareAndFill(unittest.TestCase):
             self.assertEqual(document["assets"][iso], [(self.assets / iso).stat().st_size, "sha256:" + digest])
             self.assertEqual(document["application_feed"], FEEDS["--packages-amd64"])
             self.assertEqual(document["checkout_feed"], FEEDS["--checkouts-amd64"])
+        hwtrace = f"daemonarchy-hwtrace-{VERSION}-amd64.img.xz"
+        self.assertEqual(record["hwtrace"], ["amd64"])
+        self.assertEqual(record["assets"][hwtrace][0], (self.assets / hwtrace).stat().st_size)
+        self.assertIn(record["assets"][hwtrace][1][7:], (self.root / f"docs/release-{VERSION}.md").read_text())
+        self.assertIn({"type": "hwtrace", "arch": "amd64", "asset": hwtrace, "checksum_asset": hwtrace + ".sha256"},
+                      current["images"])
         self.assertEqual(current["published_at"], "2026-11-07T12:00:00Z")
         self.assertEqual((record["installer_commit"], record["ports_commit"]), (INSTALLER, PORTS))
         self.assertEqual(record["aarch64_application_feed"], FEEDS["--packages-aarch64"])
@@ -165,6 +177,11 @@ class PrepareAndFill(unittest.TestCase):
         result = self.fill(check=False)
         self.assertNotEqual(result.returncode, 0)
         self.assertIn("does not cover", result.stderr)
+        iso.write_bytes(b"amd64" * 1000)
+        (self.assets / f"daemonarchy-hwtrace-{VERSION}-amd64.img.xz").write_bytes(b"changed")
+        self.assertIn("does not cover", self.fill(check=False).stderr)           # the trace image is checked too
+        (self.assets / f"daemonarchy-hwtrace-{VERSION}-amd64.img.xz.sha256").unlink()
+        self.assertIn("exactly", self.fill(check=False).stderr)
 
     def test_fill_checks_the_catalogue_and_the_closure_records(self):
         self.prepare()
