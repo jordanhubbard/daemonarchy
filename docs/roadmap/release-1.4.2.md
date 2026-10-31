@@ -12,11 +12,31 @@ that exists for each.
 
 - **MacBookPro16,1 Wi-Fi: the dead associated state.** The BCM4364 driver
   (`if_brcmfmac-kmod`) can stall after association: the interface still reports
-  `associated` and no traffic moves. A fix is drafted in
-  [daemonarchy-ports #37](https://github.com/jordanhubbard/daemonarchy-ports/pull/37)
-  and is deferred: it is a kernel-bound package on the ISO, so it needs a rebuilt
-  module, a regenerated Secure Boot module inventory, a re-signed boot bundle and
-  a physical retest on the MacBook. 1.4.1 ships without it.
+  `associated` and no traffic moves. Cause: `brcmf_link_event()` ignored every firmware
+  `E_LINK` down while the VAP was in `RUN`, including a real link loss after the
+  handshake, so net80211 and `wpa_supplicant` stayed associated while the firmware had
+  dropped the association and tossed every frame (`tx_complete status=3`). The fix is
+  merged ([daemonarchy-ports #37](https://github.com/jordanhubbard/daemonarchy-ports/pull/37),
+  `e136408d`). Still open: it is a kernel-bound package on the ISO, so it needs the
+  re-signed boot bundle (the rebuilt module changes the signed inventory; see
+  [mastering-1.4.2.md](../mastering-1.4.2.md#rebuilding-a-kernel-bound-module-on-mudflap-the-wi-fi-driver-2026-10-31))
+  and a physical retest. Evidence so far is fault injection on the MacBook (a synthetic
+  link-down after the PTK: 5 of 5 honoured and recovered, no scan stall, no flapping),
+  not a reproduction of the firmware-side loss. 1.4.1 ships without it.
+- **MacBookPro16,1 Wi-Fi: the 2.4 GHz channel-1 AP fails the 4-way handshake.** Candidate,
+  not investigated. On the 1.4.0 MacBook the AP `70:a7:41:81:16:e0` (2.4 GHz, channel 1,
+  chanspec `0x1001`) never completed a handshake: the join succeeds, then 3 to 4 s later
+  the firmware reports `event 6` (deauth indication) with reason 15 (4-way handshake
+  timeout) and `wpa_supplicant` logs `WRONG_KEY` and temp-disables the SSID for 10 s, then
+  28 s to 38 s. The pre-shared key is right: the same SSID joined other APs in 1 to 2 s.
+  Every logged attempt on that AP failed this way (at least seven, 2026-10-30 00:02 twice,
+  00:28 and 08:51, and 2026-10-31 00:01 twice and 00:04), on both the 1.4.0 driver and the
+  patched one. Reason 15 is not exclusive to it: it also hit the channel-6 AP (once after
+  the key was installed) and, once, the strong channel-36 AP, but those APs usually joined.
+  When `wpa_supplicant` picks this AP the join costs 10 to 45 s. Candidates, none tested: our
+  message 4 (or message 2) is not reaching the AP on channel 1, an event-ordering problem
+  around key installation, or the X0 regulatory country. A passive capture of the AP's
+  EAPOL frames and `dev.brcmfmac.0.debug=2` during a join would separate them.
 - **ADOPT-002** ([queue](active-work.md#adopt-002--qualify-retained-native-execution-and-release-enforcement)).
   Needs the external Literate AI framework to execute native components.
 - **GUI-001** ([queue](active-work.md#gui-001--deliver-a-colorful-fast-graphical-package-manager)).
