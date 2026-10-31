@@ -204,7 +204,11 @@ and from upstream FreeBSD ports.
    ([record](#worker-record-native-bulk-unsigned-feed-and-uefi-iso-2026-10-27)).
    No VMware or hardware boot has qualified it.
 7. **Product scripts still bound to amd64** (outside this change):
-   - `scripts/build-checkout-packages.py:102` writes an amd64 ABI literal.
+   - `scripts/build-checkout-packages.py` wrote an amd64 ABI literal; it now takes `--abi`
+     (the aarch64 reroll passes `FreeBSD:16:aarch64`). The aarch64 checkout feeds published up to
+     and including 1.5.0 carry the amd64 label, so on an aarch64 system `daemonarchy-checkouts`
+     fails (`pkg: wrong architecture: FreeBSD:16:amd64 instead of FreeBSD:16:aarch64`) until the
+     checkout feed is rebuilt under a new tag.
    - `scripts/adopt-candidate-packages.sh:33,85` requires amd64.
    - `secureboot/build.py` and `secureboot/module-inventory.py` are amd64-only;
      Secure Boot is not offered on aarch64, and `build-iso.sh` refuses Secure
