@@ -121,6 +121,8 @@ Other desktop dependencies are downloaded during installation. Compatible offici
 
 ## Updates
 
+The upgrade model, stated plainly: [what `pkg upgrade` does and does not do, and when an ISO is still needed](HACKING.md#the-upgrade-model-today). Developers who want to publish their own installer and feeds: [Forking Daemonarchy](HACKING.md#forking-daemonarchy).
+
 Application packages update with `pkg upgrade` (which Omarchy's update runs). This does not update the FreeBSD base/kernel or make kernel modules compatible with another snapshot. FreeBSD's packages come from pkg.FreeBSD.org. Daemonarchy's own packages (the Omarchy ports and the patched Quickshell) come from a signed repository published as the assets of the [`packages-16-amd64`](https://github.com/jordanhubbard/daemonarchy/releases/tag/packages-16-amd64) release. The installer adds its key as `/usr/local/etc/pkg/keys/daemonarchy.pub`, so fixes reach you without a new ISO. The image's own packages stay on the disk as a fallback repository, `Daemonarchy-ISO`, since the GPU and Wi-Fi modules built for its kernel are only there.
 
 A system installed from an image dated 2026-10-02 or earlier has only the on-disk repository. To move it to the online one, run as root:

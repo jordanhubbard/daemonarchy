@@ -5,6 +5,13 @@ Use [the active queue](docs/roadmap/active-work.md) for stable work IDs and
 acceptance status, and [the architecture](docs/architecture/design-traceability.md)
 for Component ownership. This file remains the release and feature overview.
 
+## 1.5.1: network upgrades and forkability
+
+Whether 1.5 could be the last release that needs an ISO, and whether another developer can fork the
+repositories and publish their own installer and feeds, was checked: both are only partly true today. See
+[the 1.5.1 plan](docs/roadmap/release-1.5.1.md) (NETUP-001, NETUP-002, NETUP-003, FORK-001) and
+[the upgrade model](HACKING.md#the-upgrade-model-today).
+
 ## 1.5.0 (opened as 1.4.2): items deferred from 1.4.1, and faster builds
 
 The MacBookPro16,1 Wi-Fi fix (a dead associated state in the BCM4364 driver, drafted in
