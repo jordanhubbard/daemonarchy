@@ -4,7 +4,7 @@ Status: **in progress.** The toolkit-free layers (repositories, catalogue, plan,
 engine, text commands) are in `apps/daemonarchy-pkg/` with tests in `tests/gui-package-manager.py`.
 The transaction helper (`daemonarchy-pkg-helper`) and the window's progress model are in too.
 The window, the menu entries and the package are not done, and nothing is shipped. It is the plan for the
-GUI-001 queue item ([acceptance](roadmap/active-work.md#gui-001--deliver-a-colorful-fast-graphical-package-manager)).
+GUI-001 queue item ([acceptance](roadmap/active-work.md#gui-001-deliver-a-colorful-fast-graphical-package-manager)).
 Until it ships, the graphical package manager is OctoPkg.
 
 ## What the queue item asks for
