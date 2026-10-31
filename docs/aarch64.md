@@ -179,10 +179,10 @@ and from upstream FreeBSD ports.
    latest main run, [40068278453](https://github.com/jordanhubbard/daemonarchy-src/actions/runs/40068278453)
    of 2026-10-24, passed. No aarch64 loader, world, diagnostic kernel or
    netconsole build has run in CI.
-   **Deferred (1.4.2 decision, 2026-10-31).** The "Cross-build Kernel" workflow already
+   **Deferred (decision of 2026-10-31).** The "Cross-build Kernel" workflow already
    builds the aarch64 kernel on three runners. A world build costs far more CI minutes
    than a kernel, and a loader-only cross build still needs the headers a world build
-   installs, so there is no cheap, reliable step to add. It was left out of 1.4.2 rather
+   installs, so there is no cheap, reliable step to add. It was left out of the next release rather
    than spend CI minutes; the gap stays open.
 6. **poudriere cannot make an aarch64 ISO.** Its `iso` and `hybridiso` types
    embed x86 BIOS boot code (`cdboot`, `pmbr`, `isoboot`). This change adds a
