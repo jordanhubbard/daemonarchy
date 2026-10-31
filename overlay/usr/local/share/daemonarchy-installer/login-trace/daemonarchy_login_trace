@@ -1,7 +1,7 @@
 #!/bin/sh
 #
 # PROVIDE: daemonarchy_login_trace
-# REQUIRE: FILESYSTEMS
+# REQUIRE: FILESYSTEMS ldconfig
 # BEFORE: sddm LOGIN
 # KEYWORD: nojail shutdown
 #
