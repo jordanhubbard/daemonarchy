@@ -3,6 +3,99 @@
 What changed in how an amd64 release image is mastered after 1.4.1, so the 1.4.2 run
 starts from it. The steps themselves are in [mastering-1.4.1.md](mastering-1.4.1.md).
 
+## The re-roll sequence
+
+The order the 1.4.2 release will follow. Publishing anything (a feed, an image, the
+release) is the release owner's step and happens only after approval; the steps before it
+write files and nothing else. amd64 is built on mudflap and aarch64 on barmy; keys stay on
+madmax (`~/daemonarchy-keys`, never copied into a VM, never printed).
+
+1. **Pin the ports revision.** One daemonarchy-ports revision for both architectures, then
+   fast-forward `main` to it. Merge the ports that the pin depends on first: `x11-wm/daemonarchy`
+   needs `ports-mgmt/daemonarchy-pkg`
+   ([daemonarchy-ports #39](https://github.com/jordanhubbard/daemonarchy-ports/pull/39)),
+   which a `main` without it cannot resolve. `graphics/drm-612-kmod` on aarch64
+   ([#36](https://github.com/jordanhubbard/daemonarchy-ports/pull/36)) is a draft that moves
+   only when the arm64 feed pin carries it.
+2. **List what changes.** `scripts/diff-release-packages.sh OLD_PORTS NEW_PORTS FEED.tsv
+   net/if_brcmfmac-kmod ports-mgmt/daemonarchy-pkg` against the last release's application
+   feed and the new pin, on mudflap (`make -V PKGNAME` only). Against the 1.4.1 feed, ports
+   `dd277aff` to `main` plus #39, it found exactly: `x11-wm/daemonarchy` 1.4.1,1 to
+   1.4.1_1,1 (the new dependency); `ports-mgmt/daemonarchy-pkg-0.1.0` new; and, on the ISO
+   only, `net/if_brcmfmac-kmod` `_2` to `_3`. Nothing else in the 209-package feed moved
+   (`omarchy` stays 4.0.4_28). Re-run it at the real pin.
+3. **Rebuild** in one poudriere run (`poudriere -e $WORK/poudriere-etc bulk -S -C ...`, see
+   [mastering-1.4.1.md](mastering-1.4.1.md#why-the-package-build-is-not-a-plain-poudriere-bulk)):
+   the changed feed packages, the new one, and the kernel-bound module. Add
+   `ports-mgmt/daemonarchy-pkg` to `OMARCHY_ORIGINS` in `origins.sh` so the feed carries it.
+4. **Secure Boot.** A rebuilt kernel module moves the signed module inventory
+   ([the Wi-Fi driver notes below](#rebuilding-a-kernel-bound-module-on-mudflap-the-wi-fi-driver-2026-10-31)):
+   regenerate it with `resign-boot-bundle.sh check`; `sign` needs the boot signing key and
+   is an operator decision. The re-signed bundle and its `.sig` replace the 1.4.1 ones in the
+   release assets.
+5. **Application feeds.** A full signed feed for each architecture, `packages-16-amd64-1.4.2`
+   and `packages-16-aarch64-1.4.2` (a suffix such as `-r2` only when a published tag must be
+   superseded; published tags are never replaced). `master-release.sh feed` builds it on the
+   builder with the key already there, `package-feed-manifest.py` stages it, and the
+   release owner uploads with `package-feed-upload.py` (never `--clobber`) and verifies by
+   re-download. The installer reads one application repository per tag, so a feed is a
+   complete one, not a delta.
+6. **Checkout feeds.** `checkouts-16-ARCH-1.4.2`: the ports checkout package and catalogue at
+   the pin (the source checkout stays at the base revision unless the base moved). The
+   overlay `checkouts.json` becomes the published catalogue, byte for byte, in the release
+   pull request.
+7. **Closure shards.** Run `scripts/package-mirror-plan.py --fail-on-unsatisfied` against the
+   current upstream catalogue and the published shards, with the new roots. The dependency
+   closure of `daemonarchy-pkg` (107 packages with GTK 4) was checked against the published
+   `packages-16-amd64-1.4.1-upstream` shard and the 1.4.1 feed and is already covered, so
+   amd64 needs no new shard for it. A gap becomes a delta shard,
+   `packages-16-ARCH-1.4.2-upstream` (published tags are immutable, so a gap cannot join
+   an old shard); aarch64 is checked the same way on barmy, including `py312-sqlite3`, the
+   live-image gap of 1.4.1. List every shard in `PACKAGE_MIRROR_URLS`, new and old, and
+   stage its record in `verification/closure-feeds/`.
+8. **Build the images.** amd64 on mudflap, aarch64 on barmy, from `main` at one commit, with
+   `PACKAGE_REPOSITORY_TAG` and the catalogue of the new feeds and `REQUIRE_PACKAGE_MIRROR=yes`
+   (`master-release.sh iso`; the setup notes below).
+9. **Verify** (`master-release.sh verify`): the digests, `_sqlite3` in the live root, the
+   embedded mirror and tag, the catalogue byte for byte, and the overlay launchers and
+   desktop entries against the files on `main` (sha256).
+10. **QEMU QA** against the public URLs from a workstation (`master-release.sh qa`, with the
+    config's own `WORK` and a `QA_DIR` of its own). Count `[FreeBSD]` in the install log: it
+    must be 0, or list each package absent from our feeds.
+11. **Sticks.** The operator gives the serials. `master-release.sh sticks` writes both,
+    refuses the scratch disk and anything mounted, and reads each back against the digest.
+12. **Publish** (release owner): the feeds, then the release with the eight assets,
+    verified with `scripts/verify-release-assets.py --published`.
+13. **Fill the records.** The draft release pull request is made once the template is
+    reviewed: `scripts/prepare-release.py --version 1.4.2 --source-commit SHA40` copies
+    `release/templates/release-1.4.2.md` to `docs/release-1.4.2.md`, writes the
+    `verification/release-1.4.2.json` skeleton and moves `release/current.json` to the new
+    release with `TODO` digests. Write the prose sentences it lists (README, HACKING,
+    PROJECT, CHANGELOG, `docs/aarch64.md`), keep the pull request a draft (the docs
+    guard fails by design until it is filled), and after publication run
+    `scripts/fill-release.py` (below). `tests/release-prepare-fill.py` runs the whole
+    flow on a scratch tree.
+
+### Filling the records
+
+```
+python3 scripts/fill-release.py --version 1.4.2 --assets ASSETS --dry-run ...   # same arguments
+python3 scripts/fill-release.py --version 1.4.2 --assets ASSETS \
+    --installer-commit INSTALLER40 --ports-commit PORTS40 \
+    --packages-amd64 packages-16-amd64-1.4.2 --packages-aarch64 packages-16-aarch64-1.4.2 \
+    --checkouts-amd64 checkouts-16-amd64-1.4.2 --checkouts-aarch64 checkouts-16-aarch64-1.4.2 \
+    --aarch64-final-qemu "..." --physical-status "..." --set GUI001_EVIDENCE="..." \
+    [--published-at 2026-11-07T00:00:00Z]
+python3 tests/docs-release-sync.py -v
+python3 scripts/verify-release-assets.py --record verification/release-1.4.2.json \
+    --assets ASSETS --closure-assets CLOSURE_DIR      # CLOSURE_DIR/<tag>/ for each closure shard
+```
+
+It generalises `fill-release-1.4.1.py`: the version is an argument, the closure shards are
+the record's `closure_feed_records`, and a release-specific token is given with `--set`. The
+assets directory holds exactly the eight files; sizes and digests are computed from them.
+After publication use `scripts/release-current.py update` and `check-published`.
+
 ## The amd64 build VM (mudflap)
 
 `daemon.local` is retired. All amd64 build work runs in a FreeBSD 16.0-CURRENT VM on
