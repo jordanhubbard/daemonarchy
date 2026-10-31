@@ -10,7 +10,7 @@ Versioning: API_VERSION is (major, minor). A minor release only adds names; a
 major release may remove or change them. A host or plugin asks for the version
 it was written against with `compatible("1.0")`; 1.1 added `inline`, overlay screens, `NoInput`
 and `run_scene(keep=, screen=)`; 1.2 added `arcade` helpers and the `plugin` runtime (import them as
-submodules); 1.3 added `windows` (open, close, resize, select, list and title, mediated by the host); 1.4 added `ansi`.
+submodules); 1.3 added `windows` (open, close, resize, select, list and title, mediated by the host); 1.4 added `ansi`; 1.5 added `Audio.blip` and sandboxed Lua extensions (`lua`).
 """
 
 from .caps import Capabilities, detect
@@ -26,7 +26,7 @@ from .audio import Audio, NullAudio, ThreadedAudio
 from .scene import Scene, run_scene
 from . import ansi, windows
 
-API_VERSION = (1, 4)
+API_VERSION = (1, 5)
 __version__ = "1.4.0"
 
 __all__ = [

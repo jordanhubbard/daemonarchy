@@ -2,7 +2,7 @@
 
 - **Status:** active
 - **Owning queue item:** [RELEASE-001](active-work.md#release-001-deliver-a-qualified-literate-ai-release-workflow-in-14)
-- **Supporting queue items:** the rows under Scope below; each keeps its own queue entry
+- **Supporting queue items:** the rows under Scope below, and [EXT-002](active-work.md#ext-002-sandboxed-lua-extensions-for-content-we-did-not-write); each keeps its own queue entry
 - **Completion / archival evidence:** pending; each scope row closes only on the evidence its own queue item demands (see the [1.4.1 audit](release-1.4.1-audit.md))
 
 1.4.1 carried every open queue item. The items below cannot be finished by
@@ -57,6 +57,12 @@ that exists for each.
   Foundations only; needs boot-chain research and hardware.
 - **HW-004** ([queue](active-work.md#hw-004-t2-touch-id-login-through-fprintd)).
   Not in the image; needs a Mac with enrolled fingers.
+- **EXT-002** ([queue](active-work.md#ext-002-sandboxed-lua-extensions-for-content-we-did-not-write)).
+  New work, not deferred: sandboxed Lua extensions for content we did not write. The runtime (SDK API 1.5:
+  `.lua` entries and `Audio.blip`) and the fish tank are implemented and tested on Linux; FreeBSD capability mode
+  and checks on the exact image are open. Touches `daemonarchy_visual` (`lua.py`, `sandbox.lua`, `plugin.py`,
+  `audio.py`), the installer's `sound.py` and `daemonarchy-extensions`; other 1.4.2 work in those files should
+  rebase onto it. The four Python games and the feed's trust model are unchanged.
 
 ## Added for 1.4.2
 

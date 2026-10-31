@@ -32,7 +32,7 @@ INDEX_SCHEMA = "daemonarchy/visual-plugin-index@1"
 TYPES = ("game", "tool", "animation", "visualizer")
 CAPABILITIES = ("draw", "input", "audio", "window")
 ID = re.compile(r"^[a-z][a-z0-9-]{1,31}$")
-ENTRY = re.compile(r"^[A-Za-z0-9_][A-Za-z0-9_.-]{0,63}\.py$")
+ENTRY = re.compile(r"^[A-Za-z0-9_][A-Za-z0-9_.-]{0,63}\.(py|lua)$")
 HEX = re.compile(r"^[0-9a-f]{64}$")
 LIMIT_BOUNDS = dict(fps=(1, 30), memory_mb=(96, 512), cpu_seconds=(10, 3600), frame_ms=(20, 1000), windows=(1, 4))
 DEFAULT_LIMITS = dict(fps=15, memory_mb=192, cpu_seconds=900, frame_ms=250, windows=2)
@@ -83,6 +83,12 @@ def check_manifest(manifest):
         problems.append("bad entry name")
     if not isinstance(manifest.get("entry_sha256"), str) or not HEX.match(manifest["entry_sha256"]):
         problems.append("bad entry_sha256")
+    if isinstance(manifest.get("entry"), str) and manifest["entry"].endswith(".lua"):
+        api = re.match(r"^1\.([0-9]+)$", manifest["api"]) if isinstance(manifest.get("api"), str) else None
+        if not api or int(api.group(1)) < 5:
+            problems.append("a Lua extension needs SDK API 1.5 or later")
+        if isinstance(manifest.get("capabilities"), list) and "window" in manifest["capabilities"]:
+            problems.append("a Lua extension cannot have the window capability")
     caps = manifest.get("capabilities")
     if not isinstance(caps, list) or not caps or any(c not in CAPABILITIES for c in caps) or "draw" not in caps:
         problems.append("capabilities must be a non-empty subset of draw, input, audio including draw")
@@ -334,7 +340,11 @@ def run_plugin(plugin, caps, out, source, audio=None, clock=None, fps=None, back
 
     `backend` is a windows backend (see windows.choose_backend) for a plugin that has the `window` capability.
     """
-    scene = RemoteScene(plugin, clock, backend)
+    if plugin.entry.endswith(".lua"):
+        from .lua import LuaScene
+        scene = LuaScene(plugin, clock)
+    else:
+        scene = RemoteScene(plugin, clock, backend)
     try:
         return run_scene(scene, caps, out, source, audio, clock, fps=fps or plugin.limits["fps"], **kwargs)
     finally:

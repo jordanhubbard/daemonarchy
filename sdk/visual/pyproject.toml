@@ -13,3 +13,6 @@ readme = "README.md"
 [tool.setuptools]
 package-dir = { "" = "../../overlay/usr/local/lib/daemonarchy-visual" }
 packages = ["daemonarchy_visual"]
+
+[tool.setuptools.package-data]
+daemonarchy_visual = ["*.lua"]

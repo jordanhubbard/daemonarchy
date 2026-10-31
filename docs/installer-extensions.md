@@ -72,6 +72,10 @@ Capabilities are enforced on both sides: without `input` it is sent no actions, 
 dropped, without `window` every window request is refused. This is process isolation for an extension's bugs,
 not a sandbox for hostile code: extensions are signed content from our own feed.
 
+Content we did not write goes in the other runner: a Lua entry file in a real sandbox (separate process, no
+filesystem, network or `os`, an instruction budget, host-validated output), described in
+[sandboxed-extensions.md](sandboxed-extensions.md). It uses this same manifest, feed, menu and preemption.
+
 ## Adding an extension
 
 Put its directory under `extensions/` with a `manifest.json`, seal it (`scripts/seal-games.py` seals the games;

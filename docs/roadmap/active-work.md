@@ -1350,6 +1350,24 @@ remains open; report files do not establish a passing gate.
   - [ ] An install from the exact image against the published feed: choose a game, see the download and verification, play it in its own window, the install result unchanged; once with the network blocked, showing the offline message; once with a corrupted bundle, refused.
   - [ ] The same on the MSI and the MacBookPro16,1, on the `vt(4)` console and over SSH.
 
+### [ ] EXT-002 — Sandboxed Lua extensions for content we did not write
+
+- **Priority:** P2
+- **Release:** 1.4.2 (opened after 1.4.1 went to mastering, 2026-10-30; not claimed done by 1.4.0 or 1.4.1; see [the 1.4.2 plan](release-1.4.2.md))
+- **Owner:** installer Component with the visual SDK
+- **Direction:** Let the installer run an extension whose code is not ours (a community toy or game published from a release page) without trusting it: a Lua entry file in a real sandbox, loaded through the same manifest, signed feed, menu, windows and preemption as the Python extensions. Retire the "not a sandbox for hostile code" caveat for this kind of content.
+- **Conclusion:** Additive to 1.4.1: SDK API 1.5 only adds `Audio.blip` and the `.lua` entry type; the four Python games, the feed and the trust model are unchanged. GAME-001's four games are already the shipped Python games; this is not a second games portfolio.
+- **Depends on:** EXT-001, VISUAL-SDK-001.
+- **Completion prerequisites:** none
+- **Implementation:**
+  - [x] The Lua runtime: 64x40 pixel surface, process-isolated sandbox with limits, host-validated protocol, held-key input, the `.lua` manifest rules, `Audio.blip` and the player's `blip` message, and the fish tank as the first Lua extension, with tests ([sandboxed-extensions.md](../sandboxed-extensions.md)).
+  - [ ] `cap_enter` in the child on FreeBSD, and confirm `flua`, `RLIMIT_AS` and the root-to-`nobody` drop on the exact image.
+  - [ ] Publish the fish tank in the feed; an authoring guide; decide whether third-party content uses a separate signing key from the package repository.
+  - [ ] A read-only "progress" capability, if wanted.
+- **Evidence:**
+  - [ ] An escape-attempt suite and a runaway/flood suite run on the exact image as root, showing the extension dies as a failed result and the install is unchanged.
+  - [ ] The fish tank played from the published feed on a `vt(4)` console, over SSH and in tmux.
+
 ### [ ] VISUAL-SDK-001 — Extract a reusable installer visual SDK and plugin runtime
 
 - **Priority:** P1 (1.4.1)
