@@ -70,9 +70,11 @@ that exists for each.
   moved from the [1.4.1 plan](release-1.4.1.md)). amd64 only. Delivered as virtual apps
   like Cudalab, not as default packages: `daemonarchy-steam` and `daemonarchy-wine`
   launchers, desktop entries, icons and System > FreeBSD menu entries that the installer
-  places on amd64 only. The first launch installs `wine-devel`, `wine-mono-devel`,
-  `wine-gecko-devel` and `winetricks` from the system's repositories and downloads Valve's
-  `SteamSetup.exe` over HTTPS; nothing of Wine's or Valve's is shipped, so the package
+  places on amd64 only. The first launch installs `wine-devel` and its helpers from the
+  system's repositories, checks the NVIDIA, Vulkan and Xwayland stack, installs Wine Mono and
+  DXVK from pinned downloads and, for Steam, downloads Valve's `SteamSetup.exe` over HTTPS;
+  `install` and `run` take any Windows program the user supplies (recipe by Sam Sheridan, see
+  the design page); nothing of Wine's or any vendor's is shipped, so the package
   lists, feeds and ISO size do not change. Design, licences and the source offer are in
   [Windows programs and Steam](../windows-apps.md). The launcher state machine and the
   installer placement are tested against stand-ins. **Not verified:** a Windows game and
