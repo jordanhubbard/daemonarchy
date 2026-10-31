@@ -302,6 +302,16 @@ class Plans(Fixture):
         self.assertNotEqual(plan.from_text("install", ["perl5"], INSTALL, self.catalogue).identity, first.identity)
         self.assertNotEqual(plan.from_text("upgrade", ["cowsay"], INSTALL, self.catalogue).identity, first.identity)
 
+    def test_autoremove_is_a_removal_planned_without_names_or_a_catalogue_update(self):
+        text = "Deinstallation has been requested for the following 1 packages (of 0 packages in the universe):\n\n" \
+               "Installed packages to be REMOVED:\n\tperl5: 5.42.3\n\nNumber of packages to be removed: 1\n\nThe operation will free 63 MiB.\n"
+        result = plan.from_text("autoremove", [], text, self.catalogue)
+        self.assertEqual([(i.kind, i.name) for i in result.items], [("remove", "perl5")])
+        self.assertEqual(plan.command("autoremove", []), ["pkg", "autoremove", "-n", "-y"])
+        self.assertFalse(result.needs_confirmation)
+        self.assertEqual(result.download_bytes, 0)
+        self.assertNotEqual(result.identity, plan.from_text("remove", [], text, self.catalogue).identity)
+
     def test_the_dry_run_command_is_the_one_the_helper_will_run(self):
         self.assertEqual(plan.command("install", ["a", "b"]), ["pkg", "install", "-n", "-y", "-U", "a", "b"])
         self.assertEqual(plan.command("remove", ["a"]), ["pkg", "delete", "-n", "-y", "a"])

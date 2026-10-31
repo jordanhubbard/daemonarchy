@@ -17,8 +17,11 @@ import subprocess
 from . import engine
 
 SCHEMA = 'daemonarchy/gui-plan@1'
-ACTIONS = ('install', 'upgrade', 'remove')
-VERBS = {'install': 'install', 'upgrade': 'upgrade', 'remove': 'delete'}
+ACTIONS = ('install', 'upgrade', 'remove', 'autoremove')
+VERBS = {'install': 'install', 'upgrade': 'upgrade', 'remove': 'delete', 'autoremove': 'autoremove'}
+# Removing never fetches: no catalogue update flag, no download stage. autoremove is pkg's own list of automatic
+# packages nothing depends on any more, planned and run like any other removal.
+REMOVALS = ('remove', 'autoremove')
 # Section heading -> what happens to the packages under it.
 SECTIONS = (('New packages to be INSTALLED', 'install'), ('Installed packages to be UPGRADED', 'upgrade'),
             ('Installed packages to be REINSTALLED', 'reinstall'), ('Installed packages to be DOWNGRADED', 'downgrade'),
@@ -169,7 +172,7 @@ def command(action, names, pkg=('pkg',)):
     """The dry-run command for an action; the helper runs the same one with the real verb."""
     if action not in ACTIONS:
         raise ValueError(f'unknown action {action!r}')
-    flags = ['-n', '-y'] + (['-U'] if action != 'remove' else [])
+    flags = ['-n', '-y'] + (['-U'] if action not in REMOVALS else [])
     return [*pkg, VERBS[action], *flags, *names]
 
 

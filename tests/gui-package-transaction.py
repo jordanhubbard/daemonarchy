@@ -61,7 +61,7 @@ if args[0] == "install":
         print(f"[{n}/{len(names)}] Installing {name}...")
         print(f"[{n}/{len(names)}] Extracting {name}: .......... done")
     sys.exit(0)
-if args[0] == "delete":
+if args[0] in ("delete", "autoremove"):
     for n, name in enumerate(names, 1):
         print(f"[{n}/{len(names)}] Deinstalling {name}-1.0...")
         print(f"[{n}/{len(names)}] Deleting files for {name}-1.0: .......... done")
@@ -216,6 +216,19 @@ class Helper(Fixture):
         self.assertEqual((view["state"], view["stage_count"], view["packages"]["done"], view["packages"]["total"]),
                          ("done", 1, 1, 1))
 
+    def test_autoremove_runs_pkgs_own_list_of_unused_dependencies(self):
+        self.set_plan(gui.REMOVE.replace("cowsay: 3.04_3", "perl5: 5.42.3"))
+        approved = self.approved("autoremove", [])
+        code, lines = self.go("autoremove", [], approved.identity)
+        self.assertEqual(code, 0, lines)
+        self.assertNotIn("@@phase fetch", lines)
+        self.assertEqual(self.calls()[-1], "autoremove -y")          # no -U, no names
+        tx = txview.Transaction("autoremove")
+        for line in lines:
+            tx.feed(line)
+        view = tx.view()
+        self.assertEqual((view["state"], view["stage_count"], view["packages"]["done"]), ("done", 1, 1))
+
     def test_an_empty_plan_is_not_run(self):
         self.set_plan("No packages available to install matching 'nosuch' have been found.\n")
         approved = self.approved("install", ["nosuch"])
@@ -232,6 +245,12 @@ class RootSafety(unittest.TestCase):
         for bad in (["install", "-fy", "--identity", "0" * 64], ["install", "../x", "--identity", "0" * 64],
                     ["install", "ok", "--identity", "nothex"], ["install", "ok", "--identity", "0" * 64, "--allow-unsigned", "-x"],
                     ["install", "ok", "--identity", "0" * 64, "--workers", "99"], ["install", "--identity", "0" * 64]):
+            with self.subTest(bad=bad), contextlib.redirect_stderr(io.StringIO()), self.assertRaises(SystemExit) as caught:
+                transaction.main(bad, io.StringIO())
+            self.assertEqual(caught.exception.code, 2)
+
+    def test_autoremove_takes_no_names_and_refresh_takes_nothing(self):
+        for bad in (["autoremove", "perl5", "--identity", "0" * 64], ["autoremove"]):
             with self.subTest(bad=bad), contextlib.redirect_stderr(io.StringIO()), self.assertRaises(SystemExit) as caught:
                 transaction.main(bad, io.StringIO())
             self.assertEqual(caught.exception.code, 2)

@@ -111,7 +111,7 @@ def run(action, names, identity, allow_unsigned=(), pkg=('pkg',), out=None, dbdi
                           detail=f'the download did not complete (parallel-fetch exit {code})')
     emit(out, '@@phase install')
     verb = plan_module.VERBS[action]
-    argv = [*pkg, verb, '-y'] + (['-U'] if action != 'remove' else []) + names
+    argv = [*pkg, verb, '-y'] + (['-U'] if action not in plan_module.REMOVALS else []) + names
     code = stream(argv, out)
     if code:
         return result(out, 'failed', FAILED, reason='pkg', identity=plan.identity, detail=f'pkg {verb} exited {code}')
@@ -163,7 +163,10 @@ def main(argv=None, out=None):
         return refresh(('pkg',), out or sys.stdout)
     if not args.identity:
         parser.error('--identity is required')
-    if args.action != 'upgrade' and not args.names:
+    if args.action in ('upgrade', 'autoremove'):
+        if args.names:
+            parser.error(f'{args.action} takes no package names')
+    elif not args.names:
         parser.error('install and remove need package names')
     # This runs as root on arguments a user chose, so it takes nothing that points it somewhere else:
     # the pkg command, the database and the configuration directories are the system's, fixed here.

@@ -225,5 +225,7 @@ class Session:
 
 
 def title(action, names):
+    if action == 'autoremove':
+        return 'Remove unused dependencies'
     shown = ', '.join(names[:3]) + (f' and {len(names) - 3} more' if len(names) > 3 else '')
     return f"{theme.LABEL.get(action, action.title())} {shown}".strip()
