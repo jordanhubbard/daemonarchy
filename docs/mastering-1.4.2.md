@@ -224,3 +224,34 @@ run the script from `main` (the restored `product/` predates it):
 It exits 1 and writes `module-inventory.json.new`. The diff against the current inventory
 was exactly two hunks: the package entry (`_2` to `_3`) and the module hash. `sign` is the
 step that needs the signing key and is an operator decision.
+
+## Running poudriere and the feeds on mudflap (2026-10-31)
+
+What the amd64 feed build and the ISO prerequisites needed that daemon.local had given for free:
+
+- **The release jail needs `/usr/src/lib/virtual_oss`.** Poudriere applies a port's `IGNORE` before it
+  drops packages that already exist, so `audio/virtual_oss_bluetooth` ("requires FreeBSD source files
+  in /usr/src") was ignored and its dependents `x11-wm/daemonarchy` and `x11-wm/omarchy` were skipped,
+  and the bulk deleted the old `daemonarchy` package without building the new one. Copy
+  `lib/virtual_oss` from the restored source tree into the jail's `/usr/src/lib`; the package itself is
+  not rebuilt. Check the dry run lists only the two feed packages before the real bulk
+  (`/root/r3-build.sh` does).
+- **`pkg repo` skips a hidden directory.** The set directory poudriere keeps is `.real_<n>` behind the
+  `.latest` symlink, and `pkg repo` on it says `No package files have been found`. To regenerate the
+  set's catalogue after changing `All/` (for example swapping `if_brcmfmac-kmod` `_2` for `_3`; the ISO
+  build copies every package whose origin is in `ISO_ORIGINS`, so the set must hold exactly one),
+  hard-link `All/*.pkg` into a plain directory, run `pkg repo -q` there and copy `meta`, `meta.conf`,
+  `packagesite.pkg` and `data.pkg` back.
+- **`PACKAGE_MIRROR_URLS` must be set for a release whose tag differs from its closure shard's.**
+  The default derives the shard from the application tag minus a `-rN` suffix; for
+  `packages-16-amd64-1.4.2` it would name `packages-16-amd64-1.4.2-upstream`, which does not exist.
+  Set it to the 1.4.1 shard (and any delta shard) in the config.
+- **`pkg update` exits 0 on `Invalid signature`.** Verify a signed feed by reading pkg's output, with a
+  fresh repository name per check (pkg caches a catalogue under its name and answers "up to date").
+- **Keys.** The feed signing key never enters the VM except in the operator's tmpfs window
+  (`feed-key-window.sh` on madmax runs `/root/sign-feeds.sh` on mudflap: mount at `/var/keytmp-feed`,
+  swap off, hash compared on both sides, key removed and the tmpfs unmounted on every exit path, with a
+  shared `/var/run/keywindow.lock`); both feeds are signed and verified in one window.
+- **Order of the amd64 build planned for 1.4.2:** ports pin, `r3-build.sh` (unsigned feeds), the key window, the copy
+  to sparky and `package-feed-manifest.py`, the upload by the release owner, then the ISO (whose
+  `check-closure-feed` reads the published application feed), `verify`, `qa`, sticks.
