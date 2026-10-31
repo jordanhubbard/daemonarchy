@@ -38,9 +38,13 @@ The base is FreeBSD 16.0-CURRENT, OSVERSION `1600029`, built from daemonarchy-sr
 - **Windows programs and Steam in the Apps menu (amd64).** Two Apps menu entries,
   Steam (the Windows client, run under Wine) and Windows Programs. They are virtual apps
   like Cudalab: nothing of Wine's or Valve's is on the image. The first launch opens a
-  window that installs `wine-devel`, `wine-mono-devel`, `wine-gecko-devel` and `winetricks`
-  from the system's repositories (one sudo prompt), creates a Wine prefix and, for Steam,
-  downloads Valve's own installer over HTTPS and runs it. Design, licences, source offer
+  window that installs `wine-devel` and its helpers from the system's repositories (one sudo
+  prompt), checks the NVIDIA, Vulkan and Xwayland stack and warns about what is missing, creates
+  a 64-bit Wine prefix with Wine Mono and DXVK (pinned, sha256-checked downloads from their
+  authors) and, for Steam, downloads Valve's own installer over HTTPS and runs it. `install` and
+  `run` do the same for any Windows program you supply, logging to a file. The recipe for Mono and
+  DXVK was contributed by Sam Sheridan, from his experience running a .NET and DirectX 11 game
+  launcher on FreeBSD. Design, licences, source offer
   and limits are in [windows-apps.md](windows-apps.md). **Verified:** on the build VM the
   real first run created the prefix, ran Valve's installer, and Steam updated itself and
   stayed running (headless, no GPU). **Not verified:** a Windows game, or Steam's window,
