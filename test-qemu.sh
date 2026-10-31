@@ -48,6 +48,10 @@ VIRGL_RENDER_NODE=${VIRGL_RENDER_NODE:-}
 VNC_LISTEN=${VNC_LISTEN:-127.0.0.1:11}
 BOOT_MODE=${BOOT_MODE:-uefi}
 SSH_PORT=${SSH_PORT:-2222}
+# An emulated Intel HDA codec with no host audio backend, so the guest's sound path is exercised
+# (snd_hda must attach and /dev/sndstat list a pcm device). aarch64 only by default.
+SOUND_TEST=${SOUND_TEST:-$([ "${ARCH:-x86_64}" = aarch64 ] && echo yes || echo no)}
+case "$SOUND_TEST" in yes|no) ;; *) echo 'SOUND_TEST must be yes or no' >&2; exit 1 ;; esac
 EXPECTED_PACKAGE_REPOSITORY_TAG=${EXPECTED_PACKAGE_REPOSITORY_TAG:-packages-16-amd64}
 case "$EXPECTED_PACKAGE_REPOSITORY_TAG" in
     ''|*[!A-Za-z0-9._-]*) echo 'Invalid expected package repository tag' >&2; exit 1 ;;
@@ -193,6 +197,9 @@ vm() {
 	else
 		set -- -display none "$@"
 	fi
+	if [ "$SOUND_TEST" = yes ]; then
+		set -- -audiodev none,id=snd0 -device intel-hda -device hda-duplex,audiodev=snd0 "$@"
+	fi
 	# shellcheck disable=SC2086
 	$qemu -machine $machine $accel -smp 4 -m "$MEM" \
 		-no-reboot -monitor none -qmp "unix:$log.qmp.sock,server=on,wait=off" \
@@ -306,6 +313,9 @@ fi
 for g in wheel operator video audio; do
 	check "tester in \$g" "id -Gn | grep -qw \$g"
 done
+if [ "$SOUND_TEST" = yes ]; then
+	check "QEMU HDA sound device attaches" "as_root kldload -n snd_hda && sleep 2 && grep -q '^pcm0:' /dev/sndstat"
+fi
 check "SDDM signs in as tester" "as_root grep -qx User=tester /var/lib/sddm/state.conf"
 check "SDDM opens the Omarchy session" "as_root grep -qx Session=/usr/local/share/wayland-sessions/omarchy.desktop /var/lib/sddm/state.conf"
 check "SDDM uses the Daemonarchy theme" "grep -qx Current=daemonarchy /usr/local/etc/sddm.conf.d/20-daemonarchy-theme.conf"
