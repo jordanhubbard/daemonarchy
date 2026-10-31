@@ -105,6 +105,11 @@ class WiringTests(unittest.TestCase):
         self.assertEqual(subprocess.run(["sh", "-n", str(RC)]).returncode, 0)
         text = RC.read_text()
         self.assertIn("# BEFORE: sddm", text)
+        # The recorder runs under /usr/local/bin/python3.12, whose libpython is found only
+        # through the loader hints that /etc/rc.d/ldconfig builds. Both scripts require only
+        # FILESYSTEMS, so without this rcorder may start the recorder first and python3.12
+        # fails with "libpython3.12.so.1.0 not found" (seen on an MSI Raider 18 HX at boot).
+        self.assertRegex(text, r"(?m)^# REQUIRE: .*\bldconfig\b")
         self.assertIn('daemonarchy_login_trace_enable:="YES"', text)
         installer = (LIBEXEC / "install").read_text()
         self.assertIn('"$TARGET/usr/local/libexec/daemonarchy-login-trace"', installer)
