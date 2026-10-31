@@ -330,7 +330,11 @@ def sound_audio(env):
         cue = CUE_MAP.get(name)
         if cue:
             client.play(cue)
-    return sdk.ThreadedAudio(play)
+
+    def tone(freq, ms, wave, volume):
+        if hasattr(client, 'blip'):
+            client.blip(freq, ms, wave, int(volume * 100))
+    return sdk.ThreadedAudio(play, tone=tone)
 
 
 def say(text):

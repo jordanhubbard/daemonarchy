@@ -1,0 +1,26 @@
+{
+  "api": "1.5",
+  "capabilities": [
+    "draw",
+    "input",
+    "audio"
+  ],
+  "description": "A tiny fish tank in a sandboxed Lua plugin: press space to feed the fish.",
+  "entry": "fishtank.lua",
+  "entry_sha256": "13cce9e76cbb97c408b811262fa85bfcb7b743d2737b974a72f618ea03dd5513",
+  "id": "fishtank",
+  "limits": {
+    "cpu_seconds": 1800,
+    "fps": 15,
+    "frame_ms": 250,
+    "memory_mb": 192
+  },
+  "min_size": [
+    64,
+    22
+  ],
+  "name": "Fish tank",
+  "schema": "daemonarchy/extension@1",
+  "type": "animation",
+  "version": "1.0.0"
+}

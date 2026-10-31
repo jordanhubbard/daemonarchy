@@ -1,5 +1,8 @@
 {
   "plugins": {
+    "fishtank": {
+      "manifest_sha256": "54c090c13f99beeef1ae423ff770b6724fe24f325ad2554dd24c215df29d5ca6"
+    },
     "hordeshot": {
       "manifest_sha256": "ee7e0f100387f4ea336b2b68d77d359533b4ee2c5894479ed5d0103c13984eab"
     },

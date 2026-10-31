@@ -59,6 +59,12 @@ MAJOR = {'boot', 'fanfare', 'error', 'warn', 'commit', 'net_ok', 'net_fail', 'st
          'greeting', 'volume'}
 MINOR = {'tick', 'milestone', 'click', 'select', 'whoosh', 'attract'}
 
+# Arcade sound effects ("blips") from plugins are requests, not cues: bounded, and played only in mode "on".
+BLIP_WAVES = ('sq', 'tri', 'noise')
+BLIP_FREQ, BLIP_MS, BLIP_LOUDEST = (30, 8000), (5, 400), 0.3   # Hz, milliseconds, amplitude ceiling (a cue's own level)
+BLIP_VOICES = 4          # at most this many blips sound at once; the rest are dropped, never queued
+BLIP_PER_SECOND = 20     # the client sends at most this many, with a small burst allowance
+
 
 # ------------------------------------------------------------------ settings
 
@@ -244,6 +250,7 @@ class Client:
     """Fire-and-forget datagrams to the player. Every failure is silent."""
 
     def __init__(self, env=None):
+        self.blip_budget, self.blip_at = 8.0, time.monotonic()
         self.env = os.environ if env is None else env
         self.path = str(runtime_dir(self.env) / 'sock')
         self.sock = None
@@ -277,6 +284,26 @@ class Client:
         if cue not in CUES or not self.wants(cue):
             return False
         return self._send(dict(cue=cue, **{k: v for k, v in params.items() if isinstance(v, (int, float))}))
+
+    def blip(self, freq, ms, wave, volume):
+        """One arcade sound effect. Only in mode "on": quiet keeps the moments that matter, and a game is not one.
+
+        Values are clamped, and sends are rate-limited so a plugin cannot flood the player.
+        """
+        if wave not in BLIP_WAVES or not all(isinstance(v, (int, float)) and math.isfinite(v) for v in (freq, ms, volume)):
+            return False
+        state = self._fresh()
+        if not state.audible() or state.mode != 'on':
+            return False
+        now = time.monotonic()
+        self.blip_budget = min(8.0, self.blip_budget + (now - self.blip_at) * BLIP_PER_SECOND)
+        self.blip_at = now
+        if self.blip_budget < 1.0:
+            return False
+        self.blip_budget -= 1.0
+        return self._send(dict(blip=[int(max(BLIP_FREQ[0], min(BLIP_FREQ[1], freq))),
+                                     int(max(BLIP_MS[0], min(BLIP_MS[1], ms))), wave,
+                                     int(max(0, min(100, volume)))]))
 
     def ambient(self, levels):
         state = self._fresh()
@@ -672,6 +699,31 @@ DESCRIPTIONS = dict(
 _cache = {}
 
 
+_blips = {}
+
+
+def blip_samples(freq, ms, wave, volume):
+    """PCM for one blip, or None if the request is not acceptable. Cached by a coarse key."""
+    if (wave not in BLIP_WAVES or isinstance(freq, bool) or isinstance(ms, bool) or isinstance(volume, bool)
+            or not all(isinstance(v, (int, float)) and math.isfinite(v) for v in (freq, ms, volume))):
+        return None
+    freq = int(max(BLIP_FREQ[0], min(BLIP_FREQ[1], freq)))
+    ms = int(max(BLIP_MS[0], min(BLIP_MS[1], ms)))
+    level = BLIP_LOUDEST * max(0, min(100, volume)) / 100.0
+    key = (round(freq / 10) * 10 or BLIP_FREQ[0], round(ms / 5) * 5, wave, round(level, 2))
+    if key not in _blips:
+        if len(_blips) >= 64:
+            _blips.clear()
+        seconds = key[1] / 1000.0
+        if wave == 'noise':
+            voice = noise(seconds, level, low=min(8000, key[0] * 4), high=max(200, key[0]))
+        else:
+            voice = tone(key[0], seconds, 'square' if wave == 'sq' else 'triangle', level,
+                         attack=0.002, release=min(0.02, seconds / 3), decay=True)
+        _blips[key] = Buffer(seconds).add(0, voice).pcm()
+    return _blips[key]
+
+
 def render(cue, **params):
     key = (cue, int(params.get('step', 0)) % 15 if cue == 'tick' else 0)
     if key not in _cache:
@@ -845,6 +897,13 @@ class Player:
             raise SystemExit(0)
         elif isinstance(message.get('ambient'), dict):
             self.ambient.update(message['ambient'], now)
+        elif isinstance(message.get('blip'), list) and len(message['blip']) == 4:
+            blips = sum(1 for voice in self.voices if len(voice) > 2)
+            if not self.state.audible() or self.state.mode != 'on' or blips >= BLIP_VOICES or len(self.voices) >= 12:
+                return  # Dropped, never played late.
+            samples = blip_samples(*message['blip'])
+            if samples is not None:
+                self.voices.append([0, samples, True])
         elif message.get('cue') in CUES:
             if not self.state.audible() or len(self.voices) >= 12:
                 return  # Never queue a backlog: drop rather than play late.
@@ -854,7 +913,7 @@ class Player:
     def mix(self, now):
         block = [0.0] * self.BLOCK
         for voice in self.voices:
-            offset, samples = voice
+            offset, samples = voice[0], voice[1]
             end = min(len(samples), offset + self.BLOCK)
             for i in range(offset, end):
                 block[i - offset] += samples[i] / 32000.0

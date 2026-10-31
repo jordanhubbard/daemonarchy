@@ -6,6 +6,7 @@ should understand: click, select, blip, laser, hit, explode, bounce, pickup,
 levelup, gameover, win. Unknown names are ignored.
 """
 
+import math
 import queue
 import threading
 
@@ -28,6 +29,21 @@ class Audio:
     def _play(self, name, params):
         return False
 
+    def blip(self, freq, ms, wave="sq", volume=0.3):
+        """A synthesized tone (API 1.5, used by Lua extensions). Out-of-range or non-finite values are refused."""
+        if self.muted or wave not in ("sq", "tri", "noise"):
+            return False
+        for value in (freq, ms, volume):
+            if isinstance(value, bool) or not isinstance(value, (int, float)) or not math.isfinite(value):
+                return False
+        try:
+            return bool(self._blip(float(freq), float(ms), wave, float(volume)))
+        except Exception:  # noqa: BLE001 - sound is never allowed to fail a caller.
+            return False
+
+    def _blip(self, freq, ms, wave, volume):
+        return False
+
     def close(self):
         pass
 
@@ -46,6 +62,10 @@ class RecordingAudio(Audio):
         self.heard.append(name)
         return True
 
+    def _blip(self, freq, ms, wave, volume):
+        self.heard.append(("blip", freq, ms, wave, volume))
+        return True
+
 
 class ThreadedAudio(Audio):
     """Wraps a blocking backend `play(name, **params)` so a cue never waits on it.
@@ -54,8 +74,8 @@ class ThreadedAudio(Audio):
     is full a cue is dropped rather than delaying a frame.
     """
 
-    def __init__(self, play, limit=8):
-        self.play = play
+    def __init__(self, play, limit=8, tone=None):
+        self.play, self.tone = play, tone
         self.queue = queue.Queue(maxsize=limit)
         self.dropped = 0
         self.worker = threading.Thread(target=self._run, daemon=True)
@@ -69,13 +89,26 @@ class ThreadedAudio(Audio):
             self.dropped += 1
             return False
 
+    def _blip(self, freq, ms, wave, volume):
+        if self.tone is None:
+            return False
+        try:
+            self.queue.put_nowait(("\0tone", dict(freq=freq, ms=ms, wave=wave, volume=volume)))
+            return True
+        except queue.Full:
+            self.dropped += 1
+            return False
+
     def _run(self):
         while True:
             item = self.queue.get()
             if item is None:
                 return
             try:
-                self.play(item[0], **item[1])
+                if item[0] == "\0tone":
+                    self.tone(**item[1])
+                else:
+                    self.play(item[0], **item[1])
             except Exception:  # noqa: BLE001
                 pass
 

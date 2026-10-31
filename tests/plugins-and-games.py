@@ -419,11 +419,12 @@ class GameScenes(unittest.TestCase):
 
     def test_all_four_are_distinct_original_games_with_sealed_manifests(self):
         registry = plugin.Registry(str(GAMES))
-        self.assertEqual(sorted(registry.plugins), sorted(GAME_IDS), registry.refused)
-        titles = {p.name for p in registry.plugins.values()}
-        self.assertEqual(len(titles), 4)
-        for p in registry.plugins.values():
-            self.assertEqual(p.type, "game")
+        self.assertEqual(registry.refused, {})
+        games = registry.list("game")      # other extension types (the Lua fish tank) live beside the games
+        self.assertEqual(sorted(p.id for p in games), sorted(GAME_IDS))
+        self.assertEqual(len({p.name for p in games}), 4)
+        for p in games:
+            self.assertEqual(p.entry, "game.py")
             self.assertEqual(set(p.capabilities), {"draw", "input", "audio"})
         self.assertEqual(subprocess.run([sys.executable, "-I", str(ROOT / "scripts/seal-games.py"), "--check"],
                                         capture_output=True, text=True).returncode, 0)
