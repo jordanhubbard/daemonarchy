@@ -3,9 +3,9 @@
 set -eu
 A=/home/jkh/a141
 REV=303b3646270ffa4bf7cec65c5c1d28bd8000cbce
-PREV=582675f016b0b0d8e8760852767443841075e825
+PREV=${PORTS_REV:-582675f016b0b0d8e8760852767443841075e825}
 PY=/usr/local/bin/python3.12
-TAG=checkouts-16-aarch64-1.4.1
+TAG=${CHECKOUT_TAG:-checkouts-16-aarch64-1.4.1}
 state() { echo "$1 $(date -u +%Y-%m-%dT%H:%M:%SZ)" >> $A/state; }
 state checkout-start
 rm -rf $A/product $A/src-full $A/checkout-repo $A/checkout-feed
@@ -16,7 +16,7 @@ git clone -q --depth 1 --single-branch --branch daemonarchy https://github.com/j
 mkdir -p $A/checkout-repo
 nice -n 10 $PY $A/product/scripts/build-checkout-packages.py --kind src --repo $A/src-full --revision $REV --branch daemonarchy --remote https://github.com/jordanhubbard/daemonarchy-src.git --out $A/checkout-repo > $A/checkout-src.log 2>&1
 state checkout-src-done
-nice -n 10 $PY $A/product/scripts/build-checkout-packages.py --kind ports --repo $A/ports-0e8fb88 --revision $PREV --branch main --remote https://github.com/jordanhubbard/daemonarchy-ports.git --out $A/checkout-repo > $A/checkout-ports.log 2>&1
+nice -n 10 $PY $A/product/scripts/build-checkout-packages.py --kind ports --repo ${PORTS_DIR:-$A/ports-0e8fb88} --revision $PREV --branch main --remote https://github.com/jordanhubbard/daemonarchy-ports.git --out $A/checkout-repo > $A/checkout-ports.log 2>&1
 state checkout-ports-done
 mkdir -p $A/checkout-feed
 cp -p $A/checkout-repo/* $A/checkout-feed/

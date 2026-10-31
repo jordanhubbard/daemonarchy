@@ -11,7 +11,7 @@ for d in 16aarch64-daemonarchy 16aarch64-daemonarchy-drift 16aarch64-daemonarchy
   done
 done | awk 'NF>=2 {print $1, $2}' | sort -u > $A/built-packages.txt
 wc -l < $A/built-packages.txt
-ARCH=aarch64 JAIL=16aarch64r2 PTREE=daemonarchy141 TAG=packages-16-aarch64-1.4.1 \
+ARCH=aarch64 JAIL=16aarch64r2 PTREE=daemonarchy141 TAG=${PACKAGE_TAG:-packages-16-aarch64-1.4.1} \
   BUILT_PACKAGES_FILE=$A/built-packages.txt OUT=$A/app-feed \
   sh $A/product/pkg-repo.sh collect
 ls $A/app-feed | wc -l

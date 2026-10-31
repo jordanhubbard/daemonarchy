@@ -38,3 +38,10 @@ version of jail, cleaning all packages" and would rebuild every package (763 of
 1,404 here, including LLVM at over two hours). The OSVERSION is the same, so set
 the copied repository's `.jailversion` to the new jail's string and re-run the
 dry run: it then queues only the ports that changed (13).
+
+**A later release (step 4 and 5 overrides).** `step4-checkout.sh` takes `PORTS_REV` (the ports
+revision), `PORTS_DIR` (the ports checkout on the worker) and `CHECKOUT_TAG`; `step5-collect.sh`
+takes `PACKAGE_TAG`; `step7-iso-release.sh` takes `PACKAGE_REPOSITORY_TAG` and `CHECKOUT_FEED_DIR`.
+The defaults are the values of the first release. The list now carries `graphics/drm-612-kmod`
+(VirtIO GPU, aarch64) and `ports-mgmt/daemonarchy-pkg`. Back up the previous release's
+`app-feed` and `checkout-feed` (they are root-owned) before running either step: both start by removing them.
