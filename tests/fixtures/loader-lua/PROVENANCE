@@ -1,0 +1,9 @@
+menu.lua and drawer.lua are byte-for-byte copies of stand/lua/menu.lua and
+stand/lua/drawer.lua in jordanhubbard/daemonarchy-src at commit
+303b3646270ffa4bf7cec65c5c1d28bd8000cbce (the tip of branch "daemonarchy" on
+2026-10-30). The 1.4.1 candidate ISO built from daemonarchy 68bb08b8 ships a
+menu.lua with the same SHA-256 (5d16efef...). They are FreeBSD's loader Lua
+(BSD-2-Clause, see the file headers) plus Daemonarchy's changes.
+tests/loader-live-menu.lua loads them unmodified and refuses to run if the
+digests in SHA256SUMS differ. When daemonarchy-src changes either file in a way
+the release ships, refresh both files and SHA256SUMS together.

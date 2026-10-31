@@ -52,7 +52,7 @@ Be sure of the device name: `dd` overwrites whatever you point it at.
 
 The installer image has offered a live desktop since 1.4.0; the 1.3.1 image has none and starts the text installer. The aarch64 image has no live desktop: it was not run there ([aarch64](aarch64.md)).
 
-The loader menu that appears for a few seconds at boot is FreeBSD's own, with one entry added on the installer media (the installed system's menu does not have it). It offers **Try Daemonarchy (live desktop, disk untouched)**. Press **T** there (any key first stops the countdown). Pressing Enter, or letting the countdown finish, starts the text installer as before.
+The loader menu that appears for a few seconds at boot is FreeBSD's own, with one entry added on the installer media (the installed system's menu does not have it). It offers **Try Daemonarchy (live desktop)**, which leaves the disk untouched. Press **T** there (any key first stops the countdown). Pressing Enter, or letting the countdown finish, starts the text installer as before.
 
 The live desktop runs entirely from the stick and memory: it changes no disk, imports no existing ZFS pool and uses no swap. It is a minimal Hyprland session with a terminal (**Super + Enter**) and the graphical installer, which opens on its own (**Super + I** reopens it). It shows whether the desktop's graphics work on your machine. The graphics driver is chosen and loaded from the stick, so no network is needed for that. The full Omarchy desktop and its applications are only on the installed system.
 
