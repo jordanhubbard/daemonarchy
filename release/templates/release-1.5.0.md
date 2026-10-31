@@ -56,6 +56,14 @@ The base is FreeBSD 16.0-CURRENT, OSVERSION `1600029`, built from daemonarchy-sr
   packaged as `ports-mgmt/daemonarchy-pkg`. @@GUI001_EVIDENCE@@ OctoPkg remains the
   fallback manager until the new one has real-desktop evidence; see
   [gui-package-manager.md](gui-package-manager.md).
+- **Faster login on the MSI Raider 18 HX.** `x11-toolkits/aquamarine`
+  ([daemonarchy-ports #44](https://github.com/jordanhubbard/daemonarchy-ports/pull/44), port revision 2)
+  force-probes display connectors only on hotplug and otherwise uses the kernel's cached status; the
+  `nvidia-drm` connectors are probed as before. The cause was i915's DisplayPort detect on an unplugged port,
+  waited out twice by Aquamarine (about 0.75 s each). **Measured:** on one MSI Raider 18 HX, login to the
+  desktop shell 2.95 s to 1.32 s warm (about 1.6 s) with the first version of the patch; the shipped version
+  was run once. **Not tested:** hotplug on Intel- and NVIDIA-wired ports, session resume, lid and VT switch.
+  It is an application package: `pkg upgrade` delivers it.
 - **MacBookPro16,1 Wi-Fi: a stall after association.** The BCM4364 driver ignored a
   firmware link-down after the handshake, so the interface stayed `associated` while no
   traffic moved. The driver (`if_brcmfmac-kmod`) now honours it
@@ -88,7 +96,7 @@ None of these is claimed done by 1.5.0. They are carried in the
 | GUI-001 (complete) | The window is merged and packaged but has no evidence from a real desktop install, update and remove. |
 | Wi-Fi 2.4 GHz channel-1 handshake | A candidate on the MacBook (AP `70:a7:41:81:16:e0` never completed the 4-way handshake), not investigated. |
 | Windows game and Steam on the MSI | Needs the operator's hardware; see above. |
-| Slow first login | The display-driver sleeps of about 1.6 seconds and a first-login delay are under investigation. |
+| Login speed | The Aquamarine change removes about 1.6 s on one MSI Raider 18 HX; hotplug, resume, lid and VT switch are untested, and a separate first-login delay is still under investigation. |
 
 ## aarch64 image: community validation
 

@@ -52,6 +52,13 @@ done and what is not. What is on `main` since 1.4.1:
   real image.
 - **aarch64:** a VirtIO GPU path reaches the SDDM greeter and the session in software in a QEMU guest. Still
   QEMU only and a community-validation image ([aarch64](docs/aarch64.md)).
+- **Faster login on the MSI Raider 18 HX:** `x11-toolkits/aquamarine` (daemonarchy-ports #44, `PORTREVISION` 2)
+  force-probes display connectors only on a hotplug event and otherwise uses the kernel's cached status
+  (NVIDIA's `nvidia-drm` connectors are still probed as before). The stall it removes was i915's DisplayPort
+  detect on an unplugged port, which Aquamarine probed twice. Measured on that one machine: login to the
+  desktop shell (quickshell) 2.95 s to 1.32 s warm, about 1.6 s faster, from a first version of the patch; the
+  shipped version was run once. **Untested:** hotplug on Intel- and NVIDIA-wired ports, session resume, lid and VT
+  switch. It is an application package, so `pkg upgrade` delivers it.
 - **MacBookPro16,1 Wi-Fi stall after association:** the driver fix is merged in daemonarchy-ports. Evidence is
   fault injection on the MacBook; the real firmware-side loss was not reproduced and a physical retest is
   pending. It is a kernel-bound package, so it needs a rebuilt module and re-signed boot bundle.
