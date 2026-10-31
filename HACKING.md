@@ -45,6 +45,81 @@ requirements remain in this runbook. PERF-001 permits replacing the build
 executor after equivalent correctness and measured performance are demonstrated;
 generated wrapper commands alone do not establish that qualification.
 
+## The repositories that make up Daemonarchy
+
+Verified against the repositories on 2026-10-31 (the port facts from daemonarchy-ports `main`);
+anything marked *unverified* was not checked. File-level detail is in [Where things live](#where-things-live).
+
+| Repository | What it is | Installed or used by |
+|---|---|---|
+| [daemonarchy](https://github.com/jordanhubbard/daemonarchy) (this one) | The installer, its overlay, the live image, the package feed and image scripts, the tests, the documentation and the release engineering (release records, gates, mastering). | It is the product; the ISO, the signed Secure Boot bundle and the feeds are published from it. |
+| [daemonarchy-desktop](https://github.com/jordanhubbard/daemonarchy-desktop) | The Daemonarchy look and FreeBSD tools over Omarchy: artwork (`wallpaper.svg`, `wordmark.svg`, `mark.svg`, `about.txt`, `screensaver.txt`), the SDDM theme, the System > FreeBSD menu (`omarchy-menu.jsonc`) and the `daemonarchy-*` commands (boot environments, home snapshots, jails, bhyve VMs, DTrace views, dev setup). | Installed by the port `x11-wm/daemonarchy`. |
+| [daemonarchy-ports](https://github.com/jordanhubbard/daemonarchy-ports) | The forked FreeBSD ports tree: packaging recipes (Makefiles, plists, patches) only. Default branch `main`. | Poudriere builds our feeds from it; the installer's `origins.sh` names the ports we publish ourselves. |
+| [daemonarchy-src](https://github.com/jordanhubbard/daemonarchy-src) | The forked FreeBSD source tree: the base system and kernel. Default branch `main`. | The image's world, kernel, pkgbase and installer sets, and the kernel-bound modules, are built from it. |
+| [omarchy-freebsd](https://github.com/jordanhubbard/omarchy-freebsd) | The FreeBSD compatibility layer for Omarchy (`freebsdize.in`, `compat/`, `freebsd-bin/`, `seed-user`, ...). | Fetched by the port `x11-wm/omarchy` as a second distfile, pinned at `3e8359b47c28` in the port. |
+
+Every repository our packages are built from, by the ports' `GH_ACCOUNT`/`GH_PROJECT`/`GH_TUPLE`
+lines on daemonarchy-ports `main`:
+
+- `x11-wm/daemonarchy` fetches `jordanhubbard/daemonarchy-desktop` at a pinned commit (`GH_TAGNAME`,
+  `ec2a00824ec9` today; `DISTVERSION` 1.4.1 with a `v` prefix, so the version in the port is not a tag
+  of the desktop repository, whose last tag is `v1.1.1`).
+- `x11-wm/omarchy` fetches `basecamp/omarchy` (upstream Omarchy, not the `jordanhubbard/omarchy` fork)
+  plus `jordanhubbard/omarchy-freebsd`.
+- `ports-mgmt/daemonarchy-pkg` (the graphical package manager) fetches `jordanhubbard/daemonarchy`
+  (this repository) at a pinned commit.
+- No other port in the tree fetches from a `jordanhubbard` repository. Everything else comes from the
+  upstream projects the FreeBSD ports name. A search of the Makefiles only sees the `GH_*` form; a port
+  that fetches by another mechanism would be missed (*unverified*).
+
+Why the desktop is not folded into the ports fork: the ports tree holds packaging recipes, and a
+Makefile cannot sensibly hold artwork, a menu and shell tools that change independently of the
+FreeBSD ports tree, which is also refreshed from upstream on its own schedule. The port pins the
+desktop's commit, so a desktop fix reaches users only after a pin bump in daemonarchy-ports and a new
+package in the feed. The desktop repository is separately applicable and carries its own history (the
+1.5.0 plan records this check).
+
+Not part of Daemonarchy: the other repositories under the same GitHub account (Aviation, ElixirSSI,
+project-tracker, bookscan, freebsd-sentiment, LeRTX, the Literate AI framework and its labs, and so on).
+They are unrelated projects and are not built, pinned or released with the product.
+`jordanhubbard/freebsd-ports` is the older ports fork, used for releases through 1.1.1 and for upstream
+submissions; releases since use daemonarchy-ports.
+
+### Where a change goes
+
+| Change | Repository |
+|---|---|
+| Artwork, the login theme, the System > FreeBSD menu, the `daemonarchy-*` tools | daemonarchy-desktop, then a pin bump in `x11-wm/daemonarchy` (daemonarchy-ports) |
+| Installer logic, overlay, live image, ISO and feed scripts, tests, documentation | daemonarchy |
+| Package recipes, port patches, new or updated ports | daemonarchy-ports |
+| Kernel, base system, drivers in the base tree | daemonarchy-src |
+| Omarchy's FreeBSD adaptation, compat shims | omarchy-freebsd, then a pin bump in `x11-wm/omarchy` |
+| Launchers and menu entries now in the installer overlay (Cudalab, Wine, Steam) | daemonarchy today; [DESKTOP-001](docs/roadmap/active-work.md#desktop-001-ship-the-desktop-launchers-and-menu-entries-in-the-daemonarchy-desktop-package) moves them to daemonarchy-desktop |
+
+### How the pieces are pinned, versioned and released together
+
+- A release record (`verification/release-VERSION.json`, schema `daemonarchy/release-inputs@1`) names the
+  exact installer commit, daemonarchy-src commit, OSVERSION, daemonarchy-ports commit and the feed tags, and
+  every published asset's size and SHA-256. `release/current.json` names the latest published release.
+- The product tag is `daemonarchy-X.Y.Z` on this repository. The signed package feeds are published
+  as GitHub release tags on this repository, named like `packages-16-amd64-X.Y.Z` and
+  `checkouts-16-amd64-X.Y.Z` (a suffix such as `-r2` when a published tag could not be reused; published
+  tags are immutable).
+- daemonarchy-src and daemonarchy-ports are selected by full commit, not by branch tip, and kept fixed through
+  qualification. The ports fetch their own GitHub sources by pinned commit as above.
+- daemonarchy-desktop has no tag convention that matches the port today (last tag `v1.1.1`, port pins a
+  commit). The recommendation, to be settled in the repository's own project file, is to follow the
+  product version and tag at release.
+- [Releasing](#releasing) has the procedure; `scripts/release-check-1.4.py` is the gate `litai release check` runs.
+
+### Contributing
+
+There is no CONTRIBUTING file in this repository (*checked*). The practice, from the repository history and
+the Literate AI branching skills: `main` is the trunk in every repository, work is done on a short-lived
+topic branch and submitted as a pull request against `main`, CI must pass, and a maintainer merges. Do not
+commit to a release branch, and do not push signing keys, private worker evidence or generated images.
+Upstream FreeBSD or Omarchy fixes are submitted upstream independently of Daemonarchy releases.
+
 ## Where things live
 
 Daemonarchy spans the installer, desktop, compatibility, source and ports repositories:
