@@ -266,3 +266,98 @@ What the amd64 feed build and the ISO prerequisites needed that daemon.local had
 - **Order of the amd64 build planned for 1.5.0:** ports pin, `r3-build.sh` (unsigned feeds), the key window, the copy
   to sparky and `package-feed-manifest.py`, the upload by the release owner, then the ISO (whose
   `check-closure-feed` reads the published application feed), `verify`, `qa`, sticks.
+
+## Key windows: signing without a key on the builder
+
+The signing keys live on the key host (madmax, `~/daemonarchy-keys`, mode 0400) and never on the build VM. Signing happens in a
+**key window**: one command the operator runs on the key host. It puts the key in memory on the VM for the length of one runner,
+the runner signs and verifies, and the key is gone again whatever happened. The scripts are in `scripts/key-windows/`.
+
+### The design every window keeps
+
+- **Memory only.** A 1 MiB tmpfs on the VM (`/var/keytmp` for the boot windows, `/var/keytmp-feed`, `/var/keytmp-ext`), mode 0700,
+  with swap off. The window **verifies that the mount is a tmpfs before a byte of the key is written**
+  (`mount | grep -q '^tmpfs on DIR (tmpfs'`), because a failed mount would otherwise leave the key on the VM's disk. Swap is
+  turned off (a failure is tolerated only if no swap is active afterwards) and turned on again in the trap.
+- **The right key, checked twice.** On the key host, before anything moves: the key's sha256 equals the recorded one
+  (boot windows), and its public half belongs to the certificate or the pinned public key (compared by hash of the public halves,
+  never by printing anything). On the VM, the runner derives the public half again from the tmpfs copy and logs only its hash.
+- **Hashes on both sides.** The key is streamed from the key host to the VM only (`cat KEY | ssh ... 'cat > tmpfs/file'`), never through
+  another machine, and its sha256 must be identical on both ends or the window refuses. The key host's hash is printed before and
+  after.
+- **One window at a time.** Each window refuses if another one is open (`/var/keytmp*` mounted) or `/var/run/keywindow.lock` is
+  held. The feed runners take the lock with `mkdir`, the boot runners with `lockf` on the same path (two conventions that
+  predate this directory); every window checks that the lock is free before it places the key. The faults `lock` (a held lock) and the
+  other-window faults test this for each window; the cross-pairing of the two conventions was not tested, so keep one window at a time.
+- **The runner never reads the key.** It passes the path to `openssl` or `pkg repo` and logs only hashes. `tests/key-windows-design.sh`
+  fails if a script copies or prints the key file, loses its trap, drops the tmpfs or swap checks, or hard-codes a release value.
+- **Cleanup on every exit path.** A trap removes the key (`rm -P`, then `rm -f`), unmounts the tmpfs, removes the lock, turns swap on
+  and prints the key host's hash. The key is also removed as soon as the last signature is made, before verification starts.
+- **Check what changed.** Before signing, the inputs are hashed against the list made when they were staged; after signing, the
+  originals must be unchanged and exactly the expected files must exist (for example 12 per extension feed). Verification then uses the
+  pinned public key, the way the client does, with a control that proves the verifier can fail (a wrong feed name, or a wrong key).
+
+### The windows, in the order a release runs them
+
+| Window (key host) | Runner (VM) | Signs |
+|---|---|---|
+| `boot-relabel-window.sh` | `boot-relabel-run.sh` | a new release label over the already signed boot tree: one signature (`resign-boot-bundle.sh rebundle` does the same on a builder with the key) |
+| `boot-full-window.sh` | `boot-full-run.sh` | the boot manifest, loader and bundle, rebuilt from a commit's inputs |
+| `feeds-arm64-window.sh` | `feeds-arm64-run.sh` | the aarch64 application and checkout catalogues (`pkg repo`) |
+| `extensions-window.sh` | `extensions-run.sh` | the extension indexes and bundles of both architectures |
+
+The amd64 package catalogues have their own window (`feed-key-window.sh`, kept on the key host). A release needs a **relabel** when it is
+renamed and nothing the signed boot manifest covers changed, and a **full re-sign** when any input it covers changed. Run the boot
+window last of the boot inputs, before the ISO: the ISO embeds the bundle, and `scripts/verify-release-assets.py` requires the signed
+`release` in `bundle.json` to equal the release version.
+
+**What the full re-sign covers** (anything here changing after the window needs another window): `secureboot/boot/local.lua`,
+`secureboot/boot/daemonarchy-secureboot.conf`, `overlay/usr/local/share/daemonarchy-installer/brand-daemonarchy.lua`,
+`secureboot/maintenance.py`, the tools `prepare-boot-tree.sh`, `sign-boot-tree.py` and `bundle.py`, the kernel and loaders (source revision
+and secureboot patches), the base and kernel source sets, and the module inventory (the bytes of any kernel module or firmware in the
+package set). `boot-full-run.sh` enforces this: it refuses unless the tools and every input except the expected file are identical to the
+previous product, the module inventory is the one the previous bundle was signed with (and lists the kernel module you rebuilt), the
+newly prepared tree differs from the previous signed tree only in the expected file and the re-made loader, and the new bundle differs
+from the previous one only in the expected members. The previous bundle and tree are kept (`.previous`, `boot-tree.before-*`).
+
+### Installing and configuring
+
+Copy `scripts/key-windows/` to `~/daemonarchy-builder-vm/key-windows/` on the key host and to `/root/key-windows/` on the VM
+(`tar -C scripts -cf - key-windows | ssh ...`). Copy `key-windows.env.example` to `~/daemonarchy-builder-vm/key-windows.env` and edit it
+for the release: the release label, the working directory, the recorded key and certificate hashes, the pinned public key's hashes, the
+staged inputs. A window refuses to run when a value it needs is missing; nothing is carried over from the previous release. For the
+full re-sign, stage the commit's inputs on the VM first (`git archive COMMIT secureboot scripts/import-apple-bcm4364-firmware.py
+overlay/usr/local/share/daemonarchy-installer/brand-daemonarchy.lua`, extracted into a new directory named by `BOOT_PRODUCT`).
+`arm64-ingest.sh` moves the unsigned aarch64 feeds from the arm64 builder to the VM with every file hashed against its manifest at each hop.
+
+The operator runs one line on the key host, for example `sh ~/daemonarchy-builder-vm/key-windows/boot-full-window.sh`, and sends the
+output. A real window needs the release manager's explicit go.
+
+### Testing a window: `TEST=1`, throwaway keys, never real mode
+
+**A key window is never run in real mode as a test**, including a run that is expected to stop at a guard: real mode reads the real key
+(it hashes it and compares its public half), so every real run is a use of the key and needs an explicit go.
+
+`TEST=1 sh WINDOW.sh` generates a throwaway key (and, for the boot windows, a throwaway certificate) named like the real one, copies or
+rebuilds the inputs on a scratch directory on the VM, signs there, and checks the same code path as a real run. For the full re-sign the
+VM first prepares and signs an old tree and bundle with the throwaway key, so the runner's compare-with-previous gates run for real.
+`TEST=1 FAULT=NAME` injects a failure and the window must refuse with exit 1 and leave the VM clean (key gone, nothing mounted, swap on, no
+lock, the real bundle or feed untouched). Every window lists its fault names in its header; the common ones are `mount` (the mount
+fails), `notmpfs` (a plain directory on disk), `swap`, `hash` (a different key arrives), `lock`, the other windows being open, and
+`wrongkey`; the runners add refusals such as a changed inventory, a stale previous tree, a changed frozen input, a tampered staged file and
+an already-signed feed. A trace (`sh -x`) of the `mount` and `notmpfs` faults shows the key-write command executed zero times.
+`tests/key-windows-design.sh` and `tests/resign-boot-bundle-rebundle.sh` need neither the key host nor the VM.
+
+### What went wrong the first time (so the next release does not repeat it)
+
+- A verifier that assumes one ABI for every feed reports a false failure: the checkout feed's packages are labelled `FreeBSD:16:amd64` in
+  every release, so each feed is verified with the ABI its packages declare (and the application feed strictly as aarch64).
+- `resign-boot-bundle.sh sign` does nothing when the inventory is unchanged; a rename needs `rebundle`, and a changed input that is not a
+  module needs the full re-sign.
+- The tmpfs used by `TEST=1` for scratch files can hit a per-user quota when another job fills `/tmp`; set `TMPDIR` to a directory on the
+  home filesystem and the tests are unaffected.
+- A fault injected with `A && B || C && D` evaluates left to right with equal precedence: group it, or the guard under test never runs.
+- Under `set -o pipefail`, `diff -rq` exits 1 when the bundles differ, which is the expected case: tolerate its status.
+- `sha256 -c` on FreeBSD checks a digest value, not a manifest file; compare sorted `sha256 -r` listings. Parallel `xargs -P sha256sum`
+  interleaves its output lines; recompute any mismatch serially before believing it.
+- The release jail has no `/usr/src/sys`, so a kernel module needs a sibling jail with the source copied in (see the section above).
