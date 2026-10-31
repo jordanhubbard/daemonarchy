@@ -49,6 +49,7 @@ KIND = dict(install='GREEN', upgrade='CYAN', reinstall='PURPLE', downgrade='ORAN
 TRUST = dict(signed='GREEN', unsigned='YELLOW', broken='RED')
 BADGE = dict(installed='GREEN', update='CYAN', available='GRAY')
 LABEL = dict(install='Install', upgrade='Upgrade', reinstall='Reinstall', downgrade='Downgrade', remove='Remove',
+             autoremove='Remove unused',
              signed='Signed', unsigned='Not signed', broken='Key missing', installed='Installed', update='Update',
              available='Available')
 

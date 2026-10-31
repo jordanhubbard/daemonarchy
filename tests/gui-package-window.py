@@ -249,6 +249,7 @@ class Sessions(Fixture):
     def test_titles(self):
         self.assertEqual(viewmodel.title("remove", ["a", "b"]), "Remove a, b")
         self.assertEqual(viewmodel.title("install", list("abcde")), "Install a, b, c and 2 more")
+        self.assertEqual(viewmodel.title("autoremove", []), "Remove unused dependencies")
 
 
 class Launch(unittest.TestCase):

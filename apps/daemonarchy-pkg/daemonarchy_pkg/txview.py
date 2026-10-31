@@ -14,7 +14,7 @@ import json
 import re
 import time
 
-from . import engine
+from . import engine, plan as plan_module
 
 DELETING = re.compile(r'^\[\s*(\d+)/(\d+)\] Deleting files for (\S+?):.*done\s*$')
 DEINSTALLING = re.compile(r'^\[\s*(\d+)/(\d+)\] Deinstalling (\S+?)\.*\s*$')
@@ -44,7 +44,7 @@ class Transaction:
             return
         if line.startswith('@@phase '):
             self.phase = line[8:].strip()
-        if self.action == 'remove':
+        if self.action in plan_module.REMOVALS:
             match = DEINSTALLING.match(line)
             if match:
                 self.remove_total, self.removing = int(match[2]), match[3]
@@ -60,11 +60,11 @@ class Transaction:
         progress = self.progress
         data = progress.bytes_view(now)
         packages = progress.packages_view()
-        if self.action == 'remove':
+        if self.action in plan_module.REMOVALS:
             packages = dict(done=len(self.removed), total=self.remove_total or None,
                             source='pkg' if self.remove_total else None)
-        stages = ['Remove'] if self.action == 'remove' else (['Download', 'Install'] if progress.plan and progress.plan.get('archives') else ['Install'])
-        current = {'fetch': 'Download', 'install': 'Remove' if self.action == 'remove' else 'Install'}.get(self.phase, '')
+        stages = ['Remove'] if self.action in plan_module.REMOVALS else (['Download', 'Install'] if progress.plan and progress.plan.get('archives') else ['Install'])
+        current = {'fetch': 'Download', 'install': 'Remove' if self.action in plan_module.REMOVALS else 'Install'}.get(self.phase, '')
         index = (stages.index(current) + 1) if current in stages else 0
         percent, eta, basis = self.estimate(stages, data, packages, now)
         if self.state == 'done':
@@ -95,7 +95,7 @@ class Transaction:
             if data['average'] and data['total']:
                 left, basis = max(0.0, (data['total'] - data['done']) / data['average']), 'measured download rate'
         elif self.phase == 'install':
-            rate = self.progress.package_average(now) if self.action != 'remove' else None
+            rate = self.progress.package_average(now) if self.action not in plan_module.REMOVALS else None
             if rate and packages['total']:
                 left, basis = max(0.0, (packages['total'] - packages['done']) / rate), 'measured install rate'
         if left is not None and self.phase == 'fetch' and packages.get('total'):

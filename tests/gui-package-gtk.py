@@ -127,6 +127,29 @@ class Window(gui.Fixture):
         self.win.results.select_row(self.win.results.get_first_child())
         self.assertTrue(pump(lambda: "Install" in texts(self.win.detail)))
 
+    def test_the_installed_view_offers_to_remove_unused_dependencies(self):
+        self.assertFalse(self.win.cleanup.get_visible())          # not in Browse
+        self.win.sidebar.select_row(self.win.sidebar.get_row_at_index(1))
+        self.assertTrue(pump(lambda: self.win.cleanup.get_visible()))
+        self.plan_file.write_text("Installed packages to be REMOVED:\n\tperl5: 5.42.3\n")
+        self.win.cleanup.emit("clicked")
+        self.assertTrue(pump(lambda: self.win.session is not None and self.win.session.state == "review"))
+        pump(lambda: "perl5" in texts(self.win.transaction_box))
+        self.assertIn("Remove unused dependencies", texts(self.win.transaction_box))
+        self.assertIn("perl5", texts(self.win.transaction_box))
+
+    def test_after_a_removal_the_done_screen_offers_the_cleanup(self):
+        self.plan_file.write_text("Installed packages to be REMOVED:\n\tcowsay: 3.04_3\n")
+        self.win.start("remove", ["cowsay"])
+        self.assertTrue(pump(lambda: self.win.session.state == "review"))
+        self.win.session.state = "done"                           # as if the helper had reported success
+        from daemonarchy_pkg import txview
+        self.win.session.tx = txview.Transaction("remove")
+        self.win.session.tx.result = {"status": "ok", "changed": {"remove": 1}}
+        self.win.render()
+        self.assertIn("Remove unused dependencies…", texts(self.win.transaction_box))
+        self.win.close_session()
+
     def test_the_repositories_view_shows_trust(self):
         self.win.sidebar.select_row(self.win.sidebar.get_row_at_index(3))
         self.assertTrue(pump(lambda: self.win.stack.get_visible_child_name() == "repositories"))

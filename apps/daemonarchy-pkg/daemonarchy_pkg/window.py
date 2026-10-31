@@ -141,6 +141,11 @@ class Window(Gtk.ApplicationWindow):
         self.update_all.connect('clicked', lambda _b: self.start('upgrade', []))
         self.update_all.set_visible(False)
         left.prepend(self.update_all)
+        self.cleanup = Gtk.Button(label='Remove unused dependencies…')
+        self.cleanup.set_tooltip_text('Packages that were installed only because something needed them, and nothing needs now')
+        self.cleanup.connect('clicked', lambda _b: self.start('autoremove', []))
+        self.cleanup.set_visible(False)
+        left.prepend(self.cleanup)
         return paned
 
     # ---- loading
@@ -209,6 +214,7 @@ class Window(Gtk.ApplicationWindow):
         self.sidebar_labels['updates'].set_text(str(updates) if updates else '')
         self.sidebar_labels['installed'].set_text(f'{len(self.catalogue.installed()):,}')
         self.update_all.set_visible(self.view == 'updates' and bool(updates))
+        self.cleanup.set_visible(self.view == 'installed')
         if not shown:
             self.show_detail(None)
 
@@ -277,7 +283,7 @@ class Window(Gtk.ApplicationWindow):
         buttons.set_margin_top(12)
         for action in detail.actions:
             button = Gtk.Button(label=theme.LABEL[action])
-            button.add_css_class('danger' if action == 'remove' else 'primary')
+            button.add_css_class('danger' if action in plan_module.REMOVALS else 'primary')
             button.connect('clicked', lambda _b, a=action, n=detail.name: self.start(a, [n]))
             buttons.append(button)
         self.detail.append(buttons)
@@ -373,7 +379,7 @@ class Window(Gtk.ApplicationWindow):
             box.append(check)
         approve = self.buttons(('Cancel', None, self.close_session),
                                (theme.LABEL[session.action] + (f' {len(plan.items)} packages' if len(plan.items) > 1 else ''),
-                                'danger' if session.action == 'remove' else 'primary', self.approve))
+                                'danger' if session.action in plan_module.REMOVALS else 'primary', self.approve))
         self.approve_button = approve.get_last_child()
         self.approve_button.set_sensitive(session.can_approve())
 
@@ -408,7 +414,7 @@ class Window(Gtk.ApplicationWindow):
             self.progress_widgets[key] = bar
             if key == 'download' and not (view['bytes']['total'] or session.plan.to_fetch()):
                 continue
-            box.append(label('Download' if key == 'download' else ('Remove' if session.action == 'remove' else 'Install'), css=('hint',)))
+            box.append(label('Download' if key == 'download' else ('Remove' if session.action in plan_module.REMOVALS else 'Install'), css=('hint',)))
             box.append(bar)
         self.progress_widgets['overall'] = label('', css=('hint',))
         self.progress_widgets['eta'] = label('', css=('hint',), wrap=True)
@@ -453,7 +459,15 @@ class Window(Gtk.ApplicationWindow):
         box.append(label('Done', css=('name', 'ok')))
         changed = (session.tx.result or {}).get('changed', {})
         box.append(label(', '.join(f'{n} {k}' for k, n in changed.items()) or 'Finished.', css=('hint',)))
-        self.buttons(('Close', 'primary', lambda: self.close_session(reload=True)))
+        pairs = [('Close', 'primary', lambda: self.close_session(reload=True))]
+        if session.action == 'remove':
+            # A removal leaves what only it needed: offer pkg's own list of those, reviewed like any other change.
+            pairs.insert(0, ('Remove unused dependencies…', None, self.cleanup_after))
+        self.buttons(*pairs)
+
+    def cleanup_after(self):
+        self.close_session()
+        self.start('autoremove', [])
 
     def render_failed(self, session, box):
         detail = (session.tx.result or {}).get('detail') if session.tx and session.tx.result else session.error
