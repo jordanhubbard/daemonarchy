@@ -39,15 +39,17 @@ MAIN_COMMIT=${MAIN_COMMIT:-}
 JAIL=${JAIL:-16r2303b36}
 PTREE=${PTREE:-daports141}
 SET_CACHE_DIR=${SET_CACHE_DIR:-$WORK/inputs/source-sets}
-CHECKOUT_CATALOG=${CHECKOUT_CATALOG:-$WORK/checkout-feed-1.4.1/checkouts.json}
+RELEASE=${RELEASE:-1.5.0}                            # the release being mastered: names its feeds and boot bundle
+CLOSURE_SHARD_TAG=${CLOSURE_SHARD_TAG:-packages-16-amd64-1.4.1-upstream}   # the signed upstream snapshot the image prefers
+CHECKOUT_CATALOG=${CHECKOUT_CATALOG:-$WORK/checkout-feed-$RELEASE/checkouts.json}
 SOURCE_REVISION=${SOURCE_REVISION:-303b3646270ffa4bf7cec65c5c1d28bd8000cbce}
-PORTS_REVISION=${PORTS_REVISION:-582675f016b0b0d8e8760852767443841075e825}
-PACKAGE_REPOSITORY_TAG=${PACKAGE_REPOSITORY_TAG:-packages-16-amd64-1.4.1}
-SECUREBOOT_BUNDLE=${SECUREBOOT_BUNDLE:-/usr/daemonarchy/sb16/daemonarchy-1.4.1-boot.txz}
+PORTS_REVISION=${PORTS_REVISION:-b7f50a91973f73db047775a010237cae3455596a}
+PACKAGE_REPOSITORY_TAG=${PACKAGE_REPOSITORY_TAG:-packages-16-amd64-$RELEASE}
+SECUREBOOT_BUNDLE=${SECUREBOOT_BUNDLE:-/usr/daemonarchy/sb16/daemonarchy-$RELEASE-boot.txz}
 SECUREBOOT_CERTIFICATE=${SECUREBOOT_CERTIFICATE:-/usr/daemonarchy/boot-replacement-candidate-public-20261024/daemonarchy-1.3.1.pem}
 SIGN_KEY=${SIGN_KEY:-/usr/local/etc/daemonarchy/pkg-repo-next.key}
 BUILT_PACKAGES_FILE=${BUILT_PACKAGES_FILE:-$WORK/built-141.txt}
-CLOSURE_DIR=${CLOSURE_DIR:-/tmp/closure/out/packages-16-amd64-1.4.1-upstream}
+CLOSURE_DIR=${CLOSURE_DIR:-/tmp/closure/out/$CLOSURE_SHARD_TAG}
 # resolve can run against the published releases instead of the staged directories:
 APP_FEED_URL=${APP_FEED_URL:-}
 CLOSURE_URL=${CLOSURE_URL:-}
@@ -352,8 +354,8 @@ main() {
   FEED_OUT=${FEED_OUT:-$WORK/feed-$PACKAGE_REPOSITORY_TAG}
   # A release image carries its closure feed (PKG-002): the installer prefers it to pkg.FreeBSD.org, and
   # build-iso.sh refuses the build unless that feed resolves the installer's packages on its own.
-  # The shard belongs to the release, so a revision suffix (-r2) does not name another one.
-  PACKAGE_MIRROR_URLS=${PACKAGE_MIRROR_URLS:-https://github.com/jordanhubbard/daemonarchy/releases/download/${PACKAGE_REPOSITORY_TAG%-r[0-9]*}-upstream}
+  # The closure shard is named explicitly (CLOSURE_SHARD_TAG): an application tag, plain or with a revision suffix, does not name one.
+  PACKAGE_MIRROR_URLS=${PACKAGE_MIRROR_URLS:-https://github.com/jordanhubbard/daemonarchy/releases/download/$CLOSURE_SHARD_TAG}
   [ "${#steps[@]}" -gt 0 ] || { sed -n '2,32p' "$0" >&2; exit 2; }
   local s
   for s in "${steps[@]}"; do
