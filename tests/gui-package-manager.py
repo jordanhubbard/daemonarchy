@@ -285,7 +285,8 @@ class Plans(Fixture):
     def test_empty_plan_is_a_problem_not_silence(self):
         result = plan.from_text("install", ["nosuch"], "No packages available to install matching 'nosuch' have been found.\n")
         self.assertEqual(result.items, [])
-        self.assertEqual(result.problems, ["pkg planned no changes"])
+        self.assertEqual(result.problems, ["No packages available to install matching 'nosuch' have been found."])
+        self.assertEqual(plan.from_text("install", ["x"], "").problems, ["pkg planned no changes"])
 
     def test_identity_is_stable_and_changes_with_anything_that_matters(self):
         first = plan.from_text("install", ["cowsay"], INSTALL, self.catalogue)

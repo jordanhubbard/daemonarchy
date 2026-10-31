@@ -2,8 +2,8 @@
 
 Status: **in progress.** The toolkit-free layers (repositories, catalogue, plan, shared
 engine, text commands) are in `apps/daemonarchy-pkg/` with tests in `tests/gui-package-manager.py`.
-The transaction helper, the window, the menu entries and the package are not done, and nothing
-is shipped. It is the plan for the
+The transaction helper (`daemonarchy-pkg-helper`) and the window's progress model are in too.
+The window, the menu entries and the package are not done, and nothing is shipped. It is the plan for the
 GUI-001 queue item ([acceptance](roadmap/active-work.md#gui-001--deliver-a-colorful-fast-graphical-package-manager)).
 Until it ships, the graphical package manager is OctoPkg.
 
@@ -124,3 +124,20 @@ apps/daemonarchy-pkg/bin/daemonarchy-pkg --json plan remove cowsay
 ```
 
 The window will call exactly these layers, so what the text commands print is what it shows.
+
+## The transaction helper
+
+`daemonarchy-pkg-helper ACTION --identity SHA256 [--allow-unsigned REPO]... NAME...` runs as root
+(the window starts it with `sudo -A` through the desktop's askpass, else `sudo -n`). It
+recomputes the plan and runs only if the identity is the one the user approved; a repository
+without a verified signature must also be named. It then fetches with `parallel-fetch` (four
+streams for pkg.FreeBSD.org, sixteen for the feeds, the installer's measured settings) and runs
+pkg. Its output is the install log's vocabulary (`@@phase`, `@@plan`, `@@fetch`, pkg's
+`[n/N]` lines) ending in one `@@result` line (`daemonarchy/gui-result@1`). Exit status: 0 done,
+1 pkg failed, 3 refused (plan changed, or nothing to do), 4 refused (unsigned repository), 5 the
+download cannot succeed. Retry runs the whole thing again, so it re-plans and reuses archives
+already in pkg's cache.
+
+It runs as root on arguments a user chose, so it accepts only plain package names, repository
+names and a 64-hex identity, and has no option that points it at another database,
+configuration directory, pkg or engine directory.

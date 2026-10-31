@@ -119,6 +119,8 @@ class Catalogue:
             self.problems.append((path, str(error)))
 
     def read_local(self, path):
+        if not os.path.exists(path):
+            return              # a root that pkg has not used yet has no installed packages, which is not a problem
         try:
             with self.open(path) as db:
                 for row in rows(db, ('name', 'version', 'comment', 'origin', 'www', 'flatsize', 'automatic')):
