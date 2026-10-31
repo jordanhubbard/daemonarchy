@@ -1,6 +1,9 @@
 # The graphical package manager (design)
 
-Status: **design only; nothing here is implemented or shipped.** It is the plan for the
+Status: **in progress.** The toolkit-free layers (repositories, catalogue, plan, shared
+engine, text commands) are in `apps/daemonarchy-pkg/` with tests in `tests/gui-package-manager.py`.
+The transaction helper, the window, the menu entries and the package are not done, and nothing
+is shipped. It is the plan for the
 GUI-001 queue item ([acceptance](roadmap/active-work.md#gui-001--deliver-a-colorful-fast-graphical-package-manager)).
 Until it ships, the graphical package manager is OctoPkg.
 
@@ -110,3 +113,14 @@ The GTK window can be built and driven headless on a FreeBSD VM. Responsiveness 
 GPUs and the Hyprland compositor, real input devices and the login-session askpass
 prompt need an installed desktop (MSI and MacBook). Packaging runs on the build VM; the
 installed result is a physical check.
+
+## Using the text commands
+
+```
+apps/daemonarchy-pkg/bin/daemonarchy-pkg repos                  # signed / unsigned / broken, with key fingerprints
+apps/daemonarchy-pkg/bin/daemonarchy-pkg search editor
+apps/daemonarchy-pkg/bin/daemonarchy-pkg plan install cowsay    # the dry run as a plan, with its identity
+apps/daemonarchy-pkg/bin/daemonarchy-pkg --json plan remove cowsay
+```
+
+The window will call exactly these layers, so what the text commands print is what it shows.
