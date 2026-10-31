@@ -92,6 +92,12 @@ on:
       - 'overlay/usr/local/share/daemonarchy-installer/omarchy-menu.jsonc'
       - 'tests/windows-launchers.sh'
       - 'tests/windows-apps-install.sh'
+      - 'scripts/fill-release.py'
+      - 'scripts/prepare-release.py'
+      - 'scripts/diff-release-packages.sh'
+      - 'release/templates/**'
+      - 'tests/release-prepare-fill.py'
+      - 'tests/fixtures/release-prepare/**'
       - 'verification/install-baselines/**'
       - 'verification/closure-feeds/**'
       - 'overlay/usr/local/libexec/daemonarchy-installer/pkg-events'
@@ -192,6 +198,12 @@ on:
       - 'overlay/usr/local/share/daemonarchy-installer/omarchy-menu.jsonc'
       - 'tests/windows-launchers.sh'
       - 'tests/windows-apps-install.sh'
+      - 'scripts/fill-release.py'
+      - 'scripts/prepare-release.py'
+      - 'scripts/diff-release-packages.sh'
+      - 'release/templates/**'
+      - 'tests/release-prepare-fill.py'
+      - 'tests/fixtures/release-prepare/**'
       - 'verification/install-baselines/**'
       - 'verification/closure-feeds/**'
       - 'overlay/usr/local/libexec/daemonarchy-installer/pkg-events'
@@ -281,6 +293,10 @@ jobs:
         env:
           PYTHONDONTWRITEBYTECODE: '1'
         run: python3 tests/package-feed-manifest.py -v
+      - name: Release preparation and filling
+        env:
+          PYTHONDONTWRITEBYTECODE: '1'
+        run: python3 tests/release-prepare-fill.py -v
       - name: Install baselines and comparison
         env:
           PYTHONDONTWRITEBYTECODE: '1'
