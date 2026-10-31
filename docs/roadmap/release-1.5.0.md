@@ -1,0 +1,102 @@
+# 1.5.0 plan: build and release-cycle speed
+
+- **Status:** active
+- **Owning queue item:** [BUILD-001](active-work.md#build-001-cut-freebsd-source-ports-iso-and-release-cycle-time-10x-with-literate-ai-14)
+- **Supporting queue items:** [ADOPT-002](active-work.md#adopt-002-qualify-retained-native-execution-and-release-enforcement), [COMP-001](active-work.md#comp-001-model-complete-freebsd-source-and-ports-trees-as-components), [SRC-001](active-work.md#src-001-establish-owned-freebsd-source-builds-and-packages), [PERF-001](active-work.md#perf-001-execute-native-components-and-substantially-accelerate-iso-builds), [PERF-002](active-work.md#perf-002-coordinate-all-daemonarchy-repositories-through-literate-ai-workers-in-140), [DEV-001](active-work.md#dev-001-provide-an-operator-ready-native-component-development-system), [RELEASE-001](active-work.md#release-001-deliver-a-qualified-literate-ai-release-workflow-in-14)
+- **Completion / archival evidence:** pending; nothing here is claimed done. Done means the evidence listed under Acceptance below, retained with exact inputs.
+
+Opened 2026-10-31 by operator decision. The operator's words: decrease the time required to
+compile all of FreeBSD src, FreeBSD ports and the ISO mastering process using all applicable
+features of Literate AI, also upgrading Literate AI in all Daemonarchy repositories to version
+1.4 (top of tree), and improve the entire release engineering cycle by 10x.
+
+## 1.4.2 did not deliver build-efficiency gains
+
+The 1.4.2 queue items ADOPT-002, RELEASE-001, COMP-001, PERF-002, DEV-001 and SRC-001 were kept
+open by operator decision and were not run natively under Literate AI. 1.4.2 therefore made no
+build-efficiency claim: its builds used the hand pipeline of 1.4.1. The 1.4.2 work that touched
+this area was preparatory only (documentation authority gate, release policy and gate for 1.4.x,
+a registered FreeBSD worker, and written native adoption steps), and the retained native receipt
+(`verification/current.json`) still does not exist.
+
+## Baselines (recorded first, with where measured)
+
+No target below is meaningful until its baseline is retained in `verification/build-baselines/`
+with host, revision, vCPU, memory, clean or incremental, run count and the command. What exists
+today, and what does not:
+
+| Stage | Measured today | Where and how | Gap |
+|---|---|---|---|
+| `buildworld` | 7,931 s (clean, `-j4`) | Owned KVM FreeBSD guest, 8 vCPU, 16 GiB; see the DEV-001 source SDK baseline in [active-work.md](active-work.md#dev-001-provide-an-operator-ready-native-component-development-system) | One run; 874 to 878 s incremental on 8 cores (retained object tree) in the 1.4.1 record |
+| `buildkernel` | 600 s (clean, same guest); 622 s incremental | same, and [the 1.4.1 pipeline record](../../verification/build-baselines/rev2-1.4.1-pipeline-20261030.json) | One run each |
+| Full native producer (world, kernel, packages, sets) | 9,357 to 9,358 s, 537 artifacts | same 8 vCPU/16 GiB KVM guest | One run |
+| 1.4.1 hand pipeline (incremental) | 3,518 s total (world 878, kernel 622, sets 601, jail 154, Secure Boot 314 + 442 + 62, checkouts 387) | daemon.local (retired), 8 cores, `-j8`, retained object tree | One run; not clean; host retired |
+| ISO mastering (`build-iso.sh`), amd64 | 1,583 s and 1,601 s (two builds) | same pipeline record, `separate_phases` | Two builds; no per-arch repeat |
+| ISO mastering, aarch64 | Not extracted | An aarch64 bulk and ISO record exists ([verification](../../verification/aarch64-bulk-iso-20261027-development.json)) | Needs a repeatable per-arch measurement on barmy |
+| Full ports bulk for our origin set | No repeatable clean wall-clock retained | Earlier bulk attempts are described in the queue; the 1.4.1 and 1.4.2 package sets were built by hand pipelines | Measure a clean and an unchanged-input bulk per arch |
+| End-to-end release cycle, "main frozen" to "published and verified" | Partial: 1.4.1 tag created 2026-10-31 04:03 UTC and published (non-draft) 06:08 UTC, about 2 h 5 min; 1.4.0 published 2026-10-29 20:28 UTC, so 1.4.0 to 1.4.1 publication is about 33 h 40 min including the re-roll | GitHub release timestamps | The freeze instant is not recorded for 1.4.1; 1.4.2 is not published at the time of writing |
+
+Task 1 of the plan retains the missing rows, and a release rehearsal records the freeze time,
+every stage's start and end (the existing `scripts/build-timing-record.py` format) and the
+publication verification time. A stage with no measurement keeps the words "not measured".
+
+## Targets and mechanisms
+
+The headline target is the end-to-end cycle, "main frozen" to "published and verified", at least
+10x shorter than the baseline measured for 1.4.2 or the later rehearsal, on equivalent gates:
+the same tests, signatures, ISO boot and install checks, feed verification and byte re-download.
+Per-stage targets are set when the baselines exist, and each names the mechanism and the item
+that owns it:
+
+| Stage | Mechanism | Owning item |
+|---|---|---|
+| World, kernel, sets | Literate AI native Components with an exact-input verified cache: unchanged inputs compile nothing; a changed input rebuilds only its closure. Incremental native builds on workers with bounded jobs | SRC-001, COMP-001 (framework [#74](https://github.com/jordanhubbard/literate-ai/issues/74), [#93](https://github.com/jordanhubbard/literate-ai/issues/93)) |
+| Ports and packages | Package builds keyed by source subtree, port metadata, toolchain and ABI; compatible base version changes requalify and reuse unchanged payloads | PERF-002, COMP-001 |
+| ISO mastering | Cached sets and package closure inputs, parallel per-arch builds on separate workers, scripted rather than manual mastering | PERF-001, PERF-002 |
+| Distribution across machines | Literate AI workers on more than one physical machine sharing a verified immutable cache; duplicate-key and failure controls | PERF-002 |
+| Development loop | Operator workstation `litai-dev` interface over the same Components | DEV-001 |
+| Signing and key windows | Scripted key windows with the same custody rules; the key is never copied to workers or artifacts | RELEASE-001 |
+| QA | Parallel amd64 and aarch64 install, boot and feed checks from one plan, instead of sequential manual runs | RELEASE-001, PERF-002 |
+| Release state and gates | `litai release` plan, check and publish driven by the 1.4.x gate and a goal manifest, replacing hand steps | RELEASE-001 |
+
+These mechanisms are the open acceptance of the listed items, not new claims. A 10x figure is not
+credible if it comes from skipping a test, a package or a signature; the evidence says so.
+
+## Literate AI upgrade to 1.4 in all Daemonarchy repositories
+
+Today the installed runtime is litai 1.3.0 (c345e652) and framework main reports 1.4.0 development.
+"1.4 (top of tree)" means the framework revision chosen and recorded at the start of this work.
+The three Daemonarchy repositories that carry `literate.project.json` on 2026-10-31:
+
+| Repository | `literate.project.json` | Project version | Notes |
+|---|---|---|---|
+| daemonarchy | yes | 1.4.1 | Standard binding to framework distribution 8b9c09fd; release policy and 1.4.x gate in place |
+| daemonarchy-src | yes | 1.2.0 | Standard lifecycle binding present; older project version |
+| daemonarchy-ports | yes | 1.2.0 | Standard lifecycle binding present; older project version |
+| daemonarchy-desktop | no | n/a | No `literate.project.json` on its default branch; adopting it is part of the upgrade scope or an explicit exclusion |
+
+Other repositories under the owner carry a `literate.project.json` (Aviation, ElixirSSI,
+project-tracker, bookscan, freebsd-sentiment, LeRTX, and the framework itself and its labs). They
+are not Daemonarchy repositories and are outside this item unless the operator extends it.
+
+For each repository, the upgrade is: review the Standard rebind plan
+(`litai project lifecycle rebind-standard`, plan first), apply it only with the reviewed plan and
+explicit authorization, add the release-goal manifest that framework main requires
+(`contributions.roadmap_goal_manifest`, with a `Release target:` line on each queue heading and every
+included goal checked off), then run `litai verify` and the repository's own tests. The rebind
+changes lifecycle and receipt-policy authority, so each is an operator-approved change.
+daemonarchy's `authority-reviewed` marker is recorded by a human after review.
+
+## Acceptance
+
+Nothing is claimed done until each of these has retained evidence with exact inputs:
+
+- Baseline records for every row of the baseline table, including the missing ones, with
+  where-measured details.
+- Per-stage results against targets, each stage's gates unchanged from the baseline cycle.
+- The end-to-end cycle at least 10x shorter on equivalent gates, on a rehearsal and on a real
+  release, with every decision, cache hit and rebuild recorded.
+- Literate AI at the recorded 1.4 revision in daemonarchy, daemonarchy-src, daemonarchy-ports and
+  any further repository the operator names; each passes `litai verify` for its declared gates.
+- ADOPT-002, COMP-001, SRC-001, DEV-001, PERF-001, PERF-002 and RELEASE-001 meet their own
+  acceptance texts; framework issues #74 and #93 are resolved or the dependent scope stays open.
