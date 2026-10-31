@@ -1,11 +1,11 @@
-# Mastering notes for 1.4.2
+# Mastering notes for 1.5.0
 
-What changed in how an amd64 release image is mastered after 1.4.1, so the 1.4.2 run
+What changed in how an amd64 release image is mastered after 1.4.1, so the 1.5.0 run
 starts from it. The steps themselves are in [mastering-1.4.1.md](mastering-1.4.1.md).
 
 ## The re-roll sequence
 
-The order the 1.4.2 release will follow. Publishing anything (a feed, an image, the
+The order the 1.5.0 release will follow. Publishing anything (a feed, an image, the
 release) is the release owner's step and happens only after approval; the steps before it
 write files and nothing else. amd64 is built on mudflap and aarch64 on barmy; keys stay on
 madmax (`~/daemonarchy-keys`, never copied into a VM, never printed).
@@ -34,14 +34,14 @@ madmax (`~/daemonarchy-keys`, never copied into a VM, never printed).
    regenerate it with `resign-boot-bundle.sh check`; `sign` needs the boot signing key and
    is an operator decision. The re-signed bundle and its `.sig` replace the 1.4.1 ones in the
    release assets.
-5. **Application feeds.** A full signed feed for each architecture, `packages-16-amd64-1.4.2`
-   and `packages-16-aarch64-1.4.2` (a suffix such as `-r2` only when a published tag must be
+5. **Application feeds.** A full signed feed for each architecture, `packages-16-amd64-1.5.0`
+   and `packages-16-aarch64-1.5.0` (a suffix such as `-r2` only when a published tag must be
    superseded; published tags are never replaced). `master-release.sh feed` builds it on the
    builder with the key already there, `package-feed-manifest.py` stages it, and the
    release owner uploads with `package-feed-upload.py` (never `--clobber`) and verifies by
    re-download. The installer reads one application repository per tag, so a feed is a
    complete one, not a delta.
-6. **Checkout feeds.** `checkouts-16-ARCH-1.4.2`: the ports checkout package and catalogue at
+6. **Checkout feeds.** `checkouts-16-ARCH-1.5.0`: the ports checkout package and catalogue at
    the pin (the source checkout stays at the base revision unless the base moved). The
    overlay `checkouts.json` becomes the published catalogue, byte for byte, in the release
    pull request.
@@ -50,7 +50,7 @@ madmax (`~/daemonarchy-keys`, never copied into a VM, never printed).
    closure of `daemonarchy-pkg` (107 packages with GTK 4) was checked against the published
    `packages-16-amd64-1.4.1-upstream` shard and the 1.4.1 feed and is already covered, so
    amd64 needs no new shard for it. A gap becomes a delta shard,
-   `packages-16-ARCH-1.4.2-upstream` (published tags are immutable, so a gap cannot join
+   `packages-16-ARCH-1.5.0-upstream` (published tags are immutable, so a gap cannot join
    an old shard); aarch64 is checked the same way on barmy, including `py312-sqlite3`, the
    live-image gap of 1.4.1. List every shard in `PACKAGE_MIRROR_URLS`, new and old, and
    stage its record in `verification/closure-feeds/`.
@@ -68,9 +68,9 @@ madmax (`~/daemonarchy-keys`, never copied into a VM, never printed).
 12. **Publish** (release owner): the feeds, then the release with the eight assets,
     verified with `scripts/verify-release-assets.py --published`.
 13. **Fill the records.** The draft release pull request is made once the template is
-    reviewed: `scripts/prepare-release.py --version 1.4.2 --source-commit SHA40` copies
-    `release/templates/release-1.4.2.md` to `docs/release-1.4.2.md`, writes the
-    `verification/release-1.4.2.json` skeleton and moves `release/current.json` to the new
+    reviewed: `scripts/prepare-release.py --version 1.5.0 --source-commit SHA40` copies
+    `release/templates/release-1.5.0.md` to `docs/release-1.5.0.md`, writes the
+    `verification/release-1.5.0.json` skeleton and moves `release/current.json` to the new
     release with `TODO` digests. Write the prose sentences it lists (README, HACKING,
     PROJECT, CHANGELOG, `docs/aarch64.md`), keep the pull request a draft (the docs
     guard fails by design until it is filled), and after publication run
@@ -80,15 +80,15 @@ madmax (`~/daemonarchy-keys`, never copied into a VM, never printed).
 ### Filling the records
 
 ```
-python3 scripts/fill-release.py --version 1.4.2 --assets ASSETS --dry-run ...   # same arguments
-python3 scripts/fill-release.py --version 1.4.2 --assets ASSETS \
+python3 scripts/fill-release.py --version 1.5.0 --assets ASSETS --dry-run ...   # same arguments
+python3 scripts/fill-release.py --version 1.5.0 --assets ASSETS \
     --installer-commit INSTALLER40 --ports-commit PORTS40 \
-    --packages-amd64 packages-16-amd64-1.4.2 --packages-aarch64 packages-16-aarch64-1.4.2 \
-    --checkouts-amd64 checkouts-16-amd64-1.4.2 --checkouts-aarch64 checkouts-16-aarch64-1.4.2 \
+    --packages-amd64 packages-16-amd64-1.5.0 --packages-aarch64 packages-16-aarch64-1.5.0 \
+    --checkouts-amd64 checkouts-16-amd64-1.5.0 --checkouts-aarch64 checkouts-16-aarch64-1.5.0 \
     --aarch64-final-qemu "..." --physical-status "..." --set GUI001_EVIDENCE="..." \
     [--published-at 2026-11-07T00:00:00Z]
 python3 tests/docs-release-sync.py -v
-python3 scripts/verify-release-assets.py --record verification/release-1.4.2.json \
+python3 scripts/verify-release-assets.py --record verification/release-1.5.0.json \
     --assets ASSETS --closure-assets CLOSURE_DIR      # CLOSURE_DIR/<tag>/ for each closure shard
 ```
 

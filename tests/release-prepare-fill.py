@@ -2,8 +2,8 @@
 """scripts/prepare-release.py and scripts/fill-release.py, end to end on a scratch tree.
 
 The scratch tree is the repository's real release/current.json, closure feed records and the
-1.4.2 notes template, plus stub prose files holding the tokens, so the whole draft-then-fill
-flow of docs/mastering-1.4.2.md runs without GitHub, a build or a key.
+1.5.0 notes template, plus stub prose files holding the tokens, so the whole draft-then-fill
+flow of docs/mastering-1.5.0.md runs without GitHub, a build or a key.
 """
 import hashlib
 import json
@@ -20,16 +20,16 @@ FIXTURE = ROOT / "tests/fixtures/release-prepare/current-1.4.1.json"
 SOURCE = "303b3646270ffa4bf7cec65c5c1d28bd8000cbce"
 PORTS = "a" * 40
 INSTALLER = "b" * 40
-VERSION = "1.4.2"
+VERSION = "1.5.0"
 FEEDS = {
-    "--packages-amd64": "packages-16-amd64-1.4.2-r1", "--packages-aarch64": "packages-16-aarch64-1.4.2-r1",
-    "--checkouts-amd64": "checkouts-16-amd64-1.4.2-r1", "--checkouts-aarch64": "checkouts-16-aarch64-1.4.2-r1",
+    "--packages-amd64": "packages-16-amd64-1.5.0-r1", "--packages-aarch64": "packages-16-aarch64-1.5.0-r1",
+    "--checkouts-amd64": "checkouts-16-amd64-1.5.0-r1", "--checkouts-aarch64": "checkouts-16-aarch64-1.5.0-r1",
 }
 PROSE = {
     "README.md": "Release @@PUBLISHED_DATE@@ x86 @@AMD64_ISO_BYTES@@ @@AMD64_ISO_SHA256@@ arm @@AARCH64_ISO_BYTES@@ @@AARCH64_ISO_SHA256@@\n",
     "HACKING.md": "ports @@PORTS_COMMIT@@\n",
     "PROJECT.md": "published @@PUBLISHED_DATE@@\n",
-    "CHANGELOG.md": "## 1.4.2 (@@PUBLISHED_DATE@@)\n",
+    "CHANGELOG.md": "## 1.5.0 (@@PUBLISHED_DATE@@)\n",
     "docs/aarch64.md": "@@AARCH64_FINAL_QEMU_STATUS@@\n",
 }
 
@@ -48,10 +48,10 @@ class PrepareAndFill(unittest.TestCase):
         self.tmp = tempfile.TemporaryDirectory()
         self.addCleanup(self.tmp.cleanup)
         self.root = Path(self.tmp.name) / "tree"
-        # The current record is a fixture (the 1.4.1 one), so the test keeps its meaning after 1.4.2 is published.
+        # The current record is a fixture (the 1.4.1 one), so the test keeps its meaning after 1.5.0 is published.
         (self.root / "release/templates").mkdir(parents=True)
         shutil.copy(FIXTURE, self.root / "release/current.json")
-        shutil.copy(ROOT / "release/templates/release-1.4.2.md", self.root / "release/templates/release-1.4.2.md")
+        shutil.copy(ROOT / "release/templates/release-1.5.0.md", self.root / "release/templates/release-1.5.0.md")
         shutil.copytree(ROOT / "verification/closure-feeds", self.root / "verification/closure-feeds")
         for relative, text in PROSE.items():
             (self.root / relative).parent.mkdir(parents=True, exist_ok=True)
@@ -109,10 +109,10 @@ class PrepareAndFill(unittest.TestCase):
         self.assertNotEqual(self.prepare_result().returncode, 0)             # already prepared
         older = run("prepare-release.py", "--version", "1.4.1", "--source-commit", SOURCE, root=self.root, check=False)
         self.assertNotEqual(older.returncode, 0)
-        bad = run("prepare-release.py", "--version", "1.4.3", "--source-commit", "xyz", root=self.root, check=False)
+        bad = run("prepare-release.py", "--version", "1.5.1", "--source-commit", "xyz", root=self.root, check=False)
         self.assertNotEqual(bad.returncode, 0)
-        missing = run("prepare-release.py", "--version", "1.4.3", "--source-commit", SOURCE, root=self.root, check=False)
-        self.assertIn("release-1.4.3.md first", missing.stderr)
+        missing = run("prepare-release.py", "--version", "1.5.1", "--source-commit", SOURCE, root=self.root, check=False)
+        self.assertIn("release-1.5.1.md first", missing.stderr)
 
     def prepare_result(self):
         return run("prepare-release.py", "--version", VERSION, "--source-commit", SOURCE, root=self.root, check=False)
@@ -180,9 +180,9 @@ class PrepareAndFill(unittest.TestCase):
         self.catalogue.write_text(json.dumps(wrong))
         record_path = self.root / f"verification/release-{VERSION}.json"
         record = json.loads(record_path.read_text())
-        record["closure_feed_records"].append("packages-16-amd64-1.4.2-upstream")
+        record["closure_feed_records"].append("packages-16-amd64-1.5.0-upstream")
         record_path.write_text(json.dumps(record))
-        self.assertIn("no closure feed record for packages-16-amd64-1.4.2-upstream", self.fill(check=False).stderr)
+        self.assertIn("no closure feed record for packages-16-amd64-1.5.0-upstream", self.fill(check=False).stderr)
 
 
 if __name__ == "__main__":

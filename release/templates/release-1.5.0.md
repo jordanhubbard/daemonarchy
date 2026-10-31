@@ -1,31 +1,31 @@
-# Daemonarchy 1.4.2 release notes
+# Daemonarchy 1.5.0 release notes
 
 <!-- Template for the draft release pull request (scripts/prepare-release.py copies it to
-docs/release-1.4.2.md). Written from what is merged on main when the template was made.
+docs/release-1.5.0.md). Written from what is merged on main when the template was made.
 Before the release the owner re-checks every claim below against main and the evidence,
 removes what did not ship and adds what did. The upper-case words between pairs of at-signs
 are filled by scripts/fill-release.py (GUI001_EVIDENCE is given with --set). -->
 
-Daemonarchy 1.4.2 is the release after 1.4.1. It adds Windows programs and Steam to the
+Daemonarchy 1.5.0 is the release after 1.4.1. It adds Windows programs and Steam to the
 Apps menu on amd64, the first part of a graphical package manager, and a fix for a
 Wi-Fi stall on the MacBookPro16,1. Published @@PUBLISHED_DATE@@. The
-[GitHub release](https://github.com/jordanhubbard/daemonarchy/releases/tag/daemonarchy-1.4.2)
+[GitHub release](https://github.com/jordanhubbard/daemonarchy/releases/tag/daemonarchy-1.5.0)
 is the authority for the final images, asset hashes and publication state.
 
 ## What you download
 
-- `daemonarchy-1.4.2-amd64.iso.xz` (@@AMD64_ISO_BYTES@@ bytes, SHA-256
+- `daemonarchy-1.5.0-amd64.iso.xz` (@@AMD64_ISO_BYTES@@ bytes, SHA-256
   `@@AMD64_ISO_SHA256@@`), the x86-64 image for BIOS or UEFI.
-- `daemonarchy-1.4.2-aarch64.iso.xz` (@@AARCH64_ISO_BYTES@@ bytes, SHA-256
+- `daemonarchy-1.5.0-aarch64.iso.xz` (@@AARCH64_ISO_BYTES@@ bytes, SHA-256
   `@@AARCH64_ISO_SHA256@@`), the arm64 image, UEFI only. It is still a
   community-validation image: read [the aarch64 section](#aarch64-image-community-validation).
 - A `.sha256` file for each image, which covers the compressed file you download.
-- The signed Secure Boot bundle `daemonarchy-1.4.2-boot.txz` with its detached `.sig`,
+- The signed Secure Boot bundle `daemonarchy-1.5.0-boot.txz` with its detached `.sig`,
   and the public certificate in PEM and DER form. The bundle is the amd64 Secure Boot
   bundle; aarch64 has none.
 
 Decompress an image before writing it:
-`xz -dc daemonarchy-1.4.2-amd64.iso.xz | dd of=/dev/<usb-device> bs=1M`.
+`xz -dc daemonarchy-1.5.0-amd64.iso.xz | dd of=/dev/<usb-device> bs=1M`.
 
 The base is FreeBSD 16.0-CURRENT, OSVERSION `1600029`, built from daemonarchy-src
 `303b364`; the ports are daemonarchy-ports `@@PORTS_SHORT@@`. The installer commit is
@@ -72,8 +72,8 @@ The base is FreeBSD 16.0-CURRENT, OSVERSION `1600029`, built from daemonarchy-sr
 
 ## What is not done, and why
 
-None of these is claimed done by 1.4.2. They are carried in the
-[1.4.2 plan](roadmap/release-1.4.2.md).
+None of these is claimed done by 1.5.0. They are carried in the
+[1.5.0 plan](roadmap/release-1.5.0.md).
 
 | Item | Why it is not in this release |
 | --- | --- |
@@ -104,7 +104,7 @@ desktop on real hardware were not run. The default browser is Epiphany. See
   [1.4.0 notes](release-1.4.0.md#hardware-status-and-limits) stand: polling-mode MSI
   touchpad, only Arrow Lake-S I2C controller 0 recognised, no ARL004 VMD interrupt
   workaround, no MacBook sound, CUDA Unified Memory unsupported.
-- **Not done in 1.4.2.** The exact-image network matrix, image-based upgrade and rollback,
+- **Not done in 1.5.0.** The exact-image network matrix, image-based upgrade and rollback,
   and the ten-times-faster target measured on both physical machines were not completed.
 
 ## Upgrading

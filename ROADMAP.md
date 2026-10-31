@@ -5,12 +5,14 @@ Use [the active queue](docs/roadmap/active-work.md) for stable work IDs and
 acceptance status, and [the architecture](docs/architecture/design-traceability.md)
 for Component ownership. This file remains the release and feature overview.
 
-## 1.4.2: items deferred from 1.4.1
+## 1.5.0 (opened as 1.4.2): items deferred from 1.4.1, and faster builds
 
 The MacBookPro16,1 Wi-Fi fix (a dead associated state in the BCM4364 driver, drafted in
 daemonarchy-ports #37) and nine unfinished queue items (ADOPT-002, GUI-001, SRC-001,
 RELEASE-001, COMP-001, PERF-002, DEV-001, DEBUG-003 and HW-004) moved here from 1.4.1 by
-operator decision on 2026-10-30. See [the 1.4.2 plan](docs/roadmap/release-1.4.2.md).
+operator decision on 2026-10-30. The release was renamed from 1.4.2 to 1.5.0 on 2026-10-31 (new
+user-visible features make it a minor release; 1.4.2 is superseded and was never released), and it also
+carries BUILD-001 (10x faster builds and release cycle). See [the 1.5.0 plan](docs/roadmap/release-1.5.0.md).
 
 ## 1.4.1: faster installation and playable arcade interludes
 

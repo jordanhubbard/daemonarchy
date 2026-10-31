@@ -2,7 +2,7 @@
 
 - **Status:** completed
 - **Owning queue item:** [RELEASE-001](active-work.md#release-001-deliver-a-qualified-literate-ai-release-workflow-in-14)
-- **Completion / archival evidence:** the [1.4.2 plan](release-1.4.2.md) records where each audited item moved; the per-item `audit` lines are in [active-work.md](active-work.md).
+- **Completion / archival evidence:** the [1.5.0 plan](release-1.5.0.md) records where each audited item moved; the per-item `audit` lines are in [active-work.md](active-work.md).
 
 Audited 2026-10-30 against the repository, `verification/` records, the test suite
 and the physical and QEMU runs of this cycle. Scope: the open queue items in

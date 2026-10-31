@@ -96,7 +96,7 @@ Evidence: `verification/adoption-checks.json`. Native execution and release enfo
 ### [ ] ADOPT-002 — Qualify retained native execution and release enforcement
 
 - **Priority:** P1
-- **Release:** 1.4.2 (moved from 1.4.1 by operator decision, 2026-10-30; not claimed done by 1.4.0 or 1.4.1; see [the 1.4.2 plan](release-1.4.2.md))
+- **Release:** 1.5.0 (moved from 1.4.1 by operator decision, 2026-10-30; not claimed done by 1.4.0 or 1.4.1; renamed from 1.4.2 on 2026-10-31; see [the 1.5.0 plan](release-1.5.0.md))
 - **Owner:** native lifecycle integration and framework boundary
 - **Direction:** Integrate existing FreeBSD build, test, signing and release procedures without transferring source authority.
 - **Conclusion:** Do not enable framework execution or publication until exact mixed source/assets, worker/toolchain, privileged cleanup, artifact custody and current receipt paths are demonstrated; the installed candidate provides the retained handler, while the actual product profile and native acceptance remain unfinished.
@@ -293,7 +293,7 @@ lifecycle authority.
 ### [ ] GUI-001 — Deliver a colorful fast graphical package manager
 
 - **Priority:** P2
-- **Release:** 1.4.2 (moved from 1.4.1 by operator decision, 2026-10-30; not claimed done by 1.4.0 or 1.4.1; see [the 1.4.2 plan](release-1.4.2.md))
+- **Release:** 1.5.0 (moved from 1.4.1 by operator decision, 2026-10-30; not claimed done by 1.4.0 or 1.4.1; renamed from 1.4.2 on 2026-10-31; see [the 1.5.0 plan](release-1.5.0.md))
 - **Owner:** desktop and package-engine Components
 - **Direction:** Provide the same useful visual progress and parallel execution in graphical package management, contributing a port if a new application is needed.
 - **Conclusion:** Evaluate the current manager; share the transaction engine and progress semantics rather than build a competing planner.
@@ -308,7 +308,7 @@ lifecycle authority.
 ### [ ] SRC-001 — Establish owned FreeBSD source builds and packages
 
 - **Priority:** P1
-- **Release:** 1.4.2 (moved from 1.4.1 by operator decision, 2026-10-30; not claimed done by 1.4.0 or 1.4.1; see [the 1.4.2 plan](release-1.4.2.md))
+- **Release:** 1.5.0 (moved from 1.4.1 by operator decision, 2026-10-30; not claimed done by 1.4.0 or 1.4.1; renamed from 1.4.2 on 2026-10-31; see [the 1.5.0 plan](release-1.5.0.md))
 - **Owner:** release and diagnostics Components; daemonarchy-src fork
 - **Direction:** Build modified FreeBSD-CURRENT from the owned source fork, retaining upstream provenance and coherent kernel/world/source package selections.
 - **Conclusion:** Introduce clean exact-commit native builds with isolated objects/staging, GENERIC and diagnostic profiles, pkgbase and installer-set outputs, bounded jobs and verifiable build records. Do not install on build workers or publish unsigned development outputs as releases.
@@ -400,7 +400,7 @@ lifecycle authority.
 - **GitHub issue:** [#11](https://github.com/jordanhubbard/daemonarchy/issues/11)
 
 - **Priority:** P1
-- **Release:** 1.4.2 (moved from 1.4.1 by operator decision, 2026-10-30; not claimed done by 1.4.0 or 1.4.1; see [the 1.4.2 plan](release-1.4.2.md))
+- **Release:** 1.5.0 (moved from 1.4.1 by operator decision, 2026-10-30; not claimed done by 1.4.0 or 1.4.1; renamed from 1.4.2 on 2026-10-31; see [the 1.5.0 plan](release-1.5.0.md))
 - **Owner:** whole product, release and acceptance
 - **Direction:** Finish the retained backlog and publish a future release entirely through qualified Literate AI execution across the owned repositories. The original 1.2.0 milestone was not published; 1.3.1 records the intervening development but uses its separately verified native release workflow.
 - **Conclusion:** This remains a 1.4 goal. Its existence proof must include actual native build, complete declared testing, artifact custody and publication; authority-only adoption, waived backlog, or the 1.3.1 native release cannot close it.
@@ -702,7 +702,7 @@ before claiming the observer optimization resolves that release blocker.
 - **Detailed plan:** [Complete source/ports Component coverage](freebsd-components.md)
 
 - **Priority:** P1
-- **Release:** 1.4.2 (moved from 1.4.1 by operator decision, 2026-10-30; not claimed done by 1.4.0 or 1.4.1; see [the 1.4.2 plan](release-1.4.2.md))
+- **Release:** 1.5.0 (moved from 1.4.1 by operator decision, 2026-10-30; not claimed done by 1.4.0 or 1.4.1; renamed from 1.4.2 on 2026-10-31; see [the 1.5.0 plan](release-1.5.0.md))
 - **Owner:** source and ports Component inventories; framework retained native lifecycle
 - **Direction:** Represent all of /usr/src and all of /usr/ports as Literate AI Components, not opaque external trees.
 - **Conclusion:** Require complete pinned tree ownership, native build-unit and port-origin contracts, target/options variants, dependency composition and honest per-component evidence while preserving upstream implementation authority.
@@ -747,7 +747,7 @@ before claiming the observer optimization resolves that release blocker.
 - **GitHub issue:** [#39](https://github.com/jordanhubbard/daemonarchy/issues/39); [1.4.0 milestone](https://github.com/jordanhubbard/daemonarchy/milestone/3).
 - **Detailed plan:** [1.4.0 cross-repository build and release graph](release-1.4.0.md).
 - **Priority:** P1 for 1.4.0; outside the 1.3.1 release and 1.3.2 MSI acceptance paths.
-- **Release:** 1.4.2 (moved from 1.4.1 by operator decision, 2026-10-30; not claimed done by 1.4.0 or 1.4.1; see [the 1.4.2 plan](release-1.4.2.md))
+- **Release:** 1.5.0 (moved from 1.4.1 by operator decision, 2026-10-30; not claimed done by 1.4.0 or 1.4.1; renamed from 1.4.2 on 2026-10-31; see [the 1.5.0 plan](release-1.5.0.md))
 - **Owner:** LitAI native lifecycle, owned source/ports/desktop/compatibility forks and product release integration.
 - **Direction:** Select exact commits across all owned release-input repositories, resolve their complete native build/test/package/release dependency graph, and schedule ready actions across multiple physical machines with LitAI's parallel workers and a shared verified artifact cache. Treat ports and packages as build artifacts; evaluate Bazel incremental builds, remote cache/execution and other suitable tools. FreeBSD make and Poudriere are optional executors.
 - **Fork authority:** The owned FreeBSD source and ports forks are in scope for any 1.4 build, ports, package, ABI or cache integration changes needed to deliver this flow. Keep their native contracts and reviewable FreeBSD CURRENT refreshes; land changes in each fork's main before the release selection is locked.
@@ -810,7 +810,7 @@ before claiming the observer optimization resolves that release blocker.
   attempt. [Checkpoint](../../verification/native-sdk-build-development.json).
 
 - **Priority:** P1
-- **Release:** 1.4.2 (moved from 1.4.1 by operator decision, 2026-10-30; not claimed done by 1.4.0 or 1.4.1; see [the 1.4.2 plan](release-1.4.2.md))
+- **Release:** 1.5.0 (moved from 1.4.1 by operator decision, 2026-10-30; not claimed done by 1.4.0 or 1.4.1; renamed from 1.4.2 on 2026-10-31; see [the 1.5.0 plan](release-1.5.0.md))
 - **Owner:** release Component, source and ports forks, native framework lifecycle
 - **Direction:** Make the complete source and ports Component build, test, package, ISO creation and installation system available on the operator development workstation at /usr/src and /usr/ports, managed by Literate AI.
 - **Conclusion:** Preserve the running desktop and existing data; deploy editable fork checkouts and the qualified framework, then prove unchanged and changed-input incremental builds, tests, package provenance, ISO creation and installation against exact native inputs. Checkout availability alone does not complete this work.
@@ -1094,7 +1094,7 @@ remains open; report files do not establish a passing gate.
 - **GitHub issue:** [#33](https://github.com/jordanhubbard/daemonarchy/issues/33), milestone **1.4.0**; source [#21](https://github.com/jordanhubbard/daemonarchy-src/issues/21), also in 1.4.0.
 - **Release scope:** [Current 1.4 plan](release-1.4.0.md) supersedes the [earlier 1.3.2 plan](release-1.3.2.md). Preserve the published 1.3.1 ISO, tags, feeds, signing material, source and native evidence. Historical product #27 closed after prerequisites merged; complete-feature acceptance remains open here.
 - **Priority:** P0
-- **Release:** 1.4.2 (moved from 1.4.1 by operator decision, 2026-10-30; not claimed done by 1.4.0 or 1.4.1; see [the 1.4.2 plan](release-1.4.2.md))
+- **Release:** 1.5.0 (moved from 1.4.1 by operator decision, 2026-10-30; not claimed done by 1.4.0 or 1.4.1; renamed from 1.4.2 on 2026-10-31; see [the 1.5.0 plan](release-1.5.0.md))
 - **Owner:** diagnostics, owned FreeBSD source and release integration
 - **Direction:** Provide explicitly enabled plain wired console control without SSH, a new key or pairing from boot blocks/loader through a forced `mountroot>` prompt, early startup and deliberate panic. Include kernel/module selection, variables and Lua, bounded polled bidirectional transport, retained last-stage output after reset and orderly native-NIC takeover.
 - **Conclusion:** A preloaded NIC kernel module does not supply loader networking or establish the early transport. Loader-only output, inventory and initialized-driver NetGDB do not satisfy the MSI reset use case.
@@ -1230,7 +1230,7 @@ remains open; report files do not establish a passing gate.
 ### [ ] HW-004 — T2 Touch ID login through fprintd
 
 - **Priority:** P2
-- **Release:** 1.4.2 (moved from 1.4.1 by operator decision, 2026-10-30; not claimed done by 1.4.0 or 1.4.1; see [the 1.4.2 plan](release-1.4.2.md))
+- **Release:** 1.5.0 (moved from 1.4.1 by operator decision, 2026-10-30; not claimed done by 1.4.0 or 1.4.1; renamed from 1.4.2 on 2026-10-31; see [the 1.5.0 plan](release-1.5.0.md))
 - **Owner:** MacBook hardware support: security/t2-touchid port, installed-system networking (daemonarchy-t2link) and PAM integration
 - **Direction:** Let a MacBookPro16,1 (and other Apple T2 Macs) accept a macOS-enrolled finger for login, sudo, SDDM and hyprlock through stock fprintd and pam_fprintd, using KaiT2en's t2-touchid bridge over the T2 internal link's IPv6 link-local BiometricKit service and libfprint's virtual storage device.
 - **Conclusion:** Transport works on FreeBSD: on 2026-10-28 the security/t2-touchid package (KaiT2en commit 16b58080ebc8, [ports PR #33](https://github.com/jordanhubbard/daemonarchy-ports/pull/33)), started by hand on the MacBookPro16,1, found ue0 by USB 05ac:8233, reached the T2 at fe80::aede:48ff:fe33:4455%ue0, opened BiometricKit (RemoteXPC port 59602 advertised it on 49166; sensor reset, readiness and FDR calibration load in 4-8 s, the first attempt after idle twice timing out with EAGAIN before a retry succeeded), and the Secure Enclave answered for macOS uids 501-503: SKS_LOCK_STATE 0x15, PROVISIONING_STATE 5, USER_IDENTITIES empty, GET_FREE_IDENTITY_COUNT 0, REQUEST_MAX_IDENTITY_COUNT 5, GET_ENABLED_FOR_UNLOCK 0; the daemon found no enrolled finger in uids 501-520. That is the expected locked or empty inventory: this MacBook has no macOS. Login by finger requires fingers enrolled under macOS (the bridge never enrolls, it only binds a SEP identity to a FreeBSD account) and the before-first-unlock gate: the SEP keeps its biometric keybag locked, and reports an empty inventory, until the macOS account password has unlocked it once since the T2 last powered on. The daemon was left stopped and not enabled; PAM, SDDM and the lock screen are unchanged. The enabling procedure in docs/application-note-macbookpro16-1.md is untested end to end.
@@ -1353,7 +1353,7 @@ remains open; report files do not establish a passing gate.
 ### [ ] EXT-002 — Sandboxed Lua extensions for content we did not write
 
 - **Priority:** P2
-- **Release:** 1.4.2 (opened after 1.4.1 went to mastering, 2026-10-30; not claimed done by 1.4.0 or 1.4.1; see [the 1.4.2 plan](release-1.4.2.md))
+- **Release:** 1.5.0 (opened after 1.4.1 went to mastering, 2026-10-30; not claimed done by 1.4.0 or 1.4.1; renamed from 1.4.2 on 2026-10-31; see [the 1.5.0 plan](release-1.5.0.md))
 - **Owner:** installer Component with the visual SDK
 - **Direction:** Let the installer run an extension whose code is not ours (a community toy or game published from a release page) without trusting it: a Lua entry file in a real sandbox, loaded through the same manifest, signed feed, menu, windows and preemption as the Python extensions. Retire the "not a sandbox for hostile code" caveat for this kind of content.
 - **Conclusion:** Additive to 1.4.1: SDK API 1.5 only adds `Audio.blip` and the `.lua` entry type; the four Python games, the feed and the trust model are unchanged. GAME-001's four games are already the shipped Python games; this is not a second games portfolio.
@@ -1433,3 +1433,20 @@ remains open; report files do not establish a passing gate.
   - [ ] Measure the end-to-end cycle on a release rehearsal and a real release.
 - **Evidence:**
   - [ ] Baseline records, per-stage and end-to-end results, and the 10x comparison on equivalent gates are retained with exact inputs; correctness (tests, signatures, artifact identity) is identical to the baseline cycle.
+
+### [ ] DESKTOP-001 — Ship the desktop launchers and menu entries in the daemonarchy-desktop package
+
+- **Priority:** P2
+- **Release:** 1.5.0 (opened 2026-10-31 by operator decision; nothing here is claimed done; see [the 1.5.0 plan](release-1.5.0.md))
+- **Owner:** installer overlay and the daemonarchy-desktop repository (`x11-wm/daemonarchy` in daemonarchy-ports)
+- **Direction:** Move the desktop-style launchers and menu entries that live in the installer overlay into the daemonarchy-desktop package, so users receive fixes through `pkg upgrade` without a new ISO.
+- **Conclusion:** Today the overlay carries `daemonarchy-cudalab`, `daemonarchy-wine` and `daemonarchy-steam` (in `overlay/usr/local/bin/`), their `.desktop` files and SVG icons and the System > FreeBSD menu entries (`overlay/usr/local/share/daemonarchy-installer/`), while the desktop repository carries a different `omarchy-menu.jsonc` and `x11-wm/daemonarchy` installs that one. The installer places the overlay copies on the system, so a fix reaches users only with a new image. Which copy wins on a given system, and whether the overlay's wine, steam and cudalab entries and the README's statement that Linux-only applications are withheld until Linuxulator qualification agree, are not yet established.
+- **Depends on:** the daemonarchy-desktop project binding and a port revision that pins the new desktop commit (daemonarchy-ports).
+- **Implementation:**
+  - [ ] Inventory every launcher, `.desktop` file, icon and menu entry in the overlay, the desktop repository and the port, and record which copy a fresh install and an upgraded system actually use.
+  - [ ] Move the launchers, desktop entries, icons and menu entries into daemonarchy-desktop and have `x11-wm/daemonarchy` install them; remove the installer's overlay copies and their installer steps.
+  - [ ] Move the tests with them (`tests/windows-launchers.sh`, `tests/cudalab-launcher.sh` and the Wine and Steam install checks) to run against the package contents, keeping the installer's integration checks.
+  - [ ] Reconcile the Cudalab wording: the desktop repository already shows Cudalab only when its optional launcher is installed and withholds unqualified Linux applications from the menu, while the README says they are withheld until Linuxulator qualification. One statement, matching the shipped behavior, in the README, [the application policy](../freebsd-application-policy.md) and [the Windows apps note](../windows-apps.md).
+- **Evidence:**
+  - [ ] A fresh install delivers the launchers, entries and icons from the package, and a `pkg upgrade` of an existing system delivers a changed launcher without a new ISO; both are shown on exact artifacts.
+  - [ ] The overlay copies are gone from the installer tree, the moved tests pass in the package's checks and the installer's, and the documentation states the Cudalab and Linux-application behavior once.

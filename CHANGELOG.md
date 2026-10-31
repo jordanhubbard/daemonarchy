@@ -28,7 +28,7 @@ ports `dd277aff`. Application feeds `packages-16-amd64-1.4.1-r2` and
 ### Known limitations
 
 - The MacBookPro16,1 Wi-Fi driver can stall in a dead associated state; the fix
-  (daemonarchy-ports #37) is deferred to 1.4.2.
+  (daemonarchy-ports #37) is deferred to 1.5.0 (1.4.2 was renamed 1.5.0 and never released).
 - Display-driver sleeps of about 1.6 s at login; a first-login delay is under investigation.
 - aarch64: no real hardware, GPU desktop, sound or Wi-Fi result.
 
