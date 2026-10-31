@@ -112,6 +112,14 @@ def parse(text):
     return found
 
 
+def configured_dirs(env=None):
+    """Where the window looks: pkg's directories, or DAEMONARCHY_PKG_REPOS_DIRS (colon separated) for a test
+    or a trial. Only the user's own window reads this; the root helper never does."""
+    import os
+    value = (os.environ if env is None else env).get('DAEMONARCHY_PKG_REPOS_DIRS', '')
+    return tuple(d for d in value.split(':') if d) or DEFAULT_DIRS
+
+
 def read(dirs=DEFAULT_DIRS):
     """The repositories in effect, in pkg's order: later files merge over earlier ones of the same name,
     then highest priority first (pkg prefers the higher number), then name for a stable list."""

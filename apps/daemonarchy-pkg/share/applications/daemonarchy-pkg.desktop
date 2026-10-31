@@ -1,0 +1,12 @@
+[Desktop Entry]
+Type=Application
+Name=Packages
+GenericName=Package Manager
+Comment=Search, install, update and remove software
+Exec=daemonarchy-pkg gui
+Icon=system-software-install
+Terminal=false
+Categories=System;PackageManager;Settings;
+Keywords=packages;software;install;update;remove;pkg;
+StartupNotify=true
+StartupWMClass=org.daemonarchy.Pkg

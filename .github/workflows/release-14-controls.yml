@@ -48,6 +48,8 @@ on:
       - 'tests/installer-progress-stats.py'
       - 'tests/gui-package-manager.py'
       - 'tests/gui-package-transaction.py'
+      - 'tests/gui-package-window.py'
+      - 'tests/gui-package-gtk.py'
       - 'apps/daemonarchy-pkg/**'
       - 'tests/fixtures/installer-progress/msi-install-1.4.1.*'
       - 'overlay/usr/local/libexec/daemonarchy-installer/progress-model.py'
@@ -146,6 +148,8 @@ on:
       - 'tests/installer-progress-stats.py'
       - 'tests/gui-package-manager.py'
       - 'tests/gui-package-transaction.py'
+      - 'tests/gui-package-window.py'
+      - 'tests/gui-package-gtk.py'
       - 'apps/daemonarchy-pkg/**'
       - 'tests/fixtures/installer-progress/msi-install-1.4.1.*'
       - 'overlay/usr/local/libexec/daemonarchy-installer/progress-model.py'
@@ -257,6 +261,8 @@ jobs:
           python3 -I tests/installer-progress-stats.py -v
           python3 -I tests/gui-package-manager.py -v
           python3 -I tests/gui-package-transaction.py -v
+          python3 -I tests/gui-package-window.py -v
+          python3 -I tests/gui-package-gtk.py -v   # skips without PyGObject and a display
       - name: Parallel package fetch
         env:
           PYTHONDONTWRITEBYTECODE: '1'

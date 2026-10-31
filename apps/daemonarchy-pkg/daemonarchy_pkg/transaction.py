@@ -1,6 +1,7 @@
 """Run an approved plan as root, and say what happened in the installer's own event vocabulary.
 
   daemonarchy-pkg-helper ACTION --identity SHA256 [--allow-unsigned REPO]... NAME...
+  daemonarchy-pkg-helper refresh
 
 The window shows a plan and the user approves it by identity. This recomputes the plan from the
 current catalogue and runs only if the identity is the same, so what runs is what was shown. A
@@ -117,6 +118,14 @@ def run(action, names, identity, allow_unsigned=(), pkg=('pkg',), out=None, dbdi
     return result(out, 'ok', OK, identity=plan.identity, changed=plan.counts())
 
 
+def refresh(pkg, out):
+    """`pkg update`: fetch the repositories' catalogues, which are signed and checked by pkg. Needs no plan."""
+    code = stream([*pkg, 'update'], out)
+    if code:
+        return result(out, 'failed', FAILED, reason='refresh', detail=f'pkg update exited {code}')
+    return result(out, 'ok', OK, changed={'refresh': 1})
+
+
 def fetch(plan, pkg, repositories, out, workers, python):
     """Fetch every archive the plan needs into pkg's cache with the installer's pool; 0 when all are there."""
     to_fetch = plan.to_fetch()
@@ -142,12 +151,18 @@ def main(argv=None, out=None):
     import argparse
     parser = argparse.ArgumentParser(prog='daemonarchy-pkg-helper', description=__doc__,
                                      formatter_class=argparse.RawDescriptionHelpFormatter)
-    parser.add_argument('action', choices=plan_module.ACTIONS)
+    parser.add_argument('action', choices=plan_module.ACTIONS + ('refresh',))
     parser.add_argument('names', nargs='*')
-    parser.add_argument('--identity', required=True)
+    parser.add_argument('--identity')
     parser.add_argument('--allow-unsigned', action='append', default=[])
     parser.add_argument('--workers', type=int, default=16)
     args = parser.parse_args(argv)
+    if args.action == 'refresh':
+        if args.names or args.identity:
+            parser.error('refresh takes no arguments')
+        return refresh(('pkg',), out or sys.stdout)
+    if not args.identity:
+        parser.error('--identity is required')
     if args.action != 'upgrade' and not args.names:
         parser.error('install and remove need package names')
     # This runs as root on arguments a user chose, so it takes nothing that points it somewhere else:
@@ -157,6 +172,15 @@ def main(argv=None, out=None):
     if bad or not 1 <= args.workers <= 32 or not IDENTITY.match(args.identity):
         parser.error('refusing an argument that is not a plain package name, repository name or identity')
     return run(args.action, args.names, args.identity, args.allow_unsigned, ('pkg',), out, workers=args.workers)
+
+
+def helper_path():
+    """The helper to run as root: the installed one in /usr/local/bin (root-owned) when there is one, else the
+    one beside this package in a checkout. Never found through PATH, which a user controls."""
+    installed = Path('/usr/local/bin/daemonarchy-pkg-helper')
+    if installed.is_file():
+        return str(installed)
+    return str(Path(__file__).resolve().parents[1] / 'bin/daemonarchy-pkg-helper')
 
 
 def elevate(argv, env=None, euid=None, which=None):
