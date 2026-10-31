@@ -304,6 +304,7 @@ the runner signs and verifies, and the key is gone again whatever happened. The 
 | `boot-relabel-window.sh` | `boot-relabel-run.sh` | a new release label over the already signed boot tree: one signature (`resign-boot-bundle.sh rebundle` does the same on a builder with the key) |
 | `boot-full-window.sh` | `boot-full-run.sh` | the boot manifest, loader and bundle, rebuilt from a commit's inputs |
 | `feeds-arm64-window.sh` | `feeds-arm64-run.sh` | the aarch64 application and checkout catalogues (`pkg repo`) |
+| `checkout-arm64-window.sh` | `checkout-arm64-run.sh` | the aarch64 checkout catalogue alone, for a feed rebuilt after the application feed was signed; refuses before the key is used unless every package declares the expected ABI, the payload matches its manifest and `checkouts.json` names the release |
 | `extensions-window.sh` | `extensions-run.sh` | the extension indexes and bundles of both architectures |
 
 The amd64 package catalogues have their own window (`feed-key-window.sh`, kept on the key host). A release needs a **relabel** when it is
