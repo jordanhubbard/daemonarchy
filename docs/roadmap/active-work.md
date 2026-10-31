@@ -1423,12 +1423,12 @@ remains open; report files do not establish a passing gate.
 - **Priority:** P1
 - **Release:** 1.5.0 (opened 2026-10-31 by operator decision; nothing here is claimed done)
 - **Owner:** release engineering, native Component lifecycle and the framework boundary
-- **Direction:** Decrease the time to compile all of FreeBSD src, FreeBSD ports and the ISO mastering process using every applicable Literate AI feature, upgrade Literate AI to version 1.4 (top of tree) in every Daemonarchy repository, and improve the entire release engineering cycle by 10x.
+- **Direction:** Decrease the time to compile all of FreeBSD src, FreeBSD ports and the ISO mastering process using every applicable Literate AI feature, upgrade Literate AI to version 1.4 (top of tree) in every Daemonarchy repository (daemonarchy, daemonarchy-src, daemonarchy-ports, daemonarchy-desktop; no other repository), and improve the entire release engineering cycle by 10x.
 - **Conclusion:** Baselines come first and are recorded with where they were measured. The 10x target applies to the end-to-end cycle from "main frozen" to "published and verified", on equivalent gates and with no omitted test, package or signature. It is delivered by the mechanisms of ADOPT-002, COMP-001, PERF-001, PERF-002, DEV-001 and SRC-001 (verified cache and incremental native builds, parallel workers, scripted key windows, parallel QA), which stay open and keep their own acceptance. 1.4.2 did not deliver any build-efficiency gain: none of those items ran natively under Literate AI in 1.4.2.
 - **Depends on:** ADOPT-002, COMP-001, SRC-001, DEV-001, PERF-001, PERF-002 (framework issues [#74](https://github.com/jordanhubbard/literate-ai/issues/74) and [#93](https://github.com/jordanhubbard/literate-ai/issues/93) gate COMP-001)
 - **Implementation:**
   - [ ] Record the baselines named in the plan, each with host, revision, vCPU, memory, clean or incremental, and run count; mark every figure the repository has no measurement for.
-  - [ ] Upgrade Literate AI to 1.4 in daemonarchy, daemonarchy-src and daemonarchy-ports through reviewed Standard rebinds and, where the framework requires it, a roadmap goal manifest; qualify each repository's `litai verify` afterwards.
+  - [ ] Upgrade Literate AI to 1.4 in daemonarchy, daemonarchy-src and daemonarchy-ports through reviewed Standard rebinds, and bind daemonarchy-desktop (in scope, not subsumed; see the plan) and, where the framework requires it, a roadmap goal manifest; qualify each repository's `litai verify` afterwards.
   - [ ] Deliver the per-stage mechanisms with measured results against the plan's targets.
   - [ ] Measure the end-to-end cycle on a release rehearsal and a real release.
 - **Evidence:**

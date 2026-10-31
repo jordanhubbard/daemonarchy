@@ -66,18 +66,27 @@ credible if it comes from skipping a test, a package or a signature; the evidenc
 
 Today the installed runtime is litai 1.3.0 (c345e652) and framework main reports 1.4.0 development.
 "1.4 (top of tree)" means the framework revision chosen and recorded at the start of this work.
-The three Daemonarchy repositories that carry `literate.project.json` on 2026-10-31:
+The Daemonarchy repositories and their state on 2026-10-31 (three carry `literate.project.json`):
 
 | Repository | `literate.project.json` | Project version | Notes |
 |---|---|---|---|
 | daemonarchy | yes | 1.4.1 | Standard binding to framework distribution 8b9c09fd; release policy and 1.4.x gate in place |
 | daemonarchy-src | yes | 1.2.0 | Standard lifecycle binding present; older project version |
 | daemonarchy-ports | yes | 1.2.0 | Standard lifecycle binding present; older project version |
-| daemonarchy-desktop | no | n/a | No `literate.project.json` on its default branch; adopting it is part of the upgrade scope or an explicit exclusion |
+| daemonarchy-desktop | no (to be added) | n/a | In scope, not subsumed: see below. Needs a project binding like the other three |
 
-Other repositories under the owner carry a `literate.project.json` (Aviation, ElixirSSI,
-project-tracker, bookscan, freebsd-sentiment, LeRTX, and the framework itself and its labs). They
-are not Daemonarchy repositories and are outside this item unless the operator extends it.
+### daemonarchy-desktop: in scope, not subsumed
+
+Checked on 2026-10-31. The repository is still applicable and is not folded into daemonarchy-ports or daemonarchy-src:
+
+- The port `x11-wm/daemonarchy` in daemonarchy-ports builds from it (`USE_GITHUB`, `GH_ACCOUNT=jordanhubbard`, `GH_PROJECT=daemonarchy-desktop`, `GH_TAGNAME` pinned to commit `ec2a00824ec9`) and installs its wallpaper, SDDM theme, menu (`omarchy-menu.jsonc`), icons and the `daemonarchy-*` FreeBSD tools. The ports tree holds only the packaging, not these sources.
+- It is active (a commit on `main` on 2026-10-31, and open PR 1, which makes the Packages menu open daemonarchy-pkg) and not archived. Its last tag is v1.1.1, so tags and the port's pin are not aligned today.
+
+So it gets a project binding: a `literate.project.json` with the Standard lifecycle, a release policy suited to a small source repository (version and tag convention to be decided with the operator, including whether the port pin follows a tag), and the same `litai verify` qualification as the other three. It would be excluded only if a later change moved its sources into daemonarchy-ports or daemonarchy-src; this item records that this has not happened.
+
+### Out of scope
+
+Scope is exactly daemonarchy, daemonarchy-src, daemonarchy-ports and daemonarchy-desktop. The other repositories under the owner that carry a `literate.project.json` (Aviation, ElixirSSI, project-tracker, bookscan, freebsd-sentiment, LeRTX, and the Literate AI framework with its labs) are unrelated to Daemonarchy and are out of scope. Nothing in this plan changes them.
 
 For each repository, the upgrade is: review the Standard rebind plan
 (`litai project lifecycle rebind-standard`, plan first), apply it only with the reviewed plan and
@@ -97,6 +106,6 @@ Nothing is claimed done until each of these has retained evidence with exact inp
 - The end-to-end cycle at least 10x shorter on equivalent gates, on a rehearsal and on a real
   release, with every decision, cache hit and rebuild recorded.
 - Literate AI at the recorded 1.4 revision in daemonarchy, daemonarchy-src, daemonarchy-ports and
-  any further repository the operator names; each passes `litai verify` for its declared gates.
+  daemonarchy-desktop (with its new binding); each passes `litai verify` for its declared gates.
 - ADOPT-002, COMP-001, SRC-001, DEV-001, PERF-001, PERF-002 and RELEASE-001 meet their own
   acceptance texts; framework issues #74 and #93 are resolved or the dependent scope stays open.
