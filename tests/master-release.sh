@@ -13,6 +13,7 @@ out=$(WORK=$work/w MAIN_COMMIT=$commit bash "$script" --dry-run preflight packag
 for expect in '== packages' 'build-release-packages.sh' ' seed' ' bulk' ' identity' '== feed' 'pkg-repo.sh' \
               '== secureboot' 'resign-boot-bundle.sh' '== resolve' 'check-install-resolution.sh' '== catalogue' '== iso' 'build-iso.sh' '== verify' '== qa' 'test-qemu.sh' \
               "EXPECTED_PACKAGE_REPOSITORY_TAG=packages-16-amd64-1.4.1" \
+              "POST_INSTALL_CHECK=/tmp/daemonarchy-qa/repo/tests/qemu-desktop.py" \
               "PACKAGE_MIRROR_URLS=https://github.com/jordanhubbard/daemonarchy/releases/download/packages-16-amd64-1.4.1-upstream" \
               "REQUIRE_PACKAGE_MIRROR=yes" "VIRGL_RENDER_NODE=/dev/dri/renderD128"; do
   grep -qF -- "$expect" <<<"$out" || { echo "dry run is missing '$expect'" >&2; echo "$out" >&2; exit 1; }
