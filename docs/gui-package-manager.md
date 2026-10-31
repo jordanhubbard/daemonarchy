@@ -1,9 +1,12 @@
 # The graphical package manager (design)
 
-Status: **in progress.** The toolkit-free layers (repositories, catalogue, plan, shared
-engine, text commands) are in `apps/daemonarchy-pkg/` with tests in `tests/gui-package-manager.py`.
-The transaction helper (`daemonarchy-pkg-helper`) and the window's progress model are in too.
-The window, the menu entries and the package are not done, and nothing is shipped. It is the plan for the
+Status: **in progress; not shipped in a published release.** On main the toolkit-free layers (repositories,
+catalogue, plan, shared engine, text commands), the transaction helper (`daemonarchy-pkg-helper`), the
+window's progress model, the GTK 4 window with its theme and desktop entry, and an offer to remove unused
+dependencies are in `apps/daemonarchy-pkg/`, with tests in `tests/gui-package-manager.py`. The package
+`ports-mgmt/daemonarchy-pkg` is in daemonarchy-ports and `origins.sh` lists it for the application feed (no feed with it is published).
+The menu entries still open OctoPkg (the change to open `daemonarchy-pkg` is an open pull request in
+daemonarchy-desktop, not merged), and there is no evidence yet from a real desktop install, update and remove. It is the plan for the
 GUI-001 queue item ([acceptance](roadmap/active-work.md#gui-001-deliver-a-colorful-fast-graphical-package-manager)).
 Until it ships, the graphical package manager is OctoPkg.
 

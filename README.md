@@ -34,6 +34,30 @@ New to Daemonarchy? [Getting started](docs/getting-started.md) walks through wri
 Check the [hardware quirks](docs/hardware-quirks.md) for known boot blockers and
 diagnostic notes, including the MSI Raider 18 HX AI A2XWIG results for 1.4.0.
 
+## 1.5.0 (in development)
+
+1.5.0 is the next release and is not published; nothing below is in an image you can download today, and
+its [plan](docs/roadmap/release-1.5.0.md) and the [active queue](docs/roadmap/active-work.md) say what is
+done and what is not. What is on `main` since 1.4.1:
+
+- **Windows programs and Steam (x86-64).** Apps menu entries `Steam` and `Windows Programs`, virtual apps that
+  set up Wine, Wine Mono and DXVK on first launch and run any Windows program you supply
+  ([Windows programs and Steam](docs/windows-apps.md); the Mono and DXVK recipe was contributed by Sam
+  Sheridan). Checked headless on a build VM only; no Windows game or Steam window has run on real hardware.
+- **A graphical package manager, `daemonarchy-pkg`** (GUI-001, partly): a GTK 4 window over the installer's
+  planner, packaged (`ports-mgmt/daemonarchy-pkg`) and listed for the application feed (`origins.sh`); no 1.5.0 feed is published. The menu still opens OctoPkg and it has no real-desktop
+  evidence yet ([status](docs/gui-package-manager.md)).
+- **Sandboxed Lua installer extensions** (EXT-002, SDK API 1.5) and a first fish-tank extension
+  ([sandboxed extensions](docs/sandboxed-extensions.md)); built and tested on a build host, not yet on a
+  real image.
+- **aarch64:** a VirtIO GPU path reaches the SDDM greeter and the session in software in a QEMU guest. Still
+  QEMU only and a community-validation image ([aarch64](docs/aarch64.md)).
+- **MacBookPro16,1 Wi-Fi stall after association:** the driver fix is merged in daemonarchy-ports. Evidence is
+  fault injection on the MacBook; the real firmware-side loss was not reproduced and a physical retest is
+  pending. It is a kernel-bound package, so it needs a rebuilt module and re-signed boot bundle.
+- **Build and release-cycle speed** (BUILD-001) is planned, not delivered: the framework-dependent items
+  ADOPT-002, RELEASE-001, COMP-001, PERF-002, DEV-001 and SRC-001 have not run natively under Literate AI.
+
 ## 1.4.1 release
 
 The current stable release is **1.4.1**. Its base is the Daemonarchy FreeBSD
@@ -248,7 +272,7 @@ otherwise, or if that driver fails at start, Cudalab runs with SDL's silent driv
 Daemonarchy is built from these repositories:
 
 - **[jordanhubbard/daemonarchy](https://github.com/jordanhubbard/daemonarchy)** (this one): the installer image, its build and test scripts, and these docs.
-- **[jordanhubbard/daemonarchy-desktop](https://github.com/jordanhubbard/daemonarchy-desktop)**: Daemonarchy's artwork and login theme, and the System > FreeBSD tools. Its tags are Daemonarchy's version numbers.
+- **[jordanhubbard/daemonarchy-desktop](https://github.com/jordanhubbard/daemonarchy-desktop)**: Daemonarchy's artwork and login theme, and the System > FreeBSD tools. The ports pin its commit; its last tag is `v1.1.1` (see [the repositories](HACKING.md#the-repositories-that-make-up-daemonarchy)).
 - **[jordanhubbard/omarchy-freebsd](https://github.com/jordanhubbard/omarchy-freebsd)**: the FreeBSD compatibility layer that lets Omarchy run unchanged.
 - **[jordanhubbard/daemonarchy-src](https://github.com/jordanhubbard/daemonarchy-src)**: the owned FreeBSD source fork the image's base system and kernel are built from. 1.3.1 uses `d63d77f4`; review work lands on its `daemonarchy` integration branch.
 - **[jordanhubbard/daemonarchy-ports](https://github.com/jordanhubbard/daemonarchy-ports)**: the ports fork that packages all of it. 1.3.1 uses `b7857842`; review work lands on its `daemonarchy` integration branch. Releases through 1.1.1 used [jordanhubbard/freebsd-ports](https://github.com/jordanhubbard/freebsd-ports/tree/daemonarchy-1.1.1) (`daemonarchy-1.1.1`, and `daemonarchy-1.1-package-baseline` for the 1.1 candidate). Upstream submissions continue independently of Daemonarchy releases.

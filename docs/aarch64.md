@@ -12,6 +12,19 @@ first native results:
   boots to the installer menu under QEMU/EDK2
   ([record](#worker-record-native-bulk-unsigned-feed-and-uefi-iso-2026-10-27)).
 
+## Status on main for the next release (1.5.0)
+
+The aarch64 image remains a community-validation image: QEMU only, no physical arm64 machine tested. What
+changed on main after 1.4.1 is a VirtIO GPU path: `graphics/drm-612-kmod` builds the VirtIO GPU stack on
+aarch64 (daemonarchy-ports #36), the graphics service loads and reattaches the driver before SDDM starts
+(no kernel change), and an aarch64-only patch lets a render-node client create, map and destroy dumb
+buffers so Mesa's software path (llvmpipe) can draw. In a QEMU 11.1.2 guest with `-device virtio-gpu-pci`
+on an Apple silicon Mac the installed disk reached the SDDM greeter and the Omarchy session in software
+(evidence at the VirtIO GPU entry further down this page). **Not verified:** hardware 3D (VirGL), a physical GPU, sound,
+Wi-Fi, the live desktop and anything past the first screen of the session; the disk was prepared with the
+real graphics scripts, not by a full image install. The DRM package is not in a published aarch64 feed
+yet. People with arm64 hardware are still asked to try the image and report what happens.
+
 ## Status in 1.4.1: a community-validation image
 
 The 1.4.1 release publishes `daemonarchy-1.4.1-aarch64.iso.xz`

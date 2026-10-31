@@ -1,5 +1,40 @@
 # Changelog
 
+## Unreleased
+
+Collects what is on `main` since 1.4.1 for the next release, 1.5.0 (opened as 1.4.2 and renamed; 1.4.2 was
+never released). Nothing here is published, and nothing is claimed done beyond the evidence named.
+
+### Added
+
+- Windows programs and Steam as virtual apps on amd64 (`daemonarchy-wine`, `daemonarchy-steam`): first launch
+  sets up Wine with Wine Mono and DXVK, graphics checks, and generic `install` and `run` for any Windows
+  program. Checked headless on a build VM only. The Mono and DXVK recipe was contributed by Sam Sheridan.
+- `daemonarchy-pkg`, the graphical package manager (GUI-001, partly): catalogue, plan, transaction helper,
+  GTK 4 window, theme and an offer to remove unused dependencies; packaged as `ports-mgmt/daemonarchy-pkg`.
+  The menu still opens OctoPkg; no real-desktop evidence yet.
+- Sandboxed Lua extensions (SDK API 1.5) and a first fish-tank extension (EXT-002).
+- aarch64: the VirtIO GPU stack and a render-node dumb-buffer patch (aarch64 only) in `drm-612-kmod`, and the
+  graphics service's driver reattach; a QEMU guest reaches the SDDM greeter and the session in software.
+  An emulated HDA sound device and check in the aarch64 QEMU harness.
+- Roadmap: BUILD-001 (10x faster builds and release cycle with Literate AI 1.4), DESKTOP-001 and the 1.5.0 plan;
+  documentation authority checks (`tests/docs-lifecycle.py`), a generic 1.4.x release gate
+  (`scripts/release-check-1.4.py`) and the 1.5.0 release machinery (`scripts/prepare-release.py`,
+  `scripts/fill-release.py`).
+- HACKING: the repositories that make up Daemonarchy, where a change goes and how the pieces are pinned.
+
+### Changed
+
+- The login recorder starts after `ldconfig`, so `python3.12` can load.
+
+### Known limitations
+
+- The MacBookPro16,1 Wi-Fi stall fix (daemonarchy-ports #37) is fault-injection tested only and is a
+  kernel-bound package needing a rebuilt module and re-signed boot bundle; a physical retest is pending.
+- A candidate 2.4 GHz channel-1 handshake failure on the MacBook is not investigated.
+- ADOPT-002, RELEASE-001, COMP-001, PERF-002, DEV-001 and SRC-001 have not run natively under Literate AI;
+  no build-efficiency gain is claimed.
+
 ## 1.4.1 (October 31, 2026)
 
 Base: FreeBSD 16.0-CURRENT (OSVERSION `1600029`), daemonarchy-src `303b364`,
