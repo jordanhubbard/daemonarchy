@@ -171,11 +171,19 @@ and from upstream FreeBSD ports.
    cannot start on arm64. It needs an RNDR fallback or a stated firmware
    requirement. Whether VMware's arm64 firmware provides the protocol is
    unverified.
+   **Not verified (2026-10-31).** The fallback would use the CPU's RNDR instruction, and
+   I could not confirm that the QEMU/HVF CPU model on Apple silicon implements it, so a
+   change could not be tested and none was made.
 5. **Source CI never builds Daemonarchy's aarch64 pieces.** The "Cross-build
    Kernel" workflow builds only `GENERIC` with `NO_MODULES` for aarch64; the
    latest main run, [40068278453](https://github.com/jordanhubbard/daemonarchy-src/actions/runs/40068278453)
    of 2026-10-24, passed. No aarch64 loader, world, diagnostic kernel or
    netconsole build has run in CI.
+   **Deferred (1.4.2 decision, 2026-10-31).** The "Cross-build Kernel" workflow already
+   builds the aarch64 kernel on three runners. A world build costs far more CI minutes
+   than a kernel, and a loader-only cross build still needs the headers a world build
+   installs, so there is no cheap, reliable step to add. It was left out of 1.4.2 rather
+   than spend CI minutes; the gap stays open.
 6. **poudriere cannot make an aarch64 ISO.** Its `iso` and `hybridiso` types
    embed x86 BIOS boot code (`cdboot`, `pmbr`, `isoboot`). This change adds a
    UEFI-only path (see below). A native build of it booted under QEMU/EDK2,
@@ -708,10 +716,22 @@ release image, screendump over QMP): on a fresh boot with no manual step the gra
 service loaded the driver and attached it (`Attaching pci0:0:1:0 to virtio_gpu_drm
 (was virtio_pci0)`), `service sddm onestatus` reported running with `Hyprland` and
 `sddm-greeter-qt6` up, and the screen showed the Daemonarchy greeter (logo and
-password field), software-rendered by llvmpipe. Not tested: a login to the Omarchy
-session, hardware 3D (VirGL), and any physical GPU. The installed disk was prepared
-with the real `gpu_select` and `gpu_write_config`, not by an installer run: a full
-image install needs the DRM package in the aarch64 feeds.
+password field), software-rendered by llvmpipe. Typing the test user's password with
+QMP `sendkey` (an emulated USB keyboard) then started the Omarchy session: `start-hyprland`,
+`quickshell`, `dbus-run-session`, the portals and the accessibility registry were running
+under `tester`, and the screen showed the Daemonarchy desktop (bar, wallpaper, the two
+first-run notifications). Not tested: hardware 3D (VirGL), a physical GPU, and anything
+beyond the first screen of the session. The installed disk was prepared with the real
+`gpu_select` and `gpu_write_config`, not by an installer run: a full image install needs
+the DRM package in the aarch64 feeds.
+
+![The Daemonarchy SDDM greeter in a QEMU aarch64 guest](images/aarch64-qemu-sddm-greeter.png)
+
+![The Daemonarchy desktop after login in a QEMU aarch64 guest](images/aarch64-qemu-omarchy-session.png)
+
+The harness also gained an emulated Intel HDA device on aarch64 and a check that
+`snd_hda` attaches and `/dev/sndstat` lists `pcm0` (`SOUND_TEST`): the guest's sound
+path works in QEMU, with no host audio backend.
 
 **A second install, with parallel fetch (2026-10-30).** The same harness against
 a QA ISO built from current `main` (which has #176) completed in **11 minutes**,
@@ -776,8 +796,8 @@ What is verified, and what is not:
   Fusion guest. It installs and builds everything, but the guest GPU has no FreeBSD
   driver, so it has only the EFI framebuffer and cannot run the desktop. Run QEMU
   inside it only with software emulation (TCG): the first boot test took hours.
-- **Graphical desktop in a VM.** The SDDM greeter renders under QEMU with a VirtIO
-  GPU (see the VirtIO GPU record above); a full session login is not yet tested.
+- **Graphical desktop in a VM.** SDDM and the Omarchy session start under QEMU with a
+  VirtIO GPU (see the VirtIO GPU record above), software-rendered.
 - **Bare metal is not supported.** There is no FreeBSD boot or GPU path for Apple
   SoCs, so an M1 to M4 laptop is a host for virtual machines, never a target.
 
