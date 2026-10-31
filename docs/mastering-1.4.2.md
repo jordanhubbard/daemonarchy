@@ -26,8 +26,9 @@ madmax (`~/daemonarchy-keys`, never copied into a VM, never printed).
    (`omarchy` stays 4.0.4_28). Re-run it at the real pin.
 3. **Rebuild** in one poudriere run (`poudriere -e $WORK/poudriere-etc bulk -S -C ...`, see
    [mastering-1.4.1.md](mastering-1.4.1.md#why-the-package-build-is-not-a-plain-poudriere-bulk)):
-   the changed feed packages, the new one, and the kernel-bound module. Add
-   `ports-mgmt/daemonarchy-pkg` to `OMARCHY_ORIGINS` in `origins.sh` so the feed carries it.
+   the changed feed packages, the new one, and the kernel-bound module.
+   `ports-mgmt/daemonarchy-pkg` is in `OMARCHY_ORIGINS` in `origins.sh`, so the feed carries
+   it explicitly.
 4. **Secure Boot.** A rebuilt kernel module moves the signed module inventory
    ([the Wi-Fi driver notes below](#rebuilding-a-kernel-bound-module-on-mudflap-the-wi-fi-driver-2026-10-31)):
    regenerate it with `resign-boot-bundle.sh check`; `sign` needs the boot signing key and
