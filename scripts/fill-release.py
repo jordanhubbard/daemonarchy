@@ -1,5 +1,5 @@
 #!/usr/bin/env python3
-"""Fill a release's records from the verified assets (docs/mastering-1.4.2.md).
+"""Fill a release's records from the verified assets (docs/mastering-1.5.0.md).
 
 The draft release pull request, made by scripts/prepare-release.py, carries
 placeholders: `@@TOKEN@@` in the documents and `TODO` in release/current.json and
@@ -8,7 +8,7 @@ script replaces every one of them from a small set of values, copies the publish
 checkout catalogue over the overlay, and refuses to finish while a placeholder is
 left that the values should have filled.
 
-  scripts/fill-release.py --version 1.4.2 --assets DIR \\
+  scripts/fill-release.py --version 1.5.0 --assets DIR \\
       --installer-commit SHA40 --ports-commit SHA40 \\
       --packages-amd64 TAG --packages-aarch64 TAG \\
       --checkouts-amd64 TAG --checkouts-aarch64 TAG \\
