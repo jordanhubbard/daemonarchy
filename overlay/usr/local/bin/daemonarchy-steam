@@ -1,0 +1,11 @@
+#!/usr/local/bin/bash
+# Steam, the Windows client, running under Wine: the launcher in the Apps menu.
+# The first launch sets Wine up and downloads Valve's installer (see daemonarchy-wine);
+# later launches open Steam directly. --status, --setup, --rebuild and --reset work as
+# they do for daemonarchy-wine, which does all of the work.
+wine=$(dirname "$(readlink -f "$0" 2>/dev/null || echo "$0")")/daemonarchy-wine
+case ${1:-} in
+  --status | --reset) exec "$BASH" "$wine" "$@" ;;
+  --setup | --rebuild) flag=$1; shift; exec "$BASH" "$wine" "$flag" --steam "$@" ;;
+esac
+exec "$BASH" "$wine" --steam "$@"

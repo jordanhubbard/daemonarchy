@@ -41,6 +41,7 @@ source "$(dirname "$0")/disk-layout"
 source "$(dirname "$0")/gpu-config"
 source "$(dirname "$0")/checkout-options"
 source "$(dirname "$0")/cuda-options"
+source "$(dirname "$0")/windows-apps"
 source "$(dirname "$0")/install-diagnostics"
 source "$(dirname "$0")/install-integrity"
 source "$(dirname "$0")/rescue-setup"
@@ -834,6 +835,8 @@ done
 log "Checking installed package files."
 traced package_integrity install_verify_package_integrity "$diagnostics_dir/package-integrity.log" pkg_target
 cuda_install_support "$TARGET" "$ISO_SHARE"
+# Launchers for Windows programs and Steam (amd64 only; nothing of Wine's or Valve's is installed).
+windows_apps_install_support "$TARGET" "$ISO_SHARE" "" "$image_arch"
 
 if [[ $install_cuda == true ]]; then
   phase cuda "Installing CUDA and building cudalab"

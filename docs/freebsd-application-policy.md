@@ -30,6 +30,7 @@ User extensions remain user-controlled.
 | Browser web applications | Retained using the FreeBSD Chromium desktop entry through GIO |
 | Browser theme enterprise-policy writer | Disabled on FreeBSD; changing a user theme does not request root access or change administrator-managed browser policies |
 | Foot, imv, mpv, Disk Usage and ported Omarchy applications | Native FreeBSD packages |
+| Windows programs and Steam (amd64 only; planned for 1.4.2, not yet released) | Virtual apps like Cudalab: launchers and menu entries only, Wine and Valve's client installed on first launch from the system's repositories and Valve's own download; see [Windows programs and Steam](windows-apps.md) |
 | Unknown new upstream bundled application entries | Excluded until reviewed |
 
 Native editor defaults use FreeBSD’s `hx` and `zedit` executables. Dead Docker,

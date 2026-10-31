@@ -1,0 +1,40 @@
+#!/usr/local/bin/bash
+# Windows programs and Steam are "virtual apps" (daemonarchy-wine, daemonarchy-steam):
+# nothing of Wine's or Valve's is installed here. The installer puts the two launchers,
+# their desktop entries and icons and the System > FreeBSD menu entries in the new
+# system, on amd64 only; the first launch installs Wine and downloads Steam (see
+# docs/windows-apps.md). On any other architecture the entries are taken out, so they
+# never appear.
+windows_apps_menu_keys=(system.freebsd.steam system.freebsd.wine)
+windows_apps_launchers=(daemonarchy-wine daemonarchy-steam)
+windows_apps_desktops=(daemonarchy-wine daemonarchy-steam)
+
+# Run after cuda_install_support, which writes the vendor menu this edits.
+windows_apps_install_support() { # target share source-root architecture
+  local target=$1 share=$2 source_root=${3:-} arch=${4:-amd64} name key menu tmp
+  menu=$target/usr/local/share/omarchy/vendor/omarchy-menu.jsonc
+  if [[ $arch == amd64 ]]; then
+    for name in "${windows_apps_launchers[@]}"; do
+      install -m 0755 "$source_root/usr/local/bin/$name" "$target/usr/local/bin/$name"
+    done
+    mkdir -p "$target/usr/local/share/applications" "$target/usr/local/share/icons/hicolor/scalable/apps"
+    for name in "${windows_apps_desktops[@]}"; do
+      install -m 0644 "$share/$name.desktop" "$target/usr/local/share/applications/$name.desktop"
+      # The Apps menu looks Icon=<name> up in the icon theme: new files beside the theme's own.
+      install -m 0644 "$share/$name.svg" "$target/usr/local/share/icons/hicolor/scalable/apps/$name.svg"
+    done
+    return 0
+  fi
+  for name in "${windows_apps_launchers[@]}"; do rm -f "$target/usr/local/bin/$name"; done
+  for name in "${windows_apps_desktops[@]}"; do
+    rm -f "$target/usr/local/share/applications/$name.desktop" "$target/usr/local/share/icons/hicolor/scalable/apps/$name.svg"
+  done
+  if [[ -f $menu ]]; then
+    tmp=$menu.new
+    cp "$menu" "$tmp"
+    for key in "${windows_apps_menu_keys[@]}"; do
+      sed "/\"$key\":/d" "$tmp" >"$tmp.next" && mv -f "$tmp.next" "$tmp"
+    done
+    mv -f "$tmp" "$menu"
+  fi
+}
