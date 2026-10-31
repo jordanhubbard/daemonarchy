@@ -253,14 +253,14 @@ step_qa() {
   local product=$WORK/product-$(short) out=$WORK/out-$(short) xz
   run ssh "$QA_USER@$QA_HOST" "rm -rf $QA_DIR && mkdir -p $QA_DIR"
   if $DRY_RUN; then
-    echo "+ scp image and $product to $QA_HOST:$QA_DIR; test-qemu.sh with EXPECTED_PACKAGE_REPOSITORY_TAG=$PACKAGE_REPOSITORY_TAG POST_INSTALL_CHECK=tests/qemu-desktop.py VIRGL_RENDER_NODE=$QA_VIRGL_RENDER_NODE"
+    echo "+ scp image and $product to $QA_HOST:$QA_DIR; test-qemu.sh with EXPECTED_PACKAGE_REPOSITORY_TAG=$PACKAGE_REPOSITORY_TAG POST_INSTALL_CHECK=$QA_DIR/repo/tests/qemu-desktop.py VIRGL_RENDER_NODE=$QA_VIRGL_RENDER_NODE"
     return 0
   fi
   xz=$(ls "$out"/*.iso.xz | head -1)
   scp -q "$xz" "$QA_USER@$QA_HOST:$QA_DIR/"
   tar -cf - -C "$product" . | ssh "$QA_USER@$QA_HOST" "mkdir -p $QA_DIR/repo && tar -xf - -C $QA_DIR/repo"
   ssh "$QA_USER@$QA_HOST" "cd $QA_DIR && xz -dk $(basename "$xz") && cd repo && \
-      EXPECTED_PACKAGE_REPOSITORY_TAG=$PACKAGE_REPOSITORY_TAG POST_INSTALL_CHECK=tests/qemu-desktop.py VIRGL_RENDER_NODE=$QA_VIRGL_RENDER_NODE \
+      EXPECTED_PACKAGE_REPOSITORY_TAG=$PACKAGE_REPOSITORY_TAG POST_INSTALL_CHECK=$QA_DIR/repo/tests/qemu-desktop.py VIRGL_RENDER_NODE=$QA_VIRGL_RENDER_NODE \
       WORK=$QA_DIR/work sh ./test-qemu.sh ../$(basename "${xz%.xz}")" || fail 'QEMU QA failed'
   state_mark qa
 }
