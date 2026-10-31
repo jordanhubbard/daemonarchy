@@ -117,7 +117,7 @@ pkg upgrade
 
 ## Roadmap
 
-**1.4.1 is available with documented qualification gaps; 1.4.2 is planned.** See the [roadmap](ROADMAP.md) for remaining
+**1.4.1 is available with documented qualification gaps; 1.5.0 is planned.** See the [roadmap](ROADMAP.md) for remaining
 graphics, Bluetooth, enterprise Wi-Fi, installation and boot support, upstream
 ports work, and the checks required before release. The
 [partition preview guide](docs/testing-1.1-partitions.md) covers installing into
