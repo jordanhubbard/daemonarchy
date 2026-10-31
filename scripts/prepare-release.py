@@ -1,7 +1,7 @@
 #!/usr/bin/env python3
-"""Write the placeholder records of a release's draft pull request (docs/mastering-1.4.2.md).
+"""Write the placeholder records of a release's draft pull request (docs/mastering-1.5.0.md).
 
-  scripts/prepare-release.py --version 1.4.2 --source-commit SHA40 [--osversion 1600029] [--dry-run]
+  scripts/prepare-release.py --version 1.5.0 --source-commit SHA40 [--osversion 1600029] [--dry-run]
 
 It writes, from release/templates/ and the current record:
 
@@ -133,7 +133,7 @@ def main(argv=None):
     for name, what in PROSE.items():
         print(f"  {name.replace('VERSION', version)}: {what}")
     print("\nThe pull request stays a draft until scripts/fill-release.py has run and "
-          "tests/docs-release-sync.py passes (docs/mastering-1.4.2.md).")
+          "tests/docs-release-sync.py passes (docs/mastering-1.5.0.md).")
     return 0
 
 

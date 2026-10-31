@@ -15,8 +15,8 @@ spec.loader.exec_module(gate)
 
 
 def record(**over):
-    value = {"schema": "daemonarchy/release-inputs@1", "version": "1.4.2",
-             "tag": "daemonarchy-1.4.2", "installer_commit": "a" * 40}
+    value = {"schema": "daemonarchy/release-inputs@1", "version": "1.5.0",
+             "tag": "daemonarchy-1.5.0", "installer_commit": "a" * 40}
     value.update(over)
     return value
 
@@ -28,7 +28,7 @@ class Gate(unittest.TestCase):
     def tearDown(self):
         gate.ROOT = self._root
 
-    def fixture(self, tmp, version="1.4.2"):
+    def fixture(self, tmp, version="1.5.0"):
         root = Path(tmp)
         (root / "release").mkdir()
         (root / "release/current.json").write_text(json.dumps({"version": version}))
@@ -38,7 +38,7 @@ class Gate(unittest.TestCase):
         import tempfile
         with tempfile.TemporaryDirectory() as tmp:
             self.fixture(tmp)
-            gate.check_record(record(), "1.4.2", "a" * 40)
+            gate.check_record(record(), "1.5.0", "a" * 40)
 
     def test_refuses_each_mismatch(self):
         import tempfile
@@ -48,14 +48,14 @@ class Gate(unittest.TestCase):
                         record(installer_commit="b" * 40), record(schema="x"),
                         record(assets={"a.iso.xz": [1, "sha256:TODO"]})):
                 with self.subTest(bad), self.assertRaises(ValueError):
-                    gate.check_record(bad, "1.4.2", "a" * 40)
+                    gate.check_record(bad, "1.5.0", "a" * 40)
 
     def test_refuses_placeholder_or_stale_current_json(self):
         import tempfile
         with tempfile.TemporaryDirectory() as tmp:
             self.fixture(tmp, version="1.4.1")
             with self.assertRaises(ValueError):
-                gate.check_record(record(), "1.4.2", "a" * 40)
+                gate.check_record(record(), "1.5.0", "a" * 40)
 
     def test_refuses_without_evidence_paths(self):
         for variable in ("DAEMONARCHY_RELEASE_RECORD", "DAEMONARCHY_RELEASE_ASSETS"):

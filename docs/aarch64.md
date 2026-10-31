@@ -709,7 +709,7 @@ cause and the way round it:
   `DRM_RENDER_ALLOW` to those three entries. A render-node client can already
   allocate and map GEM objects and use PRIME, and a dumb buffer exposes nothing more;
   it still cannot become DRM master or set a mode. The amd64 module is unchanged.
-  This is a review item for the 1.4.2 release notes.
+  This is a review item for the 1.5.0 release notes.
 
 Evidence (QEMU 11.1.2, HVF, `-device virtio-gpu-pci`, the installed disk of the
 release image, screendump over QMP): on a fresh boot with no manual step the graphics
