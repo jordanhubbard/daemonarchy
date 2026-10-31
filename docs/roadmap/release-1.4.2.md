@@ -81,6 +81,12 @@ that exists for each.
   operator's hardware, and the item is not claimed done until then. Linux Steam under the
   Linuxulator stays out (no receipt).
 
+## Build efficiency: not delivered in 1.4.2
+
+ADOPT-002, RELEASE-001, COMP-001, PERF-002, DEV-001 and SRC-001 stay open and were not run natively
+under Literate AI in 1.4.2, so 1.4.2 delivers no build-efficiency gain. The speed work is planned
+in the [1.5.0 plan](release-1.5.0.md) (BUILD-001).
+
 ## Also carried
 
 Known limitations written in the [1.4.1 release notes](../release-1.4.1.md) that

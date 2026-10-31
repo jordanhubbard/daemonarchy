@@ -47,6 +47,7 @@ another version are historical records. 1.4 entries describe work in development
 - [Historical 1.3.2 network debugging plan](roadmap/release-1.3.2.md)
 - [1.4.0 plan: Literate AI cross-repository build and release orchestration](roadmap/release-1.4.0.md)
 - [1.4.1 plan: measured faster installation and deferred exact-image checks](roadmap/release-1.4.1.md)
+- [1.5.0 plan: build and release-cycle speed](roadmap/release-1.5.0.md)
 - [1.4.2 plan: items deferred from 1.4.1](roadmap/release-1.4.2.md)
 - [aarch64 inventory and VMware worker bring-up (ARCH-001)](aarch64.md)
 - [1.1.1-to-1.3.1 application package reuse inventory](evidence/release-1.3.1-package-reuse-inventory.md)
