@@ -9,7 +9,7 @@
   "version_mirrors": [],
   "documentation_authority": ["docs/architecture/design-traceability.md"],
   "contributions": {
-    "current_milestone": "1.4.2"
+    "current_milestone": "1.5.0"
   },
   "allowed_transitions": ["patch", "minor", "major", "prerelease", "explicit"],
   "gate": {

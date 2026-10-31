@@ -1,8 +1,8 @@
-# 1.5.0 plan: build and release-cycle speed
+# 1.5.0 plan: the 1.4.2 scope, build speed and release-cycle speed
 
 - **Status:** active
 - **Owning queue item:** [BUILD-001](active-work.md#build-001-cut-freebsd-source-ports-iso-and-release-cycle-time-10x-with-literate-ai-14)
-- **Supporting queue items:** [ADOPT-002](active-work.md#adopt-002-qualify-retained-native-execution-and-release-enforcement), [COMP-001](active-work.md#comp-001-model-complete-freebsd-source-and-ports-trees-as-components), [SRC-001](active-work.md#src-001-establish-owned-freebsd-source-builds-and-packages), [PERF-001](active-work.md#perf-001-execute-native-components-and-substantially-accelerate-iso-builds), [PERF-002](active-work.md#perf-002-coordinate-all-daemonarchy-repositories-through-literate-ai-workers-in-140), [DEV-001](active-work.md#dev-001-provide-an-operator-ready-native-component-development-system), [RELEASE-001](active-work.md#release-001-deliver-a-qualified-literate-ai-release-workflow-in-14)
+- **Supporting queue items:** [ADOPT-002](active-work.md#adopt-002-qualify-retained-native-execution-and-release-enforcement), [COMP-001](active-work.md#comp-001-model-complete-freebsd-source-and-ports-trees-as-components), [SRC-001](active-work.md#src-001-establish-owned-freebsd-source-builds-and-packages), [PERF-001](active-work.md#perf-001-execute-native-components-and-substantially-accelerate-iso-builds), [PERF-002](active-work.md#perf-002-coordinate-all-daemonarchy-repositories-through-literate-ai-workers-in-140), [DEV-001](active-work.md#dev-001-provide-an-operator-ready-native-component-development-system), [RELEASE-001](active-work.md#release-001-deliver-a-qualified-literate-ai-release-workflow-in-14), [DESKTOP-001](active-work.md#desktop-001-ship-the-desktop-launchers-and-menu-entries-in-the-daemonarchy-desktop-package)
 - **Completion / archival evidence:** pending; nothing here is claimed done. Done means the evidence listed under Acceptance below, retained with exact inputs.
 
 Opened 2026-10-31 by operator decision. The operator's words: decrease the time required to
@@ -10,9 +10,105 @@ compile all of FreeBSD src, FreeBSD ports and the ISO mastering process using al
 features of Literate AI, also upgrading Literate AI in all Daemonarchy repositories to version
 1.4 (top of tree), and improve the entire release engineering cycle by 10x.
 
-## 1.4.2 did not deliver build-efficiency gains
+## 1.4.2 is superseded by 1.5.0 and was never released
 
-The 1.4.2 queue items ADOPT-002, RELEASE-001, COMP-001, PERF-002, DEV-001 and SRC-001 were kept
+This release was opened as 1.4.2. The operator and the release coordinator renamed it 1.5.0 on
+2026-10-31: the work adds user-visible features (the graphical package manager, Windows programs
+and Steam, the aarch64 VirtIO GPU path, the Wi-Fi fix) and the BUILD-001 program, which is a
+minor release under semantic versioning, and Literate AI's patch rule admits only bounded fixes.
+No 1.4.2 tag, feed or image was published. Every 1.4.2 goal moved here without deferral and
+keeps its own queue entry and acceptance text; the scope and the honest status text of the old
+plan follow, unchanged in substance. The 1.4.1 plan and the [1.4.1 audit](release-1.4.1-audit.md)
+describe the same items under the 1.4.2 name.
+
+## Scope carried from the 1.4.2 plan
+
+- **MacBookPro16,1 Wi-Fi: the dead associated state.** The BCM4364 driver
+  (`if_brcmfmac-kmod`) can stall after association: the interface still reports
+  `associated` and no traffic moves. Cause: `brcmf_link_event()` ignored every firmware
+  `E_LINK` down while the VAP was in `RUN`, including a real link loss after the
+  handshake, so net80211 and `wpa_supplicant` stayed associated while the firmware had
+  dropped the association and tossed every frame (`tx_complete status=3`). The fix is
+  merged ([daemonarchy-ports #37](https://github.com/jordanhubbard/daemonarchy-ports/pull/37),
+  `e136408d`). Still open: it is a kernel-bound package on the ISO, so it needs the
+  re-signed boot bundle (the rebuilt module changes the signed inventory; see
+  [mastering-1.5.0.md](../mastering-1.5.0.md#rebuilding-a-kernel-bound-module-on-mudflap-the-wi-fi-driver-2026-10-31))
+  and a physical retest. Evidence so far is fault injection on the MacBook (a synthetic
+  link-down after the PTK: 5 of 5 honoured and recovered, no scan stall, no flapping),
+  not a reproduction of the firmware-side loss. 1.4.1 ships without it.
+- **MacBookPro16,1 Wi-Fi: the 2.4 GHz channel-1 AP fails the 4-way handshake.** Candidate,
+  not investigated. On the 1.4.0 MacBook the AP `70:a7:41:81:16:e0` (2.4 GHz, channel 1,
+  chanspec `0x1001`) never completed a handshake: the join succeeds, then 3 to 4 s later
+  the firmware reports `event 6` (deauth indication) with reason 15 (4-way handshake
+  timeout) and `wpa_supplicant` logs `WRONG_KEY` and temp-disables the SSID for 10 s, then
+  28 s to 38 s. The pre-shared key is right: the same SSID joined other APs in 1 to 2 s.
+  Every logged attempt on that AP failed this way (at least seven, 2026-10-30 00:02 twice,
+  00:28 and 08:51, and 2026-10-31 00:01 twice and 00:04), on both the 1.4.0 driver and the
+  patched one. Reason 15 is not exclusive to it: it also hit the channel-6 AP (once after
+  the key was installed) and, once, the strong channel-36 AP, but those APs usually joined.
+  When `wpa_supplicant` picks this AP the join costs 10 to 45 s. Candidates, none tested: our
+  message 4 (or message 2) is not reaching the AP on channel 1, an event-ordering problem
+  around key installation, or the X0 regulatory country. A passive capture of the AP's
+  EAPOL frames and `dev.brcmfmac.0.debug=2` during a join would separate them.
+- **ADOPT-002** ([queue](active-work.md#adopt-002-qualify-retained-native-execution-and-release-enforcement)).
+  Needs the external Literate AI framework to execute native components.
+- **GUI-001** ([queue](active-work.md#gui-001-deliver-a-colorful-fast-graphical-package-manager)).
+  Not started.
+- **SRC-001** ([queue](active-work.md#src-001-establish-owned-freebsd-source-builds-and-packages)).
+  Partly done; the hand pipeline builds the base.
+- **RELEASE-001** ([queue](active-work.md#release-001-deliver-a-qualified-literate-ai-release-workflow-in-14)).
+  Blocked on the framework.
+- **COMP-001** ([queue](active-work.md#comp-001-model-complete-freebsd-source-and-ports-trees-as-components)).
+  Blocked on the framework.
+- **PERF-002** ([queue](active-work.md#perf-002-coordinate-all-daemonarchy-repositories-through-literate-ai-workers-in-140)).
+  Blocked on the framework.
+- **DEV-001** ([queue](active-work.md#dev-001-provide-an-operator-ready-native-component-development-system)).
+  Blocked on the framework.
+- **DEBUG-003** ([queue](active-work.md#debug-003-deliver-bidirectional-loader-mountroot-and-panic-network-debugging-for-14)).
+  Foundations only; needs boot-chain research and hardware.
+- **HW-004** ([queue](active-work.md#hw-004-t2-touch-id-login-through-fprintd)).
+  Not in the image; needs a Mac with enrolled fingers.
+- **EXT-002** ([queue](active-work.md#ext-002-sandboxed-lua-extensions-for-content-we-did-not-write)).
+  New work, not deferred: sandboxed Lua extensions for content we did not write. The runtime (SDK API 1.5:
+  `.lua` entries and `Audio.blip`) and the fish tank are implemented and tested on Linux; FreeBSD capability mode
+  and checks on the exact image are open. Touches `daemonarchy_visual` (`lua.py`, `sandbox.lua`, `plugin.py`,
+  `audio.py`), the installer's `sound.py` and `daemonarchy-extensions`; other 1.4.2 work in those files should
+  rebase onto it. The four Python games and the feed's trust model are unchanged.
+
+## Added after the 1.4.2 plan opened
+
+- **Windows games: Wine and Steam in the Apps menu** (operator decision, 2026-10-30,
+  moved from the [1.4.1 plan](release-1.4.1.md)). amd64 only. Delivered as virtual apps
+  like Cudalab, not as default packages: `daemonarchy-steam` and `daemonarchy-wine`
+  launchers, desktop entries, icons and System > FreeBSD menu entries that the installer
+  places on amd64 only. The first launch installs `wine-devel`, `wine-mono-devel`,
+  `wine-gecko-devel` and `winetricks` from the system's repositories and downloads Valve's
+  `SteamSetup.exe` over HTTPS; nothing of Wine's or Valve's is shipped, so the package
+  lists, feeds and ISO size do not change. Design, licences and the source offer are in
+  [Windows programs and Steam](../windows-apps.md). The launcher state machine and the
+  installer placement are tested against stand-ins. **Not verified:** a Windows game and
+  Steam each launching from the Apps menu on a fresh install on the MSI (NVIDIA
+  OpenGL/Vulkan, sound, Steam's updater and web view under Wine); that needs the
+  operator's hardware, and the item is not claimed done until then. Linux Steam under the
+  Linuxulator stays out (no receipt).
+
+## Also carried (known limitations)
+
+Known limitations written in the [1.4.1 release notes](../release-1.4.1.md) that
+have no fix yet: the roughly 1.6 second display-driver sleeps at login and the
+first-login delay (under investigation), and the aarch64 gaps (real hardware, GPU,
+sound, Wi-Fi, a desktop in a VM).
+
+## DESKTOP-001: launchers and menu entries move to the desktop package
+
+New for 1.5.0 (operator decision, 2026-10-31): [DESKTOP-001](active-work.md#desktop-001-ship-the-desktop-launchers-and-menu-entries-in-the-daemonarchy-desktop-package)
+moves the Cudalab, Wine and Steam launchers, desktop files, icons and menu entries out of the
+installer overlay into the daemonarchy-desktop package, so fixes arrive by `pkg upgrade` and not
+only with a new image. Nothing is claimed done; its acceptance is in the queue entry.
+
+## Build efficiency: not delivered under the 1.4.2 name
+
+The 1.4.2 (now 1.5.0) queue items ADOPT-002, RELEASE-001, COMP-001, PERF-002, DEV-001 and SRC-001 were kept
 open by operator decision and were not run natively under Literate AI. 1.4.2 therefore made no
 build-efficiency claim: its builds used the hand pipeline of 1.4.1. The 1.4.2 work that touched
 this area was preparatory only (documentation authority gate, release policy and gate for 1.4.x,

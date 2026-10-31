@@ -96,6 +96,17 @@ class LinkFragments(unittest.TestCase):
                         self.assertIn(unquote(split.fragment), queue)
 
 
+class LocalLinks(unittest.TestCase):
+    def test_relative_links_exist(self):
+        for path in sorted(DOCS.rglob("*.md")):
+            for target in LINK.findall(path.read_text(encoding="utf-8")):
+                split = urlsplit(target)
+                if split.scheme or not split.path or split.path.startswith("/"):
+                    continue
+                with self.subTest(f"{path.relative_to(ROOT)} -> {split.path}"):
+                    self.assertTrue((path.parent / unquote(split.path)).exists())
+
+
 class Reachability(unittest.TestCase):
     def test_every_doc_is_linked_from_the_index(self):
         seen, todo = set(), [DOCS / "README.md"]

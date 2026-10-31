@@ -1,6 +1,6 @@
 # Sandboxed Lua extensions
 
-Status: implemented for the 1.4.2 branch (SDK API **1.5**), additive to the 1.4.1 extensions. Nothing about
+Status: implemented on main for the next release (SDK API **1.5**), additive to the 1.4.1 extensions. Nothing about
 the four Python games, the feed, the menu or the installer's trust model changes.
 
 [Installer extensions](installer-extensions.md) run Python that we sign and ship from our own feed, in a

@@ -155,7 +155,7 @@ have them. Reports of success are as useful as failures.
   rollback, and the ten-times-faster target measured on both physical machines were
   not completed. Nine queue items (ADOPT-002, GUI-001, SRC-001, RELEASE-001,
   COMP-001, PERF-002, DEV-001, DEBUG-003 and HW-004) and the Wi-Fi fix are
-  planned for the [1.4.2 plan](roadmap/release-1.4.2.md); none is claimed done. The
+  planned for the [1.5.0 plan](roadmap/release-1.5.0.md); none is claimed done. The
   1.4.0 notes said these checks were deferred to 1.4.1; that was not completed.
 
 ## Upgrading

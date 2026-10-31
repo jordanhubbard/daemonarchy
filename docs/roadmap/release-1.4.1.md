@@ -2,7 +2,7 @@
 
 > **Update, 2026-10-30:** the nine items ADOPT-002, GUI-001, SRC-001, RELEASE-001,
 > COMP-001, PERF-002, DEV-001, DEBUG-003 and HW-004, and the MacBook Wi-Fi fix, moved
-> to the [1.4.2 plan](release-1.4.2.md) by operator decision. The list below is the
+> to the [1.5.0 plan](release-1.5.0.md) by operator decision. The list below is the
 > scope as first opened.
 
 - **Status:** active
@@ -66,7 +66,7 @@ items below were 1.4 acceptance rows. They moved here so they no longer block
   use. Do not ship ROMs, copied assets, protected names or incompatible code.
 
 - **Windows games: wine-devel and Steam in the Apps menu** (operator decision,
-  2026-10-30). Moved to the [1.4.2 plan](release-1.4.2.md#added-for-142) by the
+  2026-10-30). Moved to the [1.5.0 plan](release-1.5.0.md#added-after-the-142-plan-opened) by the
   operator's order that the 1.4.1 ISOs ship first; the design is in
   [Windows programs and Steam](../windows-apps.md). Not claimed done.
 
