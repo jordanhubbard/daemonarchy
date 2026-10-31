@@ -26,7 +26,7 @@ another version are historical records. 1.4 entries describe work in development
 - [Hardware trace stick: reset-surviving boot trace](boottrace.md)
 - [Login trace: timing from the login screen to a usable desktop](login-trace.md)
 - [Mastering a release image: resumable steps](mastering-1.4.1.md)
-- [Mastering notes for 1.5.0: what changed in how an amd64 release is mastered](mastering-1.5.0.md)
+- [Mastering notes for 1.5.0: the re-roll sequence and the build VM](mastering-1.5.0.md)
 - [ADOPT-002 and SRC-001 native adoption steps for the operator](native-adoption-steps.md)
 - [1.4 live5 unsigned release candidate and hwtrace dev6, October 28](testing-1.4-live5-20261028.md)
 - [1.4 live7 unsigned acceptance candidate, October 29](testing-1.4-live7-20261029.md)

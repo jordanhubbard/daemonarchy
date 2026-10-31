@@ -1,22 +1,35 @@
 #!/usr/local/bin/bash
 # Windows programs and Steam, as a "virtual app" (the pattern of daemonarchy-cudalab).
 #
-#   daemonarchy-wine [PROGRAM.exe | PROGRAM.msi [ARG...]]   run a Windows program
+#   daemonarchy-wine install SETUP.exe [ARG...]             run an installer you supply, in the prefix
+#   daemonarchy-wine run PROGRAM.exe [ARG...]               run a Windows program (extra arguments pass through)
+#   daemonarchy-wine [PROGRAM.exe | PROGRAM.msi [ARG...]]   the same by file type
 #                                                           (no argument: Wine's file manager)
 #   daemonarchy-wine --steam [ARG...]                       the Steam client (daemonarchy-steam)
 #   daemonarchy-wine --setup                                set everything up now, run nothing
+#   daemonarchy-wine --check                                the graphics checks only (kernel, NVIDIA, Vulkan, Xwayland)
 #   daemonarchy-wine --status                               say what is set up
 #   daemonarchy-wine --rebuild                              forget the setup record and set up again
 #   daemonarchy-wine --reset [--yes]                        delete the Wine prefix and start from nothing
 #
-# Nothing of Wine's or Valve's is on the image. The first launch opens a window that
+# Nothing of Wine's, Valve's or any other vendor's is on the image. The first launch opens a
+# window that
 #
-#   1. installs wine-devel, wine-mono-devel, wine-gecko-devel and winetricks from the
-#      system's configured package repositories (one sudo prompt, in that window),
-#   2. creates the user's Wine prefix under ~/.local/share/daemonarchy-wine, and
+#   1. installs wine-devel, wine-gecko-devel, winetricks, xwayland and vulkan-tools from the
+#      system's configured package repositories (one sudo prompt, in that window), and checks
+#      that the graphics stack is what Windows games need (see graphics_check),
+#   2. creates a 64-bit Wine prefix under ~/.local/share/daemonarchy-wine with no display and
+#      Mono/Gecko prompts off, installs Wine Mono from WineHQ's MSI (pinned, sha256 checked)
+#      and DXVK's DLLs from its GitHub release (pinned, sha256 checked), and
 #   3. for Steam, downloads Valve's own SteamSetup.exe over HTTPS at that moment and
 #      runs it inside the prefix. Valve's installer shows Valve's terms; the launcher
 #      carries nothing of Valve's.
+#
+# `install` and `run` are the generic mechanism for any other Windows program: you supply the
+# installer or executable, nothing is downloaded for it. What a program prints always goes to a
+# log file under ~/.local/state/daemonarchy-wine/ (`> log 2>&1 < /dev/null`), never to a pipe:
+# some launchers die on a pipe. Extra arguments reach the program unchanged (an Electron or CEF
+# launcher usually wants --no-sandbox under Wine).
 #
 # Every later launch runs straight into Wine or Steam: no window, no sudo. Failure is
 # not fatal: the log (~/.local/state/daemonarchy-wine/setup.log) says why, the window
@@ -26,10 +39,23 @@
 # wine-devel is built for both 32- and 64-bit Windows programs (Wine's WoW64 mode), so
 # no 32-bit FreeBSD libraries are needed. The windows run on the desktop's X server
 # (Xwayland on the Wayland session). amd64 only: the packages exist for no other
-# architecture here.
+# architecture here. The recipe for Mono and DXVK was contributed by Sam Sheridan, from his
+# experience running a .NET and DirectX 11 game launcher on FreeBSD; docs/windows-apps.md says what
+# we have not verified ourselves.
 set -uo pipefail
 
-packages=(wine-devel wine-mono-devel wine-gecko-devel winetricks)
+packages=(wine-devel wine-gecko-devel winetricks xwayland vulkan-tools)
+# Wine Mono from WineHQ's MSI. The sha256 is the one in the FreeBSD port's distinfo
+# (emulators/wine-mono 10.4.1), which matches the download.
+mono_version=10.4.1
+mono_url=${DAEMONARCHY_MONO_URL:-https://dl.winehq.org/wine/wine-mono/10.4.1/wine-mono-10.4.1-x86.msi}
+mono_sha256=${DAEMONARCHY_MONO_SHA256:-071f4b2887e1c97a11d791ff3d65be9429eed6dec4c2708888bfd546ba358e23}
+# DXVK (Direct3D 8 to 11 on Vulkan): the upstream release tarball, whose sha256 is the digest GitHub
+# records for that release asset. DXVK 3.x needs Vulkan 1.4. An override needs both variables.
+dxvk_version=3.1.1
+dxvk_url=${DAEMONARCHY_DXVK_URL:-https://github.com/doitsujin/dxvk/releases/download/v3.1.1/dxvk-3.1.1.tar.gz}
+dxvk_sha256=${DAEMONARCHY_DXVK_SHA256:-40565b4a724aadc4433fa4e010b4b23916d9b1f1baeee64e17186db94f54e608}
+dxvk_dlls=(d3d8 d3d9 d3d10core d3d11 dxgi)
 # Valve's own download, over HTTPS; the second is the same installer on another CDN.
 steam_urls=(
   https://cdn.cloudflare.steamstatic.com/client/installer/SteamSetup.exe
@@ -75,7 +101,7 @@ missing_packages() {
 
 # Wine is set up when its packages are in and the prefix was made by this launcher.
 wine_ready() {
-  [[ -f $stamp && -f $prefix/system.reg ]] || return 1
+  [[ -f $stamp && -f $prefix/system.reg && $(stamp_value mono) == "$mono_version" && -n $(stamp_value dxvk) ]] || return 1
   [[ -z $(missing_packages) ]]
 }
 # Windows ignores case; this file system does not, and Valve's installer writes Steam.exe.
@@ -89,14 +115,14 @@ wine_env() {
       "WINEDLLOVERRIDES=${WINEDLLOVERRIDES:-winemenubuilder.exe=d}" "$@"
 }
 
-write_stamp() { # key=value lines, replacing earlier ones
+stamp_set() { # key value: replace or add one line of the record and keep the rest
   local new=$stamp.new
-  {
-    printf 'wine=%s\n' "$(pkg query %v wine-devel 2>/dev/null | head -1)"
-    printf 'prefix=%s\n' "$prefix"
-    printf 'steam=%s\n' "${1:-$(stamp_value steam)}"
-    printf 'setup=%s\n' "$(date -u +%Y-%m-%dT%H:%M:%SZ)"
-  } >"$new" && mv -f "$new" "$stamp"
+  { grep -v "^$1=" "$stamp" 2>/dev/null; printf '%s=%s\n' "$1" "$2"; } >"$new" && mv -f "$new" "$stamp"
+}
+write_stamp() { # the base record: Wine's version, the prefix and the time (steam, mono and dxvk lines are kept)
+  stamp_set wine "$(pkg query %v wine-devel 2>/dev/null | head -1)"
+  stamp_set prefix "$prefix"
+  stamp_set setup "$(date -u +%Y-%m-%dT%H:%M:%SZ)"
 }
 
 install_packages() {
@@ -112,19 +138,139 @@ install_packages() {
   [[ -z $(missing_packages) ]] || { die "the packages did not install."; return 1; }
 }
 
+# The graphics stack Windows games need, checked and reported, never enforced: a warning says what
+# will not work and the setup goes on. Sets gfx_ok (false after any warning) and vulkan_ok (true
+# when native Vulkan answers on NVIDIA, which is what DXVK needs). The NVIDIA kernel modules
+# (x11/nvidia-kmod, graphics/nvidia-drm-612-kmod, in the ISO's package list) are built for the
+# ISO's exact kernel, and their package versions end in that kernel's OSVERSION.
+gfx_ok=true
+vulkan_ok=false
+gfx_warn() { say "    WARNING: $*"; gfx_ok=false; }
+graphics_check() {
+  local kernel osver mod pk pkgver vk api
+  gfx_ok=true
+  vulkan_ok=false
+  kernel=$(uname -v 2>/dev/null | head -1)
+  osver=$(sysctl -n kern.osreldate 2>/dev/null)
+  say "==> Checking the graphics stack (kernel: ${kernel:-unknown}; OSVERSION ${osver:-unknown})"
+  if [[ -x ${DAEMONARCHY_XWAYLAND:-/usr/local/bin/Xwayland} ]]; then
+    say '    ok: Xwayland is installed'
+  else
+    gfx_warn 'Xwayland is not installed: Windows programs have no X server on the Wayland session (sudo pkg install xwayland)'
+  fi
+  for mod in nvidia nvidia-drm; do
+    if kldstat -q -n "$mod.ko" 2>/dev/null || kldstat -q -m "$mod" 2>/dev/null; then
+      say "    ok: the $mod kernel module is loaded"
+    else
+      gfx_warn "the $mod kernel module is not loaded, so there is no NVIDIA graphics (kldload $mod)"
+    fi
+  done
+  for pk in nvidia-kmod nvidia-drm-612-kmod; do
+    pkgver=$(pkg query %v "$pk" 2>/dev/null | head -1)
+    if [[ -z $pkgver ]]; then
+      gfx_warn "$pk is not installed: the ISO builds it for its own kernel, and a module built for another kernel does not load"
+    elif [[ -n $osver && $pkgver =~ \.${osver}(_[0-9]+)?$ ]]; then
+      say "    ok: $pk $pkgver was built for this kernel"
+    else
+      gfx_warn "$pk $pkgver was not built for this kernel (OSVERSION ${osver:-unknown}): NVIDIA graphics need the modules of the image's own kernel"
+    fi
+  done
+  if command -v "${DAEMONARCHY_VULKANINFO:-vulkaninfo}" >/dev/null 2>&1; then
+    vk=$("${DAEMONARCHY_VULKANINFO:-vulkaninfo}" --summary 2>&1)
+    if grep -qi 'driverName *= *NVIDIA' <<<"$vk"; then
+      vulkan_ok=true
+      api=$(sed -n 's/^[[:space:]]*apiVersion *= *\([0-9]*\.[0-9]*\).*/\1/p' <<<"$vk" | head -1)
+      say "    ok: native Vulkan on NVIDIA ($(sed -n 's/^[[:space:]]*deviceName *= *//p' <<<"$vk" | head -1), Vulkan ${api:-?})"
+      if [[ -n $api ]] && ((${api%%.*} < 1 || (${api%%.*} == 1 && ${api##*.} < 4))); then
+        gfx_warn "Vulkan $api: DXVK $dxvk_version needs Vulkan 1.4, so its games may not start"
+      fi
+    else
+      gfx_warn 'vulkaninfo finds no NVIDIA Vulkan device: DirectX games fall back to Wine'"'"'s OpenGL translation, which is slow, and DXVK is not installed'
+    fi
+  else
+    gfx_warn 'vulkaninfo is not installed (sudo pkg install vulkan-tools): native Vulkan could not be checked'
+  fi
+  if $gfx_ok; then say '    the graphics stack looks right for Windows games'; else say '    Windows games may run slowly or not at all until the warnings above are fixed (daemonarchy-wine --check repeats these checks)'; fi
+}
+
 make_prefix() {
   mkdir -p "$data" "$state" || return 1
   if [[ -f $prefix/system.reg ]]; then
     say '==> The Wine prefix is already in place'
     return 0
   fi
-  say "==> Creating the Wine prefix ($prefix)"
-  wine_env wine wineboot --init >>"$log" 2>&1 || true
+  say "==> Creating the 64-bit Wine prefix ($prefix)"
+  # No display, and Mono and Gecko off for this first boot (WINEDLLOVERRIDES="mscoree,mshtml="), so
+  # that Wine's download prompts for them cannot stop it.
+  env -u DISPLAY -u WAYLAND_DISPLAY "WINEPREFIX=$prefix" WINEARCH=win64 WINEDEBUG=-all \
+      "WINEDLLOVERRIDES=mscoree,mshtml=" wine wineboot -i >>"$log" 2>&1 </dev/null || true
   # Wine writes the registry files when its server exits, a moment after wineboot returns:
   # wait for the server, then look. (wineboot can also fail on a display-less first pass
   # and still have made the prefix.)
   wine_env wineserver -w >>"$log" 2>&1 || true
   [[ -f $prefix/system.reg ]] || { die "Wine could not create its prefix. See $log"; return 1; }
+}
+
+# Download a file over HTTPS and keep it only if its sha256 is the pinned one.
+fetch_verified() { # url sha256 out
+  local url=$1 want=$2 out=$3 got
+  mkdir -p "$(dirname "$out")" || return 1
+  rm -f "$out.part"
+  curl -fsSL --proto '=https' --tlsv1.2 --retry 2 --connect-timeout 20 -o "$out.part" "$url" </dev/null \
+    || { rm -f "$out.part"; return 1; }
+  got=$(sha256 -q "$out.part" 2>/dev/null || sha256sum "$out.part" | cut -d' ' -f1)
+  if [[ $got != "$want" ]]; then
+    say "    sha256 of ${url##*/} is $got, not the pinned $want: not used"
+    rm -f "$out.part"
+    return 2
+  fi
+  mv -f "$out.part" "$out"
+}
+
+install_mono() {
+  [[ $(stamp_value mono) == "$mono_version" ]] && return 0
+  local msi=$downloads/wine-mono-$mono_version-x86.msi
+  say "==> Installing Wine Mono $mono_version from WineHQ's MSI (sha256 checked)"
+  fetch_verified "$mono_url" "$mono_sha256" "$msi" \
+    || { die "Wine Mono could not be downloaded and verified (is the network up?). Try again later."; return 1; }
+  wine_env wine msiexec /i "$msi" /qn >>"$log" 2>&1 </dev/null || true
+  wine_env wineserver -w >>"$log" 2>&1 || true
+  [[ -d $prefix/drive_c/windows/mono ]] || { die "Wine Mono did not install. See $log"; return 1; }
+  stamp_set mono "$mono_version"
+}
+
+# DXVK: its Direct3D 8, 9, 10 and 11 DLLs on top of Vulkan. The 64-bit DLLs go in system32 and the
+# 32-bit ones in syswow64 (the WoW64 prefix's layout), and each is set to native in the registry.
+# DAEMONARCHY_DXVK=auto (the default) installs it when native Vulkan on NVIDIA answers, yes always,
+# no never. To add it later: DAEMONARCHY_DXVK=yes daemonarchy-wine --rebuild.
+install_dxvk() {
+  local want=${DAEMONARCHY_DXVK:-auto} tgz=$downloads/dxvk-$dxvk_version.tar.gz tmp dir dll
+  # A skip is recorded (dxvk=skipped), so it is not retried at every launch; a failed install is not,
+  # so the next launch tries again.
+  case $want in
+    no) say '==> DXVK skipped (DAEMONARCHY_DXVK=no)'; stamp_set dxvk skipped; return 0 ;;
+    yes) ;;
+    *) $vulkan_ok || { say "==> DXVK skipped: no native Vulkan on NVIDIA (see the checks above). Windows games use Wine's OpenGL translation. DAEMONARCHY_DXVK=yes installs it anyway."; stamp_set dxvk skipped; return 0; } ;;
+  esac
+  [[ $(stamp_value dxvk) == "$dxvk_version" ]] && return 0
+  say "==> Installing DXVK $dxvk_version from its GitHub release (sha256 checked)"
+  fetch_verified "$dxvk_url" "$dxvk_sha256" "$tgz" \
+    || { die "DXVK could not be downloaded and verified (is the network up?). Try again later."; return 1; }
+  tmp=$(mktemp -d) || return 1
+  tar -xzf "$tgz" -C "$tmp" >>"$log" 2>&1 </dev/null || { rm -rf "$tmp"; die "DXVK's archive could not be unpacked."; return 1; }
+  dir=$(find "$tmp" -maxdepth 1 -type d -name 'dxvk-*' | head -1)
+  for dll in "${dxvk_dlls[@]}"; do
+    [[ -f $dir/x64/$dll.dll && -f $dir/x32/$dll.dll && $(head -c 2 "$dir/x64/$dll.dll") == MZ ]] \
+      || { rm -rf "$tmp"; die "DXVK's archive has no usable $dll.dll."; return 1; }
+    if ! { install -m 0644 "$dir/x64/$dll.dll" "$prefix/drive_c/windows/system32/$dll.dll" \
+           && install -m 0644 "$dir/x32/$dll.dll" "$prefix/drive_c/windows/syswow64/$dll.dll"; }; then
+      rm -rf "$tmp"; die "DXVK's DLLs could not be installed in the prefix."; return 1
+    fi
+    wine_env wine reg add 'HKCU\Software\Wine\DllOverrides' /v "$dll" /d native /f >>"$log" 2>&1 </dev/null || true
+  done
+  rm -rf "$tmp"
+  wine_env wineserver -w >>"$log" 2>&1 || true
+  stamp_set dxvk "$dxvk_version"
 }
 
 download_steam() {
@@ -151,7 +297,7 @@ install_steam() {
   say '==> Running Steam'"'"'s installer in the Wine prefix'
   wine_env wine "$downloads/SteamSetup.exe" /S >>"$log" 2>&1 || true
   steam_installed || { die "Steam's installer did not finish. See $log"; return 1; }
-  write_stamp installed
+  stamp_set steam installed
   say '==> Steam is installed (it updates itself the first time it opens)'
 }
 
@@ -161,8 +307,11 @@ setup() {
   supported_arch || { die "Windows programs are available on amd64 only (this is $arch)."; return 1; }
   command -v sudo >/dev/null 2>&1 || command -v pkg >/dev/null 2>&1 || { die "pkg is not available."; return 1; }
   install_packages || return 1
+  graphics_check
   make_prefix || return 1
   write_stamp
+  install_mono || return 1
+  install_dxvk || return 1
   [[ ${1:-} != steam ]] || install_steam || return 1
   say '==> Ready.'
 }
@@ -241,17 +390,52 @@ run_steam() {
   return "$status"
 }
 
-run_watched() { # steam|wine, then the arguments
-  local kind=$1 status
+# A program you name: `install` runs the installer you supply, `run` an executable, each with its own
+# arguments unchanged. An .msi goes through msiexec. A path that is not a file here is taken as a
+# Windows path inside the prefix (C:\Program Files\...).
+run_program() { # file-or-windows-path, then its arguments
+  local target=${1:-}
   shift
-  find "$applog" -size +1024k -delete 2>/dev/null
-  printf '== %s: %s %s\n' "$(date '+%F %T')" "$kind" "$*" >>"$applog"
-  if [[ $kind == steam ]]; then run_steam "$@" >>"$applog" 2>&1; else run_wine_program "$@" >>"$applog" 2>&1; fi
+  [[ -f $target ]] && target=$(readlink -f "$target" 2>/dev/null || echo "$target")
+  case ${target,,} in
+    *.msi) wine_env wine msiexec /i "$target" "$@" ;;
+    *) wine_env wine "$target" "$@" ;;
+  esac
+}
+
+# The log a program's output goes to: the app log, or for a program you name, a file of its own.
+log_for() { # kind, then the program's arguments
+  case $1 in
+    run | install)
+      local name
+      name=${2:-program}
+      name=$(basename -- "${name##*\\}")          # a Windows path ends at its last backslash
+      name=${name//[^A-Za-z0-9._-]/_}
+      mkdir -p "$state/programs"
+      echo "$state/programs/$name.log" ;;
+    *) echo "$applog" ;;
+  esac
+}
+
+# Everything a Windows program prints goes to a log FILE and its input is /dev/null: some launchers
+# die on a pipe, and a first-run window's pipe is one.
+run_watched() { # steam|wine|run|install, then the arguments
+  local kind=$1 status out
+  shift
+  out=$(log_for "$kind" "$@")
+  find "$out" -size +1024k -delete 2>/dev/null
+  printf '== %s: %s %s\n' "$(date '+%F %T')" "$kind" "$*" >>"$out"
+  case $kind in
+    steam) run_steam "$@" >>"$out" 2>&1 </dev/null ;;
+    run | install) run_program "$@" >>"$out" 2>&1 </dev/null ;;
+    *) run_wine_program "$@" >>"$out" 2>&1 </dev/null ;;
+  esac
   status=$?
   if ((status != 0)); then
-    printf '== stopped with status %s\n' "$status" >>"$applog"
-    note 'The Windows program stopped with an error' "Exit status $status. Details: $applog"
+    printf '== stopped with status %s\n' "$status" >>"$out"
+    note 'The Windows program stopped with an error' "Exit status $status. Details: $out"
   fi
+  [[ $kind != install ]] || say "The installer finished (status $status). Its output is in $out"
   return "$status"
 }
 
@@ -277,11 +461,14 @@ show_status() {
     say "unsupported: Windows programs are available on amd64 only (this is $arch)"
     return 0
   fi
-  local missing
+  local missing dxvk_have
   mapfile -t missing < <(missing_packages)
   if wine_ready; then
     say "real app: Wine is set up ($(pkg query %n-%v wine-devel 2>/dev/null | head -1))"
     say "  prefix: $prefix (set up $(stamp_value setup))"
+    dxvk_have=$(stamp_value dxvk)
+    say "  Wine Mono $(stamp_value mono); DXVK $dxvk_have"
+    [[ $dxvk_have != skipped ]] || say "    (DXVK needs native Vulkan on NVIDIA: 'daemonarchy-wine --check' says what is missing; DAEMONARCHY_DXVK=yes daemonarchy-wine --rebuild installs it anyway)"
   else
     if ((${#missing[@]})); then
       say "virtual app: not set up yet (the first launch installs ${missing[*]} and makes the prefix)"
@@ -312,6 +499,7 @@ main() {
   local mode=wine
   case ${1:-} in
     --status) show_status; return 0 ;;
+    --check) graphics_check; $gfx_ok; return $? ;;
     --reset) do_reset "$@"; return $? ;;
     --rebuild) rm -f "$stamp"; shift; set -- --setup "$@" ;;
     --setup-window) shift; setup_window "$@"; return $? ;;      # run by the launcher inside its window
@@ -320,6 +508,12 @@ main() {
   case ${1:-} in
     --setup) setup_only=true; shift; [[ ${1:-} != --steam ]] || { mode=steam; shift; } ;;
     --steam) mode=steam; shift ;;
+    install | run)
+      mode=$1
+      shift
+      [[ -n ${1:-} ]] || { say "usage: daemonarchy-wine $mode PROGRAM.exe [ARG...]"; return 2; }
+      # An installer is waited for; a program is detached from a terminal like any other launch.
+      [[ $mode != install ]] || export DAEMONARCHY_WINE_FOREGROUND=1 ;;
   esac
 
   supported_arch || { note 'Windows programs are available on amd64 only' "This is $arch."; return 1; }
