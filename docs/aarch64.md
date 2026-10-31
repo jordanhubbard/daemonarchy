@@ -589,7 +589,7 @@ was signed or published.
 The first complete aarch64 chain: release sets at the 1.4.1 source base, signed
 package feeds, an installer ISO, and an **end-to-end install that booted**, all
 **staged and not published**. The exact commands are in
-[`scripts/aarch64-reroll/`](../scripts/aarch64-reroll/README.md); the artifact
+`scripts/aarch64-reroll/` (see its README.md); the artifact
 identities are in
 [`aarch64-1.4.1-staging-20261030-development.json`](../verification/aarch64-1.4.1-staging-20261030-development.json).
 Nothing here is under LitAI custody, and nothing was uploaded.
