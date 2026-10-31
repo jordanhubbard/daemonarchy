@@ -252,6 +252,7 @@ Daemonarchy is built from these repositories:
 - **[jordanhubbard/omarchy-freebsd](https://github.com/jordanhubbard/omarchy-freebsd)**: the FreeBSD compatibility layer that lets Omarchy run unchanged.
 - **[jordanhubbard/daemonarchy-src](https://github.com/jordanhubbard/daemonarchy-src)**: the owned FreeBSD source fork the image's base system and kernel are built from. 1.3.1 uses `d63d77f4`; review work lands on its `daemonarchy` integration branch.
 - **[jordanhubbard/daemonarchy-ports](https://github.com/jordanhubbard/daemonarchy-ports)**: the ports fork that packages all of it. 1.3.1 uses `b7857842`; review work lands on its `daemonarchy` integration branch. Releases through 1.1.1 used [jordanhubbard/freebsd-ports](https://github.com/jordanhubbard/freebsd-ports/tree/daemonarchy-1.1.1) (`daemonarchy-1.1.1`, and `daemonarchy-1.1-package-baseline` for the 1.1 candidate). Upstream submissions continue independently of Daemonarchy releases.
+- **Which repository does what, where a change goes and how they are pinned together:** see [The repositories that make up Daemonarchy](HACKING.md#the-repositories-that-make-up-daemonarchy) in HACKING.md.
 
 ## Building
 
