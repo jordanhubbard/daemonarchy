@@ -12,11 +12,45 @@ first native results:
   boots to the installer menu under QEMU/EDK2
   ([record](#worker-record-native-bulk-unsigned-feed-and-uefi-iso-2026-10-27)).
 
-**No aarch64 feed or image is published.** Signed feeds and an installer ISO are
-staged, and one install under QEMU with HVF on Apple silicon completed and booted
-([record](#worker-record-aarch64-staging-at-the-post-14-base-2026-10-30)). There is no upgrade,
-rollback, desktop, debugging or laptop result. Nothing here qualifies aarch64
-beyond that one install, and no amd64 result stands in for one.
+## Status in 1.4.1: a community-validation image
+
+The 1.4.1 release publishes `daemonarchy-1.4.1-aarch64.iso.xz`
+([release notes](release-1.4.1.md#aarch64-image-community-validation)). The bar it
+met is that it boots and installs in a QEMU virtual machine. Nothing beyond that is
+claimed, and people with arm64 hardware are asked to fill the gaps.
+
+**Verified** (records below and
+[`aarch64-1.4.1-staging-20261030-development.json`](../verification/aarch64-1.4.1-staging-20261030-development.json)):
+the signed aarch64 feeds; and two installs under QEMU 11.1.2 with HVF on an Apple
+silicon Mac, on QA candidate images, each of which installed and booted under UEFI
+with 23 checks passed and 2 failed. The failed checks are `sddm running` (no DRM/KMS
+driver in the guest) and `updates from the signed Daemonarchy repository` (the
+public feed URLs did not exist yet). The release image itself was then installed in the same QEMU setup from the public feeds: it took 36 minutes, booted under UEFI and passed 33 of 34 checks; the one failure is the known `sddm running` (no DRM device in the guest), and no package came from pkg.FreeBSD.org.
+
+**Not verified:** any physical aarch64 machine; DRM/KMS and any hardware GPU
+desktop (SDDM does not start in the VM, and no graphical desktop was seen on
+aarch64); sound; Wi-Fi; upgrade, rollback, network debugging and the live desktop.
+Apple silicon laptops cannot be install targets (see
+[Running aarch64 on Apple silicon](#running-aarch64-on-apple-silicon)). Omitted from
+the aarch64 desktop: `chromium`, `aether`, `mise` and `edk2@bhyve`
+([why](#default-desktop-on-aarch64-decision-of-2026-10-30)); the default browser is
+Epiphany.
+
+**Reporting.** Open an issue at
+<https://github.com/jordanhubbard/daemonarchy/issues> (there is no issue template):
+the machine or VM, the image SHA-256, what you ran and the result. Success reports
+help as much as failures.
+
+The rest of this page is the working record that led here. It was written before
+publication, so its "not published" statements describe the state of that day.
+
+Earlier status, as of the worker records below: an
+**unsigned development** package feed and UEFI installer ISO booted to the installer
+menu under QEMU/EDK2 ([record](#worker-record-native-bulk-unsigned-feed-and-uefi-iso-2026-10-27)),
+and one install under QEMU with HVF completed and booted
+([record](#worker-record-aarch64-staging-at-the-post-14-base-2026-10-30)). Those
+records have no upgrade, rollback, desktop, debugging or laptop result, and no amd64
+result stands in for one.
 
 ## Inventory, blocking gaps first
 

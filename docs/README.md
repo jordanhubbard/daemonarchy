@@ -4,8 +4,8 @@ Product goals and completeness are in root `PROJECT.md`; build and release
 commands remain in root `HACKING.md`. This index makes the retained evidence
 reachable without changing its historical scope.
 
-The current release is **1.4.0**: start with its
-[release notes](release-1.4.0.md) and the [getting-started guide](getting-started.md).
+The current release is **1.4.1**: start with its
+[release notes](release-1.4.1.md) and the [getting-started guide](getting-started.md).
 Its published identity is recorded in
 [`release/current.json`](../release/current.json); documents dated or named for
 another version are historical records. 1.4 entries describe work in development.
@@ -44,6 +44,7 @@ another version are historical records. 1.4 entries describe work in development
 - [Historical 1.3.2 network debugging plan](roadmap/release-1.3.2.md)
 - [1.4.0 plan: Literate AI cross-repository build and release orchestration](roadmap/release-1.4.0.md)
 - [1.4.1 plan: measured faster installation and deferred exact-image checks](roadmap/release-1.4.1.md)
+- [1.4.2 plan: items deferred from 1.4.1](roadmap/release-1.4.2.md)
 - [aarch64 inventory and VMware worker bring-up (ARCH-001)](aarch64.md)
 - [1.1.1-to-1.3.1 application package reuse inventory](evidence/release-1.3.1-package-reuse-inventory.md)
 - [Earlier 1.3.1 diagnostics scope and preflight evidence](roadmap/release-1.3.1.md)

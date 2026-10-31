@@ -35,8 +35,8 @@ The image is copied to the stick byte for byte; copying the file onto the stick 
 
 - **Any system, the easy way:** [balenaEtcher](https://etcher.balena.io). Pick the `.iso.xz`, pick the stick, press Flash.
 - **Windows:** [Rufus](https://rufus.ie) works too; when it asks, choose **DD image mode**.
-- **macOS:** find the stick with `diskutil list` (say it is `/dev/disk4`), then `diskutil unmountDisk /dev/disk4` and `xz -dc daemonarchy-1.4.0-amd64.iso.xz | sudo dd of=/dev/rdisk4 bs=1m`.
-- **Linux:** find the stick with `lsblk` (say `/dev/sdb`), then `xz -dc daemonarchy-1.4.0-amd64.iso.xz | sudo dd of=/dev/sdb bs=1M status=progress conv=fsync`.
+- **macOS:** find the stick with `diskutil list` (say it is `/dev/disk4`), then `diskutil unmountDisk /dev/disk4` and `xz -dc daemonarchy-1.4.1-amd64.iso.xz | sudo dd of=/dev/rdisk4 bs=1m`.
+- **Linux:** find the stick with `lsblk` (say `/dev/sdb`), then `xz -dc daemonarchy-1.4.1-amd64.iso.xz | sudo dd of=/dev/sdb bs=1M status=progress conv=fsync`.
 
 balenaEtcher can flash the compressed file directly. For `dd`, decompress while writing instead of passing `if=`: `xz -dc daemonarchy-<version>-amd64.iso.xz | sudo dd of=/dev/rdisk4 bs=1m` on macOS, or `xz -dc daemonarchy-<version>-amd64.iso.xz | sudo dd of=/dev/sdb bs=1M status=progress conv=fsync` on Linux. FreeBSD and most Linux systems include `xz`; on macOS install it with Homebrew (`brew install xz`). If another tool will not accept the `.xz`, extract the `.iso` first, for example with [7-Zip](https://www.7-zip.org) on Windows.
 
