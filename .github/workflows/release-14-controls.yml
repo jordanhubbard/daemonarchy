@@ -26,6 +26,7 @@ on:
       - 'overlay/usr/local/libexec/daemonarchy-installer/install'
       - 'overlay/usr/local/libexec/daemonarchy-installer/package-repository'
       - 'tests/docs-release-sync.py'
+      - 'tests/docs-lifecycle.py'
       - 'VERSION'
       - 'scripts/version.py'
       - 'tests/version-sync.py'
@@ -232,6 +233,10 @@ jobs:
         env:
           PYTHONDONTWRITEBYTECODE: '1'
         run: python3 tests/docs-release-sync.py -v
+      - name: Documentation graph matches the Literate AI authority gate
+        env:
+          PYTHONDONTWRITEBYTECODE: '1'
+        run: python3 tests/docs-lifecycle.py -v
       - name: One release version
         env:
           PYTHONDONTWRITEBYTECODE: '1'

@@ -44,7 +44,7 @@ items below were 1.4 acceptance rows. They moved here so they no longer block
   path remains beside it.
 
 - **Installer extensions**
-  ([EXT-001](active-work.md#ext-001--installer-extensions-menu-sdk-windows-signed-compressed-feed),
+  ([EXT-001](active-work.md#ext-001-installer-extensions-menu-sdk-windows-signed-compressed-feed),
   [issue #161](https://github.com/jordanhubbard/daemonarchy/issues/161)). The games become
   the first extensions of a general mechanism: an Extensions menu in the installer, a window for
   every run, SDK window verbs (open, close, resize, select, list, title), and a signed, compressed,
