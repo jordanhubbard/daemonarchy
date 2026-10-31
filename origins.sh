@@ -8,7 +8,7 @@ audio/cliamp devel/tobi-try devel/usage editors/omarchy-nvim editors/omawrite
 graphics/omasnap graphics/tensaku math/omacalc misc/ttfx multimedia/omacut
 sysutils/herdr sysutils/lazydocker sysutils/tzupdate sysutils/udiskie
 x11-fonts/ia-writer-fonts x11-themes/aether x11-wm/omarchy
-x11-wm/daemonarchy x11/hyprland-preview-share-picker x11/owe
+x11-wm/daemonarchy ports-mgmt/daemonarchy-pkg x11/hyprland-preview-share-picker x11/owe
 x11/owe-lockfeed x11/quickshell
 net/tigervnc-viewer x11-toolkits/fltk
 "
