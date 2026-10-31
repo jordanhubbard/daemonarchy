@@ -120,7 +120,7 @@ def from_text(action, requested, text, catalogue=None, repositories=(), cached=l
     fetch = [i for i in wanted if not cached(i['id'])]
     sizes = catalogue.sizes() if catalogue is not None else {}
     summary = engine.load('parallel-fetch').plan_summary(wanted, fetch, sizes, text)
-    plan.approximate = bool(summary.get('approximate'))
+    plan.approximate = bool(summary.get('approximate')) and bool(wanted)      # a removal downloads nothing
     plan.download_bytes = summary.get('download_bytes', 0)
     plan.installed_bytes = summary.get('installed_bytes', 0)
     freed = freed_bytes(text, plan, catalogue)

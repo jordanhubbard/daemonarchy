@@ -263,12 +263,24 @@ class Plans(Fixture):
         self.assertEqual([(i.kind, i.name) for i in result.items], [("remove", "cowsay")])
         self.assertEqual(result.download_bytes, 0)
         self.assertEqual(result.installed_bytes, -72704)
+        self.assertFalse(result.approximate)                  # the installed size is exact; nothing is downloaded
         self.assertFalse(result.needs_confirmation)           # removing needs no repository
 
     def test_without_a_catalogue_the_sizes_are_pkgs_rounded_text_and_say_so(self):
         result = plan.from_text("install", ["cowsay"], INSTALL)
         self.assertTrue(result.approximate)
         self.assertEqual(result.download_bytes, 1 << 20)
+
+    def test_output_captured_from_a_real_pkg(self):
+        # `pkg install -n -y -U doxygen` on the amd64 build VM (FreeBSD 16.0-CURRENT, pkg 2.x), 2026-10-31.
+        captured = ("The following 2 package(s) will be affected (of 0 checked):\n\nNew packages to be INSTALLED:\n"
+                    "\tdoxygen: 1.18.0,2 [Daemonarchy]\n\tgraphviz: 16.1.0_2 [FreeBSD-ports]\n\n"
+                    "Number of packages to be installed: 2\n\nThe process will require 61 MiB more space.\n"
+                    "11 MiB to be downloaded.\n")
+        result = plan.from_text("install", ["doxygen"], captured)
+        self.assertEqual([(i.name, i.version, i.repo) for i in result.items],
+                         [("doxygen", "1.18.0,2", "Daemonarchy"), ("graphviz", "16.1.0_2", "FreeBSD-ports")])
+        self.assertEqual((result.download_bytes, result.installed_bytes, result.approximate), (11 << 20, 61 << 20, True))
 
     def test_empty_plan_is_a_problem_not_silence(self):
         result = plan.from_text("install", ["nosuch"], "No packages available to install matching 'nosuch' have been found.\n")

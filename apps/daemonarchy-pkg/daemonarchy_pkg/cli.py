@@ -70,9 +70,9 @@ def main(argv=None, out=None):
     lines = [f'{plan.action} {" ".join(plan.requested)}'.rstrip(), f'identity {plan.identity}']
     lines += [f'  {i.kind:<9} {i.name} {i.previous + " -> " if i.previous else ""}{i.version}'
               + (f' [{i.repo}]' if i.repo else '') for i in plan.items]
-    lines.append(f"download {plan_module.size_text(plan.download_bytes)}"
-                 f"{' (approximate)' if plan.approximate else ''}, installed size change "
-                 f"{plan_module.size_text(plan.installed_bytes)}")
+    lines.append((f"download {plan_module.size_text(plan.download_bytes)}, " if plan.to_fetch() else '')
+                 + f"installed size change {plan_module.size_text(plan.installed_bytes)}"
+                 + (' (sizes approximate)' if plan.approximate else ''))
     lines += [f'  NOT SIGNED: {repo}: {why}' for repo, why in plan.untrusted]
     lines += [f'  problem: {p}' for p in plan.problems]
     show(args, plan.describe(), '\n'.join(lines))
