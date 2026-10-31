@@ -9,11 +9,11 @@
   "version_mirrors": [],
   "documentation_authority": ["docs/architecture/design-traceability.md"],
   "contributions": {
-    "current_milestone": "1.3.1"
+    "current_milestone": "1.4.2"
   },
   "allowed_transitions": ["patch", "minor", "major", "prerelease", "explicit"],
   "gate": {
-    "argv": ["python3", "scripts/release-check-1.3.1.py"],
+    "argv": ["python3", "scripts/release-check-1.4.py"],
     "timeout_seconds": 172800
   },
   "changelog": {

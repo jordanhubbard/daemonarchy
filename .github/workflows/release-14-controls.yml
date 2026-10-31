@@ -27,6 +27,9 @@ on:
       - 'overlay/usr/local/libexec/daemonarchy-installer/package-repository'
       - 'tests/docs-release-sync.py'
       - 'tests/docs-lifecycle.py'
+      - 'scripts/release-check-1.4.py'
+      - 'tests/release-check-1.4.py'
+      - 'literate.release.json'
       - 'VERSION'
       - 'scripts/version.py'
       - 'tests/version-sync.py'
@@ -237,6 +240,10 @@ jobs:
         env:
           PYTHONDONTWRITEBYTECODE: '1'
         run: python3 tests/docs-lifecycle.py -v
+      - name: 1.4.x release gate refuses what its record does not prove
+        env:
+          PYTHONDONTWRITEBYTECODE: '1'
+        run: python3 tests/release-check-1.4.py -v
       - name: One release version
         env:
           PYTHONDONTWRITEBYTECODE: '1'
