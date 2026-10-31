@@ -73,6 +73,16 @@ EOF
     return 0
 }
 
+# Whether the install transaction may use pkg.FreeBSD.org: pkg takes the newest version of a
+# package across repositories (priority breaks ties only), so with it enabled a snapshot shard
+# that answered would lose packages to whatever `latest` carries that day. The mirror file the
+# transaction writes names the shards that answered; none, and the upstream repository stays on.
+# Only the transaction's own repository directory is affected: the installed system keeps its
+# default FreeBSD repository for updates.
+package_repository_freebsd_enabled() { # mirror-conf-file
+    if grep -q '^Daemonarchy-Mirror-' "$1" 2>/dev/null; then echo no; else echo yes; fi
+}
+
 package_repository_write_dependencies() {
     package_repository_tag_validate "$package_repository_tag" "${package_repository_arch:-amd64}" || return 1
     [ "$package_repository_tag" != "packages-16-${package_repository_arch:-amd64}" ] || return 0
