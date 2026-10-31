@@ -297,7 +297,7 @@ under OVMF, with a crowded store, it left less space (27 KiB instead of
   precedence when both are set. This network path has not been exercised
   yet; the MSI stick image does not enable it.
 
-## Network debugger hand-over (1.5.0)
+## Network debugger hand-over
 
 A boot that reaches init can hand the machine over to an ssh session, so the
 hardware can be probed in far more detail than the saved diagnostics. The

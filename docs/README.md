@@ -38,7 +38,7 @@ another version are historical records. 1.4 entries describe work in development
 - [MSI capture candidate dev7: legacy VGA probe skip](testing-msi-dev7-20261028.md)
 - [MSI capture candidate dev8: no legacy VGA probe on UEFI boots](testing-msi-dev8-20261028.md)
 - [MSI capture candidate dev10: AT RTC left alone on a UEFI port conflict](testing-msi-dev10-20261028.md)
-- [1.5.0 hardware trace image with the network hand-over: QEMU record, October 31](testing-1.5-trace-mvp-20261031.md)
+- [Hardware trace image with the network hand-over: QEMU record, October 31](testing-1.5-trace-mvp-20261031.md)
 - [1.4.0 test record](testing-1.4.0.md)
 - [Optional ports and system source: space estimate](optional-source-sizing.md)
 - [Daemonarchy 1.1.0 release notes (historical)](release-1.1.0.md)
