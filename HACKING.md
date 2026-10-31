@@ -25,7 +25,12 @@ complete declared gate report. The latter must continue to report a missing
 current native receipt until ADOPT-002 qualifies native execution and release custody.
 No generated source, native qualification or publication permission follows from
 a metadata check. Keep signing keys and private worker evidence outside Git.
-For the native release path, `scripts/release-check-1.3.1.py` requires the
+For 1.4.x, `scripts/release-check-1.4.py` is the gate `litai release check` runs: it needs
+`DAEMONARCHY_RELEASE_RECORD` and `DAEMONARCHY_RELEASE_ASSETS` (and
+`DAEMONARCHY_CLOSURE_ASSETS` when the record has closure feeds) and refuses placeholders,
+another version or commit, authority or lock failures and asset mismatches; it does not
+claim native execution or the LitAI receipt. The 1.3.1 native release path,
+`scripts/release-check-1.3.1.py`, required the
 current LitAI authority and locks plus a separately retained, hashed native
 build record. Its release record must bind `native_evidence_sha256`; set
 `DAEMONARCHY_NATIVE_RECORD` and `DAEMONARCHY_NATIVE_EVIDENCE_ROOT` to the
