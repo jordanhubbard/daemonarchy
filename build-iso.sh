@@ -68,6 +68,9 @@ packages=$POUDRIERE_DATA/packages/$JAIL-$PTREE
   exit 1
 }
 jq -e '.schema == 1 and (.trees.ports.depth >= 1) and (.trees.src.depth >= 1)' "$CHECKOUT_CATALOG" >/dev/null
+# A checkout feed built for another architecture installs, then fails on the first checkout a user chooses
+# (pkg: wrong architecture). Its signed catalogue sits beside the checkout catalogue.
+sh "$here/scripts/check-checkout-feed-abi.sh" "$(dirname "$CHECKOUT_CATALOG")" "$ABI"
 # I keep each attempt private and retain its staging for inspection on failure.
 . "$here/scripts/iso-stage.sh"
 stage=$(iso_stage_create)

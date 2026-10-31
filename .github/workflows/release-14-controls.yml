@@ -81,6 +81,8 @@ on:
       - 'tests/package-feed-manifest.py'
       - 'scripts/check-closure-feed.sh'
       - 'tests/closure-feed-check.sh'
+      - 'scripts/check-checkout-feed-abi.sh'
+      - 'tests/checkout-feed-abi.sh'
       - 'scripts/verify-release-assets.py'
       - 'tests/release-asset-names.py'
       - 'scripts/install-trace-baseline.py'
@@ -187,6 +189,8 @@ on:
       - 'tests/package-feed-manifest.py'
       - 'scripts/check-closure-feed.sh'
       - 'tests/closure-feed-check.sh'
+      - 'scripts/check-checkout-feed-abi.sh'
+      - 'tests/checkout-feed-abi.sh'
       - 'scripts/verify-release-assets.py'
       - 'tests/release-asset-names.py'
       - 'scripts/install-trace-baseline.py'
@@ -293,6 +297,8 @@ jobs:
         run: python3 tests/parallel-fetch.py -v
       - name: Closure feed gate
         run: sh tests/closure-feed-check.sh
+      - name: Checkout feed ABI gate
+        run: sh tests/checkout-feed-abi.sh
       - name: Package feed staging
         env:
           PYTHONDONTWRITEBYTECODE: '1'
