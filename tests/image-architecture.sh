@@ -46,7 +46,9 @@ source "$here/origins.sh"
 for origin in $ISO_ORIGINS_AMD64_ONLY; do
   [[ " $(echo $ISO_ORIGINS) " == *" $origin "* ]] || { echo "Not an ISO origin: $origin" >&2; exit 1; }
 done
-check "$(echo $ISO_ORIGINS_AMD64_ONLY | wc -w | tr -d ' ')" 6
+check "$(echo $ISO_ORIGINS_AMD64_ONLY | wc -w | tr -d ' ')" 5
+# The DRM port builds the VirtIO GPU stack on aarch64, so it is an ISO origin there.
+[[ " $(echo $ISO_ORIGINS_AMD64_ONLY) " != *" graphics/drm-612-kmod "* ]]
 
 # The UEFI ISO builder validates its request before touching any input.
 iso=$here/scripts/make-efi-iso.sh
@@ -79,24 +81,32 @@ mkdir -p "$target/boot/efi"
 echo loader >"$target/boot/loader.efi"
 refuses write_efi_loader "$target" zroot false BOOTIA32.EFI
 
-# GPU selection: aarch64 packages no KMS driver and selects none.
+# GPU selection: aarch64 selects the VirtIO GPU KMS driver for a VirtIO GPU and no driver for any other GPU.
 ids=$here/overlay/usr/local/share/daemonarchy-installer/gpu-ids
 source "$here/overlay/usr/local/libexec/daemonarchy-installer/gpu-config"
+printf '%s\n' 'vgapci0@pci0:3:0:0: class=0x030000 vendor=0x10de device=0x2684' >"$work/pci-other"
+printf '%s\n' 'virtio_pci0@pci0:0:1:0: class=0x030000 vendor=0x1af4 device=0x1050' >"$work/pci-virtio"
 printf '%s\n' 'vgapci0@pci0:3:0:0: class=0x030000 vendor=0x10de device=0x2684' \
   'virtio_pci0@pci0:0:1:0: class=0x030000 vendor=0x1af4 device=0x1050' >"$work/pci"
 gpu_arch=aarch64
-gpu_select "$work/pci" "$ids" 2>"$work/gpu.log"
+gpu_select "$work/pci-other" "$ids" 2>"$work/gpu.log"
 check "$kld_list" ''
 check "$gpu_nvidia $gpu_virtio" 'false false'
 check "${gpu_packages[*]}${gpu_userspace_packages[*]}" ''
 grep -q 'no aarch64 KMS driver' "$work/gpu.log"
+gpu_select "$work/pci-virtio" "$ids" 2>/dev/null
+check "$kld_list" 'virtio_gpu_drm'
+check "$gpu_nvidia $gpu_virtio" 'false true'
+check "${gpu_userspace_packages[*]}" 'mesa-dri'
+gpu_select "$work/pci" "$ids" 2>/dev/null          # NVIDIA is still skipped beside a VirtIO GPU
+check "$kld_list" 'virtio_gpu_drm'
+check "$gpu_nvidia" false
 mkdir -p "$work/repo/All"
-printf 'gpu-firmware-kmod 20260519\n' >"$work/gpu-packages"
-touch "$work/repo/All/gpu-firmware-kmod-20260519.pkg"
+printf 'drm-612-kmod 6.12.110.1600029\ngpu-firmware-kmod 20260519\n' >"$work/gpu-packages"
+touch "$work/repo/All/drm-612-kmod-6.12.110.1600029.pkg" "$work/repo/All/gpu-firmware-kmod-20260519.pkg"
 gpu_resolve_packages "$work/gpu-packages" "$work/repo"
-check "${gpu_exact_packages[*]}" gpu-firmware-kmod-20260519
-printf 'drm-612-kmod 6.12.110.1600027\ngpu-firmware-kmod 20260519\n' >"$work/gpu-packages"
-touch "$work/repo/All/drm-612-kmod-6.12.110.1600027.pkg"
+check "${gpu_exact_packages[*]}" 'drm-612-kmod-6.12.110.1600029 gpu-firmware-kmod-20260519'
+printf 'gpu-firmware-kmod 20260519\n' >"$work/gpu-packages"          # the DRM package is now required there too
 refuses gpu_resolve_packages "$work/gpu-packages" "$work/repo"
 gpu_arch=amd64
 refuses gpu_resolve_packages "$work/gpu-packages.missing" "$work/repo"

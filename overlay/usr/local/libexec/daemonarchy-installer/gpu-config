@@ -1,14 +1,14 @@
 #!/usr/local/bin/bash
 # Sourced by install and tests. No module is loaded on the live system.
-# gpu_arch is the image architecture (amd64 or aarch64). The DRM and NVIDIA
-# kernel module ports are amd64-only, so an aarch64 image packages no KMS
-# driver and selects none; its desktop needs a separately qualified path.
+# gpu_arch is the image architecture (amd64 or aarch64). NVIDIA is amd64-only.
+# The DRM port builds on aarch64 too, but only the core and the VirtIO GPU driver
+# (a KMS device for QEMU and UTM guests): an aarch64 image selects drm-612-kmod for
+# a VirtIO GPU (1af4:1050) and no driver for any other GPU.
 gpu_arch=${gpu_arch:-amd64}
 
 gpu_kms_packages() {
   case "$gpu_arch" in
-    amd64) echo drm-612-kmod gpu-firmware-kmod ;;
-    aarch64) echo gpu-firmware-kmod ;;
+    amd64|aarch64) echo drm-612-kmod gpu-firmware-kmod ;;
     *) echo "Unsupported GPU image architecture: $gpu_arch" >&2; return 1 ;;
   esac
 }
@@ -21,7 +21,7 @@ gpu_select() {
   gpu_kms_packages >/dev/null || return 1
   while read -r vendor device subvendor subdevice; do
     module='' family=''
-    if [[ $gpu_arch != amd64 ]]; then
+    if [[ $gpu_arch != amd64 && ! ( $vendor == 1af4 && $device == 1050 ) ]]; then
       printf 'GPU %s:%s: no %s KMS driver is packaged in this image.\n' "$vendor" "$device" "$gpu_arch" >&2
       continue
     fi
@@ -51,7 +51,7 @@ gpu_select() {
       radeonkms) gpu_other=true ;;
       virtio_gpu_drm)
         gpu_other=true; gpu_virtio=true
-        printf 'VirtIO graphics: Hyprland requires a host display with VirGL 3D enabled.\n' >&2
+        printf 'VirtIO graphics: Mesa renders in software (llvmpipe) unless the host provides VirGL 3D.\n' >&2
         ;;
       *) printf 'GPU %s:%s: no supported desktop driver in this image.\n' "$vendor" "$device" >&2; continue ;;
     esac
@@ -107,7 +107,7 @@ gpu_resolve_packages() {
   done
   while read -r name version; do
     case "$name" in
-      drm-612-kmod) [[ $gpu_arch == amd64 ]] || { echo "Unexpected $gpu_arch GPU manifest entry: $name" >&2; return 1; } ;;
+      drm-612-kmod) ;;
       gpu-firmware-*) ;;
       nvidia-driver|nvidia-kmod|nvidia-drm-612-kmod|linux-nvidia-libs) $gpu_nvidia || continue ;;
       *) echo "Unexpected GPU manifest entry: $name" >&2; return 1 ;;
@@ -160,6 +160,13 @@ fi
 EOF_SDDM
   if $gpu_intel_guc; then
     printf '\ncompat.linuxkpi.i915_enable_guc="3"\n' >>"$target/boot/loader.conf"
+  fi
+  if $gpu_virtio; then
+    # The kernel's own vtgpu(4) (aarch64 GENERIC) claims a VirtIO GPU before any module
+    # loads. Preloading the DRM driver lets it outrank vtgpu at probe time; its attach
+    # then fails (the DRM core initialises later), and the graphics service attaches it
+    # again once the system is up.
+    printf '\nvirtio_gpu_drm_load="YES"\n' >>"$target/boot/loader.conf"
   fi
   if $gpu_nvidia; then
     printf '\nhw.nvidiadrm.modeset="1"\n' >>"$target/boot/loader.conf"

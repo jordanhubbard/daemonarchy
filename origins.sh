@@ -23,10 +23,12 @@ x11/nvidia-driver x11/nvidia-kmod graphics/nvidia-drm-612-kmod x11/linux-nvidia-
 "
 
 # Kernel and driver ports above that are amd64-only (ONLY_FOR_ARCHS=amd64:
-# DRM KMS, NVIDIA and the Apple T2 BCM4364 driver). An aarch64 bulk list and
-# image omit them; see docs/aarch64.md.
+# NVIDIA and the Apple T2 BCM4364 driver). An aarch64 bulk list and image omit
+# them; see docs/aarch64.md. graphics/drm-612-kmod is not listed: it builds on
+# aarch64 too, but only the core and the VirtIO GPU driver (a KMS device for
+# QEMU and UTM guests), not amdgpu, radeon or i915.
 ISO_ORIGINS_AMD64_ONLY="
-graphics/drm-612-kmod net/if_brcmfmac-kmod
+net/if_brcmfmac-kmod
 x11/nvidia-driver x11/nvidia-kmod graphics/nvidia-drm-612-kmod x11/linux-nvidia-libs
 "
 

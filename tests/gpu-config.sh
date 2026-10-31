@@ -20,6 +20,8 @@ mkdir -p "$work/virtio/boot" "$work/virtio/etc"
 gpu_write_config "$work/virtio"
 grep -qx 'daemonarchy_graphics_modules="virtio_gpu_drm"' "$work/virtio/etc/rc.conf"
 grep -q '^devmatch_blocklist=".* virtio_gpu_drm"$' "$work/virtio/etc/rc.conf"
+# The DRM driver is preloaded so it outranks the kernel's vtgpu(4); amd64 GPUs preload nothing.
+grep -qx 'virtio_gpu_drm_load="YES"' "$work/virtio/boot/loader.conf"
 select_gpu 'virtio_pci1@pci0:0:2:0: class=0x020000 vendor=0x1af4 device=0x1000'
 check "$kld_list" ''
 check "$gpu_virtio" false

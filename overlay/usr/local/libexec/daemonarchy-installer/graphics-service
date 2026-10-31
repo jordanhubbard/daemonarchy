@@ -39,6 +39,22 @@ daemonarchy_graphics_start()
         echo "Loading $module after SSH startup" >>"$log"
         kldstat -q -n "$module.ko" || kldload "$module" >>"$log" 2>&1 || return 1
     done
+    case "$drm_drivers" in
+        *virtio_gpu_drm*)
+            # The loader preloads the driver so it outranks the kernel's vtgpu(4), but its first
+            # attach fails (the DRM core initialises after devices attach). Attach it again now.
+            if ! /usr/sbin/devinfo 2>>"$log" | /usr/bin/awk '$1 ~ /^virtio_gpu_drm[0-9]+$/ { found = 1 } END { exit !found }'; then
+                gpu=$(/usr/sbin/pciconf -l 2>>"$log" | /usr/bin/awk '/vendor=0x1af4 device=0x1050/ { split($1, a, "@"); sub(/:$/, "", a[2]); print a[1], a[2]; exit }')
+                set -- $gpu
+                if [ -z "${2:-}" ]; then
+                    echo 'No VirtIO GPU PCI device to attach; leaving graphics unready.' >>"$log"
+                    return 1
+                fi
+                echo "Attaching $2 to virtio_gpu_drm (was $1)" >>"$log"
+                /usr/sbin/devctl detach "$1" >>"$log" 2>&1 || true
+                /usr/sbin/devctl attach "$2" >>"$log" 2>&1 || { echo "Cannot attach $2." >>"$log"; return 1; }
+            fi ;;
+    esac
     if [ -z "$drm_drivers" ]; then
         # The desktop (Hyprland under SDDM) needs a DRM/KMS device. Without a
         # supported driver (VirtualBox, QEMU standard VGA or QXL) SDDM would
