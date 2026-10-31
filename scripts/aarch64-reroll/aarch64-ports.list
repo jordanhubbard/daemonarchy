@@ -32,3 +32,5 @@ security/sudo
 ports-mgmt/octopkg
 graphics/mesa-dri
 graphics/vulkan-loader
+graphics/drm-612-kmod
+ports-mgmt/daemonarchy-pkg
