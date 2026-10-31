@@ -665,32 +665,53 @@ signed feed can be tested from a local HTTP server. The ISO had no closure mirro
 - Evidence kept on the QEMU host: `install.log` `4e4a263b…` and `boot.log`
   `168746…`.
 
-**VirtIO GPU on aarch64 (2026-10-30).** Gap 2 above is smaller than recorded, but
-not closed. `graphics/drm-612-kmod` already contains a VirtIO GPU DRM driver
-(freebsd/drm-kmod PR 499, carried by the Daemonarchy patch), and upstream
-`drm-kmod` lists aarch64 as supported; only the port's `ONLY_FOR_ARCHS=amd64`
-stood in the way. With the port changed to build `dmabuf ttm drm virtio` on
-aarch64 ([ports draft](https://github.com/jordanhubbard/daemonarchy-ports/pull/36)),
-all four modules link for aarch64 with no warnings and a native `poudriere
-testport` (stage-qa, check-plist, install and deinstall) passes in 19 seconds.
-The installer side is [a draft](https://github.com/jordanhubbard/daemonarchy/pull/179).
-In a QEMU guest under HVF the installer selected and installed the driver and
-the graphics service loaded it, but **no DRM device attached**, so there was no
-`/dev/dri` and SDDM stayed off:
+**VirtIO GPU on aarch64 (2026-10-30, 2026-10-31).** `graphics/drm-612-kmod` already
+contains a VirtIO GPU DRM driver (freebsd/drm-kmod PR 499, carried by the
+Daemonarchy patch), and upstream `drm-kmod` lists aarch64 as supported; only the
+port's `ONLY_FOR_ARCHS=amd64` stood in the way. With the port changed to build
+`dmabuf ttm drm virtio` on aarch64
+([ports draft](https://github.com/jordanhubbard/daemonarchy-ports/pull/36)), all
+four modules link for aarch64 with no warnings and a native `poudriere testport`
+(stage-qa, check-plist, install and deinstall) passes in 19 seconds. The first QEMU
+attempt, with the driver loaded after boot, left no DRM device and SDDM off. The
+cause and the way round it:
 - `std.virt` compiles `device virtio_gpu` (`vtgpu(4)`) into the arm64 GENERIC
-  kernel. It claims the device at boot and the DRM driver (probe priority
-  `BUS_PROBE_VENDOR`, written to outrank the base driver) is never offered it.
-  On amd64 `vtgpu` is a module that is not loaded at boot, which is why it works there.
-- `hint.vtgpu.0.disabled=1` stops `vtgpu` but leaves the device childless; the
-  DRM module then does not attach.
-- Forcing the handover at runtime (`devctl detach vtgpu0`, then `devctl set
-  driver -f vtgpu0 virtio_gpu_drm`) froze the guest during the DRM attach
-  (console: `vtgpu0: detached`, then garbage). Reloading the module froze it too.
+  kernel. It claims the device at boot, before any module loads. On amd64 `vtgpu`
+  is a module that is not loaded at boot, which is why a driver loaded later works there.
+- `hint.vtgpu.0.disabled=1` disables the device for every driver, so the DRM driver
+  never attaches either. Forcing the handover at runtime (`devctl detach vtgpu0`,
+  then `devctl set driver -f vtgpu0 virtio_gpu_drm`) froze the guest.
+- **No kernel change is needed.** Preloading the DRM modules from the loader
+  (`virtio_gpu_drm_load="YES"`) lets `virtio_gpu_drm` (probe priority
+  `BUS_PROBE_VENDOR`) outrank `vtgpu` at probe time. Its attach then fails at boot
+  with `DRM core is not initialized`, because the DRM core initialises after the
+  device attaches, and that leaves the device free. Once the system is up,
+  `devctl detach virtio_pci0` and `devctl attach pci0:0:1:0` attach the driver
+  cleanly: `/dev/dri/card0` and `renderD128` appear and the console moves to `drmfb`.
+  The installer writes the loader line (`gpu_write_config`), and the graphics service
+  (`daemonarchy-graphics`) does the second attach before SDDM starts.
+- **Software rendering needs one deliberate deviation from upstream drm-kmod.**
+  With no 3D (no VirGL), Hyprland (Aquamarine) renders with Mesa's `kms_swrast`
+  (llvmpipe), which creates its buffers with `DRM_IOCTL_MODE_CREATE_DUMB` on the
+  *render* node. Upstream's ioctl table does not mark the three dumb-buffer calls
+  (`MODE_CREATE_DUMB`, `MODE_MAP_DUMB`, `MODE_DESTROY_DUMB`) `DRM_RENDER_ALLOW`, so a
+  render client gets `EACCES` and the compositor draws nothing (the screen stayed
+  black; Hyprland logged `KMS: DRM_IOCTL_MODE_CREATE_DUMB failed: Permission denied`).
+  The port applies `extra-patch-drm-ioctl-dumb-render` **on aarch64 only** to add
+  `DRM_RENDER_ALLOW` to those three entries. A render-node client can already
+  allocate and map GEM objects and use PRIME, and a dumb buffer exposes nothing more;
+  it still cannot become DRM master or set a mode. The amd64 module is unchanged.
+  This is a review item for the 1.4.2 release notes.
 
-The next step is an arm64 kernel configuration with `nodevice virtio_gpu`, which
-is a kernel decision, and then a retest of the DRM attach. Until then the aarch64
-image has no graphical desktop in a VM, and `sddm running` is the one expected
-failure of the QEMU checks.
+Evidence (QEMU 11.1.2, HVF, `-device virtio-gpu-pci`, the installed disk of the
+release image, screendump over QMP): on a fresh boot with no manual step the graphics
+service loaded the driver and attached it (`Attaching pci0:0:1:0 to virtio_gpu_drm
+(was virtio_pci0)`), `service sddm onestatus` reported running with `Hyprland` and
+`sddm-greeter-qt6` up, and the screen showed the Daemonarchy greeter (logo and
+password field), software-rendered by llvmpipe. Not tested: a login to the Omarchy
+session, hardware 3D (VirGL), and any physical GPU. The installed disk was prepared
+with the real `gpu_select` and `gpu_write_config`, not by an installer run: a full
+image install needs the DRM package in the aarch64 feeds.
 
 **A second install, with parallel fetch (2026-10-30).** The same harness against
 a QA ISO built from current `main` (which has #176) completed in **11 minutes**,
@@ -755,7 +776,8 @@ What is verified, and what is not:
   Fusion guest. It installs and builds everything, but the guest GPU has no FreeBSD
   driver, so it has only the EFI framebuffer and cannot run the desktop. Run QEMU
   inside it only with software emulation (TCG): the first boot test took hours.
-- **No graphical desktop in any VM yet** (see the VirtIO GPU record above).
+- **Graphical desktop in a VM.** The SDDM greeter renders under QEMU with a VirtIO
+  GPU (see the VirtIO GPU record above); a full session login is not yet tested.
 - **Bare metal is not supported.** There is no FreeBSD boot or GPU path for Apple
   SoCs, so an M1 to M4 laptop is a host for virtual machines, never a target.
 

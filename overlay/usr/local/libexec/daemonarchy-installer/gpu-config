@@ -51,7 +51,7 @@ gpu_select() {
       radeonkms) gpu_other=true ;;
       virtio_gpu_drm)
         gpu_other=true; gpu_virtio=true
-        printf 'VirtIO graphics: Hyprland requires a host display with VirGL 3D enabled.\n' >&2
+        printf 'VirtIO graphics: Mesa renders in software (llvmpipe) unless the host provides VirGL 3D.\n' >&2
         ;;
       *) printf 'GPU %s:%s: no supported desktop driver in this image.\n' "$vendor" "$device" >&2; continue ;;
     esac
@@ -160,6 +160,13 @@ fi
 EOF_SDDM
   if $gpu_intel_guc; then
     printf '\ncompat.linuxkpi.i915_enable_guc="3"\n' >>"$target/boot/loader.conf"
+  fi
+  if $gpu_virtio; then
+    # The kernel's own vtgpu(4) (aarch64 GENERIC) claims a VirtIO GPU before any module
+    # loads. Preloading the DRM driver lets it outrank vtgpu at probe time; its attach
+    # then fails (the DRM core initialises later), and the graphics service attaches it
+    # again once the system is up.
+    printf '\nvirtio_gpu_drm_load="YES"\n' >>"$target/boot/loader.conf"
   fi
   if $gpu_nvidia; then
     printf '\nhw.nvidiadrm.modeset="1"\n' >>"$target/boot/loader.conf"

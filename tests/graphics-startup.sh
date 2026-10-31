@@ -12,13 +12,16 @@ eval "$(sed -n '/^daemonarchy_graphics_start()$/,/^}$/p' "$here/overlay/usr/loca
       -e "s|nodriver=/var/run/daemonarchy-graphics.nodriver|nodriver=$work/nodriver|" \
       -e "s|log=/var/log/daemonarchy-graphics.log|log=$work/log|" \
       -e "s|/dev/dri/|$work/dri/|g" \
-      -e 's|/usr/sbin/devinfo|devinfo|g')"
+      -e 's|/usr/sbin/devinfo|devinfo|g' -e 's|/usr/sbin/pciconf|pciconf|g' -e 's|/usr/sbin/devctl|devctl|g')"
 kenv() { [[ $1 != -q ]] || shift; [[ $1 != boot_safe || $safe != YES ]] || echo YES; }
 checkyesno() { [[ ${!1} == YES ]]; }
 service() { [[ $ssh_ready == YES ]]; }
 kldstat() { [[ $already_loaded == YES ]]; }
 kldload() { echo "$1" >>"$work/loaded"; [[ $fail_module != "$1" ]]; }
 devinfo() { printf '%s\n' "$attached_devices"; [[ $devinfo_ok == YES ]]; }
+# A VirtIO GPU the loader-preloaded DRM driver failed to attach at boot: attaching it again works.
+pciconf() { printf '%s\n' "$pci_listing"; }
+devctl() { echo "$*" >>"$work/devctl"; [[ $1 != attach || $devctl_attach != fail ]] || return 1; [[ $1 != attach ]] || attached_devices='    virtio_gpu_drm0'; }
 reset_case() {
   : >"$work/loaded"
   rm -rf "$work/dri"
@@ -42,6 +45,39 @@ attached_devices='    virtio_gpu_drm0'
 daemonarchy_graphics_start
 grep -qx virtio_gpu_drm "$work/loaded"
 [[ -f $work/ready ]]
+reset_case
+daemonarchy_graphics_modules=virtio_gpu_drm
+attached_devices='    vtnet0'
+pci_listing=$'hostb0@pci0:0:0:0:\tclass=0x060000 rev=0x00 hdr=0x00 vendor=0x1b36 device=0x0008\nvirtio_pci0@pci0:0:1:0:\tclass=0x038000 rev=0x01 hdr=0x00 vendor=0x1af4 device=0x1050 subvendor=0x1af4 subdevice=0x1100'
+devctl_attach=ok
+: >"$work/devctl"
+daemonarchy_graphics_start
+printf 'detach virtio_pci0\nattach pci0:0:1:0\n' >"$work/expected"
+cmp "$work/expected" "$work/devctl"
+[[ -f $work/ready ]]
+# The device is claimed by no driver at all (vtgpu absent from the kernel): name none0, attach only.
+reset_case
+daemonarchy_graphics_modules=virtio_gpu_drm
+attached_devices='    vtnet0'
+pci_listing=$'none0@pci0:0:1:0:\tclass=0x038000 rev=0x01 hdr=0x00 vendor=0x1af4 device=0x1050 subvendor=0x1af4 subdevice=0x1100'
+: >"$work/devctl"
+daemonarchy_graphics_start
+[[ -f $work/ready ]]
+# No VirtIO GPU on the bus, or the attach is refused: graphics stays unready.
+reset_case
+daemonarchy_graphics_modules=virtio_gpu_drm
+attached_devices='    vtnet0'
+pci_listing=$'hostb0@pci0:0:0:0:\tclass=0x060000 vendor=0x1b36 device=0x0008'
+if daemonarchy_graphics_start; then echo 'Graphics ready with no VirtIO GPU' >&2; exit 1; fi
+grep -q 'No VirtIO GPU PCI device' "$work/log"
+reset_case
+daemonarchy_graphics_modules=virtio_gpu_drm
+attached_devices='    vtnet0'
+pci_listing=$'virtio_pci0@pci0:0:1:0:\tclass=0x038000 vendor=0x1af4 device=0x1050'
+devctl_attach=fail
+if daemonarchy_graphics_start; then echo 'Graphics ready after a refused attach' >&2; exit 1; fi
+grep -q 'Cannot attach pci0:0:1:0' "$work/log"
+devctl_attach=ok
 for module in amdgpu radeonkms i915kms; do
   reset_case
   daemonarchy_graphics_modules=$module
