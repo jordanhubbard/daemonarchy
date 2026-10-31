@@ -1,11 +1,11 @@
 # Changelog
 
-## 1.4.1 (@@PUBLISHED_DATE@@)
+## 1.4.1 (October 31, 2026)
 
 Base: FreeBSD 16.0-CURRENT (OSVERSION `1600029`), daemonarchy-src `303b364`,
-ports `@@PORTS_SHORT@@`. Application feeds `@@PACKAGES_AMD64_FEED@@` and
-`@@PACKAGES_AARCH64_FEED@@`, checkout feeds `@@CHECKOUTS_AMD64_FEED@@` and
-`@@CHECKOUTS_AARCH64_FEED@@`. See the [release notes](docs/release-1.4.1.md).
+ports `dd277aff`. Application feeds `packages-16-amd64-1.4.1-r2` and
+`packages-16-aarch64-1.4.1-r2`, checkout feeds `checkouts-16-amd64-1.4.1-r2` and
+`checkouts-16-aarch64-1.4.1-r2`. See the [release notes](docs/release-1.4.1.md).
 
 ### Added
 

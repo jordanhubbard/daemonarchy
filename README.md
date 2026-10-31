@@ -18,12 +18,12 @@ limits for every release, including the initial installer snapshots.
 
 ## Download
 
-The latest stable release is **[Daemonarchy 1.4.1](https://github.com/jordanhubbard/daemonarchy/releases/tag/daemonarchy-1.4.1)** (x86-64, BIOS or UEFI, and a community-validation arm64 image), published @@PUBLISHED_DATE@@, on FreeBSD 16.0-CURRENT, OSVERSION `1600029`. Version 1.2.0 was not published; 1.3.1 followed 1.1.1, 1.4.0 followed 1.3.1 and 1.4.1 follows 1.4.0.
+The latest stable release is **[Daemonarchy 1.4.1](https://github.com/jordanhubbard/daemonarchy/releases/tag/daemonarchy-1.4.1)** (x86-64, BIOS or UEFI, and a community-validation arm64 image), published October 31, 2026, on FreeBSD 16.0-CURRENT, OSVERSION `1600029`. Version 1.2.0 was not published; 1.3.1 followed 1.1.1, 1.4.0 followed 1.3.1 and 1.4.1 follows 1.4.0.
 
-- [x86-64 ISO, xz-compressed](https://github.com/jordanhubbard/daemonarchy/releases/download/daemonarchy-1.4.1/daemonarchy-1.4.1-amd64.iso.xz): @@AMD64_ISO_BYTES@@ bytes.
-- [x86-64 checksum](https://github.com/jordanhubbard/daemonarchy/releases/download/daemonarchy-1.4.1/daemonarchy-1.4.1-amd64.iso.xz.sha256) of the compressed file: `@@AMD64_ISO_SHA256@@`.
-- [arm64 ISO, xz-compressed](https://github.com/jordanhubbard/daemonarchy/releases/download/daemonarchy-1.4.1/daemonarchy-1.4.1-aarch64.iso.xz): @@AARCH64_ISO_BYTES@@ bytes, UEFI only. **This is a community-validation image:** it was verified to boot and install in QEMU and nothing more. No physical aarch64 hardware was tested; there is no hardware GPU desktop, and sound and Wi-Fi are untested. See [aarch64](docs/aarch64.md) and the [release notes](docs/release-1.4.1.md#aarch64-image-community-validation), and report results as [GitHub issues](https://github.com/jordanhubbard/daemonarchy/issues).
-- [arm64 checksum](https://github.com/jordanhubbard/daemonarchy/releases/download/daemonarchy-1.4.1/daemonarchy-1.4.1-aarch64.iso.xz.sha256) of the compressed file: `@@AARCH64_ISO_SHA256@@`.
+- [x86-64 ISO, xz-compressed](https://github.com/jordanhubbard/daemonarchy/releases/download/daemonarchy-1.4.1/daemonarchy-1.4.1-amd64.iso.xz): 1,592,484,392 bytes.
+- [x86-64 checksum](https://github.com/jordanhubbard/daemonarchy/releases/download/daemonarchy-1.4.1/daemonarchy-1.4.1-amd64.iso.xz.sha256) of the compressed file: `ea0b6d9ed435a30c75ee4b5acc70f2095d09c243adbc08532d2f8ab41e0014ca`.
+- [arm64 ISO, xz-compressed](https://github.com/jordanhubbard/daemonarchy/releases/download/daemonarchy-1.4.1/daemonarchy-1.4.1-aarch64.iso.xz): 957,807,376 bytes, UEFI only. **This is a community-validation image:** it was verified to boot and install in QEMU and nothing more. No physical aarch64 hardware was tested; there is no hardware GPU desktop, and sound and Wi-Fi are untested. See [aarch64](docs/aarch64.md) and the [release notes](docs/release-1.4.1.md#aarch64-image-community-validation), and report results as [GitHub issues](https://github.com/jordanhubbard/daemonarchy/issues).
+- [arm64 checksum](https://github.com/jordanhubbard/daemonarchy/releases/download/daemonarchy-1.4.1/daemonarchy-1.4.1-aarch64.iso.xz.sha256) of the compressed file: `eef5e9bb3b100365513a6ca3dce6d483142886c65b70411ef0a9db2aa994b076`.
 - The release also carries the signed Secure Boot bundle (`daemonarchy-1.4.1-boot.txz` and its `.sig`, amd64 only) and the public certificate in PEM and DER form.
 - Read the [1.4.1 release notes](docs/release-1.4.1.md) and their hardware status and limits before installing. Wi-Fi and Hyprland are not guaranteed on any particular machine, and the MacBookPro16,1 Wi-Fi driver can stall in a dead associated state.
 
@@ -37,7 +37,7 @@ diagnostic notes, including the MSI Raider 18 HX AI A2XWIG results for 1.4.0.
 ## 1.4.1 release
 
 The current stable release is **1.4.1**. Its base is the Daemonarchy FreeBSD
-source fork at `303b364` (OSVERSION `1600029`), with ports at `@@PORTS_SHORT@@`. The
+source fork at `303b364` (OSVERSION `1600029`), with ports at `dd277aff`. The
 [release notes](docs/release-1.4.1.md) cover everything since 1.4.0: a parallel
 package fetch from signed Daemonarchy feeds instead of pkg.FreeBSD.org, an install
 trace, an installer built on a visual SDK with four arcade games as extensions,

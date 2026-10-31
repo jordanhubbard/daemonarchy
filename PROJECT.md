@@ -79,7 +79,7 @@ original source authority in place, preserving all 272 tracked source entries at
 its reviewed commit. Native retained-project execution and release enforcement
 require separate demonstrated integration.
 
-The current product release is 1.4.1, published @@PUBLISHED_DATE@@. Its published
+The current product release is 1.4.1, published October 31, 2026. Its published
 artifact identity is recorded in [`release/current.json`](release/current.json)
 and its actual qualification scope in the [release notes](docs/release-1.4.1.md);
 the earlier 1.4.0 keeps its [notes](docs/release-1.4.0.md) and 1.1.1 keeps its [record](docs/testing-1.1.1.md).

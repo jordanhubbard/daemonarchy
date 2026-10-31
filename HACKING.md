@@ -4,7 +4,7 @@ How to build a Daemonarchy image yourself, change the installer, the ports, or t
 
 Latest published release: **1.4.1** ([`release/current.json`](release/current.json)),
 daemonarchy-src `303b3646270ffa4bf7cec65c5c1d28bd8000cbce` (OSVERSION `1600029`),
-daemonarchy-ports `@@PORTS_COMMIT@@` on `main`. Keep base,
+daemonarchy-ports `dd277aff0961905b32a122fa4909051d7a62abb1` on `main`. Keep base,
 kernel, jail, drivers, optional source checkout and signed manifests on that
 selection. The [1.4.1 release notes](docs/release-1.4.1.md) record its qualification
 and limits; the earlier 1.1.1 selection stays in [its record](docs/testing-1.1.1.md).

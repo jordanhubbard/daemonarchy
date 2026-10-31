@@ -2,52 +2,52 @@
   "schema": "daemonarchy/release-inputs@1",
   "version": "1.4.1",
   "tag": "daemonarchy-1.4.1",
-  "installer_commit": "TODO",
+  "installer_commit": "567870bbee415c9570af63078a20a714fe2c4652",
   "source_commit": "303b3646270ffa4bf7cec65c5c1d28bd8000cbce",
   "osversion": 1600029,
-  "ports_commit": "TODO",
-  "application_feed": "TODO",
-  "checkout_feed": "TODO",
-  "aarch64_application_feed": "TODO",
-  "aarch64_checkout_feed": "TODO",
+  "ports_commit": "dd277aff0961905b32a122fa4909051d7a62abb1",
+  "application_feed": "packages-16-amd64-1.4.1-r2",
+  "checkout_feed": "checkouts-16-amd64-1.4.1-r2",
+  "aarch64_application_feed": "packages-16-aarch64-1.4.1-r2",
+  "aarch64_checkout_feed": "checkouts-16-aarch64-1.4.1-r2",
   "architectures": [
     "amd64",
     "aarch64"
   ],
   "qualification": "docs/release-1.4.1.md",
-  "evidence_status": "TODO: skeleton; the release owner fills it with scripts/fill-release-1.4.1.py from the verified assets",
+  "evidence_status": "published release record",
   "assets": {
-    "daemonarchy-1.4.1-aarch64.iso.xz": [
-      0,
-      "sha256:TODO"
-    ],
-    "daemonarchy-1.4.1-aarch64.iso.xz.sha256": [
-      0,
-      "sha256:TODO"
-    ],
     "daemonarchy-1.4.1-amd64.iso.xz": [
-      0,
-      "sha256:TODO"
+      1592484392,
+      "sha256:ea0b6d9ed435a30c75ee4b5acc70f2095d09c243adbc08532d2f8ab41e0014ca"
     ],
     "daemonarchy-1.4.1-amd64.iso.xz.sha256": [
-      0,
-      "sha256:TODO"
+      97,
+      "sha256:cd297dfb1c814ef204da91fd9a05aa88cffd6a204b61786bfd0c13076ef3f724"
+    ],
+    "daemonarchy-1.4.1-aarch64.iso.xz": [
+      957807376,
+      "sha256:eef5e9bb3b100365513a6ca3dce6d483142886c65b70411ef0a9db2aa994b076"
+    ],
+    "daemonarchy-1.4.1-aarch64.iso.xz.sha256": [
+      99,
+      "sha256:4bfaa75446549237cbf41e60f1e03d0efa1b8616c13393d93ef29db965b96a13"
     ],
     "daemonarchy-1.4.1-boot.txz": [
-      0,
-      "sha256:TODO"
+      10498260,
+      "sha256:ce1c485db74cd35ed7ca57609be1c5edd4269aee9a5ec92b1ad5c21e5e2dee47"
     ],
     "daemonarchy-1.4.1-boot.txz.sig": [
-      0,
-      "sha256:TODO"
-    ],
-    "daemonarchy-1.4.1.der": [
-      0,
-      "sha256:TODO"
+      512,
+      "sha256:fa67149eaa031ecee3692a51935dd3443cc196e88e4f008aae1a4c0b7149278a"
     ],
     "daemonarchy-1.4.1.pem": [
-      0,
-      "sha256:TODO"
+      1968,
+      "sha256:26009db078d352318c06f1ea5cf7b5650dfd32137518f3a6fecd20802de2fb79"
+    ],
+    "daemonarchy-1.4.1.der": [
+      1413,
+      "sha256:ee140e7a68d566d37a96ea49ac68238d2e039c1172eb896ab69bff189d70b733"
     ]
   },
   "closure_feeds": [

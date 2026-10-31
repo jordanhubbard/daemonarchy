@@ -10,10 +10,10 @@ is the authority for the final images, asset hashes and publication state.
 
 ## What you download
 
-- `daemonarchy-1.4.1-amd64.iso.xz` (@@AMD64_ISO_BYTES@@ bytes, SHA-256
-  `@@AMD64_ISO_SHA256@@`), the x86-64 image for BIOS or UEFI.
-- `daemonarchy-1.4.1-aarch64.iso.xz` (@@AARCH64_ISO_BYTES@@ bytes, SHA-256
-  `@@AARCH64_ISO_SHA256@@`), the arm64 image, UEFI only. **It is a
+- `daemonarchy-1.4.1-amd64.iso.xz` (1,592,484,392 bytes, SHA-256
+  `ea0b6d9ed435a30c75ee4b5acc70f2095d09c243adbc08532d2f8ab41e0014ca`), the x86-64 image for BIOS or UEFI.
+- `daemonarchy-1.4.1-aarch64.iso.xz` (957,807,376 bytes, SHA-256
+  `eef5e9bb3b100365513a6ca3dce6d483142886c65b70411ef0a9db2aa994b076`), the arm64 image, UEFI only. **It is a
   community-validation image; read [the aarch64 section](#aarch64-image-community-validation)
   before using it.**
 - A `.sha256` file for each image, which covers the compressed file you download.
@@ -25,10 +25,10 @@ Decompress an image before writing it:
 `xz -dc daemonarchy-1.4.1-amd64.iso.xz | dd of=/dev/<usb-device> bs=1M`.
 
 The base is FreeBSD 16.0-CURRENT, OSVERSION `1600029`, built from daemonarchy-src
-`303b364`; the ports are daemonarchy-ports `@@PORTS_SHORT@@`. The installer commit is
-`@@INSTALLER_SHORT@@`. The signed application feeds are `@@PACKAGES_AMD64_FEED@@` and
-`@@PACKAGES_AARCH64_FEED@@`; the optional source and ports checkouts are
-`@@CHECKOUTS_AMD64_FEED@@` and `@@CHECKOUTS_AARCH64_FEED@@`.
+`303b364`; the ports are daemonarchy-ports `dd277aff`. The installer commit is
+`567870bb`. The signed application feeds are `packages-16-amd64-1.4.1-r2` and
+`packages-16-aarch64-1.4.1-r2`; the optional source and ports checkouts are
+`checkouts-16-amd64-1.4.1-r2` and `checkouts-16-aarch64-1.4.1-r2`.
 
 ## What changes
 
@@ -36,13 +36,17 @@ The base is FreeBSD 16.0-CURRENT, OSVERSION `1600029`, built from daemonarchy-sr
   whole resolved package closure up front with a pool of parallel connections
   (16 for our GitHub feeds, 4 for the pkg.FreeBSD.org fallback) instead of one
   archive at a time. The packages are zstd-compressed and come from signed,
-  versioned Daemonarchy feeds on GitHub; pkg.FreeBSD.org is only a fallback.
+  versioned Daemonarchy feeds on GitHub; pkg.FreeBSD.org is only a fallback: while one of our closure shards answers, the
+  install transaction does not use it at all (the installed system keeps it for
+  updates). In the release-image QEMU runs no package came from pkg.FreeBSD.org.
   pkg.FreeBSD.org dropped a package a day after 1.4.0 and every fresh install
   failed, so the whole installer closure, upstream packages included, is now hosted
   by us for both architectures (the `-upstream` feeds below). Parallel fetch was
   measured 5.2 times faster than the single-connection fetch against a real mirror,
-  and an aarch64 QEMU install went from 39 minutes to 11 (see below). No 10x figure
-  is claimed: the physical-machine baselines for the MSI and MacBook that the plan
+  and an aarch64 QEMU install went from 39 minutes to 11 against a local package
+  cache. The release image fetching everything over public GitHub, at about 2.4 MB/s
+  from the test host, took 36 minutes; the amd64 release image installed in a QEMU
+  guest in 13 minutes. No 10x figure is claimed: the physical-machine baselines for the MSI and MacBook that the plan
   asked for were not completed.
 - **Install trace and metrics.** Every installation writes a microsecond-resolution
   trace of its timed events (phases, storage operations, each package download and
@@ -116,7 +120,7 @@ What was not verified:
 - **Sound, Wi-Fi, upgrade, rollback, network debugging and the live desktop** were
   not run on aarch64.
 - **The release image itself** was not the image used in the QEMU runs above: those
-  were QA candidates. @@AARCH64_FINAL_QEMU_STATUS@@
+  were QA candidates. The release image itself was then installed in the same QEMU setup from the public feeds: it took 36 minutes, booted under UEFI and passed 33 of 34 checks; the one failure is the known `sddm running` (no DRM device in the guest), and no package came from pkg.FreeBSD.org.
 - **Omitted on aarch64:** `chromium` (no aarch64 package), `aether` (no arm64
   build of its frontend dependencies), `mise` (marked broken on aarch64) and
   `edk2@bhyve`. The default browser is **Epiphany**, because no Chromium or Firefox
@@ -146,7 +150,7 @@ have them. Reports of success are as useful as failures.
   [1.4.0 notes](release-1.4.0.md#hardware-status-and-limits) stand: polling-mode MSI
   touchpad, only Arrow Lake-S I2C controller 0 recognised, no ARL004 VMD interrupt
   workaround, no MacBook sound, CUDA Unified Memory unsupported.
-  @@PHYSICAL_STATUS@@
+  Installs of the final amd64 image on the MSI Raider 18 HX and the MacBookPro16,1 had not been completed when these notes were written; the image passed a QEMU install and graphical-desktop check.
 - **Not done in 1.4.1.** The exact-image network matrix, image-based upgrade and
   rollback, and the ten-times-faster target measured on both physical machines were
   not completed. Nine queue items (ADOPT-002, GUI-001, SRC-001, RELEASE-001,

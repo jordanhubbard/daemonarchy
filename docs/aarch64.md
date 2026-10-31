@@ -25,7 +25,7 @@ the signed aarch64 feeds; and two installs under QEMU 11.1.2 with HVF on an Appl
 silicon Mac, on QA candidate images, each of which installed and booted under UEFI
 with 23 checks passed and 2 failed. The failed checks are `sddm running` (no DRM/KMS
 driver in the guest) and `updates from the signed Daemonarchy repository` (the
-public feed URLs did not exist yet). @@AARCH64_FINAL_QEMU_STATUS@@
+public feed URLs did not exist yet). The release image itself was then installed in the same QEMU setup from the public feeds: it took 36 minutes, booted under UEFI and passed 33 of 34 checks; the one failure is the known `sddm running` (no DRM device in the guest), and no package came from pkg.FreeBSD.org.
 
 **Not verified:** any physical aarch64 machine; DRM/KMS and any hardware GPU
 desktop (SDDM does not start in the VM, and no graphical desktop was seen on
