@@ -14,6 +14,11 @@ import tarfile
 import tempfile
 
 
+# The package ABI the payloads declare, and the arch string pkg pairs with it. A client refuses a repository whose
+# packages declare another ABI, so an aarch64 image's checkout feed must say aarch64.
+PKG_ARCH = {'FreeBSD:16:amd64': 'freebsd:16:x86:64', 'FreeBSD:16:aarch64': 'freebsd:16:aarch64:64'}
+
+
 def run(*args, **kwargs):
     return subprocess.run(args, check=True, **kwargs)
 
@@ -99,7 +104,7 @@ def build(args):
                                 comment=f'Daemonarchy {args.kind} shallow Git checkout payload {index}',
                                 desc='Seed data for daemonarchy-checkouts; working trees are never package-owned.',
                                 maintainer='jkh@FreeBSD.org', www=args.remote,
-                                prefix='/', abi='FreeBSD:16:amd64', arch='freebsd:16:x86:64',
+                                prefix='/', abi=args.abi, arch=PKG_ARCH[args.abi],
                                 files={'/' + rel: {'sum': '1', 'uname': 'root', 'gname': 'wheel', 'perm': '0644'}}, annotations={'git_revision': revision})
                 mf = temp / 'manifest.json'
                 mf.write_text(json.dumps(manifest))
@@ -130,6 +135,8 @@ if __name__ == '__main__':
     parser.add_argument('--branch', required=True)
     parser.add_argument('--remote', required=True)
     parser.add_argument('--out', required=True)
+    parser.add_argument('--abi', choices=sorted(PKG_ARCH), default='FreeBSD:16:amd64',
+                        help='ABI the packages declare (the target image architecture)')
     parser.add_argument('--workdir')
     parser.add_argument('--depth', type=int, default=1)
     parser.add_argument('--chunk-mib', type=int, default=512)

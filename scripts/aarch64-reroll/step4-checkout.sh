@@ -14,9 +14,9 @@ git -C $A/product rev-parse HEAD > $A/product-rev.txt
 git clone -q --depth 1 --single-branch --branch daemonarchy https://github.com/jordanhubbard/daemonarchy-src.git $A/src-full
 [ "$(git -C $A/src-full rev-parse HEAD)" = "$REV" ]
 mkdir -p $A/checkout-repo
-nice -n 10 $PY $A/product/scripts/build-checkout-packages.py --kind src --repo $A/src-full --revision $REV --branch daemonarchy --remote https://github.com/jordanhubbard/daemonarchy-src.git --out $A/checkout-repo > $A/checkout-src.log 2>&1
+nice -n 10 $PY $A/product/scripts/build-checkout-packages.py --abi FreeBSD:16:aarch64 --kind src --repo $A/src-full --revision $REV --branch daemonarchy --remote https://github.com/jordanhubbard/daemonarchy-src.git --out $A/checkout-repo > $A/checkout-src.log 2>&1
 state checkout-src-done
-nice -n 10 $PY $A/product/scripts/build-checkout-packages.py --kind ports --repo ${PORTS_DIR:-$A/ports-0e8fb88} --revision $PREV --branch main --remote https://github.com/jordanhubbard/daemonarchy-ports.git --out $A/checkout-repo > $A/checkout-ports.log 2>&1
+nice -n 10 $PY $A/product/scripts/build-checkout-packages.py --abi FreeBSD:16:aarch64 --kind ports --repo ${PORTS_DIR:-$A/ports-0e8fb88} --revision $PREV --branch main --remote https://github.com/jordanhubbard/daemonarchy-ports.git --out $A/checkout-repo > $A/checkout-ports.log 2>&1
 state checkout-ports-done
 mkdir -p $A/checkout-feed
 cp -p $A/checkout-repo/* $A/checkout-feed/
