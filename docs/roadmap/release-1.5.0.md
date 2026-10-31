@@ -95,8 +95,9 @@ describe the same items under the 1.4.2 name.
 ## Also carried (known limitations)
 
 Known limitations written in the [1.4.1 release notes](../release-1.4.1.md) that
-have no fix yet: the roughly 1.6 second display-driver sleeps at login and the
-first-login delay (under investigation), and the aarch64 gaps (real hardware, GPU,
+had no fix at 1.4.1. The roughly 1.6 second display-driver sleep at login now has a fix on the MSI Raider 18 HX
+(daemonarchy-ports #44, Aquamarine; one machine, hotplug, resume, lid and VT switch untested), the
+first-login delay is still under investigation, and the aarch64 gaps (real hardware, GPU,
 sound, Wi-Fi, a desktop in a VM).
 
 ## DESKTOP-001: launchers and menu entries move to the desktop package

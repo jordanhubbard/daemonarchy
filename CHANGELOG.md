@@ -25,7 +25,17 @@ never released). Nothing here is published, and nothing is claimed done beyond t
 
 ### Changed
 
-- The login recorder starts after `ldconfig`, so `python3.12` can load.
+- Login on the MSI Raider 18 HX is about 1.6 s faster: `x11-toolkits/aquamarine` (daemonarchy-ports #44)
+  force-probes connectors only on hotplug and otherwise uses the kernel's cached status, so i915 no longer
+  waits out a DisplayPort detect on an unplugged port twice. Login to quickshell went from 2.95 s to 1.32 s
+  warm on that one machine (first version of the patch; the shipped version excludes `nvidia-drm` and was
+  run once). Not tested: hotplug on Intel- and NVIDIA-wired ports, session resume, lid, VT switch.
+- MacBookPro16,1 Wi-Fi: `if_brcmfmac-kmod` (daemonarchy-ports #37, port revision 3) honours a firmware
+  link-down once the key is installed, so the interface no longer stays `associated` with no traffic. Evidence
+  is fault injection only (5 of 5 injected link-downs honoured and recovered); a real firmware-side loss was
+  not reproduced and the physical retest is pending. It is a kernel-bound package, so it ships with the
+  rebuilt module and re-signed boot bundle in the image, not through `pkg upgrade`.
+- The login recorder starts after `ldconfig`, so `python3.12` can load (#230).
 
 ### Known limitations
 
