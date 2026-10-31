@@ -45,6 +45,15 @@ validation. A crash, hang, flood or escape attempt ends the extension as a faile
 FreeBSD is capability mode (`cap_enter`) in the child, so even an escape from Lua has no filesystem or network
 access; it needs the real image to test.
 
+## Without a Lua runtime
+
+A Lua extension needs `flua` (FreeBSD base, `/usr/libexec/flua`) or `lua`. If the image has neither, the Extensions
+menu still lists it (the signed index does not say which runtime an extension needs) and still downloads and verifies
+it when chosen, but the launcher then says "<name> needs the Lua runtime (flua), which is not on this system, so it was
+not started. The installation is not affected." and returns to the menu: no window is opened and nothing runs. The
+Python extensions are not affected. Run directly (`daemonarchy-extensions run ID`) it prints the same sentence and
+exits 3.
+
 ## Sound
 
 `sfx.blip` becomes `Audio.blip(freq, ms, wave, volume)` (new in this SDK level), beside the named cues. The Extensions

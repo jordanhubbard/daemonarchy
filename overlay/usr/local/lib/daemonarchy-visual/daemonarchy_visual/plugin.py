@@ -335,6 +335,18 @@ class RemoteScene(Scene):
             self.windows.backend.compose(canvas, self.windows.windows.values())
 
 
+def missing_runtime(plugin):
+    """A sentence saying why this extension cannot run here, when it needs a runtime the system lacks (a Lua entry
+    file needs flua or lua), else None. Checked before anything is started, so a missing runtime is a plain message
+    and not a failed run, and no window is opened for it."""
+    if plugin.entry.endswith(".lua"):
+        from . import lua
+        if lua.find_lua() is None:
+            return (f"{plugin.name} needs the Lua runtime (flua), which is not on this system, so it was not started. "
+                    "The installation is not affected.")
+    return None
+
+
 def run_plugin(plugin, caps, out, source, audio=None, clock=None, fps=None, backend=None, **kwargs):
     """Run a plugin under the host's loop. Returns a RunResult; a plugin failure is `result={"failed": reason}`.
 
