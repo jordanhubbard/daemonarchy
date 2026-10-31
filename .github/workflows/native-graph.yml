@@ -92,6 +92,11 @@ on:
       - 'overlay/usr/local/libexec/daemonarchy-installer/secureboot-options'
       - 'tests/secureboot-options.sh'
       - 'tests/live-image-runtime.sh'
+      - 'build-hwtrace-image.sh'
+      - 'tools/hwtrace/**'
+      - 'tools/boottrace/stick.py'
+      - 'tests/hwtrace-net.sh'
+      - 'tests/boottrace-tools.py'
       - '.github/workflows/native-graph.yml'
   pull_request:
     paths:
@@ -184,6 +189,11 @@ on:
       - 'overlay/usr/local/libexec/daemonarchy-installer/secureboot-options'
       - 'tests/secureboot-options.sh'
       - 'tests/live-image-runtime.sh'
+      - 'build-hwtrace-image.sh'
+      - 'tools/hwtrace/**'
+      - 'tools/boottrace/stick.py'
+      - 'tests/hwtrace-net.sh'
+      - 'tests/boottrace-tools.py'
       - '.github/workflows/native-graph.yml'
   workflow_dispatch:
 
@@ -247,6 +257,13 @@ jobs:
           bash tests/secureboot-options.sh
           python3 tests/live-installer.py -v
           lua5.4 tests/loader-live-menu.lua
+      - name: Hardware trace image network hand-over
+        env:
+          PYTHONDONTWRITEBYTECODE: '1'
+        run: |
+          sh -n build-hwtrace-image.sh tools/hwtrace/rc tools/hwtrace/net.sh
+          sh tests/hwtrace-net.sh
+          python3 tests/boottrace-tools.py Stick.test_keys_add_replace_and_refuse_private Stick.test_network_reports_the_address -v
       - name: Offline MacBook firmware sources and image size budgets
         env:
           PYTHONDONTWRITEBYTECODE: '1'

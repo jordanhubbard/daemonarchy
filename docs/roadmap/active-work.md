@@ -1189,6 +1189,7 @@ remains open; report files do not establish a passing gate.
   - [ ] build-hwtrace-image.sh on the FreeBSD builder; tools/boottrace/stick.py for queues and traces; release-asset handling when published
   - `daemonarchy-hwtrace-1.4.0-dev3-amd64.img` (`f4aec0e6…`, unsigned) was built by main's `build-hwtrace-image.sh` from the live4 ISO and that ISO's kernel and loader (daemonarchy-src `74f81f1949d5`). Its serial copy under QEMU/OVMF filed a `configure_first` hang as INCOMPLETE and a normal boot to init with DUMPS, then stopped ([record](../testing-1.4-live4-20261027.md)).
   - `daemonarchy-hwtrace-1.4.0-dev6-amd64.img` (`be39683c…`, unsigned, empty queue) was built by main's `build-hwtrace-image.sh` from the live5 ISO and its kernel and loader (daemonarchy-src `b582921ee928`, including the raw-block writes). Its serial copy under QEMU/OVMF filed a `configure_first` hang as INCOMPLETE and a normal boot to init with DUMPS through `SLOTS.MAP`, then stopped ([record](../testing-1.4-live5-20261028.md)).
+  - 1.5.0 network hand-over ([record](../testing-1.5-trace-mvp-20261031.md)): a boot that reaches init brings up wired DHCP, starts sshd on 2222 for the key on the stick (`KEYS/authorized_keys`), records the address on DATRACE and holds for a bounded time before the loop continues. Passes four QEMU/OVMF scenarios; not yet run on hardware.
 - **Evidence:**
   - [ ] QEMU/OVMF multi-boot checks with a crowded NVRAM store; physical MSI Raider iterations
 

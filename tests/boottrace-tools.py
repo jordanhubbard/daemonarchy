@@ -179,6 +179,36 @@ class Stick(unittest.TestCase):
     def run_cli(self, *argv):
         stick.main(list(argv))
 
+    def test_keys_add_replace_and_refuse_private(self):
+        self.run_cli("init", self.dir)
+        good = Path(self.dir, "k1.pub")
+        good.write_text("ssh-ed25519 AAAAC3Nza one@host\n# c\n\necdsa-sha2-nistp256 AAAA two@host\n")
+        self.run_cli("keys", self.dir, str(good))
+        keys = Path(self.dir, "KEYS", "authorized_keys")
+        self.assertEqual(len(keys.read_text().splitlines()), 2)
+        again = Path(self.dir, "k2.pub")
+        again.write_text("ssh-ed25519 AAAAC3Nza one@host\nssh-ed25519 BBBB three@host\n")
+        self.run_cli("keys", self.dir, str(again))
+        self.assertEqual(len(keys.read_text().splitlines()), 3)
+        self.run_cli("keys", self.dir, str(again), "--replace")
+        self.assertEqual(len(keys.read_text().splitlines()), 2)
+        bad = Path(self.dir, "bad")
+        bad.write_text("-----BEGIN OPENSSH PRIVATE KEY-----\nabc\n")
+        with self.assertRaises(SystemExit):
+            self.run_cli("keys", self.dir, str(bad))
+        junk = Path(self.dir, "junk")
+        junk.write_text("hello world\n")
+        with self.assertRaises(SystemExit):
+            self.run_cli("keys", self.dir, str(junk))
+        self.assertEqual(len(keys.read_text().splitlines()), 2)
+
+    def test_network_reports_the_address(self):
+        self.run_cli("init", self.dir)
+        with self.assertRaises(SystemExit):
+            self.run_cli("network", self.dir)
+        Path(self.dir, "ADDRESS.TXT").write_text("address=10.0.2.15\nport=2222\n")
+        self.run_cli("network", self.dir)
+
     def test_parse_experiments(self):
         exps = stick.parse_experiments("[a]\nread-conf /boot/d/1\nx.y=1\n\n[b]\nunset z\n")
         self.assertEqual([e["name"] for e in exps], ["a", "b"])

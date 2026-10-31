@@ -1,0 +1,18 @@
+# hwtrace queue for the MSI Raider 18 HX with the 1.5.0 trace image (network
+# hand-over).  The kernel in the image already carries the atrtc fix, so the
+# first experiment is the stock boot: if it reaches init the image hands over
+# to the ssh debugger and holds (hwtrace.hold, default 1800 s).  The two
+# experiments after it run only if the stock boot hangs, and file an
+# INCOMPLETE trace each; the cycle stops at the first boot that reaches init.
+
+[stock]
+kern.panic_reboot_wait_time=15
+
+[atrtc-force]
+hw.atrtc.force_on_conflict=1
+kern.panic_reboot_wait_time=15
+
+[atrtc-force-noclock]
+hw.atrtc.force_on_conflict=1
+hint.atrtc.0.clock=0
+kern.panic_reboot_wait_time=15
