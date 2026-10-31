@@ -15,7 +15,7 @@ HERE = Path(__file__).resolve().parent
 
 def search_path():
     candidates = []
-    if os.environ.get('DAEMONARCHY_PKG_ENGINE'):
+    if os.environ.get('DAEMONARCHY_PKG_ENGINE') and os.geteuid() != 0:     # root never loads code a user points it at
         candidates.append(Path(os.environ['DAEMONARCHY_PKG_ENGINE']))
     candidates += [
         HERE.parent / 'engine',
@@ -27,6 +27,15 @@ def search_path():
 
 
 _loaded = {}
+
+
+def path_of(name):
+    """Where an engine file is, for running it as a program (parallel-fetch is both a module and a tool)."""
+    for directory in search_path():
+        for filename in (name, name + '.py'):
+            if (directory / filename).is_file():
+                return directory / filename
+    raise ImportError(f'engine file {name} not found in: ' + ', '.join(str(c) for c in search_path()))
 
 
 def load(name):

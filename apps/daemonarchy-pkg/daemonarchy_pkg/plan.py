@@ -52,6 +52,7 @@ class Plan:
     approximate: bool = False       # sizes are pkg's rounded text, not the catalogue
     untrusted: list = field(default_factory=list)   # (repository, why) the plan would take packages from
     problems: list = field(default_factory=list)
+    text: str = field(default='', repr=False, compare=False)   # pkg's dry-run output, which parallel-fetch reads
 
     @property
     def identity(self):
@@ -111,7 +112,7 @@ def from_text(action, requested, text, catalogue=None, repositories=(), cached=l
     """The Plan for a dry run's output. `catalogue` supplies exact bytes and the repository pkg left
     off a line (it does when only one is configured); `repositories` (repos.read()) says which are signed."""
     requested = tuple(requested)
-    plan = Plan(action, requested)
+    plan = Plan(action, requested, text=text)
     items = parse_items(text)
     if catalogue is not None:
         items = [fill_repo(i, catalogue) for i in items]
@@ -127,7 +128,8 @@ def from_text(action, requested, text, catalogue=None, repositories=(), cached=l
     if freed:
         plan.installed_bytes -= freed
     if not plan.items:
-        plan.problems.append('pkg planned no changes')
+        said = [line.strip() for line in text.splitlines() if line.strip()]
+        plan.problems.append(said[-1] if said else 'pkg planned no changes')   # pkg's own reason, when it gave one
     by_name = {r.name: r for r in repositories}
     for repo in sorted({i.repo for i in plan.items if i.kind != 'remove' and i.repo}):
         known = by_name.get(repo)
@@ -179,7 +181,10 @@ def dry_run(action, names, catalogue=None, repositories=(), pkg=('pkg',), runner
         def runner(argv):
             done = subprocess.run(argv, capture_output=True, text=True, timeout=timeout,
                                   env=dict(os.environ, LANG='C', LC_ALL='C'))
-            return done.stdout + done.stderr
+            text = done.stdout + done.stderr
+            if done.returncode and not text.strip():
+                text = f'pkg exited {done.returncode} without a message'
+            return text
     plan = from_text(action, names, runner(argv), catalogue, repositories)
     return plan
 
