@@ -300,7 +300,8 @@ lifecycle authority.
 - **Depends on:** PKG-001
 - **1.4.1 audit (2026-10-30):** not started; octopkg is the current graphical package manager; proposed to leave 1.4.1. [Detail](release-1.4.1-audit.md#gui-001).
 - **Implementation:**
-  - [ ] Evaluate extension path; implement responsive install/update/remove plans and visuals; prepare upstream application port if needed.
+  - [x] Evaluate extension path: OctoPkg has no plan object, no parallel acquisition, no event hook and does not show feed signatures, so a new application sharing `parallel-fetch` and the progress model is the plan. [Design](../gui-package-manager.md) (written; nothing implemented yet).
+  - [ ] Implement responsive install/update/remove plans and visuals; ship the application and its port.
 - **Evidence:**
   - [ ] Actual native UI, input, shared plan identity, accurate progress, failure/retry and packaging tests pass.
 
