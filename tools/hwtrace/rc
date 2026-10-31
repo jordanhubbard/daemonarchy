@@ -1,14 +1,18 @@
 #!/rescue/sh
 # SPDX-License-Identifier: BSD-2-Clause
 # Daemonarchy hardware trace image: this boot reached init.  Save
-# bring-up diagnostics to the DATRACE volume under DUMPS/<experiment>/,
-# then reboot so the loader files the (complete) trace and stops.
+# bring-up diagnostics to the DATRACE volume under DUMPS/<experiment>/.
+# If the stick carries KEYS/authorized_keys, also hand over to the network
+# debugger (net.sh): DHCP, sshd on port 2222 for that key, the address
+# recorded on the stick, and a bounded hold so the operator can probe the
+# machine.  Then reboot, so the loader files the (complete) trace and stops.
 # Set hwtrace.shell=YES (a queue line) to get a shell instead of a reboot.
-PATH=/rescue:/usr/sbin
+PATH=/rescue:/usr/sbin:/usr/bin:/sbin:/bin
 export PATH
 echo
 echo "Daemonarchy hardware trace: init reached; saving diagnostics"
 kldload msdosfs 2>/dev/null
+handover=
 if mount -t msdosfs /dev/gpt/DATRACE /mnt; then
 	id=$(sed -n 's/^pending=//p' /mnt/STATE.TXT)
 	[ -n "$id" ] || id=manual
@@ -21,12 +25,29 @@ if mount -t msdosfs /dev/gpt/DATRACE /mnt; then
 	pciconf -lvbc >"$d/pciconf.txt" 2>&1
 	devinfo -vr >"$d/devinfo.txt" 2>&1
 	acpidump -dt >"$d/acpidump.txt" 2>&1
+	usbconfig dump_device_desc >"$d/usbconfig.txt" 2>&1
 	date >"$d/done.txt"
+	sync
+	# Network hand-over only for a stick that was given a key.
+	if [ -r /etc/hwtrace-net.sh ]; then
+		. /etc/hwtrace-net.sh
+		if hwtrace_wanted; then
+			# The root is read-only: a volatile /var for dhclient and sshd.
+			mdmfs -s 32m md /var 2>/dev/null
+			mkdir -p /var/run /var/db /var/log /var/tmp /var/empty
+			echo "Network hand-over: asking for an address, sshd on port $HW_PORT"
+			hwtrace_handover "$id" && handover=1
+		fi
+	fi
 	sync
 	umount /mnt
 	echo "Saved to DATRACE DUMPS/$id"
 else
 	echo "DATRACE volume not found; nothing saved"
+fi
+if [ -n "$handover" ]; then
+	hwtrace_banner
+	hwtrace_hold
 fi
 if [ "$(kenv -q hwtrace.shell)" = YES ]; then
 	echo "hwtrace.shell=YES: starting a shell; 'reboot' continues the loop"

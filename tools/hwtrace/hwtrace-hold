@@ -1,0 +1,4 @@
+#!/bin/sh
+# hwtrace-hold SECONDS: change how long the boot is held from its start.
+case ${1:-} in ''|*[!0-9]*) echo "usage: hwtrace-hold SECONDS" >&2; exit 64 ;; esac
+mkdir -p /var/hwtrace && echo "$1" >/var/hwtrace/hold && echo "hold is now $1 s from the start"

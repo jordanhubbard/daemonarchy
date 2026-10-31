@@ -1,0 +1,3 @@
+#!/bin/sh
+# Let the held hardware trace boot go on: the loop continues (reboots).
+mkdir -p /var/hwtrace && : >/var/hwtrace/continue && echo "continuing within a few seconds"

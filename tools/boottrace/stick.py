@@ -485,6 +485,44 @@ def cmd_queue(args):
           f"{state['traces']}")
 
 
+KEY_TYPES = ("ssh-", "ecdsa-", "sk-")
+
+
+def cmd_keys(args):
+    """Put public keys on the stick for the network debugger."""
+    vol = Volume(args.target)
+    if (vol.read("DATRACE.TAG") or b"") != TAG.encode():
+        sys.exit("not an initialized DATRACE volume")
+    lines = []
+    for line in Path(args.keyfile).read_text().splitlines():
+        line = line.strip()
+        if not line or line.startswith("#"):
+            continue
+        if "PRIVATE KEY" in line or not line.startswith(KEY_TYPES):
+            sys.exit(f"{args.keyfile}: not a public key line: {line[:30]}...")
+        lines.append(line)
+    if not lines:
+        sys.exit(f"{args.keyfile}: no public keys")
+    old = [] if args.replace else [
+        l for l in (vol.read("KEYS/authorized_keys") or b"").decode().splitlines()
+        if l.strip()]
+    merged = old + [l for l in lines if l not in old]
+    vol.mkdir("KEYS")
+    vol.write("KEYS/authorized_keys", ("\n".join(merged) + "\n").encode())
+    print(f"KEYS/authorized_keys now holds {len(merged)} key(s)")
+
+
+def cmd_network(args):
+    """Show where the network debugger said to connect."""
+    vol = Volume(args.target)
+    addr = vol.read("ADDRESS.TXT")
+    if addr is None:
+        sys.exit("no ADDRESS.TXT: no boot has handed over to the debugger")
+    sys.stdout.write(addr.decode("ascii", "replace"))
+    pub = vol.read("KEYS/ssh_host_ed25519_key.pub")
+    print("host key file on the stick: " + ("yes" if pub else "no"))
+
+
 def cmd_status(args):
     vol = Volume(args.target)
     state = read_state(vol)
@@ -559,6 +597,15 @@ def main(argv=None):
         p = sub.add_parser(name)
         p.add_argument("image")
         p.set_defaults(func=func)
+    p = sub.add_parser("keys")
+    p.add_argument("target")
+    p.add_argument("keyfile")
+    p.add_argument("--replace", action="store_true",
+                   help="replace the keys instead of adding to them")
+    p.set_defaults(func=cmd_keys)
+    p = sub.add_parser("network")
+    p.add_argument("target")
+    p.set_defaults(func=cmd_network)
     p = sub.add_parser("queue")
     p.add_argument("target")
     p.add_argument("experiments")
