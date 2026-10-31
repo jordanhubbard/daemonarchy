@@ -358,6 +358,9 @@ class Session:
 
     def launch(self, p):
         """Give the extension its own window: tmux new-window when available, else this terminal."""
+        missing = plugin.missing_runtime(p)
+        if missing:                       # a runtime the image lacks: say so here, open no window, run nothing
+            return missing
         backend = windows.choose_backend(self.caps, self.env)
         if getattr(backend, 'can_spawn', False):
             handle = backend.spawn(p.name, [sys.executable, '-I', str(SELF), 'run', p.id],
@@ -428,6 +431,10 @@ def run(command, argument, env):
         if p is None:
             say(f'{argument} has not been downloaded and verified; open the Extensions menu to get it.')
             return 2
+        missing = plugin.missing_runtime(p)
+        if missing:
+            say(missing)
+            return 3
         with Raw(sys.stdin.fileno()):
             return stop_message(Session(env).run_plugin_here(p))
     say('Checking the extension feed...')

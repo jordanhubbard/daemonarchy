@@ -3,6 +3,7 @@
 request and loading through the plugin registry. Nothing here touches the network or a real terminal."""
 import array
 import hashlib
+import importlib.machinery
 import importlib.util
 import io
 import json
@@ -372,6 +373,52 @@ PROBE = ('-- Probe (toy). Test plugin: fills with colour 5, or 6 while the left 
 
 
 @needs_lua
+class MissingRuntimeTests(unittest.TestCase):
+    """No flua or lua on the image: a plain message before anything starts, and Python extensions unaffected."""
+
+    def setUp(self):
+        self.registry = plugin.Registry(str(GAMES))
+        self.fish, self.game = self.registry.plugins["fishtank"], self.registry.plugins["wyrm"]
+        self.real = lua.find_lua
+        lua.find_lua = lambda: None
+        self.addCleanup(setattr, lua, "find_lua", self.real)
+
+    def test_a_lua_extension_is_reported_not_started(self):
+        message = plugin.missing_runtime(self.fish)
+        self.assertIn("Fish tank needs the Lua runtime", message)
+        self.assertIn("installation is not affected", message)
+
+    def test_a_python_extension_is_never_held_back(self):
+        self.assertIsNone(plugin.missing_runtime(self.game))
+
+    def test_with_a_runtime_there_is_nothing_to_say(self):
+        lua.find_lua = lambda: "/usr/libexec/flua"
+        self.assertIsNone(plugin.missing_runtime(self.fish))
+
+    def launcher(self):
+        loader = importlib.machinery.SourceFileLoader("daemonarchy_extensions_under_test",
+                                                      str(ROOT / "overlay/usr/local/libexec/daemonarchy-installer/daemonarchy-extensions"))
+        spec = importlib.util.spec_from_loader(loader.name, loader)
+        module = importlib.util.module_from_spec(spec)
+        loader.exec_module(module)
+        return module
+
+    def test_the_launcher_opens_no_window_and_returns_the_message(self):
+        module = self.launcher()
+        session = object.__new__(module.Session)
+        session.env, session.caps = {}, None            # launch() must return before it touches either
+        self.assertEqual(session.launch(self.fish), plugin.missing_runtime(self.fish))
+
+    def test_running_it_directly_says_so_and_exits_3(self):
+        from unittest import mock
+        module = self.launcher()
+        spoken = io.StringIO()
+        with mock.patch.object(module, "say", lambda text: spoken.write(text + "\n")),                 mock.patch.object(module, "cached_plugins", lambda: {"fishtank": self.fish}),                 mock.patch.object(module.sys, "stdin", types.SimpleNamespace(isatty=lambda: True, fileno=lambda: 0)),                 mock.patch.object(module.sdk, "detect", lambda env, out: types.SimpleNamespace(plain=False)),                 mock.patch.object(module.os, "nice", lambda n: 0):          # the launcher lowers its priority
+            code = module.run("run", "fishtank", {"DAEMONARCHY_COLOR": "256"})
+        self.assertEqual(code, 3)
+        self.assertIn("needs the Lua runtime", spoken.getvalue())
+
+
 class ShippedExtensionTests(unittest.TestCase):
     """The fish tank through the real registry and run_plugin path, like any other extension."""
 
