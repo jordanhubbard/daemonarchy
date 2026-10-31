@@ -161,7 +161,7 @@ owns its measurements and executor decision.
 
 RELEASE-001 remains the broader release program: finish the existing backlog and
 publish through the qualified Literate AI method. The next planned release
-is 1.5.0, opened as 1.4.2 and renamed ([plan](docs/roadmap/release-1.5.0.md)); 1.4.0 and 1.4.1 are published ([1.4 plan](docs/roadmap/release-1.4.0.md)); 1.2.0 was never published,
+is 1.5.0, opened as 1.4.2 and renamed ([plan](docs/roadmap/release-1.5.0.md)), followed by the planned 1.5.1 ([plan](docs/roadmap/release-1.5.1.md): network upgrades and forkability); 1.4.0 and 1.4.1 are published ([1.4 plan](docs/roadmap/release-1.4.0.md)); 1.2.0 was never published,
 and 1.3.1 followed 1.1.1. The completion audit includes all open queue and
 roadmap acceptance, not just implementation code or a worker proof. The earlier
 [1.2.0 completion ledger](docs/roadmap/release-1.2.0.md) expands those obligations and

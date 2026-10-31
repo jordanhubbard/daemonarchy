@@ -1450,3 +1450,66 @@ remains open; report files do not establish a passing gate.
 - **Evidence:**
   - [ ] A fresh install delivers the launchers, entries and icons from the package, and a `pkg upgrade` of an existing system delivers a changed launcher without a new ISO; both are shown on exact artifacts.
   - [ ] The overlay copies are gone from the installer tree, the moved tests pass in the package's checks and the installer's, and the documentation states the Cudalab and Linux-application behavior once.
+
+### [ ] NETUP-001 — Upgrade an installed system's base, kernel, modules and boot files over the network
+
+- **Priority:** P1
+- **Release:** 1.5.1 (opened 2026-11-01 after the network-upgrade assertion was checked; nothing here is claimed done; see [the 1.5.1 plan](release-1.5.1.md))
+- **Owner:** installer, secure-boot maintenance and release engineering
+- **Direction:** Let an installed system move from release N to N+1 with no ISO, including a change of FreeBSD snapshot or ABI: a signed, versioned base and kernel feed (pkgbase packages or a signed set bundle, published as GitHub release assets like the application feeds), the matching kernel-module packages, the signed Secure Boot boot bundle and module inventory, and the EFI loader and ESP files, applied through one supported command into a new ZFS boot environment with rollback.
+- **Conclusion:** Today only application packages upgrade over the network. `daemonarchy-secureboot stage` and `activate` (`secureboot/maintenance.py`) are a development tool for same-snapshot boot maintenance, with a whitelist of known source commits, and the 1.1-era evidence is development-authority QEMU only. No base, kernel or pkgbase feed is published, a feed built for a newer OSVERSION is refused on an older base (`scripts/adopt-candidate-packages.sh`), and kernel-module packages are locked to the signed snapshot. See [the upgrade model](https://github.com/jordanhubbard/daemonarchy/blob/main/HACKING.md#the-upgrade-model-today).
+- **Depends on:** SRC-001 (owned, repeatable base and pkgbase outputs) for any new-snapshot upgrade; not for a same-snapshot one.
+- **Implementation:**
+  - [ ] Decide the artifact: pkgbase packages in a signed feed, or a signed base-and-kernel set bundle; record the decision with the ABI and `OSVERSION` rules (what is a same-snapshot update, what needs a new base).
+  - [ ] Publish it per release and architecture, signed with the pinned key, listed in the release record and verified by `scripts/verify-release-assets.py`.
+  - [ ] One command (`daemonarchy upgrade`) that creates the boot environment first, installs base, kernel, matching module packages and boot files into it, checks the signed manifests, activates for the next boot only after every check passes, and leaves the running environment bootable; refuse and report on an OSVERSION or module mismatch rather than partial work.
+  - [ ] Update the loader and ESP files and the signed manifests in the same transaction, including ZFS pool feature and boot-code compatibility checks.
+  - [ ] Firmware sets that ship with the image (for example the Apple BCM4364 set) update or are explicitly out of the upgrade's scope, stated.
+- **Evidence:**
+  - [ ] A same-snapshot upgrade (for example 1.4.1 to 1.5.x, which share OSVERSION `1600029`) and a new-snapshot upgrade pass on exact published artifacts under enforced Secure Boot, ZFS and GELI, with the rollback exercised after an injected failure at each stage.
+  - [ ] Documentation states which releases can upgrade without an ISO and which cannot.
+
+### [ ] NETUP-002 — Update trust over the network: package key and Secure Boot certificate rotation
+
+- **Priority:** P1
+- **Release:** 1.5.1 (opened 2026-11-01; nothing here is claimed done; see [the 1.5.1 plan](release-1.5.1.md))
+- **Owner:** release engineering and secure boot
+- **Direction:** Let an installed system accept a new package-signing key and a new Secure Boot certificate from a signed, authenticated update, without reinstalling, keeping the old trust until the new one has been proven.
+- **Conclusion:** The 1.3.1 rotation was handled by shipping a new image and a separate feed: [the rotation record](../package-repository-key-rotation-1.3.1.md) preserves the old feed for systems that trust the old key, and [secure-boot.md](../secure-boot.md#update-and-recovery-contract) says certificate rotation and a loader-protocol change need a separately qualified migration. No in-band trust update exists.
+- **Depends on:** NETUP-001
+- **Implementation:**
+  - [ ] Design key rollover: the new public key is delivered signed by the old key (or by a threshold), the old key stays trusted until the new one has verified a feed, and a revoked key can be removed.
+  - [ ] Secure Boot certificate rotation through the signed maintenance path, adding the replacement before switching, preserving OEM entries, with a tested revocation.
+  - [ ] Record the custody and recovery requirements without putting any key in the repository.
+- **Evidence:**
+  - [ ] An installed system rotates its package key and its boot certificate over the network on exact artifacts, a feed signed only by a revoked key is rejected, and a failed rotation leaves the old trust working.
+
+### [ ] NETUP-003 — Qualify upgrade paths on exact artifacts
+
+- **Priority:** P1
+- **Release:** 1.5.1 (opened 2026-11-01; nothing here is claimed done; see [the 1.5.1 plan](release-1.5.1.md))
+- **Owner:** release QA
+- **Direction:** Make upgrade acceptance part of every release: install the previous published release, upgrade to the candidate through the supported path, and compare against a fresh install.
+- **Conclusion:** No upgrade was accepted for 1.4.0 or 1.4.1 ([1.4.1 notes](../release-1.4.1.md#upgrading), which list image-based upgrade and rollback as not done). The last accepted application-package upgrade and rollback is the 1.1 record ([testing-1.1-upgrade.md](../testing-1.1-upgrade.md)), on development artifacts. The 1.5.0 release carries a rebuilt Wi-Fi module and a re-signed boot bundle on an unchanged snapshot, and no installed 1.4.1 system has been taken to it.
+- **Depends on:** NETUP-001
+- **Implementation:**
+  - [ ] A scripted upgrade matrix in the QA tooling: previous release to candidate, amd64 and aarch64, plain and GELI, enforced and off Secure Boot, with failure injection (interrupted download, bad signature, module mismatch, power loss) and rollback.
+  - [ ] Physical upgrade runs on the MSI and the MacBook for each release that claims an upgrade path.
+- **Evidence:**
+  - [ ] Retained upgrade records for each supported pair of releases on exact published bytes; a release that has no accepted upgrade path says so in its notes.
+
+### [ ] FORK-001 — Let another developer fork the repositories and publish their own installer, packages and feeds
+
+- **Priority:** P2
+- **Release:** 1.5.1 (opened 2026-11-01; nothing here is claimed done; see [the 1.5.1 plan](release-1.5.1.md))
+- **Owner:** installer, release engineering and documentation
+- **Direction:** Make the installer, package feeds, extension feed and release scripts configurable from one place, so a fork changes a small, documented set of values (owner and repository, feed tags, signing and pinned keys, checkout sources) instead of editing code, and write the fork guide.
+- **Conclusion:** A fork is possible but not easy. The repository, feed URLs and some validation patterns are hard-coded to `jordanhubbard/daemonarchy` in the installer and image scripts, the pinned public key is a committed file, there is no fork guide, and the build needs a FreeBSD builder with poudriere. The checklist is in [Forking Daemonarchy](https://github.com/jordanhubbard/daemonarchy/blob/main/HACKING.md#forking-daemonarchy).
+- **Depends on:** none for the guide; NETUP-001 for upgrade feeds of a fork.
+- **Implementation:**
+  - [ ] One configuration (owner, repository, feed tags, key paths, checkout remotes) read by `build-iso.sh`, the installer, `pkg-repo.sh`, the feed scripts and the release scripts; remove the hard-coded `jordanhubbard` URLs and the validation patterns that pin them.
+  - [ ] A fork guide: generate keys, build the ports with poudriere, publish the feeds to the fork's GitHub releases, build and test an ISO, and what a fork does not inherit.
+  - [ ] An example fork CI that runs the repository's static and documentation tests without the builder, and a dry-run of the publish scripts against a test repository.
+  - [ ] State what a fork must keep (licenses, trademark notices, the Omarchy and FreeBSD credits).
+- **Evidence:**
+  - [ ] A clean fork under another GitHub account builds an installer, publishes signed feeds to its own releases, installs from them and upgrades from them, with no edit to source code beyond the configuration file; a test fails if a `jordanhubbard` URL reappears outside the configuration and documented defaults.

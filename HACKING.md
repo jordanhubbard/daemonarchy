@@ -120,6 +120,53 @@ topic branch and submitted as a pull request against `main`, CI must pass, and a
 commit to a release branch, and do not push signing keys, private worker evidence or generated images.
 Upstream FreeBSD or Omarchy fixes are submitted upstream independently of Daemonarchy releases.
 
+## The upgrade model today
+
+Stated plainly, as of 1.5.0 on main; the evidence and the gaps are in [the 1.5.1 plan](docs/roadmap/release-1.5.1.md).
+
+- **`pkg upgrade` (and the desktop's Update) upgrades applications**, from the signed feeds published as GitHub
+  release assets. The desktop's Update saves a boot environment first (*unverified here*: implemented in
+  omarchy-freebsd); `sudo pkg upgrade` alone does not.
+- **It does not upgrade the FreeBSD base, the kernel, the kernel-module packages on a verified install, the
+  loader or EFI files, or trust.** No base, kernel or pkgbase feed is published. A feed built for a newer
+  `OSVERSION` is refused on an older base (`scripts/adopt-candidate-packages.sh`). Modules are locked to the
+  signed inventory. A new package-signing key or Secure Boot certificate arrives with a new image.
+- **Same-snapshot boot maintenance** (`daemonarchy-secureboot stage` and `activate`, a signed bundle, a new boot
+  environment) exists as a development tool with 1.1-era QEMU evidence. It has not been qualified on the 1.4 line
+  and is not a supported update command.
+- **No upgrade between releases was accepted for 1.4.0 or 1.4.1.** An ISO is still how you move to a release
+  that changes the snapshot, the kernel or the boot bundle, and the supported way to get 1.5.0's rebuilt Wi-Fi
+  module and boot bundle. 1.5.0 is not promised to be the last ISO release.
+- 1.5.1 plans network upgrade of base, kernel, modules and boot files with boot-environment rollback (NETUP-001),
+  trust rotation (NETUP-002), upgrade QA on exact artifacts (NETUP-003) and forkability (FORK-001).
+
+## Forking Daemonarchy
+
+A fork is possible but not yet easy; FORK-001 plans one configuration and a guide. What a fork must do today,
+from the repository (checked with `git grep jordanhubbard`):
+
+1. **Fork the four repositories** ([which are which](#the-repositories-that-make-up-daemonarchy)) and keep
+   daemonarchy-ports pinned to your source and desktop commits.
+2. **Generate your own package-signing key** with `pkg-repo.sh keygen` on your build host, commit its public half
+   as `overlay/usr/local/share/daemonarchy-installer/daemonarchy.pub`, and keep the private key off Git.
+   Generate your own Secure Boot certificate and sign your own bundles (`secureboot/README.md`); `maintenance.py`
+   only accepts source commits listed in its `SOURCE_OSVERSIONS`, so add yours.
+3. **Replace every hard-coded `jordanhubbard/daemonarchy` URL**: the installer's feed URL and its validation
+   patterns (`install`, `package-repository`), `build-iso.sh`, `test-qemu.sh`, `checkouts.json`
+   (feed and the source and ports remotes), `extensions.json`, the release scripts' repository defaults
+   (`release-current.py`, `verify-release-assets.py`, `package-feed-*.py`, `pkg-repo.sh` `GH_REPO`) and the two
+   ports that fetch from `jordanhubbard` repositories (`x11-wm/daemonarchy`, `ports-mgmt/daemonarchy-pkg`).
+   Pass your key and tag to `build-iso.sh` through `PACKAGE_REPOSITORY_PUBLIC_KEY` and `PACKAGE_REPOSITORY_TAG`.
+4. **Have a builder.** FreeBSD 16.0-CURRENT with poudriere, a snapshot jail and the ports tree for each
+   architecture you publish, as in [Setting up a build host](#setting-up-a-build-host), and a place to sign.
+5. **Publish** the feeds to your own GitHub releases with `pkg-repo.sh upload` and the feed scripts, then
+   build and test the ISO.
+6. **Keep the notices**: licenses, the Omarchy and FreeBSD credits and the trademark statement in the README.
+
+What breaks if you change only the repository name: the installer refuses its own feed URL, the image points
+at our feeds and checkouts, and `verify-release-assets.py` checks our repository. Untested: an end-to-end fork
+by someone else; this list is from reading the code.
+
 ## Where things live
 
 Daemonarchy spans the installer, desktop, compatibility, source and ports repositories:

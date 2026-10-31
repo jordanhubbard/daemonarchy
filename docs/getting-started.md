@@ -159,7 +159,7 @@ Open the menu (**Super + Space**) and choose **Update**. Daemonarchy updates Fre
 
 In a terminal, `daemonarchy update` uses the desktop update flow.
 `sudo pkg upgrade` updates packages directly and does not create a boot
-environment for you. Application-package upgrades do not migrate the FreeBSD
+environment for you. A new release that changes the FreeBSD snapshot, the kernel or the boot bundle is installed from its image; there is no network upgrade of those yet (see [the upgrade model](https://github.com/jordanhubbard/daemonarchy/blob/main/HACKING.md#the-upgrade-model-today)). Application-package upgrades do not migrate the FreeBSD
 base/kernel or convert an old installation to Secure Boot. Verified installations
 keep kernel-module packages locked to their signed snapshot. The 1.3.1 feed requires OSVERSION `1600029` in both the base system and kernel, with matching drivers; changing the feed URL alone does not perform that upgrade. 1.3.1 also signs its feeds with a new key, and no in-place upgrade from 1.1.1 is qualified: install 1.3.1 from the new image (see the [key rotation record](package-repository-key-rotation-1.3.1.md)). Use the documented
 [signed maintenance workflow](secure-boot.md#update-and-recovery-contract) for protected boot updates.
