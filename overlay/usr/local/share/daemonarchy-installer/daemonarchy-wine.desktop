@@ -1,0 +1,11 @@
+[Desktop Entry]
+Type=Application
+Name=Windows Programs
+Icon=daemonarchy-wine
+GenericName=Wine
+Comment=Run Windows programs with Wine (installed on first launch)
+Exec=daemonarchy-wine %f
+Terminal=false
+Categories=Utility;
+Keywords=windows;wine;exe;msi;
+MimeType=application/x-ms-dos-executable;application/x-msdownload;application/x-msi;

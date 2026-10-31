@@ -80,6 +80,13 @@ on:
       - 'tests/build-release-packages.sh'
       - 'scripts/master-release.sh'
       - 'tests/master-release.sh'
+      - 'overlay/usr/local/bin/daemonarchy-wine'
+      - 'overlay/usr/local/bin/daemonarchy-steam'
+      - 'overlay/usr/local/libexec/daemonarchy-installer/windows-apps'
+      - 'overlay/usr/local/share/daemonarchy-installer/daemonarchy-*'
+      - 'overlay/usr/local/share/daemonarchy-installer/omarchy-menu.jsonc'
+      - 'tests/windows-launchers.sh'
+      - 'tests/windows-apps-install.sh'
       - 'verification/install-baselines/**'
       - 'verification/closure-feeds/**'
       - 'overlay/usr/local/libexec/daemonarchy-installer/pkg-events'
@@ -168,6 +175,13 @@ on:
       - 'tests/build-release-packages.sh'
       - 'scripts/master-release.sh'
       - 'tests/master-release.sh'
+      - 'overlay/usr/local/bin/daemonarchy-wine'
+      - 'overlay/usr/local/bin/daemonarchy-steam'
+      - 'overlay/usr/local/libexec/daemonarchy-installer/windows-apps'
+      - 'overlay/usr/local/share/daemonarchy-installer/daemonarchy-*'
+      - 'overlay/usr/local/share/daemonarchy-installer/omarchy-menu.jsonc'
+      - 'tests/windows-launchers.sh'
+      - 'tests/windows-apps-install.sh'
       - 'verification/install-baselines/**'
       - 'verification/closure-feeds/**'
       - 'overlay/usr/local/libexec/daemonarchy-installer/pkg-events'
@@ -261,6 +275,8 @@ jobs:
         run: |
           bash tests/build-release-packages.sh
           bash tests/master-release.sh
+          bash tests/windows-launchers.sh
+          bash tests/windows-apps-install.sh
 
   controls:
     runs-on: ubuntu-latest

@@ -36,6 +36,23 @@ that exists for each.
 - **HW-004** ([queue](active-work.md#hw-004--t2-touch-id-login-through-fprintd)).
   Not in the image; needs a Mac with enrolled fingers.
 
+## Added for 1.4.2
+
+- **Windows games: Wine and Steam in the Apps menu** (operator decision, 2026-10-30,
+  moved from the [1.4.1 plan](release-1.4.1.md)). amd64 only. Delivered as virtual apps
+  like Cudalab, not as default packages: `daemonarchy-steam` and `daemonarchy-wine`
+  launchers, desktop entries, icons and System > FreeBSD menu entries that the installer
+  places on amd64 only. The first launch installs `wine-devel`, `wine-mono-devel`,
+  `wine-gecko-devel` and `winetricks` from the system's repositories and downloads Valve's
+  `SteamSetup.exe` over HTTPS; nothing of Wine's or Valve's is shipped, so the package
+  lists, feeds and ISO size do not change. Design, licences and the source offer are in
+  [Windows programs and Steam](../windows-apps.md). The launcher state machine and the
+  installer placement are tested against stand-ins. **Not verified:** a Windows game and
+  Steam each launching from the Apps menu on a fresh install on the MSI (NVIDIA
+  OpenGL/Vulkan, sound, Steam's updater and web view under Wine); that needs the
+  operator's hardware, and the item is not claimed done until then. Linux Steam under the
+  Linuxulator stays out (no receipt).
+
 ## Also carried
 
 Known limitations written in the [1.4.1 release notes](../release-1.4.1.md) that

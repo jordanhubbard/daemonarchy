@@ -11,5 +11,7 @@
   "system.freebsd.vms": {"icon":"󰍹","label":"Virtual Machines","description":"Run other operating systems with bhyve","action":"omarchy-launch-floating-terminal-with-presentation daemonarchy-vm"},
   "system.freebsd.hack": {"icon":"󰵮","label":"Hack on Daemonarchy","description":"Get the sources and run the desktop from your own checkout","action":"omarchy-launch-floating-terminal-with-presentation daemonarchy-dev-setup"},
   "system.freebsd.cudalab": {"icon":"󰢮","label":"Cudalab","description":"Live CUDA graphics demos on the NVIDIA GPU","action":"uwsm-app -- daemonarchy-cudalab"},
+  "system.freebsd.steam": {"icon":"󰊗","label":"Steam","description":"Windows games with Steam, running under Wine","action":"uwsm-app -- daemonarchy-steam"},
+  "system.freebsd.wine": {"icon":"󰖳","label":"Windows Programs","description":"Run Windows programs with Wine","action":"uwsm-app -- daemonarchy-wine"},
   "system.freebsd.dtrace": {"icon":"󰓅","label":"Trace the System","description":"See what the system is doing right now with DTrace","action":"omarchy-launch-floating-terminal-with-presentation daemonarchy-dtrace"},
 }

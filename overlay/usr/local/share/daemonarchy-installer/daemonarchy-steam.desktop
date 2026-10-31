@@ -1,0 +1,11 @@
+[Desktop Entry]
+Type=Application
+Name=Steam
+Icon=daemonarchy-steam
+GenericName=Windows Games
+Comment=Steam for Windows, running under Wine (downloaded from Valve on first launch)
+Exec=daemonarchy-steam %U
+Terminal=false
+Categories=Game;
+Keywords=steam;games;windows;wine;
+MimeType=x-scheme-handler/steam;

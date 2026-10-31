@@ -1,0 +1,369 @@
+#!/usr/local/bin/bash
+# Windows programs and Steam, as a "virtual app" (the pattern of daemonarchy-cudalab).
+#
+#   daemonarchy-wine [PROGRAM.exe | PROGRAM.msi [ARG...]]   run a Windows program
+#                                                           (no argument: Wine's file manager)
+#   daemonarchy-wine --steam [ARG...]                       the Steam client (daemonarchy-steam)
+#   daemonarchy-wine --setup                                set everything up now, run nothing
+#   daemonarchy-wine --status                               say what is set up
+#   daemonarchy-wine --rebuild                              forget the setup record and set up again
+#   daemonarchy-wine --reset [--yes]                        delete the Wine prefix and start from nothing
+#
+# Nothing of Wine's or Valve's is on the image. The first launch opens a window that
+#
+#   1. installs wine-devel, wine-mono-devel, wine-gecko-devel and winetricks from the
+#      system's configured package repositories (one sudo prompt, in that window),
+#   2. creates the user's Wine prefix under ~/.local/share/daemonarchy-wine, and
+#   3. for Steam, downloads Valve's own SteamSetup.exe over HTTPS at that moment and
+#      runs it inside the prefix. Valve's installer shows Valve's terms; the launcher
+#      carries nothing of Valve's.
+#
+# Every later launch runs straight into Wine or Steam: no window, no sudo. Failure is
+# not fatal: the log (~/.local/state/daemonarchy-wine/setup.log) says why, the window
+# waits for Enter so it can be read, and the next launch tries again (an offline first
+# run is the usual cause).
+#
+# wine-devel is built for both 32- and 64-bit Windows programs (Wine's WoW64 mode), so
+# no 32-bit FreeBSD libraries are needed. The windows run on the desktop's X server
+# (Xwayland on the Wayland session). amd64 only: the packages exist for no other
+# architecture here.
+set -uo pipefail
+
+packages=(wine-devel wine-mono-devel wine-gecko-devel winetricks)
+# Valve's own download, over HTTPS; the second is the same installer on another CDN.
+steam_urls=(
+  https://cdn.cloudflare.steamstatic.com/client/installer/SteamSetup.exe
+  https://cdn.akamai.steamstatic.com/client/installer/SteamSetup.exe
+)
+steam_exe_win='C:\Program Files (x86)\Steam\steam.exe'
+steam_default_args=(-no-cef-sandbox)
+
+data=${DAEMONARCHY_WINE_HOME:-${XDG_DATA_HOME:-$HOME/.local/share}/daemonarchy-wine}
+state=${DAEMONARCHY_WINE_STATE:-${XDG_STATE_HOME:-$HOME/.local/state}/daemonarchy-wine}
+prefix=$data/prefix
+stamp=$data/setup
+log=$state/setup.log
+applog=$state/app.log
+lock=$state/lock
+downloads=$data/downloads
+terminal=${DAEMONARCHY_WINE_TERMINAL:-foot}     # the window for the first run
+arch=${DAEMONARCHY_WINE_ARCH:-$(uname -m)}
+self=$(readlink -f "$0" 2>/dev/null || echo "$0")
+steam_dir="$prefix/drive_c/Program Files (x86)/Steam"
+
+say() { printf '%s\n' "$*"; }
+note() {
+  # A desktop notification when there is a way to show one, otherwise stderr.
+  if [[ -z ${DAEMONARCHY_WINE_NO_NOTIFY:-} ]] && command -v notify-send >/dev/null 2>&1; then
+    notify-send -a 'Windows programs' "$1" "${2:-}" >/dev/null 2>&1 || true
+  fi
+  printf 'daemonarchy-wine: %s %s\n' "$1" "${2:-}" >&2
+}
+die() { say "Windows programs could not be set up: $*"; return 1; }
+
+# A value from the setup record (wine, prefix, steam); empty when there is none.
+stamp_value() { sed -n "s/^$1=//p" "$stamp" 2>/dev/null | head -1; }
+
+supported_arch() { [[ $arch == amd64 || $arch == x86_64 ]]; }
+
+missing_packages() {
+  local p
+  for p in "${packages[@]}"; do
+    pkg info -e "$p" >/dev/null 2>&1 || printf '%s\n' "$p"
+  done
+}
+
+# Wine is set up when its packages are in and the prefix was made by this launcher.
+wine_ready() {
+  [[ -f $stamp && -f $prefix/system.reg ]] || return 1
+  [[ -z $(missing_packages) ]]
+}
+# Windows ignores case; this file system does not, and Valve's installer writes Steam.exe.
+steam_installed() { [[ -f $steam_dir/Steam.exe || -f $steam_dir/steam.exe ]]; }
+steam_ready() { wine_ready && steam_installed && [[ $(stamp_value steam) == installed ]]; }
+
+# The Wine environment of every call. winemenubuilder is off so that a Windows installer
+# does not scatter its own menu entries and file associations across the desktop.
+wine_env() {
+  env "WINEPREFIX=$prefix" "WINEDEBUG=${WINEDEBUG:--all}" \
+      "WINEDLLOVERRIDES=${WINEDLLOVERRIDES:-winemenubuilder.exe=d}" "$@"
+}
+
+write_stamp() { # key=value lines, replacing earlier ones
+  local new=$stamp.new
+  {
+    printf 'wine=%s\n' "$(pkg query %v wine-devel 2>/dev/null | head -1)"
+    printf 'prefix=%s\n' "$prefix"
+    printf 'steam=%s\n' "${1:-$(stamp_value steam)}"
+    printf 'setup=%s\n' "$(date -u +%Y-%m-%dT%H:%M:%SZ)"
+  } >"$new" && mv -f "$new" "$stamp"
+}
+
+install_packages() {
+  local missing
+  mapfile -t missing < <(missing_packages)
+  ((${#missing[@]})) || return 0
+  say "==> Installing ${missing[*]}"
+  say '    This needs your password once (sudo), and a network connection.'
+  # IGNORE_OSVERSION as the installer does: the repository's packages are built on the
+  # same -CURRENT snapshot family as this kernel but not always on its exact OSVERSION.
+  sudo env IGNORE_OSVERSION=yes ASSUME_ALWAYS_YES=yes pkg install -y "${missing[@]}" \
+    || { die "the packages could not be installed (is the network up?). Try again later, or run: sudo pkg install ${missing[*]}"; return 1; }
+  [[ -z $(missing_packages) ]] || { die "the packages did not install."; return 1; }
+}
+
+make_prefix() {
+  mkdir -p "$data" "$state" || return 1
+  if [[ -f $prefix/system.reg ]]; then
+    say '==> The Wine prefix is already in place'
+    return 0
+  fi
+  say "==> Creating the Wine prefix ($prefix)"
+  wine_env wine wineboot --init >>"$log" 2>&1 || true
+  # Wine writes the registry files when its server exits, a moment after wineboot returns:
+  # wait for the server, then look. (wineboot can also fail on a display-less first pass
+  # and still have made the prefix.)
+  wine_env wineserver -w >>"$log" 2>&1 || true
+  [[ -f $prefix/system.reg ]] || { die "Wine could not create its prefix. See $log"; return 1; }
+}
+
+download_steam() {
+  mkdir -p "$downloads" || return 1
+  local url out=$downloads/SteamSetup.exe
+  for url in "${steam_urls[@]}"; do
+    say "==> Downloading Steam's installer from ${url%%/client/*}"
+    rm -f "$out.part"
+    if curl -fsSL --proto '=https' --tlsv1.2 --retry 2 --connect-timeout 20 -o "$out.part" "$url" \
+        && [[ $(wc -c <"$out.part" | tr -d ' ') -gt 100000 ]] \
+        && [[ $(head -c 2 "$out.part") == MZ ]]; then
+      mv -f "$out.part" "$out"
+      say "    SteamSetup.exe sha256 $(sha256 -q "$out" 2>/dev/null || sha256sum "$out" | cut -d' ' -f1)"
+      return 0
+    fi
+    rm -f "$out.part"
+  done
+  die "Steam's installer could not be downloaded (is the network up?). Try again later."
+}
+
+install_steam() {
+  steam_ready && return 0
+  download_steam || return 1
+  say '==> Running Steam'"'"'s installer in the Wine prefix'
+  wine_env wine "$downloads/SteamSetup.exe" /S >>"$log" 2>&1 || true
+  steam_installed || { die "Steam's installer did not finish. See $log"; return 1; }
+  write_stamp installed
+  say '==> Steam is installed (it updates itself the first time it opens)'
+}
+
+# Everything the first run does, in order. $1 is "steam" to include Steam.
+setup() {
+  mkdir -p "$data" "$state" || return 1
+  supported_arch || { die "Windows programs are available on amd64 only (this is $arch)."; return 1; }
+  command -v sudo >/dev/null 2>&1 || command -v pkg >/dev/null 2>&1 || { die "pkg is not available."; return 1; }
+  install_packages || return 1
+  make_prefix || return 1
+  write_stamp
+  [[ ${1:-} != steam ]] || install_steam || return 1
+  say '==> Ready.'
+}
+
+# The first run as the window shows it: a heading, the output kept in the log, and on
+# failure a pause so the reason can be read before the window closes.
+setup_window() {
+  mkdir -p "$state"
+  say "Setting up ${1:+Steam and }Windows programs (first run only)"
+  say 'This takes a few minutes. The program opens by itself when it is done.'
+  say "Log: $log"
+  say ''
+  setup "$@" 2>&1 | tee -a "$log"
+  local status=${PIPESTATUS[0]}
+  if ((status != 0)); then
+    say ''
+    say "Setup did not finish. Details are in $log"
+    say 'Press Enter to close this window; the next launch tries again.'
+    read -r _ || true
+    return 1
+  fi
+  sleep 1
+}
+
+lock_owned=false
+release_lock() { ! $lock_owned || rm -rf "$lock"; lock_owned=false; }
+acquire_lock() {
+  [[ ${DAEMONARCHY_WINE_LOCK_HELD:-} == 1 ]] && return 0
+  mkdir -p "$state" || return 1
+  local tries=0 pid
+  while ! mkdir "$lock" 2>/dev/null; do
+    sleep 0.2                       # let a launcher that just took it write its pid
+    pid=$(cat "$lock/pid" 2>/dev/null || true)
+    if [[ -n $pid ]] && kill -0 "$pid" 2>/dev/null; then
+      return 1                      # a live setup owns it
+    fi
+    [[ -z $pid ]] && ((tries++ < 5)) && continue
+    rm -rf "$lock"                  # its owner is gone
+    ((tries++ > 8)) && return 1
+  done
+  echo $$ >"$lock/pid"
+  lock_owned=true
+  trap release_lock EXIT
+}
+
+# Windows paths as Wine wants them: a program given as a Unix path is started with
+# `wine start /unix`, an installer package with msiexec.
+run_wine_program() {
+  local target=${1:-}
+  if [[ -z $target ]]; then
+    wine_env wine winefile
+  elif [[ -f $target ]]; then
+    shift
+    case ${target,,} in
+      *.msi) wine_env wine msiexec /i "$target" "$@" ;;
+      *) wine_env wine start /unix "$target" "$@" ;;
+    esac
+  else
+    wine_env wine "$@"
+  fi
+}
+
+run_steam() {
+  local args=("${steam_default_args[@]}")
+  [[ -z ${DAEMONARCHY_STEAM_ARGS:-} ]] || read -r -a args <<<"$DAEMONARCHY_STEAM_ARGS"
+  # After it updates itself Steam's bootstrapper exits with status 42, which in Steam's own
+  # launch protocol means "start me again". Start it again (a few times at most) instead
+  # of reporting an error, so the first launch ends with Steam open.
+  local status attempt
+  for attempt in 1 2 3; do
+    wine_env wine "$steam_exe_win" "${args[@]}" "$@"
+    status=$?
+    ((status == 42)) || break
+    printf '== Steam asked to be started again after its update (%s)\n' "$attempt"
+  done
+  return "$status"
+}
+
+run_watched() { # steam|wine, then the arguments
+  local kind=$1 status
+  shift
+  find "$applog" -size +1024k -delete 2>/dev/null
+  printf '== %s: %s %s\n' "$(date '+%F %T')" "$kind" "$*" >>"$applog"
+  if [[ $kind == steam ]]; then run_steam "$@" >>"$applog" 2>&1; else run_wine_program "$@" >>"$applog" 2>&1; fi
+  status=$?
+  if ((status != 0)); then
+    printf '== stopped with status %s\n' "$status" >>"$applog"
+    note 'The Windows program stopped with an error' "Exit status $status. Details: $applog"
+  fi
+  return "$status"
+}
+
+# Open the real program and end. From a terminal the program is detached, so that
+# window closes and the program takes over (DAEMONARCHY_WINE_FOREGROUND=1 keeps it attached).
+launch() {
+  local kind=$1 status
+  shift
+  release_lock
+  mkdir -p "$state"
+  if [[ ${DAEMONARCHY_WINE_DETACH:-} == 1 ]] || { [[ -z ${DAEMONARCHY_WINE_FOREGROUND:-} ]] && { [[ -t 0 ]] || [[ -t 1 ]]; }; }; then
+    ( trap '' HUP; run_watched "$kind" "$@" ) </dev/null >/dev/null 2>&1 &
+    disown 2>/dev/null
+    exit 0
+  fi
+  run_watched "$kind" "$@"
+  status=$?
+  exit "$status"
+}
+
+show_status() {
+  if ! supported_arch; then
+    say "unsupported: Windows programs are available on amd64 only (this is $arch)"
+    return 0
+  fi
+  local missing
+  mapfile -t missing < <(missing_packages)
+  if wine_ready; then
+    say "real app: Wine is set up ($(pkg query %n-%v wine-devel 2>/dev/null | head -1))"
+    say "  prefix: $prefix (set up $(stamp_value setup))"
+  else
+    if ((${#missing[@]})); then
+      say "virtual app: not set up yet (the first launch installs ${missing[*]} and makes the prefix)"
+    else
+      say 'virtual app: not set up yet (the packages are in; the first launch makes the prefix)'
+    fi
+  fi
+  if steam_ready; then
+    say "  Steam: installed in the prefix ($steam_dir)"
+  else
+    say '  Steam: not installed (daemonarchy-steam downloads it from Valve on first launch)'
+  fi
+}
+
+do_reset() {
+  local answer=
+  if [[ ${2:-} != --yes && -z ${DAEMONARCHY_WINE_YES:-} ]]; then
+    [[ -t 0 ]] || { say 'Refusing to delete the Wine prefix without --yes.'; return 1; }
+    say "This deletes $prefix: every Windows program, game and Steam library inside it."
+    read -r -p 'Type yes to continue: ' answer
+    [[ $answer == yes ]] || { say 'Nothing deleted.'; return 1; }
+  fi
+  rm -rf "$prefix" "$stamp" "$downloads"
+  say 'The Wine prefix was deleted. The next launch sets everything up again.'
+}
+
+main() {
+  local mode=wine
+  case ${1:-} in
+    --status) show_status; return 0 ;;
+    --reset) do_reset "$@"; return $? ;;
+    --rebuild) rm -f "$stamp"; shift; set -- --setup "$@" ;;
+    --setup-window) shift; setup_window "$@"; return $? ;;      # run by the launcher inside its window
+  esac
+  local setup_only=false
+  case ${1:-} in
+    --setup) setup_only=true; shift; [[ ${1:-} != --steam ]] || { mode=steam; shift; } ;;
+    --steam) mode=steam; shift ;;
+  esac
+
+  supported_arch || { note 'Windows programs are available on amd64 only' "This is $arch."; return 1; }
+
+  ready=wine_ready
+  [[ $mode == steam ]] && ready=steam_ready
+  if $ready; then
+    $setup_only && { say 'Already set up.'; return 0; }
+    launch "$mode" "$@"
+  fi
+
+  # Virtual app: set up once, with the lock held so two launches never set up together.
+  if ! acquire_lock; then
+    note 'Windows programs are already being set up' 'The program opens by itself when that finishes.'
+    return 0
+  fi
+  if $ready; then   # another launcher may have finished while we waited for the lock
+    $setup_only && return 0
+    launch "$mode" "$@"
+  fi
+
+  mkdir -p "$state"
+  local steam_arg=''
+  [[ $mode == steam ]] && steam_arg=steam
+  if $setup_only; then
+    if [[ -t 1 ]]; then
+      setup "$steam_arg" 2>&1 | tee -a "$log"
+      return "${PIPESTATUS[0]}"
+    fi
+    setup "$steam_arg" >>"$log" 2>&1
+    return $?
+  elif [[ -t 1 ]]; then
+    setup "$steam_arg" 2>&1 | tee -a "$log"
+    [[ ${PIPESTATUS[0]} -eq 0 ]] || return 1
+  elif command -v "$terminal" >/dev/null 2>&1; then
+    # No terminal of our own (a menu or Apps launch): give the first run a window.
+    env DAEMONARCHY_WINE_LOCK_HELD=1 "$terminal" --app-id=daemonarchy-wine-setup \
+      --title='Setting up Windows programs (first run only)' "${BASH:-bash}" "$self" --setup-window $steam_arg
+    $ready || { note 'Windows programs were not set up' "See $log"; return 1; }
+  else
+    note 'Setting up Windows programs (first run only)' 'This takes a few minutes; it opens when done.'
+    setup "$steam_arg" >>"$log" 2>&1 || { note 'Windows programs were not set up' "See $log"; return 1; }
+  fi
+  launch "$mode" "$@"
+}
+
+main "$@"
