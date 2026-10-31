@@ -147,7 +147,7 @@ Daemonarchy spans the installer, desktop, compatibility, source and ports reposi
   - The artwork: `wallpaper.svg`, `wordmark.svg` (the login screen's logo), `mark.svg` (the horned "A"), `screensaver.txt`, `about.txt`.
   - The SDDM theme that reuses Omarchy's with the Daemonarchy wordmark.
   - The System > FreeBSD menu (`omarchy-menu.jsonc`) and the `daemonarchy-*` commands behind it.
-  - Its tags set Daemonarchy's version (see Releasing).
+  - It has no tag convention that matches the port today (last tag `v1.1.1`; the port pins a commit); see [the repositories](#the-repositories-that-make-up-daemonarchy).
 - **[jordanhubbard/daemonarchy-src](https://github.com/jordanhubbard/daemonarchy-src)**: the owned FreeBSD source fork. [Owned source builds](docs/source-builds.md) describes exact-commit world/kernel/pkgbase and installer-set preparation; [the performance plan](docs/roadmap/build-performance.md) tracks complete Component execution and build-system evaluation. Development outputs do not change a published release's selection.
 - **[jordanhubbard/daemonarchy-ports](https://github.com/jordanhubbard/daemonarchy-ports)** is the release ports fork; 1.3.1 uses `b7857842` on `main`. Releases through 1.1.1 used [jordanhubbard/freebsd-ports](https://github.com/jordanhubbard/freebsd-ports): the earlier 1.1.1 on `daemonarchy-1.1.1`, the older 1.1 candidate on `daemonarchy-1.1-package-baseline`. Upstream review does not block releases from this fork. It carries the ports:
   - `x11-wm/omarchy`: Omarchy itself, with omarchy-freebsd as a second distfile. Its `files/` holds only patches to Omarchy's own files, among them the ones that add the `FreeBSDWifi.qml` and `FreeBSDBluetooth.qml` stand-ins to the panels.
@@ -339,7 +339,7 @@ space than a cached installer-only rebuild. Check resources before dispatching.
    ./build-iso.sh
    ```
 
-   The image is named after the version of the `daemonarchy` package it carries: `daemonarchy-<version>-<arch>.iso`, for example `daemonarchy-1.4.1-amd64.iso` (published xz-compressed as `.iso.xz`). Set `NAME` to override.
+   The image is named from the repository's `VERSION` file (`scripts/version.py`): `daemonarchy-<version>-<arch>.iso`, for example `daemonarchy-1.4.1-amd64.iso` (published xz-compressed as `.iso.xz`). Set `NAME` to override. `build-iso.sh` refuses a `VERSION` that is not `X.Y.Z`.
 
    The image and its `.sha256` land in `/usr/local/poudriere/data/images`.
 

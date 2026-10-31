@@ -1,6 +1,6 @@
 # Windows programs and Steam
 
-Status: planned for the 1.5.0 release; not yet released. The launchers are in the
+Status: on main for the next release (1.5.0); not yet published. The launchers are in the
 repository, tested against stand-ins and, headless, on the build VM; they have not run on
 real hardware.
 

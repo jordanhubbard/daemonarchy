@@ -4,7 +4,7 @@ This guide takes you from a download to a working desktop, and through the thing
 
 Daemonarchy is the [Omarchy](https://omarchy.org) desktop running on [FreeBSD](https://www.freebsd.org). If you are curious how it is put together, or want to change it, read the [hacking guide](https://github.com/jordanhubbard/daemonarchy/blob/main/HACKING.md) when you are done here.
 
-This guide covers Daemonarchy 1.4.0, the latest release. The [download page](https://github.com/jordanhubbard/daemonarchy/blob/main/README.md#download) identifies what is published; the [1.4.0 release notes](release-1.4.0.md) record the image, its hardware status and outstanding qualification. Read them before choosing hardware. Features marked *upcoming 1.4.0* below are in development and not in the 1.3.1 image.
+This guide describes Daemonarchy as it is on `main` for the next release, 1.5.0, which is not yet published. The [download page](https://github.com/jordanhubbard/daemonarchy/blob/main/README.md#download) identifies what is published, and each release's notes (for example the [1.4.1 release notes](release-1.4.1.md)) record its image, hardware status and outstanding qualification. Read them before choosing hardware. Where a feature arrived after the published release, this guide says so.
 
 ![The Daemonarchy desktop, with the System > FreeBSD menu open](images/desktop.png)
 
@@ -18,7 +18,7 @@ This guide covers Daemonarchy 1.4.0, the latest release. The [download page](htt
 
 ## 1. Download the image
 
-Get the `.iso.xz` and matching `.sha256` from the [download page](https://github.com/jordanhubbard/daemonarchy/blob/main/README.md#download). GitHub **latest** selects stable 1.4.0. Read its [release notes](release-1.4.0.md) before installing: publication does not establish physical-hardware compatibility or completion of the final installation matrix.
+Get the `.iso.xz` and matching `.sha256` from the [download page](https://github.com/jordanhubbard/daemonarchy/blob/main/README.md#download). GitHub **Latest** selects the newest stable release. Read its release notes (linked from the download page) before installing: publication does not establish physical-hardware compatibility or completion of the final installation matrix.
 
 Checking the download is optional but quick. In a terminal, in the folder you saved both files to:
 
@@ -45,20 +45,20 @@ Be sure of the device name: `dd` overwrites whatever you point it at.
 ## 3. Boot from the stick
 
 1. Plug the stick in and turn the machine on, pressing its boot menu key (often F12, F11, F10 or Esc; on Macs hold Option).
-2. Turn Secure Boot off, or [manually enroll the project certificate](secure-boot.md) for enforced Secure Boot, preserving existing OEM/Windows keys. Factory keys alone reject the project loader. 1.3.1 has a new certificate, so a machine that trusts only the 1.1 certificate needs the new one enrolled too. Earlier 1.0.1 needs Secure Boot off.
+2. Turn Secure Boot off, or [manually enroll the project certificate](secure-boot.md) for enforced Secure Boot, preserving existing OEM/Windows keys. Factory keys alone reject the project loader. 1.3.1 has a new certificate, so a machine that trusts only the 1.1 certificate needs the new one enrolled too. Earlier 1.0.1 needs Secure Boot off. aarch64 has no Secure Boot bundle.
 3. Choose the USB stick. Use UEFI for Secure Boot; legacy BIOS boot also works.
 
-### Try the live desktop first (upcoming 1.4.0)
+### Try the live desktop first (x86-64 images since 1.4.0)
 
-This section describes the upcoming 1.4.0 image; the 1.3.1 image has no live desktop and starts the text installer. See the [roadmap](https://github.com/jordanhubbard/daemonarchy/blob/main/ROADMAP.md) for its status.
+The installer image has offered a live desktop since 1.4.0; the 1.3.1 image has none and starts the text installer. The aarch64 image has no live desktop: it was not run there ([aarch64](aarch64.md)).
 
-The loader menu that appears for a few seconds at boot offers **Try Daemonarchy (live desktop, disk untouched)**. Press **T** there (any key first stops the countdown). Pressing Enter, or letting the countdown finish, starts the text installer as before.
+The loader menu that appears for a few seconds at boot is FreeBSD's own, with one entry added on the installer media (the installed system's menu does not have it). It offers **Try Daemonarchy (live desktop, disk untouched)**. Press **T** there (any key first stops the countdown). Pressing Enter, or letting the countdown finish, starts the text installer as before.
 
 The live desktop runs entirely from the stick and memory: it changes no disk, imports no existing ZFS pool and uses no swap. It is a minimal Hyprland session with a terminal (**Super + Enter**) and the graphical installer, which opens on its own (**Super + I** reopens it). It shows whether the desktop's graphics work on your machine. The graphics driver is chosen and loaded from the stick, so no network is needed for that. The full Omarchy desktop and its applications are only on the installed system.
 
 The graphical installer asks the same questions as the text installer, checks them by the same rules and writes the same answers. Its network page runs the same network checks and shows what each one found; you can pick a different wired port as the primary connection, enter a DNS server, and set the clock by hand if network time does not answer. Nothing is written to a disk until you tick the confirmation on its last screen and press **Install Daemonarchy**; it then shows the installer's measured progress and offers a restart when the installation has verifiably completed. Enterprise (802.1X) Wi-Fi, setting the clock and the MacBook Wi-Fi firmware step open the text installer's own screens in a terminal window.
 
-If the graphics cannot start, or when you leave the live desktop, the text installer takes over the screen; no disk has been changed. Everything the live desktop changes is kept in memory; its minimum memory has not been measured yet. Its account is named `live`, so choose a different user name for your installation.
+If the graphics cannot start, or when you leave the live desktop, the text installer takes over the screen; no disk has been changed. Everything the live desktop changes is kept in memory; its minimum memory has not been measured. Its account is named `live`, so choose a different user name for your installation.
 
 ## 4. Install
 
@@ -69,7 +69,7 @@ The installer asks a handful of questions, then installs on its own. Use the arr
 3. **Your account.** Your name, a user name, a password (you will log in with it, and give it when the system asks for your permission), a name for the computer, and your time zone.
 4. **Network.** The installer lists your network adapters. A plugged-in cable is usually already connected; otherwise pick **Join Wi-Fi**, choose your network and type its password. You can also set an address by hand if your network has no DHCP. If the clock is wrong, choose **Set date and time** and enter the current UTC date and time; this works offline. **Synchronize time over network** tries NTP for up to 30 seconds. After either action the installer checks package access again. Package downloads still require internet access.
 
-   *Upcoming 1.4.0* (not in the 1.3.1 image): the installer checks the network for you first, and each check takes at most a short, fixed time:
+   Since 1.4.0 (not in the 1.3.1 image) the installer checks the network for you first, and each check takes at most a short, fixed time. The exact-image network matrix on physical hardware is not complete ([1.4.1 release notes](release-1.4.1.md)):
    - It lists every wired, USB-tethering and Wi-Fi adapter.
    - It asks all cabled ports for an address at once and uses the one whose gateway answers.
    - It checks DNS by looking up `pkg.FreeBSD.org` directly: first with your network's own servers, then with Cloudflare (1.1.1.1), Google (8.8.8.8) and Quad9 (9.9.9.9). It does not ping them, because some block ping.
@@ -91,6 +91,12 @@ The installer also offers optional `/usr/ports` and `/usr/src` Git checkouts. Th
 
 
 The desktop has roughly 1,200 packages; download and installation time depend on the selected release and connection. Wait for the explicit successful completion screen before removing the stick and restarting. An unexpected reboot is not that completion signal.
+
+### While the installer works: extensions and games
+
+The installer's options include an **Extensions** menu (also `x` on the progress screen, and `C-b e` in any tmux window). It lists what the signed Daemonarchy extension feed offers, with each entry's size and source, and downloads one only when you choose it. Four original arcade games (Hordeshot, Shatter, Rockdrift, Wyrm) are the first extensions, since 1.4.1. They run at low priority in their own window and stop at once when the installation finishes or fails or needs you. Nothing from the Extensions menu is installed onto your disk. The details are in [installer extensions](installer-extensions.md).
+
+On main for the next release, extensions may also be written in Lua and run inside a sandbox ([sandboxed Lua extensions](sandboxed-extensions.md)), with a fish tank as the first. This is implemented and tested on a build host; the checks on a real installer image and real console (listed under "Not done yet" there) are not done, and the fish tank is not yet in the published feed.
 
 ## 5. Log in
 
@@ -130,7 +136,7 @@ Open the network panel with **Super + Ctrl + W**, or click the network icon in t
 
 A cable is enough. If a wireless card is present and no Wi-Fi switch appears, FreeBSD has no driver for that card.
 
-*Upcoming 1.4.0* (not in the 1.3.1 image, and not yet timed on hardware): startup no longer waits on an unplugged or unanswered Ethernet port. The installed system waits at most 10 seconds for a network at startup (5 seconds when nothing is plugged in or joined) and uses the first connection whose router answers, preferring one whose DNS server also answers. A cable plugged in or a Wi-Fi network joined later is used as soon as it gets an address. If the connection in use goes down, another working one takes over. `daemonarchy-netselect status` shows which connection is in use, and `/var/log/daemonarchy-net.log` records each connection's result with the seconds since startup.
+Since 1.4.0 (not in the 1.3.1 image; not yet timed on hardware across a matrix) startup no longer waits on an unplugged or unanswered Ethernet port. The installed system waits at most 10 seconds for a network at startup (5 seconds when nothing is plugged in or joined) and uses the first connection whose router answers, preferring one whose DNS server also answers. A cable plugged in or a Wi-Fi network joined later is used as soon as it gets an address. If the connection in use goes down, another working one takes over. `daemonarchy-netselect status` shows which connection is in use, and `/var/log/daemonarchy-net.log` records each connection's result with the seconds since startup.
 
 ## 8. Sound
 
@@ -167,7 +173,10 @@ dataset properties.
 The desktop includes Chromium and the **OctoPkg** graphical package
 manager. Choose **Install > Packages** or **Remove > Packages** to search,
 install or remove FreeBSD packages; OctoPkg asks for administrator
-authentication when it needs it. The terminal package pickers remain
+authentication when it needs it. A new graphical package manager,
+`daemonarchy-pkg` (a plan before every change, signed-repository display), is packaged on main for
+the next release and listed for the application feed, but the menu still opens OctoPkg and it has not
+been checked on a real desktop ([design and status](gui-package-manager.md)). The terminal package pickers remain
 available as `daemonarchy pkg install` and `daemonarchy pkg remove`.
 
 Use `daemonarchy --help` or `daemonarchy commands` to discover desktop
@@ -188,6 +197,10 @@ Open the menu and go to **System > FreeBSD**.
 - **Hack on Daemonarchy:** run the desktop from your own copy of its source code (see the [hacking guide](https://github.com/jordanhubbard/daemonarchy/blob/main/HACKING.md)).
 
 ![Hourly snapshots of your home in Files, a live DTrace view, the ZFS pool, and the sound panel](images/freebsd.png)
+
+## Windows programs and Steam (x86-64, next release)
+
+On main for the next release the Apps menu has **Steam** and **Windows Programs** on x86-64: virtual apps, like Cudalab, that install Wine and its helpers from the system's repositories on first launch and download Valve's installer or Wine's Mono and DXVK components at that moment. Nothing of theirs is on the image. A game or Steam's window has not been run on the MSI Raider 18 HX or any other real desktop yet; the real first run was only checked headless on a build VM. See [Windows programs and Steam](windows-apps.md), whose Wine Mono and DXVK recipe was contributed by Sam Sheridan.
 
 ## 12. AI coding tools
 
