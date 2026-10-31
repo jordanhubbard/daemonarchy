@@ -536,10 +536,15 @@ Apple firmware has separate terms.
 
 ### The live desktop
 
-The loader's **Try Daemonarchy (live desktop, disk untouched)** entry, added by
-`brand-daemonarchy.lua` only when the image's `loader.conf` sets
-`daemonarchy_live_media`, sets the `daemonarchy_live` kenv. The default entry
-still boots the text installer. The pieces, all in
+The loader's **Try Daemonarchy (live desktop)** entry (the disk stays untouched
+until an installation is confirmed), added by `brand-daemonarchy.lua` only when
+the image's `loader.conf` sets `daemonarchy_live_media`, sets the
+`daemonarchy_live` kenv. The default entry still boots the text installer. The
+same brand file hides the developer entries **Boot trace** and **Network
+debugging** unless `loader.conf` sets `daemonarchy_debug_menu="YES"` (the
+hardware trace image sets `boottrace_stick="YES"`, which shows them too), so the
+menu ends inside its frame; `lua5.4 tests/loader-live-menu.lua` checks this
+against the real `menu.lua` and `drawer.lua` kept in `tests/fixtures/loader-lua`. The pieces, all in
 `overlay/usr/local/libexec/daemonarchy-installer/`:
 
 - **`live-service`** (installed as `/etc/rc.d/daemonarchy_live`) copies `/etc`,

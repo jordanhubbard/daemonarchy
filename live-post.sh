@@ -88,7 +88,7 @@ kern.vty="vt"
 # Keep ordinary panic evidence visible during hardware qualification.
 kern.panic_reboot_wait_time="-1"
 debug.trace_on_panic="1"
-# Offers "Try Daemonarchy (live desktop, disk untouched)" in the loader menu
+# Offers "Try Daemonarchy (live desktop)" in the loader menu
 # (brand-daemonarchy.lua). Return still boots the text installer.
 daemonarchy_live_media="YES"
 EOF
