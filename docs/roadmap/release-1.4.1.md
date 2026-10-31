@@ -60,6 +60,21 @@ items below were 1.4 acceptance rows. They moved here so they no longer block
   terminals, mute/no-device behavior, game failure recovery and bounded resource
   use. Do not ship ROMs, copied assets, protected names or incompatible code.
 
+- **Windows games: wine-devel and Steam in the Apps menu** (operator decision,
+  2026-10-30; no queue item or issue yet). Ship `emulators/wine-devel` in the
+  distribution so Windows games run, and a Steam entry in the Apps menu. Neither
+  is in the package lists, the overlay or the ISO today. amd64 only: wine needs
+  32-bit support and arm64 is not planned. Open questions to settle first: the
+  Steam runtime route on FreeBSD (Linux compatibility layer or wine), the 32-bit
+  library set, Vulkan translation and NVIDIA behavior on the MSI, and the
+  licence review for redistributing the packages
+  ([PKG-002](active-work.md#pkg-002-self-host-the-installers-package-closure-for-both-architectures)).
+  Done means a Windows game and Steam each launch from the Apps menu on a
+  fresh install of the final image on the MSI. Packages for this need new
+  application and closure feed revisions and a new ISO. Not started; it is not
+  claimed as done. Operator order 2026-10-30: the current 1.4.1 ISOs ship first and
+  this goes into the next re-roll.
+
 - **Exact-image installer network matrix** ([ledger A14](1.4-coverage-ledger.md),
   [NET-001](active-work.md#net-001-make-the-installer-network-bring-up-proactive-and-robust)).
   VM runs on the final image for several NICs with one DHCP server, broken DHCP
