@@ -61,7 +61,6 @@ QA_VIRGL_RENDER_NODE=${QA_VIRGL_RENDER_NODE:-/dev/dri/renderD128}   # the deskto
 STICK_MAX_BYTES=${STICK_MAX_BYTES:-137438953472}  # 128 GiB: refuses the 239 GB scratch disk and anything larger
 DENY_SERIALS=${DENY_SERIALS:-03A0423110011698}    # sda "toolscratch" (Samsung, 239 GB): never written
 LSBLK=${LSBLK:-lsblk}
-STATE=${STATE:-$WORK/master-state.tsv}
 
 fail() { echo "master-release: $*" >&2; exit 1; }
 
@@ -341,14 +340,15 @@ main() {
       --dry-run) DRY_RUN=true; shift ;;
       --force) FORCE=true; shift ;;
       --config) CONFIG=$2; shift 2 ;;
-      sticks) shift; [ -z "$CONFIG" ] || . "$CONFIG"; step_sticks "$@"; return ;;
+      sticks) shift; [ -z "$CONFIG" ] || . "$CONFIG"; STATE=${STATE:-$WORK/master-state.tsv}; step_sticks "$@"; return ;;
       -h | --help | help) sed -n '2,32p' "$0"; return 0 ;;
       *) steps+=("$1"); shift ;;
     esac
   done
   # shellcheck disable=SC1090
   [ -z "$CONFIG" ] || . "$CONFIG"
-  # Defaults that follow the tag come after the config, which sets the tag.
+  # Defaults that follow the tag or the work directory come after the config, which sets them.
+  STATE=${STATE:-$WORK/master-state.tsv}
   FEED_OUT=${FEED_OUT:-$WORK/feed-$PACKAGE_REPOSITORY_TAG}
   # A release image carries its closure feed (PKG-002): the installer prefers it to pkg.FreeBSD.org, and
   # build-iso.sh refuses the build unless that feed resolves the installer's packages on its own.
