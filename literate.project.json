@@ -75,7 +75,7 @@
     "schema": "literate-ai/repository-policy@1",
     "default_branch": "main",
     "main_state": "pre-release",
-    "pre_release_version": "1.3",
+    "pre_release_version": "1.4",
     "default_component": null,
     "sample_component_roots": [
       "samples"
