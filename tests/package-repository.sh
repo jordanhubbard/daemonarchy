@@ -99,5 +99,21 @@ rm -f "$work/mirror.conf"
 package_repository_write_mirror "$work/mirror.conf" /public/key "$work/package-mirror" aarch64 2>/dev/null
 [ "$(grep -c '^Daemonarchy-Mirror-' "$work/mirror.conf")" = 1 ] && grep -q 'packages-16-aarch64-1.4.1-upstream-1' "$work/mirror.conf"
 echo 'PASS: package mirror shards are preferred, validated, per architecture, and skipped when they do not answer'
+
+# pkg takes the newest version across repositories, so the transaction turns pkg.FreeBSD.org off
+# while a shard answers (a 1.4.1 candidate took 63 packages from it) and leaves it on otherwise.
+[ "$(package_repository_freebsd_enabled "$work/mirror.conf")" = no ]
+rm -f "$work/mirror.conf"
+[ "$(package_repository_freebsd_enabled "$work/mirror.conf")" = yes ]
+printf '%s\n' "$base/packages-16-amd64-1.4.1-upstream-down" >"$work/down-list"
+package_repository_write_mirror "$work/mirror.conf" /public/key "$work/down-list" 2>/dev/null
+[ "$(package_repository_freebsd_enabled "$work/mirror.conf")" = yes ]
+installer=$here/overlay/usr/local/libexec/daemonarchy-installer/install
+grep -q 'freebsd_enabled=\$(package_repository_freebsd_enabled "\$repos/mirror.conf")' "$installer"
+grep -q '^  enabled: \$freebsd_enabled$' "$installer"
+# Only the transaction's repository directory changes: the installed system's repository files
+# are written elsewhere and never name the FreeBSD repository as disabled.
+! grep -n 'enabled: no' "$installer"
+echo 'PASS: the install transaction uses the upstream repository only when no mirror shard answers'
 echo 'PASS: stable fallback, candidate feed selection and invalid metadata rejection'
 echo 'PASS: per-architecture feed families never cross'

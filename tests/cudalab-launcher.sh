@@ -38,7 +38,7 @@ case $cmd in
     sleep "${LX_BUILD_SLEEP:-0}"
     [[ -z ${LX_FAIL_BUILD:-} ]] || { echo 'nvcc fatal: stub build failure' >&2; exit 1; }
     mkdir -p build/release/examples
-    printf '#!/bin/sh\necho "args=$* preload=${LD_PRELOAD:-} audio=${SDL_AUDIODRIVER:-} video=${SDL_VIDEODRIVER:-} cwd=$(pwd)" >> "%s"\necho hello-from-app\n[ -z "$LX_APP_FAIL" ] || exit 3\n[ -z "$LX_APP_FAIL_REAL_AUDIO" ] || [ "$SDL_AUDIODRIVER" = dummy ] || exit 1\n' "$APP_OUT" >build/release/cudalab
+    printf '#!/bin/sh\necho "args=$* preload=${LD_PRELOAD:-} audio=${SDL_AUDIODRIVER:-} video=${SDL_VIDEODRIVER:-} pulse=${PULSE_SERVER:-} cwd=$(pwd)" >> "%s"\necho hello-from-app\n[ -z "$LX_APP_FAIL" ] || exit 3\n[ -z "$LX_APP_FAIL_REAL_AUDIO" ] || [ "$SDL_AUDIODRIVER" = dummy ] || exit 1\n' "$APP_OUT" >build/release/cudalab
     chmod +x build/release/cudalab ;;
 esac
 STUB
@@ -357,6 +357,20 @@ run cuda-cosmos
 check "$(count 'cmake --build' "$work/lx.log")" 0
 check "$(count 'gcc -shared' "$work/lx.log")" 1
 grep -q 'cudalab-async-fallback.so ' "$work/app.out"
+
+# --- the desktop's sound server is found by its socket path, not through XDG_RUNTIME_DIR
+fresh
+run --build-only
+mkdir -p "$work/xdg/pulse"
+: >"$work/xdg/pulse/native"
+XDG_RUNTIME_DIR=$work/xdg run cuda-cosmos
+grep -q "pulse=unix:$work/xdg/pulse/native " "$work/app.out"
+: >"$work/app.out"
+PULSE_SERVER=unix:/elsewhere XDG_RUNTIME_DIR=$work/xdg run cuda-cosmos           # the user's own setting wins
+grep -q 'pulse=unix:/elsewhere ' "$work/app.out"
+: >"$work/app.out"
+XDG_RUNTIME_DIR=$work/nothing-here run cuda-cosmos                              # no server: nothing is set
+grep -q 'pulse= ' "$work/app.out"
 
 # --- a sound driver the user chose is honoured
 fresh

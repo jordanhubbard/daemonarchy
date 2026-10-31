@@ -191,13 +191,21 @@ ensure_fallback() {
 # One run of the Linux program with a given SDL audio driver list. Only the Linux program
 # gets LD_PRELOAD: a native FreeBSD program cannot load these libraries.
 app_once() {
-  local audio=$1 preload=() libs=''
+  local audio=$1 preload=() libs='' pulse=()
   shift
+  # Tell libpulse where the desktop's sound server is. Left to itself it looks the server
+  # up through XDG_RUNTIME_DIR and refuses it ("not owned by us, but by uid 0"): a Linux
+  # process sees the Linux root's own /var/run/xdg/<user>, an empty root-owned directory
+  # that earlier launchers made as a mount point, instead of the real one. The socket
+  # itself is reachable by its absolute path.
+  if [[ -z ${PULSE_SERVER:-} && -n ${XDG_RUNTIME_DIR:-} && -e $XDG_RUNTIME_DIR/pulse/native ]]; then
+    pulse=("PULSE_SERVER=unix:$XDG_RUNTIME_DIR/pulse/native")
+  fi
   [[ -f $linux_root$shim ]] && libs=$shim
   [[ -f $fallback_lib.so ]] && libs=${libs:+$libs:}$fallback_lib.so
   [[ -n $libs ]] && preload=("LD_PRELOAD=$libs")
   env "DISPLAY=${DISPLAY:-:0}" "SDL_VIDEODRIVER=${SDL_VIDEODRIVER:-x11}" "SDL_AUDIODRIVER=$audio" \
-    __GLX_VENDOR_LIBRARY_NAME=nvidia CUDAToolkit_ROOT=/usr/local/cuda "${preload[@]}" "$exe" "$@" >>"$applog" 2>&1
+    __GLX_VENDOR_LIBRARY_NAME=nvidia CUDAToolkit_ROOT=/usr/local/cuda "${pulse[@]}" "${preload[@]}" "$exe" "$@" >>"$applog" 2>&1
 }
 
 # SDL takes a comma-separated list and skips the drivers it was not built with or that
