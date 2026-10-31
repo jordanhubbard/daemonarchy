@@ -988,6 +988,10 @@ sh build-hwtrace-image.sh -I daemonarchy-1.4.1-amd64.iso \
 # size in MiB (default 256); -S adds a serial console for VM tests;
 # -x EXTRA.conf appends test knobs to loader.conf (never for a published
 # image).
+# -K KEYS puts public keys on the stick as KEYS/authorized_keys and -H makes
+# its ssh host key at build time (a private image only): see the network
+# hand-over in docs/boottrace.md. Without -K the image starts no network
+# service.
 ```
 
 The builder needs Python 3 (`python3` or `python3.12`): it runs

@@ -81,7 +81,7 @@ echo "default 10.0.2.2"
 SH
 chmod +x "$shims"/*
 
-export SHIM_LOG=$tmp/log HW_DATA=$tmp/data HW_VAR=$tmp/var/hwtrace HW_SSHD=$shims/mysshd HW_STEP=5
+export HW_CON=/nonexistent SHIM_LOG=$tmp/log HW_DATA=$tmp/data HW_VAR=$tmp/var/hwtrace HW_SSHD=$shims/mysshd HW_STEP=5
 PATH=$shims:$PATH
 reset() { rm -rf "$SHIM_LOG" "$HW_VAR"; mkdir -p "$SHIM_LOG"; unset KENV_hwtrace_net KENV_hwtrace_hold KENV_hwtrace_dhcp SHIM_NO_LEASE SHIM_CONTINUE_AT SHIM_HOLD_AT || true; }
 reset

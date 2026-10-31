@@ -20,18 +20,28 @@
 : "${HW_VAR:=/var/hwtrace}"     # volatile state (keys, sshd, markers)
 : "${HW_PORT:=2222}"
 : "${HW_STEP:=5}"               # hold poll interval, seconds
-: "${HW_NICMODS:=if_rge if_re if_igc if_em if_igb if_ix if_bge if_msk if_ure if_axge if_axe if_cdce if_mos if_smsc if_muge if_urndis if_ipheth if_aue}"
+# The kernel (GENERIC) already has em, igb, igc, ix, re and rge built in (the
+# QEMU run printed "already loaded from kernel" for each); these are the
+# drivers it lacks: USB Ethernet and a few PCI ones.
+: "${HW_NICMODS:=if_ure if_axge if_axe if_cdce if_cdceem if_mos if_smsc if_muge if_urndis if_ipheth if_aue if_bge if_msk}"
 # The T2's internal USB link is not a network (docs/roadmap NET-001).
 : "${HW_T2_MAC:=ac:de:48:00:11:22}"
 
 hw_kenv() { kenv -q "$1" 2>/dev/null || true; }
-hw_say() { echo "hwtrace net: $*"; }
+# init's stdout does not always reach the console; also write to /dev/console.
+: "${HW_CON:=/dev/console}"
+hw_out() { echo "$*"; [ -c "$HW_CON" ] && echo "$*" >"$HW_CON" 2>/dev/null; return 0; }
+hw_say() { hw_out "hwtrace net: $*"; }
 
 # 0 when a hand-over is wanted: not disabled and the stick carries a key.
 hwtrace_wanted() {
 	[ "$(hw_kenv hwtrace.net)" = NO ] && return 1
 	[ -s "$HW_DATA/KEYS/authorized_keys" ] || return 1
-	[ -n "$(sed -n '/^\(ssh-\|ecdsa-\|sk-\)/p' "$HW_DATA/KEYS/authorized_keys")" ]
+	# (no sed alternation: the rescue sed is BSD basic-regex only)
+	while read -r line; do
+		case $line in ssh-*|ecdsa-*|sk-*) return 0 ;; esac
+	done <"$HW_DATA/KEYS/authorized_keys"
+	return 1
 }
 
 # The volatile /var (the root is read-only), then keys and host key.
@@ -92,11 +102,13 @@ hwtrace_dhcp() {
 	local wait i a n=0
 	wait=$(hw_kenv hwtrace.dhcp); : "${wait:=40}"
 	hwtrace_loadnics
+	# DHCP servers list clients by name: make the machine easy to find.
+	hostname "${HW_HOSTNAME:-daemonarchy-hwtrace}" 2>/dev/null || true
 	HW_IFACE= HW_ADDR=
 	sleep 2
 	for i in $(hwtrace_candidates); do
 		ifconfig "$i" up >/dev/null 2>&1 || continue
-		dhclient -b "$i" >/dev/null 2>&1 &
+		dhclient -b "$i" >>"$HW_VAR/dhclient.log" 2>&1 &
 	done
 	while [ "$n" -lt "$wait" ]; do
 		for i in $(hwtrace_candidates); do
@@ -142,6 +154,8 @@ hwtrace_record() {
 		echo "kernel=$(sysctl -n kern.version 2>/dev/null | sed 1q)"
 		ifconfig -a
 		netstat -rn 2>/dev/null
+		echo "--- dhclient"; cat "$HW_VAR/dhclient.log" 2>/dev/null
+		echo "--- sshd"; cat "$HW_VAR/sshd.log" 2>/dev/null
 	} >"$d/network.txt" 2>&1
 	{
 		echo "experiment=$id"
@@ -173,12 +187,12 @@ hwtrace_handover() {	# hwtrace_handover ID
 }
 
 hwtrace_banner() {
-	echo
-	echo "=== Daemonarchy hardware trace: debugger ready ==="
-	echo "ssh -p $HW_PORT root@$HW_ADDR   ($HW_IFACE)"
-	echo "host key $HW_FINGERPRINT"
-	echo "The boot is held for $HW_HOLD s. On the machine: hwtrace-hold SECONDS to"
-	echo "change that, hwtrace-continue to go on now. Then the loop continues."
+	hw_out ""
+	hw_out "=== Daemonarchy hardware trace: debugger ready ==="
+	hw_out "ssh -p $HW_PORT root@$HW_ADDR   ($HW_IFACE)"
+	hw_out "host key $HW_FINGERPRINT"
+	hw_out "The boot is held for $HW_HOLD s. Over ssh: hwtrace-hold SECONDS changes"
+	hw_out "that, hwtrace-continue goes on now. Then the loop continues."
 }
 
 # Stay up until the hold runs out or the operator says go on.

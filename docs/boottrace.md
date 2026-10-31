@@ -297,6 +297,73 @@ under OVMF, with a crowded store, it left less space (27 KiB instead of
   precedence when both are set. This network path has not been exercised
   yet; the MSI stick image does not enable it.
 
+## Network debugger hand-over (1.5.0)
+
+A boot that reaches init can hand the machine over to an ssh session, so the
+hardware can be probed in far more detail than the saved diagnostics. The
+trace loop is unchanged; the hand-over is an addition at the end of the boot.
+It needs a wired network (DHCP) and a public key on the stick; **Secure Boot
+stays off** for this image, as before.
+
+What the image does when a boot reaches init (`tools/hwtrace/rc`,
+`tools/hwtrace/net.sh`):
+
+1. Saves the diagnostics to `DUMPS/<id>/`, as before.
+2. If the stick carries `KEYS/authorized_keys` (and `hwtrace.net=NO` is not set):
+   loads the USB-Ethernet drivers, asks every wired interface for an address
+   at once (bounded: `hwtrace.dhcp`, default 40 s; the T2's internal USB link,
+   Wi-Fi and virtual interfaces are skipped), and starts `sshd` on **port 2222**
+   for that key only (root, public-key login, no passwords, no forwarding).
+   The host name is `daemonarchy-hwtrace`, so the DHCP server's client list
+   shows it.
+3. Records the address: `ADDRESS.TXT` on the stick, `DUMPS/<id>/network.txt`
+   (interfaces, routes, DHCP and sshd logs) and `DUMPS/<id>/rc.log`.
+4. **Holds the boot** for `hwtrace.hold` seconds (default 1800). Over ssh,
+   `hwtrace-hold SECONDS` changes the total and `hwtrace-continue` ends the
+   hold now. When the hold ends the machine reboots, the loader files the
+   complete trace and stops the loop, exactly as without a hand-over. The hold
+   is finite, so an unattended stick cannot wedge.
+5. If there is no key, no address or sshd does not start, nothing is held: the
+   boot reboots as before and `network.txt` says why.
+
+The message on the screen is best effort: in QEMU the userland console output did
+not reach the serial line, so read `ADDRESS.TXT` from the stick afterwards, or
+find `daemonarchy-hwtrace` in the router's client list.
+
+### Keys and the host key
+
+- The published image carries **no keys**, so it starts no network service.
+  Add yours to a stick: `tools/boottrace/stick.py keys STICK-OR-IMAGE
+  ~/.ssh/id_ed25519.pub` (`--replace` to replace, otherwise it adds). Only
+  public keys are accepted. `build-hwtrace-image.sh -K FILE` does the same at
+  build time for a private image.
+- The **host key** is made by the first boot that hands over and is kept on the
+  stick in `KEYS/ssh_host_ed25519_key`, so its fingerprint is the same on every
+  later boot; the fingerprint is printed, and written to `ADDRESS.TXT` and
+  `network.txt` (`stick.py network STICK` shows it). `-H` generates it at build
+  time instead and writes the fingerprint to `OUT.img.hostkey`, so the
+  operator can pin it before the first boot. The key is on the stick
+  (private) and is never shared between sticks unless you copy it.
+  Tradeoff: anyone who holds the stick holds the host key, so keep the stick
+  private and do not publish an image built with `-H`.
+- Connect: `ssh -p 2222 -o UserKnownHostsFile=... root@ADDRESS` and compare the
+  fingerprint to the one on the stick or from the build.
+
+What is on the image for the session: `/rescue` tools (ls, cat, dmesg, sysctl,
+kldstat, kldload, ifconfig, route, ping, dd, gpart, camcontrol, ...) on the
+PATH, `pciconf`, `devinfo`, `acpidump`, `usbconfig`, `netstat`, `scp` and
+`sftp-server`. Not on it: a package manager, a compiler, DTrace tooling beyond
+what the kernel provides, Wi-Fi drivers or firmware (wired only).
+
+### Testing it
+
+`tools/boottrace/qemu-trace-mvp-test.py` drives an image built with `-S` and a
+test key (`-K`) through four scenarios under QEMU/OVMF (user networking with a
+forwarded port): `handover`, `hang` (the first experiment hangs, the second
+hands over), `bounded` (the hold ends on its own) and `nokey` (an image with no
+key never opens a port). `tests/hwtrace-net.sh` runs the shell logic against
+shimmed commands in CI.
+
 ## Building the image
 
 `build-hwtrace-image.sh` builds the image on the FreeBSD builder from a

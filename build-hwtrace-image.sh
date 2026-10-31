@@ -54,10 +54,11 @@ usage() { sed -n '/^# usage:/,/^set -eu/p' "$0" | sed '$d'; exit 64; }
 here=$(cd "$(dirname "$0")" && pwd)
 iso= kernel= loader= luadir= version= outdir=. datamib=256 serial= compress=
 extra= keys= hostkey=
-# msdosfs for DATRACE; the NIC drivers GENERIC lacks (Realtek rge/re, Intel
-# igc, USB Ethernet) and the helpers they depend on.  Missing ones are
+# msdosfs for DATRACE; the NIC drivers GENERIC lacks (USB Ethernet, bge, msk;
+# em, igb, igc, ix, re and rge are built into the kernel) and the helpers they
+# depend on.  Missing ones are
 # skipped with a note.
-modules="msdosfs miibus uether if_rge if_re if_igc if_em if_igb if_ix if_bge if_msk if_ure if_axge if_axe if_cdce if_mos if_smsc if_muge if_urndis if_ipheth if_aue"
+modules="msdosfs miibus uether if_ure if_axge if_axe if_cdce if_cdceem if_mos if_smsc if_muge if_urndis if_ipheth if_aue if_bge if_msk"
 while getopts I:k:l:L:V:o:m:s:SZx:K:H opt; do
 	case $opt in
 	I) iso=$OPTARG ;; k) kernel=$OPTARG ;; l) loader=$OPTARG ;;
@@ -99,7 +100,7 @@ mkdir -p "$root/boot/kernel" "$root/boot/lua" "$root/boot/d" \
 first=$(tar -tf "$iso" | grep -m1 '^rescue/.')
 tar -xf "$iso" -C "$root" "$first"
 [ "$first" = rescue/rescue ] || mv "$root/$first" "$root/rescue/rescue"
-set -- libexec/ld-elf.so.1 lib/libc.so.7 lib/libsys.so.7 \
+set -- rescue/dhclient-script libexec/ld-elf.so.1 lib/libc.so.7 lib/libsys.so.7 \
     usr/lib/libdevinfo.so.7 \
     usr/sbin/pciconf usr/sbin/devinfo usr/sbin/acpidump \
     boot/defaults/loader.conf boot/device.hints
@@ -114,7 +115,7 @@ done
 # Network debugger payload: sshd, ssh-keygen, sftp-server, scp, usbconfig and
 # netstat, the login classes sshd looks up, the ISO's module hints, and every
 # shared library they need (closure computed with readelf).
-netbins="usr/sbin/sshd usr/bin/ssh-keygen usr/bin/scp usr/libexec/sftp-server usr/sbin/usbconfig usr/bin/netstat"
+netbins="usr/sbin/sshd usr/libexec/sshd-session usr/libexec/sshd-auth usr/bin/ssh-keygen usr/bin/scp usr/libexec/sftp-server usr/sbin/usbconfig usr/bin/netstat"
 set -- "$@" $netbins etc/login.conf etc/login.conf.db boot/kernel/linker.hints
 tar -xf "$iso" -C "$root" "$@"
 for f in usr/sbin/pciconf usr/sbin/devinfo usr/sbin/acpidump $netbins; do
@@ -144,7 +145,7 @@ for p in sh init mount mount_msdosfs umount mkdir sed kenv kldload \
 done
 # The network tools and the rest of /rescue, reachable from sshd's default
 # PATH (/usr/bin:/bin:/usr/sbin:/sbin) as well as the rc script's.
-for p in dhclient dhclient-script ifconfig route mdmfs mdconfig newfs ping \
+for p in dhclient ifconfig route mdmfs mdconfig newfs ping \
     ps kill pgrep pkill hostname id ln cp mv rm rmdir chmod tail head tee \
     test expr echo more less stty df mount_msdosfs fsck_msdosfs gpart geom \
     camcontrol nc tar xz sed; do
@@ -152,12 +153,13 @@ for p in dhclient dhclient-script ifconfig route mdmfs mdconfig newfs ping \
 done
 for p in "$root"/rescue/*; do
 	p=${p##*/}
-	[ "$p" = rescue ] && continue
+	case $p in rescue|dhclient-script) continue ;; esac
 	[ -e "$root/bin/$p" ] || ln -s ../rescue/rescue "$root/bin/$p"
+	[ -e "$root/sbin/$p" ] || ln -s ../rescue/rescue "$root/sbin/$p"
 done
 ln -sf ../rescue/rescue "$root/bin/sh"
-ln -s ../rescue/rescue "$root/sbin/init"
-rm -f "$root/sbin/dhclient-script"
+ln -sf ../rescue/rescue "$root/sbin/init"
+# dhclient runs /sbin/dhclient-script (a real sh script, kept in /rescue).
 ln -s ../rescue/dhclient-script "$root/sbin/dhclient-script"
 mkdir -p "$root/var" "$root/root"
 install -m 0555 "$here/tools/hwtrace/rc" "$root/etc/rc"
@@ -168,9 +170,10 @@ install -m 0555 "$here/tools/hwtrace/hwtrace-continue" "$here/tools/hwtrace/hwtr
 cat >"$work/master.passwd" <<EOP
 root:*:0:0::0:0:Hardware trace root:/:/bin/sh
 sshd:*:22:22::0:0:Secure Shell Daemon:/var/empty:/usr/sbin/nologin
+_dhcp:*:65:65::0:0:dhcp programs:/var/empty:/usr/sbin/nologin
 nobody:*:65534:65534::0:0:Unprivileged user:/nonexistent:/usr/sbin/nologin
 EOP
-printf 'wheel:*:0:root\nsshd:*:22:\nnobody:*:65534:\n' >"$root/etc/group"
+printf 'wheel:*:0:root\nsshd:*:22:\n_dhcp:*:65:\nnobody:*:65534:\n' >"$root/etc/group"
 pwd_mkdb -d "$root/etc" -p "$work/master.passwd"
 printf 'PATH=/rescue:/usr/sbin:/usr/bin:/sbin:/bin; export PATH\n' >"$root/.profile"
 printf 'Daemonarchy hardware trace image %s\n' "$version" >"$root/etc/motd"
