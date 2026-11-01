@@ -17,7 +17,7 @@ never released). Nothing here is published, and nothing is claimed done beyond t
 - aarch64: the VirtIO GPU stack and a render-node dumb-buffer patch (aarch64 only) in `drm-612-kmod`, and the
   graphics service's driver reattach; a QEMU guest reaches the SDDM greeter and the session in software.
   An emulated HDA sound device and check in the aarch64 QEMU harness.
-- Roadmap: BUILD-001 (10x faster builds and release cycle with Literate AI 1.4), DESKTOP-001 and the 1.5.0 plan;
+- Roadmap: BUILD-001 (10x faster builds and release cycle with Literate AI, locked to 1.3.1), DESKTOP-001 and the 1.5.0 plan;
   documentation authority checks (`tests/docs-lifecycle.py`), a generic 1.4.x release gate
   (`scripts/release-check-1.4.py`) and the 1.5.0 release machinery (`scripts/prepare-release.py`,
   `scripts/fill-release.py`).

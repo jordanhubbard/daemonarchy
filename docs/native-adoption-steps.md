@@ -57,13 +57,13 @@ Open until these run: privileged cleanup, protected signer binding, artifact cus
 release enforcement (the ADOPT-002 acceptance text), and framework issues 74 and 93 for
 COMP-001.
 
-## Framework main instead of 1.3.0
+## Runtime: Literate AI 1.3.1
 
-Framework main needs `contributions.roadmap_goal_manifest` in `literate.release.json` and a
-reviewed Standard rebind (`litai project lifecycle rebind-standard`, plan then `--apply
---authorize-rebind`, which changes lifecycle and receipt-policy authority). The manifest
-needs a `Release target:` line on each queue heading and every included goal checked off.
-Do this as one operator-approved change; the 1.3.0 runtime rejects the manifest field.
+The operator locked this work to Literate AI 1.3.1 (tag `v1.3.1`, branch `release/1.3.x`) unless an item is
+scoped to 1.4.0. Use `~/daemonarchy-framework-1.3.1-runtime/venv/bin/litai` (built from the tag; `litai --version`
+reports `1.3.1`). Do not use framework main (1.4.0 development): it requires a release-goal manifest and a
+Standard rebind that the 1.3.x line does not. The only item that may need 1.4.0 is COMP-001 (framework issues
+#74 and #93, milestone 1.4).
 
 ## SRC-001: scheduling the controller run
 
