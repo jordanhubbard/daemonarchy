@@ -25,6 +25,7 @@ another version are historical records. 1.4 entries describe work in development
 - [GPU report: which GPU the desktop uses](gpu-report.md)
 - [Hardware trace stick: reset-surviving boot trace](boottrace.md)
 - [Login trace: timing from the login screen to a usable desktop](login-trace.md)
+- [Post-mortem: the 1.4.0 image stopped installing (tigervnc-viewer)](post-mortem-1.4.0-tigervnc.md)
 - [Mastering a release image: resumable steps](mastering-1.4.1.md)
 - [Mastering notes for 1.5.0: the re-roll sequence and the build VM](mastering-1.5.0.md)
 - [ADOPT-002 and SRC-001 native adoption steps for the operator](native-adoption-steps.md)
