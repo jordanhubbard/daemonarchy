@@ -1,0 +1,2001 @@
+{
+  "schema": "literate-ai/retained-project-test-policy@1",
+  "project_policy_identity": "sha256:d64aae9f5cad0b1ac47a4af5ca238e60fa09f56ecb6b14bb8176a1c1084ca13e",
+  "cases": [
+    {
+      "id": "build-timing-record.Record.test_clean_build_carries_no_incremental_caveat",
+      "action": "draft-ci-tests",
+      "skip_reason": null
+    },
+    {
+      "id": "build-timing-record.Record.test_each_step_lasts_until_the_next_marker",
+      "action": "draft-ci-tests",
+      "skip_reason": null
+    },
+    {
+      "id": "build-timing-record.Record.test_output_without_markers_is_refused",
+      "action": "draft-ci-tests",
+      "skip_reason": null
+    },
+    {
+      "id": "build-timing-record.Record.test_separate_phases_are_timed",
+      "action": "draft-ci-tests",
+      "skip_reason": null
+    },
+    {
+      "id": "build-timing-record.Record.test_total_exit_world_log_and_limits",
+      "action": "draft-ci-tests",
+      "skip_reason": null
+    },
+    {
+      "id": "extension-bundles.Downloads.test_a_download_larger_than_the_index_says_is_stopped",
+      "action": "draft-ci-isolated-tests",
+      "skip_reason": null
+    },
+    {
+      "id": "extension-bundles.Downloads.test_fetch_downloads_verifies_and_records_bytes_and_time_in_the_trace",
+      "action": "draft-ci-isolated-tests",
+      "skip_reason": null
+    },
+    {
+      "id": "extension-bundles.Downloads.test_offline_is_a_clear_error_not_a_traceback",
+      "action": "draft-ci-isolated-tests",
+      "skip_reason": null
+    },
+    {
+      "id": "extension-bundles.Downloads.test_only_https_or_loopback_http_is_allowed",
+      "action": "draft-ci-isolated-tests",
+      "skip_reason": null
+    },
+    {
+      "id": "extension-bundles.Downloads.test_without_an_install_trace_fetch_still_works_and_writes_nothing",
+      "action": "draft-ci-isolated-tests",
+      "skip_reason": null
+    },
+    {
+      "id": "extension-bundles.Extraction.test_a_good_bundle_extracts_with_normalised_modes_and_replaces_an_older_copy",
+      "action": "draft-ci-isolated-tests",
+      "skip_reason": null
+    },
+    {
+      "id": "extension-bundles.Extraction.test_an_extracted_tree_loads_through_the_plugin_registry",
+      "action": "draft-ci-isolated-tests",
+      "skip_reason": null
+    },
+    {
+      "id": "extension-bundles.Extraction.test_hostile_archives_are_refused_and_nothing_escapes",
+      "action": "draft-ci-isolated-tests",
+      "skip_reason": null
+    },
+    {
+      "id": "extension-bundles.Extraction.test_the_manifest_must_agree_with_the_signed_index_and_its_entry_hash",
+      "action": "draft-ci-isolated-tests",
+      "skip_reason": null
+    },
+    {
+      "id": "extension-bundles.IndexAndSignatures.test_a_correctly_signed_bundle_that_the_index_does_not_list_is_still_refused",
+      "action": "draft-ci-isolated-tests",
+      "skip_reason": null
+    },
+    {
+      "id": "extension-bundles.IndexAndSignatures.test_a_key_that_cannot_verify_is_a_refusal_not_a_crash",
+      "action": "draft-ci-isolated-tests",
+      "skip_reason": null
+    },
+    {
+      "id": "extension-bundles.IndexAndSignatures.test_a_signed_feed_verifies_end_to_end",
+      "action": "draft-ci-isolated-tests",
+      "skip_reason": null
+    },
+    {
+      "id": "extension-bundles.IndexAndSignatures.test_an_index_that_expands_without_limit_is_refused",
+      "action": "draft-ci-isolated-tests",
+      "skip_reason": null
+    },
+    {
+      "id": "extension-bundles.IndexAndSignatures.test_feed_name_schema_and_entries_are_validated",
+      "action": "draft-ci-isolated-tests",
+      "skip_reason": null
+    },
+    {
+      "id": "extension-bundles.IndexAndSignatures.test_resigning_with_the_release_key_changes_only_the_signatures",
+      "action": "draft-ci-isolated-tests",
+      "skip_reason": null
+    },
+    {
+      "id": "extension-bundles.IndexAndSignatures.test_tampering_with_the_index_a_bundle_or_its_hash_is_caught",
+      "action": "draft-ci-isolated-tests",
+      "skip_reason": null
+    },
+    {
+      "id": "extension-bundles.IndexAndSignatures.test_the_wrong_key_a_missing_signature_and_a_swapped_signature_are_refused",
+      "action": "draft-ci-isolated-tests",
+      "skip_reason": null
+    },
+    {
+      "id": "extension-bundles.Packing.test_a_bad_or_unsealed_manifest_is_refused",
+      "action": "draft-ci-isolated-tests",
+      "skip_reason": null
+    },
+    {
+      "id": "extension-bundles.Packing.test_every_extension_type_is_allowed_and_categorised",
+      "action": "draft-ci-isolated-tests",
+      "skip_reason": null
+    },
+    {
+      "id": "extension-bundles.Packing.test_only_plain_visible_files_are_bundled",
+      "action": "draft-ci-isolated-tests",
+      "skip_reason": null
+    },
+    {
+      "id": "extension-bundles.Packing.test_packing_is_deterministic_normalised_and_compressed",
+      "action": "draft-ci-isolated-tests",
+      "skip_reason": null
+    },
+    {
+      "id": "extension-bundles.Packing.test_python_bytecode_beside_the_source_is_left_out",
+      "action": "draft-ci-isolated-tests",
+      "skip_reason": null
+    },
+    {
+      "id": "extension-bundles.Packing.test_the_window_capability_is_a_valid_capability",
+      "action": "draft-ci-isolated-tests",
+      "skip_reason": null
+    },
+    {
+      "id": "extension-bundles.StagingTool.test_a_bad_feed_name_is_refused_by_the_tool",
+      "action": "draft-ci-isolated-tests",
+      "skip_reason": null
+    },
+    {
+      "id": "extension-bundles.StagingTool.test_resign_then_verify_with_the_release_public_key",
+      "action": "draft-ci-isolated-tests",
+      "skip_reason": null
+    },
+    {
+      "id": "extension-bundles.StagingTool.test_stage_builds_signs_verifies_and_reports_the_four_games",
+      "action": "draft-ci-isolated-tests",
+      "skip_reason": null
+    },
+    {
+      "id": "extension-bundles.StagingTool.test_the_games_sources_are_small_text_that_compresses",
+      "action": "draft-ci-isolated-tests",
+      "skip_reason": null
+    },
+    {
+      "id": "gpu-report.Classification.test_software_virtual_and_hardware_renderers",
+      "action": "draft-ci-tests",
+      "skip_reason": null
+    },
+    {
+      "id": "gpu-report.CommandLine.test_from_directory_text_json_and_exit_status",
+      "action": "draft-ci-tests",
+      "skip_reason": null
+    },
+    {
+      "id": "gpu-report.CommandLine.test_software_fallback_exits_2",
+      "action": "draft-ci-tests",
+      "skip_reason": null
+    },
+    {
+      "id": "gpu-report.MsiHybrid.test_both_pci_gpus_and_the_modules_are_listed",
+      "action": "draft-ci-tests",
+      "skip_reason": null
+    },
+    {
+      "id": "gpu-report.MsiHybrid.test_egl_devices_include_a_software_device_that_is_not_the_session",
+      "action": "draft-ci-tests",
+      "skip_reason": null
+    },
+    {
+      "id": "gpu-report.MsiHybrid.test_nothing_to_report_is_unknown",
+      "action": "draft-ci-tests",
+      "skip_reason": null
+    },
+    {
+      "id": "gpu-report.MsiHybrid.test_software_rendering_is_a_fallback_not_acceleration",
+      "action": "draft-ci-tests",
+      "skip_reason": null
+    },
+    {
+      "id": "gpu-report.MsiHybrid.test_the_session_is_matched_to_the_gpu_it_runs_on",
+      "action": "draft-ci-tests",
+      "skip_reason": null
+    },
+    {
+      "id": "gpu-report.MsiHybrid.test_x11_is_used_when_there_is_no_wayland_view",
+      "action": "draft-ci-tests",
+      "skip_reason": null
+    },
+    {
+      "id": "gui-package-manager.Catalog.test_an_unreadable_database_is_reported_not_hidden",
+      "action": "draft-ci-isolated-tests",
+      "skip_reason": null
+    },
+    {
+      "id": "gui-package-manager.Catalog.test_loads_repositories_and_installed",
+      "action": "draft-ci-isolated-tests",
+      "skip_reason": null
+    },
+    {
+      "id": "gui-package-manager.Catalog.test_missing_columns_do_not_break_loading",
+      "action": "draft-ci-isolated-tests",
+      "skip_reason": null
+    },
+    {
+      "id": "gui-package-manager.Catalog.test_search_filters",
+      "action": "draft-ci-isolated-tests",
+      "skip_reason": null
+    },
+    {
+      "id": "gui-package-manager.Catalog.test_search_is_fast_over_a_full_catalogue",
+      "action": "draft-ci-isolated-tests",
+      "skip_reason": null
+    },
+    {
+      "id": "gui-package-manager.Catalog.test_search_ranks_exact_then_prefix_then_substring_then_comment",
+      "action": "draft-ci-isolated-tests",
+      "skip_reason": null
+    },
+    {
+      "id": "gui-package-manager.Cli.test_plan_from_a_captured_dry_run",
+      "action": "draft-ci-isolated-tests",
+      "skip_reason": null
+    },
+    {
+      "id": "gui-package-manager.Cli.test_plan_needs_an_action_and_names",
+      "action": "draft-ci-isolated-tests",
+      "skip_reason": null
+    },
+    {
+      "id": "gui-package-manager.Cli.test_repos_json",
+      "action": "draft-ci-isolated-tests",
+      "skip_reason": null
+    },
+    {
+      "id": "gui-package-manager.Cli.test_search",
+      "action": "draft-ci-isolated-tests",
+      "skip_reason": null
+    },
+    {
+      "id": "gui-package-manager.Plans.test_a_plan_from_an_unsigned_repository_needs_confirmation",
+      "action": "draft-ci-isolated-tests",
+      "skip_reason": null
+    },
+    {
+      "id": "gui-package-manager.Plans.test_a_repository_unknown_to_the_configuration_is_untrusted",
+      "action": "draft-ci-isolated-tests",
+      "skip_reason": null
+    },
+    {
+      "id": "gui-package-manager.Plans.test_autoremove_is_a_removal_planned_without_names_or_a_catalogue_update",
+      "action": "draft-ci-isolated-tests",
+      "skip_reason": null
+    },
+    {
+      "id": "gui-package-manager.Plans.test_dry_run_uses_the_runner_and_sees_the_argv",
+      "action": "draft-ci-isolated-tests",
+      "skip_reason": null
+    },
+    {
+      "id": "gui-package-manager.Plans.test_empty_plan_is_a_problem_not_silence",
+      "action": "draft-ci-isolated-tests",
+      "skip_reason": null
+    },
+    {
+      "id": "gui-package-manager.Plans.test_identity_is_stable_and_changes_with_anything_that_matters",
+      "action": "draft-ci-isolated-tests",
+      "skip_reason": null
+    },
+    {
+      "id": "gui-package-manager.Plans.test_install_plan_items_bytes_and_repositories",
+      "action": "draft-ci-isolated-tests",
+      "skip_reason": null
+    },
+    {
+      "id": "gui-package-manager.Plans.test_output_captured_from_a_real_pkg",
+      "action": "draft-ci-isolated-tests",
+      "skip_reason": null
+    },
+    {
+      "id": "gui-package-manager.Plans.test_remove_plan_frees_the_installed_size",
+      "action": "draft-ci-isolated-tests",
+      "skip_reason": null
+    },
+    {
+      "id": "gui-package-manager.Plans.test_the_dry_run_command_is_the_one_the_helper_will_run",
+      "action": "draft-ci-isolated-tests",
+      "skip_reason": null
+    },
+    {
+      "id": "gui-package-manager.Plans.test_upgrade_reinstall_downgrade",
+      "action": "draft-ci-isolated-tests",
+      "skip_reason": null
+    },
+    {
+      "id": "gui-package-manager.Plans.test_without_a_catalogue_the_sizes_are_pkgs_rounded_text_and_say_so",
+      "action": "draft-ci-isolated-tests",
+      "skip_reason": null
+    },
+    {
+      "id": "gui-package-manager.Repositories.test_comments_quotes_and_order",
+      "action": "draft-ci-isolated-tests",
+      "skip_reason": null
+    },
+    {
+      "id": "gui-package-manager.Repositories.test_fingerprints_directory",
+      "action": "draft-ci-isolated-tests",
+      "skip_reason": null
+    },
+    {
+      "id": "gui-package-manager.Repositories.test_later_file_merges_over_earlier_and_can_disable",
+      "action": "draft-ci-isolated-tests",
+      "skip_reason": null
+    },
+    {
+      "id": "gui-package-manager.Repositories.test_signed_by_pubkey_with_fingerprint",
+      "action": "draft-ci-isolated-tests",
+      "skip_reason": null
+    },
+    {
+      "id": "gui-package-manager.Repositories.test_unsigned_and_broken_are_not_trusted",
+      "action": "draft-ci-isolated-tests",
+      "skip_reason": null
+    },
+    {
+      "id": "gui-package-manager.SharedEngine.test_a_missing_module_names_where_it_looked",
+      "action": "draft-ci-isolated-tests",
+      "skip_reason": null
+    },
+    {
+      "id": "gui-package-manager.SharedEngine.test_the_gui_plan_totals_equal_the_installers_plan_line",
+      "action": "draft-ci-isolated-tests",
+      "skip_reason": null
+    },
+    {
+      "id": "gui-package-manager.SharedEngine.test_the_installers_own_modules_are_the_ones_loaded",
+      "action": "draft-ci-isolated-tests",
+      "skip_reason": null
+    },
+    {
+      "id": "gui-package-transaction.Helper.test_a_changed_plan_is_refused_and_nothing_runs",
+      "action": "draft-ci-isolated-tests",
+      "skip_reason": null
+    },
+    {
+      "id": "gui-package-transaction.Helper.test_a_download_that_cannot_succeed_stops_before_the_install",
+      "action": "draft-ci-isolated-tests",
+      "skip_reason": null
+    },
+    {
+      "id": "gui-package-transaction.Helper.test_a_failed_install_is_reported_as_failed",
+      "action": "draft-ci-isolated-tests",
+      "skip_reason": null
+    },
+    {
+      "id": "gui-package-transaction.Helper.test_an_empty_plan_is_not_run",
+      "action": "draft-ci-isolated-tests",
+      "skip_reason": null
+    },
+    {
+      "id": "gui-package-transaction.Helper.test_an_unsigned_repository_needs_to_be_named",
+      "action": "draft-ci-isolated-tests",
+      "skip_reason": null
+    },
+    {
+      "id": "gui-package-transaction.Helper.test_autoremove_runs_pkgs_own_list_of_unused_dependencies",
+      "action": "draft-ci-isolated-tests",
+      "skip_reason": null
+    },
+    {
+      "id": "gui-package-transaction.Helper.test_install_runs_the_plan_and_reports_in_the_installers_vocabulary",
+      "action": "draft-ci-isolated-tests",
+      "skip_reason": null
+    },
+    {
+      "id": "gui-package-transaction.Helper.test_remove",
+      "action": "draft-ci-isolated-tests",
+      "skip_reason": null
+    },
+    {
+      "id": "gui-package-transaction.Helper.test_retry_replans_and_reuses_archives_already_fetched",
+      "action": "draft-ci-isolated-tests",
+      "skip_reason": null
+    },
+    {
+      "id": "gui-package-transaction.Helper.test_the_window_view_of_that_stream_ends_complete",
+      "action": "draft-ci-isolated-tests",
+      "skip_reason": null
+    },
+    {
+      "id": "gui-package-transaction.RootSafety.test_arguments_that_are_not_plain_names_are_refused",
+      "action": "draft-ci-isolated-tests",
+      "skip_reason": null
+    },
+    {
+      "id": "gui-package-transaction.RootSafety.test_autoremove_takes_no_names_and_refresh_takes_nothing",
+      "action": "draft-ci-isolated-tests",
+      "skip_reason": null
+    },
+    {
+      "id": "gui-package-transaction.RootSafety.test_elevation",
+      "action": "draft-ci-isolated-tests",
+      "skip_reason": null
+    },
+    {
+      "id": "gui-package-transaction.RootSafety.test_root_ignores_the_engine_directory_a_user_names",
+      "action": "draft-ci-isolated-tests",
+      "skip_reason": null
+    },
+    {
+      "id": "gui-package-transaction.RootSafety.test_the_helper_takes_no_option_that_redirects_it",
+      "action": "draft-ci-isolated-tests",
+      "skip_reason": null
+    },
+    {
+      "id": "gui-package-transaction.View.test_a_refusal_is_its_own_state",
+      "action": "draft-ci-isolated-tests",
+      "skip_reason": null
+    },
+    {
+      "id": "gui-package-transaction.View.test_an_unreadable_result_is_a_failure_not_success",
+      "action": "draft-ci-isolated-tests",
+      "skip_reason": null
+    },
+    {
+      "id": "gui-package-transaction.View.test_download_progress_is_measured_and_the_estimate_says_what_it_rests_on",
+      "action": "draft-ci-isolated-tests",
+      "skip_reason": null
+    },
+    {
+      "id": "gui-package-transaction.View.test_install_counts_extracted_packages_once",
+      "action": "draft-ci-isolated-tests",
+      "skip_reason": null
+    },
+    {
+      "id": "gui-package-transaction.View.test_nothing_is_shown_as_known_before_it_is",
+      "action": "draft-ci-isolated-tests",
+      "skip_reason": null
+    },
+    {
+      "id": "gui-package-transaction.View.test_percent_never_exceeds_99_until_the_result",
+      "action": "draft-ci-isolated-tests",
+      "skip_reason": null
+    },
+    {
+      "id": "gui-package-window.Browsing.test_a_disabled_repository_does_not_supply_packages",
+      "action": "draft-ci-isolated-tests",
+      "skip_reason": null
+    },
+    {
+      "id": "gui-package-window.Browsing.test_detail_actions",
+      "action": "draft-ci-isolated-tests",
+      "skip_reason": null
+    },
+    {
+      "id": "gui-package-window.Browsing.test_limit_reports_the_true_total",
+      "action": "draft-ci-isolated-tests",
+      "skip_reason": null
+    },
+    {
+      "id": "gui-package-window.Browsing.test_repository_rows_carry_trust",
+      "action": "draft-ci-isolated-tests",
+      "skip_reason": null
+    },
+    {
+      "id": "gui-package-window.Browsing.test_rows_say_which_repository_would_supply_them_and_whether_it_is_signed",
+      "action": "draft-ci-isolated-tests",
+      "skip_reason": null
+    },
+    {
+      "id": "gui-package-window.Browsing.test_views_and_badges",
+      "action": "draft-ci-isolated-tests",
+      "skip_reason": null
+    },
+    {
+      "id": "gui-package-window.Launch.test_lines_and_exit_status_are_delivered",
+      "action": "draft-ci-isolated-tests",
+      "skip_reason": null
+    },
+    {
+      "id": "gui-package-window.Launch.test_terminate_stops_a_running_process",
+      "action": "draft-ci-isolated-tests",
+      "skip_reason": null
+    },
+    {
+      "id": "gui-package-window.Packaging.test_the_application_id_matches_the_window_source",
+      "action": "draft-ci-isolated-tests",
+      "skip_reason": null
+    },
+    {
+      "id": "gui-package-window.Packaging.test_the_desktop_entry_is_launchable_from_the_apps_menu",
+      "action": "draft-ci-isolated-tests",
+      "skip_reason": null
+    },
+    {
+      "id": "gui-package-window.Packaging.test_the_helper_is_found_by_path_not_by_search",
+      "action": "draft-ci-isolated-tests",
+      "skip_reason": null
+    },
+    {
+      "id": "gui-package-window.Packaging.test_the_launchers_are_executable_and_start_with_a_shebang",
+      "action": "draft-ci-isolated-tests",
+      "skip_reason": null
+    },
+    {
+      "id": "gui-package-window.Refresh.test_refresh_reports_in_the_same_vocabulary",
+      "action": "draft-ci-isolated-tests",
+      "skip_reason": null
+    },
+    {
+      "id": "gui-package-window.Refresh.test_the_helper_has_a_refresh_action_that_takes_no_arguments",
+      "action": "draft-ci-isolated-tests",
+      "skip_reason": null
+    },
+    {
+      "id": "gui-package-window.Sessions.test_a_helper_that_dies_without_a_result_is_a_failure_with_its_last_words",
+      "action": "draft-ci-isolated-tests",
+      "skip_reason": null
+    },
+    {
+      "id": "gui-package-window.Sessions.test_a_signed_plan_can_be_approved_and_runs_the_helper_with_its_identity",
+      "action": "draft-ci-isolated-tests",
+      "skip_reason": null
+    },
+    {
+      "id": "gui-package-window.Sessions.test_an_empty_plan_and_a_failing_planner_are_errors",
+      "action": "draft-ci-isolated-tests",
+      "skip_reason": null
+    },
+    {
+      "id": "gui-package-window.Sessions.test_an_unsigned_repository_blocks_approval_until_it_is_named",
+      "action": "draft-ci-isolated-tests",
+      "skip_reason": null
+    },
+    {
+      "id": "gui-package-window.Sessions.test_cancel_during_the_download_ends_cancelled_not_failed",
+      "action": "draft-ci-isolated-tests",
+      "skip_reason": null
+    },
+    {
+      "id": "gui-package-window.Sessions.test_cancel_is_offered_only_while_downloading",
+      "action": "draft-ci-isolated-tests",
+      "skip_reason": null
+    },
+    {
+      "id": "gui-package-window.Sessions.test_failure_and_refusal_states",
+      "action": "draft-ci-isolated-tests",
+      "skip_reason": null
+    },
+    {
+      "id": "gui-package-window.Sessions.test_no_sudo_is_a_clear_error_not_a_hang",
+      "action": "draft-ci-isolated-tests",
+      "skip_reason": null
+    },
+    {
+      "id": "gui-package-window.Sessions.test_retry_plans_again_and_shows_a_changed_plan",
+      "action": "draft-ci-isolated-tests",
+      "skip_reason": null
+    },
+    {
+      "id": "gui-package-window.Sessions.test_the_stream_drives_the_state_to_done",
+      "action": "draft-ci-isolated-tests",
+      "skip_reason": null
+    },
+    {
+      "id": "gui-package-window.Sessions.test_titles",
+      "action": "draft-ci-isolated-tests",
+      "skip_reason": null
+    },
+    {
+      "id": "gui-package-window.Theme.test_contrast_function",
+      "action": "draft-ci-isolated-tests",
+      "skip_reason": null
+    },
+    {
+      "id": "gui-package-window.Theme.test_css_is_self_contained",
+      "action": "draft-ci-isolated-tests",
+      "skip_reason": null
+    },
+    {
+      "id": "gui-package-window.Theme.test_every_kind_has_a_chip_style_and_a_label",
+      "action": "draft-ci-isolated-tests",
+      "skip_reason": null
+    },
+    {
+      "id": "gui-package-window.Theme.test_reduced_motion",
+      "action": "draft-ci-isolated-tests",
+      "skip_reason": null
+    },
+    {
+      "id": "gui-package-window.Theme.test_text_colours_are_legible_on_the_window_surfaces",
+      "action": "draft-ci-isolated-tests",
+      "skip_reason": null
+    },
+    {
+      "id": "gui-package-window.Theme.test_the_fallback_palette_is_the_sdks",
+      "action": "draft-ci-isolated-tests",
+      "skip_reason": null
+    },
+    {
+      "id": "gui-package-window.Theme.test_the_selected_sidebar_row_keeps_white_text_legible_across_the_gradient",
+      "action": "draft-ci-isolated-tests",
+      "skip_reason": null
+    },
+    {
+      "id": "install-trace-baseline.BaselineTests.test_a_raw_trace_can_be_labelled_so_the_next_run_compares_cleanly",
+      "action": "draft-ci-tests",
+      "skip_reason": null
+    },
+    {
+      "id": "install-trace-baseline.BaselineTests.test_build_records_context_digest_and_completeness",
+      "action": "draft-ci-tests",
+      "skip_reason": null
+    },
+    {
+      "id": "install-trace-baseline.BaselineTests.test_compare_accepts_raw_traces_and_gates_on_regression",
+      "action": "draft-ci-tests",
+      "skip_reason": null
+    },
+    {
+      "id": "install-trace-baseline.BaselineTests.test_compare_reports_deltas_and_flags_regressions",
+      "action": "draft-ci-tests",
+      "skip_reason": null
+    },
+    {
+      "id": "install-trace-baseline.BaselineTests.test_comparison_warns_when_a_run_is_incomplete",
+      "action": "draft-ci-tests",
+      "skip_reason": null
+    },
+    {
+      "id": "install-trace-baseline.BaselineTests.test_context_accepts_only_known_keys_and_plain_values",
+      "action": "draft-ci-tests",
+      "skip_reason": null
+    },
+    {
+      "id": "install-trace-baseline.BaselineTests.test_failed_run_is_marked_incomplete",
+      "action": "draft-ci-tests",
+      "skip_reason": null
+    },
+    {
+      "id": "install-trace-baseline.CuratedRecordTests.test_every_record_matches_its_trace_and_grants_nothing",
+      "action": "draft-ci-tests",
+      "skip_reason": null
+    },
+    {
+      "id": "install-trace.LibraryTests.test_phase_operation_and_exit_events",
+      "action": "draft-ci-tests",
+      "skip_reason": null
+    },
+    {
+      "id": "install-trace.LibraryTests.test_values_cannot_break_the_line",
+      "action": "draft-ci-tests",
+      "skip_reason": null
+    },
+    {
+      "id": "install-trace.PkgEventsTraceTests.test_download_and_install_events_get_durations",
+      "action": "draft-ci-tests",
+      "skip_reason": null
+    },
+    {
+      "id": "install-trace.SamplerTests.test_cpu_percent",
+      "action": "draft-ci-tests",
+      "skip_reason": null
+    },
+    {
+      "id": "install-trace.SamplerTests.test_deltas_only_for_what_moved",
+      "action": "draft-ci-tests",
+      "skip_reason": null
+    },
+    {
+      "id": "install-trace.SamplerTests.test_devd_events_keep_only_names",
+      "action": "draft-ci-tests",
+      "skip_reason": null
+    },
+    {
+      "id": "install-trace.SamplerTests.test_iostat_devices",
+      "action": "draft-ci-tests",
+      "skip_reason": null
+    },
+    {
+      "id": "install-trace.SamplerTests.test_netstat_counters_without_addresses",
+      "action": "draft-ci-tests",
+      "skip_reason": null
+    },
+    {
+      "id": "install-trace.SummaryTests.test_summary_reports_phases_operations_downloads_and_io",
+      "action": "draft-ci-tests",
+      "skip_reason": null
+    },
+    {
+      "id": "installer-extensions.InstallScreenAndHooks.test_a_lingering_menu_window_is_closed_after_the_request",
+      "action": "draft-ci-isolated-tests",
+      "skip_reason": null
+    },
+    {
+      "id": "installer-extensions.InstallScreenAndHooks.test_g_and_x_open_the_extensions_menu_only_when_it_is_safe_and_possible",
+      "action": "draft-ci-isolated-tests",
+      "skip_reason": null
+    },
+    {
+      "id": "installer-extensions.InstallScreenAndHooks.test_nothing_extension_shaped_is_baked_into_the_iso",
+      "action": "draft-ci-isolated-tests",
+      "skip_reason": null
+    },
+    {
+      "id": "installer-extensions.InstallScreenAndHooks.test_the_launcher_stays_out_of_the_installation",
+      "action": "draft-ci-isolated-tests",
+      "skip_reason": null
+    },
+    {
+      "id": "installer-extensions.InstallScreenAndHooks.test_the_preempt_file_follows_the_installation_and_pairing",
+      "action": "draft-ci-isolated-tests",
+      "skip_reason": null
+    },
+    {
+      "id": "installer-extensions.InstallScreenAndHooks.test_the_welcome_options_screen_has_an_extensions_entry",
+      "action": "draft-ci-isolated-tests",
+      "skip_reason": null
+    },
+    {
+      "id": "installer-extensions.InstallScreenAndHooks.test_tmux_keys_and_hint_mention_extensions",
+      "action": "draft-ci-isolated-tests",
+      "skip_reason": null
+    },
+    {
+      "id": "installer-extensions.MenuFlow.test_a_terminal_that_is_too_small_for_the_choice_is_told_so_and_nothing_downloads",
+      "action": "draft-ci-isolated-tests",
+      "skip_reason": null
+    },
+    {
+      "id": "installer-extensions.MenuFlow.test_choosing_downloads_verifies_and_runs_and_the_second_time_needs_no_network",
+      "action": "draft-ci-isolated-tests",
+      "skip_reason": null
+    },
+    {
+      "id": "installer-extensions.MenuFlow.test_list_prints_the_feed_for_scripts",
+      "action": "draft-ci-isolated-tests",
+      "skip_reason": null
+    },
+    {
+      "id": "installer-extensions.MenuFlow.test_run_never_downloads",
+      "action": "draft-ci-isolated-tests",
+      "skip_reason": null
+    },
+    {
+      "id": "installer-extensions.MenuFlow.test_the_games_category_can_be_the_starting_point",
+      "action": "draft-ci-isolated-tests",
+      "skip_reason": null
+    },
+    {
+      "id": "installer-extensions.MenuFlow.test_the_menu_lists_the_signed_feed_with_size_source_and_network",
+      "action": "draft-ci-isolated-tests",
+      "skip_reason": null
+    },
+    {
+      "id": "installer-extensions.OwnWindow.test_each_run_gets_its_own_tmux_window_and_the_installation_preempts_them",
+      "action": "draft-ci-isolated-tests",
+      "skip_reason": null
+    },
+    {
+      "id": "installer-extensions.Refusals.test_a_bundle_signed_by_another_key_is_refused",
+      "action": "draft-ci-isolated-tests",
+      "skip_reason": null
+    },
+    {
+      "id": "installer-extensions.Refusals.test_a_tampered_bundle_is_refused_at_download_time_and_never_runs",
+      "action": "draft-ci-isolated-tests",
+      "skip_reason": null
+    },
+    {
+      "id": "installer-extensions.Refusals.test_an_image_without_a_pinned_key_offers_nothing_and_asks_the_network_for_nothing",
+      "action": "draft-ci-isolated-tests",
+      "skip_reason": null
+    },
+    {
+      "id": "installer-extensions.Refusals.test_an_index_for_another_feed_is_refused",
+      "action": "draft-ci-isolated-tests",
+      "skip_reason": null
+    },
+    {
+      "id": "installer-extensions.Refusals.test_an_index_signed_by_the_wrong_key_is_refused",
+      "action": "draft-ci-isolated-tests",
+      "skip_reason": null
+    },
+    {
+      "id": "installer-extensions.Refusals.test_disabled_plain_unknown_and_preempted_cases_are_explicit",
+      "action": "draft-ci-isolated-tests",
+      "skip_reason": null
+    },
+    {
+      "id": "installer-extensions.Refusals.test_offline_says_so_clearly_runs_nothing_and_still_offers_what_is_cached",
+      "action": "draft-ci-isolated-tests",
+      "skip_reason": null
+    },
+    {
+      "id": "installer-extensions.Refusals.test_offline_with_nothing_cached_says_what_to_do",
+      "action": "draft-ci-isolated-tests",
+      "skip_reason": null
+    },
+    {
+      "id": "installer-progress-stats.Counts.test_a_package_is_counted_once_however_often_its_lines_repeat",
+      "action": "draft-ci-isolated-tests",
+      "skip_reason": null
+    },
+    {
+      "id": "installer-progress-stats.Counts.test_a_whole_log_arriving_at_once_is_read_without_loss",
+      "action": "draft-ci-isolated-tests",
+      "skip_reason": null
+    },
+    {
+      "id": "installer-progress-stats.Counts.test_the_count_is_clamped_to_the_plan",
+      "action": "draft-ci-isolated-tests",
+      "skip_reason": null
+    },
+    {
+      "id": "installer-progress-stats.Counts.test_the_installed_count_rises_one_package_at_a_time_and_reaches_the_total_only_when_done",
+      "action": "draft-ci-isolated-tests",
+      "skip_reason": null
+    },
+    {
+      "id": "installer-progress-stats.Counts.test_without_a_plan_the_total_comes_from_pkgs_own_lines",
+      "action": "draft-ci-isolated-tests",
+      "skip_reason": null
+    },
+    {
+      "id": "installer-progress-stats.LiveDashboard.test_the_header_counts_up_and_the_ticker_never_outlives_the_install",
+      "action": "draft-ci-isolated-tests",
+      "skip_reason": null
+    },
+    {
+      "id": "installer-progress-stats.RenderedHeader.test_a_finished_install_shows_the_total_time_and_no_estimate",
+      "action": "draft-ci-isolated-tests",
+      "skip_reason": null
+    },
+    {
+      "id": "installer-progress-stats.RenderedHeader.test_a_steady_download_shows_its_measured_rate_in_the_header",
+      "action": "draft-ci-isolated-tests",
+      "skip_reason": null
+    },
+    {
+      "id": "installer-progress-stats.RenderedHeader.test_a_tall_screen_shows_the_stage_table_and_a_short_one_the_chips",
+      "action": "draft-ci-isolated-tests",
+      "skip_reason": null
+    },
+    {
+      "id": "installer-progress-stats.RenderedHeader.test_ascii_terminals_get_an_ascii_header",
+      "action": "draft-ci-isolated-tests",
+      "skip_reason": null
+    },
+    {
+      "id": "installer-progress-stats.RenderedHeader.test_the_estimates_are_labelled_and_the_counters_are_not",
+      "action": "draft-ci-isolated-tests",
+      "skip_reason": null
+    },
+    {
+      "id": "installer-progress-stats.RenderedHeader.test_the_first_rows_hold_the_statistics_at_every_size",
+      "action": "draft-ci-isolated-tests",
+      "skip_reason": null
+    },
+    {
+      "id": "installer-progress-stats.RenderedHeader.test_the_full_header_at_a_comfortable_size_has_every_figure_labelled",
+      "action": "draft-ci-isolated-tests",
+      "skip_reason": null
+    },
+    {
+      "id": "installer-progress-stats.RenderedHeader.test_the_header_is_above_the_logo_not_replaced_by_it",
+      "action": "draft-ci-isolated-tests",
+      "skip_reason": null
+    },
+    {
+      "id": "installer-progress-stats.RenderedHeader.test_the_plain_serial_view_carries_the_same_numbers",
+      "action": "draft-ci-isolated-tests",
+      "skip_reason": null
+    },
+    {
+      "id": "installer-progress-stats.RenderedHeader.test_the_stage_table_can_be_forced_either_way",
+      "action": "draft-ci-isolated-tests",
+      "skip_reason": null
+    },
+    {
+      "id": "installer-progress-stats.Statistics.test_a_bad_plan_is_refused_not_trusted",
+      "action": "draft-ci-isolated-tests",
+      "skip_reason": null
+    },
+    {
+      "id": "installer-progress-stats.Statistics.test_a_restarted_log_forgets_the_plan_and_the_counts",
+      "action": "draft-ci-isolated-tests",
+      "skip_reason": null
+    },
+    {
+      "id": "installer-progress-stats.Statistics.test_an_unknown_rate_is_never_invented",
+      "action": "draft-ci-isolated-tests",
+      "skip_reason": null
+    },
+    {
+      "id": "installer-progress-stats.Statistics.test_each_retry_banks_the_bytes_of_the_run_before",
+      "action": "draft-ci-isolated-tests",
+      "skip_reason": null
+    },
+    {
+      "id": "installer-progress-stats.Statistics.test_percent_only_moves_forward_never_reaches_100_early_and_is_exact_at_the_end",
+      "action": "draft-ci-isolated-tests",
+      "skip_reason": null
+    },
+    {
+      "id": "installer-progress-stats.Statistics.test_stage_n_of_m_counts_the_expected_cuda_stage_from_the_start",
+      "action": "draft-ci-isolated-tests",
+      "skip_reason": null
+    },
+    {
+      "id": "installer-progress-stats.Statistics.test_the_time_left_comes_from_the_measured_rate",
+      "action": "draft-ci-isolated-tests",
+      "skip_reason": null
+    },
+    {
+      "id": "installer-progress-stats.Statistics.test_the_time_left_says_baseline_until_there_is_a_rate",
+      "action": "draft-ci-isolated-tests",
+      "skip_reason": null
+    },
+    {
+      "id": "installer-progress-stats.Statistics.test_total_elapsed_is_h_mm_ss_and_runs_from_the_first_stage",
+      "action": "draft-ci-isolated-tests",
+      "skip_reason": null
+    },
+    {
+      "id": "installer-progress-stats.Statistics.test_when_the_download_ends_its_total_is_what_was_received",
+      "action": "draft-ci-isolated-tests",
+      "skip_reason": null
+    },
+    {
+      "id": "installer-progress-stats.Statistics.test_with_a_plan_the_bytes_and_packages_have_exact_totals_and_a_rate",
+      "action": "draft-ci-isolated-tests",
+      "skip_reason": null
+    },
+    {
+      "id": "installer-progress-stats.Statistics.test_without_a_plan_the_download_total_is_pkgs_rounded_figure_and_flagged_approximate",
+      "action": "draft-ci-isolated-tests",
+      "skip_reason": null
+    },
+    {
+      "id": "installer-progress-stats.TheSymptom.test_no_screen_after_the_install_says_installing",
+      "action": "draft-ci-isolated-tests",
+      "skip_reason": null
+    },
+    {
+      "id": "installer-progress-stats.TheSymptom.test_the_stale_download_ticker_is_not_shown_while_the_install_resolves",
+      "action": "draft-ci-isolated-tests",
+      "skip_reason": null
+    },
+    {
+      "id": "installer-progress-stats.TheSymptom.test_the_ticker_is_hidden_once_its_phase_is_over",
+      "action": "draft-ci-isolated-tests",
+      "skip_reason": null
+    },
+    {
+      "id": "installer-progress-stats.Timeline.test_stages_carry_start_offsets_durations_and_expectations",
+      "action": "draft-ci-isolated-tests",
+      "skip_reason": null
+    },
+    {
+      "id": "installer-progress-stats.Timeline.test_the_baseline_is_the_recorded_real_install",
+      "action": "draft-ci-isolated-tests",
+      "skip_reason": null
+    },
+    {
+      "id": "installer-sdk-audit.Audit.test_every_remaining_raw_escape_in_the_installer_is_allowed_and_explained",
+      "action": "draft-ci-isolated-tests",
+      "skip_reason": null
+    },
+    {
+      "id": "installer-sdk-audit.Audit.test_the_allow_list_has_no_stale_entries",
+      "action": "draft-ci-isolated-tests",
+      "skip_reason": null
+    },
+    {
+      "id": "installer-sdk-audit.Audit.test_the_python_screens_import_the_sdk",
+      "action": "draft-ci-isolated-tests",
+      "skip_reason": null
+    },
+    {
+      "id": "installer-sdk-audit.Audit.test_the_welcome_frame_and_logo_go_through_charm_with_a_plain_fallback",
+      "action": "draft-ci-isolated-tests",
+      "skip_reason": null
+    },
+    {
+      "id": "installer-sdk-audit.CharmCommands.test_bad_arguments_never_fail_the_installer",
+      "action": "draft-ci-isolated-tests",
+      "skip_reason": null
+    },
+    {
+      "id": "installer-sdk-audit.CharmCommands.test_logo_clears_and_draws_it_and_restore_puts_the_terminal_back",
+      "action": "draft-ci-isolated-tests",
+      "skip_reason": null
+    },
+    {
+      "id": "installer-sdk-audit.CharmCommands.test_welcome_draws_logo_tagline_and_hint_on_a_terminal",
+      "action": "draft-ci-isolated-tests",
+      "skip_reason": null
+    },
+    {
+      "id": "installer-sdk-audit.CharmCommands.test_welcome_is_plain_text_off_a_terminal",
+      "action": "draft-ci-isolated-tests",
+      "skip_reason": null
+    },
+    {
+      "id": "login-trace.ParseTests.test_ps_rows_split_into_fields_and_junk_is_skipped",
+      "action": "draft-ci-tests",
+      "skip_reason": null
+    },
+    {
+      "id": "login-trace.RecorderTests.test_first_sighting_wins",
+      "action": "draft-ci-tests",
+      "skip_reason": null
+    },
+    {
+      "id": "login-trace.RecorderTests.test_full_login_gives_deltas_from_the_login_in_milliseconds",
+      "action": "draft-ci-tests",
+      "skip_reason": null
+    },
+    {
+      "id": "login-trace.RecorderTests.test_greeter_and_user_sessions_are_told_apart",
+      "action": "draft-ci-tests",
+      "skip_reason": null
+    },
+    {
+      "id": "login-trace.RecorderTests.test_no_command_line_reaches_the_record",
+      "action": "draft-ci-tests",
+      "skip_reason": null
+    },
+    {
+      "id": "login-trace.RecorderTests.test_the_sddm_user_is_never_a_user_session",
+      "action": "draft-ci-tests",
+      "skip_reason": null
+    },
+    {
+      "id": "login-trace.WiringTests.test_rc_script_parses_and_installer_installs_both_files",
+      "action": "draft-ci-tests",
+      "skip_reason": null
+    },
+    {
+      "id": "login-trace.WriteTests.test_records_append_and_the_file_is_bounded",
+      "action": "draft-ci-tests",
+      "skip_reason": null
+    },
+    {
+      "id": "package-feed-manifest.FeedManifest.test_manifest_lists_every_asset_and_uploader_orders_packages_first",
+      "action": "draft-ci-tests",
+      "skip_reason": null
+    },
+    {
+      "id": "package-feed-manifest.FeedManifest.test_refuses_a_feed_without_its_catalogue",
+      "action": "draft-ci-tests",
+      "skip_reason": null
+    },
+    {
+      "id": "package-feed-manifest.FeedManifest.test_refuses_uncompressed_packages_bad_tags_and_a_second_staging",
+      "action": "draft-ci-tests",
+      "skip_reason": null
+    },
+    {
+      "id": "package-feed-stage.RecordedFeeds.test_every_recorded_feed_is_valid_and_matches_its_file_name",
+      "action": "draft-ci-tests",
+      "skip_reason": null
+    },
+    {
+      "id": "package-feed-stage.StageTests.test_a_corrupt_or_missing_archive_stops_staging",
+      "action": "draft-ci-tests",
+      "skip_reason": null
+    },
+    {
+      "id": "package-feed-stage.StageTests.test_catalogue_must_name_exactly_the_staged_packages",
+      "action": "draft-ci-tests",
+      "skip_reason": null
+    },
+    {
+      "id": "package-feed-stage.StageTests.test_publish_plan_is_text_only_with_packages_before_catalogue",
+      "action": "draft-ci-tests",
+      "skip_reason": null
+    },
+    {
+      "id": "package-feed-stage.StageTests.test_record_entries_are_what_the_release_verifier_accepts",
+      "action": "draft-ci-tests",
+      "skip_reason": null
+    },
+    {
+      "id": "package-feed-stage.StageTests.test_stage_copies_verified_archives_under_github_safe_names",
+      "action": "draft-ci-tests",
+      "skip_reason": null
+    },
+    {
+      "id": "package-feed-stage.StageTests.test_tag_prefix_and_existing_output_are_validated",
+      "action": "draft-ci-tests",
+      "skip_reason": null
+    },
+    {
+      "id": "package-feed-stage.StageTests.test_verify_catches_tampering_extras_and_missing_assets",
+      "action": "draft-ci-tests",
+      "skip_reason": null
+    },
+    {
+      "id": "package-feed-upload.UploadTests.test_a_complete_asset_of_another_size_is_never_replaced",
+      "action": "draft-ci-tests",
+      "skip_reason": null
+    },
+    {
+      "id": "package-feed-upload.UploadTests.test_a_failed_asset_is_retried_alone_and_its_partial_removed",
+      "action": "draft-ci-tests",
+      "skip_reason": null
+    },
+    {
+      "id": "package-feed-upload.UploadTests.test_creates_a_non_latest_release_and_uploads_packages_before_the_catalogue",
+      "action": "draft-ci-tests",
+      "skip_reason": null
+    },
+    {
+      "id": "package-feed-upload.UploadTests.test_running_again_resumes_without_uploading_anything",
+      "action": "draft-ci-tests",
+      "skip_reason": null
+    },
+    {
+      "id": "package-feed-upload.VerifyTests.test_independent_download_catches_a_changed_asset_and_a_latest_feed",
+      "action": "draft-ci-tests",
+      "skip_reason": null
+    },
+    {
+      "id": "package-feed-upload.VerifyTests.test_missing_asset_and_failed_download_are_reported",
+      "action": "draft-ci-tests",
+      "skip_reason": null
+    },
+    {
+      "id": "package-mirror-plan.DriftExitTests.test_fail_on_unsatisfied_reports_missing_dependency",
+      "action": "draft-ci-tests",
+      "skip_reason": null
+    },
+    {
+      "id": "package-mirror-plan.PlanTests.test_closure_and_priority",
+      "action": "draft-ci-tests",
+      "skip_reason": null
+    },
+    {
+      "id": "package-mirror-plan.PlanTests.test_hosted_shard_covers_only_upstream_packages",
+      "action": "draft-ci-tests",
+      "skip_reason": null
+    },
+    {
+      "id": "package-mirror-plan.PlanTests.test_licences_counted",
+      "action": "draft-ci-tests",
+      "skip_reason": null
+    },
+    {
+      "id": "package-mirror-plan.PlanTests.test_only_named_upstream_catalogues_are_hosted",
+      "action": "draft-ci-tests",
+      "skip_reason": null
+    },
+    {
+      "id": "package-mirror-plan.PlanTests.test_shards_split_at_asset_limit",
+      "action": "draft-ci-tests",
+      "skip_reason": null
+    },
+    {
+      "id": "package-mirror-plan.PlanTests.test_unsatisfied_root_is_reported",
+      "action": "draft-ci-tests",
+      "skip_reason": null
+    },
+    {
+      "id": "parallel-fetch.PlanTests.test_batches_start_big_first_and_keep_big_packages_alone",
+      "action": "draft-ci-tests",
+      "skip_reason": null
+    },
+    {
+      "id": "parallel-fetch.PlanTests.test_parse_plan_takes_install_and_upgrade_sections_only",
+      "action": "draft-ci-tests",
+      "skip_reason": null
+    },
+    {
+      "id": "parallel-fetch.PlanTests.test_skip_repo_drops_local_packages",
+      "action": "draft-ci-tests",
+      "skip_reason": null
+    },
+    {
+      "id": "parallel-fetch.PlanTests.test_unsafe_names_are_ignored",
+      "action": "draft-ci-tests",
+      "skip_reason": null
+    },
+    {
+      "id": "parallel-fetch.PoolTests.test_a_failing_archive_does_not_hold_up_the_rest",
+      "action": "draft-ci-tests",
+      "skip_reason": null
+    },
+    {
+      "id": "parallel-fetch.PoolTests.test_a_plan_without_repository_brackets_uses_the_only_catalogue",
+      "action": "draft-ci-tests",
+      "skip_reason": null
+    },
+    {
+      "id": "parallel-fetch.PoolTests.test_a_python_without_sqlite3_still_plans_and_fetches_in_parallel",
+      "action": "draft-ci-tests",
+      "skip_reason": null
+    },
+    {
+      "id": "parallel-fetch.PoolTests.test_archives_already_cached_are_not_fetched_again",
+      "action": "draft-ci-tests",
+      "skip_reason": null
+    },
+    {
+      "id": "parallel-fetch.PoolTests.test_deterministic_error_stops_at_once",
+      "action": "draft-ci-tests",
+      "skip_reason": null
+    },
+    {
+      "id": "parallel-fetch.PoolTests.test_each_repository_has_its_own_connection_cap_and_is_named_in_the_trace",
+      "action": "draft-ci-tests",
+      "skip_reason": null
+    },
+    {
+      "id": "parallel-fetch.PoolTests.test_empty_plan_is_a_usage_error",
+      "action": "draft-ci-tests",
+      "skip_reason": null
+    },
+    {
+      "id": "parallel-fetch.PoolTests.test_fetch_lines_carry_the_plan_totals",
+      "action": "draft-ci-tests",
+      "skip_reason": null
+    },
+    {
+      "id": "parallel-fetch.PoolTests.test_fetches_everything_within_the_worker_bound",
+      "action": "draft-ci-tests",
+      "skip_reason": null
+    },
+    {
+      "id": "parallel-fetch.PoolTests.test_plan_only_prints_exact_catalogue_bytes_and_fetches_nothing",
+      "action": "draft-ci-tests",
+      "skip_reason": null
+    },
+    {
+      "id": "parallel-fetch.PoolTests.test_repo_workers_must_name_a_repository_and_a_count",
+      "action": "draft-ci-tests",
+      "skip_reason": null
+    },
+    {
+      "id": "parallel-fetch.PoolTests.test_trace_has_no_paths_or_commands",
+      "action": "draft-ci-tests",
+      "skip_reason": null
+    },
+    {
+      "id": "parallel-fetch.PoolTests.test_transient_failure_is_retried_for_just_that_archive",
+      "action": "draft-ci-tests",
+      "skip_reason": null
+    },
+    {
+      "id": "parallel-fetch.PoolTests.test_without_a_readable_catalogue_the_plan_is_marked_approximate",
+      "action": "draft-ci-tests",
+      "skip_reason": null
+    },
+    {
+      "id": "plugins-and-games.FrameValidation.test_malformed_frames_are_rejected",
+      "action": "draft-ci-isolated-tests",
+      "skip_reason": null
+    },
+    {
+      "id": "plugins-and-games.FrameValidation.test_the_real_games_run_in_their_own_processes",
+      "action": "draft-ci-isolated-tests",
+      "skip_reason": null
+    },
+    {
+      "id": "plugins-and-games.FrameValidation.test_well_formed_frames_decode",
+      "action": "draft-ci-isolated-tests",
+      "skip_reason": null
+    },
+    {
+      "id": "plugins-and-games.GameScenes.test_a_tiny_terminal_gets_a_message_and_the_game_does_not_advance",
+      "action": "draft-ci-isolated-tests",
+      "skip_reason": null
+    },
+    {
+      "id": "plugins-and-games.GameScenes.test_all_four_are_distinct_original_games_with_sealed_manifests",
+      "action": "draft-ci-isolated-tests",
+      "skip_reason": null
+    },
+    {
+      "id": "plugins-and-games.GameScenes.test_ascii_mode_draws_only_ascii_in_the_playfield_glyphs",
+      "action": "draft-ci-isolated-tests",
+      "skip_reason": null
+    },
+    {
+      "id": "plugins-and-games.GameScenes.test_below_its_minimum_size_a_game_says_so_and_does_not_run",
+      "action": "draft-ci-isolated-tests",
+      "skip_reason": null
+    },
+    {
+      "id": "plugins-and-games.GameScenes.test_every_game_draws_at_every_size_and_glyph_mode",
+      "action": "draft-ci-isolated-tests",
+      "skip_reason": null
+    },
+    {
+      "id": "plugins-and-games.GameScenes.test_every_game_runs_under_the_host_loop_and_quits_on_request",
+      "action": "draft-ci-isolated-tests",
+      "skip_reason": null
+    },
+    {
+      "id": "plugins-and-games.GameScenes.test_firing_requests_a_laser_cue_and_a_muted_host_hears_nothing",
+      "action": "draft-ci-isolated-tests",
+      "skip_reason": null
+    },
+    {
+      "id": "plugins-and-games.GameScenes.test_plain_terminals_get_a_line_not_a_screen",
+      "action": "draft-ci-isolated-tests",
+      "skip_reason": null
+    },
+    {
+      "id": "plugins-and-games.HordeshotRules.test_a_bomb_costs_a_life_then_grants_a_moment_of_safety",
+      "action": "draft-ci-isolated-tests",
+      "skip_reason": null
+    },
+    {
+      "id": "plugins-and-games.HordeshotRules.test_a_bullet_kills_the_alien_it_reaches_and_scores_by_row",
+      "action": "draft-ci-isolated-tests",
+      "skip_reason": null
+    },
+    {
+      "id": "plugins-and-games.HordeshotRules.test_clearing_the_wave_starts_a_faster_one",
+      "action": "draft-ci-isolated-tests",
+      "skip_reason": null
+    },
+    {
+      "id": "plugins-and-games.HordeshotRules.test_losing_every_life_or_being_overrun_ends_the_game_and_fire_restarts",
+      "action": "draft-ci-isolated-tests",
+      "skip_reason": null
+    },
+    {
+      "id": "plugins-and-games.HordeshotRules.test_only_one_shot_at_a_time",
+      "action": "draft-ci-isolated-tests",
+      "skip_reason": null
+    },
+    {
+      "id": "plugins-and-games.HordeshotRules.test_same_seed_same_game",
+      "action": "draft-ci-isolated-tests",
+      "skip_reason": null
+    },
+    {
+      "id": "plugins-and-games.HordeshotRules.test_the_cannon_stays_inside_the_field",
+      "action": "draft-ci-isolated-tests",
+      "skip_reason": null
+    },
+    {
+      "id": "plugins-and-games.HordeshotRules.test_the_horde_reverses_and_descends_at_the_edge",
+      "action": "draft-ci-isolated-tests",
+      "skip_reason": null
+    },
+    {
+      "id": "plugins-and-games.PluginProcess.test_a_crashing_plugin_ends_as_a_failed_result_and_the_host_survives",
+      "action": "draft-ci-isolated-tests",
+      "skip_reason": null
+    },
+    {
+      "id": "plugins-and-games.PluginProcess.test_a_hung_plugin_is_killed_as_too_slow",
+      "action": "draft-ci-isolated-tests",
+      "skip_reason": null
+    },
+    {
+      "id": "plugins-and-games.PluginProcess.test_a_memory_hog_hits_its_limit_instead_of_the_machine",
+      "action": "draft-ci-isolated-tests",
+      "skip_reason": null
+    },
+    {
+      "id": "plugins-and-games.PluginProcess.test_a_plugin_cannot_corrupt_the_protocol_by_printing",
+      "action": "draft-ci-isolated-tests",
+      "skip_reason": null
+    },
+    {
+      "id": "plugins-and-games.PluginProcess.test_a_plugin_cannot_start_processes",
+      "action": "draft-ci-isolated-tests",
+      "skip_reason": null
+    },
+    {
+      "id": "plugins-and-games.PluginProcess.test_a_plugin_cannot_write_data",
+      "action": "draft-ci-isolated-tests",
+      "skip_reason": null
+    },
+    {
+      "id": "plugins-and-games.PluginProcess.test_a_plugin_that_cannot_even_import_fails_cleanly",
+      "action": "draft-ci-isolated-tests",
+      "skip_reason": null
+    },
+    {
+      "id": "plugins-and-games.PluginProcess.test_a_suspended_plugin_costs_nothing_and_resumes",
+      "action": "draft-ci-isolated-tests",
+      "skip_reason": null
+    },
+    {
+      "id": "plugins-and-games.PluginProcess.test_frames_actions_and_cues_cross_the_process_boundary",
+      "action": "draft-ci-isolated-tests",
+      "skip_reason": null
+    },
+    {
+      "id": "plugins-and-games.PluginProcess.test_preemption_kills_the_process_at_once",
+      "action": "draft-ci-isolated-tests",
+      "skip_reason": null
+    },
+    {
+      "id": "plugins-and-games.PluginProcess.test_the_child_runs_isolated_and_in_a_neutral_directory",
+      "action": "draft-ci-isolated-tests",
+      "skip_reason": null
+    },
+    {
+      "id": "plugins-and-games.PluginProcess.test_without_the_audio_capability_cues_are_dropped",
+      "action": "draft-ci-isolated-tests",
+      "skip_reason": null
+    },
+    {
+      "id": "plugins-and-games.PluginProcess.test_without_the_input_capability_no_actions_arrive",
+      "action": "draft-ci-isolated-tests",
+      "skip_reason": null
+    },
+    {
+      "id": "plugins-and-games.RegistryTrust.test_a_missing_or_wrong_index_trusts_nothing",
+      "action": "draft-ci-isolated-tests",
+      "skip_reason": null
+    },
+    {
+      "id": "plugins-and-games.RegistryTrust.test_a_sealed_listed_plugin_loads",
+      "action": "draft-ci-isolated-tests",
+      "skip_reason": null
+    },
+    {
+      "id": "plugins-and-games.RegistryTrust.test_an_entry_name_cannot_escape_its_directory",
+      "action": "draft-ci-isolated-tests",
+      "skip_reason": null
+    },
+    {
+      "id": "plugins-and-games.RegistryTrust.test_bad_manifests_are_refused",
+      "action": "draft-ci-isolated-tests",
+      "skip_reason": null
+    },
+    {
+      "id": "plugins-and-games.RegistryTrust.test_everything_unlisted_or_altered_is_refused_with_a_reason",
+      "action": "draft-ci-isolated-tests",
+      "skip_reason": null
+    },
+    {
+      "id": "plugins-and-games.RegistryTrust.test_the_directory_name_must_match_the_id_and_links_are_refused",
+      "action": "draft-ci-isolated-tests",
+      "skip_reason": null
+    },
+    {
+      "id": "plugins-and-games.RockdriftRules.test_a_collision_costs_a_life_and_respawns_safely",
+      "action": "draft-ci-isolated-tests",
+      "skip_reason": null
+    },
+    {
+      "id": "plugins-and-games.RockdriftRules.test_a_shot_splits_a_big_rock_into_two_smaller_and_scores",
+      "action": "draft-ci-isolated-tests",
+      "skip_reason": null
+    },
+    {
+      "id": "plugins-and-games.RockdriftRules.test_at_most_four_shots_in_flight",
+      "action": "draft-ci-isolated-tests",
+      "skip_reason": null
+    },
+    {
+      "id": "plugins-and-games.RockdriftRules.test_everything_wraps",
+      "action": "draft-ci-isolated-tests",
+      "skip_reason": null
+    },
+    {
+      "id": "plugins-and-games.RockdriftRules.test_losing_the_last_life_ends_the_game",
+      "action": "draft-ci-isolated-tests",
+      "skip_reason": null
+    },
+    {
+      "id": "plugins-and-games.RockdriftRules.test_the_smallest_rock_just_vanishes_and_the_field_is_replaced",
+      "action": "draft-ci-isolated-tests",
+      "skip_reason": null
+    },
+    {
+      "id": "plugins-and-games.RockdriftRules.test_thrust_accelerates_along_the_heading_and_turning_rotates_it",
+      "action": "draft-ci-isolated-tests",
+      "skip_reason": null
+    },
+    {
+      "id": "plugins-and-games.ShatterRules.test_a_brick_breaks_scores_and_reflects",
+      "action": "draft-ci-isolated-tests",
+      "skip_reason": null
+    },
+    {
+      "id": "plugins-and-games.ShatterRules.test_a_fast_ball_cannot_tunnel_through_a_brick",
+      "action": "draft-ci-isolated-tests",
+      "skip_reason": null
+    },
+    {
+      "id": "plugins-and-games.ShatterRules.test_an_empty_wall_is_a_new_faster_level",
+      "action": "draft-ci-isolated-tests",
+      "skip_reason": null
+    },
+    {
+      "id": "plugins-and-games.ShatterRules.test_missing_costs_a_life_and_the_last_ends_the_game",
+      "action": "draft-ci-isolated-tests",
+      "skip_reason": null
+    },
+    {
+      "id": "plugins-and-games.ShatterRules.test_the_ball_waits_on_the_paddle_until_fire",
+      "action": "draft-ci-isolated-tests",
+      "skip_reason": null
+    },
+    {
+      "id": "plugins-and-games.ShatterRules.test_the_paddle_sends_the_ball_off_at_an_angle_by_where_it_lands",
+      "action": "draft-ci-isolated-tests",
+      "skip_reason": null
+    },
+    {
+      "id": "plugins-and-games.ShatterRules.test_walls_and_ceiling_reflect",
+      "action": "draft-ci-isolated-tests",
+      "skip_reason": null
+    },
+    {
+      "id": "plugins-and-games.WyrmRules.test_chasing_its_own_tail_is_allowed",
+      "action": "draft-ci-isolated-tests",
+      "skip_reason": null
+    },
+    {
+      "id": "plugins-and-games.WyrmRules.test_eating_grows_scores_and_moves_the_food_off_the_snake",
+      "action": "draft-ci-isolated-tests",
+      "skip_reason": null
+    },
+    {
+      "id": "plugins-and-games.WyrmRules.test_it_cannot_reverse_into_its_neck_even_with_two_quick_keys",
+      "action": "draft-ci-isolated-tests",
+      "skip_reason": null
+    },
+    {
+      "id": "plugins-and-games.WyrmRules.test_it_moves_one_cell_per_interval",
+      "action": "draft-ci-isolated-tests",
+      "skip_reason": null
+    },
+    {
+      "id": "plugins-and-games.WyrmRules.test_it_speeds_up_as_it_grows_and_restarts_on_fire",
+      "action": "draft-ci-isolated-tests",
+      "skip_reason": null
+    },
+    {
+      "id": "plugins-and-games.WyrmRules.test_walls_and_its_own_body_end_the_game",
+      "action": "draft-ci-isolated-tests",
+      "skip_reason": null
+    },
+    {
+      "id": "release-check-1.4.Gate.test_accepts_matching_record",
+      "action": "draft-ci-tests",
+      "skip_reason": null
+    },
+    {
+      "id": "release-check-1.4.Gate.test_refuses_each_mismatch",
+      "action": "draft-ci-tests",
+      "skip_reason": null
+    },
+    {
+      "id": "release-check-1.4.Gate.test_refuses_placeholder_or_stale_current_json",
+      "action": "draft-ci-tests",
+      "skip_reason": null
+    },
+    {
+      "id": "release-check-1.4.Gate.test_refuses_without_evidence_paths",
+      "action": "draft-ci-tests",
+      "skip_reason": null
+    },
+    {
+      "id": "release-prepare-fill.PrepareAndFill.test_dry_run_writes_nothing",
+      "action": "draft-ci-tests",
+      "skip_reason": null
+    },
+    {
+      "id": "release-prepare-fill.PrepareAndFill.test_fill_before_publication_leaves_only_the_date_token",
+      "action": "draft-ci-tests",
+      "skip_reason": null
+    },
+    {
+      "id": "release-prepare-fill.PrepareAndFill.test_fill_checks_the_catalogue_and_the_closure_records",
+      "action": "draft-ci-tests",
+      "skip_reason": null
+    },
+    {
+      "id": "release-prepare-fill.PrepareAndFill.test_fill_consumes_every_token_and_records_the_assets",
+      "action": "draft-ci-tests",
+      "skip_reason": null
+    },
+    {
+      "id": "release-prepare-fill.PrepareAndFill.test_fill_refuses_what_does_not_match",
+      "action": "draft-ci-tests",
+      "skip_reason": null
+    },
+    {
+      "id": "release-prepare-fill.PrepareAndFill.test_prepare_refuses_overwrites_older_versions_and_bad_input",
+      "action": "draft-ci-tests",
+      "skip_reason": null
+    },
+    {
+      "id": "release-prepare-fill.PrepareAndFill.test_prepare_writes_placeholders_and_moves_the_current_release",
+      "action": "draft-ci-tests",
+      "skip_reason": null
+    },
+    {
+      "id": "sdk-windows.BackendsWithoutTmux.test_backend_choice_follows_the_terminal",
+      "action": "draft-ci-isolated-tests",
+      "skip_reason": null
+    },
+    {
+      "id": "sdk-windows.BackendsWithoutTmux.test_inline_panels_stack_clip_and_the_selected_one_is_in_front",
+      "action": "draft-ci-isolated-tests",
+      "skip_reason": null
+    },
+    {
+      "id": "sdk-windows.BackendsWithoutTmux.test_no_windows_refuses_explicitly",
+      "action": "draft-ci-isolated-tests",
+      "skip_reason": null
+    },
+    {
+      "id": "sdk-windows.ManagerRules.test_a_backend_refusal_is_reported_with_its_reason",
+      "action": "draft-ci-isolated-tests",
+      "skip_reason": null
+    },
+    {
+      "id": "sdk-windows.ManagerRules.test_a_request_tmux_will_not_honour_is_reported_after_the_settle_time",
+      "action": "draft-ci-isolated-tests",
+      "skip_reason": null
+    },
+    {
+      "id": "sdk-windows.ManagerRules.test_an_extension_can_only_address_its_own_windows",
+      "action": "draft-ci-isolated-tests",
+      "skip_reason": null
+    },
+    {
+      "id": "sdk-windows.ManagerRules.test_at_most_eight_operations_a_tick",
+      "action": "draft-ci-isolated-tests",
+      "skip_reason": null
+    },
+    {
+      "id": "sdk-windows.ManagerRules.test_at_most_max_windows_per_run",
+      "action": "draft-ci-isolated-tests",
+      "skip_reason": null
+    },
+    {
+      "id": "sdk-windows.ManagerRules.test_closing_reports_who_closed_and_everything_closes_with_the_run",
+      "action": "draft-ci-isolated-tests",
+      "skip_reason": null
+    },
+    {
+      "id": "sdk-windows.ManagerRules.test_garbage_requests_are_refused_not_raised",
+      "action": "draft-ci-isolated-tests",
+      "skip_reason": null
+    },
+    {
+      "id": "sdk-windows.ManagerRules.test_open_grants_numbered_windows_and_reports_them",
+      "action": "draft-ci-isolated-tests",
+      "skip_reason": null
+    },
+    {
+      "id": "sdk-windows.ManagerRules.test_select_title_and_list_cover_the_run_window_too",
+      "action": "draft-ci-isolated-tests",
+      "skip_reason": null
+    },
+    {
+      "id": "sdk-windows.ManagerRules.test_sizes_are_bounded_on_open_and_resize",
+      "action": "draft-ci-isolated-tests",
+      "skip_reason": null
+    },
+    {
+      "id": "sdk-windows.ManagerRules.test_startup_size_noise_is_not_reported_as_a_resize",
+      "action": "draft-ci-isolated-tests",
+      "skip_reason": null
+    },
+    {
+      "id": "sdk-windows.ManagerRules.test_the_user_closing_or_resizing_a_window_is_reported",
+      "action": "draft-ci-isolated-tests",
+      "skip_reason": null
+    },
+    {
+      "id": "sdk-windows.ManagerRules.test_the_window_capability_is_required",
+      "action": "draft-ci-isolated-tests",
+      "skip_reason": null
+    },
+    {
+      "id": "sdk-windows.ManagerRules.test_titles_are_reduced_to_short_printable_text",
+      "action": "draft-ci-isolated-tests",
+      "skip_reason": null
+    },
+    {
+      "id": "sdk-windows.ManagerRules.test_unknown_verbs_list_is_exactly_the_agreed_six",
+      "action": "draft-ci-isolated-tests",
+      "skip_reason": null
+    },
+    {
+      "id": "sdk-windows.RealTmux.test_frames_reach_the_viewer_and_the_user_closing_the_window_is_reported",
+      "action": "draft-ci-isolated-tests",
+      "skip_reason": null
+    },
+    {
+      "id": "sdk-windows.RealTmux.test_open_resize_title_select_close_use_only_tmux_window_operations",
+      "action": "draft-ci-isolated-tests",
+      "skip_reason": null
+    },
+    {
+      "id": "sdk-windows.RealTmux.test_the_installers_own_windows_are_never_touched",
+      "action": "draft-ci-isolated-tests",
+      "skip_reason": null
+    },
+    {
+      "id": "sdk-windows.RealTmux.test_the_test_extension_runs_end_to_end_on_tmux_and_leaves_no_window_behind",
+      "action": "draft-ci-isolated-tests",
+      "skip_reason": null
+    },
+    {
+      "id": "sdk-windows.TestExtension.test_it_opens_resizes_selects_lists_retitles_and_closes_inline",
+      "action": "draft-ci-isolated-tests",
+      "skip_reason": null
+    },
+    {
+      "id": "sdk-windows.TestExtension.test_serial_and_headless_refuse_explicitly",
+      "action": "draft-ci-isolated-tests",
+      "skip_reason": null
+    },
+    {
+      "id": "sdk-windows.TestExtension.test_the_extension_process_cannot_reach_tmux_itself",
+      "action": "draft-ci-isolated-tests",
+      "skip_reason": null
+    },
+    {
+      "id": "sdk-windows.TestExtension.test_the_manifest_limit_caps_the_windows",
+      "action": "draft-ci-isolated-tests",
+      "skip_reason": null
+    },
+    {
+      "id": "sdk-windows.TestExtension.test_without_the_window_capability_every_request_is_refused",
+      "action": "draft-ci-isolated-tests",
+      "skip_reason": null
+    },
+    {
+      "id": "version-sync.VersionTests.test_build_iso_takes_version_from_file",
+      "action": "draft-ci-tests",
+      "skip_reason": null
+    },
+    {
+      "id": "version-sync.VersionTests.test_repository_agrees",
+      "action": "draft-ci-tests",
+      "skip_reason": null
+    },
+    {
+      "id": "version-sync.VersionTests.test_set_updates_both_and_check_catches_drift",
+      "action": "draft-ci-tests",
+      "skip_reason": null
+    },
+    {
+      "id": "version-sync.VersionTests.test_show_json_matches_file",
+      "action": "draft-ci-tests",
+      "skip_reason": null
+    },
+    {
+      "id": "visual-sdk.AnsiTests.test_the_helpers_produce_the_standard_sequences",
+      "action": "draft-ci-isolated-tests",
+      "skip_reason": null
+    },
+    {
+      "id": "visual-sdk.AudioTests.test_backend_errors_never_escape",
+      "action": "draft-ci-isolated-tests",
+      "skip_reason": null
+    },
+    {
+      "id": "visual-sdk.AudioTests.test_cues_are_filtered_and_mutable",
+      "action": "draft-ci-isolated-tests",
+      "skip_reason": null
+    },
+    {
+      "id": "visual-sdk.AudioTests.test_threaded_audio_never_blocks_and_drops_when_full",
+      "action": "draft-ci-isolated-tests",
+      "skip_reason": null
+    },
+    {
+      "id": "visual-sdk.CapabilityTests.test_api_compatibility",
+      "action": "draft-ci-isolated-tests",
+      "skip_reason": null
+    },
+    {
+      "id": "visual-sdk.CapabilityTests.test_detect_plain_for_pipes_serial_and_off",
+      "action": "draft-ci-isolated-tests",
+      "skip_reason": null
+    },
+    {
+      "id": "visual-sdk.CapabilityTests.test_glyphs_follow_locale_and_override",
+      "action": "draft-ci-isolated-tests",
+      "skip_reason": null
+    },
+    {
+      "id": "visual-sdk.CapabilityTests.test_small_terminal",
+      "action": "draft-ci-isolated-tests",
+      "skip_reason": null
+    },
+    {
+      "id": "visual-sdk.CapabilityTests.test_vt_console_never_gets_truecolor_or_256",
+      "action": "draft-ci-isolated-tests",
+      "skip_reason": null
+    },
+    {
+      "id": "visual-sdk.DrawingTests.test_bottom_right_cell_is_never_written",
+      "action": "draft-ci-isolated-tests",
+      "skip_reason": null
+    },
+    {
+      "id": "visual-sdk.DrawingTests.test_box_sprite_bar",
+      "action": "draft-ci-isolated-tests",
+      "skip_reason": null
+    },
+    {
+      "id": "visual-sdk.DrawingTests.test_canvas_clips_and_diffs",
+      "action": "draft-ci-isolated-tests",
+      "skip_reason": null
+    },
+    {
+      "id": "visual-sdk.DrawingTests.test_colors_quantize_to_the_depth",
+      "action": "draft-ci-isolated-tests",
+      "skip_reason": null
+    },
+    {
+      "id": "visual-sdk.DrawingTests.test_gradient_endpoints",
+      "action": "draft-ci-isolated-tests",
+      "skip_reason": null
+    },
+    {
+      "id": "visual-sdk.DrawingTests.test_layout",
+      "action": "draft-ci-isolated-tests",
+      "skip_reason": null
+    },
+    {
+      "id": "visual-sdk.DrawingTests.test_screen_clears_on_resize_and_restores",
+      "action": "draft-ci-isolated-tests",
+      "skip_reason": null
+    },
+    {
+      "id": "visual-sdk.InputTests.test_decode_arrow_enter_and_partial_escape",
+      "action": "draft-ci-isolated-tests",
+      "skip_reason": null
+    },
+    {
+      "id": "visual-sdk.InputTests.test_keymap_to_actions",
+      "action": "draft-ci-isolated-tests",
+      "skip_reason": null
+    },
+    {
+      "id": "visual-sdk.InputTests.test_list_source_and_fd_source",
+      "action": "draft-ci-isolated-tests",
+      "skip_reason": null
+    },
+    {
+      "id": "visual-sdk.InstallerConsumesSdkTests.test_dashboard_and_charm_draw_through_the_sdk",
+      "action": "draft-ci-isolated-tests",
+      "skip_reason": null
+    },
+    {
+      "id": "visual-sdk.InstallerConsumesSdkTests.test_no_private_copies_of_sdk_pieces_in_the_installer",
+      "action": "draft-ci-isolated-tests",
+      "skip_reason": null
+    },
+    {
+      "id": "visual-sdk.InstallerConsumesSdkTests.test_sdk_ships_beside_libexec_where_the_installer_looks",
+      "action": "draft-ci-isolated-tests",
+      "skip_reason": null
+    },
+    {
+      "id": "visual-sdk.MotionTests.test_clock_manual",
+      "action": "draft-ci-isolated-tests",
+      "skip_reason": null
+    },
+    {
+      "id": "visual-sdk.MotionTests.test_fireworks_are_seeded_and_fade",
+      "action": "draft-ci-isolated-tests",
+      "skip_reason": null
+    },
+    {
+      "id": "visual-sdk.MotionTests.test_timeline_fires_in_order_and_survives_a_bad_callback",
+      "action": "draft-ci-isolated-tests",
+      "skip_reason": null
+    },
+    {
+      "id": "visual-sdk.MotionTests.test_tween_and_easing",
+      "action": "draft-ci-isolated-tests",
+      "skip_reason": null
+    },
+    {
+      "id": "visual-sdk.MotionTests.test_typed_text",
+      "action": "draft-ci-isolated-tests",
+      "skip_reason": null
+    },
+    {
+      "id": "visual-sdk.OverlayAndInlineTests.test_alternate_screen_enters_and_restores",
+      "action": "draft-ci-isolated-tests",
+      "skip_reason": null
+    },
+    {
+      "id": "visual-sdk.OverlayAndInlineTests.test_inline_flourishes_animate_briefly_and_end_clean",
+      "action": "draft-ci-isolated-tests",
+      "skip_reason": null
+    },
+    {
+      "id": "visual-sdk.OverlayAndInlineTests.test_inline_flourishes_degrade_to_plain_text",
+      "action": "draft-ci-isolated-tests",
+      "skip_reason": null
+    },
+    {
+      "id": "visual-sdk.OverlayAndInlineTests.test_no_input_never_ends",
+      "action": "draft-ci-isolated-tests",
+      "skip_reason": null
+    },
+    {
+      "id": "visual-sdk.OverlayAndInlineTests.test_overlay_draws_only_its_region_and_never_clears",
+      "action": "draft-ci-isolated-tests",
+      "skip_reason": null
+    },
+    {
+      "id": "visual-sdk.OverlayAndInlineTests.test_overlay_scene_and_keep_leave_the_screen_alone",
+      "action": "draft-ci-isolated-tests",
+      "skip_reason": null
+    },
+    {
+      "id": "visual-sdk.SampleHostTests.test_sample_host_runs_headless_and_plain",
+      "action": "draft-ci-isolated-tests",
+      "skip_reason": null
+    },
+    {
+      "id": "visual-sdk.SampleHostTests.test_sdk_imports_nothing_from_the_installer",
+      "action": "draft-ci-isolated-tests",
+      "skip_reason": null
+    },
+    {
+      "id": "visual-sdk.SceneTests.test_a_long_stall_is_clamped",
+      "action": "draft-ci-isolated-tests",
+      "skip_reason": null
+    },
+    {
+      "id": "visual-sdk.SceneTests.test_actions_reach_the_scene_but_pause_and_mute_do_not",
+      "action": "draft-ci-isolated-tests",
+      "skip_reason": null
+    },
+    {
+      "id": "visual-sdk.SceneTests.test_plain_terminals_get_plain_lines_once",
+      "action": "draft-ci-isolated-tests",
+      "skip_reason": null
+    },
+    {
+      "id": "visual-sdk.SceneTests.test_preempt_wins_at_any_frame",
+      "action": "draft-ci-isolated-tests",
+      "skip_reason": null
+    },
+    {
+      "id": "visual-sdk.SceneTests.test_quit_and_pause",
+      "action": "draft-ci-isolated-tests",
+      "skip_reason": null
+    },
+    {
+      "id": "visual-sdk.SceneTests.test_resize_reflows_and_small_terminal_shows_a_message",
+      "action": "draft-ci-isolated-tests",
+      "skip_reason": null
+    },
+    {
+      "id": "visual-sdk.SceneTests.test_runs_to_done_and_restores_the_terminal",
+      "action": "draft-ci-isolated-tests",
+      "skip_reason": null
+    },
+    {
+      "id": "visual-sdk.SceneTests.test_suspended_scene_neither_updates_nor_draws",
+      "action": "draft-ci-isolated-tests",
+      "skip_reason": null
+    }
+  ],
+  "reports": [
+    {
+      "action": "draft-ci-isolated-tests",
+      "path": "tests-isolated/ci-report.json"
+    },
+    {
+      "action": "draft-ci-tests",
+      "path": "tests/ci-report.json"
+    }
+  ]
+}
