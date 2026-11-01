@@ -37,8 +37,10 @@ package_repository_prepare() {
 # GitHub release feed, one URL per line in the image's package-mirror file. pkg.
 # FreeBSD.org's `latest` moves under an image (it dropped a package one day after
 # a release), so an image that carries a mirror list prefers the snapshot it was
-# built against and keeps pkg.FreeBSD.org only as the fallback. A shard that does
-# not answer is left out, never fatal. No list, no mirror, no change.
+# built against and keeps pkg.FreeBSD.org only as the fallback when NO shard answers.
+# Each shard is tried three times; if some answer and some do not, the install stops
+# (package_repository_write_mirror returns 1) rather than mix in pkg.FreeBSD.org.
+# No list, no mirror, no change.
 package_mirror_probe() { # URL: does the shard's catalogue answer? (three tries: one dropped connection is not "down")
     local try
     for try in 1 2 3; do
@@ -50,7 +52,7 @@ package_mirror_probe() { # URL: does the shard's catalogue answer? (three tries:
 
 package_repository_write_mirror() { # conf-file public-key mirror-list-file [architecture, default amd64]
     [ -s "$3" ] || return 0
-    local url number=0 arch=${4:-amd64}
+    local url number=0 arch=${4:-amd64} missing=''
     while IFS= read -r url; do
         [ -n "$url" ] || continue
         case "$url" in
@@ -61,9 +63,8 @@ package_repository_write_mirror() { # conf-file public-key mirror-list-file [arc
             *[!A-Za-z0-9._-]*) echo 'Ignoring an invalid package mirror URL' >&2; continue ;;
         esac
         if ! package_mirror_probe "$url"; then
-            echo "Package mirror ${url##*/} did not answer; using pkg.FreeBSD.org for its packages" >&2
-            # Recorded in the file so package_repository_freebsd_enabled keeps pkg.FreeBSD.org on for what this shard carried.
-            printf '# a package mirror shard did not answer\n' >>"$1"
+            echo "Package mirror ${url##*/} did not answer after 3 tries" >&2
+            missing="$missing ${url##*/}"
             continue
         fi
         number=$((number + 1))
@@ -77,6 +78,14 @@ Daemonarchy-Mirror-$number: {
 }
 EOF
     done <"$3"
+    [ -n "$missing" ] || return 0
+    if [ "$number" -gt 0 ]; then
+        # Some shards answered and some did not: the packages of the missing ones have no source of ours, and
+        # mixing in pkg.FreeBSD.org would give the install whatever `latest` carries that day. Stop, say why.
+        echo "package mirror${missing} unreachable after 3 tries: check the network and retry; the installer will not mix in pkg.FreeBSD.org" >&2
+        return 1
+    fi
+    echo "No package mirror answered; using pkg.FreeBSD.org" >&2
     return 0
 }
 
@@ -84,16 +93,10 @@ EOF
 # package across repositories (priority breaks ties only), so with it enabled a snapshot shard
 # that answered would lose packages to whatever `latest` carries that day. The mirror file the
 # transaction writes names the shards that answered; none, and the upstream repository stays on.
-# It stays on too when any shard did NOT answer: the packages that shard carries have no other
-# source, and an install that loses one of two shards must fall back for those, not fail.
 # Only the transaction's own repository directory is affected: the installed system keeps its
 # default FreeBSD repository for updates.
 package_repository_freebsd_enabled() { # mirror-conf-file
-    if grep -q '^Daemonarchy-Mirror-' "$1" 2>/dev/null && ! grep -q '^# a package mirror shard did not answer' "$1"; then
-        echo no
-    else
-        echo yes
-    fi
+    if grep -q '^Daemonarchy-Mirror-' "$1" 2>/dev/null; then echo no; else echo yes; fi
 }
 
 package_repository_write_dependencies() {
