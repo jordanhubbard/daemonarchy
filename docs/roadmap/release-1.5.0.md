@@ -210,6 +210,28 @@ lifecycle and receipt-policy authority, so each is an operator-approved change, 
 are not carried over (see [the upgrade sequence](../native-adoption-steps.md#the-literate-ai-14-move-prepared-not-applied)).
 daemonarchy's `authority-reviewed` marker is recorded by a human after review.
 
+## Framework issues for the 1.4.0 gaps
+
+The gaps found while preparing ADOPT-002, COMP-001, PERF-002, DEV-001 and SRC-001 are framework work, done in the
+framework project and not in this repository. Opened or already open, as of 2026-11-01 (milestones as the framework
+labels them):
+
+| Issue | Gap | Milestone | Items it blocks |
+|---|---|---|---|
+| [#74](https://github.com/jordanhubbard/literate-ai/issues/74) | Complete retained native trees as canonical Component catalogs | 1.4.0 | COMP-001 |
+| [#93](https://github.com/jordanhubbard/literate-ai/issues/93) | Internal aliases through native SDK product admission | 1.4.0 | COMP-001 |
+| [#234](https://github.com/jordanhubbard/literate-ai/issues/234) | Catalog and pinned-input ceilings at src and ports scale (about 1,000 units) | 1.4 | COMP-001 |
+| [#235](https://github.com/jordanhubbard/literate-ai/issues/235) | Per-unit link-aware native packages and tree-aware worker transport | 1.4 | COMP-001, DEV-001, PERF-002 |
+| [#236](https://github.com/jordanhubbard/literate-ai/issues/236) | Cache keying for FreeBSD native units across two physical FreeBSD workers | 1.4 | PERF-002 |
+| [#4](https://github.com/jordanhubbard/literate-ai/issues/4) | Production action DAG dispatch and shared LAN caches | 1.4.0 | PERF-002 |
+| [#5](https://github.com/jordanhubbard/literate-ai/issues/5) | Native package construction and verification on compatible remote workers | 1.4.0 | PERF-002, SRC-001 |
+| [#67](https://github.com/jordanhubbard/literate-ai/issues/67) | First-class FreeBSD worker, target and native lifecycle support | 1.4.0 | ADOPT-002, DEV-001 |
+
+The framework has two milestones, `1.4` (4 open issues) and `1.4.0` (53 open issues); the first three-issue batch (#234 to
+#236) carries `1.4` while the older issues carry `1.4.0`. Which of the two the framework treats as the 1.4.0 release scope is the
+framework project's call; this plan follows whichever it names. The "Items it blocks" column is this repository's reading of each issue,
+not the framework's statement.
+
 ## Acceptance
 
 Nothing is claimed done until each of these has retained evidence with exact inputs:
