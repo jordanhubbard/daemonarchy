@@ -139,6 +139,12 @@ grep -q '^  enabled: \$freebsd_enabled$' "$installer"
 # Only the transaction's repository directory changes: the installed system's repository files
 # are written elsewhere and never name the FreeBSD repository as disabled.
 ! grep -n 'enabled: no' "$installer"
+# The install stops on the dead shard before pkg first touches the target: the stop sits on the
+# write_mirror call, and that call comes before the first pkg command line of the transaction.
+stop=$(grep -n '^package_repository_write_mirror .* || exit 1$' "$installer" | head -1 | cut -d: -f1)
+first_pkg=$(grep -n '^pkg_command=(' "$installer" | head -1 | cut -d: -f1)
+[ -n "$stop" ] && [ -n "$first_pkg" ] && [ "$stop" -lt "$first_pkg" ]
 echo 'PASS: the install transaction uses the upstream repository only when no mirror shard answers'
+echo 'PASS: a dead shard stops the installer before any package is touched'
 echo 'PASS: stable fallback, candidate feed selection and invalid metadata rejection'
 echo 'PASS: per-architecture feed families never cross'
