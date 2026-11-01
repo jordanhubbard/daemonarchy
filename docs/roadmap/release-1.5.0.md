@@ -2,7 +2,7 @@
 
 - **Status:** active
 - **Owning queue item:** [BUILD-001](active-work.md#build-001-cut-freebsd-source-ports-iso-and-release-cycle-time-10x-with-literate-ai-14)
-- **Supporting queue items:** [ADOPT-002](active-work.md#adopt-002-qualify-retained-native-execution-and-release-enforcement), [COMP-001](active-work.md#comp-001-model-complete-freebsd-source-and-ports-trees-as-components), [SRC-001](active-work.md#src-001-establish-owned-freebsd-source-builds-and-packages), [PERF-001](active-work.md#perf-001-execute-native-components-and-substantially-accelerate-iso-builds), [PERF-002](active-work.md#perf-002-coordinate-all-daemonarchy-repositories-through-literate-ai-workers-in-140), [DEV-001](active-work.md#dev-001-provide-an-operator-ready-native-component-development-system), [RELEASE-001](active-work.md#release-001-deliver-a-qualified-literate-ai-release-workflow-in-14), [DESKTOP-001](active-work.md#desktop-001-ship-the-desktop-launchers-and-menu-entries-in-the-daemonarchy-desktop-package)
+- **Supporting queue items:** [ADOPT-002](active-work.md#adopt-002-qualify-retained-native-execution-and-release-enforcement), [COMP-001](active-work.md#comp-001-model-complete-freebsd-source-and-ports-trees-as-components), [SRC-001](active-work.md#src-001-establish-owned-freebsd-source-builds-and-packages), [PERF-001](active-work.md#perf-001-execute-native-components-and-substantially-accelerate-iso-builds), [PERF-002](active-work.md#perf-002-coordinate-all-daemonarchy-repositories-through-literate-ai-workers-in-140), [DEV-001](active-work.md#dev-001-provide-an-operator-ready-native-component-development-system), [RELEASE-001](active-work.md#release-001-deliver-a-qualified-literate-ai-release-workflow-in-14), [DESKTOP-001](active-work.md#desktop-001-ship-the-desktop-launchers-and-menu-entries-in-the-daemonarchy-desktop-package), [SIGN-001](active-work.md#sign-001-one-signing-session-per-release-stop-the-key-window-churn)
 - **Completion / archival evidence:** pending; nothing here is claimed done. Done means the evidence listed under Acceptance below, retained with exact inputs.
 
 Opened 2026-10-31 by operator decision. The operator's words: decrease the time required to
@@ -106,6 +106,44 @@ New for 1.5.0 (operator decision, 2026-10-31): [DESKTOP-001](active-work.md#desk
 moves the Cudalab, Wine and Steam launchers, desktop files, icons and menu entries out of the
 installer overlay into the daemonarchy-desktop package, so fixes arrive by `pkg upgrade` and not
 only with a new image. Nothing is claimed done; its acceptance is in the queue entry.
+
+## SIGN-001: one signing session per release
+
+New for 1.5.0 (operator decision, 2026-11-01; the operator's words: "this is too much security").
+Nothing here is claimed done. Parent and related item: BUILD-001 (the 10x release-cycle target).
+
+**The problem, as recorded by the release coordinator (the operator's counts; I did not re-measure them).** In 1.4.1 the signing key
+lived on daemon.local and the workers signed without an operator step. For 1.5.0 the operator ran **six key windows by hand**:
+
+| # | Window | Avoidable? |
+|---|---|---|
+| 1 | Boot bundle relabel 1.4.2 to 1.5.0 after the mid-release rename | Avoidable: the rename was a decision made after signing had started |
+| 2 | amd64 feeds | Needed once |
+| 3 | arm64 feeds | Needed once |
+| 4 | Extension feeds (the installer derives the extension feed name from the image version) | Avoidable: scheduling; the name is known once the release label is frozen |
+| 5 | Boot bundle full re-sign after the loader menu fix landed late | Avoidable: a late change to a signed input |
+| 6 | arm64 checkout feed re-sign after QA found the wrong package ABI label | A genuine QA finding, but it would have cost nothing extra if signing had followed QA |
+
+Why each window needed the operator: (a) the key was moved off the builders on purpose (daemon.local retired, the key on the key host,
+and the rule that it is never on a build machine or sparky and never printed); (b) the agent permission system refuses to let agents
+move key material even with a relayed operator approval, so every signing step needs the operator to type a command; (c) artifacts
+were signed as soon as they were ready, instead of freezing the signed inputs, finishing QA and signing once.
+
+**Goal (measurable).** At most **one** operator signing action per release; **zero** key material handled by agents; the signing
+wall-clock time and operator-command count recorded in the release record for the next release.
+
+**Options, with trade-offs (the operator picks):**
+
+| Option | What it is | Trade-off |
+|---|---|---|
+| A. Process rule | Freeze all signed inputs (boot tree files, feeds, extension feeds, release label), finish QA, then one signing session. No code. | Costs nothing and keeps every safeguard; still needs the operator to run each window command once in that session. |
+| B. One manifest-driven window script | One script signs every pending item in one sitting, with the existing safeguards (tmpfs, locks, hash checks, trap cleanup). | Some code on top of `scripts/key-windows/`; one operator command; the safeguards are kept. |
+| C. A signing service on the key host | Signs only allowlisted artifact types after verifying their hashes against an operator-approved release manifest; agents request, never hold the key; one approval per release. | More to build and secure (the service is a new attack surface); zero operator commands per window, one approval per release. |
+| D. Simplify the security policy | A dedicated release-signing VM holding the key, with operator approval once per release. | **Explicitly lowers the current safeguards.** The operator decides the threat model. The operator considers the current process excessive. |
+
+**Recommendation.** Adopt A now, for the rest of 1.5.0. Implement B, plus C if the operator wants zero commands, for 1.5.0. Use D only
+if the operator accepts the risk. The acceptance and evidence are in the
+[queue item](active-work.md#sign-001-one-signing-session-per-release-stop-the-key-window-churn).
 
 ## Build efficiency: not delivered under the 1.4.2 name
 
