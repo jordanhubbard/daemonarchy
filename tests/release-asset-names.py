@@ -254,6 +254,30 @@ class HardwareTraceImage(ReleaseAssetNames):
         self.assertEqual(assets.hwtrace_assets(record),
                          ["daemonarchy-hwtrace-1.4.0-amd64.img.xz"])
 
+    def test_release_tooling_names_exactly_the_assets_the_verifier_expects(self):
+        # prepare-release.py and fill-release.py list the assets a release record must hold.
+        for script in ("prepare-release.py", "fill-release.py"):
+            spec = importlib.util.spec_from_file_location("tool", SCRIPT.parent / script)
+            tool = importlib.util.module_from_spec(spec)
+            spec.loader.exec_module(tool)
+            names = tool.asset_names("1.5.0")
+            self.assertEqual(len(names), 10, script)
+            record = {
+                "schema": "daemonarchy/release-inputs@1", "version": "1.5.0", "tag": "daemonarchy-1.5.0",
+                "installer_commit": "a" * 40, "source_commit": "b" * 40, "osversion": 1600029,
+                "architectures": ["amd64", "aarch64"], "hwtrace": ["amd64"],
+                "assets": {name: [1, "sha256:" + "c" * 64] for name in names},
+                "closure_feeds": [{"tag": f"packages-16-{arch}-1.5.0-upstream", "assets": {
+                    name: [1, "sha256:" + "c" * 64] for name in ("meta.conf", "data.pkg", "a.pkg")}}
+                    for arch in ("amd64", "aarch64")],
+            }
+            self.path.write_text(json.dumps(record) + "\n")
+            assets.read_record(self.path)
+            del record["assets"]["daemonarchy-hwtrace-1.5.0-amd64.img.xz.sha256"]
+            self.path.write_text(json.dumps(record) + "\n")
+            with self.assertRaisesRegex(ValueError, "incomplete or unexpected"):
+                assets.read_record(self.path)
+
     def test_hwtrace_image_without_declaration_refused(self):
         record = self.record("daemonarchy-1.4.0.pem", "1.4.0", "daemonarchy-1.4.0-amd64.iso.xz",
                              hwtrace=["amd64"])

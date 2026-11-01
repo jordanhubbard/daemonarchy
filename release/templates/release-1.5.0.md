@@ -19,6 +19,10 @@ is the authority for the final images, asset hashes and publication state.
 - `daemonarchy-1.5.0-aarch64.iso.xz` (@@AARCH64_ISO_BYTES@@ bytes, SHA-256
   `@@AARCH64_ISO_SHA256@@`), the arm64 image, UEFI only. It is still a
   community-validation image: read [the aarch64 section](#aarch64-image-community-validation).
+- `daemonarchy-hwtrace-1.5.0-amd64.img.xz` (@@HWTRACE_BYTES@@ bytes, SHA-256
+  `@@HWTRACE_SHA256@@`), the hardware bring-up trace image for machines that fail early
+  in kernel start (amd64, UEFI). It is not an installer: it holds the ISO's own kernel
+  and loader and carries no keys. See [the trace image](boottrace.md).
 - A `.sha256` file for each image, which covers the compressed file you download.
 - The signed Secure Boot bundle `daemonarchy-1.5.0-boot.txz` with its detached `.sig`,
   and the public certificate in PEM and DER form. The bundle is the amd64 Secure Boot

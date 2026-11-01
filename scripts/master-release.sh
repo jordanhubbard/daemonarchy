@@ -12,9 +12,10 @@
 #   catalogue   check the checkout catalogue against the source and ports revisions (builder)
 #   iso         build the ISO from a clean checkout of MAIN_COMMIT      (builder, ~26 min)
 #   verify      xz test, hashes, size budget, version string, ISO contents (builder)
+#   hwtrace     build the hardware trace image from the verified ISO's own kernel and loader (builder, ~10 s)
 #   qa          copy the ISO to QA_HOST and run test-qemu.sh there      (QA host, ~35 min)
 #   sticks      write the ISO to the named USB sticks and verify by read-back (workstation)
-#   all         preflight packages secureboot feed resolve catalogue iso verify qa  (never sticks, never publishes)
+#   all         preflight packages secureboot feed resolve catalogue iso verify hwtrace qa  (never sticks, never publishes)
 #   status      print the state file
 #
 # Nothing here uploads to GitHub or signs with a release key except `feed`, which signs
@@ -56,6 +57,7 @@ CLOSURE_URL=${CLOSURE_URL:-}
 REQUIRE_PACKAGE_MIRROR=${REQUIRE_PACKAGE_MIRROR:-yes}
 SB_DIR=${SB_DIR:-/usr/daemonarchy/sb16}
 XZ_BUDGET=${XZ_BUDGET:-2147483648}                # a GitHub release asset must stay under 2 GiB
+ASSETS_DIR=${ASSETS_DIR:-$WORK/assets-$RELEASE}      # where the release assets this script builds (the hwtrace image) are collected
 QA_HOST=${QA_HOST:-madmax.local}
 QA_USER=${QA_USER:-jkh}
 QA_DIR=${QA_DIR:-/tmp/daemonarchy-qa}
@@ -248,6 +250,37 @@ step_verify() {
   state_mark verify
 }
 
+step_hwtrace() {
+  step_enabled hwtrace || return 0
+  fetch_product
+  local product=$WORK/product-$(short) out=$WORK/out-$(short) iso xz tmp name=daemonarchy-hwtrace-$RELEASE-amd64.img.xz
+  if $DRY_RUN; then
+    echo "+ (cd $out && nice -n 19 sh $product/build-hwtrace-image.sh -I ISO -k boot/kernel/kernel -l boot/loader_lua.efi -L boot/lua -V $RELEASE -Z -o TMP)  # from the ISO, minus brand-daemonarchy.lua and local.lua"
+    echo "+ cp TMP/$name TMP/$name.sha256 $ASSETS_DIR/"
+    return 0
+  fi
+  xz=$(ls "$out"/*.iso.xz 2>/dev/null | head -1) || true
+  [ -n "$xz" ] || fail "no .iso.xz in $out"
+  [ ! -e "$ASSETS_DIR/$name" ] || fail "$ASSETS_DIR/$name exists: published tags are immutable, move it away first"
+  tmp=$(mktemp -d "$WORK/hwtrace.XXXXXX")
+  iso=${xz%.xz}
+  [ -f "$iso" ] || { iso=$tmp/image.iso; xz -dc "$xz" >"$iso"; }
+  # The image carries the ISO's own boottrace kernel and loader, so its provenance is the final ISO.
+  # The Daemonarchy brand and a local.lua stay out: the trace image has its own loader screen.
+  tar -xf "$iso" -C "$tmp" boot/kernel/kernel boot/loader_lua.efi boot/lua
+  rm -f "$tmp/boot/lua/brand-daemonarchy.lua" "$tmp/boot/lua/local.lua"
+  mkdir "$tmp/out"
+  nice -n 19 sh "$product/build-hwtrace-image.sh" -I "$iso" -k "$tmp/boot/kernel/kernel" -l "$tmp/boot/loader_lua.efi" \
+      -L "$tmp/boot/lua" -V "$RELEASE" -Z -o "$tmp/out" >"$WORK/evidence/build-hwtrace-$(short).log" 2>&1 \
+    || fail "build-hwtrace-image.sh failed; see $WORK/evidence/build-hwtrace-$(short).log"
+  [ -s "$tmp/out/$name" ] && [ -s "$tmp/out/$name.sha256" ] || fail "no $name with its .sha256 in $tmp/out"
+  mkdir -p "$ASSETS_DIR"
+  cp "$tmp/out/$name" "$tmp/out/$name.sha256" "$ASSETS_DIR/"
+  rm -rf "$tmp"
+  echo "hwtrace: $ASSETS_DIR/$name $(wc -c <"$ASSETS_DIR/$name" | tr -d ' ') bytes, $(cat "$ASSETS_DIR/$name.sha256")"
+  state_mark hwtrace
+}
+
 step_qa() {
   step_enabled qa || return 0
   fetch_product
@@ -360,9 +393,9 @@ main() {
   local s
   for s in "${steps[@]}"; do
     case $s in
-      all) step_preflight; step_packages; step_secureboot; step_feed; step_resolve; step_catalogue; step_iso; step_verify; step_qa ;;
+      all) step_preflight; step_packages; step_secureboot; step_feed; step_resolve; step_catalogue; step_iso; step_verify; step_hwtrace; step_qa ;;
       status) [ -f "$STATE" ] && cat "$STATE" || echo 'no state yet' ;;
-      preflight | packages | secureboot | feed | resolve | catalogue | iso | verify | qa) "step_$s" ;;
+      preflight | packages | secureboot | feed | resolve | catalogue | iso | verify | hwtrace | qa) "step_$s" ;;
       *) fail "unknown step: $s" ;;
     esac
   done

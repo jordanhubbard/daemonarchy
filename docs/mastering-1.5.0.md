@@ -70,14 +70,20 @@ image pins the 1.4.2-named feeds. The names below are the 1.5.0 ones.
    (`master-release.sh iso`; the setup notes below).
 9. **Verify** (`master-release.sh verify`): the digests, `_sqlite3` in the live root, the
    embedded mirror and tag, the catalogue byte for byte, and the overlay launchers and
-   desktop entries against the files on `main` (sha256).
+   desktop entries against the files on `main` (sha256). Then build the hardware trace
+   image from the verified amd64 ISO (`master-release.sh hwtrace`): it extracts the ISO's
+   kernel, `loader_lua.efi` and `boot/lua` (without `brand-daemonarchy.lua` and
+   `local.lua`), runs `build-hwtrace-image.sh -Z`, and copies
+   `daemonarchy-hwtrace-1.5.0-amd64.img.xz` and its `.sha256` into `ASSETS_DIR`. Rerun it
+   if the ISO is rebuilt, so the published image's provenance is the final ISO.
 10. **QEMU QA** against the public URLs from a workstation (`master-release.sh qa`, with the
     config's own `WORK` and a `QA_DIR` of its own). Count `[FreeBSD]` in the install log: it
     must be 0, or list each package absent from our feeds.
 11. **Sticks.** The operator gives the serials. `master-release.sh sticks` writes both,
     refuses the scratch disk and anything mounted, and reads each back against the digest.
-12. **Publish** (release owner): the feeds, then the release with the eight assets,
-    verified with `scripts/verify-release-assets.py --published`.
+12. **Publish** (release owner): the feeds, then the release with the ten assets (the two
+    installers and the trace image, each with its `.sha256`, the boot bundle and its
+    signature, the certificate in PEM and DER form), verified with `scripts/verify-release-assets.py --published`.
 13. **Fill the records.** The draft release pull request is made once the template is
     reviewed: `scripts/prepare-release.py --version 1.5.0 --source-commit SHA40` copies
     `release/templates/release-1.5.0.md` to `docs/release-1.5.0.md`, writes the
@@ -105,7 +111,8 @@ python3 scripts/verify-release-assets.py --record verification/release-1.5.0.jso
 
 It generalises `fill-release-1.4.1.py`: the version is an argument, the closure shards are
 the record's `closure_feed_records`, and a release-specific token is given with `--set`. The
-assets directory holds exactly the eight files; sizes and digests are computed from them.
+assets directory holds exactly the ten files (the trace image and its `.sha256` come from
+`master-release.sh hwtrace`, which leaves them in `ASSETS_DIR`); sizes and digests are computed from them.
 After publication use `scripts/release-current.py update` and `check-published`.
 
 ## The amd64 build VM (mudflap)
