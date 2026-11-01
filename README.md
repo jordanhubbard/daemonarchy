@@ -268,8 +268,9 @@ built and whether it is pinned, updated or has local changes.
 
 The app's output is kept in `~/.local/state/cudalab/app.log`, and a notification
 says so if it stops with an error. Started from a terminal it detaches, so that
-window closes (`CUDALAB_FOREGROUND=1` keeps it attached). The FreeBSD NVIDIA driver
-has no memory pools, so `cudaMallocAsync` fails with "operation not supported";
+window closes (`CUDALAB_FOREGROUND=1` keeps it attached). Under the
+Linuxulator, with the UVM shim and no real `nvidia-uvm`, CUDA reports no memory pools
+(measured on an RTX 5080, driver 595.104.02), so `cudaMallocAsync` fails with "operation not supported";
 the launcher builds a small library that falls back to `cudaMalloc` and preloads
 it, which is what lets the Choreograph demo start. Sound goes through PulseAudio
 (the desktop's PipeWire answers on its socket, which the launcher hands to
