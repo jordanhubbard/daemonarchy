@@ -57,13 +57,36 @@ Open until these run: privileged cleanup, protected signer binding, artifact cus
 release enforcement (the ADOPT-002 acceptance text), and framework issues 74 and 93 for
 COMP-001.
 
-## Runtime: Literate AI 1.3.1
+## Runtime: 1.3.1 now, 1.4.0 for the authoritative evidence
 
-The operator locked this work to Literate AI 1.3.1 (tag `v1.3.1`, branch `release/1.3.x`) unless an item is
-scoped to 1.4.0. Use `~/daemonarchy-framework-1.3.1-runtime/venv/bin/litai` (built from the tag; `litai --version`
-reports `1.3.1`). Do not use framework main (1.4.0 development): it requires a release-goal manifest and a
-Standard rebind that the 1.3.x line does not. The only item that may need 1.4.0 is COMP-001 (framework issues
-#74 and #93, milestone 1.4).
+The released 1.3.1 runtime (`~/daemonarchy-framework-1.3.1-runtime/venv/bin/litai`, built from tag `v1.3.1`) is used
+for rehearsals: authoring, read-only plans, worker setup. Framework main (1.4.0 development) is built side by side
+at `~/daemonarchy-framework-main-runtime` for read-only plans only. The authoritative native runs wait for
+framework 1.4.0 (COMP-001 needs its catalog scale, per-unit packages and tree-aware transport), because the move
+changes the receipt policy (see the next section).
+
+## The Literate AI 1.4 move (prepared, not applied)
+
+Apply sequence, per repository, once framework 1.4.0 is released and the operator authorizes it:
+
+1. Install the 1.4.0 runtime side by side; record its identity.
+2. `litai project lifecycle rebind-standard` (plan), review the plan identity and the changed fields, then
+   `--apply --authorize-rebind` with that plan. This changes `lifecycle_driver` (framework distribution and policy
+   identities) and the receipt policy.
+3. Land the release-goal manifest (`contributions.roadmap_goal_manifest`, `docs/roadmap/release-goals.json`) and the
+   `Release target:` lines on queue headings (the prepared draft change); the 1.3.x runtime rejects that field, so
+   this lands only with the 1.4.0 runtime.
+4. `litai verify`, rerun the repository's tests, then record the human `authority-reviewed` marker.
+5. Rerun every native run whose receipt matters (see below).
+
+What the rebind invalidates: the plan reports `evidence_after_apply`: `accepted_source_membership` and
+`test_receipt` both become `stale-until-rebuild`. Any native receipt, retained-project admission or plan
+authorization produced on 1.3.x is therefore not carried over, and an authorization identity is bound to the
+reviewed plan, which changes with the framework identity. The framework's own code ties them together: the lifecycle driver identity (which embeds the framework
+distribution identity) is written into the run's derivation (`cli/rebuild.py` records `lifecycle_driver_identity`) and a
+run is refused when the project's current driver identity differs from the recorded one (v1.3.1 `cli/rebuild.py`, the
+`lifecycle_driver.identity != driver.identity` checks). Run the multi-hour native builds after the move, not
+before it.
 
 ## SRC-001: scheduling the controller run
 
