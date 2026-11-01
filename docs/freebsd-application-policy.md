@@ -72,8 +72,9 @@ cudalab refuses to start without an audio device, so the launcher runs it with
 `SDL_AUDIODRIVER=dummy`; `LD_PRELOAD` of the UVM shim is given only to the Linux
 executable, never to a native FreeBSD program. The same preload carries a small
 fallback library (built by the launcher under the Linux gcc) that answers
-`cudaMallocAsync` with `cudaMalloc` when the driver reports the stream-ordered
-allocator unsupported, as the FreeBSD driver does, as for Unified Memory; the
+`cudaMallocAsync` with `cudaMalloc` when CUDA reports the stream-ordered
+allocator unsupported, as it does here with the UVM shim and no real `nvidia-uvm` (the
+cause is the missing UVM layer, as for Unified Memory, not a down-rev driver); the
 Choreograph demo needs it. Audio uses SDL's `pulseaudio,pipewire,dummy` driver list
 and falls back to the silent driver, so a missing sound path never costs the user
 the app.

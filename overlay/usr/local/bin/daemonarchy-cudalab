@@ -43,7 +43,7 @@
 # that window closes and the app takes over (CUDALAB_FOREGROUND=1 keeps it attached).
 # Its output goes to ~/.local/state/cudalab/app.log, and a notification says so if it
 # stops with an error. Two things make it work on the FreeBSD NVIDIA driver:
-#   - cudaMallocAsync, which the driver does not support, falls back to cudaMalloc
+#   - cudaMallocAsync, which is unsupported here (no real nvidia-uvm), falls back to cudaMalloc
 #     (a small library built here and preloaded; Choreograph needs it);
 #   - sound goes through PulseAudio when SDL has it and the desktop's server answers,
 #     and falls back to SDL's silent driver otherwise, or when the app stops within
@@ -119,16 +119,16 @@ lx() {
       "$linux_root/bin/bash" -c "$*" )
 }
 
-# The source of the stream-ordered allocator fallback. The FreeBSD NVIDIA driver has no
-# memory pools, so cudaMallocAsync fails with "operation not supported" and Cudalab's
+# The source of the stream-ordered allocator fallback. Under the Linuxulator (UVM shim, no real
+# nvidia-uvm) CUDA reports no memory pools, so cudaMallocAsync fails with "operation not supported" and Cudalab's
 # Choreograph demo (which allocates its named buffers that way) exits at once. Preloaded
 # ahead of libcudart, this tries the real call and falls back to cudaMalloc/cudaFree.
 fallback_source() {
   cat <<'CSOURCE'
 /* Stream-ordered allocator fallback for Cudalab under the FreeBSD Linuxulator.
  *
- * The FreeBSD NVIDIA driver does not implement the memory pools behind
- * cudaMallocAsync: the call fails with cudaErrorNotSupported (801), and so does
+ * Under the Linuxulator the UVM shim stands in for nvidia-uvm and CUDA reports no
+ * memory pools, so cudaMallocAsync: the call fails with cudaErrorNotSupported (801), and so does
  * Cudalab's Choreograph demo, which allocates its named buffers that way. Preloaded
  * ahead of libcudart, this tries the real call first and, when the pool is not
  * supported, allocates with cudaMalloc and releases with cudaFree (both wait for
