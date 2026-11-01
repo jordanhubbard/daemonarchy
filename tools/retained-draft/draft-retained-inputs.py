@@ -135,15 +135,13 @@ def main():
     policy = RetainedProjectTestPolicy.from_dict({
         "schema": "literate-ai/retained-project-test-policy@1",
         "project_policy_identity": definition.test_receipt_policy.identity.uri,
-        "cases": [{"id": c, "action": "draft-ci-isolated-tests", "skip_reason": None}
-                  for c in isolated]
-                 + [{"id": c, "action": "draft-ci-tests", "skip_reason": None}
-                    for c in plain],
+        "cases": [{"id": c, "action": "draft-ci-isolated-tests" if c in isolated
+                   else "draft-ci-tests", "skip_reason": None}
+                  for c in sorted(set(plain) | set(isolated))],
         "reports": [{"action": "draft-ci-isolated-tests",
                      "path": "tests/ci-isolated-report.json"},
                     {"action": "draft-ci-tests", "path": "tests/ci-report.json"}],
     })
-    # The contract wants cases sorted by id; the wire order is the policy's own.
     (root / POLICY).write_text(json.dumps(policy.to_dict(), indent=2) + "\n")
 
     limits = RetainedProjectLimits(100_000, 128 * 1024 * 1024, 2 * 1024**3)
