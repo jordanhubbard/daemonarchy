@@ -280,6 +280,22 @@ The signing keys live on the key host (madmax, `~/daemonarchy-keys`, mode 0400) 
 **key window**: one command the operator runs on the key host. It puts the key in memory on the VM for the length of one runner,
 the runner signs and verifies, and the key is gone again whatever happened. The scripts are in `scripts/key-windows/`.
 
+### One signing session per release: the rule
+
+**Freeze, QA, sign once.** Do not sign an artifact because it is ready. Freeze every signed input, finish QA on the unsigned
+artifacts, and only then run the key windows in one sitting, in the order below. A change to a frozen input after that point means
+the window is run again, so it is a release-blocking decision, not a routine fix. The frozen inputs are:
+
+- the boot tree and loader inputs: `secureboot/*`, `overlay/usr/local/share/daemonarchy-installer/brand-daemonarchy.lua`, the kernel
+  and loader (source revision and patches);
+- the kernel modules and firmware in the amd64 package set (the module inventory the signed manifest covers);
+- the **release label** (the version the bundle, feeds and extension feed names carry: a rename after signing costs a relabel window);
+- the feed package sets for both architectures, including the package ABI label (check it during QA, before signing);
+- the extension bundles and indexes (the installer derives the extension feed name from the image version).
+
+The goal, the options and the measured history are in [SIGN-001](roadmap/release-1.5.0.md#sign-001-one-signing-session-per-release).
+Record the number of operator signing commands and the signing wall-clock time for each release.
+
 ### The design every window keeps
 
 - **Memory only.** A 1 MiB tmpfs on the VM (`/var/keytmp` for the boot windows, `/var/keytmp-feed`, `/var/keytmp-ext`), mode 0700,

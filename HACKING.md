@@ -1128,6 +1128,15 @@ deletes the trace variables.
 
 ## Releasing
 
+### One signing session per release
+
+Sign once. Freeze every signed input (the boot tree files `secureboot/*` and `brand-daemonarchy.lua`, the kernel and loader, the
+kernel modules and firmware in the amd64 set, the release label, the feed package sets and the extension bundles), finish QA on the
+unsigned artifacts, then run the key windows in one sitting. A change to a frozen input after signing needs another window.
+The windows and their safeguards are in [Key windows](docs/mastering-1.5.0.md#key-windows-signing-without-a-key-on-the-builder); the
+rule is [there](docs/mastering-1.5.0.md#one-signing-session-per-release-the-rule); the reasons and options are in
+[SIGN-001](docs/roadmap/release-1.5.0.md#sign-001-one-signing-session-per-release). Agents never hold or move key material.
+
 ### Maintaining the release history
 
 Update [CHANGELOG.md](CHANGELOG.md) with every release change. Keep the current

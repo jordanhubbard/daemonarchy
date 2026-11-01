@@ -1516,3 +1516,22 @@ remains open; report files do not establish a passing gate.
   - [ ] State what a fork must keep (licenses, trademark notices, the Omarchy and FreeBSD credits).
 - **Evidence:**
   - [ ] A clean fork under another GitHub account builds an installer, publishes signed feeds to its own releases, installs from them and upgrades from them, with no edit to source code beyond the configuration file; a test fails if a `jordanhubbard` URL reappears outside the configuration and documented defaults.
+
+### [ ] SIGN-001 — One signing session per release: stop the key-window churn
+
+- **Priority:** P1
+- **Release target:** 1.5.0
+- **Release:** 1.5.0 (opened 2026-11-01 by operator decision: "this is too much security"; nothing here is claimed done; see [the 1.5.0 plan](release-1.5.0.md#sign-001-one-signing-session-per-release))
+- **Owner:** release engineering; parent and related item BUILD-001 ("improve the entire release engineering cycle by 10x")
+- **Direction:** Make signing a single, planned operator action per release, with no key material ever handled by an agent.
+- **Conclusion:** In 1.5.0 the operator ran six key windows by hand. The cause was process and policy as much as security: three windows were avoidable, one was a genuine QA finding, and the rest were needed once the order was wrong. The record and the options are in [the plan](release-1.5.0.md#sign-001-one-signing-session-per-release). The operator picks the option; the recommendation is to adopt a frozen-input process rule now (A) and implement a manifest-driven window (B), optionally with a signing service (C), if zero commands is wanted.
+- **Depends on:** none to adopt option A; the chosen implementation for B, C or D.
+- **Implementation:**
+  - [ ] Adopt option A at once for the rest of 1.5.0: freeze every signed input, finish QA, then sign once. It is documented in [HACKING.md](https://github.com/jordanhubbard/daemonarchy/blob/main/HACKING.md#one-signing-session-per-release) and [mastering-1.5.0.md](../mastering-1.5.0.md#one-signing-session-per-release-the-rule).
+  - [ ] Record, for every release, the number of operator signing commands and the signing wall-clock time, in the release record.
+  - [ ] The operator decides among options B, C and D (threat model and risk in the plan); implement the chosen one, with the existing safeguards kept unless the operator explicitly lowers them.
+  - [ ] Test the chosen mechanism with throwaway keys only, as `tests/key-windows-design.sh` requires; never test in real mode.
+- **Evidence:**
+  - [ ] A release is signed with at most one operator signing action, and the release record shows the command count and the wall-clock time.
+  - [ ] No agent read, copied, moved or printed key material in that release (the key-window design checks and the session record agree).
+  - [ ] If option C or D is chosen, its allowlist or VM design, its approvals and the operator's recorded acceptance of the changed threat model.
