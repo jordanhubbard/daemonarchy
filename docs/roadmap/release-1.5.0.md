@@ -1,7 +1,7 @@
 # 1.5.0 plan: the 1.4.2 scope, build speed and release-cycle speed
 
 - **Status:** active
-- **Owning queue item:** [BUILD-001](active-work.md#build-001-cut-freebsd-source-ports-iso-and-release-cycle-time-10x-with-literate-ai-14)
+- **Owning queue item:** [BUILD-001](active-work.md#build-001-cut-freebsd-source-ports-iso-and-release-cycle-time-10x-with-literate-ai)
 - **Supporting queue items:** [ADOPT-002](active-work.md#adopt-002-qualify-retained-native-execution-and-release-enforcement), [COMP-001](active-work.md#comp-001-model-complete-freebsd-source-and-ports-trees-as-components), [SRC-001](active-work.md#src-001-establish-owned-freebsd-source-builds-and-packages), [PERF-001](active-work.md#perf-001-execute-native-components-and-substantially-accelerate-iso-builds), [PERF-002](active-work.md#perf-002-coordinate-all-daemonarchy-repositories-through-literate-ai-workers-in-140), [DEV-001](active-work.md#dev-001-provide-an-operator-ready-native-component-development-system), [RELEASE-001](active-work.md#release-001-deliver-a-qualified-literate-ai-release-workflow-in-14), [DESKTOP-001](active-work.md#desktop-001-ship-the-desktop-launchers-and-menu-entries-in-the-daemonarchy-desktop-package)
 - **Completion / archival evidence:** pending; nothing here is claimed done. Done means the evidence listed under Acceptance below, retained with exact inputs.
 
@@ -9,6 +9,21 @@ Opened 2026-10-31 by operator decision. The operator's words: decrease the time 
 compile all of FreeBSD src, FreeBSD ports and the ISO mastering process using all applicable
 features of Literate AI, also upgrading Literate AI in all Daemonarchy repositories to version
 1.4 (top of tree), and improve the entire release engineering cycle by 10x.
+
+**Gating, 2026-11-01 (operator decisions, recorded with their reasoning).** 1.5.0 is held until
+ADOPT-002, RELEASE-001, COMP-001, PERF-002, DEV-001, SRC-001 and BUILD-001 are all done, each with the
+evidence its own acceptance text demands, and it is **gated on Literate AI 1.4.0** with its blockers resolved. The
+reason: a framework assessment found that COMP-001 (all of `/usr/src` and `/usr/ports` as Components) cannot
+ship on the 1.3.x line. The catalog scale cap (about 1,000 units), per-unit link-aware packages, tree-aware worker
+transport and catalog-scale native actions are 1.4.0 features, and COMP-001, PERF-002, DEV-001 and
+RELEASE-001 depend on them. The operator owns the framework and its 1.4.0 work is done in that project, not in
+this repository. The upgrade of Literate AI to 1.4 (top of tree) in daemonarchy, daemonarchy-src and
+daemonarchy-ports (daemonarchy-desktop is already bound) therefore stays in this release and is prepared here
+without being applied (see the upgrade section below). Until 1.4.0 is available, work on the six goals is
+rehearsal only on the released 1.3.1 runtime (a side-by-side build from tag `v1.3.1`,
+`~/daemonarchy-framework-1.3.1-runtime`). Framework issues
+[#74](https://github.com/jordanhubbard/literate-ai/issues/74) and
+[#93](https://github.com/jordanhubbard/literate-ai/issues/93) carry the framework's 1.4 milestone.
 
 ## 1.4.2 is superseded by 1.5.0 and was never released
 
@@ -154,15 +169,16 @@ that owns it:
 | Development loop | Operator workstation `litai-dev` interface over the same Components | DEV-001 |
 | Signing and key windows | Scripted key windows with the same custody rules; the key is never copied to workers or artifacts | RELEASE-001 |
 | QA | Parallel amd64 and aarch64 install, boot and feed checks from one plan, instead of sequential manual runs | RELEASE-001, PERF-002 |
-| Release state and gates | `litai release` plan, check and publish driven by the 1.4.x gate and a goal manifest, replacing hand steps | RELEASE-001 |
+| Release state and gates | `litai release` plan, check and publish driven by the 1.4.x gate (this repository's release gate, not the 1.4 framework), replacing hand steps | RELEASE-001 |
 
 These mechanisms are the open acceptance of the listed items, not new claims. A 10x figure is not
 credible if it comes from skipping a test, a package or a signature; the evidence says so.
 
-## Literate AI upgrade to 1.4 in all Daemonarchy repositories
+## Literate AI upgrade to 1.4 in all Daemonarchy repositories (prepared, not applied)
 
-Today the installed runtime is litai 1.3.0 (c345e652) and framework main reports 1.4.0 development.
-"1.4 (top of tree)" means the framework revision chosen and recorded at the start of this work.
+Today the runtime in use is litai 1.3.1 (tag `v1.3.1`), with framework main (1.4.0 development) built
+side by side at `~/daemonarchy-framework-main-runtime` for read-only plans. "1.4 (top of tree)" means the
+framework 1.4.0 revision recorded when the upgrade is applied. Nothing is applied before 1.4.0.
 The Daemonarchy repositories and their state on 2026-10-31 (three carry `literate.project.json`):
 
 | Repository | `literate.project.json` | Project version | Notes |
@@ -170,7 +186,7 @@ The Daemonarchy repositories and their state on 2026-10-31 (three carry `literat
 | daemonarchy | yes | 1.4.1 | Standard binding to framework distribution 8b9c09fd; release policy and 1.4.x gate in place |
 | daemonarchy-src | yes | 1.2.0 | Standard lifecycle binding present; older project version |
 | daemonarchy-ports | yes | 1.2.0 | Standard lifecycle binding present; older project version |
-| daemonarchy-desktop | no (to be added) | n/a | In scope, not subsumed: see below. Needs a project binding like the other three |
+| daemonarchy-desktop | yes (added 2026-11-01, scaffolded with framework main) | 1.4.1 | In scope, not subsumed: see below |
 
 ### daemonarchy-desktop: in scope, not subsumed
 
@@ -186,11 +202,12 @@ So it gets a project binding: a `literate.project.json` with the Standard lifecy
 Scope is exactly daemonarchy, daemonarchy-src, daemonarchy-ports and daemonarchy-desktop. The other repositories under the owner that carry a `literate.project.json` (Aviation, ElixirSSI, project-tracker, bookscan, freebsd-sentiment, LeRTX, and the Literate AI framework with its labs) are unrelated to Daemonarchy and are out of scope. Nothing in this plan changes them.
 
 For each repository, the upgrade is: review the Standard rebind plan
-(`litai project lifecycle rebind-standard`, plan first), apply it only with the reviewed plan and
-explicit authorization, add the release-goal manifest that framework main requires
+(`litai project lifecycle rebind-standard`, plan only until 1.4.0), apply it only with the reviewed plan and
+explicit authorization, add the release-goal manifest that framework 1.4 requires
 (`contributions.roadmap_goal_manifest`, with a `Release target:` line on each queue heading and every
-included goal checked off), then run `litai verify` and the repository's own tests. The rebind
-changes lifecycle and receipt-policy authority, so each is an operator-approved change.
+included goal checked off), then run `litai verify` and the repository's own tests. The rebind changes
+lifecycle and receipt-policy authority, so each is an operator-approved change, and native receipts made on 1.3.x
+are not carried over (see [the upgrade sequence](../native-adoption-steps.md#the-literate-ai-14-move-prepared-not-applied)).
 daemonarchy's `authority-reviewed` marker is recorded by a human after review.
 
 ## Acceptance
@@ -202,7 +219,7 @@ Nothing is claimed done until each of these has retained evidence with exact inp
 - Per-stage results against targets, each stage's gates unchanged from the baseline cycle.
 - The end-to-end cycle at least 10x shorter on equivalent gates, on a rehearsal and on a real
   release, with every decision, cache hit and rebuild recorded.
-- Literate AI at the recorded 1.4 revision in daemonarchy, daemonarchy-src, daemonarchy-ports and
-  daemonarchy-desktop (with its new binding); each passes `litai verify` for its declared gates.
+- Literate AI is at the recorded 1.4.0 revision in daemonarchy, daemonarchy-src, daemonarchy-ports and
+  daemonarchy-desktop; each passes `litai verify` for its declared gates.
 - ADOPT-002, COMP-001, SRC-001, DEV-001, PERF-001, PERF-002 and RELEASE-001 meet their own
-  acceptance texts; framework issues #74 and #93 are resolved or the dependent scope stays open.
+  acceptance texts; framework 1.4.0 is released with issues #74 and #93 resolved. 1.5.0 is not published until all of them are met.
