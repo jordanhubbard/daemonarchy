@@ -39,8 +39,13 @@ package_repository_prepare() {
 # a release), so an image that carries a mirror list prefers the snapshot it was
 # built against and keeps pkg.FreeBSD.org only as the fallback. A shard that does
 # not answer is left out, never fatal. No list, no mirror, no change.
-package_mirror_probe() { # URL: does the shard's catalogue answer?
-    fetch -q -T 20 -o /dev/null "$1/meta.conf"
+package_mirror_probe() { # URL: does the shard's catalogue answer? (three tries: one dropped connection is not "down")
+    local try
+    for try in 1 2 3; do
+        fetch -q -T 20 -o /dev/null "$1/meta.conf" && return 0
+        sleep 2
+    done
+    return 1
 }
 
 package_repository_write_mirror() { # conf-file public-key mirror-list-file [architecture, default amd64]
@@ -57,6 +62,8 @@ package_repository_write_mirror() { # conf-file public-key mirror-list-file [arc
         esac
         if ! package_mirror_probe "$url"; then
             echo "Package mirror ${url##*/} did not answer; using pkg.FreeBSD.org for its packages" >&2
+            # Recorded in the file so package_repository_freebsd_enabled keeps pkg.FreeBSD.org on for what this shard carried.
+            printf '# a package mirror shard did not answer\n' >>"$1"
             continue
         fi
         number=$((number + 1))
@@ -77,10 +84,16 @@ EOF
 # package across repositories (priority breaks ties only), so with it enabled a snapshot shard
 # that answered would lose packages to whatever `latest` carries that day. The mirror file the
 # transaction writes names the shards that answered; none, and the upstream repository stays on.
+# It stays on too when any shard did NOT answer: the packages that shard carries have no other
+# source, and an install that loses one of two shards must fall back for those, not fail.
 # Only the transaction's own repository directory is affected: the installed system keeps its
 # default FreeBSD repository for updates.
 package_repository_freebsd_enabled() { # mirror-conf-file
-    if grep -q '^Daemonarchy-Mirror-' "$1" 2>/dev/null; then echo no; else echo yes; fi
+    if grep -q '^Daemonarchy-Mirror-' "$1" 2>/dev/null && ! grep -q '^# a package mirror shard did not answer' "$1"; then
+        echo no
+    else
+        echo yes
+    fi
 }
 
 package_repository_write_dependencies() {
