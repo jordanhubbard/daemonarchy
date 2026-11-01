@@ -698,7 +698,7 @@ before claiming the observer optimization resolves that release blocker.
 
 ### [ ] COMP-001 — Model complete FreeBSD source and ports trees as Components
 
-- **Framework issue:** [#74](https://github.com/jordanhubbard/literate-ai/issues/74)
+- **Framework issues:** [#74](https://github.com/jordanhubbard/literate-ai/issues/74), [#93](https://github.com/jordanhubbard/literate-ai/issues/93), [#234](https://github.com/jordanhubbard/literate-ai/issues/234), [#235](https://github.com/jordanhubbard/literate-ai/issues/235): complete native trees as Component catalogs, internal aliases through SDK admission, catalog and pinned-input ceilings at src and ports scale, and per-unit link-aware packages.
 - **Detailed plan:** [Complete source/ports Component coverage](freebsd-components.md)
 
 - **Priority:** P1
@@ -744,6 +744,7 @@ before claiming the observer optimization resolves that release blocker.
 
 ### [ ] PERF-002 — Coordinate all Daemonarchy repositories through Literate AI workers in 1.4.0
 
+- **Framework issues:** [#4](https://github.com/jordanhubbard/literate-ai/issues/4), [#5](https://github.com/jordanhubbard/literate-ai/issues/5), [#235](https://github.com/jordanhubbard/literate-ai/issues/235), [#236](https://github.com/jordanhubbard/literate-ai/issues/236), [#67](https://github.com/jordanhubbard/literate-ai/issues/67): production DAG dispatch and shared LAN caches, remote native package construction, tree-aware worker transport and the FreeBSD cache keying that two physical workers need.
 - **GitHub issue:** [#39](https://github.com/jordanhubbard/daemonarchy/issues/39); [1.4.0 milestone](https://github.com/jordanhubbard/daemonarchy/milestone/3).
 - **Detailed plan:** [1.4.0 cross-repository build and release graph](release-1.4.0.md).
 - **Priority:** P1 for 1.4.0; outside the 1.3.1 release and 1.3.2 MSI acceptance paths.
@@ -1420,6 +1421,7 @@ remains open; report files do not establish a passing gate.
 
 ### [ ] BUILD-001 — Cut FreeBSD source, ports, ISO and release-cycle time 10x with Literate AI 1.4
 
+- **Framework issues:** [#234](https://github.com/jordanhubbard/literate-ai/issues/234), [#235](https://github.com/jordanhubbard/literate-ai/issues/235), [#236](https://github.com/jordanhubbard/literate-ai/issues/236), [#74](https://github.com/jordanhubbard/literate-ai/issues/74), [#93](https://github.com/jordanhubbard/literate-ai/issues/93), [#4](https://github.com/jordanhubbard/literate-ai/issues/4), [#5](https://github.com/jordanhubbard/literate-ai/issues/5), [#67](https://github.com/jordanhubbard/literate-ai/issues/67) (see [the plan](release-1.5.0.md#framework-issues-for-the-140-gaps)); the framework tracks them under its 1.4.0 work.
 - **Detailed plan:** [1.5.0 plan: build and release-cycle speed](release-1.5.0.md)
 - **Priority:** P1
 - **Release:** 1.5.0 (opened 2026-10-31 by operator decision; nothing here is claimed done)
