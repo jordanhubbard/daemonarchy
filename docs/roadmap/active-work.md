@@ -1,5 +1,7 @@
 # Active work
 
+The release-goal ledger for the Literate AI release policy is [release-goals.json](release-goals.json).
+
 [PROJECT.md](https://github.com/jordanhubbard/daemonarchy/blob/main/PROJECT.md) owns product goals and completeness.
 Checkboxes below are execution status, not substitutes for test receipts.
 
@@ -96,6 +98,7 @@ Evidence: `verification/adoption-checks.json`. Native execution and release enfo
 ### [ ] ADOPT-002 — Qualify retained native execution and release enforcement
 
 - **Priority:** P1
+- **Release target:** 1.5.0
 - **Release:** 1.5.0 (moved from 1.4.1 by operator decision, 2026-10-30; not claimed done by 1.4.0 or 1.4.1; renamed from 1.4.2 on 2026-10-31; see [the 1.5.0 plan](release-1.5.0.md))
 - **Owner:** native lifecycle integration and framework boundary
 - **Direction:** Integrate existing FreeBSD build, test, signing and release procedures without transferring source authority.
@@ -293,6 +296,7 @@ lifecycle authority.
 ### [ ] GUI-001 — Deliver a colorful fast graphical package manager
 
 - **Priority:** P2
+- **Release target:** 1.5.0
 - **Release:** 1.5.0 (moved from 1.4.1 by operator decision, 2026-10-30; not claimed done by 1.4.0 or 1.4.1; renamed from 1.4.2 on 2026-10-31; see [the 1.5.0 plan](release-1.5.0.md))
 - **Owner:** desktop and package-engine Components
 - **Direction:** Provide the same useful visual progress and parallel execution in graphical package management, contributing a port if a new application is needed.
@@ -308,6 +312,7 @@ lifecycle authority.
 ### [ ] SRC-001 — Establish owned FreeBSD source builds and packages
 
 - **Priority:** P1
+- **Release target:** 1.5.0
 - **Release:** 1.5.0 (moved from 1.4.1 by operator decision, 2026-10-30; not claimed done by 1.4.0 or 1.4.1; renamed from 1.4.2 on 2026-10-31; see [the 1.5.0 plan](release-1.5.0.md))
 - **Owner:** release and diagnostics Components; daemonarchy-src fork
 - **Direction:** Build modified FreeBSD-CURRENT from the owned source fork, retaining upstream provenance and coherent kernel/world/source package selections.
@@ -400,6 +405,7 @@ lifecycle authority.
 - **GitHub issue:** [#11](https://github.com/jordanhubbard/daemonarchy/issues/11)
 
 - **Priority:** P1
+- **Release target:** 1.5.0
 - **Release:** 1.5.0 (moved from 1.4.1 by operator decision, 2026-10-30; not claimed done by 1.4.0 or 1.4.1; renamed from 1.4.2 on 2026-10-31; see [the 1.5.0 plan](release-1.5.0.md))
 - **Owner:** whole product, release and acceptance
 - **Direction:** Finish the retained backlog and publish a future release entirely through qualified Literate AI execution across the owned repositories. The original 1.2.0 milestone was not published; 1.3.1 records the intervening development but uses its separately verified native release workflow.
@@ -702,6 +708,7 @@ before claiming the observer optimization resolves that release blocker.
 - **Detailed plan:** [Complete source/ports Component coverage](freebsd-components.md)
 
 - **Priority:** P1
+- **Release target:** 1.5.0
 - **Release:** 1.5.0 (moved from 1.4.1 by operator decision, 2026-10-30; not claimed done by 1.4.0 or 1.4.1; renamed from 1.4.2 on 2026-10-31; see [the 1.5.0 plan](release-1.5.0.md))
 - **Owner:** source and ports Component inventories; framework retained native lifecycle
 - **Direction:** Represent all of /usr/src and all of /usr/ports as Literate AI Components, not opaque external trees.
@@ -747,6 +754,7 @@ before claiming the observer optimization resolves that release blocker.
 - **GitHub issue:** [#39](https://github.com/jordanhubbard/daemonarchy/issues/39); [1.4.0 milestone](https://github.com/jordanhubbard/daemonarchy/milestone/3).
 - **Detailed plan:** [1.4.0 cross-repository build and release graph](release-1.4.0.md).
 - **Priority:** P1 for 1.4.0; outside the 1.3.1 release and 1.3.2 MSI acceptance paths.
+- **Release target:** 1.5.0
 - **Release:** 1.5.0 (moved from 1.4.1 by operator decision, 2026-10-30; not claimed done by 1.4.0 or 1.4.1; renamed from 1.4.2 on 2026-10-31; see [the 1.5.0 plan](release-1.5.0.md))
 - **Owner:** LitAI native lifecycle, owned source/ports/desktop/compatibility forks and product release integration.
 - **Direction:** Select exact commits across all owned release-input repositories, resolve their complete native build/test/package/release dependency graph, and schedule ready actions across multiple physical machines with LitAI's parallel workers and a shared verified artifact cache. Treat ports and packages as build artifacts; evaluate Bazel incremental builds, remote cache/execution and other suitable tools. FreeBSD make and Poudriere are optional executors.
@@ -810,6 +818,7 @@ before claiming the observer optimization resolves that release blocker.
   attempt. [Checkpoint](../../verification/native-sdk-build-development.json).
 
 - **Priority:** P1
+- **Release target:** 1.5.0
 - **Release:** 1.5.0 (moved from 1.4.1 by operator decision, 2026-10-30; not claimed done by 1.4.0 or 1.4.1; renamed from 1.4.2 on 2026-10-31; see [the 1.5.0 plan](release-1.5.0.md))
 - **Owner:** release Component, source and ports forks, native framework lifecycle
 - **Direction:** Make the complete source and ports Component build, test, package, ISO creation and installation system available on the operator development workstation at /usr/src and /usr/ports, managed by Literate AI.
@@ -1094,6 +1103,7 @@ remains open; report files do not establish a passing gate.
 - **GitHub issue:** [#33](https://github.com/jordanhubbard/daemonarchy/issues/33), milestone **1.4.0**; source [#21](https://github.com/jordanhubbard/daemonarchy-src/issues/21), also in 1.4.0.
 - **Release scope:** [Current 1.4 plan](release-1.4.0.md) supersedes the [earlier 1.3.2 plan](release-1.3.2.md). Preserve the published 1.3.1 ISO, tags, feeds, signing material, source and native evidence. Historical product #27 closed after prerequisites merged; complete-feature acceptance remains open here.
 - **Priority:** P0
+- **Release target:** 1.5.0
 - **Release:** 1.5.0 (moved from 1.4.1 by operator decision, 2026-10-30; not claimed done by 1.4.0 or 1.4.1; renamed from 1.4.2 on 2026-10-31; see [the 1.5.0 plan](release-1.5.0.md))
 - **Owner:** diagnostics, owned FreeBSD source and release integration
 - **Direction:** Provide explicitly enabled plain wired console control without SSH, a new key or pairing from boot blocks/loader through a forced `mountroot>` prompt, early startup and deliberate panic. Include kernel/module selection, variables and Lua, bounded polled bidirectional transport, retained last-stage output after reset and orderly native-NIC takeover.
@@ -1231,6 +1241,7 @@ remains open; report files do not establish a passing gate.
 ### [ ] HW-004 — T2 Touch ID login through fprintd
 
 - **Priority:** P2
+- **Release target:** 1.5.0
 - **Release:** 1.5.0 (moved from 1.4.1 by operator decision, 2026-10-30; not claimed done by 1.4.0 or 1.4.1; renamed from 1.4.2 on 2026-10-31; see [the 1.5.0 plan](release-1.5.0.md))
 - **Owner:** MacBook hardware support: security/t2-touchid port, installed-system networking (daemonarchy-t2link) and PAM integration
 - **Direction:** Let a MacBookPro16,1 (and other Apple T2 Macs) accept a macOS-enrolled finger for login, sudo, SDDM and hyprlock through stock fprintd and pam_fprintd, using KaiT2en's t2-touchid bridge over the T2 internal link's IPv6 link-local BiometricKit service and libfprint's virtual storage device.
@@ -1354,6 +1365,7 @@ remains open; report files do not establish a passing gate.
 ### [ ] EXT-002 — Sandboxed Lua extensions for content we did not write
 
 - **Priority:** P2
+- **Release target:** 1.5.0
 - **Release:** 1.5.0 (opened after 1.4.1 went to mastering, 2026-10-30; not claimed done by 1.4.0 or 1.4.1; renamed from 1.4.2 on 2026-10-31; see [the 1.5.0 plan](release-1.5.0.md))
 - **Owner:** installer Component with the visual SDK
 - **Direction:** Let the installer run an extension whose code is not ours (a community toy or game published from a release page) without trusting it: a Lua entry file in a real sandbox, loaded through the same manifest, signed feed, menu, windows and preemption as the Python extensions. Retire the "not a sandbox for hostile code" caveat for this kind of content.
@@ -1422,6 +1434,7 @@ remains open; report files do not establish a passing gate.
 
 - **Detailed plan:** [1.5.0 plan: build and release-cycle speed](release-1.5.0.md)
 - **Priority:** P1
+- **Release target:** 1.5.0
 - **Release:** 1.5.0 (opened 2026-10-31 by operator decision; nothing here is claimed done)
 - **Owner:** release engineering, native Component lifecycle and the framework boundary
 - **Direction:** Decrease the time to compile all of FreeBSD src, FreeBSD ports and the ISO mastering process using every applicable Literate AI feature, upgrade Literate AI to version 1.4 (top of tree) in every Daemonarchy repository (daemonarchy, daemonarchy-src, daemonarchy-ports, daemonarchy-desktop; no other repository), and improve the entire release engineering cycle by 10x.
@@ -1438,6 +1451,7 @@ remains open; report files do not establish a passing gate.
 ### [ ] DESKTOP-001 — Ship the desktop launchers and menu entries in the daemonarchy-desktop package
 
 - **Priority:** P2
+- **Release target:** 1.5.0
 - **Release:** 1.5.0 (opened 2026-10-31 by operator decision; nothing here is claimed done; see [the 1.5.0 plan](release-1.5.0.md))
 - **Owner:** installer overlay and the daemonarchy-desktop repository (`x11-wm/daemonarchy` in daemonarchy-ports)
 - **Direction:** Move the desktop-style launchers and menu entries that live in the installer overlay into the daemonarchy-desktop package, so users receive fixes through `pkg upgrade` without a new ISO.
@@ -1455,6 +1469,7 @@ remains open; report files do not establish a passing gate.
 ### [ ] NETUP-001 — Upgrade an installed system's base, kernel, modules and boot files over the network
 
 - **Priority:** P1
+- **Release target:** 1.5.1
 - **Release:** 1.5.1 (opened 2026-11-01 after the network-upgrade assertion was checked; nothing here is claimed done; see [the 1.5.1 plan](release-1.5.1.md))
 - **Owner:** installer, secure-boot maintenance and release engineering
 - **Direction:** Let an installed system move from release N to N+1 with no ISO, including a change of FreeBSD snapshot or ABI: a signed, versioned base and kernel feed (pkgbase packages or a signed set bundle, published as GitHub release assets like the application feeds), the matching kernel-module packages, the signed Secure Boot boot bundle and module inventory, and the EFI loader and ESP files, applied through one supported command into a new ZFS boot environment with rollback.
@@ -1473,6 +1488,7 @@ remains open; report files do not establish a passing gate.
 ### [ ] NETUP-002 — Update trust over the network: package key and Secure Boot certificate rotation
 
 - **Priority:** P1
+- **Release target:** 1.5.1
 - **Release:** 1.5.1 (opened 2026-11-01; nothing here is claimed done; see [the 1.5.1 plan](release-1.5.1.md))
 - **Owner:** release engineering and secure boot
 - **Direction:** Let an installed system accept a new package-signing key and a new Secure Boot certificate from a signed, authenticated update, without reinstalling, keeping the old trust until the new one has been proven.
@@ -1488,6 +1504,7 @@ remains open; report files do not establish a passing gate.
 ### [ ] NETUP-003 — Qualify upgrade paths on exact artifacts
 
 - **Priority:** P1
+- **Release target:** 1.5.1
 - **Release:** 1.5.1 (opened 2026-11-01; nothing here is claimed done; see [the 1.5.1 plan](release-1.5.1.md))
 - **Owner:** release QA
 - **Direction:** Make upgrade acceptance part of every release: install the previous published release, upgrade to the candidate through the supported path, and compare against a fresh install.
@@ -1502,6 +1519,7 @@ remains open; report files do not establish a passing gate.
 ### [ ] FORK-001 — Let another developer fork the repositories and publish their own installer, packages and feeds
 
 - **Priority:** P2
+- **Release target:** 1.5.1
 - **Release:** 1.5.1 (opened 2026-11-01; nothing here is claimed done; see [the 1.5.1 plan](release-1.5.1.md))
 - **Owner:** installer, release engineering and documentation
 - **Direction:** Make the installer, package feeds, extension feed and release scripts configurable from one place, so a fork changes a small, documented set of values (owner and repository, feed tags, signing and pinned keys, checkout sources) instead of editing code, and write the fork guide.
