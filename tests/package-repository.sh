@@ -76,13 +76,13 @@ if package_repository_tag_validate packages-16-aarch64-1.4.0 2>/dev/null; then
     exit 1
 fi
 # A signed snapshot of the upstream packages: preferred when listed, skipped
-# (never fatal) when it does not answer, ignored when it is not one of ours.
+# (a dead shard stops the install when others answered) and ignored when it is not one of ours.
 base=https://github.com/jordanhubbard/daemonarchy/releases/download
 package_mirror_probe() { case "$1" in *upstream-down) return 1 ;; *) return 0 ;; esac; }
 rm -f "$work/mirror.conf"
 package_repository_write_mirror "$work/mirror.conf" /public/key "$work/no-such-list"
 [ ! -e "$work/mirror.conf" ]
-printf '%s\n' "$base/packages-16-amd64-1.4.1-upstream-1" "$base/packages-16-amd64-1.4.1-upstream-down" \
+printf '%s\n' "$base/packages-16-amd64-1.4.1-upstream-1" \
     "$base/packages-16-amd64-1.4.1-upstream-2" 'https://evil.example/packages-16-amd64-x' \
     "$base/packages-16-aarch64-1.4.1-upstream-1" "$base/packages-16-amd64-bad;rm" '' >"$work/package-mirror"
 package_repository_write_mirror "$work/mirror.conf" /public/key "$work/package-mirror" 2>"$work/mirror.err"
@@ -93,21 +93,46 @@ grep -q 'upstream-1"' "$work/mirror.conf" && grep -q 'upstream-2"' "$work/mirror
 ! grep -q 'upstream-down\|evil\|aarch64\|rm' "$work/mirror.conf"
 grep -q 'signature_type: "pubkey"' "$work/mirror.conf" && grep -q 'pubkey: "/public/key"' "$work/mirror.conf"
 grep -q 'priority: 5' "$work/mirror.conf"
-grep -q 'did not answer' "$work/mirror.err" && grep -q 'not one of ours' "$work/mirror.err"
+grep -q 'not one of ours' "$work/mirror.err"
 # aarch64 images take only aarch64 shards.
 rm -f "$work/mirror.conf"
 package_repository_write_mirror "$work/mirror.conf" /public/key "$work/package-mirror" aarch64 2>/dev/null
 [ "$(grep -c '^Daemonarchy-Mirror-' "$work/mirror.conf")" = 1 ] && grep -q 'packages-16-aarch64-1.4.1-upstream-1' "$work/mirror.conf"
-echo 'PASS: package mirror shards are preferred, validated, per architecture, and skipped when they do not answer'
+# A shard that answers on the third try is not down; one that never answers is, and the install stops
+# when others answered: no mixing of pkg.FreeBSD.org into a snapshot install.
+. "$here/overlay/usr/local/libexec/daemonarchy-installer/package-repository"
+tries=0
+fetch() { tries=$((tries + 1)); [ "$tries" -ge 3 ]; }
+sleep() { :; }
+package_mirror_probe "$base/packages-16-amd64-1.4.1-upstream-1"
+[ "$tries" = 3 ]
+tries=0
+fetch() { tries=$((tries + 1)); return 1; }
+if package_mirror_probe "$base/packages-16-amd64-1.4.1-upstream-1"; then echo 'A dead shard answered' >&2; exit 1; fi
+[ "$tries" = 3 ]
+unset -f fetch sleep
+package_mirror_probe() { case "$1" in *upstream-down) return 1 ;; *) return 0 ;; esac; }
+printf '%s\n' "$base/packages-16-amd64-1.4.1-upstream-1" "$base/packages-16-amd64-1.4.1-upstream-down" >"$work/partial-list"
+rm -f "$work/mirror.conf"
+if package_repository_write_mirror "$work/mirror.conf" /public/key "$work/partial-list" 2>"$work/partial.err"; then
+    echo 'An install with a dead shard went ahead' >&2; exit 1
+fi
+grep -q 'package mirror packages-16-amd64-1.4.1-upstream-down unreachable after 3 tries: check the network and retry; the installer will not mix in pkg.FreeBSD.org' "$work/partial.err"
+echo 'PASS: package mirror shards are preferred, validated, per architecture, retried, and a dead one stops the install'
 
 # pkg takes the newest version across repositories, so the transaction turns pkg.FreeBSD.org off
 # while a shard answers (a 1.4.1 candidate took 63 packages from it) and leaves it on otherwise.
+printf '%s\n' "$base/packages-16-amd64-1.4.1-upstream-1" "$base/packages-16-amd64-1.4.1-upstream-2" >"$work/all-answer-list"
+rm -f "$work/mirror.conf"
+package_repository_write_mirror "$work/mirror.conf" /public/key "$work/all-answer-list" 2>/dev/null
 [ "$(package_repository_freebsd_enabled "$work/mirror.conf")" = no ]
 rm -f "$work/mirror.conf"
 [ "$(package_repository_freebsd_enabled "$work/mirror.conf")" = yes ]
 printf '%s\n' "$base/packages-16-amd64-1.4.1-upstream-down" >"$work/down-list"
-package_repository_write_mirror "$work/mirror.conf" /public/key "$work/down-list" 2>/dev/null
+# no shard answers at all: the upstream repository stays on, as before
+package_repository_write_mirror "$work/mirror.conf" /public/key "$work/down-list" 2>"$work/none.err"
 [ "$(package_repository_freebsd_enabled "$work/mirror.conf")" = yes ]
+grep -q 'No package mirror answered; using pkg.FreeBSD.org' "$work/none.err"
 installer=$here/overlay/usr/local/libexec/daemonarchy-installer/install
 grep -q 'freebsd_enabled=\$(package_repository_freebsd_enabled "\$repos/mirror.conf")' "$installer"
 grep -q '^  enabled: \$freebsd_enabled$' "$installer"

@@ -111,9 +111,12 @@ help." That text is from the code; it has **not been triggered in a run**.
 
 Honest list from the code. None is known to be failing.
 
-- **The mirror shard may not answer.** A shard that does not answer is left out
-  and never fatal; the install then uses pkg.FreeBSD.org's `latest` for those
-  packages and is exposed to the same kind of drift.
+- **The mirror shard may not answer.** Each shard is tried three times. If some
+  shards answer and one does not, the install stops with "package mirror ...
+  unreachable after 3 tries: check the network and retry; the installer will not
+  mix in pkg.FreeBSD.org", rather than take that shard's packages from `latest`.
+  If no shard answers at all, the install uses pkg.FreeBSD.org's `latest` and is
+  exposed to the same kind of drift.
 - **Installed-system updates.** The installed system keeps the FreeBSD
   repository; `pkg upgrade` and any later `pkg install` take `latest`. A
   package withdrawn upstream can break a later upgrade or a package that

@@ -552,7 +552,7 @@ mount -t devfs devfs "$TARGET/dev"
 repos=$(mktemp -d)
 package_repository_write_dependencies "$repos/dependencies.conf" "$ISO_SHARE/daemonarchy.pub"
 # A signed snapshot of the upstream packages, when this image carries one.
-package_repository_write_mirror "$repos/mirror.conf" "$ISO_SHARE/daemonarchy.pub" "$ISO_SHARE/package-mirror" "${package_repository_arch:-amd64}"
+package_repository_write_mirror "$repos/mirror.conf" "$ISO_SHARE/daemonarchy.pub" "$ISO_SHARE/package-mirror" "${package_repository_arch:-amd64}" || exit 1
 # pkg.FreeBSD.org is off for this transaction while a shard answers (see package-repository).
 freebsd_enabled=$(package_repository_freebsd_enabled "$repos/mirror.conf")
 cat >"$repos/repos.conf" <<EOF
