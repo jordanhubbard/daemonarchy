@@ -139,7 +139,7 @@ def main():
                    else "draft-ci-tests", "skip_reason": None}
                   for c in sorted(set(plain) | set(isolated))],
         "reports": [{"action": "draft-ci-isolated-tests",
-                     "path": "tests/ci-isolated-report.json"},
+                     "path": "tests-isolated/ci-report.json"},
                     {"action": "draft-ci-tests", "path": "tests/ci-report.json"}],
     })
     (root / POLICY).write_text(json.dumps(policy.to_dict(), indent=2) + "\n")
@@ -205,9 +205,9 @@ def main():
             {"id": "draft-ci-isolated-tests", "stage": "test", "tool": "python",
              "argv": [py, "-I", REPORT_TOOL, "--action", "draft-ci-isolated-tests"]
                      + [a for n in ISOLATED for a in ("--test-file", "tests/%s.py" % n)]
-                     + ["--output", "{output_root}/tests/ci-isolated-report.json"],
+                     + ["--output", "{output_root}/tests-isolated/ci-report.json"],
              "requires": ["draft-build-iso", "draft-master-release-verify"],
-             "inventory": list(isolated), "outputs": ["tests"], "timeout_seconds": 3600},
+             "inventory": list(isolated), "outputs": ["tests-isolated"], "timeout_seconds": 3600},
             # UNKNOWN: independent acceptance (VM/QEMU QA via test-qemu.sh on a QA host,
             # physical hardware) is not a retained-plan action defined anywhere.
             {"id": "draft-unknown-accept", "stage": "accept", "tool": "echo",
