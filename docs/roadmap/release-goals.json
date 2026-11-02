@@ -1,0 +1,58 @@
+{
+  "schema": "literate-ai/release-roadmap-goals@1",
+  "roadmap": "docs/roadmap/active-work.md",
+  "releases": {
+    "1.5.0": [
+      {
+        "id": "ADOPT-002"
+      },
+      {
+        "id": "GUI-001"
+      },
+      {
+        "id": "SRC-001"
+      },
+      {
+        "id": "RELEASE-001"
+      },
+      {
+        "id": "COMP-001"
+      },
+      {
+        "id": "PERF-002"
+      },
+      {
+        "id": "DEV-001"
+      },
+      {
+        "id": "DEBUG-003"
+      },
+      {
+        "id": "HW-004"
+      },
+      {
+        "id": "EXT-002"
+      },
+      {
+        "id": "BUILD-001"
+      },
+      {
+        "id": "DESKTOP-001"
+      }
+    ],
+    "1.5.1": [
+      {
+        "id": "NETUP-001"
+      },
+      {
+        "id": "NETUP-002"
+      },
+      {
+        "id": "NETUP-003"
+      },
+      {
+        "id": "FORK-001"
+      }
+    ]
+  }
+}

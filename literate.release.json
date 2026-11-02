@@ -4,16 +4,30 @@
   "version_authority": {
     "path": "literate.project.json",
     "format": "json-pointer",
-    "selectors": ["/version"]
+    "selectors": [
+      "/version"
+    ]
   },
   "version_mirrors": [],
-  "documentation_authority": ["docs/architecture/design-traceability.md"],
+  "documentation_authority": [
+    "docs/architecture/design-traceability.md"
+  ],
   "contributions": {
-    "current_milestone": "1.5.0"
+    "current_milestone": "1.5.0",
+    "roadmap_goal_manifest": "docs/roadmap/release-goals.json"
   },
-  "allowed_transitions": ["patch", "minor", "major", "prerelease", "explicit"],
+  "allowed_transitions": [
+    "patch",
+    "minor",
+    "major",
+    "prerelease",
+    "explicit"
+  ],
   "gate": {
-    "argv": ["python3", "scripts/release-check-1.4.py"],
+    "argv": [
+      "python3",
+      "scripts/release-check-1.4.py"
+    ],
     "timeout_seconds": 172800
   },
   "changelog": {
