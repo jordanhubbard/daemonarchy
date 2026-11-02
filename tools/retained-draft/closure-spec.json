@@ -1,0 +1,620 @@
+{
+ "search": [
+  "/usr/bin",
+  "/bin",
+  "/usr/sbin",
+  "/sbin",
+  "/usr/local/sbin",
+  "/usr/local/bin"
+ ],
+ "tools": [
+  {
+   "name": "sh",
+   "why": "command used by build-iso.sh or the scripts it runs, by this review's grep of those scripts",
+   "role": "toolchain",
+   "command": "sh"
+  },
+  {
+   "name": "bash",
+   "why": "command used by build-iso.sh or the scripts it runs, by this review's grep of those scripts",
+   "role": "toolchain",
+   "command": "bash"
+  },
+  {
+   "name": "awk",
+   "why": "command used by build-iso.sh or the scripts it runs, by this review's grep of those scripts",
+   "role": "toolchain",
+   "command": "awk"
+  },
+  {
+   "name": "basename",
+   "why": "command used by build-iso.sh or the scripts it runs, by this review's grep of those scripts",
+   "role": "toolchain",
+   "command": "basename"
+  },
+  {
+   "name": "cat",
+   "why": "command used by build-iso.sh or the scripts it runs, by this review's grep of those scripts",
+   "role": "toolchain",
+   "command": "cat"
+  },
+  {
+   "name": "chmod",
+   "why": "command used by build-iso.sh or the scripts it runs, by this review's grep of those scripts",
+   "role": "toolchain",
+   "command": "chmod"
+  },
+  {
+   "name": "cp",
+   "why": "command used by build-iso.sh or the scripts it runs, by this review's grep of those scripts",
+   "role": "toolchain",
+   "command": "cp"
+  },
+  {
+   "name": "date",
+   "why": "command used by build-iso.sh or the scripts it runs, by this review's grep of those scripts",
+   "role": "toolchain",
+   "command": "date"
+  },
+  {
+   "name": "dirname",
+   "why": "command used by build-iso.sh or the scripts it runs, by this review's grep of those scripts",
+   "role": "toolchain",
+   "command": "dirname"
+  },
+  {
+   "name": "env",
+   "why": "command used by build-iso.sh or the scripts it runs, by this review's grep of those scripts",
+   "role": "toolchain",
+   "command": "env"
+  },
+  {
+   "name": "fetch",
+   "why": "command used by build-iso.sh or the scripts it runs, by this review's grep of those scripts",
+   "role": "toolchain",
+   "command": "fetch"
+  },
+  {
+   "name": "grep",
+   "why": "command used by build-iso.sh or the scripts it runs, by this review's grep of those scripts",
+   "role": "toolchain",
+   "command": "grep"
+  },
+  {
+   "name": "head",
+   "why": "command used by build-iso.sh or the scripts it runs, by this review's grep of those scripts",
+   "role": "toolchain",
+   "command": "head"
+  },
+  {
+   "name": "ls",
+   "why": "command used by build-iso.sh or the scripts it runs, by this review's grep of those scripts",
+   "role": "toolchain",
+   "command": "ls"
+  },
+  {
+   "name": "mkdir",
+   "why": "command used by build-iso.sh or the scripts it runs, by this review's grep of those scripts",
+   "role": "toolchain",
+   "command": "mkdir"
+  },
+  {
+   "name": "mktemp",
+   "why": "command used by build-iso.sh or the scripts it runs, by this review's grep of those scripts",
+   "role": "toolchain",
+   "command": "mktemp"
+  },
+  {
+   "name": "mv",
+   "why": "command used by build-iso.sh or the scripts it runs, by this review's grep of those scripts",
+   "role": "toolchain",
+   "command": "mv"
+  },
+  {
+   "name": "rm",
+   "why": "command used by build-iso.sh or the scripts it runs, by this review's grep of those scripts",
+   "role": "toolchain",
+   "command": "rm"
+  },
+  {
+   "name": "sed",
+   "why": "command used by build-iso.sh or the scripts it runs, by this review's grep of those scripts",
+   "role": "toolchain",
+   "command": "sed"
+  },
+  {
+   "name": "sleep",
+   "why": "command used by build-iso.sh or the scripts it runs, by this review's grep of those scripts",
+   "role": "toolchain",
+   "command": "sleep"
+  },
+  {
+   "name": "sort",
+   "why": "command used by build-iso.sh or the scripts it runs, by this review's grep of those scripts",
+   "role": "toolchain",
+   "command": "sort"
+  },
+  {
+   "name": "strings",
+   "why": "command used by build-iso.sh or the scripts it runs, by this review's grep of those scripts",
+   "role": "toolchain",
+   "command": "strings"
+  },
+  {
+   "name": "tail",
+   "why": "command used by build-iso.sh or the scripts it runs, by this review's grep of those scripts",
+   "role": "toolchain",
+   "command": "tail"
+  },
+  {
+   "name": "tar",
+   "why": "command used by build-iso.sh or the scripts it runs, by this review's grep of those scripts",
+   "role": "toolchain",
+   "command": "tar"
+  },
+  {
+   "name": "bsdtar",
+   "why": "command used by build-iso.sh or the scripts it runs, by this review's grep of those scripts",
+   "role": "toolchain",
+   "command": "bsdtar"
+  },
+  {
+   "name": "tr",
+   "why": "command used by build-iso.sh or the scripts it runs, by this review's grep of those scripts",
+   "role": "toolchain",
+   "command": "tr"
+  },
+  {
+   "name": "wc",
+   "why": "command used by build-iso.sh or the scripts it runs, by this review's grep of those scripts",
+   "role": "toolchain",
+   "command": "wc"
+  },
+  {
+   "name": "xz",
+   "why": "command used by build-iso.sh or the scripts it runs, by this review's grep of those scripts",
+   "role": "toolchain",
+   "command": "xz"
+  },
+  {
+   "name": "openssl",
+   "why": "command used by build-iso.sh or the scripts it runs, by this review's grep of those scripts",
+   "role": "toolchain",
+   "command": "openssl"
+  },
+  {
+   "name": "sha256",
+   "why": "command used by build-iso.sh or the scripts it runs, by this review's grep of those scripts",
+   "role": "toolchain",
+   "command": "sha256"
+  },
+  {
+   "name": "id",
+   "why": "command used by build-iso.sh or the scripts it runs, by this review's grep of those scripts",
+   "role": "toolchain",
+   "command": "id"
+  },
+  {
+   "name": "uname",
+   "why": "command used by build-iso.sh or the scripts it runs, by this review's grep of those scripts",
+   "role": "toolchain",
+   "command": "uname"
+  },
+  {
+   "name": "cut",
+   "why": "command used by build-iso.sh or the scripts it runs, by this review's grep of those scripts",
+   "role": "toolchain",
+   "command": "cut"
+  },
+  {
+   "name": "tee",
+   "why": "command used by build-iso.sh or the scripts it runs, by this review's grep of those scripts",
+   "role": "toolchain",
+   "command": "tee"
+  },
+  {
+   "name": "echo",
+   "why": "command used by build-iso.sh or the scripts it runs, by this review's grep of those scripts",
+   "role": "toolchain",
+   "command": "echo"
+  },
+  {
+   "name": "printf",
+   "why": "command used by build-iso.sh or the scripts it runs, by this review's grep of those scripts",
+   "role": "toolchain",
+   "command": "printf"
+  },
+  {
+   "name": "true",
+   "why": "command used by build-iso.sh or the scripts it runs, by this review's grep of those scripts",
+   "role": "toolchain",
+   "command": "true"
+  },
+  {
+   "name": "test",
+   "why": "command used by build-iso.sh or the scripts it runs, by this review's grep of those scripts",
+   "role": "toolchain",
+   "command": "test"
+  },
+  {
+   "name": "[",
+   "why": "command used by build-iso.sh or the scripts it runs, by this review's grep of those scripts",
+   "role": "toolchain",
+   "command": "["
+  },
+  {
+   "name": "jq",
+   "why": "command used by build-iso.sh or the scripts it runs, by this review's grep of those scripts",
+   "role": "toolchain",
+   "command": "jq"
+  },
+  {
+   "name": "xorriso",
+   "why": "command used by build-iso.sh or the scripts it runs, by this review's grep of those scripts",
+   "role": "toolchain",
+   "command": "xorriso"
+  },
+  {
+   "name": "mkisofs",
+   "why": "command used by build-iso.sh or the scripts it runs, by this review's grep of those scripts",
+   "role": "toolchain",
+   "command": "mkisofs"
+  },
+  {
+   "name": "pkg",
+   "why": "build-iso.sh calls bare `pkg query -F`/`pkg repo`; /usr/sbin/pkg is the bootstrap stub, the real binary is the installed package",
+   "role": "toolchain",
+   "path": "/usr/local/sbin/pkg"
+  },
+  {
+   "name": "poudriere",
+   "why": "build-iso.sh poudriere_run (jail -l, image); locates share/ and libexec/ relative to its own realpath",
+   "role": "toolchain",
+   "path": "/usr/local/bin/poudriere"
+  },
+  {
+   "name": "python3.12",
+   "why": "unittest/docs/accept report producers; build-iso.sh also calls /usr/local/bin/python3.12 for test-loader",
+   "role": "toolchain",
+   "path": "/usr/local/bin/python3.12"
+  },
+  {
+   "name": "makefs",
+   "why": "poudriere 3.4.99 image/jail/common scripts mention it (grep -w); usage in other poudriere scripts not enumerated",
+   "role": "toolchain",
+   "command": "makefs"
+  },
+  {
+   "name": "mdconfig",
+   "why": "poudriere 3.4.99 image/jail/common scripts mention it (grep -w); usage in other poudriere scripts not enumerated",
+   "role": "toolchain",
+   "command": "mdconfig"
+  },
+  {
+   "name": "mount",
+   "why": "poudriere 3.4.99 image/jail/common scripts mention it (grep -w); usage in other poudriere scripts not enumerated",
+   "role": "toolchain",
+   "command": "mount"
+  },
+  {
+   "name": "umount",
+   "why": "poudriere 3.4.99 image/jail/common scripts mention it (grep -w); usage in other poudriere scripts not enumerated",
+   "role": "toolchain",
+   "command": "umount"
+  },
+  {
+   "name": "jail",
+   "why": "poudriere 3.4.99 image/jail/common scripts mention it (grep -w); usage in other poudriere scripts not enumerated",
+   "role": "toolchain",
+   "command": "jail"
+  },
+  {
+   "name": "jexec",
+   "why": "poudriere 3.4.99 image/jail/common scripts mention it (grep -w); usage in other poudriere scripts not enumerated",
+   "role": "toolchain",
+   "command": "jexec"
+  },
+  {
+   "name": "chroot",
+   "why": "poudriere 3.4.99 image/jail/common scripts mention it (grep -w); usage in other poudriere scripts not enumerated",
+   "role": "toolchain",
+   "command": "chroot"
+  },
+  {
+   "name": "truncate",
+   "why": "poudriere 3.4.99 image/jail/common scripts mention it (grep -w); usage in other poudriere scripts not enumerated",
+   "role": "toolchain",
+   "command": "truncate"
+  },
+  {
+   "name": "dd",
+   "why": "poudriere 3.4.99 image/jail/common scripts mention it (grep -w); usage in other poudriere scripts not enumerated",
+   "role": "toolchain",
+   "command": "dd"
+  },
+  {
+   "name": "find",
+   "why": "poudriere 3.4.99 image/jail/common scripts mention it (grep -w); usage in other poudriere scripts not enumerated",
+   "role": "toolchain",
+   "command": "find"
+  },
+  {
+   "name": "xargs",
+   "why": "poudriere 3.4.99 image/jail/common scripts mention it (grep -w); usage in other poudriere scripts not enumerated",
+   "role": "toolchain",
+   "command": "xargs"
+  },
+  {
+   "name": "sysctl",
+   "why": "poudriere 3.4.99 image/jail/common scripts mention it (grep -w); usage in other poudriere scripts not enumerated",
+   "role": "toolchain",
+   "command": "sysctl"
+  },
+  {
+   "name": "install",
+   "why": "poudriere 3.4.99 image/jail/common scripts mention it (grep -w); usage in other poudriere scripts not enumerated",
+   "role": "toolchain",
+   "command": "install"
+  },
+  {
+   "name": "chflags",
+   "why": "poudriere 3.4.99 image/jail/common scripts mention it (grep -w); usage in other poudriere scripts not enumerated",
+   "role": "toolchain",
+   "command": "chflags"
+  },
+  {
+   "name": "pwd_mkdb",
+   "why": "poudriere 3.4.99 image/jail/common scripts mention it (grep -w); usage in other poudriere scripts not enumerated",
+   "role": "toolchain",
+   "command": "pwd_mkdb"
+  },
+  {
+   "name": "cap_mkdb",
+   "why": "poudriere 3.4.99 image/jail/common scripts mention it (grep -w); usage in other poudriere scripts not enumerated",
+   "role": "toolchain",
+   "command": "cap_mkdb"
+  },
+  {
+   "name": "ldconfig",
+   "why": "poudriere 3.4.99 image/jail/common scripts mention it (grep -w); usage in other poudriere scripts not enumerated",
+   "role": "toolchain",
+   "command": "ldconfig"
+  },
+  {
+   "name": "stat",
+   "why": "poudriere 3.4.99 image/jail/common scripts mention it (grep -w); usage in other poudriere scripts not enumerated",
+   "role": "toolchain",
+   "command": "stat"
+  },
+  {
+   "name": "ln",
+   "why": "poudriere 3.4.99 image/jail/common scripts mention it (grep -w); usage in other poudriere scripts not enumerated",
+   "role": "toolchain",
+   "command": "ln"
+  },
+  {
+   "name": "expr",
+   "why": "poudriere 3.4.99 image/jail/common scripts mention it (grep -w); usage in other poudriere scripts not enumerated",
+   "role": "toolchain",
+   "command": "expr"
+  },
+  {
+   "name": "readlink",
+   "why": "poudriere 3.4.99 image/jail/common scripts mention it (grep -w); usage in other poudriere scripts not enumerated",
+   "role": "toolchain",
+   "command": "readlink"
+  },
+  {
+   "name": "realpath",
+   "why": "poudriere 3.4.99 image/jail/common scripts mention it (grep -w); usage in other poudriere scripts not enumerated",
+   "role": "toolchain",
+   "command": "realpath"
+  },
+  {
+   "name": "diff",
+   "why": "poudriere 3.4.99 image/jail/common scripts mention it (grep -w); usage in other poudriere scripts not enumerated",
+   "role": "toolchain",
+   "command": "diff"
+  },
+  {
+   "name": "patch",
+   "why": "poudriere 3.4.99 image/jail/common scripts mention it (grep -w); usage in other poudriere scripts not enumerated",
+   "role": "toolchain",
+   "command": "patch"
+  },
+  {
+   "name": "hostname",
+   "why": "poudriere 3.4.99 image/jail/common scripts mention it (grep -w); usage in other poudriere scripts not enumerated",
+   "role": "toolchain",
+   "command": "hostname"
+  },
+  {
+   "name": "rmdir",
+   "why": "poudriere 3.4.99 image/jail/common scripts mention it (grep -w); usage in other poudriere scripts not enumerated",
+   "role": "toolchain",
+   "command": "rmdir"
+  },
+  {
+   "name": "gzip",
+   "why": "poudriere 3.4.99 image/jail/common scripts mention it (grep -w); usage in other poudriere scripts not enumerated",
+   "role": "toolchain",
+   "command": "gzip"
+  },
+  {
+   "name": "zstd",
+   "why": "poudriere 3.4.99 image/jail/common scripts mention it (grep -w); usage in other poudriere scripts not enumerated",
+   "role": "toolchain",
+   "command": "zstd"
+  },
+  {
+   "name": "du",
+   "why": "poudriere 3.4.99 image/jail/common scripts mention it (grep -w); usage in other poudriere scripts not enumerated",
+   "role": "toolchain",
+   "command": "du"
+  },
+  {
+   "name": "df",
+   "why": "poudriere 3.4.99 image/jail/common scripts mention it (grep -w); usage in other poudriere scripts not enumerated",
+   "role": "toolchain",
+   "command": "df"
+  },
+  {
+   "name": "touch",
+   "why": "poudriere 3.4.99 image/jail/common scripts mention it (grep -w); usage in other poudriere scripts not enumerated",
+   "role": "toolchain",
+   "command": "touch"
+  },
+  {
+   "name": "kill",
+   "why": "poudriere 3.4.99 image/jail/common scripts mention it (grep -w); usage in other poudriere scripts not enumerated",
+   "role": "toolchain",
+   "command": "kill"
+  },
+  {
+   "name": "ps",
+   "why": "poudriere 3.4.99 image/jail/common scripts mention it (grep -w); usage in other poudriere scripts not enumerated",
+   "role": "toolchain",
+   "command": "ps"
+  },
+  {
+   "name": "nc",
+   "why": "poudriere 3.4.99 image/jail/common scripts mention it (grep -w); usage in other poudriere scripts not enumerated",
+   "role": "toolchain",
+   "command": "nc"
+  }
+ ],
+ "trees": [
+  {
+   "name": "python3.12-stdlib",
+   "source": "/usr/local/lib/python3.12",
+   "dest": "lib/python3.12",
+   "role": "toolchain",
+   "exclude": [
+    "__pycache__",
+    "site-packages",
+    "idlelib",
+    "test",
+    "ensurepip",
+    "config-3.12",
+    "turtledemo",
+    "tkinter",
+    "lib2to3"
+   ],
+   "scan_libs": true,
+   "why": "stdlib the retained test/docs/accept scripts import (lzma, sqlite3, ctypes, unittest ...); python locates it relative to its own prefix"
+  },
+  {
+   "name": "poudriere-share",
+   "source": "/usr/local/share/poudriere",
+   "dest": "share/poudriere",
+   "role": "toolchain",
+   "why": "poudriere SCRIPTPREFIX, found from realpath(bin/poudriere); MANIFESTS (absolute symlink to /usr/local/share/freebsd/MANIFESTS, used by jail creation, not by `image`) is not captured",
+   "exclude": [
+    "MANIFESTS"
+   ]
+  },
+  {
+   "name": "poudriere-libexec",
+   "source": "/usr/local/libexec/poudriere",
+   "dest": "libexec/poudriere",
+   "role": "toolchain",
+   "scan_libs": false,
+   "why": "poudriere LIBEXECPREFIX helpers (timeout, lockf, nc, sh ...)"
+  }
+ ],
+ "ambient": [
+  {
+   "name": "poudriere-etc",
+   "path": "/usr/daemonarchy/rev2-20261030/poudriere-etc",
+   "kind": "tree",
+   "why": "POUDRIERE_ETC: poudriere.conf plus jail and ports-tree registry (JAIL 16r2303b36, PTREE daports141)"
+  },
+  {
+   "name": "jail-param.h",
+   "path": "/usr/local/poudriere/jails/16r2303b36/usr/include/sys/param.h",
+   "kind": "file",
+   "why": "build-iso.sh compares its __FreeBSD_version with base.txz"
+  },
+  {
+   "name": "jail-kernel",
+   "path": "/usr/local/poudriere/jails/16r2303b36/boot/kernel/kernel",
+   "kind": "file",
+   "why": "poudriere image hybridiso requires a jail with a kernel"
+  },
+  {
+   "name": "jail-libc",
+   "path": "/usr/local/poudriere/jails/16r2303b36/lib/libc.so.7",
+   "kind": "file",
+   "why": "anchor for the jail root; the whole jail root is not hashable without root (UNKNOWN full-tree identity)"
+  },
+  {
+   "name": "ports-tree-daports141",
+   "path": "/usr/daemonarchy/rev2-20261030/ports-141",
+   "kind": "tree",
+   "exclude": [
+    ".git"
+   ],
+   "why": "PTREE daports141 (poudriere null-method ports tree)"
+  },
+  {
+   "name": "package-catalogue",
+   "path": "/usr/daemonarchy/rev2-20261030/poudriere-data/packages/16r2303b36-daports141/packagesite.pkg",
+   "kind": "file",
+   "why": "signed-free repository catalogue of the bulk package set build-iso.sh collects from; it carries each package's digest"
+  },
+  {
+   "name": "package-set-listing",
+   "path": "/usr/daemonarchy/rev2-20261030/poudriere-data/packages/16r2303b36-daports141/All",
+   "kind": "listing",
+   "why": "names and sizes only: 1470 packages (8.1 GB) are not content-hashed, so this is a weak identity (UNKNOWN per-package bytes beyond the catalogue)"
+  },
+  {
+   "name": "set-base",
+   "path": "/usr/daemonarchy/rev2-20261030/inputs/source-sets/base.txz",
+   "kind": "file",
+   "why": "SET_CACHE_DIR release sets the jail was made from"
+  },
+  {
+   "name": "set-kernel",
+   "path": "/usr/daemonarchy/rev2-20261030/inputs/source-sets/kernel.txz",
+   "kind": "file",
+   "why": "SET_CACHE_DIR"
+  },
+  {
+   "name": "set-lib32",
+   "path": "/usr/daemonarchy/rev2-20261030/inputs/source-sets/lib32.txz",
+   "kind": "file",
+   "why": "SET_CACHE_DIR"
+  },
+  {
+   "name": "set-manifest",
+   "path": "/usr/daemonarchy/rev2-20261030/inputs/source-sets/MANIFEST",
+   "kind": "file",
+   "why": "SET_CACHE_DIR"
+  },
+  {
+   "name": "checkout-catalogue",
+   "path": "/usr/daemonarchy/rev2-20261030/checkout-feed-1.5.0/checkouts.json",
+   "kind": "file",
+   "why": "CHECKOUT_CATALOG"
+  },
+  {
+   "name": "secureboot-bundle",
+   "path": "/usr/daemonarchy/sb16/daemonarchy-1.5.0-boot.txz",
+   "kind": "file",
+   "why": "SECUREBOOT_BUNDLE (public, already signed artifact; hashed only)"
+  },
+  {
+   "name": "secureboot-signature",
+   "path": "/usr/daemonarchy/sb16/daemonarchy-1.5.0-boot.txz.sig",
+   "kind": "file",
+   "why": "SECUREBOOT_SIGNATURE (public artifact; hashed only)"
+  },
+  {
+   "name": "secureboot-certificate",
+   "path": "/usr/daemonarchy/boot-replacement-candidate-public-20261024/daemonarchy-1.3.1.pem",
+   "kind": "file",
+   "why": "SECUREBOOT_CERTIFICATE (public material; hashed only, content not read for display)"
+  }
+ ]
+}

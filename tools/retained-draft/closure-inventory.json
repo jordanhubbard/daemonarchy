@@ -1,0 +1,2510 @@
+{
+ "ambient": [
+  {
+   "bytes": 1609,
+   "digest": "c14b87639c275d06e0975491fc803c501d5b90a3f084729d3544d5aa74ceedc2",
+   "exclude": [],
+   "files": 65,
+   "kind": "tree",
+   "name": "poudriere-etc",
+   "path": "/usr/daemonarchy/rev2-20261030/poudriere-etc",
+   "why": "POUDRIERE_ETC: poudriere.conf plus jail and ports-tree registry (JAIL 16r2303b36, PTREE daports141)"
+  },
+  {
+   "kind": "file",
+   "mode": "0444",
+   "name": "jail-param.h",
+   "owner": {
+    "kind": "unowned-local"
+   },
+   "path": "/usr/local/poudriere/jails/16r2303b36/usr/include/sys/param.h",
+   "realpath": "/usr/local/poudriere/jails/16r2303b36/usr/include/sys/param.h",
+   "sha256": "c751fa465cced85ebfda67ea7eb792e121631bd5dc32514cb0a1ea8ae42bf36e",
+   "size": 13437,
+   "why": "build-iso.sh compares its __FreeBSD_version with base.txz"
+  },
+  {
+   "kind": "file",
+   "mode": "0444",
+   "name": "jail-kernel",
+   "owner": {
+    "kind": "unowned-local"
+   },
+   "path": "/usr/local/poudriere/jails/16r2303b36/boot/kernel/kernel",
+   "realpath": "/usr/local/poudriere/jails/16r2303b36/boot/kernel/kernel",
+   "sha256": "3dd2f654efed95c2f9543c903eb031d52c6fcf50afd232088401dd7cfa417105",
+   "size": 31539640,
+   "why": "poudriere image hybridiso requires a jail with a kernel"
+  },
+  {
+   "kind": "file",
+   "mode": "0444",
+   "name": "jail-libc",
+   "owner": {
+    "kind": "unowned-local"
+   },
+   "path": "/usr/local/poudriere/jails/16r2303b36/lib/libc.so.7",
+   "realpath": "/usr/local/poudriere/jails/16r2303b36/lib/libc.so.7",
+   "sha256": "210ffc6ba03d511523dd8831722a2913c79658ba2a6268449f8c7cf82d95dc9e",
+   "size": 2214096,
+   "why": "anchor for the jail root; the whole jail root is not hashable without root (UNKNOWN full-tree identity)"
+  },
+  {
+   "bytes": 591887348,
+   "digest": "7aef6b14a93b0c11f565ad5e98dac5b202ebc8dd5e455f895f4b7b7ce2bfa28f",
+   "exclude": [
+    ".git"
+   ],
+   "files": 178157,
+   "kind": "tree",
+   "name": "ports-tree-daports141",
+   "path": "/usr/daemonarchy/rev2-20261030/ports-141",
+   "why": "PTREE daports141 (poudriere null-method ports tree)"
+  },
+  {
+   "kind": "file",
+   "mode": "0644",
+   "name": "package-catalogue",
+   "owner": {
+    "kind": "base-system"
+   },
+   "path": "/usr/daemonarchy/rev2-20261030/poudriere-data/packages/16r2303b36-daports141/packagesite.pkg",
+   "realpath": "/usr/daemonarchy/rev2-20261030/poudriere-data/packages/16r2303b36-daports141/.real_1793475228/packagesite.pkg",
+   "sha256": "7f7e7d581b7b6fa9329484184c66d4a1f9bfa3f5640e9a26a7269c3fd7280e04",
+   "size": 410352,
+   "why": "signed-free repository catalogue of the bulk package set build-iso.sh collects from; it carries each package's digest"
+  },
+  {
+   "digest": "1e68e21e6de82add6ba46ac79681742ed3bb3afdad64c966e705e7757f3c2500",
+   "entries": 1470,
+   "kind": "listing",
+   "name": "package-set-listing",
+   "path": "/usr/daemonarchy/rev2-20261030/poudriere-data/packages/16r2303b36-daports141/All",
+   "why": "names and sizes only: 1470 packages (8.1 GB) are not content-hashed, so this is a weak identity (UNKNOWN per-package bytes beyond the catalogue)"
+  },
+  {
+   "kind": "file",
+   "mode": "0644",
+   "name": "set-base",
+   "owner": {
+    "kind": "base-system"
+   },
+   "path": "/usr/daemonarchy/rev2-20261030/inputs/source-sets/base.txz",
+   "realpath": "/usr/daemonarchy/rev2-20261030/inputs/source-sets/base.txz",
+   "sha256": "766a20e684eb1ebdbb4aa8611a0263a8ff7aa119d583e9783e1099c813478dde",
+   "size": 175910520,
+   "why": "SET_CACHE_DIR release sets the jail was made from"
+  },
+  {
+   "kind": "file",
+   "mode": "0644",
+   "name": "set-kernel",
+   "owner": {
+    "kind": "base-system"
+   },
+   "path": "/usr/daemonarchy/rev2-20261030/inputs/source-sets/kernel.txz",
+   "realpath": "/usr/daemonarchy/rev2-20261030/inputs/source-sets/kernel.txz",
+   "sha256": "9d0a61a6505e4598b4c4575c9e5513bf6a314cd11ff9e5f744af91b0c3765b82",
+   "size": 47510316,
+   "why": "SET_CACHE_DIR"
+  },
+  {
+   "kind": "file",
+   "mode": "0644",
+   "name": "set-lib32",
+   "owner": {
+    "kind": "base-system"
+   },
+   "path": "/usr/daemonarchy/rev2-20261030/inputs/source-sets/lib32.txz",
+   "realpath": "/usr/daemonarchy/rev2-20261030/inputs/source-sets/lib32.txz",
+   "sha256": "3b37cd06499a6c513ea1a94267caeb46cbe84a5475c1143b5a0a86f4b6e76dc2",
+   "size": 67791924,
+   "why": "SET_CACHE_DIR"
+  },
+  {
+   "kind": "file",
+   "mode": "0644",
+   "name": "set-manifest",
+   "owner": {
+    "kind": "base-system"
+   },
+   "path": "/usr/daemonarchy/rev2-20261030/inputs/source-sets/MANIFEST",
+   "realpath": "/usr/daemonarchy/rev2-20261030/inputs/source-sets/MANIFEST",
+   "sha256": "eb91132ec214cfe8880efa31eef765c22c695cbe966aae92e645f957384f1503",
+   "size": 829,
+   "why": "SET_CACHE_DIR"
+  },
+  {
+   "kind": "file",
+   "mode": "0644",
+   "name": "checkout-catalogue",
+   "owner": {
+    "kind": "base-system"
+   },
+   "path": "/usr/daemonarchy/rev2-20261030/checkout-feed-1.5.0/checkouts.json",
+   "realpath": "/usr/daemonarchy/rev2-20261030/checkout-feed-1.5.0/checkouts.json",
+   "sha256": "3507fdbb419ea91cc50ed527bdfcc6441de674b6e36c788cb6e86938d3a5aeb7",
+   "size": 2170,
+   "why": "CHECKOUT_CATALOG"
+  },
+  {
+   "kind": "file",
+   "mode": "0644",
+   "name": "secureboot-bundle",
+   "owner": {
+    "kind": "base-system"
+   },
+   "path": "/usr/daemonarchy/sb16/daemonarchy-1.5.0-boot.txz",
+   "realpath": "/usr/daemonarchy/sb16/daemonarchy-1.5.0-boot.txz",
+   "sha256": "c301015f4ea4cfbf484da7496f25f7ac591bf7911001be72a4897a4af28fd77d",
+   "size": 10499928,
+   "why": "SECUREBOOT_BUNDLE (public, already signed artifact; hashed only)"
+  },
+  {
+   "kind": "file",
+   "mode": "0644",
+   "name": "secureboot-signature",
+   "owner": {
+    "kind": "base-system"
+   },
+   "path": "/usr/daemonarchy/sb16/daemonarchy-1.5.0-boot.txz.sig",
+   "realpath": "/usr/daemonarchy/sb16/daemonarchy-1.5.0-boot.txz.sig",
+   "sha256": "9f590bbe973b560a063a462fbbe7eecbf7500b5877fa0a059e6df199a018ef69",
+   "size": 512,
+   "why": "SECUREBOOT_SIGNATURE (public artifact; hashed only)"
+  },
+  {
+   "kind": "file",
+   "mode": "0600",
+   "name": "secureboot-certificate",
+   "owner": {
+    "kind": "base-system"
+   },
+   "path": "/usr/daemonarchy/boot-replacement-candidate-public-20261024/daemonarchy-1.3.1.pem",
+   "realpath": "/usr/daemonarchy/boot-replacement-candidate-public-20261024/daemonarchy-1.3.1.pem",
+   "sha256": "26009db078d352318c06f1ea5cf7b5650dfd32137518f3a6fecd20802de2fb79",
+   "size": 1968,
+   "why": "SECUREBOOT_CERTIFICATE (public material; hashed only, content not read for display)"
+  },
+  {
+   "kind": "file",
+   "mode": "0555",
+   "name": "dynamic-linker",
+   "owner": {
+    "kind": "base-system"
+   },
+   "path": "/libexec/ld-elf.so.1",
+   "realpath": "/libexec/ld-elf.so.1",
+   "sha256": "002510dc2343bea2f485d36856670d8f3628038e99e055ee51909aa802972b29",
+   "size": 122968,
+   "why": "ELF interpreter of every captured binary; its absolute path is recorded in the executable and cannot be relocated"
+  },
+  {
+   "kind": "file",
+   "mode": "0555",
+   "name": "interpreter:sh",
+   "owner": {
+    "kind": "base-system"
+   },
+   "path": "/bin/sh",
+   "realpath": "/bin/sh",
+   "sha256": "35b2613337d1221b8138ab0e8fa8552b9f5a8b77630ab4914cbe511ba42f6d7e",
+   "size": 171080,
+   "why": "shebang of captured script poudriere"
+  }
+ ],
+ "host": {
+  "freebsd_kernel": "16.0-CURRENT",
+  "freebsd_userland": "16.0-CURRENT",
+  "machine": "amd64"
+ },
+ "libraries": [
+  {
+   "mode": "0444",
+   "owner": {
+    "kind": "base-system"
+   },
+   "path": "/usr/lib/libarchive.so.7",
+   "realpath": "/usr/lib/libarchive.so.7",
+   "role": "toolchain",
+   "sha256": "f4b4395853c46ac28a97b2fb6e3a3a6dee8d6660268803a7dca9b3b3e4139ed5",
+   "size": 900040,
+   "soname": "libarchive.so.7"
+  },
+  {
+   "mode": "0444",
+   "owner": {
+    "kind": "base-system"
+   },
+   "path": "/lib/libbsdxml.so.4",
+   "realpath": "/lib/libbsdxml.so.4",
+   "role": "toolchain",
+   "sha256": "178a3806689ac6244140bfacad476c1f591156fa9e3c38c4f25b8dd3a4eed630",
+   "size": 192760,
+   "soname": "libbsdxml.so.4"
+  },
+  {
+   "mode": "0755",
+   "owner": {
+    "kind": "pkg",
+    "name": "libburn-1.5.8",
+    "version_origin": "libburn-1.5.8 devel/libburn"
+   },
+   "path": "/usr/local/lib/libburn.so.4",
+   "realpath": "/usr/local/lib/libburn.so.4.111.0",
+   "role": "toolchain",
+   "sha256": "eef727c19f906fe6b2569f82d04b1077ba6ef69dd9bfab2198ca5f48aa27a0f5",
+   "size": 348464,
+   "soname": "libburn.so.4"
+  },
+  {
+   "mode": "0444",
+   "owner": {
+    "kind": "base-system"
+   },
+   "path": "/usr/lib/libbz2.so.4",
+   "realpath": "/usr/lib/libbz2.so.4",
+   "role": "toolchain",
+   "sha256": "8faa4a133cd29a8b1952b4dd0b7cd4f71db3cefb67171856072214f87fd9e97e",
+   "size": 82544,
+   "soname": "libbz2.so.4"
+  },
+  {
+   "mode": "0444",
+   "owner": {
+    "kind": "base-system"
+   },
+   "path": "/lib/libc.so.7",
+   "realpath": "/lib/libc.so.7",
+   "role": "toolchain",
+   "sha256": "210ffc6ba03d511523dd8831722a2913c79658ba2a6268449f8c7cf82d95dc9e",
+   "size": 2214096,
+   "soname": "libc.so.7"
+  },
+  {
+   "mode": "0444",
+   "owner": {
+    "kind": "base-system"
+   },
+   "path": "/lib/libcam.so.7",
+   "realpath": "/lib/libcam.so.7",
+   "role": "toolchain",
+   "sha256": "cf76a6c7923dcd24c3cf1524ac40959ba3aa0afc291472b30c4a487907d7f706",
+   "size": 236728,
+   "soname": "libcam.so.7"
+  },
+  {
+   "mode": "0444",
+   "owner": {
+    "kind": "base-system"
+   },
+   "path": "/lib/libcap_fileargs.so.1",
+   "realpath": "/lib/libcap_fileargs.so.1",
+   "role": "toolchain",
+   "sha256": "61b830887b5ccc2d7db6998b49483cccb749b4d79eb81c2f04ceccba0b731e27",
+   "size": 15240,
+   "soname": "libcap_fileargs.so.1"
+  },
+  {
+   "mode": "0444",
+   "owner": {
+    "kind": "base-system"
+   },
+   "path": "/lib/libcasper.so.1",
+   "realpath": "/lib/libcasper.so.1",
+   "role": "toolchain",
+   "sha256": "feadb9fa94ed017f660752cce263b48132dc98a97c391f90211142c3acf20e04",
+   "size": 22424,
+   "soname": "libcasper.so.1"
+  },
+  {
+   "mode": "0444",
+   "owner": {
+    "kind": "pkg",
+    "name": "schilybase-2024.03.21_1",
+    "version_origin": "schilybase-2024.03.21_1 devel/schilybase"
+   },
+   "path": "/usr/local/lib/libcdrdeflt.so.1.0",
+   "realpath": "/usr/local/lib/libcdrdeflt.so.1.0",
+   "role": "toolchain",
+   "sha256": "dee7c4a0a9fc4e190567b4d23de2a8dff45540c1d49dd21549b97a6fc2bbd885",
+   "size": 7704,
+   "soname": "libcdrdeflt.so.1.0"
+  },
+  {
+   "mode": "0444",
+   "owner": {
+    "kind": "base-system"
+   },
+   "path": "/lib/libcrypt.so.5",
+   "realpath": "/lib/libcrypt.so.5",
+   "role": "toolchain",
+   "sha256": "99e1a95a4e6017ea48c1f1efe0ca2680289a00bd899fd7a3a76c92625a08cec8",
+   "size": 33992,
+   "soname": "libcrypt.so.5"
+  },
+  {
+   "mode": "0444",
+   "owner": {
+    "kind": "base-system"
+   },
+   "path": "/lib/libcrypto.so.35",
+   "realpath": "/lib/libcrypto.so.35",
+   "role": "toolchain",
+   "sha256": "833f22a179aaf39756eeee9e31c12de1bda3825c0107fe3d2b5eadcf14d8b50c",
+   "size": 6306728,
+   "soname": "libcrypto.so.35"
+  },
+  {
+   "mode": "0444",
+   "owner": {
+    "kind": "pkg",
+    "name": "schilybase-2024.03.21_1",
+    "version_origin": "schilybase-2024.03.21_1 devel/schilybase"
+   },
+   "path": "/usr/local/lib/libdeflt.so.1.0",
+   "realpath": "/usr/local/lib/libdeflt.so.1.0",
+   "role": "toolchain",
+   "sha256": "cd143ca6f8ee438ed006ad47fe0acd7c34d8b56619f3ad656bb79a65548c5fb4",
+   "size": 6496,
+   "soname": "libdeflt.so.1.0"
+  },
+  {
+   "mode": "0444",
+   "owner": {
+    "kind": "base-system"
+   },
+   "path": "/usr/lib/libdl.so.1",
+   "realpath": "/usr/lib/libdl.so.1",
+   "role": "toolchain",
+   "sha256": "546611eb4ed42eb8899de0d467f2ff8630628c73ad3d51e9958e3bf83eead3bc",
+   "size": 6344,
+   "soname": "libdl.so.1"
+  },
+  {
+   "mode": "0444",
+   "owner": {
+    "kind": "base-system"
+   },
+   "path": "/lib/libedit.so.8",
+   "realpath": "/lib/libedit.so.8",
+   "role": "toolchain",
+   "sha256": "335d37f36d518518e938ef49805301dc41facc103cb66c7c0006f15fa6f03f52",
+   "size": 217256,
+   "soname": "libedit.so.8"
+  },
+  {
+   "mode": "0444",
+   "owner": {
+    "kind": "base-system"
+   },
+   "path": "/lib/libelf.so.2",
+   "realpath": "/lib/libelf.so.2",
+   "role": "toolchain",
+   "sha256": "651df3e19da01c7c1a5cb76dcd811d6d9a230c7dfe46827a7e32aebf1cb7ed11",
+   "size": 99592,
+   "soname": "libelf.so.2"
+  },
+  {
+   "mode": "0755",
+   "owner": {
+    "kind": "pkg",
+    "name": "expat-2.9.0",
+    "version_origin": "expat-2.9.0 textproc/expat2"
+   },
+   "path": "/usr/local/lib/libexpat.so.1",
+   "realpath": "/usr/local/lib/libexpat.so.1.13.0",
+   "role": "toolchain",
+   "sha256": "78d61d497c93018b7d68f617f0294f97994cee94d37fef958f9a0b7dba47ad11",
+   "size": 192016,
+   "soname": "libexpat.so.1"
+  },
+  {
+   "mode": "0444",
+   "owner": {
+    "kind": "base-system"
+   },
+   "path": "/usr/lib/libfetch.so.6",
+   "realpath": "/usr/lib/libfetch.so.6",
+   "role": "toolchain",
+   "sha256": "c2eb00f4ce166a63be5911943e81c0f81086f157b6c31a5d96fef82710afc605",
+   "size": 80480,
+   "soname": "libfetch.so.6"
+  },
+  {
+   "mode": "0755",
+   "owner": {
+    "kind": "pkg",
+    "name": "libffi-3.8.0",
+    "version_origin": "libffi-3.8.0 devel/libffi"
+   },
+   "path": "/usr/local/lib/libffi.so.8",
+   "realpath": "/usr/local/lib/libffi.so.8.5.0",
+   "role": "toolchain",
+   "sha256": "e62697a3881d7bddab7e39bd8e6cf00fc8dcaf210bec888f92fcdf8fb3e890a5",
+   "size": 44728,
+   "soname": "libffi.so.8"
+  },
+  {
+   "mode": "0444",
+   "owner": {
+    "kind": "pkg",
+    "name": "schilybase-2024.03.21_1",
+    "version_origin": "schilybase-2024.03.21_1 devel/schilybase"
+   },
+   "path": "/usr/local/lib/libfile.so.1.0",
+   "realpath": "/usr/local/lib/libfile.so.1.0",
+   "role": "toolchain",
+   "sha256": "78f64e5f0802d887eea7b595cf1865a5c7585037ff7037789a578ca332b2a2ca",
+   "size": 12744,
+   "soname": "libfile.so.1.0"
+  },
+  {
+   "mode": "0444",
+   "owner": {
+    "kind": "pkg",
+    "name": "schilybase-2024.03.21_1",
+    "version_origin": "schilybase-2024.03.21_1 devel/schilybase"
+   },
+   "path": "/usr/local/lib/libfind.so.4.0",
+   "realpath": "/usr/local/lib/libfind.so.4.0",
+   "role": "toolchain",
+   "sha256": "acb835a78c3c5839ea719f6d62be0b06ea96f02e9b96e16ed1e5ce0b540dab31",
+   "size": 62848,
+   "soname": "libfind.so.4.0"
+  },
+  {
+   "mode": "0444",
+   "owner": {
+    "kind": "base-system"
+   },
+   "path": "/lib/libgeom.so.5",
+   "realpath": "/lib/libgeom.so.5",
+   "role": "toolchain",
+   "sha256": "ab35d681742aef1bf4910c0b95d9f69a8e73c5689b21d0cd1cf9e259f0693b3b",
+   "size": 23160,
+   "soname": "libgeom.so.5"
+  },
+  {
+   "mode": "0444",
+   "owner": {
+    "kind": "pkg",
+    "name": "schilybase-2024.03.21_1",
+    "version_origin": "schilybase-2024.03.21_1 devel/schilybase"
+   },
+   "path": "/usr/local/lib/libhfs.so.1.0",
+   "realpath": "/usr/local/lib/libhfs.so.1.0",
+   "role": "toolchain",
+   "sha256": "9834f7743f12e440c66938f2b2d3fd4d3def7374009cd0559dc33ae629fc0311",
+   "size": 61416,
+   "soname": "libhfs.so.1.0"
+  },
+  {
+   "mode": "0755",
+   "owner": {
+    "kind": "pkg",
+    "name": "gettext-runtime-1.0_1",
+    "version_origin": "gettext-runtime-1.0_1 devel/gettext-runtime"
+   },
+   "path": "/usr/local/lib/libintl.so.8",
+   "realpath": "/usr/local/lib/libintl.so.8.4.6",
+   "role": "toolchain",
+   "sha256": "81c777975d167472926b629ea7da6501b207da174623ac8a595f7f6e333b773c",
+   "size": 200176,
+   "soname": "libintl.so.8"
+  },
+  {
+   "mode": "0444",
+   "owner": {
+    "kind": "base-system"
+   },
+   "path": "/lib/libipsec.so.4",
+   "realpath": "/lib/libipsec.so.4",
+   "role": "toolchain",
+   "sha256": "ed9248ee3437fe1c2a7f2f142a9c4531011e024186ee5e16e708b2929d2c5118",
+   "size": 31152,
+   "soname": "libipsec.so.4"
+  },
+  {
+   "mode": "0755",
+   "owner": {
+    "kind": "pkg",
+    "name": "xorriso-1.5.6_2",
+    "version_origin": "xorriso-1.5.6_2 sysutils/xorriso"
+   },
+   "path": "/usr/local/lib/libisoburn.so.1",
+   "realpath": "/usr/local/lib/libisoburn.so.1.113.0",
+   "role": "toolchain",
+   "sha256": "575990e8612248d4e82010c172143a0a7820647c1e0ad1158a7431ec827262d8",
+   "size": 1093320,
+   "soname": "libisoburn.so.1"
+  },
+  {
+   "mode": "0755",
+   "owner": {
+    "kind": "pkg",
+    "name": "libisofs-1.5.8.02",
+    "version_origin": "libisofs-1.5.8.02 devel/libisofs"
+   },
+   "path": "/usr/local/lib/libisofs.so.6",
+   "realpath": "/usr/local/lib/libisofs.so.6.94.0",
+   "role": "toolchain",
+   "sha256": "c98d603bea5b1ef644ddac7bb68aa42f37da8d7a662a9926caf2eb9b4e9be838",
+   "size": 555624,
+   "soname": "libisofs.so.6"
+  },
+  {
+   "mode": "0444",
+   "owner": {
+    "kind": "base-system"
+   },
+   "path": "/lib/libjail.so.1",
+   "realpath": "/lib/libjail.so.1",
+   "role": "toolchain",
+   "sha256": "e7fc8f0bcbd08e922af979f3aee7334dd12259c421ff64fc932779a918c51724",
+   "size": 24760,
+   "soname": "libjail.so.1"
+  },
+  {
+   "mode": "0755",
+   "owner": {
+    "kind": "pkg",
+    "name": "jq-1.8.2",
+    "version_origin": "jq-1.8.2 textproc/jq"
+   },
+   "path": "/usr/local/lib/libjq.so.1",
+   "realpath": "/usr/local/lib/libjq.so.1.0.4",
+   "role": "toolchain",
+   "sha256": "52aa69862b19176b122e341cc439e53f51af950c7cae95f60bbcc948b7d8ff40",
+   "size": 417248,
+   "soname": "libjq.so.1"
+  },
+  {
+   "mode": "0444",
+   "owner": {
+    "kind": "base-system"
+   },
+   "path": "/lib/libkvm.so.7",
+   "realpath": "/lib/libkvm.so.7",
+   "role": "toolchain",
+   "sha256": "7e2b7c10007a00765b589981204bd96e70f0506c2a2047d6be4359e59d1e52bb",
+   "size": 73136,
+   "soname": "libkvm.so.7"
+  },
+  {
+   "mode": "0444",
+   "owner": {
+    "kind": "base-system"
+   },
+   "path": "/usr/lib/liblzma.so.5",
+   "realpath": "/usr/lib/liblzma.so.5",
+   "role": "toolchain",
+   "sha256": "bf3a897d544ece594394607f42e96cd44ce0055ca9bd0c921e5553c0a67d1367",
+   "size": 203144,
+   "soname": "liblzma.so.5"
+  },
+  {
+   "mode": "0444",
+   "owner": {
+    "kind": "base-system"
+   },
+   "path": "/lib/libm.so.5",
+   "realpath": "/lib/libm.so.5",
+   "role": "toolchain",
+   "sha256": "e00f39753653f6740f2e256d55e9b0f0ea605c89762078eb3127af8c244158e3",
+   "size": 273440,
+   "soname": "libm.so.5"
+  },
+  {
+   "mode": "0444",
+   "owner": {
+    "kind": "base-system"
+   },
+   "path": "/lib/libmd.so.7",
+   "realpath": "/lib/libmd.so.7",
+   "role": "toolchain",
+   "sha256": "68c03372b44a11f349cac33ec0e38add4a1ba06b4a0d4b82cf4a0a35a5c59eaf",
+   "size": 122280,
+   "soname": "libmd.so.7"
+  },
+  {
+   "mode": "0444",
+   "owner": {
+    "kind": "pkg",
+    "name": "schilybase-2024.03.21_1",
+    "version_origin": "schilybase-2024.03.21_1 devel/schilybase"
+   },
+   "path": "/usr/local/lib/libmdigest.so.1.0",
+   "realpath": "/usr/local/lib/libmdigest.so.1.0",
+   "role": "toolchain",
+   "sha256": "c394322818ba4e4e04fca8d70d3506fa01b1b1ed840ec5f0057e488c9851284c",
+   "size": 48544,
+   "soname": "libmdigest.so.1.0"
+  },
+  {
+   "mode": "0755",
+   "owner": {
+    "kind": "pkg",
+    "name": "mpdecimal-4.0.1",
+    "version_origin": "mpdecimal-4.0.1 math/mpdecimal"
+   },
+   "path": "/usr/local/lib/libmpdec.so.4",
+   "realpath": "/usr/local/lib/libmpdec.so.4.0.1",
+   "role": "toolchain",
+   "sha256": "d61075bc90a3cd1323a0e1011a57243c29d68cea18ea4f75e8e523b2dd65f2d7",
+   "size": 210336,
+   "soname": "libmpdec.so.4"
+  },
+  {
+   "mode": "0444",
+   "owner": {
+    "kind": "base-system"
+   },
+   "path": "/lib/libncursesw.so.9",
+   "realpath": "/lib/libncursesw.so.9",
+   "role": "toolchain",
+   "sha256": "18cecd28645c1d043977e598b2aafe3376d6e8f7be363d1ecb146d4bcd9b6798",
+   "size": 219256,
+   "soname": "libncursesw.so.9"
+  },
+  {
+   "mode": "0444",
+   "owner": {
+    "kind": "base-system"
+   },
+   "path": "/lib/libnv.so.1",
+   "realpath": "/lib/libnv.so.1",
+   "role": "toolchain",
+   "sha256": "5a1544745f0ee6b5dfbd760953a8ed66541b0f39ff79f727e086048f327959fe",
+   "size": 91752,
+   "soname": "libnv.so.1"
+  },
+  {
+   "mode": "0755",
+   "owner": {
+    "kind": "pkg",
+    "name": "oniguruma-6.9.10",
+    "version_origin": "oniguruma-6.9.10 devel/oniguruma"
+   },
+   "path": "/usr/local/lib/libonig.so.5",
+   "realpath": "/usr/local/lib/libonig.so.5.5.0",
+   "role": "toolchain",
+   "sha256": "a25f5c59767b05d8b655b846c56b32aa761ee689f4c818dff3d18a7718cb93f5",
+   "size": 650552,
+   "soname": "libonig.so.5"
+  },
+  {
+   "mode": "0444",
+   "owner": {
+    "kind": "base-system"
+   },
+   "path": "/usr/lib/libpanelw.so.6",
+   "realpath": "/usr/lib/libpanelw.so.6",
+   "role": "toolchain",
+   "sha256": "173d78e15740b7ef64678d15d2b50f85a45fe19325f123cd2e2ad22f20a99e36",
+   "size": 11616,
+   "soname": "libpanelw.so.6"
+  },
+  {
+   "mode": "0444",
+   "owner": {
+    "kind": "base-system"
+   },
+   "path": "/usr/lib/libprivatezstd.so.5",
+   "realpath": "/usr/lib/libprivatezstd.so.5",
+   "role": "toolchain",
+   "sha256": "abb0fae2c9ec80d8843a792a2ce308f96a5e5b75c99f3cfae31da726ecddf9e1",
+   "size": 701312,
+   "soname": "libprivatezstd.so.5"
+  },
+  {
+   "mode": "0644",
+   "owner": {
+    "kind": "pkg",
+    "name": "python312-3.12.15",
+    "version_origin": "python312-3.12.15 lang/python312"
+   },
+   "path": "/usr/local/lib/libpython3.12.so.1.0",
+   "realpath": "/usr/local/lib/libpython3.12.so.1.0",
+   "role": "toolchain",
+   "sha256": "fce5da098219c1e014961b793ce85202445a6c63eeaaf82a7c26eb500271e4e2",
+   "size": 7368472,
+   "soname": "libpython3.12.so.1.0"
+  },
+  {
+   "mode": "0644",
+   "owner": {
+    "kind": "pkg",
+    "name": "readline-8.3.6",
+    "version_origin": "readline-8.3.6 devel/readline"
+   },
+   "path": "/usr/local/lib/libreadline.so.8",
+   "realpath": "/usr/local/lib/libreadline.so.8.3",
+   "role": "toolchain",
+   "sha256": "282ab2595dad2eaf1b078eeed8afd58b820b53eac639705c14052ad86da5dd76",
+   "size": 435984,
+   "soname": "libreadline.so.8"
+  },
+  {
+   "mode": "0444",
+   "owner": {
+    "kind": "base-system"
+   },
+   "path": "/usr/lib/libregex.so.1",
+   "realpath": "/usr/lib/libregex.so.1",
+   "role": "toolchain",
+   "sha256": "31121e1d7fb6d04fb627017d189da32c94c6bdf0b71d46cb61a2276e316fb5ec",
+   "size": 66424,
+   "soname": "libregex.so.1"
+  },
+  {
+   "mode": "0444",
+   "owner": {
+    "kind": "pkg",
+    "name": "schilybase-2024.03.21_1",
+    "version_origin": "schilybase-2024.03.21_1 devel/schilybase"
+   },
+   "path": "/usr/local/lib/librscg.so.1.0",
+   "realpath": "/usr/local/lib/librscg.so.1.0",
+   "role": "toolchain",
+   "sha256": "c9a56ac2385813f1ccd9595bab7e66b1a1335e1a4cdecdabdde15222578197b4",
+   "size": 16384,
+   "soname": "librscg.so.1.0"
+  },
+  {
+   "mode": "0444",
+   "owner": {
+    "kind": "base-system"
+   },
+   "path": "/lib/libsbuf.so.6",
+   "realpath": "/lib/libsbuf.so.6",
+   "role": "toolchain",
+   "sha256": "e0d2c9fda2fc7711b51eb0b210f8f91dfc2fc7a28140f092153168fb0f03d6ae",
+   "size": 12752,
+   "soname": "libsbuf.so.6"
+  },
+  {
+   "mode": "0444",
+   "owner": {
+    "kind": "pkg",
+    "name": "schilybase-2024.03.21_1",
+    "version_origin": "schilybase-2024.03.21_1 devel/schilybase"
+   },
+   "path": "/usr/local/lib/libscg.so.1.0",
+   "realpath": "/usr/local/lib/libscg.so.1.0",
+   "role": "toolchain",
+   "sha256": "253ec97014c8eff743133a584898bf5c13539d05c2d439a2af42a0f6d1cd9ed5",
+   "size": 74736,
+   "soname": "libscg.so.1.0"
+  },
+  {
+   "mode": "0444",
+   "owner": {
+    "kind": "pkg",
+    "name": "schilybase-2024.03.21_1",
+    "version_origin": "schilybase-2024.03.21_1 devel/schilybase"
+   },
+   "path": "/usr/local/lib/libscgcmd.so.1.0",
+   "realpath": "/usr/local/lib/libscgcmd.so.1.0",
+   "role": "toolchain",
+   "sha256": "a9f9fd87a42803a879915b8da3ae371b787fe026adfcb37a005c0187dd061ba1",
+   "size": 16912,
+   "soname": "libscgcmd.so.1.0"
+  },
+  {
+   "mode": "0444",
+   "owner": {
+    "kind": "pkg",
+    "name": "schilybase-2024.03.21_1",
+    "version_origin": "schilybase-2024.03.21_1 devel/schilybase"
+   },
+   "path": "/usr/local/lib/libschily.so.2.0",
+   "realpath": "/usr/local/lib/libschily.so.2.0",
+   "role": "toolchain",
+   "sha256": "454d8ecef82024c24c69b48fed1b8261ec96e9cb292e7799c9a607024bff10b6",
+   "size": 160232,
+   "soname": "libschily.so.2.0"
+  },
+  {
+   "mode": "0444",
+   "owner": {
+    "kind": "pkg",
+    "name": "schilybase-2024.03.21_1",
+    "version_origin": "schilybase-2024.03.21_1 devel/schilybase"
+   },
+   "path": "/usr/local/lib/libsiconv.so.1.0",
+   "realpath": "/usr/local/lib/libsiconv.so.1.0",
+   "role": "toolchain",
+   "sha256": "ce90dc4c5a0c3ad601a45d2f85e17398b74a81e30ebcaeeb0ccc11fe4c1190c7",
+   "size": 10264,
+   "soname": "libsiconv.so.1.0"
+  },
+  {
+   "mode": "0444",
+   "owner": {
+    "kind": "base-system"
+   },
+   "path": "/usr/lib/libssl.so.35",
+   "realpath": "/usr/lib/libssl.so.35",
+   "role": "toolchain",
+   "sha256": "9cc5bc632b997f182406cceb6bd3e2cf5659ce3a11a8c44e8101ab9414dee5a2",
+   "size": 1069064,
+   "soname": "libssl.so.35"
+  },
+  {
+   "mode": "0444",
+   "owner": {
+    "kind": "base-system"
+   },
+   "path": "/lib/libstats.so.0",
+   "realpath": "/lib/libstats.so.0",
+   "role": "toolchain",
+   "sha256": "e5c17aa10a17522573108eb88e95906a6139b50bb9a1803480a7910e46890d58",
+   "size": 71872,
+   "soname": "libstats.so.0"
+  },
+  {
+   "mode": "0444",
+   "owner": {
+    "kind": "base-system"
+   },
+   "path": "/lib/libsys.so.7",
+   "realpath": "/lib/libsys.so.7",
+   "role": "toolchain",
+   "sha256": "f99e9052fb7ffe8a597cf65f813acd3e89f2b7ecebc2a9001debc14de0df679a",
+   "size": 112008,
+   "soname": "libsys.so.7"
+  },
+  {
+   "mode": "0444",
+   "owner": {
+    "kind": "base-system"
+   },
+   "path": "/lib/libthr.so.3",
+   "realpath": "/lib/libthr.so.3",
+   "role": "toolchain",
+   "sha256": "4778bf04b36deacbe5a237ef21b481cef2232accf022c7b4b681efe78f9ff1c8",
+   "size": 130664,
+   "soname": "libthr.so.3"
+  },
+  {
+   "mode": "0444",
+   "owner": {
+    "kind": "base-system"
+   },
+   "path": "/lib/libtinfow.so.9",
+   "realpath": "/lib/libtinfow.so.9",
+   "role": "toolchain",
+   "sha256": "d1c07d6739b188422bda7bb59e2771bfc2cfcc83fe5492501d2e30a546a0b19c",
+   "size": 264552,
+   "soname": "libtinfow.so.9"
+  },
+  {
+   "mode": "0444",
+   "owner": {
+    "kind": "base-system"
+   },
+   "path": "/lib/libutil.so.10",
+   "realpath": "/lib/libutil.so.10",
+   "role": "toolchain",
+   "sha256": "532d6fd6d6c3938db6aca50daf7c448a5ef0e686213d59590d9cd9a83d778606",
+   "size": 88840,
+   "soname": "libutil.so.10"
+  },
+  {
+   "mode": "0444",
+   "owner": {
+    "kind": "base-system"
+   },
+   "path": "/lib/libxo.so.0",
+   "realpath": "/lib/libxo.so.0",
+   "role": "toolchain",
+   "sha256": "3e29ece217b0c1014897cf07584ae458ae2c4d9d163caec856a2c4b64e3419c8",
+   "size": 116472,
+   "soname": "libxo.so.0"
+  },
+  {
+   "mode": "0444",
+   "owner": {
+    "kind": "base-system"
+   },
+   "path": "/lib/libz.so.6",
+   "realpath": "/lib/libz.so.6",
+   "role": "toolchain",
+   "sha256": "88033feb5ca258275edae515eaf43dcf659a9f42af7ec9d45d5879859c5a256f",
+   "size": 102400,
+   "soname": "libz.so.6"
+  }
+ ],
+ "problems": [],
+ "schema": "daemonarchy/retained-closure-inventory@1",
+ "spec_sha256": "6984ad02af9da7d52b1581f1c6eff26b4228e0be29a3bc4c362d7bd0db9d7334",
+ "tools": [
+  {
+   "libraries": [
+    "libc.so.7",
+    "libsys.so.7"
+   ],
+   "mode": "0555",
+   "name": "[",
+   "owner": {
+    "kind": "base-system"
+   },
+   "path": "/bin/[",
+   "realpath": "/bin/[",
+   "role": "toolchain",
+   "sha256": "ef43b79bbc9655ee40a092fb42294eee6bf0a397f76b6b5f8f887c1b1d177ed7",
+   "size": 11384,
+   "why": "command used by build-iso.sh or the scripts it runs, by this review's grep of those scripts"
+  },
+  {
+   "libraries": [
+    "libc.so.7",
+    "libm.so.5",
+    "libsys.so.7"
+   ],
+   "mode": "0555",
+   "name": "awk",
+   "owner": {
+    "kind": "base-system"
+   },
+   "path": "/usr/bin/awk",
+   "realpath": "/usr/bin/awk",
+   "role": "toolchain",
+   "sha256": "d30c7501df8de4427e09079e891577815a4f1675a42862b18d46f4029cd5def4",
+   "size": 233624,
+   "why": "command used by build-iso.sh or the scripts it runs, by this review's grep of those scripts"
+  },
+  {
+   "libraries": [
+    "libc.so.7",
+    "libsys.so.7"
+   ],
+   "mode": "0555",
+   "name": "basename",
+   "owner": {
+    "kind": "base-system"
+   },
+   "path": "/usr/bin/basename",
+   "realpath": "/usr/bin/basename",
+   "role": "toolchain",
+   "sha256": "6f25948750ef0e44de0e72eea0effcff3a322ccc4f1c809ade7151c86c4d080c",
+   "size": 8096,
+   "why": "command used by build-iso.sh or the scripts it runs, by this review's grep of those scripts"
+  },
+  {
+   "libraries": [
+    "libc.so.7",
+    "libdl.so.1",
+    "libintl.so.8",
+    "libsys.so.7",
+    "libthr.so.3",
+    "libtinfow.so.9"
+   ],
+   "mode": "0755",
+   "name": "bash",
+   "owner": {
+    "kind": "pkg",
+    "name": "bash-5.3.20",
+    "version_origin": "bash-5.3.20 shells/bash"
+   },
+   "path": "/bin/bash",
+   "realpath": "/usr/local/bin/bash",
+   "role": "toolchain",
+   "sha256": "ef39f03eca8db37b580bc4b1bcc712813c6a8ddec6acde82cd6fef22e58d39ce",
+   "size": 1311168,
+   "why": "command used by build-iso.sh or the scripts it runs, by this review's grep of those scripts"
+  },
+  {
+   "libraries": [
+    "libarchive.so.7",
+    "libbsdxml.so.4",
+    "libbz2.so.4",
+    "libc.so.7",
+    "libcrypto.so.35",
+    "liblzma.so.5",
+    "libmd.so.7",
+    "libprivatezstd.so.5",
+    "libsys.so.7",
+    "libthr.so.3",
+    "libz.so.6"
+   ],
+   "mode": "0555",
+   "name": "bsdtar",
+   "owner": {
+    "kind": "base-system"
+   },
+   "path": "/usr/bin/bsdtar",
+   "realpath": "/usr/bin/bsdtar",
+   "role": "toolchain",
+   "sha256": "553616f9c29ca068aa19c3d7c98ec4f1518fdce9220931f958ab4cc5a3c1f5f0",
+   "size": 74376,
+   "why": "command used by build-iso.sh or the scripts it runs, by this review's grep of those scripts"
+  },
+  {
+   "libraries": [
+    "libc.so.7",
+    "libsys.so.7"
+   ],
+   "mode": "0555",
+   "name": "cap_mkdb",
+   "owner": {
+    "kind": "base-system"
+   },
+   "path": "/usr/bin/cap_mkdb",
+   "realpath": "/usr/bin/cap_mkdb",
+   "role": "toolchain",
+   "sha256": "78b49a005204005966da348e6cedce04e1ae783176ec4d0affba360d445cbddd",
+   "size": 7856,
+   "why": "poudriere 3.4.99 image/jail/common scripts mention it (grep -w); usage in other poudriere scripts not enumerated"
+  },
+  {
+   "libraries": [
+    "libc.so.7",
+    "libsys.so.7"
+   ],
+   "mode": "0555",
+   "name": "cat",
+   "owner": {
+    "kind": "base-system"
+   },
+   "path": "/bin/cat",
+   "realpath": "/bin/cat",
+   "role": "toolchain",
+   "sha256": "91ab4c555eb54d7634dd6471af1236ff2d5889f3dfba75918eb6f249de9dd783",
+   "size": 13840,
+   "why": "command used by build-iso.sh or the scripts it runs, by this review's grep of those scripts"
+  },
+  {
+   "libraries": [
+    "libc.so.7",
+    "libsys.so.7"
+   ],
+   "mode": "0555",
+   "name": "chflags",
+   "owner": {
+    "kind": "base-system"
+   },
+   "path": "/bin/chflags",
+   "realpath": "/bin/chflags",
+   "role": "toolchain",
+   "sha256": "2921483325803cd03b41091dc7a11d2bafe674af8f41a17f5d95532d905d0dc2",
+   "size": 11984,
+   "why": "poudriere 3.4.99 image/jail/common scripts mention it (grep -w); usage in other poudriere scripts not enumerated"
+  },
+  {
+   "libraries": [
+    "libc.so.7",
+    "libsys.so.7"
+   ],
+   "mode": "0555",
+   "name": "chmod",
+   "owner": {
+    "kind": "base-system"
+   },
+   "path": "/bin/chmod",
+   "realpath": "/bin/chmod",
+   "role": "toolchain",
+   "sha256": "cf3602e0447874a8759972519ae670d7e540e973592193a3571cff7d90b4e41e",
+   "size": 8520,
+   "why": "command used by build-iso.sh or the scripts it runs, by this review's grep of those scripts"
+  },
+  {
+   "libraries": [
+    "libc.so.7",
+    "libsys.so.7"
+   ],
+   "mode": "0555",
+   "name": "chroot",
+   "owner": {
+    "kind": "base-system"
+   },
+   "path": "/usr/sbin/chroot",
+   "realpath": "/usr/sbin/chroot",
+   "role": "toolchain",
+   "sha256": "3b7278f9183069854e9da02678d7f27b6945e9fead78b3b87bb7fcfb8354d921",
+   "size": 8216,
+   "why": "poudriere 3.4.99 image/jail/common scripts mention it (grep -w); usage in other poudriere scripts not enumerated"
+  },
+  {
+   "libraries": [
+    "libc.so.7",
+    "libsys.so.7"
+   ],
+   "mode": "0555",
+   "name": "cp",
+   "owner": {
+    "kind": "base-system"
+   },
+   "path": "/bin/cp",
+   "realpath": "/bin/cp",
+   "role": "toolchain",
+   "sha256": "d0ddd7385f1444927e534a8530db62bb78dc361db1586c7add92055826710c28",
+   "size": 25480,
+   "why": "command used by build-iso.sh or the scripts it runs, by this review's grep of those scripts"
+  },
+  {
+   "libraries": [
+    "libc.so.7",
+    "libsys.so.7"
+   ],
+   "mode": "0555",
+   "name": "cut",
+   "owner": {
+    "kind": "base-system"
+   },
+   "path": "/usr/bin/cut",
+   "realpath": "/usr/bin/cut",
+   "role": "toolchain",
+   "sha256": "f47de722d81b112323cdea85c280ceba8880024abdf23e417066aafc667da2f1",
+   "size": 13760,
+   "why": "command used by build-iso.sh or the scripts it runs, by this review's grep of those scripts"
+  },
+  {
+   "libraries": [
+    "libc.so.7",
+    "libsys.so.7"
+   ],
+   "mode": "0555",
+   "name": "date",
+   "owner": {
+    "kind": "base-system"
+   },
+   "path": "/bin/date",
+   "realpath": "/bin/date",
+   "role": "toolchain",
+   "sha256": "710208025952f3672c6b8d25a54b95ae6b2ee4b6cc37aefe3be753deff5316c7",
+   "size": 20720,
+   "why": "command used by build-iso.sh or the scripts it runs, by this review's grep of those scripts"
+  },
+  {
+   "libraries": [
+    "libc.so.7",
+    "libsys.so.7",
+    "libutil.so.10"
+   ],
+   "mode": "0555",
+   "name": "dd",
+   "owner": {
+    "kind": "base-system"
+   },
+   "path": "/bin/dd",
+   "realpath": "/bin/dd",
+   "role": "toolchain",
+   "sha256": "b756baf4f12a4cef273cb3b685562175a0a2db0e547655061a30812e8111eb51",
+   "size": 33416,
+   "why": "poudriere 3.4.99 image/jail/common scripts mention it (grep -w); usage in other poudriere scripts not enumerated"
+  },
+  {
+   "libraries": [
+    "libc.so.7",
+    "libsys.so.7",
+    "libutil.so.10",
+    "libxo.so.0"
+   ],
+   "mode": "0555",
+   "name": "df",
+   "owner": {
+    "kind": "base-system"
+   },
+   "path": "/bin/df",
+   "realpath": "/bin/df",
+   "role": "toolchain",
+   "sha256": "70e1370a653b05dcbbc7418edf4babf64327ad7faba7fd5fddbc6886edb9a6ae",
+   "size": 15368,
+   "why": "poudriere 3.4.99 image/jail/common scripts mention it (grep -w); usage in other poudriere scripts not enumerated"
+  },
+  {
+   "libraries": [
+    "libc.so.7",
+    "libm.so.5",
+    "libsys.so.7"
+   ],
+   "mode": "0555",
+   "name": "diff",
+   "owner": {
+    "kind": "base-system"
+   },
+   "path": "/usr/bin/diff",
+   "realpath": "/usr/bin/diff",
+   "role": "toolchain",
+   "sha256": "8719089f49bc77db444ce6c0f01f27dc89f0b1efcef9b8f278c8179e37f3db6e",
+   "size": 84064,
+   "why": "poudriere 3.4.99 image/jail/common scripts mention it (grep -w); usage in other poudriere scripts not enumerated"
+  },
+  {
+   "libraries": [
+    "libc.so.7",
+    "libsys.so.7"
+   ],
+   "mode": "0555",
+   "name": "dirname",
+   "owner": {
+    "kind": "base-system"
+   },
+   "path": "/usr/bin/dirname",
+   "realpath": "/usr/bin/dirname",
+   "role": "toolchain",
+   "sha256": "1e9d439281536a87abd6ed2ffbde40d9f110e5cba67effecfac718709fb59e3d",
+   "size": 6672,
+   "why": "command used by build-iso.sh or the scripts it runs, by this review's grep of those scripts"
+  },
+  {
+   "libraries": [
+    "libc.so.7",
+    "libsys.so.7",
+    "libutil.so.10",
+    "libxo.so.0"
+   ],
+   "mode": "0555",
+   "name": "du",
+   "owner": {
+    "kind": "base-system"
+   },
+   "path": "/usr/bin/du",
+   "realpath": "/usr/bin/du",
+   "role": "toolchain",
+   "sha256": "abea496db656f606a73965d6c173523a476a7d54cddc84a0b27163d595e340d5",
+   "size": 13000,
+   "why": "poudriere 3.4.99 image/jail/common scripts mention it (grep -w); usage in other poudriere scripts not enumerated"
+  },
+  {
+   "libraries": [
+    "libc.so.7",
+    "libsys.so.7"
+   ],
+   "mode": "0555",
+   "name": "echo",
+   "owner": {
+    "kind": "base-system"
+   },
+   "path": "/bin/echo",
+   "realpath": "/bin/echo",
+   "role": "toolchain",
+   "sha256": "f096b7ac348e2f4ab0797a2a77dc8f1c7b82cd3b63aab442b450c848f543920a",
+   "size": 6680,
+   "why": "command used by build-iso.sh or the scripts it runs, by this review's grep of those scripts"
+  },
+  {
+   "libraries": [
+    "libc.so.7",
+    "libsys.so.7",
+    "libutil.so.10"
+   ],
+   "mode": "0555",
+   "name": "env",
+   "owner": {
+    "kind": "base-system"
+   },
+   "path": "/usr/bin/env",
+   "realpath": "/usr/bin/env",
+   "role": "toolchain",
+   "sha256": "6613dd6987a254ce205de219ae3a049e2491f6a66dadc54adc931b385a56ca3d",
+   "size": 14280,
+   "why": "command used by build-iso.sh or the scripts it runs, by this review's grep of those scripts"
+  },
+  {
+   "libraries": [
+    "libc.so.7",
+    "libsys.so.7"
+   ],
+   "mode": "0555",
+   "name": "expr",
+   "owner": {
+    "kind": "base-system"
+   },
+   "path": "/bin/expr",
+   "realpath": "/bin/expr",
+   "role": "toolchain",
+   "sha256": "49de0a242f992d9b792f691c4fcfb6f08a4f751c6267759269f8be0dbefd7efd",
+   "size": 20408,
+   "why": "poudriere 3.4.99 image/jail/common scripts mention it (grep -w); usage in other poudriere scripts not enumerated"
+  },
+  {
+   "libraries": [
+    "libc.so.7",
+    "libcrypto.so.35",
+    "libfetch.so.6",
+    "libssl.so.35",
+    "libsys.so.7",
+    "libthr.so.3"
+   ],
+   "mode": "0555",
+   "name": "fetch",
+   "owner": {
+    "kind": "base-system"
+   },
+   "path": "/usr/bin/fetch",
+   "realpath": "/usr/bin/fetch",
+   "role": "toolchain",
+   "sha256": "7ff58717861f049435d4e3d9436606413c719d145599ea03f9c9c837c3299a79",
+   "size": 28448,
+   "why": "command used by build-iso.sh or the scripts it runs, by this review's grep of those scripts"
+  },
+  {
+   "libraries": [
+    "libc.so.7",
+    "libsys.so.7"
+   ],
+   "mode": "0555",
+   "name": "find",
+   "owner": {
+    "kind": "base-system"
+   },
+   "path": "/usr/bin/find",
+   "realpath": "/usr/bin/find",
+   "role": "toolchain",
+   "sha256": "99e592750ae2aea91bf4f7f07e9d76d21cd598c8576c1816b27a71d6db3050f4",
+   "size": 72464,
+   "why": "poudriere 3.4.99 image/jail/common scripts mention it (grep -w); usage in other poudriere scripts not enumerated"
+  },
+  {
+   "libraries": [
+    "libc.so.7",
+    "libregex.so.1",
+    "libsys.so.7"
+   ],
+   "mode": "0555",
+   "name": "grep",
+   "owner": {
+    "kind": "base-system"
+   },
+   "path": "/usr/bin/grep",
+   "realpath": "/usr/bin/grep",
+   "role": "toolchain",
+   "sha256": "581986bfba44efcf6d13b182f2f0bf9e874487f98dbe77ae275acf42a9af6b17",
+   "size": 29808,
+   "why": "command used by build-iso.sh or the scripts it runs, by this review's grep of those scripts"
+  },
+  {
+   "libraries": [
+    "libbz2.so.4",
+    "libc.so.7",
+    "liblzma.so.5",
+    "libmd.so.7",
+    "libprivatezstd.so.5",
+    "libsys.so.7",
+    "libthr.so.3",
+    "libz.so.6"
+   ],
+   "mode": "0555",
+   "name": "gzip",
+   "owner": {
+    "kind": "base-system"
+   },
+   "path": "/usr/bin/gzip",
+   "realpath": "/usr/bin/gzip",
+   "role": "toolchain",
+   "sha256": "05645d32c857f19580cffe02f68e570cae9358e007ad2b5dfdb049db6a923ac8",
+   "size": 63472,
+   "why": "poudriere 3.4.99 image/jail/common scripts mention it (grep -w); usage in other poudriere scripts not enumerated"
+  },
+  {
+   "libraries": [
+    "libc.so.7",
+    "libcap_fileargs.so.1",
+    "libcasper.so.1",
+    "libnv.so.1",
+    "libsys.so.7",
+    "libutil.so.10"
+   ],
+   "mode": "0555",
+   "name": "head",
+   "owner": {
+    "kind": "base-system"
+   },
+   "path": "/usr/bin/head",
+   "realpath": "/usr/bin/head",
+   "role": "toolchain",
+   "sha256": "a17034e23ca836664aa9d16cca918726788f2c2ea78d609d43554671d103fd62",
+   "size": 10760,
+   "why": "command used by build-iso.sh or the scripts it runs, by this review's grep of those scripts"
+  },
+  {
+   "libraries": [
+    "libc.so.7",
+    "libsys.so.7"
+   ],
+   "mode": "0555",
+   "name": "hostname",
+   "owner": {
+    "kind": "base-system"
+   },
+   "path": "/bin/hostname",
+   "realpath": "/bin/hostname",
+   "role": "toolchain",
+   "sha256": "7d9322b3e91cd66230212649e7a480c7b39fb01c3207b7d5923bb35de6162c0a",
+   "size": 5744,
+   "why": "poudriere 3.4.99 image/jail/common scripts mention it (grep -w); usage in other poudriere scripts not enumerated"
+  },
+  {
+   "libraries": [
+    "libc.so.7",
+    "libsys.so.7"
+   ],
+   "mode": "0555",
+   "name": "id",
+   "owner": {
+    "kind": "base-system"
+   },
+   "path": "/usr/bin/id",
+   "realpath": "/usr/bin/id",
+   "role": "toolchain",
+   "sha256": "bb76947c4635704535b98b8d9aea455ed1fece20e1512d3b5dd08c09bd2b9580",
+   "size": 12664,
+   "why": "command used by build-iso.sh or the scripts it runs, by this review's grep of those scripts"
+  },
+  {
+   "libraries": [
+    "libc.so.7",
+    "libmd.so.7",
+    "libsys.so.7"
+   ],
+   "mode": "0555",
+   "name": "install",
+   "owner": {
+    "kind": "base-system"
+   },
+   "path": "/usr/bin/install",
+   "realpath": "/usr/bin/install",
+   "role": "toolchain",
+   "sha256": "3e45126614a001dba2c49b7da6f39c47b4c992fc3ce641f4a999c4126a4466b3",
+   "size": 30816,
+   "why": "poudriere 3.4.99 image/jail/common scripts mention it (grep -w); usage in other poudriere scripts not enumerated"
+  },
+  {
+   "libraries": [
+    "libc.so.7",
+    "libelf.so.2",
+    "libjail.so.1",
+    "libkvm.so.7",
+    "libsys.so.7",
+    "libutil.so.10"
+   ],
+   "mode": "0555",
+   "name": "jail",
+   "owner": {
+    "kind": "base-system"
+   },
+   "path": "/usr/sbin/jail",
+   "realpath": "/usr/sbin/jail",
+   "role": "toolchain",
+   "sha256": "1a901c3d8f9a991f92ccee62f39703fcb4130b6f756b69275b8a8e5366c00d64",
+   "size": 74344,
+   "why": "poudriere 3.4.99 image/jail/common scripts mention it (grep -w); usage in other poudriere scripts not enumerated"
+  },
+  {
+   "libraries": [
+    "libc.so.7",
+    "libjail.so.1",
+    "libsys.so.7",
+    "libutil.so.10"
+   ],
+   "mode": "0555",
+   "name": "jexec",
+   "owner": {
+    "kind": "base-system"
+   },
+   "path": "/usr/sbin/jexec",
+   "realpath": "/usr/sbin/jexec",
+   "role": "toolchain",
+   "sha256": "f24b0b493b4b2186014f366f09b118e7908e7481a30e2ead278f06a4df6662ea",
+   "size": 9160,
+   "why": "poudriere 3.4.99 image/jail/common scripts mention it (grep -w); usage in other poudriere scripts not enumerated"
+  },
+  {
+   "libraries": [
+    "libc.so.7",
+    "libjq.so.1",
+    "libm.so.5",
+    "libonig.so.5",
+    "libsys.so.7",
+    "libthr.so.3"
+   ],
+   "mode": "0755",
+   "name": "jq",
+   "owner": {
+    "kind": "pkg",
+    "name": "jq-1.8.2",
+    "version_origin": "jq-1.8.2 textproc/jq"
+   },
+   "path": "/usr/local/bin/jq",
+   "realpath": "/usr/local/bin/jq",
+   "role": "toolchain",
+   "sha256": "6baff1184e5a0dc55f947c55de46a54562f3345dc770feadc45184c0c5191658",
+   "size": 24696,
+   "why": "command used by build-iso.sh or the scripts it runs, by this review's grep of those scripts"
+  },
+  {
+   "libraries": [
+    "libc.so.7",
+    "libsys.so.7"
+   ],
+   "mode": "0555",
+   "name": "kill",
+   "owner": {
+    "kind": "base-system"
+   },
+   "path": "/bin/kill",
+   "realpath": "/bin/kill",
+   "role": "toolchain",
+   "sha256": "7ba2cabac71072866184cf99af762b7346eea3070e13d3ba2f7d274ee5b4dd3c",
+   "size": 7720,
+   "why": "poudriere 3.4.99 image/jail/common scripts mention it (grep -w); usage in other poudriere scripts not enumerated"
+  },
+  {
+   "libraries": [
+    "libc.so.7",
+    "libsys.so.7"
+   ],
+   "mode": "0555",
+   "name": "ldconfig",
+   "owner": {
+    "kind": "base-system"
+   },
+   "path": "/sbin/ldconfig",
+   "realpath": "/sbin/ldconfig",
+   "role": "toolchain",
+   "sha256": "383f185622ee5f27ee4bf1f83a6ec717d4ef5e36f77940c0a2cc6a5819965ffb",
+   "size": 13216,
+   "why": "poudriere 3.4.99 image/jail/common scripts mention it (grep -w); usage in other poudriere scripts not enumerated"
+  },
+  {
+   "libraries": [
+    "libc.so.7",
+    "libsys.so.7"
+   ],
+   "mode": "0555",
+   "name": "ln",
+   "owner": {
+    "kind": "base-system"
+   },
+   "path": "/bin/ln",
+   "realpath": "/bin/ln",
+   "role": "toolchain",
+   "sha256": "0467a888d5674978e4d6aaabe9f2d730ef448aebd5b7980dae532c1bac00d572",
+   "size": 10384,
+   "why": "poudriere 3.4.99 image/jail/common scripts mention it (grep -w); usage in other poudriere scripts not enumerated"
+  },
+  {
+   "libraries": [
+    "libc.so.7",
+    "libsys.so.7",
+    "libtinfow.so.9",
+    "libutil.so.10"
+   ],
+   "mode": "0555",
+   "name": "ls",
+   "owner": {
+    "kind": "base-system"
+   },
+   "path": "/bin/ls",
+   "realpath": "/bin/ls",
+   "role": "toolchain",
+   "sha256": "6ddf66db33075e60f1e2b042ebc1ff6aa897b4147293c4e7fcfaf47e97f45a45",
+   "size": 34664,
+   "why": "command used by build-iso.sh or the scripts it runs, by this review's grep of those scripts"
+  },
+  {
+   "libraries": [
+    "libc.so.7",
+    "libsbuf.so.6",
+    "libsys.so.7",
+    "libutil.so.10"
+   ],
+   "mode": "0555",
+   "name": "makefs",
+   "owner": {
+    "kind": "base-system"
+   },
+   "path": "/usr/sbin/makefs",
+   "realpath": "/usr/sbin/makefs",
+   "role": "toolchain",
+   "sha256": "6d8ee138683d12519eaeebc82fd296e6ab6a7328fcae7436509c23f35084abbc",
+   "size": 254624,
+   "why": "poudriere 3.4.99 image/jail/common scripts mention it (grep -w); usage in other poudriere scripts not enumerated"
+  },
+  {
+   "libraries": [
+    "libbsdxml.so.4",
+    "libc.so.7",
+    "libgeom.so.5",
+    "libsbuf.so.6",
+    "libsys.so.7",
+    "libutil.so.10"
+   ],
+   "mode": "0555",
+   "name": "mdconfig",
+   "owner": {
+    "kind": "base-system"
+   },
+   "path": "/sbin/mdconfig",
+   "realpath": "/sbin/mdconfig",
+   "role": "toolchain",
+   "sha256": "a2ea7b54722cf43254a375a0843f4678f9e3101059bf33ccf5d830fd33f8ddab",
+   "size": 17320,
+   "why": "poudriere 3.4.99 image/jail/common scripts mention it (grep -w); usage in other poudriere scripts not enumerated"
+  },
+  {
+   "libraries": [
+    "libc.so.7",
+    "libsys.so.7"
+   ],
+   "mode": "0555",
+   "name": "mkdir",
+   "owner": {
+    "kind": "base-system"
+   },
+   "path": "/bin/mkdir",
+   "realpath": "/bin/mkdir",
+   "role": "toolchain",
+   "sha256": "6009bef6d6552b945f4e2196391b05a539208ac8b2d0991977bd91ba8ef77168",
+   "size": 6928,
+   "why": "command used by build-iso.sh or the scripts it runs, by this review's grep of those scripts"
+  },
+  {
+   "libraries": [
+    "libc.so.7",
+    "libcam.so.7",
+    "libcdrdeflt.so.1.0",
+    "libdeflt.so.1.0",
+    "libfile.so.1.0",
+    "libfind.so.4.0",
+    "libhfs.so.1.0",
+    "libintl.so.8",
+    "libmdigest.so.1.0",
+    "librscg.so.1.0",
+    "libsbuf.so.6",
+    "libscg.so.1.0",
+    "libscgcmd.so.1.0",
+    "libschily.so.2.0",
+    "libsiconv.so.1.0",
+    "libsys.so.7",
+    "libthr.so.3"
+   ],
+   "mode": "0755",
+   "name": "mkisofs",
+   "owner": {
+    "kind": "pkg",
+    "name": "cdrtools-2024.03.21",
+    "version_origin": "cdrtools-2024.03.21 sysutils/cdrtools"
+   },
+   "path": "/usr/local/bin/mkisofs",
+   "realpath": "/usr/local/bin/mkisofs",
+   "role": "toolchain",
+   "sha256": "800e3cd20f12946bdbd52ef602eaf3e5f598f1ced7fc9300886a451cb64990b6",
+   "size": 238176,
+   "why": "command used by build-iso.sh or the scripts it runs, by this review's grep of those scripts"
+  },
+  {
+   "libraries": [
+    "libc.so.7",
+    "libsys.so.7"
+   ],
+   "mode": "0555",
+   "name": "mktemp",
+   "owner": {
+    "kind": "base-system"
+   },
+   "path": "/usr/bin/mktemp",
+   "realpath": "/usr/bin/mktemp",
+   "role": "toolchain",
+   "sha256": "ea3fc35a9b057b859e99f9d8325c7a7418953a19e34dffc7bb58359b411567de",
+   "size": 8208,
+   "why": "command used by build-iso.sh or the scripts it runs, by this review's grep of those scripts"
+  },
+  {
+   "libraries": [
+    "libc.so.7",
+    "libsys.so.7",
+    "libutil.so.10",
+    "libxo.so.0"
+   ],
+   "mode": "0555",
+   "name": "mount",
+   "owner": {
+    "kind": "base-system"
+   },
+   "path": "/sbin/mount",
+   "realpath": "/sbin/mount",
+   "role": "toolchain",
+   "sha256": "2df848caa6cf8c933a11cfc91df98f305a636ac909db47cd2ebc1d7aa20e1813",
+   "size": 29160,
+   "why": "poudriere 3.4.99 image/jail/common scripts mention it (grep -w); usage in other poudriere scripts not enumerated"
+  },
+  {
+   "libraries": [
+    "libc.so.7",
+    "libsys.so.7"
+   ],
+   "mode": "0555",
+   "name": "mv",
+   "owner": {
+    "kind": "base-system"
+   },
+   "path": "/bin/mv",
+   "realpath": "/bin/mv",
+   "role": "toolchain",
+   "sha256": "20d865635d43c1c1d9ef52c886894b50e2a8902b138020f0fbdcd464b546bebe",
+   "size": 13760,
+   "why": "command used by build-iso.sh or the scripts it runs, by this review's grep of those scripts"
+  },
+  {
+   "libraries": [
+    "libc.so.7",
+    "libipsec.so.4",
+    "libsbuf.so.6",
+    "libstats.so.0",
+    "libsys.so.7"
+   ],
+   "mode": "0555",
+   "name": "nc",
+   "owner": {
+    "kind": "base-system"
+   },
+   "path": "/usr/bin/nc",
+   "realpath": "/usr/bin/nc",
+   "role": "toolchain",
+   "sha256": "d65e1a23a115dc6a4866d98cd04d84d557f87cb5975045410a76ba53902246b6",
+   "size": 32752,
+   "why": "poudriere 3.4.99 image/jail/common scripts mention it (grep -w); usage in other poudriere scripts not enumerated"
+  },
+  {
+   "libraries": [
+    "libc.so.7",
+    "libcrypto.so.35",
+    "libssl.so.35",
+    "libsys.so.7",
+    "libthr.so.3"
+   ],
+   "mode": "0555",
+   "name": "openssl",
+   "owner": {
+    "kind": "base-system"
+   },
+   "path": "/usr/bin/openssl",
+   "realpath": "/usr/bin/openssl",
+   "role": "toolchain",
+   "sha256": "00f8d794f70a1f3e557cffd00099fe2e12ccd699e7f316617bd11a9cb498431f",
+   "size": 1086704,
+   "why": "command used by build-iso.sh or the scripts it runs, by this review's grep of those scripts"
+  },
+  {
+   "libraries": [
+    "libc.so.7",
+    "libsys.so.7"
+   ],
+   "mode": "0555",
+   "name": "patch",
+   "owner": {
+    "kind": "base-system"
+   },
+   "path": "/usr/bin/patch",
+   "realpath": "/usr/bin/patch",
+   "role": "toolchain",
+   "sha256": "329ce2c4d7c22eb7fff4efd15e670af8d6081c5dc0ff55504df68a53e88f82ac",
+   "size": 59096,
+   "why": "poudriere 3.4.99 image/jail/common scripts mention it (grep -w); usage in other poudriere scripts not enumerated"
+  },
+  {
+   "libraries": [
+    "libarchive.so.7",
+    "libbsdxml.so.4",
+    "libbz2.so.4",
+    "libc.so.7",
+    "libcrypto.so.35",
+    "libelf.so.2",
+    "libjail.so.1",
+    "liblzma.so.5",
+    "libm.so.5",
+    "libmd.so.7",
+    "libprivatezstd.so.5",
+    "libssl.so.35",
+    "libsys.so.7",
+    "libthr.so.3",
+    "libutil.so.10",
+    "libz.so.6"
+   ],
+   "mode": "0755",
+   "name": "pkg",
+   "owner": {
+    "kind": "pkg",
+    "name": "pkg-2.8.4",
+    "version_origin": "pkg-2.8.4 ports-mgmt/pkg"
+   },
+   "path": "/usr/local/sbin/pkg",
+   "realpath": "/usr/local/sbin/pkg",
+   "role": "toolchain",
+   "sha256": "6aa088572c7f7a6f7d1149bc9e2f2efc1d4f059ed490cd79dbf15afe277ca174",
+   "size": 3884408,
+   "why": "build-iso.sh calls bare `pkg query -F`/`pkg repo`; /usr/sbin/pkg is the bootstrap stub, the real binary is the installed package"
+  },
+  {
+   "interpreter": "/bin/sh",
+   "libraries": [],
+   "mode": "0555",
+   "name": "poudriere",
+   "owner": {
+    "kind": "pkg",
+    "name": "poudriere-devel-3.4.99.20260425",
+    "version_origin": "poudriere-devel-3.4.99.20260425 ports-mgmt/poudriere-devel"
+   },
+   "path": "/usr/local/bin/poudriere",
+   "realpath": "/usr/local/bin/poudriere",
+   "role": "toolchain",
+   "sha256": "1329a1bd99616c13de51285a95061aabf2fccd7dfd09e8001b1c6b22624242c9",
+   "size": 6826,
+   "why": "build-iso.sh poudriere_run (jail -l, image); locates share/ and libexec/ relative to its own realpath"
+  },
+  {
+   "libraries": [
+    "libc.so.7",
+    "libsys.so.7"
+   ],
+   "mode": "0555",
+   "name": "printf",
+   "owner": {
+    "kind": "base-system"
+   },
+   "path": "/usr/bin/printf",
+   "realpath": "/usr/bin/printf",
+   "role": "toolchain",
+   "sha256": "5ea01a7a6dd5f4f972d344c010cd2e2bf33b2e3b9b940339bed8714b544131b5",
+   "size": 13088,
+   "why": "command used by build-iso.sh or the scripts it runs, by this review's grep of those scripts"
+  },
+  {
+   "libraries": [
+    "libc.so.7",
+    "libelf.so.2",
+    "libjail.so.1",
+    "libkvm.so.7",
+    "libm.so.5",
+    "libsys.so.7",
+    "libutil.so.10",
+    "libxo.so.0"
+   ],
+   "mode": "0555",
+   "name": "ps",
+   "owner": {
+    "kind": "base-system"
+   },
+   "path": "/bin/ps",
+   "realpath": "/bin/ps",
+   "role": "toolchain",
+   "sha256": "02a696955a753649b38cf87531a91bf3f4727ce87493b9cc0989a0bfe061631a",
+   "size": 59184,
+   "why": "poudriere 3.4.99 image/jail/common scripts mention it (grep -w); usage in other poudriere scripts not enumerated"
+  },
+  {
+   "libraries": [
+    "libc.so.7",
+    "libsys.so.7"
+   ],
+   "mode": "0555",
+   "name": "pwd_mkdb",
+   "owner": {
+    "kind": "base-system"
+   },
+   "path": "/usr/sbin/pwd_mkdb",
+   "realpath": "/usr/sbin/pwd_mkdb",
+   "role": "toolchain",
+   "sha256": "16e205e830056069ab52c138702c22b99854a57c6b5bc7d57a0c050b0cfeb602",
+   "size": 16240,
+   "why": "poudriere 3.4.99 image/jail/common scripts mention it (grep -w); usage in other poudriere scripts not enumerated"
+  },
+  {
+   "libraries": [
+    "libc.so.7",
+    "libdl.so.1",
+    "libintl.so.8",
+    "libm.so.5",
+    "libpython3.12.so.1.0",
+    "libsys.so.7",
+    "libthr.so.3",
+    "libutil.so.10"
+   ],
+   "mode": "0555",
+   "name": "python3.12",
+   "owner": {
+    "kind": "pkg",
+    "name": "python312-3.12.15",
+    "version_origin": "python312-3.12.15 lang/python312"
+   },
+   "path": "/usr/local/bin/python3.12",
+   "realpath": "/usr/local/bin/python3.12",
+   "role": "toolchain",
+   "sha256": "05587422e95c177bedf8622ec5d6771150412a652a3c38417d45e6c00dbd91b7",
+   "size": 4160,
+   "why": "unittest/docs/accept report producers; build-iso.sh also calls /usr/local/bin/python3.12 for test-loader"
+  },
+  {
+   "libraries": [
+    "libc.so.7",
+    "libsys.so.7"
+   ],
+   "mode": "0555",
+   "name": "readlink",
+   "owner": {
+    "kind": "base-system"
+   },
+   "path": "/usr/bin/readlink",
+   "realpath": "/usr/bin/readlink",
+   "role": "toolchain",
+   "sha256": "60ebdc028062dfc02d8f90dc442a157682731bc31a1dd5880ddf52d1a23c69d9",
+   "size": 18104,
+   "why": "poudriere 3.4.99 image/jail/common scripts mention it (grep -w); usage in other poudriere scripts not enumerated"
+  },
+  {
+   "libraries": [
+    "libc.so.7",
+    "libsys.so.7"
+   ],
+   "mode": "0555",
+   "name": "realpath",
+   "owner": {
+    "kind": "base-system"
+   },
+   "path": "/bin/realpath",
+   "realpath": "/bin/realpath",
+   "role": "toolchain",
+   "sha256": "11eb0547e80751eda36e8fa97857ac52220eabadb17244222e79afc45348d2f3",
+   "size": 5368,
+   "why": "poudriere 3.4.99 image/jail/common scripts mention it (grep -w); usage in other poudriere scripts not enumerated"
+  },
+  {
+   "libraries": [
+    "libc.so.7",
+    "libsys.so.7"
+   ],
+   "mode": "0555",
+   "name": "rm",
+   "owner": {
+    "kind": "base-system"
+   },
+   "path": "/bin/rm",
+   "realpath": "/bin/rm",
+   "role": "toolchain",
+   "sha256": "333afc83341aa81508945fce12bb7555b33182d683487d2df8009640d1932b86",
+   "size": 12616,
+   "why": "command used by build-iso.sh or the scripts it runs, by this review's grep of those scripts"
+  },
+  {
+   "libraries": [
+    "libc.so.7",
+    "libsys.so.7"
+   ],
+   "mode": "0555",
+   "name": "rmdir",
+   "owner": {
+    "kind": "base-system"
+   },
+   "path": "/bin/rmdir",
+   "realpath": "/bin/rmdir",
+   "role": "toolchain",
+   "sha256": "30f49a31143dacb53fc6d767b127597498edbf697956bf138a3f7246dfdb568b",
+   "size": 5696,
+   "why": "poudriere 3.4.99 image/jail/common scripts mention it (grep -w); usage in other poudriere scripts not enumerated"
+  },
+  {
+   "libraries": [
+    "libc.so.7",
+    "libsys.so.7"
+   ],
+   "mode": "0555",
+   "name": "sed",
+   "owner": {
+    "kind": "base-system"
+   },
+   "path": "/usr/bin/sed",
+   "realpath": "/usr/bin/sed",
+   "role": "toolchain",
+   "sha256": "6ceda4eb9ba8944eaedfe4dc8337537e1a86d7f9ecb56c4c3f1afd460dcb3c0b",
+   "size": 39328,
+   "why": "command used by build-iso.sh or the scripts it runs, by this review's grep of those scripts"
+  },
+  {
+   "libraries": [
+    "libc.so.7",
+    "libedit.so.8",
+    "libsys.so.7",
+    "libtinfow.so.9"
+   ],
+   "mode": "0555",
+   "name": "sh",
+   "owner": {
+    "kind": "base-system"
+   },
+   "path": "/bin/sh",
+   "realpath": "/bin/sh",
+   "role": "toolchain",
+   "sha256": "35b2613337d1221b8138ab0e8fa8552b9f5a8b77630ab4914cbe511ba42f6d7e",
+   "size": 171080,
+   "why": "command used by build-iso.sh or the scripts it runs, by this review's grep of those scripts"
+  },
+  {
+   "libraries": [
+    "libc.so.7",
+    "libcap_fileargs.so.1",
+    "libcasper.so.1",
+    "libmd.so.7",
+    "libnv.so.1",
+    "libsys.so.7"
+   ],
+   "mode": "0555",
+   "name": "sha256",
+   "owner": {
+    "kind": "base-system"
+   },
+   "path": "/sbin/sha256",
+   "realpath": "/sbin/sha256",
+   "role": "toolchain",
+   "sha256": "13154f73a40a1823026217662b43925f9ed9aa22240de921fd1229a806e91db5",
+   "size": 38744,
+   "why": "command used by build-iso.sh or the scripts it runs, by this review's grep of those scripts"
+  },
+  {
+   "libraries": [
+    "libc.so.7",
+    "libsys.so.7"
+   ],
+   "mode": "0555",
+   "name": "sleep",
+   "owner": {
+    "kind": "base-system"
+   },
+   "path": "/bin/sleep",
+   "realpath": "/bin/sleep",
+   "role": "toolchain",
+   "sha256": "b0218c3cb6863e5e2d4d927eb42cb41b1dc4c233d6bce9ead12cf8fc3eaaa41f",
+   "size": 7592,
+   "why": "command used by build-iso.sh or the scripts it runs, by this review's grep of those scripts"
+  },
+  {
+   "libraries": [
+    "libc.so.7",
+    "libmd.so.7",
+    "libsys.so.7"
+   ],
+   "mode": "0555",
+   "name": "sort",
+   "owner": {
+    "kind": "base-system"
+   },
+   "path": "/usr/bin/sort",
+   "realpath": "/usr/bin/sort",
+   "role": "toolchain",
+   "sha256": "65dff6397fdef54fa78faa3f2bdc8571ef840fedc23deeaa8c6da7cbf094100f",
+   "size": 61808,
+   "why": "command used by build-iso.sh or the scripts it runs, by this review's grep of those scripts"
+  },
+  {
+   "libraries": [
+    "libc.so.7",
+    "libsys.so.7"
+   ],
+   "mode": "0555",
+   "name": "stat",
+   "owner": {
+    "kind": "base-system"
+   },
+   "path": "/usr/bin/stat",
+   "realpath": "/usr/bin/stat",
+   "role": "toolchain",
+   "sha256": "60ebdc028062dfc02d8f90dc442a157682731bc31a1dd5880ddf52d1a23c69d9",
+   "size": 18104,
+   "why": "poudriere 3.4.99 image/jail/common scripts mention it (grep -w); usage in other poudriere scripts not enumerated"
+  },
+  {
+   "libraries": [
+    "libc.so.7",
+    "libcap_fileargs.so.1",
+    "libcasper.so.1",
+    "libelf.so.2",
+    "libnv.so.1",
+    "libsys.so.7"
+   ],
+   "mode": "0555",
+   "name": "strings",
+   "owner": {
+    "kind": "base-system"
+   },
+   "path": "/usr/bin/strings",
+   "realpath": "/usr/bin/strings",
+   "role": "toolchain",
+   "sha256": "913bc8ace5a16d495c17bf681777fb69ccd6da13aa21f7dd4d7f8bdd64f8d026",
+   "size": 15464,
+   "why": "command used by build-iso.sh or the scripts it runs, by this review's grep of those scripts"
+  },
+  {
+   "libraries": [
+    "libc.so.7",
+    "libjail.so.1",
+    "libsys.so.7"
+   ],
+   "mode": "0555",
+   "name": "sysctl",
+   "owner": {
+    "kind": "base-system"
+   },
+   "path": "/sbin/sysctl",
+   "realpath": "/sbin/sysctl",
+   "role": "toolchain",
+   "sha256": "984fe75cdc89ca70a2a2aac0f4c9ece4ff5f0f758a0c33891a0f4d8987ffeaf3",
+   "size": 24752,
+   "why": "poudriere 3.4.99 image/jail/common scripts mention it (grep -w); usage in other poudriere scripts not enumerated"
+  },
+  {
+   "libraries": [
+    "libc.so.7",
+    "libcap_fileargs.so.1",
+    "libcasper.so.1",
+    "libnv.so.1",
+    "libsys.so.7",
+    "libutil.so.10"
+   ],
+   "mode": "0555",
+   "name": "tail",
+   "owner": {
+    "kind": "base-system"
+   },
+   "path": "/usr/bin/tail",
+   "realpath": "/usr/bin/tail",
+   "role": "toolchain",
+   "sha256": "b3f2e65d793c2fa494df010d33ed28c22733f41a0891b3f357990929449bcd4c",
+   "size": 21704,
+   "why": "command used by build-iso.sh or the scripts it runs, by this review's grep of those scripts"
+  },
+  {
+   "libraries": [
+    "libarchive.so.7",
+    "libbsdxml.so.4",
+    "libbz2.so.4",
+    "libc.so.7",
+    "libcrypto.so.35",
+    "liblzma.so.5",
+    "libmd.so.7",
+    "libprivatezstd.so.5",
+    "libsys.so.7",
+    "libthr.so.3",
+    "libz.so.6"
+   ],
+   "mode": "0555",
+   "name": "tar",
+   "owner": {
+    "kind": "base-system"
+   },
+   "path": "/usr/bin/tar",
+   "realpath": "/usr/bin/bsdtar",
+   "role": "toolchain",
+   "sha256": "553616f9c29ca068aa19c3d7c98ec4f1518fdce9220931f958ab4cc5a3c1f5f0",
+   "size": 74376,
+   "why": "command used by build-iso.sh or the scripts it runs, by this review's grep of those scripts"
+  },
+  {
+   "libraries": [
+    "libc.so.7",
+    "libsys.so.7"
+   ],
+   "mode": "0555",
+   "name": "tee",
+   "owner": {
+    "kind": "base-system"
+   },
+   "path": "/usr/bin/tee",
+   "realpath": "/usr/bin/tee",
+   "role": "toolchain",
+   "sha256": "5bf82d65d8a1fab2ec17a5d6f6323a30ba37a52fd46d6aa48400f0c991ba3861",
+   "size": 8552,
+   "why": "command used by build-iso.sh or the scripts it runs, by this review's grep of those scripts"
+  },
+  {
+   "libraries": [
+    "libc.so.7",
+    "libsys.so.7"
+   ],
+   "mode": "0555",
+   "name": "test",
+   "owner": {
+    "kind": "base-system"
+   },
+   "path": "/bin/test",
+   "realpath": "/bin/test",
+   "role": "toolchain",
+   "sha256": "ef43b79bbc9655ee40a092fb42294eee6bf0a397f76b6b5f8f887c1b1d177ed7",
+   "size": 11384,
+   "why": "command used by build-iso.sh or the scripts it runs, by this review's grep of those scripts"
+  },
+  {
+   "libraries": [
+    "libc.so.7",
+    "libsys.so.7"
+   ],
+   "mode": "0555",
+   "name": "touch",
+   "owner": {
+    "kind": "base-system"
+   },
+   "path": "/usr/bin/touch",
+   "realpath": "/usr/bin/touch",
+   "role": "toolchain",
+   "sha256": "3f57442c87aff210f9473a8ea6650f0efdbae1dcb94ca3675f0e65b9ef2e68e5",
+   "size": 9760,
+   "why": "poudriere 3.4.99 image/jail/common scripts mention it (grep -w); usage in other poudriere scripts not enumerated"
+  },
+  {
+   "libraries": [
+    "libc.so.7",
+    "libsys.so.7"
+   ],
+   "mode": "0555",
+   "name": "tr",
+   "owner": {
+    "kind": "base-system"
+   },
+   "path": "/usr/bin/tr",
+   "realpath": "/usr/bin/tr",
+   "role": "toolchain",
+   "sha256": "a260227c140fc6ffcf7324484de1e78130501b9503506edb030dc85a252888d4",
+   "size": 22336,
+   "why": "command used by build-iso.sh or the scripts it runs, by this review's grep of those scripts"
+  },
+  {
+   "libraries": [
+    "libc.so.7",
+    "libsys.so.7"
+   ],
+   "mode": "0555",
+   "name": "true",
+   "owner": {
+    "kind": "base-system"
+   },
+   "path": "/usr/bin/true",
+   "realpath": "/usr/bin/true",
+   "role": "toolchain",
+   "sha256": "bcc1864368dcae63c9367cbb3bcf34eec558b18fe344b24e7cab63cc11f4ed7b",
+   "size": 4336,
+   "why": "command used by build-iso.sh or the scripts it runs, by this review's grep of those scripts"
+  },
+  {
+   "libraries": [
+    "libc.so.7",
+    "libsys.so.7",
+    "libutil.so.10"
+   ],
+   "mode": "0555",
+   "name": "truncate",
+   "owner": {
+    "kind": "base-system"
+   },
+   "path": "/usr/bin/truncate",
+   "realpath": "/usr/bin/truncate",
+   "role": "toolchain",
+   "sha256": "dd89b7f366cf27bab3c78ed0437218d8162788e7d1f61184c00908cb16de1555",
+   "size": 8240,
+   "why": "poudriere 3.4.99 image/jail/common scripts mention it (grep -w); usage in other poudriere scripts not enumerated"
+  },
+  {
+   "libraries": [
+    "libc.so.7",
+    "libsys.so.7"
+   ],
+   "mode": "0555",
+   "name": "umount",
+   "owner": {
+    "kind": "base-system"
+   },
+   "path": "/sbin/umount",
+   "realpath": "/sbin/umount",
+   "role": "toolchain",
+   "sha256": "e6b18476dd3fc7f21a263280ea8635fee20c66595df9b97a6cdec9b6381afc95",
+   "size": 19488,
+   "why": "poudriere 3.4.99 image/jail/common scripts mention it (grep -w); usage in other poudriere scripts not enumerated"
+  },
+  {
+   "libraries": [
+    "libc.so.7",
+    "libsys.so.7"
+   ],
+   "mode": "0555",
+   "name": "uname",
+   "owner": {
+    "kind": "base-system"
+   },
+   "path": "/usr/bin/uname",
+   "realpath": "/usr/bin/uname",
+   "role": "toolchain",
+   "sha256": "5fbf27b6204812f9c33f0dbe91ad8b69014bcfcb425fdf8c042b89c574fadba3",
+   "size": 13336,
+   "why": "command used by build-iso.sh or the scripts it runs, by this review's grep of those scripts"
+  },
+  {
+   "libraries": [
+    "libc.so.7",
+    "libcap_fileargs.so.1",
+    "libcasper.so.1",
+    "libnv.so.1",
+    "libsys.so.7",
+    "libutil.so.10",
+    "libxo.so.0"
+   ],
+   "mode": "0555",
+   "name": "wc",
+   "owner": {
+    "kind": "base-system"
+   },
+   "path": "/usr/bin/wc",
+   "realpath": "/usr/bin/wc",
+   "role": "toolchain",
+   "sha256": "eb99de0ed250ec108550313116296cec8767bcef813692ce88fa03e85124879b",
+   "size": 12504,
+   "why": "command used by build-iso.sh or the scripts it runs, by this review's grep of those scripts"
+  },
+  {
+   "libraries": [
+    "libc.so.7",
+    "libsys.so.7"
+   ],
+   "mode": "0555",
+   "name": "xargs",
+   "owner": {
+    "kind": "base-system"
+   },
+   "path": "/usr/bin/xargs",
+   "realpath": "/usr/bin/xargs",
+   "role": "toolchain",
+   "sha256": "c22eb48b2e14b31640bbbf0d75fa8fab079cbf13cb23742f654c0f973c70374c",
+   "size": 16872,
+   "why": "poudriere 3.4.99 image/jail/common scripts mention it (grep -w); usage in other poudriere scripts not enumerated"
+  },
+  {
+   "libraries": [
+    "libburn.so.4",
+    "libc.so.7",
+    "libcam.so.7",
+    "libisoburn.so.1",
+    "libisofs.so.6",
+    "libreadline.so.8",
+    "libsbuf.so.6",
+    "libsys.so.7",
+    "libthr.so.3",
+    "libtinfow.so.9",
+    "libz.so.6"
+   ],
+   "mode": "0755",
+   "name": "xorriso",
+   "owner": {
+    "kind": "pkg",
+    "name": "xorriso-1.5.6_2",
+    "version_origin": "xorriso-1.5.6_2 sysutils/xorriso"
+   },
+   "path": "/usr/local/bin/xorriso",
+   "realpath": "/usr/local/bin/xorriso",
+   "role": "toolchain",
+   "sha256": "2571dde466b9090198d9f68ba0b8cd85406ff7cd72b423fd1fc9ea4174829a2e",
+   "size": 7576,
+   "why": "command used by build-iso.sh or the scripts it runs, by this review's grep of those scripts"
+  },
+  {
+   "libraries": [
+    "libc.so.7",
+    "liblzma.so.5",
+    "libmd.so.7",
+    "libsys.so.7",
+    "libthr.so.3"
+   ],
+   "mode": "0555",
+   "name": "xz",
+   "owner": {
+    "kind": "base-system"
+   },
+   "path": "/usr/bin/xz",
+   "realpath": "/usr/bin/xz",
+   "role": "toolchain",
+   "sha256": "4a995bd96359a14509dbbc7df902d3a293a7244beff2d04e0e7f5fb2ce58bf42",
+   "size": 91400,
+   "why": "command used by build-iso.sh or the scripts it runs, by this review's grep of those scripts"
+  },
+  {
+   "libraries": [
+    "libc.so.7",
+    "libprivatezstd.so.5",
+    "libsys.so.7",
+    "libthr.so.3"
+   ],
+   "mode": "0555",
+   "name": "zstd",
+   "owner": {
+    "kind": "base-system"
+   },
+   "path": "/usr/bin/zstd",
+   "realpath": "/usr/bin/zstd",
+   "role": "toolchain",
+   "sha256": "f1a5e730548dfeebf3883ca193ada4e3d299e4a20e6d1b235ffa68107c9cca9e",
+   "size": 179528,
+   "why": "poudriere 3.4.99 image/jail/common scripts mention it (grep -w); usage in other poudriere scripts not enumerated"
+  }
+ ],
+ "trees": [
+  {
+   "bytes": 14942399,
+   "dest": "lib/python3.12",
+   "digest": "fa2e4ac1280a494be5f4621c627c1d86cf4a3638786a04d38241a086339ac822",
+   "exclude": [
+    "__pycache__",
+    "config-3.12",
+    "ensurepip",
+    "idlelib",
+    "lib2to3",
+    "site-packages",
+    "test",
+    "tkinter",
+    "turtledemo"
+   ],
+   "files": 600,
+   "name": "python3.12-stdlib",
+   "owner": {
+    "kind": "pkg",
+    "name": "python312-3.12.15",
+    "version_origin": "python312-3.12.15 lang/python312"
+   },
+   "role": "toolchain",
+   "source": "/usr/local/lib/python3.12",
+   "why": "stdlib the retained test/docs/accept scripts import (lzma, sqlite3, ctypes, unittest ...); python locates it relative to its own prefix"
+  },
+  {
+   "bytes": 1974001,
+   "dest": "share/poudriere",
+   "digest": "7324d7a8aadfb96075071ba747abcb91488ef11d1a71864eaa1e14bb19af88d1",
+   "exclude": [
+    "MANIFESTS"
+   ],
+   "files": 77,
+   "name": "poudriere-share",
+   "owner": {
+    "kind": "pkg",
+    "name": "poudriere-devel-3.4.99.20260425",
+    "version_origin": "poudriere-devel-3.4.99.20260425 ports-mgmt/poudriere-devel"
+   },
+   "role": "toolchain",
+   "source": "/usr/local/share/poudriere",
+   "why": "poudriere SCRIPTPREFIX, found from realpath(bin/poudriere); MANIFESTS (absolute symlink to /usr/local/share/freebsd/MANIFESTS, used by jail creation, not by `image`) is not captured"
+  },
+  {
+   "bytes": 527512,
+   "dest": "libexec/poudriere",
+   "digest": "6b4de59666495ed6429753788c225c4ad256b20f19c79730474277eced3f74ed",
+   "exclude": [],
+   "files": 17,
+   "name": "poudriere-libexec",
+   "owner": {
+    "kind": "pkg",
+    "name": "poudriere-devel-3.4.99.20260425",
+    "version_origin": "poudriere-devel-3.4.99.20260425 ports-mgmt/poudriere-devel"
+   },
+   "role": "toolchain",
+   "source": "/usr/local/libexec/poudriere",
+   "why": "poudriere LIBEXECPREFIX helpers (timeout, lockf, nc, sh ...)"
+  }
+ ]
+}

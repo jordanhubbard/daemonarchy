@@ -3,44 +3,463 @@
   "authority_mode": "retained-project",
   "target": "freebsd",
   "worker_identity": "sha256:29d0ce36b8f96325b660670b5e4a2e99bd42e705472c2b4594f6955e04fe2171",
-  "toolchain_identity": "sha256:100c4eb69e8660fc6d205e10995d6092d8a63dcec35abf3011d68f4f464046a9",
+  "toolchain_identity": "sha256:9a2f5db8607c9ba9ec05f1426703e41fb73c0883a87f3802a3f21d9a92f6c776",
   "dependency_identity": "sha256:5b8c257af24528b3bf9cc46317f481475a540ff4913422f09ba056fd64c05206",
   "test_policy_identity": "sha256:94fe7c86102612fc1ca62d1a74608a3a3e1a9836d06109d69a67f94e55582244",
-  "release_policy_identity": "sha256:778607d5e12623702238547a29bd74e4b2f7b47562fcca17d355457b8ca239bf",
+  "release_policy_identity": "sha256:f119d79be15d1b4d8b78a3ffb30ccfc73d914fcdb56d0679624299a524981dac",
   "tools": [
     {
+      "name": "[",
+      "path": "closure/toolchain/bin/[",
+      "identity": "sha256:ef43b79bbc9655ee40a092fb42294eee6bf0a397f76b6b5f8f887c1b1d177ed7"
+    },
+    {
+      "name": "awk",
+      "path": "closure/toolchain/bin/awk",
+      "identity": "sha256:d30c7501df8de4427e09079e891577815a4f1675a42862b18d46f4029cd5def4"
+    },
+    {
+      "name": "basename",
+      "path": "closure/toolchain/bin/basename",
+      "identity": "sha256:6f25948750ef0e44de0e72eea0effcff3a322ccc4f1c809ade7151c86c4d080c"
+    },
+    {
       "name": "bash",
-      "path": "sdk/bin/bash",
+      "path": "closure/toolchain/bin/bash",
       "identity": "sha256:ef39f03eca8db37b580bc4b1bcc712813c6a8ddec6acde82cd6fef22e58d39ce"
     },
     {
+      "name": "bsdtar",
+      "path": "closure/toolchain/bin/bsdtar",
+      "identity": "sha256:553616f9c29ca068aa19c3d7c98ec4f1518fdce9220931f958ab4cc5a3c1f5f0"
+    },
+    {
+      "name": "cap_mkdb",
+      "path": "closure/toolchain/bin/cap_mkdb",
+      "identity": "sha256:78b49a005204005966da348e6cedce04e1ae783176ec4d0affba360d445cbddd"
+    },
+    {
+      "name": "cat",
+      "path": "closure/toolchain/bin/cat",
+      "identity": "sha256:91ab4c555eb54d7634dd6471af1236ff2d5889f3dfba75918eb6f249de9dd783"
+    },
+    {
+      "name": "chflags",
+      "path": "closure/toolchain/bin/chflags",
+      "identity": "sha256:2921483325803cd03b41091dc7a11d2bafe674af8f41a17f5d95532d905d0dc2"
+    },
+    {
+      "name": "chmod",
+      "path": "closure/toolchain/bin/chmod",
+      "identity": "sha256:cf3602e0447874a8759972519ae670d7e540e973592193a3571cff7d90b4e41e"
+    },
+    {
+      "name": "chroot",
+      "path": "closure/toolchain/bin/chroot",
+      "identity": "sha256:3b7278f9183069854e9da02678d7f27b6945e9fead78b3b87bb7fcfb8354d921"
+    },
+    {
+      "name": "cp",
+      "path": "closure/toolchain/bin/cp",
+      "identity": "sha256:d0ddd7385f1444927e534a8530db62bb78dc361db1586c7add92055826710c28"
+    },
+    {
+      "name": "cut",
+      "path": "closure/toolchain/bin/cut",
+      "identity": "sha256:f47de722d81b112323cdea85c280ceba8880024abdf23e417066aafc667da2f1"
+    },
+    {
+      "name": "date",
+      "path": "closure/toolchain/bin/date",
+      "identity": "sha256:710208025952f3672c6b8d25a54b95ae6b2ee4b6cc37aefe3be753deff5316c7"
+    },
+    {
+      "name": "dd",
+      "path": "closure/toolchain/bin/dd",
+      "identity": "sha256:b756baf4f12a4cef273cb3b685562175a0a2db0e547655061a30812e8111eb51"
+    },
+    {
+      "name": "df",
+      "path": "closure/toolchain/bin/df",
+      "identity": "sha256:70e1370a653b05dcbbc7418edf4babf64327ad7faba7fd5fddbc6886edb9a6ae"
+    },
+    {
+      "name": "diff",
+      "path": "closure/toolchain/bin/diff",
+      "identity": "sha256:8719089f49bc77db444ce6c0f01f27dc89f0b1efcef9b8f278c8179e37f3db6e"
+    },
+    {
+      "name": "dirname",
+      "path": "closure/toolchain/bin/dirname",
+      "identity": "sha256:1e9d439281536a87abd6ed2ffbde40d9f110e5cba67effecfac718709fb59e3d"
+    },
+    {
+      "name": "du",
+      "path": "closure/toolchain/bin/du",
+      "identity": "sha256:abea496db656f606a73965d6c173523a476a7d54cddc84a0b27163d595e340d5"
+    },
+    {
       "name": "echo",
-      "path": "sdk/bin/echo",
+      "path": "closure/toolchain/bin/echo",
       "identity": "sha256:f096b7ac348e2f4ab0797a2a77dc8f1c7b82cd3b63aab442b450c848f543920a"
     },
     {
-      "name": "python",
-      "path": "sdk/bin/python3.12",
+      "name": "env",
+      "path": "closure/toolchain/bin/env",
+      "identity": "sha256:6613dd6987a254ce205de219ae3a049e2491f6a66dadc54adc931b385a56ca3d"
+    },
+    {
+      "name": "expr",
+      "path": "closure/toolchain/bin/expr",
+      "identity": "sha256:49de0a242f992d9b792f691c4fcfb6f08a4f751c6267759269f8be0dbefd7efd"
+    },
+    {
+      "name": "fetch",
+      "path": "closure/toolchain/bin/fetch",
+      "identity": "sha256:7ff58717861f049435d4e3d9436606413c719d145599ea03f9c9c837c3299a79"
+    },
+    {
+      "name": "find",
+      "path": "closure/toolchain/bin/find",
+      "identity": "sha256:99e592750ae2aea91bf4f7f07e9d76d21cd598c8576c1816b27a71d6db3050f4"
+    },
+    {
+      "name": "grep",
+      "path": "closure/toolchain/bin/grep",
+      "identity": "sha256:581986bfba44efcf6d13b182f2f0bf9e874487f98dbe77ae275acf42a9af6b17"
+    },
+    {
+      "name": "gzip",
+      "path": "closure/toolchain/bin/gzip",
+      "identity": "sha256:05645d32c857f19580cffe02f68e570cae9358e007ad2b5dfdb049db6a923ac8"
+    },
+    {
+      "name": "head",
+      "path": "closure/toolchain/bin/head",
+      "identity": "sha256:a17034e23ca836664aa9d16cca918726788f2c2ea78d609d43554671d103fd62"
+    },
+    {
+      "name": "hostname",
+      "path": "closure/toolchain/bin/hostname",
+      "identity": "sha256:7d9322b3e91cd66230212649e7a480c7b39fb01c3207b7d5923bb35de6162c0a"
+    },
+    {
+      "name": "id",
+      "path": "closure/toolchain/bin/id",
+      "identity": "sha256:bb76947c4635704535b98b8d9aea455ed1fece20e1512d3b5dd08c09bd2b9580"
+    },
+    {
+      "name": "install",
+      "path": "closure/toolchain/bin/install",
+      "identity": "sha256:3e45126614a001dba2c49b7da6f39c47b4c992fc3ce641f4a999c4126a4466b3"
+    },
+    {
+      "name": "jail",
+      "path": "closure/toolchain/bin/jail",
+      "identity": "sha256:1a901c3d8f9a991f92ccee62f39703fcb4130b6f756b69275b8a8e5366c00d64"
+    },
+    {
+      "name": "jexec",
+      "path": "closure/toolchain/bin/jexec",
+      "identity": "sha256:f24b0b493b4b2186014f366f09b118e7908e7481a30e2ead278f06a4df6662ea"
+    },
+    {
+      "name": "jq",
+      "path": "closure/toolchain/bin/jq",
+      "identity": "sha256:6baff1184e5a0dc55f947c55de46a54562f3345dc770feadc45184c0c5191658"
+    },
+    {
+      "name": "kill",
+      "path": "closure/toolchain/bin/kill",
+      "identity": "sha256:7ba2cabac71072866184cf99af762b7346eea3070e13d3ba2f7d274ee5b4dd3c"
+    },
+    {
+      "name": "ldconfig",
+      "path": "closure/toolchain/bin/ldconfig",
+      "identity": "sha256:383f185622ee5f27ee4bf1f83a6ec717d4ef5e36f77940c0a2cc6a5819965ffb"
+    },
+    {
+      "name": "ln",
+      "path": "closure/toolchain/bin/ln",
+      "identity": "sha256:0467a888d5674978e4d6aaabe9f2d730ef448aebd5b7980dae532c1bac00d572"
+    },
+    {
+      "name": "ls",
+      "path": "closure/toolchain/bin/ls",
+      "identity": "sha256:6ddf66db33075e60f1e2b042ebc1ff6aa897b4147293c4e7fcfaf47e97f45a45"
+    },
+    {
+      "name": "makefs",
+      "path": "closure/toolchain/bin/makefs",
+      "identity": "sha256:6d8ee138683d12519eaeebc82fd296e6ab6a7328fcae7436509c23f35084abbc"
+    },
+    {
+      "name": "mdconfig",
+      "path": "closure/toolchain/bin/mdconfig",
+      "identity": "sha256:a2ea7b54722cf43254a375a0843f4678f9e3101059bf33ccf5d830fd33f8ddab"
+    },
+    {
+      "name": "mkdir",
+      "path": "closure/toolchain/bin/mkdir",
+      "identity": "sha256:6009bef6d6552b945f4e2196391b05a539208ac8b2d0991977bd91ba8ef77168"
+    },
+    {
+      "name": "mkisofs",
+      "path": "closure/toolchain/bin/mkisofs",
+      "identity": "sha256:800e3cd20f12946bdbd52ef602eaf3e5f598f1ced7fc9300886a451cb64990b6"
+    },
+    {
+      "name": "mktemp",
+      "path": "closure/toolchain/bin/mktemp",
+      "identity": "sha256:ea3fc35a9b057b859e99f9d8325c7a7418953a19e34dffc7bb58359b411567de"
+    },
+    {
+      "name": "mount",
+      "path": "closure/toolchain/bin/mount",
+      "identity": "sha256:2df848caa6cf8c933a11cfc91df98f305a636ac909db47cd2ebc1d7aa20e1813"
+    },
+    {
+      "name": "mv",
+      "path": "closure/toolchain/bin/mv",
+      "identity": "sha256:20d865635d43c1c1d9ef52c886894b50e2a8902b138020f0fbdcd464b546bebe"
+    },
+    {
+      "name": "nc",
+      "path": "closure/toolchain/bin/nc",
+      "identity": "sha256:d65e1a23a115dc6a4866d98cd04d84d557f87cb5975045410a76ba53902246b6"
+    },
+    {
+      "name": "openssl",
+      "path": "closure/toolchain/bin/openssl",
+      "identity": "sha256:00f8d794f70a1f3e557cffd00099fe2e12ccd699e7f316617bd11a9cb498431f"
+    },
+    {
+      "name": "patch",
+      "path": "closure/toolchain/bin/patch",
+      "identity": "sha256:329ce2c4d7c22eb7fff4efd15e670af8d6081c5dc0ff55504df68a53e88f82ac"
+    },
+    {
+      "name": "pkg",
+      "path": "closure/toolchain/bin/pkg",
+      "identity": "sha256:6aa088572c7f7a6f7d1149bc9e2f2efc1d4f059ed490cd79dbf15afe277ca174"
+    },
+    {
+      "name": "poudriere",
+      "path": "closure/toolchain/bin/poudriere",
+      "identity": "sha256:1329a1bd99616c13de51285a95061aabf2fccd7dfd09e8001b1c6b22624242c9"
+    },
+    {
+      "name": "printf",
+      "path": "closure/toolchain/bin/printf",
+      "identity": "sha256:5ea01a7a6dd5f4f972d344c010cd2e2bf33b2e3b9b940339bed8714b544131b5"
+    },
+    {
+      "name": "ps",
+      "path": "closure/toolchain/bin/ps",
+      "identity": "sha256:02a696955a753649b38cf87531a91bf3f4727ce87493b9cc0989a0bfe061631a"
+    },
+    {
+      "name": "pwd_mkdb",
+      "path": "closure/toolchain/bin/pwd_mkdb",
+      "identity": "sha256:16e205e830056069ab52c138702c22b99854a57c6b5bc7d57a0c050b0cfeb602"
+    },
+    {
+      "name": "python3.12",
+      "path": "closure/toolchain/bin/python3.12",
       "identity": "sha256:05587422e95c177bedf8622ec5d6771150412a652a3c38417d45e6c00dbd91b7"
     },
     {
+      "name": "readlink",
+      "path": "closure/toolchain/bin/readlink",
+      "identity": "sha256:60ebdc028062dfc02d8f90dc442a157682731bc31a1dd5880ddf52d1a23c69d9"
+    },
+    {
+      "name": "realpath",
+      "path": "closure/toolchain/bin/realpath",
+      "identity": "sha256:11eb0547e80751eda36e8fa97857ac52220eabadb17244222e79afc45348d2f3"
+    },
+    {
+      "name": "rm",
+      "path": "closure/toolchain/bin/rm",
+      "identity": "sha256:333afc83341aa81508945fce12bb7555b33182d683487d2df8009640d1932b86"
+    },
+    {
+      "name": "rmdir",
+      "path": "closure/toolchain/bin/rmdir",
+      "identity": "sha256:30f49a31143dacb53fc6d767b127597498edbf697956bf138a3f7246dfdb568b"
+    },
+    {
+      "name": "sed",
+      "path": "closure/toolchain/bin/sed",
+      "identity": "sha256:6ceda4eb9ba8944eaedfe4dc8337537e1a86d7f9ecb56c4c3f1afd460dcb3c0b"
+    },
+    {
       "name": "sh",
-      "path": "sdk/bin/sh",
+      "path": "closure/toolchain/bin/sh",
       "identity": "sha256:35b2613337d1221b8138ab0e8fa8552b9f5a8b77630ab4914cbe511ba42f6d7e"
+    },
+    {
+      "name": "sha256",
+      "path": "closure/toolchain/bin/sha256",
+      "identity": "sha256:13154f73a40a1823026217662b43925f9ed9aa22240de921fd1229a806e91db5"
+    },
+    {
+      "name": "sleep",
+      "path": "closure/toolchain/bin/sleep",
+      "identity": "sha256:b0218c3cb6863e5e2d4d927eb42cb41b1dc4c233d6bce9ead12cf8fc3eaaa41f"
+    },
+    {
+      "name": "sort",
+      "path": "closure/toolchain/bin/sort",
+      "identity": "sha256:65dff6397fdef54fa78faa3f2bdc8571ef840fedc23deeaa8c6da7cbf094100f"
+    },
+    {
+      "name": "stat",
+      "path": "closure/toolchain/bin/stat",
+      "identity": "sha256:60ebdc028062dfc02d8f90dc442a157682731bc31a1dd5880ddf52d1a23c69d9"
+    },
+    {
+      "name": "strings",
+      "path": "closure/toolchain/bin/strings",
+      "identity": "sha256:913bc8ace5a16d495c17bf681777fb69ccd6da13aa21f7dd4d7f8bdd64f8d026"
+    },
+    {
+      "name": "sysctl",
+      "path": "closure/toolchain/bin/sysctl",
+      "identity": "sha256:984fe75cdc89ca70a2a2aac0f4c9ece4ff5f0f758a0c33891a0f4d8987ffeaf3"
+    },
+    {
+      "name": "tail",
+      "path": "closure/toolchain/bin/tail",
+      "identity": "sha256:b3f2e65d793c2fa494df010d33ed28c22733f41a0891b3f357990929449bcd4c"
+    },
+    {
+      "name": "tar",
+      "path": "closure/toolchain/bin/tar",
+      "identity": "sha256:553616f9c29ca068aa19c3d7c98ec4f1518fdce9220931f958ab4cc5a3c1f5f0"
+    },
+    {
+      "name": "tee",
+      "path": "closure/toolchain/bin/tee",
+      "identity": "sha256:5bf82d65d8a1fab2ec17a5d6f6323a30ba37a52fd46d6aa48400f0c991ba3861"
+    },
+    {
+      "name": "test",
+      "path": "closure/toolchain/bin/test",
+      "identity": "sha256:ef43b79bbc9655ee40a092fb42294eee6bf0a397f76b6b5f8f887c1b1d177ed7"
+    },
+    {
+      "name": "touch",
+      "path": "closure/toolchain/bin/touch",
+      "identity": "sha256:3f57442c87aff210f9473a8ea6650f0efdbae1dcb94ca3675f0e65b9ef2e68e5"
+    },
+    {
+      "name": "tr",
+      "path": "closure/toolchain/bin/tr",
+      "identity": "sha256:a260227c140fc6ffcf7324484de1e78130501b9503506edb030dc85a252888d4"
+    },
+    {
+      "name": "true",
+      "path": "closure/toolchain/bin/true",
+      "identity": "sha256:bcc1864368dcae63c9367cbb3bcf34eec558b18fe344b24e7cab63cc11f4ed7b"
+    },
+    {
+      "name": "truncate",
+      "path": "closure/toolchain/bin/truncate",
+      "identity": "sha256:dd89b7f366cf27bab3c78ed0437218d8162788e7d1f61184c00908cb16de1555"
+    },
+    {
+      "name": "umount",
+      "path": "closure/toolchain/bin/umount",
+      "identity": "sha256:e6b18476dd3fc7f21a263280ea8635fee20c66595df9b97a6cdec9b6381afc95"
+    },
+    {
+      "name": "uname",
+      "path": "closure/toolchain/bin/uname",
+      "identity": "sha256:5fbf27b6204812f9c33f0dbe91ad8b69014bcfcb425fdf8c042b89c574fadba3"
+    },
+    {
+      "name": "wc",
+      "path": "closure/toolchain/bin/wc",
+      "identity": "sha256:eb99de0ed250ec108550313116296cec8767bcef813692ce88fa03e85124879b"
+    },
+    {
+      "name": "xargs",
+      "path": "closure/toolchain/bin/xargs",
+      "identity": "sha256:c22eb48b2e14b31640bbbf0d75fa8fab079cbf13cb23742f654c0f973c70374c"
+    },
+    {
+      "name": "xorriso",
+      "path": "closure/toolchain/bin/xorriso",
+      "identity": "sha256:2571dde466b9090198d9f68ba0b8cd85406ff7cd72b423fd1fc9ea4174829a2e"
+    },
+    {
+      "name": "xz",
+      "path": "closure/toolchain/bin/xz",
+      "identity": "sha256:4a995bd96359a14509dbbc7df902d3a293a7244beff2d04e0e7f5fb2ce58bf42"
+    },
+    {
+      "name": "zstd",
+      "path": "closure/toolchain/bin/zstd",
+      "identity": "sha256:f1a5e730548dfeebf3883ca193ada4e3d299e4a20e6d1b235ffa68107c9cca9e"
     }
   ],
+  "runtime_library_paths": [
+    "closure/toolchain/lib"
+  ],
   "actions": [
+    {
+      "id": "draft-ambient-preflight",
+      "stage": "stage",
+      "tool": "python3.12",
+      "argv": [
+        "closure/toolchain/bin/python3.12",
+        "tools/retained-draft/ambient-preflight.py",
+        "--inventory",
+        "tools/retained-draft/closure-inventory.json",
+        "--output",
+        "{output_root}/preflight/ambient.json"
+      ],
+      "requires": [],
+      "inventory": [
+        "ambient:poudriere-etc",
+        "ambient:jail-param.h",
+        "ambient:jail-kernel",
+        "ambient:jail-libc",
+        "ambient:ports-tree-daports141",
+        "ambient:package-catalogue",
+        "ambient:package-set-listing",
+        "ambient:set-base",
+        "ambient:set-kernel",
+        "ambient:set-lib32",
+        "ambient:set-manifest",
+        "ambient:checkout-catalogue",
+        "ambient:secureboot-bundle",
+        "ambient:secureboot-signature",
+        "ambient:secureboot-certificate",
+        "ambient:dynamic-linker",
+        "ambient:interpreter:sh"
+      ],
+      "outputs": [
+        "preflight"
+      ],
+      "timeout_seconds": 7200
+    },
     {
       "id": "draft-build-iso",
       "stage": "build",
       "tool": "sh",
       "argv": [
-        "sdk/bin/sh",
-        "build-iso.sh"
+        "closure/toolchain/bin/sh",
+        "tools/retained-draft/run-build-iso.sh",
+        "{output_root}/images"
       ],
-      "requires": [],
+      "requires": [
+        "draft-ambient-preflight"
+      ],
       "inventory": [
-        "build-iso.sh"
+        "build-iso.sh",
+        "run-build-iso.sh"
       ],
       "outputs": [
         "images"
@@ -48,31 +467,12 @@
       "timeout_seconds": 86400
     },
     {
-      "id": "draft-master-release-verify",
-      "stage": "build",
-      "tool": "bash",
-      "argv": [
-        "sdk/bin/bash",
-        "scripts/master-release.sh",
-        "verify"
-      ],
-      "requires": [
-        "draft-build-iso"
-      ],
-      "inventory": [
-        "master-release.sh verify"
-      ],
-      "outputs": [
-        "verify"
-      ],
-      "timeout_seconds": 3600
-    },
-    {
       "id": "draft-docs-tests",
       "stage": "docs",
-      "tool": "python",
+      "tool": "python3.12",
       "argv": [
-        "sdk/bin/python3.12",
+        "closure/toolchain/bin/python3.12",
+        "-B",
         "tools/retained-draft/unittest-report.py",
         "--action",
         "draft-docs-tests",
@@ -84,8 +484,7 @@
         "{output_root}/docs/report.json"
       ],
       "requires": [
-        "draft-build-iso",
-        "draft-master-release-verify"
+        "draft-build-iso"
       ],
       "inventory": [
         "docs-lifecycle",
@@ -97,11 +496,191 @@
       "timeout_seconds": 3600
     },
     {
+      "id": "draft-docs-tree",
+      "stage": "docs",
+      "tool": "python3.12",
+      "argv": [
+        "closure/toolchain/bin/python3.12",
+        "-B",
+        "tools/retained-draft/docs-tree-check.py",
+        "--root",
+        ".",
+        "--include",
+        "docs/**/*.md",
+        "--include",
+        "*.md",
+        "--include",
+        "components/**/*.md",
+        "--include",
+        "secureboot/**/*.md",
+        "--include",
+        "overlay/**/*.md",
+        "--include",
+        "skills/**/*.md",
+        "--include",
+        "workflows/**/*.md",
+        "--include",
+        "sdk/**/*.md",
+        "--include",
+        "tools/**/*.md",
+        "--output",
+        "{output_root}/docs-tree/report.json"
+      ],
+      "requires": [
+        "draft-build-iso"
+      ],
+      "inventory": [
+        "docs-tree:AGENTS.md",
+        "docs-tree:CHANGELOG.md",
+        "docs-tree:HACKING.md",
+        "docs-tree:PROJECT.md",
+        "docs-tree:README.md",
+        "docs-tree:ROADMAP.md",
+        "docs-tree:SKILL.md",
+        "docs-tree:components/compatibility/acceptance.md",
+        "docs-tree:components/compatibility/component.md",
+        "docs-tree:components/compatibility/interfaces/contract.md",
+        "docs-tree:components/desktop/acceptance.md",
+        "docs-tree:components/desktop/component.md",
+        "docs-tree:components/desktop/interfaces/contract.md",
+        "docs-tree:components/diagnostics/acceptance.md",
+        "docs-tree:components/diagnostics/component.md",
+        "docs-tree:components/diagnostics/interfaces/contract.md",
+        "docs-tree:components/installer/acceptance.md",
+        "docs-tree:components/installer/component.md",
+        "docs-tree:components/installer/interfaces/contract.md",
+        "docs-tree:components/package-engine/acceptance.md",
+        "docs-tree:components/package-engine/component.md",
+        "docs-tree:components/package-engine/interfaces/contract.md",
+        "docs-tree:components/release/acceptance.md",
+        "docs-tree:components/release/component.md",
+        "docs-tree:components/release/interfaces/contract.md",
+        "docs-tree:components/updates/acceptance.md",
+        "docs-tree:components/updates/component.md",
+        "docs-tree:components/updates/interfaces/contract.md",
+        "docs-tree:components/verified-boot/acceptance.md",
+        "docs-tree:components/verified-boot/component.md",
+        "docs-tree:components/verified-boot/interfaces/contract.md",
+        "docs-tree:docs/README.md",
+        "docs-tree:docs/aarch64.md",
+        "docs-tree:docs/application-note-macbookpro16-1.md",
+        "docs-tree:docs/boottrace.md",
+        "docs-tree:docs/enterprise-wifi.md",
+        "docs-tree:docs/extension-feed.md",
+        "docs-tree:docs/freebsd-application-policy.md",
+        "docs-tree:docs/getting-started.md",
+        "docs-tree:docs/gpu-report.md",
+        "docs-tree:docs/gui-package-manager.md",
+        "docs-tree:docs/hardware-quirks.md",
+        "docs-tree:docs/install-trace.md",
+        "docs-tree:docs/install-weight-vs-omarchy.md",
+        "docs-tree:docs/installer-extensions.md",
+        "docs-tree:docs/installer-progress.md",
+        "docs-tree:docs/login-trace.md",
+        "docs-tree:docs/mastering-1.4.1.md",
+        "docs-tree:docs/mastering-1.5.0.md",
+        "docs-tree:docs/native-adoption-steps.md",
+        "docs-tree:docs/native-package-plan.md",
+        "docs-tree:docs/native-qemu-worker.md",
+        "docs-tree:docs/optional-source-sizing.md",
+        "docs-tree:docs/package-dag.md",
+        "docs-tree:docs/package-repository-key-rotation-1.3.1.md",
+        "docs-tree:docs/package-reuse-inventory.md",
+        "docs-tree:docs/post-mortem-1.4.0-tigervnc.md",
+        "docs-tree:docs/release-1.1.0.md",
+        "docs-tree:docs/release-1.3.1.md",
+        "docs-tree:docs/release-1.4.0.md",
+        "docs-tree:docs/release-1.4.1.md",
+        "docs-tree:docs/release-input-graph.md",
+        "docs-tree:docs/release-measurements.md",
+        "docs-tree:docs/remote-agent-debug.md",
+        "docs-tree:docs/remote-worker.md",
+        "docs-tree:docs/repair-efi-root.md",
+        "docs-tree:docs/rescue-console.md",
+        "docs-tree:docs/sandboxed-extensions.md",
+        "docs-tree:docs/secure-boot.md",
+        "docs-tree:docs/signed-package-snapshot.md",
+        "docs-tree:docs/source-builds.md",
+        "docs-tree:docs/testing-1.1-bios.md",
+        "docs-tree:docs/testing-1.1-bluetooth-audio.md",
+        "docs-tree:docs/testing-1.1-final-image.md",
+        "docs-tree:docs/testing-1.1-hardware-observations.md",
+        "docs-tree:docs/testing-1.1-headless-rescue.md",
+        "docs-tree:docs/testing-1.1-image-budget.md",
+        "docs-tree:docs/testing-1.1-live-checkouts.md",
+        "docs-tree:docs/testing-1.1-native-apps.md",
+        "docs-tree:docs/testing-1.1-partitions.md",
+        "docs-tree:docs/testing-1.1-refresh.md",
+        "docs-tree:docs/testing-1.1-remote-debug.md",
+        "docs-tree:docs/testing-1.1-secureboot.md",
+        "docs-tree:docs/testing-1.1-upgrade.md",
+        "docs-tree:docs/testing-1.1-vm-graphics.md",
+        "docs-tree:docs/testing-1.1.1.md",
+        "docs-tree:docs/testing-1.2-test-iso.md",
+        "docs-tree:docs/testing-1.4-boottrace-20261027.md",
+        "docs-tree:docs/testing-1.4-hwtrace-rawblock-20261027.md",
+        "docs-tree:docs/testing-1.4-live-desktop-20261026.md",
+        "docs-tree:docs/testing-1.4-live-desktop-virgl-20261027.md",
+        "docs-tree:docs/testing-1.4-live4-20261027.md",
+        "docs-tree:docs/testing-1.4-live4-lua4-20261028.md",
+        "docs-tree:docs/testing-1.4-live5-20261028.md",
+        "docs-tree:docs/testing-1.4-live7-20261029.md",
+        "docs-tree:docs/testing-1.4-live8-live9-20261029.md",
+        "docs-tree:docs/testing-1.4-network-debug-20261026.md",
+        "docs-tree:docs/testing-1.4.0.md",
+        "docs-tree:docs/testing-1.5-trace-mvp-20261031.md",
+        "docs-tree:docs/testing-macbookpro16-1-1.3.1.md",
+        "docs-tree:docs/testing-macbookpro16-1-firmware-handoff-20261023.md",
+        "docs-tree:docs/testing-macbookpro16-1-installer-20261022.md",
+        "docs-tree:docs/testing-macbookpro16-1-nvme-20261026.md",
+        "docs-tree:docs/testing-macbookpro16-1-s3-20261024.md",
+        "docs-tree:docs/testing-macbookpro16-1-wifi-preview-20261022.md",
+        "docs-tree:docs/testing-macbookpro16-1.md",
+        "docs-tree:docs/testing-msi-dev10-20261028.md",
+        "docs-tree:docs/testing-msi-dev5-20261027.md",
+        "docs-tree:docs/testing-msi-dev7-20261028.md",
+        "docs-tree:docs/testing-msi-dev8-20261028.md",
+        "docs-tree:docs/testing-remote-worker-20261028.md",
+        "docs-tree:docs/verified-artifact-cache.md",
+        "docs-tree:docs/visual-sdk.md",
+        "docs-tree:docs/windows-apps.md",
+        "docs-tree:docs/architecture/design-traceability.md",
+        "docs-tree:docs/contributions/netgdb-peer-close.md",
+        "docs-tree:docs/demos/installer-sounds/README.md",
+        "docs-tree:docs/demos/installer-visuals/README.md",
+        "docs-tree:docs/evidence/release-1.3.1-package-reuse-inventory.md",
+        "docs-tree:docs/roadmap/1.4-coverage-ledger.md",
+        "docs-tree:docs/roadmap/active-work.md",
+        "docs-tree:docs/roadmap/build-performance.md",
+        "docs-tree:docs/roadmap/freebsd-components.md",
+        "docs-tree:docs/roadmap/native-workspace.md",
+        "docs-tree:docs/roadmap/release-1.2.0.md",
+        "docs-tree:docs/roadmap/release-1.3.1.md",
+        "docs-tree:docs/roadmap/release-1.3.2.md",
+        "docs-tree:docs/roadmap/release-1.4.0.md",
+        "docs-tree:docs/roadmap/release-1.4.1-audit.md",
+        "docs-tree:docs/roadmap/release-1.4.1.md",
+        "docs-tree:docs/roadmap/release-1.5.0.md",
+        "docs-tree:docs/roadmap/release-1.5.1.md",
+        "docs-tree:sdk/visual/README.md",
+        "docs-tree:secureboot/README.md",
+        "docs-tree:secureboot/certificates/README.md",
+        "docs-tree:skills/specification-to-source/retained-boundaries/SKILL.md",
+        "docs-tree:tools/retained-draft/PROVENANCE.md",
+        "docs-tree:workflows/retained.md"
+      ],
+      "outputs": [
+        "docs-tree"
+      ],
+      "timeout_seconds": 3600
+    },
+    {
       "id": "draft-ci-tests",
       "stage": "test",
-      "tool": "python",
+      "tool": "python3.12",
       "argv": [
-        "sdk/bin/python3.12",
+        "closure/toolchain/bin/python3.12",
+        "-B",
         "tools/retained-draft/unittest-report.py",
         "--action",
         "draft-ci-tests",
@@ -135,8 +714,7 @@
         "{output_root}/tests/ci-report.json"
       ],
       "requires": [
-        "draft-build-iso",
-        "draft-master-release-verify"
+        "draft-build-iso"
       ],
       "inventory": [
         "build-timing-record.Record.test_clean_build_carries_no_incremental_caveat",
@@ -244,10 +822,11 @@
     {
       "id": "draft-ci-isolated-tests",
       "stage": "test",
-      "tool": "python",
+      "tool": "python3.12",
       "argv": [
-        "sdk/bin/python3.12",
+        "closure/toolchain/bin/python3.12",
         "-I",
+        "-B",
         "tools/retained-draft/unittest-report.py",
         "--action",
         "draft-ci-isolated-tests",
@@ -275,8 +854,7 @@
         "{output_root}/tests-isolated/ci-report.json"
       ],
       "requires": [
-        "draft-build-iso",
-        "draft-master-release-verify"
+        "draft-build-iso"
       ],
       "inventory": [
         "extension-bundles.Downloads.test_a_download_larger_than_the_index_says_is_stopped",
@@ -587,22 +1165,42 @@
       "timeout_seconds": 3600
     },
     {
-      "id": "draft-unknown-accept",
+      "id": "draft-accept-image",
       "stage": "accept",
-      "tool": "echo",
+      "tool": "python3.12",
       "argv": [
-        "sdk/bin/echo",
-        "UNKNOWN-placeholder-not-a-result"
+        "closure/toolchain/bin/python3.12",
+        "-B",
+        "tools/retained-draft/accept-image.py",
+        "--images",
+        "{output_root}/images",
+        "--version-file",
+        "VERSION",
+        "--expect-tag",
+        "packages-16-amd64-1.5.0",
+        "--output",
+        "{output_root}/acceptance/image.json"
       ],
       "requires": [
+        "draft-ambient-preflight",
         "draft-build-iso",
-        "draft-master-release-verify",
         "draft-docs-tests",
+        "draft-docs-tree",
         "draft-ci-tests",
         "draft-ci-isolated-tests"
       ],
       "inventory": [
-        "UNKNOWN-independent-acceptance"
+        "image:present",
+        "image:sidecar-iso",
+        "image:sidecar-xz",
+        "image:xz-roundtrip",
+        "image:budget-raw",
+        "image:budget-xz",
+        "image:iso9660",
+        "image:image-version",
+        "image:image-abi",
+        "image:image-tag",
+        "image:live-sqlite3"
       ],
       "outputs": [
         "acceptance"
