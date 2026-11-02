@@ -6,7 +6,7 @@ Finds every documentation file selected by --include (glob, relative to --root, 
 allowed), and checks each Markdown file for unreadable bytes (not UTF-8), relative links
 and images whose target is missing from the tree, and `#fragment` links with no matching
 heading (same slug rule as the repositories' docs-lifecycle tests: whitespace collapses,
-so `### X -- Y` is `#x--y` only when the text between is not collapsed).  External URLs
+so `### X -- Y` is `#x-y`; fragments compare case-insensitively like GitHub).  External URLs
 are not fetched.  A per-file report is written to --output; the exit status is nonzero
 when any file has a finding.  Only --include/--exclude select the tree; nothing is
 inferred from the file system outside --root.
@@ -113,7 +113,7 @@ def main():
                     if not (root / dest).exists():
                         entry["findings"].append("missing target: " + target)
                     elif parts.fragment and dest.endswith(".md") and \
-                            unquote(parts.fragment) not in headings(dest):
+                            unquote(parts.fragment).casefold() not in headings(dest):
                         entry["findings"].append("no such heading: " + target)
         bad += bool(entry["findings"])
         report.append(entry)
