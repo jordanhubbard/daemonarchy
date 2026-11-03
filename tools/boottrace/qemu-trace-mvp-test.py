@@ -1,6 +1,5 @@
 #!/usr/bin/env python3
 # SPDX-License-Identifier: BSD-2-Clause
-# Copyright (c) 2026 Daemonarchy contributors.
 """QEMU/OVMF checks of the hardware trace image's network hand-over.
 
 Needs an image built with -S (serial) and -K (a TEST public key; never a

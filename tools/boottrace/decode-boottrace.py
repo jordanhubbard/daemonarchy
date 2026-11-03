@@ -1,6 +1,5 @@
 #!/usr/bin/env python3
 # SPDX-License-Identifier: BSD-2-Clause
-# Copyright (c) 2026 Daemonarchy contributors.
 """Decode a Daemonarchy reset-surviving boot trace.
 
 Input is one of:

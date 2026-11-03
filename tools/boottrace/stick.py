@@ -1,6 +1,5 @@
 #!/usr/bin/env python3
 # SPDX-License-Identifier: BSD-2-Clause
-# Copyright (c) 2026 Daemonarchy contributors.
 """Manage the DATRACE volume of a Daemonarchy hardware-trace stick.
 
 The loader's "Hardware trace" cycle files each boot's NVRAM trace as

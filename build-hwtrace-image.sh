@@ -1,6 +1,5 @@
 #!/bin/sh
 # SPDX-License-Identifier: BSD-2-Clause
-# Copyright (c) 2026 Daemonarchy contributors.
 #
 # Build the Daemonarchy hardware bring-up / trace image, a separate image
 # type from the install/live ISO, for developers and agentic researchers

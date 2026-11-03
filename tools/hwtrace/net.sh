@@ -1,6 +1,5 @@
 #!/rescue/sh
 # SPDX-License-Identifier: BSD-2-Clause
-# Copyright (c) 2026 Daemonarchy contributors.
 #
 # Network hand-over for the Daemonarchy hardware trace image (sourced by rc).
 # When a boot reaches init and the stick carries KEYS/authorized_keys, bring
