@@ -12,14 +12,16 @@ repositories and publish their own installer and feeds, was checked: both are on
 [the 1.5.1 plan](docs/roadmap/release-1.5.1.md) (NETUP-001, NETUP-002, NETUP-003, FORK-001) and
 [the upgrade model](HACKING.md#the-upgrade-model-today).
 
-## 1.5.0 (opened as 1.4.2): items deferred from 1.4.1, and faster builds
+## 1.5.0 (opened as 1.4.2): re-scoped on 2026-11-03 to what is evidenced
 
 The MacBookPro16,1 Wi-Fi fix (a dead associated state in the BCM4364 driver, drafted in
-daemonarchy-ports #37) and nine unfinished queue items (ADOPT-002, GUI-001, SRC-001,
-RELEASE-001, COMP-001, PERF-002, DEV-001, DEBUG-003 and HW-004) moved here from 1.4.1 by
-operator decision on 2026-10-30. The release was renamed from 1.4.2 to 1.5.0 on 2026-10-31 (new
-user-visible features make it a minor release; 1.4.2 is superseded and was never released), and it also
-carries BUILD-001 (10x faster builds and release cycle). See [the 1.5.0 plan](docs/roadmap/release-1.5.0.md).
+daemonarchy-ports #37) and unfinished queue items moved here from 1.4.1 by operator decision on
+2026-10-30; the release was renamed from 1.4.2 to 1.5.0 on 2026-10-31 (1.4.2 was never released). On
+2026-11-03 the operator re-scoped it: 1.5.0 keeps ADOPT-002, SRC-001 and RELEASE-001 (delivered parts only),
+GUI-001, DEBUG-003, HW-004, EXT-002, DESKTOP-001 and SIGN-001 (option A, one signing session). It is no
+longer gated on Literate AI 1.4.0, which does not exist (latest v1.3.1). PERF-002, COMP-001, DEV-001,
+BUILD-001, PERF-001 and the native halves of ADOPT-002, SRC-001 and RELEASE-001 (ADOPT-003, SRC-002,
+RELEASE-002) moved to 1.5.1. See [the 1.5.0 plan](docs/roadmap/release-1.5.0.md).
 
 ## 1.4.1: faster installation and playable arcade interludes
 
