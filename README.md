@@ -38,7 +38,8 @@ diagnostic notes, including the MSI Raider 18 HX AI A2XWIG results for 1.4.0.
 
 1.5.0 is the next release and is not published; nothing below is in an image you can download today, and
 its [plan](docs/roadmap/release-1.5.0.md) and the [active queue](docs/roadmap/active-work.md) say what is
-done and what is not. What is on `main` since 1.4.1:
+done and what is not. 1.5.0 was re-scoped on 2026-11-03 to evidenced work; the framework-executed build-speed
+goals moved to [1.5.1](docs/roadmap/release-1.5.1.md). What is on `main` since 1.4.1:
 
 - **NVIDIA RTX Spark laptop (aarch64): an official target; support is deferred from 1.5.0.** The first physical arm64 machine the project tests. **Tested, not yet working; deferred from 1.5.0 and to be debugged later:** the image boots its kernel there but does not reach a desktop. The stock arm64 kernel stops starting CPUs after `Starting CPU 4 (400)`; with `kern.smp.disabled=1` it reaches init; with the draft bounded-wait fix it boots further and then panics in the kernel. Support stays in the tree and the work continues after 1.5.0 ([application note](docs/application-note-rtx-spark.md)).
 - **Windows programs and Steam (x86-64).** Apps menu entries `Steam` and `Windows Programs`, virtual apps that

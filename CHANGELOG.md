@@ -4,6 +4,9 @@
 
 Collects what is on `main` since 1.4.1 for the next release, 1.5.0 (opened as 1.4.2 and renamed; 1.4.2 was
 never released). Nothing here is published, and nothing is claimed done beyond the evidence named.
+On 2026-11-03 1.5.0 was re-scoped to evidenced work: it is no longer gated on Literate AI 1.4.0 and the
+framework-executed goals (BUILD-001, COMP-001, PERF-001, PERF-002, DEV-001 and the native halves of
+ADOPT-002, SRC-001 and RELEASE-001) moved to 1.5.1; SIGN-001 (option A) is in 1.5.0.
 
 ### Added
 
@@ -20,7 +23,7 @@ never released). Nothing here is published, and nothing is claimed done beyond t
 - NVIDIA RTX Spark laptop (aarch64): an official target whose support is deferred from 1.5.0: tested, not yet working, to be debugged later. The image boots the kernel
   and reaches init only with `kern.smp.disabled=1`; the draft kernel fix boots further and then panics, and is not part
   of 1.5.0 (`docs/application-note-rtx-spark.md`).
-- Roadmap: BUILD-001 (10x faster builds and release cycle with Literate AI 1.4, gated on framework 1.4.0), DESKTOP-001 and the 1.5.0 plan;
+- Roadmap: BUILD-001 (10x faster builds and release cycle with Literate AI 1.4, gated on framework 1.4.0; deferred to 1.5.1), DESKTOP-001 and the 1.5.0 plan;
   documentation authority checks (`tests/docs-lifecycle.py`), a generic 1.4.x release gate
   (`scripts/release-check-1.4.py`) and the 1.5.0 release machinery (`scripts/prepare-release.py`,
   `scripts/fill-release.py`).

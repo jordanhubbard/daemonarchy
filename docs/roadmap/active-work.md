@@ -104,13 +104,14 @@ Evidence: `verification/adoption-checks.json`. Native execution and release enfo
 - **Direction:** Integrate existing FreeBSD build, test, signing and release procedures without transferring source authority.
 - **Conclusion:** Do not enable framework execution or publication until exact mixed source/assets, worker/toolchain, privileged cleanup, artifact custody and current receipt paths are demonstrated; the installed candidate provides the retained handler, while the actual product profile and native acceptance remain unfinished.
 - **Depends on:** ADOPT-001
+- **1.5.0 scope (re-scoped 2026-11-03):** only the delivered, ticked work below: the retained-handler audit and the first-binding and Standard-rebind records. The native half moved to [ADOPT-003](#adopt-003-qualify-retained-native-execution-and-release-enforcement-deferred-half-of-adopt-002) (1.5.1) with its unticked boxes; nothing was ticked in the move. The long record that follows the checklist is the evidence state of that deferred half.
 - **1.4.1 audit (2026-10-30):** partly (1 of 4), blocked on the Literate AI framework; not needed for the image; proposed to leave 1.4.1. [Detail](release-1.4.1-audit.md#adopt-002).
 - **Implementation:**
   - [x] Audit the retained execution handler on current framework main and reconcile [framework issue #22](https://github.com/jordanhubbard/literate-ai/issues/22): the issue was reopened because authorized execution still unconditionally refuses. Actual execution qualification remains open below.
-  - [ ] Bind the actual FreeBSD target, action inventory, external inputs, privileged cleanup and protected signer.
-  - [ ] Qualify current native receipts, artifact custody and release enforcement.
+  - [x] Record the first reviewed Standard binding and the combined native-first-binding checkpoint ([first binding](../../verification/standard-first-binding-development.json), [integration](../../verification/native-first-binding-integration-development.json)); these are preparation, not native execution or acceptance.
+  - Moved to ADOPT-003 (1.5.1), unticked: bind the actual FreeBSD target, action inventory, external inputs, privileged cleanup and protected signer; qualify current native receipts, artifact custody and release enforcement.
 
-Next action: bind the actual source/ports compiler, sysroot, input closure and
+Next action (deferred half, ADOPT-003): bind the actual source/ports compiler, sysroot, input closure and
 native action inventory to executable retained profiles and earn installed native
 admission. The [first-binding checkpoint](../../verification/standard-first-binding-development.json)
 now records an exact reviewed Standard configuration apply on the controller using
@@ -222,6 +223,21 @@ then run the real public retained build and test path before updating product
 lifecycle authority.
 
 - **Evidence:**
+  - [x] The retained-handler audit and the binding records above exist and are linked; they state that native execution, receipts and release enforcement are not earned.
+  - Moved to ADOPT-003 (1.5.1): actual installed CLI accepts retained native execution (see that item).
+
+### [ ] ADOPT-003 — Qualify retained native execution and release enforcement (deferred half of ADOPT-002)
+
+- **Priority:** P1
+- **Release target:** 1.5.1
+- **Release:** 1.5.1 (split from ADOPT-002 and deferred from 1.5.0 by operator decision, 2026-11-03; blocked on the framework; nothing here is claimed done; see [the 1.5.1 plan](release-1.5.1.md#deferred-from-150-operator-decision-2026-11-03))
+- **Owner:** native lifecycle integration and framework boundary
+- **Direction:** As ADOPT-002: integrate existing FreeBSD build, test, signing and release procedures without transferring source authority. The evidence state is the long record under ADOPT-002 ("Next action").
+- **Depends on:** ADOPT-002
+- **Implementation:**
+  - [ ] Bind the actual FreeBSD target, action inventory, external inputs, privileged cleanup and protected signer.
+  - [ ] Qualify current native receipts, artifact custody and release enforcement.
+- **Evidence:**
   - [ ] Actual installed CLI accepts retained native execution; source and binary invalidation works; native tests and artifact hashes are current; failed or omitted evidence blocks publication; existing release workflow is reproduced.
 
 ### [ ] UI-001 — Deliver measured retro installer visualizers
@@ -318,10 +334,25 @@ lifecycle authority.
 - **Direction:** Build modified FreeBSD-CURRENT from the owned source fork, retaining upstream provenance and coherent kernel/world/source package selections.
 - **Conclusion:** Introduce clean exact-commit native builds with isolated objects/staging, GENERIC and diagnostic profiles, pkgbase and installer-set outputs, bounded jobs and verifiable build records. Do not install on build workers or publish unsigned development outputs as releases.
 - **Depends on:** ADOPT-002 for framework execution and release qualification
+- **1.5.0 scope (re-scoped 2026-11-03):** only the two delivered, ticked controller and capture boxes. The native qualification, first baseline build and VM/signing qualification moved to [SRC-002](#src-002-qualify-native-freebsd-source-builds-and-packages-deferred-half-of-src-001) (1.5.1) with their unticked boxes and the evidence notes they carry; nothing was ticked in the move.
 - **1.4.1 audit (2026-10-30):** partly (2 of 6); the 1.4.1 base was built by a hand pipeline in 3,518 s incremental; controller run open; proposed to leave 1.4.1. [Detail](release-1.4.1-audit.md#src-001).
 - **Implementation:**
   - [x] Author the native plan/build/verify controller in [source PR #4](https://github.com/jordanhubbard/daemonarchy-src/pull/4); 11 refusal/custody tests pass locally, in CI and on FreeBSD.
   - [x] Prepare optional filemon/meta-mode capture and immutable per-phase snapshots in source revision `a2f44e0b96c0`; seventeen controller checks pass locally and in controller CI. The declared worker bootstrap now enables owner-only filemon access and its unprivileged readiness inspection passes; all 26 current controller/bootstrap checks pass on FreeBSD. Full traced-build execution remains unqualified.
+  - Moved to SRC-002 (1.5.1), unticked: native end-to-end build/package/verify qualification; the first baseline world/kernel/package/set build; VM boot, installer set admission, jail/module matching, signing and rollback.
+- **Evidence:**
+  - [ ] The controller and capture tests named in the two boxes above pass as recorded (source PR #4, source revision `a2f44e0b96c0`). Not re-run for the 1.5.0 re-scope; the earlier recorded result is not re-verified here.
+  - Moved to SRC-002 (1.5.1): exact source/config/toolchain/log/artifact identities, failure refusal checks and native package output.
+
+### [ ] SRC-002 — Qualify native FreeBSD source builds and packages (deferred half of SRC-001)
+
+- **Priority:** P1
+- **Release target:** 1.5.1
+- **Release:** 1.5.1 (split from SRC-001 and deferred from 1.5.0 by operator decision, 2026-11-03; nothing here is claimed done; see [the 1.5.1 plan](release-1.5.1.md#deferred-from-150-operator-decision-2026-11-03))
+- **Owner:** release and diagnostics Components; daemonarchy-src fork
+- **Direction:** As SRC-001: clean exact-commit native builds with isolated objects and staging, pkgbase and installer-set outputs, bounded jobs and verifiable build records.
+- **Depends on:** SRC-001, ADOPT-003
+- **Implementation:**
   - [ ] Complete native end-to-end build/package/verify qualification. The quiet traced run reached completed set generation but failed metadata capture on a 39 MB source-archive record. The bounded streaming correction passes 30 native checks and captures the actual record; an independent audit verifies 537 artifacts and all eight sets. [Outcome evidence](../../verification/native-traced-build-quiet-result.json) preserves the original failure; full lifecycle acceptance remains open.
   - [ ] Produce the first baseline world/kernel/package/set build and retain identities. The 12-job GENERIC build at `92276fc76c65` passed world, kernel and pkgbase, then failed its first set-staging attempt. An isolated replay of the exact 219-header install passed; the root cause remains unproven. An exact-plan resume retained the failure and completed sets; 533 artifacts byte-verify and all eight MANIFEST set hashes independently verify. The source archive audit found all 138 symlinks dereferenced and build-user ownership; an isolated corrected source archive now matches every Git file and symlink with root ownership. ISO and native acceptance remain open. Its [plan and scope](../source-builds.md) are retained.
   - [ ] Qualify VM boot, installer set admission, matching jail/external modules, signing and rollback before production selection.
@@ -410,11 +441,28 @@ lifecycle authority.
 - **Owner:** whole product, release and acceptance
 - **Direction:** Finish the retained backlog and publish a future release entirely through qualified Literate AI execution across the owned repositories. The original 1.2.0 milestone was not published; 1.3.1 records the intervening development but uses its separately verified native release workflow.
 - **Conclusion:** This remains a 1.4 goal. Its existence proof must include actual native build, complete declared testing, artifact custody and publication; authority-only adoption, waived backlog, or the 1.3.1 native release cannot close it.
-- **Depends on:** ADOPT-002,UI-001,PKG-001,GUI-001,DEBUG-001,HW-001,SRC-001,COMP-001
+- **Depends on:** ADOPT-002,UI-001,PKG-001,GUI-001,DEBUG-001,HW-001,SRC-001,COMP-001 (full release program, now RELEASE-002); for the 1.5.0 scope below: none beyond the delivered work
+- **1.5.0 scope (re-scoped 2026-11-03):** acceptance is the delivered 1.4.x release gate (`scripts/release-check-1.4.py`, `tests/release-check-1.4.py`), the release-media sync, and the prepare/fill tooling (`scripts/prepare-release.py`, `scripts/fill-release.py`, `tests/release-prepare-fill.py`). The rest (upstream FreeBSD platform and retained execution support, a release run entirely through Literate AI, every inherited backlog obligation) moved to [RELEASE-002](#release-002-run-a-release-entirely-through-qualified-literate-ai-execution-deferred-rest-of-release-001) (1.5.1); nothing was ticked in the move.
 - **1.4.1 audit (2026-10-30):** partly (2 of 4), blocked on the framework; proposed to leave 1.4.1. [Detail](release-1.4.1-audit.md#release-001).
 - **Implementation:**
   - [x] Inventory current roadmap and queue obligations in [the 1.2.0 completion ledger](release-1.2.0.md), including inherited Bluetooth, enterprise Wi-Fi, dual-boot, bhyve and physical trust/graphics gaps.
   - [x] Keep release media and documentation in sync: [`release/current.json`](../../release/current.json) records the latest published release and all its image types and asset digests; `scripts/release-current.py` updates and checks it against GitHub; `tests/docs-release-sync.py` runs in the release-controls workflow and fails on a current-state document that names an older release as current, an older image name, checksum or size, or an unreleased version as available. HACKING.md's release step 3 is the checklist. The 1.4.0 publication must pass it ([ledger row A16](1.4-coverage-ledger.md)).
+  - [ ] The 1.4.x release gate `scripts/release-check-1.4.py` passes on the release record. Its test `tests/release-check-1.4.py` passes (run 2026-11-03), but the gate itself refuses until `verification/release-1.5.0.json` exists and the signed assets are present; that is the release step, not yet done.
+  - [x] The release preparation and fill tooling (`scripts/prepare-release.py`, `scripts/fill-release.py`) and `tests/release-prepare-fill.py`, `tests/release-asset-names.py` pass (run for this re-scope, 2026-11-03).
+  - Moved to RELEASE-002 (1.5.1), unticked: contribute and qualify upstream FreeBSD platform and retained execution support; bind private native workers and VM supervision; complete backlog implementations and acceptance; run the exact final release through Literate AI and verify publication.
+- **Evidence:**
+  - [x] `tests/docs-release-sync.py`, `tests/version-sync.py` and the gate tests above pass on this tree.
+  - Moved to RELEASE-002 (1.5.1): every inherited backlog obligation has direct completion evidence; native and virtual/physical acceptance match exact final artifacts; full LitAI verification and release gates pass; published new release and immutable assets are verified.
+
+### [ ] RELEASE-002 — Run a release entirely through qualified Literate AI execution (deferred rest of RELEASE-001)
+
+- **Priority:** P1
+- **Release target:** 1.5.1
+- **Release:** 1.5.1 (split from RELEASE-001 and deferred from 1.5.0 by operator decision, 2026-11-03; blocked on the framework; nothing here is claimed done; see [the 1.5.1 plan](release-1.5.1.md#deferred-from-150-operator-decision-2026-11-03))
+- **Owner:** whole product, release and acceptance
+- **Direction:** As RELEASE-001: publish a release entirely through qualified Literate AI execution across the owned repositories.
+- **Depends on:** RELEASE-001, ADOPT-003, SRC-002, COMP-001, UI-001, PKG-001, GUI-001, DEBUG-001, HW-001
+- **Implementation:**
   - [ ] Contribute and qualify upstream FreeBSD platform and retained execution support; bind private native workers and VM supervision; complete backlog implementations and acceptance; run the exact final release through Literate AI and verify publication.
 - **Evidence:**
   - [ ] Every inherited backlog obligation has direct completion evidence; native and virtual/physical acceptance match exact final artifacts; full LitAI verification and release gates pass; published new release and immutable assets are verified.
@@ -708,8 +756,8 @@ before claiming the observer optimization resolves that release blocker.
 - **Detailed plan:** [Complete source/ports Component coverage](freebsd-components.md)
 
 - **Priority:** P1
-- **Release target:** 1.5.0
-- **Release:** 1.5.0 (moved from 1.4.1 by operator decision, 2026-10-30; not claimed done by 1.4.0 or 1.4.1; renamed from 1.4.2 on 2026-10-31; see [the 1.5.0 plan](release-1.5.0.md))
+- **Release target:** 1.5.1
+- **Release:** 1.5.1 (deferred from 1.5.0 by operator decision, 2026-11-03: the framework cannot execute it on the released runtime v1.3.1; nothing was ticked in the move; see [the 1.5.1 plan](release-1.5.1.md#deferred-from-150-operator-decision-2026-11-03))
 - **Owner:** source and ports Component inventories; framework retained native lifecycle
 - **Direction:** Represent all of /usr/src and all of /usr/ports as Literate AI Components, not opaque external trees.
 - **Conclusion:** Require complete pinned tree ownership, native build-unit and port-origin contracts, target/options variants, dependency composition and honest per-component evidence while preserving upstream implementation authority.
@@ -734,7 +782,8 @@ before claiming the observer optimization resolves that release blocker.
 - **Detailed plan:** [Native Component execution and build performance](build-performance.md)
 
 - **Priority:** P1
-- **Release:** 1.4.1 (carried over; not claimed done by 1.4.0)
+- **Release target:** 1.5.1
+- **Release:** 1.5.1 (deferred from 1.5.0 by operator decision, 2026-11-03: the framework cannot execute it on the released runtime v1.3.1; nothing was ticked in the move; see [the 1.5.1 plan](release-1.5.1.md#deferred-from-150-operator-decision-2026-11-03))
 - **Owner:** release build graph, native Component lifecycle and build-system Flavors
 - **Direction:** After establishing the source/ports graph, use LitAI to execute literal Components and substantially improve FreeBSD ISO build and packaging time; replacing make with Bazel, Buck2 or another suitable system is authorized.
 - **Conclusion:** Measure the current native baseline, establish complete package/provenance/dependency coverage, and choose execution, caching, incremental and packaging changes from evidence. Preserve exact output correctness and native acceptance; a wrapper or renamed executor is insufficient.
@@ -755,8 +804,8 @@ before claiming the observer optimization resolves that release blocker.
 - **GitHub issue:** [#39](https://github.com/jordanhubbard/daemonarchy/issues/39); [1.4.0 milestone](https://github.com/jordanhubbard/daemonarchy/milestone/3).
 - **Detailed plan:** [1.4.0 cross-repository build and release graph](release-1.4.0.md).
 - **Priority:** P1 for 1.4.0; outside the 1.3.1 release and 1.3.2 MSI acceptance paths.
-- **Release target:** 1.5.0
-- **Release:** 1.5.0 (moved from 1.4.1 by operator decision, 2026-10-30; not claimed done by 1.4.0 or 1.4.1; renamed from 1.4.2 on 2026-10-31; see [the 1.5.0 plan](release-1.5.0.md))
+- **Release target:** 1.5.1
+- **Release:** 1.5.1 (deferred from 1.5.0 by operator decision, 2026-11-03: the framework cannot execute it on the released runtime v1.3.1; nothing was ticked in the move; see [the 1.5.1 plan](release-1.5.1.md#deferred-from-150-operator-decision-2026-11-03))
 - **Owner:** LitAI native lifecycle, owned source/ports/desktop/compatibility forks and product release integration.
 - **Direction:** Select exact commits across all owned release-input repositories, resolve their complete native build/test/package/release dependency graph, and schedule ready actions across multiple physical machines with LitAI's parallel workers and a shared verified artifact cache. Treat ports and packages as build artifacts; evaluate Bazel incremental builds, remote cache/execution and other suitable tools. FreeBSD make and Poudriere are optional executors.
 - **Fork authority:** The owned FreeBSD source and ports forks are in scope for any 1.4 build, ports, package, ABI or cache integration changes needed to deliver this flow. Keep their native contracts and reviewable FreeBSD CURRENT refreshes; land changes in each fork's main before the release selection is locked.
@@ -819,8 +868,8 @@ before claiming the observer optimization resolves that release blocker.
   attempt. [Checkpoint](../../verification/native-sdk-build-development.json).
 
 - **Priority:** P1
-- **Release target:** 1.5.0
-- **Release:** 1.5.0 (moved from 1.4.1 by operator decision, 2026-10-30; not claimed done by 1.4.0 or 1.4.1; renamed from 1.4.2 on 2026-10-31; see [the 1.5.0 plan](release-1.5.0.md))
+- **Release target:** 1.5.1
+- **Release:** 1.5.1 (deferred from 1.5.0 by operator decision, 2026-11-03: the framework cannot execute it on the released runtime v1.3.1; nothing was ticked in the move; see [the 1.5.1 plan](release-1.5.1.md#deferred-from-150-operator-decision-2026-11-03))
 - **Owner:** release Component, source and ports forks, native framework lifecycle
 - **Direction:** Make the complete source and ports Component build, test, package, ISO creation and installation system available on the operator development workstation at /usr/src and /usr/ports, managed by Literate AI.
 - **Conclusion:** Preserve the running desktop and existing data; deploy editable fork checkouts and the qualified framework, then prove unchanged and changed-input incremental builds, tests, package provenance, ISO creation and installation against exact native inputs. Checkout availability alone does not complete this work.
@@ -1433,11 +1482,11 @@ remains open; report files do not establish a passing gate.
 
 ### [ ] BUILD-001 — Cut FreeBSD source, ports, ISO and release-cycle time 10x with Literate AI
 
-- **Framework issues:** [#234](https://github.com/jordanhubbard/literate-ai/issues/234), [#235](https://github.com/jordanhubbard/literate-ai/issues/235), [#236](https://github.com/jordanhubbard/literate-ai/issues/236), [#74](https://github.com/jordanhubbard/literate-ai/issues/74), [#93](https://github.com/jordanhubbard/literate-ai/issues/93), [#4](https://github.com/jordanhubbard/literate-ai/issues/4), [#5](https://github.com/jordanhubbard/literate-ai/issues/5), [#67](https://github.com/jordanhubbard/literate-ai/issues/67) (see [the plan](release-1.5.0.md#framework-issues-for-the-140-gaps)); the framework tracks them under its 1.4.0 work.
-- **Detailed plan:** [1.5.0 plan: build and release-cycle speed](release-1.5.0.md)
+- **Framework issues:** [#234](https://github.com/jordanhubbard/literate-ai/issues/234), [#235](https://github.com/jordanhubbard/literate-ai/issues/235), [#236](https://github.com/jordanhubbard/literate-ai/issues/236), [#74](https://github.com/jordanhubbard/literate-ai/issues/74), [#93](https://github.com/jordanhubbard/literate-ai/issues/93), [#4](https://github.com/jordanhubbard/literate-ai/issues/4), [#5](https://github.com/jordanhubbard/literate-ai/issues/5), [#67](https://github.com/jordanhubbard/literate-ai/issues/67) (see [the plan](release-1.5.1.md#framework-issues-for-the-140-gaps)); the framework tracks them under its 1.4.0 work.
+- **Detailed plan:** [1.5.1 plan: build speed and framework-executed goals](release-1.5.1.md#build-speed-and-framework-executed-goals-deferred-from-150)
 - **Priority:** P1
-- **Release target:** 1.5.0
-- **Release:** 1.5.0 (opened 2026-10-31 by operator decision; nothing here is claimed done)
+- **Release target:** 1.5.1
+- **Release:** 1.5.1 (deferred from 1.5.0 by operator decision, 2026-11-03: the framework cannot execute it on the released runtime v1.3.1; nothing was ticked in the move; see [the 1.5.1 plan](release-1.5.1.md#deferred-from-150-operator-decision-2026-11-03))
 - **Owner:** release engineering, native Component lifecycle and the framework boundary
 - **Direction:** Decrease the time to compile all of FreeBSD src, FreeBSD ports and the ISO mastering process using every applicable Literate AI feature, upgrade Literate AI to version 1.4 (top of tree) in daemonarchy, daemonarchy-src and daemonarchy-ports (daemonarchy-desktop is already bound; no other repository), gated on framework 1.4.0 because COMP-001, PERF-002, DEV-001 and RELEASE-001 depend on it, and improve the entire release engineering cycle by 10x.
 - **Conclusion:** Baselines come first and are recorded with where they were measured. The 10x target applies to the end-to-end cycle from "main frozen" to "published and verified", on equivalent gates and with no omitted test, package or signature. It is delivered by the mechanisms of ADOPT-002, COMP-001, PERF-001, PERF-002, DEV-001 and SRC-001 (verified cache and incremental native builds, parallel workers, scripted key windows, parallel QA), which stay open and keep their own acceptance. 1.4.2 did not deliver any build-efficiency gain: none of those items ran natively under Literate AI in 1.4.2.
@@ -1542,14 +1591,57 @@ remains open; report files do not establish a passing gate.
 - **Release:** 1.5.0 (opened 2026-11-01 by operator decision: "this is too much security"; nothing here is claimed done; see [the 1.5.0 plan](release-1.5.0.md#sign-001-one-signing-session-per-release))
 - **Owner:** release engineering; parent and related item BUILD-001 ("improve the entire release engineering cycle by 10x")
 - **Direction:** Make signing a single, planned operator action per release, with no key material ever handled by an agent.
-- **Conclusion:** In 1.5.0 the operator ran six key windows by hand. The cause was process and policy as much as security: three windows were avoidable, one was a genuine QA finding, and the rest were needed once the order was wrong. The record and the options are in [the plan](release-1.5.0.md#sign-001-one-signing-session-per-release). The operator picks the option; the recommendation is to adopt a frozen-input process rule now (A) and implement a manifest-driven window (B), optionally with a signing service (C), if zero commands is wanted.
-- **Depends on:** none to adopt option A; the chosen implementation for B, C or D.
+- **Conclusion:** In 1.5.0 the operator ran six key windows by hand. The cause was process and policy as much as security: three windows were avoidable, one was a genuine QA finding, and the rest were needed once the order was wrong. The record and the options are in [the plan](release-1.5.0.md#sign-001-one-signing-session-per-release). **Operator decision, 2026-11-03: option A for 1.5.0**, a process rule (freeze the signed inputs, finish QA, sign once). Options B, C and D are not part of 1.5.0.
+- **Depends on:** none (option A is a process, no code).
 - **Implementation:**
-  - [ ] Adopt option A at once for the rest of 1.5.0: freeze every signed input, finish QA, then sign once. It is documented in [HACKING.md](https://github.com/jordanhubbard/daemonarchy/blob/main/HACKING.md#one-signing-session-per-release) and [mastering-1.5.0.md](../mastering-1.5.0.md#one-signing-session-per-release-the-rule).
-  - [ ] Record, for every release, the number of operator signing commands and the signing wall-clock time, in the release record.
-  - [ ] The operator decides among options B, C and D (threat model and risk in the plan); implement the chosen one, with the existing safeguards kept unless the operator explicitly lowers them.
-  - [ ] Test the chosen mechanism with throwaway keys only, as `tests/key-windows-design.sh` requires; never test in real mode.
+  - [ ] Follow option A for the 1.5.0 signing: freeze every signed input (boot tree files, feeds, extension feeds, release label), finish QA, then sign once. It is documented in [HACKING.md](https://github.com/jordanhubbard/daemonarchy/blob/main/HACKING.md#one-signing-session-per-release) and [mastering-1.5.0.md](../mastering-1.5.0.md#one-signing-session-per-release-the-rule).
+  - [ ] Record, in the 1.5.0 release record, the number of operator signing commands and the signing wall-clock time.
+  - Not in 1.5.0: options B (one manifest-driven window script), C (a signing service) and D (a simplified policy) remain recorded in the plan for a later release; any of them needs a new operator decision, and any code needs throwaway-key tests only (`tests/key-windows-design.sh`).
 - **Evidence:**
-  - [ ] A release is signed with at most one operator signing action, and the release record shows the command count and the wall-clock time.
+  - [ ] The 1.5.0 release is signed in one signing session after inputs were frozen and QA finished, and the release record shows the operator command count and the wall-clock time.
   - [ ] No agent read, copied, moved or printed key material in that release (the key-window design checks and the session record agree).
-  - [ ] If option C or D is chosen, its allowlist or VM design, its approvals and the operator's recorded acceptance of the changed threat model.
+
+### [ ] TREE-001 — Browse /usr/src and /usr/ports on the system as nested HTML cards
+
+- **Priority:** P3
+- **Release:** after 1.5 (proposed 1.6.0; unscheduled, nothing here is claimed done)
+- **Owner:** Literate AI surfaces and the Daemonarchy source and ports Components
+- **Direction:** Generate, on the installed system and with `litai`, an HTML tree explorer for `/usr/src` and `/usr/ports`: one nested card per directory with a top-level `index.html`, so a user can browse the trees offline.
+- **Conclusion:** This is a new literate-ai surface, so an ADR comes first. Research summary (2026-11-03): today literate-ai has six single-file, project-scoped views and no per-directory cards; its limits are 64 MiB, 256 bindings, 4096 records and 128 requests, which a tree of this size exceeds. It cannot be built into the signed checkout packages, because generating files there would dirty `git status` and force a signing window. It must therefore be generated on the system, on demand, outside the checkouts.
+- **Depends on:** [COMP-001](#comp-001-model-complete-freebsd-source-and-ports-trees-as-components) and framework issue [#235](https://github.com/jordanhubbard/literate-ai/issues/235) (per-unit packages and tree-aware transport); LITAI-PKG-001 to have `litai` on the system.
+- **Implementation:**
+  - [ ] Write the ADR: the new view's contract, output location outside the checkouts, how it respects the framework limits (paging or sharding), and regeneration.
+  - [ ] Implement the surface in literate-ai and the generation command; nested cards per directory and a top-level `index.html`.
+  - [ ] Wire it to the installed system's `/usr/src` and `/usr/ports` checkouts without modifying them.
+- **Evidence:**
+  - [ ] On an installed image, the explorer is generated for both trees, `git status` of both checkouts stays clean, the limits are met or paged, and the output opens offline in a browser.
+
+### [ ] MON-001 — Worker activity monitor and graphical package browser on the installer visual SDK
+
+- **Priority:** P3
+- **Release:** after 1.5 (proposed 1.6.0; unscheduled, nothing here is claimed done)
+- **Owner:** installer visual SDK (`daemonarchy_visual`) and release engineering
+- **Direction:** A worker activity monitor (jobs and actions with progress, network and disk I/O) and a graphical package browser and inspector, both built on the `daemonarchy_visual` installer SDK.
+- **Conclusion:** A worker telemetry feed has to exist first: job and action progress, network I/O and disk I/O per worker. Rendering today is terminal only. The package browser is separate from the GTK package manager of [GUI-001](#gui-001-deliver-a-colorful-fast-graphical-package-manager) and should share its plan and catalogue data, not duplicate them.
+- **Depends on:** a worker telemetry feed (defined here as the first step); [VISUAL-SDK-001](#visual-sdk-001-extract-a-reusable-installer-visual-sdk-and-plugin-runtime); WORKER-001 for workers to observe.
+- **Implementation:**
+  - [ ] Define and implement the worker telemetry feed (job and action progress, network and disk I/O) with its schema and retention.
+  - [ ] Build the worker activity monitor on `daemonarchy_visual`, terminal rendering first.
+  - [ ] Build the graphical package browser and inspector on the same SDK, sharing GUI-001's catalogue and plan.
+- **Evidence:**
+  - [ ] The monitor shows live progress and I/O from real workers during a build; the browser lists and inspects packages from a signed feed; both run on the exact image.
+
+### [ ] LITAI-PKG-001 — Ship Literate AI as a port and package so users run src/ports operations with litai
+
+- **Priority:** P2
+- **Release:** after 1.5 (proposed 1.6.0; unscheduled, nothing here is claimed done)
+- **Owner:** daemonarchy-ports and the Literate AI framework
+- **Direction:** Provide literate-ai itself as a FreeBSD port and a package in the Daemonarchy feeds, so users can run source and ports operations with `litai` on their own system.
+- **Conclusion:** Today litai is a developer runtime built side by side from a framework tag. Shipping it as a port makes TREE-001 and any user-run build usable. It follows the framework's own release (v1.3.1 is the latest) and the port rules of daemonarchy-ports.
+- **Depends on:** a framework release suitable for packaging; daemonarchy-ports.
+- **Implementation:**
+  - [ ] Write the port (dependencies, license, plist) and build it for amd64 and aarch64.
+  - [ ] Add it to the package feeds with the signed feed workflow and the installer's package lists, if the operator wants it in the default image.
+  - [ ] Document the user-run `litai` operations on `/usr/src` and `/usr/ports`.
+- **Evidence:**
+  - [ ] `pkg install` of the package on an installed image runs `litai` successfully against the system's checkouts; the package is in the signed feed and its version is pinned to a framework release.

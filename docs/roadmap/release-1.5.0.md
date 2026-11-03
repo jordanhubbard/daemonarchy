@@ -1,40 +1,40 @@
-# 1.5.0 plan: the 1.4.2 scope, build speed and release-cycle speed
+# 1.5.0 plan: the 1.4.2 scope, re-scoped on 2026-11-03 to what is evidenced
 
 - **Status:** active
-- **Owning queue item:** [BUILD-001](active-work.md#build-001-cut-freebsd-source-ports-iso-and-release-cycle-time-10x-with-literate-ai)
-- **Supporting queue items:** [ADOPT-002](active-work.md#adopt-002-qualify-retained-native-execution-and-release-enforcement), [COMP-001](active-work.md#comp-001-model-complete-freebsd-source-and-ports-trees-as-components), [SRC-001](active-work.md#src-001-establish-owned-freebsd-source-builds-and-packages), [PERF-001](active-work.md#perf-001-execute-native-components-and-substantially-accelerate-iso-builds), [PERF-002](active-work.md#perf-002-coordinate-all-daemonarchy-repositories-through-literate-ai-workers-in-140), [DEV-001](active-work.md#dev-001-provide-an-operator-ready-native-component-development-system), [RELEASE-001](active-work.md#release-001-deliver-a-qualified-literate-ai-release-workflow-in-14), [DESKTOP-001](active-work.md#desktop-001-ship-the-desktop-launchers-and-menu-entries-in-the-daemonarchy-desktop-package), [SIGN-001](active-work.md#sign-001-one-signing-session-per-release-stop-the-key-window-churn)
+- **Owning queue item:** [RELEASE-001](active-work.md#release-001-deliver-a-qualified-literate-ai-release-workflow-in-14)
+- **Supporting queue items:** [ADOPT-002](active-work.md#adopt-002-qualify-retained-native-execution-and-release-enforcement), [SRC-001](active-work.md#src-001-establish-owned-freebsd-source-builds-and-packages), [GUI-001](active-work.md#gui-001-deliver-a-colorful-fast-graphical-package-manager), [DEBUG-003](active-work.md#debug-003-deliver-bidirectional-loader-mountroot-and-panic-network-debugging-for-14), [HW-004](active-work.md#hw-004-t2-touch-id-login-through-fprintd), [EXT-002](active-work.md#ext-002-sandboxed-lua-extensions-for-content-we-did-not-write), [DESKTOP-001](active-work.md#desktop-001-ship-the-desktop-launchers-and-menu-entries-in-the-daemonarchy-desktop-package), [SIGN-001](active-work.md#sign-001-one-signing-session-per-release-stop-the-key-window-churn)
 - **Completion / archival evidence:** pending; nothing here is claimed done. Done means the evidence listed under Acceptance below, retained with exact inputs.
 
-Opened 2026-10-31 by operator decision. The operator's words: decrease the time required to
-compile all of FreeBSD src, FreeBSD ports and the ISO mastering process using all applicable
-features of Literate AI, also upgrading Literate AI in all Daemonarchy repositories to version
-1.4 (top of tree), and improve the entire release engineering cycle by 10x.
+Opened 2026-10-31 as the 1.4.2 scope plus a build-speed program (BUILD-001). **Re-scoped 2026-11-03 by
+operator decision** to the work that is real, with the framework-executed goals deferred to
+[1.5.1](release-1.5.1.md). The roadmap stays honest: no box is ticked without evidence, and a deferred
+item keeps its evidence state, unchanged, in the 1.5.1 plan.
 
-**Gating, 2026-11-01 (operator decisions, recorded with their reasoning).** 1.5.0 is held until
-ADOPT-002, RELEASE-001, COMP-001, PERF-002, DEV-001, SRC-001 and BUILD-001 are all done, each with the
-evidence its own acceptance text demands, and it is **gated on Literate AI 1.4.0** with its blockers resolved. The
-reason: a framework assessment found that COMP-001 (all of `/usr/src` and `/usr/ports` as Components) cannot
-ship on the 1.3.x line. The catalog scale cap (about 1,000 units), per-unit link-aware packages, tree-aware worker
-transport and catalog-scale native actions are 1.4.0 features, and COMP-001, PERF-002, DEV-001 and
-RELEASE-001 depend on them. The operator owns the framework and its 1.4.0 work is done in that project, not in
-this repository. The upgrade of Literate AI to 1.4 (top of tree) in daemonarchy, daemonarchy-src and
-daemonarchy-ports (daemonarchy-desktop is already bound) therefore stays in this release and is prepared here
-without being applied (see the upgrade section below). Until 1.4.0 is available, work on the six goals is
-rehearsal only on the released 1.3.1 runtime (a side-by-side build from tag `v1.3.1`,
-`~/daemonarchy-framework-1.3.1-runtime`). Framework issues
-[#74](https://github.com/jordanhubbard/literate-ai/issues/74) and
-[#93](https://github.com/jordanhubbard/literate-ai/issues/93) carry the framework's 1.4 milestone.
+**Gating (replaces the 2026-11-01 gating).** The earlier text held 1.5.0 until ADOPT-002, RELEASE-001,
+COMP-001, PERF-002, DEV-001, SRC-001 and BUILD-001 were all done and gated it on Literate AI 1.4.0. That
+gate is withdrawn: the latest Literate AI release is v1.3.1, 1.4.0 does not exist, and COMP-001, PERF-002,
+DEV-001, BUILD-001 and the native halves of ADOPT-002, SRC-001 and RELEASE-001 cannot be done on 1.3.x.
+1.5.0 is **not** gated on Literate AI 1.4.0 and does not wait for those goals. It is published when each
+goal in [release-goals.json](release-goals.json) for 1.5.0 has the evidence its own queue acceptance
+demands. The runtime in use stays Literate AI 1.3.1; the 1.4 upgrade of the repositories moves to 1.5.1.
 
-## 1.4.2 is superseded by 1.5.0 and was never released
+**What moved to 1.5.1** (exact list; each keeps its queue entry, acceptance text and evidence state):
+PERF-002, COMP-001, DEV-001, BUILD-001, PERF-001, and the halves of three items that need the framework to
+execute native components: ADOPT-003 (from ADOPT-002), SRC-002 (from SRC-001) and RELEASE-002 (from
+RELEASE-001). The Literate AI 1.4 upgrade, the baselines, the targets and the framework-issue table moved
+with them, verbatim, into the [1.5.1 plan](release-1.5.1.md#build-speed-and-framework-executed-goals-deferred-from-150).
 
-This release was opened as 1.4.2. The operator and the release coordinator renamed it 1.5.0 on
-2026-10-31: the work adds user-visible features (the graphical package manager, Windows programs
-and Steam, the aarch64 VirtIO GPU path, the Wi-Fi fix) and the BUILD-001 program, which is a
-minor release under semantic versioning, and Literate AI's patch rule admits only bounded fixes.
-No 1.4.2 tag, feed or image was published. Every 1.4.2 goal moved here without deferral and
-keeps its own queue entry and acceptance text; the scope and the honest status text of the old
-plan follow, unchanged in substance. The 1.4.1 plan and the [1.4.1 audit](release-1.4.1-audit.md)
-describe the same items under the 1.4.2 name.
+**What stays in 1.5.0:** ADOPT-002 (only the delivered handler audit and binding records), SRC-001 (only the
+delivered controller and capture work), RELEASE-001 (the delivered 1.4.x release gate and the
+prepare/fill tooling), GUI-001, DEBUG-003, HW-004, EXT-002, DESKTOP-001 and SIGN-001 (option A). The RTX
+Spark laptop is deferred (see the [application note](../application-note-rtx-spark.md)).
+
+## History: 1.4.2 was renamed 1.5.0 and never released
+
+Opened as 1.4.2; renamed 1.5.0 on 2026-10-31 (user-visible features make it a minor release; no 1.4.2 tag,
+feed or image exists). Its goals moved here without deferral and kept their queue entries; the 1.4.1 plan
+and the [1.4.1 audit](release-1.4.1-audit.md) describe the same items under the 1.4.2 name.
+
 
 ## Scope carried from the 1.4.2 plan
 
@@ -66,19 +66,19 @@ describe the same items under the 1.4.2 name.
   around key installation, or the X0 regulatory country. A passive capture of the AP's
   EAPOL frames and `dev.brcmfmac.0.debug=2` during a join would separate them.
 - **ADOPT-002** ([queue](active-work.md#adopt-002-qualify-retained-native-execution-and-release-enforcement)).
-  Needs the external Literate AI framework to execute native components.
+  Re-scoped 2026-11-03: only the delivered handler audit and binding records stay; native execution moved to ADOPT-003 in 1.5.1.
 - **GUI-001** ([queue](active-work.md#gui-001-deliver-a-colorful-fast-graphical-package-manager)).
   Not started.
 - **SRC-001** ([queue](active-work.md#src-001-establish-owned-freebsd-source-builds-and-packages)).
-  Partly done; the hand pipeline builds the base.
+  Re-scoped 2026-11-03: the delivered controller and capture work stay; native qualification moved to SRC-002 in 1.5.1.
 - **RELEASE-001** ([queue](active-work.md#release-001-deliver-a-qualified-literate-ai-release-workflow-in-14)).
-  Blocked on the framework.
+  Re-scoped 2026-11-03: the 1.4.x release gate and the prepare/fill tooling stay; the framework-executed release moved to RELEASE-002 in 1.5.1.
 - **COMP-001** ([queue](active-work.md#comp-001-model-complete-freebsd-source-and-ports-trees-as-components)).
-  Blocked on the framework.
+  Deferred to 1.5.1 (blocked on the framework).
 - **PERF-002** ([queue](active-work.md#perf-002-coordinate-all-daemonarchy-repositories-through-literate-ai-workers-in-140)).
-  Blocked on the framework.
+  Deferred to 1.5.1 (blocked on the framework).
 - **DEV-001** ([queue](active-work.md#dev-001-provide-an-operator-ready-native-component-development-system)).
-  Blocked on the framework.
+  Deferred to 1.5.1 (blocked on the framework).
 - **DEBUG-003** ([queue](active-work.md#debug-003-deliver-bidirectional-loader-mountroot-and-panic-network-debugging-for-14)).
   Foundations only; needs boot-chain research and hardware.
 - **HW-004** ([queue](active-work.md#hw-004-t2-touch-id-login-through-fprintd)).
@@ -125,7 +125,8 @@ only with a new image. Nothing is claimed done; its acceptance is in the queue e
 ## SIGN-001: one signing session per release
 
 New for 1.5.0 (operator decision, 2026-11-01; the operator's words: "this is too much security").
-Nothing here is claimed done. Parent and related item: BUILD-001 (the 10x release-cycle target).
+**Operator decision, 2026-11-03: option A for 1.5.0.** Nothing here is claimed done. Related item: BUILD-001
+(the 10x release-cycle target, deferred to 1.5.1).
 
 **The problem, as recorded by the release coordinator (the operator's counts; I did not re-measure them).** In 1.4.1 the signing key
 lived on daemon.local and the workers signed without an operator step. For 1.5.0 the operator ran **six key windows by hand**:
@@ -156,130 +157,23 @@ wall-clock time and operator-command count recorded in the release record for th
 | C. A signing service on the key host | Signs only allowlisted artifact types after verifying their hashes against an operator-approved release manifest; agents request, never hold the key; one approval per release. | More to build and secure (the service is a new attack surface); zero operator commands per window, one approval per release. |
 | D. Simplify the security policy | A dedicated release-signing VM holding the key, with operator approval once per release. | **Explicitly lowers the current safeguards.** The operator decides the threat model. The operator considers the current process excessive. |
 
-**Recommendation.** Adopt A now, for the rest of 1.5.0. Implement B, plus C if the operator wants zero commands, for 1.5.0. Use D only
-if the operator accepts the risk. The acceptance and evidence are in the
-[queue item](active-work.md#sign-001-one-signing-session-per-release-stop-the-key-window-churn).
-
-## Build efficiency: not delivered under the 1.4.2 name
-
-The 1.4.2 (now 1.5.0) queue items ADOPT-002, RELEASE-001, COMP-001, PERF-002, DEV-001 and SRC-001 were kept
-open by operator decision and were not run natively under Literate AI. 1.4.2 therefore made no
-build-efficiency claim: its builds used the hand pipeline of 1.4.1. The 1.4.2 work that touched
-this area was preparatory only (documentation authority gate, release policy and gate for 1.4.x,
-a registered FreeBSD worker, and written native adoption steps), and the retained native receipt
-(`verification/current.json`) still does not exist.
-
-## Baselines (recorded first, with where measured)
-
-No target below is meaningful until its baseline is retained in `verification/build-baselines/`
-with host, revision, vCPU, memory, clean or incremental, run count and the command. What exists
-today, and what does not:
-
-| Stage | Measured today | Where and how | Gap |
-|---|---|---|---|
-| `buildworld` | 7,931 s (clean, `-j4`) | Owned KVM FreeBSD guest, 8 vCPU, 16 GiB; see the DEV-001 source SDK baseline in [active-work.md](active-work.md#dev-001-provide-an-operator-ready-native-component-development-system) | One run; 874 to 878 s incremental on 8 cores (retained object tree) in the 1.4.1 record |
-| `buildkernel` | 600 s (clean, same guest); 622 s incremental | same, and [the 1.4.1 pipeline record](../../verification/build-baselines/rev2-1.4.1-pipeline-20261030.json) | One run each |
-| Full native producer (world, kernel, packages, sets) | 9,357 to 9,358 s, 537 artifacts | same 8 vCPU/16 GiB KVM guest | One run |
-| 1.4.1 hand pipeline (incremental) | 3,518 s total (world 878, kernel 622, sets 601, jail 154, Secure Boot 314 + 442 + 62, checkouts 387) | daemon.local (retired), 8 cores, `-j8`, retained object tree | One run; not clean; host retired |
-| ISO mastering (`build-iso.sh`), amd64 | 1,583 s and 1,601 s (two builds) | same pipeline record, `separate_phases` | Two builds; no per-arch repeat |
-| ISO mastering, aarch64 | Not extracted | An aarch64 bulk and ISO record exists ([verification](../../verification/aarch64-bulk-iso-20261027-development.json)) | Needs a repeatable per-arch measurement on barmy |
-| Full ports bulk for our origin set | No repeatable clean wall-clock retained | Earlier bulk attempts are described in the queue; the 1.4.1 and 1.4.2 package sets were built by hand pipelines | Measure a clean and an unchanged-input bulk per arch |
-| End-to-end release cycle, "main frozen" to "published and verified" | Partial: 1.4.1 tag created 2026-10-31 04:03 UTC and published (non-draft) 06:08 UTC, about 2 h 5 min; 1.4.0 published 2026-10-29 20:28 UTC, so 1.4.0 to 1.4.1 publication is about 33 h 40 min including the re-roll | GitHub release timestamps | The freeze instant is not recorded for 1.4.1; 1.4.2 is not published at the time of writing |
-
-Task 1 of the plan retains the missing rows, and a release rehearsal records the freeze time,
-every stage's start and end (the existing `scripts/build-timing-record.py` format) and the
-publication verification time. A stage with no measurement keeps the words "not measured".
-
-## Targets and mechanisms
-
-The headline target is the end-to-end cycle, "main frozen" to "published and verified", at least
-10x shorter than the baseline measured for 1.4.2 or the later rehearsal, on equivalent gates:
-the same tests, signatures, ISO boot and install checks, feed verification and byte re-download.
-Per-stage targets are set when the baselines exist, and each names the mechanism and the item
-that owns it:
-
-| Stage | Mechanism | Owning item |
-|---|---|---|
-| World, kernel, sets | Literate AI native Components with an exact-input verified cache: unchanged inputs compile nothing; a changed input rebuilds only its closure. Incremental native builds on workers with bounded jobs | SRC-001, COMP-001 (framework [#74](https://github.com/jordanhubbard/literate-ai/issues/74), [#93](https://github.com/jordanhubbard/literate-ai/issues/93)) |
-| Ports and packages | Package builds keyed by source subtree, port metadata, toolchain and ABI; compatible base version changes requalify and reuse unchanged payloads | PERF-002, COMP-001 |
-| ISO mastering | Cached sets and package closure inputs, parallel per-arch builds on separate workers, scripted rather than manual mastering | PERF-001, PERF-002 |
-| Distribution across machines | Literate AI workers on more than one physical machine sharing a verified immutable cache; duplicate-key and failure controls | PERF-002 |
-| Development loop | Operator workstation `litai-dev` interface over the same Components | DEV-001 |
-| Signing and key windows | Scripted key windows with the same custody rules; the key is never copied to workers or artifacts | RELEASE-001 |
-| QA | Parallel amd64 and aarch64 install, boot and feed checks from one plan, instead of sequential manual runs | RELEASE-001, PERF-002 |
-| Release state and gates | `litai release` plan, check and publish driven by the 1.4.x gate (this repository's release gate, not the 1.4 framework), replacing hand steps | RELEASE-001 |
-
-These mechanisms are the open acceptance of the listed items, not new claims. A 10x figure is not
-credible if it comes from skipping a test, a package or a signature; the evidence says so.
-
-## Literate AI upgrade to 1.4 in all Daemonarchy repositories (prepared, not applied)
-
-Today the runtime in use is litai 1.3.1 (tag `v1.3.1`), with framework main (1.4.0 development) built
-side by side at `~/daemonarchy-framework-main-runtime` for read-only plans. "1.4 (top of tree)" means the
-framework 1.4.0 revision recorded when the upgrade is applied. Nothing is applied before 1.4.0.
-The Daemonarchy repositories and their state on 2026-10-31 (three carry `literate.project.json`):
-
-| Repository | `literate.project.json` | Project version | Notes |
-|---|---|---|---|
-| daemonarchy | yes | 1.4.1 | Standard binding to framework distribution 8b9c09fd; release policy and 1.4.x gate in place |
-| daemonarchy-src | yes | 1.2.0 | Standard lifecycle binding present; older project version |
-| daemonarchy-ports | yes | 1.2.0 | Standard lifecycle binding present; older project version |
-| daemonarchy-desktop | yes (added 2026-11-01, scaffolded with framework main) | 1.4.1 | In scope, not subsumed: see below |
-
-### daemonarchy-desktop: in scope, not subsumed
-
-Checked on 2026-10-31. The repository is still applicable and is not folded into daemonarchy-ports or daemonarchy-src:
-
-- The port `x11-wm/daemonarchy` in daemonarchy-ports builds from it (`USE_GITHUB`, `GH_ACCOUNT=jordanhubbard`, `GH_PROJECT=daemonarchy-desktop`, `GH_TAGNAME` pinned to commit `ec2a00824ec9`) and installs its wallpaper, SDDM theme, menu (`omarchy-menu.jsonc`), icons and the `daemonarchy-*` FreeBSD tools. The ports tree holds only the packaging, not these sources.
-- It is active (a commit on `main` on 2026-10-31, and open PR 1, which makes the Packages menu open daemonarchy-pkg) and not archived. Its last tag is v1.1.1, so tags and the port's pin are not aligned today.
-
-So it gets a project binding: a `literate.project.json` with the Standard lifecycle, a release policy suited to a small source repository (version and tag convention to be decided with the operator, including whether the port pin follows a tag), and the same `litai verify` qualification as the other three. It would be excluded only if a later change moved its sources into daemonarchy-ports or daemonarchy-src; this item records that this has not happened.
-
-### Out of scope
-
-Scope is exactly daemonarchy, daemonarchy-src, daemonarchy-ports and daemonarchy-desktop. The other repositories under the owner that carry a `literate.project.json` (Aviation, ElixirSSI, project-tracker, bookscan, freebsd-sentiment, LeRTX, and the Literate AI framework with its labs) are unrelated to Daemonarchy and are out of scope. Nothing in this plan changes them.
-
-For each repository, the upgrade is: review the Standard rebind plan
-(`litai project lifecycle rebind-standard`, plan only until 1.4.0), apply it only with the reviewed plan and
-explicit authorization, add the release-goal manifest that framework 1.4 requires
-(`contributions.roadmap_goal_manifest`, with a `Release target:` line on each queue heading and every
-included goal checked off), then run `litai verify` and the repository's own tests. The rebind changes
-lifecycle and receipt-policy authority, so each is an operator-approved change, and native receipts made on 1.3.x
-are not carried over (see [the upgrade sequence](../native-adoption-steps.md#the-literate-ai-14-move-prepared-not-applied)).
-daemonarchy's `authority-reviewed` marker is recorded by a human after review.
-
-## Framework issues for the 1.4.0 gaps
-
-The gaps found while preparing ADOPT-002, COMP-001, PERF-002, DEV-001 and SRC-001 are framework work, done in the
-framework project and not in this repository. Opened or already open, as of 2026-11-01 (milestones as the framework
-labels them):
-
-| Issue | Gap | Milestone | Items it blocks |
-|---|---|---|---|
-| [#74](https://github.com/jordanhubbard/literate-ai/issues/74) | Complete retained native trees as canonical Component catalogs | 1.4.0 | COMP-001 |
-| [#93](https://github.com/jordanhubbard/literate-ai/issues/93) | Internal aliases through native SDK product admission | 1.4.0 | COMP-001 |
-| [#234](https://github.com/jordanhubbard/literate-ai/issues/234) | Catalog and pinned-input ceilings at src and ports scale (about 1,000 units) | 1.4 | COMP-001 |
-| [#235](https://github.com/jordanhubbard/literate-ai/issues/235) | Per-unit link-aware native packages and tree-aware worker transport | 1.4 | COMP-001, DEV-001, PERF-002 |
-| [#236](https://github.com/jordanhubbard/literate-ai/issues/236) | Cache keying for FreeBSD native units across two physical FreeBSD workers | 1.4 | PERF-002 |
-| [#4](https://github.com/jordanhubbard/literate-ai/issues/4) | Production action DAG dispatch and shared LAN caches | 1.4.0 | PERF-002 |
-| [#5](https://github.com/jordanhubbard/literate-ai/issues/5) | Native package construction and verification on compatible remote workers | 1.4.0 | PERF-002, SRC-001 |
-| [#67](https://github.com/jordanhubbard/literate-ai/issues/67) | First-class FreeBSD worker, target and native lifecycle support | 1.4.0 | ADOPT-002, DEV-001 |
-
-The framework has two milestones, `1.4` (4 open issues) and `1.4.0` (53 open issues); the first three-issue batch (#234 to
-#236) carries `1.4` while the older issues carry `1.4.0`. Which of the two the framework treats as the 1.4.0 release scope is the
-framework project's call; this plan follows whichever it names. The "Items it blocks" column is this repository's reading of each issue,
-not the framework's statement.
+**Decision (2026-11-03): option A, a process rule.** Freeze every signed input (boot tree files, feeds,
+extension feeds, release label), finish QA, then sign once. The release record states the number of operator
+signing commands and the signing wall-clock time. Options B, C and D are not part of 1.5.0; they stay recorded
+above for a later release and need their own operator decision (D explicitly lowers safeguards). The acceptance
+and evidence are in the [queue item](active-work.md#sign-001-one-signing-session-per-release-stop-the-key-window-churn).
 
 ## Acceptance
 
-Nothing is claimed done until each of these has retained evidence with exact inputs:
+Nothing is claimed done until each of these has retained evidence with exact inputs. 1.5.0 is not gated on
+Literate AI 1.4.0 and does not wait for the goals listed under "What moved to 1.5.1".
 
-- Baseline records for every row of the baseline table, including the missing ones, with
-  where-measured details.
-- Per-stage results against targets, each stage's gates unchanged from the baseline cycle.
-- The end-to-end cycle at least 10x shorter on equivalent gates, on a rehearsal and on a real
-  release, with every decision, cache hit and rebuild recorded.
-- Literate AI is at the recorded 1.4.0 revision in daemonarchy, daemonarchy-src, daemonarchy-ports and
-  daemonarchy-desktop; each passes `litai verify` for its declared gates.
-- ADOPT-002, COMP-001, SRC-001, DEV-001, PERF-001, PERF-002 and RELEASE-001 meet their own
-  acceptance texts; framework 1.4.0 is released with issues #74 and #93 resolved. 1.5.0 is not published until all of them are met.
+- Every goal listed for 1.5.0 in [release-goals.json](release-goals.json) is done by its own queue
+  acceptance text: ADOPT-002, SRC-001 and RELEASE-001 as re-scoped, GUI-001, DEBUG-003, HW-004, EXT-002,
+  DESKTOP-001 and SIGN-001. An item whose hardware or physical evidence is missing is moved to 1.5.1 by an
+  operator decision, not ticked.
+- SIGN-001 (option A): one signing session (each window command run once, after inputs are frozen and QA is done), no agent handling key material, and the release
+  record states the operator command count and the signing wall-clock time.
+- The release passes `scripts/release-check-1.4.py` and the release-media sync checks, and is published
+  through the existing, documented hand pipeline ([mastering notes](../mastering-1.5.0.md)). It makes no
+  build-efficiency or Literate AI 1.4 claim.
