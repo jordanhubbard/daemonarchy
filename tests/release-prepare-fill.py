@@ -64,10 +64,11 @@ class PrepareAndFill(unittest.TestCase):
             (self.assets / name).write_bytes(arch.encode() * 1000)
             digest = hashlib.sha256((self.assets / name).read_bytes()).hexdigest()
             (self.assets / (name + ".sha256")).write_text(f"{digest}  {name}\n")
-        hwtrace = f"daemonarchy-hwtrace-{VERSION}-amd64.img.xz"
-        (self.assets / hwtrace).write_bytes(b"hwtrace" * 1000)
-        digest = hashlib.sha256((self.assets / hwtrace).read_bytes()).hexdigest()
-        (self.assets / (hwtrace + ".sha256")).write_text(f"{digest}  {hwtrace}\n")
+        for arch in ("amd64", "aarch64"):
+            hwtrace = f"daemonarchy-hwtrace-{VERSION}-{arch}.img.xz"
+            (self.assets / hwtrace).write_bytes(f"hwtrace-{arch}".encode() * 1000)
+            digest = hashlib.sha256((self.assets / hwtrace).read_bytes()).hexdigest()
+            (self.assets / (hwtrace + ".sha256")).write_text(f"{digest}  {hwtrace}\n")
         for name in (f"daemonarchy-{VERSION}-boot.txz", f"daemonarchy-{VERSION}-boot.txz.sig",
                      f"daemonarchy-{VERSION}.pem", f"daemonarchy-{VERSION}.der"):
             (self.assets / name).write_bytes(name.encode())
@@ -79,8 +80,15 @@ class PrepareAndFill(unittest.TestCase):
     def prepare(self, *extra):
         return run("prepare-release.py", "--version", VERSION, "--source-commit", SOURCE, *extra, root=self.root)
 
-    def fill(self, *extra, check=True, **override):
+    def trace_tokens(self, bytes_=None, sha=None):
+        trace = self.assets / f"daemonarchy-hwtrace-{VERSION}-aarch64.img.xz"
+        return ["--set", f"HWTRACE_AARCH64_BYTES={bytes_ or trace.stat().st_size}",
+                "--set", f"HWTRACE_AARCH64_SHA256={sha or hashlib.sha256(trace.read_bytes()).hexdigest()}"]
+
+    def fill(self, *extra, check=True, tokens=True, **override):
         feeds = dict(FEEDS, **override)
+        if tokens:
+            extra = (*self.trace_tokens(), *extra)
         args = ["--version", VERSION, "--assets", str(self.assets), "--installer-commit", INSTALLER,
                 "--ports-commit", PORTS, "--aarch64-final-qemu", "The arm64 release image ran in QEMU.",
                 "--physical-status", "No physical run was done.", "--checkouts-json", str(self.catalogue)]
@@ -96,9 +104,10 @@ class PrepareAndFill(unittest.TestCase):
         record = json.loads((self.root / f"verification/release-{VERSION}.json").read_text())
         self.assertEqual((record["version"], record["source_commit"]), (VERSION, SOURCE))
         self.assertEqual(record["installer_commit"], "TODO")
-        self.assertEqual(len(record["assets"]), 10)
-        self.assertEqual(record["hwtrace"], ["amd64"])
-        self.assertIn(f"daemonarchy-hwtrace-{VERSION}-amd64.img.xz.sha256", record["assets"])
+        self.assertEqual(len(record["assets"]), 12)
+        self.assertEqual(record["hwtrace"], ["amd64", "aarch64"])
+        for arch in ("amd64", "aarch64"):
+            self.assertIn(f"daemonarchy-hwtrace-{VERSION}-{arch}.img.xz.sha256", record["assets"])
         self.assertTrue(all(value == [0, "sha256:TODO"] for value in record["assets"].values()))
         self.assertEqual(record["closure_feed_records"],
                          sorted(p.stem for p in (ROOT / "verification/closure-feeds").glob("packages-16-*.json")))
@@ -140,11 +149,16 @@ class PrepareAndFill(unittest.TestCase):
             self.assertEqual(document["application_feed"], FEEDS["--packages-amd64"])
             self.assertEqual(document["checkout_feed"], FEEDS["--checkouts-amd64"])
         hwtrace = f"daemonarchy-hwtrace-{VERSION}-amd64.img.xz"
-        self.assertEqual(record["hwtrace"], ["amd64"])
-        self.assertEqual(record["assets"][hwtrace][0], (self.assets / hwtrace).stat().st_size)
-        self.assertIn(record["assets"][hwtrace][1][7:], (self.root / f"docs/release-{VERSION}.md").read_text())
-        self.assertIn({"type": "hwtrace", "arch": "amd64", "asset": hwtrace, "checksum_asset": hwtrace + ".sha256"},
-                      current["images"])
+        notes = (self.root / f"docs/release-{VERSION}.md").read_text()
+        self.assertEqual(record["hwtrace"], ["amd64", "aarch64"])
+        for arch in ("amd64", "aarch64"):
+            hwtrace = f"daemonarchy-hwtrace-{VERSION}-{arch}.img.xz"
+            self.assertEqual(record["assets"][hwtrace][0], (self.assets / hwtrace).stat().st_size)
+            self.assertEqual(current["assets"][hwtrace], record["assets"][hwtrace])
+            self.assertIn(record["assets"][hwtrace][1][7:], notes)
+            self.assertIn({"type": "hwtrace", "arch": arch, "asset": hwtrace, "checksum_asset": hwtrace + ".sha256"},
+                          current["images"])
+        self.assertEqual(len(current["assets"]), 12)
         self.assertEqual(current["published_at"], "2026-11-07T12:00:00Z")
         self.assertEqual((record["installer_commit"], record["ports_commit"]), (INSTALLER, PORTS))
         self.assertEqual(record["aarch64_application_feed"], FEEDS["--packages-aarch64"])
@@ -182,6 +196,19 @@ class PrepareAndFill(unittest.TestCase):
         self.assertIn("does not cover", self.fill(check=False).stderr)           # the trace image is checked too
         (self.assets / f"daemonarchy-hwtrace-{VERSION}-amd64.img.xz.sha256").unlink()
         self.assertIn("exactly", self.fill(check=False).stderr)
+
+    def test_fill_twelve_assets_needs_the_aarch64_trace_image_and_its_tokens(self):
+        self.prepare()
+        result = self.fill(check=False, tokens=False)                          # tokens missing
+        self.assertNotEqual(result.returncode, 0)
+        self.assertIn("--set HWTRACE_AARCH64_BYTES=", result.stderr)
+        result = self.fill(*self.trace_tokens(sha="0" * 64), check=False, tokens=False)
+        self.assertIn("HWTRACE_AARCH64_SHA256", result.stderr)                 # a digest that is not the file's
+        trace = self.assets / f"daemonarchy-hwtrace-{VERSION}-aarch64.img.xz"
+        (self.assets / (trace.name + ".sha256")).unlink()
+        self.assertIn("exactly", self.fill(check=False).stderr)                # the aarch64 pair is required
+        (self.assets / (trace.name + ".sha256")).write_text("0" * 64 + f"  {trace.name}\n")
+        self.assertIn("does not cover", self.fill(check=False).stderr)         # and its checksum is checked
 
     def test_fill_checks_the_catalogue_and_the_closure_records(self):
         self.prepare()

@@ -75,14 +75,16 @@ image pins the 1.4.2-named feeds. The names below are the 1.5.0 ones.
    kernel, `loader_lua.efi` and `boot/lua` (without `brand-daemonarchy.lua` and
    `local.lua`), runs `build-hwtrace-image.sh -Z`, and copies
    `daemonarchy-hwtrace-1.5.0-amd64.img.xz` and its `.sha256` into `ASSETS_DIR`. Rerun it
-   if the ISO is rebuilt, so the published image's provenance is the final ISO.
+   if the ISO is rebuilt, so the published image's provenance is the final ISO. The arm64
+   trace image `daemonarchy-hwtrace-1.5.0-aarch64.img.xz` (and its `.sha256`) is built the same
+   way from the verified aarch64 ISO and also goes into `ASSETS_DIR`.
 10. **QEMU QA** against the public URLs from a workstation (`master-release.sh qa`, with the
     config's own `WORK` and a `QA_DIR` of its own). Count `[FreeBSD]` in the install log: it
     must be 0, or list each package absent from our feeds.
 11. **Sticks.** The operator gives the serials. `master-release.sh sticks` writes both,
     refuses the scratch disk and anything mounted, and reads each back against the digest.
-12. **Publish** (release owner): the feeds, then the release with the ten assets (the two
-    installers and the trace image, each with its `.sha256`, the boot bundle and its
+12. **Publish** (release owner): the feeds, then the release with the twelve assets (the two
+    installers and the two trace images, each with its `.sha256`, the boot bundle and its
     signature, the certificate in PEM and DER form), verified with `scripts/verify-release-assets.py --published`.
 13. **Fill the records.** The draft release pull request is made once the template is
     reviewed: `scripts/prepare-release.py --version 1.5.0 --source-commit SHA40` copies
@@ -103,6 +105,7 @@ python3 scripts/fill-release.py --version 1.5.0 --assets ASSETS \
     --packages-amd64 packages-16-amd64-1.5.0 --packages-aarch64 packages-16-aarch64-1.5.0 \
     --checkouts-amd64 checkouts-16-amd64-1.5.0 --checkouts-aarch64 checkouts-16-aarch64-1.5.0 \
     --aarch64-final-qemu "..." --physical-status "..." --set GUI001_EVIDENCE="..." \
+    --set HWTRACE_AARCH64_BYTES=N --set HWTRACE_AARCH64_SHA256=SHA256 \
     [--published-at 2026-11-07T00:00:00Z]
 python3 tests/docs-release-sync.py -v
 python3 scripts/verify-release-assets.py --record verification/release-1.5.0.json \
@@ -135,8 +138,10 @@ record listing both architectures (`scripts/verify-release-assets.py` already ac
 
 It generalises `fill-release-1.4.1.py`: the version is an argument, the closure shards are
 the record's `closure_feed_records`, and a release-specific token is given with `--set`. The
-assets directory holds exactly the ten files (the trace image and its `.sha256` come from
+assets directory holds exactly the twelve files (the trace images and their `.sha256` come from
 `master-release.sh hwtrace`, which leaves them in `ASSETS_DIR`); sizes and digests are computed from them.
+The aarch64 trace image's size and digest enter the notes through `--set HWTRACE_AARCH64_BYTES=N --set
+HWTRACE_AARCH64_SHA256=SHA256` (the script refuses values that differ from the file).
 After publication use `scripts/release-current.py update` and `check-published`.
 
 ## The amd64 build VM (mudflap)

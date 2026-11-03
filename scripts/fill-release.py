@@ -15,7 +15,7 @@ left that the values should have filled.
       --aarch64-final-qemu "TEXT" --physical-status "TEXT" \\
       [--published-at 2026-11-07T00:00:00Z] [--checkouts-json FILE] [--dry-run]
 
-DIR holds exactly the eight release assets, as they will be (or were) uploaded. The
+DIR holds exactly the release assets (ten before 1.5.0; twelve from 1.5.0, with the aarch64 trace image), as they will be (or were) uploaded. The
 release record's `closure_feed_records` field lists the closure shards the image
 carries; each is a file in verification/closure-feeds/ (written by
 scripts/package-feed-stage.py). It writes files only; it never publishes, tags or
@@ -56,10 +56,20 @@ def fail(message):
     sys.exit(f"fill-release: {message}")
 
 
+def version_tuple(text):
+    return tuple(map(int, text.split(".")))
+
+
+def hwtrace_architectures(version):
+    """The trace images a release carries: amd64 from 1.4.0, aarch64 as well from 1.5.0."""
+    return ("amd64", "aarch64") if version_tuple(version) >= (1, 5, 0) else ("amd64",)
+
+
 def asset_names(version):
     return [f"daemonarchy-{version}-{arch}.iso.xz{suffix}"
             for arch in ("amd64", "aarch64") for suffix in ("", ".sha256")] + [
-        f"daemonarchy-hwtrace-{version}-amd64.img.xz{suffix}" for suffix in ("", ".sha256")] + [
+        f"daemonarchy-hwtrace-{version}-{arch}.img.xz{suffix}"
+        for arch in hwtrace_architectures(version) for suffix in ("", ".sha256")] + [
         f"daemonarchy-{version}-boot.txz", f"daemonarchy-{version}-boot.txz.sig",
         f"daemonarchy-{version}.pem", f"daemonarchy-{version}.der"]
 
@@ -112,7 +122,7 @@ def main(argv=None):
         fail("--assets must be a directory holding exactly: " + ", ".join(names))
     assets = {name: [(args.assets / name).stat().st_size, "sha256:" + digest(args.assets / name)] for name in names}
     for iso in [f"daemonarchy-{version}-{arch}.iso.xz" for arch in ("amd64", "aarch64")] + [
-            f"daemonarchy-hwtrace-{version}-amd64.img.xz"]:
+            f"daemonarchy-hwtrace-{version}-{arch}.img.xz" for arch in hwtrace_architectures(version)]:
         expected = f"{assets[iso][1][7:]}  {iso}\n".encode()
         if (args.assets / (iso + ".sha256")).read_bytes() != expected:
             fail(f"{iso}.sha256 does not cover the {iso} next to it")
@@ -181,6 +191,16 @@ def main(argv=None):
         if not separator or not re.fullmatch(r"[A-Z0-9_]+", token) or token in values:
             fail(f"--set expects a new TOKEN=TEXT with an upper-case token, got {item!r}")
         values[token] = text
+    # The aarch64 trace image's numbers are given with --set (HWTRACE_AARCH64_BYTES, HWTRACE_AARCH64_SHA256,
+    # as the 1.5.0 notes template names them); they must be the ones computed from the asset.
+    if "aarch64" in hwtrace_architectures(version):
+        trace = f"daemonarchy-hwtrace-{version}-aarch64.img.xz"
+        computed = {"HWTRACE_AARCH64_BYTES": str(assets[trace][0]), "HWTRACE_AARCH64_SHA256": assets[trace][1][7:]}
+        for token, expected in computed.items():
+            if token not in values:
+                fail(f"{version} carries the aarch64 trace image: pass --set {token}={expected}")
+            if values[token].replace(",", "") != expected:
+                fail(f"--set {token} is {values[token]!r} but {trace} gives {expected}")
 
     current = json.loads(CURRENT.read_text())
     if current.get("version") != version:
@@ -194,7 +214,8 @@ def main(argv=None):
         installer_commit=args.installer_commit, ports_commit=args.ports_commit,
         application_feed=feeds["packages_amd64"], checkout_feed=feeds["checkouts_amd64"],
         aarch64_application_feed=feeds["packages_aarch64"], aarch64_checkout_feed=feeds["checkouts_aarch64"],
-        evidence_status="published release record", assets=assets, closure_feeds=closure)
+        evidence_status="published release record", assets=assets, closure_feeds=closure,
+        hwtrace=list(hwtrace_architectures(version)))
 
     texts = {}
     for name in [notes_path] + TOKEN_FILES:
