@@ -23,6 +23,9 @@ is the authority for the final images, asset hashes and publication state.
   `@@HWTRACE_SHA256@@`), the hardware bring-up trace image for machines that fail early
   in kernel start (amd64, UEFI). It is not an installer: it holds the ISO's own kernel
   and loader and carries no keys. See [the trace image](boottrace.md).
+- `daemonarchy-hwtrace-1.5.0-aarch64.img.xz` (@@HWTRACE_AARCH64_BYTES@@ bytes, SHA-256
+  `@@HWTRACE_AARCH64_SHA256@@`), the same trace image for arm64 (UEFI), built from the
+  aarch64 ISO's own kernel and loader; it is not an installer and carries no keys.
 - A `.sha256` file for each image, which covers the compressed file you download.
 - The signed Secure Boot bundle `daemonarchy-1.5.0-boot.txz` with its detached `.sig`,
   and the public certificate in PEM and DER form. The bundle is the amd64 Secure Boot

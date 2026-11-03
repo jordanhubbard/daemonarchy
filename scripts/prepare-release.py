@@ -47,10 +47,16 @@ def version_tuple(text):
     return tuple(map(int, VERSION.fullmatch(text).groups()))
 
 
+def hwtrace_architectures(version):
+    """The trace images a release carries: amd64 from 1.4.0, aarch64 as well from 1.5.0."""
+    return ("amd64", "aarch64") if version_tuple(version) >= (1, 5, 0) else ("amd64",)
+
+
 def asset_names(version):
     return [f"daemonarchy-{version}-{arch}.iso.xz{suffix}"
             for arch in ("amd64", "aarch64") for suffix in ("", ".sha256")] + [
-        f"daemonarchy-hwtrace-{version}-amd64.img.xz{suffix}" for suffix in ("", ".sha256")] + [
+        f"daemonarchy-hwtrace-{version}-{arch}.img.xz{suffix}"
+        for arch in hwtrace_architectures(version) for suffix in ("", ".sha256")] + [
         f"daemonarchy-{version}-boot.txz", f"daemonarchy-{version}-boot.txz.sig",
         f"daemonarchy-{version}.pem", f"daemonarchy-{version}.der"]
 
@@ -96,7 +102,7 @@ def main(argv=None):
         "aarch64_application_feed": "TODO",
         "aarch64_checkout_feed": "TODO",
         "architectures": ["amd64", "aarch64"],
-        "hwtrace": ["amd64"],
+        "hwtrace": list(hwtrace_architectures(version)),
         "qualification": f"docs/release-{version}.md",
         "evidence_status": "draft: placeholders, not a release record",
         "assets": {name: [0, "sha256:TODO"] for name in sorted(asset_names(version))},
@@ -121,8 +127,9 @@ def main(argv=None):
         "checkout_feed": "TODO",
         "images": [{"type": "installer", "arch": arch, "asset": f"daemonarchy-{version}-{arch}.iso.xz",
                     "checksum_asset": f"daemonarchy-{version}-{arch}.iso.xz.sha256"} for arch in ("amd64", "aarch64")] + [
-                       {"type": "hwtrace", "arch": "amd64", "asset": f"daemonarchy-hwtrace-{version}-amd64.img.xz",
-                        "checksum_asset": f"daemonarchy-hwtrace-{version}-amd64.img.xz.sha256"}],
+                       {"type": "hwtrace", "arch": arch, "asset": f"daemonarchy-hwtrace-{version}-{arch}.img.xz",
+                        "checksum_asset": f"daemonarchy-hwtrace-{version}-{arch}.img.xz.sha256"}
+                       for arch in hwtrace_architectures(version)],
         "assets": {name: [0, "sha256:TODO"] for name in sorted(asset_names(version))},
         "previous_releases": previous,
     }

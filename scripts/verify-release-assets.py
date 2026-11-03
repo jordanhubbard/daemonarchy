@@ -64,10 +64,12 @@ def iso_assets(record):
 # The hardware bring-up trace image (DEBUG-004) is a separate image type,
 # published xz-compressed from 1.4.0 when the record lists its architectures.
 HWTRACE_FIRST = (1, 4, 0)
+# The arm64 trace image begins with 1.5.0.
+HWTRACE_ARCHITECTURES = {"amd64": HWTRACE_FIRST, "aarch64": (1, 5, 0)}
 
 
 def hwtrace_asset(version, arch="amd64"):
-    if arch != "amd64":
+    if arch not in HWTRACE_ARCHITECTURES:
         raise ValueError(f"Unsupported hardware trace architecture: {arch}")
     return f"daemonarchy-hwtrace-{version}-{arch}.img.xz"
 
@@ -76,10 +78,13 @@ def hwtrace_assets(record):
     if "hwtrace" not in record:
         return []
     architectures = record["hwtrace"]
-    if (not isinstance(architectures, list) or architectures != ["amd64"]):
-        raise ValueError("Hardware trace images must be listed as [\"amd64\"]")
+    if architectures not in (["amd64"], ["amd64", "aarch64"]):
+        raise ValueError("Hardware trace images must be listed as [\"amd64\"] or [\"amd64\", \"aarch64\"]")
     if release_tuple(record["version"]) < HWTRACE_FIRST:
         raise ValueError(f"Release {record['version']} predates hardware trace images")
+    for arch in architectures:
+        if release_tuple(record["version"]) < HWTRACE_ARCHITECTURES[arch]:
+            raise ValueError(f"Release {record['version']} predates {arch} hardware trace images")
     return [hwtrace_asset(record["version"], arch) for arch in architectures]
 
 

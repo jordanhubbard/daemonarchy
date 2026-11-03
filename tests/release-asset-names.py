@@ -24,8 +24,8 @@ class ReleaseAssetNames(unittest.TestCase):
     def record(self, certificate, version="1.3.1", iso=None, isos=None, architectures=None,
                hwtrace=None):
         isos = isos or [iso or f"daemonarchy-{version}-amd64.iso"]
-        if hwtrace is not None:
-            isos = isos + [f"daemonarchy-hwtrace-{version}-amd64.img.xz"]
+        for arch in hwtrace or []:
+            isos = isos + [f"daemonarchy-hwtrace-{version}-{arch}.img.xz"]
         names = [name for image in isos for name in (image, image + ".sha256")] + [
             f"daemonarchy-{version}-boot.txz",
             f"daemonarchy-{version}-boot.txz.sig",
@@ -260,12 +260,15 @@ class HardwareTraceImage(ReleaseAssetNames):
             spec = importlib.util.spec_from_file_location("tool", SCRIPT.parent / script)
             tool = importlib.util.module_from_spec(spec)
             spec.loader.exec_module(tool)
+            self.assertEqual(len(tool.asset_names("1.4.1")), 10, script)       # earlier releases: amd64 trace only
+            self.assertNotIn("daemonarchy-hwtrace-1.4.1-aarch64.img.xz", tool.asset_names("1.4.1"))
             names = tool.asset_names("1.5.0")
-            self.assertEqual(len(names), 10, script)
+            self.assertEqual(len(names), 12, script)
+            self.assertIn("daemonarchy-hwtrace-1.5.0-aarch64.img.xz.sha256", names, script)
             record = {
                 "schema": "daemonarchy/release-inputs@1", "version": "1.5.0", "tag": "daemonarchy-1.5.0",
                 "installer_commit": "a" * 40, "source_commit": "b" * 40, "osversion": 1600029,
-                "architectures": ["amd64", "aarch64"], "hwtrace": ["amd64"],
+                "architectures": ["amd64", "aarch64"], "hwtrace": ["amd64", "aarch64"],
                 "assets": {name: [1, "sha256:" + "c" * 64] for name in names},
                 "closure_feeds": [{"tag": f"packages-16-{arch}-1.5.0-upstream", "assets": {
                     name: [1, "sha256:" + "c" * 64] for name in ("meta.conf", "data.pkg", "a.pkg")}}
@@ -273,10 +276,29 @@ class HardwareTraceImage(ReleaseAssetNames):
             }
             self.path.write_text(json.dumps(record) + "\n")
             assets.read_record(self.path)
-            del record["assets"]["daemonarchy-hwtrace-1.5.0-amd64.img.xz.sha256"]
-            self.path.write_text(json.dumps(record) + "\n")
+            for gone in ("amd64", "aarch64"):
+                trimmed = dict(record, assets=dict(record["assets"]))
+                del trimmed["assets"][f"daemonarchy-hwtrace-1.5.0-{gone}.img.xz.sha256"]
+                self.path.write_text(json.dumps(trimmed) + "\n")
+                with self.assertRaisesRegex(ValueError, "incomplete or unexpected"):
+                    assets.read_record(self.path)
+            amd64_only = dict(record, hwtrace=["amd64"])                        # the aarch64 pair is then unexpected
+            self.path.write_text(json.dumps(amd64_only) + "\n")
             with self.assertRaisesRegex(ValueError, "incomplete or unexpected"):
                 assets.read_record(self.path)
+
+    def test_150_may_publish_both_hwtrace_images(self):
+        self.record("daemonarchy-1.5.0.pem", "1.5.0", "daemonarchy-1.5.0-amd64.iso.xz",
+                    hwtrace=["amd64", "aarch64"])
+        record, _ = assets.read_record(self.path)
+        self.assertEqual(assets.hwtrace_assets(record), ["daemonarchy-hwtrace-1.5.0-amd64.img.xz",
+                                                         "daemonarchy-hwtrace-1.5.0-aarch64.img.xz"])
+
+    def test_aarch64_hwtrace_before_150_refused(self):
+        self.record("daemonarchy-1.4.0.pem", "1.4.0", "daemonarchy-1.4.0-amd64.iso.xz",
+                    hwtrace=["amd64", "aarch64"])
+        with self.assertRaisesRegex(ValueError, "predates aarch64 hardware trace"):
+            assets.read_record(self.path)
 
     def test_hwtrace_image_without_declaration_refused(self):
         record = self.record("daemonarchy-1.4.0.pem", "1.4.0", "daemonarchy-1.4.0-amd64.iso.xz",
