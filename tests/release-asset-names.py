@@ -288,9 +288,8 @@ class HardwareTraceImage(ReleaseAssetNames):
                 assets.read_record(self.path)
 
     def test_150_may_publish_both_hwtrace_images(self):
-        self.record("daemonarchy-1.5.0.pem", "1.5.0", "daemonarchy-1.5.0-amd64.iso.xz",
-                    hwtrace=["amd64", "aarch64"])
-        record, _ = assets.read_record(self.path)
+        record = self.record("daemonarchy-1.5.0.pem", "1.5.0", "daemonarchy-1.5.0-amd64.iso.xz",
+                             hwtrace=["amd64", "aarch64"])
         self.assertEqual(assets.hwtrace_assets(record), ["daemonarchy-hwtrace-1.5.0-amd64.img.xz",
                                                          "daemonarchy-hwtrace-1.5.0-aarch64.img.xz"])
 
