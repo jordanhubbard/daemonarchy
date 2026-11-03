@@ -2,12 +2,17 @@
 
 Updated November 3, 2026. The **NVIDIA RTX Spark** ARM laptop is an official
 Daemonarchy target for 1.5.0 and the first physical aarch64 machine the project
-tests. **It does not yet boot to a desktop.** This note records what has been
-observed and what has not; it is not a support statement for any release.
+tests. **It does not yet boot to a desktop.** For 1.5.0 this hardware is released
+as *tested, not yet working*: the support added so far stays in the tree, and the
+kernel fix is not part of 1.5.0. This note records what has been observed and what
+has not; it is not a support statement for any release.
 
 ## Status
 
-The 1.5.0 aarch64 image has not been shown to work on this machine. What the
+The 1.5.0 aarch64 image has not been shown to work on this machine as of the table above. Since then the operator booted the
+patched kernel by hand: it boots further than the stock kernel and then panics in
+the kernel. The panic has not been analysed yet; the fix stays a draft and is
+not scoped into 1.5.0. What the
 operator has run so far:
 
 | Step | Result |
