@@ -1,23 +1,23 @@
 {
   "schema": 1,
-  "repository_url": "https://github.com/jordanhubbard/daemonarchy/releases/download/checkouts-16-amd64-1.4.1-r2",
+  "repository_url": "https://github.com/jordanhubbard/daemonarchy/releases/download/checkouts-16-amd64-1.5.0-r2",
   "trees": {
     "ports": {
-      "revision": "dd277aff0961905b32a122fa4909051d7a62abb1",
+      "revision": "e84b4c4cde0df8ee645ee46e7ad1e99ef8ffa181",
       "branch": "main",
       "remote": "https://github.com/jordanhubbard/daemonarchy-ports.git",
       "depth": 1,
-      "archive_sha256": "fb1f83e4dbd4c31e73fac4ca1e3aa739da0cf5f66e5cbf68688d6c37b755a297",
-      "archive_bytes": 238467462,
-      "expanded_bytes": 733095295,
-      "required_bytes": 3918549521,
+      "archive_sha256": "d72e83e5c6401998c191e4bfc30fb56e0c73063048fc51b7c05fb910978ff224",
+      "archive_bytes": 238486947,
+      "expanded_bytes": 733326938,
+      "required_bytes": 3919171395,
       "parts": [
         {
-          "package": "daemonarchy-ports-checkout-000-20261030.gdd277aff0961",
-          "file": "/usr/local/share/daemonarchy/checkouts/ports/dd277aff0961905b32a122fa4909051d7a62abb1/part-000",
-          "sha256": "fb1f83e4dbd4c31e73fac4ca1e3aa739da0cf5f66e5cbf68688d6c37b755a297",
-          "bytes": 238467462,
-          "download_bytes": 238256647
+          "package": "daemonarchy-ports-checkout-000-20261103.ge84b4c4cde0d",
+          "file": "/usr/local/share/daemonarchy/checkouts/ports/e84b4c4cde0df8ee645ee46e7ad1e99ef8ffa181/part-000",
+          "sha256": "d72e83e5c6401998c191e4bfc30fb56e0c73063048fc51b7c05fb910978ff224",
+          "bytes": 238486947,
+          "download_bytes": 238317546
         }
       ],
       "tracking_branch": "main"
@@ -46,8 +46,7 @@
           "bytes": 187277288,
           "download_bytes": 182093228
         }
-      ],
-      "tracking_branch": "daemonarchy"
+      ]
     }
   }
 }
