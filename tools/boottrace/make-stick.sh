@@ -1,6 +1,5 @@
 #!/bin/sh
 # SPDX-License-Identifier: BSD-2-Clause
-# Copyright (c) 2026 Daemonarchy contributors.
 #
 # Remaster a Daemonarchy live ISO into a boottrace diagnostic USB image:
 #   - /boot/kernel.bt/kernel: the boottrace kernel (default kernel)

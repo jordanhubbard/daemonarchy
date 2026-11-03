@@ -1,6 +1,5 @@
 #!/usr/bin/env python3
 # SPDX-License-Identifier: BSD-2-Clause
-# Copyright (c) 2026 Daemonarchy contributors.
 """Drive a hardware-trace stick through several boots under QEMU/OVMF.
 
 The stick is attached as a USB disk and OVMF keeps its variables in a

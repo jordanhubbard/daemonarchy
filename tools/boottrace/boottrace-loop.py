@@ -1,6 +1,5 @@
 #!/usr/bin/env python3
 # SPDX-License-Identifier: BSD-2-Clause
-# Copyright (c) 2026 Daemonarchy contributors.
 """Closed-loop boot experiments against a boottrace diagnostic stick.
 
 The stick's loader (boottrace_loop="YES") starts the plain wired debug
