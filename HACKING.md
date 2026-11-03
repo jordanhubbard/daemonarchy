@@ -2,12 +2,13 @@
 
 How to build a Daemonarchy image yourself, change the installer, the ports, or the artwork, and test and release the result. [README.md](README.md) says what Daemonarchy is; this is for working on it.
 
-Latest published release: **1.4.1** ([`release/current.json`](release/current.json)),
+Latest published release: **1.5.0** ([`release/current.json`](release/current.json)),
 daemonarchy-src `303b3646270ffa4bf7cec65c5c1d28bd8000cbce` (OSVERSION `1600029`),
-daemonarchy-ports `dd277aff0961905b32a122fa4909051d7a62abb1` on `main`. Keep base,
+daemonarchy-ports `e84b4c4cde0df8ee645ee46e7ad1e99ef8ffa181` on `main`. Keep base,
 kernel, jail, drivers, optional source checkout and signed manifests on that
-selection. The [1.4.1 release notes](docs/release-1.4.1.md) record its qualification
-and limits; the earlier 1.1.1 selection stays in [its record](docs/testing-1.1.1.md).
+selection. The [1.5.0 release notes](docs/release-1.5.0.md) record its qualification
+and limits; [1.4.1](docs/release-1.4.1.md) and the earlier 1.1.1 selection stay in
+their records ([1.1.1](docs/testing-1.1.1.md)).
 Older image examples below must use their own retained inputs; a package update
 is not a base/ABI migration.
 
@@ -62,7 +63,7 @@ Every repository our packages are built from, by the ports' `GH_ACCOUNT`/`GH_PRO
 lines on daemonarchy-ports `main`:
 
 - `x11-wm/daemonarchy` fetches `jordanhubbard/daemonarchy-desktop` at a pinned commit (`GH_TAGNAME`,
-  `ec2a00824ec9` today; `DISTVERSION` 1.4.1 with a `v` prefix, so the version in the port is not a tag
+  `ec2a00824ec9` at 1.4.1; `DISTVERSION` 1.5.0 since 1.5.0 (ports #46), with a `v` prefix, so the version in the port is not a tag
   of the desktop repository, whose last tag is `v1.1.1`).
 - `x11-wm/omarchy` fetches `basecamp/omarchy` (upstream Omarchy, not the `jordanhubbard/omarchy` fork)
   plus `jordanhubbard/omarchy-freebsd`.
@@ -196,7 +197,7 @@ Daemonarchy spans the installer, desktop, compatibility, source and ports reposi
   - The System > FreeBSD menu (`omarchy-menu.jsonc`) and the `daemonarchy-*` commands behind it.
   - It has no tag convention that matches the port today (last tag `v1.1.1`; the port pins a commit); see [the repositories](#the-repositories-that-make-up-daemonarchy).
 - **[jordanhubbard/daemonarchy-src](https://github.com/jordanhubbard/daemonarchy-src)**: the owned FreeBSD source fork. [Owned source builds](docs/source-builds.md) describes exact-commit world/kernel/pkgbase and installer-set preparation; [the performance plan](docs/roadmap/build-performance.md) tracks complete Component execution and build-system evaluation. Development outputs do not change a published release's selection.
-- **[jordanhubbard/daemonarchy-ports](https://github.com/jordanhubbard/daemonarchy-ports)** is the release ports fork; 1.3.1 uses `b7857842` on `main`. Releases through 1.1.1 used [jordanhubbard/freebsd-ports](https://github.com/jordanhubbard/freebsd-ports): the earlier 1.1.1 on `daemonarchy-1.1.1`, the older 1.1 candidate on `daemonarchy-1.1-package-baseline`. Upstream review does not block releases from this fork. It carries the ports:
+- **[jordanhubbard/daemonarchy-ports](https://github.com/jordanhubbard/daemonarchy-ports)** is the release ports fork; 1.5.0 uses `e84b4c4cde0d` on `main` (1.4.1 `dd277aff`, 1.3.1 `b7857842`). Releases through 1.1.1 used [jordanhubbard/freebsd-ports](https://github.com/jordanhubbard/freebsd-ports): the earlier 1.1.1 on `daemonarchy-1.1.1`, the older 1.1 candidate on `daemonarchy-1.1-package-baseline`. Upstream review does not block releases from this fork. It carries the ports:
   - `x11-wm/omarchy`: Omarchy itself, with omarchy-freebsd as a second distfile. Its `files/` holds only patches to Omarchy's own files, among them the ones that add the `FreeBSDWifi.qml` and `FreeBSDBluetooth.qml` stand-ins to the panels.
   - `x11-wm/daemonarchy`: the full desktop's dependencies, plus daemonarchy-desktop. Defaults for new users go to `share/omarchy/skel.d/daemonarchy`, which `seed-user` copies in ahead of Omarchy's.
   - The applications and tools Omarchy uses, one port each (`x11-themes/aether`, `graphics/tensaku`, `misc/ttfx`, ...), resubmitted upstream in [freebsd/freebsd-ports#640](https://github.com/freebsd/freebsd-ports/pull/640); `x11-wm/omarchy` and `x11-wm/daemonarchy` are in [#641](https://github.com/freebsd/freebsd-ports/pull/641). The earlier #630/#635 submissions were closed unmerged. The LinuxKPI header fix is [#642](https://github.com/freebsd/freebsd-ports/pull/642); review status is independent of fork qualification.
@@ -653,7 +654,7 @@ native checks still required on an exact image:
 
 ### The ports
 
-Work on a review branch based on the exact integration commit in [ROADMAP.md](ROADMAP.md). For 1.3.1 this is daemonarchy-ports `main` at `b7857842`, pinned in [its release notes](docs/release-1.3.1.md); verify that poudriere uses the matching tree and snapshot jail before rebuilding.
+Work on a review branch based on the exact integration commit in [ROADMAP.md](ROADMAP.md). For 1.5.0 this is daemonarchy-ports `main` at `e84b4c4cde0d`, pinned in [its release notes](docs/release-1.5.0.md) (1.3.1 used `b7857842`, in [its notes](docs/release-1.3.1.md)); verify that poudriere uses the matching tree and snapshot jail before rebuilding.
 
 - `poudriere testport -j 16amd64 -p <tree> -o <origin>` checks a port in a clean jail: stage-qa, the plist, install, and deinstall. Use it rather than `make stage-qa` as root on the host, which installs the port's dependencies onto the host.
 - To try a change on a running Daemonarchy desktop, `make reinstall` the port there; `seed-user --force` re-copies the defaults into the home (it never overwrites a file you have).
@@ -935,8 +936,8 @@ contract](docs/remote-agent-debug.md#continuous-diagnostics) for exact commands,
 retention and privacy limits. It reports when console-buffer access is unavailable;
 SSH diagnostics cannot reconstruct probes from before networking or survive a
 hard reset as a live connection. Loader/early-kernel network debugging is
-upcoming 1.4 work ([plan](docs/roadmap/release-1.4.0.md)); the published 1.3.1
-does not include a qualified early-kernel network debugger.
+1.4 work ([plan](docs/roadmap/release-1.4.0.md)); no published release through 1.5.0
+includes a qualified early-kernel network debugger.
 
 ### When the screen or keyboard is unusable
 
@@ -981,9 +982,9 @@ ISO supplies `/rescue`, `pciconf`, `devinfo`, `acpidump`, their libraries
 and the modules:
 
 ```sh
-sh build-hwtrace-image.sh -I daemonarchy-1.4.1-amd64.iso \
+sh build-hwtrace-image.sh -I daemonarchy-1.5.0-amd64.iso \
     -k obj/GENERIC/kernel -l loader_lua.efi -L src/stand/lua \
-    -V 1.4.1-1 -o out
+    -V 1.5.0-1 -o out
 # -m "msdosfs ..." picks modules (default msdosfs); -s sets the DATRACE
 # size in MiB (default 256); -S adds a serial console for VM tests;
 # -x EXTRA.conf appends test knobs to loader.conf (never for a published
@@ -1287,7 +1288,7 @@ coordinated operation.
    assets unchanged. The 1.3.1
    candidate rotates that certificate because the previous private signing key
    is unavailable; do not reuse the 1.1 certificate names for a different key.
-   For 1.4.1, after the exact build and QA gates pass (the staged assets are
+   For 1.4.1 (the 1.5.0 command is in [mastering-1.5.0.md](docs/mastering-1.5.0.md#filling-the-records)), after the exact build and QA gates pass (the staged assets are
    verified first with `scripts/verify-release-assets.py`, see below), the release
    carries one image per architecture:
 
@@ -1511,7 +1512,7 @@ python3 scripts/make-checkout-catalog.py /path/to/checkout-repo \
 sudo pkg repo /path/to/checkout-repo /usr/local/etc/daemonarchy/pkg-repo.key
 ```
 
-`--depth` defaults to 1. The 1.3.1 checkout feed (`checkouts-16-amd64-1.3.1-r2`)
+`--depth` defaults to 1. The 1.3.1 checkout feed (`checkouts-16-amd64-1.3.1-r2`, and the later release feeds likewise)
 tracks `main` of daemonarchy-ports and daemonarchy-src; the earlier 1.1.1 tracked
 freebsd-ports `daemonarchy-1.1.1` and FreeBSD `main`, and older 1.1 images retain
 their pinned `daemonarchy-1.1-package-baseline` catalogue and feed. Default fetches are restricted to one branch. Payloads are split into 512 MiB parts before packaging,

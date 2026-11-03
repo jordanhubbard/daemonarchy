@@ -109,6 +109,30 @@ python3 scripts/verify-release-assets.py --record verification/release-1.5.0.jso
     --assets ASSETS --closure-assets CLOSURE_DIR      # CLOSURE_DIR/<tag>/ for each closure shard
 ```
 
+### The 1.5.0 command, as prepared (confirm before running)
+
+Known values: installer commit `ea0432a0fb890ad56379bb898d4db6d0505c5a76` (`main` when the images were built),
+ports commit `e84b4c4cde0df8ee645ee46e7ad1e99ef8ffa181`, aarch64 feeds `packages-16-aarch64-1.5.0-r2` and
+`checkouts-16-aarch64-1.5.0-r3` (the earlier `1.5.0` and `-r2` tags are published and immutable). The amd64 feed
+tags are recorded here when they are uploaded; until then the amd64 values below are placeholders.
+
+```
+python3 scripts/fill-release.py --version 1.5.0 --assets ASSETS \
+    --installer-commit ea0432a0fb890ad56379bb898d4db6d0505c5a76 \
+    --ports-commit e84b4c4cde0df8ee645ee46e7ad1e99ef8ffa181 \
+    --packages-amd64 AMD64_PACKAGES_TAG --packages-aarch64 packages-16-aarch64-1.5.0-r2 \
+    --checkouts-amd64 AMD64_CHECKOUTS_TAG --checkouts-aarch64 checkouts-16-aarch64-1.5.0-r3 \
+    --aarch64-final-qemu "TEXT" --physical-status "TEXT" --set GUI001_EVIDENCE="TEXT" \
+    --set HWTRACE_AARCH64_BYTES=N --set HWTRACE_AARCH64_SHA256=SHA256
+```
+
+The release carries twelve assets: the two installers, the two trace images (amd64 and aarch64), each with a
+`.sha256`, the boot bundle and its `.sig`, and the certificate in PEM and DER form. **Tooling gap:**
+`scripts/prepare-release.py`, `scripts/fill-release.py` and `tests/release-asset-names.py` know only the
+amd64 trace image (ten assets), so the aarch64 trace image needs their asset list extended, the `hwtrace`
+record listing both architectures (`scripts/verify-release-assets.py` already accepts a list), and the two
+`--set` tokens above wired in before this command passes.
+
 It generalises `fill-release-1.4.1.py`: the version is an argument, the closure shards are
 the record's `closure_feed_records`, and a release-specific token is given with `--set`. The
 assets directory holds exactly the ten files (the trace image and its `.sha256` come from

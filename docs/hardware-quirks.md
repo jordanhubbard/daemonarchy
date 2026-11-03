@@ -194,7 +194,7 @@ results rather than replacing the configuration that reproduced this failure.
 
 ## Apple T2 MacBook Pro: graphics, Wi-Fi and resets
 
-**Current release:** 1.4.0 carries the MacBookPro16,1 work below: Navi14
+**Release status:** as of 1.4.0, with the Wi-Fi link-down fix added in 1.5.0 ([notes](release-1.5.0.md)), the image carries the MacBookPro16,1 work below: Navi14
 graphics, the built-in T2 keyboard and trackpad, and BCM4364 Wi-Fi with
 firmware acquired from Apple recovery media or local media before the disk is
 changed. 1.4.0 adds a signed Secure Boot boot profile to the image so the

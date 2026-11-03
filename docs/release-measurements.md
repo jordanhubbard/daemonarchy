@@ -56,7 +56,7 @@ uses the existing framework APIs to re-open current policy and verify local
 artifact bytes, roles, revision, version, size and digest. It derives actual
 GitHub release download URLs, requests `PACKAGE_QA_MODE=final-rc`, and excludes all
 local package-cache overrides. An authenticated-receipt policy is mandatory for
-readiness; the current 1.3.1 policy lacks that binding and remains a blocker.
+readiness; the 1.3.1 policy lacked that binding, and no release since has recorded one; it remains a blocker for the framework-executed goals deferred to 1.5.1.
 Invoke using the exact selected framework runtime, without changing its pin:
 
 ```sh

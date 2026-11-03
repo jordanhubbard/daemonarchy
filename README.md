@@ -18,28 +18,28 @@ limits for every release, including the initial installer snapshots.
 
 ## Download
 
-The latest stable release is **[Daemonarchy 1.4.1](https://github.com/jordanhubbard/daemonarchy/releases/tag/daemonarchy-1.4.1)** (x86-64, BIOS or UEFI, and a community-validation arm64 image), published October 31, 2026, on FreeBSD 16.0-CURRENT, OSVERSION `1600029`. Version 1.2.0 was not published; 1.3.1 followed 1.1.1, 1.4.0 followed 1.3.1 and 1.4.1 follows 1.4.0.
+The latest stable release is **[Daemonarchy 1.5.0](https://github.com/jordanhubbard/daemonarchy/releases/tag/daemonarchy-1.5.0)** (x86-64, BIOS or UEFI, and a community-validation arm64 image), published @@PUBLISHED_DATE@@, on FreeBSD 16.0-CURRENT, OSVERSION `1600029`. Version 1.2.0 was not published; 1.3.1 followed 1.1.1, 1.4.0 followed 1.3.1, 1.4.1 followed 1.4.0 and 1.5.0 follows 1.4.1.
 
-- [x86-64 ISO, xz-compressed](https://github.com/jordanhubbard/daemonarchy/releases/download/daemonarchy-1.4.1/daemonarchy-1.4.1-amd64.iso.xz): 1,592,484,392 bytes.
-- [x86-64 checksum](https://github.com/jordanhubbard/daemonarchy/releases/download/daemonarchy-1.4.1/daemonarchy-1.4.1-amd64.iso.xz.sha256) of the compressed file: `ea0b6d9ed435a30c75ee4b5acc70f2095d09c243adbc08532d2f8ab41e0014ca`.
-- [arm64 ISO, xz-compressed](https://github.com/jordanhubbard/daemonarchy/releases/download/daemonarchy-1.4.1/daemonarchy-1.4.1-aarch64.iso.xz): 957,807,376 bytes, UEFI only. **This is a community-validation image:** it was verified to boot and install in QEMU and nothing more. No physical aarch64 hardware was tested; there is no hardware GPU desktop, and sound and Wi-Fi are untested. See [aarch64](docs/aarch64.md) and the [release notes](docs/release-1.4.1.md#aarch64-image-community-validation), and report results as [GitHub issues](https://github.com/jordanhubbard/daemonarchy/issues).
-- [arm64 checksum](https://github.com/jordanhubbard/daemonarchy/releases/download/daemonarchy-1.4.1/daemonarchy-1.4.1-aarch64.iso.xz.sha256) of the compressed file: `eef5e9bb3b100365513a6ca3dce6d483142886c65b70411ef0a9db2aa994b076`.
-- The release also carries the signed Secure Boot bundle (`daemonarchy-1.4.1-boot.txz` and its `.sig`, amd64 only) and the public certificate in PEM and DER form.
-- Read the [1.4.1 release notes](docs/release-1.4.1.md) and their hardware status and limits before installing. Wi-Fi and Hyprland are not guaranteed on any particular machine, and the MacBookPro16,1 Wi-Fi driver can stall in a dead associated state.
+- [x86-64 ISO, xz-compressed](https://github.com/jordanhubbard/daemonarchy/releases/download/daemonarchy-1.5.0/daemonarchy-1.5.0-amd64.iso.xz): @@AMD64_ISO_BYTES@@ bytes.
+- [x86-64 checksum](https://github.com/jordanhubbard/daemonarchy/releases/download/daemonarchy-1.5.0/daemonarchy-1.5.0-amd64.iso.xz.sha256) of the compressed file: `@@AMD64_ISO_SHA256@@`.
+- [arm64 ISO, xz-compressed](https://github.com/jordanhubbard/daemonarchy/releases/download/daemonarchy-1.5.0/daemonarchy-1.5.0-aarch64.iso.xz): @@AARCH64_ISO_BYTES@@ bytes, UEFI only. **This is a community-validation image:** it was verified to boot and install in QEMU and nothing more. The NVIDIA RTX Spark laptop is tested but not yet working (support is deferred from 1.5.0); no other physical aarch64 hardware was tested. See [aarch64](docs/aarch64.md) and the [Spark application note](docs/application-note-rtx-spark.md).
+- [arm64 checksum](https://github.com/jordanhubbard/daemonarchy/releases/download/daemonarchy-1.5.0/daemonarchy-1.5.0-aarch64.iso.xz.sha256) of the compressed file: `@@AARCH64_ISO_SHA256@@`.
+- The release also carries the hardware bring-up trace images for amd64 and arm64 (`daemonarchy-hwtrace-1.5.0-amd64.img.xz` and `daemonarchy-hwtrace-1.5.0-aarch64.img.xz`, each with a `.sha256`; for machines that fail early in kernel start, [how to use them](docs/boottrace.md)), the signed Secure Boot bundle (`daemonarchy-1.5.0-boot.txz` and its `.sig`, amd64 only) and the public certificate in PEM and DER form.
+- Read the [1.5.0 release notes](docs/release-1.5.0.md) and their hardware status and limits before installing. Wi-Fi and Hyprland are not guaranteed on any particular machine.
 
-Write it to a USB stick with `xz -dc daemonarchy-1.4.1-amd64.iso.xz | dd of=/dev/<usb-device> bs=1m` (`bs=1M` on Linux). Boot with Secure Boot off, or follow the manual enrollment guide to enable verified boot. The installer needs a network connection. Whole-disk installation erases the selected disk; partition mode replaces only the explicitly selected partition.
+Write it to a USB stick with `xz -dc daemonarchy-1.5.0-amd64.iso.xz | dd of=/dev/<usb-device> bs=1m` (`bs=1M` on Linux). Boot with Secure Boot off, or follow the manual enrollment guide to enable verified boot. The installer needs a network connection. Whole-disk installation erases the selected disk; partition mode replaces only the explicitly selected partition.
 
 New to Daemonarchy? [Getting started](docs/getting-started.md) walks through writing the stick, installing, and your first hour on the desktop: Wi-Fi, sound, Bluetooth, updates, and what FreeBSD adds. To build an image yourself or work on Daemonarchy, see [HACKING.md](HACKING.md).
 
 Check the [hardware quirks](docs/hardware-quirks.md) for known boot blockers and
 diagnostic notes, including the MSI Raider 18 HX AI A2XWIG results for 1.4.0.
 
-## 1.5.0 (in development)
+## 1.5.0 release
 
-1.5.0 is the next release and is not published; nothing below is in an image you can download today, and
-its [plan](docs/roadmap/release-1.5.0.md) and the [active queue](docs/roadmap/active-work.md) say what is
-done and what is not. 1.5.0 was re-scoped on 2026-11-03 to evidenced work; the framework-executed build-speed
-goals moved to [1.5.1](docs/roadmap/release-1.5.1.md). What is on `main` since 1.4.1:
+1.5.0 is the current stable release. Its [notes](docs/release-1.5.0.md) and the [plan](docs/roadmap/release-1.5.0.md)
+say what was done and what was not. 1.5.0 was re-scoped on 2026-11-03 to evidenced work; the
+framework-executed build-speed goals (BUILD-001, COMP-001, PERF-001, PERF-002, DEV-001 and the native halves
+of ADOPT-002, SRC-001 and RELEASE-001) moved to [1.5.1](docs/roadmap/release-1.5.1.md). What changed since 1.4.1:
 
 - **NVIDIA RTX Spark laptop (aarch64): an official target; support is deferred from 1.5.0.** The first physical arm64 machine the project tests. **Tested, not yet working; deferred from 1.5.0 and to be debugged later:** the image boots its kernel there but does not reach a desktop. The stock arm64 kernel stops starting CPUs after `Starting CPU 4 (400)`; with `kern.smp.disabled=1` it reaches init; with the draft bounded-wait fix it boots further and then panics in the kernel. Support stays in the tree and the work continues after 1.5.0 ([application note](docs/application-note-rtx-spark.md)).
 - **Windows programs and Steam (x86-64).** Apps menu entries `Steam` and `Windows Programs`, virtual apps that
@@ -47,7 +47,7 @@ goals moved to [1.5.1](docs/roadmap/release-1.5.1.md). What is on `main` since 1
   ([Windows programs and Steam](docs/windows-apps.md); the Mono and DXVK recipe was contributed by Sam
   Sheridan). Checked headless on a build VM only; no Windows game or Steam window has run on real hardware.
 - **A graphical package manager, `daemonarchy-pkg`** (GUI-001, partly): a GTK 4 window over the installer's
-  planner, packaged (`ports-mgmt/daemonarchy-pkg`) and listed for the application feed (`origins.sh`); no 1.5.0 feed is published. The menu still opens OctoPkg and it has no real-desktop
+  planner, packaged (`ports-mgmt/daemonarchy-pkg`) and listed for the application feed (`origins.sh`); it ships in the 1.5.0 application feed. The menu still opens OctoPkg and it has no real-desktop
   evidence yet ([status](docs/gui-package-manager.md)).
 - **Sandboxed Lua installer extensions** (EXT-002, SDK API 1.5) and a first fish-tank extension
   ([sandboxed extensions](docs/sandboxed-extensions.md)); built and tested on a build host, not yet on a
@@ -64,31 +64,25 @@ goals moved to [1.5.1](docs/roadmap/release-1.5.1.md). What is on `main` since 1
 - **MacBookPro16,1 Wi-Fi stall after association:** the driver fix is merged in daemonarchy-ports. Evidence is
   fault injection on the MacBook; the real firmware-side loss was not reproduced and a physical retest is
   pending. It is a kernel-bound package, so it needs a rebuilt module and re-signed boot bundle.
-- **Build and release-cycle speed** (BUILD-001) is planned, not delivered: the framework-dependent items
-  ADOPT-002, RELEASE-001, COMP-001, PERF-002, DEV-001 and SRC-001 have not run natively under Literate AI.
+- **Build and release-cycle speed** (BUILD-001) is not delivered in 1.5.0 and no speed-up is claimed: the
+  framework-dependent items have not run natively under Literate AI and moved to 1.5.1.
+- **One signing session per release** (SIGN-001, option A): the signed inputs were frozen, then signed in the
+  operator's key windows ([mastering](docs/mastering-1.5.0.md)).
 
-## 1.4.1 release
-
-The current stable release is **1.4.1**. Its base is the Daemonarchy FreeBSD
-source fork at `303b364` (OSVERSION `1600029`), with ports at `dd277aff`. The
-[release notes](docs/release-1.4.1.md) cover everything since 1.4.0: a parallel
-package fetch from signed Daemonarchy feeds instead of pkg.FreeBSD.org, an install
-trace, an installer built on a visual SDK with four arcade games as extensions,
-cudalab as a virtual app, remote debugger leases and a watchdog, and fixes for the
-NVIDIA install failure, the live-power panic and the Aquamarine exit, plus an arm64
-image for community validation. [CHANGELOG.md](CHANGELOG.md) keeps the detailed
-history; the previous releases' [1.4.0 notes](docs/release-1.4.0.md),
-[1.3.1 notes](docs/release-1.3.1.md) and [1.1.1 qualification record](docs/testing-1.1.1.md)
-remain available.
+## Earlier releases
 
 <!-- release-sync: history -->
+1.4.1 was the stable release from October 31, 2026 until 1.5.0. Its base was source `303b364` with ports at
+`dd277aff`; its [notes](docs/release-1.4.1.md) cover a parallel package fetch from signed Daemonarchy feeds, an
+install trace, an installer built on a visual SDK with four arcade games as extensions, cudalab as a virtual
+app, remote debugger leases and a watchdog, and an arm64 image for community validation.
 1.4.0 was the stable release from October 29, 2026 until 1.4.1. Its base was
 source `06e5befc` with ports at `b7857842`.
 1.3.1 was the stable release from October 25, 2026 until 1.4.0. Its base was
 source `d63d77f4` with ports at `b7857842`.
 <!-- /release-sync -->
 
-Moving an older installation to the 1.4.1 application feed requires a
+Moving an older installation to the 1.5.0 application feed requires a
 coordinated base, kernel and driver upgrade; changing the package URL alone is
 insufficient. Physical GPU, firmware, radio and retained-OS qualification
 remains explicitly recorded rather than inferred from VM tests.
@@ -152,7 +146,7 @@ pkg upgrade
 
 ## Roadmap
 
-**1.4.1 is available with documented qualification gaps; 1.5.0 is planned.** See the [roadmap](ROADMAP.md) for remaining
+**1.5.0 is available with documented qualification gaps; 1.5.1 is planned.** See the [roadmap](ROADMAP.md) for remaining
 graphics, Bluetooth, enterprise Wi-Fi, installation and boot support, upstream
 ports work, and the checks required before release. The
 [partition preview guide](docs/testing-1.1-partitions.md) covers installing into

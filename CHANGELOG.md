@@ -1,12 +1,15 @@
 # Changelog
 
-## Unreleased
+## 1.5.0 (@@PUBLISHED_DATE@@)
 
-Collects what is on `main` since 1.4.1 for the next release, 1.5.0 (opened as 1.4.2 and renamed; 1.4.2 was
-never released). Nothing here is published, and nothing is claimed done beyond the evidence named.
-On 2026-11-03 1.5.0 was re-scoped to evidenced work: it is no longer gated on Literate AI 1.4.0 and the
+Base: FreeBSD 16.0-CURRENT (OSVERSION `1600029`), daemonarchy-src `303b364`,
+ports `@@PORTS_SHORT@@`. Application feeds `@@PACKAGES_AMD64_FEED@@` and `@@PACKAGES_AARCH64_FEED@@`,
+checkout feeds `@@CHECKOUTS_AMD64_FEED@@` and `@@CHECKOUTS_AARCH64_FEED@@`. See the
+[release notes](docs/release-1.5.0.md). Opened as 1.4.2 and renamed 1.5.0 (1.4.2 was never released).
+On 2026-11-03 1.5.0 was re-scoped to evidenced work: it is not gated on Literate AI 1.4.0 and the
 framework-executed goals (BUILD-001, COMP-001, PERF-001, PERF-002, DEV-001 and the native halves of
-ADOPT-002, SRC-001 and RELEASE-001) moved to 1.5.1; SIGN-001 (option A) is in 1.5.0.
+ADOPT-002, SRC-001 and RELEASE-001) moved to 1.5.1; SIGN-001 (option A, one signing session) is in 1.5.0.
+Two hardware trace images ship, one per architecture.
 
 ### Added
 
@@ -48,8 +51,10 @@ ADOPT-002, SRC-001 and RELEASE-001) moved to 1.5.1; SIGN-001 (option A) is in 1.
 - The MacBookPro16,1 Wi-Fi stall fix (daemonarchy-ports #37) is fault-injection tested only and is a
   kernel-bound package needing a rebuilt module and re-signed boot bundle; a physical retest is pending.
 - A candidate 2.4 GHz channel-1 handshake failure on the MacBook is not investigated.
-- ADOPT-002, RELEASE-001, COMP-001, PERF-002, DEV-001 and SRC-001 have not run natively under Literate AI;
-  no build-efficiency gain is claimed.
+- The framework-executed goals have not run natively under Literate AI and moved to 1.5.1; no
+  build-efficiency gain is claimed.
+- The NVIDIA RTX Spark laptop is tested and does not work yet; support is deferred and the kernel fix is not in
+  this release.
 
 ## 1.4.1 (October 31, 2026)
 
