@@ -25,6 +25,8 @@ Wi-Fi, the live desktop and anything past the first screen of the session; the d
 real graphics scripts, not by a full image install. The DRM package is not in a published aarch64 feed
 yet. People with arm64 hardware are still asked to try the image and report what happens.
 
+The first physical aarch64 target is the NVIDIA RTX Spark laptop, an official 1.5.0 target. The 1.5.0 image boots its kernel there but stops while starting secondary CPUs, so it does not reach a desktop; see the [application note](application-note-rtx-spark.md) for the observations, the cause and the workaround.
+
 ## Status in 1.4.1: a community-validation image
 
 The 1.4.1 release publishes `daemonarchy-1.4.1-aarch64.iso.xz`

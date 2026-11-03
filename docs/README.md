@@ -11,6 +11,7 @@ Its published identity is recorded in
 another version are historical records. 1.4 entries describe work in development.
 
 - [Application note: MacBook Pro 16-inch (2019)](application-note-macbookpro16-1.md)
+- [Application note: NVIDIA RTX Spark laptop (aarch64)](application-note-rtx-spark.md)
 - [MacBookPro16,1 physical acceptance for 1.3.1](testing-macbookpro16-1-1.3.1.md)
 - [Daemonarchy 1.3.1 release notes and evidence](release-1.3.1.md)
 - [Product architecture and acceptance traceability](architecture/design-traceability.md)
