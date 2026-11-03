@@ -32,4 +32,10 @@ PATH=$here/closure/toolchain/bin:/sbin:/bin:/usr/sbin:/usr/bin
 export PACKAGE_REPOSITORY_PUBLIC_KEY OUTDIR ISO_STAGE_PARENT PATH
 mkdir -p "$OUTDIR"
 cd "$here"
-exec sh ./build-iso.sh
+# Keep the build's own console output with the export (the verifier scans it for error text,
+# not only the exit status) and install the deterministic verifier beside the ISO.
+rc=0
+sh ./build-iso.sh >"$OUTDIR/build-iso.log" 2>&1 || rc=$?
+cat "$OUTDIR/build-iso.log"
+install -m 0755 "$here/tools/retained-draft/daemonarchy-verify.sh" "$OUTDIR/daemonarchy-verify"
+exit "$rc"

@@ -1,0 +1,169 @@
+{
+  "schema": "literate-ai/retained-project-acceptance-policy@1",
+  "component_locks": [
+    "sha256:33e2456f146061f2742add4ec759ea8ff31c5e210ae63b559884d643ccb6c720",
+    "sha256:387d5476f51c8ad138c3d7dd2566ddb9f2e55da1e6d58b2324acceb4e6d2d890",
+    "sha256:463ebf8122ed8c0cf24eec657ab6d8007968bb7a8255038d4d47c59f09030508",
+    "sha256:475806fc7a5c7c5445d936f8b3e27674ae45b6899c90fe6e4a4d895436902a9c",
+    "sha256:8b5ec3940530ace176acc749a10999825efc812be163f0c267c822153c1b339b",
+    "sha256:9320bf256a81d1ad2dfeb4a3efdf28011aadd201ab3ca07913eb3208de3412e9",
+    "sha256:996bb219965c32096bc80562eaf9c21a601dbf9c203003938b5ac7a3c31e2d7c",
+    "sha256:eb12c2801697ee90dd3f31e1e165807d3f0f1342379e1cf178b846ef3b317126"
+  ],
+  "cases": [
+    {
+      "id": "image:present",
+      "action": "draft-accept-image",
+      "executable": "images/daemonarchy-verify",
+      "argv": [
+        "{output_root}/images",
+        "present"
+      ],
+      "stdin": "",
+      "expected_exit": 0,
+      "expected_stdout": "ZGFlbW9uYXJjaHktdmVyaWZ5IGltYWdlOnByZXNlbnQgT0sgZXJyb3JzPTAK",
+      "expected_stderr": "",
+      "timeout_seconds": 300
+    },
+    {
+      "id": "image:sidecar-iso",
+      "action": "draft-accept-image",
+      "executable": "images/daemonarchy-verify",
+      "argv": [
+        "{output_root}/images",
+        "sidecar-iso"
+      ],
+      "stdin": "",
+      "expected_exit": 0,
+      "expected_stdout": "ZGFlbW9uYXJjaHktdmVyaWZ5IGltYWdlOnNpZGVjYXItaXNvIE9LIGVycm9ycz0wCg==",
+      "expected_stderr": "",
+      "timeout_seconds": 300
+    },
+    {
+      "id": "image:sidecar-xz",
+      "action": "draft-accept-image",
+      "executable": "images/daemonarchy-verify",
+      "argv": [
+        "{output_root}/images",
+        "sidecar-xz"
+      ],
+      "stdin": "",
+      "expected_exit": 0,
+      "expected_stdout": "ZGFlbW9uYXJjaHktdmVyaWZ5IGltYWdlOnNpZGVjYXIteHogT0sgZXJyb3JzPTAK",
+      "expected_stderr": "",
+      "timeout_seconds": 300
+    },
+    {
+      "id": "image:xz-roundtrip",
+      "action": "draft-accept-image",
+      "executable": "images/daemonarchy-verify",
+      "argv": [
+        "{output_root}/images",
+        "xz-roundtrip"
+      ],
+      "stdin": "",
+      "expected_exit": 0,
+      "expected_stdout": "ZGFlbW9uYXJjaHktdmVyaWZ5IGltYWdlOnh6LXJvdW5kdHJpcCBPSyBlcnJvcnM9MAo=",
+      "expected_stderr": "",
+      "timeout_seconds": 300
+    },
+    {
+      "id": "image:budget-raw",
+      "action": "draft-accept-image",
+      "executable": "images/daemonarchy-verify",
+      "argv": [
+        "{output_root}/images",
+        "budget-raw"
+      ],
+      "stdin": "",
+      "expected_exit": 0,
+      "expected_stdout": "ZGFlbW9uYXJjaHktdmVyaWZ5IGltYWdlOmJ1ZGdldC1yYXcgT0sgZXJyb3JzPTAK",
+      "expected_stderr": "",
+      "timeout_seconds": 300
+    },
+    {
+      "id": "image:budget-xz",
+      "action": "draft-accept-image",
+      "executable": "images/daemonarchy-verify",
+      "argv": [
+        "{output_root}/images",
+        "budget-xz"
+      ],
+      "stdin": "",
+      "expected_exit": 0,
+      "expected_stdout": "ZGFlbW9uYXJjaHktdmVyaWZ5IGltYWdlOmJ1ZGdldC14eiBPSyBlcnJvcnM9MAo=",
+      "expected_stderr": "",
+      "timeout_seconds": 300
+    },
+    {
+      "id": "image:iso9660",
+      "action": "draft-accept-image",
+      "executable": "images/daemonarchy-verify",
+      "argv": [
+        "{output_root}/images",
+        "iso9660"
+      ],
+      "stdin": "",
+      "expected_exit": 0,
+      "expected_stdout": "ZGFlbW9uYXJjaHktdmVyaWZ5IGltYWdlOmlzbzk2NjAgT0sgZXJyb3JzPTAK",
+      "expected_stderr": "",
+      "timeout_seconds": 300
+    },
+    {
+      "id": "image:image-version",
+      "action": "draft-accept-image",
+      "executable": "images/daemonarchy-verify",
+      "argv": [
+        "{output_root}/images",
+        "image-version"
+      ],
+      "stdin": "",
+      "expected_exit": 0,
+      "expected_stdout": "ZGFlbW9uYXJjaHktdmVyaWZ5IGltYWdlOmltYWdlLXZlcnNpb24gT0sgZXJyb3JzPTAK",
+      "expected_stderr": "",
+      "timeout_seconds": 300
+    },
+    {
+      "id": "image:image-abi",
+      "action": "draft-accept-image",
+      "executable": "images/daemonarchy-verify",
+      "argv": [
+        "{output_root}/images",
+        "image-abi"
+      ],
+      "stdin": "",
+      "expected_exit": 0,
+      "expected_stdout": "ZGFlbW9uYXJjaHktdmVyaWZ5IGltYWdlOmltYWdlLWFiaSBPSyBlcnJvcnM9MAo=",
+      "expected_stderr": "",
+      "timeout_seconds": 300
+    },
+    {
+      "id": "image:image-tag",
+      "action": "draft-accept-image",
+      "executable": "images/daemonarchy-verify",
+      "argv": [
+        "{output_root}/images",
+        "image-tag"
+      ],
+      "stdin": "",
+      "expected_exit": 0,
+      "expected_stdout": "ZGFlbW9uYXJjaHktdmVyaWZ5IGltYWdlOmltYWdlLXRhZyBPSyBlcnJvcnM9MAo=",
+      "expected_stderr": "",
+      "timeout_seconds": 300
+    },
+    {
+      "id": "image:live-sqlite3",
+      "action": "draft-accept-image",
+      "executable": "images/daemonarchy-verify",
+      "argv": [
+        "{output_root}/images",
+        "live-sqlite3"
+      ],
+      "stdin": "",
+      "expected_exit": 0,
+      "expected_stdout": "ZGFlbW9uYXJjaHktdmVyaWZ5IGltYWdlOmxpdmUtc3FsaXRlMyBPSyBlcnJvcnM9MAo=",
+      "expected_stderr": "",
+      "timeout_seconds": 300
+    }
+  ]
+}

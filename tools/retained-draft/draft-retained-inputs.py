@@ -67,7 +67,8 @@ BUILD_FILES = ("build-iso.sh", "scripts/master-release.sh", "scripts/image-archi
                "scripts/check-closure-feed.sh", "scripts/make-efi-iso.sh",
                HERE + "/run-build-iso.sh", HERE + "/build-iso.env",
                HERE + "/ambient-preflight.py", HERE + "/accept-image.py",
-               HERE + "/closure-inventory.json", HERE + "/closure-spec.json")
+               HERE + "/closure-inventory.json", HERE + "/closure-spec.json",
+               HERE + "/daemonarchy-verify.sh")
 # Documentation selection (project-authored docs; docs/ is the project's documentation root).
 DOC_INCLUDE = ("docs/**/*.md", "*.md", "components/**/*.md", "secureboot/**/*.md",
                "overlay/**/*.md", "skills/**/*.md", "workflows/**/*.md", "sdk/**/*.md",
@@ -161,7 +162,11 @@ def main():
     ap.add_argument("--manifest-out", required=True)
     args = ap.parse_args()
     root = Path.cwd().resolve()
-    roots = tuple(sorted(n for n in os.listdir(root) if n not in EXCLUDED_TOP))
+    # verification/ keeps the withheld acceptance policy, which must lie outside every manifest
+    # root: the other records stay as individual file roots (tests read verification/release-*.json).
+    roots = tuple(sorted([n for n in os.listdir(root) if n not in EXCLUDED_TOP | {"verification"}]
+                         + ["verification/" + n for n in os.listdir(root / "verification")
+                            if n != "retained-project-acceptance.json"]))
     definition = ProjectConfigurationStore(root).read().definition
     closure = json.loads((root / CLOSURE).read_text())
     if closure["problems"]:
@@ -206,6 +211,8 @@ def main():
         "dependency_identity": provisional.role_identity({"dependency"}).uri,
         "test_policy_identity": "sha256:" + by_path[POLICY].sha256,
         "release_policy_identity": "sha256:" + by_path[RELEASE].sha256,
+        "acceptance_policy_identity": "sha256:" + hashlib.sha256(
+            (root / "verification" / "retained-project-acceptance.json").read_bytes()).hexdigest(),
         "tools": [tool(t["name"]) for t in closure["tools"] if t["role"] == "toolchain"],
         "runtime_library_paths": libdirs,
         "actions": [

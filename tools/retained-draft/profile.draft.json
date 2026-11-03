@@ -7,6 +7,7 @@
   "dependency_identity": "sha256:5b8c257af24528b3bf9cc46317f481475a540ff4913422f09ba056fd64c05206",
   "test_policy_identity": "sha256:94fe7c86102612fc1ca62d1a74608a3a3e1a9836d06109d69a67f94e55582244",
   "release_policy_identity": "sha256:f119d79be15d1b4d8b78a3ffb30ccfc73d914fcdb56d0679624299a524981dac",
+  "acceptance_policy_identity": "sha256:6ed4aa3d81420410d06799ac7ae29c4182acc28772cc1b6ddd8d72823f33e485",
   "tools": [
     {
       "name": "[",
@@ -564,6 +565,7 @@
         "docs-tree:docs/README.md",
         "docs-tree:docs/aarch64.md",
         "docs-tree:docs/application-note-macbookpro16-1.md",
+        "docs-tree:docs/application-note-rtx-spark.md",
         "docs-tree:docs/boottrace.md",
         "docs-tree:docs/enterprise-wifi.md",
         "docs-tree:docs/extension-feed.md",
