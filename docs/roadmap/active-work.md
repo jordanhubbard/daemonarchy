@@ -341,7 +341,7 @@ lifecycle authority.
   - [x] Prepare optional filemon/meta-mode capture and immutable per-phase snapshots in source revision `a2f44e0b96c0`; seventeen controller checks pass locally and in controller CI. The declared worker bootstrap now enables owner-only filemon access and its unprivileged readiness inspection passes; all 26 current controller/bootstrap checks pass on FreeBSD. Full traced-build execution remains unqualified.
   - Moved to SRC-002 (1.5.1), unticked: native end-to-end build/package/verify qualification; the first baseline world/kernel/package/set build; VM boot, installer set admission, jail/module matching, signing and rollback.
 - **Evidence:**
-  - [x] The controller and capture tests named in the two boxes above pass as recorded (source PR #4, source revision `a2f44e0b96c0`).
+  - [ ] The controller and capture tests named in the two boxes above pass as recorded (source PR #4, source revision `a2f44e0b96c0`). Not re-run for the 1.5.0 re-scope; the earlier recorded result is not re-verified here.
   - Moved to SRC-002 (1.5.1): exact source/config/toolchain/log/artifact identities, failure refusal checks and native package output.
 
 ### [ ] SRC-002 — Qualify native FreeBSD source builds and packages (deferred half of SRC-001)
@@ -447,7 +447,7 @@ lifecycle authority.
 - **Implementation:**
   - [x] Inventory current roadmap and queue obligations in [the 1.2.0 completion ledger](release-1.2.0.md), including inherited Bluetooth, enterprise Wi-Fi, dual-boot, bhyve and physical trust/graphics gaps.
   - [x] Keep release media and documentation in sync: [`release/current.json`](../../release/current.json) records the latest published release and all its image types and asset digests; `scripts/release-current.py` updates and checks it against GitHub; `tests/docs-release-sync.py` runs in the release-controls workflow and fails on a current-state document that names an older release as current, an older image name, checksum or size, or an unreleased version as available. HACKING.md's release step 3 is the checklist. The 1.4.0 publication must pass it ([ledger row A16](1.4-coverage-ledger.md)).
-  - [x] The 1.4.x release gate `scripts/release-check-1.4.py` and its test `tests/release-check-1.4.py` pass (run for this re-scope, 2026-11-03).
+  - [ ] The 1.4.x release gate `scripts/release-check-1.4.py` passes on the release record. Its test `tests/release-check-1.4.py` passes (run 2026-11-03), but the gate itself refuses until `verification/release-1.5.0.json` exists and the signed assets are present; that is the release step, not yet done.
   - [x] The release preparation and fill tooling (`scripts/prepare-release.py`, `scripts/fill-release.py`) and `tests/release-prepare-fill.py`, `tests/release-asset-names.py` pass (run for this re-scope, 2026-11-03).
   - Moved to RELEASE-002 (1.5.1), unticked: contribute and qualify upstream FreeBSD platform and retained execution support; bind private native workers and VM supervision; complete backlog implementations and acceptance; run the exact final release through Literate AI and verify publication.
 - **Evidence:**
