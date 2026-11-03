@@ -8,6 +8,7 @@
 #
 # Layout (GPT, written to a USB stick):
 #   1  efi       ESP: the boottrace loader as \EFI\BOOT\BOOTX64.EFI
+#                (BOOTAA64.EFI when ARCH=aarch64)
 #   2  HWTROOT   UFS, mounted read-only: /boot (boottrace kernel, selected
 #                modules, Lua, presets in /boot/d, loader.conf with the
 #                unattended cycle as the only behaviour) and a rescue root
@@ -32,13 +33,16 @@
 #
 # usage: build-hwtrace-image.sh -I RELEASE.iso -k KERNEL -l LOADER.efi
 #            -L LUADIR -V VERSION [-o OUTDIR] [-m "MODULE ..."] [-s DATA-MIB]
-#            [-S] [-Z] [-x EXTRA.conf] [-K AUTHORIZED_KEYS] [-H]
+#            [-S] [-Z] [-x EXTRA.conf] [-K AUTHORIZED_KEYS] [-H] [-a ARCH]
 #   -S  also use a serial console (VM testing)
 #   -Z  also write the published form, .img.xz with its .sha256
 #   -K  put these public keys on the stick as KEYS/authorized_keys: the
 #       network debugger starts only for them.  Without -K the image never
 #       starts a network service (the published form carries no keys; add
 #       yours with tools/boottrace/stick.py keys).
+#   -a  target architecture: amd64 (default) or aarch64 (also from the ARCH
+#       environment variable).  Selects the ESP fallback loader name and the
+#       output name; the ISO, kernel and loader must be for that architecture.
 #   -H  also generate the stick's ssh host key here, so its fingerprint is
 #       known before the first boot (written to OUT.img.hostkey as the
 #       fingerprint only).  Without -H the first boot generates and keeps
@@ -46,24 +50,24 @@
 #   -x  append EXTRA.conf to loader.conf (test knobs such as
 #       boottrace_test_drop; never for a published image)
 #
-# Output: OUTDIR/daemonarchy-hwtrace-VERSION-amd64.img and its .sha256.
+# Output: OUTDIR/daemonarchy-hwtrace-VERSION-ARCH.img and its .sha256.
 set -eu
 
 usage() { sed -n '/^# usage:/,/^set -eu/p' "$0" | sed '$d'; exit 64; }
 here=$(cd "$(dirname "$0")" && pwd)
 iso= kernel= loader= luadir= version= outdir=. datamib=256 serial= compress=
-extra= keys= hostkey=
+extra= keys= hostkey= arch=${ARCH:-amd64}
 # msdosfs for DATRACE; the NIC drivers GENERIC lacks (USB Ethernet, bge, msk;
 # em, igb, igc, ix, re and rge are built into the kernel) and the helpers they
 # depend on.  Missing ones are
 # skipped with a note.
 modules="msdosfs miibus uether if_ure if_axge if_axe if_cdce if_cdceem if_mos if_smsc if_muge if_urndis if_ipheth if_aue if_bge if_msk"
-while getopts I:k:l:L:V:o:m:s:SZx:K:H opt; do
+while getopts I:k:l:L:V:o:m:s:SZx:K:Ha: opt; do
 	case $opt in
 	I) iso=$OPTARG ;; k) kernel=$OPTARG ;; l) loader=$OPTARG ;;
 	L) luadir=$OPTARG ;; V) version=$OPTARG ;; o) outdir=$OPTARG ;;
 	m) modules=$OPTARG ;; s) datamib=$OPTARG ;; S) serial=1 ;; Z) compress=1 ;;
-	x) extra=$OPTARG ;; K) keys=$OPTARG ;; H) hostkey=1 ;; *) usage ;;
+	x) extra=$OPTARG ;; K) keys=$OPTARG ;; H) hostkey=1 ;; a) arch=$OPTARG ;; *) usage ;;
 	esac
 done
 [ -n "$iso" ] && [ -n "$kernel" ] && [ -n "$loader" ] && [ -n "$luadir" ] &&
@@ -74,7 +78,12 @@ esac
 [ "$(uname -s)" = FreeBSD ] || { echo "run on the FreeBSD builder" >&2; exit 1; }
 py=$(command -v python3 || command -v python3.12 || command -v python3.11) ||
     { echo "Python 3 is needed for the block map" >&2; exit 1; }
-name=daemonarchy-hwtrace-$version-amd64.img
+case $arch in
+amd64) efiname=BOOTX64.EFI ;;
+aarch64) efiname=BOOTAA64.EFI ;;
+*) echo "unsupported ARCH: $arch (amd64 or aarch64)" >&2; exit 64 ;;
+esac
+name=daemonarchy-hwtrace-$version-$arch.img
 out=$outdir/$name
 [ -e "$out" ] && { echo "refusing to overwrite $out" >&2; exit 1; }
 if [ -n "$keys" ]; then
@@ -212,7 +221,7 @@ makefs -t ffs -B little -o version=2,minfree=0,label=HWTROOT \
     "$work/root.ufs" "$root"
 
 mkdir -p "$work/esp/EFI/BOOT"
-cp "$loader" "$work/esp/EFI/BOOT/BOOTX64.EFI"
+cp "$loader" "$work/esp/EFI/BOOT/$efiname"
 makefs -t msdos -s 40m -o fat_type=16,volume_label=EFISYS \
     "$work/esp.img" "$work/esp"
 

@@ -6,7 +6,9 @@ that explains why (the MSI Raider 18 HX AI A2XWIG in
 the boottrace kernel records each startup step in UEFI NVRAM before the step
 runs. The **hardware bring-up trace image**
 (`daemonarchy-hwtrace-<version>-amd64.img`, built by `build-hwtrace-image.sh`)
-then runs an unattended loop. Each boot files the previous trace on the
+then runs an unattended loop. (An aarch64 image, `daemonarchy-hwtrace-<version>-aarch64.img`,
+is built the same way with `-a aarch64` or `ARCH=aarch64`; it carries the loader as
+`\EFI\BOOT\BOOTAA64.EFI` and must be built from the arm64 ISO's own kernel and loader.) Each boot files the previous trace on the
 stick and boots the next queued experiment. The image is a separate product
 image type, not a mode of the install ISO. The install ISO's loader keeps at
 most the interactive single traced boot and never cycles. HACKING.md
@@ -368,7 +370,9 @@ shimmed commands in CI.
 
 `build-hwtrace-image.sh` builds the image on the FreeBSD builder from a
 boottrace kernel, the boottrace loader and Lua, and the release ISO the
-kernel matches; see HACKING.md. `tools/boottrace/make-stick.sh` is the
+kernel matches; see HACKING.md. For aarch64 pass `-a aarch64` (or set `ARCH=aarch64`, which
+`scripts/master-release.sh hwtrace` also honours) together with the arm64 ISO,
+kernel and loader on an arm64 FreeBSD builder. `tools/boottrace/make-stick.sh` is the
 earlier interim remaster of a live ISO. It was used for the first MSI
 iterations and adds the same stick settings (`boottrace_stick`,
 `boottrace_autocycle`) to a copy of the ISO.
