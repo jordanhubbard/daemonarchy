@@ -387,7 +387,7 @@ space than a cached installer-only rebuild. Check resources before dispatching.
    ./build-iso.sh
    ```
 
-   The image is named from the repository's `VERSION` file (`scripts/version.py`): `daemonarchy-<version>-<arch>.iso`, for example `daemonarchy-1.4.1-amd64.iso` (published xz-compressed as `.iso.xz`). Set `NAME` to override. `build-iso.sh` refuses a `VERSION` that is not `X.Y.Z`.
+   The image is named from the repository's `VERSION` file (`scripts/version.py`): `daemonarchy-<version>-<arch>.iso`, for example `daemonarchy-1.5.0-amd64.iso` (published xz-compressed as `.iso.xz`). Set `NAME` to override. `build-iso.sh` refuses a `VERSION` that is not `X.Y.Z`.
 
    The image and its `.sha256` land in `/usr/local/poudriere/data/images`.
 
@@ -1293,7 +1293,7 @@ coordinated operation.
    carries one image per architecture:
 
    ```
-   gh release create daemonarchy-1.4.1 --target <exact-reviewed-commit> --latest --title "Daemonarchy 1.4.1" --notes-file notes.md daemonarchy-1.4.1-amd64.iso.xz daemonarchy-1.4.1-amd64.iso.xz.sha256 daemonarchy-1.4.1-aarch64.iso.xz daemonarchy-1.4.1-aarch64.iso.xz.sha256 daemonarchy-1.4.1-boot.txz daemonarchy-1.4.1-boot.txz.sig daemonarchy-1.4.1.pem daemonarchy-1.4.1.der
+   gh release create daemonarchy-1.5.0 --target <exact-reviewed-commit> --latest --title "Daemonarchy 1.5.0" --notes-file notes.md daemonarchy-1.5.0-amd64.iso.xz daemonarchy-1.5.0-amd64.iso.xz.sha256 daemonarchy-1.5.0-aarch64.iso.xz daemonarchy-1.5.0-aarch64.iso.xz.sha256 daemonarchy-1.5.0-boot.txz daemonarchy-1.5.0-boot.txz.sig daemonarchy-1.5.0.pem daemonarchy-1.5.0.der
    ```
 
    Verify the exact uploaded asset names, sizes and SHA-256 digests. Keep

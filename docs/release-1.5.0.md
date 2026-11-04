@@ -11,23 +11,23 @@ Apps menu on amd64, the first part of a graphical package manager, sandboxed Lua
 extensions, and a fix for a Wi-Fi stall on the MacBookPro16,1. It was re-scoped on 2026-11-03 to
 what has evidence: the framework-executed goals (build speed, complete source and ports Components,
 the development system, multi-machine workers) are in [1.5.1](roadmap/release-1.5.1.md), and support
-for the NVIDIA RTX Spark laptop is deferred (see below). Published @@PUBLISHED_DATE@@. The
+for the NVIDIA RTX Spark laptop is deferred (see below). Published November 4, 2026. The
 [GitHub release](https://github.com/jordanhubbard/daemonarchy/releases/tag/daemonarchy-1.5.0)
 is the authority for the final images, asset hashes and publication state.
 
 ## What you download
 
-- `daemonarchy-1.5.0-amd64.iso.xz` (@@AMD64_ISO_BYTES@@ bytes, SHA-256
-  `@@AMD64_ISO_SHA256@@`), the x86-64 image for BIOS or UEFI.
-- `daemonarchy-1.5.0-aarch64.iso.xz` (@@AARCH64_ISO_BYTES@@ bytes, SHA-256
-  `@@AARCH64_ISO_SHA256@@`), the arm64 image, UEFI only. It is still a
+- `daemonarchy-1.5.0-amd64.iso.xz` (1,592,500,128 bytes, SHA-256
+  `6e18a512e9e2072f96d3e1941da7d57d95ec32aa62b3e2a7cd3493c31007cbfd`), the x86-64 image for BIOS or UEFI.
+- `daemonarchy-1.5.0-aarch64.iso.xz` (958,319,980 bytes, SHA-256
+  `6936c010949f88c5621018c149d141270d55adcc434b799528d30669ee6840b0`), the arm64 image, UEFI only. It is still a
   community-validation image: read [the aarch64 section](#aarch64-image-community-validation).
-- `daemonarchy-hwtrace-1.5.0-amd64.img.xz` (@@HWTRACE_BYTES@@ bytes, SHA-256
-  `@@HWTRACE_SHA256@@`), the hardware bring-up trace image for machines that fail early
+- `daemonarchy-hwtrace-1.5.0-amd64.img.xz` (20,073,092 bytes, SHA-256
+  `c133741f936498af0daa32298ff405b7f71f77200a7013cb3b3abc396c60ac57`), the hardware bring-up trace image for machines that fail early
   in kernel start (amd64, UEFI). It is not an installer: it holds the ISO's own kernel
   and loader and carries no keys. See [the trace image](boottrace.md).
-- `daemonarchy-hwtrace-1.5.0-aarch64.img.xz` (@@HWTRACE_AARCH64_BYTES@@ bytes, SHA-256
-  `@@HWTRACE_AARCH64_SHA256@@`), the same trace image for arm64 (UEFI, `BOOTAA64.EFI`),
+- `daemonarchy-hwtrace-1.5.0-aarch64.img.xz` (15043936 bytes, SHA-256
+  `07c47a408733d69200086100e10d39cbc341a3c245ce58251fe9b85748e9c6e7`), the same trace image for arm64 (UEFI, `BOOTAA64.EFI`),
   built from the aarch64 ISO's kernel and loader. It was used on the RTX Spark laptop;
   see [the Spark note](application-note-rtx-spark.md).
 - A `.sha256` file for each image, which covers the compressed file you download.
@@ -39,10 +39,10 @@ Decompress an image before writing it:
 `xz -dc daemonarchy-1.5.0-amd64.iso.xz | dd of=/dev/<usb-device> bs=1M`.
 
 The base is FreeBSD 16.0-CURRENT, OSVERSION `1600029`, built from daemonarchy-src
-`303b364`; the ports are daemonarchy-ports `@@PORTS_SHORT@@`. The installer commit is
-`@@INSTALLER_SHORT@@`. The signed application feeds are `@@PACKAGES_AMD64_FEED@@` and
-`@@PACKAGES_AARCH64_FEED@@`; the optional source and ports checkouts are
-`@@CHECKOUTS_AMD64_FEED@@` and `@@CHECKOUTS_AARCH64_FEED@@`.
+`303b364`; the ports are daemonarchy-ports `e84b4c4c`. The installer commit is
+`ea0432a0`. The signed application feeds are `packages-16-amd64-1.5.0-r2` and
+`packages-16-aarch64-1.5.0-r2`; the optional source and ports checkouts are
+`checkouts-16-amd64-1.5.0-r2` and `checkouts-16-aarch64-1.5.0-r3`.
 
 ## What changes
 
@@ -64,7 +64,7 @@ The base is FreeBSD 16.0-CURRENT, OSVERSION `1600029`, built from daemonarchy-sr
 - **Graphical package manager (GUI-001), partly.** `daemonarchy-pkg`, a GTK 4 window over
   the installer's own planner and parallel fetch, with a plan before every change, signed
   repository display and an offer to remove unused dependencies, is in the repository and
-  packaged as `ports-mgmt/daemonarchy-pkg`. @@GUI001_EVIDENCE@@ OctoPkg remains the
+  packaged as `ports-mgmt/daemonarchy-pkg`. It has no real-desktop evidence in this release. OctoPkg remains the
   fallback manager until the new one has real-desktop evidence; see
   [gui-package-manager.md](gui-package-manager.md).
 - **Faster login on the MSI Raider 18 HX.** `x11-toolkits/aquamarine`
@@ -108,7 +108,7 @@ None of these is claimed done by 1.5.0. They are carried in the
 | Item | Why it is not in this release |
 | --- | --- |
 | BUILD-001, COMP-001, PERF-001, PERF-002, DEV-001 | Moved to [1.5.1](roadmap/release-1.5.1.md): they need the Literate AI framework to execute native components, and no framework 1.4.0 exists. No build-speed gain is claimed. |
-| ADOPT-002, SRC-001, RELEASE-001 (native halves) | Only the delivered parts are in 1.5.0 (handler audit and binding records, the controller and capture work, the 1.4.x release gate and tooling). The native retained execution and release enforcement are ADOPT-003, SRC-002 and RELEASE-002 in 1.5.1. |
+| ADOPT-002, SRC-001, RELEASE-001 (native halves) | Only the delivered parts are in 1.5.0 (handler audit and binding records, the controller and capture work, the 1.4.x release gate and tooling). The native retained execution and release enforcement are planned as ADOPT-003, SRC-002 and RELEASE-002 for 1.5.1. |
 | NVIDIA RTX Spark laptop (aarch64) | Tested, not yet working; support is deferred and the kernel fix is not in this release ([note](application-note-rtx-spark.md)). |
 | DEBUG-003 | Foundations only. Bidirectional loader, mountroot and panic debugging needs boot-chain research and hardware. |
 | HW-004 | T2 Touch ID is not in the image; it needs a Mac with enrolled fingers. |
@@ -120,7 +120,7 @@ None of these is claimed done by 1.5.0. They are carried in the
 ## aarch64 image: community validation
 
 The aarch64 image is still released so that people with arm64 hardware can try it and tell
-us what happens. @@AARCH64_FINAL_QEMU_STATUS@@ Nothing beyond QEMU boot and install is
+us what happens. In QEMU with an e1000e network card the final image installs (all 919 archives, about 20 minutes) and boots under UEFI, and the signed-repository, feed-URL and no-FreeBSD-repository checks pass. **Known issue:** with QEMU's default virtio-net card the install stalls during the package fetch: about a minute in, the guest stops servicing receive on vtnet0, so every lookup and download then times out; bringing the interface down and up revives it. Use `-device e1000e` until this is fixed. The automated desktop check first timed out on the e1000e run because the harness's QEMU `virt` guest had no keyboard to type the SDDM password with; with a USB keyboard added and nothing else changed it passed (graphical login, input, the Epiphany browser and the package manager). Nothing beyond QEMU boot and install is
 claimed. The one physical aarch64 machine tried, the NVIDIA RTX Spark laptop, does not work yet
 (support is deferred); sound, Wi-Fi, upgrade and the live desktop on real hardware were not run. The default browser is Epiphany. See
 [aarch64.md](aarch64.md) for what was and was not verified and how to report results.
@@ -130,7 +130,7 @@ claimed. The one physical aarch64 machine tried, the NVIDIA RTX Spark laptop, do
 - **No Wi-Fi or Hyprland guarantees.** Wi-Fi depends on the chipset and firmware, and
   the desktop depends on the GPU driver. Nothing in this release promises either on
   any particular machine.
-- @@PHYSICAL_STATUS@@
+- Physical runs of the final amd64 image on the MSI Raider 18 HX and the MacBookPro16,1 were not made before publication; the hardware statements below describe earlier builds.
 - **MSI Raider 18 HX and MacBookPro16,1.** The limits in the
   [1.4.0 notes](release-1.4.0.md#hardware-status-and-limits) stand: polling-mode MSI
   touchpad, only Arrow Lake-S I2C controller 0 recognised, no ARL004 VMD interrupt

@@ -15,7 +15,7 @@ first native results:
 ## Status in 1.5.0: a community-validation image
 
 The 1.5.0 release publishes `daemonarchy-1.5.0-aarch64.iso.xz` and the aarch64 hardware trace image
-`daemonarchy-hwtrace-1.5.0-aarch64.img.xz`. @@AARCH64_FINAL_QEMU_STATUS@@ The image remains a community-validation
+`daemonarchy-hwtrace-1.5.0-aarch64.img.xz`. In QEMU with an e1000e network card the final image installs (all 919 archives, about 20 minutes) and boots under UEFI, and the signed-repository, feed-URL and no-FreeBSD-repository checks pass. **Known issue:** with QEMU's default virtio-net card the install stalls during the package fetch: about a minute in, the guest stops servicing receive on vtnet0, so every lookup and download then times out; bringing the interface down and up revives it. Use `-device e1000e` until this is fixed. The automated desktop check first timed out on the e1000e run because the harness's QEMU `virt` guest had no keyboard to type the SDDM password with; with a USB keyboard added and nothing else changed it passed (graphical login, input, the Epiphany browser and the package manager). The image remains a community-validation
 image: QEMU only, and the one physical arm64 machine tried does not work yet (below). What changed after 1.4.1 is a VirtIO GPU path: `graphics/drm-612-kmod` builds the VirtIO GPU stack on
 aarch64 (daemonarchy-ports #36), the graphics service loads and reattaches the driver before SDDM starts
 (no kernel change), and an aarch64-only patch lets a render-node client create, map and destroy dumb
@@ -30,10 +30,12 @@ The first physical aarch64 target is the NVIDIA RTX Spark laptop, an official ta
 
 ## Status in 1.4.1: a community-validation image (history)
 
-The 1.4.1 release publishes `daemonarchy-1.4.1-aarch64.iso.xz`
+<!-- release-sync: history -->
+The earlier 1.4.1 release published `daemonarchy-1.4.1-aarch64.iso.xz`
 ([release notes](release-1.4.1.md#aarch64-image-community-validation)). The bar it
 met is that it boots and installs in a QEMU virtual machine. Nothing beyond that is
 claimed, and people with arm64 hardware are asked to fill the gaps.
+<!-- /release-sync -->
 
 **Verified** (records below and
 [`aarch64-1.4.1-staging-20261030-development.json`](../verification/aarch64-1.4.1-staging-20261030-development.json)):
@@ -630,7 +632,7 @@ Nothing here is under LitAI custody, and nothing was uploaded.
 | Application feed `packages-16-aarch64-1.4.1` | 496 payloads, 1.9 GiB, signed; `packagesite.pkg` `4c51894d…` | 30 s to collect |
 | Checkout feed `checkouts-16-aarch64-1.4.1` | src `303b3646270f` (2 packages) and ports `0e8fb88350c7`; signed | 5 min |
 | Closure shard `packages-16-aarch64-1.4.1-upstream` | 552 upstream packages, 3,261,881,077 bytes, 556 files; signed; verified | fetch 6 min |
-| ISO `daemonarchy-1.4.1-aarch64.iso` | 2,628,749,312 bytes (`0f9af366…`); `.iso.xz` 957,743,052 bytes (`3f0675c3…`) | 22 min with xz |
+| Earlier 1.4.1 aarch64 ISO | 2,628,749,312 bytes (`0f9af366…`); `.iso.xz` 957,743,052 bytes (`3f0675c3…`) | 22 min with xz |
 | QEMU install | passed; see below | 39 min |
 
 **Which ports.** The amd64 pin, `daemonarchy-ports` `main` at `b785784`, is 10

@@ -1,10 +1,10 @@
 # Changelog
 
-## 1.5.0 (@@PUBLISHED_DATE@@)
+## 1.5.0 (November 4, 2026)
 
 Base: FreeBSD 16.0-CURRENT (OSVERSION `1600029`), daemonarchy-src `303b364`,
-ports `@@PORTS_SHORT@@`. Application feeds `@@PACKAGES_AMD64_FEED@@` and `@@PACKAGES_AARCH64_FEED@@`,
-checkout feeds `@@CHECKOUTS_AMD64_FEED@@` and `@@CHECKOUTS_AARCH64_FEED@@`. See the
+ports `e84b4c4c`. Application feeds `packages-16-amd64-1.5.0-r2` and `packages-16-aarch64-1.5.0-r2`,
+checkout feeds `checkouts-16-amd64-1.5.0-r2` and `checkouts-16-aarch64-1.5.0-r3`. See the
 [release notes](docs/release-1.5.0.md). Opened as 1.4.2 and renamed 1.5.0 (1.4.2 was never released).
 On 2026-11-03 1.5.0 was re-scoped to evidenced work: it is not gated on Literate AI 1.4.0 and the
 framework-executed goals (BUILD-001, COMP-001, PERF-001, PERF-002, DEV-001 and the native halves of
