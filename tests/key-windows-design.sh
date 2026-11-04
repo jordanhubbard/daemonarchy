@@ -8,9 +8,9 @@ fail() { echo "FAIL: $*" >&2; exit 1; }
 has() { grep -qE -- "$2" "$1" || fail "$(basename "$1") lacks: $3"; }
 hasnt() { ! grep -nE -- "$2" "$1" >&2 || fail "$(basename "$1"): $3"; }
 
-windows=(boot-relabel-window boot-full-window feeds-arm64-window extensions-window)
-runners=(boot-relabel-run boot-full-run feeds-arm64-run extensions-run)
-for f in "${windows[@]}" "${runners[@]}" arm64-ingest; do bash -n "$dir/$f.sh" || fail "$f.sh does not parse"; done
+windows=(boot-relabel-window boot-full-window feeds-arm64-window checkout-arm64-window extensions-window)
+runners=(boot-relabel-run boot-full-run feeds-arm64-run checkout-arm64-run extensions-run)
+for f in "${windows[@]}" "${runners[@]}" arm64-ingest arm64-ingest-checkout; do bash -n "$dir/$f.sh" || fail "$f.sh does not parse"; done
 
 for w in "${windows[@]}"; do
   f=$dir/$w.sh
@@ -23,7 +23,7 @@ for w in "${windows[@]}"; do
   has "$f" 'hash mismatch: refusing' 'a hash comparison on both sides'
   has "$f" 'key sha256 on madmax after' 'the hash after'
   has "$f" 'KEYWINDOW_ENV' 'release values from the env file'
-  has "$f" 'RELEASE:\?' 'a required RELEASE'
+  has "$f" 'RELEASE:\?|CHK_TAG:\?' 'a required release or feed tag'
   has "$f" 'WORK:\?' 'a required WORK'
   has "$f" 'key window is open|another key window' 'a refusal when another window is open'
   has "$f" 'keywindow.lock' 'the shared lock'
@@ -49,7 +49,7 @@ for r in "${runners[@]}"; do
   hasnt "$f" 'rev2-[0-9]{8}' 'a hard-coded release directory'
   hasnt "$f" ':-1\.[0-9]+\.[0-9]+\}' 'a hard-coded release default'
 done
-for r in boot-relabel-run boot-full-run extensions-run feeds-arm64-run; do has "$dir/$r.sh" 'keywindow\.lock' 'the key-window lock'; done
+for r in boot-relabel-run boot-full-run extensions-run feeds-arm64-run checkout-arm64-run; do has "$dir/$r.sh" 'keywindow\.lock' 'the key-window lock'; done
 
 # Every variable a script requires is documented in the example env file, and the example holds no key material.
 env=$dir/key-windows.env.example
@@ -63,4 +63,9 @@ has "$dir/boot-full-run.sh" 'FREEZE:' 'the freeze check on tools and inputs'
 has "$dir/boot-full-run.sh" 'differ from the previous signed tree' 'the prepared-tree gate'
 has "$dir/boot-full-run.sh" '\.previous' 'the previous bundle kept'
 has "$dir/boot-full-run.sh" 'PRIVATE MATERIAL IN PUBLIC BUNDLE' 'the leak check'
+# The checkout-only signing refuses a mislabelled feed before the key is used.
+has "$dir/checkout-arm64-run.sh" "tar -xOf .*\+COMPACT_MANIFEST" 'a read of each package'"'"'s own ABI label before signing'
+has "$dir/checkout-arm64-run.sh" 'do not declare' 'a refusal when a package declares another ABI'
+has "$dir/checkout-arm64-run.sh" 'repository_url' 'a check that checkouts.json names the release'
+has "$dir/checkout-arm64-run.sh" 'control: the same catalogue is refused' 'an ABI control that proves the check can fail'
 echo 'key-windows design checks passed'
