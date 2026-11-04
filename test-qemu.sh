@@ -189,7 +189,8 @@ vm() {
 		if [ "$ARCH" = aarch64 ]; then gpu=virtio-gpu-gl-pci; else gpu=virtio-vga-gl; fi
 		set -- -device "$gpu" -display "egl-headless,rendernode=$VIRGL_RENDER_NODE" \
 			-vnc "$VNC_LISTEN" -device qemu-xhci,id=desktop-usb \
-			-device usb-tablet,bus=desktop-usb.0 "$@"
+			-device usb-tablet,bus=desktop-usb.0 \
+			-device usb-kbd,bus=desktop-usb.0 "$@"
 	elif [ "$ARCH" = aarch64 ]; then
 		# The installer autologs in on ttyv0 only, and 'virt' has no VGA, so
 		# without a display device the guest has only the serial console.
