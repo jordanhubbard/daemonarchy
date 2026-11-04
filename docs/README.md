@@ -1,7 +1,8 @@
 # Documentation index
 
-Product goals and completeness are in root `PROJECT.md`; build and release
-commands remain in root `HACKING.md`. This index makes the retained evidence
+Product goals and completeness are in root `PROJECT.md`; the developer guide,
+build and release commands are in root `HACKING.md` (narrative first, then the full
+reference); the newcomer's overview is root `README.md`. This index makes the retained evidence
 reachable without changing its historical scope.
 
 The current release is **1.5.0**: start with its
@@ -23,6 +24,7 @@ another version are historical records. 1.5.1 entries describe planned work.
 - [Signed catalogue and package payload checks](signed-package-snapshot.md)
 - [1.3.1 package repository key rotation](package-repository-key-rotation-1.3.1.md)
 - [Getting started with Daemonarchy](getting-started.md)
+- [Installer reference: unattended installs, optional checkouts, CUDA and cudalab](installer-reference.md)
 - [Hardware quirks](hardware-quirks.md)
 - [GPU report: which GPU the desktop uses](gpu-report.md)
 - [Hardware trace stick: reset-surviving boot trace](boottrace.md)
