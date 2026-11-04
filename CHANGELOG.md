@@ -8,7 +8,10 @@ checkout feeds `checkouts-16-amd64-1.5.0-r2` and `checkouts-16-aarch64-1.5.0-r3`
 [release notes](docs/release-1.5.0.md). Opened as 1.4.2 and renamed 1.5.0 (1.4.2 was never released).
 On 2026-11-03 1.5.0 was re-scoped to evidenced work: it is not gated on Literate AI 1.4.0 and the
 framework-executed goals (BUILD-001, COMP-001, PERF-001, PERF-002, DEV-001 and the native halves of
-ADOPT-002, SRC-001 and RELEASE-001) moved to 1.5.1; SIGN-001 (option A, one signing session) is in 1.5.0.
+ADOPT-002, SRC-001 and RELEASE-001) moved to 1.5.1. The SIGN-001 process rule
+was documented for 1.5.0, but its command count and timing were not retained
+in the release record; that acceptance and the other unfinished 1.5.0 goals
+are carried into [the 1.5.1 plan](docs/roadmap/release-1.5.1.md#unfinished-150-acceptance).
 Two hardware trace images ship, one per architecture.
 
 ### Added

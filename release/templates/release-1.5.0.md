@@ -1,10 +1,11 @@
 # Daemonarchy 1.5.0 release notes
 
-<!-- Template for the draft release pull request (scripts/prepare-release.py copies it to
+<!-- Historical template for the draft release pull request (scripts/prepare-release.py copies it to
 docs/release-1.5.0.md). Written from what is merged on main when the template was made.
 Before the release the owner re-checks every claim below against main and the evidence,
 removes what did not ship and adds what did. The upper-case words between pairs of at-signs
-are filled by scripts/fill-release.py (GUI001_EVIDENCE is given with --set). -->
+are filled by scripts/fill-release.py (GUI001_EVIDENCE is given with --set).
+For the published result use docs/release-1.5.0.md and release/current.json. -->
 
 Daemonarchy 1.5.0 is the release after 1.4.1. It adds Windows programs and Steam to the
 Apps menu on amd64, the first part of a graphical package manager, and a fix for a
@@ -91,13 +92,13 @@ The base is FreeBSD 16.0-CURRENT, OSVERSION `1600029`, built from daemonarchy-sr
 
 ## What is not done, and why
 
-None of these is claimed done by 1.5.0. They are carried in the
-[1.5.0 plan](roadmap/release-1.5.0.md).
+The framework-executed goals below are deferred to the
+[1.5.1 plan](roadmap/release-1.5.1.md). The other rows remain release limits
+until their acceptance evidence is recorded.
 
 | Item | Why it is not in this release |
 | --- | --- |
-| ADOPT-002, RELEASE-001, COMP-001, PERF-002, DEV-001 | Blocked on the external Literate AI framework, which this repository cannot execute or fake. |
-| SRC-001 | Partly done: the hand pipeline builds the base and the kernel. Owned, repeatable source builds are not finished. |
+| ADOPT-003, SRC-002, RELEASE-002, COMP-001, PERF-001, PERF-002, DEV-001, BUILD-001 | Complete native Component execution, packages, cross-repository scheduling and a framework-run release need the later Literate AI runtime and native qualification. The delivered authority/binding work, source capture and 1.4.x release gate remain in 1.5.0 under ADOPT-002, SRC-001 and RELEASE-001. |
 | DEBUG-003 | Foundations only. Bidirectional loader, mountroot and panic debugging needs boot-chain research and hardware. |
 | HW-004 | T2 Touch ID is not in the image; it needs a Mac with enrolled fingers. |
 | GUI-001 (complete) | The window is merged and packaged but has no evidence from a real desktop install, update and remove. |
@@ -108,9 +109,10 @@ None of these is claimed done by 1.5.0. They are carried in the
 ## aarch64 image: community validation
 
 The aarch64 image is still released so that people with arm64 hardware can try it and tell
-us what happens. @@AARCH64_FINAL_QEMU_STATUS@@ Nothing beyond QEMU boot and install is
-claimed: no physical aarch64 machine was tested, and sound, Wi-Fi, upgrade and the live
-desktop on real hardware were not run. The default browser is Epiphany. See
+us what happens. @@AARCH64_FINAL_QEMU_STATUS@@ The NVIDIA RTX Spark laptop was
+boot-tested but does not reach a desktop with the selected kernel; no physical
+aarch64 install is claimed. Sound, Wi-Fi, upgrade and the live desktop on real
+hardware were not run. The default browser is Epiphany. See
 [aarch64.md](aarch64.md) for what was and was not verified and how to report results.
 
 ## Hardware status and limits

@@ -1,9 +1,13 @@
 # 1.5.0 plan: the 1.4.2 scope, re-scoped on 2026-11-03 to what is evidenced
 
-- **Status:** active
+- **Status:** partial
 - **Owning queue item:** [RELEASE-001](active-work.md#release-001-deliver-a-qualified-literate-ai-release-workflow-in-14)
 - **Supporting queue items:** [ADOPT-002](active-work.md#adopt-002-qualify-retained-native-execution-and-release-enforcement), [SRC-001](active-work.md#src-001-establish-owned-freebsd-source-builds-and-packages), [GUI-001](active-work.md#gui-001-deliver-a-colorful-fast-graphical-package-manager), [DEBUG-003](active-work.md#debug-003-deliver-bidirectional-loader-mountroot-and-panic-network-debugging-for-14), [HW-004](active-work.md#hw-004-t2-touch-id-login-through-fprintd), [EXT-002](active-work.md#ext-002-sandboxed-lua-extensions-for-content-we-did-not-write), [DESKTOP-001](active-work.md#desktop-001-ship-the-desktop-launchers-and-menu-entries-in-the-daemonarchy-desktop-package), [SIGN-001](active-work.md#sign-001-one-signing-session-per-release-stop-the-key-window-churn)
 - **Completion / archival evidence:** pending; nothing here is claimed done. Done means the evidence listed under Acceptance below, retained with exact inputs.
+
+The 1.5.0 image was published November 4, 2026. Unfinished acceptance is
+carried to [1.5.1](release-1.5.1.md#unfinished-150-acceptance); this plan's
+remaining boxes are historical evidence of the original target.
 
 Opened 2026-10-31 as the 1.4.2 scope plus a build-speed program (BUILD-001). **Re-scoped 2026-11-03 by
 operator decision** to the work that is real, with the framework-executed goals deferred to

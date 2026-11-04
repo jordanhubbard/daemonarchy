@@ -254,8 +254,9 @@ the collector can capture the visible text buffer. It never reads console input.
 The stream cannot capture firmware output, a hard reset, or panic messages emitted
 after the kernel/network stops responding. Empty crash-dump records do not prove
 that no kernel fault occurred. Serial/BMC capture or kernel network-debug support
-is needed for that boundary; loader and early-kernel network debugging is
-upcoming 1.4 work ([plan](roadmap/release-1.4.0.md)) and is not in the 1.3.1 image.
+is needed for that boundary; loader and early-kernel network debugging remains
+open work from the historical [1.4 plan](roadmap/release-1.4.0.md). It was not
+qualified by the published 1.5.0 image and is queued under DEBUG-003.
 
 Validate reboot resumption with `tests/remote-debug-reboot.sh` as root on FreeBSD.
 Validate observation with `tests/remote-debug-observe.sh` as root on FreeBSD and

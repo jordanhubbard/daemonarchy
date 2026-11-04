@@ -48,8 +48,9 @@ generated wrapper commands alone do not establish that qualification.
 
 ## The repositories that make up Daemonarchy
 
-Verified against the repositories on 2026-10-31 (the port facts from daemonarchy-ports `main`);
-anything marked *unverified* was not checked. File-level detail is in [Where things live](#where-things-live).
+The five owned product repositories below supply the selected implementation;
+Literate AI is a separate authority and build toolchain input. Pin exact commits
+for each release. File-level detail is in [Where things live](#where-things-live).
 
 | Repository | What it is | Installed or used by |
 |---|---|---|
@@ -58,6 +59,12 @@ anything marked *unverified* was not checked. File-level detail is in [Where thi
 | [daemonarchy-ports](https://github.com/jordanhubbard/daemonarchy-ports) | The forked FreeBSD ports tree: packaging recipes (Makefiles, plists, patches) only. Default branch `main`. | Poudriere builds our feeds from it; the installer's `origins.sh` names the ports we publish ourselves. |
 | [daemonarchy-src](https://github.com/jordanhubbard/daemonarchy-src) | The forked FreeBSD source tree: the base system and kernel. Default branch `main`. | The image's world, kernel, pkgbase and installer sets, and the kernel-bound modules, are built from it. |
 | [omarchy-freebsd](https://github.com/jordanhubbard/omarchy-freebsd) | The FreeBSD compatibility layer for Omarchy (`freebsdize.in`, `compat/`, `freebsd-bin/`, `seed-user`, ...). | Fetched by the port `x11-wm/omarchy` as a second distfile, pinned at `3e8359b47c28` in the port. |
+| [literate-ai](https://github.com/jordanhubbard/literate-ai) | The independently versioned framework and `litai` CLI for contracts, locks and release controls. | Used in selected controller and development environments; packaging it for installed systems remains [LITAI-PKG-001](docs/roadmap/active-work.md#litai-pkg-001-ship-literate-ai-as-a-port-and-package-so-users-run-srcports-operations-with-litai). |
+
+The `x11-wm/omarchy` port also fetches pinned
+[basecamp/omarchy](https://github.com/basecamp/omarchy) source. The owned
+`jordanhubbard/omarchy` fork is not selected by that port. FreeBSD's upstream
+source and ports are synchronization inputs for the owned forks.
 
 Every repository our packages are built from, by the ports' `GH_ACCOUNT`/`GH_PROJECT`/`GH_TUPLE`
 lines on daemonarchy-ports `main`:
@@ -80,9 +87,9 @@ desktop's commit, so a desktop fix reaches users only after a pin bump in daemon
 package in the feed. The desktop repository is separately applicable and carries its own history (the
 1.5.0 plan records this check).
 
-Not part of Daemonarchy: the other repositories under the same GitHub account (Aviation, ElixirSSI,
-project-tracker, bookscan, freebsd-sentiment, LeRTX, the Literate AI framework and its labs, and so on).
-They are unrelated projects and are not built, pinned or released with the product.
+Other repositories under the same GitHub account (Aviation, ElixirSSI,
+project-tracker, bookscan, freebsd-sentiment, LeRTX and the Literate AI labs)
+are not product source inputs.
 `jordanhubbard/freebsd-ports` is the older ports fork, used for releases through 1.1.1 and for upstream
 submissions; releases since use daemonarchy-ports.
 
@@ -95,6 +102,7 @@ submissions; releases since use daemonarchy-ports.
 | Package recipes, port patches, new or updated ports | daemonarchy-ports |
 | Kernel, base system, drivers in the base tree | daemonarchy-src |
 | Omarchy's FreeBSD adaptation, compat shims | omarchy-freebsd, then a pin bump in `x11-wm/omarchy` |
+| Framework CLI, native lifecycle or executor capability | literate-ai; requalify its selected distribution and the affected product contracts and gates |
 | Launchers and menu entries now in the installer overlay (Cudalab, Wine, Steam) | daemonarchy today; [DESKTOP-001](docs/roadmap/active-work.md#desktop-001-ship-the-desktop-launchers-and-menu-entries-in-the-daemonarchy-desktop-package) moves them to daemonarchy-desktop |
 
 ### How the pieces are pinned, versioned and released together
@@ -111,13 +119,15 @@ submissions; releases since use daemonarchy-ports.
 - daemonarchy-desktop has no tag convention that matches the port today (last tag `v1.1.1`, port pins a
   commit). The recommendation, to be settled in the repository's own project file, is to follow the
   product version and tag at release.
+- Literate AI has its own version and exact framework distribution identity.
+  A passing authority check is not native build, package or release evidence.
 - [Releasing](#releasing) has the procedure; `scripts/release-check-1.4.py` is the gate `litai release check` runs.
 
 ### Contributing
 
-There is no CONTRIBUTING file in this repository (*checked*). The practice, from the repository history and
-the Literate AI branching skills: `main` is the trunk in every repository, work is done on a short-lived
-topic branch and submitted as a pull request against `main`, CI must pass, and a maintainer merges. Do not
+There is no CONTRIBUTING file in this repository (*checked*). Work on a short-lived
+topic branch and submit a pull request to the owning integration branch: product
+`main`, source/ports `daemonarchy`. CI must pass and a maintainer merges. Do not
 commit to a release branch, and do not push signing keys, private worker evidence or generated images.
 Upstream FreeBSD or Omarchy fixes are submitted upstream independently of Daemonarchy releases.
 
@@ -146,7 +156,7 @@ Stated plainly, as of 1.5.0 on main; the evidence and the gaps are in [the 1.5.1
 A fork is possible but not yet easy; FORK-001 plans one configuration and a guide. What a fork must do today,
 from the repository (checked with `git grep jordanhubbard`):
 
-1. **Fork the four repositories** ([which are which](#the-repositories-that-make-up-daemonarchy)) and keep
+1. **Fork the five owned product repositories** ([which are which](#the-repositories-that-make-up-daemonarchy)) and keep
    daemonarchy-ports pinned to your source and desktop commits.
 2. **Generate your own package-signing key** with `pkg-repo.sh keygen` on your build host, commit its public half
    as `overlay/usr/local/share/daemonarchy-installer/daemonarchy.pub`, and keep the private key off Git.
@@ -207,7 +217,62 @@ Daemonarchy spans the installer, desktop, compatibility, source and ports reposi
 
 A Daemonarchy machine can be its own development machine, much as Omarchy's repo mode works on Arch.
 
-`daemonarchy-dev-setup` (also System > FreeBSD > Hack on Daemonarchy) clones the trees into `~/src`: Omarchy at the installed version on a `daemonarchy-dev` branch, omarchy-freebsd, daemonarchy-desktop, this repository, and the ports tree with the Omarchy ports. It then offers to link the desktop to the Omarchy checkout.
+`daemonarchy-dev-setup` (also System > FreeBSD > Hack on Daemonarchy) clones
+Omarchy at the installed version on a `daemonarchy-dev` branch,
+omarchy-freebsd, daemonarchy-desktop, this repository, and the legacy
+`freebsd-ports` tree into `~/src`. It then offers to link the desktop to the
+Omarchy checkout. It does not install Literate AI or select the source and
+ports revisions for a release.
+
+### Check out all build inputs
+
+For a fresh development workspace, clone the owned repositories and the
+framework separately. A native build host needs sufficient space for the full
+source and ports trees. Source and ports use `daemonarchy` for owned integration
+and `main` for upstream tracking; a published checkout catalogue may select a
+different branch at its exact release commit. The 1.5.0 catalogue selects
+source `daemonarchy` and ports `main`.
+
+```sh
+mkdir -p ~/src
+git clone https://github.com/jordanhubbard/daemonarchy.git ~/src/daemonarchy
+git clone https://github.com/jordanhubbard/daemonarchy-src.git ~/src/daemonarchy-src
+git clone https://github.com/jordanhubbard/daemonarchy-ports.git ~/src/daemonarchy-ports
+git clone https://github.com/jordanhubbard/daemonarchy-desktop.git ~/src/daemonarchy-desktop
+git clone https://github.com/jordanhubbard/omarchy-freebsd.git ~/src/omarchy-freebsd
+git clone https://github.com/jordanhubbard/literate-ai.git ~/src/literate-ai
+git clone https://github.com/basecamp/omarchy.git ~/src/omarchy
+```
+
+Read `verification/release-<version>.json` for published product, source and
+ports commits. Check out the full hashes, for example `git -C
+~/src/daemonarchy-src switch --detach <source-commit>`. The selected ports'
+`x11-wm/daemonarchy/Makefile` pins desktop source; `x11-wm/omarchy/Makefile`
+and `distinfo` pin compatibility and upstream Omarchy inputs. Select a
+framework distribution whose identity matches the product's lifecycle
+binding. Keep edits on review branches; detached checkouts reproduce releases.
+
+### Literate AI and the native build
+
+From the product checkout, use the selected framework runtime for
+`litai project validate .`, `litai verify` and `litai release check`. The last
+invokes the product release gate with its record and staged assets. The 1.5.0
+release used native FreeBSD tools, Poudriere, signing and ISO tooling to build
+the actual artifacts. A passing authority or lock check is not native build
+evidence; complete framework-executed source/ports and release work is queued
+for [1.5.1](docs/roadmap/release-1.5.1.md).
+
+On an installed system, `sudo daemonarchy-checkouts src "$USER"` and
+`sudo daemonarchy-checkouts ports "$USER"` materialize the release-pinned Git
+trees at `/usr/src` and `/usr/ports` when those destinations are empty. The
+optional packages own seed archives, while the user owns the working trees.
+A future `litai` package would supply the CLI. Installing it alone would not
+clone, update, regenerate or build either tree, or change installed base,
+kernel or ports packages. Source and ports have their own in-place contracts
+and locks; a compatible runtime can inspect them with
+`litai project validate` from the chosen tree. Full Component coverage and a
+common `litai-dev` build/test/package path remain open under
+[DEV-001](docs/roadmap/active-work.md#dev-001-provide-an-operator-ready-native-component-development-system).
 
 ### Omarchy from a checkout
 
@@ -1129,6 +1194,38 @@ deletes the trace variables.
 
 ## Releasing
 
+### Build a release from your own checkout
+
+Use the [1.5.0 mastering notes](docs/mastering-1.5.0.md) as the worked example
+and the exact input/asset identities in [its release record](verification/release-1.5.0.json)
+to reproduce it. For a new release, review one product commit and exact source,
+ports, desktop, compatibility and framework selections. On native FreeBSD
+workers, build the matching world/kernel/sets and jail, application and checkout
+feeds, any needed closure shards, signed boot products and installer images.
+Record the selections and native/VM/hardware results before publication.
+
+`scripts/master-release.sh` runs the resumable native build, verification and
+QA steps. Supply a private config with the reviewed `MAIN_COMMIT`, `RELEASE`,
+`SOURCE_REVISION`, `PORTS_REVISION`, `JAIL`, `PTREE`, feed tags, checkout
+catalogue, public Secure Boot bundle and output paths. Its defaults are
+historical examples. Inspect the config and dry-run before dispatch:
+
+```sh
+./scripts/master-release.sh --config /path/to/reviewed-master.conf --dry-run all
+./scripts/master-release.sh --config /path/to/reviewed-master.conf preflight packages
+./scripts/master-release.sh --config /path/to/reviewed-master.conf secureboot feed
+./scripts/master-release.sh --config /path/to/reviewed-master.conf resolve catalogue iso verify hwtrace qa
+```
+
+The `secureboot` and `feed` steps need the protected signing workflow in
+[the mastering notes](docs/mastering-1.5.0.md#key-windows-signing-without-a-key-on-the-builder).
+`sticks` writes explicitly selected USB devices and is separate from `all`.
+Before publication, fill the release record and notes, run
+`python3 tests/docs-release-sync.py -v` and verify staged assets with
+`scripts/verify-release-assets.py` as shown in
+[Filling the records](docs/mastering-1.5.0.md#filling-the-records). Publish
+only after exact artifact QA; published tags and bytes are immutable.
+
 ### One signing session per release
 
 Sign once. Freeze every signed input (the boot tree files `secureboot/*` and `brand-daemonarchy.lua`, the kernel and loader, the
@@ -1288,13 +1385,12 @@ coordinated operation.
    assets unchanged. The 1.3.1
    candidate rotates that certificate because the previous private signing key
    is unavailable; do not reuse the 1.1 certificate names for a different key.
-   For 1.4.1 (the 1.5.0 command is in [mastering-1.5.0.md](docs/mastering-1.5.0.md#filling-the-records)), after the exact build and QA gates pass (the staged assets are
-   verified first with `scripts/verify-release-assets.py`, see below), the release
-   carries one image per architecture:
-
-   ```
-   gh release create daemonarchy-1.5.0 --target <exact-reviewed-commit> --latest --title "Daemonarchy 1.5.0" --notes-file notes.md daemonarchy-1.5.0-amd64.iso.xz daemonarchy-1.5.0-amd64.iso.xz.sha256 daemonarchy-1.5.0-aarch64.iso.xz daemonarchy-1.5.0-aarch64.iso.xz.sha256 daemonarchy-1.5.0-boot.txz daemonarchy-1.5.0-boot.txz.sig daemonarchy-1.5.0.pem daemonarchy-1.5.0.der
-   ```
+   The published 1.5.0 release carries amd64 and aarch64 installers, amd64 and
+   aarch64 hardware trace images, their four checksums, the amd64 signed boot
+   bundle and signature, and the public certificate in PEM and DER form. Use
+   [the exact release record](verification/release-1.5.0.json) for its twelve
+   asset names and hashes. A new release needs its own reviewed record and
+   publication plan; do not reuse the 1.5.0 tag or asset names.
 
    Verify the exact uploaded asset names, sizes and SHA-256 digests. Keep
    release-specific application and checkout feeds non-latest. Operator-approved
@@ -1503,7 +1599,7 @@ python3 scripts/build-checkout-packages.py --kind ports \
   --out /path/to/checkout-repo
 python3 scripts/build-checkout-packages.py --kind src \
   --repo /usr/src --revision <kernel-source-commit> \
-  --branch main --remote https://github.com/jordanhubbard/daemonarchy-src.git \
+  --branch daemonarchy --remote https://github.com/jordanhubbard/daemonarchy-src.git \
   --out /path/to/checkout-repo
 python3 scripts/make-checkout-catalog.py /path/to/checkout-repo \
   --url https://github.com/jordanhubbard/daemonarchy/releases/download/<checkout-tag> \
@@ -1512,8 +1608,8 @@ python3 scripts/make-checkout-catalog.py /path/to/checkout-repo \
 sudo pkg repo /path/to/checkout-repo /usr/local/etc/daemonarchy/pkg-repo.key
 ```
 
-`--depth` defaults to 1. The 1.3.1 checkout feed (`checkouts-16-amd64-1.3.1-r2`, and the later release feeds likewise)
-tracks `main` of daemonarchy-ports and daemonarchy-src; the earlier 1.1.1 tracked
+`--depth` defaults to 1. The 1.5.0 checkout feeds track ports `main` and
+source `daemonarchy` at the commits in their catalogues. The earlier 1.1.1 tracked
 freebsd-ports `daemonarchy-1.1.1` and FreeBSD `main`, and older 1.1 images retain
 their pinned `daemonarchy-1.1-package-baseline` catalogue and feed. Default fetches are restricted to one branch. Payloads are split into 512 MiB parts before packaging,
 keeping each asset below 2 GiB. Publish the signed repository at a dedicated,

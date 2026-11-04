@@ -312,16 +312,18 @@ lifecycle authority.
 ### [ ] GUI-001 — Deliver a colorful fast graphical package manager
 
 - **Priority:** P2
-- **Release target:** 1.5.0
-- **Release:** 1.5.0 (moved from 1.4.1 by operator decision, 2026-10-30; not claimed done by 1.4.0 or 1.4.1; renamed from 1.4.2 on 2026-10-31; see [the 1.5.0 plan](release-1.5.0.md))
+- **Release target:** 1.5.1
+- **Release:** 1.5.1 carry-over. 1.5.0 shipped the packaged first part, but the graphical manager had no real-desktop install, update or remove evidence; see [the published notes](../release-1.5.0.md#what-is-not-done-and-why).
 - **Owner:** desktop and package-engine Components
 - **Direction:** Provide the same useful visual progress and parallel execution in graphical package management, contributing a port if a new application is needed.
 - **Conclusion:** Evaluate the current manager; share the transaction engine and progress semantics rather than build a competing planner.
 - **Depends on:** PKG-001
+- **1.5.1 acceptance:** verify native GTK input and responsive install/update/remove plans on an installed desktop, including signed feed display, accurate progress, failure and retry, before replacing OctoPkg in the menu.
 - **1.4.1 audit (2026-10-30):** not started; octopkg is the current graphical package manager; proposed to leave 1.4.1. [Detail](release-1.4.1-audit.md#gui-001).
 - **Implementation:**
   - [x] Evaluate extension path: OctoPkg has no plan object, no parallel acquisition, no event hook and does not show feed signatures, so a new application sharing `parallel-fetch` and the progress model is the plan. [Design](../gui-package-manager.md) (written; nothing implemented yet).
-  - [ ] Implement responsive install/update/remove plans and visuals; ship the application and its port.
+  - [x] Ship the first application and `ports-mgmt/daemonarchy-pkg` in 1.5.0; the published release notes scope it as partial.
+  - [ ] Qualify responsive install/update/remove plans and visuals on a real installed desktop, then select it in the menu.
 - **Evidence:**
   - [ ] Actual native UI, input, shared plan identity, accurate progress, failure/retry and packaging tests pass.
 
@@ -417,6 +419,7 @@ lifecycle authority.
 ### [ ] HW-001 — Close remaining physical hardware qualification gaps
 
 - **Priority:** P1
+- **Release target:** 1.5.1
 - **Release:** 1.4.1 (carried over; not claimed done by 1.4.0)
 - **Owner:** desktop, compatibility and diagnostics Components
 - **Direction:** Keep unresolved GPU, radio, boot and restart behavior explicit while extending physical acceptance.
@@ -425,6 +428,7 @@ lifecycle authority.
 - **MSI video:** The October 18 recording ends readable output at `atrtc0: Warning: Couldn't map I/O.` before the display blanks, with no visible panic. The second video confirms the RTC-disable/panic flags and advances to `sc0 failed to probe on isa1` before blanking, without a visible panic. Repeated Intel SPMC constraint-format warnings motivated a `debug.acpi.disabled="spmc"` comparison, which the operator reports made no difference; the exact installer artifact remains unidentified. The [analysis](../testing-1.1-hardware-observations.md#msi-startup-video-reviewed-2026-10-18) records the movie identity, observed scope and source-backed diagnostic; no default quirk or fix is qualified.
 - **MSI current report, October 23:** ACPI enabled still produces an early reset without a visible panic; disabling it produces a missing-APIC panic and debugger entry. The operator confirms the MSI Raider 18 HX/RTX 5080, latest pre-1.3 ISO and `APIC: Could not find any APICs`; exact artifact filename/hash and current BIOS remain unrecorded. [The source-backed diagnostic](../testing-1.1-hardware-observations.md#msi-acpi-on-reset-and-acpi-off-apic-panic-reported-2026-10-23) explains why ACPI-off can also remove MADT-based APIC discovery. The operator confirms the proposed ACPI-on/SMP-disabled and panic-retention settings were already tried without changing the reset; do not request that repeat. Loader networking is implemented only through firmware handoff; continuous early-kernel capture remains unfinished. No boot fix is claimed.
 - **Depends on:** none
+- **1.5.1 carry-over from published 1.5.0:** retain exact final-image identities for the RTX Spark boot failure, MSI and MacBook physical runs, the MacBook Wi-Fi link-down retest and channel-1 handshake, Windows/Steam real desktop use, and Aquamarine hotplug, resume, lid and VT-switch checks. Record each as pass, fail or explicitly unrun; a prior build does not qualify the final image.
 - **1.4.1 audit (2026-10-30):** partly: the standing hardware evidence log; closes only when every case runs on the final image. [Detail](release-1.4.1-audit.md#hw-001).
 - **Implementation:**
   - [ ] Retain exact hardware and artifact scope; investigate known failures without conflating transport loss and reboot; qualify actual rendering, wireless and recovery.
@@ -1153,8 +1157,8 @@ remains open; report files do not establish a passing gate.
 - **GitHub issue:** [#33](https://github.com/jordanhubbard/daemonarchy/issues/33), milestone **1.4.0**; source [#21](https://github.com/jordanhubbard/daemonarchy-src/issues/21), also in 1.4.0.
 - **Release scope:** [Current 1.4 plan](release-1.4.0.md) supersedes the [earlier 1.3.2 plan](release-1.3.2.md). Preserve the published 1.3.1 ISO, tags, feeds, signing material, source and native evidence. Historical product #27 closed after prerequisites merged; complete-feature acceptance remains open here.
 - **Priority:** P0
-- **Release target:** 1.5.0
-- **Release:** 1.5.0 (moved from 1.4.1 by operator decision, 2026-10-30; not claimed done by 1.4.0 or 1.4.1; renamed from 1.4.2 on 2026-10-31; see [the 1.5.0 plan](release-1.5.0.md))
+- **Release target:** 1.5.1
+- **Release:** 1.5.1 carry-over. The published 1.5.0 image has the trace foundations, but loader, mountroot and panic control did not pass the complete native and physical matrix; see [its release limits](../release-1.5.0.md#what-is-not-done-and-why).
 - **Owner:** diagnostics, owned FreeBSD source and release integration
 - **Direction:** Provide explicitly enabled plain wired console control without SSH, a new key or pairing from boot blocks/loader through a forced `mountroot>` prompt, early startup and deliberate panic. Include kernel/module selection, variables and Lua, bounded polled bidirectional transport, retained last-stage output after reset and orderly native-NIC takeover.
 - **Conclusion:** A preloaded NIC kernel module does not supply loader networking or establish the early transport. Loader-only output, inventory and initialized-driver NetGDB do not satisfy the MSI reset use case.
@@ -1222,6 +1226,7 @@ remains open; report files do not establish a passing gate.
 
 - **GitHub issue:** [#80](https://github.com/jordanhubbard/daemonarchy/issues/80), milestone **1.4.0**.
 - **Priority:** P1
+- **Release target:** 1.5.1
 - **Release:** 1.4.1 (carried over; not claimed done by 1.4.0)
 - **Owner:** installer, live image and unattended install
 - **Direction:** Before any disk change, find every wired, USB-tethering and wireless adapter (including devices still waiting for firmware), probe all wired ports for DHCP concurrently with bounded timeouts, choose the primary connection, prove DNS with direct lookups (DHCP servers, then Cloudflare, Google and Quad9, then a user server that must answer), make the clock usable, load missing firmware, and bring up Wi-Fi; Wi-Fi first when no cable works.
@@ -1291,8 +1296,8 @@ remains open; report files do not establish a passing gate.
 ### [ ] HW-004 — T2 Touch ID login through fprintd
 
 - **Priority:** P2
-- **Release target:** 1.5.0
-- **Release:** 1.5.0 (moved from 1.4.1 by operator decision, 2026-10-30; not claimed done by 1.4.0 or 1.4.1; renamed from 1.4.2 on 2026-10-31; see [the 1.5.0 plan](release-1.5.0.md))
+- **Release target:** 1.5.1
+- **Release:** 1.5.1 carry-over. The 1.5.0 image does not provide Touch ID login; transport testing on a Mac without enrolled fingers cannot qualify PAM, SDDM or hyprlock.
 - **Owner:** MacBook hardware support: security/t2-touchid port, installed-system networking (daemonarchy-t2link) and PAM integration
 - **Direction:** Let a MacBookPro16,1 (and other Apple T2 Macs) accept a macOS-enrolled finger for login, sudo, SDDM and hyprlock through stock fprintd and pam_fprintd, using KaiT2en's t2-touchid bridge over the T2 internal link's IPv6 link-local BiometricKit service and libfprint's virtual storage device.
 - **Conclusion:** Transport works on FreeBSD: on 2026-10-28 the security/t2-touchid package (KaiT2en commit 16b58080ebc8, [ports PR #33](https://github.com/jordanhubbard/daemonarchy-ports/pull/33)), started by hand on the MacBookPro16,1, found ue0 by USB 05ac:8233, reached the T2 at fe80::aede:48ff:fe33:4455%ue0, opened BiometricKit (RemoteXPC port 59602 advertised it on 49166; sensor reset, readiness and FDR calibration load in 4-8 s, the first attempt after idle twice timing out with EAGAIN before a retry succeeded), and the Secure Enclave answered for macOS uids 501-503: SKS_LOCK_STATE 0x15, PROVISIONING_STATE 5, USER_IDENTITIES empty, GET_FREE_IDENTITY_COUNT 0, REQUEST_MAX_IDENTITY_COUNT 5, GET_ENABLED_FOR_UNLOCK 0; the daemon found no enrolled finger in uids 501-520. That is the expected locked or empty inventory: this MacBook has no macOS. Login by finger requires fingers enrolled under macOS (the bridge never enrolls, it only binds a SEP identity to a FreeBSD account) and the before-first-unlock gate: the SEP keeps its biometric keybag locked, and reports an empty inventory, until the macOS account password has unlocked it once since the T2 last powered on. The daemon was left stopped and not enabled; PAM, SDDM and the lock screen are unchanged. The enabling procedure in docs/application-note-macbookpro16-1.md is untested end to end.
@@ -1415,8 +1420,8 @@ remains open; report files do not establish a passing gate.
 ### [ ] EXT-002 — Sandboxed Lua extensions for content we did not write
 
 - **Priority:** P2
-- **Release target:** 1.5.0
-- **Release:** 1.5.0 (opened after 1.4.1 went to mastering, 2026-10-30; not claimed done by 1.4.0 or 1.4.1; renamed from 1.4.2 on 2026-10-31; see [the 1.5.0 plan](release-1.5.0.md))
+- **Release target:** 1.5.1
+- **Release:** 1.5.1 carry-over. 1.5.0 shipped the API 1.5 Lua runtime and fish-tank source, but exact-image sandbox and published-feed play evidence remains open.
 - **Owner:** installer Component with the visual SDK
 - **Direction:** Let the installer run an extension whose code is not ours (a community toy or game published from a release page) without trusting it: a Lua entry file in a real sandbox, loaded through the same manifest, signed feed, menu, windows and preemption as the Python extensions. Retire the "not a sandbox for hostile code" caveat for this kind of content.
 - **Conclusion:** Additive to 1.4.1: SDK API 1.5 only adds `Audio.blip` and the `.lua` entry type; the four Python games, the feed and the trust model are unchanged. GAME-001's four games are already the shipped Python games; this is not a second games portfolio.
@@ -1502,8 +1507,8 @@ remains open; report files do not establish a passing gate.
 ### [ ] DESKTOP-001 — Ship the desktop launchers and menu entries in the daemonarchy-desktop package
 
 - **Priority:** P2
-- **Release target:** 1.5.0
-- **Release:** 1.5.0 (opened 2026-10-31 by operator decision; nothing here is claimed done; see [the 1.5.0 plan](release-1.5.0.md))
+- **Release target:** 1.5.1
+- **Release:** 1.5.1 carry-over. The 1.5.0 image still contains overlay-owned launchers; package ownership and upgrade delivery were not established.
 - **Owner:** installer overlay and the daemonarchy-desktop repository (`x11-wm/daemonarchy` in daemonarchy-ports)
 - **Direction:** Move the desktop-style launchers and menu entries that live in the installer overlay into the daemonarchy-desktop package, so users receive fixes through `pkg upgrade` without a new ISO.
 - **Conclusion:** Today the overlay carries `daemonarchy-cudalab`, `daemonarchy-wine` and `daemonarchy-steam` (in `overlay/usr/local/bin/`), their `.desktop` files and SVG icons and the System > FreeBSD menu entries (`overlay/usr/local/share/daemonarchy-installer/`), while the desktop repository carries a different `omarchy-menu.jsonc` and `x11-wm/daemonarchy` installs that one. The installer places the overlay copies on the system, so a fix reaches users only with a new image. Which copy wins on a given system, and whether the overlay's wine, steam and cudalab entries and the README's statement that Linux-only applications are withheld until Linuxulator qualification agree, are not yet established.
@@ -1587,18 +1592,18 @@ remains open; report files do not establish a passing gate.
 ### [ ] SIGN-001 — One signing session per release: stop the key-window churn
 
 - **Priority:** P1
-- **Release target:** 1.5.0
-- **Release:** 1.5.0 (opened 2026-11-01 by operator decision: "this is too much security"; nothing here is claimed done; see [the 1.5.0 plan](release-1.5.0.md#sign-001-one-signing-session-per-release))
+- **Release target:** 1.5.1
+- **Release:** 1.5.1 carry-over. The 1.5.0 notes describe the signing process, but `verification/release-1.5.0.json` does not contain the operator command count or signing wall-clock time required by this item's acceptance. Preserve the published record; demonstrate and record the one-session result on the next release.
 - **Owner:** release engineering; parent and related item BUILD-001 ("improve the entire release engineering cycle by 10x")
 - **Direction:** Make signing a single, planned operator action per release, with no key material ever handled by an agent.
-- **Conclusion:** In 1.5.0 the operator ran six key windows by hand. The cause was process and policy as much as security: three windows were avoidable, one was a genuine QA finding, and the rest were needed once the order was wrong. The record and the options are in [the plan](release-1.5.0.md#sign-001-one-signing-session-per-release). **Operator decision, 2026-11-03: option A for 1.5.0**, a process rule (freeze the signed inputs, finish QA, sign once). Options B, C and D are not part of 1.5.0.
+- **Conclusion:** During 1.5.0 preparation the operator ran six key windows by hand. The cause was process and policy as much as security: three windows were avoidable, one was a genuine QA finding, and the rest were needed once the order was wrong. The record and options are in [the 1.5.0 plan](release-1.5.0.md#sign-001-one-signing-session-per-release). **Operator decision, 2026-11-03: option A**, a process rule (freeze signed inputs, finish QA, sign once). The published 1.5.0 release record lacks the count and timing needed to close this item; apply and measure option A for 1.5.1. Options B, C and D need a separate operator decision.
 - **Depends on:** none (option A is a process, no code).
 - **Implementation:**
-  - [ ] Follow option A for the 1.5.0 signing: freeze every signed input (boot tree files, feeds, extension feeds, release label), finish QA, then sign once. It is documented in [HACKING.md](https://github.com/jordanhubbard/daemonarchy/blob/main/HACKING.md#one-signing-session-per-release) and [mastering-1.5.0.md](../mastering-1.5.0.md#one-signing-session-per-release-the-rule).
-  - [ ] Record, in the 1.5.0 release record, the number of operator signing commands and the signing wall-clock time.
+  - [ ] Follow option A for the 1.5.1 signing: freeze every signed input (boot tree files, feeds, extension feeds, release label), finish QA, then sign once. The rule is documented in [HACKING.md](https://github.com/jordanhubbard/daemonarchy/blob/main/HACKING.md#one-signing-session-per-release) and [mastering-1.5.0.md](../mastering-1.5.0.md#one-signing-session-per-release-the-rule).
+  - [ ] Record the operator signing command count and wall-clock time in the 1.5.1 release record.
   - Not in 1.5.0: options B (one manifest-driven window script), C (a signing service) and D (a simplified policy) remain recorded in the plan for a later release; any of them needs a new operator decision, and any code needs throwaway-key tests only (`tests/key-windows-design.sh`).
 - **Evidence:**
-  - [ ] The 1.5.0 release is signed in one signing session after inputs were frozen and QA finished, and the release record shows the operator command count and the wall-clock time.
+  - [ ] The 1.5.1 release is signed in one signing session after inputs were frozen and QA finished, and its release record shows the operator command count and wall-clock time.
   - [ ] No agent read, copied, moved or printed key material in that release (the key-window design checks and the session record agree).
 
 ### [ ] TREE-001 — Browse /usr/src and /usr/ports on the system as nested HTML cards
