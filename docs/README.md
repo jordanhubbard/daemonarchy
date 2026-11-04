@@ -10,6 +10,7 @@ Its published identity is recorded in
 [`release/current.json`](../release/current.json); documents dated or named for
 another version are historical records. 1.5.1 entries describe planned work.
 
+- [Licenses of the components in this repository](../licenses/README.md)
 - [Application note: MacBook Pro 16-inch (2019)](application-note-macbookpro16-1.md)
 - [Application note: NVIDIA RTX Spark laptop (aarch64)](application-note-rtx-spark.md)
 - [MacBookPro16,1 physical acceptance for 1.3.1](testing-macbookpro16-1-1.3.1.md)
