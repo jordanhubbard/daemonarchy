@@ -6,6 +6,13 @@ is a second host that has nothing to do with installation. The SDK keeps no
 installation state and performs no privileged operation: a host passes in
 observations and decides what an action means.
 
+The extraction is complete only when every installer-owned renderer, animation
+and effect uses this public surface. Toolkit integrations such as terminal
+widgets or the live desktop's graphical frontend may implement an SDK backend
+or host adapter, but they do not define a private presentation API beside it.
+Temporary audited escape sites must either migrate behind that boundary or be
+removed before VISUAL-SDK-001 can close.
+
 API version 1.3 (the extension bundle module needs no API change). `daemonarchy_visual.compatible("1.0")` tells a host or plugin
 whether this SDK can serve the version it was written for. A minor release only
 adds names; a major release may remove or change them, and the old major keeps
