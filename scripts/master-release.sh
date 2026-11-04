@@ -267,7 +267,8 @@ step_hwtrace() {
   [ -f "$iso" ] || { iso=$tmp/image.iso; xz -dc "$xz" >"$iso"; }
   # The image carries the ISO's own boottrace kernel and loader, so its provenance is the final ISO.
   # The Daemonarchy brand and a local.lua stay out: the trace image has its own loader screen.
-  tar -xf "$iso" -C "$tmp" boot/kernel/kernel boot/loader_lua.efi boot/lua
+  # boot/loader_lua.efi is a hard link to boot/loader.efi in the ISO: extract the target too, or tar refuses the link.
+  tar -xf "$iso" -C "$tmp" boot/kernel/kernel boot/loader.efi boot/loader_lua.efi boot/lua
   rm -f "$tmp/boot/lua/brand-daemonarchy.lua" "$tmp/boot/lua/local.lua"
   mkdir "$tmp/out"
   nice -n 19 sh "$product/build-hwtrace-image.sh" -I "$iso" -k "$tmp/boot/kernel/kernel" -l "$tmp/boot/loader_lua.efi" \
