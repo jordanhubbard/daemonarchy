@@ -424,6 +424,20 @@
    "mode": "0755",
    "owner": {
     "kind": "pkg",
+    "name": "libevent-2.1.13",
+    "version_origin": "libevent-2.1.13 devel/libevent"
+   },
+   "path": "/usr/local/lib/libevent_core-2.1.so.7",
+   "realpath": "/usr/local/lib/libevent_core-2.1.so.7.0.2",
+   "role": "toolchain",
+   "sha256": "ae65f3791bc534d4f120c6742b33f2fd0fda6896819a7f2041fac49949955ff0",
+   "size": 205720,
+   "soname": "libevent_core-2.1.so.7"
+  },
+  {
+   "mode": "0755",
+   "owner": {
+    "kind": "pkg",
     "name": "expat-2.9.0",
     "version_origin": "expat-2.9.0 textproc/expat2"
    },
@@ -919,6 +933,18 @@
    "owner": {
     "kind": "base-system"
    },
+   "path": "/lib/libulog.so.0",
+   "realpath": "/lib/libulog.so.0",
+   "role": "toolchain",
+   "sha256": "c7e2fff8f0c745e9a003dc2a0cdfe090355bc4a80b82b67ffa559c5df94eeb80",
+   "size": 8776,
+   "soname": "libulog.so.0"
+  },
+  {
+   "mode": "0444",
+   "owner": {
+    "kind": "base-system"
+   },
    "path": "/lib/libutil.so.10",
    "realpath": "/lib/libutil.so.10",
    "role": "toolchain",
@@ -953,7 +979,7 @@
  ],
  "problems": [],
  "schema": "daemonarchy/retained-closure-inventory@1",
- "spec_sha256": "560e6eeb9a433c9042e2b97f143c8a2aeafc86afcf4029ecee496ce210a4f5a6",
+ "spec_sha256": "20f857f508e2933e12db0436ecc15211e6b4bdcce9d8f705482cf17198429327",
  "tools": [
   {
    "libraries": [
@@ -2249,6 +2275,32 @@
    "sha256": "ef43b79bbc9655ee40a092fb42294eee6bf0a397f76b6b5f8f887c1b1d177ed7",
    "size": 11384,
    "why": "command used by build-iso.sh or the scripts it runs, by this review's grep of those scripts"
+  },
+  {
+   "libraries": [
+    "libc.so.7",
+    "libevent_core-2.1.so.7",
+    "libm.so.5",
+    "libmd.so.7",
+    "libsys.so.7",
+    "libthr.so.3",
+    "libtinfow.so.9",
+    "libulog.so.0",
+    "libutil.so.10"
+   ],
+   "mode": "0555",
+   "name": "tmux",
+   "owner": {
+    "kind": "pkg",
+    "name": "tmux-3.8",
+    "version_origin": "tmux-3.8 sysutils/tmux"
+   },
+   "path": "/usr/local/bin/tmux",
+   "realpath": "/usr/local/bin/tmux",
+   "role": "toolchain",
+   "sha256": "bf9ba5c1b363553b16af7ff6746ade09b83ad4ac9e1dcd00648144c18495e9f2",
+   "size": 1265112,
+   "why": "sdk-windows.RealTmux and installer-extensions.OwnWindow run against a real tmux and skip without one; the retained test policy authorizes no skip"
   },
   {
    "libraries": [

@@ -1608,6 +1608,11 @@
       "skip_reason": null
     },
     {
+      "id": "release-prepare-fill.PrepareAndFill.test_fill_twelve_assets_needs_the_aarch64_trace_image_and_its_tokens",
+      "action": "draft-ci-tests",
+      "skip_reason": null
+    },
+    {
       "id": "release-prepare-fill.PrepareAndFill.test_prepare_refuses_overwrites_older_versions_and_bad_input",
       "action": "draft-ci-tests",
       "skip_reason": null

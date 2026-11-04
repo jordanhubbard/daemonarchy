@@ -23,6 +23,10 @@ TAG=packages-16-amd64-1.5.0
 RAW_LIMIT=3758096384   # scripts/check-image-size.sh: 3.5 GiB
 XZ_LIMIT=2147483648    # 2 GiB
 # Error patterns searched for in the captured build output (extended regular expressions).
+# The one benign pkg(8) notice the FreeBSD 16.0-CURRENT image build prints for every package it
+# installs (pinned exactly, including OSVERSION): lines equal to this are not errors; any other
+# `pkg:` line, or this notice with another OSVERSION, still fails.
+KNOWN_NOTICE='pkg: Setting ABI requires setting OSVERSION, guessing the OSVERSION as: 1600000'
 PATTERNS='(^|[^[:alnum:]])(Error|ERROR|error):|Error code|FAILED|Segmentation fault|Stop\.$|\*\*\* \[|^pkg: |: undefined reference|cc: error|ld: error'
 
 dir=${1:-}; check=${2:-}
@@ -37,7 +41,7 @@ quiet() { _e=$("$@" 2>&1 >/dev/null); [ -z "$_e" ] || fail "$1 wrote to stderr: 
 
 # Every check first refuses a build whose own console output carried error text.
 if [ -f "$log" ]; then
-	hits=$(grep -En "$PATTERNS" "$log" 2>/dev/null | head -n 20)
+	hits=$(grep -En "$PATTERNS" "$log" 2>/dev/null | grep -vF ":$KNOWN_NOTICE" | head -n 20)
 	[ -z "$hits" ] || fail "error text in build-iso.log: $hits"
 else
 	fail "build-iso.log missing from the export"

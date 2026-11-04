@@ -53,6 +53,10 @@ class PrepareAndFill(unittest.TestCase):
         shutil.copy(FIXTURE, self.root / "release/current.json")
         shutil.copy(ROOT / "release/templates/release-1.5.0.md", self.root / "release/templates/release-1.5.0.md")
         shutil.copytree(ROOT / "verification/closure-feeds", self.root / "verification/closure-feeds")
+        # The sources can be read-only (a frozen retained snapshot keeps files at 0444 and
+        # directories at 0555): the copies are fixtures the scripts rewrite, so they must be writable.
+        for path in (self.root, *self.root.rglob("*")):
+            path.chmod(path.stat().st_mode | 0o200)
         for relative, text in PROSE.items():
             (self.root / relative).parent.mkdir(parents=True, exist_ok=True)
             (self.root / relative).write_text(text)

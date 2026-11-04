@@ -3,11 +3,11 @@
   "authority_mode": "retained-project",
   "target": "freebsd",
   "worker_identity": "sha256:29d0ce36b8f96325b660670b5e4a2e99bd42e705472c2b4594f6955e04fe2171",
-  "toolchain_identity": "sha256:c401010eab4368f73b35c17a873858f8bf8fd5799fe5807f10e0961bff57f5cb",
+  "toolchain_identity": "sha256:8e2739e80aededaf67e2e9f8b242773ce31a42054bb47d0ef8008b7d6643953e",
   "dependency_identity": "sha256:5b8c257af24528b3bf9cc46317f481475a540ff4913422f09ba056fd64c05206",
-  "test_policy_identity": "sha256:94fe7c86102612fc1ca62d1a74608a3a3e1a9836d06109d69a67f94e55582244",
+  "test_policy_identity": "sha256:f80b84a1c8af8c59ca649ea74b2a1c4cd177452853321ec333aadc8df1519cbb",
   "release_policy_identity": "sha256:f119d79be15d1b4d8b78a3ffb30ccfc73d914fcdb56d0679624299a524981dac",
-  "acceptance_policy_identity": "sha256:6ed4aa3d81420410d06799ac7ae29c4182acc28772cc1b6ddd8d72823f33e485",
+  "acceptance_policy_identity": "sha256:25e6c384f29ced63d13c2511e0c16bfb30a22758c8521a2752623fffd67b128b",
   "tools": [
     {
       "name": "[",
@@ -345,6 +345,11 @@
       "identity": "sha256:ef43b79bbc9655ee40a092fb42294eee6bf0a397f76b6b5f8f887c1b1d177ed7"
     },
     {
+      "name": "tmux",
+      "path": "closure/toolchain/bin/tmux",
+      "identity": "sha256:bf9ba5c1b363553b16af7ff6746ade09b83ad4ac9e1dcd00648144c18495e9f2"
+    },
+    {
       "name": "touch",
       "path": "closure/toolchain/bin/touch",
       "identity": "sha256:3f57442c87aff210f9473a8ea6650f0efdbae1dcb94ca3675f0e65b9ef2e68e5"
@@ -432,6 +437,7 @@
         "ambient:secureboot-bundle",
         "ambient:secureboot-signature",
         "ambient:secureboot-certificate",
+        "ambient:sudo",
         "ambient:dynamic-linker",
         "ambient:interpreter:sh"
       ],
@@ -584,6 +590,7 @@
         "docs-tree:docs/release-1.3.1.md",
         "docs-tree:docs/release-1.4.0.md",
         "docs-tree:docs/release-1.4.1.md",
+        "docs-tree:docs/release-1.5.0.md",
         "docs-tree:docs/release-input-graph.md",
         "docs-tree:docs/release-measurements.md",
         "docs-tree:docs/remote-agent-debug.md",
@@ -799,6 +806,7 @@
         "release-prepare-fill.PrepareAndFill.test_fill_checks_the_catalogue_and_the_closure_records",
         "release-prepare-fill.PrepareAndFill.test_fill_consumes_every_token_and_records_the_assets",
         "release-prepare-fill.PrepareAndFill.test_fill_refuses_what_does_not_match",
+        "release-prepare-fill.PrepareAndFill.test_fill_twelve_assets_needs_the_aarch64_trace_image_and_its_tokens",
         "release-prepare-fill.PrepareAndFill.test_prepare_refuses_overwrites_older_versions_and_bad_input",
         "release-prepare-fill.PrepareAndFill.test_prepare_writes_placeholders_and_moves_the_current_release",
         "version-sync.VersionTests.test_build_iso_takes_version_from_file",

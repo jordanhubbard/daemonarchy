@@ -481,6 +481,12 @@
    "why": "poudriere 3.4.99 image/jail/common scripts mention it (grep -w); usage in other poudriere scripts not enumerated",
    "role": "toolchain",
    "command": "nc"
+  },
+  {
+   "name": "tmux",
+   "why": "sdk-windows.RealTmux and installer-extensions.OwnWindow run against a real tmux and skip without one; the retained test policy authorizes no skip",
+   "role": "toolchain",
+   "command": "tmux"
   }
  ],
  "trees": [
