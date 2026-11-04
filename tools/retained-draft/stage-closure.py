@@ -14,6 +14,7 @@ import hashlib
 import json
 import os
 import shutil
+import subprocess
 import sys
 from pathlib import Path
 
@@ -68,6 +69,30 @@ def main():
                 # not captured); os.stat/copyfile follow the link.
                 mode = 0o755 if os.stat(src).st_mode & 0o111 else 0o644
                 put(src, out, sha256_file(src), mode)
+    # Scripts and test fixtures start `python3` through the search path, which holds only the
+    # captured directory; give it a relative link (also a manifest symlink, so the dependency
+    # observer inspects the native executables instead of walking the whole tree).
+    link = root / "toolchain" / "bin" / "python3"
+    if not link.is_symlink():
+        os.symlink("python3.12", link)
+    # `python -I` ignores PYTHONDONTWRITEBYTECODE, but `site` still imports sitecustomize from the
+    # captured prefix: a child interpreter started by a test then cannot write .pyc files into the
+    # frozen snapshot either.
+    for pydir in sorted((root / "toolchain" / "lib").glob("python3.*")):
+        site = pydir / "site-packages"
+        site.mkdir(exist_ok=True)
+        (site / "sitecustomize.py").write_text(
+            "# Daemonarchy retained closure: never write bytecode into the frozen inputs.\n"
+            "import sys\nsys.dont_write_bytecode = True\n")
+    # The captured interpreter must not write bytecode into the frozen snapshot (a child
+    # `python -I` ignores PYTHONDONTWRITEBYTECODE).  Precompile the staged stdlib with
+    # unchecked-hash pycs (never rewritten) and a fixed recorded path, so they are deterministic.
+    # -B -f: the interpreter's own startup imports must not leave timestamp pycs that compileall skips.
+    lib = root / "toolchain" / "lib"
+    for pydir in sorted(lib.glob("python3.*")):
+        subprocess.run([str(root / "toolchain" / "bin" / "python3.12"), "-B", "-m", "compileall", "-q", "-f",
+                        "--invalidation-mode", "unchecked-hash", "-d", "lib/" + pydir.name,
+                        str(pydir)], check=True)
     print(json.dumps({"staged_under": str(root)}))
 
 

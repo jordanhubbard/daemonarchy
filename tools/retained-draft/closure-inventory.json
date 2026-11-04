@@ -188,6 +188,21 @@
   },
   {
    "kind": "file",
+   "mode": "04755",
+   "name": "sudo",
+   "owner": {
+    "kind": "pkg",
+    "name": "sudo-1.9.17p2_2",
+    "version_origin": "sudo-1.9.17p2_2 security/sudo"
+   },
+   "path": "/usr/local/bin/sudo",
+   "realpath": "/usr/local/bin/sudo",
+   "sha256": "68e2f8eb251edc198326cd88d88421533a524909c9e07b921866c9524995d07a",
+   "size": 228616,
+   "why": "run-build-iso.sh elevates only the poudriere image build; Literate AI and the original tests run unprivileged"
+  },
+  {
+   "kind": "file",
    "mode": "0555",
    "name": "dynamic-linker",
    "owner": {
@@ -404,6 +419,20 @@
    "sha256": "651df3e19da01c7c1a5cb76dcd811d6d9a230c7dfe46827a7e32aebf1cb7ed11",
    "size": 99592,
    "soname": "libelf.so.2"
+  },
+  {
+   "mode": "0755",
+   "owner": {
+    "kind": "pkg",
+    "name": "libevent-2.1.13",
+    "version_origin": "libevent-2.1.13 devel/libevent"
+   },
+   "path": "/usr/local/lib/libevent_core-2.1.so.7",
+   "realpath": "/usr/local/lib/libevent_core-2.1.so.7.0.2",
+   "role": "toolchain",
+   "sha256": "ae65f3791bc534d4f120c6742b33f2fd0fda6896819a7f2041fac49949955ff0",
+   "size": 205720,
+   "soname": "libevent_core-2.1.so.7"
   },
   {
    "mode": "0755",
@@ -904,6 +933,18 @@
    "owner": {
     "kind": "base-system"
    },
+   "path": "/lib/libulog.so.0",
+   "realpath": "/lib/libulog.so.0",
+   "role": "toolchain",
+   "sha256": "c7e2fff8f0c745e9a003dc2a0cdfe090355bc4a80b82b67ffa559c5df94eeb80",
+   "size": 8776,
+   "soname": "libulog.so.0"
+  },
+  {
+   "mode": "0444",
+   "owner": {
+    "kind": "base-system"
+   },
    "path": "/lib/libutil.so.10",
    "realpath": "/lib/libutil.so.10",
    "role": "toolchain",
@@ -938,7 +979,7 @@
  ],
  "problems": [],
  "schema": "daemonarchy/retained-closure-inventory@1",
- "spec_sha256": "6984ad02af9da7d52b1581f1c6eff26b4228e0be29a3bc4c362d7bd0db9d7334",
+ "spec_sha256": "20f857f508e2933e12db0436ecc15211e6b4bdcce9d8f705482cf17198429327",
  "tools": [
   {
    "libraries": [
@@ -2234,6 +2275,32 @@
    "sha256": "ef43b79bbc9655ee40a092fb42294eee6bf0a397f76b6b5f8f887c1b1d177ed7",
    "size": 11384,
    "why": "command used by build-iso.sh or the scripts it runs, by this review's grep of those scripts"
+  },
+  {
+   "libraries": [
+    "libc.so.7",
+    "libevent_core-2.1.so.7",
+    "libm.so.5",
+    "libmd.so.7",
+    "libsys.so.7",
+    "libthr.so.3",
+    "libtinfow.so.9",
+    "libulog.so.0",
+    "libutil.so.10"
+   ],
+   "mode": "0555",
+   "name": "tmux",
+   "owner": {
+    "kind": "pkg",
+    "name": "tmux-3.8",
+    "version_origin": "tmux-3.8 sysutils/tmux"
+   },
+   "path": "/usr/local/bin/tmux",
+   "realpath": "/usr/local/bin/tmux",
+   "role": "toolchain",
+   "sha256": "bf9ba5c1b363553b16af7ff6746ade09b83ad4ac9e1dcd00648144c18495e9f2",
+   "size": 1265112,
+   "why": "sdk-windows.RealTmux and installer-extensions.OwnWindow run against a real tmux and skip without one; the retained test policy authorizes no skip"
   },
   {
    "libraries": [

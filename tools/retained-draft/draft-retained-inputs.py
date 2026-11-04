@@ -44,7 +44,8 @@ RELEASE = "literate.release.json"
 TARGET = "freebsd"
 TC = "closure/toolchain/bin/"
 # _build: litai cache (git-ignored); retained-out: sealed outputs, not inputs.
-EXCLUDED_TOP = {".git", ".literate", "literate.project.json", "retained-out", "_build"}
+# literate.project.json is a retained input: tests/docs-release-sync.py reads its version.
+EXCLUDED_TOP = {".git", ".literate", "retained-out", "_build", ".litai-cache-locks", "generated"}
 RELEASE_TAG = "packages-16-amd64-1.5.0"
 
 # Python suites that .github/workflows/release-14-controls.yml runs as
@@ -67,7 +68,8 @@ BUILD_FILES = ("build-iso.sh", "scripts/master-release.sh", "scripts/image-archi
                "scripts/check-closure-feed.sh", "scripts/make-efi-iso.sh",
                HERE + "/run-build-iso.sh", HERE + "/build-iso.env",
                HERE + "/ambient-preflight.py", HERE + "/accept-image.py",
-               HERE + "/closure-inventory.json", HERE + "/closure-spec.json")
+               HERE + "/closure-inventory.json", HERE + "/closure-spec.json",
+               HERE + "/daemonarchy-verify.sh")
 # Documentation selection (project-authored docs; docs/ is the project's documentation root).
 DOC_INCLUDE = ("docs/**/*.md", "*.md", "components/**/*.md", "secureboot/**/*.md",
                "overlay/**/*.md", "skills/**/*.md", "workflows/**/*.md", "sdk/**/*.md",
@@ -161,7 +163,11 @@ def main():
     ap.add_argument("--manifest-out", required=True)
     args = ap.parse_args()
     root = Path.cwd().resolve()
-    roots = tuple(sorted(n for n in os.listdir(root) if n not in EXCLUDED_TOP))
+    # verification/ keeps the withheld acceptance policy, which must lie outside every manifest
+    # root: the other records stay as individual file roots (tests read verification/release-*.json).
+    roots = tuple(sorted([n for n in os.listdir(root) if n not in EXCLUDED_TOP | {"verification"}]
+                         + ["verification/" + n for n in os.listdir(root / "verification")
+                            if n != "retained-project-acceptance.json"]))
     definition = ProjectConfigurationStore(root).read().definition
     closure = json.loads((root / CLOSURE).read_text())
     if closure["problems"]:
@@ -180,7 +186,9 @@ def main():
     })
     (root / POLICY).write_text(json.dumps(policy.to_dict(), indent=2) + "\n")
 
-    limits = RetainedProjectLimits(100_000, 128 * 1024 * 1024, 2 * 1024**3)
+    # The same bounds seal the exports: one file may be as large as the raw ISO budget of
+    # scripts/check-image-size.sh (3.5 GiB), and raw ISO + xz + inputs must fit in 6 GiB.
+    limits = RetainedProjectLimits(100_000, 3758096384, 6 * 1024**3)
     tree = RetainedProjectTreePolicy(case_sensitive=True)
     profile_stub = root / PROFILE
     profile_stub.write_text("{}\n")
@@ -193,6 +201,8 @@ def main():
         return {"name": name, "path": m.path, "identity": "sha256:" + m.sha256}
 
     worker = ExecutionWorker("local", ExecutionWorkerKind.LOCAL, target_profile=TARGET)
+    # Action argv holds only the arguments: the executor prefixes the action's tool binding.
+    IR = "{input_root}/"   # action paths into the frozen snapshot; cwd is the object root
     py = TC + "python3.12"
     docs_files = doc_files(root)
     libdirs = ["closure/toolchain/lib"]
@@ -206,14 +216,20 @@ def main():
         "dependency_identity": provisional.role_identity({"dependency"}).uri,
         "test_policy_identity": "sha256:" + by_path[POLICY].sha256,
         "release_policy_identity": "sha256:" + by_path[RELEASE].sha256,
-        "tools": [tool(t["name"]) for t in closure["tools"] if t["role"] == "toolchain"],
+        "acceptance_policy_identity": "sha256:" + hashlib.sha256(
+            (root / "verification" / "retained-project-acceptance.json").read_bytes()).hexdigest(),
+        # Only native (ELF) commands are profile tools: the dependency observer requires a native
+        # realization for each.  Captured shell scripts (poudriere, service) stay in the toolchain
+        # role of the manifest, pinned by sha256, and run under the captured sh.
+        "tools": [tool(t["name"]) for t in closure["tools"] if t["role"] == "toolchain"
+                  and open(root / (TC + t["name"]), "rb").read(4) == b"\x7fELF"],
         "runtime_library_paths": libdirs,
         "actions": [
             # Refuses a run whose ambient host inputs (jail, ports tree, package set,
             # release sets, catalogue, public secure-boot artifacts) differ from the
             # reviewed closure-inventory.json.  Reads and hashes only.
             {"id": "draft-ambient-preflight", "stage": "stage", "tool": "python3.12",
-             "argv": [py, HERE + "/ambient-preflight.py", "--inventory", CLOSURE,
+             "argv": [IR + HERE + "/ambient-preflight.py", "--inventory", IR + CLOSURE,
                       "--output", "{output_root}/preflight/ambient.json"],
              "requires": [], "inventory": ambient_items, "outputs": ["preflight"],
              "timeout_seconds": 7200},
@@ -221,15 +237,15 @@ def main():
             # maps the reviewed environment (build-iso.env) and OUTDIR onto build-iso.sh.
             # Runs as root (poudriere).  Its ISO, .xz and .sha256 files are the outputs.
             {"id": "draft-build-iso", "stage": "build", "tool": "sh",
-             "argv": [TC + "sh", HERE + "/run-build-iso.sh", "{output_root}/images"],
+             "argv": [IR + HERE + "/run-build-iso.sh", "{output_root}/images"],
              "requires": ["draft-ambient-preflight"],
              "inventory": ["build-iso.sh", "run-build-iso.sh"], "outputs": ["images"],
              "timeout_seconds": 86400},
             # CI "Documentation graph matches the Literate AI authority gate" and
             # "Documentation and release media agree".
             {"id": "draft-docs-tests", "stage": "docs", "tool": "python3.12",
-             "argv": [py, "-B", REPORT_TOOL, "--action", "draft-docs-tests"]
-                     + [a for n in DOCS for a in ("--test-file", "tests/%s.py" % n)]
+             "argv": ["-B", IR + REPORT_TOOL, "--action", "draft-docs-tests"]
+                     + [a for n in DOCS for a in ("--test-file", IR + "tests/%s.py" % n)]
                      + ["--output", "{output_root}/docs/report.json"],
              "requires": ["draft-build-iso"],
              "inventory": ["docs-lifecycle", "docs-release-sync"],
@@ -237,7 +253,7 @@ def main():
             # Whole-tree check of every project-authored Markdown file (links, images,
             # fragments, UTF-8).  Selection: DOC_INCLUDE in the generator.
             {"id": "draft-docs-tree", "stage": "docs", "tool": "python3.12",
-             "argv": [py, "-B", HERE + "/docs-tree-check.py", "--root", "."]
+             "argv": ["-B", IR + HERE + "/docs-tree-check.py", "--root", "{input_root}"]
                      + [a for p in DOC_INCLUDE for a in ("--include", p)]
                      + ["--output", "{output_root}/docs-tree/report.json"],
              "requires": ["draft-build-iso"],
@@ -245,8 +261,8 @@ def main():
              "outputs": ["docs-tree"], "timeout_seconds": 3600},
             # release-14-controls.yml `python3 tests/X.py -v` steps.
             {"id": "draft-ci-tests", "stage": "test", "tool": "python3.12",
-             "argv": [py, "-B", REPORT_TOOL, "--action", "draft-ci-tests"]
-                     + [a for n in PLAIN for a in ("--test-file", "tests/%s.py" % n)]
+             "argv": ["-B", IR + REPORT_TOOL, "--action", "draft-ci-tests"]
+                     + [a for n in PLAIN for a in ("--test-file", IR + "tests/%s.py" % n)]
                      + ["--output", "{output_root}/tests/ci-report.json"],
              "requires": ["draft-build-iso"],
              "inventory": list(plain), "outputs": ["tests"], "timeout_seconds": 3600},
@@ -254,8 +270,8 @@ def main():
             # PYTHONDONTWRITEBYTECODE and would otherwise write .pyc files into the
             # frozen input snapshot.
             {"id": "draft-ci-isolated-tests", "stage": "test", "tool": "python3.12",
-             "argv": [py, "-I", "-B", REPORT_TOOL, "--action", "draft-ci-isolated-tests"]
-                     + [a for n in ISOLATED for a in ("--test-file", "tests/%s.py" % n)]
+             "argv": ["-I", "-B", IR + REPORT_TOOL, "--action", "draft-ci-isolated-tests"]
+                     + [a for n in ISOLATED for a in ("--test-file", IR + "tests/%s.py" % n)]
                      + ["--output", "{output_root}/tests-isolated/ci-report.json"],
              "requires": ["draft-build-iso"],
              "inventory": list(isolated), "outputs": ["tests-isolated"], "timeout_seconds": 3600},
@@ -263,8 +279,8 @@ def main():
             # master-release.sh verify.  VM/QEMU and physical acceptance are not defined
             # as retained actions (UNKNOWN) and no acceptance policy file exists.
             {"id": "draft-accept-image", "stage": "accept", "tool": "python3.12",
-             "argv": [py, "-B", HERE + "/accept-image.py", "--images", "{output_root}/images",
-                      "--version-file", "VERSION", "--expect-tag", RELEASE_TAG,
+             "argv": ["-B", IR + HERE + "/accept-image.py", "--images", "{output_root}/images",
+                      "--version-file", IR + "VERSION", "--expect-tag", RELEASE_TAG,
                       "--output", "{output_root}/acceptance/image.json"],
              "requires": ["draft-ambient-preflight", "draft-build-iso", "draft-docs-tests",
                           "draft-docs-tree", "draft-ci-tests", "draft-ci-isolated-tests"],
