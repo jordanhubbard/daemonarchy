@@ -188,6 +188,21 @@
   },
   {
    "kind": "file",
+   "mode": "04755",
+   "name": "sudo",
+   "owner": {
+    "kind": "pkg",
+    "name": "sudo-1.9.17p2_2",
+    "version_origin": "sudo-1.9.17p2_2 security/sudo"
+   },
+   "path": "/usr/local/bin/sudo",
+   "realpath": "/usr/local/bin/sudo",
+   "sha256": "68e2f8eb251edc198326cd88d88421533a524909c9e07b921866c9524995d07a",
+   "size": 228616,
+   "why": "run-build-iso.sh elevates only the poudriere image build; Literate AI and the original tests run unprivileged"
+  },
+  {
+   "kind": "file",
    "mode": "0555",
    "name": "dynamic-linker",
    "owner": {
@@ -938,7 +953,7 @@
  ],
  "problems": [],
  "schema": "daemonarchy/retained-closure-inventory@1",
- "spec_sha256": "6984ad02af9da7d52b1581f1c6eff26b4228e0be29a3bc4c362d7bd0db9d7334",
+ "spec_sha256": "560e6eeb9a433c9042e2b97f143c8a2aeafc86afcf4029ecee496ce210a4f5a6",
  "tools": [
   {
    "libraries": [
