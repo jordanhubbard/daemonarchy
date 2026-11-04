@@ -87,10 +87,11 @@ The base is FreeBSD 16.0-CURRENT, OSVERSION `1600029`, built from daemonarchy-sr
 - **Sandboxed Lua installer extensions (EXT-002).** The installer's visual SDK (API 1.5) runs
   extensions in a sandbox, with a first fish-tank extension; built and tested on a build host,
   not yet exercised on a physical machine.
-- **One signing session per release (SIGN-001, option A).** The signed inputs were frozen
-  before signing and signed in the operator's key windows (the process is recorded in
-  [mastering-1.5.0.md](mastering-1.5.0.md)). No key is on a build machine and none was
-  copied into a VM or an artifact; the command count and wall-clock time are in the release record.
+- **Signing process (SIGN-001, option A).** The input-freeze and one-session rule
+  is documented in [mastering-1.5.0.md](mastering-1.5.0.md). The published
+  release record does not retain the operator signing command count or wall-clock
+  time, so the one-session acceptance remains open for 1.5.1. No key was
+  included in a published package or image.
 - **arm64 render nodes (QEMU evidence only; whether the aarch64 feed carries the package was not re-checked here).** `graphics/drm-612-kmod` builds
   the VirtIO GPU stack on aarch64 with one deliberate difference from upstream drm-kmod:
   an aarch64-only patch lets a render-node client create, map and destroy dumb buffers,
