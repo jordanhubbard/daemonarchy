@@ -46,13 +46,13 @@ complete declarations and external/native gaps are in [the acceptance inventory]
   peer/NIC loss, local recovery and disk preservation. Boot/sequence validation
   provides correlation and duplicate suppression, not authentication. Retain the
   existing authenticated mode's separate regression requirements above.
-- **1.4 mountroot and early-kernel connection:** force the `mountroot>` prompt
+- **1.4 (earlier plan) mountroot and early-kernel connection:** force the `mountroot>` prompt
   and remotely exchange input and output there; require real packets after firmware exit and
   before normal PCI/NIC attachment with exact products, NIC and boot identity.
   Retain deliberate pre-driver panic and hard-reset captures, successful continued
   boot, bounded panic polling, loss counters, stale/malformed message controls and
   safe native-driver takeover. Qualify the separate diagnostic image and actual
-  MSI built-in-NIC startup capture. Use the current
+  MSI built-in-NIC startup capture. Use the earlier
   [1.4 P0 matrix](../../docs/roadmap/release-1.4.0.md#p0-network-debugging-across-the-boot-boundary)
   and retained [earlier matrix](../../docs/roadmap/release-1.3.2.md#acceptance-matrix).
   Descriptor checks, a preloaded NIC module and controller-only fixtures do not

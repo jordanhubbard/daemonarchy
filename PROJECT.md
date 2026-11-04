@@ -47,8 +47,8 @@ the [1.3.2 plan](docs/roadmap/release-1.3.2.md) retains historical design work.
 The enabled plain-debug mode requires no SSH, new key or pairing. It must
 support remote input as well as output at each claimed stage, bounded polling
 in early/panic contexts and orderly native-NIC takeover. Preserve the
-published 1.3.1 image, tags, feeds, signing material, source and build outputs;
-no 1.4 implementation or hardware acceptance is claimed yet.
+published images, tags, feeds, signing material, source and build outputs of every
+release; no 1.4 implementation or hardware acceptance is claimed beyond the release notes.
 
 ## Dependencies
 
@@ -79,10 +79,10 @@ original source authority in place, preserving all 272 tracked source entries at
 its reviewed commit. Native retained-project execution and release enforcement
 require separate demonstrated integration.
 
-The current product release is 1.4.1, published October 31, 2026. Its published
-artifact identity is recorded in [`release/current.json`](release/current.json)
-and its actual qualification scope in the [release notes](docs/release-1.4.1.md);
-the earlier 1.4.0 keeps its [notes](docs/release-1.4.0.md) and 1.1.1 keeps its [record](docs/testing-1.1.1.md).
+The current product release is 1.5.0. Its published artifact identity is recorded in
+[`release/current.json`](release/current.json) and its actual qualification scope in the
+[release notes](docs/release-1.5.0.md); 1.4.1 (October 31, 2026) keeps its [notes](docs/release-1.4.1.md),
+1.4.0 its [notes](docs/release-1.4.0.md) and 1.1.1 its [record](docs/testing-1.1.1.md).
 Product responsibilities and current acceptance coverage are mapped in
 [the architecture](docs/architecture/design-traceability.md). G7 remains unfinished:
 pinned DAG/acquisition work has scoped native evidence, and a
@@ -161,8 +161,7 @@ The [performance plan](docs/roadmap/build-performance.md)
 owns its measurements and executor decision.
 
 RELEASE-001 remains the broader release program: finish the existing backlog and
-publish through the qualified Literate AI method. The next planned release
-is 1.5.0, opened as 1.4.2 and renamed ([plan](docs/roadmap/release-1.5.0.md)), re-scoped on 2026-11-03 to evidenced work, followed by the planned 1.5.1 ([plan](docs/roadmap/release-1.5.1.md): network upgrades, forkability and the framework-executed goals deferred from 1.5.0); 1.4.0 and 1.4.1 are published ([1.4 plan](docs/roadmap/release-1.4.0.md)); 1.2.0 was never published,
+publish through the qualified Literate AI method. 1.5.0 (opened as 1.4.2 and renamed; [plan](docs/roadmap/release-1.5.0.md)) shipped re-scoped on 2026-11-03 to evidenced work. The next planned release is 1.5.1 ([plan](docs/roadmap/release-1.5.1.md): network upgrades, forkability and the framework-executed goals deferred from 1.5.0); 1.4.0, 1.4.1 and 1.5.0 are published ([1.4 plan](docs/roadmap/release-1.4.0.md)); 1.2.0 was never published,
 and 1.3.1 followed 1.1.1. The completion audit includes all open queue and
 roadmap acceptance, not just implementation code or a worker proof. The earlier
 [1.2.0 completion ledger](docs/roadmap/release-1.2.0.md) expands those obligations and
@@ -204,7 +203,7 @@ DEBUG-003 retains P0 priority.
 
 ## Completed work
 
-[CHANGELOG.md](CHANGELOG.md) records published history. The 1.3.1 release shipped
+[CHANGELOG.md](CHANGELOG.md) records published history; 1.5.0 is the latest release and its [notes](docs/release-1.5.0.md) say what shipped. The 1.3.1 release shipped
 MacBookPro16,1 graphics, T2 input and BCM4364 Wi-Fi support, retained
 remote-debugging grants and a rotated package-signing key; see its
 [release notes](docs/release-1.3.1.md). The earlier 1.1.1 release shipped

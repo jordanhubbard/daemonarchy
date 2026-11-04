@@ -112,6 +112,29 @@ python3 scripts/verify-release-assets.py --record verification/release-1.5.0.jso
     --assets ASSETS --closure-assets CLOSURE_DIR      # CLOSURE_DIR/<tag>/ for each closure shard
 ```
 
+### The 1.5.0 command, as prepared (confirm before running)
+
+Values for the 1.5.0 images: installer commit `ea0432a0fb890ad56379bb898d4db6d0505c5a76` (the commit the images were
+built from), FreeBSD source revision `303b3646270ffa4bf7cec65c5c1d28bd8000cbce`, ports commit
+`e84b4c4cde0df8ee645ee46e7ad1e99ef8ffa181`, and the feeds `packages-16-amd64-1.5.0-r2`, `checkouts-16-amd64-1.5.0-r2`,
+`packages-16-aarch64-1.5.0-r2` and `checkouts-16-aarch64-1.5.0-r3` (the earlier `1.5.0` and `-r2` tags are published
+and immutable, and the amd64 `checkouts.json` asset was replaced once so its `repository_url` names `-r2`). Run it
+with `--dry-run` first, and for real only after the release assets are published.
+
+```
+python3 scripts/fill-release.py --version 1.5.0 --assets ASSETS \
+    --installer-commit ea0432a0fb890ad56379bb898d4db6d0505c5a76 \
+    --ports-commit e84b4c4cde0df8ee645ee46e7ad1e99ef8ffa181 \
+    --packages-amd64 packages-16-amd64-1.5.0-r2 --packages-aarch64 packages-16-aarch64-1.5.0-r2 \
+    --checkouts-amd64 checkouts-16-amd64-1.5.0-r2 --checkouts-aarch64 checkouts-16-aarch64-1.5.0-r3 \
+    --aarch64-final-qemu "TEXT" --physical-status "TEXT" --set GUI001_EVIDENCE="TEXT" \
+    --set HWTRACE_AARCH64_BYTES=15043936 \
+    --set HWTRACE_AARCH64_SHA256=07c47a408733d69200086100e10d39cbc341a3c245ce58251fe9b85748e9c6e7
+```
+
+The release carries twelve assets: the two installers, the two trace images (amd64 and aarch64), each with a
+`.sha256`, the boot bundle and its `.sig`, and the certificate in PEM and DER form.
+
 It generalises `fill-release-1.4.1.py`: the version is an argument, the closure shards are
 the record's `closure_feed_records`, and a release-specific token is given with `--set`. The
 assets directory holds exactly the twelve files (the trace images and their `.sha256` come from

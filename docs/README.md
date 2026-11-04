@@ -4,11 +4,11 @@ Product goals and completeness are in root `PROJECT.md`; build and release
 commands remain in root `HACKING.md`. This index makes the retained evidence
 reachable without changing its historical scope.
 
-The current release is **1.4.1**: start with its
-[release notes](release-1.4.1.md) and the [getting-started guide](getting-started.md).
+The current release is **1.5.0**: start with its
+[release notes](release-1.5.0.md) and the [getting-started guide](getting-started.md).
 Its published identity is recorded in
 [`release/current.json`](../release/current.json); documents dated or named for
-another version are historical records. 1.4 entries describe work in development.
+another version are historical records. 1.5.1 entries describe planned work.
 
 - [Application note: MacBook Pro 16-inch (2019)](application-note-macbookpro16-1.md)
 - [Application note: NVIDIA RTX Spark laptop (aarch64)](application-note-rtx-spark.md)

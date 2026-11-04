@@ -87,7 +87,7 @@ checks are separate release gates; passing these tests alone is not a GUI or
 Linuxulator acceptance claim.
 
 
-The current 1.4.0 release retains this policy, as did 1.3.1 and the 1.1.1 refresh. Since
+Releases 1.4.0 and later retain this policy, as did 1.3.1 and the 1.1.1 refresh. Since
 1.1.1 the installer verifies package-file integrity and dependencies before
 recording installation success, and the adoption helper checks the actual base and kernel against candidate
 OSVERSION metadata before changing repository identities. These checks do not

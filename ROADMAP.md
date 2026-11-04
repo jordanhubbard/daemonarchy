@@ -19,7 +19,7 @@ daemonarchy-ports #37) and unfinished queue items moved here from 1.4.1 by opera
 2026-10-30; the release was renamed from 1.4.2 to 1.5.0 on 2026-10-31 (1.4.2 was never released). On
 2026-11-03 the operator re-scoped it: 1.5.0 keeps ADOPT-002, SRC-001 and RELEASE-001 (delivered parts only),
 GUI-001, DEBUG-003, HW-004, EXT-002, DESKTOP-001 and SIGN-001 (option A, one signing session). It is no
-longer gated on Literate AI 1.4.0, which does not exist (latest v1.3.1). PERF-002, COMP-001, DEV-001,
+longer gated on a Literate AI 1.4.0 release, which does not exist (the newest tagged Literate AI is v1.3.1). PERF-002, COMP-001, DEV-001,
 BUILD-001, PERF-001 and the native halves of ADOPT-002, SRC-001 and RELEASE-001 (ADOPT-003, SRC-002,
 RELEASE-002) moved to 1.5.1. See [the 1.5.0 plan](docs/roadmap/release-1.5.0.md).
 
@@ -433,7 +433,7 @@ Later 1.1 QEMU results are recorded in [the final candidate record](docs/testing
 ## Historical 1.3.2 network bootloader plan
 
 The earlier operator direction assigned the complete bootloader environment and
-MSI early-kernel capture to 1.3.2. The current 1.4 P0 scope adds mountroot and
+MSI early-kernel capture to 1.3.2. The earlier 1.4 P0 plan added mountroot and
 panic interaction. [DEBUG-003 and the historical plan](docs/roadmap/release-1.3.2.md) cover plain wired
 console control without SSH or additional authentication, variables, disk and
 network kernel/module loading, downloaded Lua execution, actual pre-driver
@@ -443,7 +443,7 @@ retain their original scope. The implementation is incomplete.
 ## 1.2: earlier network debugging
 
 The following records the earlier scope and inspection baseline; use the 1.4
-plan above for current implementation status and scheduling.
+plan above for the status and scheduling recorded at that time.
 
 Loader and early-kernel network-debugging changes are deferred to **1.2**.
 The selected GENERIC already includes DEBUGNET, NETDUMP and NETGDB; those

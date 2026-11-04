@@ -7,7 +7,7 @@ catalogue. See [the build and runtime instructions](https://github.com/jordanhub
 The seed packages contain no full historical repository; users can deepen
 history explicitly with Git.
 
-## Current 1.4.0 shallow packages
+## Shallow packages (sizes measured for 1.4.0)
 
 The checked-in [catalogue](../overlay/usr/local/share/daemonarchy-installer/checkouts.json)
 is byte-identical to the one published with the

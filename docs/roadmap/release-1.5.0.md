@@ -24,6 +24,18 @@ execute native components: ADOPT-003 (from ADOPT-002), SRC-002 (from SRC-001) an
 RELEASE-001). The Literate AI 1.4 upgrade, the baselines, the targets and the framework-issue table moved
 with them, verbatim, into the [1.5.1 plan](release-1.5.1.md#build-speed-and-framework-executed-goals-deferred-from-150).
 
+## What shipped in 1.5.0
+
+Status: shipping. This plan becomes `completed` when the release is published and [`release/current.json`](../../release/current.json) records it.
+
+Shipped: ADOPT-002, SRC-001 and RELEASE-001 (delivered parts only), GUI-001 (the `daemonarchy-pkg` window and its
+package, no real-desktop evidence), EXT-002 (sandboxed Lua extensions), DEBUG-003 (foundations), HW-004 (Touch ID stays
+out of the image), DESKTOP-001 and SIGN-001 (option A: one signing session per release), plus Windows programs and
+Steam on amd64, the faster Raider login and the MacBookPro16,1 Wi-Fi link-down fix. The release carries four images:
+the installer ISO and the hardware trace image for each of amd64 and arm64. Not shipped: the RTX Spark laptop
+(tested, not yet working, deferred) and everything moved to [1.5.1](release-1.5.1.md). The evidence for each
+claim is in the [release notes](../release-1.5.0.md); the roadmap boxes stay unticked where the evidence is not there.
+
 **What stays in 1.5.0:** ADOPT-002 (only the delivered handler audit and binding records), SRC-001 (only the
 delivered controller and capture work), RELEASE-001 (the delivered 1.4.x release gate and the
 prepare/fill tooling), GUI-001, DEBUG-003, HW-004, EXT-002, DESKTOP-001 and SIGN-001 (option A). The RTX

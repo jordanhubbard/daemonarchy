@@ -1,63 +1,95 @@
 {
   "schema": "daemonarchy/current-release@1",
-  "version": "1.4.1",
-  "tag": "daemonarchy-1.4.1",
-  "name": "Daemonarchy 1.4.1",
-  "published_at": "2026-10-31T06:08:14Z",
-  "url": "https://github.com/jordanhubbard/daemonarchy/releases/tag/daemonarchy-1.4.1",
-  "notes": "docs/release-1.4.1.md",
+  "version": "1.5.0",
+  "tag": "daemonarchy-1.5.0",
+  "name": "Daemonarchy 1.5.0",
+  "published_at": "2026-11-04T03:08:20Z",
+  "url": "https://github.com/jordanhubbard/daemonarchy/releases/tag/daemonarchy-1.5.0",
+  "notes": "docs/release-1.5.0.md",
   "osversion": 1600029,
-  "application_feed": "packages-16-amd64-1.4.1-r2",
-  "checkout_feed": "checkouts-16-amd64-1.4.1-r2",
+  "application_feed": "packages-16-amd64-1.5.0-r2",
+  "checkout_feed": "checkouts-16-amd64-1.5.0-r2",
   "images": [
     {
       "type": "installer",
       "arch": "amd64",
-      "asset": "daemonarchy-1.4.1-amd64.iso.xz",
-      "checksum_asset": "daemonarchy-1.4.1-amd64.iso.xz.sha256"
+      "asset": "daemonarchy-1.5.0-amd64.iso.xz",
+      "checksum_asset": "daemonarchy-1.5.0-amd64.iso.xz.sha256"
     },
     {
       "type": "installer",
       "arch": "aarch64",
-      "asset": "daemonarchy-1.4.1-aarch64.iso.xz",
-      "checksum_asset": "daemonarchy-1.4.1-aarch64.iso.xz.sha256"
+      "asset": "daemonarchy-1.5.0-aarch64.iso.xz",
+      "checksum_asset": "daemonarchy-1.5.0-aarch64.iso.xz.sha256"
+    },
+    {
+      "type": "hwtrace",
+      "arch": "amd64",
+      "asset": "daemonarchy-hwtrace-1.5.0-amd64.img.xz",
+      "checksum_asset": "daemonarchy-hwtrace-1.5.0-amd64.img.xz.sha256"
     }
   ],
   "assets": {
-    "daemonarchy-1.4.1-amd64.iso.xz": [
-      1592484392,
-      "sha256:ea0b6d9ed435a30c75ee4b5acc70f2095d09c243adbc08532d2f8ab41e0014ca"
+    "daemonarchy-1.5.0-amd64.iso.xz": [
+      1592500128,
+      "sha256:6e18a512e9e2072f96d3e1941da7d57d95ec32aa62b3e2a7cd3493c31007cbfd"
     ],
-    "daemonarchy-1.4.1-amd64.iso.xz.sha256": [
+    "daemonarchy-1.5.0-amd64.iso.xz.sha256": [
       97,
-      "sha256:cd297dfb1c814ef204da91fd9a05aa88cffd6a204b61786bfd0c13076ef3f724"
+      "sha256:94b75b2d89f8983580cbb5e797ddb10205196c17ec58d035b5fd1234aadd0c45"
     ],
-    "daemonarchy-1.4.1-aarch64.iso.xz": [
-      957807376,
-      "sha256:eef5e9bb3b100365513a6ca3dce6d483142886c65b70411ef0a9db2aa994b076"
+    "daemonarchy-1.5.0-aarch64.iso.xz": [
+      958319980,
+      "sha256:6936c010949f88c5621018c149d141270d55adcc434b799528d30669ee6840b0"
     ],
-    "daemonarchy-1.4.1-aarch64.iso.xz.sha256": [
+    "daemonarchy-1.5.0-aarch64.iso.xz.sha256": [
       99,
-      "sha256:4bfaa75446549237cbf41e60f1e03d0efa1b8616c13393d93ef29db965b96a13"
+      "sha256:448b0d0faf585bfa5462acc98c8531262381f5a896229bffd52f872a61a98a06"
     ],
-    "daemonarchy-1.4.1-boot.txz": [
-      10498260,
-      "sha256:ce1c485db74cd35ed7ca57609be1c5edd4269aee9a5ec92b1ad5c21e5e2dee47"
+    "daemonarchy-hwtrace-1.5.0-amd64.img.xz": [
+      20073092,
+      "sha256:c133741f936498af0daa32298ff405b7f71f77200a7013cb3b3abc396c60ac57"
     ],
-    "daemonarchy-1.4.1-boot.txz.sig": [
+    "daemonarchy-hwtrace-1.5.0-amd64.img.xz.sha256": [
+      105,
+      "sha256:92dd9a6b7e0f7ae7db47705c49f50025821e3551f4b4b29ccbfc058eaa9230a4"
+    ],
+    "daemonarchy-hwtrace-1.5.0-aarch64.img.xz": [
+      15043936,
+      "sha256:07c47a408733d69200086100e10d39cbc341a3c245ce58251fe9b85748e9c6e7"
+    ],
+    "daemonarchy-hwtrace-1.5.0-aarch64.img.xz.sha256": [
+      107,
+      "sha256:b5a8ccc90150255b51f99658b4914d1c1c292d10172302b5cada4294148728f1"
+    ],
+    "daemonarchy-1.5.0-boot.txz": [
+      10499928,
+      "sha256:c301015f4ea4cfbf484da7496f25f7ac591bf7911001be72a4897a4af28fd77d"
+    ],
+    "daemonarchy-1.5.0-boot.txz.sig": [
       512,
-      "sha256:fa67149eaa031ecee3692a51935dd3443cc196e88e4f008aae1a4c0b7149278a"
+      "sha256:9f590bbe973b560a063a462fbbe7eecbf7500b5877fa0a059e6df199a018ef69"
     ],
-    "daemonarchy-1.4.1.pem": [
+    "daemonarchy-1.5.0.pem": [
       1968,
       "sha256:26009db078d352318c06f1ea5cf7b5650dfd32137518f3a6fecd20802de2fb79"
     ],
-    "daemonarchy-1.4.1.der": [
+    "daemonarchy-1.5.0.der": [
       1413,
       "sha256:ee140e7a68d566d37a96ea49ac68238d2e039c1172eb896ab69bff189d70b733"
     ]
   },
   "previous_releases": [
+    {
+      "version": "1.4.1",
+      "tag": "daemonarchy-1.4.1",
+      "published_at": "2026-10-31T06:08:14Z",
+      "image": [
+        "daemonarchy-1.4.1-amd64.iso.xz",
+        1592484392,
+        "sha256:ea0b6d9ed435a30c75ee4b5acc70f2095d09c243adbc08532d2f8ab41e0014ca"
+      ]
+    },
     {
       "version": "1.4.0",
       "tag": "daemonarchy-1.4.0",

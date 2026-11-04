@@ -3,7 +3,7 @@
 Updated October 28, 2026. Model: **MacBookPro16,1**, Apple T2, Intel Core
 i9-9880H.
 
-**Current release:** 1.4.0 (OSVERSION `1600029`) carries the graphics, T2
+**Release status:** as of 1.4.0 (OSVERSION `1600029`; the 1.5.0 release adds the Wi-Fi link-down fix, see its [notes](release-1.5.0.md)) the image carries the graphics, T2
 keyboard and BCM4364 Wi-Fi work described below. 1.4.0 adds a signed Secure Boot
 boot profile to the image, so the installer can stage the Apple firmware again,
 and keeps the T2's internal USB link out of DHCP. The operator's tests of this
