@@ -133,6 +133,13 @@ paired with #33) was not changed.
 
 ## Release tasks
 
+- Release notes: [draft](../release-1.5.1.md), written from what was merged on 2026-11-05 and filled by
+  `scripts/fill-release.py` from the verified artifacts. 1.5.1 is released with what has evidence; the
+  open items above stay open and are listed in the notes as not done.
+- Kernel input: daemonarchy-src `cb38d6498a24` (`daemonarchy`): the 1.5.0 snapshot plus the arm64 CPU-start
+  bound and diagnostics (src #53, #60), the comment-only header change (src #56) and the virtio barrier
+  (src #59 via #61). The native world, kernel, packages, ISO, trace images and QA run on the FreeBSD
+  workers; signing and publication are the release owner's, in one session.
 - Record an onboarding video on the published 1.5.1 media and link it from the README. It is made after the
   image is final, so it shows exactly what a new user gets.
 

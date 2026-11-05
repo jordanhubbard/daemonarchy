@@ -1,0 +1,78 @@
+{
+  "schema": "daemonarchy/release-inputs@1",
+  "version": "1.5.1",
+  "tag": "daemonarchy-1.5.1",
+  "installer_commit": "TODO",
+  "source_commit": "cb38d6498a24606aba3b3ca22fceedc61b31f9bf",
+  "osversion": 1600029,
+  "ports_commit": "TODO",
+  "application_feed": "TODO",
+  "checkout_feed": "TODO",
+  "aarch64_application_feed": "TODO",
+  "aarch64_checkout_feed": "TODO",
+  "architectures": [
+    "amd64",
+    "aarch64"
+  ],
+  "hwtrace": [
+    "amd64",
+    "aarch64"
+  ],
+  "qualification": "docs/release-1.5.1.md",
+  "evidence_status": "draft: placeholders, not a release record",
+  "assets": {
+    "daemonarchy-1.5.1-aarch64.iso.xz": [
+      0,
+      "sha256:TODO"
+    ],
+    "daemonarchy-1.5.1-aarch64.iso.xz.sha256": [
+      0,
+      "sha256:TODO"
+    ],
+    "daemonarchy-1.5.1-amd64.iso.xz": [
+      0,
+      "sha256:TODO"
+    ],
+    "daemonarchy-1.5.1-amd64.iso.xz.sha256": [
+      0,
+      "sha256:TODO"
+    ],
+    "daemonarchy-1.5.1-boot.txz": [
+      0,
+      "sha256:TODO"
+    ],
+    "daemonarchy-1.5.1-boot.txz.sig": [
+      0,
+      "sha256:TODO"
+    ],
+    "daemonarchy-1.5.1.der": [
+      0,
+      "sha256:TODO"
+    ],
+    "daemonarchy-1.5.1.pem": [
+      0,
+      "sha256:TODO"
+    ],
+    "daemonarchy-hwtrace-1.5.1-aarch64.img.xz": [
+      0,
+      "sha256:TODO"
+    ],
+    "daemonarchy-hwtrace-1.5.1-aarch64.img.xz.sha256": [
+      0,
+      "sha256:TODO"
+    ],
+    "daemonarchy-hwtrace-1.5.1-amd64.img.xz": [
+      0,
+      "sha256:TODO"
+    ],
+    "daemonarchy-hwtrace-1.5.1-amd64.img.xz.sha256": [
+      0,
+      "sha256:TODO"
+    ]
+  },
+  "closure_feed_records": [
+    "packages-16-aarch64-1.4.1-upstream",
+    "packages-16-aarch64-1.4.1-upstream-2",
+    "packages-16-amd64-1.4.1-upstream"
+  ]
+}
