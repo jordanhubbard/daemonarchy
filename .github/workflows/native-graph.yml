@@ -43,6 +43,8 @@ on:
       - 'overlay/usr/local/libexec/daemonarchy-installer/dashboard'
       - 'overlay/usr/local/libexec/daemonarchy-installer/install'
       - 'overlay/usr/local/libexec/daemonarchy-installer/install-integrity'
+      - 'overlay/usr/local/libexec/daemonarchy-installer/install-failed'
+      - 'tests/install-failed.sh'
       - 'tests/installer-progress.py'
       - 'tests/installer-charm.sh'
       - 'tests/clock-floor.sh'
@@ -140,6 +142,8 @@ on:
       - 'overlay/usr/local/libexec/daemonarchy-installer/dashboard'
       - 'overlay/usr/local/libexec/daemonarchy-installer/install'
       - 'overlay/usr/local/libexec/daemonarchy-installer/install-integrity'
+      - 'overlay/usr/local/libexec/daemonarchy-installer/install-failed'
+      - 'tests/install-failed.sh'
       - 'tests/installer-progress.py'
       - 'tests/installer-charm.sh'
       - 'tests/clock-floor.sh'
@@ -232,7 +236,7 @@ jobs:
           PYTHONDONTWRITEBYTECODE: '1'
         run: |
           bash -n overlay/usr/local/libexec/daemonarchy-installer/dashboard overlay/usr/local/libexec/daemonarchy-installer/install
-          bash -n overlay/usr/local/libexec/daemonarchy-installer/install-screen overlay/usr/local/libexec/daemonarchy-installer/remote-debug
+          bash -n overlay/usr/local/libexec/daemonarchy-installer/install-screen overlay/usr/local/libexec/daemonarchy-installer/remote-debug overlay/usr/local/libexec/daemonarchy-installer/install-failed
           python3 -m py_compile overlay/usr/local/libexec/daemonarchy-installer/progress-model.py overlay/usr/local/libexec/daemonarchy-installer/sound.py overlay/usr/local/libexec/daemonarchy-installer/charm.py scripts/installer-visuals-demo.py scripts/scrub-install-log.py
           bash -n overlay/usr/local/libexec/daemonarchy-installer/sound-setup overlay/usr/local/libexec/daemonarchy-installer/configurator overlay/usr/local/libexec/daemonarchy-installer/launch
           sh -n overlay/usr/local/libexec/daemonarchy-installer/sound overlay/usr/local/libexec/daemonarchy-installer/charm overlay/usr/local/share/daemonarchy-installer/greeting/daemonarchy_greeting
@@ -240,6 +244,7 @@ jobs:
           command -v tmux >/dev/null || sudo apt-get install -y tmux
           python3 tests/installer-progress.py
           bash tests/installer-charm.sh
+          bash tests/install-failed.sh
           bash tests/clock-floor.sh
           bash tests/install-integrity.sh
       - name: Live desktop controls (LIVE-001)

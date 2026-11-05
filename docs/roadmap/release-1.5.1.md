@@ -163,6 +163,18 @@ for image-based upgrade and rollback. Windows/Steam real-desktop and Aquamarine
 hotplug/resume checks remain physical acceptance under HW-001. The channel-1
 MacBook Wi-Fi handshake remains a distinct unresolved case under HW-001.
 
+## Installer fix: a failed installation explains itself (issue #257)
+
+A failed installation no longer drops to a bare shell after `[exited]`. The
+installer's own exit status decides the outcome, so a progress warning is
+reported beside a successful result instead of turning it into a failure. The
+failure card waits for a key, and `install-failed` then shows the end of the
+install log, the last recorded stage, the log locations and a menu (view the
+log, shell, reboot, power off). Unattended CIDATA installs keep their
+behavior and never wait. See [When the installation fails](../installer-progress.md#when-the-installation-fails).
+Evidence: `tests/install-failed.sh` and `tests/installer-progress.py` on Linux
+with tmux. Exact-image and hardware runs are pending.
+
 ## Deferred from 1.5.0 (operator decision, 2026-11-03)
 
 1.5.0 was re-scoped to what is real ([plan](release-1.5.0.md)). Every goal below needs the Literate AI
@@ -189,6 +201,18 @@ Three new queue items follow in the queue with no 1.5.x commitment (target after
 scheduled): [TREE-001](active-work.md#tree-001-browse-usrsrc-and-usrports-on-the-system-as-nested-html-cards),
 [MON-001](active-work.md#mon-001-worker-activity-monitor-and-graphical-package-browser-on-the-installer-visual-sdk)
 and [LITAI-PKG-001](active-work.md#litai-pkg-001-ship-literate-ai-as-a-port-and-package-so-users-run-srcports-operations-with-litai).
+
+## Installer fix: console messages no longer shift the install screen (issue #244)
+
+ntpd's "Set system clock by hand." (LOG_ERR) reached ttyv0 through FreeBSD's
+default `syslog.conf`, scrolled the console under tmux, and tmux drew every
+row one line off. The live image now logs those messages only to
+`/var/log/messages`, `install-screen` redraws the console every 12 seconds
+while its session exists (kernel messages too), `C-b r` redraws at once, the
+live `ntp.conf` has `tinker panic 0`, and a wrapped header row is indented.
+The installed system's `syslog.conf` is unchanged. Evidence: `tests/live-desktop.sh`
+and `tests/installer-progress.py` on Linux with tmux; `tests/live-image-runtime.sh`
+checks the image natively. Exact-image and hardware runs are pending.
 
 ## Build speed and framework-executed goals deferred from 1.5.0
 

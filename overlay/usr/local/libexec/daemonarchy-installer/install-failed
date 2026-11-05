@@ -1,0 +1,105 @@
+#!/usr/local/bin/bash
+# Explain a failed installation and offer what to do next (launch runs it).
+#
+#   install-failed STATUS LOG [SUMMARY]
+#
+# STATUS is the installer's own exit status (its status file), LOG the live
+# install log and SUMMARY the progress screen's final summary, if it wrote one.
+# The explanation stays on the screen: the end of the install log, the
+# summary, the last recorded stage and where every log is. Then a menu like
+# the one after a successful install, which needs no function keys: view the
+# full log, open a shell (exit returns here), reboot or power off. Escape
+# leaves the menu for launch's shell.
+#
+# Unattended (CIDATA) installs, DAEMONARCHY_UNATTENDED=1, and runs without a
+# terminal print the explanation only and return at once, so launch keeps its
+# unattended behaviour and nothing waits for a key.
+#
+# Retrying in place is not offered: a failed run can leave the target pool
+# imported at /mnt and the GELI provider attached, so a second run in the same
+# boot cannot start cleanly. Reboot and start the installer again instead.
+set -u
+here=$(cd "$(dirname "$0")" && pwd)
+status=${1:?usage: install-failed STATUS LOG [SUMMARY]}
+log=${2:?usage: install-failed STATUS LOG [SUMMARY]}
+summary=${3:-}
+target=${DAEMONARCHY_INSTALL_TARGET:-/mnt}
+trace=${DAEMONARCHY_INSTALL_TRACE:-/tmp/daemonarchy-install-trace.jsonl}
+network_log=${DAEMONARCHY_NETWORK_LOG:-/tmp/daemonarchy-network/log}
+diagnostics=$target/var/db/daemonarchy/install
+
+# Terminal control characters from the log (pkg's progress, colors) must not
+# reach the console; the text that remains is still readable.
+printable() { tr -d '\000-\010\013-\037\177'; }
+
+# The last stage the installer announced, from the live log and, when the
+# target is still mounted, from its retained diagnostics.
+stage_report() {
+  local phase step
+  phase=$(sed -n 's/^@@phase //p' "$log" 2>/dev/null | tail -n 1 | printable)
+  step=$(sed -n 's/^@@step //p' "$log" 2>/dev/null | tail -n 1 | printable)
+  printf 'Last recorded stage: %s%s\n' "${phase:-none recorded}" "${step:+ (step: $step)}"
+  if [[ -r $diagnostics/status ]]; then
+    printf 'Recorded on the target disk: status %s, stage %s\n' \
+      "$(head -n 1 "$diagnostics/status" | printable)" "$(head -n 1 "$diagnostics/phase" 2>/dev/null | printable)"
+  fi
+}
+
+where_logs() {
+  local path
+  echo 'Logs on this live system:'
+  for path in "$log" "$trace" "$network_log"; do
+    if [[ -e $path ]]; then printf '  %s\n' "$path"; else printf '  %s (not written)\n' "$path"; fi
+  done
+  if [[ -d $diagnostics ]]; then
+    printf 'On the target disk, mounted at %s:\n  %s\n  %s/\n' "$target" \
+      "$target/var/log/daemonarchy-install.log" "$diagnostics"
+  else
+    echo 'On the target disk, if the installation got that far (mount it first):'
+    echo '  /var/log/daemonarchy-install.log'
+    echo '  /var/db/daemonarchy/install/'
+  fi
+}
+
+report() {
+  local foot rows=0 cols tail_lines=30
+  foot=$(
+    echo
+    if [[ -s $summary ]]; then head -n 14 "$summary" | printable; echo; fi
+    printf 'THE INSTALLATION FAILED (installer exit status %s).\n' "$status"
+    stage_report
+    where_logs
+  )
+  # Keep the explanation and the menu on one screen; the log end shrinks first.
+  IFS=' ' read -r rows cols < <(stty size 2>/dev/null) || rows=0
+  if [[ ${rows:-0} =~ ^[0-9]+$ ]] && ((rows > 0)); then
+    tail_lines=$((rows - $(wc -l <<<"$foot") - ${1:-0} - 2))
+    ((tail_lines > 30)) && tail_lines=30
+    ((tail_lines < 5)) && tail_lines=5
+  fi
+  printf -- '--- The last %s lines of %s ---\n' "$tail_lines" "$log"
+  grep -v '^@@' "$log" 2>/dev/null | tail -n "$tail_lines" | printable | cut -c 1-"${cols:-240}"
+  printf '%s\n' "$foot"
+}
+
+interactive=true
+[[ ${DAEMONARCHY_UNATTENDED:-} == 1 ]] && interactive=false
+[[ -t 0 && -t 1 ]] || interactive=false
+if ! $interactive; then
+  report
+  exit 0
+fi
+
+menu_rows=8
+while :; do
+  clear 2>/dev/null || true
+  report "$menu_rows"
+  case $(gum choose --header "The installation failed. What next?" \
+         "View the full install log" "Open a shell (type exit to return here)" "Reboot" "Power off") in
+    View*) "${PAGER:-less}" "$log" || more "$log" ;;
+    Open*) echo "Type exit to return to this screen."; /bin/sh ;;
+    Reboot) "$here/live-power" reboot ;;
+    Power*) "$here/live-power" poweroff ;;
+    *) exit 0 ;;  # Escape, or no menu: launch opens its shell.
+  esac
+done
