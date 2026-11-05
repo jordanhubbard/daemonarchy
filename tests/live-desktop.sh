@@ -304,4 +304,31 @@ grep -q 'hyprland seatd dbus sudo mesa-dri foot dejavu gtk3' "$here/build-iso.sh
 grep -q 'sh "$here/scripts/check-image-size.sh" "$iso" "$iso.xz"' "$here/build-iso.sh"
 # The configurator still runs its screens when executed, and only defines them when sourced.
 grep -q '^  configurator_main$' "$lib/configurator"
-echo 'PASS: live service, GPU payload, session fallback, no unionfs and image wiring'
+
+# Console messages stay off the installer's tmux screen (issue #244): syslog
+# no longer writes to /dev/console on the live image, *.notice still reaches
+# /var/log/messages, and ntpd survives a large clock jump.
+eval "$(sed -n '/^live_quiet_console() {$/,/^}$/p; /^live_ntp_tolerate_jumps() {$/,/^}$/p' "$post")"
+grep -qx 'live_quiet_console "$world" || exit 1' "$post"
+grep -qx 'live_ntp_tolerate_jumps "$world" || exit 1' "$post"
+world=$work/world
+mkdir -p "$world/etc/syslog.d" "$world/usr/local/etc/syslog.d"
+# FreeBSD's default lines (tab-separated), plus a package that logs to the console.
+printf '%s\n' '# $FreeBSD$' \
+  $'*.err;kern.warning;auth.notice;mail.crit\t\t/dev/console' \
+  $'*.notice;authpriv.none;kern.debug;lpr.info;mail.crit;news.err\t/var/log/messages' \
+  $'#*.*\t\t\t\t\t\t/var/log/all.log' \
+  'include /etc/syslog.d' >"$world/etc/syslog.conf"
+printf '%s\n' $'daemon.err\t/dev/console' >"$world/usr/local/etc/syslog.d/pkg.conf"
+printf '%s\n' '# comment' 'server 0.freebsd.pool.ntp.org iburst' >"$world/etc/ntp.conf"
+live_quiet_console "$world"
+live_ntp_tolerate_jumps "$world"
+live_ntp_tolerate_jumps "$world"
+! grep -Eq '^[^#].*/dev/console' "$world/etc/syslog.conf" "$world/usr/local/etc/syslog.d/pkg.conf"
+grep -qxF $'#*.err;kern.warning;auth.notice;mail.crit\t\t/dev/console' "$world/etc/syslog.conf"
+grep -qxF $'*.notice;authpriv.none;kern.debug;lpr.info;mail.crit;news.err\t/var/log/messages' "$world/etc/syslog.conf"
+grep -qx 'include /etc/syslog.d' "$world/etc/syslog.conf"
+[[ $(grep -v '^#' "$world/etc/ntp.conf" | head -n 1) == 'tinker panic 0' ]]
+[[ $(grep -c '^tinker panic 0' "$world/etc/ntp.conf") == 1 ]]
+grep -qx 'server 0.freebsd.pool.ntp.org iburst' "$world/etc/ntp.conf"
+echo 'PASS: live service, GPU payload, session fallback, no unionfs, image wiring and a quiet console'

@@ -243,6 +243,28 @@ class MeasuredProgressTests(unittest.TestCase):
             self.assertIn(b'Daemonarchy is installed.', result.stdout.splitlines()[-1])
             self.assertLess(len(result.stdout), 4096)
 
+    def test_progress_warning_is_reported_beside_a_successful_result(self):
+        with tempfile.TemporaryDirectory() as directory:
+            log, status, summary = Path(directory)/'log', Path(directory)/'status', Path(directory)/'summary'
+            log.write_text('@@phase base\n@@progress ' + json.dumps(metric(2)) + '\n@@progress ' + json.dumps(metric(1)) + '\n')
+            status.write_text('0\n')
+            result = subprocess.run([sys.executable, str(SCRIPT), str(log), str(status), '--style', 'plain',
+                                     '--summary-file', str(summary)], capture_output=True, timeout=10)
+            self.assertEqual(result.returncode, 0)
+            self.assertIn(b'Progress unavailable:', result.stdout)
+            self.assertIn('Progress unavailable:', summary.read_text())
+            monitor = model.Monitor(log, status, source=None)
+            monitor.poll()
+            snap = monitor.snapshot()
+            self.assertTrue(snap['warning'])
+            self.assertTrue(snap['succeeded'])
+            self.assertEqual([e['succeeded'] for e in snap['events'] if e['kind'] == 'done'], [True])
+            status.write_text('3\n')
+            result = subprocess.run([sys.executable, str(SCRIPT), str(log), str(status), '--style', 'plain',
+                                     '--summary-file', str(summary)], capture_output=True, timeout=10)
+            self.assertEqual(result.returncode, 3)
+            self.assertIn('Installer stopped (exit 3)', summary.read_text())
+
     def test_real_tty_styles_color_depth_and_owner_completion(self):
         # vt100 serial: 8 basic colors only; xterm: 16 colors; xterm-256color: 256-color
         # syntax; COLORTERM=truecolor: 24-bit; the vt(4) console never gets 256 or 24-bit.
@@ -591,6 +613,15 @@ class RenderingTests(unittest.TestCase):
         self.assertTrue(ui.unicode_ok({'TERM': 'xterm', 'LANG': 'C'}, True))
         self.assertFalse(ui.unicode_ok({'TERM': 'xterm', 'LANG': 'C'}, False))
 
+    def test_redraw_key_and_hint(self):
+        app = self.app()
+        app.screen.size = (80, 24)
+        app.key('r')
+        self.assertIsNone(app.screen.size)  # the next frame clears and redraws every cell
+        self.assertIn('r redraw', app.keys_hint())
+        app.tmux.active = True
+        self.assertIn('C-b r redraw', app.keys_hint())
+
     def test_key_decoding_needs_no_function_keys(self):
         keys, rest = ui.decode_keys(b'v\tq\x1b[A\x1b[6~\x1b[Z\x03?')
         self.assertEqual(keys, ['v', 'tab', 'q', 'up', 'pgdn', 'backtab', 'ctrl-c', '?'])
@@ -691,8 +722,8 @@ class TmuxWindowControlTests(unittest.TestCase):
                     DAEMONARCHY_REMOTE_STATE=str(self.root/'remote'),
                     DAEMONARCHY_REMOTE_PUBLIC=str(self.root/'remote.status'), **extra)
 
-    def screen(self, rows=40, cols=140, **extra):
-        return Terminal([str(self.log), str(self.status)], self.env(**extra), rows, cols,
+    def screen(self, rows=40, cols=140, args=(), **extra):
+        return Terminal([str(self.log), str(self.status), *args], self.env(**extra), rows, cols,
                         command=['bash', str(WRAPPER)])
 
     def tmux(self, *args):
@@ -817,8 +848,9 @@ class TmuxWindowControlTests(unittest.TestCase):
             keys = self.tmux('list-keys', '-N', '-T', 'prefix')
             for text in ('Split left/right', 'Split top/bottom', 'Close the pane', 'Zoom', 'New window',
                          'Window list', 'Scroll/copy mode', 'Detach is not available', 'install log',
-                         'diagnostics', 'remote debugging', 'Send C-b'):
+                         'diagnostics', 'remote debugging', 'Send C-b', 'Redraw the screen'):
                 self.assertIn(text, keys)
+            self.assertIn('refresh-client', self.tmux('list-keys', '-T', 'prefix', 'r'))
             self.press(tty, self.PREFIX + b'?')
             self.until(tty, lambda: self.panes()[0][5] == '1')  # the key list in tmux's view mode
             self.press(tty, b'q')
@@ -876,11 +908,46 @@ class TmuxWindowControlTests(unittest.TestCase):
             self.assertIn(b'Daemonarchy is installed.', tty.captured)
 
     def test_failed_install_reports_its_status_through_tmux(self):
-        with self.screen() as tty:
+        # A failure is never dismissed by time: it waits for a key, then the summary outlives the session.
+        summary = self.root/'summary'
+        with self.screen(args=('--summary-file', str(summary)), DAEMONARCHY_CELEBRATE='0') as tty:
+            self.started(tty)
+            with self.log.open('a') as stream:
+                stream.write('pkg: the last thing that went wrong\n')
+            self.status.write_text('7\n')
+            self.until(tty, lambda: 'The installation failed (exit 7). Press any key' in self.capture('install:0.0'))
+            self.assertIn('Installer stopped (exit 7)', self.capture('install:0.0'))
+            tty.read_for(1.5)
+            self.assertIsNone(tty.child.poll())
+            self.assertFalse(summary.exists())
+            tty.send(b' ')
+            self.assertEqual(tty.exit_code(), 7)
+            self.assertEqual(self.tmux('list-sessions'), '')
+            text = summary.read_text()
+            self.assertIn('Installer stopped (exit 7)', text)
+            self.assertIn('pkg: the last thing that went wrong', text)
+            self.assertIn(f'Full install log: {self.log}', text)
+
+    def test_unattended_failure_is_not_held_for_a_key(self):
+        summary = self.root/'summary'
+        with self.screen(args=('--summary-file', str(summary)), DAEMONARCHY_CELEBRATE='0',
+                         DAEMONARCHY_UNATTENDED='1') as tty:
             self.started(tty)
             self.status.write_text('7\n')
             self.assertEqual(tty.exit_code(), 7)
-            self.assertIn(b'Installer stopped (exit 7)', tty.captured)
+            self.assertIn('Installer stopped (exit 7)', summary.read_text())
+
+    def test_progress_warning_never_turns_success_into_failure(self):
+        summary = self.root/'summary'
+        with self.screen(args=('--summary-file', str(summary)), DAEMONARCHY_CELEBRATE='0') as tty:
+            self.started(tty)
+            with self.log.open('a') as stream:  # a counter going backwards: a progress warning
+                stream.write('@@progress ' + json.dumps(metric(0)) + '\n')
+            self.status.write_text('0\n')
+            self.assertEqual(tty.exit_code(), 0)
+            text = summary.read_text()
+            self.assertIn('Progress unavailable:', text)
+            self.assertNotIn('Installer stopped', text)
 
     def test_small_terminal_is_zoom_only_and_resize_reflows(self):
         with self.screen(rows=14, cols=50) as tty:
@@ -922,6 +989,37 @@ class TmuxWindowControlTests(unittest.TestCase):
             tty.send(b'\r')  # leave the view; a background listener would keep running
             self.until(tty, lambda: len(self.windows()) == 1)
             self.assertFalse(self.status.exists())
+
+    def traced_tmux(self):
+        """tmux through a wrapper that records each command and its status."""
+        calls, wrapper = self.root/'tmux-calls', self.root/'bin'/'tmux'
+        wrapper.parent.mkdir()
+        wrapper.write_text(f'#!/bin/sh\n{shutil.which("tmux")} "$@"\nrc=$?\necho "$rc $*" >>{calls}\nexit $rc\n')
+        wrapper.chmod(0o755)
+        return calls, f'{wrapper.parent}:{os.environ["PATH"]}'
+
+    def redraws(self, calls):
+        return [row for row in (calls.read_text().splitlines() if calls.exists() else []) if 'refresh-client' in row]
+
+    def test_vt_console_redraws_while_the_session_exists(self):
+        # Console messages scroll the vt under tmux (issue #244); the whole screen is redrawn every few seconds.
+        calls, path = self.traced_tmux()
+        with self.screen(PATH=path, DAEMONARCHY_CONSOLE='vt', DAEMONARCHY_REDRAW_SECONDS='0.3') as tty:
+            self.started(tty)
+            self.until(tty, lambda: len(self.redraws(calls)) >= 2)
+            self.assertTrue(all(row.startswith('0 ') for row in self.redraws(calls)), self.redraws(calls))
+            self.status.write_text('0\n')
+            self.assertEqual(tty.exit_code(), 0)
+            done = len(self.redraws(calls))
+            time.sleep(1)
+            self.assertEqual(len(self.redraws(calls)), done, 'the redraw loop outlived the session')
+
+    def test_other_terminals_are_not_redrawn_on_a_timer(self):
+        calls, path = self.traced_tmux()
+        with self.screen(PATH=path, DAEMONARCHY_REDRAW_SECONDS='0.3') as tty:
+            self.started(tty)
+            tty.read_for(1.5)
+            self.assertEqual(self.redraws(calls), [])
 
     def test_serial_class_terminals_get_the_direct_screen(self):
         env = self.env()

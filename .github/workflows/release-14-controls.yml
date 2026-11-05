@@ -335,18 +335,18 @@ jobs:
           python-version: '3.13'
       # LitAI 1.4.0, the framework the Standard lifecycle binding selects.
       # Rebuilding changes ZIP timestamps, and *.dist-info records the build
-      # tool's version, so verify the 1,234 package members rather than the
+      # tool's version, so verify the 1,353 package members rather than the
       # archive hash; the pinned Git tree covers the source.
       - uses: actions/checkout@v4
         with:
           repository: jordanhubbard/literate-ai
-          ref: 0a267a6646f20e3a635a1f870042b6b034f026a1
+          ref: 2b29c1e621a9e4fee5c4f12d273010a142560cfd
           path: _framework_src
           persist-credentials: false
       - name: Verify and install the selected framework runtime
         run: |
-          test "$(git -C _framework_src rev-parse HEAD)" = 0a267a6646f20e3a635a1f870042b6b034f026a1
-          test "$(git -C _framework_src rev-parse HEAD^{tree})" = cada37a12b930b109b298e0ed5c4f7dc24e5a467
+          test "$(git -C _framework_src rev-parse HEAD)" = 2b29c1e621a9e4fee5c4f12d273010a142560cfd
+          test "$(git -C _framework_src rev-parse HEAD^{tree})" = b446af31ef86edc701642839b3c31e0023d07e3d
           python -m pip wheel --no-deps --wheel-dir "$RUNNER_TEMP/framework-wheels" ./_framework_src
           python - <<'PY'
           import hashlib
@@ -363,8 +363,8 @@ jobs:
                             for name in wheel.namelist()
                             if not name.endswith('/') and '.dist-info/' not in name)
           digest = hashlib.sha256(json.dumps(rows, separators=(',', ':')).encode()).hexdigest()
-          expected = '7a37c208a61bf38165ce06b9cae0eccafc1ee507dc658f469afda8e92111c0a4'
-          if len(rows) != 1234 or digest != expected:
+          expected = '1692da0a648dc34d19de72e4b7d95491e839f8211f62583a8d95a4584baddacc'
+          if len(rows) != 1353 or digest != expected:
               for name, value in rows:
                   print('member', value, name)
               raise SystemExit(f'framework payload manifest mismatch: {len(rows)} entries, {digest}')
