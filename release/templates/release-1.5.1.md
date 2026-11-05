@@ -71,10 +71,12 @@ source and ports checkouts are `@@CHECKOUTS_AMD64_FEED@@` and `@@CHECKOUTS_AARCH
   user and engineering [slide decks](presentations/README.md), and the narrated introduction above.
 - **Licensing.** Each repository has a project statement (`LICENSE.daemonarchy`, BSD-2-Clause for
   Daemonarchy-original work) and a `licenses/` index; FreeBSD's own `COPYRIGHT` files are unchanged.
-- **Graphical package manager in the menu (include only if it shipped).** The Packages menu
-  entries open `daemonarchy-pkg`, with OctoPkg kept as **Packages (OctoPkg)**
-  ([daemonarchy-desktop #1](https://github.com/jordanhubbard/daemonarchy-desktop/pull/1)). This ships
-  only if `x11-wm/daemonarchy` is moved to a daemonarchy-desktop commit that contains it.
+- **Graphical package manager in the menu.** The Packages menu entries open `daemonarchy-pkg`,
+  with OctoPkg kept as **Packages (OctoPkg)**
+  ([daemonarchy-desktop #1](https://github.com/jordanhubbard/daemonarchy-desktop/pull/1), shipped by
+  moving `x11-wm/daemonarchy` to daemonarchy-desktop `85322f5` in
+  [daemonarchy-ports #53](https://github.com/jordanhubbard/daemonarchy-ports/pull/53)). It is an
+  application package: `pkg upgrade` delivers it.
 
 ## What is not done, and why
 
