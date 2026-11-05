@@ -1,7 +1,8 @@
 # Documentation index
 
-Product goals and completeness are in root `PROJECT.md`; build and release
-commands remain in root `HACKING.md`. This index makes the retained evidence
+Product goals and completeness are in root `PROJECT.md`; the developer guide,
+build and release commands are in root `HACKING.md` (narrative first, then the full
+reference); the newcomer's overview is root `README.md`. This index makes the retained evidence
 reachable without changing its historical scope.
 
 The current release is **1.5.0**: start with its
@@ -23,6 +24,7 @@ another version are historical records. 1.5.1 entries describe planned work.
 - [Signed catalogue and package payload checks](signed-package-snapshot.md)
 - [1.3.1 package repository key rotation](package-repository-key-rotation-1.3.1.md)
 - [Getting started with Daemonarchy](getting-started.md)
+- [Installer reference: unattended installs, optional checkouts, CUDA and cudalab](installer-reference.md)
 - [Hardware quirks](hardware-quirks.md)
 - [GPU report: which GPU the desktop uses](gpu-report.md)
 - [Hardware trace stick: reset-surviving boot trace](boottrace.md)
@@ -59,7 +61,7 @@ another version are historical records. 1.5.1 entries describe planned work.
 - [Earlier 1.3.1 diagnostics scope and preflight evidence](roadmap/release-1.3.1.md)
 - [Owned FreeBSD source builds](source-builds.md)
 - [Disposable QEMU worker ownership](native-qemu-worker.md)
-- [Remote build worker (design and implementation, planned for 1.4.0)](remote-worker.md)
+- [Remote build worker (historical 1.4 plan and implementation status)](remote-worker.md)
 - [Remote build worker: hosted tests and sample workloads, October 28](testing-remote-worker-20261028.md)
 - [Complete FreeBSD source and ports Component coverage](roadmap/freebsd-components.md)
 - [Native Component execution and build performance](roadmap/build-performance.md)

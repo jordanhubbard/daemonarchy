@@ -215,8 +215,9 @@ repository.
 
 ## Delivery plan
 
-The worker is planned as a 1.4.0 deliverable: steps 1 to 3 are required before the 1.4
-selection is locked, and step 4 by the 1.4.0 release.
+This was the original 1.4.0 delivery plan. The 1.4.0, 1.4.1 and 1.5.0 releases
+did not qualify a full release run through the worker. That remains
+framework-executed work in the [1.5.1 plan](roadmap/release-1.5.1.md).
 
 1. This note, and the WORKER-001 work item.
 2. `daemonarchy-worker` and `daemonarchy-remote`, in POSIX sh with `jq`, or
