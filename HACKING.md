@@ -1,6 +1,8 @@
 # Hacking on Daemonarchy
 
-How to build a Daemonarchy image yourself, change the installer, the ports, or the artwork, and test and release the result. [README.md](README.md) says what Daemonarchy is; this is for working on it.
+This is the guide for people who want to change Daemonarchy, build it themselves, or test and release what they built. [README.md](README.md) says what Daemonarchy is and what is the same as FreeBSD; this page assumes you have read the "Is it still FreeBSD?" section there and want your hands on the source.
+
+If you already hack on FreeBSD, the good news is that you mostly keep your habits. You still edit a source tree and run `make`; you still edit a port and build it. What Daemonarchy adds is a layer of packaging and release machinery around those trees, so the question this page answers first is: *where does my change go, and what do I run to see it on a machine?* The first half of this file is a narrative for that. The second half, starting at [Reference](#reference), is the full runbook with every tool, test and pitfall the project has met; nothing from the old version of this file was dropped.
 
 Latest published release: **1.5.0** ([`release/current.json`](release/current.json)),
 daemonarchy-src `303b3646270ffa4bf7cec65c5c1d28bd8000cbce` (OSVERSION `1600029`),
@@ -12,7 +14,325 @@ their records ([1.1.1](docs/testing-1.1.1.md)).
 Older image examples below must use their own retained inputs; a package update
 is not a base/ABI migration.
 
+**In this half:** [the big picture](#the-big-picture) · [FreeBSD muscle memory, the Daemonarchy way](#freebsd-muscle-memory-the-daemonarchy-way) · [what you need](#what-you-need) · [four walkthroughs](#walkthrough-1-change-the-installer-and-test-it) · [running the tests](#running-the-tests) · [how a release happens](#how-a-release-happens) · [Literate AI](#literate-ai-what-it-is-and-whether-you-need-it) · [what is rough](#what-is-rough-today)
+
+## The big picture
+
+A Daemonarchy image is five things stacked up, each with its own repository (the [full table](#the-repositories-that-make-up-daemonarchy) is in the reference):
+
+1. **FreeBSD itself**, from [daemonarchy-src](https://github.com/jordanhubbard/daemonarchy-src): an ordinary FreeBSD source tree, a fork that tracks upstream FreeBSD `main` and keeps Daemonarchy's own changes on an integration branch (`daemonarchy`). It produces the base system, the kernel and the 32-bit libraries as tarball sets.
+2. **The ports**, from [daemonarchy-ports](https://github.com/jordanhubbard/daemonarchy-ports): the FreeBSD ports tree plus the Omarchy ports. Poudriere builds them into packages, and the ones Daemonarchy publishes itself are signed and uploaded as GitHub release assets (the "feeds").
+3. **The desktop layers**, [omarchy-freebsd](https://github.com/jordanhubbard/omarchy-freebsd) and [daemonarchy-desktop](https://github.com/jordanhubbard/daemonarchy-desktop). They are not built separately: the ports `x11-wm/omarchy` and `x11-wm/daemonarchy` fetch them at pinned commits, so they reach a machine as packages.
+4. **The installer and the image**, this repository: the installer in `overlay/`, `build-iso.sh`, `pkg-repo.sh`, the test harnesses, the release scripts and the documentation.
+5. **Evidence and release records**, also this repository: `verification/`, `release/current.json`, and the gates that refuse a release that does not prove its inputs.
+
+A change travels the same way whichever layer it starts in:
+
+```
+daemonarchy-src --(build.py or make)--> base.txz kernel.txz lib32.txz
+                                               |
+                                     poudriere jail (16amd64)
+daemonarchy-ports --(poudriere bulk)--> packages --(pkg-repo.sh)--> signed feeds
+daemonarchy-desktop, omarchy-freebsd --(pinned in ports)--^
+this repo: overlay/ + build-iso.sh --(poudriere image)--> ISO
+        --(test-qemu.sh / test-bhyve.sh)--> QA --(operator signs)--> publish
+```
+
+Two things to carry in your head:
+
+- **Most of your day is spent in one of three loops.** Installer or overlay change: edit, build an ISO, install it in a VM. Port change: edit, `poudriere testport`, merge, pin. Base change: edit `/usr/src`, build, and only then think about how it reaches an image. The walkthroughs below do one of each, then the ISO.
+- **The release pins everything by full commit.** A release is a set of exact commits (installer, source, ports) plus exact feed tags and asset checksums. Nothing is built from a moving branch tip.
+
+## FreeBSD muscle memory, the Daemonarchy way
+
+This is the table to read if you are a FreeBSD developer. The left column is what you would type today on a plain FreeBSD machine. The right column is what a Daemonarchy developer runs, checked against the scripts in this repository and in daemonarchy-src. "Same" means the command works identically because the tree is FreeBSD's.
+
+| On plain FreeBSD you... | On Daemonarchy you... | Notes |
+|---|---|---|
+| `cd /usr/src`, edit, `make buildworld buildkernel` | **Same**, in any daemonarchy-src checkout on FreeBSD (`/usr/src` is the conventional place). For release inputs, run the pinned, unprivileged controller instead: `python3.12 tools/daemonarchy/build.py plan` then `run`, from the daemonarchy-src checkout. | The tree is stock FreeBSD underneath ([its README](https://github.com/jordanhubbard/daemonarchy-src/blob/main/README.md) still points at `build(7)`). The controller adds a frozen plan, isolated object and staging directories, per-phase logs and byte-verified results. It refuses to run as root. |
+| `make installworld installkernel DESTDIR=/`, reboot | **Same commands** on a build host or a throwaway VM. On an installed Daemonarchy machine this is *not* a qualified path today (the project has no base or kernel upgrade it has tested; see [the upgrade model](#the-upgrade-model-today)). | If you try it, make a boot environment first (`sudo daemonarchy-be create`, or `bectl create`). With Secure Boot enforcement on, the firmware boots the signed kernel and not yours. GPU and Wi-Fi modules are packages built for one exact kernel and have to be rebuilt after a kernel change. |
+| `cd /usr/src/release && make release` to get an ISO | There is no `make release` step for the Daemonarchy ISO. `build-iso.sh` assembles it with `poudriere image` from a jail made from your `base.txz`, plus the packages. The `sets` phase of `build.py` produces the tarballs the jail is made from (it uses the release Makefile's `packagesystem`). | `ARCH=aarch64 ./build-iso.sh` on a native arm64 host makes the arm64 image. |
+| `cd /usr/ports/<category>/<port> && make all install` | **Same**, in a daemonarchy-ports checkout (on a Daemonarchy machine, `sudo daemonarchy-checkouts ports "$USER"` puts one at `/usr/ports`). To try a port on a running Daemonarchy desktop, `sudo make reinstall clean` in its directory. | Daemonarchy adds nothing around a plain `make` in a port. It adds a clean-room test (`poudriere testport`) and a rule about which ports ship from Daemonarchy's feed ([walkthrough 2](#walkthrough-2-build-one-port)). |
+| `poudriere bulk -j <jail> -p <tree> -f list` | **Same**, with `-b latest` so poudriere fetches the official packages it can reuse: `poudriere bulk -j 16amd64 -p omarchyiso -b latest -t -f omarchyiso-ports.list`. The release pipeline wraps this as `scripts/build-release-packages.sh`. | The origin lists are `ISO_ORIGINS`, `OMARCHY_ORIGINS` and `LIVE_ORIGINS` in `origins.sh`. |
+| `pkg install`, `pkg upgrade`, `bectl` | **Same.** `daemonarchy-be` is a wrapper around `bectl` for the menu. | The menu's **Update** saves a boot environment first; `sudo pkg upgrade` alone does not. |
+| `bsdinstall` | `./test-qemu.sh <iso>` or `sudo ./test-bhyve.sh <iso>` drives the Daemonarchy installer unattended in a VM. | Answers come from a `daemonarchy-install.conf` on a drive labelled `CIDATA`; see the [installer reference](docs/installer-reference.md#unattended-installs). |
+| `freebsd-update` or `git pull && make installworld` as the upgrade path | **Not available.** A new snapshot, kernel or boot bundle arrives as a new image. | [The upgrade model](#the-upgrade-model-today) is the plain statement. 1.5.1 plans network upgrades. |
+| A faster build because someone wrote a better driver | Not delivered. The plan to make builds much faster with Literate AI (BUILD-001) is deferred to 1.5.1 with zero evidence ticked, and 1.5.0 makes no speed claim. | Everything above is the hand pipeline the project actually used for 1.5.0. |
+
+## What you need
+
+### The machine you build on
+
+What the repository documents, by job. Nothing here is a hidden requirement; where a number comes from a particular run it says so.
+
+| To do this | You need | Evidence |
+|---|---|---|
+| Edit docs, the installer overlay and the Python and shell tooling; run the portable tests | Any Linux, macOS or FreeBSD machine with `git`, `python3` and `bash` (CI uses Python 3.13; builders use `python3.12`). `lua5.4` for one loader test. | The CI jobs in `.github/workflows/` run the portable tests on `ubuntu-latest`. |
+| Install-test an ISO | Anywhere QEMU runs (Linux, macOS, FreeBSD), no root: `qemu-system-x86_64` (or `qemu-system-aarch64`), UEFI firmware (OVMF; AArch64 edk2 for arm64), an OpenSSH client, and `mkfs.fat`/`mtools` or `xorriso` for the CIDATA drive. On an x86 host with acceleration it is fast; on a non-x86 host the guest is emulated and an install takes two to three hours. Or FreeBSD with VT-x/AMD-V, root and `edk2-bhyve`, for `test-bhyve.sh`. | Headers of `test-qemu.sh` and `test-bhyve.sh`. The harness creates a blank 40 GB guest disk and gives the guest 4 GiB (`MEM`, default `4G` for QEMU, `3G` wired for bhyve). |
+| Build world, kernel and installer sets | A **native FreeBSD 16.0-CURRENT** machine of the target architecture (amd64 is the documented target), with `git`, Python 3.12 and `/usr/local/sbin/pkg`, an unprivileged build account, **at least 80 GiB free** on the output volume, and at least **2 GiB of RAM per job (8 GiB minimum)**. Keep objects and staging outside the source tree and outside `/usr/obj`. | `tools/daemonarchy/README.md` in daemonarchy-src. A clean `buildworld` took 7,931 s and the whole producer about 9,360 s on an 8-vCPU, 16 GiB guest at `-j4` ([build baselines](docs/roadmap/release-1.5.1.md#baselines-recorded-first-with-where-measured)). |
+| Build the packages and the ISO | A **native FreeBSD 16.0-CURRENT** machine of the target architecture, **as root**, with `poudriere`, `git`, the pinned ports tree and a jail made from the image's own sets. Linux and macOS cannot do this step: `poudriere image`, jails and `makefs` are FreeBSD's. | `build-iso.sh` header. The maintainers' amd64 builder is a FreeBSD 16-CURRENT VM with 16 vCPU, 48 GiB RAM and a 500 GB sparse disk; the arm64 builder is a separate native arm64 VM ([mastering notes](docs/mastering-1.5.0.md)). The 1.1.1 dependency rebuild used 20 CPUs, 80 GiB and 400 GiB with two package builders. |
+| Master a release | The amd64 builder, a QA host that runs QEMU, and at least 30 GB free in the work directory. | `scripts/master-release.sh` preflight. |
+| Sign anything | A separate, protected host holding the keys. You do not need one to develop; **agents and builders never hold key material**. | [One signing session per release](#one-signing-session-per-release). |
+
+Expect the first package build to be long. When the pinned ports tree is ahead of what pkg.FreeBSD.org has built, poudriere rebuilds what does not match, which can include compilers and browsers; the pitfalls list records a chromium and LibreOffice build taking most of a day. Later builds reuse the persistent caches described in [Persistent authoring caches](#persistent-authoring-caches).
+
+### What to install on the machine
+
+Package names below were checked against daemonarchy-ports. On a FreeBSD 16.0-CURRENT builder:
+
+```sh
+pkg install git gh jq bash python312 poudriere xorriso
+```
+
+- `poudriere-devel` can replace `poudriere` (the maintainers' VM runs poudriere-devel 3.4.99). `gh` is only needed where you create GitHub releases or upload feeds; `jq` is used by `build-iso.sh` and the release steps; `bash` is the interpreter of `master-release.sh` and `build-release-packages.sh`; `xorriso` is what the builder uses for the hybrid ISO.
+- For `test-bhyve.sh` add `edk2-bhyve` (the package `sysutils/edk2` builds for bhyve). For `test-qemu.sh` on FreeBSD add `qemu` and `mtools`.
+- On Debian or Ubuntu, `test-qemu.sh` wants `qemu-system-x86` (and `qemu-system-arm`), `ovmf` (and `qemu-efi-aarch64` for arm64), `mtools`, `dosfstools` and `xorriso`, plus `git`, `python3`, `bash` and `lua5.4` to run the portable tests. The harness looks for OVMF at `/usr/share/ovmf/OVMF.fd` and takes `OVMF=` to override it.
+- `xz`, `openssl`, `makefs`, `mkimg` and `bsdtar` are in FreeBSD's base system.
+- Shell scripts are checked with `shellcheck` in CI (`devel/hs-ShellCheck` on FreeBSD).
+- Literate AI is optional; see [its section](#literate-ai-what-it-is-and-whether-you-need-it).
+
+### Which repositories to check out, and where
+
+Start with the installer repository; it is the one you always need.
+
+```sh
+git clone https://github.com/jordanhubbard/daemonarchy.git ~/src/daemonarchy
+```
+
+| Repository | Check it out when | Where, and which branch |
+|---|---|---|
+| [daemonarchy](https://github.com/jordanhubbard/daemonarchy) | Always | Anywhere. Branch from `main`; the release machinery masters from a clean checkout of one full commit. |
+| [daemonarchy-src](https://github.com/jordanhubbard/daemonarchy-src) | You change the kernel or base system, or build the sets | `/usr/src` is the conventional path and the optional checkout the installer offers uses it; `~/daemonarchy-src` also works for the controller. `main` tracks upstream FreeBSD; Daemonarchy's changes and the optional `/usr/src` checkout use the `daemonarchy` branch. Check out an exact commit (`git checkout --detach <40-hex>`) for any build you will keep, and keep the tree clean while it builds. |
+| [daemonarchy-ports](https://github.com/jordanhubbard/daemonarchy-ports) | You change or add a port, or build packages | `main` is the integration branch (the 1.5.0 pin is `e84b4c4c` on it). Register it with poudriere as a null tree (`poudriere ports -c -p omarchyiso -m null -M <path>`); on a Daemonarchy machine it can also be `/usr/ports`. A shallow clone is enough for poudriere. |
+| [daemonarchy-desktop](https://github.com/jordanhubbard/daemonarchy-desktop) and [omarchy-freebsd](https://github.com/jordanhubbard/omarchy-freebsd) | You change the look, the System > FreeBSD tools or the FreeBSD adaptation of Omarchy | Anywhere (`~/src`). The ports fetch them pinned, so test your checkout by laying it over the port's extracted sources ([The FreeBSD layer and the desktop layer](#the-freebsd-layer-and-the-desktop-layer)) and then bump the pin in the port. |
+
+A Daemonarchy machine can fetch most of this for you. **System > FreeBSD > Hack on Daemonarchy** (`daemonarchy-dev-setup`) clones omarchy, omarchy-freebsd, daemonarchy-desktop, this repository and a ports tree into `~/src`. One thing to know: in the desktop repository's `main` as read for this page, that script clones the older `jordanhubbard/freebsd-ports` fork on its `omarchy` branch, not daemonarchy-ports, and it does not clone daemonarchy-src. For 1.5.0-era work, clone daemonarchy-ports and daemonarchy-src yourself.
+
+The maintainers keep a parallel workspace under `/usr/daemonarchy` (independent `src`, `ports` and `control` checkouts with `obj`, `stage`, `packages`, `cache` and `evidence` beside them, on their own ZFS dataset) so experiments never touch the machine's running system; see the [workspace plan](docs/roadmap/native-workspace.md). You do not need that layout to start.
+
+## Walkthrough 1: change the installer and test it
+
+The installer is shell, in `overlay/usr/local/libexec/daemonarchy-installer/` (`configurator` asks, `install` installs, `dashboard` draws). It is the quickest thing to change because it does not need a new package set.
+
+1. **Edit, and run the portable tests that cover it.** For example, after touching `install` or `package-repository`, `bash -n overlay/usr/local/libexec/daemonarchy-installer/install` and `sh -n overlay/usr/local/libexec/daemonarchy-installer/package-repository` (CI does both), and the suites under [Running the tests](#running-the-tests).
+2. **See it without an install.** `dashboard` draws from a log file, so you can try the install screen by feeding it one; the recipe is in [The installer](#the-installer) in the reference.
+3. **Build an ISO** on the FreeBSD builder, as root, from your checkout. The package repository and sets are reused, so an installer-only change takes minutes, not hours:
+
+   ```sh
+   cd ~/src/daemonarchy
+   JAIL=16amd64 PTREE=omarchyiso ./build-iso.sh
+   ```
+
+   What you will see: `==> ISO staging: /var/tmp/...` (each run gets a new private staging directory and keeps it), `==> Collecting the Omarchy package repository` with a package count, checks that the sets match the jail and the checkout catalogue, then `poudriere image`. The image and its `.sha256` land in `/usr/local/poudriere/data/images`, named `daemonarchy-<VERSION>-<arch>.iso`. Set `NAME` and `PREVIEW_LABEL` for a development image so its welcome screen says what it is.
+4. **Install it in a VM, unattended.** Copy the ISO to any machine with QEMU and run:
+
+   ```sh
+   WORK=$PWD/qemu-run ./test-qemu.sh daemonarchy-1.5.0-amd64.iso
+   ```
+
+   The harness boots the ISO with a blank 40 GB disk and a `CIDATA` drive that carries the answers, waits for the installer to power the guest off, boots the installed disk, logs in over SSH and checks what a VM without a screen can show (accounts and groups, SDDM's user and session, services, the Daemonarchy feed). It prints each check and a tally. The serial console is in `$WORK/install.log` and `$WORK/boot.log`, which is where to look first when an install stalls. On FreeBSD with bhyve use `sudo ./test-bhyve.sh <iso>` instead (`NET=nat` by default; `./test-bhyve.sh --cleanup` removes the test network afterwards).
+5. **Gotchas.** Give the guest real memory and do not overcommit the host (a swapped-out guest can trip the kernel's deadlock detector mid-install). Under emulation use a CPU model without AVX (the harness does) because ZFS's AVX2 code faults under `-cpu max`. For arm64, `ARCH=aarch64 ./test-qemu.sh <iso>`, and use `-device e1000e` for the known virtio-net issue in [docs/aarch64.md](docs/aarch64.md). The [pitfalls](#pitfalls-met-so-far) list has the rest.
+
+## Walkthrough 2: build one port
+
+This is the "`cd /usr/ports/category/port && make all install`" loop. There are three levels, from quick to shippable.
+
+**Try it on a running Daemonarchy machine.** Get a ports tree (the installer offers one, or `sudo daemonarchy-checkouts ports "$USER"` later; it is a shallow clone of daemonarchy-ports `main`, about 4 GB with the space allowance), then work in it as you would on FreeBSD:
+
+```sh
+cd /usr/ports/x11-wm/omarchy        # any category/port
+make                                # fetch, extract, patch, build
+sudo make reinstall clean           # install over the installed package, then clean
+```
+
+`seed-user --force` re-copies Omarchy's defaults into your home if the port changes them (it never overwrites a file you have changed). The installed system keeps its compiler, headers and libraries, so building a port on it works.
+
+**Test it in a clean room.** Do not run `make stage-qa` as root on a host you care about, because it installs the port's dependencies onto the host. Use poudriere on the builder:
+
+```sh
+poudriere testport -j 16amd64 -p omarchyiso -o x11-wm/omarchy
+```
+
+That builds the port in a clean jail and checks stage-qa, the plist, install and deinstall.
+
+**Ship it.** A change to a port reaches users only through one of two doors, and which one depends on `origins.sh`:
+
+- If the origin is in `OMARCHY_ORIGINS` (the Omarchy ports and the few packages Daemonarchy carries because the official packages lack a fix), it is built by Daemonarchy and published in the signed feed, so `pkg upgrade` delivers it. Bump `PORTREVISION` whenever the package contents change (poudriere rebuilds on version changes, not file changes), run `make makesum` if you changed a pin, and open a pull request against daemonarchy-ports `main`. Releasing the rebuilt package is a feed publication, described in [How a release happens](#how-a-release-happens).
+- Any other port comes from pkg.FreeBSD.org's own builders, so the way to ship a fix to it is upstream FreeBSD. Add the origin to `origins.sh` only if Daemonarchy must carry its own build.
+- Kernel-bound ports (`*-kmod`, firmware, NVIDIA) are on the ISO, not in the online feed, and rebuilding one moves the Secure Boot module inventory and the signed boot bundle. That is a release-owner decision.
+
+Gotcha: a port that changes `x11-wm/omarchy` or `x11-wm/daemonarchy` is pinning a commit of omarchy-freebsd or daemonarchy-desktop. A desktop fix reaches users only after the pin bump and a new package in the feed.
+
+## Walkthrough 3: build FreeBSD itself
+
+There are two ways, and they answer different questions.
+
+**"I changed a driver and want to see it compile and boot."** This is plain FreeBSD. In your daemonarchy-src checkout on a FreeBSD 16.0-CURRENT machine, run `make buildworld buildkernel` (and the rest of `build(7)`) as you always do; the tree is FreeBSD's. Use a VM or a spare machine, and do it in a boot environment if it is a Daemonarchy install, for the reasons in the [muscle memory table](#freebsd-muscle-memory-the-daemonarchy-way).
+
+**"I need world, kernel and sets I can trust and hand to the image build."** Use the controller that lives in the source fork, because it freezes the inputs and records what it built:
+
+```sh
+git clone https://github.com/jordanhubbard/daemonarchy-src.git ~/daemonarchy-src
+cd ~/daemonarchy-src
+git checkout --detach <full-40-hex-commit>
+mkdir -p ~/daemonarchy-builds
+
+python3.12 tools/daemonarchy/build.py plan --revision <full-40-hex-commit> \
+    --output ~/daemonarchy-builds/baseline-<short> --jobs 8
+python3.12 tools/daemonarchy/build.py run  --revision <full-40-hex-commit> \
+    --output ~/daemonarchy-builds/baseline-<short> --jobs 8
+python3.12 tools/daemonarchy/build.py status --output ~/daemonarchy-builds/baseline-<short>
+python3.12 tools/daemonarchy/build.py verify --output ~/daemonarchy-builds/baseline-<short>
+```
+
+Use the same arguments for `plan`, `run` and a resumed run. The phases are `buildworld`, `buildkernel`, `packages` (pkgbase packages), `release-obj` and `sets` (`base.txz`, `kernel.txz`, `lib32.txz`, `src.txz` and `MANIFEST`). Each phase has a six-hour default deadline. `--through buildkernel` stops after compilation; `--resume` continues the same plan; `--profile diagnostic` builds a kernel with startup tracing compiled in (use a fresh output directory). `plan` writes `plan.json`, binding the commit, tree, configuration and commands; `run` writes logs and `result.json`; `verify` checks the recorded bytes. Expect hours. It never installs, signs, uploads or reboots anything, and it refuses to run as root.
+
+What you will not get from this: a ready ISO, or proof that the result boots. External ports modules (GPU and Wi-Fi drivers) are excluded and have to be rebuilt against this exact source and kernel. Before a source-built set replaces the snapshot sets a release uses, the owned build still has to pass a VM boot and install, a matching jail and modules, update and rollback, signatures and physical hardware; that checklist is in daemonarchy-src's `tools/daemonarchy/README.md` ("Promotion to Daemonarchy"). The documented release path is still the verified snapshot sets of the pinned source revision: `scripts/cache-release-sets.sh` fetches and checksums them into `SET_CACHE_DIR` (default `/var/cache/daemonarchy-iso`), and the jail is made from them.
+
+To make that jail (as root, once per snapshot; the poudriere details and the `@clean` snapshot trap are in [Setting up a build host](#setting-up-a-build-host)):
+
+```sh
+sh scripts/cache-release-sets.sh
+poudriere jail -c -j 16amd64 -a amd64 -v 16.0-CURRENT -m tar=/var/cache/daemonarchy-iso/base.txz
+tar -xpf /var/cache/daemonarchy-iso/kernel.txz -C /usr/local/poudriere/jails/16amd64
+tar -xpf /var/cache/daemonarchy-iso/lib32.txz  -C /usr/local/poudriere/jails/16amd64
+```
+
+## Walkthrough 4: build an ISO
+
+With a jail, a pinned ports tree registered with poudriere, and a bulk-built package set, the image is one command. The whole sequence from nothing is long, so here it is as a map; each step is explained in the reference ([Setting up a build host](#setting-up-a-build-host)):
+
+1. Make the jail from the sets (above) and register the ports tree (`poudriere ports -c -p omarchyiso -m null -M <path>`).
+2. Put the package build settings in `/usr/local/etc/poudriere.d/omarchyiso-poudriere.conf` (build the GPU and Wi-Fi modules locally rather than fetching them: `PACKAGE_FETCH_BLACKLIST`, `PACKAGE_FETCH_URL`, `DISTFILES_CACHE`).
+3. Bulk-build the origins from `origins.sh`: `poudriere bulk -j 16amd64 -p omarchyiso -b latest -t -f omarchyiso-ports.list`.
+4. `./build-iso.sh`, as root.
+
+`build-iso.sh` is configured through its environment. The ones you will meet:
+
+| Variable | Meaning |
+|---|---|
+| `ARCH` | `amd64` (default) or `aarch64`; the host must be native to it. It chooses the jail, set cache, feeds and boot file. |
+| `JAIL`, `PTREE` | The poudriere jail and ports tree (defaults `16amd64` and `omarchyiso`). |
+| `SET_CACHE_DIR`, `SNAPSHOT_URL` | Where the verified `base`, `kernel` and `lib32` sets are cached, and where missing ones come from. |
+| `POUDRIERE_ETC`, `POUDRIERE_DATA` | An isolated poudriere configuration and its data directory. |
+| `OUTDIR`, `NAME`, `PREVIEW_LABEL` | Where the image goes, what it is called (default from the `VERSION` file), and a label the welcome screen shows for a development image. |
+| `ISO_STAGE_PARENT` | Parent of the private staging directory (default `/var/tmp`). |
+| `PACKAGE_REPOSITORY_TAG`, `PACKAGE_REPOSITORY_PUBLIC_KEY` | Which signed application feed the image pins, and its public key. A fork passes its own. |
+| `PACKAGE_MIRROR_URLS`, `REQUIRE_PACKAGE_MIRROR=yes` | The signed closure-feed shards a release image prefers to pkg.FreeBSD.org, and the refusal to build without them. |
+| `CHECKOUT_CATALOG` | The signed checkout feed catalogue (defaults to the one in the overlay). |
+| `SECUREBOOT_BUNDLE`, `SECUREBOOT_SIGNATURE`, `SECUREBOOT_CERTIFICATE` | The signed boot bundle, signature and public certificate (public artifacts only; see [Secure Boot development](#secure-boot-development)). |
+| `LIVE_EXTRA_OVERLAY` | A private directory laid over the live root (for private firmware previews). |
+
+Every `build-iso.sh` run creates a new staging directory and prints it; failed and finished ones stay for inspection. The ISO is written next to a `.sha256`, and the release image is also published xz-compressed (the build checks that the `.xz` decompresses to exactly the built image and that it fits the 2 GiB asset limit). `bash tests/live-image-budget.sh` checks the size boundaries; on FreeBSD, `sudo sh tests/live-image-runtime.sh <iso>` audits the live root's commands and shared libraries read-only.
+
+## Running the tests
+
+There is no single `make test`. The suites are standalone Python and shell programs under `tests/`, and CI runs them one by one (`.github/workflows/`). Most need nothing but the standard library, run on any machine, and finish in seconds. Start with the three that guard the documentation and the release record, which are the ones every pull request must keep green:
+
+```sh
+python3 tests/docs-release-sync.py -v     # docs agree with release/current.json
+python3 tests/docs-lifecycle.py -v        # links, anchors and reachability from SKILL.md
+python3 tests/version-sync.py -v          # one release version everywhere
+```
+
+What you will see is unittest's ordinary output, ending like this:
+
+```
+Ran 13 tests in 0.072s
+
+OK
+```
+
+When `docs-release-sync` fails it lists `path:line: problem` for each stale claim, such as a document that calls an older release "current" or an image name or checksum from a previous release. Fix the document; do not weaken the guard.
+
+Other portable suites, as CI runs them (a few more take `-I`, which isolates Python from the working directory):
+
+```sh
+python3 tests/package-mirror-plan.py -v ; python3 tests/release-check-1.4.py -v
+python3 -I tests/plugins-and-games.py -v ; python3 -I tests/extension-bundles.py -v
+python3 tests/install-trace.py -v ; python3 tests/parallel-fetch.py -v
+bash tests/master-release.sh ; bash tests/build-release-packages.sh
+bash tests/live-backend.sh ; bash tests/live-desktop.sh ; lua5.4 tests/loader-live-menu.lua
+```
+
+The complete list is the set of `tests/*.py` and `tests/*.sh` that `.github/workflows/release-14-controls.yml` and `native-graph.yml` invoke. A handful of those (the ones the CI "controls" job runs after installing the framework wheel) import `literate_ai`, so they need Literate AI installed.
+
+Other suites need a FreeBSD host, root, or both, and mount memory disks or build pools: for example `sudo bash tests/disk-layout.sh`, `sudo bash tests/boot-environment-mounts.sh`, `sudo bash tests/shared-disk.sh`, `sudo bash tests/pkg-repo-dependencies.sh` and `sudo bash tests/checkout-packages.sh`. Each is introduced where the reference section it checks is described ([Testing](#testing), [Releasing](#releasing)). They exercise real mounts, so run them on a disposable FreeBSD VM, never on a machine you care about. VM install tests (`test-qemu.sh`, `test-bhyve.sh`) are the integration level above these; none of this proves a graphical desktop on physical hardware, which has its own records under `docs/`.
+
+## How a release happens
+
+The release is a sequence of resumable steps, driven by `scripts/master-release.sh` and recorded step by step in a state file so a rerun resumes. The reference [Releasing](#releasing) section is the full procedure; this is the shape.
+
+1. **Pin** one daemonarchy-ports commit and one daemonarchy-src commit, and set the version once with `python3 scripts/version.py set X.Y.Z`.
+2. **List what changed** against the last release's feed with `scripts/diff-release-packages.sh`, which only evaluates `make -V PKGNAME` and builds nothing.
+3. **Build**: `master-release.sh packages` (poudriere, seeded from the previous set so retained packages are not rebuilt), `secureboot` (regenerate the module inventory; re-signing is the operator's), `feed` (collect and sign the application feed on the builder, which holds the key), `resolve`, `catalogue`, `iso`, `verify`, `hwtrace` and `qa`. `master-release.sh --dry-run --config master.env all` prints every command without running anything; `all` never writes sticks and never publishes.
+4. **Draft the release pull request** with `scripts/prepare-release.py` (placeholders) and `scripts/fill-release.py` (from the verified artifacts), and check staged assets with `scripts/verify-release-assets.py`. The documentation guard is expected to fail until the placeholders are filled; that is why the pull request stays a draft.
+5. **Sign and publish are the release owner's steps**, in one signing session: the feeds, the boot bundle and the GitHub release. Nobody and nothing else holds those keys.
+6. **Bring the documents into step**: `scripts/release-current.py update` rewrites `release/current.json` from the published release, then `tests/docs-release-sync.py` shows every document that still carries the old release.
+
+Where you are in all this as a contributor: open a pull request against `main`; leave the pinning, signing and publishing to the release engineers listed in the README. See [Contributing](#contributing).
+
+## Literate AI: what it is and whether you need it
+
+**Short answer: you do not need it to build, test, change or release Daemonarchy.** Every command in the walkthroughs above is a plain shell, Python or `make` command. Literate AI (`litai`) is a separate project, [jordanhubbard/literate-ai](https://github.com/jordanhubbard/literate-ai), and nothing here is built by it.
+
+**What it is.** A release-engineering and software-lifecycle tool built around specifications: you declare the product's contracts (what the installer, the desktop, the package engine and so on are responsible for), pin them with locks, and record evidence (receipts) of what was built and tested. Daemonarchy adopted it "in place": the existing scripts remain the implementation and release authority, and Literate AI sits beside them as a checking layer. Its footprint in this repository is `literate.project.json`, `literate.release.json`, the eight Component contracts under `components/`, the work queue in [docs/roadmap/active-work.md](docs/roadmap/active-work.md), `SKILL.md` and `AGENTS.md` (which tell coding agents how to behave here), and the architecture map in [design-traceability.md](docs/architecture/design-traceability.md).
+
+**Where it is installed.** Not on the ISO, not in the package feeds, and not in any port. A port and package ("LITAI-PKG-001") is a queue item for after 1.5, unscheduled. `litai` is a Python package (Python 3.11 or later) that you install yourself, side by side with whatever else you have, in its own virtual environment: on a laptop or workstation for the authority checks, and on a FreeBSD build worker for native build work. CI installs it by building a wheel from a pinned framework revision (the "controls" job in `release-14-controls.yml`); you can do the same:
+
+```sh
+git clone https://github.com/jordanhubbard/literate-ai.git
+git -C literate-ai checkout 0a267a6646f20e3a635a1f870042b6b034f026a1   # the revision CI pins
+python3 -m venv ~/litai-venv
+~/litai-venv/bin/pip wheel --no-deps --wheel-dir ~/litai-wheels ./literate-ai
+~/litai-venv/bin/pip install ~/litai-wheels/literate_ai-1.4.0-*.whl
+~/litai-venv/bin/litai --version
+```
+
+The project's lifecycle binding names an exact framework distribution. The framework's newest published release when this page was written was v1.3.1, which is not what the project pins, so build from the pinned revision, which is a development build of the framework's next version. The checks reported below were run with a development build of the same line; the procedure for moving to another framework build ("rebind") is in [native-adoption-steps.md](docs/native-adoption-steps.md). Do not replace a stable `litai` you rely on elsewhere.
+
+**What it does in 1.5.x, command by command.**
+
+| Role | Command | What happens |
+|---|---|---|
+| Authority gate | `litai project validate .` | Checks that the project definition, the eight Components, the authority graph and the documentation graph are coherent: no cycles, documentation reachable, links and anchors that resolve. Passes on `main`. |
+| Component locks | `litai lock --check` (also part of `verify`) | Confirms the eight committed Component locks match their contracts. Passes on `main`. |
+| Everything declared | `litai verify` | Runs every declared gate and writes nothing, builds nothing and calls no model. See the outcome below. |
+| Documentation review | `litai project documentation-review` | Prints the value a human records as the `authority-reviewed` marker in `docs/architecture/design-traceability.md` after reviewing the documentation. Editing documentation makes that marker stale until a person re-reviews. |
+| Work records | `litai work record` | Allocates a stable ID for a new item in the work queue; update requirements, acceptance evidence and the changelog together. |
+| Release check | `litai release check` | Runs `scripts/release-check-1.4.py`, the 1.4.x gate (see below). |
+| Retained-project builds | `litai build --retained-project MANIFEST --retained-project-profile PROFILE` (add `--retained-project-plan` for a read-only plan) | Plans, and only with the operator's explicit authorization executes, a build from an exact, frozen input manifest on a registered FreeBSD worker. Prototype stage; see below. |
+
+The 1.4.x release gate (`literate.release.json` names it) refuses to pass unless the release record names exactly this version and checkout, `release/current.json` has no placeholder, `litai verify` passes for the `authority` and `locks` gates, the standard-library documentation, version and lifecycle suites pass, and the staged assets match the record. It needs `DAEMONARCHY_RELEASE_RECORD` and `DAEMONARCHY_RELEASE_ASSETS` (and `DAEMONARCHY_CLOSURE_ASSETS` when the record has closure feeds). It says in its own header that it does not claim the native test receipt.
+
+**What `litai verify` says today, honestly.** On `main` before these documentation changes it reported: `authority` pass, `locks` pass (8 current), `source-intelligence` skipped, `html-observability` skipped and `receipt` **fail** (`project.test_receipt_missing: configured project test receipt has not been committed`), with exit status 1. The receipt is `verification/current.json`, which a retained native build would earn; it does not exist, so that gate is red, and **it is red on purpose**. Do not write a receipt by hand or paste in an old log to turn it green. A change to promote a retained run into a receipt is open in the framework as [literate-ai #297](https://github.com/jordanhubbard/literate-ai/pull/297) ("Add project test-receipt promote-retained"); until it lands and a native run is promoted, expect the receipt gate to fail and report it that way. After a documentation change, expect `authority` to report the documentation marker stale until a human re-attests it. That is also by design.
+
+**The advantages, as actually delivered.** One command that answers "is the declared design coherent, are the docs reachable and the contracts locked?" and fails closed. A release gate that refuses placeholders, another version or commit, authority or lock failures and asset mismatches. Stable work IDs and a queue that records evidence beside requirements. Instructions for coding agents that make them keep to the project's authority rules. **What the advantages are not:** faster builds (the plan to cache and run native builds incrementally, BUILD-001, is deferred to 1.5.1 with no evidence ticked), a driver for `build-iso.sh` (the 1.5.0 release was assembled with the hand pipeline in this file and `scripts/master-release.sh`), or a green receipt.
+
+**Where it is headed.** The retained-project builds are the interesting part. A draft profile is in `tools/retained-draft/` (its [PROVENANCE.md](tools/retained-draft/PROVENANCE.md) lists what is captured and what is unknown), and daemonarchy-src has a selected-unit prototype. They are prototypes: execution needs the operator's authorization, and `litai` runs trusted project code unconfined, so nobody should run them casually. [native-adoption-steps.md](docs/native-adoption-steps.md) lists the steps and what is still open.
+
+**What you can do without it.** All of: clone the repositories; build the sets, the ports and the ISO; run `test-qemu.sh` and `test-bhyve.sh`; run every `tests/*` suite except the few that import `literate_ai`; publish a package feed with `pkg-repo.sh`; master a release with `master-release.sh`; use the documentation guards (`tests/docs-release-sync.py`, `tests/docs-lifecycle.py`). What needs it: `litai project validate`, `litai verify`, `litai lock`, `litai release`, `litai work` and retained native builds, and the release gate because it calls `litai verify`.
+
+## What is rough today
+
+Honest list, so you do not discover it by accident.
+
+- **The project test receipt is red** (above): there is no `verification/current.json`, so `litai verify` fails on `main` and will until a retained native run is promoted.
+- **No tested path to upgrade the base on an installed machine.** `make installworld` on a Daemonarchy install is an experiment; the project's own base and kernel upgrade (NETUP-001) is planned for 1.5.1.
+- **Source-built sets are not yet a qualified release input.** `build.py` produces them, byte-verified, but the release path documented in this file is the pinned snapshot sets.
+- **Scripts default to the maintainers' paths.** `master-release.sh` and `build-release-packages.sh` default `WORK` to `/usr/daemonarchy/...`, the jail to `16r2303b36` and the ports tree to `daports141`; `pkg-repo.sh` defaults `BUILD_HOST` to `freebsd.local`. Set the environment (or a `master.env`) for your own machines. A fork also has to replace the hard-coded `jordanhubbard/daemonarchy` URLs; see [Forking Daemonarchy](#forking-daemonarchy), which is the honest list because there is no fork guide yet (FORK-001, planned for 1.5.1).
+- **`build.py` and `build-iso.sh` cannot share one invocation:** the first refuses to run as root, the second must run as root.
+- **No single test command**, and some suites need a FreeBSD VM and root.
+- **Documentation authority marker** is a human attestation and goes stale on any documentation edit; that is expected.
+- **The arm64 image is community-validation only,** with the known virtio-net issue; the NVIDIA RTX Spark laptop is deferred.
+
+# Reference
+
+Everything below is the runbook as it stood before the narrative above was written, kept whole: the repositories and how they are pinned, the upgrade model, forking, where files live, build host setup in detail, changing each layer, testing, remote debugging, the hardware trace image, releasing, pitfalls, Secure Boot development and the live checkout packages. Links elsewhere in the repository point at these section names, so they have not been renamed.
+
 ## Literate AI project authority
+
+The plain-language version of this section, with install steps and what `litai verify` reports today, is [Literate AI: what it is and whether you need it](#literate-ai-what-it-is-and-whether-you-need-it). What follows is the project's authority rules as they stood.
 
 Read [PROJECT.md](PROJECT.md), [the active queue](docs/roadmap/active-work.md) and
 [the architecture](docs/architecture/design-traceability.md) before changing
