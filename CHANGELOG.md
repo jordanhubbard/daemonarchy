@@ -7,7 +7,7 @@ Not published. Entries are added as changes merge; the release notes and the
 
 ### Added
 
-- A narrated eight-minute introduction for newcomers, built from [the tutorial course](docs/tutorial/README.md)
+- A narrated eight-minute introduction for newcomers (NVIDIA Magpie TTS voices), built from [the tutorial course](docs/tutorial/README.md)
   and linked from the README; it is published as a 1.5.1 release asset.
 - A newcomer README and a narrative-first HACKING guide; [installer reference](docs/installer-reference.md).
 - User and engineering slide decks under [docs/presentations](docs/presentations/README.md).
