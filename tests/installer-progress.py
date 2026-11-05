@@ -613,6 +613,15 @@ class RenderingTests(unittest.TestCase):
         self.assertTrue(ui.unicode_ok({'TERM': 'xterm', 'LANG': 'C'}, True))
         self.assertFalse(ui.unicode_ok({'TERM': 'xterm', 'LANG': 'C'}, False))
 
+    def test_redraw_key_and_hint(self):
+        app = self.app()
+        app.screen.size = (80, 24)
+        app.key('r')
+        self.assertIsNone(app.screen.size)  # the next frame clears and redraws every cell
+        self.assertIn('r redraw', app.keys_hint())
+        app.tmux.active = True
+        self.assertIn('C-b r redraw', app.keys_hint())
+
     def test_key_decoding_needs_no_function_keys(self):
         keys, rest = ui.decode_keys(b'v\tq\x1b[A\x1b[6~\x1b[Z\x03?')
         self.assertEqual(keys, ['v', 'tab', 'q', 'up', 'pgdn', 'backtab', 'ctrl-c', '?'])
@@ -839,8 +848,9 @@ class TmuxWindowControlTests(unittest.TestCase):
             keys = self.tmux('list-keys', '-N', '-T', 'prefix')
             for text in ('Split left/right', 'Split top/bottom', 'Close the pane', 'Zoom', 'New window',
                          'Window list', 'Scroll/copy mode', 'Detach is not available', 'install log',
-                         'diagnostics', 'remote debugging', 'Send C-b'):
+                         'diagnostics', 'remote debugging', 'Send C-b', 'Redraw the screen'):
                 self.assertIn(text, keys)
+            self.assertIn('refresh-client', self.tmux('list-keys', '-T', 'prefix', 'r'))
             self.press(tty, self.PREFIX + b'?')
             self.until(tty, lambda: self.panes()[0][5] == '1')  # the key list in tmux's view mode
             self.press(tty, b'q')
@@ -979,6 +989,37 @@ class TmuxWindowControlTests(unittest.TestCase):
             tty.send(b'\r')  # leave the view; a background listener would keep running
             self.until(tty, lambda: len(self.windows()) == 1)
             self.assertFalse(self.status.exists())
+
+    def traced_tmux(self):
+        """tmux through a wrapper that records each command and its status."""
+        calls, wrapper = self.root/'tmux-calls', self.root/'bin'/'tmux'
+        wrapper.parent.mkdir()
+        wrapper.write_text(f'#!/bin/sh\n{shutil.which("tmux")} "$@"\nrc=$?\necho "$rc $*" >>{calls}\nexit $rc\n')
+        wrapper.chmod(0o755)
+        return calls, f'{wrapper.parent}:{os.environ["PATH"]}'
+
+    def redraws(self, calls):
+        return [row for row in (calls.read_text().splitlines() if calls.exists() else []) if 'refresh-client' in row]
+
+    def test_vt_console_redraws_while_the_session_exists(self):
+        # Console messages scroll the vt under tmux (issue #244); the whole screen is redrawn every few seconds.
+        calls, path = self.traced_tmux()
+        with self.screen(PATH=path, DAEMONARCHY_CONSOLE='vt', DAEMONARCHY_REDRAW_SECONDS='0.3') as tty:
+            self.started(tty)
+            self.until(tty, lambda: len(self.redraws(calls)) >= 2)
+            self.assertTrue(all(row.startswith('0 ') for row in self.redraws(calls)), self.redraws(calls))
+            self.status.write_text('0\n')
+            self.assertEqual(tty.exit_code(), 0)
+            done = len(self.redraws(calls))
+            time.sleep(1)
+            self.assertEqual(len(self.redraws(calls)), done, 'the redraw loop outlived the session')
+
+    def test_other_terminals_are_not_redrawn_on_a_timer(self):
+        calls, path = self.traced_tmux()
+        with self.screen(PATH=path, DAEMONARCHY_REDRAW_SECONDS='0.3') as tty:
+            self.started(tty)
+            tty.read_for(1.5)
+            self.assertEqual(self.redraws(calls), [])
 
     def test_serial_class_terminals_get_the_direct_screen(self):
         env = self.env()

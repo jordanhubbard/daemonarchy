@@ -171,9 +171,14 @@ def header_fields(snap, unicode=True):
     return fields
 
 
+# A wrapped header row starts this far in, so it reads as the header's continuation rather than a stray line.
+HEADER_INDENT = 2
+
+
 def header_rows(fields, width, max_rows):
     """Lay the fields out in at most `max_rows` rows of `width`: the longest form that fits, else shorter, else
-    dropping the last fields. Always returns at least one row; the first fields are the most important."""
+    dropping the last fields. Always returns at least one row; the first fields are the most important.
+    Rows after the first are drawn HEADER_INDENT columns in and are laid out to fit that."""
     gap = 3
     for form in ('long', 'short', 'tiny'):
         used = list(fields)
@@ -181,13 +186,14 @@ def header_rows(fields, width, max_rows):
             rows, row, size = [], [], 0
             for field in used:
                 length = sum(len(text) for text, _ in field[form])
-                if row and size + gap + length > width:
+                if row and size + gap + length > width - (HEADER_INDENT if rows else 0):
                     rows.append(row)
                     row, size = [], 0
                 row.append(field[form])
                 size += length + (gap if size else 0)
             rows.append(row)
-            if len(rows) <= max_rows and all(sum(len(t) for f in r for t, _ in f) + gap * (len(r) - 1) <= width for r in rows):
+            if len(rows) <= max_rows and all(sum(len(t) for f in r for t, _ in f) + gap * (len(r) - 1)
+                                             + (HEADER_INDENT if index else 0) <= width for index, r in enumerate(rows)):
                 return rows
             if form != 'tiny':
                 break
@@ -474,7 +480,7 @@ class Visuals:
         rows = header_rows(header_fields(snap, self.g.unicode), w, max_rows)
         roles = dict(label=(GRAY, None, False), value=(WHITE, None, True), est=(YELLOW, None, False), dim=(DIM, None, False))
         for index, row in enumerate(rows[:max(1, h)]):
-            cx = x
+            cx = x + (HEADER_INDENT if index else 0)
             for position, field in enumerate(row):
                 for text, role in field:
                     canvas.put(cx, y + index, text, roles[role], w - (cx - x))
@@ -939,6 +945,8 @@ class App:
             self.open_extensions()
         elif key in ('?', 'h'):
             self.say(self.keys_hint(), 8)
+        elif key == 'r':
+            self.screen.size = None  # The next frame clears and redraws every cell (console messages scroll it).
         elif key in ('m', '+', '=', '-', 'a') and sound is not None:
             action = {'m': 'toggle-mute', '+': 'up', '=': 'up', '-': 'down', 'a': 'ambient'}[key]
             try:
@@ -1030,8 +1038,10 @@ class App:
     def keys_hint(self):
         if self.tmux.active:
             return ('C-b c new window  C-b % / C-b " split  C-b G log  C-b H diagnostics  '
-                    'C-b R remote debug  C-b e extensions  C-b g games  C-b m mute  C-b +/- volume  C-b ? all keys  v style  t timeline')
-        return 'v style  t timeline  m mute  +/- volume  a ambient. Window controls and extensions need tmux, which is not available here.'
+                    'C-b R remote debug  C-b e extensions  C-b g games  C-b m mute  C-b +/- volume  C-b r redraw  '
+                    'C-b ? all keys  v style  t timeline')
+        return ('v style  t timeline  r redraw  m mute  +/- volume  a ambient. '
+                'Window controls and extensions need tmux, which is not available here.')
 
     # -- frames
 
