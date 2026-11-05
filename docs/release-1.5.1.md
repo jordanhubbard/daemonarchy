@@ -9,7 +9,7 @@ For the published result use docs/release-1.5.1.md and release/current.json. -->
 
 Daemonarchy 1.5.1 is the release after 1.5.0. It makes a failed installation explain itself,
 keeps console messages from corrupting the install screen, fixes the arm64 virtio-net receive
-stall, and adds a narrated introduction for newcomers. Published @@PUBLISHED_DATE@@. The
+stall, and rewrites the documentation for newcomers. Published @@PUBLISHED_DATE@@. The
 [GitHub release](https://github.com/jordanhubbard/daemonarchy/releases/tag/daemonarchy-1.5.1)
 is the authority for the final images, asset hashes and publication state.
 
@@ -25,9 +25,6 @@ is the authority for the final images, asset hashes and publication state.
   (@@HWTRACE_AARCH64_BYTES@@ bytes, SHA-256 `@@HWTRACE_AARCH64_SHA256@@`), the hardware
   bring-up trace images. They are not installers: each holds its ISO's own kernel and loader
   and carries no keys. See [the trace image](boottrace.md).
-- `daemonarchy-newcomer-tutorial-1.5.1.mp4` with `.srt` and `.vtt` subtitles: an eight-minute
-  narrated introduction (synthesized speech) from download to hacking. Its script and sources are
-  in [the tutorial](tutorial/README.md).
 - A `.sha256` file for each image, which covers the compressed file you download.
 - The signed Secure Boot bundle `daemonarchy-1.5.1-boot.txz` with its detached `.sig`,
   and the public certificate in PEM and DER form (amd64; aarch64 has none).
@@ -68,7 +65,7 @@ source and ports checkouts are `@@CHECKOUTS_AMD64_FEED@@` and `@@CHECKOUTS_AARCH
   RTX Spark failure observable; it does not fix it, and the Spark remains deferred.
 - **Documentation for newcomers.** A rewritten README for users, a narrative-first HACKING guide
   that compares the FreeBSD way with the Daemonarchy way, an [installer reference](installer-reference.md),
-  user and engineering [slide decks](presentations/README.md), and the narrated introduction above.
+  and user and engineering [slide decks](presentations/README.md).
 - **Licensing.** Each repository has a project statement (`LICENSE.daemonarchy`, BSD-2-Clause for
   Daemonarchy-original work) and a `licenses/` index; FreeBSD's own `COPYRIGHT` files are unchanged.
 - **Graphical package manager in the menu.** The Packages menu entries open `daemonarchy-pkg`,
