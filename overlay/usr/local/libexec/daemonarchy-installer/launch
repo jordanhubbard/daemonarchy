@@ -6,6 +6,13 @@
 # NoCloud label the Arch ISO uses for the same purpose), the install runs
 # unattended from that file and the machine powers off when it is done.
 # Otherwise the configurator asks its questions first.
+#
+# The installer's own exit status (its status file) decides what happens next,
+# never the progress screen's: a progress display problem is reported in the
+# summary and does not turn a finished installation into a failure. A failure
+# stays on the screen with an explanation and a menu (install-failed). An
+# unattended install never waits for a key: it prints the same explanation and
+# opens a shell, as before.
 
 # The install runs through tee for its log; report the install's own status.
 set -o pipefail
@@ -20,6 +27,8 @@ if [[ -s /usr/local/share/daemonarchy-installer/headless/authorized_keys ]]; the
 fi
 log=/tmp/daemonarchy-install.log
 status_file=/tmp/daemonarchy-install.status
+# The progress screen's final summary, printed here after its tmux session ends.
+summary_file=/tmp/daemonarchy-install.summary
 
 # The root filesystem is the install stick. Keep the reboot tools in memory so the
 # final reboot or power-off does not need the stick (see live-power).
@@ -84,15 +93,33 @@ console_font() {
 console_font
 
 # Run the install in the background with everything it prints going to the
-# log, and draw the install screen from that log until it finishes.
+# log, and draw the install screen from that log until it finishes. Succeeds
+# only when the installer itself exited 0; install_result is its status, or
+# empty when the screen was left while the installer still runs.
 run_install() {
-  rm -f "$status_file"
+  rm -f "$status_file" "$summary_file"
   : >"$log"
   (
     "$ISO_LIBEXEC/install" 2>&1 | tee "${serial[@]}" >>"$log"
     echo "$?" >"$status_file"
   ) &
-  "$ISO_LIBEXEC/dashboard" "$log" "$status_file"
+  "$ISO_LIBEXEC/dashboard" "$log" "$status_file" --summary-file "$summary_file" || true
+  install_result=
+  [[ -s $status_file ]] || return 1
+  install_result=$(<"$status_file")
+  [[ $install_result =~ ^[0-9]{1,3}$ ]] && ((10#$install_result <= 255)) || install_result=1
+  ((10#$install_result == 0)) || return 1
+  if [[ -s $summary_file ]]; then cat "$summary_file"; fi
+}
+
+# Why the installation stopped, where its logs are and, at a console, a menu.
+install_failed() {
+  if [[ -z $install_result ]]; then
+    echo "The install screen was closed while the installation is still running."
+    echo "Follow it with: tail -f $log"
+    return
+  fi
+  "$ISO_LIBEXEC/install-failed" "$install_result" "$log" "$summary_file"
 }
 
 # The live desktop entry promises no disk changes until the operator confirms,
@@ -122,6 +149,8 @@ if [[ ${DAEMONARCHY_LIVE:-} != 1 ]] && find_cidata; then
     echo "Daemonarchy autoinstall finished; powering off."
     "$ISO_LIBEXEC/live-power" poweroff
   else
+    # DAEMONARCHY_UNATTENDED: the explanation only, no menu and no key to wait for.
+    install_failed 2>&1 | tee "${serial[@]}"
     echo "Daemonarchy autoinstall FAILED; see $log"
   fi
   exec /bin/sh
@@ -139,5 +168,7 @@ if run_install; then
     Power*) "$ISO_LIBEXEC/live-power" poweroff ;;
     Reboot*) "$ISO_LIBEXEC/live-power" reboot ;;
   esac
+else
+  install_failed
 fi
 exec /bin/sh

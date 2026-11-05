@@ -42,6 +42,36 @@ if [ "$(tty)" = /dev/ttyv0 ] && [ ! -e /tmp/.daemonarchy-installer ]; then
 fi
 EOF
 
+# syslog writes *.err, kern.warning, auth.notice and mail.crit to /dev/console
+# in FreeBSD's default syslog.conf. On ttyv0 that text lands under the
+# installer's tmux screen, scrolls the console a line, and tmux, which redraws
+# only what changed, then draws every row one line off (issue #244). The live
+# image logs those messages only to /var/log/messages, where *.notice already
+# sends them. The installed system keeps FreeBSD's syslog.conf from base.txz.
+live_quiet_console() {
+	for live_conf in "$1/etc/syslog.conf" "$1"/etc/syslog.d/*.conf "$1"/usr/local/etc/syslog.d/*.conf; do
+		[ -f "$live_conf" ] || continue
+		sed -E 's|^([^#].*[[:space:]]/dev/console[[:space:]]*)$|#\1|' "$live_conf" >"$live_conf.new" &&
+			mv "$live_conf.new" "$live_conf" || return 1
+		if grep -Eq '^[^#].*/dev/console' "$live_conf"; then
+			echo "syslog still writes to the console: $live_conf" >&2
+			return 1
+		fi
+	done
+}
+
+# ntpd exits when the clock is more than 1000 s off after its first correction,
+# which a suspended or migrated VM can cause. The live image keeps it running
+# (tinker panic 0 must come first in ntp.conf); ntpd_sync_on_start still makes
+# the initial correction at boot.
+live_ntp_tolerate_jumps() {
+	live_conf=$1/etc/ntp.conf
+	[ -f "$live_conf" ] || return 0
+	grep -q '^tinker panic 0' "$live_conf" && return 0
+	{ printf '%s\n' '# Daemonarchy live image: keep running after a large clock jump.' 'tinker panic 0'; cat "$live_conf"; } \
+		>"$live_conf.new" && mv "$live_conf.new" "$live_conf"
+}
+
 # The root filesystem is the read-only ISO: keep /var in memory and point the
 # files DHCP rewrites at /tmp.
 cat >"$world/etc/rc.conf" <<'EOF'
@@ -77,6 +107,8 @@ if [ -f "$world/boot/modules/if_brcmfmac.ko" ] &&
     # in the installer before attaching the radio.
     echo 'kld_list="if_brcmfmac"' >>"$world/etc/rc.conf"
 fi
+live_quiet_console "$world" || exit 1
+live_ntp_tolerate_jumps "$world" || exit 1
 ln -sf /tmp/resolv.conf "$world/etc/resolv.conf"
 echo 'resolv_conf=/tmp/resolv.conf' >"$world/etc/resolvconf.conf"
 

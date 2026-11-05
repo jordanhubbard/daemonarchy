@@ -12,7 +12,7 @@ runtime from framework `c345e652b91863e72526f25f8e31a03ec34bec01`, wheel SHA-256
 The ambient older CLI lacks the ownership extension. No language Flavor is
 created to accommodate that older installation. Those records are retained
 unchanged. Later controller checks run under installed LitAI 1.4.0 (public git
-`0a267a6646f20e3a635a1f870042b6b034f026a1`); the hosted
+`2b29c1e621a9e4fee5c4f12d273010a142560cfd`); the hosted
 `release-14-controls` job installs that exact commit into a job virtual
 environment rather than relying on the runner's bare `python3`.
 

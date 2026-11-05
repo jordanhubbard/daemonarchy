@@ -171,9 +171,14 @@ def header_fields(snap, unicode=True):
     return fields
 
 
+# A wrapped header row starts this far in, so it reads as the header's continuation rather than a stray line.
+HEADER_INDENT = 2
+
+
 def header_rows(fields, width, max_rows):
     """Lay the fields out in at most `max_rows` rows of `width`: the longest form that fits, else shorter, else
-    dropping the last fields. Always returns at least one row; the first fields are the most important."""
+    dropping the last fields. Always returns at least one row; the first fields are the most important.
+    Rows after the first are drawn HEADER_INDENT columns in and are laid out to fit that."""
     gap = 3
     for form in ('long', 'short', 'tiny'):
         used = list(fields)
@@ -181,13 +186,14 @@ def header_rows(fields, width, max_rows):
             rows, row, size = [], [], 0
             for field in used:
                 length = sum(len(text) for text, _ in field[form])
-                if row and size + gap + length > width:
+                if row and size + gap + length > width - (HEADER_INDENT if rows else 0):
                     rows.append(row)
                     row, size = [], 0
                 row.append(field[form])
                 size += length + (gap if size else 0)
             rows.append(row)
-            if len(rows) <= max_rows and all(sum(len(t) for f in r for t, _ in f) + gap * (len(r) - 1) <= width for r in rows):
+            if len(rows) <= max_rows and all(sum(len(t) for f in r for t, _ in f) + gap * (len(r) - 1)
+                                             + (HEADER_INDENT if index else 0) <= width for index, r in enumerate(rows)):
                 return rows
             if form != 'tiny':
                 break
@@ -474,7 +480,7 @@ class Visuals:
         rows = header_rows(header_fields(snap, self.g.unicode), w, max_rows)
         roles = dict(label=(GRAY, None, False), value=(WHITE, None, True), est=(YELLOW, None, False), dim=(DIM, None, False))
         for index, row in enumerate(rows[:max(1, h)]):
-            cx = x
+            cx = x + (HEADER_INDENT if index else 0)
             for position, field in enumerate(row):
                 for text, role in field:
                     canvas.put(cx, y + index, text, roles[role], w - (cx - x))
@@ -867,6 +873,7 @@ class App:
         self.input = b''
         self.input_at = 0.0
         self.quit = None
+        self.hold = False  # a failed result waits for a key (see hold_failure)
         self.started = time.monotonic()
         self.director = None
         self.sound_state = None
@@ -938,6 +945,8 @@ class App:
             self.open_extensions()
         elif key in ('?', 'h'):
             self.say(self.keys_hint(), 8)
+        elif key == 'r':
+            self.screen.size = None  # The next frame clears and redraws every cell (console messages scroll it).
         elif key in ('m', '+', '=', '-', 'a') and sound is not None:
             action = {'m': 'toggle-mute', '+': 'up', '=': 'up', '-': 'down', 'a': 'ambient'}[key]
             try:
@@ -1029,8 +1038,10 @@ class App:
     def keys_hint(self):
         if self.tmux.active:
             return ('C-b c new window  C-b % / C-b " split  C-b G log  C-b H diagnostics  '
-                    'C-b R remote debug  C-b e extensions  C-b g games  C-b m mute  C-b +/- volume  C-b ? all keys  v style  t timeline')
-        return 'v style  t timeline  m mute  +/- volume  a ambient. Window controls and extensions need tmux, which is not available here.'
+                    'C-b R remote debug  C-b e extensions  C-b g games  C-b m mute  C-b +/- volume  C-b r redraw  '
+                    'C-b ? all keys  v style  t timeline')
+        return ('v style  t timeline  r redraw  m mute  +/- volume  a ambient. '
+                'Window controls and extensions need tmux, which is not available here.')
 
     # -- frames
 
@@ -1048,6 +1059,9 @@ class App:
         if snap['result'] is not None and self.tmux.other_panes():
             return ('Installation finished. Close the other panes and windows to continue '
                     '(exit in a shell, C-b x, C-b &).'), GREEN
+        if snap['result'] not in (None, 0) and self.hold:
+            return (f"The installation failed (exit {snap['result']}). Press any key for the summary, "
+                    'the logs and what to do next.'), RED
         return self.keys_hint(), GRAY
 
     def frame(self, width, height, snap):
@@ -1109,7 +1123,7 @@ def run_plain(monitor, style):
             sys.stdout.flush()
             previous = key
         if monitor.result is not None:
-            return monitor.result if monitor.result else (1 if state.warning or state.failed else 0)
+            return monitor.result  # The installer's own result; a progress warning is printed beside it.
         time.sleep(0.2)
 
 
@@ -1126,6 +1140,23 @@ def final_summary(monitor, style, width):
     return rows
 
 
+def record_summary(path, rows):
+    """Keep the final summary in a file the caller prints after the screen (and any tmux session) has gone."""
+    if path is None:
+        return
+    try:
+        temporary = path.with_name(path.name + '.tmp')
+        temporary.write_text('\n'.join(rows) + '\n', encoding='utf-8')
+        temporary.replace(path)
+    except OSError:
+        pass
+
+
+def hold_failure(env, keyboard):
+    """A failed installation stays on screen until a key is pressed, except unattended (CIDATA) installs."""
+    return keyboard and env.get('DAEMONARCHY_UNATTENDED', '') != '1'
+
+
 def main(argv=None):
     parser = argparse.ArgumentParser(description=__doc__.splitlines()[0])
     parser.add_argument('log', type=Path)
@@ -1136,6 +1167,8 @@ def main(argv=None):
     parser.add_argument('--input-pin')
     parser.add_argument('--repository-pin')
     parser.add_argument('--exit-file', type=Path, help='record the exit status here (install-screen)')
+    parser.add_argument('--summary-file', type=Path,
+                        help='write the final summary here instead of to the terminal; the caller prints it (launch)')
     args = parser.parse_args(argv)
     if args.style not in ('bars', 'spectrum', 'scope', 'plain'):
         args.style = 'spectrum'
@@ -1167,7 +1200,10 @@ def run(args):
 
     if not interactive:
         try:
-            return run_plain(monitor, args.style if args.style != 'plain' else 'bars'), True
+            style = args.style if args.style != 'plain' else 'bars'
+            code = run_plain(monitor, style)
+            record_summary(args.summary_file, final_summary(monitor, style, 120))
+            return code, True
         except InterruptedError as error:
             return 128 + error.args[0], False
         except (OSError, ValueError) as error:
@@ -1196,6 +1232,7 @@ def run(args):
         except termios.error:
             keyboard, saved = False, None
     app = App(monitor, args, env, console, True, keyboard)
+    app.hold = hold_failure(env, keyboard)
     fps = 1.0 if app.reduced else max(1.0, min(20.0, float(env.get('DAEMONARCHY_FPS', '10') or 10)))
     try:
         celebrate = max(0.0, min(30.0, float(env.get('DAEMONARCHY_CELEBRATE', '') or (2.0 if app.reduced else 4.0))))
@@ -1222,12 +1259,14 @@ def run(args):
                 break
             if monitor.result is not None and not app.waiting_for_panes():
                 if celebrate_until is None:
-                    # Hold the finale (fireworks and fanfare, or the failure) briefly; any key skips it.
+                    # Hold the finale (fireworks and fanfare) briefly; any key skips it. A failure is never
+                    # dismissed by time: it waits for a key, unless nobody is there to press one (unattended).
                     celebrate_until = time.monotonic() + celebrate
+                    if monitor.result != 0 and app.hold:
+                        celebrate_until = math.inf
                     held_input = app.input_at
                 if time.monotonic() >= celebrate_until or app.input_at != held_input:
-                    state = monitor.state
-                    code = monitor.result if monitor.result else (1 if state.warning or state.failed else 0)
+                    code = monitor.result  # The installer's own result decides; warnings never change it.
                     finished = True
                     snap = monitor.snapshot()
                     app.feed_sound(snap)
@@ -1258,7 +1297,11 @@ def run(args):
         sys.stdout.write('\n')
         if app is not None and monitor.result is not None:
             width = app.screen.size[0] if app.screen.size else 80
-            sys.stdout.write('\n'.join(final_summary(monitor, app.style, width)) + '\n')
+            rows = final_summary(monitor, app.style, width)
+            if args.summary_file is not None:
+                record_summary(args.summary_file, rows)
+            else:
+                sys.stdout.write('\n'.join(rows) + '\n')
         sys.stdout.flush()
     return code, finished
 

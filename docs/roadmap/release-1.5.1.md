@@ -2,8 +2,9 @@
 
 - **Status:** active
 - **Owning queue item:** [NETUP-001](active-work.md#netup-001-upgrade-an-installed-systems-base-kernel-modules-and-boot-files-over-the-network)
-- **Supporting queue items:** [NETUP-002](active-work.md#netup-002-update-trust-over-the-network-package-key-and-secure-boot-certificate-rotation), [NETUP-003](active-work.md#netup-003-qualify-upgrade-paths-on-exact-artifacts), [FORK-001](active-work.md#fork-001-let-another-developer-fork-the-repositories-and-publish-their-own-installer-packages-and-feeds), [BUILD-001](active-work.md#build-001-cut-freebsd-source-ports-iso-and-release-cycle-time-10x-with-literate-ai), [COMP-001](active-work.md#comp-001-model-complete-freebsd-source-and-ports-trees-as-components), [PERF-001](active-work.md#perf-001-execute-native-components-and-substantially-accelerate-iso-builds), [PERF-002](active-work.md#perf-002-coordinate-all-daemonarchy-repositories-through-literate-ai-workers-in-140), [DEV-001](active-work.md#dev-001-provide-an-operator-ready-native-component-development-system), [ADOPT-003](active-work.md#adopt-003-qualify-retained-native-execution-and-release-enforcement-deferred-half-of-adopt-002), [SRC-002](active-work.md#src-002-qualify-native-freebsd-source-builds-and-packages-deferred-half-of-src-001), [RELEASE-002](active-work.md#release-002-run-a-release-entirely-through-qualified-literate-ai-execution-deferred-rest-of-release-001), [TREE-001](active-work.md#tree-001-browse-usrsrc-and-usrports-on-the-system-as-nested-html-cards), [MON-001](active-work.md#mon-001-worker-activity-monitor-and-graphical-package-browser-on-the-installer-visual-sdk), [LITAI-PKG-001](active-work.md#litai-pkg-001-ship-literate-ai-as-a-port-and-package-so-users-run-srcports-operations-with-litai)
+- **Supporting queue items:** [NETUP-002](active-work.md#netup-002-update-trust-over-the-network-package-key-and-secure-boot-certificate-rotation), [NETUP-003](active-work.md#netup-003-qualify-upgrade-paths-on-exact-artifacts), [FORK-001](active-work.md#fork-001-let-another-developer-fork-the-repositories-and-publish-their-own-installer-packages-and-feeds), [BUILD-001](active-work.md#build-001-cut-freebsd-source-ports-iso-and-release-cycle-time-10x-with-literate-ai), [COMP-001](active-work.md#comp-001-model-complete-freebsd-source-and-ports-trees-as-components), [PERF-001](active-work.md#perf-001-execute-native-components-and-substantially-accelerate-iso-builds), [PERF-002](active-work.md#perf-002-coordinate-all-daemonarchy-repositories-through-literate-ai-workers-in-140), [DEV-001](active-work.md#dev-001-provide-an-operator-ready-native-component-development-system), [ADOPT-003](active-work.md#adopt-003-qualify-retained-native-execution-and-release-enforcement-deferred-half-of-adopt-002), [SRC-002](active-work.md#src-002-qualify-native-freebsd-source-builds-and-packages-deferred-half-of-src-001), [RELEASE-002](active-work.md#release-002-run-a-release-entirely-through-qualified-literate-ai-execution-deferred-rest-of-release-001), [TREE-001](active-work.md#tree-001-browse-usrsrc-and-usrports-on-the-system-as-nested-html-cards), [MON-001](active-work.md#mon-001-worker-activity-monitor-and-graphical-package-browser-on-the-installer-visual-sdk), [LITAI-PKG-001](active-work.md#litai-pkg-001-ship-literate-ai-as-a-port-and-package-so-users-run-srcports-operations-with-litai), [ARCH-001](active-work.md#arch-001-add-aarch64-as-a-second-supported-architecture-for-140), [LIVE-001](active-work.md#live-001-offer-a-live-desktop-from-the-installer-media-without-touching-the-disk), [NET-001](active-work.md#net-001-make-the-installer-network-bring-up-proactive-and-robust), [NET-002](active-work.md#net-002-boot-with-the-first-usable-connected-interface-without-waiting-for-disconnected-ethernet), [GPU-001](active-work.md#gpu-001-qualify-cross-vendor-gpu-diagnostics-and-a-daemonarchy-showcase), [PKG-002](active-work.md#pkg-002-self-host-the-installers-package-closure-for-both-architectures), [INSTALL-PERF-001](active-work.md#install-perf-001-make-exact-image-installation-at-least-10x-faster), [VISUAL-SDK-001](active-work.md#visual-sdk-001-extract-a-reusable-installer-visual-sdk-and-plugin-runtime), [EXT-001](active-work.md#ext-001-installer-extensions-menu-sdk-windows-signed-compressed-feed)
 - **Completion / archival evidence:** pending; nothing here is claimed done. Done means the evidence in each queue item, retained with exact inputs.
+- **Published 1.5.0 gate carry-over:** [GUI-001](active-work.md#gui-001-deliver-a-colorful-fast-graphical-package-manager), [DEBUG-003](active-work.md#debug-003-deliver-bidirectional-loader-mountroot-and-panic-network-debugging-for-14), [HW-004](active-work.md#hw-004-t2-touch-id-login-through-fprintd), [EXT-002](active-work.md#ext-002-sandboxed-lua-extensions-for-content-we-did-not-write), [DESKTOP-001](active-work.md#desktop-001-ship-the-desktop-launchers-and-menu-entries-in-the-daemonarchy-desktop-package), and [SIGN-001](active-work.md#sign-001-one-signing-session-per-release-stop-the-key-window-churn). Their delivered 1.5.0 portions remain published; the unticked acceptance moves here.
 
 Opened 2026-11-01. It exists because of an assertion that was checked and found not to hold: that
 Daemonarchy 1.5 would be the last release needing an ISO because full network upgrades from the GitHub
@@ -103,6 +104,77 @@ certificate rotation over the network), NETUP-003 (upgrade QA on exact artifacts
 (one configuration, a fork guide and an example fork CI), plus the goals deferred from 1.5.0 below. Their acceptance texts are in the queue. Until they
 have evidence, [the upgrade model](https://github.com/jordanhubbard/daemonarchy/blob/main/HACKING.md#the-upgrade-model-today) is the statement of what works.
 
+## GitHub milestone
+
+The [1.5.1 milestone](https://github.com/jordanhubbard/daemonarchy/milestone/4) holds the open issues for this
+release. On 2026-11-04 the operator audited the open issues: #11, #137 and #189 were closed as past
+problems, and the eleven tracking issues below moved from the 1.4.0 milestone with their queue items. Each
+queue item now has `Release target: 1.5.1`; nothing was ticked in the move, and each item's 1.4.1 audit
+line remains as the record of what was true then.
+
+| Issue | Queue item | State at the move |
+|---|---|---|
+| [#33](https://github.com/jordanhubbard/daemonarchy/issues/33) | [DEBUG-003](active-work.md#debug-003-deliver-bidirectional-loader-mountroot-and-panic-network-debugging-for-14) | P0; already a 1.5.0 carry-over below |
+| [#39](https://github.com/jordanhubbard/daemonarchy/issues/39) | [PERF-002](active-work.md#perf-002-coordinate-all-daemonarchy-repositories-through-literate-ai-workers-in-140) | already deferred from 1.5.0 below |
+| [#62](https://github.com/jordanhubbard/daemonarchy/issues/62) | [ARCH-001](active-work.md#arch-001-add-aarch64-as-a-second-supported-architecture-for-140) | aarch64 staged at the 1.4.1 base; feeds unpublished |
+| [#67](https://github.com/jordanhubbard/daemonarchy/issues/67) | [LIVE-001](active-work.md#live-001-offer-a-live-desktop-from-the-installer-media-without-touching-the-disk) | shipped in 1.4.0; exact-image run with disk digests open |
+| [#80](https://github.com/jordanhubbard/daemonarchy/issues/80) | [NET-001](active-work.md#net-001-make-the-installer-network-bring-up-proactive-and-robust) | implemented; exact-image matrix and MacBook Wi-Fi-first run open |
+| [#101](https://github.com/jordanhubbard/daemonarchy/issues/101) | [GPU-001](active-work.md#gpu-001-qualify-cross-vendor-gpu-diagnostics-and-a-daemonarchy-showcase) | MSI report retained; frame times, AMD and MacBook runs open |
+| [#102](https://github.com/jordanhubbard/daemonarchy/issues/102) | [NET-002](active-work.md#net-002-boot-with-the-first-usable-connected-interface-without-waiting-for-disconnected-ethernet) | code-level; installed-boot timing evidence open |
+| [#134](https://github.com/jordanhubbard/daemonarchy/issues/134) | [INSTALL-PERF-001](active-work.md#install-perf-001-make-exact-image-installation-at-least-10x-faster) | baselines first |
+| [#139](https://github.com/jordanhubbard/daemonarchy/issues/139) | [VISUAL-SDK-001](active-work.md#visual-sdk-001-extract-a-reusable-installer-visual-sdk-and-plugin-runtime) |  |
+| [#142](https://github.com/jordanhubbard/daemonarchy/issues/142) | [PKG-002](active-work.md#pkg-002-self-host-the-installers-package-closure-for-both-architectures) | feeds INSTALL-PERF-001 |
+| [#161](https://github.com/jordanhubbard/daemonarchy/issues/161) | [EXT-001](active-work.md#ext-001-installer-extensions-menu-sdk-windows-signed-compressed-feed) | depends on VISUAL-SDK-001 |
+| [#244](https://github.com/jordanhubbard/daemonarchy/issues/244) | installer defect | fix in review ([#282](https://github.com/jordanhubbard/daemonarchy/pull/282)) |
+| [#257](https://github.com/jordanhubbard/daemonarchy/issues/257) | installer defect | fix in review ([#281](https://github.com/jordanhubbard/daemonarchy/pull/281)); reporters' logs requested |
+
+The daemonarchy-src 1.4.0 milestone (source issue [#21](https://github.com/jordanhubbard/daemonarchy-src/issues/21),
+paired with #33) was not changed.
+
+## Release tasks
+
+- Record an onboarding video on the published 1.5.1 media and link it from the README. It is made after the
+  image is final, so it shows exactly what a new user gets.
+
+## Unfinished 1.5.0 acceptance
+
+The [published 1.5.0 notes](../release-1.5.0.md#what-is-not-done-and-why)
+identify these concrete gaps. Their original 1.5.0 target is historical; the
+active queue and release-goal ledger now assign remaining acceptance to 1.5.1.
+
+| Queue item | What 1.5.0 delivered | What 1.5.1 must prove |
+| --- | --- | --- |
+| GUI-001 | Packaged first GTK manager; OctoPkg remains the menu choice. | Real installed desktop install, update and remove; plan identity, progress, retry and failure behavior. |
+| DEBUG-003 | Trace and VM foundations. | Loader, forced `mountroot>` and panic control with exact native/physical evidence, including the MSI NIC and reset capture. |
+| HW-004 | T2 transport and package development. | An enrolled-finger Mac test through fprintd, login, sudo, SDDM and hyprlock, plus resume and T2 power loss. |
+| EXT-002 | Lua runtime and fish-tank source. | Exact-image sandbox refusal tests, published feed, authoring guide and play on the actual console. |
+| DESKTOP-001 | Launchers still came from the installer overlay. | Package ownership, matching menu entries, fresh-install behavior and delivery of a launcher change through `pkg upgrade`. |
+| SIGN-001 | The process rule was documented. | Freeze inputs, sign once and retain the operator command count and wall-clock time in the 1.5.1 release record. The 1.5.0 record lacks those measurements, so its one-session acceptance cannot be inferred from the notes. |
+
+The native halves of ADOPT-002, SRC-001 and RELEASE-001 already have the
+ADOPT-003, SRC-002 and RELEASE-002 queue items below. Those items must also
+resolve the unticked 1.5.0 source-controller evidence and release-gate checks
+with exact records; publication alone did not turn those boxes into passes.
+The other limits in the 1.5.0 notes retain their existing owners: [HW-001](active-work.md#hw-001-close-remaining-physical-hardware-qualification-gaps)
+for the RTX Spark boot failure, final-image MSI/MacBook runs and Wi-Fi retest;
+[NET-001](active-work.md#net-001-make-the-installer-network-bring-up-proactive-and-robust)
+for the exact-image network matrix; and [NETUP-003](active-work.md#netup-003-qualify-upgrade-paths-on-exact-artifacts)
+for image-based upgrade and rollback. Windows/Steam real-desktop and Aquamarine
+hotplug/resume checks remain physical acceptance under HW-001. The channel-1
+MacBook Wi-Fi handshake remains a distinct unresolved case under HW-001.
+
+## Installer fix: a failed installation explains itself (issue #257)
+
+A failed installation no longer drops to a bare shell after `[exited]`. The
+installer's own exit status decides the outcome, so a progress warning is
+reported beside a successful result instead of turning it into a failure. The
+failure card waits for a key, and `install-failed` then shows the end of the
+install log, the last recorded stage, the log locations and a menu (view the
+log, shell, reboot, power off). Unattended CIDATA installs keep their
+behavior and never wait. See [When the installation fails](../installer-progress.md#when-the-installation-fails).
+Evidence: `tests/install-failed.sh` and `tests/installer-progress.py` on Linux
+with tmux. Exact-image and hardware runs are pending.
+
 ## Deferred from 1.5.0 (operator decision, 2026-11-03)
 
 1.5.0 was re-scoped to what is real ([plan](release-1.5.0.md)). Every goal below needs the Literate AI
@@ -129,6 +201,18 @@ Three new queue items follow in the queue with no 1.5.x commitment (target after
 scheduled): [TREE-001](active-work.md#tree-001-browse-usrsrc-and-usrports-on-the-system-as-nested-html-cards),
 [MON-001](active-work.md#mon-001-worker-activity-monitor-and-graphical-package-browser-on-the-installer-visual-sdk)
 and [LITAI-PKG-001](active-work.md#litai-pkg-001-ship-literate-ai-as-a-port-and-package-so-users-run-srcports-operations-with-litai).
+
+## Installer fix: console messages no longer shift the install screen (issue #244)
+
+ntpd's "Set system clock by hand." (LOG_ERR) reached ttyv0 through FreeBSD's
+default `syslog.conf`, scrolled the console under tmux, and tmux drew every
+row one line off. The live image now logs those messages only to
+`/var/log/messages`, `install-screen` redraws the console every 12 seconds
+while its session exists (kernel messages too), `C-b r` redraws at once, the
+live `ntp.conf` has `tinker panic 0`, and a wrapped header row is indented.
+The installed system's `syslog.conf` is unchanged. Evidence: `tests/live-desktop.sh`
+and `tests/installer-progress.py` on Linux with tmux; `tests/live-image-runtime.sh`
+checks the image natively. Exact-image and hardware runs are pending.
 
 ## Build speed and framework-executed goals deferred from 1.5.0
 

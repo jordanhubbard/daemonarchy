@@ -12,6 +12,11 @@ repositories and publish their own installer and feeds, was checked: both are on
 [the 1.5.1 plan](docs/roadmap/release-1.5.1.md) (NETUP-001, NETUP-002, NETUP-003, FORK-001) and
 [the upgrade model](HACKING.md#the-upgrade-model-today).
 
+The published 1.5.0 release also left acceptance open for GUI-001, DEBUG-003,
+HW-004, EXT-002, DESKTOP-001 and SIGN-001. Their remaining checks, plus the
+physical hardware and exact-image network gaps, are in
+[the 1.5.1 carry-over](docs/roadmap/release-1.5.1.md#unfinished-150-acceptance).
+
 ## 1.5.0 (opened as 1.4.2): re-scoped on 2026-11-03 to what is evidenced
 
 The MacBookPro16,1 Wi-Fi fix (a dead associated state in the BCM4364 driver, drafted in
