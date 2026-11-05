@@ -64,6 +64,7 @@ for path in /usr/freebsd-dist/base.txz /usr/freebsd-dist/kernel.txz /usr/freebsd
   /usr/local/libexec/daemonarchy-installer/debug-events.py \
   /usr/local/libexec/daemonarchy-installer/progress-model.py \
   /usr/local/libexec/daemonarchy-installer/install-screen \
+  /usr/local/libexec/daemonarchy-installer/install-failed \
   /usr/local/libexec/daemonarchy-installer/install-views \
   /usr/local/libexec/daemonarchy-installer/sound.py \
   /usr/local/libexec/daemonarchy-installer/sound \

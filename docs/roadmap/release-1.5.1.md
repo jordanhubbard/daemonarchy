@@ -131,6 +131,18 @@ for image-based upgrade and rollback. Windows/Steam real-desktop and Aquamarine
 hotplug/resume checks remain physical acceptance under HW-001. The channel-1
 MacBook Wi-Fi handshake remains a distinct unresolved case under HW-001.
 
+## Installer fix: a failed installation explains itself (issue #257)
+
+A failed installation no longer drops to a bare shell after `[exited]`. The
+installer's own exit status decides the outcome, so a progress warning is
+reported beside a successful result instead of turning it into a failure. The
+failure card waits for a key, and `install-failed` then shows the end of the
+install log, the last recorded stage, the log locations and a menu (view the
+log, shell, reboot, power off). Unattended CIDATA installs keep their
+behavior and never wait. See [When the installation fails](../installer-progress.md#when-the-installation-fails).
+Evidence: `tests/install-failed.sh` and `tests/installer-progress.py` on Linux
+with tmux. Exact-image and hardware runs are pending.
+
 ## Deferred from 1.5.0 (operator decision, 2026-11-03)
 
 1.5.0 was re-scoped to what is real ([plan](release-1.5.0.md)). Every goal below needs the Literate AI

@@ -19,6 +19,8 @@ Honesty rules:
   cp_times, vm.stats, ZFS kstats). They show that the machine is working and
   how hard; they do not claim how much of the installation is left.
 - Only the installer's result file says whether the installation succeeded.
+  A progress warning or a failed acquisition event is reported beside that
+  result (the title and the warning field); it never turns success into failure.
 - Events (stage started or finished, packages reported, a warning, a genuine
   wait, the installer's result) are derived from those same observations.
   Front ends animate flourishes and play sounds from events only, so a
@@ -1005,7 +1007,8 @@ class Events:
             self.emit('failed')
         self.failed = state.failed
         if result is not None and self.result is None:
-            self.emit('done', result=result, succeeded=result == 0 and not state.warning and not state.failed)
+            # The installer's result alone decides; a progress warning is reported beside it (title, warning).
+            self.emit('done', result=result, succeeded=result == 0)
         self.result = result
         waiting = result is None and idle >= WAITING and bool(timeline.started)
         if waiting and not self.waiting:
@@ -1106,7 +1109,7 @@ class Monitor:
                                                        encrypted=state.encrypted),
             warning=state.warning, failed=state.failed, result=self.result,
             done=self.result is not None,
-            succeeded=self.result == 0 and not state.warning and not state.failed,
+            succeeded=self.result == 0,
             idle=self.idle_seconds(), recent=list(state.recent), events=self.events.view())
 
 

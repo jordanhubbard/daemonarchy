@@ -243,6 +243,28 @@ class MeasuredProgressTests(unittest.TestCase):
             self.assertIn(b'Daemonarchy is installed.', result.stdout.splitlines()[-1])
             self.assertLess(len(result.stdout), 4096)
 
+    def test_progress_warning_is_reported_beside_a_successful_result(self):
+        with tempfile.TemporaryDirectory() as directory:
+            log, status, summary = Path(directory)/'log', Path(directory)/'status', Path(directory)/'summary'
+            log.write_text('@@phase base\n@@progress ' + json.dumps(metric(2)) + '\n@@progress ' + json.dumps(metric(1)) + '\n')
+            status.write_text('0\n')
+            result = subprocess.run([sys.executable, str(SCRIPT), str(log), str(status), '--style', 'plain',
+                                     '--summary-file', str(summary)], capture_output=True, timeout=10)
+            self.assertEqual(result.returncode, 0)
+            self.assertIn(b'Progress unavailable:', result.stdout)
+            self.assertIn('Progress unavailable:', summary.read_text())
+            monitor = model.Monitor(log, status, source=None)
+            monitor.poll()
+            snap = monitor.snapshot()
+            self.assertTrue(snap['warning'])
+            self.assertTrue(snap['succeeded'])
+            self.assertEqual([e['succeeded'] for e in snap['events'] if e['kind'] == 'done'], [True])
+            status.write_text('3\n')
+            result = subprocess.run([sys.executable, str(SCRIPT), str(log), str(status), '--style', 'plain',
+                                     '--summary-file', str(summary)], capture_output=True, timeout=10)
+            self.assertEqual(result.returncode, 3)
+            self.assertIn('Installer stopped (exit 3)', summary.read_text())
+
     def test_real_tty_styles_color_depth_and_owner_completion(self):
         # vt100 serial: 8 basic colors only; xterm: 16 colors; xterm-256color: 256-color
         # syntax; COLORTERM=truecolor: 24-bit; the vt(4) console never gets 256 or 24-bit.
@@ -700,8 +722,8 @@ class TmuxWindowControlTests(unittest.TestCase):
                     DAEMONARCHY_REMOTE_STATE=str(self.root/'remote'),
                     DAEMONARCHY_REMOTE_PUBLIC=str(self.root/'remote.status'), **extra)
 
-    def screen(self, rows=40, cols=140, **extra):
-        return Terminal([str(self.log), str(self.status)], self.env(**extra), rows, cols,
+    def screen(self, rows=40, cols=140, args=(), **extra):
+        return Terminal([str(self.log), str(self.status), *args], self.env(**extra), rows, cols,
                         command=['bash', str(WRAPPER)])
 
     def tmux(self, *args):
@@ -886,11 +908,46 @@ class TmuxWindowControlTests(unittest.TestCase):
             self.assertIn(b'Daemonarchy is installed.', tty.captured)
 
     def test_failed_install_reports_its_status_through_tmux(self):
-        with self.screen() as tty:
+        # A failure is never dismissed by time: it waits for a key, then the summary outlives the session.
+        summary = self.root/'summary'
+        with self.screen(args=('--summary-file', str(summary)), DAEMONARCHY_CELEBRATE='0') as tty:
+            self.started(tty)
+            with self.log.open('a') as stream:
+                stream.write('pkg: the last thing that went wrong\n')
+            self.status.write_text('7\n')
+            self.until(tty, lambda: 'The installation failed (exit 7). Press any key' in self.capture('install:0.0'))
+            self.assertIn('Installer stopped (exit 7)', self.capture('install:0.0'))
+            tty.read_for(1.5)
+            self.assertIsNone(tty.child.poll())
+            self.assertFalse(summary.exists())
+            tty.send(b' ')
+            self.assertEqual(tty.exit_code(), 7)
+            self.assertEqual(self.tmux('list-sessions'), '')
+            text = summary.read_text()
+            self.assertIn('Installer stopped (exit 7)', text)
+            self.assertIn('pkg: the last thing that went wrong', text)
+            self.assertIn(f'Full install log: {self.log}', text)
+
+    def test_unattended_failure_is_not_held_for_a_key(self):
+        summary = self.root/'summary'
+        with self.screen(args=('--summary-file', str(summary)), DAEMONARCHY_CELEBRATE='0',
+                         DAEMONARCHY_UNATTENDED='1') as tty:
             self.started(tty)
             self.status.write_text('7\n')
             self.assertEqual(tty.exit_code(), 7)
-            self.assertIn(b'Installer stopped (exit 7)', tty.captured)
+            self.assertIn('Installer stopped (exit 7)', summary.read_text())
+
+    def test_progress_warning_never_turns_success_into_failure(self):
+        summary = self.root/'summary'
+        with self.screen(args=('--summary-file', str(summary)), DAEMONARCHY_CELEBRATE='0') as tty:
+            self.started(tty)
+            with self.log.open('a') as stream:  # a counter going backwards: a progress warning
+                stream.write('@@progress ' + json.dumps(metric(0)) + '\n')
+            self.status.write_text('0\n')
+            self.assertEqual(tty.exit_code(), 0)
+            text = summary.read_text()
+            self.assertIn('Progress unavailable:', text)
+            self.assertNotIn('Installer stopped', text)
 
     def test_small_terminal_is_zoom_only_and_resize_reflows(self):
         with self.screen(rows=14, cols=50) as tty:
