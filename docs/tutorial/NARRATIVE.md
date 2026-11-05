@@ -4,7 +4,7 @@ This is the readable script for [`course.json`](course.json), the editable sourc
 
 ## 1. Meet Daemonarchy
 
-Visual: `assets/desktop.png`
+Visual: [`assets/desktop.png`](assets/desktop.png)
 
 **Robin:** I have used Windows and a bit of Linux. Someone told me to try Daemonarchy. What actually is it?
 
@@ -30,7 +30,7 @@ Visual: `assets/desktop.png`
 - On screen: Virtual machines with bhyve, tracing with DTrace
 - On screen: System > FreeBSD menu
 
-Visual: `assets/freebsd.png`
+Visual: [`assets/freebsd.png`](assets/freebsd.png)
 
 **Imp:** FreeBSD's strengths sit in the menu under System, FreeBSD. Boot environments are bootable copies of the whole system, saved before every update. Restore Files shows hourly and daily snapshots of your home folder. There are jails, bhyve virtual machines, and live DTrace views of what the system is doing.
 
@@ -128,7 +128,7 @@ $ xz -dc daemonarchy-1.5.0-amd64.iso.xz | \
 - On screen: QEMU 11.1.2 with HVF on an Apple silicon Mac
 - On screen: Not verified: 3D, physical GPU, sound, Wi-Fi, live desktop
 
-Visual: `assets/aarch64-qemu-omarchy-session.png`
+Visual: [`assets/aarch64-qemu-omarchy-session.png`](assets/aarch64-qemu-omarchy-session.png)
 
 **Imp:** This is real evidence from a QEMU guest with a VirtIO GPU. The greeter and the Omarchy session draw in software. It is a start, not a promise about hardware.
 
@@ -140,7 +140,7 @@ Visual: `assets/aarch64-qemu-omarchy-session.png`
 - On screen: Super + Return: terminal. Super + Shift + B: browser
 - On screen: Super + Ctrl + W: network panel
 
-Visual: `assets/network.png`
+Visual: [`assets/network.png`](assets/network.png)
 
 **Imp:** Log in with the password you chose. The first login takes a few seconds longer while your desktop is set up. Everything starts from the keyboard. Super, the key with the Windows or Command logo, plus Space opens the menu. Super plus K lists every shortcut. Super plus Return opens a terminal. Windows tile themselves, so there is nothing to drag.
 

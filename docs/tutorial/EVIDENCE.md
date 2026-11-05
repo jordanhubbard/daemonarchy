@@ -9,7 +9,7 @@ Every statement in [`course.json`](course.json) is taken from a repository docum
 - [1.5.1 plan](../roadmap/release-1.5.1.md) and the [active work queue](../roadmap/active-work.md): what moved to 1.5.1 and what is unscheduled.
 - [Graphical package manager](../gui-package-manager.md): why `daemonarchy-pkg` has no real-desktop evidence.
 
-Screenshots in `assets/` are byte copies of authentic files in [`../images/`](../images/): the desktop, the System > FreeBSD menu, the network panel, and two QEMU aarch64 captures. Nothing was staged or recorded for this film. The film shows no physical-desktop footage because none exists for the claims it makes.
+Screenshots in `assets/` are byte copies of authentic files in [`../images/`](../images/): the desktop, the System > FreeBSD menu, the network panel, and a QEMU aarch64 capture. Nothing was staged or recorded for this film. The film shows no physical-desktop footage because none exists for the claims it makes.
 
 Items that come from the project's report for 1.5.1 and are not yet in [aarch64](../aarch64.md): the alternative workaround `-device virtio-net-pci,event_idx=off` and the fix in daemonarchy-src pull request 59. Re-check them when the 1.5.1 notes are written.
 
