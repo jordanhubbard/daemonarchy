@@ -202,12 +202,15 @@ class ProgressTests(unittest.TestCase):
         self.assertIn('exit 1', view['title'])
 
     def test_invalid_progress_is_not_reported_as_clean_success(self):
+        # The installer's result decides; the progress problem is reported beside it, never as a failure.
         model = gui.InstallProgress(self.log, self.status)
         self.write('@@phase base', self.metric(2), self.metric(1))
         self.status.write_text('0\n')
         view = model.poll()
         self.assertTrue(view['done'])
-        self.assertFalse(view['succeeded'])
+        self.assertTrue(view['succeeded'])
+        self.assertNotEqual(view['title'], 'Daemonarchy is installed.')
+        self.assertIn('needs inspection', view['title'])
 
 
     def test_shared_model_feeds_stages_ticker_download_and_activity(self):
