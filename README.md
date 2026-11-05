@@ -8,8 +8,6 @@ You write an image to a USB stick, boot it, answer the questions Omarchy's own i
 
 Each release is built from a FreeBSD 16.0-CURRENT snapshot. CURRENT moves daily, so an image is tied to the snapshot it was built from.
 
-**New here? Watch the [eight-minute introduction](https://github.com/jordanhubbard/daemonarchy/releases/download/daemonarchy-1.5.1/daemonarchy-newcomer-tutorial-1.5.1.mp4)** (MP4, 13 MB, narrated, with subtitles; also as [SRT](https://github.com/jordanhubbard/daemonarchy/releases/download/daemonarchy-1.5.1/daemonarchy-newcomer-tutorial-1.5.1.srt) and [VTT](https://github.com/jordanhubbard/daemonarchy/releases/download/daemonarchy-1.5.1/daemonarchy-newcomer-tutorial-1.5.1.vtt)). It goes from what Daemonarchy is, through downloading, writing and installing the image, to how developers work on it. The narration is synthesized speech (NVIDIA Magpie TTS); its script and the source of every claim are in [docs/tutorial](docs/tutorial/README.md).
-
 ## Which page do I need?
 
 | I want to... | Read |

@@ -11,24 +11,18 @@ Imp (a small daemon) guides and Robin (a newcomer) asks. Displayed commands are 
 
 ## Status of the media
 
-Built for 1.5.1 on 2026-11-05 with recorded narration: every dialogue turn was synthesized by NVIDIA's Magpie TTS Multilingual on build.nvidia.com (voices `Magpie-Multilingual.EN-US.Aria` for Imp and `Magpie-Multilingual.EN-US.Jason` for Robin) with [`narrate-nvidia.py`](narrate-nvidia.py), then assembled with `litai video build --narration recorded`. The result is an MP4 of 481.4 seconds at 1280x720 with embedded subtitles, plus SRT and VTT files, and `litai video verify` accepted its `video-result.json`. The media are published as assets of the 1.5.1 release (`daemonarchy-newcomer-tutorial-1.5.1.mp4`, `.srt`, `.vtt`), not committed here, and the repository README links to them. The generated WAV files are not committed either; rerun the script to recreate them.
-
-The release owner watched an earlier espeak-ng build and asked for these voices; the owner reviews the film before it is published.
+The manifest passes `litai video plan`. **The MP4, SRT, VTT and `video-result.json` have not been built**: the build host lacked ImageMagick's `magick`, `espeak-ng` and any recorded narration, and no speech was faked. The `voice` fields (`en-us+f3`, `en-us+m3`) are espeak-ng voices intended only for a scratch track; recorded audio on each turn (`audio`) is the better path.
 
 ## Rebuild
 
-Needs `ffmpeg`, `ffprobe`, `magick` (ImageMagick 7), a TrueType font file, and either `espeak-ng` or an `audio` file for every dialogue turn. For the published voices you also need a build.nvidia.com API key in `~/.config/daemonarchy/nvidia-api-key` (mode 600) and the `nvidia-riva-client` Python package; only the narration text is sent to NVIDIA.
+Needs `ffmpeg`, `ffprobe`, `magick` (ImageMagick 7), a TrueType font file, and either `espeak-ng` or an `audio` file for every dialogue turn.
 
 ```sh
-docs/tutorial/narrate-nvidia.py docs/tutorial _build/tutorial-nv
-cd _build/tutorial-nv
-litai video plan course.json
-litai video build course.json --output ../videos \
-  --font /usr/share/fonts/truetype/dejavu/DejaVuSans.ttf --narration recorded
-litai video verify ../videos/<course-dir>/video-result.json --manifest course.json
-```
-
-For a quick draft without a key, use `--narration espeak` on `docs/tutorial/course.json` directly.
+litai video plan docs/tutorial/course.json
+litai video build docs/tutorial/course.json --output _build/videos \
+  --font /usr/share/fonts/truetype/dejavu/DejaVuSans.ttf --narration espeak
+litai video verify _build/videos/<course-dir>/video-result.json \
+  --manifest docs/tutorial/course.json
 ```
 
 See Literate AI's instructional-video guide for the backends. A person must listen to the speech and check the frames before the film is published.

@@ -135,11 +135,9 @@ reporters' install log explains the failure.
 
 ## Release tasks
 
-- Onboarding video: built on 2026-11-05 from [the newcomer tutorial](../tutorial/README.md), updated for 1.5.1
-  (the installer's failure screen, the 1.5.1 file names, and no claim that base upgrades over the network are
-  delivered). It uses the existing authentic screenshots, not new footage. The release owner watches it before
-  publication; it is then attached to the 1.5.1 release and linked from the README. Its Literate AI receipt is
-  blocked by a framework duration-tolerance issue described in the tutorial's README.
+- Onboarding video: deferred out of 1.5.1 on 2026-11-05. The release owner rejected the build made from
+  [the newcomer tutorial](../tutorial/README.md) with the presentation tooling (screenshots and synthesized speech);
+  the video will be remade with a different approach and is not a 1.5.1 release asset.
 
 ## Unfinished 1.5.0 acceptance
 

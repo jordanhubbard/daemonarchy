@@ -91,7 +91,7 @@
       "title": "Get and check the image",
       "points": [
         "Download .iso.xz and its .sha256 from the download page",
-        "GitHub Latest is the newest stable release: 1.5.1",
+        "GitHub Latest is the newest stable release: 1.5.0",
         "Checking is optional but quick"
       ],
       "terminal": [
@@ -114,7 +114,7 @@
       ],
       "terminal": [
         "$ lsblk",
-        "$ xz -dc daemonarchy-1.5.1-amd64.iso.xz | \\",
+        "$ xz -dc daemonarchy-1.5.0-amd64.iso.xz | \\",
         "    sudo dd of=/dev/sdb bs=1M status=progress conv=fsync"
       ],
       "dialogue": [
@@ -148,7 +148,7 @@
       "points": [
         "Keyboard, account, network, remote access",
         "Storage: whole disk, partition or free space; optional encryption",
-        "Wait for the completion screen; a failure shows its log"
+        "Confirm, then wait for the explicit completion screen"
       ],
       "terminal": [],
       "dialogue": [
@@ -158,7 +158,7 @@
         },
         {
           "speaker": "imp",
-          "text": "The installer asks a handful of questions: keyboard, your account, network, whether you want SSH access, and where to install. Nothing is written until you confirm on the last screen. The desktop has roughly twelve hundred packages, so be patient. Do not remove the stick until the installer shows its successful completion screen. An unexpected reboot is not that signal. If the installation fails, it stops on a failure screen that shows the end of the install log, with a menu to read the whole log, open a shell, reboot or power off. Include that log when you report a problem."
+          "text": "The installer asks a handful of questions: keyboard, your account, network, whether you want SSH access, and where to install. Nothing is written until you confirm on the last screen. The desktop has roughly twelve hundred packages, so be patient. Do not remove the stick until the installer shows its successful completion screen. An unexpected reboot is not that signal."
         }
       ]
     },
@@ -176,7 +176,7 @@
       "dialogue": [
         {
           "speaker": "imp",
-          "text": "The aarch64 image is for community validation. It was verified to boot and install in a QEMU virtual machine and nothing more. With QEMU's default virtio network card, the install stalls during the package fetch: the guest stops servicing receive, and every download times out. Use an e1000e card, or turn off event index on the virtio card. The fix, daemonarchy-src pull request fifty-nine, is in the 1.5.1 sources; until an arm64 image built from them is published, use the workaround."
+          "text": "The aarch64 image is for community validation. It was verified to boot and install in a QEMU virtual machine and nothing more. With QEMU's default virtio network card, the install stalls during the package fetch: the guest stops servicing receive, and every download times out. Use an e1000e card, or turn off event index on the virtio card. The fix is in daemonarchy-src pull request fifty-nine, planned for 1.5.1, so it is not in the published image."
         },
         {
           "speaker": "robin",
@@ -238,7 +238,7 @@
         },
         {
           "speaker": "imp",
-          "text": "Daemonarchy's update flow saves a boot environment first, so you restart into an earlier one from the boot menu. A plain sudo pkg upgrade does not make one. Be clear about the limit: pkg upgrade updates applications. It does not upgrade the FreeBSD base or the kernel. A release that changes those comes from its image, and upgrading the base and kernel over the network is planned, not delivered."
+          "text": "Daemonarchy's update flow saves a boot environment first, so you restart into an earlier one from the boot menu. A plain sudo pkg upgrade does not make one. Be clear about the limit: pkg upgrade updates applications. It does not upgrade the FreeBSD base or the kernel. A release that changes those comes from its image, and network upgrades are planned for 1.5.1."
         }
       ]
     },
@@ -341,7 +341,7 @@
       "points": [
         "Literate AI (litai): the authority layer for contracts, evidence",
         "A metadata check is not native qualification",
-        "Native build-speed goals are open work; none claimed done"
+        "Native build-speed goals moved to 1.5.1; none claimed done"
       ],
       "terminal": [
         "$ litai project validate .",
@@ -354,7 +354,7 @@
         },
         {
           "speaker": "imp",
-          "text": "In 1.5.x Literate AI is how the project states and checks its promises. The product goals, the work queue and the architecture are validated in place by litai project validate, and litai verify prints the full gate report. Those checks do not generate source or qualify a native build. The framework-executed goals, build speed, source and ports as components, and a development system, are open work after 1.5.0. Nothing there is claimed done. Shipping litai itself as a package is proposed, and unscheduled."
+          "text": "In 1.5.x Literate AI is how the project states and checks its promises. The product goals, the work queue and the architecture are validated in place by litai project validate, and litai verify prints the full gate report. Those checks do not generate source or qualify a native build. The framework-executed goals, build speed, source and ports as components, and a development system, were moved from 1.5.0 to 1.5.1. Nothing there is claimed done. Shipping litai itself as a package is proposed, and unscheduled."
         }
       ]
     },
