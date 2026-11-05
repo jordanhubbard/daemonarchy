@@ -25,6 +25,7 @@ SOURCE_OSVERSIONS = {
     "f6f30e8e17139e03f1262cc48a5f8acb829bb467": 1600029,
     "06e5befc60319b8a72f746dac31e01dbe75ae702": 1600029,
     "303b3646270ffa4bf7cec65c5c1d28bd8000cbce": 1600029,
+    "cb38d6498a24606aba3b3ca22fceedc61b31f9bf": 1600029,  # 1.5.1: virtio barrier and arm64 AP-start bound
 }
 BASE = "bdcfeac3e1cb8ce3f05c32d8a7ad3597deb48bdf"  # Historical 1.1.1 pin.
 MANAGED = {
