@@ -24,6 +24,7 @@ another version are historical records. 1.5.1 entries describe planned work.
 - [Signed catalogue and package payload checks](signed-package-snapshot.md)
 - [1.3.1 package repository key rotation](package-repository-key-rotation-1.3.1.md)
 - [Getting started with Daemonarchy](getting-started.md)
+- [Presentations: user and engineering slide decks for 1.5.x](presentations/README.md)
 - [Installer reference: unattended installs, optional checkouts, CUDA and cudalab](installer-reference.md)
 - [Hardware quirks](hardware-quirks.md)
 - [GPU report: which GPU the desktop uses](gpu-report.md)
