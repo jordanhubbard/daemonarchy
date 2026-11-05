@@ -11,7 +11,9 @@ Imp (a small daemon) guides and Robin (a newcomer) asks. Displayed commands are 
 
 ## Status of the media
 
-The manifest passes `litai video plan`. **The MP4, SRT, VTT and `video-result.json` have not been built**: the build host lacked ImageMagick's `magick`, `espeak-ng` and any recorded narration, and no speech was faked. The `voice` fields (`en-us+f3`, `en-us+m3`) are espeak-ng voices intended only for a scratch track; recorded audio on each turn (`audio`) is the better path.
+Built for 1.5.1 on 2026-11-05 with `litai video build --narration espeak` (espeak-ng scratch voices `en-us+f3` and `en-us+m3`; no recorded narration): an MP4 of 494.7 seconds at 1280x720 with embedded subtitles, plus SRT and VTT files. The media are published as assets of the 1.5.1 release (`daemonarchy-newcomer-tutorial-1.5.1.mp4`, `.srt`, `.vtt`), not committed here, and the repository README links to them.
+
+The release owner watches the film before it is published. **There is no `video-result.json` receipt yet:** the build stopped at its final check because the concatenated film is 0.617 seconds longer than the sum of its narration, beyond Literate AI's fixed 0.25-second tolerance (`video.media_duration`). The per-clip checks passed; the drift is per-clip frame rounding that adds up over 114 caption segments. That is a framework issue, and `litai video verify` cannot be run on this film until it is resolved.
 
 ## Rebuild
 

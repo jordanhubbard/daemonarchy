@@ -1,5 +1,26 @@
 # Changelog
 
+## 1.5.1 (unreleased)
+
+Not published. Entries are added as changes merge; the release notes and the
+[1.5.1 plan](docs/roadmap/release-1.5.1.md) state what is and is not done.
+
+### Added
+
+- A narrated eight-minute introduction for newcomers, built from [the tutorial course](docs/tutorial/README.md)
+  and linked from the README; it is published as a 1.5.1 release asset.
+- A newcomer README and a narrative-first HACKING guide; [installer reference](docs/installer-reference.md).
+- User and engineering slide decks under [docs/presentations](docs/presentations/README.md).
+
+### Fixed
+
+- A failed installation stops on a failure screen with the end of the install log and a menu (view the log,
+  shell, reboot, power off) instead of a bare shell after `[exited]`; a progress warning no longer turns a
+  successful installation into a failure ([#257](https://github.com/jordanhubbard/daemonarchy/issues/257), #281).
+- Console messages no longer shift the install screen: the live image keeps syslog off the console, the screen
+  redraws itself (and on `C-b r`), and ntpd tolerates a large clock step
+  ([#244](https://github.com/jordanhubbard/daemonarchy/issues/244), #282).
+
 ## 1.5.0 (November 4, 2026)
 
 Base: FreeBSD 16.0-CURRENT (OSVERSION `1600029`), daemonarchy-src `303b364`,

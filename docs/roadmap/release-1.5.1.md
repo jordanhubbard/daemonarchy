@@ -129,12 +129,17 @@ line remains as the record of what was true then.
 | [#257](https://github.com/jordanhubbard/daemonarchy/issues/257) | installer defect | fix in review ([#281](https://github.com/jordanhubbard/daemonarchy/pull/281)); reporters' logs requested |
 
 The daemonarchy-src 1.4.0 milestone (source issue [#21](https://github.com/jordanhubbard/daemonarchy-src/issues/21),
-paired with #33) was not changed.
+paired with #33) moved to a new daemonarchy-src 1.5.1 milestone on 2026-11-05, and the empty 1.3.1, 1.3.2 and
+1.4.0 milestones were closed in both repositories. #244 was closed as fixed by #282; #257 stays open until the
+reporters' install log explains the failure.
 
 ## Release tasks
 
-- Record an onboarding video on the published 1.5.1 media and link it from the README. It is made after the
-  image is final, so it shows exactly what a new user gets.
+- Onboarding video: built on 2026-11-05 from [the newcomer tutorial](../tutorial/README.md), updated for 1.5.1
+  (the installer's failure screen, the 1.5.1 file names, and no claim that base upgrades over the network are
+  delivered). It uses the existing authentic screenshots, not new footage. The release owner watches it before
+  publication; it is then attached to the 1.5.1 release and linked from the README. Its Literate AI receipt is
+  blocked by a framework duration-tolerance issue described in the tutorial's README.
 
 ## Unfinished 1.5.0 acceptance
 
