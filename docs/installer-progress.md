@@ -174,11 +174,23 @@ bottom lists the windows (`index:name`, the active one marked `*`) and shows
 | `C-b w` | Window list (a menu with no close action). |
 | `C-b [` | Scroll/copy mode, for example in the log pane; `q` leaves it. `C-b PgUp` scrolls back a page. |
 | `C-b ?` | The key list. |
+| `C-b r` | Redraw the screen (tmux's default key, kept). Without tmux, `r` in the progress view does the same. |
 | `C-b d` | Not available: the installer cannot be detached. It shows a message and changes nothing. |
 | `C-b C-b` | Sends a literal `Ctrl-b` to the pane. |
 | `C-b G`, `C-b H`, `C-b R` | Open the install log, diagnostics or remote debugging directly in a new window. These keys are unbound in tmux's defaults. |
 | `exit` | In a shell pane, closes that pane, as in tmux. |
 | `v` | In the progress view: change the visual style (spectrum, scope, bars). |
+
+Text written straight to the console, past tmux, scrolls the screen by a
+line, and tmux, which redraws only what changed, then draws every row one line
+off until something redraws it (issue #244). The live image therefore keeps
+syslog off `/dev/console` (`live-post.sh`; messages still go to
+`/var/log/messages`), and on the vt console `install-screen` redraws the whole
+screen every 12 seconds while the session exists
+(`DAEMONARCHY_REDRAW_SECONDS`), which also covers kernel messages. `C-b r`
+redraws at once. The installed system keeps FreeBSD's `syslog.conf`. The live
+image's `ntp.conf` starts with `tinker panic 0`, so ntpd keeps running after a
+large clock jump such as a resumed VM.
 
 Nothing here needs function keys or a virtual console switch. vt(4) binds
 console switching only to Alt+F1–F12 and Print Screen, which many laptops,

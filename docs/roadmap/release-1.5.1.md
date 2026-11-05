@@ -158,6 +158,18 @@ scheduled): [TREE-001](active-work.md#tree-001-browse-usrsrc-and-usrports-on-the
 [MON-001](active-work.md#mon-001-worker-activity-monitor-and-graphical-package-browser-on-the-installer-visual-sdk)
 and [LITAI-PKG-001](active-work.md#litai-pkg-001-ship-literate-ai-as-a-port-and-package-so-users-run-srcports-operations-with-litai).
 
+## Installer fix: console messages no longer shift the install screen (issue #244)
+
+ntpd's "Set system clock by hand." (LOG_ERR) reached ttyv0 through FreeBSD's
+default `syslog.conf`, scrolled the console under tmux, and tmux drew every
+row one line off. The live image now logs those messages only to
+`/var/log/messages`, `install-screen` redraws the console every 12 seconds
+while its session exists (kernel messages too), `C-b r` redraws at once, the
+live `ntp.conf` has `tinker panic 0`, and a wrapped header row is indented.
+The installed system's `syslog.conf` is unchanged. Evidence: `tests/live-desktop.sh`
+and `tests/installer-progress.py` on Linux with tmux; `tests/live-image-runtime.sh`
+checks the image natively. Exact-image and hardware runs are pending.
+
 ## Build speed and framework-executed goals deferred from 1.5.0
 
 The sections below were the build-efficiency half of the 1.5.0 plan and are moved here verbatim (a "1.5.0"

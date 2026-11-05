@@ -86,6 +86,11 @@ for path in /usr/freebsd-dist/base.txz /usr/freebsd-dist/kernel.txz /usr/freebsd
   /usr/local/share/daemonarchy-installer/checkouts.json; do
   [ -s "$path" ] || { echo "Missing live payload: $path" >&2; exit 1; }
 done
+# Console messages stay off the installer's tmux screen (issue #244).
+if grep -Eq '^[^#].*/dev/console' /etc/syslog.conf; then
+  echo 'syslog still writes to /dev/console on the live image' >&2; exit 1
+fi
+grep -q '^tinker panic 0' /etc/ntp.conf || { echo 'ntpd would exit after a large clock jump' >&2; exit 1; }
 . /usr/local/libexec/daemonarchy-installer/package-repository
 package_repository_prepare /usr/local/share/daemonarchy-installer
 echo "PASS: signed application feed selection: $package_repository_tag"

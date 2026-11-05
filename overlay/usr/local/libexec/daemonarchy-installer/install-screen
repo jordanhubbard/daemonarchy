@@ -90,7 +90,28 @@ tmux -L "$socket" set -g @progress "$progress_pane" \; set -g @exit_file "$exit_
   select-pane -t "$progress_pane" -T progress \; \
   set -p -t "$progress_pane" remain-on-exit on \; \
   set-hook -g pane-died "run-shell -b '$BASH $here/install-screen pane-died $socket #{hook_pane}'"
+# On the vt console, syslog or kernel messages written straight to the console
+# scroll it under tmux, and tmux, which redraws only what changed, then draws
+# every row a line off (issue #244). Redraw the whole screen every few seconds
+# while the session exists; C-b r does the same at once.
+redraw=
+if [[ $console == vt ]]; then
+  (
+    trap 'kill "$nap" 2>/dev/null; exit 0' TERM
+    nap=
+    while tmux -L "$socket" has-session -t install 2>/dev/null; do
+      sleep "${DAEMONARCHY_REDRAW_SECONDS:-12}" & nap=$!
+      wait "$nap"
+      tmux -L "$socket" refresh-client 2>/dev/null || true
+    done
+  ) &
+  redraw=$!
+fi
 tmux -L "$socket" attach-session -t install
+if [[ -n $redraw ]]; then
+  kill "$redraw" 2>/dev/null || true
+  wait "$redraw" 2>/dev/null || true
+fi
 tmux -L "$socket" kill-server 2>/dev/null || true
 if [[ -s $exit_file ]]; then
   read -r code <"$exit_file"
