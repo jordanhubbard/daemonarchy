@@ -1,7 +1,8 @@
 #!/usr/local/bin/bash
 # The install screen as window 0 of a private, locked-down tmux session.
 #
-#   install-screen LOG STATUS       run the session; exit with the screen's result
+#   install-screen LOG STATUS [OPTIONS]  run the session; exit with the screen's result
+#                                    (OPTIONS go to progress-dashboard.py, e.g. --summary-file)
 #   install-screen pane-died SOCKET PANE   (tmux hook) respawn the progress view unless it finished
 #
 # tmux provides the window controls with its default Ctrl-b keys (see

@@ -104,7 +104,7 @@ same events.
 | While working | The mascot's trident goes up and down at a pace set by the measured activity; the banner glint moves with it. | Optional chiptune: arpeggio loudness and tempo follow CPU, bass follows disk, hi-hats follow network. Silent when nothing is measured. | Kernel counters (the spectrum's samples) |
 | A genuine wait | After 20 s without any report the mascot looks around and a line says "Still working: no new progress report for 0:42". | A soft two-note "still here", once per wait. | No new report for 20 s |
 | Warnings and failures | Warning and failure lines as before. | "Uh-oh" for a progress warning, a descending sad trombone for a failure. | The model's checks; the result file |
-| Completion | Fireworks over the visuals, a "Daemonarchy is installed" card and a happy mascot for 4 s (any key skips); a failure shows its status in a pulsing red card and a sad mascot. | A fanfare, or the failure sound. | Only the installer's result file |
+| Completion | Fireworks over the visuals, a "Daemonarchy is installed" card and a happy mascot for 4 s (any key skips); a failure shows its status in a pulsing red card and a sad mascot and stays until a key is pressed (see [When the installation fails](#when-the-installation-fails)). | A fanfare, or the failure sound. | Only the installer's result file |
 | First boot | An animated welcome with the mascot and fireworks on the console, once. | The greeting chime; a boot chime on later boots. | `daemonarchy_greeting` (rc.d) |
 | Live desktop | The graphical installer: the wordmark in the logo's gradient, flashes for stage starts and the disk warning, a glowing title for success. | The greeting chime when Hyprland starts, and the same cues as the console from the same events. | Hyprland start; the model's events |
 
@@ -246,6 +246,46 @@ the installation to its end:
 - Without tmux or Python the installer falls back to the direct screen, and
   then to a passive log tail that waits for the installer's result.
 
+## When the installation fails
+
+Only the installer's exit status, written to `/tmp/daemonarchy-install.status`,
+decides whether the installation succeeded. A progress warning (for example a
+counter that went backwards) is printed beside the result as "Progress
+unavailable: ..." and never turns an installer that exited 0 into a failure,
+on the console or in the graphical installer.
+
+On a failure the progress view keeps its red card and says "The installation
+failed (exit N). Press any key for the summary, the logs and what to do next."
+It does not time out. When a key is pressed the tmux session ends; the
+screen's final summary was written to `/tmp/daemonarchy-install.summary`, so
+it is not lost with the session. `launch` then runs `install-failed`, which
+shows:
+
+- the end of `/tmp/daemonarchy-install.log` (up to 30 lines, fewer on a short
+  console so that everything fits on one screen), without progress markers or
+  terminal control characters;
+- the summary: the result, total time, stages and the last log lines the
+  screen saw;
+- the installer's exit status and the last recorded stage and step, plus the
+  status and stage recorded on the target disk when it is still mounted;
+- where the logs are: `/tmp/daemonarchy-install.log`,
+  `/tmp/daemonarchy-install-trace.jsonl` and `/tmp/daemonarchy-network/log` on
+  the live system, and `/var/log/daemonarchy-install.log` and
+  `/var/db/daemonarchy/install/` on the target (under `/mnt` while mounted).
+
+A menu like the one after a successful installation follows: view the full
+install log, open a shell (`exit` returns to the explanation), reboot or
+power off. Escape leaves the menu for a shell. Retrying in the same boot is not
+offered: a failed run can leave the target pool imported at `/mnt` and the GELI
+provider attached, so reboot and start the installer again. No function key is
+needed.
+
+Unattended CIDATA installs (`DAEMONARCHY_UNATTENDED=1`) keep their behavior:
+the failure card is shown for the usual 4 seconds (`DAEMONARCHY_CELEBRATE`),
+nothing waits for a key, the same explanation is printed (and copied to the
+serial port) without a menu, and a shell follows. A successful unattended
+install still powers off.
+
 ## One model for both installers
 
 `progress-model.py` is the single producer. It reads the install log and
@@ -281,8 +321,12 @@ authorizes installation.
   pane movement, zoom, guarded close of the progress view, confirmation, copy
   mode, the key list, the literal prefix, respawn, small-terminal zoom-only
   splits, resize, the remote debug window and the pairing banner, and
-  completion with a shell still open. The tmux cases skip where tmux is
-  missing.
+  completion with a shell still open, a failure held until a key (not when
+  unattended) with its summary kept after the session, and a progress warning
+  beside a successful result. The tmux cases skip where tmux is missing.
+- `bash tests/install-failed.sh` covers the failure explanation and menu
+  (`install-failed`), the unattended case, and `launch` following the
+  installer's status rather than the screen's exit code.
 - The same file's fetch cases convert a real pkg event-pipe recording
   (`tests/fixtures/installer-progress/pkg-fetch-events.jsonl`) and, as root on
   FreeBSD with `DAEMONARCHY_NATIVE_PKG_FETCH=1`, run a real `pkg fetch` through
