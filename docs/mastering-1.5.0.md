@@ -354,6 +354,7 @@ Record the number of operator signing commands and the signing wall-clock time f
 |---|---|---|
 | `boot-relabel-window.sh` | `boot-relabel-run.sh` | a new release label over the already signed boot tree: one signature (`resign-boot-bundle.sh rebundle` does the same on a builder with the key) |
 | `boot-full-window.sh` | `boot-full-run.sh` | the boot manifest, loader and bundle, rebuilt from a commit's inputs |
+| `boot-resign-window.sh` | `boot-resign-run.sh` | the boot manifest, loader and bundle of a release whose kernel, modules or Secure Boot build changed (`resign-boot-bundle.sh sign`), refused unless the inputs still hash to the `--freeze` value recorded after QA |
 | `feeds-arm64-window.sh` | `feeds-arm64-run.sh` | the aarch64 application and checkout catalogues (`pkg repo`) |
 | `checkout-arm64-window.sh` | `checkout-arm64-run.sh` | the aarch64 checkout catalogue alone, for a feed rebuilt after the application feed was signed; refuses before the key is used unless every package declares the expected ABI, the payload matches its manifest and `checkouts.json` names the release |
 | `extensions-window.sh` | `extensions-run.sh` | the extension indexes and bundles of both architectures |
