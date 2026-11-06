@@ -7,8 +7,8 @@
   "url": "https://github.com/jordanhubbard/daemonarchy/releases/tag/daemonarchy-1.5.1",
   "notes": "docs/release-1.5.1.md",
   "osversion": 1600029,
-  "application_feed": "TODO",
-  "checkout_feed": "TODO",
+  "application_feed": "packages-16-amd64-1.5.1",
+  "checkout_feed": "checkouts-16-amd64-1.5.1",
   "images": [
     {
       "type": "installer",
@@ -36,53 +36,53 @@
     }
   ],
   "assets": {
-    "daemonarchy-1.5.1-aarch64.iso.xz": [
-      0,
-      "sha256:TODO"
-    ],
-    "daemonarchy-1.5.1-aarch64.iso.xz.sha256": [
-      0,
-      "sha256:TODO"
-    ],
     "daemonarchy-1.5.1-amd64.iso.xz": [
-      0,
-      "sha256:TODO"
+      1593461112,
+      "sha256:61d7b8a1590daeae2da7a7f71eab369287bd92afc30523d22e965e95e8b86317"
     ],
     "daemonarchy-1.5.1-amd64.iso.xz.sha256": [
-      0,
-      "sha256:TODO"
+      97,
+      "sha256:f3667da9d1740bbce6c60380782267845ef163cdca078eb620db0de1b154f351"
     ],
-    "daemonarchy-1.5.1-boot.txz": [
-      0,
-      "sha256:TODO"
+    "daemonarchy-1.5.1-aarch64.iso.xz": [
+      958322956,
+      "sha256:6516c3879dfe59c7fd63b9e867444a0d6357e2a21c3695f360a8b9572947fcc2"
     ],
-    "daemonarchy-1.5.1-boot.txz.sig": [
-      0,
-      "sha256:TODO"
-    ],
-    "daemonarchy-1.5.1.der": [
-      0,
-      "sha256:TODO"
-    ],
-    "daemonarchy-1.5.1.pem": [
-      0,
-      "sha256:TODO"
-    ],
-    "daemonarchy-hwtrace-1.5.1-aarch64.img.xz": [
-      0,
-      "sha256:TODO"
-    ],
-    "daemonarchy-hwtrace-1.5.1-aarch64.img.xz.sha256": [
-      0,
-      "sha256:TODO"
+    "daemonarchy-1.5.1-aarch64.iso.xz.sha256": [
+      99,
+      "sha256:67ed12fb1bdd59c334a7056a72d03ff1934271fbd294fd377d38d7255b4c4cc7"
     ],
     "daemonarchy-hwtrace-1.5.1-amd64.img.xz": [
-      0,
-      "sha256:TODO"
+      20067972,
+      "sha256:b000b23c4ef3a9022f5600af25dd0f79b7691a967075a0b79d9627c539d7ef83"
     ],
     "daemonarchy-hwtrace-1.5.1-amd64.img.xz.sha256": [
-      0,
-      "sha256:TODO"
+      105,
+      "sha256:690731d6939d37e3e09110ff16e8190b24995c2ab5faea30653dad2c919f79bb"
+    ],
+    "daemonarchy-hwtrace-1.5.1-aarch64.img.xz": [
+      15046220,
+      "sha256:4c73186a882a14642242806ee050d50efc972e272e254e3605261a309e7976d6"
+    ],
+    "daemonarchy-hwtrace-1.5.1-aarch64.img.xz.sha256": [
+      107,
+      "sha256:70d9420956dbbdd39490c38132e2a355c70fc49b6bfd295c9b7660b11871e60a"
+    ],
+    "daemonarchy-1.5.1-boot.txz": [
+      10500616,
+      "sha256:46726bed1f110a72d4da099722e958263539566fc91363cb28c2fc17fe8ac128"
+    ],
+    "daemonarchy-1.5.1-boot.txz.sig": [
+      512,
+      "sha256:bc30767c1f753456a027240a8fd9def4a857ab79bb936d75bb59e615160ad883"
+    ],
+    "daemonarchy-1.5.1.pem": [
+      1968,
+      "sha256:26009db078d352318c06f1ea5cf7b5650dfd32137518f3a6fecd20802de2fb79"
+    ],
+    "daemonarchy-1.5.1.der": [
+      1413,
+      "sha256:ee140e7a68d566d37a96ea49ac68238d2e039c1172eb896ab69bff189d70b733"
     ]
   },
   "previous_releases": [

@@ -15,14 +15,14 @@ is the authority for the final images, asset hashes and publication state.
 
 ## What you download
 
-- `daemonarchy-1.5.1-amd64.iso.xz` (@@AMD64_ISO_BYTES@@ bytes, SHA-256
-  `@@AMD64_ISO_SHA256@@`), the x86-64 image for BIOS or UEFI.
-- `daemonarchy-1.5.1-aarch64.iso.xz` (@@AARCH64_ISO_BYTES@@ bytes, SHA-256
-  `@@AARCH64_ISO_SHA256@@`), the arm64 image, UEFI only. It is still a
+- `daemonarchy-1.5.1-amd64.iso.xz` (1,593,461,112 bytes, SHA-256
+  `61d7b8a1590daeae2da7a7f71eab369287bd92afc30523d22e965e95e8b86317`), the x86-64 image for BIOS or UEFI.
+- `daemonarchy-1.5.1-aarch64.iso.xz` (958,322,956 bytes, SHA-256
+  `6516c3879dfe59c7fd63b9e867444a0d6357e2a21c3695f360a8b9572947fcc2`), the arm64 image, UEFI only. It is still a
   community-validation image: read [the aarch64 section](#aarch64-image-community-validation).
-- `daemonarchy-hwtrace-1.5.1-amd64.img.xz` (@@HWTRACE_BYTES@@ bytes, SHA-256
-  `@@HWTRACE_SHA256@@`) and `daemonarchy-hwtrace-1.5.1-aarch64.img.xz`
-  (@@HWTRACE_AARCH64_BYTES@@ bytes, SHA-256 `@@HWTRACE_AARCH64_SHA256@@`), the hardware
+- `daemonarchy-hwtrace-1.5.1-amd64.img.xz` (20,067,972 bytes, SHA-256
+  `b000b23c4ef3a9022f5600af25dd0f79b7691a967075a0b79d9627c539d7ef83`) and `daemonarchy-hwtrace-1.5.1-aarch64.img.xz`
+  (15,046,220 bytes, SHA-256 `4c73186a882a14642242806ee050d50efc972e272e254e3605261a309e7976d6`), the hardware
   bring-up trace images. They are not installers: each holds its ISO's own kernel and loader
   and carries no keys. See [the trace image](boottrace.md).
 - A `.sha256` file for each image, which covers the compressed file you download.
@@ -34,9 +34,9 @@ Decompress an image before writing it:
 
 The base is FreeBSD 16.0-CURRENT, OSVERSION `1600029`, built from daemonarchy-src
 `cb38d64` (the 1.5.0 snapshot `303b364` plus the kernel changes below); the ports are
-daemonarchy-ports `@@PORTS_SHORT@@`. The installer commit is `@@INSTALLER_SHORT@@`. The signed
-application feeds are `@@PACKAGES_AMD64_FEED@@` and `@@PACKAGES_AARCH64_FEED@@`; the optional
-source and ports checkouts are `@@CHECKOUTS_AMD64_FEED@@` and `@@CHECKOUTS_AARCH64_FEED@@`.
+daemonarchy-ports `8e28793a`. The installer commit is `612e96a5`. The signed
+application feeds are `packages-16-amd64-1.5.1` and `packages-16-aarch64-1.5.1`; the optional
+source and ports checkouts are `checkouts-16-amd64-1.5.1` and `checkouts-16-aarch64-1.5.1`.
 
 ## What changes
 
@@ -46,7 +46,7 @@ source and ports checkouts are `@@CHECKOUTS_AMD64_FEED@@` and `@@CHECKOUTS_AARCH
   recorded stage and the log locations, and a menu: view the log, open a shell, reboot or power off.
   The installer's own exit status decides the outcome, so a progress warning no longer turns a
   successful installation into a failure. Unattended installs do not wait. **Verified:** tests on
-  Linux with tmux. **Not verified:** @@INSTALLER_FAILURE_EVIDENCE@@
+  Linux with tmux. **Not verified:** the failure screen on a real failed installation at a physical console; the QEMU runs of the final images were successful unattended installs.
 - **Console messages no longer shift the install screen** ([#244](https://github.com/jordanhubbard/daemonarchy/issues/244),
   [#282](https://github.com/jordanhubbard/daemonarchy/pull/282)). The live image keeps syslog
   messages off the console, the install screen redraws itself every 12 seconds (and at once on
@@ -56,7 +56,7 @@ source and ports checkouts are `@@CHECKOUTS_AMD64_FEED@@` and `@@CHECKOUTS_AARCH
   ([daemonarchy-src #59](https://github.com/jordanhubbard/daemonarchy-src/pull/59), carried to the
   kernel branch by [#61](https://github.com/jordanhubbard/daemonarchy-src/pull/61)). The virtqueue
   notification checks now use a full barrier on every architecture, so a QEMU arm64 guest no longer
-  stalls during the package fetch with the default virtio network card. @@VIRTIO_EVIDENCE@@
+  stalls during the package fetch with the default virtio network card. **Verified:** the release arm64 image fetched all 919 package archives (4.72 GB) over the default virtio network card (vtnet0) in QEMU without a stall, and the amd64 image passed the same QEMU install with VirGL.
 - **arm64 secondary CPU start is bounded and reported**
   ([daemonarchy-src #53](https://github.com/jordanhubbard/daemonarchy-src/pull/53),
   [#60](https://github.com/jordanhubbard/daemonarchy-src/pull/60)). A CPU that never checks in no
@@ -93,14 +93,14 @@ source and ports checkouts are `@@CHECKOUTS_AMD64_FEED@@` and `@@CHECKOUTS_AARCH
 ## aarch64 image: community validation
 
 The aarch64 image is still released so that people with arm64 hardware can try it and tell
-us what happens. @@AARCH64_FINAL_QEMU_STATUS@@ The NVIDIA RTX Spark laptop is deferred; no
+us what happens. The release arm64 image itself was installed in QEMU (Apple silicon, hvf) from the published 1.5.1 feeds and passed every check of test-qemu.sh, including the graphical login, input, browser, package manager and sound device. The NVIDIA RTX Spark laptop is deferred; no
 physical aarch64 install is claimed. See [aarch64.md](aarch64.md).
 
 ## Hardware status and limits
 
 - **No Wi-Fi or Hyprland guarantees.** Wi-Fi depends on the chipset and firmware, and
   the desktop depends on the GPU driver.
-- @@PHYSICAL_STATUS@@
+- **No physical run.** The final 1.5.1 images were not installed on the MSI Raider 18 HX or the MacBookPro16,1; the release was qualified in QEMU only.
 - **MSI Raider 18 HX and MacBookPro16,1.** The limits in the
   [1.4.0 notes](release-1.4.0.md#hardware-status-and-limits) stand.
 

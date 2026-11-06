@@ -1,52 +1,53 @@
 {
   "schema": 1,
-  "repository_url": "https://github.com/jordanhubbard/daemonarchy/releases/download/checkouts-16-amd64-1.5.0-r2",
+  "repository_url": "https://github.com/jordanhubbard/daemonarchy/releases/download/checkouts-16-amd64-1.5.1",
   "trees": {
     "ports": {
-      "revision": "e84b4c4cde0df8ee645ee46e7ad1e99ef8ffa181",
+      "revision": "8e28793af60dc8dc47d515c52d6b14ee1392c29b",
       "branch": "main",
       "remote": "https://github.com/jordanhubbard/daemonarchy-ports.git",
       "depth": 1,
-      "archive_sha256": "d72e83e5c6401998c191e4bfc30fb56e0c73063048fc51b7c05fb910978ff224",
-      "archive_bytes": 238486947,
-      "expanded_bytes": 733326938,
-      "required_bytes": 3919171395,
+      "archive_sha256": "15588ad6c864a95ea9b4f226ecb4d946d6f04a432a5f451de72499cc5c822d52",
+      "archive_bytes": 238694707,
+      "expanded_bytes": 733585091,
+      "required_bytes": 3920413276,
       "parts": [
         {
-          "package": "daemonarchy-ports-checkout-000-20261103.ge84b4c4cde0d",
-          "file": "/usr/local/share/daemonarchy/checkouts/ports/e84b4c4cde0df8ee645ee46e7ad1e99ef8ffa181/part-000",
-          "sha256": "d72e83e5c6401998c191e4bfc30fb56e0c73063048fc51b7c05fb910978ff224",
-          "bytes": 238486947,
-          "download_bytes": 238317546
+          "package": "daemonarchy-ports-checkout-000-20261104.g8e28793af60d",
+          "file": "/usr/local/share/daemonarchy/checkouts/ports/8e28793af60dc8dc47d515c52d6b14ee1392c29b/part-000",
+          "sha256": "15588ad6c864a95ea9b4f226ecb4d946d6f04a432a5f451de72499cc5c822d52",
+          "bytes": 238694707,
+          "download_bytes": 238440495
         }
       ],
       "tracking_branch": "main"
     },
     "src": {
-      "revision": "303b3646270ffa4bf7cec65c5c1d28bd8000cbce",
+      "revision": "cb38d6498a24606aba3b3ca22fceedc61b31f9bf",
       "branch": "daemonarchy",
       "remote": "https://github.com/jordanhubbard/daemonarchy-src.git",
       "depth": 1,
-      "archive_sha256": "57c129523cbd7f49da1b3aaaae039f7ca4828d7d6259770b0d5dcecc5a75430c",
-      "archive_bytes": 724148200,
-      "expanded_bytes": 1934063262,
-      "required_bytes": 6936942166,
+      "archive_sha256": "c20156e66ce78fe8811bded578ad2550861aeb0cfbd138519a6dd37a9be253b8",
+      "archive_bytes": 724344363,
+      "expanded_bytes": 1934320985,
+      "required_bytes": 6937833434,
       "parts": [
         {
-          "package": "daemonarchy-src-checkout-000-20261029.g303b3646270f",
-          "file": "/usr/local/share/daemonarchy/checkouts/src/303b3646270ffa4bf7cec65c5c1d28bd8000cbce/part-000",
-          "sha256": "98bba0dc0f6566a4d16926890f26d5664a13f206b884e73f272ebef9a7f83c1f",
+          "package": "daemonarchy-src-checkout-000-20261104.gcb38d6498a24",
+          "file": "/usr/local/share/daemonarchy/checkouts/src/cb38d6498a24606aba3b3ca22fceedc61b31f9bf/part-000",
+          "sha256": "a826f43b32df921a9fd5d3626793128a797b96a860c11a4d938dce029296eaa9",
           "bytes": 536870912,
-          "download_bytes": 536748074
+          "download_bytes": 536746460
         },
         {
-          "package": "daemonarchy-src-checkout-001-20261029.g303b3646270f",
-          "file": "/usr/local/share/daemonarchy/checkouts/src/303b3646270ffa4bf7cec65c5c1d28bd8000cbce/part-001",
-          "sha256": "42f2e926831dcb5e33ff052a568a3c912acc2d11947f275477eaf4f66d6249b5",
-          "bytes": 187277288,
-          "download_bytes": 182093228
+          "package": "daemonarchy-src-checkout-001-20261104.gcb38d6498a24",
+          "file": "/usr/local/share/daemonarchy/checkouts/src/cb38d6498a24606aba3b3ca22fceedc61b31f9bf/part-001",
+          "sha256": "d32b1c8d8d6b17a5dd39f0676765a26e7efd462c2ec22885486a196ff729ed58",
+          "bytes": 187473451,
+          "download_bytes": 182287467
         }
-      ]
+      ],
+      "tracking_branch": "daemonarchy"
     }
   }
 }
