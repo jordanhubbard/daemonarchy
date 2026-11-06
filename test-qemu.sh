@@ -194,7 +194,13 @@ vm() {
 	elif [ "$ARCH" = aarch64 ]; then
 		# The installer autologs in on ttyv0 only, and 'virt' has no VGA, so
 		# without a display device the guest has only the serial console.
-		set -- -device virtio-gpu-pci -display none "$@"
+		# The tablet and keyboard give the post-install desktop check an
+		# absolute pointer (QMP input-send-event) without VirGL, as on a host
+		# with no usable render node (macOS with hvf, or a remote session).
+		set -- -device virtio-gpu-pci -display none -vnc "$VNC_LISTEN" \
+			-device qemu-xhci,id=desktop-usb \
+			-device usb-tablet,bus=desktop-usb.0 \
+			-device usb-kbd,bus=desktop-usb.0 "$@"
 	else
 		set -- -display none "$@"
 	fi
