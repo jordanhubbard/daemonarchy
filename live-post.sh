@@ -113,7 +113,7 @@ ln -sf /tmp/resolv.conf "$world/etc/resolv.conf"
 echo 'resolv_conf=/tmp/resolv.conf' >"$world/etc/resolvconf.conf"
 
 cat >>"$world/boot/loader.conf" <<'EOF'
-autoboot_delay="3"
+autoboot_delay="10"
 loader_logo="none"
 loader_brand="daemonarchy"
 kern.vty="vt"
