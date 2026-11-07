@@ -19,14 +19,20 @@ hwtrace_capture() {
 hwtrace_collect() {
 	hwtrace_capture dmesg.txt dmesg -a
 	hwtrace_capture kenv.txt kenv
-	hwtrace_capture sysctl.txt sysctl -a
+	# Broad enumeration entered vm.phys_locality on the Spark control.
+	# Query only reviewed, bounded scalar observations.
+	hwtrace_capture sysctl.txt sysctl kern.ostype kern.osrelease kern.version \
+	    hw.machine hw.machine_arch hw.model hw.ncpu hw.physmem hw.pagesize \
+	    kern.smp.cpus kern.smp.active kern.smp.disabled
 	hwtrace_capture kldstat.txt kldstat -v
 	hwtrace_capture pciconf.txt pciconf -lvbc
 	hwtrace_capture devinfo.txt devinfo -vr
 	hwtrace_capture usbconfig.txt usbconfig dump_device_desc
-	# -d needs iasl and writable temporary storage, absent in this root.
-	# Do physical-memory access last, after the other evidence is durable.
-	hwtrace_capture acpidump.txt acpidump -t
+	# ACPI is captured by the loader before kernel entry and decoded offline.
+	# A timeout cannot interrupt a kernel stall in acpidump's /dev/mem path.
+	printf '%s\n' 'ACPI: see loader ACPI/INDEX.TXT; no live /dev/mem probe' \
+	    >"$d/acpi-source.txt"
+	sync
 	date >"$d/done.txt"
 	sync
 }

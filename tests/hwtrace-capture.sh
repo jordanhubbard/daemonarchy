@@ -12,11 +12,13 @@ cat >"$tmp/bin/probe" <<'SH'
 name=${0##*/}
 echo "$name $*"
 case $name in
-sysctl) [ "${TEST_FAILURE:-0}" = 0 ] || exit 7 ;;
-acpidump)
-	[ "$*" = -t ] || exit 86
+sysctl)
+	case " $* " in *" -a "*|*" vm.phys_locality "*) exit 86 ;; esac
+	[ "${TEST_FAILURE:-0}" = 0 ] || exit 7 ;;
+acpidump) exit 88 ;;
+usbconfig)
 	# A late hang must not erase the completed earlier observations.
-	for file in dmesg.txt kenv.txt sysctl.txt kldstat.txt pciconf.txt devinfo.txt usbconfig.txt; do
+	for file in dmesg.txt kenv.txt sysctl.txt kldstat.txt pciconf.txt devinfo.txt; do
 		[ -s "$TEST_STABLE/$file" ] || exit 87
 	done
 	if [ "${TEST_HANG:-0}" = 1 ]; then
@@ -39,14 +41,15 @@ export PATH TEST_DUMPS=$tmp/dumps TEST_STABLE=$tmp/stable HWTRACE_CAPTURE_TIMEOU
 d=$TEST_DUMPS
 . "$here/tools/hwtrace/capture.sh"
 hwtrace_collect
-grep -q '^finish acpidump.txt status=0$' "$d/capture.log" || fail 'normal ACPI probe'
+grep -q '^finish usbconfig.txt status=0$' "$d/capture.log" || fail 'normal final probe'
+[ ! -e "$d/acpidump.txt" ] || fail 'unsafe ACPI probe ran'
 [ -s "$TEST_STABLE/done.txt" ] || fail 'completion not flushed'
 rm -f "$d/"* "$TEST_STABLE/"*
 export TEST_FAILURE=1 TEST_HANG=1
 hwtrace_collect
 grep -q '^finish sysctl.txt status=7$' "$d/capture.log" || fail 'probe failure not recorded'
 grep -q '^finish kldstat.txt status=0$' "$d/capture.log" || fail 'stopped after probe failure'
-grep -Eq '^finish acpidump.txt status=(124|137)$' "$d/capture.log" || fail 'hung probe not killed'
-[ -s "$TEST_STABLE/usbconfig.txt" ] || fail 'earlier output lost on timeout'
+grep -Eq '^finish usbconfig.txt status=(124|137)$' "$d/capture.log" || fail 'hung probe not killed'
+[ -s "$TEST_STABLE/devinfo.txt" ] || fail 'earlier output lost on timeout'
 [ -s "$TEST_STABLE/done.txt" ] || fail 'timeout prevented completion'
 echo 'PASS: diagnostic failure and TERM-resistant hang preserve prior files and finish'

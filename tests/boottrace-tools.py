@@ -307,6 +307,20 @@ class BlockMap(unittest.TestCase):
         self.assertEqual(self.raw("TRACES/0200.TXT"), vol.read("TRACES/0200.TXT"))
         self.assertTrue(self.raw("TRACES/0007.TXT").startswith(stick.EMPTY))
 
+    def test_acpi_slots_are_mapped_and_rewritten_in_place(self):
+        vol = stick.Volume(self.img)
+        vol.mkdir("ACPI")
+        vol.write("ACPI/APIC.BIN", stick.padded(b"uncaptured", stick.SLOT_SIZE))
+        vol.write("ACPI/INDEX.TXT", stick.padded(b"uncaptured", stick.SLOT_SIZE))
+        stick.write_map(self.img)
+        before = stick.check_map(self.img)
+        self.assertIn("ACPI/APIC.BIN", before["files"])
+        self.assertIn("ACPI/INDEX.TXT", before["files"])
+        vol = stick.Volume(self.img)
+        vol.rewrite("ACPI/APIC.BIN", b"APIC bytes", stick.SLOT_SIZE)
+        self.assertTrue(self.raw("ACPI/APIC.BIN").startswith(b"APIC bytes"))
+        self.assertEqual(before, stick.check_map(self.img))
+
     def test_queue_rewrites_in_place(self):
         before = stick.check_map(self.img)
         q = Path(self.dir, "q.txt")

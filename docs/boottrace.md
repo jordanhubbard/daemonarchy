@@ -33,21 +33,55 @@ normal menu instead; its **Hardware trace** entry (`W`) runs one cycle by
 hand.
 
 When a boot reaches init, the image's rescue root saves bring-up
-diagnostics before it reboots. It writes `dmesg -a`, `sysctl -a`, `kenv`,
-`kldstat`, `pciconf -lvbc`, `devinfo -vr`, USB descriptors and `acpidump -t` to
+diagnostics before it reboots. It writes `dmesg -a`, an allowlist of scalar
+`sysctl` values, `kenv`, `kldstat`, `pciconf -lvbc`, `devinfo -vr` and USB descriptors to
 `DUMPS/<experiment>/`, and the next boot stops the loop. The FAT volume is
 mounted synchronously so a hung probe cannot leave earlier file data and FAT
 allocations only in memory. `capture.log` checkpoints each command before it
 starts and records its exit status afterwards. Each command has a 20-second
 limit, followed by SIGKILL after two more seconds; failures do not prevent the
-remaining commands from running. ACPI physical-memory access runs last and
-does not request AML disassembly (the rescue image has no `iasl`). A kernel
-hang can still require a reset, but the earlier completed files and the last
+remaining commands from running. The collector does not enumerate all sysctls
+or run `acpidump` through `/dev/mem`; both stalled on the Spark control.
+A kernel hang can still require a reset, but the earlier completed files and the last
 `start` checkpoint remain on the stick. `done.txt` means collection finished;
 inspect the per-command statuses for failures or timeouts.
 
 Then unplug the stick and bring it to the controller host. Remove it only
 when the loader is at the STOPPED prompt or the machine is off.
+
+## ARM discovery before kernel entry
+
+A loader built with the ARM discovery changes accepts
+`boottrace_capture_acpi="YES"` in the image's extra loader configuration.
+Before starting an experiment, it copies RSDP, the root table, and selected
+APIC/PPTT/FACP/IORT/SRAT/SLIT/SPCR tables into preallocated `ACPI/` slots.
+Each table is limited to 16 KiB, the root to 256 entries; lengths, checksums
+and readable EFI memory ranges are checked before access. No AML runs.
+
+The loader invalidates `ACPI/INDEX.TXT` before capture, then commits the queue
+epoch, exact lengths, hashes and per-table outcomes after raw block writes,
+flush and readback. This mode requires a working raw map and RSDP/root/MADT;
+if required capture fails it stops before booting the experiment. FDT-only
+profiles must use their own discovery path rather than enable this ACPI mode.
+Binary slots are padded; only their indexed prefix is table data. Decode on
+the controller, without accessing the target's live physical memory:
+
+```sh
+python3 tools/hwtrace/acpi-summary.py /path/to/returned-stick.img
+```
+
+The summary validates the index epoch, hashes and table checksums, then reports
+GICC enabled/online-capable flags, MPIDRs and parking versions. Raw captures
+stay private. The single snapshot is replaced on the next loader cycle; it is
+firmware/topology evidence, not a per-CPU kernel trace. It does not establish
+persistence of kernel events before EFI runtime or disk drivers initialize.
+
+For Pi 4, run [the read-only Linux reference collector](../tools/hwtrace/pi-reference.sh)
+first. [The Pi 4 media helper](../tools/hwtrace/pi4-media.py) adds an explicitly
+hashed pftf firmware ZIP to a new aarch64 diagnostic image and reads back every
+firmware file. It never writes a block device or changes EEPROM. Its first
+UEFI/ACPI candidate retains the upstream 3 GiB cap; Pi 400 and CM4 need separate
+qualification. See [the Pi bring-up checkpoint](aarch64.md#raspberry-pi-4-bring-up).
 
 ## How the loader writes the stick
 
@@ -362,7 +396,7 @@ find `daemonarchy-hwtrace` in the router's client list.
 
 What is on the image for the session: `/rescue` tools (ls, cat, dmesg, sysctl,
 kldstat, kldload, ifconfig, route, ping, dd, gpart, camcontrol, ...) on the
-PATH, `pciconf`, `devinfo`, `acpidump`, `usbconfig`, `netstat`, `scp` and
+PATH, `pciconf`, `devinfo`, `usbconfig`, `netstat`, `scp` and
 `sftp-server`. Not on it: a package manager, a compiler, DTrace tooling beyond
 what the kernel provides, Wi-Fi drivers or firmware (wired only).
 
