@@ -877,3 +877,12 @@ candidate and return its loader topology and init files. Keep the default
 Full 4/8 GiB USB/storage/network DMA, native GENET traffic, SD/USB boot,
 framebuffer/keyboard and cold/warm boot remain the next hardware gates, followed
 by installation, desktop, update and recovery. Keep Pi 400 and CM4 separate.
+
+## Pi 500 Linux reference
+
+The operator-supplied target identified itself as Pi 500 (BCM2712), not Pi 4.
+[The physical reference record](testing-pi500-linux-20261107.md) retains exact
+installed-input hashes, a 64-bit 4 KiB kernel with 32-bit armhf userspace, and
+a verified round-trip transfer through built-in RP1 Ethernet. The bound driver
+is Cadence GEM/macb; Pi 4 GENET is a separate path. FreeBSD and Pi 4 physical
+acceptance remain open, with Pi 4 first in the porting queue.

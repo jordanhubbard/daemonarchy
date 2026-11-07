@@ -153,7 +153,7 @@ firmware work does not delay the Pi 4 reference port.
 
 ### Final implementation
 
-- [ ] Implement RP1 PCIe/interrupt/clock/reset/USB/GENET/pinctrl/PWM support needed by the distribution, plus SD/NVMe, display and cooling. Do not equate a DTB import or old UEFI boot report with these drivers.
+- [ ] Implement the required RP1 PCIe nexus, interrupts, clock/reset, USB, pinctrl/PWM and Cadence GEM Ethernet support, plus SD/NVMe, display and cooling. Do not equate a DTB import or old UEFI boot report with these drivers.
 - [ ] Choose and retain a maintained boot path per revision; qualify fallback trace persistence without EFI variables, boot-order behavior and power-cycle recovery.
 - [ ] Deliver the board-specific final image and installed boot, default application/graphics stack and working network; document peripherals still under development per model.
 
