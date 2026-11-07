@@ -1,17 +1,27 @@
 # Changelog
 
-## 1.5.1 (unreleased)
+## 1.5.1 (November 7, 2026)
 
-Not published. Entries are added as changes merge; the release notes and the
-[1.5.1 plan](docs/roadmap/release-1.5.1.md) state what is and is not done.
+Base: FreeBSD 16.0-CURRENT (OSVERSION `1600029`), daemonarchy-src `cb38d64`, ports `8e28793a`, installer
+`b6b91517`. Application feeds `packages-16-amd64-1.5.1` and `packages-16-aarch64-1.5.1`, checkout feeds
+`checkouts-16-amd64-1.5.1` and `checkouts-16-aarch64-1.5.1`. See the [release notes](docs/release-1.5.1.md).
+The amd64 image was installed on the MSI Raider 18 HX and the MacBookPro16,1. On the NVIDIA RTX Spark the arm64
+image still hangs after starting the fourth CPU; Spark support moves to 1.6. The onboarding video was deferred.
 
 ### Added
 
 - A newcomer README and a narrative-first HACKING guide; [installer reference](docs/installer-reference.md).
 - User and engineering slide decks under [docs/presentations](docs/presentations/README.md).
 
+### Changed
+
+- The boot menu waits 10 seconds instead of 3, on the image and the installed system (#290).
+- The Packages menu opens `daemonarchy-pkg`; OctoPkg stays as **Packages (OctoPkg)** (daemonarchy-ports #53).
+
 ### Fixed
 
+- The arm64 virtio-net receive stall: virtqueue notification checks use a full barrier on every architecture
+  (daemonarchy-src #59, #61).
 - A failed installation stops on a failure screen with the end of the install log and a menu (view the log,
   shell, reboot, power off) instead of a bare shell after `[exited]`; a progress warning no longer turns a
   successful installation into a failure ([#257](https://github.com/jordanhubbard/daemonarchy/issues/257), #281).
