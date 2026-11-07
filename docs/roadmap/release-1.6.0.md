@@ -32,53 +32,62 @@ CPU_ON call and nothing is printed when that call returns successfully; the time
 returns. Two explanations remain, and the first experiments separate them:
 
 1. **The boot CPU never returns from PSCI CPU_ON for `0x400`.** The firmware call itself hangs, so the
-   bounded wait never starts. This is consistent with an identical hang on 1.5.0 and 1.5.1. Possible
-   causes: the MADT GICC entry for that core asks for something other than PSCI (the Linux kernel known
-   to boot this SoC is built with the ACPI parking protocol; FreeBSD arm64 has no parking-protocol support
-   and ignores those fields), a firmware power-domain dependency (the SSPM `NVDA8400` device), or a PSCI
-   quirk.
+   bounded wait never starts. This is consistent with an identical hang on 1.5.0 and 1.5.1. Linux starts
+   the same core with the same PSCI call (below), so the question is what FreeBSD passes differently: the
+   entry address, the context ID, the exception level and cache state the core enters with, or a firmware
+   power-domain dependency (the SSPM `NVDA8400` device).
 2. **The call returns and the core starts, then hangs the system** (for example by faulting while holding
    shared state). src#60 parks late arrivals, but not a core that checks in on time and then fails.
 
-The core-type theory is weak: on the DGX Spark (GB10, same 20-core layout under Linux) CPUs 0 to 4 are
-all Cortex-A725 with one MIDR, so `0x400` would be the fifth core of the first, working cluster.
+## Ground truth from the DGX Spark (2026-11-07)
+
+Read on the lab's DGX Spark (`sparky`, GB10, Linux `7.0.0-1019-nvidia`), which boots all 20 cores:
+
+| Fact | Value |
+| --- | --- |
+| Firmware interface | PSCI v1.1 (standard v0.2 function IDs), SMCCC v1.5, conduit from ACPI |
+| MADT GICC entries | 20, all enabled; **parking-protocol version 0 and no mailbox on every core**, so every core is started by PSCI CPU_ON. The parking-protocol theory is ruled out on this SoC. |
+| `0x400` | An ordinary entry, identical to `0x000`-`0x300` (efficiency class 0); Linux boots it with no special case |
+| Cores | `0x000`-`0x400` and `0x10000`-`0x10400`: Cortex-A725 r0p1 (`0x410fd871`); `0x500`-`0x900` and `0x10500`-`0x10900`: Cortex-X925 r0p1 (`0x410fd851`) |
+| Errata | Linux enables erratum 4193781 (X925, broken broadcast TLBI completion) when `0x500` comes up. FreeBSD has no such workaround; it is not the `0x400` hang but is needed for the X925 cores. |
+
+Whether the laptop's tables match is checked by the last experiment below, which dumps its MADT.
 
 ## Plan
 
 ### 1. Evidence from the published 1.5.1 image (no new code)
 
-All at the loader prompt of the 1.5.1 arm64 stick, one boot each, with a photo of the last screen:
+A copy of the published `daemonarchy-hwtrace-1.5.1-aarch64` image carries these as a five-boot queue
+([evidence/spark-151-queue.txt](evidence/spark-151-queue.txt); one boot each; power off a hung boot after photographing the whole screen; the last boot reaches init
+and saves `dmesg`, `acpidump`, `pciconf` and `devinfo`):
 
 | Setting | Question it answers |
 | --- | --- |
 | `boot -v` | Does a `failed to start` line or a per-CPU start time appear at all? If not, the hang is inside PSCI CPU_ON (explanation 1). |
 | `hw.ncpu=4` | Does the 1.5.1 kernel still reach init on four CPUs (the baseline)? |
-| `hw.mp.skip_mpidr=0x400` | Does CPU `0x500` start, and do the other 15? This tells whether the fault is that one core or everything after it. |
 | `hw.mp.ap_timeout_ms=60000` | Only if a failure line appears: does the core arrive late (slow firmware power-up)? |
+| `hw.mp.skip_mpidr=400`, `hw.mp.stop_on_failure=0` | Do the other 15 cores start? Is it that one core or everything after it? |
+| `hw.mp.skip_mpidr=400,500,...,900`, `stop_on_failure=0` | Does the second cluster (`0x10000`-`0x10900`) start? |
+| `hw.ncpu=4` (last) | The 1.5.1 baseline on four CPUs, and the laptop's own MADT, PPTT and DSDT. |
 
-The published `daemonarchy-hwtrace-1.5.1-aarch64` image can run the same settings as a hands-off queue
-(src `docs/rtx-spark-queue6a.txt`, `6b.txt`) and keeps a 60 s panic hold for photos.
+### 2. Linux on the same SoC
 
-### 2. Ground truth from Linux on the same SoC
-
-Omarchy (Arch Linux) already runs on the DGX Spark, the same SoC family, so a working Linux boot of all
-cores is available to learn from: its kernel version and configuration, and how it starts each core. From
-that system, or from a Linux live USB on the laptop itself: the
-MADT (every GICC entry's flags, parking-protocol version and mailbox address, MPIDR), PPTT and DSDT
-(`acpidump`), the PSCI version and features from `dmesg`, the boot method Linux used per core, MIDR per
-core, and each secondary core's start time. Compare the `0x400` entry with `0x000` to `0x300`. Linux never
-redistributes the vendor tables; neither do we.
+The DGX Spark facts above come from Linux on `sparky`; the laptop's own MADT comes from the last
+experiment. Still to compare: what Linux passes to CPU_ON (entry point, context ID) and the state its
+secondary entry code assumes, against FreeBSD's `mpentry` (`locore.S`) and `start_cpu()`. Linux and the
+vendor tables are read, never copied or redistributed.
 
 ### 3. Fix
 
 Depending on steps 1 and 2:
 
-- **PSCI CPU_ON hangs for `0x400`:** start each core the way the MADT says. If cores are parked, add ACPI
-  parking-protocol support to `madt_handler()`/`start_cpu()` (Linux has the mechanism). If it is a
-  firmware power-domain order, match it. A watchdog print from an already running CPU while the boot CPU
-  is inside CPU_ON confirms the location in one boot.
+- **PSCI CPU_ON hangs for `0x400`:** make FreeBSD's call match what works under Linux (entry address,
+  context ID, entry exception level and cache state), or the firmware power-domain order if that is the
+  cause. A watchdog print from an already running CPU while the boot CPU is inside CPU_ON confirms the
+  location in one boot.
 - **The core starts and then fails:** extend src#60's stage reporting past `init_secondary()` and fix the
   fault it names.
+- **The X925 cores:** add the erratum 4193781 workaround (repeat the TLBI sync) before claiming all 20 CPUs.
 - **Fallback, only if the root fix misses 1.6.0:** a quirk keyed on the ACPI OEM table ID that skips the
   failing cores by default, so the Spark boots on fewer CPUs. The release notes would then say how many
   CPUs run and why; this is not "supported".

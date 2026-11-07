@@ -1211,8 +1211,8 @@ remains open; report files do not establish a passing gate.
 - **Depends on:** ARCH-001 (the arm64 image and feeds)
 - **Implementation:**
   - [ ] Run the four loader experiments of [plan step 1](release-1.6.0.md#1-evidence-from-the-published-151-image-no-new-code) on the 1.5.1 image and record the screens.
-  - [ ] Collect the MADT, PPTT, DSDT and PSCI details from Linux on the same SoC ([step 2](release-1.6.0.md#2-ground-truth-from-linux-on-the-same-soc)).
-  - [ ] Fix secondary CPU start in daemonarchy-src (parking protocol, power-domain order or the fault src#60 names); fall back to a documented OEM quirk only if the root fix misses 1.6.0.
+  - [ ] Compare FreeBSD's CPU_ON call and entry state with Linux on the same SoC; the DGX Spark facts are recorded ([step 2](release-1.6.0.md#2-linux-on-the-same-soc)).
+  - [ ] Fix secondary CPU start in daemonarchy-src (the CPU_ON entry state or power-domain order, or the fault src#60 names), plus the X925 erratum 4193781 workaround; fall back to a documented OEM quirk only if the root fix misses 1.6.0.
   - [ ] Install to the internal NVMe and reach the desktop on `efifb`; Wi-Fi through mt7925.
   - [ ] Send the CPU-start fix to FreeBSD upstream.
 - **Evidence:**

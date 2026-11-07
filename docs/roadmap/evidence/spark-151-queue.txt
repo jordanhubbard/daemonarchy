@@ -1,0 +1,47 @@
+# Hardware trace queue for the NVIDIA RTX Spark (SPARK-001, 1.6.0 plan step 1), on the
+# published daemonarchy-hwtrace-1.5.1-aarch64 image (kernel cb38d64: bounded CPU start,
+# stop-on-failure, stage report). One experiment per boot. A boot that hangs must be
+# powered off by hand: photograph the WHOLE screen first. The loop stops at the first
+# boot that reaches init and saves dmesg/acpidump/pciconf/devinfo to DUMPS/.
+
+# 1. Default 1.5.1 behaviour, verbose. If no "CPU 4 (400) failed to start" line
+#    appears, the boot CPU is stuck inside PSCI CPU_ON (the firmware call).
+[v-default]
+boot_verbose=YES
+hwtrace.hold=120
+kern.panic_reboot_wait_time=60
+debug.trace_on_panic=1
+
+# 2. Long wait: only meaningful if 1 printed a failure line (a slow core).
+[v-timeout-60s]
+boot_verbose=YES
+hw.mp.ap_timeout_ms=60000
+hwtrace.hold=120
+kern.panic_reboot_wait_time=60
+debug.trace_on_panic=1
+
+# 3. Skip 0x400 and keep starting the others: is it that one core, or every core after it?
+[v-skip-400-continue]
+boot_verbose=YES
+hw.mp.skip_mpidr=400
+hw.mp.stop_on_failure=0
+hwtrace.hold=120
+kern.panic_reboot_wait_time=60
+debug.trace_on_panic=1
+
+# 4. Skip the whole first cluster's fifth core and the X925 cores of cluster 0 (0x400-0x900):
+#    does the second cluster (0x10000-0x10900) start?
+[v-skip-c0-tail]
+boot_verbose=YES
+hw.mp.skip_mpidr=400,500,600,700,800,900
+hw.mp.stop_on_failure=0
+hwtrace.hold=120
+kern.panic_reboot_wait_time=60
+debug.trace_on_panic=1
+
+# 5. Known good (CPUs 0-3): guarantees a boot to init and the laptop's own MADT/PPTT/DSDT dump.
+[ncpu-4-dumps]
+boot_verbose=YES
+hw.ncpu=4
+hwtrace.hold=180
+kern.panic_reboot_wait_time=60
