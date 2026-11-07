@@ -14,6 +14,7 @@ import shutil
 import stat
 import struct
 import subprocess
+import sys
 import tempfile
 import zipfile
 
@@ -84,6 +85,12 @@ def main():
             data = subprocess.check_output(["mtype", "-i", target, "::/" + member["path"]])
             if hashlib.sha256(data).hexdigest() != member["sha256"]:
                 parser.error("firmware readback mismatch")
+    with tempfile.TemporaryDirectory() as tmp:
+        queue = Path(tmp) / "pi4-queue.txt"
+        queue.write_text("[pi4-uefi-acpi-baseline]\nhw.ncpu=4\n")
+        stick = Path(__file__).resolve().parents[1] / "boottrace/stick.py"
+        subprocess.run([sys.executable, str(stick), "queue", str(args.output),
+                        str(queue)], check=True)
     manifest = dict(schema="daemonarchy/pi4-discovery-media@1", model="Raspberry Pi 4B",
                     source_sha256=digest(args.source), firmware_zip_sha256=digest(args.firmware_zip),
                     output_sha256=digest(args.output), firmware_files=members,
