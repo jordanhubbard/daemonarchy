@@ -25,6 +25,7 @@ def load(name, path):
 
 decoder = load("decode_boottrace", TOOLS / "decode-boottrace.py")
 stick = load("stick", TOOLS / "stick.py")
+acpi = load("acpi_summary", ROOT / "tools/hwtrace/acpi-summary.py")
 
 
 def step(seq, index, text, kind=3, ms=None):
@@ -277,6 +278,72 @@ class Stick(unittest.TestCase):
 
 @unittest.skipUnless(all(shutil.which(t) for t in ("sgdisk", "mkfs.fat", "mcopy")),
                      "sgdisk, mkfs.fat and mtools are needed")
+class AcpiDiscovery(unittest.TestCase):
+    def setUp(self):
+        self.files = {"STATE.TXT": b"epoch=77\n"}
+        class Volume:
+            def __init__(inner, files):
+                inner.files = files
+            def read(inner, name):
+                return inner.files.get(name)
+        self.volume = Volume(self.files)
+        cpus = bytearray(44 + 160)
+        cpus[:4] = b"APIC"
+        struct.pack_into("<I", cpus, 4, len(cpus))
+        for i, flags in enumerate((1, 8)):
+            off = 44 + i * 80
+            cpus[off:off + 2] = bytes((11, 80))
+            struct.pack_into("<III", cpus, off + 8, i, flags, 0)
+            struct.pack_into("<Q", cpus, off + 68, i * 0x100)
+        cpus[9] = -sum(cpus) & 255
+        root = bytearray(40)
+        root[:4] = b"RSDT"
+        struct.pack_into("<I", root, 4, len(root))
+        root[9] = -sum(root) & 255
+        rsdp = bytearray(20)
+        rsdp[:8] = b"RSD PTR "
+        rsdp[8] = -sum(rsdp) & 255
+        index = "Daemonarchy loader ACPI capture v1 epoch=77\n"
+        for name, payload in (("RSDP", rsdp), ("ROOT", root), ("APIC", cpus)):
+            self.files[f"ACPI/{name}.BIN"] = bytes(payload) + b"\n" * 100
+            index += f"{name} length={len(payload)} fnv1a={stick.fnv1a(payload):08x} write=0 captured\n"
+        self.files["ACPI/INDEX.TXT"] = index.encode()
+
+    def test_enabled_and_online_capable_are_separate(self):
+        topology = acpi.summary(self.volume)["topology"]
+        self.assertEqual(topology["gicc_entries"], 2)
+        self.assertEqual(topology["enabled"], 1)
+        self.assertEqual(topology["online_capable"], 1)
+        self.assertEqual(topology["cpus"][1]["mpidr"], "0x100")
+
+    def test_foreign_epoch_rejected(self):
+        self.files["STATE.TXT"] = b"epoch=78\n"
+        with self.assertRaisesRegex(ValueError, "different queue epoch"):
+            acpi.summary(self.volume)
+
+    def test_corrupt_payload_rejected(self):
+        self.files["ACPI/APIC.BIN"] = b"X" + self.files["ACPI/APIC.BIN"][1:]
+        with self.assertRaisesRegex(ValueError, "hash/checksum mismatch"):
+            acpi.summary(self.volume)
+
+    def test_required_table_omission_rejected(self):
+        self.files["ACPI/INDEX.TXT"] = b"\n".join(
+            line for line in self.files["ACPI/INDEX.TXT"].splitlines()
+            if not line.startswith(b"ROOT "))
+        with self.assertRaisesRegex(ValueError, "required table: ROOT"):
+            acpi.summary(self.volume)
+
+    def test_incomplete_and_empty_indices_rejected(self):
+        for index in (b"INCOMPLETE CAPTURE\n", b"\n\n"):
+            self.files["ACPI/INDEX.TXT"] = index
+            with self.assertRaises(ValueError):
+                acpi.summary(self.volume)
+
+    def test_short_gicc_rejected(self):
+        with self.assertRaisesRegex(ValueError, "short GICC"):
+            acpi.madt(b"APIC" + bytes(40) + bytes((11, 2)))
+
+
 class BlockMap(unittest.TestCase):
     """SLOTS.MAP on a real FAT32 GPT image, as the loader will use it."""
 
@@ -306,6 +373,20 @@ class BlockMap(unittest.TestCase):
         self.assertEqual(self.raw("STATE.TXT"), vol.read("STATE.TXT"))
         self.assertEqual(self.raw("TRACES/0200.TXT"), vol.read("TRACES/0200.TXT"))
         self.assertTrue(self.raw("TRACES/0007.TXT").startswith(stick.EMPTY))
+
+    def test_acpi_slots_are_mapped_and_rewritten_in_place(self):
+        vol = stick.Volume(self.img)
+        vol.mkdir("ACPI")
+        vol.write("ACPI/APIC.BIN", stick.padded(b"uncaptured", stick.SLOT_SIZE))
+        vol.write("ACPI/INDEX.TXT", stick.padded(b"uncaptured", stick.SLOT_SIZE))
+        stick.write_map(self.img)
+        before = stick.check_map(self.img)
+        self.assertIn("ACPI/APIC.BIN", before["files"])
+        self.assertIn("ACPI/INDEX.TXT", before["files"])
+        vol = stick.Volume(self.img)
+        vol.rewrite("ACPI/APIC.BIN", b"APIC bytes", stick.SLOT_SIZE)
+        self.assertTrue(self.raw("ACPI/APIC.BIN").startswith(b"APIC bytes"))
+        self.assertEqual(before, stick.check_map(self.img))
 
     def test_queue_rewrites_in_place(self):
         before = stick.check_map(self.img)

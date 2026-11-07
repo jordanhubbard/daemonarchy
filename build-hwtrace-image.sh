@@ -12,8 +12,8 @@
 #   2  HWTROOT   UFS, mounted read-only: /boot (boottrace kernel, selected
 #                modules, Lua, presets in /boot/d, loader.conf with the
 #                unattended cycle as the only behaviour) and a rescue root
-#                whose /etc/rc saves dmesg, sysctl, kenv, kldstat, pciconf,
-#                devinfo and acpidump output to DATRACE when a boot
+#                whose /etc/rc saves dmesg, scalar sysctls, kenv, kldstat,
+#                pciconf, devinfo and USB descriptor output to DATRACE when a boot
 #                reaches init
 #                When the stick carries KEYS/authorized_keys the rescue root
 #                also brings up a wired network (bounded DHCP) and sshd on
@@ -110,7 +110,7 @@ tar -xf "$iso" -C "$root" "$first"
 [ "$first" = rescue/rescue ] || mv "$root/$first" "$root/rescue/rescue"
 set -- rescue/dhclient-script libexec/ld-elf.so.1 lib/libc.so.7 lib/libsys.so.7 \
     usr/lib/libdevinfo.so.7 \
-    usr/sbin/pciconf usr/sbin/devinfo usr/sbin/acpidump bin/timeout \
+    usr/sbin/pciconf usr/sbin/devinfo bin/timeout \
     boot/defaults/loader.conf boot/device.hints
 tar -tf "$iso" >"$work/iso.list"
 for m in $modules; do
@@ -126,7 +126,7 @@ done
 netbins="usr/sbin/sshd usr/libexec/sshd-session usr/libexec/sshd-auth usr/bin/ssh-keygen usr/bin/scp usr/libexec/sftp-server usr/sbin/usbconfig usr/bin/netstat"
 set -- "$@" $netbins etc/login.conf etc/login.conf.db boot/kernel/linker.hints
 tar -xf "$iso" -C "$root" "$@"
-for f in usr/sbin/pciconf usr/sbin/devinfo usr/sbin/acpidump bin/timeout $netbins; do
+for f in usr/sbin/pciconf usr/sbin/devinfo bin/timeout $netbins; do
 	echo "$f"
 done >"$work/dynbins"
 : >"$work/libs"
@@ -256,6 +256,12 @@ while [ $i -le 200 ]; do
 	cp "$work/slot" "$work/data/TRACES/$(printf %04d $i).TXT"
 	i=$((i + 1))
 done
+# Optional loader-stage ACPI capture: bounded tables, fixed mapped extents.
+mkdir -p "$work/data/ACPI"
+for table in RSDP ROOT APIC PPTT FACP IORT SRAT SLIT SPCR; do
+	cp "$work/slot" "$work/data/ACPI/$table.BIN"
+done
+cp "$work/slot" "$work/data/ACPI/INDEX.TXT"
 makefs -t msdos -s "${datamib}m" -o fat_type=32,sectors_per_cluster=4,volume_label=DATRACE \
     "$work/data.img" "$work/data"
 # makefs reports "too few clusters for FAT32" yet exits 0 (seen with -s 64).

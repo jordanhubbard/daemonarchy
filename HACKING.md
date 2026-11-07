@@ -1363,7 +1363,7 @@ tunables; this section is the procedure.
 
 Build the image on the FreeBSD builder, from a kernel and loader built from
 daemonarchy-src with boottrace, and the release ISO that kernel matches. The
-ISO supplies `/rescue`, `pciconf`, `devinfo`, `acpidump`, their libraries
+ISO supplies `/rescue`, `pciconf`, `devinfo`, `timeout`, their libraries
 and the modules:
 
 ```sh
@@ -1392,10 +1392,11 @@ and its `.sha256`. It has three GPT partitions:
   - `/boot`: the kernel, modules, Lua, the `/boot/d` presets and a
     `loader.conf` whose only behaviour is the cycle
   - a rescue root whose `/etc/rc` runs when a boot reaches init. It saves
-    `dmesg`, `sysctl -a`, `kenv`, `kldstat`, `pciconf -lvbc`, `devinfo -vr`
-    USB descriptors and `acpidump -t` output to `DATRACE/DUMPS/<experiment>/`
+    `dmesg`, allowlisted scalar `sysctl` values, `kenv`, `kldstat`,
+    `pciconf -lvbc`, `devinfo -vr` and USB descriptors to `DATRACE/DUMPS/<experiment>/`
     on a synchronous FAT mount and reboots. Each probe has a time limit;
-    `capture.log` records starts and exit statuses, with ACPI collected last.
+    `capture.log` records starts and exit statuses; ACPI discovery is performed
+    by the optional loader capture described in `docs/boottrace.md`.
     The queue line `hwtrace.shell=YES` gives a shell instead.
 - `DATRACE`: a FAT32 volume with `DATRACE.TAG`, `STATE.TXT`, `QUEUE/`,
   `TRACES/`, `DUMPS/` and `SLOTS.MAP`.

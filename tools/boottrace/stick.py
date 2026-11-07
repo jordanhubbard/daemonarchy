@@ -213,6 +213,10 @@ class Fat32:
 def mapped_files(fat):
     names = ["STATE.TXT"] + ["TRACES/" + n for n in sorted(fat.listdir("TRACES"))
                              if re.fullmatch(r"\d{4}\.TXT", n)]
+    # New discovery images reserve ACPI files; older images remain usable.
+    if fat.lookup("ACPI") is not None:
+        names += ["ACPI/" + n for n in sorted(fat.listdir("ACPI"))
+                  if re.fullmatch(r"(?:[A-Z0-9]{4}\.BIN|INDEX\.TXT)", n)]
     return [(n,) + fat.extent(n) for n in names]
 
 

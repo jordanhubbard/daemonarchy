@@ -850,3 +850,30 @@ builder while HVF ran the install tests on the same host.
   and an aarch64 checkout feed.
 - Host disk capacity for the worker. Its virtual NVMe has no TRIM, so a
   thin-provisioned disk only grows.
+
+## Raspberry Pi 4 bring-up
+
+RPI-001 is the first SBC implementation target, ahead of Pi 5. The initial
+candidate combines the matching FreeBSD kernel/world with a newly built ARM
+EFI loader and pftf RPi4 UEFI v1.53 (ZIP SHA-256
+`ca9973e2a7a546b3df871cfb7382e656829114b6dfa424f40dc67cc90a217d88`).
+Firmware files, including license notices and settings, are retained verbatim.
+This is a private diagnostic candidate; physical Pi acceptance is pending.
+
+The source inventory finds `std.broadcom` included by GENERIC, BCM2838 SoC
+support, GENET, SDHCI, the BCM2838 PCIe controller and the VL805 xHCI firmware
+handoff. GENET currently attaches through FDT/simplebus and matches
+`brcm,bcm2711-genet-v5`; an ACPI boot does not establish built-in Ethernet
+support. Compare the firmware's ACPI profile with its device-tree profile,
+the exact handed-off DTB and the Linux reference before choosing the product
+boot path. A source driver match is not a native working-device result.
+
+First capture Linux model/revision, RAM, kernel/config, boot firmware/EEPROM,
+DTB/overlays and storage using `tools/hwtrace/pi-reference.sh NEW-DIRECTORY`.
+The command only reads installed state; retain its output privately and record
+the original Linux image/checksum separately. Then boot the UEFI diagnostic
+candidate and return its loader topology and init files. Keep the default
+3 GiB cap for that initial control and record the effective firmware settings.
+Full 4/8 GiB USB/storage/network DMA, native GENET traffic, SD/USB boot,
+framebuffer/keyboard and cold/warm boot remain the next hardware gates, followed
+by installation, desktop, update and recovery. Keep Pi 400 and CM4 separate.
