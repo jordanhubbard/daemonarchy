@@ -97,6 +97,15 @@ performance improvement or canonical per-unit Component execution result.
 
 ## Current work
 
+The operator-directed **1.6 ARM program** supersedes the earlier Spark-only
+scope: popular ARM platforms include native Apple Silicon, NVIDIA Spark/GB10,
+Raspberry Pi 4 **before** Raspberry Pi 5, other SBC and Qualcomm families, and
+server/cloud/VM profiles. ARM32 feasibility is explicit. None gains support status
+from a roadmap entry. [The 1.6 plan](docs/roadmap/release-1.6.0.md) defines the
+matrix and final-distribution gates; [the research](docs/roadmap/arm-research-20261107.md)
+and [implementation tasks](docs/roadmap/arm-implementation.md) retain source
+provenance, hwtrace discovery, driver/package prerequisites and native acceptance.
+
 INSTALL-PERF-001 (issue #134) is the first planned 1.4.1 development program. It
 requires equivalent exact-image installer baselines on the MSI, MacBookPro16,1
 and a VM, then at least a 10x total-time improvement on both physical machines.

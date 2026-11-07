@@ -1202,23 +1202,22 @@ remains open; report files do not establish a passing gate.
 ### [ ] SPARK-001 — Boot, install and run the desktop on the NVIDIA RTX Spark laptop
 
 - **GitHub issue:** [#291](https://github.com/jordanhubbard/daemonarchy/issues/291), [1.6.0 milestone](https://github.com/jordanhubbard/daemonarchy/milestone/5).
-- **Priority:** P0 for 1.6.0
 - **Release target:** 1.6.0
-- **Release:** 1.6.0 (deferred from 1.5.0 and 1.5.1; see [the 1.6.0 plan](release-1.6.0.md))
-- **Owner:** owned FreeBSD source (arm64 SMP start), release integration
-- **Direction:** Make the release arm64 image boot, install and reach the desktop on the NVIDIA RTX Spark laptop, the first physical arm64 target.
-- **Conclusion:** The 1.5.0 and 1.5.1 images both hang after `Starting CPU 4 (400)`. The 1.5.1 kernel bounds the CPU-start wait and still hangs, which points at the PSCI CPU_ON call for MPIDR `0x400` not returning, or at a core that starts and then hangs the system. `hw.ncpu=4` reaches init. See [the 1.6.0 plan](release-1.6.0.md#what-the-151-result-says).
-- **Depends on:** ARCH-001 (the arm64 image and feeds)
+- **Plan:** [Research](arm-research-20261107.md), [implementation and discovery](arm-implementation.md), [release gates](release-1.6.0.md).
+- **Priority:** P0
+- **Owner:** Owned FreeBSD arm64 source and release integration
+- **Direction:** Deliver a native installed desktop on the NVIDIA RTX Spark laptop, with all usable firmware-enabled CPUs.
+- **Conclusion:** The four-CPU physical control reaches init and the durable collector preserved seven files. Broad sysctl enumeration timed out; ACPI was the last started probe. The CPU4 cause and the laptop enabled-core topology remain unresolved; the detailed research separates facts from candidate causes.
+- **Depends on:** ARM-002, ARM-003
 - **Implementation:**
-  - [ ] Run the four loader experiments of [plan step 1](release-1.6.0.md#1-evidence-from-the-published-151-image-no-new-code) on the 1.5.1 image and record the screens.
-  - [ ] Compare FreeBSD's CPU_ON call and entry state with Linux on the same SoC; the DGX Spark facts are recorded ([step 2](release-1.6.0.md#2-linux-on-the-same-soc)).
-  - [ ] Fix secondary CPU start in daemonarchy-src (the CPU_ON entry state or power-domain order, or the fault src#60 names), plus the X925 erratum 4193781 workaround; fall back to a documented OEM quirk only if the root fix misses 1.6.0.
-  - [ ] Install to the internal NVMe and reach the desktop on `efifb`; Wi-Fi through mt7925.
-  - [ ] Send the CPU-start fix to FreeBSD upstream.
+  - [ ] Discovery: Start from the four-CPU physical baseline and capture the laptop MADT enabled flags, MPIDRs, MIDRs, PPTT, IORT and firmware. Resolve its 18-core marketing versus 20 ACPI-entry discrepancy without importing the DGX count.
+  - [ ] Discovery: Compare Linux and FreeBSD PSCI conduit/function width, context zero versus logical ID, physical entry address, EL/cache/translation state and startup order. Establish a persistent pre-call and return checkpoint before trying the next full-core boot.
+  - [ ] Run one-variable experiments with a known-good four-CPU control; instrument already-online CPUs to distinguish a non-returning firmware call from a late secondary fault or first-idle failure. A context-zero test needs a matching secondary identification path.
+  - [ ] Independently implement and validate required Cortex-X925 4193781 TLBI completion handling (Linux config 4118414), and audit A725/X925 speculative-SSBS errata. Match MIDRs and all BSD TLB paths; do not call these the proven CPU4 cause.
+  - [ ] Repair the identified CPU, NUMA, firmware mapping or driver defect; upstream a minimal BSD change. Qualify SMMUv3/DMA, NVMe, MT7925, display, input and installed boot rather than stopping at a four-core workaround.
 - **Evidence:**
-  - [ ] Photos and traces of each step-1 boot, with the image hash.
-  - [ ] The release arm64 image booting on the Spark with the stated CPU count, an install, the installed desktop and Wi-Fi traffic, with `dmesg`, `sysctl hw`, `pciconf -lv` and `devinfo`.
-  - [ ] amd64 regression: the QEMU and MSI/MacBook installs still pass.
+  - [ ] All firmware-enabled usable cores pass cold/warm boot, concurrent load, TLB/mmap/fork stress and idle transitions; core count is bound to the laptop tables.
+  - [ ] Exact release media installs to selected NVMe, preserves unrelated data, boots the desktop, and passes real Wi-Fi/network traffic and the shared ARM acceptance matrix. A reduced-core fallback remains a limitation until explicitly accepted.
 
 ### [ ] LIVE-001 — Offer a live desktop from the installer media without touching the disk
 
@@ -1679,3 +1678,277 @@ remains open; report files do not establish a passing gate.
   - [ ] Document the user-run `litai` operations on `/usr/src` and `/usr/ports`.
 - **Evidence:**
   - [ ] `pkg install` of the package on an installed image runs `litai` successfully against the system's checkouts; the package is in the signed feed and its version is pinned to a framework release.
+
+### [ ] ARM-001 — Maintain the ARM platform and upstream evidence register
+
+- **GitHub issue:** [#295](https://github.com/jordanhubbard/daemonarchy/issues/295), [1.6.0 milestone](https://github.com/jordanhubbard/daemonarchy/milestone/5).
+- **Release target:** 1.6.0
+- **Plan:** [Research](arm-research-20261107.md), [implementation and discovery](arm-implementation.md), [release gates](release-1.6.0.md).
+- **Priority:** P0
+- **Owner:** ARM release integration
+- **Direction:** Deliver the 1.6 ARM platform program with explicit discovery, implementation and final-distribution qualification for every enrolled board.
+- **Conclusion:** Operator expanded the former SPARK-only scope on 2026-11-07. Source research is recorded; hardware support remains unqualified.
+- **Depends on:** none
+- **Implementation:**
+  - [ ] Record exact board, SoC, firmware, boot chain, ABI, source pins, owner and available test hardware for every platform.
+  - [ ] Refresh both requested repositories and their Asahi, Aurora, NVIDIA/NixOS and BSD predecessors; distinguish merged code, reports and hypotheses.
+- **Evidence:**
+  - [ ] Every enrolled model has a release-ledger row and traceable source evidence.
+  - [ ] No family or blocked board is silently removed from release coverage.
+
+### [ ] ARM-002 — Make hwtrace discovery durable across ARM boot chains
+
+- **GitHub issue:** [#296](https://github.com/jordanhubbard/daemonarchy/issues/296), [1.6.0 milestone](https://github.com/jordanhubbard/daemonarchy/milestone/5).
+- **Release target:** 1.6.0
+- **Plan:** [Research](arm-research-20261107.md), [implementation and discovery](arm-implementation.md), [release gates](release-1.6.0.md).
+- **Priority:** P0
+- **Owner:** Diagnostics and owned FreeBSD loader/kernel
+- **Direction:** Retain synchronous FAT/checksum/readback safeguards; add recovery after interruption, foreign-epoch completion, exhausted queues, full media and trace-budget failure. Provide explicit fallback transport when earliest CPU failure precedes any disk driver.
+- **Conclusion:** Planned for the operator-directed 1.6 ARM program; research and detailed phases are in docs/roadmap/arm-implementation.md. No new platform support is claimed.
+- **Depends on:** ARM-001
+- **Implementation:**
+  - [ ] Discovery: Capture ACPI APIC/PPTT/FADT/IORT/SRAT/SLIT and FDT/Apple handoff data before risky kernel probes, with bounded lengths, checksums, address-range validation and private raw custody.
+  - [ ] Discovery: Measure reset and power-cycle survival of EFI variables, raw-block slots, reserved RAM and available serial/proxy transports on every firmware profile. Missing runtime NVRAM is a supported diagnostic outcome.
+  - [ ] Add platform-selected discovery presets and pre-call/return/secondary-entry/MMU/interrupt/check-in/scheduler/idle milestones. Never invoke EFI Boot Services after ExitBootServices or assume EFI runtime is callable before its initialization.
+  - [ ] Replace broad sysctl -a and default acpidump /dev/mem access with isolated allowlisted probes and offline ACPI decoding. Preserve command output and status at each checkpoint; distinguish timeout, kernel stall, incomplete collection and complete capture.
+  - [ ] Retain synchronous FAT/checksum/readback safeguards; add recovery after interruption, foreign-epoch completion, exhausted queues, full media and trace-budget failure. Provide explicit fallback transport when earliest CPU failure precedes any disk driver.
+- **Evidence:**
+  - [ ] Native and firmware-VM fault injection plus physical warm reset and power-cycle records preserve the last committed checkpoint and earlier files.
+  - [ ] A deliberately hung probe cannot erase completed evidence; early CPU and firmware-stage gaps are reported instead of inferred from absent records.
+
+### [ ] SPARK-002 — Qualify DGX Spark and GB10 partner systems separately
+
+- **GitHub issue:** [#297](https://github.com/jordanhubbard/daemonarchy/issues/297), [1.6.0 milestone](https://github.com/jordanhubbard/daemonarchy/milestone/5).
+- **Release target:** 1.6.0
+- **Plan:** [Research](arm-research-20261107.md), [implementation and discovery](arm-implementation.md), [release gates](release-1.6.0.md).
+- **Priority:** P1
+- **Owner:** Owned arm64 source and NVIDIA platform integration
+- **Direction:** Qualify built-in networking, ConnectX-7 power/hotplug where fitted, storage, firmware framebuffer and EC/thermal behavior. Keep Blackwell GPU/CUDA claims open unless an actual FreeBSD implementation and runtime result exists.
+- **Conclusion:** Planned for the operator-directed 1.6 ARM program; research and detailed phases are in docs/roadmap/arm-implementation.md. No new platform support is claimed.
+- **Depends on:** ARM-002, ARM-003
+- **Implementation:**
+  - [ ] Discovery: Read a working Linux DGX baseline: exact NVIDIA source/config, effective cmdline, firmware components, topology, memory carveouts, IORT/SMMU and PCIe/EC inventory. Treat Founders Edition, Ascent GX10 and other partner boards as distinct rows.
+  - [ ] Discovery: Investigate factory-firmware reports, CBB probe suppression, PCIe payload policy, KHO memory reservations, SVA/config-baseline mismatches and later power-daemon resets by boot stage; do not transplant Linux parameters.
+  - [ ] Implement demonstrated BSD firmware/CPU/NUMA/IOMMU/PCIe fixes with board and MIDR qualification. Keep 4 KiB as the proven baseline; gate any 64 KiB experiment on the complete ABI/module closure.
+  - [ ] Qualify built-in networking, ConnectX-7 power/hotplug where fitted, storage, firmware framebuffer and EC/thermal behavior. Keep Blackwell GPU/CUDA claims open unless an actual FreeBSD implementation and runtime result exists.
+- **Evidence:**
+  - [ ] Each named partner model boots all enabled CPUs and passes sustained CPU/memory/storage/network load on the final distribution.
+  - [ ] Record display renderer and thermals, model-specific firmware baseline, DMA faults and rollback/recovery; a DGX result never qualifies the N1X laptop.
+
+### [ ] RPI-001 — Port Raspberry Pi 4 before Raspberry Pi 5
+
+- **GitHub issue:** [#298](https://github.com/jordanhubbard/daemonarchy/issues/298), [1.6.0 milestone](https://github.com/jordanhubbard/daemonarchy/milestone/5).
+- **Release target:** 1.6.0
+- **Plan:** [Research](arm-research-20261107.md), [implementation and discovery](arm-implementation.md), [release gates](release-1.6.0.md).
+- **Priority:** P0
+- **Owner:** SBC boot, owned FreeBSD source and release integration
+- **Direction:** Finish Pi 4 media, installer, installed boot and recovery first; reuse the common infrastructure for Pi 5 without treating Pi 4 drivers as RP1 support.
+- **Conclusion:** Planned for the operator-directed 1.6 ARM program; research and detailed phases are in docs/roadmap/arm-implementation.md. No new platform support is claimed.
+- **Depends on:** ARM-002, ARM-003
+- **Implementation:**
+  - [ ] Discovery: First SBC bring-up target by operator decision: Pi 4B; record BCM2711 stepping, RAM variant, EEPROM, power supply, U-Boot/EDK2, DTB/ACPI mode and SD/USB boot. Enroll Pi 400 and CM4 as separate carrier/model records.
+  - [ ] Discovery: Use a known-good Debian or Debian-based Raspberry Pi OS run, upstream Linux and Raspberry Pi downstream source as behavioral references. Record exact image, resolved config, DTB/overlays, firmware and feature results rather than assuming every Debian image is equivalent.
+  - [ ] Establish the standard SBC hwtrace SD/USB layout and deterministic firmware handoff. Match BCM2711 clocks, mailbox/interrupts, SDHCI, GENET Ethernet, xHCI PCIe/DMA and framebuffer; preserve the distinction between firmware-visible and OS-driven devices.
+  - [ ] Test the UEFI 3 GiB memory cap and full-RAM DMA correctness explicitly, including 4/8 GiB variants. Build native storage/network/input plus the actual desktop path, then package boot firmware and DTBs as retained inputs.
+  - [ ] Finish Pi 4 media, installer, installed boot and recovery first; reuse the common infrastructure for Pi 5 without treating Pi 4 drivers as RP1 support.
+- **Evidence:**
+  - [ ] Pi 4B completes the shared exact-image install/desktop/network/update/rollback suite, cold/warm boots and full-RAM USB/storage DMA stress.
+  - [ ] Pi 400/CM4 extensions require their own input, carrier, network and storage evidence; Pi 4 completion does not close the Pi 5 item.
+
+### [ ] RPI-002 — Port Raspberry Pi 5 and resolve RP1 and firmware quirks
+
+- **GitHub issue:** [#299](https://github.com/jordanhubbard/daemonarchy/issues/299), [1.6.0 milestone](https://github.com/jordanhubbard/daemonarchy/milestone/5).
+- **Release target:** 1.6.0
+- **Plan:** [Research](arm-research-20261107.md), [implementation and discovery](arm-implementation.md), [release gates](release-1.6.0.md).
+- **Priority:** P1
+- **Owner:** SBC boot and owned FreeBSD RP1/BCM2712 source
+- **Direction:** Deliver the board-specific final image and installed boot, default application/graphics stack and working network; document peripherals still under development per model.
+- **Conclusion:** Planned for the operator-directed 1.6 ARM program; research and detailed phases are in docs/roadmap/arm-implementation.md. No new platform support is claimed.
+- **Depends on:** RPI-001, ARM-002, ARM-003
+- **Implementation:**
+  - [ ] Discovery: Follow Pi 4 in the SBC implementation queue while researching Pi 5 independently. Inventory C1/D0 stepping, RAM, EEPROM, power/cooling, RP1 and SD/USB/NVMe paths; include CM5 and Pi 500-family carrier/input differences.
+  - [ ] Discovery: Compare working Debian/Raspberry Pi OS images, upstream Linux and Raspberry Pi downstream RP1/BCM2712 drivers and bindings. Preserve the reference kernel/config/DTB and EEPROM identities; distinguish mainline gaps from downstream support.
+  - [ ] Discovery: Investigate the unmaintained UEFI reference, newer EEPROM display regressions, missing runtime-variable persistence and ACPI/FDT differences. Compare Linux bcm2711 4 KiB and bcm2712 16 KiB builds without assuming Pi 5 requires 16 KiB.
+  - [ ] Implement RP1 PCIe/interrupt/clock/reset/USB/GENET/pinctrl/PWM support needed by the distribution, plus SD/NVMe, display and cooling. Do not equate a DTB import or old UEFI boot report with these drivers.
+  - [ ] Choose and retain a maintained boot path per revision; qualify fallback trace persistence without EFI variables, boot-order behavior and power-cycle recovery.
+  - [ ] Deliver the board-specific final image and installed boot, default application/graphics stack and working network; document peripherals still under development per model.
+- **Evidence:**
+  - [ ] Pi 5 C1 and D0 plus enrolled RAM variants pass final-image boot, full memory/DMA, SD/USB/NVMe, desktop/input, network, thermal and update/rollback tests.
+  - [ ] RP1 Ethernet and cooling are exercised natively; USB adapters or manual fan settings do not establish built-in-device acceptance. CM5/Pi 500 results remain separate.
+
+### [ ] APPLE-001 — Bring up native Apple Silicon across board generations
+
+- **GitHub issue:** [#300](https://github.com/jordanhubbard/daemonarchy/issues/300), [1.6.0 milestone](https://github.com/jordanhubbard/daemonarchy/milestone/5).
+- **Release target:** 1.6.0
+- **Plan:** [Research](arm-research-20261107.md), [implementation and discovery](arm-implementation.md), [release gates](release-1.6.0.md).
+- **Priority:** P0
+- **Owner:** Owned FreeBSD Apple platform and boot integration
+- **Direction:** Implement graphics/display, input and platform services under ARM-004; examine Apple M4+ WFI register/SIMD state preservation by MIDR independently of PSCI experiments on NVIDIA. Keep new-generation firmware/display/GPU prerequisites open until proven.
+- **Conclusion:** Planned for the operator-directed 1.6 ARM program; research and detailed phases are in docs/roadmap/arm-implementation.md. No new platform support is claimed.
+- **Depends on:** ARM-002, ARM-003
+- **Implementation:**
+  - [ ] Discovery: Enroll M1/M2 reference Macs first and maintain explicit M3/M4/A18 Pro/M5 and emerging-generation rows. Capture board/SoC IDs, ADT/FDT, AIC/DART generation, enabled cores, reservations, firmware and per-OS ESP/Recovery ownership.
+  - [ ] Discovery: Record both system firmware and the OS stub stage-2 firmware. Investigate the Apple-confirmed M5 Pro/Max/Ultra raw-boot core restriction using the newer-stub J716s report; do not assume a main macOS update refreshes the stub or apply beta firmware automatically.
+  - [ ] Discovery: Use m1n1 proxy/tethered capture and BSD predecessors where appropriate. Separate the default Asahi matrix, Aurora work and unmerged proposals; inspect the latest results rather than an early dead-end claim.
+  - [ ] Deliver a recoverable APFS-stub/m1n1/U-Boot/FreeBSD EFI path that preserves macOS and Recovery, identifies the correct ESP and binds board DTB, kernel, firmware payload and loader versions. No generic whole-disk wipe.
+  - [ ] Audit existing FreeBSD T8103 support, then implement missing AIC generations, CPU start/idle, DART/busdma, ANS/NVMe, RTKit/SMC and USB/HID before claiming later SoCs. Check entry trampolines and reserved regions in untethered boots.
+  - [ ] Implement graphics/display, input and platform services under ARM-004; examine Apple M4+ WFI register/SIMD state preservation by MIDR independently of PSCI experiments on NVIDIA. Keep new-generation firmware/display/GPU prerequisites open until proven.
+- **Evidence:**
+  - [ ] Each enrolled Mac passes native cold and untethered boot, all enabled cores, idle/SIMD stress, storage and working input before encrypted-root prompts; a QEMU/HVF guest is a different result.
+  - [ ] Exact distribution installs without destroying Apple recovery, reaches a usable desktop and network, updates and rolls back its matched boot set, and passes per-model power/peripheral validation.
+
+### [ ] SBC-001 — Port other popular ARM boards with model-specific profiles
+
+- **GitHub issue:** [#301](https://github.com/jordanhubbard/daemonarchy/issues/301), [1.6.0 milestone](https://github.com/jordanhubbard/daemonarchy/milestone/5).
+- **Release target:** 1.6.0
+- **Plan:** [Research](arm-research-20261107.md), [implementation and discovery](arm-implementation.md), [release gates](release-1.6.0.md).
+- **Priority:** P1
+- **Owner:** Owned FreeBSD FDT/ACPI board support
+- **Direction:** Qualify external peripherals and safe board recovery without reusing another model firmware or voltage tables merely because its SoC matches. Integrate each board into the common media and desktop tracks.
+- **Conclusion:** Planned for the operator-directed 1.6 ARM program; research and detailed phases are in docs/roadmap/arm-implementation.md. No new platform support is claimed.
+- **Depends on:** ARM-002, ARM-003
+- **Implementation:**
+  - [ ] Discovery: Enroll ROCK 5B and Orange Pi 5/5 Plus (RK3588), RK3399/RK356x Pine64/Radxa boards, CIX Orion O6-class boards, and representative Allwinner, Amlogic and NXP i.MX8/MNT Reform boards. Record exact carrier and SoC, not just the family name.
+  - [ ] Discovery: Compare maintained board firmware, Linux bindings and BSD implementations for regulator/clock/reset, CPU, memory, PCIe/USB/storage and display/network dependencies. Treat Windows-oriented RK3588 ACPI and mainline/vendor FDT modes as separate profiles.
+  - [ ] Implement model-specific boot containers/DTBs, clocks/regulators, interrupts, DMA, storage, network and display. Preserve firmware-storage reservations and document runtime NVRAM limitations on SD/eMMC firmware.
+  - [ ] Qualify external peripherals and safe board recovery without reusing another model firmware or voltage tables merely because its SoC matches. Integrate each board into the common media and desktop tracks.
+- **Evidence:**
+  - [ ] Every enrolled board has physical final-image results for its own firmware/mode, media, full RAM, I/O, desktop and network.
+  - [ ] Neither RK3588 firmware support nor an OpenBSD/Linux result qualifies FreeBSD; unresolved board prerequisites remain visible in 1.6.
+
+### [ ] QUALCOMM-001 — Bring up Qualcomm ARM laptops as distinct hardware targets
+
+- **GitHub issue:** [#302](https://github.com/jordanhubbard/daemonarchy/issues/302), [1.6.0 milestone](https://github.com/jordanhubbard/daemonarchy/milestone/5).
+- **Release target:** 1.6.0
+- **Plan:** [Research](arm-research-20261107.md), [implementation and discovery](arm-implementation.md), [release gates](release-1.6.0.md).
+- **Priority:** P1
+- **Owner:** Owned FreeBSD Qualcomm platform and desktop integration
+- **Direction:** Integrate native installed boot, graphical installer, battery/lid/suspend and public firmware/package dependencies into the final release profiles.
+- **Conclusion:** Planned for the operator-directed 1.6 ARM program; research and detailed phases are in docs/roadmap/arm-implementation.md. No new platform support is claimed.
+- **Depends on:** ARM-002, ARM-003
+- **Implementation:**
+  - [ ] Discovery: Enroll a Snapdragon 8cx Gen3/X13s and Snapdragon X Elite/Plus laptop profile with exact model and SoC. Inventory firmware, ACPI versus Linux-selected DTB, PSCI, memory/SMMU, UFS/NVMe, USB/HID, WLAN and display.
+  - [ ] Discovery: Use upstream Linux/board firmware and BSD predecessor evidence. Existing FreeBSD Qualcomm router drivers or aarch64 architecture support are not evidence for an Oryon laptop.
+  - [ ] Implement missing interrupt/CPU/clock/reset/IOMMU and storage/input prerequisites, then native GPU/display and firmware-dependent networking. Retain OEM recovery and a known-good boot entry.
+  - [ ] Integrate native installed boot, graphical installer, battery/lid/suspend and public firmware/package dependencies into the final release profiles.
+- **Evidence:**
+  - [ ] Each model boots all enabled cores, installs, reaches a usable desktop, passes network traffic, device DMA and sleep/resume tests on final media.
+  - [ ] Document firmware and driver blockers by model rather than representing VM or another Snapdragon generation as acceptance.
+
+### [ ] ARM-003 — Qualify ARM base, page-size ABIs and package closures
+
+- **GitHub issue:** [#303](https://github.com/jordanhubbard/daemonarchy/issues/303), [1.6.0 milestone](https://github.com/jordanhubbard/daemonarchy/milestone/5).
+- **Release target:** 1.6.0
+- **Plan:** [Research](arm-research-20261107.md), [implementation and discovery](arm-implementation.md), [release gates](release-1.6.0.md).
+- **Priority:** P0
+- **Owner:** FreeBSD base/ports, native build and package release
+- **Direction:** Require native aarch64 worker and actual target tests; distinguish cross-build correctness from emulated or hardware runtime. Keep variants isolated in feeds and upgrade selection.
+- **Conclusion:** Planned for the operator-directed 1.6 ARM program; research and detailed phases are in docs/roadmap/arm-implementation.md. No new platform support is claimed.
+- **Depends on:** ARM-001
+- **Implementation:**
+  - [ ] Discovery: Inventory CPU translation granules, IOMMU granules, ELF alignment and actual page size for every profile; distinguish Apple 16 KiB DMA constraints, working DGX 4 KiB, optional DGX 64 KiB and Pi 5 optimized Linux 16 KiB from its 4 KiB-capable baseline.
+  - [ ] Discovery: Capture resolved kernel configs, effective boot arguments, dependencies and downstream patch results. Reject silent config-delta losses, patch rejects and wrong target builds.
+  - [ ] Choose supported FreeBSD kernel/world/module/package variants through measured compatibility, retaining exact toolchain and source identities. Do not assume Linux user4k or FEX/muvm behavior exists in FreeBSD.
+  - [ ] Build and qualify the complete signed base, desktop, compatibility, DRM/firmware, checkout and application closures for each admitted ABI. Check ELF segment alignment, mmap/shared-memory/JIT and DMA behavior.
+  - [ ] Require native aarch64 worker and actual target tests; distinguish cross-build correctness from emulated or hardware runtime. Keep variants isolated in feeds and upgrade selection.
+- **Evidence:**
+  - [ ] Native boot and application evidence covers each admitted page-size/ABI variant; incompatible modules and feeds are refused before installation.
+  - [ ] Package solving and offline/online installs use the pinned signed closure, with correct missing-application reporting and no x86-only substitutes claimed as native ARM.
+
+### [ ] ARM-004 — Deliver ARM graphics, input, network and power integration
+
+- **GitHub issue:** [#304](https://github.com/jordanhubbard/daemonarchy/issues/304), [1.6.0 milestone](https://github.com/jordanhubbard/daemonarchy/milestone/5).
+- **Release target:** 1.6.0
+- **Plan:** [Research](arm-research-20261107.md), [implementation and discovery](arm-implementation.md), [release gates](release-1.6.0.md).
+- **Priority:** P0
+- **Owner:** Desktop, compatibility, owned drivers and ports
+- **Direction:** Provide default browser, terminal, editor, file manager and graphical package manager workflows on every desktop profile; keep headless server roles separately declared.
+- **Conclusion:** Planned for the operator-directed 1.6 ARM program; research and detailed phases are in docs/roadmap/arm-implementation.md. No new platform support is claimed.
+- **Depends on:** ARM-003, ARM-002
+- **Implementation:**
+  - [ ] Discovery: Record real DRM/KMS renderer/API capabilities and firmware-framebuffer fallback separately; inventory keyboard/trackpad/external USB, WLAN/Ethernet, audio, cameras, Bluetooth, display outputs and power features per board.
+  - [ ] Discovery: Carry forward Mac HID registration order, early encrypted-root input, Broadcom scan-versus-association/resume distinctions, speaker protection and measured sleep drain; separate all Intel T2-only workarounds.
+  - [ ] Implement missing native drivers and package matching firmware/Mesa/compositor components; qualify software rendering only with a working display/input path and explicitly record its performance/limitations.
+  - [ ] Wire FreeBSD services for network, battery/thermals, lid, safe speaker audio and recovery after peripheral/display loss. Gate features by capability and device revision, with bounded failure behavior and no Linux service substitution.
+  - [ ] Provide default browser, terminal, editor, file manager and graphical package manager workflows on every desktop profile; keep headless server roles separately declared.
+- **Evidence:**
+  - [ ] Real input, native clipboard, display/hotplug, renderer evidence and actual default applications work on each final desktop profile.
+  - [ ] Network transfers, Wi-Fi reconnect, audio safety, USB/input after boot/resume and measured idle/suspend drain pass per-model tests; enumerated devices alone never pass.
+
+### [ ] ARM-005 — Ship coherent ARM discovery, installer and recovery media
+
+- **GitHub issue:** [#305](https://github.com/jordanhubbard/daemonarchy/issues/305), [1.6.0 milestone](https://github.com/jordanhubbard/daemonarchy/milestone/5).
+- **Release target:** 1.6.0
+- **Plan:** [Research](arm-research-20261107.md), [implementation and discovery](arm-implementation.md), [release gates](release-1.6.0.md).
+- **Priority:** P0
+- **Owner:** Installer, verified boot and release engineering
+- **Direction:** Qualify signed upgrades/rollback and atomic matched boot-set updates (loader, DTB, kernel, modules and firmware). Retain recovery entries and diagnostics; preserve published bytes and follow the one-session signing rule.
+- **Conclusion:** Planned for the operator-directed 1.6 ARM program; research and detailed phases are in docs/roadmap/arm-implementation.md. No new platform support is claimed.
+- **Depends on:** ARM-001, ARM-002, ARM-003
+- **Implementation:**
+  - [ ] Discovery: Determine board-specific first-stage prerequisites, EFI/FDT/ACPI boot paths, owned ESP, disk/media layout and firmware redistribution rights. Enumerate raw SD/USB, EFI ISO and platform bootstrap outputs explicitly.
+  - [ ] Discovery: Bind source, firmware, DTBs, board revision, ABI, loader/kernel/modules and signed package closures in a manifest; keep diagnostics separate from the install/live product.
+  - [ ] Build platform-selected hwtrace and install/live media without pretending one generic USB image provisions every ARM platform. Reuse common payloads while retaining board boot containers and Apple recovery ownership.
+  - [ ] Implement SD/eMMC/USB/NVMe selection, preserve-data installs and installed boot, with clear model discovery and unsupported-device explanations. Wrong firmware/board/ABI combinations fail before destructive writes.
+  - [ ] Qualify signed upgrades/rollback and atomic matched boot-set updates (loader, DTB, kernel, modules and firmware). Retain recovery entries and diagnostics; preserve published bytes and follow the one-session signing rule.
+- **Evidence:**
+  - [ ] Fresh and retained-data installs, installed cold boot, interrupted install/download, checksum/signature/ABI rejection and boot-set rollback pass on exact final media per board.
+  - [ ] Release manifests and public feeds match downloaded artifacts; packaged image contents and every distributed firmware/license are verified, with no test keys or private captures.
+
+### [ ] ARM-006 — Qualify and document the complete 1.6 ARM distribution
+
+- **GitHub issue:** [#306](https://github.com/jordanhubbard/daemonarchy/issues/306), [1.6.0 milestone](https://github.com/jordanhubbard/daemonarchy/milestone/5).
+- **Release target:** 1.6.0
+- **Plan:** [Research](arm-research-20261107.md), [implementation and discovery](arm-implementation.md), [release gates](release-1.6.0.md).
+- **Priority:** P0
+- **Owner:** Release QA and documentation
+- **Direction:** Retain amd64 install/desktop/network regressions and the required release security/signing workflow. Plan publication only after every claimed target has the required release ledger evidence.
+- **Conclusion:** Planned for the operator-directed 1.6 ARM program; research and detailed phases are in docs/roadmap/arm-implementation.md. No new platform support is claimed.
+- **Depends on:** ARM-001, ARM-002, ARM-003, ARM-004, ARM-005
+- **Implementation:**
+  - [ ] Discovery: Allocate a real worker/owner and baseline for every enrolled matrix row, including Pi 4 before Pi 5. Keep evidence identities, missing hardware and upstream prerequisites visible.
+  - [ ] Discovery: Design failure cases for reset persistence, malformed firmware tables, NVRAM/media exhaustion, probe hangs, corrupt downloads, wrong ABI, loss of network/input and interrupted upgrades.
+  - [ ] Run the discovery/driver matrix and the final exact-image suite as distinct gates; rerun affected checks after changes to signed inputs. Keep native hardware, VM, cloud and synthetic evidence separate.
+  - [ ] Refresh hardware support tables, getting-started/install/recovery guides, release notes, README, tutorial/video/slides and other collateral around the actual 1.6 artifacts and limitations. Audit all current support/version claims without rewriting historical records.
+  - [ ] Retain amd64 install/desktop/network regressions and the required release security/signing workflow. Plan publication only after every claimed target has the required release ledger evidence.
+- **Evidence:**
+  - [ ] All required per-target final-distribution checklists have exact artifact/firmware/source identifiers and observed results; no research, four-core workaround or installer exit substitutes for acceptance.
+  - [ ] Every unresolved target or feature remains explicitly open; it cannot be silently dropped to make the release green. Published support claims match the reviewed ledger and signed downloaded artifacts.
+
+### [ ] ARM-007 — Qualify ARM servers, cloud systems and virtual machines
+
+- **GitHub issue:** [#307](https://github.com/jordanhubbard/daemonarchy/issues/307), [1.6.0 milestone](https://github.com/jordanhubbard/daemonarchy/milestone/5).
+- **Release target:** 1.6.0
+- **Plan:** [Research](arm-research-20261107.md), [implementation and discovery](arm-implementation.md), [release gates](release-1.6.0.md).
+- **Priority:** P1
+- **Owner:** Server platform, native workers and release QA
+- **Direction:** Qualify headless operation and remote administration explicitly; where a desktop profile is offered, test the real virtual/physical DRM path and input rather than reusing a console-only build worker result.
+- **Conclusion:** Planned for the operator-directed 1.6 ARM program; research and detailed phases are in docs/roadmap/arm-implementation.md. No new platform support is claimed.
+- **Depends on:** ARM-002, ARM-003, ARM-005
+- **Implementation:**
+  - [ ] Discovery: Enroll an Ampere Altra/ARM server profile, AWS Graviton, and a supported ARM cloud alternative; separately retain QEMU/HVF/KVM/UTM and VMware Fusion guest profiles. Record provider instance, virtual firmware, devices and console/recovery channel.
+  - [ ] Discovery: Discover NUMA, GIC/ITS, SMMU, PCIe, NVMe, virtio/ENA/network, balloon/entropy/timekeeping and virtual GPU dependencies. A VM on Apple hardware does not test native Apple SoC support.
+  - [ ] Implement native boot, cloud/disk-image provisioning, serial/provider-console discovery and recovery, network/storage/device drivers and signed package/bootstrap workflows. Validate large-memory/core-count and page-size behavior.
+  - [ ] Qualify headless operation and remote administration explicitly; where a desktop profile is offered, test the real virtual/physical DRM path and input rather than reusing a console-only build worker result.
+- **Evidence:**
+  - [ ] Exact provider/physical/VM profiles pass boot, all expected CPUs/memory, sustained I/O/network load, timekeeping, update and recovery.
+  - [ ] Physical-server, cloud-instance and VM results retain separate scope; desktop claims require the shared graphical acceptance.
+
+### [ ] ARM-008 — Resolve legacy ARM32 coverage and feasibility explicitly
+
+- **GitHub issue:** [#308](https://github.com/jordanhubbard/daemonarchy/issues/308), [1.6.0 milestone](https://github.com/jordanhubbard/daemonarchy/milestone/5).
+- **Release target:** 1.6.0
+- **Plan:** [Research](arm-research-20261107.md), [implementation and discovery](arm-implementation.md), [release gates](release-1.6.0.md).
+- **Priority:** P2
+- **Owner:** Architecture and base/ports release engineering
+- **Direction:** Present any unsupported ARMv6 or infeasible desktop target as an explicit scope decision with source evidence and prerequisites; retain it in the inventory rather than inventing successful coverage.
+- **Conclusion:** Planned for the operator-directed 1.6 ARM program; research and detailed phases are in docs/roadmap/arm-implementation.md. No new platform support is claimed.
+- **Depends on:** ARM-001
+- **Implementation:**
+  - [ ] Discovery: Inventory still-popular ARMv7 boards and older Pi/Zero/BeagleBone-class devices separately from aarch64-capable Pi 3/Zero 2. Record available FreeBSD versions, toolchains, drivers, RAM/storage and intended desktop or headless role.
+  - [ ] Discovery: FreeBSD lists ARMv7 separately and newer releases do not support ARMv6. Establish the actual native baseline and product feasibility; do not relabel aarch64 support as all ARM.
+  - [ ] Prototype an ARMv7 base/kernel/boot/package pipeline only against an admitted maintained FreeBSD baseline, and measure whether the complete distribution is usable within device resources.
+  - [ ] Present any unsupported ARMv6 or infeasible desktop target as an explicit scope decision with source evidence and prerequisites; retain it in the inventory rather than inventing successful coverage.
+- **Evidence:**
+  - [ ] Each claimed ARM32 target has native boot, working application/role, package/update and recovery evidence for its actual ABI.
+  - [ ] Unsupported architectures and unresolved feasibility are disclosed in the 1.6 support matrix and are never hidden by the ARM theme.
