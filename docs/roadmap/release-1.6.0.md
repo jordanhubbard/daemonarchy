@@ -61,7 +61,9 @@ The published `daemonarchy-hwtrace-1.5.1-aarch64` image can run the same setting
 
 ### 2. Ground truth from Linux on the same SoC
 
-From a Linux boot on the laptop (a live USB) or, as a weaker substitute, the DGX Spark `sparky`: the
+Omarchy (Arch Linux) already runs on the DGX Spark, the same SoC family, so a working Linux boot of all
+cores is available to learn from: its kernel version and configuration, and how it starts each core. From
+that system, or from a Linux live USB on the laptop itself: the
 MADT (every GICC entry's flags, parking-protocol version and mailbox address, MPIDR), PPTT and DSDT
 (`acpidump`), the PSCI version and features from `dmesg`, the boot method Linux used per core, MIDR per
 core, and each secondary core's start time. Compare the `0x400` entry with `0x000` to `0x300`. Linux never
@@ -100,11 +102,12 @@ fails once SMP works. Out of scope and stated as unsupported: the NVIDIA GPU, Bl
   exact image hashes. amd64 is unaffected (the QEMU and MSI/MacBook installs still pass).
 - The release notes claim only what these records show.
 
-## Other 1.6.0 candidates (not yet scoped)
+## Scope
 
-The issues on the 1.6.0 milestone, moved from 1.5.1 on 2026-11-07: DEBUG-003 (#33), PERF-002 (#39),
-ARCH-001 (#62), NET-001 (#80), GPU-001 (#101), INSTALL-PERF-001 (#134), VISUAL-SDK-001 (#139),
-PKG-002 (#142) and EXT-001 (#161), plus the not-done rows of [the 1.5.1 notes](../release-1.5.1.md#what-is-not-done-and-why).
-The operator decides which of them join SPARK-001 in 1.6.0; until then only SPARK-001 is committed.
+**Operator decision, 2026-11-07: 1.6.0 is scoped to SPARK-001 only for now.** The other open issues on the
+1.6.0 milestone (DEBUG-003 #33, PERF-002 #39, ARCH-001 #62, NET-001 #80, GPU-001 #101, INSTALL-PERF-001 #134,
+VISUAL-SDK-001 #139, PKG-002 #142, EXT-001 #161) and the not-done rows of
+[the 1.5.1 notes](../release-1.5.1.md#what-is-not-done-and-why) are not part of 1.6.0 unless the operator
+adds them.
 
 Signing follows SIGN-001 option A: freeze the signed inputs, finish QA, sign once.
