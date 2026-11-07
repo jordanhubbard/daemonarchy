@@ -64,7 +64,8 @@ source and ports checkouts are `@@CHECKOUTS_AMD64_FEED@@` and `@@CHECKOUTS_AARCH
   [#60](https://github.com/jordanhubbard/daemonarchy-src/pull/60)). A CPU that never checks in no
   longer hangs the boot forever: the wait gives up after two seconds, reports the stage the CPU
   reached and, by default (`hw.mp.stop_on_failure=1`), starts no more CPUs. This makes the NVIDIA
-  RTX Spark failure observable; it does not fix it, and the Spark remains deferred.
+  RTX Spark failure observable; it does not fix it. On the Spark the 1.5.1 image still hangs after
+  starting the fourth CPU, as 1.5.0 did, so Spark support moves to 1.6.
 - **Documentation for newcomers.** A rewritten README for users, a narrative-first HACKING guide
   that compares the FreeBSD way with the Daemonarchy way, an [installer reference](installer-reference.md),
   and user and engineering [slide decks](presentations/README.md).
@@ -89,14 +90,15 @@ source and ports checkouts are `@@CHECKOUTS_AMD64_FEED@@` and `@@CHECKOUTS_AARCH
 | BUILD-001, COMP-001, PERF-001, PERF-002, DEV-001, ADOPT-003, SRC-002, RELEASE-002 | Need native execution by a later Literate AI runtime and native qualification. |
 | DEBUG-003 | Loader, forced `mountroot>` and panic network control are still open. |
 | HW-004 | T2 Touch ID needs a Mac with enrolled fingers. |
+| NVIDIA RTX Spark (aarch64) | The 1.5.1 image still hangs after starting the fourth CPU, as 1.5.0 did. Planned for 1.6. |
 | GUI-001, EXT-002, DESKTOP-001, SIGN-001 | Their 1.5.0 carry-over acceptance is not complete. |
 | ARCH-001, LIVE-001, NET-001, NET-002, GPU-001, INSTALL-PERF-001, PKG-002, VISUAL-SDK-001, EXT-001 | Open queue items; their partial delivery is as in earlier releases. |
 
 ## aarch64 image: community validation
 
 The aarch64 image is still released so that people with arm64 hardware can try it and tell
-us what happens. @@AARCH64_FINAL_QEMU_STATUS@@ The NVIDIA RTX Spark laptop is deferred; no
-physical aarch64 install is claimed. See [aarch64.md](aarch64.md).
+us what happens. @@AARCH64_FINAL_QEMU_STATUS@@ The NVIDIA RTX Spark laptop still hangs after
+starting its fourth CPU and is deferred to 1.6; no physical aarch64 install is claimed. See [aarch64.md](aarch64.md).
 
 ## Hardware status and limits
 

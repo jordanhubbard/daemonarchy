@@ -202,7 +202,8 @@ boxes of the queue item as of the move.
 | [RELEASE-002](active-work.md#release-002-run-a-release-entirely-through-qualified-literate-ai-execution-deferred-rest-of-release-001) | 0 of 2 | Upstream FreeBSD platform support, a release run entirely through Literate AI, and the full inherited backlog. |
 
 The RTX Spark laptop is also deferred (not a queue item; see the
-[application note](../application-note-rtx-spark.md)).
+[application note](../application-note-rtx-spark.md)). On 2026-11-06 the 1.5.1 arm64 image still hung on the
+Spark after starting the fourth CPU, as 1.5.0 did, so Spark support moves to 1.6.0.
 
 Three new queue items follow in the queue with no 1.5.x commitment (target after 1.5, proposed 1.6.0, not
 scheduled): [TREE-001](active-work.md#tree-001-browse-usrsrc-and-usrports-on-the-system-as-nested-html-cards),

@@ -26,7 +26,7 @@ Wi-Fi, the live desktop and anything past the first screen of the session; the d
 real graphics scripts, not by a full image install. Whether the 1.5.0 aarch64 application feed carries the VirtIO GPU package was not re-checked for this page.
 People with arm64 hardware are still asked to try the image and report what happens.
 
-The first physical aarch64 target is the NVIDIA RTX Spark laptop, an official target whose support is deferred from 1.5.0. The 1.5.0 image boots its kernel there but stops while starting secondary CPUs, so it does not reach a desktop (tested, not yet working in 1.5.0; a draft fix boots further and then panics in the kernel, and the fix is not part of 1.5.0); see the [application note](application-note-rtx-spark.md) for the observations, the cause and the workaround.
+The first physical aarch64 target is the NVIDIA RTX Spark laptop, an official target whose support is deferred from 1.5.0 and, after the 1.5.1 image still hung after starting the fourth CPU, to 1.6. The 1.5.0 image boots its kernel there but stops while starting secondary CPUs, so it does not reach a desktop (tested, not yet working in 1.5.0; a draft fix boots further and then panics in the kernel, and the fix is not part of 1.5.0); see the [application note](application-note-rtx-spark.md) for the observations, the cause and the workaround.
 
 ## Status in 1.4.1: a community-validation image (history)
 
