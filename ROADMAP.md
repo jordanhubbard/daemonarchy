@@ -5,12 +5,20 @@ Use [the active queue](docs/roadmap/active-work.md) for stable work IDs and
 acceptance status, and [the architecture](docs/architecture/design-traceability.md)
 for Component ownership. This file remains the release and feature overview.
 
-## 1.6.0: the NVIDIA RTX Spark laptop
+## 1.6.0: ARM platforms
 
-The 1.5.1 arm64 image still hangs on the NVIDIA RTX Spark after starting the fourth CPU, as 1.5.0 did, so
-Spark support is the 1.6.0 goal (SPARK-001). The first step needs no new code: four loader experiments on
-the published 1.5.1 image tell whether the firmware's CPU_ON call is where it stops. See
-[the 1.6.0 plan](docs/roadmap/release-1.6.0.md). The other open items on the 1.6.0 milestone are not yet scoped.
+The operator expanded 1.6 on 2026-11-07 from Spark-only to popular ARM platforms:
+NVIDIA Spark/GB10, Apple Silicon, **Raspberry Pi 4 ahead of Raspberry Pi 5**,
+Rockchip and other SBCs, Qualcomm laptops, and ARM server/cloud/VM profiles.
+Legacy ARM32 coverage has an explicit feasibility item. These are porting targets,
+not new support claims; unresolved drivers or missing hardware remain release work.
+
+The [research checkpoint](docs/roadmap/arm-research-20261107.md) follows Omarchy Mac
+and linux-dgx-spark through their Asahi/Aurora, NVIDIA/NixOS, Raspberry Pi/Debian/Linux
+and BSD predecessors. The [implementation plan](docs/roadmap/arm-implementation.md)
+breaks fifteen work items into hwtrace/prerequisite discovery, final implementation
+and native validation. The [1.6 release plan](docs/roadmap/release-1.6.0.md) owns the
+per-model matrix, order, exact-image distribution gates and remaining Spark experiments.
 
 ## 1.5.1: network upgrades and forkability
 

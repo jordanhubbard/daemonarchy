@@ -820,8 +820,13 @@ What is verified, and what is not:
   inside it only with software emulation (TCG): the first boot test took hours.
 - **Graphical desktop in a VM.** SDDM and the Omarchy session start under QEMU with a
   VirtIO GPU (see the VirtIO GPU record above), software-rendered.
-- **Bare metal is not supported.** There is no FreeBSD boot or GPU path for Apple
-  SoCs, so an M1 to M4 laptop is a host for virtual machines, never a target.
+- **Native Apple targets are planned for 1.6 and remain unqualified.** Existing
+  FreeBSD T8103/AIC/UART support is only an initial implementation, not a complete
+  boot/storage/DART/graphics stack. The operator has now enrolled Apple Silicon
+  separately from Mac-hosted VMs under
+  [APPLE-001](roadmap/arm-implementation.md#apple-001-bring-up-native-apple-silicon-across-board-generations).
+  [The 1.6 ARM plan](roadmap/release-1.6.0.md) supersedes the earlier decision not
+  to enlist native Macs; published VM evidence does not qualify these ports.
 
 Both a VMware guest and QEMU/HVF can run on one Mac: Fusion held the arm64
 builder while HVF ran the install tests on the same host.
