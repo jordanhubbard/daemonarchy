@@ -5,6 +5,13 @@ Use [the active queue](docs/roadmap/active-work.md) for stable work IDs and
 acceptance status, and [the architecture](docs/architecture/design-traceability.md)
 for Component ownership. This file remains the release and feature overview.
 
+## 1.6.0: the NVIDIA RTX Spark laptop
+
+The 1.5.1 arm64 image still hangs on the NVIDIA RTX Spark after starting the fourth CPU, as 1.5.0 did, so
+Spark support is the 1.6.0 goal (SPARK-001). The first step needs no new code: four loader experiments on
+the published 1.5.1 image tell whether the firmware's CPU_ON call is where it stops. See
+[the 1.6.0 plan](docs/roadmap/release-1.6.0.md). The other open items on the 1.6.0 milestone are not yet scoped.
+
 ## 1.5.1: network upgrades and forkability
 
 Whether 1.5 could be the last release that needs an ISO, and whether another developer can fork the

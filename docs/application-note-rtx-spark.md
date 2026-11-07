@@ -9,6 +9,10 @@ has not; it is not a support statement for any release.
 
 ## Status
 
+**1.5.1 (2026-11-06):** the 1.5.1 release image, whose kernel bounds the CPU-start wait (src#53, src#60),
+still hangs after starting the fourth CPU. Spark support moves to 1.6.0; the next steps are in
+[the 1.6.0 plan](roadmap/release-1.6.0.md).
+
 The 1.5.0 aarch64 image has not been shown to work on this machine as of the table above. Since then the operator booted the
 patched kernel by hand: it boots further than the stock kernel and then panics in
 the kernel. The panic has not been analysed yet; the fix stays a draft and is
