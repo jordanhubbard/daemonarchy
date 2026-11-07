@@ -38,6 +38,7 @@ probe graphics sh -c 'for p in /sys/class/drm/card*-*/status; do [ ! -f "$p" ] |
 probe firmware vcgencmd version
 probe throttled vcgencmd get_throttled
 probe eeprom rpi-eeprom-update
+probe eeprom-config rpi-eeprom-config
 probe boot-config sh -c 'for p in /boot/firmware/config.txt /boot/firmware/cmdline.txt /boot/config.txt /boot/cmdline.txt; do [ ! -f "$p" ] || { echo "$p"; cat "$p"; }; done'
 probe package-versions dpkg-query -W -f '${binary:Package}\t${db:Status-Abbrev}\t${Version}\t${Architecture}\n' 'linux-image*' 'raspberrypi*' 'raspi*' 'firmware*'
 probe active-kernel-package dpkg-query -W -f '${binary:Package}\t${db:Status-Abbrev}\t${Version}\t${Architecture}\n' "linux-image-$(uname -r)"
