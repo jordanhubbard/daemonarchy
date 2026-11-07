@@ -46,6 +46,8 @@ def summary(volume):
     if not raw:
         raise ValueError("no loader ACPI index")
     index = raw.decode("ascii").rstrip("\n\0")
+    if not index:
+        raise ValueError("empty ACPI index")
     header = re.fullmatch(r"Daemonarchy loader ACPI capture v1 epoch=(\d+)",
                           index.splitlines()[0])
     if not header:
@@ -61,6 +63,8 @@ def summary(volume):
             raise ValueError("malformed ACPI index entry")
         name, size, checksum, status, outcome = m.groups()
         size = int(size)
+        if name in result["tables"]:
+            raise ValueError(f"duplicate ACPI index entry for {name}")
         entry = result["tables"][name] = dict(length=size, status=outcome,
                                                write_status=int(status))
         if outcome != "captured" or int(status) != 0:
@@ -84,6 +88,9 @@ def summary(volume):
         entry["sha256"] = hashlib.sha256(payload).hexdigest()
         if name == "APIC":
             result["topology"] = madt(payload)
+    for required in ("RSDP", "ROOT", "APIC"):
+        if "sha256" not in result["tables"].get(required, {}):
+            raise ValueError(f"no validated required table: {required}")
     if "topology" not in result:
         raise ValueError("no validated MADT CPU topology")
     return result
