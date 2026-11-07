@@ -15,14 +15,14 @@ is the authority for the final images, asset hashes and publication state.
 
 ## What you download
 
-- `daemonarchy-1.5.1-amd64.iso.xz` (1,593,461,112 bytes, SHA-256
-  `61d7b8a1590daeae2da7a7f71eab369287bd92afc30523d22e965e95e8b86317`), the x86-64 image for BIOS or UEFI.
-- `daemonarchy-1.5.1-aarch64.iso.xz` (958,322,956 bytes, SHA-256
-  `6516c3879dfe59c7fd63b9e867444a0d6357e2a21c3695f360a8b9572947fcc2`), the arm64 image, UEFI only. It is still a
+- `daemonarchy-1.5.1-amd64.iso.xz` (1,593,471,020 bytes, SHA-256
+  `de9311416cf29c88525efcec0dcae3990c38cbffe8235035b50b3a8e4d1b84ad`), the x86-64 image for BIOS or UEFI.
+- `daemonarchy-1.5.1-aarch64.iso.xz` (958,315,864 bytes, SHA-256
+  `42106836374a3c15116de7d8569dae66a4ddc11ffd595aecc5dfc3f6485d38b6`), the arm64 image, UEFI only. It is still a
   community-validation image: read [the aarch64 section](#aarch64-image-community-validation).
-- `daemonarchy-hwtrace-1.5.1-amd64.img.xz` (20,067,972 bytes, SHA-256
-  `b000b23c4ef3a9022f5600af25dd0f79b7691a967075a0b79d9627c539d7ef83`) and `daemonarchy-hwtrace-1.5.1-aarch64.img.xz`
-  (15,046,220 bytes, SHA-256 `4c73186a882a14642242806ee050d50efc972e272e254e3605261a309e7976d6`), the hardware
+- `daemonarchy-hwtrace-1.5.1-amd64.img.xz` (20,069,016 bytes, SHA-256
+  `89a2769413c1262050b167bd16b9fdd49e7db20f92daa1c6b635b6e2915cfe98`) and `daemonarchy-hwtrace-1.5.1-aarch64.img.xz`
+  (15,046,456 bytes, SHA-256 `63e6f5fee9cb0d393afb0c059bc051651c0af735778214310a2e864ed9b03ce1`), the hardware
   bring-up trace images. They are not installers: each holds its ISO's own kernel and loader
   and carries no keys. See [the trace image](boottrace.md).
 - A `.sha256` file for each image, which covers the compressed file you download.
@@ -34,7 +34,7 @@ Decompress an image before writing it:
 
 The base is FreeBSD 16.0-CURRENT, OSVERSION `1600029`, built from daemonarchy-src
 `cb38d64` (the 1.5.0 snapshot `303b364` plus the kernel changes below); the ports are
-daemonarchy-ports `8e28793a`. The installer commit is `612e96a5`. The signed
+daemonarchy-ports `8e28793a`. The installer commit is `b6b91517`. The signed
 application feeds are `packages-16-amd64-1.5.1` and `packages-16-aarch64-1.5.1`; the optional
 source and ports checkouts are `checkouts-16-amd64-1.5.1` and `checkouts-16-aarch64-1.5.1`.
 
@@ -52,6 +52,8 @@ source and ports checkouts are `checkouts-16-amd64-1.5.1` and `checkouts-16-aarc
   messages off the console, the install screen redraws itself every 12 seconds (and at once on
   `C-b r`), ntpd tolerates a large clock step, and a wrapped header row is indented. The installed
   system's `syslog.conf` is unchanged.
+- **A 10-second boot menu** ([#290](https://github.com/jordanhubbard/daemonarchy/pull/290)). The image and
+  the installed system wait 10 seconds instead of 3 at the boot menu, long enough to read it and choose.
 - **arm64 virtio-net receive stall fixed in the kernel**
   ([daemonarchy-src #59](https://github.com/jordanhubbard/daemonarchy-src/pull/59), carried to the
   kernel branch by [#61](https://github.com/jordanhubbard/daemonarchy-src/pull/61)). The virtqueue

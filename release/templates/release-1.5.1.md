@@ -52,6 +52,8 @@ source and ports checkouts are `@@CHECKOUTS_AMD64_FEED@@` and `@@CHECKOUTS_AARCH
   messages off the console, the install screen redraws itself every 12 seconds (and at once on
   `C-b r`), ntpd tolerates a large clock step, and a wrapped header row is indented. The installed
   system's `syslog.conf` is unchanged.
+- **A 10-second boot menu** ([#290](https://github.com/jordanhubbard/daemonarchy/pull/290)). The image and
+  the installed system wait 10 seconds instead of 3 at the boot menu, long enough to read it and choose.
 - **arm64 virtio-net receive stall fixed in the kernel**
   ([daemonarchy-src #59](https://github.com/jordanhubbard/daemonarchy-src/pull/59), carried to the
   kernel branch by [#61](https://github.com/jordanhubbard/daemonarchy-src/pull/61)). The virtqueue

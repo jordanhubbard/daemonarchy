@@ -37,36 +37,36 @@
   ],
   "assets": {
     "daemonarchy-1.5.1-amd64.iso.xz": [
-      1593461112,
-      "sha256:61d7b8a1590daeae2da7a7f71eab369287bd92afc30523d22e965e95e8b86317"
+      1593471020,
+      "sha256:de9311416cf29c88525efcec0dcae3990c38cbffe8235035b50b3a8e4d1b84ad"
     ],
     "daemonarchy-1.5.1-amd64.iso.xz.sha256": [
       97,
-      "sha256:f3667da9d1740bbce6c60380782267845ef163cdca078eb620db0de1b154f351"
+      "sha256:9d4e4fd9aec667c2c56f146fcf453a94f36992cef592dd383e4ff389dfd2d7bf"
     ],
     "daemonarchy-1.5.1-aarch64.iso.xz": [
-      958322956,
-      "sha256:6516c3879dfe59c7fd63b9e867444a0d6357e2a21c3695f360a8b9572947fcc2"
+      958315864,
+      "sha256:42106836374a3c15116de7d8569dae66a4ddc11ffd595aecc5dfc3f6485d38b6"
     ],
     "daemonarchy-1.5.1-aarch64.iso.xz.sha256": [
       99,
-      "sha256:67ed12fb1bdd59c334a7056a72d03ff1934271fbd294fd377d38d7255b4c4cc7"
+      "sha256:f6b3084650df0e46f3d685b784563eb52b9f988e172d99e1353d98d7df990af5"
     ],
     "daemonarchy-hwtrace-1.5.1-amd64.img.xz": [
-      20067972,
-      "sha256:b000b23c4ef3a9022f5600af25dd0f79b7691a967075a0b79d9627c539d7ef83"
+      20069016,
+      "sha256:89a2769413c1262050b167bd16b9fdd49e7db20f92daa1c6b635b6e2915cfe98"
     ],
     "daemonarchy-hwtrace-1.5.1-amd64.img.xz.sha256": [
       105,
-      "sha256:690731d6939d37e3e09110ff16e8190b24995c2ab5faea30653dad2c919f79bb"
+      "sha256:c7680cb315859aa3e7465cb0b8c94a73a6f9f2a3784b759bab6d107eb76b39b4"
     ],
     "daemonarchy-hwtrace-1.5.1-aarch64.img.xz": [
-      15046220,
-      "sha256:4c73186a882a14642242806ee050d50efc972e272e254e3605261a309e7976d6"
+      15046456,
+      "sha256:63e6f5fee9cb0d393afb0c059bc051651c0af735778214310a2e864ed9b03ce1"
     ],
     "daemonarchy-hwtrace-1.5.1-aarch64.img.xz.sha256": [
       107,
-      "sha256:70d9420956dbbdd39490c38132e2a355c70fc49b6bfd295c9b7660b11871e60a"
+      "sha256:bf58b97fbad069fc441cbc11cc725bd29afbe32f7721151598d8367e837616c5"
     ],
     "daemonarchy-1.5.1-boot.txz": [
       10500616,
