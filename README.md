@@ -20,7 +20,7 @@ Each release is built from a FreeBSD 16.0-CURRENT snapshot. CURRENT moves daily,
 
 ## Download
 
-The latest stable release is **[Daemonarchy 1.5.1](https://github.com/jordanhubbard/daemonarchy/releases/tag/daemonarchy-1.5.1)** (x86-64, BIOS or UEFI, and a community-validation arm64 image), published November 6, 2026, on FreeBSD 16.0-CURRENT, OSVERSION `1600029`. Version 1.2.0 was not published; 1.3.1 followed 1.1.1, 1.4.0 followed 1.3.1, 1.4.1 followed 1.4.0, 1.5.0 followed 1.4.1 and 1.5.1 follows 1.5.0.
+The latest stable release is **[Daemonarchy 1.5.1](https://github.com/jordanhubbard/daemonarchy/releases/tag/daemonarchy-1.5.1)** (x86-64, BIOS or UEFI, and a community-validation arm64 image), published November 7, 2026, on FreeBSD 16.0-CURRENT, OSVERSION `1600029`. Version 1.2.0 was not published; 1.3.1 followed 1.1.1, 1.4.0 followed 1.3.1, 1.4.1 followed 1.4.0, 1.5.0 followed 1.4.1 and 1.5.1 follows 1.5.0.
 
 - [x86-64 ISO, xz-compressed](https://github.com/jordanhubbard/daemonarchy/releases/download/daemonarchy-1.5.1/daemonarchy-1.5.1-amd64.iso.xz): 1,593,471,020 bytes.
 - [x86-64 checksum](https://github.com/jordanhubbard/daemonarchy/releases/download/daemonarchy-1.5.1/daemonarchy-1.5.1-amd64.iso.xz.sha256) of the compressed file: `de9311416cf29c88525efcec0dcae3990c38cbffe8235035b50b3a8e4d1b84ad`.

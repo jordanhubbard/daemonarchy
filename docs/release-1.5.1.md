@@ -9,7 +9,7 @@ For the published result use docs/release-1.5.1.md and release/current.json. -->
 
 Daemonarchy 1.5.1 is the release after 1.5.0. It makes a failed installation explain itself,
 keeps console messages from corrupting the install screen, fixes the arm64 virtio-net receive
-stall, and rewrites the documentation for newcomers. Published @@PUBLISHED_DATE@@. The
+stall, and rewrites the documentation for newcomers. Published November 7, 2026. The
 [GitHub release](https://github.com/jordanhubbard/daemonarchy/releases/tag/daemonarchy-1.5.1)
 is the authority for the final images, asset hashes and publication state.
 
