@@ -372,7 +372,7 @@ read -r xkb_layout xkb_variant <<<"$("$ISO_SHARE/keymap" xkb "$keyboard")"
 
 cat >"$TARGET/boot/loader.conf" <<EOF
 zfs_load="YES"
-autoboot_delay="3"
+autoboot_delay="10"
 loader_logo="none"
 loader_brand="daemonarchy"
 kern.vty="vt"

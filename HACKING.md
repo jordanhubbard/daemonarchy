@@ -127,7 +127,7 @@ The installer is shell, in `overlay/usr/local/libexec/daemonarchy-installer/` (`
 4. **Install it in a VM, unattended.** Copy the ISO to any machine with QEMU and run:
 
    ```sh
-   WORK=$PWD/qemu-run ./test-qemu.sh daemonarchy-1.5.0-amd64.iso
+   WORK=$PWD/qemu-run ./test-qemu.sh daemonarchy-1.5.1-amd64.iso
    ```
 
    The harness boots the ISO with a blank 40 GB disk and a `CIDATA` drive that carries the answers, waits for the installer to power the guest off, boots the installed disk, logs in over SSH and checks what a VM without a screen can show (accounts and groups, SDDM's user and session, services, the Daemonarchy feed). It prints each check and a tally. The serial console is in `$WORK/install.log` and `$WORK/boot.log`, which is where to look first when an install stalls. On FreeBSD with bhyve use `sudo ./test-bhyve.sh <iso>` instead (`NET=nat` by default; `./test-bhyve.sh --cleanup` removes the test network afterwards).
@@ -772,7 +772,7 @@ space than a cached installer-only rebuild. Check resources before dispatching.
    ./build-iso.sh
    ```
 
-   The image is named from the repository's `VERSION` file (`scripts/version.py`): `daemonarchy-<version>-<arch>.iso`, for example `daemonarchy-1.5.0-amd64.iso` (published xz-compressed as `.iso.xz`). Set `NAME` to override. `build-iso.sh` refuses a `VERSION` that is not `X.Y.Z`.
+   The image is named from the repository's `VERSION` file (`scripts/version.py`): `daemonarchy-<version>-<arch>.iso`, for example `daemonarchy-1.5.1-amd64.iso` (published xz-compressed as `.iso.xz`). Set `NAME` to override. `build-iso.sh` refuses a `VERSION` that is not `X.Y.Z`.
 
    The image and its `.sha256` land in `/usr/local/poudriere/data/images`.
 
@@ -1367,7 +1367,7 @@ ISO supplies `/rescue`, `pciconf`, `devinfo`, `acpidump`, their libraries
 and the modules:
 
 ```sh
-sh build-hwtrace-image.sh -I daemonarchy-1.5.0-amd64.iso \
+sh build-hwtrace-image.sh -I daemonarchy-1.5.1-amd64.iso \
     -k obj/GENERIC/kernel -l loader_lua.efi -L src/stand/lua \
     -V 1.5.0-1 -o out
 # -m "msdosfs ..." picks modules (default msdosfs); -s sets the DATRACE

@@ -135,6 +135,13 @@ reporters' install log explains the failure.
 
 ## Release tasks
 
+- Release notes: [published 2026-11-07](../release-1.5.1.md), filled by `scripts/fill-release.py` from the
+  verified artifacts. 1.5.1 is released with what has evidence; the open items above stay open and are listed
+  in the notes as not done.
+- Kernel input: daemonarchy-src `cb38d6498a24` (`daemonarchy`): the 1.5.0 snapshot plus the arm64 CPU-start
+  bound and diagnostics (src #53, #60), the comment-only header change (src #56) and the virtio barrier
+  (src #59 via #61). The native world, kernel, packages, ISO, trace images and QA run on the FreeBSD
+  workers; signing and publication are the release owner's, in one session.
 - Onboarding video: deferred out of 1.5.1 on 2026-11-05. The release owner rejected the build made from
   [the newcomer tutorial](../tutorial/README.md) with the presentation tooling (screenshots and synthesized speech);
   the video will be remade with a different approach and is not a 1.5.1 release asset.
@@ -198,7 +205,8 @@ boxes of the queue item as of the move.
 | [RELEASE-002](active-work.md#release-002-run-a-release-entirely-through-qualified-literate-ai-execution-deferred-rest-of-release-001) | 0 of 2 | Upstream FreeBSD platform support, a release run entirely through Literate AI, and the full inherited backlog. |
 
 The RTX Spark laptop is also deferred (not a queue item; see the
-[application note](../application-note-rtx-spark.md)).
+[application note](../application-note-rtx-spark.md)). On 2026-11-06 the 1.5.1 arm64 image still hung on the
+Spark after starting the fourth CPU, as 1.5.0 did, so Spark support moves to 1.6.0.
 
 Three new queue items follow in the queue with no 1.5.x commitment (target after 1.5, proposed 1.6.0, not
 scheduled): [TREE-001](active-work.md#tree-001-browse-usrsrc-and-usrports-on-the-system-as-nested-html-cards),
