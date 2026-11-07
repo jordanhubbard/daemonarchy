@@ -30,6 +30,7 @@ another version are historical records. 1.5.1 entries describe planned work.
 - [Hardware quirks](hardware-quirks.md)
 - [GPU report: which GPU the desktop uses](gpu-report.md)
 - [Hardware trace stick: reset-surviving boot trace](boottrace.md)
+- [Pi 4 simulator checkpoint: Linux control and UEFI model gaps](testing-pi4-simulator-20261107.md)
 - [Login trace: timing from the login screen to a usable desktop](login-trace.md)
 - [Post-mortem: the 1.4.0 image stopped installing (tigervnc-viewer)](post-mortem-1.4.0-tigervnc.md)
 - [Mastering a release image: resumable steps](mastering-1.4.1.md)

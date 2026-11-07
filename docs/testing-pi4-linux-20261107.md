@@ -17,7 +17,7 @@ Raw evidence and network addresses remain private.
 | EEPROM / USB controller | Bootloader 2023-01-11 17:40:52 UTC; VL805 firmware `000138c0` |
 | Native Ethernet | Linux `bcmgenet`, `fd580000.ethernet`; interface is down with no carrier, so no native Ethernet traffic result |
 | Current control connection | SSH route uses `wlan0`; this is not an Ethernet result |
-| Boot/storage | One approximately 64 GB SD card, containing the running root and boot filesystem; no spare block device attached |
+| Boot/storage | Initial inventory: one approximately 64 GB SD card containing the running root and boot filesystem. Separate USB diagnostic media was subsequently attached and written as recorded below. |
 | Thermal observation | `throttled=0x0` at collection; no sustained thermal test |
 
 The collector retained kernel configuration, firmware-modified FDT, boot config,
@@ -61,9 +61,19 @@ does not test all 8 GB, final-distribution installation or desktop usability.
 
 ## Next physical run
 
-1. Connect separate test media to the Pi or controller. Identify its actual
-   capacity/identity and verify that it is not the running SD card. Write only
-   that spare device and verify the decompressed-image readback.
+The separate 8 GB USB has now been written and its first 389,056,000 bytes
+verified by direct readback against the candidate SHA-256 above. Device
+identity, capacity, exclusive access and the running SD root were checked
+before writing. The 64 GB SD card, boot configuration and running service were
+preserved. This is media preparation, not a USB boot result.
+
+Both physical boards are now unattended. Do not shut them down, reboot them
+or change boot configuration while physical intervention is unavailable.
+The [Pi 4 simulator checkpoint](testing-pi4-simulator-20261107.md) records the
+independent work that can proceed in the meantime.
+
+1. When physical intervention is available, recheck the prepared USB identity
+   and image readback before the handoff.
 2. At the hardware handoff, shut down Linux cleanly and retain its original SD
    card. For USB testing, remove that card while powered off so SD-first boot
    does not select the existing system. Boot the prepared USB without changing
@@ -78,5 +88,5 @@ does not test all 8 GB, final-distribution installation or desktop usability.
    cap for an accepted profile, then complete native display/input, installation,
    installed boot, update and recovery gates.
 
-Until spare media and a physical boot are available, RPI-001 discovery and
+Until an attended physical boot is available, RPI-001 discovery and
 implementation remain open. Pi 400/CM4 and Pi 5/Pi 500 have separate records.

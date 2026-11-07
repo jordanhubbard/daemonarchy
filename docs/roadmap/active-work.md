@@ -1743,7 +1743,7 @@ remains open; report files do not establish a passing gate.
 - **Priority:** P0
 - **Owner:** SBC boot, owned FreeBSD source and release integration
 - **Direction:** Finish Pi 4 media, installer, installed boot and recovery first; reuse the common infrastructure for Pi 5 without treating Pi 4 drivers as RP1 support.
-- **Conclusion:** The [physical 8 GB Pi 4B Rev 1.5 Linux baseline and diagnostic candidate](../testing-pi4-linux-20261107.md) are retained. No spare media is attached; the first FreeBSD boot, full-RAM DMA and final distribution acceptance remain open.
+- **Conclusion:** The [physical 8 GB Pi 4B Rev 1.5 Linux baseline and diagnostic candidate](../testing-pi4-linux-20261107.md) are retained. Separate USB media is written and direct-readback verified; physical boards are unattended, so the first FreeBSD boot waits for an attended handoff. The [Pi 4 simulator checkpoint](../testing-pi4-simulator-20261107.md) passes Linux control and identifies RNG200/PCIe firmware-model gaps before the FreeBSD loader. Full-RAM DMA and final distribution acceptance remain open.
 - **Depends on:** ARM-002, ARM-003
 - **Implementation:**
   - [ ] Discovery: First SBC bring-up target by operator decision: Pi 4B; record BCM2711 stepping, RAM variant, EEPROM, power supply, U-Boot/EDK2, DTB/ACPI mode and SD/USB boot. Enroll Pi 400 and CM4 as separate carrier/model records.
