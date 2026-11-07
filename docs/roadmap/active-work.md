@@ -1199,6 +1199,27 @@ remains open; report files do not establish a passing gate.
   - [ ] Retained aarch64 VM install/boot/upgrade/rollback/desktop/debug matrix results, failures included.
   - [ ] Scoped per-model Apple silicon laptop records, if and when enlisted, with any unsupported mode stated honestly.
 
+### [ ] SPARK-001 — Boot, install and run the desktop on the NVIDIA RTX Spark laptop
+
+- **GitHub issue:** [#291](https://github.com/jordanhubbard/daemonarchy/issues/291), [1.6.0 milestone](https://github.com/jordanhubbard/daemonarchy/milestone/5).
+- **Priority:** P0 for 1.6.0
+- **Release target:** 1.6.0
+- **Release:** 1.6.0 (deferred from 1.5.0 and 1.5.1; see [the 1.6.0 plan](release-1.6.0.md))
+- **Owner:** owned FreeBSD source (arm64 SMP start), release integration
+- **Direction:** Make the release arm64 image boot, install and reach the desktop on the NVIDIA RTX Spark laptop, the first physical arm64 target.
+- **Conclusion:** The 1.5.0 and 1.5.1 images both hang after `Starting CPU 4 (400)`. The 1.5.1 kernel bounds the CPU-start wait and still hangs, which points at the PSCI CPU_ON call for MPIDR `0x400` not returning, or at a core that starts and then hangs the system. `hw.ncpu=4` reaches init. See [the 1.6.0 plan](release-1.6.0.md#what-the-151-result-says).
+- **Depends on:** ARCH-001 (the arm64 image and feeds)
+- **Implementation:**
+  - [ ] Run the four loader experiments of [plan step 1](release-1.6.0.md#1-evidence-from-the-published-151-image-no-new-code) on the 1.5.1 image and record the screens.
+  - [ ] Collect the MADT, PPTT, DSDT and PSCI details from Linux on the same SoC ([step 2](release-1.6.0.md#2-ground-truth-from-linux-on-the-same-soc)).
+  - [ ] Fix secondary CPU start in daemonarchy-src (parking protocol, power-domain order or the fault src#60 names); fall back to a documented OEM quirk only if the root fix misses 1.6.0.
+  - [ ] Install to the internal NVMe and reach the desktop on `efifb`; Wi-Fi through mt7925.
+  - [ ] Send the CPU-start fix to FreeBSD upstream.
+- **Evidence:**
+  - [ ] Photos and traces of each step-1 boot, with the image hash.
+  - [ ] The release arm64 image booting on the Spark with the stated CPU count, an install, the installed desktop and Wi-Fi traffic, with `dmesg`, `sysctl hw`, `pciconf -lv` and `devinfo`.
+  - [ ] amd64 regression: the QEMU and MSI/MacBook installs still pass.
+
 ### [ ] LIVE-001 — Offer a live desktop from the installer media without touching the disk
 
 - **GitHub issue:** [#67](https://github.com/jordanhubbard/daemonarchy/issues/67), [1.5.1 milestone](https://github.com/jordanhubbard/daemonarchy/milestone/4) (moved from 1.4.0 on 2026-11-04).
