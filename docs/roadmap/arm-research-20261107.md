@@ -272,3 +272,14 @@ early-persistence channel before attempting the PSCI comparison matrix.
 No 1.6 implementation item is closed by this research. Track source changes,
 recheck upstream status before implementation, and attach exact-artifact
 FreeBSD and physical results to each target's release ledger.
+
+### Physical Pi 500 follow-up
+
+The [2026-11-07 Linux reference](../testing-pi500-linux-20261107.md) identifies
+a Pi 500 with a 64-bit 4 KiB kernel, 32-bit armhf userspace and a verified
+4 MiB round trip through built-in Ethernet. It corrects the first task list:
+RP1 Ethernet uses Cadence GEM/macb (`raspberrypi,rp1-gem`, `cdns,macb`), whereas
+Pi 4 uses GENET. Kernel options containing both drivers do not identify which
+one is bound. Audit the existing FreeBSD CGEM predecessor and RP1 nexus/IRQ,
+clock/reset and DMA prerequisites; no FreeBSD qualification follows from this
+Linux result. Pi 4 remains ahead of Pi 5-family implementation.

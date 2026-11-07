@@ -1763,13 +1763,13 @@ remains open; report files do not establish a passing gate.
 - **Priority:** P1
 - **Owner:** SBC boot and owned FreeBSD RP1/BCM2712 source
 - **Direction:** Deliver the board-specific final image and installed boot, default application/graphics stack and working network; document peripherals still under development per model.
-- **Conclusion:** Planned for the operator-directed 1.6 ARM program; research and detailed phases are in docs/roadmap/arm-implementation.md. No new platform support is claimed.
+- **Conclusion:** A [physical Pi 500 Linux reference](../testing-pi500-linux-20261107.md) now binds the mixed kernel/userspace ABI and a native Ethernet transfer. RP1 uses Cadence GEM, not Pi 4 GENET. FreeBSD qualification remains open; Pi 4 stays first.
 - **Depends on:** RPI-001, ARM-002, ARM-003
 - **Implementation:**
   - [ ] Discovery: Follow Pi 4 in the SBC implementation queue while researching Pi 5 independently. Inventory C1/D0 stepping, RAM, EEPROM, power/cooling, RP1 and SD/USB/NVMe paths; include CM5 and Pi 500-family carrier/input differences.
   - [ ] Discovery: Compare working Debian/Raspberry Pi OS images, upstream Linux and Raspberry Pi downstream RP1/BCM2712 drivers and bindings. Preserve the reference kernel/config/DTB and EEPROM identities; distinguish mainline gaps from downstream support.
   - [ ] Discovery: Investigate the unmaintained UEFI reference, newer EEPROM display regressions, missing runtime-variable persistence and ACPI/FDT differences. Compare Linux bcm2711 4 KiB and bcm2712 16 KiB builds without assuming Pi 5 requires 16 KiB.
-  - [ ] Implement RP1 PCIe/interrupt/clock/reset/USB/GENET/pinctrl/PWM support needed by the distribution, plus SD/NVMe, display and cooling. Do not equate a DTB import or old UEFI boot report with these drivers.
+  - [ ] Implement the required RP1 PCIe nexus, interrupts, clock/reset, USB, pinctrl/PWM and Cadence GEM Ethernet support, plus SD/NVMe, display and cooling. Do not equate a DTB import or old UEFI boot report with these drivers.
   - [ ] Choose and retain a maintained boot path per revision; qualify fallback trace persistence without EFI variables, boot-order behavior and power-cycle recovery.
   - [ ] Deliver the board-specific final image and installed boot, default application/graphics stack and working network; document peripherals still under development per model.
 - **Evidence:**
