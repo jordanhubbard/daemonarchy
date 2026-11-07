@@ -34,8 +34,17 @@ hand.
 
 When a boot reaches init, the image's rescue root saves bring-up
 diagnostics before it reboots. It writes `dmesg -a`, `sysctl -a`, `kenv`,
-`kldstat`, `pciconf -lvbc`, `devinfo -vr` and `acpidump -dt` to
-`DUMPS/<experiment>/`, and the next boot stops the loop.
+`kldstat`, `pciconf -lvbc`, `devinfo -vr`, USB descriptors and `acpidump -t` to
+`DUMPS/<experiment>/`, and the next boot stops the loop. The FAT volume is
+mounted synchronously so a hung probe cannot leave earlier file data and FAT
+allocations only in memory. `capture.log` checkpoints each command before it
+starts and records its exit status afterwards. Each command has a 20-second
+limit, followed by SIGKILL after two more seconds; failures do not prevent the
+remaining commands from running. ACPI physical-memory access runs last and
+does not request AML disassembly (the rescue image has no `iasl`). A kernel
+hang can still require a reset, but the earlier completed files and the last
+`start` checkpoint remain on the stick. `done.txt` means collection finished;
+inspect the per-command statuses for failures or timeouts.
 
 Then unplug the stick and bring it to the controller host. Remove it only
 when the loader is at the STOPPED prompt or the machine is off.

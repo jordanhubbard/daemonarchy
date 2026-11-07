@@ -154,7 +154,7 @@ sh "$tmp/h.sh" abc >/dev/null 2>&1 && fail "hwtrace-hold accepted junk"
 
 # 6. The rc only hands over for a stick with keys and never blocks the loop:
 # the hand-over is after the diagnostics save, before the reboot.
-awk '/hwtrace_wanted/ { w = NR } /dmesg -a/ { d = NR } /^reboot$/ { r = NR } END { exit !(d < w && w < r) }' \
+awk '/hwtrace_wanted/ { w = NR } /^\thwtrace_collect$/ { d = NR } /^reboot$/ { r = NR } END { exit !(d > 0 && d < w && w < r) }' \
     "$here/tools/hwtrace/rc" || fail "rc ordering"
 grep -q 'hwtrace_hold' "$here/tools/hwtrace/rc" || fail "rc does not hold"
 
