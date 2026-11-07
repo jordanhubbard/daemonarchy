@@ -37,6 +37,13 @@ diagnostics before it reboots. It writes `dmesg -a`, `sysctl -a`, `kenv`,
 `kldstat`, `pciconf -lvbc`, `devinfo -vr` and `acpidump -dt` to
 `DUMPS/<experiment>/`, and the next boot stops the loop.
 
+Only a queued experiment that reaches init stops the loop. A complete trace
+left in NVRAM by a boot outside the queue (an earlier campaign or a normal
+boot) is filed as `experiment: (none: booted outside the queue)`, cleared,
+and the queue starts as usual. Loaders built before this change stopped on
+such a trace; on those, booting the stick again runs the queue, because the
+filed trace was cleared from NVRAM.
+
 Then unplug the stick and bring it to the controller host. Remove it only
 when the loader is at the STOPPED prompt or the machine is off.
 
