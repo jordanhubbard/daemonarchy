@@ -110,7 +110,7 @@ tar -xf "$iso" -C "$root" "$first"
 [ "$first" = rescue/rescue ] || mv "$root/$first" "$root/rescue/rescue"
 set -- rescue/dhclient-script libexec/ld-elf.so.1 lib/libc.so.7 lib/libsys.so.7 \
     usr/lib/libdevinfo.so.7 \
-    usr/sbin/pciconf usr/sbin/devinfo usr/sbin/acpidump \
+    usr/sbin/pciconf usr/sbin/devinfo usr/sbin/acpidump bin/timeout \
     boot/defaults/loader.conf boot/device.hints
 tar -tf "$iso" >"$work/iso.list"
 for m in $modules; do
@@ -126,7 +126,7 @@ done
 netbins="usr/sbin/sshd usr/libexec/sshd-session usr/libexec/sshd-auth usr/bin/ssh-keygen usr/bin/scp usr/libexec/sftp-server usr/sbin/usbconfig usr/bin/netstat"
 set -- "$@" $netbins etc/login.conf etc/login.conf.db boot/kernel/linker.hints
 tar -xf "$iso" -C "$root" "$@"
-for f in usr/sbin/pciconf usr/sbin/devinfo usr/sbin/acpidump $netbins; do
+for f in usr/sbin/pciconf usr/sbin/devinfo usr/sbin/acpidump bin/timeout $netbins; do
 	echo "$f"
 done >"$work/dynbins"
 : >"$work/libs"
@@ -171,6 +171,7 @@ ln -sf ../rescue/rescue "$root/sbin/init"
 ln -s ../rescue/dhclient-script "$root/sbin/dhclient-script"
 mkdir -p "$root/var" "$root/root"
 install -m 0555 "$here/tools/hwtrace/rc" "$root/etc/rc"
+install -m 0444 "$here/tools/hwtrace/capture.sh" "$root/etc/hwtrace-capture.sh"
 install -m 0444 "$here/tools/hwtrace/net.sh" "$root/etc/hwtrace-net.sh"
 install -m 0555 "$here/tools/hwtrace/hwtrace-continue" "$here/tools/hwtrace/hwtrace-hold" "$root/sbin/"
 # Minimal accounts for sshd (privilege separation) and a root whose shell
