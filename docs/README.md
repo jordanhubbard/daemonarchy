@@ -63,6 +63,7 @@ another version are historical records. 1.5.1 entries describe planned work.
 - [ARM implementation, hwtrace discovery and final-distribution validation](roadmap/arm-implementation.md)
 - [aarch64 inventory and VMware worker bring-up (ARCH-001)](aarch64.md)
 - [Pi 500 physical Linux reference and RP1 Ethernet correction](testing-pi500-linux-20261107.md)
+- [Pi 4 physical Linux baseline and first FreeBSD diagnostic media](testing-pi4-linux-20261107.md)
 - [1.1.1-to-1.3.1 application package reuse inventory](evidence/release-1.3.1-package-reuse-inventory.md)
 - [Earlier 1.3.1 diagnostics scope and preflight evidence](roadmap/release-1.3.1.md)
 - [Owned FreeBSD source builds](source-builds.md)

@@ -853,7 +853,9 @@ builder while HVF ran the install tests on the same host.
 
 ## Raspberry Pi 4 bring-up
 
-RPI-001 is the first SBC implementation target, ahead of Pi 5. The initial
+RPI-001 is the first SBC implementation target, ahead of Pi 5. A physical 8 GB
+Pi 4B Rev 1.5 now has a [Linux baseline and staged-media record](testing-pi4-linux-20261107.md).
+Spare media and its first FreeBSD boot are still pending. The initial
 candidate combines the matching FreeBSD kernel/world with a newly built ARM
 EFI loader and pftf RPi4 UEFI v1.53 (ZIP SHA-256
 `ca9973e2a7a546b3df871cfb7382e656829114b6dfa424f40dc67cc90a217d88`).
