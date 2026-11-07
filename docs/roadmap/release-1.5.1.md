@@ -129,19 +129,22 @@ line remains as the record of what was true then.
 | [#257](https://github.com/jordanhubbard/daemonarchy/issues/257) | installer defect | fix in review ([#281](https://github.com/jordanhubbard/daemonarchy/pull/281)); reporters' logs requested |
 
 The daemonarchy-src 1.4.0 milestone (source issue [#21](https://github.com/jordanhubbard/daemonarchy-src/issues/21),
-paired with #33) was not changed.
+paired with #33) moved to a new daemonarchy-src 1.5.1 milestone on 2026-11-05, and the empty 1.3.1, 1.3.2 and
+1.4.0 milestones were closed in both repositories. #244 was closed as fixed by #282; #257 stays open until the
+reporters' install log explains the failure.
 
 ## Release tasks
 
-- Release notes: [draft](../release-1.5.1.md), written from what was merged on 2026-11-05 and filled by
-  `scripts/fill-release.py` from the verified artifacts. 1.5.1 is released with what has evidence; the
-  open items above stay open and are listed in the notes as not done.
+- Release notes: [published 2026-11-07](../release-1.5.1.md), filled by `scripts/fill-release.py` from the
+  verified artifacts. 1.5.1 is released with what has evidence; the open items above stay open and are listed
+  in the notes as not done.
 - Kernel input: daemonarchy-src `cb38d6498a24` (`daemonarchy`): the 1.5.0 snapshot plus the arm64 CPU-start
   bound and diagnostics (src #53, #60), the comment-only header change (src #56) and the virtio barrier
   (src #59 via #61). The native world, kernel, packages, ISO, trace images and QA run on the FreeBSD
   workers; signing and publication are the release owner's, in one session.
-- Record an onboarding video on the published 1.5.1 media and link it from the README. It is made after the
-  image is final, so it shows exactly what a new user gets.
+- Onboarding video: deferred out of 1.5.1 on 2026-11-05. The release owner rejected the build made from
+  [the newcomer tutorial](../tutorial/README.md) with the presentation tooling (screenshots and synthesized speech);
+  the video will be remade with a different approach and is not a 1.5.1 release asset.
 
 ## Unfinished 1.5.0 acceptance
 
