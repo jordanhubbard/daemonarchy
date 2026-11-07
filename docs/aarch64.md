@@ -12,10 +12,10 @@ first native results:
   boots to the installer menu under QEMU/EDK2
   ([record](#worker-record-native-bulk-unsigned-feed-and-uefi-iso-2026-10-27)).
 
-## Status in 1.5.0: a community-validation image
+## Status in 1.5.1: a community-validation image
 
-The 1.5.0 release publishes `daemonarchy-1.5.0-aarch64.iso.xz` and the aarch64 hardware trace image
-`daemonarchy-hwtrace-1.5.0-aarch64.img.xz`. In QEMU with an e1000e network card the final image installs (all 919 archives, about 20 minutes) and boots under UEFI, and the signed-repository, feed-URL and no-FreeBSD-repository checks pass. **Known issue:** with QEMU's default virtio-net card the install stalls during the package fetch: about a minute in, the guest stops servicing receive on vtnet0, so every lookup and download then times out; bringing the interface down and up revives it. Use `-device e1000e` until this is fixed. The automated desktop check first timed out on the e1000e run because the harness's QEMU `virt` guest had no keyboard to type the SDDM password with; with a USB keyboard added and nothing else changed it passed (graphical login, input, the Epiphany browser and the package manager). The image remains a community-validation
+The 1.5.1 release publishes `daemonarchy-1.5.1-aarch64.iso.xz` and the aarch64 hardware trace image
+`daemonarchy-hwtrace-1.5.1-aarch64.img.xz`. In QEMU on an Apple silicon Mac (hvf) with the default virtio-net card the final image installs from the published 1.5.1 feeds (all 919 archives, 4.72 GB, in 17 minutes) and boots under UEFI, and every check of `test-qemu.sh` passes: the signed-repository, feed-URL and no-FreeBSD-repository checks, the sound device, and the desktop check (graphical login, input, the Epiphany browser and the package manager). The 1.5.0 known issue, a receive stall on vtnet0 during the package fetch, is fixed in the 1.5.1 kernel (daemonarchy-src #59 and #61: the virtqueue notification checks use a full barrier on every architecture), so `-device e1000e` is no longer needed. The harness gives the `virt` guest a USB tablet and keyboard without VirGL (#289). The image remains a community-validation
 image: QEMU only, and the one physical arm64 machine tried does not work yet (below). What changed after 1.4.1 is a VirtIO GPU path: `graphics/drm-612-kmod` builds the VirtIO GPU stack on
 aarch64 (daemonarchy-ports #36), the graphics service loads and reattaches the driver before SDDM starts
 (no kernel change), and an aarch64-only patch lets a render-node client create, map and destroy dumb
@@ -26,7 +26,7 @@ Wi-Fi, the live desktop and anything past the first screen of the session; the d
 real graphics scripts, not by a full image install. Whether the 1.5.0 aarch64 application feed carries the VirtIO GPU package was not re-checked for this page.
 People with arm64 hardware are still asked to try the image and report what happens.
 
-The first physical aarch64 target is the NVIDIA RTX Spark laptop, an official target whose support is deferred from 1.5.0. The 1.5.0 image boots its kernel there but stops while starting secondary CPUs, so it does not reach a desktop (tested, not yet working in 1.5.0; a draft fix boots further and then panics in the kernel, and the fix is not part of 1.5.0); see the [application note](application-note-rtx-spark.md) for the observations, the cause and the workaround.
+The first physical aarch64 target is the NVIDIA RTX Spark laptop, an official target whose support is deferred from 1.5.0 and, after the 1.5.1 image still hung after starting the fourth CPU, to 1.6. The 1.5.0 image boots its kernel there but stops while starting secondary CPUs, so it does not reach a desktop (tested, not yet working in 1.5.0; a draft fix boots further and then panics in the kernel, and the fix is not part of 1.5.0); see the [application note](application-note-rtx-spark.md) for the observations, the cause and the workaround.
 
 ## Status in 1.4.1: a community-validation image (history)
 
