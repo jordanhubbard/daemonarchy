@@ -25,7 +25,8 @@ the current queue generation with four enabled CPUs, native kernel ACPI/xHCI/
 USB mass-storage attachment, UFS root, four active CPUs, 4096-byte pages, and
 the unique label in the saved kernel environment. All seven bounded diagnostic
 probes must finish with status zero, the completion marker must be nonempty,
-and no root-ownership warning may appear. Offline diagnostics, synchronized
+and no root-ownership warning or failed storage I/O may appear. Offline
+diagnostics, synchronized
 guest reset, clean emulator exit and unchanged source-image hash are checked
 separately. A firmware prompt, visible kernel text or exit zero cannot pass.
 
@@ -76,3 +77,23 @@ poweroff). All eight device-model suites pass against the extracted Linux
 ARM64 native package, whose GUI/archive check also passes. These independent
 controls preserve both original input images and do not substitute for the
 unfinished ACPI/USB acceptance.
+
+
+The diagnostic observer eventually reached init, saved all seven probes and
+requested reset. No guest memory/register values or completion events were
+injected; debugger attaches paused execution and detaches resumed it. This is
+not a clean qualification run. Its saved dmesg shows the 720,896-byte CTF read
+exhausted five CAM retries and failed with `g_vfs_done()` error 5 before init
+continued. Collection completion therefore does not establish correct storage.
+The runner now explicitly rejects that error, CAM request failures, exhausted
+retries and I/O errors; an additional acceptance-guard test proves a complete
+collector result cannot hide them.
+
+Live transfer inspection found the first 64 KiB completion of a 128 KiB bulk-IN
+transfer delivered and the second absent. An independent generic QEMU xHCI +
+USB-storage fixture verifies the entire patterned 128 KiB payload arrived but
+only the first completion event was emitted. QEMU's transfer-wide `reported`
+latch suppresses the final IOC event. The xHCI specification requires an event
+for each IOC-marked TRB, including intermediate chained TRBs. A bounded model
+repair and a fresh uninterrupted boot with clean storage diagnostics remain
+required; the observer's original successful collector checks do not close it.

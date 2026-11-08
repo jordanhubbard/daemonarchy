@@ -118,6 +118,9 @@ def assess(serial, dumps, snapshot, label):
         "all_probes_complete": all(f"finish {name}.txt status=0" in capture for name in PROBES),
         "done_marker": bool((dumps / "done.txt").read_bytes().strip()),
         "no_ownership_warning": "_secure_path:" not in dmesg,
+        "storage_io_clean": not any(marker in dmesg for marker in (
+            "g_vfs_done():", "CAM status: CCB request completed with an error",
+            "Retries exhausted", "I/O error")),
     }
 
 

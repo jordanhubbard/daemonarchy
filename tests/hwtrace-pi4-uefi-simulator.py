@@ -64,6 +64,18 @@ class UefiUsbChecks(unittest.TestCase):
         with self.assertRaises(FileNotFoundError):
             self.checks()
 
+    def test_completed_collection_does_not_hide_failed_root_reads(self):
+        dmesg = self.root / "dmesg.txt"
+        original = dmesg.read_text()
+        for failure in ("g_vfs_done():gpt/HWTROOT[READ(offset=23953408, length=720896)]error = 5",
+                        "CAM status: CCB request completed with an error",
+                        "Error 5, Retries exhausted", "I/O error"):
+            dmesg.write_text(original + "\n" + failure)
+            checks = self.checks()
+            self.assertTrue(checks["all_probes_complete"])
+            self.assertTrue(checks["done_marker"])
+            self.assertFalse(checks["storage_io_clean"])
+
 
 if __name__ == "__main__":
     unittest.main()
