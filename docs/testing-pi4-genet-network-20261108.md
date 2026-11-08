@@ -107,6 +107,23 @@ link, DHCP, authenticated SCP in both directions, the upload round trip,
 all probes, storage diagnostics, offline evidence and the natural reset
 pass again with the source image unchanged.
 
+The final model also preserves a partially assembled TX frame across separate
+producer doorbells and migration. Its QEMU SHA-256 is
+`bb79102f8cdebdd0da7f0678507a9281f496934f1089d8b1ab4b7f8f20f85ca6`.
+A fresh native kernel
+`77b90b794de95ec3908f4c182dae972fa81265f0dfeec527de23a8ce69aee328`
+then repeats the complete public control with unchanged runner/helper bytes:
+
+| Profile | Checks | Guest `hw.physmem` | GENET input/output bytes | Errors/drops |
+| --- | --- | --- | --- | --- |
+| 2 GiB | 26/26 | 2,054,680,576 | 1,225,228 / 2,245,839 | 0 |
+| 8 GiB | 27/27 | 8,430,018,560 | 1,225,552 / 2,246,369 | 0 |
+
+Both final runs preserve 15 offline diagnostic files, all seven probe statuses
+are zero, SSH verifies the provisioned host key, and the bidirectional payloads
+and upload round trip match their expected hashes. Native SD root, clean
+storage, natural continue/reset and original-image integrity pass again.
+
 These are actual guest-stack packets through the modeled MAC/DMA/interrupt
 path and QEMU user networking. They do not qualify a physical PHY, cable,
 Ethernet performance, an ACPI GENET frontend, or Pi 5/RP1.
