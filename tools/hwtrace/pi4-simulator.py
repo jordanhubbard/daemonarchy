@@ -20,6 +20,7 @@ import subprocess
 import sys
 
 ANSI = re.compile(rb"\x1b\[[0-?]*[ -/]*[@-~]")
+MACHINES = {"raspi4b": 2 << 30, "raspi4b-4g": 4 << 30, "raspi4b-8g": 8 << 30}
 CHECKS = {
     "uboot": "U-Boot ",
     "freebsd_loader": "FreeBSD/arm64 EFI loader",
@@ -72,7 +73,39 @@ def data_offset(image):
     raise ValueError("bounded DATRACE partition not found")
 
 
-def assess(serial, dumps):
+def memory_options(parser):
+    parser.add_argument("--machine", choices=MACHINES, default="raspi4b",
+                        help="explicit BCM2711 model; the default remains 2 GiB")
+    parser.add_argument("--memory-min-bytes", type=int,
+                        help="minimum required guest hw.physmem, not a firmware setting")
+    parser.add_argument("--memory-max-bytes", type=int,
+                        help="maximum permitted guest hw.physmem, not a firmware setting")
+
+
+def validate_memory_options(args):
+    low, high = args.memory_min_bytes, args.memory_max_bytes
+    if any(value is not None and value < 0 for value in (low, high)):
+        raise ValueError("guest memory bounds must be nonnegative byte counts")
+    if low is not None and high is not None and low > high:
+        raise ValueError("guest memory minimum exceeds its maximum")
+    if low is not None and low > MACHINES[args.machine]:
+        raise ValueError("guest memory minimum exceeds configured model RAM")
+
+
+def physical_memory(text):
+    matches = re.findall(r"^hw\.physmem:[ \t]*([0-9]+)[ \t]*$", text, re.MULTILINE)
+    return int(matches[0]) if len(matches) == 1 else None
+
+
+def memory_checks(text, low=None, high=None):
+    if low is None and high is None:
+        return {}
+    actual = physical_memory(text)
+    return {"guest_physical_memory_bounds": actual is not None and
+            (low is None or actual >= low) and (high is None or actual <= high)}
+
+
+def assess(serial, dumps, memory_min=None, memory_max=None):
     checks = {key: value in serial for key, value in CHECKS.items()}
     checks["no_ownership_warning"] = "_secure_path:" not in serial
     checks["fdt_profile"] = 'boottrace_capture_acpi="NO"' in (
@@ -84,10 +117,12 @@ def assess(serial, dumps):
     sysctl = (dumps / "sysctl.txt").read_text(errors="replace")
     checks["smp_active"] = "kern.smp.active: 1" in sysctl and "kern.smp.cpus: 4" in sysctl
     checks["page_size"] = "hw.pagesize: 4096" in sysctl
+    checks.update(memory_checks(sysctl, memory_min, memory_max))
     return checks
 
 
 def run(args):
+    validate_memory_options(args)
     image = checked(args.image, args.image_sha256)
     uboot = checked(args.uboot, args.uboot_sha256)
     dtb = checked(args.dtb, args.dtb_sha256)
@@ -120,12 +155,15 @@ def run(args):
     virtual_size = 1 << max(29, (control.stat().st_size - 1).bit_length())
     subprocess.run([str(qimg), "create", "-f", "qcow2", "-F", "raw", "-b", str(control),
                     str(overlay), str(virtual_size)], check=True)
-    command = [str(qemu), "-machine", "raspi4b", "-accel", "tcg", "-kernel", str(uboot),
+    command = [str(qemu), "-machine", args.machine, "-accel", "tcg", "-kernel", str(uboot),
                "-dtb", str(profile_dtb), "-drive", f"if=sd,format=qcow2,file={overlay}",
                "-display", "none", "-serial", f"file:{output / 'serial.log'}",
                "-serial", f"file:{output / 'uart1.log'}", "-monitor", "none", "-nic", "none",
                "-no-reboot", "-d", "guest_errors,unimp", "-D", str(output / "guest-errors.log")]
     manifest = dict(schema="daemonarchy/pi4-simulator@1", profile="uboot-fdt", command=command,
+                    machine=args.machine, model_ram_bytes=MACHINES[args.machine],
+                    guest_memory_bounds=dict(min_bytes=args.memory_min_bytes,
+                                             max_bytes=args.memory_max_bytes),
                     harness_sha256=digest(Path(__file__).resolve()),
                     inputs={str(p): digest(p) for p in (image, uboot, dtb, qemu, qimg)},
                     profile_dtb_sha256=digest(profile_dtb), virtual_size=virtual_size,
@@ -153,7 +191,10 @@ def run(args):
     dumps = output / "dumps"
     dumps.mkdir()
     subprocess.run(["mcopy", "-s", "-i", spec, "::/DUMPS/0001", str(dumps)], check=True)
-    manifest["checks"] = assess(serial, dumps / "0001")
+    manifest["checks"] = assess(serial, dumps / "0001", args.memory_min_bytes,
+                                args.memory_max_bytes)
+    manifest["guest_physical_memory_bytes"] = physical_memory(
+        (dumps / "0001/sysctl.txt").read_text(errors="replace"))
     manifest["source_unchanged"] = digest(image) == args.image_sha256.lower()
     manifest["diagnostics"] = {str(p.relative_to(dumps)): digest(p) for p in sorted(dumps.rglob("*")) if p.is_file()}
     manifest["ok"] = (manifest["exit_code"] == 0 and manifest["source_unchanged"] and
@@ -166,6 +207,7 @@ def run(args):
 
 def main():
     parser = argparse.ArgumentParser(description=__doc__)
+    memory_options(parser)
     for name in ("image", "uboot", "dtb"):
         parser.add_argument("--" + name, type=Path, required=True)
         parser.add_argument("--" + name + "-sha256", required=True)

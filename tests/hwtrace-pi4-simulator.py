@@ -2,6 +2,7 @@
 # SPDX-License-Identifier: BSD-2-Clause
 """Guard the simulator's boot/collection acceptance and raw-image bounds."""
 import importlib.util
+import argparse
 from pathlib import Path
 import struct
 import tempfile
@@ -13,6 +14,22 @@ spec.loader.exec_module(sim)
 
 
 class SimulatorChecks(unittest.TestCase):
+    def test_full_memory_expectation_rejects_small_guest_or_ambiguous_evidence(self):
+        seven, eight = 7 << 30, 8 << 30
+        for text in ("hw.physmem: 2147483648\n", "hw.physmem: 3221225472\n", "",
+                     "hw.physmem: 8418725888\nhw.physmem: 8418725888\n"):
+            self.assertFalse(sim.memory_checks(text, seven, eight)["guest_physical_memory_bounds"])
+        self.assertTrue(sim.memory_checks("hw.physmem: 8418725888\n", seven, eight)["guest_physical_memory_bounds"])
+        parser = argparse.ArgumentParser()
+        sim.memory_options(parser)
+        for arguments in (("--memory-min-bytes", "-1"),
+                          ("--machine", "raspi4b-8g", "--memory-min-bytes", "9", "--memory-max-bytes", "8"),
+                          ("--memory-min-bytes", str(seven))):
+            with self.assertRaises(ValueError):
+                sim.validate_memory_options(parser.parse_args(arguments))
+        sim.validate_memory_options(parser.parse_args(("--machine", "raspi4b-8g",
+                                                      "--memory-min-bytes", str(seven))))
+
     def test_diagnostic_completion_requires_every_probe_and_smp(self):
         with tempfile.TemporaryDirectory() as directory:
             p = Path(directory)

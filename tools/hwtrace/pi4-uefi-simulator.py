@@ -96,12 +96,12 @@ def values(text):
     return dict(line.split(": ", 1) for line in text.splitlines() if ": " in line)
 
 
-def assess(serial, dumps, snapshot, label):
+def assess(serial, dumps, snapshot, label, memory_min=None, memory_max=None):
     dmesg = (dumps / "dmesg.txt").read_text(errors="replace")
     kenv = (dumps / "kenv.txt").read_text(errors="replace")
     capture = (dumps / "capture.log").read_text(errors="replace")
     scalars = values((dumps / "sysctl.txt").read_text(errors="replace"))
-    return {
+    checks = {
         "efi_loader": "FreeBSD/arm64 EFI loader" in serial,
         "loader_acpi_readback": "loader ACPI capture saved and read back" in serial,
         "acpi_four_enabled_cpus": snapshot.get("topology", {}).get("enabled") == 4,
@@ -122,9 +122,13 @@ def assess(serial, dumps, snapshot, label):
             "g_vfs_done():", "CAM status: CCB request completed with an error",
             "Retries exhausted", "I/O error")),
     }
+    checks.update(sim.memory_checks((dumps / "sysctl.txt").read_text(errors="replace"),
+                                    memory_min, memory_max))
+    return checks
 
 
 def run(args):
+    sim.validate_memory_options(args)
     image = sim.checked(args.image, args.image_sha256)
     firmware = sim.checked(args.firmware, args.firmware_sha256)
     qemu = sim.checked(args.qemu, args.qemu_sha256)
@@ -135,6 +139,11 @@ def run(args):
     output = args.output.resolve()
     result = output / "result.json"
     manifest = dict(schema="daemonarchy/pi4-uefi-usb-simulator@1", profile="uefi-usb",
+                    machine=args.machine, model_ram_bytes=sim.MACHINES[args.machine],
+                    guest_memory_bounds=dict(min_bytes=args.memory_min_bytes,
+                                             max_bytes=args.memory_max_bytes),
+                    harness_sha256=sim.digest(Path(__file__).resolve()),
+                    fdt_helper_sha256=sim.digest(TOOLS / "pi4-simulator.py"),
                     inputs={str(p): sim.digest(p) for p in (image, firmware, qemu, qimg)},
                     limitations=["VideoCore/EEPROM bypassed", "partial BCM2711 model",
                                  "not Pi 5/RP1 or physical/full-RAM qualification"], ok=False)
@@ -158,7 +167,7 @@ def run(args):
                         str(overlay)], check=True)
         # A USB disk keeps the exact source geometry; unlike SD it needs no
         # power-of-two capacity rounding. qemu-xhci is a real PCI endpoint.
-        command = [str(qemu), "-machine", "raspi4b", "-accel", "tcg",
+        command = [str(qemu), "-machine", args.machine, "-accel", "tcg",
                    "-global", "arm_gic.has-security-extensions=on",
                    "-global", "bcm2838-pcie-disconnected.connected-xhci=on",
                    "-blockdev", json.dumps({"driver": "qcow2", "node-name": "stick",
@@ -184,6 +193,10 @@ def run(args):
             manifest["pid"] = process.pid
             save()
             qmp = QMP(process)
+            memory = qmp.command("query-memory-size-summary")
+            manifest["configured_memory_bytes"] = memory["base-memory"] + memory.get("plugged-memory", 0)
+            if manifest["configured_memory_bytes"] != sim.MACHINES[args.machine]:
+                raise ValueError("QEMU configured RAM disagrees with selected BCM2711 model")
             manifest["stop_state"] = qmp.wait_for_stop(args.timeout)
             qmp.command("screendump", {"filename": str(output / "screen.ppm")})
             manifest["events"] = list(qmp.events)
@@ -203,7 +216,10 @@ def run(args):
         serial = "\n".join(sim.ANSI.sub(b"", (output / f"uart{n}.log").read_bytes()).decode(
                           errors="replace") for n in (0, 1))
         (output / "serial-clean.txt").write_text(serial)
-        checks = assess(serial, dumps / "0001", snapshot, label)
+        checks = assess(serial, dumps / "0001", snapshot, label,
+                        args.memory_min_bytes, args.memory_max_bytes)
+        manifest["guest_physical_memory_bytes"] = sim.physical_memory(
+            (dumps / "0001/sysctl.txt").read_text(errors="replace"))
         checks["guest_reset_observed"] = any(e.get("event") == "SHUTDOWN" and
             e.get("data", {}).get("reason") == "guest-reset" for e in manifest["events"])
         checks["natural_observed_stop"] = manifest["stop_state"]["status"] == "shutdown"
@@ -245,6 +261,7 @@ def run(args):
 
 def main():
     parser = argparse.ArgumentParser(description=__doc__)
+    sim.memory_options(parser)
     for name in ("image", "firmware", "qemu"):
         parser.add_argument("--" + name, type=Path, required=True)
         parser.add_argument("--" + name + "-sha256", required=True)
