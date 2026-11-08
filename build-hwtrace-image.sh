@@ -217,7 +217,16 @@ EOF
 [ -n "$extra" ] && cat "$extra" >>"$root/boot/loader.conf"
 printf 'daemonarchy-hwtrace %s\n' "$version" >"$root/boot/version"
 
-makefs -t ffs -B little -o version=2,minfree=0,label=HWTROOT \
+# makefs otherwise copies the staging user's ownership into the rescue root.
+# Native images must also be usable when assembled without root privileges:
+# login.conf, account databases and sshd's empty directory require root custody.
+# Keep the staged modes/times; override only ownership for every existing path.
+{
+	printf '/set uid=0 gid=0\n'
+	mtree -c -k type -p "$root"
+} >"$work/root.mtree"
+makefs -t ffs -B little -F "$work/root.mtree" \
+    -o version=2,minfree=0,label=HWTROOT \
     -s "$(( $(du -Ask "$root" | cut -f1) * 13 / 10 / 1024 + 8 ))m" \
     "$work/root.ufs" "$root"
 

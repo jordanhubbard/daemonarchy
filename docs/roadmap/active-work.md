@@ -1743,7 +1743,7 @@ remains open; report files do not establish a passing gate.
 - **Priority:** P0
 - **Owner:** SBC boot, owned FreeBSD source and release integration
 - **Direction:** Finish Pi 4 media, installer, installed boot and recovery first; reuse the common infrastructure for Pi 5 without treating Pi 4 drivers as RP1 support.
-- **Conclusion:** The [physical 8 GB Pi 4B Rev 1.5 Linux baseline and diagnostic candidate](../testing-pi4-linux-20261107.md) are retained. No spare media is attached; the first FreeBSD boot, full-RAM DMA and final distribution acceptance remain open.
+- **Conclusion:** The [physical 8 GB Pi 4B Rev 1.5 Linux baseline and diagnostic candidate](../testing-pi4-linux-20261107.md) are retained. Separate USB media is written and direct-readback verified; physical boards are unattended, so physical FreeBSD boot waits for an attended handoff. A distinct [U-Boot/FDT simulator control](../testing-pi4-uboot-fdt-20261108.md) now boots FreeBSD with four active CPUs and native SD root, saves all seven probes, and resets with offline diagnostics preserved. The [EDK2/ACPI checkpoint](../testing-pi4-simulator-20261107.md) remains separate. Full-RAM DMA and final distribution acceptance remain open.
 - **Depends on:** ARM-002, ARM-003
 - **Implementation:**
   - [ ] Discovery: First SBC bring-up target by operator decision: Pi 4B; record BCM2711 stepping, RAM variant, EEPROM, power supply, U-Boot/EDK2, DTB/ACPI mode and SD/USB boot. Enroll Pi 400 and CM4 as separate carrier/model records.
@@ -1763,7 +1763,7 @@ remains open; report files do not establish a passing gate.
 - **Priority:** P1
 - **Owner:** SBC boot and owned FreeBSD RP1/BCM2712 source
 - **Direction:** Deliver the board-specific final image and installed boot, default application/graphics stack and working network; document peripherals still under development per model.
-- **Conclusion:** A [physical Pi 500 Linux reference](../testing-pi500-linux-20261107.md) now binds the mixed kernel/userspace ABI and a native Ethernet transfer. RP1 uses Cadence GEM, not Pi 4 GENET. FreeBSD qualification remains open; Pi 4 stays first.
+- **Conclusion:** A [physical Pi 500 Linux reference](../testing-pi500-linux-20261107.md) binds the mixed kernel/userspace ABI and a native Ethernet transfer. A separate [SD/FDT bootstrap candidate](../testing-pi5-bootstrap-20261107.md) now retains pinned upstream U-Boot, the board DTB and a clean native-built kernel with the BCM2712 SDHCI match. That kernel passes the Pi 4 simulator control; physical Pi 5 boot, MMC ordering, controller quirks and RP1 qualification remain open. RP1 uses Cadence GEM, not Pi 4 GENET. Pi 4 stays first.
 - **Depends on:** RPI-001, ARM-002, ARM-003
 - **Implementation:**
   - [ ] Discovery: Follow Pi 4 in the SBC implementation queue while researching Pi 5 independently. Inventory C1/D0 stepping, RAM, EEPROM, power/cooling, RP1 and SD/USB/NVMe paths; include CM5 and Pi 500-family carrier/input differences.

@@ -99,6 +99,8 @@ on:
       - 'tools/boottrace/stick.py'
       - 'tests/hwtrace-net.sh'
       - 'tests/hwtrace-capture.sh'
+      - 'tests/hwtrace-pi4-simulator.py'
+      - 'tests/pi5-bootstrap.py'
       - 'tests/boottrace-tools.py'
       - '.github/workflows/native-graph.yml'
   pull_request:
@@ -199,6 +201,8 @@ on:
       - 'tools/boottrace/stick.py'
       - 'tests/hwtrace-net.sh'
       - 'tests/hwtrace-capture.sh'
+      - 'tests/hwtrace-pi4-simulator.py'
+      - 'tests/pi5-bootstrap.py'
       - 'tests/boottrace-tools.py'
       - '.github/workflows/native-graph.yml'
   workflow_dispatch:
@@ -271,6 +275,8 @@ jobs:
           sh -n build-hwtrace-image.sh tools/hwtrace/rc tools/hwtrace/net.sh
           sh tests/hwtrace-net.sh
           sh tests/hwtrace-capture.sh
+          python3 tests/hwtrace-pi4-simulator.py -v
+          python3 tests/pi5-bootstrap.py -v
           python3 tests/boottrace-tools.py Stick.test_keys_add_replace_and_refuse_private Stick.test_network_reports_the_address -v
       - name: Offline MacBook firmware sources and image size budgets
         env:
