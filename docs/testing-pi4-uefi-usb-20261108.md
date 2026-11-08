@@ -129,3 +129,14 @@ Both original base images remain unchanged. The final extracted Linux ARM64
 archive passes GUI/archive validation and all nine model suites, including
 actual USB storage completion and migration continuation. These controls
 complement the accepted ACPI/USB boot without expanding its hardware scope.
+
+
+The same uninterrupted 19-check USB control also passes with the later native
+BCM2712 SDHCI-glue kernel, SHA-256
+`79ebe4bfcb5f46bbe61c4611d0875beb876b6a523f5b7b187f3c49b0ee463eeb`,
+using fresh image SHA-256
+`60aaf3d087c56bb1ab68b5c05d6c29fb3864bd171b69d8560e21eb4b9c42a6f7`.
+All seven probes, ten durable files, clean storage and synchronized reset pass;
+the original image remains unchanged. Its separate FDT proxy passes 15/15.
+See the [Pi 5 follow-on record](testing-pi5-bootstrap-20261107.md#conservative-bcm2712-sdhci-follow-on-2026-11-08)
+for native build identity and the unchanged physical-hardware boundary.
