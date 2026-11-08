@@ -6,8 +6,9 @@
 
 The [release plan](release-1.6.0.md) owns scope, target matrix, ordering and the
 common release gates. The [research checkpoint](arm-research-20261107.md) gives
-source revisions and the evidence behind these tasks. All checkboxes below are
-open requirements. Source research does not close implementation or validation.
+source revisions and the evidence behind these tasks. The original target
+requirements below remain open. Separately marked software controls do not close
+physical or final-distribution validation. Source research alone closes neither.
 
 **SBC priority:** RPI-001 (Pi 4) precedes RPI-002 (Pi 5), by operator decision
 on 2026-11-07. Pi 5 research can proceed concurrently; its additional RP1 and
@@ -120,6 +121,12 @@ firmware work does not delay the Pi 4 reference port.
 - **GitHub issue:** https://github.com/jordanhubbard/daemonarchy/issues/298
 - **Queue:** [RPI-001](active-work.md#rpi-001-port-raspberry-pi-4-before-raspberry-pi-5)
 
+### Software checkpoint, 2026-11-08
+
+- [x] Pi 4 defaults: SD and USB-only FDT/GENET at 2/8 GiB, plus uncapped 8 GiB UEFI/ACPI USB pass with source `4cf77572` / kernel `d520d762`; see the [scoped evidence and candidate plan](../testing-pi-bootstrap-checkpoint-20261108.md).
+- [x] Versioned D520 regular-file candidates have passed the scoped assembly/readback controls recorded in that checkpoint.
+- [ ] Attended physical validation and the original final-distribution requirements remain open; software controls do not close them.
+
 ### Hwtrace and prerequisite discovery
 
 - [ ] First SBC bring-up target by operator decision: Pi 4B; record BCM2711 stepping, RAM variant, EEPROM, power supply, U-Boot/EDK2, DTB/ACPI mode and SD/USB boot. Enroll Pi 400 and CM4 as separate carrier/model records.
@@ -144,6 +151,12 @@ firmware work does not delay the Pi 4 reference port.
 - **Release target:** 1.6.0
 - **GitHub issue:** https://github.com/jordanhubbard/daemonarchy/issues/299
 - **Queue:** [RPI-002](active-work.md#rpi-002-port-raspberry-pi-5-and-resolve-rp1-and-firmware-quirks)
+
+### Software checkpoint, 2026-11-08
+
+- [x] Selected synthetic PCIe2 MSI-X and MSI: native USB data, message-bound interrupts, reset and finite UART overflow recovery pass with source `4cf77572` / kernel `d520d762`; see the [scoped evidence and candidate plan](../testing-pi-bootstrap-checkpoint-20261108.md).
+- [x] Versioned D520 regular-file candidates have passed the scoped assembly/readback controls recorded in that checkpoint.
+- [ ] Attended physical validation and the original final-distribution requirements remain open; software controls do not close them.
 
 ### Hwtrace and prerequisite discovery
 

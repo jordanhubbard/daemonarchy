@@ -20,6 +20,12 @@ breaks fifteen work items into hwtrace/prerequisite discovery, final implementat
 and native validation. The [1.6 release plan](docs/roadmap/release-1.6.0.md) owns the
 per-model matrix, order, exact-image distribution gates and remaining Spark experiments.
 
+The [Pi software checkpoint](docs/testing-pi-bootstrap-checkpoint-20261108.md)
+records passed Pi 4 SD/USB/GENET/full-memory controls and selected synthetic
+BCM2712 PCIe2 MSI-X/MSI, USB data and console-recovery tests. Versioned regular
+candidates are prepared for review; no physical Pi boot, full RP1 support,
+installer/desktop or update/rollback acceptance follows from those results.
+
 ## 1.5.1: network upgrades and forkability
 
 Whether 1.5 could be the last release that needs an ISO, and whether another developer can fork the
