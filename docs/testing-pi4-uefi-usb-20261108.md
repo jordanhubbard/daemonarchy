@@ -97,3 +97,35 @@ latch suppresses the final IOC event. The xHCI specification requires an event
 for each IOC-marked TRB, including intermediate chained TRBs. A bounded model
 repair and a fresh uninterrupted boot with clean storage diagnostics remain
 required; the observer's original successful collector checks do not close it.
+
+
+## Accepted uninterrupted control
+
+The bounded chained-IOC repair was then tested in a fresh, uninterrupted cold
+boot with QEMU SHA-256
+`c392d7c5b3a56f7afc01887a679e878c40953b0da0fde9dc0fd2edda4d31740d`.
+The source image, firmware, loader and kernel retain the identities above.
+No debugger socket or debugger attachment was used. All 19 runtime/readback
+checks pass, including the new clean-storage check; the separate source-image
+integrity check also passes. The only observed stop is the guest's synchronized
+reset (`SHUTDOWN` reason `guest-reset`, followed by `STOP`).
+
+The actual EFI loader captures current-generation ACPI tables with four enabled
+CPUs. The native ACPI kernel attaches xHCI and USB mass storage, mounts the UFS
+root, activates all four CPUs and reaches init. All seven bounded probes finish
+with status zero. Offline readback preserves ten diagnostic files, including
+the completion marker, after filesystem synchronization. The saved dmesg has
+none of the earlier CAM failures, exhausted retries or UFS read errors.
+
+This closes the simulated Pi 4 UEFI/ACPI/PCIe/USB bootstrap control. It does not
+qualify the physical board, full RAM/DMA, Ethernet, display/input, installed
+boot, updates/rollback, BCM2712/RP1 or the bypassed VideoCore/EEPROM chain.
+
+
+The final `c392d7c5…` binary also repeats the independent Linux CM4 control
+(10/10, actual ext4 SD root, four CPUs and natural poweroff) and FreeBSD FDT
+control (15/15, native SD UFS root, four CPUs, ten durable files and reset).
+Both original base images remain unchanged. The final extracted Linux ARM64
+archive passes GUI/archive validation and all nine model suites, including
+actual USB storage completion and migration continuation. These controls
+complement the accepted ACPI/USB boot without expanding its hardware scope.
