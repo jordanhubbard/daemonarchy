@@ -49,3 +49,14 @@ cannot close those gates or RPI-002's RP1 requirements.
 Private UART/QMP/GDB captures and all writable overlays remain outside the
 repositories. The existing uConsole workspace and physical media were not
 modified by the simulator runs.
+
+## Subsequent independent U-Boot/FDT bootstrap
+
+The [2026-11-08 U-Boot/FDT control](testing-pi4-uboot-fdt-20261108.md) reaches
+the actual FreeBSD EFI loader, four active SMP CPUs, the native SD UFS root,
+init and all seven completed diagnostic probes. Offline readback verifies the
+saved files after filesystem synchronization and reset. The explicit FDT
+profile does not require ACPI capture; the EDK2 failure controls above remain
+separate. A discovered image ownership defect was fixed and the corrected
+candidate passed the same complete simulated boot/collection/reset control.
+Physical and final-distribution acceptance remain open.

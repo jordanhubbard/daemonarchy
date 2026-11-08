@@ -65,8 +65,8 @@ The final private regular image is 389,056,000 bytes, SHA-256
 Its native-built base was assembled with the new kernel, matching existing
 1.5.1 hwtrace world/Lua support, root-owned filesystem metadata and explicit
 FDT discovery configuration. A read-only native UFS mount verified the actual
-kernel hash, `boottrace_capture_acpi="NO"`, four CPUs, an initial **3 GiB kernel
-memory cap**, and root ownership of `/etc/login.conf`. ESP boot inputs were
+kernel hash, `boottrace_capture_acpi="NO"`, a configured four-CPU limit and
+initial **3 GiB kernel memory cap**, and root ownership of `/etc/login.conf`. ESP boot inputs were
 copied and read back, one Pi 500 experiment queued, and all 211 fixed trace
 slots checked. The UFS partition stayed byte-identical during final ESP/queue
 assembly. Neither the EEPROM boot chain nor MMC numbering has been tested.
@@ -92,7 +92,7 @@ source, object and final artifact hashes. This is conventional native build
 evidence, not per-unit framework qualification.
 
 The new kernel also completed the proved Pi 4 U-Boot/FDT simulation control:
-15 of 15 checks, ten durable probe files and a clean reset. Runtime output
+15 of 15 checks, ten durable diagnostic files and a clean reset. Runtime output
 identifies the new kernel's clean build, four CPUs and 4096-byte pages. That
 checks the boot artifact and its basic compatibility with the existing world;
 it does not exercise the BCM2712 SDHCI controller or qualify Pi 5 hardware.
