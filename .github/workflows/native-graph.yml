@@ -100,6 +100,7 @@ on:
       - 'tests/hwtrace-net.sh'
       - 'tests/hwtrace-capture.sh'
       - 'tests/hwtrace-pi4-simulator.py'
+      - 'tests/hwtrace-pi4-network.py'
       - 'tests/hwtrace-pi4-uefi-simulator.py'
       - 'tests/pi5-bootstrap.py'
       - 'tests/boottrace-tools.py'
@@ -203,6 +204,7 @@ on:
       - 'tests/hwtrace-net.sh'
       - 'tests/hwtrace-capture.sh'
       - 'tests/hwtrace-pi4-simulator.py'
+      - 'tests/hwtrace-pi4-network.py'
       - 'tests/hwtrace-pi4-uefi-simulator.py'
       - 'tests/pi5-bootstrap.py'
       - 'tests/boottrace-tools.py'
@@ -278,6 +280,7 @@ jobs:
           sh tests/hwtrace-net.sh
           sh tests/hwtrace-capture.sh
           python3 tests/hwtrace-pi4-simulator.py -v
+          python3 tests/hwtrace-pi4-network.py -v
           python3 tests/hwtrace-pi4-uefi-simulator.py -v
           python3 tests/pi5-bootstrap.py -v
           python3 tests/boottrace-tools.py Stick.test_keys_add_replace_and_refuse_private Stick.test_network_reports_the_address -v

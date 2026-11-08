@@ -126,7 +126,7 @@ def assess(serial, dumps, memory_min=None, memory_max=None):
     return checks
 
 
-def run(args):
+def run(args, control_hook=None):
     validate_memory_options(args)
     image = checked(args.image, args.image_sha256)
     uboot = checked(args.uboot, args.uboot_sha256)
@@ -142,8 +142,12 @@ def run(args):
     shutil.copyfile(image, control)
     queue = output / "queue.txt"
     queue.write_text("[pi4-simulator-uboot-fdt]\nhw.ncpu=4\n")
+    if control_hook is not None:
+        control_hook.prepare(control, queue, output)
     stick = Path(__file__).resolve().parents[1] / "boottrace/stick.py"
     subprocess.run([sys.executable, str(stick), "queue", str(control), str(queue)], check=True)
+    if control_hook is not None:
+        control_hook.validate_image(control)
     profile_dtb = output / "pi4-uboot.dtb"
     shutil.copyfile(dtb, profile_dtb)
     # The existing Linux fixture uses pl011-axi. Both U-Boot and FreeBSD bind
@@ -156,6 +160,8 @@ def run(args):
         ("/soc/serial@7e201000", "status", ["okay"]),
     ):
         subprocess.run(["fdtput", "-t", "s", str(profile_dtb), node, prop, *values], check=True)
+    if control_hook is not None:
+        control_hook.configure_dtb(profile_dtb)
     overlay = output / "disk.qcow2"
     virtual_size = 1 << max(29, (control.stat().st_size - 1).bit_length())
     subprocess.run([str(qimg), "create", "-f", "qcow2", "-F", "raw", "-b", str(control),
@@ -165,6 +171,8 @@ def run(args):
                "-display", "none", "-serial", f"file:{output / 'serial.log'}",
                "-serial", f"file:{output / 'uart1.log'}", "-monitor", "none", "-nic", "none",
                "-no-reboot", "-d", "guest_errors,unimp", "-D", str(output / "guest-errors.log")]
+    if control_hook is not None:
+        command = control_hook.configure_command(command)
     manifest = dict(schema="daemonarchy/pi4-simulator@1", profile="uboot-fdt", command=command,
                     machine=args.machine, model_ram_bytes=MACHINES[args.machine],
                     guest_memory_bounds=dict(min_bytes=args.memory_min_bytes,
@@ -174,12 +182,15 @@ def run(args):
                     profile_dtb_sha256=digest(profile_dtb), virtual_size=virtual_size,
                     limitations=["VideoCore/EEPROM bypassed", "partial BCM2711 model",
                                  "not Pi 5/RP1", "no physical PCIe/network/full-RAM acceptance"])
+    if control_hook is not None:
+        manifest["network_profile"] = control_hook.identity()
     result = output / "result.json"
     result.write_text(json.dumps(manifest, indent=2) + "\n")
     with (output / "qemu.log").open("wb") as log:
         process = subprocess.Popen(command, stdout=log, stderr=log)
         try:
-            manifest["exit_code"] = process.wait(timeout=args.timeout)
+            manifest["exit_code"] = (control_hook.wait(process, args.timeout)
+                if control_hook is not None else process.wait(timeout=args.timeout))
         except subprocess.TimeoutExpired:
             manifest["error"] = "QEMU deadline expired; retained partial evidence"
             raise RuntimeError(manifest["error"])
@@ -198,6 +209,9 @@ def run(args):
     subprocess.run(["mcopy", "-s", "-i", spec, "::/DUMPS/0001", str(dumps)], check=True)
     manifest["checks"] = assess(serial, dumps / "0001", args.memory_min_bytes,
                                 args.memory_max_bytes)
+    if control_hook is not None:
+        manifest["checks"].update(control_hook.assess(dumps / "0001"))
+        manifest["network_result"] = control_hook.report
     manifest["guest_physical_memory_bytes"] = physical_memory(
         (dumps / "0001/sysctl.txt").read_text(errors="replace"))
     manifest["source_unchanged"] = digest(image) == args.image_sha256.lower()
