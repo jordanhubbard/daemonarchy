@@ -105,8 +105,9 @@ def memory_checks(text, low=None, high=None):
             (low is None or actual >= low) and (high is None or actual <= high)}
 
 
-def assess(serial, dumps, memory_min=None, memory_max=None):
-    checks = {key: value in serial for key, value in CHECKS.items()}
+def assess(serial, dumps, memory_min=None, memory_max=None, boot_checks=None):
+    checks = {key: value in serial for key, value in
+              (CHECKS if boot_checks is None else boot_checks).items()}
     dmesg = (dumps / "dmesg.txt").read_text(errors="replace")
     checks["storage_io_clean"] = not any(marker in serial or marker in dmesg
         for marker in ("g_vfs_done():", "CAM status: CCB request completed with an error",
@@ -163,7 +164,8 @@ def run(args, control_hook=None):
     if control_hook is not None:
         control_hook.configure_dtb(profile_dtb)
     overlay = output / "disk.qcow2"
-    virtual_size = 1 << max(29, (control.stat().st_size - 1).bit_length())
+    virtual_size = (control.stat().st_size if getattr(control_hook, "exact_disk_size", False)
+                    else 1 << max(29, (control.stat().st_size - 1).bit_length()))
     subprocess.run([str(qimg), "create", "-f", "qcow2", "-F", "raw", "-b", str(control),
                     str(overlay), str(virtual_size)], check=True)
     command = [str(qemu), "-machine", args.machine, "-accel", "tcg", "-kernel", str(uboot),
@@ -173,7 +175,8 @@ def run(args, control_hook=None):
                "-no-reboot", "-d", "guest_errors,unimp", "-D", str(output / "guest-errors.log")]
     if control_hook is not None:
         command = control_hook.configure_command(command)
-    manifest = dict(schema="daemonarchy/pi4-simulator@1", profile="uboot-fdt", command=command,
+    manifest = dict(schema="daemonarchy/pi4-simulator@1",
+                    profile=getattr(control_hook, "profile", "uboot-fdt"), command=command,
                     machine=args.machine, model_ram_bytes=MACHINES[args.machine],
                     guest_memory_bounds=dict(min_bytes=args.memory_min_bytes,
                                              max_bytes=args.memory_max_bytes),
@@ -208,7 +211,7 @@ def run(args, control_hook=None):
     dumps.mkdir()
     subprocess.run(["mcopy", "-s", "-i", spec, "::/DUMPS/0001", str(dumps)], check=True)
     manifest["checks"] = assess(serial, dumps / "0001", args.memory_min_bytes,
-                                args.memory_max_bytes)
+                                args.memory_max_bytes, getattr(control_hook, "boot_checks", None))
     if control_hook is not None:
         manifest["checks"].update(control_hook.assess(dumps / "0001"))
         manifest["network_result"] = control_hook.report
@@ -221,7 +224,9 @@ def run(args, control_hook=None):
     result.write_text(json.dumps(manifest, indent=2) + "\n")
     if not manifest["ok"]:
         raise RuntimeError(f"bootstrap checks incomplete: {manifest['checks']}")
-    print(f"PASS: Pi 4 U-Boot/FDT four-CPU SD boot, init, durable collection and clean reset: {result}")
+    description = getattr(control_hook, "success_description",
+                          "four-CPU SD boot, init, durable collection and clean reset")
+    print(f"PASS: Pi 4 U-Boot/FDT {description}: {result}")
 
 
 def main():

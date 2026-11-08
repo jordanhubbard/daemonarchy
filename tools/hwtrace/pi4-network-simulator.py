@@ -185,6 +185,9 @@ class NetworkControl:
         if result.returncode:
             raise RuntimeError(f'SCP failed ({result.returncode}): {result.stderr[-4096:]}')
 
+    def collect_extra(self):
+        """Collect transport-specific evidence before the natural hand-over ends."""
+
     def wait(self, process, timeout):
         self.deadline = time.monotonic() + timeout
         try:
@@ -230,6 +233,7 @@ class NetworkControl:
                         f"printf '%s\\n' '{self.label}' > /mnt/DUMPS/0001/network-token.txt; "
                         'ifconfig -a > /mnt/DUMPS/0001/network-ifconfig.txt; '
                         'netstat -ibn > /mnt/DUMPS/0001/network-netstat.txt; sync; umount /mnt')
+            self.collect_extra()
             self.remote('/sbin/hwtrace-continue')
             self.report['continue_requested'] = True
             code = process.wait(timeout=self.remaining())
@@ -264,8 +268,8 @@ class NetworkControl:
         return checks
 
 
-def main():
-    parser = argparse.ArgumentParser(description=__doc__)
+def main(control_class=NetworkControl, description=__doc__):
+    parser = argparse.ArgumentParser(description=description)
     sim.memory_options(parser)
     for name in ('image', 'uboot', 'dtb', 'qemu'):
         parser.add_argument('--' + name, type=Path, required=True)
@@ -281,7 +285,7 @@ def main():
         image = sim.checked(args.image, args.image_sha256)
         if stick.Volume(str(image)).listdir('DUMPS'):
             raise ValueError('source DUMPS must be empty; refuse stale evidence')
-        sim.run(args, NetworkControl(args))
+        sim.run(args, control_class(args))
     except (OSError, ValueError, RuntimeError, TimeoutError, subprocess.CalledProcessError) as error:
         parser.exit(1, f'{error}\n')
 
