@@ -47,6 +47,21 @@ finish. See the [source implementation and fault controls](https://github.com/jo
 
 ## Measured controls
 
+The separate U-Boot/FDT SD path also boots with the new native kernel on both
+4 and 8 GB models, without a kernel memory cap. Durable guest `hw.physmem`
+values are 4,135,047,168 and 8,430,014,464 bytes. Both activate four CPUs,
+finish all seven probes, save ten durable files and reset; inputs remain
+unchanged. This kernel selects **PIO** for the modeled SD controller. These
+boots verify the full-memory FDT handoff and SD bootstrap, not SD DMA.
+
+The FDT runner now rejects storage errors in either UART output or durable
+dmesg, including MMC errors and controller timeouts. Complete probe collection
+cannot override a failed root read. Reassessing the unchanged 2/4/8 GB FDT
+readbacks with this additional guard passes 16/17/17 checks respectively;
+the 4/8 GB runs include their required guest-memory bounds. The original boot
+manifests remain preserved separately from this offline reassessment.
+
+
 The public UEFI runner passes all 20 checks with an 8 GB model and the firmware
 3 GiB limit enabled: configured RAM is 8,589,934,592 bytes and durable guest
 `hw.physmem` is 3,117,445,120 bytes. All seven probes, clean USB storage,

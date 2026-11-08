@@ -107,6 +107,11 @@ def memory_checks(text, low=None, high=None):
 
 def assess(serial, dumps, memory_min=None, memory_max=None):
     checks = {key: value in serial for key, value in CHECKS.items()}
+    dmesg = (dumps / "dmesg.txt").read_text(errors="replace")
+    checks["storage_io_clean"] = not any(marker in serial or marker in dmesg
+        for marker in ("g_vfs_done():", "CAM status: CCB request completed with an error",
+                       "Retries exhausted", "I/O error", "Error indicated:",
+                       "Controller timeout"))
     checks["no_ownership_warning"] = "_secure_path:" not in serial
     checks["fdt_profile"] = 'boottrace_capture_acpi="NO"' in (
         dumps / "kenv.txt").read_text(errors="replace")
