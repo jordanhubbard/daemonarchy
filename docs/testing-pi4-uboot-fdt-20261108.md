@@ -75,8 +75,9 @@ incorrect profile/SMP/reset evidence, input-device/hash refusal and GPT bounds.
 
 The same complete control was then repeated with the newly built RNG200,
 no-link PCIe and GENET-control QEMU generation, and repeated again after its
-final reset/register/migration changes. The final `qemu-system-aarch64`
-SHA-256 is `cf65cb291e517a6a3db41bd3db5990006da003f7eb5d90fb66ae901be1f30eec`.
+final reset/register/migration and generic SDHCI stop/DMA changes. The final
+`qemu-system-aarch64` SHA-256 is
+`7fe73e7a5b2cf80a05ac373687b92682a728e0b2ce692045e76161c013d366d5`.
 All 15 checks pass again, including four active CPUs, native SD UFS root,
 all completed probes, 10 durable diagnostic files and synchronized reset.
 This is a regression check of the existing working FDT path. The fixture still
@@ -92,6 +93,23 @@ All 15 boot/collection/reset checks pass with the final QEMU binary, and the
 captured kernel version identifies the clean native build. This verifies basic
 boot and rescue-world compatibility of the new kernel artifact on the Pi 4
 model. It does not exercise BCM2712 or the new SDHCI binding on Pi 5 hardware.
+
+The exact final binary also passes a separate interactive Linux CM4 control:
+kernel `6.12.62-v8+`, aarch64, 64-bit userspace, CPUs 0–3 and the actual ext4
+SD root filesystem. The shell probe syncs and remounts root read-only before
+poweroff. The guest emits its powerdown marker and QEMU exits naturally with
+status zero; no forced quit is used. All 10 Linux checks pass, and the original
+Linux base image hash is unchanged. This complements the final FreeBSD run's
+15 checks, seven completed probes, 10 durable files and synchronized reset.
+
+Independent PCI SDHCI controls reproduce four failures on the earlier PIO-only
+fix and pass on the final binary: pending ADMA callbacks after manual CMD12 and
+DATA reset no longer modify guest RAM, a stale post-abort SDMA address write
+cannot restart DMA, and a genuine active SDMA boundary resume transfers the
+next card blocks. Those controls use `virt` with an SDHCI PCI controller that
+advertises DMA; the Pi 4 model itself advertises no SDHCI DMA support. They
+provide causal regression evidence for the shared controller fix, without
+claiming physical Pi 4/Pi 5 DMA acceptance.
 
 ## Reproduce the isolated control
 
