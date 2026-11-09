@@ -116,3 +116,33 @@ controls pass. A [real kernel-control ISO append](../../verification/install-tra
 preserves every original filesystem byte and verifies 201 raw-map files on its
 new 255 MiB FAT32 DATRACE partition. This is preparation only: automatic default
 boot/install capture and augmented-image boot/persistence remain unqualified.
+
+## Native builder and live-root persistence checkpoint
+
+The EFI image builder now appends a 256 MiB DATRACE filesystem by default,
+using native FreeBSD `makefs` and `mkimg` through
+[`make-install-trace.py`](../../scripts/make-install-trace.py). It creates fresh
+regular files, checks both GPT copies, preserves the original ISO payload and
+ESP, and initializes and reads back all 201 raw-map files. `INSTALL.JSON` binds
+the trace filesystem to the unmodified ISO payload hash. The native end-to-end
+builder and six refusal/integrity controls passed; the full 29 boottrace-tool
+controls now run in CI with their real filesystem utilities.
+
+The [native checkpoint](../../verification/install-trace-native-20261109.json)
+also retains an important failure. The augmented kernel-control image boots as
+a writable USB disk, but mounting DATRACE for writing while the live root is
+mounted directly from that same disk's ISO9660 provider returns `Operation not
+permitted`. A read-only mount succeeds. The same filesystem passes native
+write, filesystem checking and remount/readback from a separate worker, and
+controller readback finds the committed file with the raw map intact. This
+points to the shared raw-disk access boundary, rather than a broken FAT image.
+Do not disable GEOM protections globally to evade it.
+
+The default userspace trace design therefore needs a root arrangement that
+releases the boot disk, such as the ARM RAM-root path, or another qualified
+layout. That path's same-medium persistence remains to be tested. The amd64
+BIOS/hybrid builder still needs integration; this helper deliberately refuses
+layouts with partitions other than a single ESP. Automatic loader, kernel and
+installer capture, interrupted writes and physical reset/power-loss acceptance
+remain open. Neither a successful builder nor the independent write control
+closes those gates.

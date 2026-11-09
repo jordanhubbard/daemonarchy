@@ -52,6 +52,15 @@ root. Its manifest records input/output digests, kernel-set identity, package
 version/inventory and expanded/compressed root sizes. Assembly does not set
 VM boot, physical boot, installation, desktop or recovery status true.
 
+The outer EFI builder also appends initialized 256 MiB DATRACE storage by
+default, using native `makefs`, `mkimg` and Python 3. Keep its co-located
+`scripts/make-install-trace.py` and `tools/boottrace/stick.py` with the builder.
+This prepares storage; automatic early-boot and installer capture remains
+[TRACE-001 work](roadmap/default-install-tracing.md). The normal ISO-root USB
+control cannot mount its sibling trace partition for writing while using the
+raw disk as its live root. The RAM-root path must demonstrate that it releases
+that disk and persists evidence on the same medium before physical acceptance.
+
 Before requesting a physical test, boot the exact image through its EFI loader
 in a disposable ARM VM, verify the mounted RAM root, kernel/package identities
 and full installer payload, and exercise the intended user interface. A VM

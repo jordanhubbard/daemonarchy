@@ -59,6 +59,8 @@ on:
       - 'scripts/image-architecture.sh'
       - 'origins.sh'
       - 'scripts/make-efi-iso.sh'
+      - 'scripts/make-install-trace.py'
+      - 'tests/install-trace-media.py'
       - 'scripts/check-gpu-packages.sh'
       - 'pkg-repo.sh'
       - 'overlay/usr/local/libexec/daemonarchy-installer/disk-layout'
@@ -164,6 +166,8 @@ on:
       - 'scripts/image-architecture.sh'
       - 'origins.sh'
       - 'scripts/make-efi-iso.sh'
+      - 'scripts/make-install-trace.py'
+      - 'tests/install-trace-media.py'
       - 'scripts/check-gpu-packages.sh'
       - 'pkg-repo.sh'
       - 'overlay/usr/local/libexec/daemonarchy-installer/disk-layout'
@@ -243,6 +247,7 @@ jobs:
           bash -n overlay/usr/local/libexec/daemonarchy-installer/disk-layout overlay/usr/local/libexec/daemonarchy-installer/gpu-config
           sh tests/package-repository.sh
           bash tests/image-architecture.sh
+          python3 tests/install-trace-media.py -v
       - name: Measured installer progress and completion controls
         env:
           PYTHONDONTWRITEBYTECODE: '1'
@@ -278,6 +283,7 @@ jobs:
         env:
           PYTHONDONTWRITEBYTECODE: '1'
         run: |
+          sudo apt-get install -y -q gdisk dosfstools mtools
           sh -n build-hwtrace-image.sh tools/hwtrace/rc tools/hwtrace/net.sh
           sh tests/hwtrace-net.sh
           sh tests/hwtrace-capture.sh
@@ -286,7 +292,7 @@ jobs:
           python3 tests/hwtrace-pi4-usb-network.py -v
           python3 tests/hwtrace-pi4-uefi-simulator.py -v
           python3 tests/pi5-bootstrap.py -v
-          python3 tests/boottrace-tools.py Stick.test_keys_add_replace_and_refuse_private Stick.test_network_reports_the_address -v
+          python3 tests/boottrace-tools.py -v
       - name: Offline MacBook firmware sources and image size budgets
         env:
           PYTHONDONTWRITEBYTECODE: '1'

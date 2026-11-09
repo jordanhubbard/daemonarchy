@@ -1993,6 +1993,7 @@ remains open; report files do not establish a passing gate.
 - **Owner:** Diagnostics, loader/kernel, installer and release engineering
 - **Direction:** For 1.6, trace standard boots and installations automatically to a writable hwtrace partition on default media; prefer target-described, LLM-assisted hwtrace customization for new hardware and collect early boot/post-mortem evidence without a Run experiment menu.
 - **Conclusion:** Operator direction 2026-11-09. Preserve published artifacts and normal installation behavior; implementation, default-media persistence and physical acceptance remain open.
+- **Development checkpoint:** Native EFI construction now appends initialized 256 MiB DATRACE storage and verifies both GPTs and 201 raw-map files. The augmented image boots as USB with a virtual entropy device, but its same-disk ISO root prevents a writable trace mount; independent native write/remount/readback passes. [Exact results and remaining scope](../../verification/install-trace-native-20261109.json); RAM-root persistence, amd64 BIOS integration and automatic capture remain open.
 - **Depends on:** ARM-002, ARM-005
 - **Implementation:**
   - [ ] Design observe-only loader/kernel/installer tracing with bounded early capture, exact media identities and a standard writable hwtrace partition; keep active experiment queues separate from normal installation.

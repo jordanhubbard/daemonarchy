@@ -4,10 +4,19 @@
 # isoboot), which aarch64 does not have. This follows FreeBSD's
 # release/arm64/mkisoimages.sh: an El Torito EFI boot image plus a GPT in the
 # ISO system area that points at the same ESP, so the image boots from a
-# virtual CD or a USB stick. Run on FreeBSD as root (makefs, etdump, mkimg).
+# virtual CD or a USB stick. Append initialized DATRACE storage for writable
+# USB use; optical media remain read-only. Run on FreeBSD (makefs, etdump,
+# mkimg, Python 3). Storage preparation alone does not enable early capture.
 #
 # usage: make-efi-iso.sh world.txz LABEL output.iso new-work-dir [BOOTAA64.EFI|BOOTX64.EFI]
 set -eu
+here=$(CDPATH='' cd -- "$(dirname -- "$0")" && pwd)
+py=$(command -v python3 || command -v python3.12 || command -v python3.11) || {
+    echo 'Python 3 is needed to prepare installation trace storage' >&2; exit 1;
+}
+if [ ! -f "$here/make-install-trace.py" ] || [ ! -f "$here/../tools/boottrace/stick.py" ]; then
+    echo 'The co-located installation trace helpers are missing' >&2; exit 1;
+fi
 usage='usage: make-efi-iso.sh world.txz LABEL output.iso new-work-dir [BOOTAA64.EFI|BOOTX64.EFI]'
 [ $# -ge 4 ] && [ $# -le 5 ] || { echo "$usage" >&2; exit 2; }
 archive=$1 label=$2 output=$3 work=$4 boot_file=${5:-BOOTAA64.EFI}
@@ -26,6 +35,7 @@ case "$size_kb" in ''|*[!0-9]*) echo 'ESP_SIZE_KB must be a number of KiB' >&2; 
     echo 'The work directory and output must not exist yet' >&2; exit 1;
 }
 mkdir -m 0700 "$work"
+payload=$work/payload.iso
 world=$work/world
 mkdir "$world" "$work/esp"
 tar -xpf "$archive" -C "$world"
@@ -52,11 +62,11 @@ makefs -t msdos -o fat_type="$fat" -o sectors_per_cluster=1 -o volume_label=EFIS
 
 makefs -t cd9660 -o rockridge -o label="$upper" -o publisher=Daemonarchy \
     -o bootimage="efi;$work/efiboot.img" -o no-emul-boot -o platformid=efi \
-    "$output" "$world"
+    "$payload" "$world"
 
 # Locate the ESP inside the ISO; its only boot entry is the initial/default one.
 espparam=''
-for entry in $(etdump --format shell "$output"); do
+for entry in $(etdump --format shell "$payload"); do
     et_platform='' et_lba='' et_sectors=''
     eval "$entry"
     case "$et_platform" in
@@ -68,6 +78,7 @@ for entry in $(etdump --format shell "$output"); do
 done
 [ -n "$espparam" ] || { echo 'The ISO has no EFI boot entry' >&2; exit 1; }
 # shellcheck disable=SC2086
-mkimg -s gpt --capacity "$(stat -f %z "$output")" $espparam -o "$work/gpt.img"
-dd if="$work/gpt.img" of="$output" bs=32k count=1 conv=notrunc 2>/dev/null
+mkimg -s gpt --capacity "$(stat -f %z "$payload")" $espparam -o "$work/gpt.img"
+dd if="$work/gpt.img" of="$payload" bs=32k count=1 conv=notrunc 2>/dev/null
+"$py" "$here/make-install-trace.py" "$payload" "$output" "$work/trace"
 echo "UEFI-only ISO: $output ($boot_file)"
