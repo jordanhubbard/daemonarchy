@@ -93,7 +93,7 @@
     "raw_budget_margin_bytes": 26197504,
     "raw_budget_check_passed": true,
     "published_asset_budget_bytes": 2147483648,
-    "compressed_publication_size_measured": false
+    "compressed_publication_size_measured": true
   },
   "platform_assemblies": {
     "rtx-spark-n1x": {
@@ -306,7 +306,8 @@
   "preserved_attempts": [
     "Initial strict decoder rejected the valid short final native cluster; native mkuzip source confirmed short final reads. The decoder now permits only sector-aligned final short clusters and pads their logical tail; short nonfinal clusters remain refused.",
     "The 16 KiB and 128 KiB LZMA payload variants were measured and retained; only the 256 KiB repack received the complete ISO/VM/platform control recorded here.",
-    "Initial documentation link checks ran before this checkpoint existed and failed on its pending links; rerun after writing the evidence."
+    "Initial documentation link checks ran before this checkpoint existed and failed on its pending links; rerun after writing the evidence.",
+    "The 8 GiB USB control prints secondary-GPT-not-at-last-LBA warnings. QEMU itself reports exit 0 after orderly shutdown, while its command launcher reports 143; independent image/FAT/map/inventory readback passed."
   ],
   "qualification": {
     "packed_root_handoff": true,
@@ -325,12 +326,45 @@
     "recovery": false,
     "signed_repository_admission": false,
     "framework_lifecycle_admission": false,
-    "release": false
+    "release": false,
+    "published_asset_budget_pass": false,
+    "larger_usb_manual_trace_readback": true
   },
   "project_verification": {
     "locks_current": 8,
     "authority": "fail: documentation authority human review stale",
     "receipt": "fail: blocked by stale authority review",
     "review_marker_synthesized": false
+  },
+  "publication_compression": {
+    "options": [
+      "-T0",
+      "-9"
+    ],
+    "bytes": 3144154384,
+    "sha256": "3946adcf385f628c9e2497a44ec0189896ef7a3f8394489899635989f5e57acb",
+    "source_sha256": "0a9786022f49d62377a894755f385bcdaac63341271272cbe38ffc70575f49a7",
+    "roundtrip_verified": true,
+    "asset_budget_bytes": 2147483648,
+    "asset_budget_passed": false,
+    "elapsed_seconds": 138.96
+  },
+  "larger_usb_control": {
+    "virtual_device_bytes": 8589934592,
+    "base_image_sha256": "0a9786022f49d62377a894755f385bcdaac63341271272cbe38ffc70575f49a7",
+    "base_image_unchanged": true,
+    "returned_image_sha256": "9269d8608d9d1abfee710b49fed73a790f733e53aac7c93f2304090bdad81418",
+    "mapped_files": 201,
+    "trace_partition": [
+      2,
+      6764544,
+      524288
+    ],
+    "runtime_packages_sha256": "5d020ea5e04d6344408a58bd357bebd2fd58658b0f9ccfc9476a0b0560c3301c",
+    "controller_readback": true,
+    "readonly_fat_check_status": 0,
+    "backup_gpt_not_at_last_lba_warning": true,
+    "source_backed_qemu_exit_status": 0,
+    "launcher_status": 143
   }
 }

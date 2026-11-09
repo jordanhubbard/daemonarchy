@@ -184,6 +184,11 @@ image and failed inspection of a valid short final cluster remain recorded.
 
 This remains a development control. Its world/installer uses retained 1.5.0
 inputs; the full 1.6 overlay and current upstream synchronization are pending.
-Compressed publication size against the existing per-asset limit is unmeasured.
+The standard `xz -T0 -9` publication control produces 3,144,154,384 bytes,
+exceeding the unchanged 2,147,483,648-byte asset limit. XZ integrity and full
+source-image roundtrip checks pass; the release size check correctly fails.
+Raw-media fit alone therefore does not resolve release packaging. An 8 GiB
+USB control also boots and persists traces: FreeBSD reports the backup GPT is
+not at the device's final LBA, but returned inventory/map/FAT checks pass.
 Default automatic tracing, final-image installation, rendered desktop, physical
 Apple and release qualification remain open.

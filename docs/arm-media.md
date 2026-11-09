@@ -22,7 +22,7 @@ MANIFEST hashes. The output binds their actual bytes; it does not trust a
 producer sidecar as proof. Unknown codecs, corrupt clusters, absent payloads and
 mismatched boot sets are refused. The [handoff checkpoint](../verification/arm-ram-handoff-20261109.json)
 records successful RTX Spark and M2 Pro assembly from the boot-tested RAM image.
-It does not establish physical boot or installation.
+It does not establish physical boot or installation. The tested repack fits the raw-media budget but fails the compressed release-asset limit.
 
 ```sh
 python3 scripts/assemble-arm-media.py \

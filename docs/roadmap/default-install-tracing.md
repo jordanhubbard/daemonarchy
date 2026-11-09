@@ -148,7 +148,7 @@ capture. A subsequent [LZMA/packed-root control](../../verification/arm-ram-hand
 preserves every original filesystem byte, fits the unchanged raw-media budget,
 boots and repeats manual same-medium readback. Its verified RTX Spark/M2 Pro
 handoffs remain development assemblies using the retained installer world;
-compressed publication size and final-media acceptance remain open. The amd64
+its compressed publication fails the existing asset limit and final-media acceptance remains open. The amd64
 BIOS/hybrid builder still needs integration; this helper deliberately refuses
 layouts with partitions other than a single ESP. Automatic loader, kernel and
 installer capture, interrupted writes and physical reset/power-loss acceptance
