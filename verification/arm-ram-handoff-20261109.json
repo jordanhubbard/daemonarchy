@@ -27,7 +27,7 @@
   },
   "compression": {
     "method": "Native mkuzip -L -s 262144 -j 4 applied to the previous native UFS2 image, followed by native EFI ISO construction",
-    "fresh_full_updated_recipe_qualified": false,
+    "fresh_full_updated_recipe_qualified": true,
     "original_root": {
       "original_bytes": 9690742784,
       "original_sha256": "a18a53cede87a4b4ca79289688255372d785ea260e2e6115dfe0541cc034dc9a",
@@ -307,14 +307,15 @@
     "Initial strict decoder rejected the valid short final native cluster; native mkuzip source confirmed short final reads. The decoder now permits only sector-aligned final short clusters and pads their logical tail; short nonfinal clusters remain refused.",
     "The 16 KiB and 128 KiB LZMA payload variants were measured and retained; only the 256 KiB repack received the complete ISO/VM/platform control recorded here.",
     "Initial documentation link checks ran before this checkpoint existed and failed on its pending links; rerun after writing the evidence.",
-    "The 8 GiB USB control prints secondary-GPT-not-at-last-LBA warnings. QEMU itself reports exit 0 after orderly shutdown, while its command launcher reports 143; independent image/FAT/map/inventory readback passed."
+    "The 8 GiB USB control prints secondary-GPT-not-at-last-LBA warnings. QEMU itself reports exit 0 after orderly shutdown, while its command launcher reports 143; independent image/FAT/map/inventory readback passed.",
+    "The fresh-producer VM control initially held its QMP connection while starting a second QMP client; that harness deadlock was released by terminating only its owning controller, with the same live VM retained. The pending control then passed and the returned bytes independently verified."
   ],
   "qualification": {
     "packed_root_handoff": true,
     "raw_budget_pass": true,
     "vm_boot": true,
     "manual_trace_write_readback": true,
-    "fresh_full_updated_recipe": false,
+    "fresh_full_updated_recipe": true,
     "full_16_world_and_overlay": false,
     "automatic_loader_capture": false,
     "automatic_kernel_capture": false,
@@ -328,7 +329,8 @@
     "framework_lifecycle_admission": false,
     "release": false,
     "published_asset_budget_pass": false,
-    "larger_usb_manual_trace_readback": true
+    "larger_usb_manual_trace_readback": true,
+    "fresh_full_updated_recipe_vm_boot_and_manual_readback": true
   },
   "project_verification": {
     "locks_current": 8,
@@ -366,5 +368,83 @@
     "backup_gpt_not_at_last_lba_warning": true,
     "source_backed_qemu_exit_status": 0,
     "launcher_status": 143
+  },
+  "fresh_full_producer": {
+    "source_commit": "a5261d91c3efebf6f99f9a38e581c6bd5a687f2c",
+    "record": {
+      "schema": "daemonarchy/arm-ram-installer@1",
+      "abi": "FreeBSD:16:aarch64",
+      "world_archive_sha256": "766b856cd93e58e2f19808070046c5a9a6c97d492a4b901b676a26ce23bd64d8",
+      "kernel_sha256": "c3612c03838a7c53b75443cf2eab1ab8ad28db5b490fa8d34f57bbe03d90ccaf",
+      "kernel_set_sha256": "7b66c3e0dc4a89fe7eb8bf38de114e6aaf052dbc6d0960ee0a36158f544a9573",
+      "omarchy_package_sha256": "79cb85bb7d921384e0a8e15b03ab4016f8b133d5ed17c8125782a7ad295d062b",
+      "omarchy_version": "4.5.0_4",
+      "package_closure_manifest_sha256": "b893cefc06315492374a1bac058d949365b2969e0e2941ec71059b0e99c1e848",
+      "package_closure_inventory_sha256": "d627249843b7aa1e971a86663cd91848210fcb19ff90c46e321c4aed796f7d49",
+      "package_closure_count": 316,
+      "ram_root": {
+        "bytes": 9690742784,
+        "sha256": "496e96ca81602a341a3b956549909edd36d3b0901559bf146682680b67a50279",
+        "format": "ufs-geom-uzip",
+        "codec": "lzma",
+        "cluster_bytes": 262144,
+        "expanded_media_bytes": 9690939392,
+        "zero_padding_bytes": 196608,
+        "compressed_bytes": 3085583360,
+        "compressed_sha256": "a59e2b6312b8af9086808ac4a18e755961e3fedbcb2822a4c2235faf3fdf939d"
+      },
+      "installed_packages_sha256": "5d020ea5e04d6344408a58bd357bebd2fd58658b0f9ccfc9476a0b0560c3301c",
+      "image": {
+        "bytes": 3731898880,
+        "sha256": "85d547ae31fe3c733413493ded39a6b413fbcff4fb66307668533a5561c36e98"
+      },
+      "qualification": {
+        "assembly": true,
+        "vm_boot": false,
+        "physical_boot": false,
+        "installation": false,
+        "desktop": false,
+        "recovery": false
+      }
+    },
+    "native_command_exit": 0,
+    "scope": "Full fresh producer assembly and exact EFI/USB VM boot with default LZMA/256 KiB/two compression workers, eight vCPUs/16 GiB and manual trace-write/shutdown/readback on an 8 GiB USB device; not installed-system or automatic-capture acceptance",
+    "controller_readback": {
+      "virtual_device_bytes": 8589934592,
+      "base_image_sha256": "85d547ae31fe3c733413493ded39a6b413fbcff4fb66307668533a5561c36e98",
+      "base_image_unchanged": true,
+      "returned_image_sha256": "c2befcb9fc5415b0db4e94958c2be977fabad5024a317853ea2d8876da0464fe",
+      "mapped_files": 201,
+      "trace_partition": [
+        2,
+        6764544,
+        524288
+      ],
+      "runtime_packages_sha256": "5d020ea5e04d6344408a58bd357bebd2fd58658b0f9ccfc9476a0b0560c3301c",
+      "controller_readback": true,
+      "readonly_fat_check_status": 0,
+      "qemu_exit": 0,
+      "manual_control_pass": "ARM16_RAM_USB_PASS"
+    },
+    "source_tools_sha256": {
+      "scripts/make-arm-ram-installer.sh": "fcf5691df0698497a7a0a506fda2f63f42e8e23ca9651599c9add8b552b7d0b9",
+      "scripts/arm-package-closure.py": "e667d37a9ef3ca46ed402acb7ff36df7e5b3b565fb2019449f5cf4086861d4c7",
+      "scripts/check-arm-kernel-set.py": "7f94cd5cf2a2c6a0da4b9c36e9bc121db59bb917e222b5d7445922618af431e5",
+      "scripts/make-efi-iso.sh": "c08a07e204dc569a9daef440bc8fb5d3f5e60dea712340744bd091138ebdf9bf",
+      "scripts/make-install-trace.py": "d9b05d7bda208efd6a86b339c11352d4c1e7f40113a26324345fcdeb0303746c",
+      "tools/boottrace/stick.py": "8f4cb7b3e427a1c4f997677142188c3233f917f0a7b8fbf11b5656bd0aa76d95"
+    }
+  },
+  "solid_root_diagnostic": {
+    "scope": "Diagnostic solid-XZ measurement of the exact original UFS root; not a bootable image or supported bootstrap recipe",
+    "bytes": 2578350100,
+    "sha256": "2d53a0946c34d087f67d516b9db5c7df57a38792be12f8f0c3b0a642dbb27df8",
+    "root_sha256": "a18a53cede87a4b4ca79289688255372d785ea260e2e6115dfe0541cc034dc9a",
+    "options": [
+      "-T0",
+      "-9"
+    ],
+    "roundtrip_verified": true,
+    "elapsed_seconds": 244.81
   }
 }

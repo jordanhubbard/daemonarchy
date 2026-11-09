@@ -178,13 +178,16 @@ That exact image boots through EFI/USB with eight VM CPUs, preserves package
 identities and repeats the manual trace-write/shutdown/controller-readback
 control. The platform assembler now independently checks its actual packed
 root and stages both RTX Spark and M2 Pro candidates. These results use a
-repack of the previously assembled filesystem; they do not qualify a fresh
-full build with the updated default compression recipe. The earlier oversized
+repack of the previously assembled filesystem. A subsequent full fresh producer
+build with the updated default compression recipe completes natively and has
+the same raw-image size; its new root and image hashes are recorded separately.
+That fresh image also boots with eight VM CPUs and passes the manual
+trace-write/shutdown/controller-readback control on an 8 GiB USB device. The earlier oversized
 image and failed inspection of a valid short final cluster remain recorded.
 
 This remains a development control. Its world/installer uses retained 1.5.0
 inputs; the full 1.6 overlay and current upstream synchronization are pending.
-The standard `xz -T0 -9` publication control produces 3,144,154,384 bytes,
+The repack's standard `xz -T0 -9` publication control produces 3,144,154,384 bytes,
 exceeding the unchanged 2,147,483,648-byte asset limit. XZ integrity and full
 source-image roundtrip checks pass; the release size check correctly fails.
 Raw-media fit alone therefore does not resolve release packaging. An 8 GiB

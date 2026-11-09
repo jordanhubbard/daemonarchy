@@ -148,9 +148,31 @@ capture. A subsequent [LZMA/packed-root control](../../verification/arm-ram-hand
 preserves every original filesystem byte, fits the unchanged raw-media budget,
 boots and repeats manual same-medium readback. Its verified RTX Spark/M2 Pro
 handoffs remain development assemblies using the retained installer world;
-its compressed publication fails the existing asset limit and final-media acceptance remains open. The amd64
+its compressed publication fails the existing asset limit and final-media
+acceptance remains open. The amd64
 BIOS/hybrid builder still needs integration; this helper deliberately refuses
 layouts with partitions other than a single ESP. Automatic loader, kernel and
 installer capture, interrupted writes and physical reset/power-loss acceptance
 remain open. Neither a successful builder nor the independent write control
 closes those gates.
+
+
+## Boot-medium discovery checkpoint
+
+[Source PR #81](https://github.com/jordanhubbard/daemonarchy-src/pull/81)
+adds a read-only EFI discovery command that binds the loaded image's physical
+GPT disk to a distinct tagged sibling partition. It refuses read-only,
+ambiguous and malformed-tag media, ignores a foreign disk's tag, and leaves
+optical boot unbound. Each renewal clears any stale writable identity.
+Seventeen production-parser sanitizer controls pass on Linux and native
+FreeBSD ARM64. The exact rebuilt ARM64 EFI passes six VM discovery cases;
+returned UUID/GPT equality and zero disk writes are independently checked.
+The [artifact-bound checkpoint](../../verification/install-trace-media-20261109.json)
+retains an earlier invalid-GPT fixture and its unexpected startup writes,
+followed by the corrected complete-GPT control with before/after write counts.
+
+This is a capture prerequisite. It does not yet run automatically at startup,
+bind the image payload, validate a raw write map or persist a normal boot.
+The RAM media checkpoint uses its original matched loader; it does not silently
+inherit this new EFI candidate's discovery result. Automatic loader/kernel/init/
+installer capture and all remaining TRACE-001 acceptance gates stay open.
