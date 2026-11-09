@@ -81,3 +81,11 @@ complete kernel set accepted by the checker, with all 114,908 original source
 members preserved after the build ([native checkpoint](../verification/arm-native-kernel-20261109.json)).
 The sealed set remains a development input: its inclusion in a rebuilt RAM image,
 VM boot and physical target behavior still need qualification.
+
+The subsequent [normal-ISO control](../verification/arm-kernel-vm-control-20261109.json)
+boots that complete set through EFI/KVM, reports all four VM CPUs active, and
+passes one serial plus eight concurrent local HTTP transfers with exact payload
+checksums. It retains the old live root and does not qualify the complete RAM
+preload, current Omarchy image, installation or physical boards. The earlier
+retained-image installer timed out during package fetching; these controls do
+not establish its cause or a repair.
