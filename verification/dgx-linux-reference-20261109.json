@@ -1,0 +1,38 @@
+{
+  "schema": "daemonarchy/arm-linux-reference@1",
+  "recorded_at": "2026-11-09T17:26:01.367681+00:00",
+  "work_item": "SPARK-002",
+  "profile": "dgx-spark-fe",
+  "reference_only": true,
+  "smbios": {
+    "sys_vendor": "NVIDIA",
+    "product_name": "NVIDIA_DGX_Spark",
+    "product_version": "A.7",
+    "board_vendor": "NVIDIA",
+    "board_name": "P4242",
+    "board_version": "A04",
+    "bios_vendor": "American Megatrends International, LLC.",
+    "bios_version": "5.36_0ACUM028",
+    "bios_date": "09/04/2026"
+  },
+  "linux": {
+    "release": "7.0.0-1025-nvidia",
+    "image_package": "linux-image-7.0.0-1025-nvidia 7.0.0-1025.26~24.04.1",
+    "source_revision": null,
+    "page_bytes": 4096,
+    "memtotal_kib": 127598412,
+    "online_cpus": "0-19",
+    "midr_counts": {
+      "0x00000000410fd871": 10,
+      "0x00000000410fd851": 10
+    },
+    "uefi": true,
+    "acpi_tables_present": true
+  },
+  "limitations": [
+    "Read-only Linux runtime observation; no FreeBSD boot or hardware feature qualification.",
+    "No physical FreeBSD boot/test allocation or selected target disk has been established.",
+    "Exact NVIDIA Linux source/config and full firmware component inventory remain to be bound.",
+    "Only allowlisted SMBIOS fields were read; no serials, UUIDs, private addresses or raw firmware tables are retained here."
+  ]
+}

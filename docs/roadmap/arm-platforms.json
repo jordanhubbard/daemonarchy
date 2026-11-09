@@ -173,22 +173,23 @@
       "owner": "ARM release integration; individual test owner unassigned",
       "hardware": {
         "state": "unallocated",
-        "note": "No release test allocation recorded; historical reference access is not an allocation."
+        "note": "A live Linux DGX Spark reference was observed on 2026-11-09. Physical FreeBSD boot/test allocation and console/power access remain unassigned."
       },
       "identity": {
-        "model": "NVIDIA DGX Spark Founders Edition",
+        "model": "NVIDIA_DGX_Spark, SMBIOS product A.7",
         "soc": "NVIDIA GB10",
-        "board_revision": null,
-        "ram": null,
-        "firmware": null,
-        "boot_chain": null,
+        "board_revision": "NVIDIA P4242 A04",
+        "ram": "Linux MemTotal 127598412 KiB; FreeBSD usable/reserved memory unqualified",
+        "firmware": "AMI 5.36_0ACUM028, SMBIOS date 09/04/2026",
+        "boot_chain": "UEFI with ACPI present in Linux reference; FreeBSD handoff unqualified",
         "abi": null,
         "storage": null
       },
-      "discovery_needed": "Enroll an exact test profile with board/carrier and RAM revision, firmware, boot chain, ABI and storage. Split distinct variants into additional rows; retain this scope row.",
+      "discovery_needed": "Bind exact NVIDIA Linux source/config and full firmware components, capture bounded ACPI/IORT and DMA/topology summaries, allocate physical FreeBSD test access and a target disk, then enroll the selected FreeBSD ABI/media variants. The Linux reference is not FreeBSD support.",
       "sources": [
         "docs/roadmap/release-1.6.0.md",
-        "docs/roadmap/arm-research-20261107.md"
+        "docs/roadmap/arm-research-20261107.md",
+        "verification/dgx-linux-reference-20261109.json"
       ],
       "features": {
         "boot": {
