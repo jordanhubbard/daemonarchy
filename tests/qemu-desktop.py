@@ -156,6 +156,7 @@ time.sleep(1)
 position = json.loads(hypr("-j cursorpos"))
 assert abs(position["x"] - 400) <= 3 and abs(position["y"] - 300) <= 3, position
 screenshot("desktop-input.png")
+browser_package = "epiphany" if guest("pkg config ABI").endswith(":aarch64") else "chromium"
 page = "data:text/html," + quote(
     "<title>Daemonarchy browser check</title><h1>Daemonarchy browser check</h1>")
 browser_command = "omarchy-launch-browser " + shlex.quote(page)
@@ -192,7 +193,7 @@ wait_for(packages_ready,
 screenshot("desktop-packages.png")
 (work / "desktop-evidence.json").write_text(json.dumps(dict(
     monitors=monitors, pointer=position, clients=json.loads(hypr("-j clients")),
-    packages=guest("pkg query '%n %v' daemonarchy omarchy chromium octopkg"),
+    packages=guest("pkg query '%n %v' daemonarchy omarchy " + browser_package + " octopkg"),
     kernel=guest("uname -v"),
     checks=["encrypted-install autologin" if autologin else "SDDM password login",
             "Hyprland monitor", "no configuration errors",
