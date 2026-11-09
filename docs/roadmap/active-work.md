@@ -1972,3 +1972,15 @@ remains open; report files do not establish a passing gate.
 - **Evidence:**
   - [ ] Reviewed upstream-to-fork revision manifests, ancestry and conflict decisions for all three upstreams.
   - [ ] Exact-artifact native, VM and required physical desktop, installation, update and rollback regression records, including existing amd64 and enrolled ARM targets.
+
+### [x] ARM-PI5-MEM-001 — Explicit Pi 5 bootstrap memory profiles
+
+- **Priority:** P1
+- **Owner:** product diagnostics tooling
+- **Direction:** Keep capped discovery compatible and make uncapped experimental inputs explicit
+- **Conclusion:** Explicit bundle profiles and validation are implemented; native base-image readback and usable-RAM acceptance remain separate
+- **Depends on:** none
+- **Implementation:**
+  - [x] Add validated memory profile, queue and retained base-profile audit identity
+- **Evidence:**
+  - [x] Eighteen host controls plus retained-input default/uncapped staging and repeatability checks; no image or physical boot claim
