@@ -1,0 +1,58 @@
+{
+  "schema": "daemonarchy/native-arm-source-build-observation@1",
+  "status": "running",
+  "scope": "Observed unprivileged native ARM64 CURRENT aggregate build; no completed phase or artifact acceptance yet",
+  "source_commit": "af55b6f9042e15b635e90926d476e7cbeb48a069",
+  "source_tree": "b5bbcc0fe5f8fa1b1f3653b2a4d692f414d64850",
+  "upstream_base": "d0fd70983b6b93d4a6a4671457619eb34786b38d",
+  "plan_identity": "72bfce4e2deb47eb28873c4df4fcea3c9251523fa45b53cc29f4c24fb2e7eeb2",
+  "target": "arm64",
+  "target_arch": "aarch64",
+  "profile": "baseline",
+  "jobs": 4,
+  "planned_phases": [
+    "buildworld",
+    "buildkernel",
+    "packages",
+    "release-obj",
+    "sets"
+  ],
+  "active_phase": "buildworld",
+  "completed_phases": [],
+  "worker": {
+    "system": "FreeBSD 16.0-CURRENT ARM64 allocated KVM worker",
+    "memory_gib": 16,
+    "cpus": 4,
+    "build_uid": 1017,
+    "compiler": "FreeBSD clang 21.1.8, llvmorg-21.1.8-0-g2078da43e25a, aarch64-unknown-freebsd16.0",
+    "python": "3.12.15",
+    "pkg": "2.8.4",
+    "available_memory_before_dispatch_bytes": 15022116864,
+    "free_output_gib_before_dispatch": 143,
+    "source_mounted_readonly": true,
+    "bootstrap_source_build_provenance": "unknown-host-bootstrap"
+  },
+  "execution": {
+    "native_account_verified": true,
+    "live_controller_make_and_compiler_processes_verified": true,
+    "supervised_independently_of_ssh": true,
+    "terminal_result_and_phase_logs_on_worker": true,
+    "phase_timeout_seconds": 21600,
+    "original_source_locations_preserved": true,
+    "no_installation_or_publication": true,
+    "unchanged_resource_guards": true
+  },
+  "preserved_setup_failures": [
+    "Default SSH backup paths did not contain the temporary worker keys; after orderly worker shutdown the replacement host key was verified through the private VM console and old known-host records retained",
+    "The aligned private root initially lacked local-library lookup hints for Git; updating only its ldconfig cache restored the retained tool prefix. Original failure log retained."
+  ],
+  "qualification": {
+    "native_build_complete": false,
+    "artifact_bytes_verified": false,
+    "runtime": false,
+    "release": false,
+    "framework_receipt": false
+  },
+  "next_evidence": "Inspect the same live supervised job and its source-bound phase statuses; preserve any failure and do not restart after observation timeouts",
+  "observation_recorded_utc": "2026-11-09T23:38:52.194330+00:00"
+}
