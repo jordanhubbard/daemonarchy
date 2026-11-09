@@ -75,3 +75,9 @@ survive. Its seven cases passed on a disposable native FreeBSD ARM64 VM using
 retained inputs ([checkpoint](../verification/arm-kernel-set-20261109.json)).
 Those inputs include Omarchy 4.0.4_28, so the result covers preflight refusal;
 current-Omarchy image assembly and runtime qualification remain open.
+
+A fresh native GENERIC build of source candidate `0e1ddb782d1e` produced a
+complete kernel set accepted by the checker, with all 114,908 original source
+members preserved after the build ([native checkpoint](../verification/arm-native-kernel-20261109.json)).
+The sealed set remains a development input: its inclusion in a rebuilt RAM image,
+VM boot and physical target behavior still need qualification.
