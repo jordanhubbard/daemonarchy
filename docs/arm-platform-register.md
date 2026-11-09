@@ -30,6 +30,8 @@ feature note. Keep private worker addresses, serial numbers and raw traces out o
 this public register. A historical reference machine has no assumed release test
 allocation. In particular, Linux on DGX, Apple-hosted VMs, Pi simulator controls
 and the Spark four-core experiment cannot qualify a final distribution row.
+The required VM profiles retain desktop coverage. A native build worker or
+console-only VM control cannot turn those targets into server-only profiles.
 
 The initial register has no admitted final-image results. The validator refuses
 `passed` until a reviewed receipt admission contract binds results to the exact

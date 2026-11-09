@@ -2923,7 +2923,7 @@
       "id": "qemu-hvf",
       "work_item": "ARM-007",
       "kind": "vm",
-      "role": "server",
+      "role": "desktop",
       "owner": "ARM release integration; individual test owner unassigned",
       "hardware": {
         "state": "unallocated",
@@ -3004,7 +3004,7 @@
       "id": "qemu-kvm",
       "work_item": "ARM-007",
       "kind": "vm",
-      "role": "server",
+      "role": "desktop",
       "owner": "ARM release integration; individual test owner unassigned",
       "hardware": {
         "state": "unallocated",
@@ -3085,7 +3085,7 @@
       "id": "qemu-tcg",
       "work_item": "ARM-007",
       "kind": "vm",
-      "role": "server",
+      "role": "desktop",
       "owner": "ARM release integration; individual test owner unassigned",
       "hardware": {
         "state": "unallocated",
@@ -3166,7 +3166,7 @@
       "id": "utm",
       "work_item": "ARM-007",
       "kind": "vm",
-      "role": "server",
+      "role": "desktop",
       "owner": "ARM release integration; individual test owner unassigned",
       "hardware": {
         "state": "unallocated",
@@ -3247,7 +3247,7 @@
       "id": "vmware-fusion",
       "work_item": "ARM-007",
       "kind": "vm",
-      "role": "server",
+      "role": "desktop",
       "owner": "ARM release integration; individual test owner unassigned",
       "hardware": {
         "state": "unallocated",

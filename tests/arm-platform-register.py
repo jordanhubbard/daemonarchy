@@ -45,6 +45,14 @@ class PlatformRegister(unittest.TestCase):
         self.data["profiles"][0]["work_item"] = "ARM-008"
         self.assertTrue(any("required work item" in p for p in register.validate(self.data)))
 
+    def test_native_worker_boot_cannot_narrow_vm_desktop_scope(self):
+        for name in register.DESKTOP_VMS:
+            with self.subTest(name=name):
+                candidate = copy.deepcopy(self.data)
+                row = next(row for row in candidate["profiles"] if row["id"] == name)
+                row["role"] = "server"
+                self.assertTrue(any("desktop coverage" in p for p in register.validate(candidate)))
+
     def test_unknown_identity_is_visible_and_not_invented(self):
         row = self.data["profiles"][0]
         row["identity"]["firmware"] = None
