@@ -6,7 +6,8 @@
 # ISO system area that points at the same ESP, so the image boots from a
 # virtual CD or a USB stick. Append initialized DATRACE storage for writable
 # USB use; optical media remain read-only. Run on FreeBSD (makefs, etdump,
-# mkimg, Python 3). Storage preparation alone does not enable early capture.
+# mkimg, Python 3). Matching loaders capture a normal startup checkpoint;
+# deeper kernel/installer persistence needs separate qualification.
 #
 # usage: make-efi-iso.sh world.txz LABEL output.iso new-work-dir [BOOTAA64.EFI|BOOTX64.EFI]
 set -eu
@@ -38,10 +39,36 @@ mkdir -m 0700 "$work"
 payload=$work/payload.iso
 world=$work/world
 mkdir "$world" "$work/esp"
+archive_hash=$("$py" - "$archive" <<'PY'
+import hashlib, sys
+with open(sys.argv[1], 'rb') as stream:
+    print(hashlib.file_digest(stream, 'sha256').hexdigest())
+PY
+)
 tar -xpf "$archive" -C "$world"
 [ -f "$world/boot/kernel/kernel" ] && [ -f "$world/boot/loader.efi" ] || {
     echo 'The image world has no kernel or EFI loader' >&2; exit 1;
 }
+"$py" - "$world" "$archive_hash" <<'PY'
+from pathlib import Path
+import sys, uuid
+world = Path(sys.argv[1])
+identity, config = world / 'boot/trace-id', world / 'boot/loader.conf.local'
+if b'Daemonarchy normal boot trace v1' not in (world / 'boot/loader.efi').read_bytes():
+    raise ValueError('EFI loader lacks normal installation trace capture')
+lua = (world / 'boot/lua/boottrace.lua').read_text()
+if 'daemonarchy.trace.enable' not in lua or 'boottrace observe' not in lua:
+    raise ValueError('loader Lua lacks automatic normal trace startup')
+for path in (identity, config):
+    if path.is_symlink() or (path.exists() and not path.is_file()):
+        raise ValueError('trace metadata paths must be regular files')
+identity.write_text('Daemonarchy installation trace identity v1\n'
+                    f'image_id={uuid.uuid4()}\narchive_sha256={sys.argv[2]}\n'
+                    'mode=observe-only\n')
+with config.open('a') as stream:
+    stream.write('\n# Normal tracing observes boot without consuming experiments.\n'
+                 'daemonarchy.trace.enable="YES"\n')
+PY
 
 upper=$(printf '%s' "$label" | tr '[:lower:]' '[:upper:]')
 # The same live-root mounts poudriere's ISO types add.
@@ -80,5 +107,12 @@ done
 # shellcheck disable=SC2086
 mkimg -s gpt --capacity "$(stat -f %z "$payload")" $espparam -o "$work/gpt.img"
 dd if="$work/gpt.img" of="$payload" bs=32k count=1 conv=notrunc 2>/dev/null
-"$py" "$here/make-install-trace.py" "$payload" "$output" "$work/trace"
+"$py" - "$archive" "$archive_hash" <<'PY'
+import hashlib, sys
+with open(sys.argv[1], 'rb') as stream:
+    if hashlib.file_digest(stream, 'sha256').hexdigest() != sys.argv[2]:
+        raise ValueError('input archive changed during EFI assembly')
+PY
+"$py" "$here/make-install-trace.py" "$payload" "$output" "$work/trace" \
+    --identity "$world/boot/trace-id"
 echo "UEFI-only ISO: $output ($boot_file)"

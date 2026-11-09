@@ -102,6 +102,29 @@ class Integrity(unittest.TestCase):
         self.assertEqual(media.digest(self.image), self.original)
         self.assertFalse((self.base / 'work').exists())
 
+    def test_normal_identity_is_bounded_and_canonical(self):
+        path = self.base / 'identity'
+        data = (b'Daemonarchy installation trace identity v1\n'
+                b'image_id=01234567-89ab-cdef-0123-456789abcdef\n'
+                b'archive_sha256=' + b'ab' * 32 + b'\nmode=observe-only\n')
+        path.write_bytes(data)
+        actual, fields = media.read_identity(path)
+        self.assertEqual(actual, data)
+        self.assertEqual(fields['archive_sha256'], 'ab' * 32)
+        for changed in (data + b'\n', data.replace(b'observe-only', b'experimentxx'),
+                        data.replace(b'abcdef\narchive', b'Abcdef\narchive'), b'x' * 257):
+            path.write_bytes(changed)
+            with self.subTest(changed=changed[:40]), self.assertRaises(ValueError):
+                media.read_identity(path)
+
+    def test_normal_identity_symlink_is_refused(self):
+        path, link = self.base / 'identity', self.base / 'identity-link'
+        path.write_text('not a real identity')
+        link.symlink_to(path)
+        with self.assertRaisesRegex(ValueError, 'regular bounded'):
+            media.read_identity(link)
+        self.assertEqual(path.read_text(), 'not a real identity')
+
 
 if __name__ == '__main__':
     unittest.main()

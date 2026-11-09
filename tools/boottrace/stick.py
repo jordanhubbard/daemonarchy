@@ -38,6 +38,8 @@ EXPERIMENTS: blocks headed "[name]", each line a loader setting
 """
 
 import argparse
+import hashlib
+import json
 import os
 from pathlib import Path
 import random
@@ -58,6 +60,8 @@ SLOTS = 200
 SLOT_SIZE = 16384
 STATE_SIZE = 512
 EMPTY = b"(empty trace slot)\n"
+NORMAL_SLOTS = 32
+NORMAL_EMPTY = b"(empty normal boot slot)\n"
 MAP_NAME = "SLOTS.MAP"
 MAP_SIZE = 16384
 MAP_TAG = "Daemonarchy DATRACE block map v1"
@@ -120,6 +124,42 @@ def fnv1a(data):
     for b in data:
         h = ((h ^ b) * 16777619) & 0xFFFFFFFF
     return h
+
+
+def normal_record(data):
+    """Decode a whole preallocated slot; partial/corrupt records never pass."""
+    if len(data) != SLOT_SIZE:
+        raise ValueError('normal boot slot has the wrong size')
+    if data == padded(NORMAL_EMPTY, SLOT_SIZE):
+        return None
+    lines = data.rstrip(b'\n').split(b'\n')
+    if not lines or not re.fullmatch(rb'sum=[0-9a-f]{8}', lines[-1]):
+        raise ValueError('normal boot slot has no complete checksum')
+    body = b'\n'.join(lines[:-1]) + b'\n'
+    if fnv1a(body) != int(lines[-1][4:], 16):
+        raise ValueError('normal boot slot checksum mismatch')
+    keys = ('image_id', 'archive_sha256', 'trace_partition', 'session',
+            'phase', 'identity', 'early_kernel_backend')
+    if (len(lines) != len(keys) + 2 or
+            lines[0] != b'Daemonarchy normal boot trace v1'):
+        raise ValueError('unsupported normal boot slot schema')
+    values = {}
+    for key, line in zip(keys, lines[1:-1]):
+        prefix = key.encode() + b'='
+        if not line.startswith(prefix):
+            raise ValueError('invalid normal boot slot fields')
+        values[key] = line[len(prefix):].decode('ascii')
+    for key in ('image_id', 'trace_partition'):
+        if str(uuid.UUID(values[key])) != values[key]:
+            raise ValueError('noncanonical normal boot UUID')
+    if (not re.fullmatch('[0-9a-f]{64}', values['archive_sha256']) or
+            not re.fullmatch('[0-9]{4}', values['session']) or
+            not 1 <= int(values['session']) <= NORMAL_SLOTS or
+            values['phase'] != 'loader-ready' or
+            values['identity'] != 'declared-archive' or
+            values['early_kernel_backend'] != 'not-enabled'):
+        raise ValueError('invalid normal boot slot metadata')
+    return dict(schema='daemonarchy/normal-boot-trace@1', **values)
 
 
 class Fat32:
@@ -218,6 +258,9 @@ def mapped_files(fat):
     if fat.lookup("ACPI") is not None:
         names += ["ACPI/" + n for n in sorted(fat.listdir("ACPI"))
                   if re.fullmatch(r"(?:[A-Z0-9]{4}\.BIN|INDEX\.TXT)", n)]
+    if fat.lookup("NORMAL") is not None:
+        names += ["NORMAL/" + n for n in sorted(fat.listdir("NORMAL"))
+                  if re.fullmatch(r"\d{4}\.TXT", n)]
     return [(n,) + fat.extent(n) for n in names]
 
 
@@ -596,6 +639,58 @@ def cmd_traces(args):
         print("no traces filed")
 
 
+def cmd_normal(args):
+    """Read normal sessions without consuming queues or changing the volume."""
+    vol = Volume(args.target)
+    output = Path(args.out) if args.out else None
+    if output is not None:
+        if vol.dir is not None and (output.resolve() == vol.dir.resolve() or
+                                    vol.dir.resolve() in output.resolve().parents):
+            raise ValueError('normal extraction output must be outside the trace volume')
+        output.mkdir(mode=0o700, parents=False, exist_ok=False)
+    records, empty = [], 0
+    for slot in range(1, NORMAL_SLOTS + 1):
+        name = f'NORMAL/{slot:04d}.TXT'
+        metadata = dict(path=name)
+        try:
+            if vol.dir is not None:
+                path = vol.dir / name
+                if not path.exists():
+                    continue
+                if not stat.S_ISREG(path.lstat().st_mode) or path.stat().st_size != SLOT_SIZE:
+                    raise ValueError('normal boot slot must be a regular fixed-size file')
+                with path.open('rb') as stream:
+                    data = stream.read(SLOT_SIZE + 1)
+            else:
+                entry = vol.map['files'].get(name) if vol.map else None
+                if entry is None:
+                    continue
+                if entry[1] != SLOT_SIZE:
+                    raise ValueError('normal boot slot has the wrong mapped size')
+                data = vol.read(name)
+            if data is None:
+                raise ValueError('normal boot slot cannot be read')
+            metadata['sha256'] = hashlib.sha256(data).hexdigest()
+            if output is not None:
+                (output / f'{slot:04d}.TXT').write_bytes(data)
+            record = normal_record(data)
+            if record is None:
+                empty += 1
+                continue
+            if int(record['session']) != slot:
+                raise ValueError('normal boot session does not match its slot')
+            metadata.update(status='recorded', record=record)
+        except (ValueError, OSError) as error:
+            metadata.update(status='unreadable', error=str(error))
+        records.append(metadata)
+    result = dict(records=records, empty_slots=empty,
+                  initialized_slots=empty + len(records), volume_modified=False)
+    text = json.dumps(result, indent=2) + '\n'
+    if output is not None:
+        (output / 'normal.json').write_text(text)
+    print(text, end='')
+
+
 def main(argv=None):
     ap = argparse.ArgumentParser(description=__doc__,
                                  formatter_class=argparse.RawDescriptionHelpFormatter)
@@ -632,6 +727,10 @@ def main(argv=None):
     p.add_argument("--out")
     p.add_argument("--all", action="store_true")
     p.set_defaults(func=cmd_traces)
+    p = sub.add_parser('normal', help='read normal boot sessions without modifying the volume')
+    p.add_argument('target')
+    p.add_argument('--out', help='fresh private directory for exact slot copies and their inventory')
+    p.set_defaults(func=cmd_normal)
     args = ap.parse_args(argv)
     args.func(args)
 

@@ -11,6 +11,7 @@ import hashlib
 import importlib.util
 import json
 from pathlib import Path
+import re
 import shutil
 import stat
 import struct
@@ -81,7 +82,21 @@ def copy_range(source, dest, offset, count):
         count -= len(block)
 
 
-def assemble(image, output, work, stick_path, size_mib=256):
+def read_identity(path):
+    if not stat.S_ISREG(path.lstat().st_mode) or path.stat().st_size > 256:
+        raise ValueError('regular bounded installation trace identity required')
+    with path.open('rb') as stream:
+        data = stream.read(257)
+    match = re.fullmatch(
+        rb'Daemonarchy installation trace identity v1\n'
+        rb'image_id=([0-9a-f-]{36})\narchive_sha256=([0-9a-f]{64})\n'
+        rb'mode=observe-only\n', data)
+    if match is None or str(uuid.UUID(match[1].decode())) != match[1].decode():
+        raise ValueError('invalid installation trace identity')
+    return data, dict(image_id=match[1].decode(), archive_sha256=match[2].decode())
+
+
+def assemble(image, output, work, stick_path, size_mib=256, identity_path=None):
     if not stat.S_ISREG(image.lstat().st_mode):
         raise ValueError('input must be a regular nonsymlink image')
     if output.exists() or output.is_symlink() or work.exists() or work.is_symlink():
@@ -102,14 +117,30 @@ def assemble(image, output, work, stick_path, size_mib=256):
     spec.loader.exec_module(stick)
     identity = digest(image)
     original_size = image.stat().st_size
+    identity_data, declared = None, None
+    if identity_path is not None:
+        identity_data, declared = read_identity(identity_path)
+        members = subprocess.check_output(['tar', '-tf', str(image)],
+                                          text=True, timeout=120).splitlines()
+        matches = [m for m in members if m.removeprefix('./') == 'boot/trace-id']
+        if len(matches) != 1 or subprocess.check_output(
+                ['tar', '-xOf', str(image), matches[0]], timeout=60) != identity_data:
+            raise ValueError('trace identity differs from the actual boot filesystem')
     start = ((original_size + (1 << 20) - 1) // (1 << 20)) * (1 << 20)
     work.mkdir(mode=0o700)
     data = work / 'data'
     data.mkdir()
     stick.cmd_init(argparse.Namespace(target=str(data)))
+    if identity_data is not None:
+        (data / 'INSTALL.ID').write_bytes(identity_data)
+        (data / 'NORMAL').mkdir()
+        for slot in range(1, stick.NORMAL_SLOTS + 1):
+            (data / 'NORMAL' / f'{slot:04d}.TXT').write_bytes(
+                stick.padded(stick.NORMAL_EMPTY, stick.SLOT_SIZE))
     (data / 'INSTALL.JSON').write_text(json.dumps(dict(
         schema=1, mode='observe-only', payload_sha256=identity,
-        payload_bytes=original_size, automatic_capture_qualified=False), indent=2) + '\n')
+        payload_bytes=original_size, declared_identity=declared,
+        automatic_capture_qualified=False), indent=2) + '\n')
     fat = work / 'trace.fat'
     subprocess.run(['makefs', '-t', 'msdos', '-s', f'{size_mib}m', '-o',
                     'fat_type=32,sectors_per_cluster=4,volume_label=DATRACE', str(fat), str(data)],
@@ -140,7 +171,8 @@ def assemble(image, output, work, stick_path, size_mib=256):
         copy_range(native, dest, start, layout.stat().st_size - start)
     stick.write_map(str(output))
     mapping = stick.check_map(str(output))
-    if len(mapping['files']) != stick.SLOTS + 1:
+    normal_slots = stick.NORMAL_SLOTS if identity_data is not None else 0
+    if len(mapping['files']) != stick.SLOTS + 1 + normal_slots:
         raise ValueError('incomplete raw trace map')
     read_gpt(output)
     read_gpt(output, primary['backup'])
@@ -155,7 +187,8 @@ def assemble(image, output, work, stick_path, size_mib=256):
         raise ValueError('input changed during assembly')
     return dict(schema=1, input_sha256=identity, output_sha256=digest(output),
                 output_bytes=output.stat().st_size, trace_start_lba=start // SECTOR,
-                mapped_files=len(mapping['files']), automatic_capture_qualified=False)
+                mapped_files=len(mapping['files']), normal_boot_slots=normal_slots,
+                declared_identity=declared, automatic_capture_qualified=False)
 
 
 def main():
@@ -164,10 +197,13 @@ def main():
     parser.add_argument('output', type=Path)
     parser.add_argument('work', type=Path)
     parser.add_argument('--size-mib', type=int, default=256)
+    parser.add_argument('--identity', type=Path,
+                        help='Matched boot/trace-id for separate normal-boot slots')
     args = parser.parse_args()
     stick = Path(__file__).resolve().parents[1] / 'tools/boottrace/stick.py'
     try:
-        result = assemble(args.image, args.output, args.work, stick, args.size_mib)
+        result = assemble(args.image, args.output, args.work, stick, args.size_mib,
+                          args.identity)
     except (ValueError, OSError, subprocess.CalledProcessError) as error:
         parser.exit(1, f'make-install-trace: {error}\n')
     print(json.dumps(result, sort_keys=True))

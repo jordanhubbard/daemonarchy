@@ -8,6 +8,19 @@ hwtrace image and retrieve the resulting volume. Remote console access,
 especially on Apple machines, cannot replace local evidence capture.
 Implementation and persistence acceptance are tracked under TRACE-001.
 
+The development EFI builder now enables an automatic loader-start checkpoint
+on its owned DATRACE volume. It requires matching new EFI and Lua files;
+kernel, panic and installer capture remain open. See the
+[exact scope and native controls](roadmap/default-install-tracing.md#automatic-loader-start-checkpoint).
+Retrieve these separate NORMAL records with:
+
+```sh
+python3 tools/boottrace/stick.py normal returned-media.img --out fresh-evidence
+```
+
+Extraction preserves partial/corrupt slot bytes and leaves the volume unchanged.
+Thirty-two occupied slots report full rather than erasing earlier attempts.
+
 The mechanism below describes the existing 1.5.x separate-image workflow and
 retained research tools; it does not claim the new default behavior is shipped.
 

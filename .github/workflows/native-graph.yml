@@ -61,6 +61,7 @@ on:
       - 'scripts/make-efi-iso.sh'
       - 'scripts/make-install-trace.py'
       - 'tests/install-trace-media.py'
+      - 'tests/normal-boot-trace.py'
       - 'scripts/check-gpu-packages.sh'
       - 'pkg-repo.sh'
       - 'overlay/usr/local/libexec/daemonarchy-installer/disk-layout'
@@ -168,6 +169,7 @@ on:
       - 'scripts/make-efi-iso.sh'
       - 'scripts/make-install-trace.py'
       - 'tests/install-trace-media.py'
+      - 'tests/normal-boot-trace.py'
       - 'scripts/check-gpu-packages.sh'
       - 'pkg-repo.sh'
       - 'overlay/usr/local/libexec/daemonarchy-installer/disk-layout'
@@ -248,6 +250,7 @@ jobs:
           sh tests/package-repository.sh
           bash tests/image-architecture.sh
           python3 tests/install-trace-media.py -v
+          python3 tests/normal-boot-trace.py -v
       - name: Measured installer progress and completion controls
         env:
           PYTHONDONTWRITEBYTECODE: '1'

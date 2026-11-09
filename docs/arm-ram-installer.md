@@ -1,5 +1,11 @@
 # ARM installer RAM root
 
+The current EFI builder requires the matching automatic-trace EFI and Lua
+capabilities and adds 32 NORMAL slots alongside the legacy trace files. The
+earlier full RAM-root controls retain their original loader and manual capture
+scope; see the [new loader-only checkpoint](roadmap/default-install-tracing.md#automatic-loader-start-checkpoint)
+before treating a reconstructed image as qualified.
+
 `scripts/make-arm-ram-installer.sh` builds an experimental full installer whose
 root is read through EFI before kernel device takeover. This allows native
 kernel bring-up while USB or storage drivers are still incomplete. It does

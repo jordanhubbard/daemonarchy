@@ -171,8 +171,56 @@ The [artifact-bound checkpoint](../../verification/install-trace-media-20261109.
 retains an earlier invalid-GPT fixture and its unexpected startup writes,
 followed by the corrected complete-GPT control with before/after write counts.
 
-This is a capture prerequisite. It does not yet run automatically at startup,
+That earlier candidate was a capture prerequisite. It did not run automatically,
 bind the image payload, validate a raw write map or persist a normal boot.
 The RAM media checkpoint uses its original matched loader; it does not silently
 inherit this new EFI candidate's discovery result. Automatic loader/kernel/init/
 installer capture and all remaining TRACE-001 acceptance gates stay open.
+
+
+## Automatic loader-start checkpoint
+
+The [subsequent native checkpoint](../../verification/normal-boot-trace-20261109.json)
+now saves `phase=loader-ready` automatically before the normal menu, without
+keyboard input. The EFI builder hashes its actual input archive, creates a fresh
+image UUID in matching boot/trace-id and INSTALL.ID files, enables observe-only
+startup, and initializes 32 additional 16 KiB NORMAL slots. The new layout has
+233 mapped files; the historical 201-file controls above remain unchanged.
+The builder refuses EFI/Lua inputs lacking the new capability markers. This
+preflight is a compatibility guard, not runtime qualification.
+
+Capture binds to the loaded EFI image's own writable GPT sibling, validates the
+identity and raw map against fresh FAT32 file/cluster metadata, and uses a
+whole-disk flush/readback backend. It retains nonempty, corrupt and partial slots
+and reports full after 32 occupied slots. A repeated call within the same loader
+instance does not allocate another slot. Failure leaves normal startup available.
+The normal dispatcher takes precedence over conflicting legacy autocycle flags;
+STATE, the queued experiment and all 200 legacy trace slots remain unchanged.
+
+An exact native-built ARM64 EFI control passes automatic write/readback,
+idempotency, fresh-process restart and controlled warm reset after a committed
+record. A synthetic partial first slot survives while the next slot is used.
+Thirteen unsafe-media cases refuse with zero disk writes, including a validly
+checksummed map with swapped slot extents. Controller comparison verifies every
+changed byte lies within the expected NORMAL slots and the returned FAT checks
+clean. These are minimal loader-only VM fixtures, not full installer boots.
+
+The record labels its archive identity as declared and its early-kernel backend
+as not enabled. Image/slot sessions and GPT UUIDs can be shared by clones; full
+target identity and cross-stage boot identity remain unfinished. This metadata
+checkpoint does not capture kernel/modules, pre-exit outcome, kernel console,
+panic, init or installation. Relevant FAT metadata checks are not a general
+filesystem repair or an exhaustive cross-link audit. Physical power loss and
+actual interruption during a write remain untested. Earlier full RAM-root media
+does not inherit the new loader's acceptance; exact full-media reconstruction,
+amd64 BIOS integration and the unchanged publication-budget failure remain open.
+
+Retrieve normal records with:
+
+```sh
+python3 tools/boottrace/stick.py normal TARGET --out FRESH_DIR
+```
+
+This read-only operation copies exact bytes, preserves damaged slots and produces
+a hash-bearing manifest. Legacy experiment reset does not erase these records;
+there is no automatic rotation or erase on failure.
