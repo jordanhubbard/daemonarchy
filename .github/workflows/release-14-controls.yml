@@ -27,6 +27,9 @@ on:
       - 'overlay/usr/local/libexec/daemonarchy-installer/package-repository'
       - 'tests/docs-release-sync.py'
       - 'scripts/arm-platform-register.py'
+      - 'scripts/check-arm-kernel-set.py'
+      - 'scripts/make-arm-ram-installer.sh'
+      - 'tests/arm-kernel-set.py'
       - 'tests/arm-platform-register.py'
       - 'docs/roadmap/arm-platforms.json'
       - 'tests/docs-lifecycle.py'
@@ -142,6 +145,9 @@ on:
       - 'overlay/usr/local/libexec/daemonarchy-installer/package-repository'
       - 'tests/docs-release-sync.py'
       - 'scripts/arm-platform-register.py'
+      - 'scripts/check-arm-kernel-set.py'
+      - 'scripts/make-arm-ram-installer.sh'
+      - 'tests/arm-kernel-set.py'
       - 'tests/arm-platform-register.py'
       - 'docs/roadmap/arm-platforms.json'
       - 'VERSION'
@@ -254,6 +260,8 @@ jobs:
         env:
           PYTHONDONTWRITEBYTECODE: '1'
         run: python3 tests/release-check-1.4.py -v
+      - name: ARM kernel set integrity
+        run: python3 tests/arm-kernel-set.py -v
       - name: ARM platform scope and discovery inventory
         run: python3 tests/arm-platform-register.py -v
       - name: One release version

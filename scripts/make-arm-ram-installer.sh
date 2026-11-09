@@ -3,46 +3,45 @@
 # Full installer RAM root for native ARM kernel bring-up. FreeBSD worker only.
 # This creates regular files; it never selects or writes a physical device.
 set -eu
-usage='usage: make-arm-ram-installer.sh world.txz world-sha256 kernel kernel-sha256 omarchy.pkg package-sha256 output.iso new-work-dir'
+usage='usage: make-arm-ram-installer.sh world.txz world-sha256 kernel.txz kernel-set-sha256 omarchy.pkg package-sha256 output.iso new-work-dir'
 [ "$#" -eq 8 ] || { echo "$usage" >&2; exit 2; }
-[ "$(uname -s)" = FreeBSD ] && [ "$(id -u)" -eq 0 ] || {
+if [ "$(uname -s)" != FreeBSD ] || [ "$(id -u)" -ne 0 ]; then
     echo 'Run on the allocated native FreeBSD worker as root' >&2; exit 1;
-}
-archive=$1 archive_hash=$2 kernel=$3 kernel_hash=$4
+fi
+archive=$1 archive_hash=$2 kernel_set=$3 kernel_set_hash=$4
 package=$5 package_hash=$6 output=$7 work=$8
 here=$(CDPATH='' cd -- "$(dirname -- "$0")" && pwd)
 [ -f "$here/make-efi-iso.sh" ] || {
     echo 'The co-located EFI ISO builder is missing' >&2; exit 1;
 }
-for pin in "$archive_hash" "$kernel_hash" "$package_hash"; do
+[ -f "$here/check-arm-kernel-set.py" ] || {
+    echo 'The co-located ARM kernel-set checker is missing' >&2; exit 1;
+}
+for pin in "$archive_hash" "$kernel_set_hash" "$package_hash"; do
     [ "${#pin}" = 64 ] || { echo 'Input hashes must be SHA-256' >&2; exit 2; }
     case "$pin" in *[!0-9a-f]*) echo 'Malformed SHA-256' >&2; exit 2 ;; esac
 done
-for input in "$archive" "$kernel" "$package"; do
-    [ -f "$input" ] && [ ! -L "$input" ] || { echo 'Regular nonsymlink inputs required' >&2; exit 1; }
+for input in "$archive" "$kernel_set" "$package"; do
+    if [ ! -f "$input" ] || [ -L "$input" ]; then
+        echo 'Regular nonsymlink inputs required' >&2; exit 1;
+    fi
 done
 archive=$(realpath "$archive")
-kernel=$(realpath "$kernel")
+kernel_set=$(realpath "$kernel_set")
 package=$(realpath "$package")
-[ "$(sha256 -q "$archive")" = "$archive_hash" ] &&
-    [ "$(sha256 -q "$kernel")" = "$kernel_hash" ] &&
-    [ "$(sha256 -q "$package")" = "$package_hash" ] || {
+if [ "$(sha256 -q "$archive")" != "$archive_hash" ] ||
+    [ "$(sha256 -q "$kernel_set")" != "$kernel_set_hash" ] ||
+    [ "$(sha256 -q "$package")" != "$package_hash" ]; then
     echo 'Input checksum mismatch' >&2; exit 1;
-}
-[ "$(od -An -tx1 -N6 "$kernel" | tr -d ' \n')" = 7f454c460201 ] &&
-    [ "$(od -An -tu2 -j18 -N2 "$kernel" | tr -d ' \n')" = 183 ] || {
-    echo 'An AArch64 ELF64 kernel is required' >&2; exit 1;
-}
-strings "$kernel" | grep -Eq '^FreeBSD 16\.[^ ]* #[0-9]+' || {
-    echo 'A FreeBSD 16 kernel is required for this installer ABI' >&2; exit 1;
-}
+fi
+kernel_hash=$(python3.12 "$here/check-arm-kernel-set.py" "$kernel_set")
 [ "$(pkg query -F "$package" '%n %q')" = 'omarchy FreeBSD:16:aarch64' ] || {
     echo 'Expected an Omarchy package for FreeBSD:16:aarch64' >&2; exit 1;
 }
 for destination in "$work" "$output" "$output.manifest.json"; do
-    [ ! -e "$destination" ] && [ ! -L "$destination" ] || {
+    if [ -e "$destination" ] || [ -L "$destination" ]; then
         echo 'Outputs and work directory must not exist' >&2; exit 1;
-    }
+    fi
     case "$destination" in /*) ;; *) echo 'Absolute output paths required' >&2; exit 2 ;; esac
 done
 mkdir -m 0700 "$work"
@@ -59,15 +58,17 @@ done
 [ "$(cat "$share/ABI")" = FreeBSD:16:aarch64 ] || { echo 'Installer ABI mismatch' >&2; exit 1; }
 [ -d "$share/repo/All" ] || { echo 'Missing installer package repository' >&2; exit 1; }
 
-# Keep the live kernel and the kernel installed by this medium together.
-cp -p "$kernel" "$world/boot/kernel/kernel"
-mkdir "$work/kernel-set"
-tar -xpf "$world/usr/freebsd-dist/kernel.txz" -C "$work/kernel-set"
-[ -f "$work/kernel-set/boot/kernel/kernel" ] || { echo 'Invalid kernel set' >&2; exit 1; }
-cp -p "$kernel" "$work/kernel-set/boot/kernel/kernel"
-tar -cJf "$work/kernel.txz" -C "$work/kernel-set" .
-mv "$work/kernel.txz" "$world/usr/freebsd-dist/kernel.txz"
+# Replace the entire live kernel/module closure; do not retain modules from
+# the original installer alongside a kernel from another native build.
+rm -rf "$world/boot/kernel" "$world/boot/dtb" \
+    "$world/usr/lib/debug/boot/kernel" "$world/usr/lib/debug/boot/dtb"
+tar -xpf "$kernel_set" -C "$world"
+cp -p "$kernel_set" "$world/usr/freebsd-dist/kernel.txz"
 set_hash=$(sha256 -q "$world/usr/freebsd-dist/kernel.txz")
+if [ "$set_hash" != "$kernel_set_hash" ] ||
+    [ "$(sha256 -q "$world/boot/kernel/kernel")" != "$kernel_hash" ]; then
+    echo 'Kernel set changed during assembly' >&2; exit 1;
+fi
 awk -v digest="$set_hash" 'BEGIN { FS=OFS="\t" } $1=="kernel.txz" {$2=digest; found=1} {print} END {if (!found) exit 1}' \
     "$world/usr/freebsd-dist/MANIFEST" > "$work/MANIFEST"
 mv "$work/MANIFEST" "$world/usr/freebsd-dist/MANIFEST"
@@ -142,11 +143,13 @@ tar -cf "$work/outer.tar" -C "$work/outer" .
 sh "$here/make-efi-iso.sh" "$work/outer.tar" DAEMARMROOT "$output" "$work/iso" BOOTAA64.EFI
 
 # Record actual bytes, not native hardware or installation qualification.
-export RAM_ARCHIVE_HASH=$archive_hash RAM_KERNEL_HASH=$kernel_hash RAM_PACKAGE_HASH=$package_hash
-export RAM_ROOT_HASH=$root_hash RAM_ROOT_SIZE=$root_size RAM_PACKAGE_VERSION=$package_version
-[ "$(sha256 -q "$archive")" = "$archive_hash" ] &&
-    [ "$(sha256 -q "$kernel")" = "$kernel_hash" ] &&
-    [ "$(sha256 -q "$package")" = "$package_hash" ] || { echo 'Inputs changed during assembly' >&2; exit 1; }
+export RAM_ARCHIVE_HASH="$archive_hash" RAM_KERNEL_HASH="$kernel_hash" RAM_PACKAGE_HASH="$package_hash"
+export RAM_ROOT_HASH="$root_hash" RAM_ROOT_SIZE="$root_size" RAM_PACKAGE_VERSION="$package_version"
+if [ "$(sha256 -q "$archive")" != "$archive_hash" ] ||
+    [ "$(sha256 -q "$kernel_set")" != "$kernel_set_hash" ] ||
+    [ "$(sha256 -q "$package")" != "$package_hash" ]; then
+    echo 'Inputs changed during assembly' >&2; exit 1;
+fi
 python3.12 - "$output" "$work/mfsroot.uzip" "$set_hash" "$work/installed-packages.txt" <<'PY'
 import hashlib, json, os, sys
 from pathlib import Path

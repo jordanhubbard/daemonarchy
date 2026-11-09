@@ -2,22 +2,24 @@
 """Native input/refusal controls using actual pinned build inputs; no image build."""
 import argparse
 import hashlib
+import io
 import json
 import os
 from pathlib import Path
 import platform
 import subprocess
+import tarfile
 
 parser = argparse.ArgumentParser(description=__doc__)
 parser.add_argument('--builder', type=Path, required=True)
 parser.add_argument('--inputs', type=Path, required=True,
-                    help='JSON with world/kernel/package path and sha256 pairs')
+                    help='JSON with world/kernel_set/package path and sha256 pairs')
 parser.add_argument('--work', type=Path, required=True)
 args = parser.parse_args()
 assert platform.system() == 'FreeBSD' and os.geteuid() == 0
 args.work.mkdir(mode=0o700)
 inputs = json.loads(args.inputs.read_text())
-base = [inputs[key][item] for key in ('world', 'kernel', 'package')
+base = [inputs[key][item] for key in ('world', 'kernel_set', 'package')
         for item in ('path', 'sha256')]
 
 
@@ -54,16 +56,33 @@ args.builder = copy
 refuse('missing-iso-helper', base, 'co-located EFI ISO builder is missing')
 args.builder = original
 
-wrong_machine = args.work / 'wrong-machine'
-data = bytearray(Path(inputs['kernel']['path']).read_bytes())
+with tarfile.open(inputs['kernel_set']['path']) as archive:
+    member, = [m for m in archive if Path(m.name).as_posix() == 'boot/kernel/kernel']
+    data = bytearray(archive.extractfile(member).read())
+
+
+def kernel_fixture(label, kernel):
+    path = args.work / (label + '.txz')
+    # Retain the actual native modules while changing only the selected kernel.
+    with tarfile.open(inputs['kernel_set']['path']) as source, tarfile.open(path, 'w:xz') as output:
+        for member in source:
+            if Path(member.name).as_posix() == 'boot/kernel/kernel':
+                member.size = len(kernel)
+                output.addfile(member, io.BytesIO(kernel))
+            else:
+                output.addfile(member, source.extractfile(member) if member.isfile() else None)
+    return path
+
+
 data[18:20] = (62).to_bytes(2, 'little')
-wrong_machine.write_bytes(data)
+wrong_machine = kernel_fixture('wrong-machine', data)
 selected = list(base)
 selected[2:4] = [str(wrong_machine), digest(wrong_machine)]
 refuse('wrong-machine', selected, 'AArch64 ELF64 kernel is required')
 
 selected = list(base)
-selected[2:4] = ['/usr/bin/true', digest(Path('/usr/bin/true'))]
+ordinary_elf = kernel_fixture('ordinary-elf', Path('/usr/bin/true').read_bytes())
+selected[2:4] = [str(ordinary_elf), digest(ordinary_elf)]
 refuse('ordinary-elf-is-not-kernel', selected, 'FreeBSD 16 kernel is required')
 
 manifest = args.work / 'wrong-abi.json'

@@ -6,7 +6,7 @@ kernel bring-up while USB or storage drivers are still incomplete. It does
 not qualify installation, the native storage path or an Apple board.
 
 Use the allocated FreeBSD worker and pinned inputs: a complete Poudriere live
-installer archive, an AArch64 kernel, and an Omarchy package for
+installer archive, a complete native AArch64 `kernel.txz` set, and an Omarchy package for
 `FreeBSD:16:aarch64`. The package's adjacent native dependency archive closure
 must be present. The builder resolves immutable input paths, checks their
 SHA-256 digests and rejects existing output/work paths. It runs as root only
@@ -16,13 +16,20 @@ partitioner, Apple provisioning or signing operation is invoked.
 ```sh
 sudo sh scripts/make-arm-ram-installer.sh \
   /inputs/world.txz "$WORLD_SHA256" \
-  /inputs/kernel "$KERNEL_SHA256" \
+  /inputs/kernel.txz "$KERNEL_SET_SHA256" \
   /inputs/All/omarchy.pkg "$OMARCHY_SHA256" \
   /outputs/arm-ram-installer.iso /outputs/new-ram-work
 ```
 
-The live kernel and the kernel installation archive receive the same kernel;
-the set's MANIFEST digest is updated. Omarchy and its cached native dependencies
+The complete live kernel/module, DTB and matching kernel debug trees are replaced
+by the selected kernel set. The installation archive receives the exact same set;
+its MANIFEST digest is updated. A bare replacement kernel cannot carry the old
+installer's modules into the new image. The set checker rejects missing UZIP,
+foreign kernel/module architectures, duplicate members, unsafe links and members
+outside those trees. FreeBSD's same-directory module aliases are checked against
+their actual ELF targets. The selected set still needs native producer/source/toolchain and
+runtime qualification; archive consistency does not establish those results.
+Omarchy and its cached native dependencies
 are installed only into the private root, with remote repositories disabled.
 The local ISO package catalogue is refreshed, preserving configured signed
 public dependency feeds. The package inventory is retained with the medium.

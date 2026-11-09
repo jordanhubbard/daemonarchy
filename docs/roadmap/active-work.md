@@ -1887,6 +1887,7 @@ remains open; report files do not establish a passing gate.
 - **Owner:** Installer, verified boot and release engineering
 - **Direction:** Qualify signed upgrades/rollback and atomic matched boot-set updates (loader, DTB, kernel, modules and firmware). Retain recovery entries and diagnostics; preserve published bytes and follow the one-session signing rule.
 - **Conclusion:** Planned for the operator-directed 1.6 ARM program; research and detailed phases are in docs/roadmap/arm-implementation.md. No new platform support is claimed.
+- **2026-11-09 integration:** The [RAM installer builder](../arm-ram-installer.md) now takes a complete pinned native kernel set and replaces live kernel/modules, DTBs and matching debug trees together with the exact installation archive. Seven portable refusal tests and a retained native-built kernel-set inspection pass. Native rebuilt-image/runtime and final-board acceptance remain open; this does not qualify an ABI or driver.
 - **Depends on:** ARM-001, ARM-002, ARM-003
 - **Implementation:**
   - [ ] Discovery: Determine board-specific first-stage prerequisites, EFI/FDT/ACPI boot paths, owned ESP, disk/media layout and firmware redistribution rights. Enumerate raw SD/USB, EFI ISO and platform bootstrap outputs explicitly.
