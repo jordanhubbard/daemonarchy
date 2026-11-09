@@ -1,0 +1,69 @@
+{
+  "schema": "daemonarchy/arm-kernel-set-checkpoint@1",
+  "recorded_at": "2026-11-09T17:08:39.784424+00:00",
+  "tested_commit": "92982a6f75a6bcbf85973151e8166bc86e89556c",
+  "source_files_sha256": {
+    "scripts/make-arm-ram-installer.sh": "fdd4b1c685ab60b0cddfe1edfbb4c4cc5c9d48503b6ab1de383e4ed0dbf5b223",
+    "scripts/make-efi-iso.sh": "960bbaf4d03d65a5d87fe4a0236513dd521055e1bc3c678e2c03259c5d688c3f",
+    "scripts/check-arm-kernel-set.py": "7f94cd5cf2a2c6a0da4b9c36e9bc121db59bb917e222b5d7445922618af431e5",
+    "tests/arm-ram-installer.py": "f6da832fc4549db497640bcb35bb9de1aba767564c84bb26b583be6067086738"
+  },
+  "native_worker": {
+    "os": "FreeBSD 16.0-CURRENT",
+    "architecture": "arm64",
+    "execution": "QEMU 8.2.2/KVM VM with e1000e virtual NIC",
+    "python": "3.12.15",
+    "pkg": "2.8.4",
+    "kernel_source_baseline": "303b3646270f",
+    "live_iso_sha256": "9bcf2c8c3630eb309da83a2cea7d4845bbe386d22a0dd7e76238ecf09593a1e4"
+  },
+  "inputs": {
+    "world": {
+      "sha256": "058a987b9338dbdc7df4a17f9d5884bb617c44f44ae03f7774f78bf004d3be18",
+      "bytes": 2607786496
+    },
+    "kernel_set": {
+      "sha256": "492dc542fa043b1955261bd1ab3d3ceb49bee642970e2023258566ee00f8f821",
+      "bytes": 32235128
+    },
+    "package": {
+      "sha256": "ea6b120c6931a9b10af72f158d862694c1352ed3dbbb7f2a8191eeb31d4df44f",
+      "bytes": 118946177
+    }
+  },
+  "native_refusals": {
+    "command": "python3.12 tests/arm-ram-installer.py --builder scripts/make-arm-ram-installer.sh --inputs inputs.json --work <fresh-private-directory>",
+    "exit_code": 0,
+    "passed": [
+      "wrong-digest",
+      "missing-iso-helper",
+      "wrong-machine",
+      "ordinary-elf-is-not-kernel",
+      "wrong-package-abi",
+      "existing-output",
+      "existing-work"
+    ],
+    "stdout_sha256": "6a2e2e06f90098a00375e8752a3a20a63aed0ae45cfd42c72a17f5ea4705474f"
+  },
+  "controller_checks": {
+    "kernel_set_tests_passed": 7,
+    "real_kernel_set_inspection_kernel_sha256": "4acd88a4941c27ce21007ae1ff1542bf38eaa033222c9b83ce3618519dc8ea36",
+    "shellcheck": "passed",
+    "shell_syntax": "passed"
+  },
+  "qualification": {
+    "native_refusal_controls": true,
+    "rebuilt_image": false,
+    "rebuilt_image_vm_boot": false,
+    "physical_boot": false,
+    "installation": false,
+    "desktop": false,
+    "recovery": false
+  },
+  "limitations": [
+    "The selected 4.0.4_28 package is a retained native input for preflight controls, not the required current-Omarchy release closure.",
+    "Native rebuilt-image assembly and runtime remain open.",
+    "No admitted Component lifecycle receipt or human documentation attestation is synthesized.",
+    "The separate VirtIO installer attempt stalled under package traffic; interface reset briefly restored gateway traffic before another stall. This is a retained-image VM observation, not a proven driver cause or a 1.6 result."
+  ]
+}

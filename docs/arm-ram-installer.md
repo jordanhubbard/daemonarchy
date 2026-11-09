@@ -58,3 +58,20 @@ and full installer payload, and exercise the intended user interface. A VM
 boot still does not prove Apple AIC, CPU startup, power, DMA, USB, storage or
 framebuffer behavior. M2 Pro Mac mini tests also require an enrolled OS stub,
 its correct OS-owned ESP and preserved macOS/Recovery ownership.
+
+Run `python3 tests/arm-kernel-set.py -v` for portable archive refusal controls.
+The native preflight suite runs as root on an allocated FreeBSD ARM64 worker:
+
+```sh
+sudo python3.12 tests/arm-ram-installer.py \
+  --builder "$PWD/scripts/make-arm-ram-installer.sh" \
+  --inputs /inputs/pinned-inputs.json --work /outputs/new-refusal-run
+```
+
+The inputs JSON has `world`, `kernel_set` and `package` objects, each with
+absolute `path` and `sha256` fields matching the build command's inputs. The
+suite preserves refusal logs and verifies that existing output/work sentinels
+survive. Its seven cases passed on a disposable native FreeBSD ARM64 VM using
+retained inputs ([checkpoint](../verification/arm-kernel-set-20261109.json)).
+Those inputs include Omarchy 4.0.4_28, so the result covers preflight refusal;
+current-Omarchy image assembly and runtime qualification remain open.
