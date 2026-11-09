@@ -28,6 +28,8 @@ on:
       - 'tests/docs-release-sync.py'
       - 'scripts/arm-platform-register.py'
       - 'scripts/check-arm-kernel-set.py'
+      - 'scripts/arm-package-closure.py'
+      - 'tests/arm-package-closure.py'
       - 'scripts/make-arm-ram-installer.sh'
       - 'tests/arm-kernel-set.py'
       - 'tests/arm-platform-register.py'
@@ -146,6 +148,8 @@ on:
       - 'tests/docs-release-sync.py'
       - 'scripts/arm-platform-register.py'
       - 'scripts/check-arm-kernel-set.py'
+      - 'scripts/arm-package-closure.py'
+      - 'tests/arm-package-closure.py'
       - 'scripts/make-arm-ram-installer.sh'
       - 'tests/arm-kernel-set.py'
       - 'tests/arm-platform-register.py'
@@ -261,7 +265,9 @@ jobs:
           PYTHONDONTWRITEBYTECODE: '1'
         run: python3 tests/release-check-1.4.py -v
       - name: ARM kernel set integrity
-        run: python3 tests/arm-kernel-set.py -v
+        run: |
+          python3 tests/arm-kernel-set.py -v
+          python3 tests/arm-package-closure.py -v
       - name: ARM platform scope and discovery inventory
         run: python3 tests/arm-platform-register.py -v
       - name: One release version

@@ -3,13 +3,15 @@
 # Full installer RAM root for native ARM kernel bring-up. FreeBSD worker only.
 # This creates regular files; it never selects or writes a physical device.
 set -eu
-usage='usage: make-arm-ram-installer.sh world.txz world-sha256 kernel.txz kernel-set-sha256 omarchy.pkg package-sha256 output.iso new-work-dir'
-[ "$#" -eq 8 ] || { echo "$usage" >&2; exit 2; }
+usage='usage: make-arm-ram-installer.sh world.txz world-sha256 kernel.txz kernel-set-sha256 omarchy.pkg package-sha256 output.iso new-work-dir closure.json closure-sha256'
+[ "$#" -eq 10 ] || { echo "$usage" >&2; exit 2; }
 if [ "$(uname -s)" != FreeBSD ] || [ "$(id -u)" -ne 0 ]; then
     echo 'Run on the allocated native FreeBSD worker as root' >&2; exit 1;
 fi
 archive=$1 archive_hash=$2 kernel_set=$3 kernel_set_hash=$4
 package=$5 package_hash=$6 output=$7 work=$8
+closure=$9 closure_hash=${10}
+pkg_cmd=/usr/local/sbin/pkg
 here=$(CDPATH='' cd -- "$(dirname -- "$0")" && pwd)
 [ -f "$here/make-efi-iso.sh" ] || {
     echo 'The co-located EFI ISO builder is missing' >&2; exit 1;
@@ -17,11 +19,11 @@ here=$(CDPATH='' cd -- "$(dirname -- "$0")" && pwd)
 [ -f "$here/check-arm-kernel-set.py" ] || {
     echo 'The co-located ARM kernel-set checker is missing' >&2; exit 1;
 }
-for pin in "$archive_hash" "$kernel_set_hash" "$package_hash"; do
+for pin in "$archive_hash" "$kernel_set_hash" "$package_hash" "$closure_hash"; do
     [ "${#pin}" = 64 ] || { echo 'Input hashes must be SHA-256' >&2; exit 2; }
     case "$pin" in *[!0-9a-f]*) echo 'Malformed SHA-256' >&2; exit 2 ;; esac
 done
-for input in "$archive" "$kernel_set" "$package"; do
+for input in "$archive" "$kernel_set" "$package" "$closure"; do
     if [ ! -f "$input" ] || [ -L "$input" ]; then
         echo 'Regular nonsymlink inputs required' >&2; exit 1;
     fi
@@ -29,13 +31,14 @@ done
 archive=$(realpath "$archive")
 kernel_set=$(realpath "$kernel_set")
 package=$(realpath "$package")
+closure=$(realpath "$closure")
 if [ "$(sha256 -q "$archive")" != "$archive_hash" ] ||
     [ "$(sha256 -q "$kernel_set")" != "$kernel_set_hash" ] ||
     [ "$(sha256 -q "$package")" != "$package_hash" ]; then
     echo 'Input checksum mismatch' >&2; exit 1;
 fi
 kernel_hash=$(python3.12 "$here/check-arm-kernel-set.py" "$kernel_set")
-[ "$(pkg query -F "$package" '%n %q')" = 'omarchy FreeBSD:16:aarch64' ] || {
+[ "$("$pkg_cmd" query -F "$package" '%n %q')" = 'omarchy FreeBSD:16:aarch64' ] || {
     echo 'Expected an Omarchy package for FreeBSD:16:aarch64' >&2; exit 1;
 }
 for destination in "$work" "$output" "$output.manifest.json"; do
@@ -44,7 +47,13 @@ for destination in "$work" "$output" "$output.manifest.json"; do
     fi
     case "$destination" in /*) ;; *) echo 'Absolute output paths required' >&2; exit 2 ;; esac
 done
+[ -f "$here/arm-package-closure.py" ] || {
+    echo 'The co-located ARM package-closure checker is missing' >&2; exit 1;
+}
+python3.12 "$here/arm-package-closure.py" verify "$closure" "$closure_hash" "$package_hash"
 mkdir -m 0700 "$work"
+python3.12 "$here/arm-package-closure.py" stage "$closure" "$closure_hash" "$package_hash" \
+    --destination "$work/packages" > "$work/package-closure.json"
 mkdir "$work/no-repos"
 world=$work/world
 mkdir "$world"
@@ -76,20 +85,40 @@ mv "$work/MANIFEST" "$world/usr/freebsd-dist/MANIFEST"
 # Install only into the disposable root, then refresh its unsigned local ISO
 # repository. Public dependency signatures and configured feeds are untouched.
 mounted=no
-cleanup() { [ "$mounted" = no ] || umount "$world/dev"; }
+packages_mounted=no
+cleanup() {
+    cleanup_status=0
+    if [ "$packages_mounted" = yes ]; then umount "$world/ram-packages" || cleanup_status=1; fi
+    if [ "$mounted" = yes ]; then umount "$world/dev" || cleanup_status=1; fi
+    return "$cleanup_status"
+}
 trap cleanup EXIT
 trap 'exit 130' INT
 trap 'exit 143' TERM HUP
 mount -t devfs -o ruleset=4 devfs "$world/dev"
 mounted=yes
-env ASSUME_ALWAYS_YES=yes pkg -r "$world" -o REPOS_DIR="$work/no-repos" add -f "$package"
-package_version=$(pkg query -F "$package" '%v')
-[ "$(pkg -r "$world" query '%v' omarchy)" = "$package_version" ]
-pkg -r "$world" query '%n %v %q' | LC_ALL=C sort > "$work/installed-packages.txt"
+# A private directory contains only the verified closure. Install every selected
+# archive, so an old dependency already in the live root cannot survive by name.
+# The trimmed live skeleton omits this directory, but ConsoleKit's native
+# post-install script expects it before touching its history file.
+install -d -m 0755 "$world/var/log/ConsoleKit"
+mkdir "$world/ram-packages" "$world/ram-no-repos"
+mount -t nullfs -o ro "$work/packages" "$world/ram-packages"
+packages_mounted=yes
+python3.12 "$here/arm-package-closure.py" install "$closure" "$closure_hash" "$package_hash" \
+    --destination "$work/packages" --root "$world" --repository "$world/ram-no-repos"
+python3.12 "$here/arm-package-closure.py" installed "$closure" "$closure_hash" "$package_hash" --root "$world"
+package_version=$("$pkg_cmd" query -F "$package" '%v')
+"$pkg_cmd" -r "$world" query '%n %v %q' | LC_ALL=C sort > "$work/installed-packages.txt"
+umount "$world/ram-packages"
+packages_mounted=no
+rmdir "$world/ram-packages" "$world/ram-no-repos"
 umount "$world/dev"
 mounted=no
-cp -p "$package" "$share/repo/All/omarchy-$package_version.pkg"
-pkg repo "$share/repo"
+python3.12 "$here/arm-package-closure.py" repo "$closure" "$closure_hash" "$package_hash" \
+    --destination "$work/packages" --repository "$share/repo/All"
+cp "$work/package-closure.json" "$share/ram-package-closure.json"
+"$pkg_cmd" repo "$share/repo"
 
 # rc.d/var mounts a fresh writable /var over the read-only root. Seed it
 # through mdmfs's supported skeleton option so pkg retains the built inventory.
@@ -145,12 +174,14 @@ sh "$here/make-efi-iso.sh" "$work/outer.tar" DAEMARMROOT "$output" "$work/iso" B
 # Record actual bytes, not native hardware or installation qualification.
 export RAM_ARCHIVE_HASH="$archive_hash" RAM_KERNEL_HASH="$kernel_hash" RAM_PACKAGE_HASH="$package_hash"
 export RAM_ROOT_HASH="$root_hash" RAM_ROOT_SIZE="$root_size" RAM_PACKAGE_VERSION="$package_version"
+export RAM_CLOSURE_HASH="$closure_hash"
 if [ "$(sha256 -q "$archive")" != "$archive_hash" ] ||
     [ "$(sha256 -q "$kernel_set")" != "$kernel_set_hash" ] ||
     [ "$(sha256 -q "$package")" != "$package_hash" ]; then
     echo 'Inputs changed during assembly' >&2; exit 1;
 fi
-python3.12 - "$output" "$work/mfsroot.uzip" "$set_hash" "$work/installed-packages.txt" <<'PY'
+python3.12 "$here/arm-package-closure.py" verify "$closure" "$closure_hash" "$package_hash"
+python3.12 - "$output" "$work/mfsroot.uzip" "$set_hash" "$work/installed-packages.txt" "$work/package-closure.json" <<'PY'
 import hashlib, json, os, sys
 from pathlib import Path
 image, compressed = map(Path, sys.argv[1:3])
@@ -161,6 +192,9 @@ record = dict(schema='daemonarchy/arm-ram-installer@1', abi='FreeBSD:16:aarch64'
     world_archive_sha256=os.environ['RAM_ARCHIVE_HASH'], kernel_sha256=os.environ['RAM_KERNEL_HASH'],
     kernel_set_sha256=sys.argv[3], omarchy_package_sha256=os.environ['RAM_PACKAGE_HASH'],
     omarchy_version=os.environ['RAM_PACKAGE_VERSION'],
+    package_closure_manifest_sha256=os.environ['RAM_CLOSURE_HASH'],
+    package_closure_inventory_sha256=digest(Path(sys.argv[5])),
+    package_closure_count=len(json.loads(Path(sys.argv[5]).read_text())['packages']),
     ram_root=dict(bytes=int(os.environ['RAM_ROOT_SIZE']), sha256=os.environ['RAM_ROOT_HASH'],
                   format='ufs-geom-uzip', compressed_bytes=compressed.stat().st_size,
                   compressed_sha256=digest(compressed)),

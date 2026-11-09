@@ -7,19 +7,48 @@ not qualify installation, the native storage path or an Apple board.
 
 Use the allocated FreeBSD worker and pinned inputs: a complete Poudriere live
 installer archive, a complete native AArch64 `kernel.txz` set, and an Omarchy package for
-`FreeBSD:16:aarch64`. The package's adjacent native dependency archive closure
-must be present. The builder resolves immutable input paths, checks their
-SHA-256 digests and rejects existing output/work paths. It runs as root only
-for private archive ownership, devfs and filesystem assembly. No device writer,
-partitioner, Apple provisioning or signing operation is invoked.
+`FreeBSD:16:aarch64`, plus a pinned complete package-closure manifest. The
+builder resolves immutable input paths, checks their
+SHA-256 digests and rejects existing output/work paths. It runs as root for
+private archive ownership, chrooted package installation, mounts and filesystem
+assembly. It never writes a physical device, provisions Apple storage or signs
+outputs.
 
 ```sh
 sudo sh scripts/make-arm-ram-installer.sh \
   /inputs/world.txz "$WORLD_SHA256" \
   /inputs/kernel.txz "$KERNEL_SET_SHA256" \
   /inputs/All/omarchy.pkg "$OMARCHY_SHA256" \
-  /outputs/arm-ram-installer.iso /outputs/new-ram-work
+  /outputs/arm-ram-installer.iso /outputs/new-ram-work \
+  /inputs/package-closure.json "$CLOSURE_SHA256"
 ```
+
+The manifest uses `daemonarchy/arm-package-closure@1`, with `root: "omarchy"`
+and a `packages` list. Each package records `name`, `version`, `abi`, absolute
+regular-file `path`, `bytes`, `sha256` and its list of dependency names in
+`dependencies`. Include every transitive dependency and no unrelated packages;
+each name has one selected version. Native `pkg query -F` must agree with every
+archive's declared identity and dependency edges. AArch64 and architecture-neutral
+`FreeBSD:16:*` dependencies are admitted; Omarchy itself requires the AArch64 ABI.
+Pin the manifest's own SHA-256 separately from the root package's digest.
+
+The builder copies the verified closure into a fresh private directory, checks
+the copied bytes, installs all selected archives in dependency order through
+one native pkg writer,
+and verifies every installed version/ABI and native dependency check. Its local
+ISO repository receives the same closure, removing older versions of those
+names. The image contains a path-free `ram-package-closure.json` inventory; its
+manifest binds both that inventory and the original input manifest. Mutable
+adjacent cache contents cannot silently become image inputs.
+
+Installation uses `pkg -c` with a read-only package mount and an empty repository
+directory inside the private root. `pkg -r` alone does not confine arbitrary
+package scripts. Preserve the native `pkg-install.log` even on timeout, and
+reject reported pre/post-install script failures even if pkg returns zero.
+
+This is a development archive-identity contract, not signed-repository
+authentication or Component lifecycle admission. Those release gates remain
+separate, as do the native solver, full installer and rendered desktop checks.
 
 The complete live kernel/module, DTB and matching kernel debug trees are replaced
 by the selected kernel set. The installation archive receives the exact same set;
@@ -77,13 +106,19 @@ sudo python3.12 tests/arm-ram-installer.py \
   --inputs /inputs/pinned-inputs.json --work /outputs/new-refusal-run
 ```
 
-The inputs JSON has `world`, `kernel_set` and `package` objects, each with
+The inputs JSON has `world`, `kernel_set`, `package` and `closure` objects, each with
 absolute `path` and `sha256` fields matching the build command's inputs. The
 suite preserves refusal logs and verifies that existing output/work sentinels
 survive. Its seven cases passed on a disposable native FreeBSD ARM64 VM using
-retained inputs ([checkpoint](../verification/arm-kernel-set-20261109.json)).
-Those inputs include Omarchy 4.0.4_28, so the result covers preflight refusal;
+retained inputs before the closure-input extension
+([checkpoint](../verification/arm-kernel-set-20261109.json)). Those historical
+inputs include Omarchy 4.0.4_28, so the result covers that preflight refusal;
 current-Omarchy image assembly and runtime qualification remain open.
+
+Run `python3 tests/arm-package-closure.py -v` for checksum, metadata, ABI,
+missing/extra/duplicate/cyclic dependency and source-change-during-copy refusal controls.
+The portable suite substitutes metadata fixtures; actual native package archive
+inspection and installation require the allocated FreeBSD worker.
 
 A fresh native GENERIC build of source candidate `0e1ddb782d1e` produced a
 complete kernel set accepted by the checker, with all 114,908 original source

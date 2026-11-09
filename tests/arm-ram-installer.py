@@ -13,7 +13,7 @@ import tarfile
 parser = argparse.ArgumentParser(description=__doc__)
 parser.add_argument('--builder', type=Path, required=True)
 parser.add_argument('--inputs', type=Path, required=True,
-                    help='JSON with world/kernel_set/package path and sha256 pairs')
+                    help='JSON with world/kernel_set/package/closure path and sha256 pairs')
 parser.add_argument('--work', type=Path, required=True)
 args = parser.parse_args()
 assert platform.system() == 'FreeBSD' and os.geteuid() == 0
@@ -21,6 +21,7 @@ args.work.mkdir(mode=0o700)
 inputs = json.loads(args.inputs.read_text())
 base = [inputs[key][item] for key in ('world', 'kernel_set', 'package')
         for item in ('path', 'sha256')]
+closure = [inputs['closure'][item] for item in ('path', 'sha256')]
 
 
 def digest(path):
@@ -31,7 +32,7 @@ def digest(path):
 def refuse(label, selected, message, occupied=None):
     output, work = args.work / (label + '.iso'), args.work / (label + '-work')
     sentinel = occupied(output, work) if occupied else None
-    result = subprocess.run(['sh', str(args.builder), *selected, str(output), str(work)],
+    result = subprocess.run(['sh', str(args.builder), *selected, str(output), str(work), *closure],
                             text=True, capture_output=True)
     (args.work / (label + '.log')).write_text(result.stdout + result.stderr)
     assert result.returncode != 0 and message in result.stderr, (label, result)

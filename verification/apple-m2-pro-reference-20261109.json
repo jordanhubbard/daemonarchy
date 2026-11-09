@@ -37,9 +37,32 @@
     "recovery": false
   },
   "limitations": [
-    "Read-only macOS observations only. Native boot chain and owned ESP enrollment still require inspection.",
+    "Read-only macOS observations only. The disk inventory lists the existing ISC, main APFS and Recovery partitions, with no separate EFI or trace partition. Native OS-stub ownership and boot enrollment remain unqualified.",
     "The macOS loader version is not the per-OS m1n1/U-Boot/stub firmware identity.",
     "No firmware, partition, boot selection or operating-system changes were made.",
     "Raw IORegistry data remains private; public fields exclude serials, UUIDs and worker addresses."
-  ]
+  ],
+  "boot_storage_inspection": {
+    "observed_at": "2026-11-09T19:04:54.670687+00:00",
+    "read_only": true,
+    "physical_disks": 1,
+    "physical_disk_bytes": 1000555581440,
+    "partitions": [
+      {
+        "type": "Apple_APFS_ISC",
+        "bytes": 524288000
+      },
+      {
+        "type": "Apple_APFS",
+        "bytes": 994662584320
+      },
+      {
+        "type": "Apple_APFS_Recovery",
+        "bytes": 5368664064
+      }
+    ],
+    "separate_efi_partition_listed": false,
+    "trace_volume_listed": false,
+    "raw_disk_inventory_shared": false
+  }
 }
