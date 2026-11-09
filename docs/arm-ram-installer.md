@@ -1,0 +1,51 @@
+# ARM installer RAM root
+
+`scripts/make-arm-ram-installer.sh` builds an experimental full installer whose
+root is read through EFI before kernel device takeover. This allows native
+kernel bring-up while USB or storage drivers are still incomplete. It does
+not qualify installation, the native storage path or an Apple board.
+
+Use the allocated FreeBSD worker and pinned inputs: a complete Poudriere live
+installer archive, an AArch64 kernel, and an Omarchy package for
+`FreeBSD:16:aarch64`. The package's adjacent native dependency archive closure
+must be present. The builder resolves immutable input paths, checks their
+SHA-256 digests and rejects existing output/work paths. It runs as root only
+for private archive ownership, devfs and filesystem assembly. No device writer,
+partitioner, Apple provisioning or signing operation is invoked.
+
+```sh
+sudo sh scripts/make-arm-ram-installer.sh \
+  /inputs/world.txz "$WORLD_SHA256" \
+  /inputs/kernel "$KERNEL_SHA256" \
+  /inputs/All/omarchy.pkg "$OMARCHY_SHA256" \
+  /outputs/arm-ram-installer.iso /outputs/new-ram-work
+```
+
+The live kernel and the kernel installation archive receive the same kernel;
+the set's MANIFEST digest is updated. Omarchy and its cached native dependencies
+are installed only into the private root, with remote repositories disabled.
+The local ISO package catalogue is refreshed, preserving configured signed
+public dependency feeds. The package inventory is retained with the medium.
+
+All installer files, release archives and the package repository remain in a
+UFS2 filesystem. The builder requires the full filesystem check to complete
+and rejects integrity diagnostics even if `fsck_ffs` returns zero. UFS1's
+legacy cylinder-group inode-count field is too small for this desktop root.
+GEOM UZIP compresses it into a read-only disk image loaded as
+`md_image`; `geom_uzip.ko` exposes `/dev/md0.uzip`. Existing in-memory `/var` and
+`/tmp` handling remains in use. Unlike whole-filesystem gzip, UZIP supports an
+expanded root larger than 4 GiB and reads compressed blocks on demand. The
+compressed bootstrap input is bounded below 4 GiB. No CPU or RAM discovery
+limit is added.
+
+The outer UEFI hybrid ISO contains the matching loader, boot files and compressed
+root. Its manifest records input/output digests, kernel-set identity, package
+version/inventory and expanded/compressed root sizes. Assembly does not set
+VM boot, physical boot, installation, desktop or recovery status true.
+
+Before requesting a physical test, boot the exact image through its EFI loader
+in a disposable ARM VM, verify the mounted RAM root, kernel/package identities
+and full installer payload, and exercise the intended user interface. A VM
+boot still does not prove Apple AIC, CPU startup, power, DMA, USB, storage or
+framebuffer behavior. M2 Pro Mac mini tests also require an enrolled OS stub,
+its correct OS-owned ESP and preserved macOS/Recovery ownership.

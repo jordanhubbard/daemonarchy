@@ -65,6 +65,7 @@ another version are historical records. 1.5.1 entries describe planned work.
 - [ARM implementation, hwtrace discovery and final-distribution validation](roadmap/arm-implementation.md)
 - [aarch64 inventory and VMware worker bring-up (ARCH-001)](aarch64.md)
 - [Platform-selected ARM installer media (ARM-005)](arm-media.md)
+- [Full ARM installer RAM-root bring-up](arm-ram-installer.md)
 - [Pi 500 physical Linux reference and RP1 Ethernet correction](testing-pi500-linux-20261107.md)
 - [Pi 4 physical Linux baseline and first FreeBSD diagnostic media](testing-pi4-linux-20261107.md)
 - [Pi 5-family SD/FDT bootstrap inputs and native kernel build](testing-pi5-bootstrap-20261107.md)
