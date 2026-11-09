@@ -1,0 +1,66 @@
+{
+  "schema": "daemonarchy/omarchy-native-package-checkpoint@1",
+  "recorded_at": "2026-11-09T18:21:24.787375+00:00",
+  "ports": {
+    "hyprland_commit": "6cf405e283f81509ca1ff48df1e1094d5b535c85",
+    "omarchy_commit": "48561eaaf50086b2a6f469e307f26d1292024de6",
+    "omarchy_snapshot_sha256": "9cf67e63f7ae77f33667d7b788b2a6ae0745a76004f330e64522f591559a82ed",
+    "review": "https://github.com/jordanhubbard/daemonarchy-ports/pull/55"
+  },
+  "worker": {
+    "os": "FreeBSD 16.0-CURRENT",
+    "architecture": "arm64",
+    "execution": "Allocated QEMU/KVM VM, private chroot, work/distfile/package/options directories; operator workstation dependencies unchanged."
+  },
+  "packages": {
+    "hyprland-0.56.2_2.pkg": {
+      "bytes": 51032480,
+      "sha256": "991fdf178090e5e7d1f2c6f91a01db9af044b3780712c79cdb0d5a7440488f85",
+      "abi": "FreeBSD:16:aarch64"
+    },
+    "omarchy-4.5.0_4.pkg": {
+      "bytes": 168498109,
+      "sha256": "79cb85bb7d921384e0a8e15b03ab4016f8b133d5ed17c8125782a7ad295d062b",
+      "abi": "FreeBSD:16:aarch64"
+    }
+  },
+  "validation": {
+    "hyprland_native_build_stage_qa_package": true,
+    "hyprland_independent_package_install_and_version": true,
+    "omarchy_fresh_build_stage_qa_package": true,
+    "omarchy_independent_package_install": true,
+    "all_private_gnu_links_resolve": true,
+    "real_child_process_signal_test": true,
+    "native_uptime": true,
+    "installed_package_dependency_check": true
+  },
+  "original_outcomes": [
+    "First Omarchy attempt stopped because the fresh chroot lacked ldconfig hints; its log remains retained.",
+    "After standard ldconfig initialization, the fresh second work tree compiled Omarchy and stopped at missing Hyprland.",
+    "Hyprland was built from the selected port with its complete available signed dependency set; its original nonfatal stage QA warnings remain retained.",
+    "Omarchy 4.5.0_3 packaged successfully with two dangling GNU-link stage QA warnings; its original package and log remain retained.",
+    "The source fix removes unsupported GNU links, increments to 4.5.0_4 and passes fresh stage QA without those warnings, independent install, native signal/uptime and dependency checks."
+  ],
+  "private_evidence_sha256": {
+    "hyprland-build.log": "7ac1630503c6fd7b0bc2453f0ac0984c371ddf542f573ac6be29d7bd72204715",
+    "hyprland-installed-version.log": "778a12a4cfbfe34e3633b9e8e7060b86ff3a6e1c6f82b3234dff54fd80b3c3db",
+    "omarchy-build.log": "a94a206cb00625fdca2b5cbac3c5b9cd6a9dea80dd2a7e3b62faf49ab66b18c7",
+    "omarchy-build-r2.log": "c85d6e8def7fbcde33a0907827fd4e0ee82fcb2a03aa8f531bb7c905b27a265d",
+    "omarchy-build-r3.log": "3e915d27551e74a062cf237d56f1ac10e8f5909e764005e67ea51c7e034de434",
+    "omarchy-build-r4.log": "4bf4bb5b0c9fd20836057e38e85832d6b5b6e5f6946706964bc8f3b6614fa81b",
+    "omarchy-r4-acceptance.log": "7e66945d688277db6e44330009e43dea64d8459d8a5c2d0a8f4c0d38b40dd1b8",
+    "ports-buildroot-inventory.txt": "bccbd3f43000e20fe3e90291a90685e1a0d2ccd5a5af62cbbd452913f227ef0e"
+  },
+  "qualification": {
+    "direct_native_package_controls": true,
+    "rendered_desktop": false,
+    "complete_current_omarchy_image": false,
+    "physical_hardware": false,
+    "component_lifecycle_receipt": false
+  },
+  "limitations": [
+    "The installed framework rejects the existing ports manifest; direct make/pkg results are not admitted Component lifecycle receipts.",
+    "Build-root dependency inventory includes bootstrap/build packages; it is not the frozen final release runtime closure.",
+    "Existing Hyprland nonfatal QA warnings and reported unknown system library version strings remain in the original logs. No GUI or acceleration claim is made."
+  ]
+}

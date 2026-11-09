@@ -9,6 +9,16 @@
 
 ## Scope and release contract
 
+**Operator direction, 2026-11-09:** add
+[TRACE-001](default-install-tracing.md). Default installation media must carry a
+standard writable hwtrace partition and automatically retain early-boot,
+installation and post-mortem evidence. Normal users do not select a special
+experiment menu. For new hardware, prefer a coding LLM and detailed target
+description to produce a customized hwtrace image; revisit separate generic
+pre-built diagnostic assets while preserving published artifacts. Apple M2
+qualification uses the allocated Mac14,12 reference, with trace-volume capture
+covering remote-console gaps. Implementation and acceptance remain open.
+
 **Operator direction, 2026-11-07: the theme for 1.6 is ARM, covering popular ARM
 platforms, explicitly including Raspberry Pi 4 and Raspberry Pi 5. Pi 4 is a
 separate porting target ahead of Pi 5 in the SBC implementation queue.** This

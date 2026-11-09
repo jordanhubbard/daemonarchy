@@ -740,23 +740,24 @@
       "role": "desktop",
       "owner": "ARM release integration; individual test owner unassigned",
       "hardware": {
-        "state": "unallocated",
-        "note": "No release test allocation recorded; historical reference access is not an allocation."
+        "state": "available",
+        "note": "Operator allocated this physical M2 Pro target on 2026-11-09. macOS SSH is reachable; native console is problematic and no hwtrace volume was attached at inspection."
       },
       "identity": {
-        "model": "Apple M2 Pro Mac mini J474s",
+        "model": "Apple M2 Pro Mac mini, Mac14,12 / J474s",
         "soc": "Apple T6020",
         "board_revision": null,
-        "ram": null,
-        "firmware": null,
+        "ram": "16 GB, as reported by macOS; native FreeBSD usable RAM unqualified",
+        "firmware": "System firmware 20457.41.3; per-OS stub/stage-2 firmware unverified",
         "boot_chain": null,
         "abi": null,
         "storage": null
       },
-      "discovery_needed": "Enroll an exact test profile with board/carrier and RAM revision, firmware, boot chain, ABI and storage. Split distinct variants into additional rows; retain this scope row.",
+      "discovery_needed": "Inspect the native boot-chain and OS-owned ESP enrollment while preserving macOS/Recovery. Prepare a target-described trace-capable image and hwtrace volume; capture early boot and post-mortem evidence locally. Native AIC/DART, CPU, DMA/storage/input and full-distribution acceptance remain open.",
       "sources": [
         "docs/roadmap/release-1.6.0.md",
-        "docs/roadmap/arm-research-20261107.md"
+        "docs/roadmap/arm-research-20261107.md",
+        "verification/apple-m2-pro-reference-20261109.json"
       ],
       "features": {
         "boot": {

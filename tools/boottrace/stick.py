@@ -43,6 +43,7 @@ from pathlib import Path
 import random
 import re
 import shutil
+import stat
 import struct
 import subprocess
 import sys
@@ -414,6 +415,13 @@ def empty_slots(vol):
 def cmd_add_partition(args):
     image = args.image
     _, size_mib = None, args.size_mib
+    original = Path(image).lstat()
+    if not stat.S_ISREG(original.st_mode):
+        raise ValueError("add-partition requires a regular nonsymlink image file")
+    if size_mib < 64:
+        raise ValueError("DATRACE requires at least 64 MiB for FAT32")
+    if original.st_size % 512:
+        raise ValueError("image size must be a multiple of 512 bytes")
     try:
         gpt_partition(image)
         sys.exit(f"{image} already has a {LABEL} partition")
@@ -422,7 +430,11 @@ def cmd_add_partition(args):
     with open(image, "ab") as f:
         f.truncate(os.path.getsize(image) + size_mib * 1024 * 1024)
     subprocess.run(["sgdisk", "-e", image], check=True, capture_output=True)
-    subprocess.run(["sgdisk", "-n", "0:0:0", "-t", "0:0700", "-c", "0:" + LABEL, image],
+    # Hybrid ISOs can describe only their ESP in GPT. Apparent free space
+    # before the old EOF still contains ISO9660 payload, not spare sectors.
+    # Append after every original byte, aligned to a 1 MiB boundary.
+    first_new = ((original.st_size // 512 + 2047) // 2048) * 2048
+    subprocess.run(["sgdisk", "-n", f"0:{first_new}:0", "-t", "0:0700", "-c", "0:" + LABEL, image],
                    check=True, capture_output=True)
     num, first, count = gpt_partition(image)
     with tempfile.TemporaryDirectory() as d:

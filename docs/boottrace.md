@@ -1,5 +1,16 @@
 # Hardware trace stick: reset-surviving boot trace
 
+**Planned 1.6 direction:** [default installation tracing](roadmap/default-install-tracing.md)
+will capture ordinary boots and installations to a standard writable hwtrace
+volume, without a special experiment-menu choice. For brand-new hardware,
+start with its exact description and a coding LLM to prepare a target-specific
+hwtrace image and retrieve the resulting volume. Remote console access,
+especially on Apple machines, cannot replace local evidence capture.
+Implementation and persistence acceptance are tracked under TRACE-001.
+
+The mechanism below describes the existing 1.5.x separate-image workflow and
+retained research tools; it does not claim the new default behavior is shipped.
+
 When a machine hangs or resets during kernel startup with nothing on screen
 that explains why (the MSI Raider 18 HX AI A2XWIG in
 [hardware quirks](hardware-quirks.md#msi-raider-18-hx-ai-a2xwig-early-installer-reset)),

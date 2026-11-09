@@ -1986,3 +1986,16 @@ remains open; report files do not establish a passing gate.
   - [x] Add validated memory profile, queue and retained base-profile audit identity
 - **Evidence:**
   - [x] Eighteen host controls plus retained-input default/uncapped staging and repeatability checks; no image or physical boot claim
+
+### [ ] TRACE-001 — Make installation media trace every boot and installation
+
+- **Priority:** P0
+- **Owner:** Diagnostics, loader/kernel, installer and release engineering
+- **Direction:** For 1.6, trace standard boots and installations automatically to a writable hwtrace partition on default media; prefer target-described, LLM-assisted hwtrace customization for new hardware and collect early boot/post-mortem evidence without a Run experiment menu.
+- **Conclusion:** Operator direction 2026-11-09. Preserve published artifacts and normal installation behavior; implementation, default-media persistence and physical acceptance remain open.
+- **Depends on:** ARM-002, ARM-005
+- **Implementation:**
+  - [ ] Design observe-only loader/kernel/installer tracing with bounded early capture, exact media identities and a standard writable hwtrace partition; keep active experiment queues separate from normal installation.
+  - [ ] Update new-hardware documentation and tooling around a conversational hardware description and a coding LLM; reassess separate generic pre-built diagnostic assets without changing published bytes.
+- **Evidence:**
+  - [ ] Exact-image VM and physical boot/install, failure/reset and post-mortem readback prove automatic trace persistence without opting into an experiment menu; unsupported persistence windows remain explicit.

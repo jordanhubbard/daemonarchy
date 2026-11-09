@@ -7,6 +7,13 @@ for Component ownership. This file remains the release and feature overview.
 
 ## 1.6.0: ARM platforms and upstream synchronization
 
+On 2026-11-09 the operator added
+[TRACE-001](docs/roadmap/default-install-tracing.md): standard writable hwtrace
+storage and automatic early-boot, installation and post-mortem tracing on normal
+media. Brand-new hardware uses target-described, coding-LLM-assisted diagnostic
+recipes. An experiment-menu choice is no longer the intended normal path.
+Implementation and exact-media/physical acceptance remain open.
+
 The operator expanded 1.6 on 2026-11-07 from Spark-only to popular ARM platforms:
 NVIDIA Spark/GB10, Apple Silicon, **Raspberry Pi 4 ahead of Raspberry Pi 5**,
 Rockchip and other SBCs, Qualcomm laptops, and ARM server/cloud/VM profiles.

@@ -344,6 +344,50 @@ class AcpiDiscovery(unittest.TestCase):
             acpi.madt(b"APIC" + bytes(40) + bytes((11, 2)))
 
 
+@unittest.skipUnless(all(shutil.which(t) for t in ("sgdisk", "mkfs.fat")),
+                     "sgdisk and mkfs.fat are needed")
+class InstallerTracePartition(unittest.TestCase):
+    def test_invalid_growth_and_symlink_inputs_preserve_original_bytes(self):
+        with tempfile.TemporaryDirectory() as directory:
+            image = Path(directory) / "image"
+            image.write_bytes(b"preserve".ljust(512, b"\0"))
+            original = image.read_bytes()
+            link = Path(directory) / "link"
+            link.symlink_to(image)
+            with self.assertRaisesRegex(ValueError, "nonsymlink"):
+                stick.main(["add-partition", str(link)])
+            with self.assertRaisesRegex(ValueError, "at least 64"):
+                stick.main(["add-partition", str(image), "--size-mib", "1"])
+            self.assertEqual(image.read_bytes(), original)
+
+    def test_appended_trace_volume_preserves_iso_payload_outside_gpt_partitions(self):
+        # A hybrid ISO's GPT may describe only the embedded ESP. The ISO
+        # filesystem still occupies the apparent free space after that ESP.
+        with tempfile.TemporaryDirectory() as directory:
+            image = Path(directory) / "installer.iso"
+            with image.open("wb") as stream:
+                stream.truncate(16 * 1024 * 1024)
+            subprocess.run(["sgdisk", "-o", "-n", "1:2048:+2M", "-t", "1:ef00", str(image)],
+                           check=True, capture_output=True)
+            payload = b"retained installer payload\n" * 32768
+            boot_code = b"retained BIOS boot code".ljust(440, b"\0")
+            with image.open("r+b") as stream:
+                stream.write(boot_code)
+                stream.seek(5 * 1024 * 1024)
+                stream.write(payload)
+                stream.seek(16 * 2048)
+                stream.write(b"\x01CD001\x01")
+            old_size = image.stat().st_size
+            with contextlib_quiet():
+                stick.main(["add-partition", str(image), "--size-mib", "64"])
+            with image.open("rb") as stream:
+                self.assertEqual(stream.read(440), boot_code)
+                stream.seek(5 * 1024 * 1024)
+                self.assertEqual(stream.read(len(payload)), payload)
+            _, first, _ = stick.gpt_partition(image)
+            self.assertGreaterEqual(first * 512, old_size)
+
+
 class BlockMap(unittest.TestCase):
     """SLOTS.MAP on a real FAT32 GPT image, as the loader will use it."""
 

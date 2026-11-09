@@ -1346,6 +1346,17 @@ custom-port, reconnect and shutdown evidence belongs in the
 
 ## Hardware bring-up trace image
 
+For the planned 1.6 workflow, start with
+[default installation tracing and target-specific image recipes](docs/roadmap/default-install-tracing.md).
+New hardware should be described to a coding LLM with its exact model, firmware,
+boot chain and symptoms, using the returned hwtrace volume to guide the next
+image. Normal users must receive automatic tracing on standard installation
+media; they should not need to know when to choose an experiment menu. This
+work is tracked under TRACE-001 and is not yet a shipped default.
+
+The following reference retains the existing 1.5.x tools and separate-image
+procedures for reproducible research and historical artifacts.
+
 When a machine hangs or resets during kernel startup and nothing on screen
 says why, use the hardware bring-up trace image. It is a separate image type
 from the install/live ISO, because unattended cycling cannot coexist with
