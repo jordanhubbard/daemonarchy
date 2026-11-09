@@ -21,8 +21,8 @@ and native validation. The [1.6 release plan](docs/roadmap/release-1.6.0.md) own
 per-model matrix, order, exact-image distribution gates and remaining Spark experiments.
 
 The operator expanded the 1.6 goals on 2026-11-08 to include
-[SYNC-001](docs/roadmap/active-work.md#sync-001-synchronize-omarchy-15-and-freebsd-current-source-and-ports-for-16):
-synchronize the desktop and compatibility adaptation with **Omarchy 1.5**, and
+[SYNC-001](docs/roadmap/active-work.md#sync-001-synchronize-current-upstream-omarchy-450-and-freebsd-current-source-and-ports-for-16):
+synchronize the desktop and compatibility adaptation with **current upstream Omarchy (4.5.0)**, and
 refresh the owned **FreeBSD-CURRENT src and ports** forks from upstream before
 freezing the release inputs. Pin the exact upstream and resulting fork revisions,
 preserve Daemonarchy changes, rebuild matched base/kernel/modules and package

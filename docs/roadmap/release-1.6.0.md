@@ -3,7 +3,7 @@
 - **Status:** active
 - **Opened:** 2026-11-07; expanded from SPARK-001 to the ARM distribution program by operator direction
 - **Owning queue item:** [ARM-001](active-work.md#arm-001-maintain-the-arm-platform-and-upstream-evidence-register)
-- **Additional release goal:** [SYNC-001](active-work.md#sync-001-synchronize-omarchy-15-and-freebsd-current-source-and-ports-for-16)
+- **Additional release goal:** [SYNC-001](active-work.md#sync-001-synchronize-current-upstream-omarchy-450-and-freebsd-current-source-and-ports-for-16)
 - **GitHub issue and milestone:** [ARM-001 #295](https://github.com/jordanhubbard/daemonarchy/issues/295), [1.6.0](https://github.com/jordanhubbard/daemonarchy/milestone/5)
 - **Completion / archival evidence:** research and the four-CPU diagnostic checkpoint only; implementation and final-distribution acceptance remain open
 
@@ -40,12 +40,18 @@ then conduct one operator signing session. Preserve published release bytes.
 
 ## Upstream synchronization goal (SYNC-001)
 
-**Operator direction, 2026-11-08:** 1.6 also synchronizes with **Omarchy 1.5**
+**Operator direction, 2026-11-08:** 1.6 also synchronizes with **current upstream Omarchy (4.5.0)**
 and refreshes **FreeBSD-CURRENT src and ports**. This adds release scope to the
 ARM program; it preserves the Pi 4-before-Pi 5 priority and existing amd64 coverage.
-All synchronization and qualification checks below remain open.
+The operator clarified that the target is current upstream Omarchy, rather than
+historical 1.5.x. The selected stable release is
+[Omarchy v4.5.0](https://github.com/omacom/omarchy/releases/tag/v4.5.0), published
+2026-11-05, tag object `97e664bd971fa5a8691d89440d3738143499c438`, commit
+`ac2690cd7be4f47e4a255f5e2e78d904d436b068`. The currently packaged Omarchy
+baseline is 4.0.4. Import, adaptation and native qualification remain open.
 
-- [ ] Identify and pin the exact Omarchy 1.5 upstream tag/commit. Review its delta
+- [x] Select and pin the current upstream Omarchy release (identity above).
+- [ ] Review its delta
   against the selected desktop and compatibility forks; port applicable desktop,
   configuration, application and service changes to native FreeBSD behavior.
   Record Linux-specific features requiring adaptation or an explicit limitation.

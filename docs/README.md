@@ -60,7 +60,7 @@ another version are historical records. 1.5.1 entries describe planned work.
 - [1.4.1 plan: measured faster installation and deferred exact-image checks](roadmap/release-1.4.1.md)
 - [1.5.0 plan (opened as 1.4.2): re-scoped to evidenced work](roadmap/release-1.5.0.md)
 - [1.5.1 plan: network upgrades, forkability and the framework-executed goals deferred from 1.5.0](roadmap/release-1.5.1.md)
-- [1.6.0 plan: ARM platforms, Pi 4 before Pi 5, Omarchy 1.5 and FreeBSD-CURRENT synchronization](roadmap/release-1.6.0.md)
+- [1.6.0 plan: ARM platforms, Pi 4 before Pi 5, current upstream Omarchy (4.5.0) and FreeBSD-CURRENT synchronization](roadmap/release-1.6.0.md)
 - [ARM research: Omarchy Mac, DGX Spark, Raspberry Pi and predecessor work](roadmap/arm-research-20261107.md)
 - [ARM implementation, hwtrace discovery and final-distribution validation](roadmap/arm-implementation.md)
 - [aarch64 inventory and VMware worker bring-up (ARCH-001)](aarch64.md)
