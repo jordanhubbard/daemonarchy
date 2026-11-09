@@ -33,7 +33,9 @@ and rejects integrity diagnostics even if `fsck_ffs` returns zero. UFS1's
 legacy cylinder-group inode-count field is too small for this desktop root.
 GEOM UZIP compresses it into a read-only disk image loaded as
 `md_image`; `geom_uzip.ko` exposes `/dev/md0.uzip`. Existing in-memory `/var` and
-`/tmp` handling remains in use. Unlike whole-filesystem gzip, UZIP supports an
+`/tmp` handling remains in use. The writable `/var` is seeded from the packaged
+tree using `mdmfs -k`, preserving the installed package database after startup.
+Unlike whole-filesystem gzip, UZIP supports an
 expanded root larger than 4 GiB and reads compressed blocks on demand. The
 compressed bootstrap input is bounded below 4 GiB. No CPU or RAM discovery
 limit is added.

@@ -90,6 +90,16 @@ mounted=no
 cp -p "$package" "$share/repo/All/omarchy-$package_version.pkg"
 pkg repo "$share/repo"
 
+# rc.d/var mounts a fresh writable /var over the read-only root. Seed it
+# through mdmfs's supported skeleton option so pkg retains the built inventory.
+mkdir "$share/ram-var"
+tar -cf - -C "$world/var" . | tar -xpf - -C "$share/ram-var"
+cat >> "$world/etc/rc.conf" <<'EOF'
+
+# Preserve the packaged state when rc.d/var creates its writable RAM filesystem.
+varmfs_flags="-k /usr/local/share/daemonarchy-installer/ram-var"
+EOF
+
 # A compressed read-only root retains the live image's existing in-memory
 # /var and /tmp handling. UZIP avoids gzip's 32-bit uncompressed-size field
 # and does not require reserving the entire expanded filesystem in RAM.
