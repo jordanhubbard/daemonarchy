@@ -1,0 +1,110 @@
+{
+  "schema": "daemonarchy/normal-boot-trace-amd64-checkpoint@1",
+  "source_pr": "https://github.com/jordanhubbard/daemonarchy-src/pull/81",
+  "native_ci": {
+    "source_commit": "5cd6b69402a125577c00f98dfd9b1638b549bf2f",
+    "run_id": 42714851963,
+    "event": "push",
+    "native_exit_status": 0,
+    "feature_inputs_matched": 40,
+    "normal_policy_controls": 18,
+    "fat_extent_controls": 19,
+    "lua_dispatcher_controls": 4,
+    "media_parser_controls": 17,
+    "efi_machine": "AMD64 0x8664",
+    "efi_sha256": "ac57e19e7a526a793b844d1dcd360cea21bff66c3ebc7485a5c3d5f0884bec90",
+    "firmware_boot_qualified": false
+  },
+  "firmware_control": {
+    "machine": "QEMU q35, software TCG emulation on an AArch64 host, two emulated CPUs and 1 GiB",
+    "firmware": "OVMF UEFI, separate private variable store",
+    "efi_scope": "The exact native FreeBSD AMD64 CI EFI and unchanged staged Lua files; minimal kernel-free fixture with autoboot disabled",
+    "normal_dispatcher": "Actual unmodified loader.lua and boottrace.lua, normal enable and deliberately conflicting historical autocycle flags",
+    "fixture_assembly": "FreeBSD ARM64 makefs/mkimg construct regular FAT/ISO files; production make-install-trace.py prepares exact identity and 233 mapped files. This fixture is not the full product EFI builder or an OS image.",
+    "pristine_image_sha256": "badf34369a342ebbb4376806d0a86791c7d3ac4d9a8061015fc191b299660feb",
+    "pristine_image_bytes": 337658368,
+    "queued_image_sha256": "065bf23cd3f937cacfa55b17f58d26674528ae536b8203d6efaac762b95c67ae",
+    "keyboard_input_before_capture": false,
+    "automatic_normal_record": true,
+    "ordinary_menu_available": true,
+    "disk_write_operations": 1,
+    "firmware_variable_write_operations": 0
+  },
+  "readback": {
+    "records": {
+      "1": {
+        "record": {
+          "schema": "daemonarchy/normal-boot-trace@1",
+          "image_id": "6d93c861-2bbc-4e24-9796-246527e7320b",
+          "archive_sha256": "b45fc6211f80b71f9c9d96ff2b1fa91fad606ba1fb7a8fd5fd471e701696b177",
+          "trace_partition": "3d4a863c-dc90-11f1-1d08-61407e6af4da",
+          "session": "0001",
+          "phase": "loader-ready",
+          "identity": "declared-archive",
+          "early_kernel_backend": "not-enabled"
+        },
+        "sha256": "bae73a8a23b7bb0cb196e40d978d18fe93b138fa6450e1944849d7f69ce2dc63"
+      }
+    },
+    "preserved_nonempty_initial_slots": {},
+    "mapped_files": 233,
+    "legacy_state_unchanged": true,
+    "queued_experiment_unchanged": true,
+    "all_200_legacy_traces_unchanged": true,
+    "only_expected_normal_slots_changed": true,
+    "changed_bytes": 304,
+    "source_backing_unchanged": true,
+    "source_sha256": "065bf23cd3f937cacfa55b17f58d26674528ae536b8203d6efaac762b95c67ae",
+    "returned_image_sha256": "8795edb04dc94aa7f061c7bb06848d558b83dc55f2da606c219a6cb63fe1d0d2",
+    "fat_check_status": 0,
+    "virtual_device_bytes": 8589934592
+  },
+  "refusal_controls": {
+    "ro": {
+      "capture_status": "media-unavailable",
+      "writes": {
+        "pflash0": 0,
+        "pflash1": 0,
+        "stick": 0,
+        "ide2-cd0": 0,
+        "sd0": 0
+      },
+      "ordinary_menu_available": true,
+      "keyboard_input_before_refusal": false
+    },
+    "foreign": {
+      "capture_status": "media-unavailable",
+      "writes": {
+        "pflash0": 0,
+        "pflash1": 0,
+        "stick": 0,
+        "foreign": 0,
+        "ide2-cd0": 0,
+        "sd0": 0
+      },
+      "ordinary_menu_available": true,
+      "keyboard_input_before_refusal": false
+    },
+    "swapped": {
+      "capture_status": "slots-invalid",
+      "writes": {
+        "pflash0": 0,
+        "pflash1": 0,
+        "stick": 0,
+        "ide2-cd0": 0,
+        "sd0": 0
+      },
+      "ordinary_menu_available": true,
+      "keyboard_input_before_refusal": false
+    }
+  },
+  "remaining": [
+    "Full default amd64 install/live media and normal kernel/init/installer boot",
+    "BIOS/hybrid integration",
+    "Pre-exit/kernel/panic/init/installer capture",
+    "Exhaustive filesystem alias admission and clone-independent target/session identity",
+    "Actual interrupted writes, physical power loss and physical reference machines",
+    "Final signed release and lifecycle acceptance"
+  ],
+  "release_qualified": false
+}

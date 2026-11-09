@@ -1354,6 +1354,22 @@ image. Normal users must receive automatic tracing on standard installation
 media; they should not need to know when to choose an experiment menu. This
 work is tracked under TRACE-001 and is not yet a shipped default.
 
+The development EFI builder now requires matching automatic-trace EFI/Lua
+inputs and enables an observe-only loader-start checkpoint. Retrieve a returned
+image or mounted hwtrace volume without changing it:
+
+```sh
+python3 tools/boottrace/stick.py normal TARGET --out FRESH_EVIDENCE_DIRECTORY
+```
+
+Keep that directory and the original returned bytes for the coding LLM. Supply
+the exact model/board, firmware, boot path, image identity, last visible output
+and the point where console access disappeared. Ask it to distinguish observed
+facts from proposed experiments and preserve the working OS/recovery path.
+A `loader-ready` record proves only that checkpoint: kernel, panic and installer
+capture remain unfinished. See the linked default-tracing procedure for the
+current native controls, full/readonly behavior and remaining persistence gaps.
+
 The following reference retains the existing 1.5.x tools and separate-image
 procedures for reproducible research and historical artifacts.
 

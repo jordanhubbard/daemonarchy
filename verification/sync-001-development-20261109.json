@@ -1,0 +1,39 @@
+{
+  "schema": "daemonarchy/sync-001-development@1",
+  "source_candidate": {
+    "pr": "https://github.com/jordanhubbard/daemonarchy-src/pull/82",
+    "commit": "ca6c32213c25d0950dc4be1a9af3c543bd2a3468",
+    "upstream_revision": "d0fd70983b6b93d4a6a4671457619eb34786b38d",
+    "full_tree_merge_base": "8721f68642c392afa0413eafa3cefde66d65b6eb",
+    "vendor_root_common_base": "a8dfdb79eb008614ad3674feabcb0a25ca93abba",
+    "resolved_files": [
+      "sys/dev/nvme/nvme_pci.c",
+      "sys/dev/nvme/nvme_private.h"
+    ],
+    "resolution": "Keep owned ACK-each-completion flag 0x2000 and new upstream IGNORE_RAB at distinct 0x4000; T2 gets both. Keep upstream NVMe/API changes. Twelve recorded ARM/trace inputs remain byte-identical.",
+    "source_evidence": "https://github.com/jordanhubbard/daemonarchy-src/blob/ca6c32213c25d0950dc4be1a9af3c543bd2a3468/verification/source-upstream-sync-20261109.json",
+    "native_world_kernel_build_started": false,
+    "native_build_dependency": "Existing aggregate controller explicitly admits native amd64 only; ARM planning, execution guard and artifact qualification need a shared architecture extension. No guard bypass or fake result."
+  },
+  "ports_preflight": {
+    "owned_head": "48561eaaf50086b2a6f469e307f26d1292024de6",
+    "upstream_head": "5dcb3b799d588df1559edc4d0dfeb028b64ef70f",
+    "merge_bases": [
+      "a7c9a97bae26bf342e1bffb2273b7ef331cdb289"
+    ],
+    "conflict_messages": 457,
+    "import_performed": false,
+    "failed_merge_plan_retained": true,
+    "candidate_worktree_unchanged": true
+  },
+  "scope": "Read-only upstream preflight plus draft source import; no 1.6 release item complete",
+  "remaining": [
+    "Review and resolve ports conflicts while preserving owned adaptations",
+    "Review current Omarchy desktop and compatibility delta",
+    "Extend and qualify native source controller for ARM64",
+    "Exact new world/kernel/modules/sets, package and media rebuilds for both architectures",
+    "Signed final inputs, VM/physical desktop/install/update/recovery acceptance",
+    "Framework authority/lifecycle/receipt acceptance"
+  ],
+  "release_qualified": false
+}

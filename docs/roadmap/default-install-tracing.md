@@ -224,3 +224,26 @@ python3 tools/boottrace/stick.py normal TARGET --out FRESH_DIR
 This read-only operation copies exact bytes, preserves damaged slots and produces
 a hash-bearing manifest. Legacy experiment reset does not erase these records;
 there is no automatic rotation or erase on failure.
+
+
+The independent [amd64 EFI checkpoint](../../verification/normal-boot-trace-amd64-20261109.json)
+uses the exact native CI loader and unchanged Lua files in a kernel-free fixture
+under OVMF/TCG. It saves before keyboard input and passes whole-returned-image
+comparison and FAT readback. Read-only, foreign-volume and swapped-map cases
+leave every virtual disk and firmware variable store unwritten and keep the
+normal menu available. This adds amd64 loader-only firmware evidence; full
+amd64 OS/default-media and BIOS integration remain open.
+
+
+The [full ARM RAM-root follow-up](../../verification/normal-full-arm-trace-20261109.json)
+rebuilds the retained installer world with matching new EFI/Lua and the complete
+Omarchy closure. It boots normally with eight CPUs and 16 GiB, saves the loader
+checkpoint without menu input, renders the retained welcome screen and preserves
+the exact 378-package inventory. After guest shutdown, controller comparison
+finds only 304 changed bytes in NORMAL/0001.TXT, unchanged legacy state/traces,
+an empty experiment queue, clean FAT and an unchanged source image. The new
+3,732,947,456-byte ISO passes the unchanged raw budget by 25,148,928 bytes.
+This is an independently rebuilt control; earlier full-media results are not
+relabelled. It still uses the 1.5.0 world/UI and predates the source refresh in
+PR #82. It proves persistence through a real kernel/init boot, not capture of
+those stages' diagnostics or final installation/desktop/release acceptance.
