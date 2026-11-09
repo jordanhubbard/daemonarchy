@@ -30,6 +30,9 @@ package=$(realpath "$package")
     [ "$(od -An -tu2 -j18 -N2 "$kernel" | tr -d ' \n')" = 183 ] || {
     echo 'An AArch64 ELF64 kernel is required' >&2; exit 1;
 }
+strings "$kernel" | grep -Eq '^FreeBSD 16\.[^ ]* #[0-9]+' || {
+    echo 'A FreeBSD 16 kernel is required for this installer ABI' >&2; exit 1;
+}
 [ "$(pkg query -F "$package" '%n %q')" = 'omarchy FreeBSD:16:aarch64' ] || {
     echo 'Expected an Omarchy package for FreeBSD:16:aarch64' >&2; exit 1;
 }
