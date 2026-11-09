@@ -30,6 +30,12 @@ closures, and qualify desktop, installation, upgrade and rollback regressions on
 both architectures. These are planned release goals; synchronization is not yet
 claimed complete. Raspberry Pi 4 remains ahead of Pi 5 in the porting queue.
 
+The [Pi software checkpoint](docs/testing-pi-bootstrap-checkpoint-20261108.md)
+records passed Pi 4 SD/USB/GENET/full-memory controls and selected synthetic
+BCM2712 PCIe2 MSI-X/MSI, USB data and console-recovery tests. Versioned regular
+candidates are prepared for review; no physical Pi boot, full RP1 support,
+installer/desktop or update/rollback acceptance follows from those results.
+
 ## 1.5.1: network upgrades and forkability
 
 Whether 1.5 could be the last release that needs an ISO, and whether another developer can fork the

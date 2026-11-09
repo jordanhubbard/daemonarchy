@@ -1743,7 +1743,7 @@ remains open; report files do not establish a passing gate.
 - **Priority:** P0
 - **Owner:** SBC boot, owned FreeBSD source and release integration
 - **Direction:** Finish Pi 4 media, installer, installed boot and recovery first; reuse the common infrastructure for Pi 5 without treating Pi 4 drivers as RP1 support.
-- **Conclusion:** The [physical 8 GB Pi 4B Rev 1.5 Linux baseline and diagnostic candidate](../testing-pi4-linux-20261107.md) are retained. Separate USB media is written and direct-readback verified; physical boards are unattended, so physical FreeBSD boot waits for an attended handoff. A distinct [U-Boot/FDT simulator control](../testing-pi4-uboot-fdt-20261108.md) now boots FreeBSD with four active CPUs and native SD root, saves all seven probes, and resets with offline diagnostics preserved. The [EDK2/ACPI checkpoint](../testing-pi4-simulator-20261107.md) remains separate. Full-RAM DMA and final distribution acceptance remain open.
+- **Conclusion:** The [current software checkpoint](../testing-pi-bootstrap-checkpoint-20261108.md) binds source `4cf77572` / kernel `d520d762` to five passed native Pi 4 simulator controls: SD/FDT and USB-only FDT/GENET at 2/8 GiB, plus uncapped 8 GiB UEFI/ACPI USB. Actual payloads, seven probes and natural reset pass. Earlier physical Linux/media observations remain historical controls. The D520 regular USB candidate has passed assembly/readback and exact-queue simulator controls; attended physical boot and final install/desktop/update/rollback acceptance remain open.
 - **Depends on:** ARM-002, ARM-003
 - **Implementation:**
   - [ ] Discovery: First SBC bring-up target by operator decision: Pi 4B; record BCM2711 stepping, RAM variant, EEPROM, power supply, U-Boot/EDK2, DTB/ACPI mode and SD/USB boot. Enroll Pi 400 and CM4 as separate carrier/model records.
@@ -1752,6 +1752,7 @@ remains open; report files do not establish a passing gate.
   - [ ] Test the UEFI 3 GiB memory cap and full-RAM DMA correctness explicitly, including 4/8 GiB variants. Build native storage/network/input plus the actual desktop path, then package boot firmware and DTBs as retained inputs.
   - [ ] Finish Pi 4 media, installer, installed boot and recovery first; reuse the common infrastructure for Pi 5 without treating Pi 4 drivers as RP1 support.
 - **Evidence:**
+  - [x] Five scoped Pi 4 software controls pass with exact kernel, payload and durable reset evidence.
   - [ ] Pi 4B completes the shared exact-image install/desktop/network/update/rollback suite, cold/warm boots and full-RAM USB/storage DMA stress.
   - [ ] Pi 400/CM4 extensions require their own input, carrier, network and storage evidence; Pi 4 completion does not close the Pi 5 item.
 
@@ -1763,7 +1764,7 @@ remains open; report files do not establish a passing gate.
 - **Priority:** P1
 - **Owner:** SBC boot and owned FreeBSD RP1/BCM2712 source
 - **Direction:** Deliver the board-specific final image and installed boot, default application/graphics stack and working network; document peripherals still under development per model.
-- **Conclusion:** A [physical Pi 500 Linux reference](../testing-pi500-linux-20261107.md) binds the mixed kernel/userspace ABI and a native Ethernet transfer. A separate [SD/FDT bootstrap candidate](../testing-pi5-bootstrap-20261107.md) now retains pinned upstream U-Boot, the board DTB and a clean native-built kernel with the BCM2712 SDHCI match. That kernel passes the Pi 4 simulator control; physical Pi 5 boot, MMC ordering, controller quirks and RP1 qualification remain open. RP1 uses Cadence GEM, not Pi 4 GENET. Pi 4 stays first.
+- **Conclusion:** The [current software checkpoint](../testing-pi-bootstrap-checkpoint-20261108.md) binds native selected PCIe2 MSI-X/MSI, USB payloads, message-specific interrupts and finite PL011 overflow recovery to source `4cf77572` / kernel `d520d762`. The explicit synthetic profile uses a standard QEMU endpoint; it is not a physical Pi 500 or RP1 peripheral result. Source changes remain draft. Separate D520 regular SD-control/PCIe/full-RAM candidate lanes are prepared with readback evidence; physical boot/MMC ordering, runtime full RAM and real RP1 qualification remain pending. Pi 4 stays first.
 - **Depends on:** RPI-001, ARM-002, ARM-003
 - **Implementation:**
   - [ ] Discovery: Follow Pi 4 in the SBC implementation queue while researching Pi 5 independently. Inventory C1/D0 stepping, RAM, EEPROM, power/cooling, RP1 and SD/USB/NVMe paths; include CM5 and Pi 500-family carrier/input differences.
@@ -1773,6 +1774,7 @@ remains open; report files do not establish a passing gate.
   - [ ] Choose and retain a maintained boot path per revision; qualify fallback trace persistence without EFI variables, boot-order behavior and power-cycle recovery.
   - [ ] Deliver the board-specific final image and installed boot, default application/graphics stack and working network; document peripherals still under development per model.
 - **Evidence:**
+  - [x] Selected synthetic PCIe2 MSI-X/MSI data/IRQ/reset and finite UART recovery controls pass; full RP1 and hardware acceptance remain open.
   - [ ] Pi 5 C1 and D0 plus enrolled RAM variants pass final-image boot, full memory/DMA, SD/USB/NVMe, desktop/input, network, thermal and update/rollback tests.
   - [ ] RP1 Ethernet and cooling are exercised natively; USB adapters or manual fan settings do not establish built-in-device acceptance. CM5/Pi 500 results remain separate.
 

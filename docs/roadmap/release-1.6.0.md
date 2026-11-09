@@ -5,7 +5,7 @@
 - **Owning queue item:** [ARM-001](active-work.md#arm-001-maintain-the-arm-platform-and-upstream-evidence-register)
 - **Additional release goal:** [SYNC-001](active-work.md#sync-001-synchronize-current-upstream-omarchy-450-and-freebsd-current-source-and-ports-for-16)
 - **GitHub issue and milestone:** [ARM-001 #295](https://github.com/jordanhubbard/daemonarchy/issues/295), [1.6.0](https://github.com/jordanhubbard/daemonarchy/milestone/5)
-- **Completion / archival evidence:** research and the four-CPU diagnostic checkpoint only; implementation and final-distribution acceptance remain open
+- **Completion / archival evidence:** [Pi software bootstrap controls](../testing-pi-bootstrap-checkpoint-20261108.md) now cover Pi 4 SD/USB/network/full-memory and selected synthetic PCIe2 MSI-X/MSI prerequisites; physical board and final-distribution acceptance remain open.
 
 ## Scope and release contract
 

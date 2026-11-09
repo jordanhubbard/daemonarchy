@@ -20,6 +20,7 @@ import subprocess
 import sys
 
 ANSI = re.compile(rb"\x1b\[[0-?]*[ -/]*[@-~]")
+MACHINES = {"raspi4b": 2 << 30, "raspi4b-4g": 4 << 30, "raspi4b-8g": 8 << 30}
 CHECKS = {
     "uboot": "U-Boot ",
     "freebsd_loader": "FreeBSD/arm64 EFI loader",
@@ -72,8 +73,46 @@ def data_offset(image):
     raise ValueError("bounded DATRACE partition not found")
 
 
-def assess(serial, dumps):
-    checks = {key: value in serial for key, value in CHECKS.items()}
+def memory_options(parser):
+    parser.add_argument("--machine", choices=MACHINES, default="raspi4b",
+                        help="explicit BCM2711 model; the default remains 2 GiB")
+    parser.add_argument("--memory-min-bytes", type=int,
+                        help="minimum required guest hw.physmem, not a firmware setting")
+    parser.add_argument("--memory-max-bytes", type=int,
+                        help="maximum permitted guest hw.physmem, not a firmware setting")
+
+
+def validate_memory_options(args):
+    low, high = args.memory_min_bytes, args.memory_max_bytes
+    if any(value is not None and value < 0 for value in (low, high)):
+        raise ValueError("guest memory bounds must be nonnegative byte counts")
+    if low is not None and high is not None and low > high:
+        raise ValueError("guest memory minimum exceeds its maximum")
+    if low is not None and low > MACHINES[args.machine]:
+        raise ValueError("guest memory minimum exceeds configured model RAM")
+
+
+def physical_memory(text):
+    matches = re.findall(r"^hw\.physmem:[ \t]*([0-9]+)[ \t]*$", text, re.MULTILINE)
+    return int(matches[0]) if len(matches) == 1 else None
+
+
+def memory_checks(text, low=None, high=None):
+    if low is None and high is None:
+        return {}
+    actual = physical_memory(text)
+    return {"guest_physical_memory_bounds": actual is not None and
+            (low is None or actual >= low) and (high is None or actual <= high)}
+
+
+def assess(serial, dumps, memory_min=None, memory_max=None, boot_checks=None):
+    checks = {key: value in serial for key, value in
+              (CHECKS if boot_checks is None else boot_checks).items()}
+    dmesg = (dumps / "dmesg.txt").read_text(errors="replace")
+    checks["storage_io_clean"] = not any(marker in serial or marker in dmesg
+        for marker in ("g_vfs_done():", "CAM status: CCB request completed with an error",
+                       "Retries exhausted", "I/O error", "Error indicated:",
+                       "Controller timeout"))
     checks["no_ownership_warning"] = "_secure_path:" not in serial
     checks["fdt_profile"] = 'boottrace_capture_acpi="NO"' in (
         dumps / "kenv.txt").read_text(errors="replace")
@@ -84,10 +123,12 @@ def assess(serial, dumps):
     sysctl = (dumps / "sysctl.txt").read_text(errors="replace")
     checks["smp_active"] = "kern.smp.active: 1" in sysctl and "kern.smp.cpus: 4" in sysctl
     checks["page_size"] = "hw.pagesize: 4096" in sysctl
+    checks.update(memory_checks(sysctl, memory_min, memory_max))
     return checks
 
 
-def run(args):
+def run(args, control_hook=None):
+    validate_memory_options(args)
     image = checked(args.image, args.image_sha256)
     uboot = checked(args.uboot, args.uboot_sha256)
     dtb = checked(args.dtb, args.dtb_sha256)
@@ -102,8 +143,12 @@ def run(args):
     shutil.copyfile(image, control)
     queue = output / "queue.txt"
     queue.write_text("[pi4-simulator-uboot-fdt]\nhw.ncpu=4\n")
+    if control_hook is not None:
+        control_hook.prepare(control, queue, output)
     stick = Path(__file__).resolve().parents[1] / "boottrace/stick.py"
     subprocess.run([sys.executable, str(stick), "queue", str(control), str(queue)], check=True)
+    if control_hook is not None:
+        control_hook.validate_image(control)
     profile_dtb = output / "pi4-uboot.dtb"
     shutil.copyfile(dtb, profile_dtb)
     # The existing Linux fixture uses pl011-axi. Both U-Boot and FreeBSD bind
@@ -116,27 +161,39 @@ def run(args):
         ("/soc/serial@7e201000", "status", ["okay"]),
     ):
         subprocess.run(["fdtput", "-t", "s", str(profile_dtb), node, prop, *values], check=True)
+    if control_hook is not None:
+        control_hook.configure_dtb(profile_dtb)
     overlay = output / "disk.qcow2"
-    virtual_size = 1 << max(29, (control.stat().st_size - 1).bit_length())
+    virtual_size = (control.stat().st_size if getattr(control_hook, "exact_disk_size", False)
+                    else 1 << max(29, (control.stat().st_size - 1).bit_length()))
     subprocess.run([str(qimg), "create", "-f", "qcow2", "-F", "raw", "-b", str(control),
                     str(overlay), str(virtual_size)], check=True)
-    command = [str(qemu), "-machine", "raspi4b", "-accel", "tcg", "-kernel", str(uboot),
+    command = [str(qemu), "-machine", args.machine, "-accel", "tcg", "-kernel", str(uboot),
                "-dtb", str(profile_dtb), "-drive", f"if=sd,format=qcow2,file={overlay}",
                "-display", "none", "-serial", f"file:{output / 'serial.log'}",
                "-serial", f"file:{output / 'uart1.log'}", "-monitor", "none", "-nic", "none",
                "-no-reboot", "-d", "guest_errors,unimp", "-D", str(output / "guest-errors.log")]
-    manifest = dict(schema="daemonarchy/pi4-simulator@1", profile="uboot-fdt", command=command,
+    if control_hook is not None:
+        command = control_hook.configure_command(command)
+    manifest = dict(schema="daemonarchy/pi4-simulator@1",
+                    profile=getattr(control_hook, "profile", "uboot-fdt"), command=command,
+                    machine=args.machine, model_ram_bytes=MACHINES[args.machine],
+                    guest_memory_bounds=dict(min_bytes=args.memory_min_bytes,
+                                             max_bytes=args.memory_max_bytes),
                     harness_sha256=digest(Path(__file__).resolve()),
                     inputs={str(p): digest(p) for p in (image, uboot, dtb, qemu, qimg)},
                     profile_dtb_sha256=digest(profile_dtb), virtual_size=virtual_size,
                     limitations=["VideoCore/EEPROM bypassed", "partial BCM2711 model",
                                  "not Pi 5/RP1", "no physical PCIe/network/full-RAM acceptance"])
+    if control_hook is not None:
+        manifest["network_profile"] = control_hook.identity()
     result = output / "result.json"
     result.write_text(json.dumps(manifest, indent=2) + "\n")
     with (output / "qemu.log").open("wb") as log:
         process = subprocess.Popen(command, stdout=log, stderr=log)
         try:
-            manifest["exit_code"] = process.wait(timeout=args.timeout)
+            manifest["exit_code"] = (control_hook.wait(process, args.timeout)
+                if control_hook is not None else process.wait(timeout=args.timeout))
         except subprocess.TimeoutExpired:
             manifest["error"] = "QEMU deadline expired; retained partial evidence"
             raise RuntimeError(manifest["error"])
@@ -153,7 +210,13 @@ def run(args):
     dumps = output / "dumps"
     dumps.mkdir()
     subprocess.run(["mcopy", "-s", "-i", spec, "::/DUMPS/0001", str(dumps)], check=True)
-    manifest["checks"] = assess(serial, dumps / "0001")
+    manifest["checks"] = assess(serial, dumps / "0001", args.memory_min_bytes,
+                                args.memory_max_bytes, getattr(control_hook, "boot_checks", None))
+    if control_hook is not None:
+        manifest["checks"].update(control_hook.assess(dumps / "0001"))
+        manifest["network_result"] = control_hook.report
+    manifest["guest_physical_memory_bytes"] = physical_memory(
+        (dumps / "0001/sysctl.txt").read_text(errors="replace"))
     manifest["source_unchanged"] = digest(image) == args.image_sha256.lower()
     manifest["diagnostics"] = {str(p.relative_to(dumps)): digest(p) for p in sorted(dumps.rglob("*")) if p.is_file()}
     manifest["ok"] = (manifest["exit_code"] == 0 and manifest["source_unchanged"] and
@@ -161,11 +224,14 @@ def run(args):
     result.write_text(json.dumps(manifest, indent=2) + "\n")
     if not manifest["ok"]:
         raise RuntimeError(f"bootstrap checks incomplete: {manifest['checks']}")
-    print(f"PASS: Pi 4 U-Boot/FDT four-CPU SD boot, init, durable collection and clean reset: {result}")
+    description = getattr(control_hook, "success_description",
+                          "four-CPU SD boot, init, durable collection and clean reset")
+    print(f"PASS: Pi 4 U-Boot/FDT {description}: {result}")
 
 
 def main():
     parser = argparse.ArgumentParser(description=__doc__)
+    memory_options(parser)
     for name in ("image", "uboot", "dtb"):
         parser.add_argument("--" + name, type=Path, required=True)
         parser.add_argument("--" + name + "-sha256", required=True)
