@@ -1,9 +1,9 @@
 {
   "schema": "daemonarchy/install-trace-media-checkpoint@1",
   "source_repository": "jordanhubbard/daemonarchy-src",
-  "source_commit": "86e4cdadeeaeedd916a29ef63db088baf4939e72",
+  "source_commit": "7b66d5c840ae8910a73ba1fcaa07e5cfdc6f0718",
   "source_pr": "https://github.com/jordanhubbard/daemonarchy-src/pull/81",
-  "source_evidence": "https://github.com/jordanhubbard/daemonarchy-src/blob/86e4cdadeeaeedd916a29ef63db088baf4939e72/verification/trace-media-20261109.json",
+  "source_evidence": "https://github.com/jordanhubbard/daemonarchy-src/blob/7b66d5c840ae8910a73ba1fcaa07e5cfdc6f0718/verification/trace-media-20261109.json",
   "source_evidence_sha256": "cc2f43aaf24a75c540b96b64a3d79050a03b5377f34bbdbfb31b2e32e037ec27",
   "source_checkpoint": {
     "schema": "daemonarchy/efi-trace-media-checkpoint@1",
@@ -138,5 +138,47 @@
       "release": false
     }
   },
-  "scope": "Discovery prerequisite only; the RAM media checkpoint uses its original matched loader and does not contain this new EFI candidate. Automatic trace capture remains unfinished."
+  "scope": "Discovery prerequisite only; the RAM media checkpoint uses its original matched loader and does not contain this new EFI candidate. Automatic trace capture remains unfinished.",
+  "console_readiness_followup": {
+    "evidence": "https://github.com/jordanhubbard/daemonarchy-src/blob/7b66d5c840ae8910a73ba1fcaa07e5cfdc6f0718/verification/console-readiness-20261109.json",
+    "sha256": "f16c6473ee30e9ac4aed3ba8e1f3a8f57645abb6792de21ca4e633da29da26c0",
+    "checkpoint": {
+      "schema": "daemonarchy/console-readiness-checkpoint@1",
+      "scope": "Diagnostic console listener readiness and retained subprocess/UDP controller tests; no early transport, physical hardware or release admission",
+      "inputs_sha256": {
+        "tools/daemonarchy/debugnet-console.py": "dc763c0a6fe78d2c538b463f43ab869904bd75c79dad6e54fee6d9f1a32f5a32",
+        "tools/daemonarchy/test_debugnet_console.py": "6ec62d50ba1b5224228aefbede4cffb47ed41cb7e741d9383dcb0143a1019b57",
+        "tools/daemonarchy/netdebug_stage.py": "82c11336441dcaaaf2d7d4a909e0a0790c9a7fd9393b2fa5937fb2ca1c3a864c"
+      },
+      "change": "CLI reports its listener only after successful bind; subprocess tests wait on that observable notification instead of fixed startup sleeps. Deliberate startup refusals remain explicit negative cases.",
+      "linux_controller": {
+        "console_cases": 11,
+        "full_cases_discovered": 128,
+        "full_cases_passed": 123,
+        "full_cases_skipped": 5,
+        "suite_failed": false,
+        "skips": "Native FreeBSD BSD-make/Kyua/ATF requirements remain unavailable on Linux"
+      },
+      "native_freebsd": {
+        "system": "FreeBSD 16 AArch64 allocated disposable VM",
+        "python": "3.12.15",
+        "console_cases_discovered": 11,
+        "console_cases_passed": 11,
+        "command_exit_status": 0,
+        "scope": "Real loopback UDP and subprocess CLI; not WAN, kernel input or hardware"
+      },
+      "preserved_attempts": [
+        "PR CI at source 86e4cdadeea timed out waiting for the first HELLO ACK in the existing last-stage/silence test. That test started its peer after a fixed 150 ms delay; the same-head push controller suite passed.",
+        "The first local readiness run still expected a listener for one deliberate missing-state startup refusal. That expectation was corrected; the final eleven-case suite passes on Linux and native FreeBSD."
+      ],
+      "qualification": {
+        "listener_readiness_tests": true,
+        "wire_protocol_changed": false,
+        "physical_transport": false,
+        "automatic_installation_tracing": false,
+        "framework_lifecycle_admission": false,
+        "release": false
+      }
+    }
+  }
 }
