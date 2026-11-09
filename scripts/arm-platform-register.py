@@ -63,7 +63,7 @@ def validate(register, root=ROOT):
             problems.append(label + ": expected physical, vm or cloud kind")
         if row.get("role") not in ("desktop", "server", "feasibility"):
             problems.append(label + ": invalid intended role")
-        for field in ("owner", "discovery_needed"):
+        for field in ("scope_name", "owner", "discovery_needed"):
             if not isinstance(row.get(field), str) or not row[field].strip():
                 problems.append(label + ": missing " + field)
         hardware = row.get("hardware")

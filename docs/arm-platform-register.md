@@ -18,8 +18,8 @@ consistent; it does not mean any target passed qualification.
 
 Each scope row needs an individual test owner and an explicit hardware allocation.
 Unknown board revisions, RAM, firmware, boot chains, ABIs and storage paths use
-JSON `null`. Model descriptions containing “pending” retain an unresolved selection;
-they do not enroll an exact machine. Source links lead to the pinned research and
+JSON `null`. Scope names containing “pending” retain an unresolved selection;
+their model identity is null and they do not enroll an exact machine. Source links lead to the pinned research and
 release requirements. They do not establish a selected release source revision.
 
 Add a row for each concrete board/carrier/RAM/firmware/boot-mode/ABI/media variant
