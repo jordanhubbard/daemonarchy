@@ -32,6 +32,7 @@ REQUIRED = {
     "ARM-008": {"pi3", "pi-zero2", "armv7", "beaglebone", "pi-armv6", "pi-zero-armv6"},
 }
 STATES = {"unknown", "blocked", "failed", "passed"}
+DESKTOP_VMS = {"qemu-hvf", "qemu-kvm", "qemu-tcg", "utm", "vmware-fusion"}
 
 
 def validate(register, root=ROOT):
@@ -63,6 +64,8 @@ def validate(register, root=ROOT):
             problems.append(label + ": expected physical, vm or cloud kind")
         if row.get("role") not in ("desktop", "server", "feasibility"):
             problems.append(label + ": invalid intended role")
+        if name in DESKTOP_VMS and row.get("role") != "desktop":
+            problems.append(label + ": required VM desktop coverage cannot become server-only")
         for field in ("scope_name", "owner", "discovery_needed"):
             if not isinstance(row.get(field), str) or not row[field].strip():
                 problems.append(label + ": missing " + field)
