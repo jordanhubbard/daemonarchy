@@ -6,6 +6,13 @@ The first profiles are the RTX Spark N1X laptop and the Mac mini with M2 Pro (J4
 
 The controller needs Python 3.11 or later, libarchive `tar` with ISO9660 support, and mtools `mtype`. The FreeBSD kernel and EFI loader are built on their allocated native worker. This assembler does not compile or substitute either one.
 
+The current assembler accepts the normal ISO layout, with installer payloads
+directly visible in ISO9660. It refuses the experimental
+[RAM-root layout](arm-ram-installer.md), whose installer is inside the UZIP root.
+The native RAM/USB control now has boot and manual trace-persistence evidence,
+but a verified packed-root handoff into this platform assembler remains open.
+Do not bypass the normal ISO's payload checks to assemble that image.
+
 ```sh
 python3 scripts/assemble-arm-media.py \
   --platform rtx-spark-n1x \

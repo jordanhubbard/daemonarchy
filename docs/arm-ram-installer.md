@@ -113,7 +113,9 @@ survive. Its seven cases passed on a disposable native FreeBSD ARM64 VM using
 retained inputs before the closure-input extension
 ([checkpoint](../verification/arm-kernel-set-20261109.json)). Those historical
 inputs include Omarchy 4.0.4_28, so the result covers that preflight refusal;
-current-Omarchy image assembly and runtime qualification remain open.
+final current-Omarchy distribution qualification remains open. The later
+development RAM control below supplies assembly and VM evidence for its exact
+retained-world inputs.
 
 Run `python3 tests/arm-package-closure.py -v` for checksum, metadata, ABI,
 missing/extra/duplicate/cyclic dependency and source-change-during-copy refusal controls.
@@ -123,8 +125,9 @@ inspection and installation require the allocated FreeBSD worker.
 A fresh native GENERIC build of source candidate `0e1ddb782d1e` produced a
 complete kernel set accepted by the checker, with all 114,908 original source
 members preserved after the build ([native checkpoint](../verification/arm-native-kernel-20261109.json)).
-The sealed set remains a development input: its inclusion in a rebuilt RAM image,
-VM boot and physical target behavior still need qualification.
+The sealed set remains a development input. Its inclusion in the RAM control
+below now has native build and VM evidence; physical target behavior remains
+unqualified.
 
 The subsequent [normal-ISO control](../verification/arm-kernel-vm-control-20261109.json)
 boots that complete set through EFI/KVM, reports all four VM CPUs active, and
@@ -133,3 +136,38 @@ checksums. It retains the old live root and does not qualify the complete RAM
 preload, current Omarchy image, installation or physical boards. The earlier
 retained-image installer timed out during package fetching; these controls do
 not establish its cause or a repair.
+
+## Current-Omarchy RAM and trace-volume control
+
+The [native RAM checkpoint](../verification/arm-ram-native-20261109.json) builds
+Omarchy **4.5.0_4** with its [316 pinned runtime archives](../verification/arm-ram-runtime-closure-20261109.json),
+then boots the exact image from writable USB through EFI/KVM with eight CPUs
+and 16 GiB RAM. The mounted root is `/dev/md0.uzip`; its complete 378-package
+inventory and kernel/closure hashes match the build records after `/var`
+initialization. Hyprland's version command runs and native dependency checks pass.
+The retained installer's welcome screen renders; this is not a rendered desktop
+or an installed-system result.
+
+The manual control mounts the same USB disk's DATRACE partition with synchronous
+writes, saves kernel diagnostics and package/CPU/kernel identities, unmounts it
+and powers off. Controller readback recovers those files, verifies the package
+inventory hash and all 201 raw-map entries, and passes a read-only FAT check.
+Unlike the normal raw-ISO root control, this RAM-root arrangement permits the
+same-medium writes without changing GEOM protections. Automatic capture and
+reset/cold-power survival remain separate requirements.
+
+Earlier attempts remain recorded: alphabetical package installation failed on
+FFmpeg's old `libplacebo`; `pkg -r` did not confine arbitrary package scripts;
+and a test initially queried the wrong kldstat module name. The successful build
+uses frozen final tools, dependency ordering, `pkg -c` and explicit script-failure
+checks. The worker's ConsoleKit history remains absent while the private root's
+history exists.
+
+This is a development control, not final 1.6 media. The world/installer remains
+based on retained 1.5.0 inputs. Its 4,369,433,088-byte ISO exceeds the existing
+3,758,096,384-byte raw release budget; compressed publication size is unmeasured.
+The platform assembler currently refuses the packed layout because its required
+installer files are inside the UZIP root. Implement a verified RAM handoff and
+resolve packaging within the existing requirements, retaining full desktop
+scope. Default automatic tracing, current upstream synchronization, final-image
+installation, desktop, physical Apple and release qualification remain open.

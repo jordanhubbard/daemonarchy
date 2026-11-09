@@ -140,7 +140,12 @@ Do not disable GEOM protections globally to evade it.
 
 The default userspace trace design therefore needs a root arrangement that
 releases the boot disk, such as the ARM RAM-root path, or another qualified
-layout. That path's same-medium persistence remains to be tested. The amd64
+layout. The subsequent [eight-CPU ARM RAM control](../../verification/arm-ram-native-20261109.json)
+does persist diagnostics to its own USB trace partition and passes controller
+readback and a FAT check after orderly shutdown. That manual control proves
+the RAM-root arrangement permits writes; it does not implement automatic
+capture. It also exceeds the existing raw release-image budget, so it is not
+the final default-media solution. The amd64
 BIOS/hybrid builder still needs integration; this helper deliberately refuses
 layouts with partitions other than a single ESP. Automatic loader, kernel and
 installer capture, interrupted writes and physical reset/power-loss acceptance

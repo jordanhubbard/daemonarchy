@@ -1,0 +1,172 @@
+{
+  "schema": "daemonarchy/arm-ram-native-checkpoint@1",
+  "scope": "Native current-Omarchy RAM-root assembly, EFI/USB boot and manual same-medium trace persistence; final 1.6 distribution and automatic tracing remain unqualified.",
+  "source": {
+    "integration_commit": "4f19e08f71a259f49d00af88e66cc55533060985",
+    "kernel_source_commit": "0e1ddb782d1e27390cd380b5e3560b794607f78e",
+    "ports_commit": "48561eaaf50086b2a6f469e307f26d1292024de6",
+    "retained_world": "1.5.0 installer control world with the selected kernel set; installer welcome still identifies 1.5.0"
+  },
+  "source_tools_sha256": {
+    "scripts/make-arm-ram-installer.sh": "383c4362b6f30e8236809815cbd771845a12ccd3993328ce0e211c04a48a4c2f",
+    "scripts/arm-package-closure.py": "e667d37a9ef3ca46ed402acb7ff36df7e5b3b565fb2019449f5cf4086861d4c7",
+    "scripts/make-efi-iso.sh": "c08a07e204dc569a9daef440bc8fb5d3f5e60dea712340744bd091138ebdf9bf",
+    "scripts/make-install-trace.py": "d9b05d7bda208efd6a86b339c11352d4c1e7f40113a26324345fcdeb0303746c",
+    "scripts/check-arm-kernel-set.py": "7f94cd5cf2a2c6a0da4b9c36e9bc121db59bb917e222b5d7445922618af431e5",
+    "tools/boottrace/stick.py": "8f4cb7b3e427a1c4f997677142188c3233f917f0a7b8fbf11b5656bd0aa76d95"
+  },
+  "producer_record": {
+    "schema": "daemonarchy/arm-ram-installer@1",
+    "abi": "FreeBSD:16:aarch64",
+    "world_archive_sha256": "766b856cd93e58e2f19808070046c5a9a6c97d492a4b901b676a26ce23bd64d8",
+    "kernel_sha256": "c3612c03838a7c53b75443cf2eab1ab8ad28db5b490fa8d34f57bbe03d90ccaf",
+    "kernel_set_sha256": "7b66c3e0dc4a89fe7eb8bf38de114e6aaf052dbc6d0960ee0a36158f544a9573",
+    "omarchy_package_sha256": "79cb85bb7d921384e0a8e15b03ab4016f8b133d5ed17c8125782a7ad295d062b",
+    "omarchy_version": "4.5.0_4",
+    "package_closure_manifest_sha256": "b893cefc06315492374a1bac058d949365b2969e0e2941ec71059b0e99c1e848",
+    "package_closure_inventory_sha256": "d627249843b7aa1e971a86663cd91848210fcb19ff90c46e321c4aed796f7d49",
+    "package_closure_count": 316,
+    "ram_root": {
+      "bytes": 9690742784,
+      "sha256": "a18a53cede87a4b4ca79289688255372d785ea260e2e6115dfe0541cc034dc9a",
+      "format": "ufs-geom-uzip",
+      "compressed_bytes": 3722609152,
+      "compressed_sha256": "1b9df0bbfb9a52c865e813de3f982e4d27d4127376286242875fb2fa379a8fd7"
+    },
+    "installed_packages_sha256": "5d020ea5e04d6344408a58bd357bebd2fd58658b0f9ccfc9476a0b0560c3301c",
+    "image": {
+      "bytes": 4369433088,
+      "sha256": "d13c1139d85642654c6c691f9e264c029edc2cd9aa32466c238413cdd5ac67d9"
+    },
+    "qualification": {
+      "assembly": true,
+      "vm_boot": false,
+      "physical_boot": false,
+      "installation": false,
+      "desktop": false,
+      "recovery": false
+    }
+  },
+  "package_closure": {
+    "selected_runtime_packages": 316,
+    "total_installed_packages": 378,
+    "bytes_in_selected_archives": 1001729643,
+    "inventory": "arm-ram-runtime-closure-20261109.json",
+    "inventory_sha256": "d627249843b7aa1e971a86663cd91848210fcb19ff90c46e321c4aed796f7d49",
+    "native_archive_metadata_and_dependency_edges_verified": true,
+    "staged_copies_verified": true,
+    "dependency_ordered_single_pkg_writer": true,
+    "pkg_c_chroot": true,
+    "package_view_readonly": true,
+    "remote_repositories_disabled": true,
+    "installed_versions_and_abis_match": true,
+    "native_dependency_check_passed": true,
+    "package_script_failures": false,
+    "worker_consolekit_history_absent": true,
+    "chroot_consolekit_history_present": true
+  },
+  "native_filesystem": {
+    "format": "UFS2",
+    "fsck_ffs_readonly_passed": true,
+    "all_five_phases_observed": true,
+    "fatal_integrity_markers_found": false
+  },
+  "vm_control": {
+    "machine": "QEMU virt/GIC, AArch64 KVM, native host CPU, eight vCPUs, 16 GiB RAM",
+    "firmware": "QEMU AArch64 EFI",
+    "boot_medium": "Writable raw USB mass-storage image on xHCI",
+    "virtual_entropy_device": true,
+    "default_boot_no_experiment_menu": true,
+    "installer_welcome_rendered": true,
+    "root_provider": "/dev/md0.uzip",
+    "root_type": "ufs",
+    "root_readonly": true,
+    "hw_ncpu": 8,
+    "kern_smp_active": 1,
+    "omarchy_version": "4.5.0_4",
+    "hyprland_version_command": "0.56.2, commit efb50993780079460b0cbed1363e2166a2de1d9f",
+    "kernel_sha256": "c3612c03838a7c53b75443cf2eab1ab8ad28db5b490fa8d34f57bbe03d90ccaf",
+    "runtime_inventory_sha256": "5d020ea5e04d6344408a58bd357bebd2fd58658b0f9ccfc9476a0b0560c3301c",
+    "closure_inventory_sha256": "d627249843b7aa1e971a86663cd91848210fcb19ff90c46e321c4aed796f7d49",
+    "pkg_dependency_check_passed": true,
+    "trace_mount_sync_writable": true,
+    "trace_file": "DUMPS/RAMCTRL/RESULT.TXT",
+    "trace_package_inventory": "DUMPS/RAMCTRL/PKGS.TXT",
+    "trace_dmesg": "DUMPS/RAMCTRL/DMESG.TXT",
+    "manual_control_pass_marker": "ARM16_RAM_USB_PASS",
+    "orderly_poweroff": true,
+    "qemu_exit_status": 0
+  },
+  "controller_readback": {
+    "postwrite_image_sha256": "e19d06fc66ecec99a220ff90a92e9afd998405770366ca53ebd05df9b3ef7c80",
+    "mapped_files": 201,
+    "trace_partition": [
+      2,
+      8009728,
+      524288
+    ],
+    "runtime_packages_sha256": "5d020ea5e04d6344408a58bd357bebd2fd58658b0f9ccfc9476a0b0560c3301c",
+    "runtime_packages": 378,
+    "controller_readback": true,
+    "filesystem_check": "fsck.fat -n on extracted trace partition",
+    "filesystem_check_status": 0
+  },
+  "controller_tests": {
+    "arm_package_closure_passed": 16,
+    "arm_kernel_set_passed": 7,
+    "documentation_lifecycle_passed": 4,
+    "documentation_release_sync_passed": 13,
+    "version_sync_passed": 4,
+    "shellcheck_warning_or_error": false
+  },
+  "native_preflight": {
+    "passed": 7,
+    "inputs": "Current Omarchy 4.5.0_4, selected native kernel set and explicit closure manifest",
+    "scope": "Closure-input CLI extension; these refusal cases ran before the final package installation confinement change. Final frozen tools were used for the successful full build."
+  },
+  "preserved_attempts": [
+    "First refusal-suite launch preceded scratch mount completion and failed before creating outputs; the corrected launch passed all seven cases.",
+    "Build r1 failed FFmpeg installation because alphabetical archive order retained old libplacebo until later; a ConsoleKit script failure also remained in the log.",
+    "Build r2 installed the ordered closure and passed dependency/UFS checks, but pkg -r left arbitrary scripts outside the intended root. It was deliberately terminated during compression after that confinement defect was confirmed; no observation timeout triggered a restart.",
+    "Build r3 used a frozen copy of the final tools, pkg -c and a read-only package mount; assembly and source input rechecks passed.",
+    "First VM control stopped on an incorrect kldstat module-name lookup after package/kernel inventory checks. The corrected file-name lookup passed and the completed control persisted traces on the same boot medium."
+  ],
+  "qualification": {
+    "native_assembly": true,
+    "vm_ram_boot": true,
+    "manual_same_medium_trace_write_and_readback": true,
+    "automatic_loader_capture": false,
+    "automatic_kernel_capture": false,
+    "automatic_installer_capture": false,
+    "installed_target_boot": false,
+    "rendered_desktop": false,
+    "physical_hardware": false,
+    "reset_or_power_loss": false,
+    "release_image_budget": false,
+    "platform_assembler_ram_handoff": false,
+    "lifecycle_receipt_admitted": false
+  },
+  "remaining": [
+    "The default automatic capture path remains unimplemented; trace writes here came from the explicit VM control script.",
+    "The normal platform assembler rejects this packed RAM layout because installer payloads are inside the UZIP root. Add a verified RAM layout handoff without weakening normal ISO checks.",
+    "The 4369433088-byte image fails the existing 3758096384-byte raw release budget. Published compressed asset size was not measured. This control is not a release candidate; retain full desktop scope and existing media requirements while resolving packaging.",
+    "The retained installer UI/world and selected development source/ports are not the final synchronized 1.6 distribution.",
+    "Hyprland version execution does not establish a rendered desktop or GPU/input acceptance; its library version strings report unknown as in the native package checkpoint.",
+    "Orderly shutdown warns that the early entropy file cannot be written to the read-only root. This does not establish reset or cold-power trace survival.",
+    "Physical Apple qualification still needs an admitted boot chain and trace media; only read-only macOS hardware/disk inspection has been performed.",
+    "Human authority review and framework lifecycle receipts remain pending. Raw evidence and test-mutated image bytes remain private."
+  ],
+  "private_evidence_sha256": {
+    "ram-current-build-r1.log": "d6af5e2a9e33385b6b47abd9617cd61d5e95c30dae232f279fb13fa7dc775c21",
+    "ram-current-build-r2.log": "9ee45e75c6d0f8b0225d272caa41181293ece951fe51a8ef33b0929d9a0ce313",
+    "ram-current-build-r3.log": "510f18d6e121761371012c07b529b63596b7fad48f7d612c3ac7045a979a91e2",
+    "ram-current-refusals.log": "da2fb5e2fd7fbeede86a5b0748c9bc0a41859e9ec12ccdf73c901f440c1aa414",
+    "ram-current-refusals-r2.log": "6a2e2e06f90098a00375e8752a3a20a63aed0ae45cfd42c72a17f5ea4705474f",
+    "ram-usb-control/serial.log": "3e3340610fdf4ba66cced3931b8d3666aaafe0d6371fbf89510b689d3ba58912",
+    "ram-usb-control/result.txt": "16b58ebab30af5b806cf32a1875c51ac20e25d518125c1af01fc38615be6f80d",
+    "ram-usb-control/fat-check.log": "1093beda8f2d01935bb00663a4156458d21b7a36a8b04109528df293cb697e40",
+    "ram-size-check.log": "3680fd8e4a9262b07561ee770890d80714155c89e849e4569c5210916a8c7eea",
+    "pkg-install.log": "86d4c8b65fd458a92f17725e8204ede1d16e22d9fccdc6e18d6124ebf10dfe4f",
+    "fsck.log": "95b939cb0b4f68b51efd06b24a28a454ab759a354e78d52a6b0ab2be4375b8f1"
+  }
+}
