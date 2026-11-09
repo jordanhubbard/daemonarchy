@@ -1,0 +1,86 @@
+{
+  "schema": "daemonarchy/arm-integration-checkpoint@1",
+  "tested_commit": "94043a4efd8390001d434c25ffdaf98a13c434fb",
+  "controller": {
+    "os": "Linux",
+    "architecture": "aarch64"
+  },
+  "candidates": {
+    "pi_checkpoint": "35c5a9bffdecfe6f6a7f9099b88bd7437c5ecd79",
+    "pi5_memory": "4f4a2f6198ff754583e981745d56c4b76fa6d79d",
+    "desktop_qa": "4524f659a182d978a99fc7b71e32adf67bc29adc",
+    "apple_ram_installer": "bd1ab35dc74442617eee62ecba80da9285d10e84",
+    "platform_register": "81cf54c70f7b145d31f2e3d15fb614a1c04954f9"
+  },
+  "conflicts_resolved": [
+    "ROADMAP.md: retained both SYNC-001 direction and Pi software checkpoint",
+    "docs/roadmap/active-work.md: retained both SYNC-001 and ARM-PI5-MEM-001"
+  ],
+  "checks": [
+    {
+      "command": "python3 tests/hwtrace-pi4-simulator.py -v",
+      "passed": 5,
+      "skipped": 0
+    },
+    {
+      "command": "python3 tests/hwtrace-pi4-uefi-simulator.py -v",
+      "passed": 6,
+      "skipped": 0
+    },
+    {
+      "command": "python3 tests/hwtrace-pi4-network.py -v",
+      "passed": 6,
+      "skipped": 0
+    },
+    {
+      "command": "python3 tests/hwtrace-pi4-usb-network.py -v",
+      "passed": 7,
+      "skipped": 0
+    },
+    {
+      "command": "python3 tests/pi5-bootstrap.py -v",
+      "passed": 18,
+      "skipped": 0
+    },
+    {
+      "command": "python3 tests/arm-media.py -v",
+      "passed": 3,
+      "skipped": 1
+    },
+    {
+      "command": "python3 tests/arm-platform-register.py -v",
+      "passed": 10,
+      "skipped": 0
+    },
+    {
+      "command": "python3 tests/docs-release-sync.py -v",
+      "passed": 13,
+      "skipped": 0
+    },
+    {
+      "command": "python3 tests/docs-lifecycle.py -v",
+      "passed": 4,
+      "skipped": 0
+    },
+    {
+      "command": "python3 tests/version-sync.py -v",
+      "passed": 4,
+      "skipped": 0
+    }
+  ],
+  "total": {
+    "passed": 76,
+    "skipped": 1
+  },
+  "native_ram_installer": {
+    "state": "not-run",
+    "reason": "Native FreeBSD and pinned inputs required. Direct invocation rejected missing arguments; no native case ran. Builder DNS was unavailable from the controller and proxy; no VM was running on the inspected macOS host."
+  },
+  "limitations": [
+    "Portable controller regression only; no hardware or native build acceptance.",
+    "Published Apple bootstrap asset not supplied: real asset/FDT control skipped.",
+    "No new desktop UI, installation, update, rollback, board boot or recovery qualification.",
+    "Candidate branches remain drafts; this integration does not land their changes.",
+    "Human documentation authority attestation and retained lifecycle receipts remain open."
+  ]
+}
