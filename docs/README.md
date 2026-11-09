@@ -55,6 +55,7 @@ another version are historical records. 1.5.1 entries describe planned work.
 - [EFI loader cannot find loader.lua](repair-efi-root.md)
 - [Installation logs and the rescue console](rescue-console.md)
 - [Active work](roadmap/active-work.md)
+- [Planned 1.6 ARM platform discovery register](arm-platform-register.md)
 - [Historical 1.3.2 network debugging plan](roadmap/release-1.3.2.md)
 - [1.4.0 plan: Literate AI cross-repository build and release orchestration](roadmap/release-1.4.0.md)
 - [1.4.1 plan: measured faster installation and deferred exact-image checks](roadmap/release-1.4.1.md)

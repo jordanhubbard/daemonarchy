@@ -74,6 +74,12 @@ successful merge or green documentation check alone does not establish acceptanc
 
 ## Initial platform matrix
 
+The [machine-readable register](arm-platforms.json) retains 47 scope anchors with
+explicit unresolved identities, hardware allocation and feature states. The
+[register guide](../arm-platform-register.md) explains concrete variant enrollment
+and the inventory checker. These rows are discovery obligations, not accepted
+hardware profiles.
+
 All rows below are **planned/unqualified for 1.6**. The physical Spark diagnostic
 checkpoint is recorded separately; it does not change these release states.
 ARM-001 must expand each family into exact model/revision rows, allocate hardware

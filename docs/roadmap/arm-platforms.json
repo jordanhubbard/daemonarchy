@@ -1,0 +1,3767 @@
+{
+  "schema": "daemonarchy/arm-platform-register@1",
+  "release": "1.6.0",
+  "scope": "Required scope anchors from the 1.6 plan. Rows with unresolved identities require concrete variant enrollment; no hardware support is implied.",
+  "profiles": [
+    {
+      "id": "rtx-spark-n1x",
+      "work_item": "SPARK-001",
+      "kind": "physical",
+      "role": "desktop",
+      "owner": "ARM release integration; individual test owner unassigned",
+      "hardware": {
+        "state": "unallocated",
+        "note": "No release test allocation recorded; historical reference access is not an allocation."
+      },
+      "identity": {
+        "model": "ASUS ProArt P16 H7607BA / RTX Spark N1X",
+        "soc": "NVIDIA N1X",
+        "board_revision": null,
+        "ram": null,
+        "firmware": null,
+        "boot_chain": null,
+        "abi": null,
+        "storage": null
+      },
+      "discovery_needed": "Enroll an exact test profile with board/carrier and RAM revision, firmware, boot chain, ABI and storage. Split distinct variants into additional rows; retain this scope row.",
+      "sources": [
+        "docs/roadmap/release-1.6.0.md",
+        "docs/roadmap/arm-research-20261107.md"
+      ],
+      "features": {
+        "boot": {
+          "state": "unknown",
+          "note": "No admitted final 1.6 image result."
+        },
+        "all_cpus": {
+          "state": "unknown",
+          "note": "No admitted final 1.6 image result."
+        },
+        "memory_dma": {
+          "state": "unknown",
+          "note": "No admitted final 1.6 image result."
+        },
+        "storage": {
+          "state": "unknown",
+          "note": "No admitted final 1.6 image result."
+        },
+        "display": {
+          "state": "unknown",
+          "note": "No admitted final 1.6 image result."
+        },
+        "input": {
+          "state": "unknown",
+          "note": "No admitted final 1.6 image result."
+        },
+        "network": {
+          "state": "unknown",
+          "note": "No admitted final 1.6 image result."
+        },
+        "audio": {
+          "state": "unknown",
+          "note": "No admitted final 1.6 image result."
+        },
+        "power": {
+          "state": "unknown",
+          "note": "No admitted final 1.6 image result."
+        },
+        "installer": {
+          "state": "unknown",
+          "note": "No admitted final 1.6 image result."
+        },
+        "installed_boot": {
+          "state": "unknown",
+          "note": "No admitted final 1.6 image result."
+        },
+        "update": {
+          "state": "unknown",
+          "note": "No admitted final 1.6 image result."
+        },
+        "recovery": {
+          "state": "unknown",
+          "note": "No admitted final 1.6 image result."
+        }
+      }
+    },
+    {
+      "id": "asus-ascent-gx10",
+      "work_item": "SPARK-002",
+      "kind": "physical",
+      "role": "desktop",
+      "owner": "ARM release integration; individual test owner unassigned",
+      "hardware": {
+        "state": "unallocated",
+        "note": "No release test allocation recorded; historical reference access is not an allocation."
+      },
+      "identity": {
+        "model": "ASUS Ascent GX10",
+        "soc": "NVIDIA GB10",
+        "board_revision": null,
+        "ram": null,
+        "firmware": null,
+        "boot_chain": null,
+        "abi": null,
+        "storage": null
+      },
+      "discovery_needed": "Enroll an exact test profile with board/carrier and RAM revision, firmware, boot chain, ABI and storage. Split distinct variants into additional rows; retain this scope row.",
+      "sources": [
+        "docs/roadmap/release-1.6.0.md",
+        "docs/roadmap/arm-research-20261107.md"
+      ],
+      "features": {
+        "boot": {
+          "state": "unknown",
+          "note": "No admitted final 1.6 image result."
+        },
+        "all_cpus": {
+          "state": "unknown",
+          "note": "No admitted final 1.6 image result."
+        },
+        "memory_dma": {
+          "state": "unknown",
+          "note": "No admitted final 1.6 image result."
+        },
+        "storage": {
+          "state": "unknown",
+          "note": "No admitted final 1.6 image result."
+        },
+        "display": {
+          "state": "unknown",
+          "note": "No admitted final 1.6 image result."
+        },
+        "input": {
+          "state": "unknown",
+          "note": "No admitted final 1.6 image result."
+        },
+        "network": {
+          "state": "unknown",
+          "note": "No admitted final 1.6 image result."
+        },
+        "audio": {
+          "state": "unknown",
+          "note": "No admitted final 1.6 image result."
+        },
+        "power": {
+          "state": "unknown",
+          "note": "No admitted final 1.6 image result."
+        },
+        "installer": {
+          "state": "unknown",
+          "note": "No admitted final 1.6 image result."
+        },
+        "installed_boot": {
+          "state": "unknown",
+          "note": "No admitted final 1.6 image result."
+        },
+        "update": {
+          "state": "unknown",
+          "note": "No admitted final 1.6 image result."
+        },
+        "recovery": {
+          "state": "unknown",
+          "note": "No admitted final 1.6 image result."
+        }
+      }
+    },
+    {
+      "id": "dgx-spark-fe",
+      "work_item": "SPARK-002",
+      "kind": "physical",
+      "role": "desktop",
+      "owner": "ARM release integration; individual test owner unassigned",
+      "hardware": {
+        "state": "unallocated",
+        "note": "No release test allocation recorded; historical reference access is not an allocation."
+      },
+      "identity": {
+        "model": "NVIDIA DGX Spark Founders Edition",
+        "soc": "NVIDIA GB10",
+        "board_revision": null,
+        "ram": null,
+        "firmware": null,
+        "boot_chain": null,
+        "abi": null,
+        "storage": null
+      },
+      "discovery_needed": "Enroll an exact test profile with board/carrier and RAM revision, firmware, boot chain, ABI and storage. Split distinct variants into additional rows; retain this scope row.",
+      "sources": [
+        "docs/roadmap/release-1.6.0.md",
+        "docs/roadmap/arm-research-20261107.md"
+      ],
+      "features": {
+        "boot": {
+          "state": "unknown",
+          "note": "No admitted final 1.6 image result."
+        },
+        "all_cpus": {
+          "state": "unknown",
+          "note": "No admitted final 1.6 image result."
+        },
+        "memory_dma": {
+          "state": "unknown",
+          "note": "No admitted final 1.6 image result."
+        },
+        "storage": {
+          "state": "unknown",
+          "note": "No admitted final 1.6 image result."
+        },
+        "display": {
+          "state": "unknown",
+          "note": "No admitted final 1.6 image result."
+        },
+        "input": {
+          "state": "unknown",
+          "note": "No admitted final 1.6 image result."
+        },
+        "network": {
+          "state": "unknown",
+          "note": "No admitted final 1.6 image result."
+        },
+        "audio": {
+          "state": "unknown",
+          "note": "No admitted final 1.6 image result."
+        },
+        "power": {
+          "state": "unknown",
+          "note": "No admitted final 1.6 image result."
+        },
+        "installer": {
+          "state": "unknown",
+          "note": "No admitted final 1.6 image result."
+        },
+        "installed_boot": {
+          "state": "unknown",
+          "note": "No admitted final 1.6 image result."
+        },
+        "update": {
+          "state": "unknown",
+          "note": "No admitted final 1.6 image result."
+        },
+        "recovery": {
+          "state": "unknown",
+          "note": "No admitted final 1.6 image result."
+        }
+      }
+    },
+    {
+      "id": "apple-a18-pro",
+      "work_item": "APPLE-001",
+      "kind": "physical",
+      "role": "desktop",
+      "owner": "ARM release integration; individual test owner unassigned",
+      "hardware": {
+        "state": "unallocated",
+        "note": "No release test allocation recorded; historical reference access is not an allocation."
+      },
+      "identity": {
+        "model": "Apple A18 Pro; model selection pending",
+        "soc": "Apple A18 Pro",
+        "board_revision": null,
+        "ram": null,
+        "firmware": null,
+        "boot_chain": null,
+        "abi": null,
+        "storage": null
+      },
+      "discovery_needed": "Enroll an exact test profile with board/carrier and RAM revision, firmware, boot chain, ABI and storage. Split distinct variants into additional rows; retain this scope row.",
+      "sources": [
+        "docs/roadmap/release-1.6.0.md",
+        "docs/roadmap/arm-research-20261107.md"
+      ],
+      "features": {
+        "boot": {
+          "state": "unknown",
+          "note": "No admitted final 1.6 image result."
+        },
+        "all_cpus": {
+          "state": "unknown",
+          "note": "No admitted final 1.6 image result."
+        },
+        "memory_dma": {
+          "state": "unknown",
+          "note": "No admitted final 1.6 image result."
+        },
+        "storage": {
+          "state": "unknown",
+          "note": "No admitted final 1.6 image result."
+        },
+        "display": {
+          "state": "unknown",
+          "note": "No admitted final 1.6 image result."
+        },
+        "input": {
+          "state": "unknown",
+          "note": "No admitted final 1.6 image result."
+        },
+        "network": {
+          "state": "unknown",
+          "note": "No admitted final 1.6 image result."
+        },
+        "audio": {
+          "state": "unknown",
+          "note": "No admitted final 1.6 image result."
+        },
+        "power": {
+          "state": "unknown",
+          "note": "No admitted final 1.6 image result."
+        },
+        "installer": {
+          "state": "unknown",
+          "note": "No admitted final 1.6 image result."
+        },
+        "installed_boot": {
+          "state": "unknown",
+          "note": "No admitted final 1.6 image result."
+        },
+        "update": {
+          "state": "unknown",
+          "note": "No admitted final 1.6 image result."
+        },
+        "recovery": {
+          "state": "unknown",
+          "note": "No admitted final 1.6 image result."
+        }
+      }
+    },
+    {
+      "id": "apple-emerging",
+      "work_item": "APPLE-001",
+      "kind": "physical",
+      "role": "desktop",
+      "owner": "ARM release integration; individual test owner unassigned",
+      "hardware": {
+        "state": "unallocated",
+        "note": "No release test allocation recorded; historical reference access is not an allocation."
+      },
+      "identity": {
+        "model": "Emerging Apple generation; model selection pending",
+        "soc": null,
+        "board_revision": null,
+        "ram": null,
+        "firmware": null,
+        "boot_chain": null,
+        "abi": null,
+        "storage": null
+      },
+      "discovery_needed": "Enroll an exact test profile with board/carrier and RAM revision, firmware, boot chain, ABI and storage. Split distinct variants into additional rows; retain this scope row.",
+      "sources": [
+        "docs/roadmap/release-1.6.0.md",
+        "docs/roadmap/arm-research-20261107.md"
+      ],
+      "features": {
+        "boot": {
+          "state": "unknown",
+          "note": "No admitted final 1.6 image result."
+        },
+        "all_cpus": {
+          "state": "unknown",
+          "note": "No admitted final 1.6 image result."
+        },
+        "memory_dma": {
+          "state": "unknown",
+          "note": "No admitted final 1.6 image result."
+        },
+        "storage": {
+          "state": "unknown",
+          "note": "No admitted final 1.6 image result."
+        },
+        "display": {
+          "state": "unknown",
+          "note": "No admitted final 1.6 image result."
+        },
+        "input": {
+          "state": "unknown",
+          "note": "No admitted final 1.6 image result."
+        },
+        "network": {
+          "state": "unknown",
+          "note": "No admitted final 1.6 image result."
+        },
+        "audio": {
+          "state": "unknown",
+          "note": "No admitted final 1.6 image result."
+        },
+        "power": {
+          "state": "unknown",
+          "note": "No admitted final 1.6 image result."
+        },
+        "installer": {
+          "state": "unknown",
+          "note": "No admitted final 1.6 image result."
+        },
+        "installed_boot": {
+          "state": "unknown",
+          "note": "No admitted final 1.6 image result."
+        },
+        "update": {
+          "state": "unknown",
+          "note": "No admitted final 1.6 image result."
+        },
+        "recovery": {
+          "state": "unknown",
+          "note": "No admitted final 1.6 image result."
+        }
+      }
+    },
+    {
+      "id": "apple-m1-macbook",
+      "work_item": "APPLE-001",
+      "kind": "physical",
+      "role": "desktop",
+      "owner": "ARM release integration; individual test owner unassigned",
+      "hardware": {
+        "state": "unallocated",
+        "note": "No release test allocation recorded; historical reference access is not an allocation."
+      },
+      "identity": {
+        "model": "Apple M1 MacBook; exact model pending",
+        "soc": "Apple M1",
+        "board_revision": null,
+        "ram": null,
+        "firmware": null,
+        "boot_chain": null,
+        "abi": null,
+        "storage": null
+      },
+      "discovery_needed": "Enroll an exact test profile with board/carrier and RAM revision, firmware, boot chain, ABI and storage. Split distinct variants into additional rows; retain this scope row.",
+      "sources": [
+        "docs/roadmap/release-1.6.0.md",
+        "docs/roadmap/arm-research-20261107.md"
+      ],
+      "features": {
+        "boot": {
+          "state": "unknown",
+          "note": "No admitted final 1.6 image result."
+        },
+        "all_cpus": {
+          "state": "unknown",
+          "note": "No admitted final 1.6 image result."
+        },
+        "memory_dma": {
+          "state": "unknown",
+          "note": "No admitted final 1.6 image result."
+        },
+        "storage": {
+          "state": "unknown",
+          "note": "No admitted final 1.6 image result."
+        },
+        "display": {
+          "state": "unknown",
+          "note": "No admitted final 1.6 image result."
+        },
+        "input": {
+          "state": "unknown",
+          "note": "No admitted final 1.6 image result."
+        },
+        "network": {
+          "state": "unknown",
+          "note": "No admitted final 1.6 image result."
+        },
+        "audio": {
+          "state": "unknown",
+          "note": "No admitted final 1.6 image result."
+        },
+        "power": {
+          "state": "unknown",
+          "note": "No admitted final 1.6 image result."
+        },
+        "installer": {
+          "state": "unknown",
+          "note": "No admitted final 1.6 image result."
+        },
+        "installed_boot": {
+          "state": "unknown",
+          "note": "No admitted final 1.6 image result."
+        },
+        "update": {
+          "state": "unknown",
+          "note": "No admitted final 1.6 image result."
+        },
+        "recovery": {
+          "state": "unknown",
+          "note": "No admitted final 1.6 image result."
+        }
+      }
+    },
+    {
+      "id": "apple-m1-mini",
+      "work_item": "APPLE-001",
+      "kind": "physical",
+      "role": "desktop",
+      "owner": "ARM release integration; individual test owner unassigned",
+      "hardware": {
+        "state": "unallocated",
+        "note": "No release test allocation recorded; historical reference access is not an allocation."
+      },
+      "identity": {
+        "model": "Apple M1 Mac mini",
+        "soc": "Apple M1",
+        "board_revision": null,
+        "ram": null,
+        "firmware": null,
+        "boot_chain": null,
+        "abi": null,
+        "storage": null
+      },
+      "discovery_needed": "Enroll an exact test profile with board/carrier and RAM revision, firmware, boot chain, ABI and storage. Split distinct variants into additional rows; retain this scope row.",
+      "sources": [
+        "docs/roadmap/release-1.6.0.md",
+        "docs/roadmap/arm-research-20261107.md"
+      ],
+      "features": {
+        "boot": {
+          "state": "unknown",
+          "note": "No admitted final 1.6 image result."
+        },
+        "all_cpus": {
+          "state": "unknown",
+          "note": "No admitted final 1.6 image result."
+        },
+        "memory_dma": {
+          "state": "unknown",
+          "note": "No admitted final 1.6 image result."
+        },
+        "storage": {
+          "state": "unknown",
+          "note": "No admitted final 1.6 image result."
+        },
+        "display": {
+          "state": "unknown",
+          "note": "No admitted final 1.6 image result."
+        },
+        "input": {
+          "state": "unknown",
+          "note": "No admitted final 1.6 image result."
+        },
+        "network": {
+          "state": "unknown",
+          "note": "No admitted final 1.6 image result."
+        },
+        "audio": {
+          "state": "unknown",
+          "note": "No admitted final 1.6 image result."
+        },
+        "power": {
+          "state": "unknown",
+          "note": "No admitted final 1.6 image result."
+        },
+        "installer": {
+          "state": "unknown",
+          "note": "No admitted final 1.6 image result."
+        },
+        "installed_boot": {
+          "state": "unknown",
+          "note": "No admitted final 1.6 image result."
+        },
+        "update": {
+          "state": "unknown",
+          "note": "No admitted final 1.6 image result."
+        },
+        "recovery": {
+          "state": "unknown",
+          "note": "No admitted final 1.6 image result."
+        }
+      }
+    },
+    {
+      "id": "apple-m2-macbook",
+      "work_item": "APPLE-001",
+      "kind": "physical",
+      "role": "desktop",
+      "owner": "ARM release integration; individual test owner unassigned",
+      "hardware": {
+        "state": "unallocated",
+        "note": "No release test allocation recorded; historical reference access is not an allocation."
+      },
+      "identity": {
+        "model": "Apple M2 MacBook; exact model pending",
+        "soc": "Apple M2",
+        "board_revision": null,
+        "ram": null,
+        "firmware": null,
+        "boot_chain": null,
+        "abi": null,
+        "storage": null
+      },
+      "discovery_needed": "Enroll an exact test profile with board/carrier and RAM revision, firmware, boot chain, ABI and storage. Split distinct variants into additional rows; retain this scope row.",
+      "sources": [
+        "docs/roadmap/release-1.6.0.md",
+        "docs/roadmap/arm-research-20261107.md"
+      ],
+      "features": {
+        "boot": {
+          "state": "unknown",
+          "note": "No admitted final 1.6 image result."
+        },
+        "all_cpus": {
+          "state": "unknown",
+          "note": "No admitted final 1.6 image result."
+        },
+        "memory_dma": {
+          "state": "unknown",
+          "note": "No admitted final 1.6 image result."
+        },
+        "storage": {
+          "state": "unknown",
+          "note": "No admitted final 1.6 image result."
+        },
+        "display": {
+          "state": "unknown",
+          "note": "No admitted final 1.6 image result."
+        },
+        "input": {
+          "state": "unknown",
+          "note": "No admitted final 1.6 image result."
+        },
+        "network": {
+          "state": "unknown",
+          "note": "No admitted final 1.6 image result."
+        },
+        "audio": {
+          "state": "unknown",
+          "note": "No admitted final 1.6 image result."
+        },
+        "power": {
+          "state": "unknown",
+          "note": "No admitted final 1.6 image result."
+        },
+        "installer": {
+          "state": "unknown",
+          "note": "No admitted final 1.6 image result."
+        },
+        "installed_boot": {
+          "state": "unknown",
+          "note": "No admitted final 1.6 image result."
+        },
+        "update": {
+          "state": "unknown",
+          "note": "No admitted final 1.6 image result."
+        },
+        "recovery": {
+          "state": "unknown",
+          "note": "No admitted final 1.6 image result."
+        }
+      }
+    },
+    {
+      "id": "apple-m2-mini",
+      "work_item": "APPLE-001",
+      "kind": "physical",
+      "role": "desktop",
+      "owner": "ARM release integration; individual test owner unassigned",
+      "hardware": {
+        "state": "unallocated",
+        "note": "No release test allocation recorded; historical reference access is not an allocation."
+      },
+      "identity": {
+        "model": "Apple M2 Mac mini",
+        "soc": "Apple M2",
+        "board_revision": null,
+        "ram": null,
+        "firmware": null,
+        "boot_chain": null,
+        "abi": null,
+        "storage": null
+      },
+      "discovery_needed": "Enroll an exact test profile with board/carrier and RAM revision, firmware, boot chain, ABI and storage. Split distinct variants into additional rows; retain this scope row.",
+      "sources": [
+        "docs/roadmap/release-1.6.0.md",
+        "docs/roadmap/arm-research-20261107.md"
+      ],
+      "features": {
+        "boot": {
+          "state": "unknown",
+          "note": "No admitted final 1.6 image result."
+        },
+        "all_cpus": {
+          "state": "unknown",
+          "note": "No admitted final 1.6 image result."
+        },
+        "memory_dma": {
+          "state": "unknown",
+          "note": "No admitted final 1.6 image result."
+        },
+        "storage": {
+          "state": "unknown",
+          "note": "No admitted final 1.6 image result."
+        },
+        "display": {
+          "state": "unknown",
+          "note": "No admitted final 1.6 image result."
+        },
+        "input": {
+          "state": "unknown",
+          "note": "No admitted final 1.6 image result."
+        },
+        "network": {
+          "state": "unknown",
+          "note": "No admitted final 1.6 image result."
+        },
+        "audio": {
+          "state": "unknown",
+          "note": "No admitted final 1.6 image result."
+        },
+        "power": {
+          "state": "unknown",
+          "note": "No admitted final 1.6 image result."
+        },
+        "installer": {
+          "state": "unknown",
+          "note": "No admitted final 1.6 image result."
+        },
+        "installed_boot": {
+          "state": "unknown",
+          "note": "No admitted final 1.6 image result."
+        },
+        "update": {
+          "state": "unknown",
+          "note": "No admitted final 1.6 image result."
+        },
+        "recovery": {
+          "state": "unknown",
+          "note": "No admitted final 1.6 image result."
+        }
+      }
+    },
+    {
+      "id": "apple-m2-pro-mini",
+      "work_item": "APPLE-001",
+      "kind": "physical",
+      "role": "desktop",
+      "owner": "ARM release integration; individual test owner unassigned",
+      "hardware": {
+        "state": "unallocated",
+        "note": "No release test allocation recorded; historical reference access is not an allocation."
+      },
+      "identity": {
+        "model": "Apple M2 Pro Mac mini J474s",
+        "soc": "Apple T6020",
+        "board_revision": null,
+        "ram": null,
+        "firmware": null,
+        "boot_chain": null,
+        "abi": null,
+        "storage": null
+      },
+      "discovery_needed": "Enroll an exact test profile with board/carrier and RAM revision, firmware, boot chain, ABI and storage. Split distinct variants into additional rows; retain this scope row.",
+      "sources": [
+        "docs/roadmap/release-1.6.0.md",
+        "docs/roadmap/arm-research-20261107.md"
+      ],
+      "features": {
+        "boot": {
+          "state": "unknown",
+          "note": "No admitted final 1.6 image result."
+        },
+        "all_cpus": {
+          "state": "unknown",
+          "note": "No admitted final 1.6 image result."
+        },
+        "memory_dma": {
+          "state": "unknown",
+          "note": "No admitted final 1.6 image result."
+        },
+        "storage": {
+          "state": "unknown",
+          "note": "No admitted final 1.6 image result."
+        },
+        "display": {
+          "state": "unknown",
+          "note": "No admitted final 1.6 image result."
+        },
+        "input": {
+          "state": "unknown",
+          "note": "No admitted final 1.6 image result."
+        },
+        "network": {
+          "state": "unknown",
+          "note": "No admitted final 1.6 image result."
+        },
+        "audio": {
+          "state": "unknown",
+          "note": "No admitted final 1.6 image result."
+        },
+        "power": {
+          "state": "unknown",
+          "note": "No admitted final 1.6 image result."
+        },
+        "installer": {
+          "state": "unknown",
+          "note": "No admitted final 1.6 image result."
+        },
+        "installed_boot": {
+          "state": "unknown",
+          "note": "No admitted final 1.6 image result."
+        },
+        "update": {
+          "state": "unknown",
+          "note": "No admitted final 1.6 image result."
+        },
+        "recovery": {
+          "state": "unknown",
+          "note": "No admitted final 1.6 image result."
+        }
+      }
+    },
+    {
+      "id": "apple-m3",
+      "work_item": "APPLE-001",
+      "kind": "physical",
+      "role": "desktop",
+      "owner": "ARM release integration; individual test owner unassigned",
+      "hardware": {
+        "state": "unallocated",
+        "note": "No release test allocation recorded; historical reference access is not an allocation."
+      },
+      "identity": {
+        "model": "Apple M3; model selection pending",
+        "soc": null,
+        "board_revision": null,
+        "ram": null,
+        "firmware": null,
+        "boot_chain": null,
+        "abi": null,
+        "storage": null
+      },
+      "discovery_needed": "Enroll an exact test profile with board/carrier and RAM revision, firmware, boot chain, ABI and storage. Split distinct variants into additional rows; retain this scope row.",
+      "sources": [
+        "docs/roadmap/release-1.6.0.md",
+        "docs/roadmap/arm-research-20261107.md"
+      ],
+      "features": {
+        "boot": {
+          "state": "unknown",
+          "note": "No admitted final 1.6 image result."
+        },
+        "all_cpus": {
+          "state": "unknown",
+          "note": "No admitted final 1.6 image result."
+        },
+        "memory_dma": {
+          "state": "unknown",
+          "note": "No admitted final 1.6 image result."
+        },
+        "storage": {
+          "state": "unknown",
+          "note": "No admitted final 1.6 image result."
+        },
+        "display": {
+          "state": "unknown",
+          "note": "No admitted final 1.6 image result."
+        },
+        "input": {
+          "state": "unknown",
+          "note": "No admitted final 1.6 image result."
+        },
+        "network": {
+          "state": "unknown",
+          "note": "No admitted final 1.6 image result."
+        },
+        "audio": {
+          "state": "unknown",
+          "note": "No admitted final 1.6 image result."
+        },
+        "power": {
+          "state": "unknown",
+          "note": "No admitted final 1.6 image result."
+        },
+        "installer": {
+          "state": "unknown",
+          "note": "No admitted final 1.6 image result."
+        },
+        "installed_boot": {
+          "state": "unknown",
+          "note": "No admitted final 1.6 image result."
+        },
+        "update": {
+          "state": "unknown",
+          "note": "No admitted final 1.6 image result."
+        },
+        "recovery": {
+          "state": "unknown",
+          "note": "No admitted final 1.6 image result."
+        }
+      }
+    },
+    {
+      "id": "apple-m4",
+      "work_item": "APPLE-001",
+      "kind": "physical",
+      "role": "desktop",
+      "owner": "ARM release integration; individual test owner unassigned",
+      "hardware": {
+        "state": "unallocated",
+        "note": "No release test allocation recorded; historical reference access is not an allocation."
+      },
+      "identity": {
+        "model": "Apple M4; model selection pending",
+        "soc": null,
+        "board_revision": null,
+        "ram": null,
+        "firmware": null,
+        "boot_chain": null,
+        "abi": null,
+        "storage": null
+      },
+      "discovery_needed": "Enroll an exact test profile with board/carrier and RAM revision, firmware, boot chain, ABI and storage. Split distinct variants into additional rows; retain this scope row.",
+      "sources": [
+        "docs/roadmap/release-1.6.0.md",
+        "docs/roadmap/arm-research-20261107.md"
+      ],
+      "features": {
+        "boot": {
+          "state": "unknown",
+          "note": "No admitted final 1.6 image result."
+        },
+        "all_cpus": {
+          "state": "unknown",
+          "note": "No admitted final 1.6 image result."
+        },
+        "memory_dma": {
+          "state": "unknown",
+          "note": "No admitted final 1.6 image result."
+        },
+        "storage": {
+          "state": "unknown",
+          "note": "No admitted final 1.6 image result."
+        },
+        "display": {
+          "state": "unknown",
+          "note": "No admitted final 1.6 image result."
+        },
+        "input": {
+          "state": "unknown",
+          "note": "No admitted final 1.6 image result."
+        },
+        "network": {
+          "state": "unknown",
+          "note": "No admitted final 1.6 image result."
+        },
+        "audio": {
+          "state": "unknown",
+          "note": "No admitted final 1.6 image result."
+        },
+        "power": {
+          "state": "unknown",
+          "note": "No admitted final 1.6 image result."
+        },
+        "installer": {
+          "state": "unknown",
+          "note": "No admitted final 1.6 image result."
+        },
+        "installed_boot": {
+          "state": "unknown",
+          "note": "No admitted final 1.6 image result."
+        },
+        "update": {
+          "state": "unknown",
+          "note": "No admitted final 1.6 image result."
+        },
+        "recovery": {
+          "state": "unknown",
+          "note": "No admitted final 1.6 image result."
+        }
+      }
+    },
+    {
+      "id": "apple-m5",
+      "work_item": "APPLE-001",
+      "kind": "physical",
+      "role": "desktop",
+      "owner": "ARM release integration; individual test owner unassigned",
+      "hardware": {
+        "state": "unallocated",
+        "note": "No release test allocation recorded; historical reference access is not an allocation."
+      },
+      "identity": {
+        "model": "Apple M5; model selection pending",
+        "soc": null,
+        "board_revision": null,
+        "ram": null,
+        "firmware": null,
+        "boot_chain": null,
+        "abi": null,
+        "storage": null
+      },
+      "discovery_needed": "Enroll an exact test profile with board/carrier and RAM revision, firmware, boot chain, ABI and storage. Split distinct variants into additional rows; retain this scope row.",
+      "sources": [
+        "docs/roadmap/release-1.6.0.md",
+        "docs/roadmap/arm-research-20261107.md"
+      ],
+      "features": {
+        "boot": {
+          "state": "unknown",
+          "note": "No admitted final 1.6 image result."
+        },
+        "all_cpus": {
+          "state": "unknown",
+          "note": "No admitted final 1.6 image result."
+        },
+        "memory_dma": {
+          "state": "unknown",
+          "note": "No admitted final 1.6 image result."
+        },
+        "storage": {
+          "state": "unknown",
+          "note": "No admitted final 1.6 image result."
+        },
+        "display": {
+          "state": "unknown",
+          "note": "No admitted final 1.6 image result."
+        },
+        "input": {
+          "state": "unknown",
+          "note": "No admitted final 1.6 image result."
+        },
+        "network": {
+          "state": "unknown",
+          "note": "No admitted final 1.6 image result."
+        },
+        "audio": {
+          "state": "unknown",
+          "note": "No admitted final 1.6 image result."
+        },
+        "power": {
+          "state": "unknown",
+          "note": "No admitted final 1.6 image result."
+        },
+        "installer": {
+          "state": "unknown",
+          "note": "No admitted final 1.6 image result."
+        },
+        "installed_boot": {
+          "state": "unknown",
+          "note": "No admitted final 1.6 image result."
+        },
+        "update": {
+          "state": "unknown",
+          "note": "No admitted final 1.6 image result."
+        },
+        "recovery": {
+          "state": "unknown",
+          "note": "No admitted final 1.6 image result."
+        }
+      }
+    },
+    {
+      "id": "cm4",
+      "work_item": "RPI-001",
+      "kind": "physical",
+      "role": "desktop",
+      "owner": "ARM release integration; individual test owner unassigned",
+      "hardware": {
+        "state": "unallocated",
+        "note": "No release test allocation recorded; historical reference access is not an allocation."
+      },
+      "identity": {
+        "model": "Raspberry Pi Compute Module 4; carrier pending",
+        "soc": "BCM2711",
+        "board_revision": null,
+        "ram": null,
+        "firmware": null,
+        "boot_chain": null,
+        "abi": null,
+        "storage": null
+      },
+      "discovery_needed": "Enroll an exact test profile with board/carrier and RAM revision, firmware, boot chain, ABI and storage. Split distinct variants into additional rows; retain this scope row.",
+      "sources": [
+        "docs/roadmap/release-1.6.0.md",
+        "docs/roadmap/arm-research-20261107.md"
+      ],
+      "features": {
+        "boot": {
+          "state": "unknown",
+          "note": "No admitted final 1.6 image result."
+        },
+        "all_cpus": {
+          "state": "unknown",
+          "note": "No admitted final 1.6 image result."
+        },
+        "memory_dma": {
+          "state": "unknown",
+          "note": "No admitted final 1.6 image result."
+        },
+        "storage": {
+          "state": "unknown",
+          "note": "No admitted final 1.6 image result."
+        },
+        "display": {
+          "state": "unknown",
+          "note": "No admitted final 1.6 image result."
+        },
+        "input": {
+          "state": "unknown",
+          "note": "No admitted final 1.6 image result."
+        },
+        "network": {
+          "state": "unknown",
+          "note": "No admitted final 1.6 image result."
+        },
+        "audio": {
+          "state": "unknown",
+          "note": "No admitted final 1.6 image result."
+        },
+        "power": {
+          "state": "unknown",
+          "note": "No admitted final 1.6 image result."
+        },
+        "installer": {
+          "state": "unknown",
+          "note": "No admitted final 1.6 image result."
+        },
+        "installed_boot": {
+          "state": "unknown",
+          "note": "No admitted final 1.6 image result."
+        },
+        "update": {
+          "state": "unknown",
+          "note": "No admitted final 1.6 image result."
+        },
+        "recovery": {
+          "state": "unknown",
+          "note": "No admitted final 1.6 image result."
+        }
+      }
+    },
+    {
+      "id": "pi400",
+      "work_item": "RPI-001",
+      "kind": "physical",
+      "role": "desktop",
+      "owner": "ARM release integration; individual test owner unassigned",
+      "hardware": {
+        "state": "unallocated",
+        "note": "No release test allocation recorded; historical reference access is not an allocation."
+      },
+      "identity": {
+        "model": "Raspberry Pi 400",
+        "soc": "BCM2711",
+        "board_revision": null,
+        "ram": null,
+        "firmware": null,
+        "boot_chain": null,
+        "abi": null,
+        "storage": null
+      },
+      "discovery_needed": "Enroll an exact test profile with board/carrier and RAM revision, firmware, boot chain, ABI and storage. Split distinct variants into additional rows; retain this scope row.",
+      "sources": [
+        "docs/roadmap/release-1.6.0.md",
+        "docs/roadmap/arm-research-20261107.md"
+      ],
+      "features": {
+        "boot": {
+          "state": "unknown",
+          "note": "No admitted final 1.6 image result."
+        },
+        "all_cpus": {
+          "state": "unknown",
+          "note": "No admitted final 1.6 image result."
+        },
+        "memory_dma": {
+          "state": "unknown",
+          "note": "No admitted final 1.6 image result."
+        },
+        "storage": {
+          "state": "unknown",
+          "note": "No admitted final 1.6 image result."
+        },
+        "display": {
+          "state": "unknown",
+          "note": "No admitted final 1.6 image result."
+        },
+        "input": {
+          "state": "unknown",
+          "note": "No admitted final 1.6 image result."
+        },
+        "network": {
+          "state": "unknown",
+          "note": "No admitted final 1.6 image result."
+        },
+        "audio": {
+          "state": "unknown",
+          "note": "No admitted final 1.6 image result."
+        },
+        "power": {
+          "state": "unknown",
+          "note": "No admitted final 1.6 image result."
+        },
+        "installer": {
+          "state": "unknown",
+          "note": "No admitted final 1.6 image result."
+        },
+        "installed_boot": {
+          "state": "unknown",
+          "note": "No admitted final 1.6 image result."
+        },
+        "update": {
+          "state": "unknown",
+          "note": "No admitted final 1.6 image result."
+        },
+        "recovery": {
+          "state": "unknown",
+          "note": "No admitted final 1.6 image result."
+        }
+      }
+    },
+    {
+      "id": "pi4b",
+      "work_item": "RPI-001",
+      "kind": "physical",
+      "role": "desktop",
+      "owner": "ARM release integration; individual test owner unassigned",
+      "hardware": {
+        "state": "unallocated",
+        "note": "No release test allocation recorded; historical reference access is not an allocation."
+      },
+      "identity": {
+        "model": "Raspberry Pi 4 Model B",
+        "soc": "BCM2711",
+        "board_revision": null,
+        "ram": null,
+        "firmware": null,
+        "boot_chain": null,
+        "abi": null,
+        "storage": null
+      },
+      "discovery_needed": "Enroll an exact test profile with board/carrier and RAM revision, firmware, boot chain, ABI and storage. Split distinct variants into additional rows; retain this scope row.",
+      "sources": [
+        "docs/roadmap/release-1.6.0.md",
+        "docs/roadmap/arm-research-20261107.md"
+      ],
+      "features": {
+        "boot": {
+          "state": "unknown",
+          "note": "No admitted final 1.6 image result."
+        },
+        "all_cpus": {
+          "state": "unknown",
+          "note": "No admitted final 1.6 image result."
+        },
+        "memory_dma": {
+          "state": "unknown",
+          "note": "No admitted final 1.6 image result."
+        },
+        "storage": {
+          "state": "unknown",
+          "note": "No admitted final 1.6 image result."
+        },
+        "display": {
+          "state": "unknown",
+          "note": "No admitted final 1.6 image result."
+        },
+        "input": {
+          "state": "unknown",
+          "note": "No admitted final 1.6 image result."
+        },
+        "network": {
+          "state": "unknown",
+          "note": "No admitted final 1.6 image result."
+        },
+        "audio": {
+          "state": "unknown",
+          "note": "No admitted final 1.6 image result."
+        },
+        "power": {
+          "state": "unknown",
+          "note": "No admitted final 1.6 image result."
+        },
+        "installer": {
+          "state": "unknown",
+          "note": "No admitted final 1.6 image result."
+        },
+        "installed_boot": {
+          "state": "unknown",
+          "note": "No admitted final 1.6 image result."
+        },
+        "update": {
+          "state": "unknown",
+          "note": "No admitted final 1.6 image result."
+        },
+        "recovery": {
+          "state": "unknown",
+          "note": "No admitted final 1.6 image result."
+        }
+      }
+    },
+    {
+      "id": "cm5",
+      "work_item": "RPI-002",
+      "kind": "physical",
+      "role": "desktop",
+      "owner": "ARM release integration; individual test owner unassigned",
+      "hardware": {
+        "state": "unallocated",
+        "note": "No release test allocation recorded; historical reference access is not an allocation."
+      },
+      "identity": {
+        "model": "Raspberry Pi Compute Module 5; carrier pending",
+        "soc": "BCM2712",
+        "board_revision": null,
+        "ram": null,
+        "firmware": null,
+        "boot_chain": null,
+        "abi": null,
+        "storage": null
+      },
+      "discovery_needed": "Enroll an exact test profile with board/carrier and RAM revision, firmware, boot chain, ABI and storage. Split distinct variants into additional rows; retain this scope row.",
+      "sources": [
+        "docs/roadmap/release-1.6.0.md",
+        "docs/roadmap/arm-research-20261107.md"
+      ],
+      "features": {
+        "boot": {
+          "state": "unknown",
+          "note": "No admitted final 1.6 image result."
+        },
+        "all_cpus": {
+          "state": "unknown",
+          "note": "No admitted final 1.6 image result."
+        },
+        "memory_dma": {
+          "state": "unknown",
+          "note": "No admitted final 1.6 image result."
+        },
+        "storage": {
+          "state": "unknown",
+          "note": "No admitted final 1.6 image result."
+        },
+        "display": {
+          "state": "unknown",
+          "note": "No admitted final 1.6 image result."
+        },
+        "input": {
+          "state": "unknown",
+          "note": "No admitted final 1.6 image result."
+        },
+        "network": {
+          "state": "unknown",
+          "note": "No admitted final 1.6 image result."
+        },
+        "audio": {
+          "state": "unknown",
+          "note": "No admitted final 1.6 image result."
+        },
+        "power": {
+          "state": "unknown",
+          "note": "No admitted final 1.6 image result."
+        },
+        "installer": {
+          "state": "unknown",
+          "note": "No admitted final 1.6 image result."
+        },
+        "installed_boot": {
+          "state": "unknown",
+          "note": "No admitted final 1.6 image result."
+        },
+        "update": {
+          "state": "unknown",
+          "note": "No admitted final 1.6 image result."
+        },
+        "recovery": {
+          "state": "unknown",
+          "note": "No admitted final 1.6 image result."
+        }
+      }
+    },
+    {
+      "id": "pi5-c1",
+      "work_item": "RPI-002",
+      "kind": "physical",
+      "role": "desktop",
+      "owner": "ARM release integration; individual test owner unassigned",
+      "hardware": {
+        "state": "unallocated",
+        "note": "No release test allocation recorded; historical reference access is not an allocation."
+      },
+      "identity": {
+        "model": "Raspberry Pi 5 C1",
+        "soc": "BCM2712 C1",
+        "board_revision": null,
+        "ram": null,
+        "firmware": null,
+        "boot_chain": null,
+        "abi": null,
+        "storage": null
+      },
+      "discovery_needed": "Enroll an exact test profile with board/carrier and RAM revision, firmware, boot chain, ABI and storage. Split distinct variants into additional rows; retain this scope row.",
+      "sources": [
+        "docs/roadmap/release-1.6.0.md",
+        "docs/roadmap/arm-research-20261107.md"
+      ],
+      "features": {
+        "boot": {
+          "state": "unknown",
+          "note": "No admitted final 1.6 image result."
+        },
+        "all_cpus": {
+          "state": "unknown",
+          "note": "No admitted final 1.6 image result."
+        },
+        "memory_dma": {
+          "state": "unknown",
+          "note": "No admitted final 1.6 image result."
+        },
+        "storage": {
+          "state": "unknown",
+          "note": "No admitted final 1.6 image result."
+        },
+        "display": {
+          "state": "unknown",
+          "note": "No admitted final 1.6 image result."
+        },
+        "input": {
+          "state": "unknown",
+          "note": "No admitted final 1.6 image result."
+        },
+        "network": {
+          "state": "unknown",
+          "note": "No admitted final 1.6 image result."
+        },
+        "audio": {
+          "state": "unknown",
+          "note": "No admitted final 1.6 image result."
+        },
+        "power": {
+          "state": "unknown",
+          "note": "No admitted final 1.6 image result."
+        },
+        "installer": {
+          "state": "unknown",
+          "note": "No admitted final 1.6 image result."
+        },
+        "installed_boot": {
+          "state": "unknown",
+          "note": "No admitted final 1.6 image result."
+        },
+        "update": {
+          "state": "unknown",
+          "note": "No admitted final 1.6 image result."
+        },
+        "recovery": {
+          "state": "unknown",
+          "note": "No admitted final 1.6 image result."
+        }
+      }
+    },
+    {
+      "id": "pi5-d0",
+      "work_item": "RPI-002",
+      "kind": "physical",
+      "role": "desktop",
+      "owner": "ARM release integration; individual test owner unassigned",
+      "hardware": {
+        "state": "unallocated",
+        "note": "No release test allocation recorded; historical reference access is not an allocation."
+      },
+      "identity": {
+        "model": "Raspberry Pi 5 D0",
+        "soc": "BCM2712 D0",
+        "board_revision": null,
+        "ram": null,
+        "firmware": null,
+        "boot_chain": null,
+        "abi": null,
+        "storage": null
+      },
+      "discovery_needed": "Enroll an exact test profile with board/carrier and RAM revision, firmware, boot chain, ABI and storage. Split distinct variants into additional rows; retain this scope row.",
+      "sources": [
+        "docs/roadmap/release-1.6.0.md",
+        "docs/roadmap/arm-research-20261107.md"
+      ],
+      "features": {
+        "boot": {
+          "state": "unknown",
+          "note": "No admitted final 1.6 image result."
+        },
+        "all_cpus": {
+          "state": "unknown",
+          "note": "No admitted final 1.6 image result."
+        },
+        "memory_dma": {
+          "state": "unknown",
+          "note": "No admitted final 1.6 image result."
+        },
+        "storage": {
+          "state": "unknown",
+          "note": "No admitted final 1.6 image result."
+        },
+        "display": {
+          "state": "unknown",
+          "note": "No admitted final 1.6 image result."
+        },
+        "input": {
+          "state": "unknown",
+          "note": "No admitted final 1.6 image result."
+        },
+        "network": {
+          "state": "unknown",
+          "note": "No admitted final 1.6 image result."
+        },
+        "audio": {
+          "state": "unknown",
+          "note": "No admitted final 1.6 image result."
+        },
+        "power": {
+          "state": "unknown",
+          "note": "No admitted final 1.6 image result."
+        },
+        "installer": {
+          "state": "unknown",
+          "note": "No admitted final 1.6 image result."
+        },
+        "installed_boot": {
+          "state": "unknown",
+          "note": "No admitted final 1.6 image result."
+        },
+        "update": {
+          "state": "unknown",
+          "note": "No admitted final 1.6 image result."
+        },
+        "recovery": {
+          "state": "unknown",
+          "note": "No admitted final 1.6 image result."
+        }
+      }
+    },
+    {
+      "id": "pi500",
+      "work_item": "RPI-002",
+      "kind": "physical",
+      "role": "desktop",
+      "owner": "ARM release integration; individual test owner unassigned",
+      "hardware": {
+        "state": "unallocated",
+        "note": "No release test allocation recorded; historical reference access is not an allocation."
+      },
+      "identity": {
+        "model": "Raspberry Pi 500 family; exact model pending",
+        "soc": "BCM2712",
+        "board_revision": null,
+        "ram": null,
+        "firmware": null,
+        "boot_chain": null,
+        "abi": null,
+        "storage": null
+      },
+      "discovery_needed": "Enroll an exact test profile with board/carrier and RAM revision, firmware, boot chain, ABI and storage. Split distinct variants into additional rows; retain this scope row.",
+      "sources": [
+        "docs/roadmap/release-1.6.0.md",
+        "docs/roadmap/arm-research-20261107.md"
+      ],
+      "features": {
+        "boot": {
+          "state": "unknown",
+          "note": "No admitted final 1.6 image result."
+        },
+        "all_cpus": {
+          "state": "unknown",
+          "note": "No admitted final 1.6 image result."
+        },
+        "memory_dma": {
+          "state": "unknown",
+          "note": "No admitted final 1.6 image result."
+        },
+        "storage": {
+          "state": "unknown",
+          "note": "No admitted final 1.6 image result."
+        },
+        "display": {
+          "state": "unknown",
+          "note": "No admitted final 1.6 image result."
+        },
+        "input": {
+          "state": "unknown",
+          "note": "No admitted final 1.6 image result."
+        },
+        "network": {
+          "state": "unknown",
+          "note": "No admitted final 1.6 image result."
+        },
+        "audio": {
+          "state": "unknown",
+          "note": "No admitted final 1.6 image result."
+        },
+        "power": {
+          "state": "unknown",
+          "note": "No admitted final 1.6 image result."
+        },
+        "installer": {
+          "state": "unknown",
+          "note": "No admitted final 1.6 image result."
+        },
+        "installed_boot": {
+          "state": "unknown",
+          "note": "No admitted final 1.6 image result."
+        },
+        "update": {
+          "state": "unknown",
+          "note": "No admitted final 1.6 image result."
+        },
+        "recovery": {
+          "state": "unknown",
+          "note": "No admitted final 1.6 image result."
+        }
+      }
+    },
+    {
+      "id": "allwinner",
+      "work_item": "SBC-001",
+      "kind": "physical",
+      "role": "desktop",
+      "owner": "ARM release integration; individual test owner unassigned",
+      "hardware": {
+        "state": "unallocated",
+        "note": "No release test allocation recorded; historical reference access is not an allocation."
+      },
+      "identity": {
+        "model": "Allwinner reference; model selection pending",
+        "soc": null,
+        "board_revision": null,
+        "ram": null,
+        "firmware": null,
+        "boot_chain": null,
+        "abi": null,
+        "storage": null
+      },
+      "discovery_needed": "Enroll an exact test profile with board/carrier and RAM revision, firmware, boot chain, ABI and storage. Split distinct variants into additional rows; retain this scope row.",
+      "sources": [
+        "docs/roadmap/release-1.6.0.md",
+        "docs/roadmap/arm-research-20261107.md"
+      ],
+      "features": {
+        "boot": {
+          "state": "unknown",
+          "note": "No admitted final 1.6 image result."
+        },
+        "all_cpus": {
+          "state": "unknown",
+          "note": "No admitted final 1.6 image result."
+        },
+        "memory_dma": {
+          "state": "unknown",
+          "note": "No admitted final 1.6 image result."
+        },
+        "storage": {
+          "state": "unknown",
+          "note": "No admitted final 1.6 image result."
+        },
+        "display": {
+          "state": "unknown",
+          "note": "No admitted final 1.6 image result."
+        },
+        "input": {
+          "state": "unknown",
+          "note": "No admitted final 1.6 image result."
+        },
+        "network": {
+          "state": "unknown",
+          "note": "No admitted final 1.6 image result."
+        },
+        "audio": {
+          "state": "unknown",
+          "note": "No admitted final 1.6 image result."
+        },
+        "power": {
+          "state": "unknown",
+          "note": "No admitted final 1.6 image result."
+        },
+        "installer": {
+          "state": "unknown",
+          "note": "No admitted final 1.6 image result."
+        },
+        "installed_boot": {
+          "state": "unknown",
+          "note": "No admitted final 1.6 image result."
+        },
+        "update": {
+          "state": "unknown",
+          "note": "No admitted final 1.6 image result."
+        },
+        "recovery": {
+          "state": "unknown",
+          "note": "No admitted final 1.6 image result."
+        }
+      }
+    },
+    {
+      "id": "amlogic",
+      "work_item": "SBC-001",
+      "kind": "physical",
+      "role": "desktop",
+      "owner": "ARM release integration; individual test owner unassigned",
+      "hardware": {
+        "state": "unallocated",
+        "note": "No release test allocation recorded; historical reference access is not an allocation."
+      },
+      "identity": {
+        "model": "Amlogic reference; model selection pending",
+        "soc": null,
+        "board_revision": null,
+        "ram": null,
+        "firmware": null,
+        "boot_chain": null,
+        "abi": null,
+        "storage": null
+      },
+      "discovery_needed": "Enroll an exact test profile with board/carrier and RAM revision, firmware, boot chain, ABI and storage. Split distinct variants into additional rows; retain this scope row.",
+      "sources": [
+        "docs/roadmap/release-1.6.0.md",
+        "docs/roadmap/arm-research-20261107.md"
+      ],
+      "features": {
+        "boot": {
+          "state": "unknown",
+          "note": "No admitted final 1.6 image result."
+        },
+        "all_cpus": {
+          "state": "unknown",
+          "note": "No admitted final 1.6 image result."
+        },
+        "memory_dma": {
+          "state": "unknown",
+          "note": "No admitted final 1.6 image result."
+        },
+        "storage": {
+          "state": "unknown",
+          "note": "No admitted final 1.6 image result."
+        },
+        "display": {
+          "state": "unknown",
+          "note": "No admitted final 1.6 image result."
+        },
+        "input": {
+          "state": "unknown",
+          "note": "No admitted final 1.6 image result."
+        },
+        "network": {
+          "state": "unknown",
+          "note": "No admitted final 1.6 image result."
+        },
+        "audio": {
+          "state": "unknown",
+          "note": "No admitted final 1.6 image result."
+        },
+        "power": {
+          "state": "unknown",
+          "note": "No admitted final 1.6 image result."
+        },
+        "installer": {
+          "state": "unknown",
+          "note": "No admitted final 1.6 image result."
+        },
+        "installed_boot": {
+          "state": "unknown",
+          "note": "No admitted final 1.6 image result."
+        },
+        "update": {
+          "state": "unknown",
+          "note": "No admitted final 1.6 image result."
+        },
+        "recovery": {
+          "state": "unknown",
+          "note": "No admitted final 1.6 image result."
+        }
+      }
+    },
+    {
+      "id": "imx8",
+      "work_item": "SBC-001",
+      "kind": "physical",
+      "role": "desktop",
+      "owner": "ARM release integration; individual test owner unassigned",
+      "hardware": {
+        "state": "unallocated",
+        "note": "No release test allocation recorded; historical reference access is not an allocation."
+      },
+      "identity": {
+        "model": "NXP i.MX8 reference; model selection pending",
+        "soc": null,
+        "board_revision": null,
+        "ram": null,
+        "firmware": null,
+        "boot_chain": null,
+        "abi": null,
+        "storage": null
+      },
+      "discovery_needed": "Enroll an exact test profile with board/carrier and RAM revision, firmware, boot chain, ABI and storage. Split distinct variants into additional rows; retain this scope row.",
+      "sources": [
+        "docs/roadmap/release-1.6.0.md",
+        "docs/roadmap/arm-research-20261107.md"
+      ],
+      "features": {
+        "boot": {
+          "state": "unknown",
+          "note": "No admitted final 1.6 image result."
+        },
+        "all_cpus": {
+          "state": "unknown",
+          "note": "No admitted final 1.6 image result."
+        },
+        "memory_dma": {
+          "state": "unknown",
+          "note": "No admitted final 1.6 image result."
+        },
+        "storage": {
+          "state": "unknown",
+          "note": "No admitted final 1.6 image result."
+        },
+        "display": {
+          "state": "unknown",
+          "note": "No admitted final 1.6 image result."
+        },
+        "input": {
+          "state": "unknown",
+          "note": "No admitted final 1.6 image result."
+        },
+        "network": {
+          "state": "unknown",
+          "note": "No admitted final 1.6 image result."
+        },
+        "audio": {
+          "state": "unknown",
+          "note": "No admitted final 1.6 image result."
+        },
+        "power": {
+          "state": "unknown",
+          "note": "No admitted final 1.6 image result."
+        },
+        "installer": {
+          "state": "unknown",
+          "note": "No admitted final 1.6 image result."
+        },
+        "installed_boot": {
+          "state": "unknown",
+          "note": "No admitted final 1.6 image result."
+        },
+        "update": {
+          "state": "unknown",
+          "note": "No admitted final 1.6 image result."
+        },
+        "recovery": {
+          "state": "unknown",
+          "note": "No admitted final 1.6 image result."
+        }
+      }
+    },
+    {
+      "id": "mnt-reform",
+      "work_item": "SBC-001",
+      "kind": "physical",
+      "role": "desktop",
+      "owner": "ARM release integration; individual test owner unassigned",
+      "hardware": {
+        "state": "unallocated",
+        "note": "No release test allocation recorded; historical reference access is not an allocation."
+      },
+      "identity": {
+        "model": "MNT Reform; module selection pending",
+        "soc": null,
+        "board_revision": null,
+        "ram": null,
+        "firmware": null,
+        "boot_chain": null,
+        "abi": null,
+        "storage": null
+      },
+      "discovery_needed": "Enroll an exact test profile with board/carrier and RAM revision, firmware, boot chain, ABI and storage. Split distinct variants into additional rows; retain this scope row.",
+      "sources": [
+        "docs/roadmap/release-1.6.0.md",
+        "docs/roadmap/arm-research-20261107.md"
+      ],
+      "features": {
+        "boot": {
+          "state": "unknown",
+          "note": "No admitted final 1.6 image result."
+        },
+        "all_cpus": {
+          "state": "unknown",
+          "note": "No admitted final 1.6 image result."
+        },
+        "memory_dma": {
+          "state": "unknown",
+          "note": "No admitted final 1.6 image result."
+        },
+        "storage": {
+          "state": "unknown",
+          "note": "No admitted final 1.6 image result."
+        },
+        "display": {
+          "state": "unknown",
+          "note": "No admitted final 1.6 image result."
+        },
+        "input": {
+          "state": "unknown",
+          "note": "No admitted final 1.6 image result."
+        },
+        "network": {
+          "state": "unknown",
+          "note": "No admitted final 1.6 image result."
+        },
+        "audio": {
+          "state": "unknown",
+          "note": "No admitted final 1.6 image result."
+        },
+        "power": {
+          "state": "unknown",
+          "note": "No admitted final 1.6 image result."
+        },
+        "installer": {
+          "state": "unknown",
+          "note": "No admitted final 1.6 image result."
+        },
+        "installed_boot": {
+          "state": "unknown",
+          "note": "No admitted final 1.6 image result."
+        },
+        "update": {
+          "state": "unknown",
+          "note": "No admitted final 1.6 image result."
+        },
+        "recovery": {
+          "state": "unknown",
+          "note": "No admitted final 1.6 image result."
+        }
+      }
+    },
+    {
+      "id": "orange-pi5",
+      "work_item": "SBC-001",
+      "kind": "physical",
+      "role": "desktop",
+      "owner": "ARM release integration; individual test owner unassigned",
+      "hardware": {
+        "state": "unallocated",
+        "note": "No release test allocation recorded; historical reference access is not an allocation."
+      },
+      "identity": {
+        "model": "Orange Pi 5",
+        "soc": "RK3588S",
+        "board_revision": null,
+        "ram": null,
+        "firmware": null,
+        "boot_chain": null,
+        "abi": null,
+        "storage": null
+      },
+      "discovery_needed": "Enroll an exact test profile with board/carrier and RAM revision, firmware, boot chain, ABI and storage. Split distinct variants into additional rows; retain this scope row.",
+      "sources": [
+        "docs/roadmap/release-1.6.0.md",
+        "docs/roadmap/arm-research-20261107.md"
+      ],
+      "features": {
+        "boot": {
+          "state": "unknown",
+          "note": "No admitted final 1.6 image result."
+        },
+        "all_cpus": {
+          "state": "unknown",
+          "note": "No admitted final 1.6 image result."
+        },
+        "memory_dma": {
+          "state": "unknown",
+          "note": "No admitted final 1.6 image result."
+        },
+        "storage": {
+          "state": "unknown",
+          "note": "No admitted final 1.6 image result."
+        },
+        "display": {
+          "state": "unknown",
+          "note": "No admitted final 1.6 image result."
+        },
+        "input": {
+          "state": "unknown",
+          "note": "No admitted final 1.6 image result."
+        },
+        "network": {
+          "state": "unknown",
+          "note": "No admitted final 1.6 image result."
+        },
+        "audio": {
+          "state": "unknown",
+          "note": "No admitted final 1.6 image result."
+        },
+        "power": {
+          "state": "unknown",
+          "note": "No admitted final 1.6 image result."
+        },
+        "installer": {
+          "state": "unknown",
+          "note": "No admitted final 1.6 image result."
+        },
+        "installed_boot": {
+          "state": "unknown",
+          "note": "No admitted final 1.6 image result."
+        },
+        "update": {
+          "state": "unknown",
+          "note": "No admitted final 1.6 image result."
+        },
+        "recovery": {
+          "state": "unknown",
+          "note": "No admitted final 1.6 image result."
+        }
+      }
+    },
+    {
+      "id": "orange-pi5-plus",
+      "work_item": "SBC-001",
+      "kind": "physical",
+      "role": "desktop",
+      "owner": "ARM release integration; individual test owner unassigned",
+      "hardware": {
+        "state": "unallocated",
+        "note": "No release test allocation recorded; historical reference access is not an allocation."
+      },
+      "identity": {
+        "model": "Orange Pi 5 Plus",
+        "soc": "RK3588",
+        "board_revision": null,
+        "ram": null,
+        "firmware": null,
+        "boot_chain": null,
+        "abi": null,
+        "storage": null
+      },
+      "discovery_needed": "Enroll an exact test profile with board/carrier and RAM revision, firmware, boot chain, ABI and storage. Split distinct variants into additional rows; retain this scope row.",
+      "sources": [
+        "docs/roadmap/release-1.6.0.md",
+        "docs/roadmap/arm-research-20261107.md"
+      ],
+      "features": {
+        "boot": {
+          "state": "unknown",
+          "note": "No admitted final 1.6 image result."
+        },
+        "all_cpus": {
+          "state": "unknown",
+          "note": "No admitted final 1.6 image result."
+        },
+        "memory_dma": {
+          "state": "unknown",
+          "note": "No admitted final 1.6 image result."
+        },
+        "storage": {
+          "state": "unknown",
+          "note": "No admitted final 1.6 image result."
+        },
+        "display": {
+          "state": "unknown",
+          "note": "No admitted final 1.6 image result."
+        },
+        "input": {
+          "state": "unknown",
+          "note": "No admitted final 1.6 image result."
+        },
+        "network": {
+          "state": "unknown",
+          "note": "No admitted final 1.6 image result."
+        },
+        "audio": {
+          "state": "unknown",
+          "note": "No admitted final 1.6 image result."
+        },
+        "power": {
+          "state": "unknown",
+          "note": "No admitted final 1.6 image result."
+        },
+        "installer": {
+          "state": "unknown",
+          "note": "No admitted final 1.6 image result."
+        },
+        "installed_boot": {
+          "state": "unknown",
+          "note": "No admitted final 1.6 image result."
+        },
+        "update": {
+          "state": "unknown",
+          "note": "No admitted final 1.6 image result."
+        },
+        "recovery": {
+          "state": "unknown",
+          "note": "No admitted final 1.6 image result."
+        }
+      }
+    },
+    {
+      "id": "orion-o6",
+      "work_item": "SBC-001",
+      "kind": "physical",
+      "role": "desktop",
+      "owner": "ARM release integration; individual test owner unassigned",
+      "hardware": {
+        "state": "unallocated",
+        "note": "No release test allocation recorded; historical reference access is not an allocation."
+      },
+      "identity": {
+        "model": "CIX Orion O6-class; exact model pending",
+        "soc": null,
+        "board_revision": null,
+        "ram": null,
+        "firmware": null,
+        "boot_chain": null,
+        "abi": null,
+        "storage": null
+      },
+      "discovery_needed": "Enroll an exact test profile with board/carrier and RAM revision, firmware, boot chain, ABI and storage. Split distinct variants into additional rows; retain this scope row.",
+      "sources": [
+        "docs/roadmap/release-1.6.0.md",
+        "docs/roadmap/arm-research-20261107.md"
+      ],
+      "features": {
+        "boot": {
+          "state": "unknown",
+          "note": "No admitted final 1.6 image result."
+        },
+        "all_cpus": {
+          "state": "unknown",
+          "note": "No admitted final 1.6 image result."
+        },
+        "memory_dma": {
+          "state": "unknown",
+          "note": "No admitted final 1.6 image result."
+        },
+        "storage": {
+          "state": "unknown",
+          "note": "No admitted final 1.6 image result."
+        },
+        "display": {
+          "state": "unknown",
+          "note": "No admitted final 1.6 image result."
+        },
+        "input": {
+          "state": "unknown",
+          "note": "No admitted final 1.6 image result."
+        },
+        "network": {
+          "state": "unknown",
+          "note": "No admitted final 1.6 image result."
+        },
+        "audio": {
+          "state": "unknown",
+          "note": "No admitted final 1.6 image result."
+        },
+        "power": {
+          "state": "unknown",
+          "note": "No admitted final 1.6 image result."
+        },
+        "installer": {
+          "state": "unknown",
+          "note": "No admitted final 1.6 image result."
+        },
+        "installed_boot": {
+          "state": "unknown",
+          "note": "No admitted final 1.6 image result."
+        },
+        "update": {
+          "state": "unknown",
+          "note": "No admitted final 1.6 image result."
+        },
+        "recovery": {
+          "state": "unknown",
+          "note": "No admitted final 1.6 image result."
+        }
+      }
+    },
+    {
+      "id": "rk3399",
+      "work_item": "SBC-001",
+      "kind": "physical",
+      "role": "desktop",
+      "owner": "ARM release integration; individual test owner unassigned",
+      "hardware": {
+        "state": "unallocated",
+        "note": "No release test allocation recorded; historical reference access is not an allocation."
+      },
+      "identity": {
+        "model": "Pine64/Radxa RK3399 reference; model selection pending",
+        "soc": "RK3399",
+        "board_revision": null,
+        "ram": null,
+        "firmware": null,
+        "boot_chain": null,
+        "abi": null,
+        "storage": null
+      },
+      "discovery_needed": "Enroll an exact test profile with board/carrier and RAM revision, firmware, boot chain, ABI and storage. Split distinct variants into additional rows; retain this scope row.",
+      "sources": [
+        "docs/roadmap/release-1.6.0.md",
+        "docs/roadmap/arm-research-20261107.md"
+      ],
+      "features": {
+        "boot": {
+          "state": "unknown",
+          "note": "No admitted final 1.6 image result."
+        },
+        "all_cpus": {
+          "state": "unknown",
+          "note": "No admitted final 1.6 image result."
+        },
+        "memory_dma": {
+          "state": "unknown",
+          "note": "No admitted final 1.6 image result."
+        },
+        "storage": {
+          "state": "unknown",
+          "note": "No admitted final 1.6 image result."
+        },
+        "display": {
+          "state": "unknown",
+          "note": "No admitted final 1.6 image result."
+        },
+        "input": {
+          "state": "unknown",
+          "note": "No admitted final 1.6 image result."
+        },
+        "network": {
+          "state": "unknown",
+          "note": "No admitted final 1.6 image result."
+        },
+        "audio": {
+          "state": "unknown",
+          "note": "No admitted final 1.6 image result."
+        },
+        "power": {
+          "state": "unknown",
+          "note": "No admitted final 1.6 image result."
+        },
+        "installer": {
+          "state": "unknown",
+          "note": "No admitted final 1.6 image result."
+        },
+        "installed_boot": {
+          "state": "unknown",
+          "note": "No admitted final 1.6 image result."
+        },
+        "update": {
+          "state": "unknown",
+          "note": "No admitted final 1.6 image result."
+        },
+        "recovery": {
+          "state": "unknown",
+          "note": "No admitted final 1.6 image result."
+        }
+      }
+    },
+    {
+      "id": "rk356x",
+      "work_item": "SBC-001",
+      "kind": "physical",
+      "role": "desktop",
+      "owner": "ARM release integration; individual test owner unassigned",
+      "hardware": {
+        "state": "unallocated",
+        "note": "No release test allocation recorded; historical reference access is not an allocation."
+      },
+      "identity": {
+        "model": "Pine64/Radxa RK356x reference; model selection pending",
+        "soc": null,
+        "board_revision": null,
+        "ram": null,
+        "firmware": null,
+        "boot_chain": null,
+        "abi": null,
+        "storage": null
+      },
+      "discovery_needed": "Enroll an exact test profile with board/carrier and RAM revision, firmware, boot chain, ABI and storage. Split distinct variants into additional rows; retain this scope row.",
+      "sources": [
+        "docs/roadmap/release-1.6.0.md",
+        "docs/roadmap/arm-research-20261107.md"
+      ],
+      "features": {
+        "boot": {
+          "state": "unknown",
+          "note": "No admitted final 1.6 image result."
+        },
+        "all_cpus": {
+          "state": "unknown",
+          "note": "No admitted final 1.6 image result."
+        },
+        "memory_dma": {
+          "state": "unknown",
+          "note": "No admitted final 1.6 image result."
+        },
+        "storage": {
+          "state": "unknown",
+          "note": "No admitted final 1.6 image result."
+        },
+        "display": {
+          "state": "unknown",
+          "note": "No admitted final 1.6 image result."
+        },
+        "input": {
+          "state": "unknown",
+          "note": "No admitted final 1.6 image result."
+        },
+        "network": {
+          "state": "unknown",
+          "note": "No admitted final 1.6 image result."
+        },
+        "audio": {
+          "state": "unknown",
+          "note": "No admitted final 1.6 image result."
+        },
+        "power": {
+          "state": "unknown",
+          "note": "No admitted final 1.6 image result."
+        },
+        "installer": {
+          "state": "unknown",
+          "note": "No admitted final 1.6 image result."
+        },
+        "installed_boot": {
+          "state": "unknown",
+          "note": "No admitted final 1.6 image result."
+        },
+        "update": {
+          "state": "unknown",
+          "note": "No admitted final 1.6 image result."
+        },
+        "recovery": {
+          "state": "unknown",
+          "note": "No admitted final 1.6 image result."
+        }
+      }
+    },
+    {
+      "id": "rock5b",
+      "work_item": "SBC-001",
+      "kind": "physical",
+      "role": "desktop",
+      "owner": "ARM release integration; individual test owner unassigned",
+      "hardware": {
+        "state": "unallocated",
+        "note": "No release test allocation recorded; historical reference access is not an allocation."
+      },
+      "identity": {
+        "model": "Radxa ROCK 5B",
+        "soc": "RK3588",
+        "board_revision": null,
+        "ram": null,
+        "firmware": null,
+        "boot_chain": null,
+        "abi": null,
+        "storage": null
+      },
+      "discovery_needed": "Enroll an exact test profile with board/carrier and RAM revision, firmware, boot chain, ABI and storage. Split distinct variants into additional rows; retain this scope row.",
+      "sources": [
+        "docs/roadmap/release-1.6.0.md",
+        "docs/roadmap/arm-research-20261107.md"
+      ],
+      "features": {
+        "boot": {
+          "state": "unknown",
+          "note": "No admitted final 1.6 image result."
+        },
+        "all_cpus": {
+          "state": "unknown",
+          "note": "No admitted final 1.6 image result."
+        },
+        "memory_dma": {
+          "state": "unknown",
+          "note": "No admitted final 1.6 image result."
+        },
+        "storage": {
+          "state": "unknown",
+          "note": "No admitted final 1.6 image result."
+        },
+        "display": {
+          "state": "unknown",
+          "note": "No admitted final 1.6 image result."
+        },
+        "input": {
+          "state": "unknown",
+          "note": "No admitted final 1.6 image result."
+        },
+        "network": {
+          "state": "unknown",
+          "note": "No admitted final 1.6 image result."
+        },
+        "audio": {
+          "state": "unknown",
+          "note": "No admitted final 1.6 image result."
+        },
+        "power": {
+          "state": "unknown",
+          "note": "No admitted final 1.6 image result."
+        },
+        "installer": {
+          "state": "unknown",
+          "note": "No admitted final 1.6 image result."
+        },
+        "installed_boot": {
+          "state": "unknown",
+          "note": "No admitted final 1.6 image result."
+        },
+        "update": {
+          "state": "unknown",
+          "note": "No admitted final 1.6 image result."
+        },
+        "recovery": {
+          "state": "unknown",
+          "note": "No admitted final 1.6 image result."
+        }
+      }
+    },
+    {
+      "id": "snapdragon-x-elite",
+      "work_item": "QUALCOMM-001",
+      "kind": "physical",
+      "role": "desktop",
+      "owner": "ARM release integration; individual test owner unassigned",
+      "hardware": {
+        "state": "unallocated",
+        "note": "No release test allocation recorded; historical reference access is not an allocation."
+      },
+      "identity": {
+        "model": "Snapdragon X Elite laptop; model selection pending",
+        "soc": null,
+        "board_revision": null,
+        "ram": null,
+        "firmware": null,
+        "boot_chain": null,
+        "abi": null,
+        "storage": null
+      },
+      "discovery_needed": "Enroll an exact test profile with board/carrier and RAM revision, firmware, boot chain, ABI and storage. Split distinct variants into additional rows; retain this scope row.",
+      "sources": [
+        "docs/roadmap/release-1.6.0.md",
+        "docs/roadmap/arm-research-20261107.md"
+      ],
+      "features": {
+        "boot": {
+          "state": "unknown",
+          "note": "No admitted final 1.6 image result."
+        },
+        "all_cpus": {
+          "state": "unknown",
+          "note": "No admitted final 1.6 image result."
+        },
+        "memory_dma": {
+          "state": "unknown",
+          "note": "No admitted final 1.6 image result."
+        },
+        "storage": {
+          "state": "unknown",
+          "note": "No admitted final 1.6 image result."
+        },
+        "display": {
+          "state": "unknown",
+          "note": "No admitted final 1.6 image result."
+        },
+        "input": {
+          "state": "unknown",
+          "note": "No admitted final 1.6 image result."
+        },
+        "network": {
+          "state": "unknown",
+          "note": "No admitted final 1.6 image result."
+        },
+        "audio": {
+          "state": "unknown",
+          "note": "No admitted final 1.6 image result."
+        },
+        "power": {
+          "state": "unknown",
+          "note": "No admitted final 1.6 image result."
+        },
+        "installer": {
+          "state": "unknown",
+          "note": "No admitted final 1.6 image result."
+        },
+        "installed_boot": {
+          "state": "unknown",
+          "note": "No admitted final 1.6 image result."
+        },
+        "update": {
+          "state": "unknown",
+          "note": "No admitted final 1.6 image result."
+        },
+        "recovery": {
+          "state": "unknown",
+          "note": "No admitted final 1.6 image result."
+        }
+      }
+    },
+    {
+      "id": "snapdragon-x-plus",
+      "work_item": "QUALCOMM-001",
+      "kind": "physical",
+      "role": "desktop",
+      "owner": "ARM release integration; individual test owner unassigned",
+      "hardware": {
+        "state": "unallocated",
+        "note": "No release test allocation recorded; historical reference access is not an allocation."
+      },
+      "identity": {
+        "model": "Snapdragon X Plus laptop; model selection pending",
+        "soc": null,
+        "board_revision": null,
+        "ram": null,
+        "firmware": null,
+        "boot_chain": null,
+        "abi": null,
+        "storage": null
+      },
+      "discovery_needed": "Enroll an exact test profile with board/carrier and RAM revision, firmware, boot chain, ABI and storage. Split distinct variants into additional rows; retain this scope row.",
+      "sources": [
+        "docs/roadmap/release-1.6.0.md",
+        "docs/roadmap/arm-research-20261107.md"
+      ],
+      "features": {
+        "boot": {
+          "state": "unknown",
+          "note": "No admitted final 1.6 image result."
+        },
+        "all_cpus": {
+          "state": "unknown",
+          "note": "No admitted final 1.6 image result."
+        },
+        "memory_dma": {
+          "state": "unknown",
+          "note": "No admitted final 1.6 image result."
+        },
+        "storage": {
+          "state": "unknown",
+          "note": "No admitted final 1.6 image result."
+        },
+        "display": {
+          "state": "unknown",
+          "note": "No admitted final 1.6 image result."
+        },
+        "input": {
+          "state": "unknown",
+          "note": "No admitted final 1.6 image result."
+        },
+        "network": {
+          "state": "unknown",
+          "note": "No admitted final 1.6 image result."
+        },
+        "audio": {
+          "state": "unknown",
+          "note": "No admitted final 1.6 image result."
+        },
+        "power": {
+          "state": "unknown",
+          "note": "No admitted final 1.6 image result."
+        },
+        "installer": {
+          "state": "unknown",
+          "note": "No admitted final 1.6 image result."
+        },
+        "installed_boot": {
+          "state": "unknown",
+          "note": "No admitted final 1.6 image result."
+        },
+        "update": {
+          "state": "unknown",
+          "note": "No admitted final 1.6 image result."
+        },
+        "recovery": {
+          "state": "unknown",
+          "note": "No admitted final 1.6 image result."
+        }
+      }
+    },
+    {
+      "id": "thinkpad-x13s",
+      "work_item": "QUALCOMM-001",
+      "kind": "physical",
+      "role": "desktop",
+      "owner": "ARM release integration; individual test owner unassigned",
+      "hardware": {
+        "state": "unallocated",
+        "note": "No release test allocation recorded; historical reference access is not an allocation."
+      },
+      "identity": {
+        "model": "Lenovo ThinkPad X13s",
+        "soc": "Snapdragon 8cx Gen 3",
+        "board_revision": null,
+        "ram": null,
+        "firmware": null,
+        "boot_chain": null,
+        "abi": null,
+        "storage": null
+      },
+      "discovery_needed": "Enroll an exact test profile with board/carrier and RAM revision, firmware, boot chain, ABI and storage. Split distinct variants into additional rows; retain this scope row.",
+      "sources": [
+        "docs/roadmap/release-1.6.0.md",
+        "docs/roadmap/arm-research-20261107.md"
+      ],
+      "features": {
+        "boot": {
+          "state": "unknown",
+          "note": "No admitted final 1.6 image result."
+        },
+        "all_cpus": {
+          "state": "unknown",
+          "note": "No admitted final 1.6 image result."
+        },
+        "memory_dma": {
+          "state": "unknown",
+          "note": "No admitted final 1.6 image result."
+        },
+        "storage": {
+          "state": "unknown",
+          "note": "No admitted final 1.6 image result."
+        },
+        "display": {
+          "state": "unknown",
+          "note": "No admitted final 1.6 image result."
+        },
+        "input": {
+          "state": "unknown",
+          "note": "No admitted final 1.6 image result."
+        },
+        "network": {
+          "state": "unknown",
+          "note": "No admitted final 1.6 image result."
+        },
+        "audio": {
+          "state": "unknown",
+          "note": "No admitted final 1.6 image result."
+        },
+        "power": {
+          "state": "unknown",
+          "note": "No admitted final 1.6 image result."
+        },
+        "installer": {
+          "state": "unknown",
+          "note": "No admitted final 1.6 image result."
+        },
+        "installed_boot": {
+          "state": "unknown",
+          "note": "No admitted final 1.6 image result."
+        },
+        "update": {
+          "state": "unknown",
+          "note": "No admitted final 1.6 image result."
+        },
+        "recovery": {
+          "state": "unknown",
+          "note": "No admitted final 1.6 image result."
+        }
+      }
+    },
+    {
+      "id": "ampere-altra",
+      "work_item": "ARM-007",
+      "kind": "physical",
+      "role": "server",
+      "owner": "ARM release integration; individual test owner unassigned",
+      "hardware": {
+        "state": "unallocated",
+        "note": "No release test allocation recorded; historical reference access is not an allocation."
+      },
+      "identity": {
+        "model": "Ampere Altra-class server; model selection pending",
+        "soc": null,
+        "board_revision": null,
+        "ram": null,
+        "firmware": null,
+        "boot_chain": null,
+        "abi": null,
+        "storage": null
+      },
+      "discovery_needed": "Enroll an exact test profile with board/carrier and RAM revision, firmware, boot chain, ABI and storage. Split distinct variants into additional rows; retain this scope row.",
+      "sources": [
+        "docs/roadmap/release-1.6.0.md",
+        "docs/roadmap/arm-research-20261107.md"
+      ],
+      "features": {
+        "boot": {
+          "state": "unknown",
+          "note": "No admitted final 1.6 image result."
+        },
+        "all_cpus": {
+          "state": "unknown",
+          "note": "No admitted final 1.6 image result."
+        },
+        "memory_dma": {
+          "state": "unknown",
+          "note": "No admitted final 1.6 image result."
+        },
+        "storage": {
+          "state": "unknown",
+          "note": "No admitted final 1.6 image result."
+        },
+        "display": {
+          "state": "unknown",
+          "note": "No admitted final 1.6 image result."
+        },
+        "input": {
+          "state": "unknown",
+          "note": "No admitted final 1.6 image result."
+        },
+        "network": {
+          "state": "unknown",
+          "note": "No admitted final 1.6 image result."
+        },
+        "audio": {
+          "state": "unknown",
+          "note": "No admitted final 1.6 image result."
+        },
+        "power": {
+          "state": "unknown",
+          "note": "No admitted final 1.6 image result."
+        },
+        "installer": {
+          "state": "unknown",
+          "note": "No admitted final 1.6 image result."
+        },
+        "installed_boot": {
+          "state": "unknown",
+          "note": "No admitted final 1.6 image result."
+        },
+        "update": {
+          "state": "unknown",
+          "note": "No admitted final 1.6 image result."
+        },
+        "recovery": {
+          "state": "unknown",
+          "note": "No admitted final 1.6 image result."
+        }
+      }
+    },
+    {
+      "id": "arm-cloud-additional",
+      "work_item": "ARM-007",
+      "kind": "cloud",
+      "role": "server",
+      "owner": "ARM release integration; individual test owner unassigned",
+      "hardware": {
+        "state": "unallocated",
+        "note": "No release test allocation recorded; historical reference access is not an allocation."
+      },
+      "identity": {
+        "model": "Additional ARM cloud; provider and instance pending",
+        "soc": null,
+        "board_revision": null,
+        "ram": null,
+        "firmware": null,
+        "boot_chain": null,
+        "abi": null,
+        "storage": null
+      },
+      "discovery_needed": "Enroll an exact test profile with board/carrier and RAM revision, firmware, boot chain, ABI and storage. Split distinct variants into additional rows; retain this scope row.",
+      "sources": [
+        "docs/roadmap/release-1.6.0.md",
+        "docs/roadmap/arm-research-20261107.md"
+      ],
+      "features": {
+        "boot": {
+          "state": "unknown",
+          "note": "No admitted final 1.6 image result."
+        },
+        "all_cpus": {
+          "state": "unknown",
+          "note": "No admitted final 1.6 image result."
+        },
+        "memory_dma": {
+          "state": "unknown",
+          "note": "No admitted final 1.6 image result."
+        },
+        "storage": {
+          "state": "unknown",
+          "note": "No admitted final 1.6 image result."
+        },
+        "display": {
+          "state": "unknown",
+          "note": "No admitted final 1.6 image result."
+        },
+        "input": {
+          "state": "unknown",
+          "note": "No admitted final 1.6 image result."
+        },
+        "network": {
+          "state": "unknown",
+          "note": "No admitted final 1.6 image result."
+        },
+        "audio": {
+          "state": "unknown",
+          "note": "No admitted final 1.6 image result."
+        },
+        "power": {
+          "state": "unknown",
+          "note": "No admitted final 1.6 image result."
+        },
+        "installer": {
+          "state": "unknown",
+          "note": "No admitted final 1.6 image result."
+        },
+        "installed_boot": {
+          "state": "unknown",
+          "note": "No admitted final 1.6 image result."
+        },
+        "update": {
+          "state": "unknown",
+          "note": "No admitted final 1.6 image result."
+        },
+        "recovery": {
+          "state": "unknown",
+          "note": "No admitted final 1.6 image result."
+        }
+      }
+    },
+    {
+      "id": "aws-graviton",
+      "work_item": "ARM-007",
+      "kind": "cloud",
+      "role": "server",
+      "owner": "ARM release integration; individual test owner unassigned",
+      "hardware": {
+        "state": "unallocated",
+        "note": "No release test allocation recorded; historical reference access is not an allocation."
+      },
+      "identity": {
+        "model": "AWS Graviton; instance selection pending",
+        "soc": null,
+        "board_revision": null,
+        "ram": null,
+        "firmware": null,
+        "boot_chain": null,
+        "abi": null,
+        "storage": null
+      },
+      "discovery_needed": "Enroll an exact test profile with board/carrier and RAM revision, firmware, boot chain, ABI and storage. Split distinct variants into additional rows; retain this scope row.",
+      "sources": [
+        "docs/roadmap/release-1.6.0.md",
+        "docs/roadmap/arm-research-20261107.md"
+      ],
+      "features": {
+        "boot": {
+          "state": "unknown",
+          "note": "No admitted final 1.6 image result."
+        },
+        "all_cpus": {
+          "state": "unknown",
+          "note": "No admitted final 1.6 image result."
+        },
+        "memory_dma": {
+          "state": "unknown",
+          "note": "No admitted final 1.6 image result."
+        },
+        "storage": {
+          "state": "unknown",
+          "note": "No admitted final 1.6 image result."
+        },
+        "display": {
+          "state": "unknown",
+          "note": "No admitted final 1.6 image result."
+        },
+        "input": {
+          "state": "unknown",
+          "note": "No admitted final 1.6 image result."
+        },
+        "network": {
+          "state": "unknown",
+          "note": "No admitted final 1.6 image result."
+        },
+        "audio": {
+          "state": "unknown",
+          "note": "No admitted final 1.6 image result."
+        },
+        "power": {
+          "state": "unknown",
+          "note": "No admitted final 1.6 image result."
+        },
+        "installer": {
+          "state": "unknown",
+          "note": "No admitted final 1.6 image result."
+        },
+        "installed_boot": {
+          "state": "unknown",
+          "note": "No admitted final 1.6 image result."
+        },
+        "update": {
+          "state": "unknown",
+          "note": "No admitted final 1.6 image result."
+        },
+        "recovery": {
+          "state": "unknown",
+          "note": "No admitted final 1.6 image result."
+        }
+      }
+    },
+    {
+      "id": "qemu-hvf",
+      "work_item": "ARM-007",
+      "kind": "vm",
+      "role": "server",
+      "owner": "ARM release integration; individual test owner unassigned",
+      "hardware": {
+        "state": "unallocated",
+        "note": "No release test allocation recorded; historical reference access is not an allocation."
+      },
+      "identity": {
+        "model": "QEMU with HVF; machine and firmware selection pending",
+        "soc": null,
+        "board_revision": null,
+        "ram": null,
+        "firmware": null,
+        "boot_chain": null,
+        "abi": null,
+        "storage": null
+      },
+      "discovery_needed": "Enroll an exact test profile with board/carrier and RAM revision, firmware, boot chain, ABI and storage. Split distinct variants into additional rows; retain this scope row.",
+      "sources": [
+        "docs/roadmap/release-1.6.0.md",
+        "docs/roadmap/arm-research-20261107.md"
+      ],
+      "features": {
+        "boot": {
+          "state": "unknown",
+          "note": "No admitted final 1.6 image result."
+        },
+        "all_cpus": {
+          "state": "unknown",
+          "note": "No admitted final 1.6 image result."
+        },
+        "memory_dma": {
+          "state": "unknown",
+          "note": "No admitted final 1.6 image result."
+        },
+        "storage": {
+          "state": "unknown",
+          "note": "No admitted final 1.6 image result."
+        },
+        "display": {
+          "state": "unknown",
+          "note": "No admitted final 1.6 image result."
+        },
+        "input": {
+          "state": "unknown",
+          "note": "No admitted final 1.6 image result."
+        },
+        "network": {
+          "state": "unknown",
+          "note": "No admitted final 1.6 image result."
+        },
+        "audio": {
+          "state": "unknown",
+          "note": "No admitted final 1.6 image result."
+        },
+        "power": {
+          "state": "unknown",
+          "note": "No admitted final 1.6 image result."
+        },
+        "installer": {
+          "state": "unknown",
+          "note": "No admitted final 1.6 image result."
+        },
+        "installed_boot": {
+          "state": "unknown",
+          "note": "No admitted final 1.6 image result."
+        },
+        "update": {
+          "state": "unknown",
+          "note": "No admitted final 1.6 image result."
+        },
+        "recovery": {
+          "state": "unknown",
+          "note": "No admitted final 1.6 image result."
+        }
+      }
+    },
+    {
+      "id": "qemu-kvm",
+      "work_item": "ARM-007",
+      "kind": "vm",
+      "role": "server",
+      "owner": "ARM release integration; individual test owner unassigned",
+      "hardware": {
+        "state": "unallocated",
+        "note": "No release test allocation recorded; historical reference access is not an allocation."
+      },
+      "identity": {
+        "model": "QEMU with KVM; machine and firmware selection pending",
+        "soc": null,
+        "board_revision": null,
+        "ram": null,
+        "firmware": null,
+        "boot_chain": null,
+        "abi": null,
+        "storage": null
+      },
+      "discovery_needed": "Enroll an exact test profile with board/carrier and RAM revision, firmware, boot chain, ABI and storage. Split distinct variants into additional rows; retain this scope row.",
+      "sources": [
+        "docs/roadmap/release-1.6.0.md",
+        "docs/roadmap/arm-research-20261107.md"
+      ],
+      "features": {
+        "boot": {
+          "state": "unknown",
+          "note": "No admitted final 1.6 image result."
+        },
+        "all_cpus": {
+          "state": "unknown",
+          "note": "No admitted final 1.6 image result."
+        },
+        "memory_dma": {
+          "state": "unknown",
+          "note": "No admitted final 1.6 image result."
+        },
+        "storage": {
+          "state": "unknown",
+          "note": "No admitted final 1.6 image result."
+        },
+        "display": {
+          "state": "unknown",
+          "note": "No admitted final 1.6 image result."
+        },
+        "input": {
+          "state": "unknown",
+          "note": "No admitted final 1.6 image result."
+        },
+        "network": {
+          "state": "unknown",
+          "note": "No admitted final 1.6 image result."
+        },
+        "audio": {
+          "state": "unknown",
+          "note": "No admitted final 1.6 image result."
+        },
+        "power": {
+          "state": "unknown",
+          "note": "No admitted final 1.6 image result."
+        },
+        "installer": {
+          "state": "unknown",
+          "note": "No admitted final 1.6 image result."
+        },
+        "installed_boot": {
+          "state": "unknown",
+          "note": "No admitted final 1.6 image result."
+        },
+        "update": {
+          "state": "unknown",
+          "note": "No admitted final 1.6 image result."
+        },
+        "recovery": {
+          "state": "unknown",
+          "note": "No admitted final 1.6 image result."
+        }
+      }
+    },
+    {
+      "id": "qemu-tcg",
+      "work_item": "ARM-007",
+      "kind": "vm",
+      "role": "server",
+      "owner": "ARM release integration; individual test owner unassigned",
+      "hardware": {
+        "state": "unallocated",
+        "note": "No release test allocation recorded; historical reference access is not an allocation."
+      },
+      "identity": {
+        "model": "QEMU with TCG; machine and firmware selection pending",
+        "soc": null,
+        "board_revision": null,
+        "ram": null,
+        "firmware": null,
+        "boot_chain": null,
+        "abi": null,
+        "storage": null
+      },
+      "discovery_needed": "Enroll an exact test profile with board/carrier and RAM revision, firmware, boot chain, ABI and storage. Split distinct variants into additional rows; retain this scope row.",
+      "sources": [
+        "docs/roadmap/release-1.6.0.md",
+        "docs/roadmap/arm-research-20261107.md"
+      ],
+      "features": {
+        "boot": {
+          "state": "unknown",
+          "note": "No admitted final 1.6 image result."
+        },
+        "all_cpus": {
+          "state": "unknown",
+          "note": "No admitted final 1.6 image result."
+        },
+        "memory_dma": {
+          "state": "unknown",
+          "note": "No admitted final 1.6 image result."
+        },
+        "storage": {
+          "state": "unknown",
+          "note": "No admitted final 1.6 image result."
+        },
+        "display": {
+          "state": "unknown",
+          "note": "No admitted final 1.6 image result."
+        },
+        "input": {
+          "state": "unknown",
+          "note": "No admitted final 1.6 image result."
+        },
+        "network": {
+          "state": "unknown",
+          "note": "No admitted final 1.6 image result."
+        },
+        "audio": {
+          "state": "unknown",
+          "note": "No admitted final 1.6 image result."
+        },
+        "power": {
+          "state": "unknown",
+          "note": "No admitted final 1.6 image result."
+        },
+        "installer": {
+          "state": "unknown",
+          "note": "No admitted final 1.6 image result."
+        },
+        "installed_boot": {
+          "state": "unknown",
+          "note": "No admitted final 1.6 image result."
+        },
+        "update": {
+          "state": "unknown",
+          "note": "No admitted final 1.6 image result."
+        },
+        "recovery": {
+          "state": "unknown",
+          "note": "No admitted final 1.6 image result."
+        }
+      }
+    },
+    {
+      "id": "utm",
+      "work_item": "ARM-007",
+      "kind": "vm",
+      "role": "server",
+      "owner": "ARM release integration; individual test owner unassigned",
+      "hardware": {
+        "state": "unallocated",
+        "note": "No release test allocation recorded; historical reference access is not an allocation."
+      },
+      "identity": {
+        "model": "UTM arm64; backend and firmware selection pending",
+        "soc": null,
+        "board_revision": null,
+        "ram": null,
+        "firmware": null,
+        "boot_chain": null,
+        "abi": null,
+        "storage": null
+      },
+      "discovery_needed": "Enroll an exact test profile with board/carrier and RAM revision, firmware, boot chain, ABI and storage. Split distinct variants into additional rows; retain this scope row.",
+      "sources": [
+        "docs/roadmap/release-1.6.0.md",
+        "docs/roadmap/arm-research-20261107.md"
+      ],
+      "features": {
+        "boot": {
+          "state": "unknown",
+          "note": "No admitted final 1.6 image result."
+        },
+        "all_cpus": {
+          "state": "unknown",
+          "note": "No admitted final 1.6 image result."
+        },
+        "memory_dma": {
+          "state": "unknown",
+          "note": "No admitted final 1.6 image result."
+        },
+        "storage": {
+          "state": "unknown",
+          "note": "No admitted final 1.6 image result."
+        },
+        "display": {
+          "state": "unknown",
+          "note": "No admitted final 1.6 image result."
+        },
+        "input": {
+          "state": "unknown",
+          "note": "No admitted final 1.6 image result."
+        },
+        "network": {
+          "state": "unknown",
+          "note": "No admitted final 1.6 image result."
+        },
+        "audio": {
+          "state": "unknown",
+          "note": "No admitted final 1.6 image result."
+        },
+        "power": {
+          "state": "unknown",
+          "note": "No admitted final 1.6 image result."
+        },
+        "installer": {
+          "state": "unknown",
+          "note": "No admitted final 1.6 image result."
+        },
+        "installed_boot": {
+          "state": "unknown",
+          "note": "No admitted final 1.6 image result."
+        },
+        "update": {
+          "state": "unknown",
+          "note": "No admitted final 1.6 image result."
+        },
+        "recovery": {
+          "state": "unknown",
+          "note": "No admitted final 1.6 image result."
+        }
+      }
+    },
+    {
+      "id": "vmware-fusion",
+      "work_item": "ARM-007",
+      "kind": "vm",
+      "role": "server",
+      "owner": "ARM release integration; individual test owner unassigned",
+      "hardware": {
+        "state": "unallocated",
+        "note": "No release test allocation recorded; historical reference access is not an allocation."
+      },
+      "identity": {
+        "model": "VMware Fusion arm64; version and firmware selection pending",
+        "soc": null,
+        "board_revision": null,
+        "ram": null,
+        "firmware": null,
+        "boot_chain": null,
+        "abi": null,
+        "storage": null
+      },
+      "discovery_needed": "Enroll an exact test profile with board/carrier and RAM revision, firmware, boot chain, ABI and storage. Split distinct variants into additional rows; retain this scope row.",
+      "sources": [
+        "docs/roadmap/release-1.6.0.md",
+        "docs/roadmap/arm-research-20261107.md"
+      ],
+      "features": {
+        "boot": {
+          "state": "unknown",
+          "note": "No admitted final 1.6 image result."
+        },
+        "all_cpus": {
+          "state": "unknown",
+          "note": "No admitted final 1.6 image result."
+        },
+        "memory_dma": {
+          "state": "unknown",
+          "note": "No admitted final 1.6 image result."
+        },
+        "storage": {
+          "state": "unknown",
+          "note": "No admitted final 1.6 image result."
+        },
+        "display": {
+          "state": "unknown",
+          "note": "No admitted final 1.6 image result."
+        },
+        "input": {
+          "state": "unknown",
+          "note": "No admitted final 1.6 image result."
+        },
+        "network": {
+          "state": "unknown",
+          "note": "No admitted final 1.6 image result."
+        },
+        "audio": {
+          "state": "unknown",
+          "note": "No admitted final 1.6 image result."
+        },
+        "power": {
+          "state": "unknown",
+          "note": "No admitted final 1.6 image result."
+        },
+        "installer": {
+          "state": "unknown",
+          "note": "No admitted final 1.6 image result."
+        },
+        "installed_boot": {
+          "state": "unknown",
+          "note": "No admitted final 1.6 image result."
+        },
+        "update": {
+          "state": "unknown",
+          "note": "No admitted final 1.6 image result."
+        },
+        "recovery": {
+          "state": "unknown",
+          "note": "No admitted final 1.6 image result."
+        }
+      }
+    },
+    {
+      "id": "armv7",
+      "work_item": "ARM-008",
+      "kind": "physical",
+      "role": "feasibility",
+      "owner": "ARM release integration; individual test owner unassigned",
+      "hardware": {
+        "state": "unallocated",
+        "note": "No release test allocation recorded; historical reference access is not an allocation."
+      },
+      "identity": {
+        "model": "Maintained ARMv7 reference; model selection pending",
+        "soc": null,
+        "board_revision": null,
+        "ram": null,
+        "firmware": null,
+        "boot_chain": null,
+        "abi": null,
+        "storage": null
+      },
+      "discovery_needed": "Enroll an exact test profile with board/carrier and RAM revision, firmware, boot chain, ABI and storage. Split distinct variants into additional rows; retain this scope row.",
+      "sources": [
+        "docs/roadmap/release-1.6.0.md",
+        "docs/roadmap/arm-research-20261107.md"
+      ],
+      "features": {
+        "boot": {
+          "state": "unknown",
+          "note": "No admitted final 1.6 image result."
+        },
+        "all_cpus": {
+          "state": "unknown",
+          "note": "No admitted final 1.6 image result."
+        },
+        "memory_dma": {
+          "state": "unknown",
+          "note": "No admitted final 1.6 image result."
+        },
+        "storage": {
+          "state": "unknown",
+          "note": "No admitted final 1.6 image result."
+        },
+        "display": {
+          "state": "unknown",
+          "note": "No admitted final 1.6 image result."
+        },
+        "input": {
+          "state": "unknown",
+          "note": "No admitted final 1.6 image result."
+        },
+        "network": {
+          "state": "unknown",
+          "note": "No admitted final 1.6 image result."
+        },
+        "audio": {
+          "state": "unknown",
+          "note": "No admitted final 1.6 image result."
+        },
+        "power": {
+          "state": "unknown",
+          "note": "No admitted final 1.6 image result."
+        },
+        "installer": {
+          "state": "unknown",
+          "note": "No admitted final 1.6 image result."
+        },
+        "installed_boot": {
+          "state": "unknown",
+          "note": "No admitted final 1.6 image result."
+        },
+        "update": {
+          "state": "unknown",
+          "note": "No admitted final 1.6 image result."
+        },
+        "recovery": {
+          "state": "unknown",
+          "note": "No admitted final 1.6 image result."
+        }
+      }
+    },
+    {
+      "id": "beaglebone",
+      "work_item": "ARM-008",
+      "kind": "physical",
+      "role": "feasibility",
+      "owner": "ARM release integration; individual test owner unassigned",
+      "hardware": {
+        "state": "unallocated",
+        "note": "No release test allocation recorded; historical reference access is not an allocation."
+      },
+      "identity": {
+        "model": "BeagleBone-class reference; model selection pending",
+        "soc": null,
+        "board_revision": null,
+        "ram": null,
+        "firmware": null,
+        "boot_chain": null,
+        "abi": null,
+        "storage": null
+      },
+      "discovery_needed": "Enroll an exact test profile with board/carrier and RAM revision, firmware, boot chain, ABI and storage. Split distinct variants into additional rows; retain this scope row.",
+      "sources": [
+        "docs/roadmap/release-1.6.0.md",
+        "docs/roadmap/arm-research-20261107.md"
+      ],
+      "features": {
+        "boot": {
+          "state": "unknown",
+          "note": "No admitted final 1.6 image result."
+        },
+        "all_cpus": {
+          "state": "unknown",
+          "note": "No admitted final 1.6 image result."
+        },
+        "memory_dma": {
+          "state": "unknown",
+          "note": "No admitted final 1.6 image result."
+        },
+        "storage": {
+          "state": "unknown",
+          "note": "No admitted final 1.6 image result."
+        },
+        "display": {
+          "state": "unknown",
+          "note": "No admitted final 1.6 image result."
+        },
+        "input": {
+          "state": "unknown",
+          "note": "No admitted final 1.6 image result."
+        },
+        "network": {
+          "state": "unknown",
+          "note": "No admitted final 1.6 image result."
+        },
+        "audio": {
+          "state": "unknown",
+          "note": "No admitted final 1.6 image result."
+        },
+        "power": {
+          "state": "unknown",
+          "note": "No admitted final 1.6 image result."
+        },
+        "installer": {
+          "state": "unknown",
+          "note": "No admitted final 1.6 image result."
+        },
+        "installed_boot": {
+          "state": "unknown",
+          "note": "No admitted final 1.6 image result."
+        },
+        "update": {
+          "state": "unknown",
+          "note": "No admitted final 1.6 image result."
+        },
+        "recovery": {
+          "state": "unknown",
+          "note": "No admitted final 1.6 image result."
+        }
+      }
+    },
+    {
+      "id": "pi-armv6",
+      "work_item": "ARM-008",
+      "kind": "physical",
+      "role": "feasibility",
+      "owner": "ARM release integration; individual test owner unassigned",
+      "hardware": {
+        "state": "unallocated",
+        "note": "No release test allocation recorded; historical reference access is not an allocation."
+      },
+      "identity": {
+        "model": "Original Raspberry Pi ARMv6; exact model pending",
+        "soc": null,
+        "board_revision": null,
+        "ram": null,
+        "firmware": null,
+        "boot_chain": null,
+        "abi": null,
+        "storage": null
+      },
+      "discovery_needed": "Enroll an exact test profile with board/carrier and RAM revision, firmware, boot chain, ABI and storage. Split distinct variants into additional rows; retain this scope row.",
+      "sources": [
+        "docs/roadmap/release-1.6.0.md",
+        "docs/roadmap/arm-research-20261107.md"
+      ],
+      "features": {
+        "boot": {
+          "state": "unknown",
+          "note": "No admitted final 1.6 image result."
+        },
+        "all_cpus": {
+          "state": "unknown",
+          "note": "No admitted final 1.6 image result."
+        },
+        "memory_dma": {
+          "state": "unknown",
+          "note": "No admitted final 1.6 image result."
+        },
+        "storage": {
+          "state": "unknown",
+          "note": "No admitted final 1.6 image result."
+        },
+        "display": {
+          "state": "unknown",
+          "note": "No admitted final 1.6 image result."
+        },
+        "input": {
+          "state": "unknown",
+          "note": "No admitted final 1.6 image result."
+        },
+        "network": {
+          "state": "unknown",
+          "note": "No admitted final 1.6 image result."
+        },
+        "audio": {
+          "state": "unknown",
+          "note": "No admitted final 1.6 image result."
+        },
+        "power": {
+          "state": "unknown",
+          "note": "No admitted final 1.6 image result."
+        },
+        "installer": {
+          "state": "unknown",
+          "note": "No admitted final 1.6 image result."
+        },
+        "installed_boot": {
+          "state": "unknown",
+          "note": "No admitted final 1.6 image result."
+        },
+        "update": {
+          "state": "unknown",
+          "note": "No admitted final 1.6 image result."
+        },
+        "recovery": {
+          "state": "unknown",
+          "note": "No admitted final 1.6 image result."
+        }
+      }
+    },
+    {
+      "id": "pi-zero-armv6",
+      "work_item": "ARM-008",
+      "kind": "physical",
+      "role": "feasibility",
+      "owner": "ARM release integration; individual test owner unassigned",
+      "hardware": {
+        "state": "unallocated",
+        "note": "No release test allocation recorded; historical reference access is not an allocation."
+      },
+      "identity": {
+        "model": "Original Raspberry Pi Zero ARMv6; exact revision pending",
+        "soc": null,
+        "board_revision": null,
+        "ram": null,
+        "firmware": null,
+        "boot_chain": null,
+        "abi": null,
+        "storage": null
+      },
+      "discovery_needed": "Enroll an exact test profile with board/carrier and RAM revision, firmware, boot chain, ABI and storage. Split distinct variants into additional rows; retain this scope row.",
+      "sources": [
+        "docs/roadmap/release-1.6.0.md",
+        "docs/roadmap/arm-research-20261107.md"
+      ],
+      "features": {
+        "boot": {
+          "state": "unknown",
+          "note": "No admitted final 1.6 image result."
+        },
+        "all_cpus": {
+          "state": "unknown",
+          "note": "No admitted final 1.6 image result."
+        },
+        "memory_dma": {
+          "state": "unknown",
+          "note": "No admitted final 1.6 image result."
+        },
+        "storage": {
+          "state": "unknown",
+          "note": "No admitted final 1.6 image result."
+        },
+        "display": {
+          "state": "unknown",
+          "note": "No admitted final 1.6 image result."
+        },
+        "input": {
+          "state": "unknown",
+          "note": "No admitted final 1.6 image result."
+        },
+        "network": {
+          "state": "unknown",
+          "note": "No admitted final 1.6 image result."
+        },
+        "audio": {
+          "state": "unknown",
+          "note": "No admitted final 1.6 image result."
+        },
+        "power": {
+          "state": "unknown",
+          "note": "No admitted final 1.6 image result."
+        },
+        "installer": {
+          "state": "unknown",
+          "note": "No admitted final 1.6 image result."
+        },
+        "installed_boot": {
+          "state": "unknown",
+          "note": "No admitted final 1.6 image result."
+        },
+        "update": {
+          "state": "unknown",
+          "note": "No admitted final 1.6 image result."
+        },
+        "recovery": {
+          "state": "unknown",
+          "note": "No admitted final 1.6 image result."
+        }
+      }
+    },
+    {
+      "id": "pi-zero2",
+      "work_item": "ARM-008",
+      "kind": "physical",
+      "role": "feasibility",
+      "owner": "ARM release integration; individual test owner unassigned",
+      "hardware": {
+        "state": "unallocated",
+        "note": "No release test allocation recorded; historical reference access is not an allocation."
+      },
+      "identity": {
+        "model": "Raspberry Pi Zero 2; exact revision pending",
+        "soc": null,
+        "board_revision": null,
+        "ram": null,
+        "firmware": null,
+        "boot_chain": null,
+        "abi": null,
+        "storage": null
+      },
+      "discovery_needed": "Enroll an exact test profile with board/carrier and RAM revision, firmware, boot chain, ABI and storage. Split distinct variants into additional rows; retain this scope row.",
+      "sources": [
+        "docs/roadmap/release-1.6.0.md",
+        "docs/roadmap/arm-research-20261107.md"
+      ],
+      "features": {
+        "boot": {
+          "state": "unknown",
+          "note": "No admitted final 1.6 image result."
+        },
+        "all_cpus": {
+          "state": "unknown",
+          "note": "No admitted final 1.6 image result."
+        },
+        "memory_dma": {
+          "state": "unknown",
+          "note": "No admitted final 1.6 image result."
+        },
+        "storage": {
+          "state": "unknown",
+          "note": "No admitted final 1.6 image result."
+        },
+        "display": {
+          "state": "unknown",
+          "note": "No admitted final 1.6 image result."
+        },
+        "input": {
+          "state": "unknown",
+          "note": "No admitted final 1.6 image result."
+        },
+        "network": {
+          "state": "unknown",
+          "note": "No admitted final 1.6 image result."
+        },
+        "audio": {
+          "state": "unknown",
+          "note": "No admitted final 1.6 image result."
+        },
+        "power": {
+          "state": "unknown",
+          "note": "No admitted final 1.6 image result."
+        },
+        "installer": {
+          "state": "unknown",
+          "note": "No admitted final 1.6 image result."
+        },
+        "installed_boot": {
+          "state": "unknown",
+          "note": "No admitted final 1.6 image result."
+        },
+        "update": {
+          "state": "unknown",
+          "note": "No admitted final 1.6 image result."
+        },
+        "recovery": {
+          "state": "unknown",
+          "note": "No admitted final 1.6 image result."
+        }
+      }
+    },
+    {
+      "id": "pi3",
+      "work_item": "ARM-008",
+      "kind": "physical",
+      "role": "feasibility",
+      "owner": "ARM release integration; individual test owner unassigned",
+      "hardware": {
+        "state": "unallocated",
+        "note": "No release test allocation recorded; historical reference access is not an allocation."
+      },
+      "identity": {
+        "model": "Raspberry Pi 3; exact model pending",
+        "soc": null,
+        "board_revision": null,
+        "ram": null,
+        "firmware": null,
+        "boot_chain": null,
+        "abi": null,
+        "storage": null
+      },
+      "discovery_needed": "Enroll an exact test profile with board/carrier and RAM revision, firmware, boot chain, ABI and storage. Split distinct variants into additional rows; retain this scope row.",
+      "sources": [
+        "docs/roadmap/release-1.6.0.md",
+        "docs/roadmap/arm-research-20261107.md"
+      ],
+      "features": {
+        "boot": {
+          "state": "unknown",
+          "note": "No admitted final 1.6 image result."
+        },
+        "all_cpus": {
+          "state": "unknown",
+          "note": "No admitted final 1.6 image result."
+        },
+        "memory_dma": {
+          "state": "unknown",
+          "note": "No admitted final 1.6 image result."
+        },
+        "storage": {
+          "state": "unknown",
+          "note": "No admitted final 1.6 image result."
+        },
+        "display": {
+          "state": "unknown",
+          "note": "No admitted final 1.6 image result."
+        },
+        "input": {
+          "state": "unknown",
+          "note": "No admitted final 1.6 image result."
+        },
+        "network": {
+          "state": "unknown",
+          "note": "No admitted final 1.6 image result."
+        },
+        "audio": {
+          "state": "unknown",
+          "note": "No admitted final 1.6 image result."
+        },
+        "power": {
+          "state": "unknown",
+          "note": "No admitted final 1.6 image result."
+        },
+        "installer": {
+          "state": "unknown",
+          "note": "No admitted final 1.6 image result."
+        },
+        "installed_boot": {
+          "state": "unknown",
+          "note": "No admitted final 1.6 image result."
+        },
+        "update": {
+          "state": "unknown",
+          "note": "No admitted final 1.6 image result."
+        },
+        "recovery": {
+          "state": "unknown",
+          "note": "No admitted final 1.6 image result."
+        }
+      }
+    }
+  ]
+}

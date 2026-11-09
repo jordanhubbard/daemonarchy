@@ -1688,6 +1688,7 @@ remains open; report files do not establish a passing gate.
 - **Owner:** ARM release integration
 - **Direction:** Deliver the 1.6 ARM platform program with explicit discovery, implementation and final-distribution qualification for every enrolled board.
 - **Conclusion:** Operator expanded the former SPARK-only scope on 2026-11-07. Source research is recorded; hardware support remains unqualified.
+- **2026-11-09 inventory:** [47 retained scope rows](arm-platforms.json) now record unresolved identity, hardware allocation and all thirteen feature states. The [register checker](../arm-platform-register.md) rejects missing targets and incomplete matrices. Concrete variant enrollment, individual owners, hardware allocations and final-image receipt admission remain open; no platform acceptance is claimed.
 - **Depends on:** none
 - **Implementation:**
   - [ ] Record exact board, SoC, firmware, boot chain, ABI, source pins, owner and available test hardware for every platform.
