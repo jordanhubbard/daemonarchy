@@ -45,6 +45,15 @@ bad_hash = list(base)
 bad_hash[1] = '0' * 64
 refuse('wrong-digest', bad_hash, 'Input checksum mismatch')
 
+isolated = args.work / 'isolated-builder'
+isolated.mkdir()
+copy = isolated / 'make-arm-ram-installer.sh'
+copy.write_bytes(args.builder.read_bytes())
+original = args.builder
+args.builder = copy
+refuse('missing-iso-helper', base, 'co-located EFI ISO builder is missing')
+args.builder = original
+
 wrong_machine = args.work / 'wrong-machine'
 data = bytearray(Path(inputs['kernel']['path']).read_bytes())
 data[18:20] = (62).to_bytes(2, 'little')
@@ -85,4 +94,4 @@ def occupy_work(output, work):
 
 refuse('existing-output', base, 'must not exist', occupy_output)
 refuse('existing-work', base, 'must not exist', occupy_work)
-print('PASS: all six native refusal cases; no mounts, installation or output replacement')
+print('PASS: all seven native refusal cases; no mounts, installation or output replacement')

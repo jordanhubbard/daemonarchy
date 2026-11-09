@@ -11,6 +11,9 @@ usage='usage: make-arm-ram-installer.sh world.txz world-sha256 kernel kernel-sha
 archive=$1 archive_hash=$2 kernel=$3 kernel_hash=$4
 package=$5 package_hash=$6 output=$7 work=$8
 here=$(CDPATH='' cd -- "$(dirname -- "$0")" && pwd)
+[ -f "$here/make-efi-iso.sh" ] || {
+    echo 'The co-located EFI ISO builder is missing' >&2; exit 1;
+}
 for pin in "$archive_hash" "$kernel_hash" "$package_hash"; do
     [ "${#pin}" = 64 ] || { echo 'Input hashes must be SHA-256' >&2; exit 2; }
     case "$pin" in *[!0-9a-f]*) echo 'Malformed SHA-256' >&2; exit 2 ;; esac
