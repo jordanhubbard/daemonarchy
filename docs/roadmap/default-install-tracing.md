@@ -144,8 +144,11 @@ layout. The subsequent [eight-CPU ARM RAM control](../../verification/arm-ram-na
 does persist diagnostics to its own USB trace partition and passes controller
 readback and a FAT check after orderly shutdown. That manual control proves
 the RAM-root arrangement permits writes; it does not implement automatic
-capture. It also exceeds the existing raw release-image budget, so it is not
-the final default-media solution. The amd64
+capture. A subsequent [LZMA/packed-root control](../../verification/arm-ram-handoff-20261109.json)
+preserves every original filesystem byte, fits the unchanged raw-media budget,
+boots and repeats manual same-medium readback. Its verified RTX Spark/M2 Pro
+handoffs remain development assemblies using the retained installer world;
+compressed publication size and final-media acceptance remain open. The amd64
 BIOS/hybrid builder still needs integration; this helper deliberately refuses
 layouts with partitions other than a single ESP. Automatic loader, kernel and
 installer capture, interrupted writes and physical reset/power-loss acceptance

@@ -29,6 +29,11 @@ on:
       - 'scripts/arm-platform-register.py'
       - 'scripts/check-arm-kernel-set.py'
       - 'scripts/arm-package-closure.py'
+      - 'scripts/assemble-arm-media.py'
+      - 'scripts/arm-ram-inspect.py'
+      - 'tests/arm-media.py'
+      - 'tests/arm-ram-inspect.py'
+      - 'tests/fixtures/arm-ram/**'
       - 'tests/arm-package-closure.py'
       - 'scripts/make-arm-ram-installer.sh'
       - 'tests/arm-kernel-set.py'
@@ -149,6 +154,11 @@ on:
       - 'scripts/arm-platform-register.py'
       - 'scripts/check-arm-kernel-set.py'
       - 'scripts/arm-package-closure.py'
+      - 'scripts/assemble-arm-media.py'
+      - 'scripts/arm-ram-inspect.py'
+      - 'tests/arm-media.py'
+      - 'tests/arm-ram-inspect.py'
+      - 'tests/fixtures/arm-ram/**'
       - 'tests/arm-package-closure.py'
       - 'scripts/make-arm-ram-installer.sh'
       - 'tests/arm-kernel-set.py'
@@ -270,6 +280,12 @@ jobs:
           python3 tests/arm-package-closure.py -v
       - name: ARM platform scope and discovery inventory
         run: python3 tests/arm-platform-register.py -v
+      - name: Packed ARM installer contents and refusal controls
+        run: |
+          sudo apt-get update -q
+          sudo apt-get install -y -q sleuthkit
+          python3 tests/arm-ram-inspect.py -v
+          python3 tests/arm-media.py -v
       - name: One release version
         env:
           PYTHONDONTWRITEBYTECODE: '1'

@@ -68,7 +68,9 @@ UFS2 filesystem. The builder requires the full filesystem check to complete
 and rejects integrity diagnostics even if `fsck_ffs` returns zero. UFS1's
 legacy cylinder-group inode-count field is too small for this desktop root.
 GEOM UZIP compresses it into a read-only disk image loaded as
-`md_image`; `geom_uzip.ko` exposes `/dev/md0.uzip`. Existing in-memory `/var` and
+`md_image`; the default codec is LZMA with 256 KiB clusters and two compression
+workers. The manifest records actual codec, geometry and cluster-rounding
+padding. `geom_uzip.ko` exposes `/dev/md0.uzip`. Existing in-memory `/var` and
 `/tmp` handling remains in use. The writable `/var` is seeded from the packaged
 tree using `mdmfs -k`, preserving the installed package database after startup.
 Unlike whole-filesystem gzip, UZIP supports an
@@ -87,8 +89,8 @@ default, using native `makefs`, `mkimg` and Python 3. Keep its co-located
 This prepares storage; automatic early-boot and installer capture remains
 [TRACE-001 work](roadmap/default-install-tracing.md). The normal ISO-root USB
 control cannot mount its sibling trace partition for writing while using the
-raw disk as its live root. The RAM-root path must demonstrate that it releases
-that disk and persists evidence on the same medium before physical acceptance.
+raw disk as its live root. The RAM-root controls below demonstrate same-medium writes after an orderly VM
+shutdown; automatic capture and physical reset/power-loss acceptance remain open.
 
 Before requesting a physical test, boot the exact image through its EFI loader
 in a disposable ARM VM, verify the mounted RAM root, kernel/package identities
@@ -163,11 +165,25 @@ uses frozen final tools, dependency ordering, `pkg -c` and explicit script-failu
 checks. The worker's ConsoleKit history remains absent while the private root's
 history exists.
 
-This is a development control, not final 1.6 media. The world/installer remains
-based on retained 1.5.0 inputs. Its 4,369,433,088-byte ISO exceeds the existing
-3,758,096,384-byte raw release budget; compressed publication size is unmeasured.
-The platform assembler currently refuses the packed layout because its required
-installer files are inside the UZIP root. Implement a verified RAM handoff and
-resolve packaging within the existing requirements, retaining full desktop
-scope. Default automatic tracing, current upstream synchronization, final-image
-installation, desktop, physical Apple and release qualification remain open.
+The initial zlib/16 KiB control produced a 4,369,433,088-byte ISO, exceeding the
+existing 3,758,096,384-byte raw release budget. The subsequent
+[packed-root handoff and compression checkpoint](../verification/arm-ram-handoff-20261109.json)
+recompresses the exact same UFS filesystem with LZMA/256 KiB clusters. Every
+original filesystem byte is preserved; only 196,608 zero bytes are added to
+complete the final logical cluster. The resulting 3,731,898,880-byte image
+passes the unchanged raw limit with 26,197,504 bytes to spare. No desktop
+packages, installer payloads or hardware discovery scope were removed.
+
+That exact image boots through EFI/USB with eight VM CPUs, preserves package
+identities and repeats the manual trace-write/shutdown/controller-readback
+control. The platform assembler now independently checks its actual packed
+root and stages both RTX Spark and M2 Pro candidates. These results use a
+repack of the previously assembled filesystem; they do not qualify a fresh
+full build with the updated default compression recipe. The earlier oversized
+image and failed inspection of a valid short final cluster remain recorded.
+
+This remains a development control. Its world/installer uses retained 1.5.0
+inputs; the full 1.6 overlay and current upstream synchronization are pending.
+Compressed publication size against the existing per-asset limit is unmeasured.
+Default automatic tracing, final-image installation, rendered desktop, physical
+Apple and release qualification remain open.

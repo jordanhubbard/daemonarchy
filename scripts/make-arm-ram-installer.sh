@@ -160,7 +160,9 @@ grep -Fq '** Phase 5 - Check Cyl groups' "$work/fsck.log" || {
 }
 root_size=$(stat -f %z "$work/mfsroot")
 root_hash=$(sha256 -q "$work/mfsroot")
-mkuzip -j 2 -o "$work/mfsroot.uzip" "$work/mfsroot"
+# Preserve the complete filesystem while avoiding the size of 16 KiB zlib
+# clusters. The selected GENERIC set must still pass exact-image VM/board QA.
+mkuzip -L -s 262144 -j 2 -o "$work/mfsroot.uzip" "$work/mfsroot"
 [ "$(stat -f %z "$work/mfsroot.uzip")" -lt 4294967296 ] || {
     echo 'Compressed RAM payload exceeds the 4 GiB bootstrap input profile' >&2; exit 1;
 }
@@ -182,12 +184,20 @@ if [ "$(sha256 -q "$archive")" != "$archive_hash" ] ||
 fi
 python3.12 "$here/arm-package-closure.py" verify "$closure" "$closure_hash" "$package_hash"
 python3.12 - "$output" "$work/mfsroot.uzip" "$set_hash" "$work/installed-packages.txt" "$work/package-closure.json" <<'PY'
-import hashlib, json, os, sys
+import hashlib, json, os, struct, sys
 from pathlib import Path
 image, compressed = map(Path, sys.argv[1:3])
 def digest(path):
     with path.open('rb') as stream:
         return hashlib.file_digest(stream, 'sha256').hexdigest()
+with compressed.open('rb') as stream:
+    header = stream.read(136)
+if len(header) != 136 or header[:11] != b'#!/bin/sh\n#' or chr(header[11]).upper() != 'L':
+    raise ValueError('Expected a native LZMA UZIP payload')
+cluster, blocks = struct.unpack_from('>II', header, 128)
+root_size = int(os.environ['RAM_ROOT_SIZE'])
+if cluster != 262144 or not root_size <= cluster * blocks < root_size + cluster:
+    raise ValueError('Unexpected UZIP cluster geometry')
 record = dict(schema='daemonarchy/arm-ram-installer@1', abi='FreeBSD:16:aarch64',
     world_archive_sha256=os.environ['RAM_ARCHIVE_HASH'], kernel_sha256=os.environ['RAM_KERNEL_HASH'],
     kernel_set_sha256=sys.argv[3], omarchy_package_sha256=os.environ['RAM_PACKAGE_HASH'],
@@ -195,8 +205,10 @@ record = dict(schema='daemonarchy/arm-ram-installer@1', abi='FreeBSD:16:aarch64'
     package_closure_manifest_sha256=os.environ['RAM_CLOSURE_HASH'],
     package_closure_inventory_sha256=digest(Path(sys.argv[5])),
     package_closure_count=len(json.loads(Path(sys.argv[5]).read_text())['packages']),
-    ram_root=dict(bytes=int(os.environ['RAM_ROOT_SIZE']), sha256=os.environ['RAM_ROOT_HASH'],
-                  format='ufs-geom-uzip', compressed_bytes=compressed.stat().st_size,
+    ram_root=dict(bytes=root_size, sha256=os.environ['RAM_ROOT_HASH'],
+                  format='ufs-geom-uzip', codec='lzma', cluster_bytes=cluster,
+                  expanded_media_bytes=cluster * blocks, zero_padding_bytes=cluster * blocks - root_size,
+                  compressed_bytes=compressed.stat().st_size,
                   compressed_sha256=digest(compressed)),
     installed_packages_sha256=digest(Path(sys.argv[4])),
     image=dict(bytes=image.stat().st_size, sha256=digest(image)),
