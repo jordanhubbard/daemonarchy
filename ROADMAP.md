@@ -5,7 +5,7 @@ Use [the active queue](docs/roadmap/active-work.md) for stable work IDs and
 acceptance status, and [the architecture](docs/architecture/design-traceability.md)
 for Component ownership. This file remains the release and feature overview.
 
-## 1.6.0: ARM platforms
+## 1.6.0: ARM platforms and upstream synchronization
 
 The operator expanded 1.6 on 2026-11-07 from Spark-only to popular ARM platforms:
 NVIDIA Spark/GB10, Apple Silicon, **Raspberry Pi 4 ahead of Raspberry Pi 5**,
@@ -19,6 +19,16 @@ and BSD predecessors. The [implementation plan](docs/roadmap/arm-implementation.
 breaks fifteen work items into hwtrace/prerequisite discovery, final implementation
 and native validation. The [1.6 release plan](docs/roadmap/release-1.6.0.md) owns the
 per-model matrix, order, exact-image distribution gates and remaining Spark experiments.
+
+The operator expanded the 1.6 goals on 2026-11-08 to include
+[SYNC-001](docs/roadmap/active-work.md#sync-001-synchronize-omarchy-15-and-freebsd-current-source-and-ports-for-16):
+synchronize the desktop and compatibility adaptation with **Omarchy 1.5**, and
+refresh the owned **FreeBSD-CURRENT src and ports** forks from upstream before
+freezing the release inputs. Pin the exact upstream and resulting fork revisions,
+preserve Daemonarchy changes, rebuild matched base/kernel/modules and package
+closures, and qualify desktop, installation, upgrade and rollback regressions on
+both architectures. These are planned release goals; synchronization is not yet
+claimed complete. Raspberry Pi 4 remains ahead of Pi 5 in the porting queue.
 
 ## 1.5.1: network upgrades and forkability
 

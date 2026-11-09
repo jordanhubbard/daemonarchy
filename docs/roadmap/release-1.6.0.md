@@ -1,8 +1,9 @@
-# 1.6.0 plan: ARM platforms
+# 1.6.0 plan: ARM platforms and upstream synchronization
 
 - **Status:** active
 - **Opened:** 2026-11-07; expanded from SPARK-001 to the ARM distribution program by operator direction
 - **Owning queue item:** [ARM-001](active-work.md#arm-001-maintain-the-arm-platform-and-upstream-evidence-register)
+- **Additional release goal:** [SYNC-001](active-work.md#sync-001-synchronize-omarchy-15-and-freebsd-current-source-and-ports-for-16)
 - **GitHub issue and milestone:** [ARM-001 #295](https://github.com/jordanhubbard/daemonarchy/issues/295), [1.6.0](https://github.com/jordanhubbard/daemonarchy/milestone/5)
 - **Completion / archival evidence:** research and the four-CPU diagnostic checkpoint only; implementation and final-distribution acceptance remain open
 
@@ -20,7 +21,8 @@ repositories and the Asahi/Aurora, NVIDIA/NixOS, Raspberry Pi/Debian/Linux and
 BSD predecessor work. [Implementation tasks](arm-implementation.md) separate
 hwtrace/prerequisite discovery, final implementation and validation for each
 work item. The [active queue](active-work.md) and
-[release goals](release-goals.json) register all fifteen work IDs.
+[release goals](release-goals.json) register all fifteen ARM work IDs and the
+additional upstream synchronization goal.
 
 A family name, successful kernel build or another OS's support table does not
 qualify a board. Every concrete model/revision/mode needs its own ledger row.
@@ -35,6 +37,34 @@ full. ARCH-001, NET-001, GPU-001, PKG-002, DEBUG-003 and the release/desktop
 Components supply dependencies for the ARM work; unrelated backlog retains its
 own scope. SIGN-001 option A still applies: freeze signed inputs, finish QA,
 then conduct one operator signing session. Preserve published release bytes.
+
+## Upstream synchronization goal (SYNC-001)
+
+**Operator direction, 2026-11-08:** 1.6 also synchronizes with **Omarchy 1.5**
+and refreshes **FreeBSD-CURRENT src and ports**. This adds release scope to the
+ARM program; it preserves the Pi 4-before-Pi 5 priority and existing amd64 coverage.
+All synchronization and qualification checks below remain open.
+
+- [ ] Identify and pin the exact Omarchy 1.5 upstream tag/commit. Review its delta
+  against the selected desktop and compatibility forks; port applicable desktop,
+  configuration, application and service changes to native FreeBSD behavior.
+  Record Linux-specific features requiring adaptation or an explicit limitation.
+- [ ] Refresh the owned source fork from upstream FreeBSD src `main` (CURRENT)
+  and the owned ports fork from upstream FreeBSD ports `main`. Record upstream
+  and resulting fork commits, resolve conflicts, and preserve Daemonarchy fixes,
+  board support, packaging and contribution history. Ports has its own revision;
+  its compatibility must be tested against the selected CURRENT base and ABI.
+- [ ] Rebuild and qualify the matched world, kernel, modules, source/ports seeds,
+  packages and installer images for amd64 and aarch64. Record toolchain, ABI,
+  upstream ancestry and exact artifact/feed identities before the release freeze.
+- [ ] Retain exact-artifact desktop/login, application/menu/service, install,
+  network update and rollback regression evidence, including ARM board-specific
+  fixes and existing amd64 targets. Refresh documentation to the actual delivered
+  behavior and disclose unresolved upstream differences.
+
+SYNC-001 closes only with reviewed import/conflict records and passing native,
+VM and required physical results for the selected artifacts. A newer revision,
+successful merge or green documentation check alone does not establish acceptance.
 
 ## Initial platform matrix
 

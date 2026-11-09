@@ -1952,3 +1952,20 @@ remains open; report files do not establish a passing gate.
 - **Evidence:**
   - [ ] Each claimed ARM32 target has native boot, working application/role, package/update and recovery evidence for its actual ABI.
   - [ ] Unsupported architectures and unresolved feasibility are disclosed in the 1.6 support matrix and are never hidden by the ARM theme.
+
+### [ ] SYNC-001 — Synchronize Omarchy 1.5 and FreeBSD-CURRENT source and ports for 1.6
+
+- **Priority:** P1
+- **Release target:** 1.6.0
+- **Plan:** [1.6 upstream synchronization scope and acceptance](release-1.6.0.md#upstream-synchronization-goal-sync-001)
+- **Owner:** desktop, compatibility, source, ports and release integration
+- **Direction:** Synchronize the FreeBSD desktop adaptation with Omarchy 1.5 and refresh the owned source and ports forks from upstream FreeBSD-CURRENT before selecting 1.6 release inputs.
+- **Conclusion:** Planned by operator direction on 2026-11-08; upstream imports and native qualification remain open. Preserve the Pi 4-before-Pi 5 priority.
+- **Depends on:** none
+- **Implementation:**
+  - [ ] Pin the Omarchy 1.5 tag/commit, review its delta and synchronize applicable desktop and compatibility changes with native FreeBSD service behavior; document adaptations and omissions.
+  - [ ] Import upstream FreeBSD src main (CURRENT) and ports main into their owned forks, retaining Daemonarchy changes and recording upstream/fork revisions and conflict decisions.
+  - [ ] Rebuild matched world/kernel/modules, checkout seeds, package closures and installer images for amd64 and aarch64 with exact ABI/toolchain and feed identities.
+- **Evidence:**
+  - [ ] Reviewed upstream-to-fork revision manifests, ancestry and conflict decisions for all three upstreams.
+  - [ ] Exact-artifact native, VM and required physical desktop, installation, update and rollback regression records, including existing amd64 and enrolled ARM targets.
