@@ -516,3 +516,10 @@ Init/installer banks remain empty. This qualifies the loader format through the
 retained kernel/userspace boundary, not automatic userspace writes, full CURRENT
 media, USB-specific v4 behavior, physical hardware or release acceptance. Native
 medium admission, writers/hooks and failure/power-loss controls remain required.
+
+
+A subsequent boot of that actual returned v4 medium reserves slot 2 with a fresh
+nonce, preserves slot 1 byte-for-byte, repeats the kernel-version/kenv handoff
+and synchronizes before shutdown. Only 809 bytes in slot 2 change; both native
+and Linux FAT checks pass. This is another boot through the same returned-media
+bytes, not physical cold-power or warm-reset qualification.

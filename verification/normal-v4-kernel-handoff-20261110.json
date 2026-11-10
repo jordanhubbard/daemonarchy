@@ -139,5 +139,22 @@
     "sdk": false,
     "physical": false,
     "release": false
+  },
+  "subsequent_boot": {
+    "status": "pass",
+    "slot": 2,
+    "prior_slot_unchanged": true,
+    "fresh_nonce": true,
+    "kernel_osreldate": 1600029,
+    "input_image_sha256": "b4782f2e9be3fd0573c43676bb06d5cab55a41ba87f712086d4b787142ef0e8c",
+    "changed_bytes": 809,
+    "only_current_slot_changed": true,
+    "input_unchanged": true,
+    "normal_shutdown": true,
+    "boot_nonce_sha256": "b36181d92618839ce8201acbb14a51ef5b1881b5ee1ada03e49605443c18d680",
+    "serial_sha256": "c838a2e72442a68479969be92e24ccc454ecbb1a32f81b33d80e0952d0d80490",
+    "returned_fat_sha256": "f27e6c55f6199fff006900fc50c96e1cfdc28cf163e7faef5ce5b4d3595969a6",
+    "linux_fat_exit": 0,
+    "native_freebsd_fat_exit": 0
   }
 }
