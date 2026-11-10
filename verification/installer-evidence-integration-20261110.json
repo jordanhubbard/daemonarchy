@@ -50,7 +50,9 @@
     "suite_groups_passed": 81,
     "skipped": 0,
     "kqueue_producer_exit_and_bounded_drain": "pass",
-    "device_delivery_in_native_unit_test": "test callback; not actual raw-medium admission"
+    "device_delivery_in_native_unit_test": "test callback; not actual raw-medium admission",
+    "terminal_exit": 0,
+    "retained_log_sha256": "6aeb7238f45725a86a2ac0d0cfbcfc4f1b835dbb27da3686a6c686901eadcd29"
   },
   "retained_setup_failures": [
     "Native kqueue object lacked context-manager support; corrected with contextlib.closing; failed output retained",
@@ -181,6 +183,7 @@
     "final_CURRENT_media": false,
     "physical": false,
     "source_scope": "Frozen r5 bundle dab088d0ecc4ba1dd999ac4942f90366cc566be2048aef1917a51b3b794ea86f; same relay/writer/readiness source; later preflight placement is separately covered by r6 native controls",
-    "linux_readonly_fat_exit": 0
+    "linux_readonly_fat_exit": 0,
+    "native_freebsd_readonly_fat_exit": 0
   }
 }

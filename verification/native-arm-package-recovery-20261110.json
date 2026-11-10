@@ -1,0 +1,63 @@
+{
+  "schema": "daemonarchy/native-arm-package-recovery@1",
+  "observed_utc": "2026-11-10T21:51:00.805041+00:00",
+  "ports_commit": "2f98c787cf7ac28ea815b843597096ba01aefa89",
+  "source_commit": "af55b6f9042e15b635e90926d476e7cbeb48a069",
+  "status": "resumed; complete package closure pending",
+  "interruption": {
+    "host_utc": "2026-11-10T21:40:33Z",
+    "reason": "host global OOM killed QEMU, confirmed by host kernel and service journal",
+    "vm_exit_signal": 9,
+    "native_controller_terminal_receipt": false,
+    "prior_guest_memory_gib": 32,
+    "prior_completed_packages_in_this_attempt": 69,
+    "prior_failed": 0,
+    "prior_skipped": 0
+  },
+  "preservation": {
+    "crash_disks_retained_as_readonly_backings": true,
+    "backing_inputs": [
+      {
+        "name": "boot.qcow2",
+        "bytes": 12517376,
+        "sha256": "5bdb24553d260f2dea4b29aa1b76b1fce67a07ca8f23a149cc6042e025d12e60",
+        "mtime_ns": 1794346824486078866
+      },
+      {
+        "name": "packages.qcow2",
+        "bytes": 140667453440,
+        "sha256": "375039065149c779caa42df0d9102bc5b75493962a9d4cc53b667b57fa59fbac",
+        "mtime_ns": 1794346830365170947
+      }
+    ],
+    "new_overlay_writes_only": true,
+    "prior_native_bulk_log_and_stats_retained": true
+  },
+  "recovery": {
+    "guest_memory_gib": 16,
+    "guest_cpus": 8,
+    "host_memory_limit_gib": 24,
+    "vm_bound_seconds": 50400,
+    "native_bulk_bound_seconds": 43200,
+    "zfs_pool_healthy": true,
+    "zfs_known_errors": 0,
+    "pool_available_bytes": 102862966784,
+    "native_free_inactive_bytes": 15963443200,
+    "minimum_pool_available_bytes": 85899345920,
+    "minimum_native_free_inactive_bytes": 12884901888,
+    "input_archives_and_origin_list_checksums_verified": true,
+    "ports_archive_sha256": "4f6d7483e81ba658e46b2e006a0ebac19dee6569819ac4af4c4563be7638c40b",
+    "origin_list_sha256": "036708c36d4967706a434c3d55323aba70cf4c5ce25aaa4f5123770e842b6942",
+    "builders": 2,
+    "allow_make_jobs": false,
+    "qa_test_mode": true,
+    "resume": "Original Poudriere build name; completed packages reused, interrupted ports may restart",
+    "native_controller_observed_live": true
+  },
+  "qualification": {
+    "full_package_closure": false,
+    "final_CURRENT_media": false,
+    "release": false,
+    "lifecycle_receipt": false
+  }
+}

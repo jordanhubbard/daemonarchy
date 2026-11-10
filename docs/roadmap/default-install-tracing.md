@@ -893,5 +893,6 @@ A second native EFI/USB relay control forces an actual first-batch commit
 before the producer finishes. Both frame sequences decode; the final ten
 events retain status 37, preserve the complete earlier batch as a prefix,
 and leave the first installer bank unchanged. Only 15,514 bytes change, all
-within the current session. This validates incremental delivery on the actual
+within the current session. Linux and native FreeBSD read-only FAT checks
+pass. This validates incremental delivery on the actual
 medium; it remains a controlled producer rather than a complete installation.
