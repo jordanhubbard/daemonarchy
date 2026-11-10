@@ -27,9 +27,9 @@
     "failed_merge_plan_retained": true,
     "candidate_worktree_unchanged": true
   },
-  "scope": "Read-only upstream preflight plus draft source import; no 1.6 release item complete",
+  "scope": "Source and ports upstream refresh candidates with scoped native controls; no 1.6 release item complete",
   "remaining": [
-    "Review and resolve ports conflicts while preserving owned adaptations",
+    "Complete native amd64 metadata checks and both-architecture package/desktop acceptance for the reviewed ports import; original conflict preflight remains historical evidence",
     "Review current Omarchy desktop and compatibility delta",
     "Complete an unprivileged native ARM64 aggregate source build",
     "Exact new world/kernel/modules/sets, package and media rebuilds for both architectures",
@@ -61,5 +61,35 @@
     "build_observation": "verification/native-arm-source-build-20261109.json",
     "build_recovery_observation": "verification/native-arm-source-build-recovery-20261110.json",
     "current_build_observation": "verification/native-arm-source-build-r2-20261110.json"
+  },
+  "ports_candidate": {
+    "pr": "https://github.com/jordanhubbard/daemonarchy-ports/pull/56",
+    "commit": "d75b96ea947537362867a1df97529d12d04a86c8",
+    "merge_commit": "a128bcefc8d1e7708d112753a17c3c507c04bbc3",
+    "owned_parent": "48561eaaf50086b2a6f469e307f26d1292024de6",
+    "upstream_parent": "5dcb3b799d588df1559edc4d0dfeb028b64ef70f",
+    "code_tree": "5c40f49e6e53c55a5fcba80e15890e0a89803db0",
+    "evidence": "https://github.com/jordanhubbard/daemonarchy-ports/blob/d75b96ea947537362867a1df97529d12d04a86c8/verification/ports-upstream-sync-20261110.json",
+    "draft": true,
+    "unmerged_paths": 0,
+    "downstream_delta_paths": 229,
+    "protected_history_paths": 390,
+    "unexpected_delta_paths": 0,
+    "categories_checked": 63,
+    "category_origin_entries_checked": 35528,
+    "missing_category_origins": 0,
+    "native_arm64_current_origins_evaluated": 35,
+    "native_arm64_make_failures": 0,
+    "explicit_amd64_only_origins": 2,
+    "declared_direct_dependency_origins": 300,
+    "missing_direct_dependency_origins": 0,
+    "historical_omarchy_desktop_probe_failure_retained": true,
+    "controller_cases": 24,
+    "controller_pass": 23,
+    "controller_native_only_skips": 1,
+    "real_aquamarine_patch_controls_pass": 4,
+    "package_build_or_desktop_qualified": false,
+    "framework_validation": "project.manifest_invalid for unchanged inherited manifest",
+    "upstream_whitespace_preserved": true
   }
 }
