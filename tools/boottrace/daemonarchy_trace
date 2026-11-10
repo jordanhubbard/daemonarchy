@@ -1,0 +1,24 @@
+#!/bin/sh
+# PROVIDE: daemonarchy_trace
+# REQUIRE: FILESYSTEMS var tmp ldconfig
+# BEFORE: LOGIN
+# KEYWORD: nojail
+#
+# Staged on live RAM media only. Capture runs in the background; unavailable
+# storage, entropy or a refused identity cannot stop the normal boot.
+. /etc/rc.subr
+name=daemonarchy_trace
+rcvar=daemonarchy_trace_enable
+start_cmd=daemonarchy_trace_start
+stop_cmd=:
+daemonarchy_trace_start()
+{
+    [ "$(kenv -q daemonarchy.trace.capture 2>/dev/null)" = saved ] || return 0
+    [ -x /usr/local/libexec/daemonarchy-installer/boot-trace ] || return 0
+    /usr/sbin/daemon -p /var/run/daemonarchy-trace.pid \
+        -o /var/run/daemonarchy-trace.log \
+        /usr/local/libexec/daemonarchy-installer/boot-trace init-ready || :
+}
+load_rc_config "$name"
+: ${daemonarchy_trace_enable:=YES}
+run_rc_command "$1"

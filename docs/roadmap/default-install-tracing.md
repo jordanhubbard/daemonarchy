@@ -684,3 +684,29 @@ installer hooks, actual phase/package/target/terminal evidence, ARM and BIOS,
 final CURRENT images, real interrupted device writes/reset/power loss and
 physical hardware acceptance remain required. Complete early-kernel or panic
 persistence does not follow from an init-time dmesg snapshot.
+
+
+## Default live-root service preparation
+
+The [staging checkpoint](../../verification/live-trace-stage-20261110.json)
+adds the bounded capture wrapper and a background FreeBSD rc service to both
+RAM-root builders. The service follows filesystem, var, tmp and ldconfig
+setup and precedes login. Missing capture identity or unavailable tracing does
+not prevent ordinary boot. A retained lock inode serializes writers; the
+operation has a 120-second timeout and five-second kill grace.
+
+Nine staging groups pass on Linux and native FreeBSD ARM64 without skips.
+They cover both ABI/ELF selections, exact helper bytes, repeat staging,
+prerequisites, root metadata and unsafe paths. The initial repeat-stage failure
+is retained; atomic replacement now handles read-only helpers. Four native
+RAM-image admission groups also pass without skips. Linux passes the three
+portable groups and explicitly skips native archive admission.
+
+The complete retained x86 live root stages all eight helpers while preserving
+its root UID 0, GID 1002 and mode 0755. Actual native rcorder confirms the
+prerequisite/login ordering. A full image with an rc.local test observer is
+being assembled for automatic service-start validation; native UFS authoring
+and integrity checks have completed. This preparation does not yet prove
+that the service runs at boot or that returned media contains its output.
+Real installer hooks, final CURRENT media, ARM/BIOS runtime, failure/reset/
+power-loss and physical acceptance remain open.

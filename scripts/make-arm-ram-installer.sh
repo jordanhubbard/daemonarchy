@@ -121,6 +121,7 @@ python3.12 "$here/arm-package-closure.py" repo "$closure" "$closure_hash" "$pack
 cp "$work/package-closure.json" "$share/ram-package-closure.json"
 "$pkg_cmd" repo "$share/repo"
 
+python3.12 "$here/stage-live-trace.py" "$world" > "$work/live-trace-stage.json"
 # rc.d/var mounts a fresh writable /var over the read-only root. Seed it
 # through mdmfs's supported skeleton option so pkg retains the built inventory.
 mkdir "$share/ram-var"

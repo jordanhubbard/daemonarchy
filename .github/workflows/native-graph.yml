@@ -62,6 +62,10 @@ on:
       - 'scripts/make-ram-iso.sh'
       - 'scripts/live-root-metadata.py'
       - 'tests/live-root-metadata.py'
+      - 'scripts/stage-live-trace.py'
+      - 'tests/live-trace-stage.py'
+      - 'tools/boottrace/daemonarchy_trace'
+      - 'overlay/usr/local/libexec/daemonarchy-installer/boot-trace'
       - 'tests/ram-live-image.py'
       - 'scripts/make-install-trace.py'
       - 'tests/install-trace-media.py'
@@ -185,6 +189,10 @@ on:
       - 'scripts/make-ram-iso.sh'
       - 'scripts/live-root-metadata.py'
       - 'tests/live-root-metadata.py'
+      - 'scripts/stage-live-trace.py'
+      - 'tests/live-trace-stage.py'
+      - 'tools/boottrace/daemonarchy_trace'
+      - 'overlay/usr/local/libexec/daemonarchy-installer/boot-trace'
       - 'tests/ram-live-image.py'
       - 'scripts/make-install-trace.py'
       - 'tests/install-trace-media.py'
@@ -290,6 +298,8 @@ jobs:
           sh -n scripts/make-ram-iso.sh
           python3 tests/live-root-metadata.py -v
           python3 tests/ram-live-image.py -v
+          python3 tests/live-trace-stage.py -v
+          sh -n tools/boottrace/daemonarchy_trace overlay/usr/local/libexec/daemonarchy-installer/boot-trace
       - name: Measured installer progress and completion controls
         env:
           PYTHONDONTWRITEBYTECODE: '1'

@@ -1,0 +1,14 @@
+#!/bin/sh
+# Serialize same-session capture; all failures remain best effort for callers.
+set -u
+umask 077
+[ "$(uname -s)" = FreeBSD ] || exit 0
+[ "$(id -u)" = 0 ] || exit 0
+[ "$(kenv -q daemonarchy.trace.capture 2>/dev/null)" = saved ] || exit 0
+case ${1:-} in init-ready|installer) ;; *) exit 2 ;; esac
+py=/usr/local/bin/python3.12
+tool=/usr/local/libexec/daemonarchy-boottrace/capture-medium.py
+[ -x "$py" ] && [ -r "$tool" ] || exit 0
+# -k retains a stable lock inode. The enclosing timeout also bounds lock wait
+# and device observation; interrupted frames retain their preceding checkpoint.
+/bin/timeout -k 5 120 /usr/bin/lockf -k -t 110 /var/run/daemonarchy-boottrace.lock "$py" "$tool" "$@"

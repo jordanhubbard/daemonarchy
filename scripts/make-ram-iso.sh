@@ -61,6 +61,7 @@ for name in ('boot/kernel/kernel', 'bin/sh', 'boot/kernel/geom_uzip.ko'):
             or struct.unpack_from('<H', header, 18)[0] != machine):
         raise ValueError('Wrong native ELF architecture: ' + name)
 CHECK
+"$py" "$here/stage-live-trace.py" "$world" > "$work/live-trace-stage.json"
 # Keep the existing database, caches and service state when rc.d/var mounts
 # writable memory over /var. Use an input-bound fresh seed, never erase one.
 seed=/usr/local/share/daemonarchy-installer/ram-var-$(printf '%s' "$archive_hash" | cut -c1-16)
