@@ -18,6 +18,11 @@ Retrieve these separate NORMAL records with:
 python3 tools/boottrace/stick.py normal returned-media.img --out fresh-evidence
 ```
 
+The [pre-exit follow-up](roadmap/default-install-tracing.md#independent-pre-exit-checkpoint)
+adds an independent later bank in the same slot. A valid loader-ready record is
+still exported if the later checkpoint is partial; this does not prove firmware
+exit succeeded or add kernel/init/installer capture.
+
 Extraction preserves partial/corrupt slot bytes and leaves the volume unchanged.
 Thirty-two occupied slots report full rather than erasing earlier attempts.
 

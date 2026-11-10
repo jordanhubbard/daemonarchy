@@ -247,3 +247,40 @@ This is an independently rebuilt control; earlier full-media results are not
 relabelled. It still uses the 1.5.0 world/UI and predates the source refresh in
 PR #82. It proves persistence through a real kernel/init boot, not capture of
 those stages' diagnostics or final installation/desktop/release acceptance.
+
+## Independent pre-exit checkpoint
+
+The [native ARM64 pre-exit record](../../verification/normal-preexit-20261110.json)
+binds the exact new EFI, producer helpers and minimal kernel-control medium.
+Each existing 16 KiB NORMAL file now has independent 4 KiB loader-ready and
+pre-exit banks, with the final 8 KiB reserved. The pre-exit hook renews boot-medium,
+identity, raw-map and FAT admission before writing only its derived bank. It
+runs before the first GetMemoryMap call, outside the ExitBootServices retry
+window. A record proves the callback was reached; successful firmware exit
+requires separate observation. Legacy v1 files remain readable and occupied.
+
+Native unprivileged stand construction and sanitizer controls pass. Initial and
+fresh-process restart boots save both stages, enter the CURRENT kernel and
+change only 607 bytes in the new session slot. Synthetic partial later data is
+preserved while the next slot succeeds. Read-only media and a read-only trace-less
+primary beside a writable foreign trace disk boot without saving records or
+changing either image. No keyboard input or network device is used.
+
+An earlier writable trace-less primary changed 81 bytes in backup GPT sectors;
+the foreign trace disk remained unchanged. That preserved run does not pass
+whole-primary preservation. The retry holds the primary read-only and does not
+resolve firmware/GPT-repair attribution or establish the stronger writable-primary
+claim. The exact record retains this failure and its limits.
+
+The controller reads both versions and exports an intact loader-ready bank even
+when pre-exit is partial or corrupt, preserving the complete raw slot. Extraction
+reports partial evidence explicitly. Unknown reserved-bank changes are refused.
+The builder accepts the explicit v1 or v2 EFI capability marker.
+
+These are minimal boot controls held at a deliberately unavailable root, using
+the af55 kernel and a separately rebuilt fe12c0bb loader. They do not qualify a
+new whole world, installer or desktop. Native amd64 callback assertions are wired
+into CI with results checked separately. Selected kernel/module identities,
+bounded firmware facts, early kernel/panic/init/installer capture, clone-independent
+identity, interrupted writes, power loss, amd64/BIOS, full refreshed media and
+physical acceptance remain open. Pi 4, Pi 5 and Apple M2 remain untested physically.

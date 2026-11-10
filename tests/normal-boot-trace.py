@@ -16,15 +16,22 @@ stick = importlib.util.module_from_spec(spec)
 spec.loader.exec_module(stick)
 
 
-def record(**changes):
+def record(version=1, **changes):
     values = dict(image_id='01234567-89ab-cdef-0123-456789abcdef',
                   archive_sha256='ab' * 32, trace_partition='fedcba98-7654-3210-fedc-ba9876543210',
                   session='0001', phase='loader-ready', identity='declared-archive',
                   early_kernel_backend='not-enabled')
     values.update(changes)
-    body = ('Daemonarchy normal boot trace v1\n' +
+    body = (f'Daemonarchy normal boot trace v{version}\n' +
             ''.join(f'{key}={value}\n' for key, value in values.items())).encode()
     return stick.padded(body + f'sum={stick.fnv1a(body):08x}\n'.encode(), stick.SLOT_SIZE)
+
+
+def staged_record(later=None):
+    primary = record(version=2)[:stick.NORMAL_STAGE_SIZE]
+    if later is None:
+        later = b'\n' * stick.NORMAL_STAGE_SIZE
+    return primary + later + b'\n' * (stick.SLOT_SIZE - 2 * stick.NORMAL_STAGE_SIZE)
 
 
 class Normal(unittest.TestCase):
@@ -86,6 +93,50 @@ class Normal(unittest.TestCase):
         with self.assertRaisesRegex(ValueError, 'outside'):
             stick.cmd_normal(argparse.Namespace(target=str(self.volume), out=str(output)))
         self.assertFalse(output.exists())
+
+
+    def test_v2_keeps_the_primary_checkpoint_before_preexit(self):
+        value = stick.normal_record(staged_record())
+        self.assertEqual(value['schema'], 'daemonarchy/normal-boot-trace@2')
+        self.assertEqual(value['phase'], 'loader-ready')
+        self.assertEqual(value['pre_exit']['status'], 'not-recorded')
+        self.assertEqual(value['early_kernel_backend'], 'not-enabled')
+
+    def test_v2_decodes_an_independently_bound_preexit_checkpoint(self):
+        later = record(version=2, phase='pre-exit')[:stick.NORMAL_STAGE_SIZE]
+        value = stick.normal_record(staged_record(later))
+        self.assertEqual(value['pre_exit']['status'], 'recorded')
+        self.assertEqual(value['pre_exit']['record']['phase'], 'pre-exit')
+        self.assertEqual(value['pre_exit']['sha256'], hashlib.sha256(later).hexdigest())
+
+    def test_v2_preserves_primary_when_later_data_is_partial_foreign_or_corrupt(self):
+        for later in (stick.padded(b'partial', stick.NORMAL_STAGE_SIZE),
+                      record(version=2, phase='pre-exit', session='0002')[:stick.NORMAL_STAGE_SIZE],
+                      record(version=1)[:stick.NORMAL_STAGE_SIZE],
+                      record(version=2, phase='kernel-qualified')[:stick.NORMAL_STAGE_SIZE]):
+            with self.subTest(data=later[:50]):
+                value = stick.normal_record(staged_record(later))
+                self.assertEqual(value['phase'], 'loader-ready')
+                self.assertEqual(value['pre_exit']['status'], 'unreadable')
+
+    def test_v2_rejects_damaged_primary_and_unknown_reserved_writes(self):
+        for offset in (0, 100, stick.NORMAL_STAGE_SIZE - 1, stick.SLOT_SIZE - 1):
+            data = bytearray(staged_record())
+            data[offset] ^= 1
+            with self.subTest(offset=offset), self.assertRaises(ValueError):
+                stick.normal_record(data)
+
+    def test_v2_extraction_retains_both_banks_and_reports_partial_later_stage(self):
+        data = staged_record(stick.padded(b'partial', stick.NORMAL_STAGE_SIZE))
+        (self.volume / 'NORMAL/0001.TXT').write_bytes(data)
+        output = self.root / 'v2-returned'
+        with contextlib.redirect_stdout(io.StringIO()):
+            stick.cmd_normal(argparse.Namespace(target=str(self.volume), out=str(output)))
+        result = json.loads((output / 'normal.json').read_text())
+        self.assertEqual(result['records'][0]['status'], 'partial')
+        self.assertEqual(result['records'][0]['record']['phase'], 'loader-ready')
+        self.assertEqual((output / '0001.TXT').read_bytes(), data)
+        self.assertEqual((self.volume / 'NORMAL/0001.TXT').read_bytes(), data)
 
     def test_legacy_experiment_reset_does_not_erase_normal_sessions(self):
         path = self.volume / 'NORMAL/0001.TXT'

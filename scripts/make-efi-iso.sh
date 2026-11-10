@@ -54,7 +54,9 @@ from pathlib import Path
 import sys, uuid
 world = Path(sys.argv[1])
 identity, config = world / 'boot/trace-id', world / 'boot/loader.conf.local'
-if b'Daemonarchy normal boot trace v1' not in (world / 'boot/loader.efi').read_bytes():
+loader = (world / 'boot/loader.efi').read_bytes()
+if not any(f'Daemonarchy normal boot trace v{version}'.encode() in loader
+           for version in (1, 2)):
     raise ValueError('EFI loader lacks normal installation trace capture')
 lua = (world / 'boot/lua/boottrace.lua').read_text()
 if 'daemonarchy.trace.enable' not in lua or 'boottrace observe' not in lua:

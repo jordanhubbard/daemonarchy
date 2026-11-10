@@ -61,6 +61,8 @@ SLOT_SIZE = 16384
 STATE_SIZE = 512
 EMPTY = b"(empty trace slot)\n"
 NORMAL_SLOTS = 32
+NORMAL_STAGE_SIZE = 4096
+NORMAL_PREEXIT_OFF = NORMAL_STAGE_SIZE
 NORMAL_EMPTY = b"(empty normal boot slot)\n"
 MAP_NAME = "SLOTS.MAP"
 MAP_SIZE = 16384
@@ -126,12 +128,7 @@ def fnv1a(data):
     return h
 
 
-def normal_record(data):
-    """Decode a whole preallocated slot; partial/corrupt records never pass."""
-    if len(data) != SLOT_SIZE:
-        raise ValueError('normal boot slot has the wrong size')
-    if data == padded(NORMAL_EMPTY, SLOT_SIZE):
-        return None
+def _normal_stage(data, version, phase):
     lines = data.rstrip(b'\n').split(b'\n')
     if not lines or not re.fullmatch(rb'sum=[0-9a-f]{8}', lines[-1]):
         raise ValueError('normal boot slot has no complete checksum')
@@ -141,7 +138,7 @@ def normal_record(data):
     keys = ('image_id', 'archive_sha256', 'trace_partition', 'session',
             'phase', 'identity', 'early_kernel_backend')
     if (len(lines) != len(keys) + 2 or
-            lines[0] != b'Daemonarchy normal boot trace v1'):
+            lines[0] != f'Daemonarchy normal boot trace v{version}'.encode()):
         raise ValueError('unsupported normal boot slot schema')
     values = {}
     for key, line in zip(keys, lines[1:-1]):
@@ -155,11 +152,41 @@ def normal_record(data):
     if (not re.fullmatch('[0-9a-f]{64}', values['archive_sha256']) or
             not re.fullmatch('[0-9]{4}', values['session']) or
             not 1 <= int(values['session']) <= NORMAL_SLOTS or
-            values['phase'] != 'loader-ready' or
+            values['phase'] != phase or
             values['identity'] != 'declared-archive' or
             values['early_kernel_backend'] != 'not-enabled'):
         raise ValueError('invalid normal boot slot metadata')
-    return dict(schema='daemonarchy/normal-boot-trace@1', **values)
+    return dict(schema=f'daemonarchy/normal-boot-trace@{version}', **values)
+
+
+def normal_record(data):
+    """Decode legacy slots or independent v2 checkpoint banks without writes."""
+    if len(data) != SLOT_SIZE:
+        raise ValueError('normal boot slot has the wrong size')
+    if data == padded(NORMAL_EMPTY, SLOT_SIZE):
+        return None
+    if not data.startswith(b'Daemonarchy normal boot trace v2\n'):
+        return _normal_stage(data, 1, 'loader-ready')
+    primary = _normal_stage(data[:NORMAL_STAGE_SIZE], 2, 'loader-ready')
+    end = NORMAL_PREEXIT_OFF + NORMAL_STAGE_SIZE
+    if data[end:] != b'\n' * (SLOT_SIZE - end):
+        raise ValueError('unsupported data in reserved normal checkpoint space')
+    later = data[NORMAL_PREEXIT_OFF:end]
+    checkpoint = dict(sha256=hashlib.sha256(later).hexdigest())
+    if later == b'\n' * NORMAL_STAGE_SIZE:
+        checkpoint['status'] = 'not-recorded'
+    else:
+        try:
+            record = _normal_stage(later, 2, 'pre-exit')
+            for key in ('image_id', 'archive_sha256', 'trace_partition', 'session'):
+                if record[key] != primary[key]:
+                    raise ValueError('pre-exit identity does not match loader-ready')
+            checkpoint.update(status='recorded', record=record)
+        except (ValueError, UnicodeError) as error:
+            # A torn later write cannot erase an intact earlier checkpoint.
+            checkpoint.update(status='unreadable', error=str(error))
+    primary['pre_exit'] = checkpoint
+    return primary
 
 
 class Fat32:
@@ -680,6 +707,8 @@ def cmd_normal(args):
             if int(record['session']) != slot:
                 raise ValueError('normal boot session does not match its slot')
             metadata.update(status='recorded', record=record)
+            if record.get('pre_exit', {}).get('status') == 'unreadable':
+                metadata['status'] = 'partial'
         except (ValueError, OSError) as error:
             metadata.update(status='unreadable', error=str(error))
         records.append(metadata)
