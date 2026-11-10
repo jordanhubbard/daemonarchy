@@ -523,3 +523,24 @@ nonce, preserves slot 1 byte-for-byte, repeats the kernel-version/kenv handoff
 and synchronizes before shutdown. Only 809 bytes in slot 2 change; both native
 and Linux FAT checks pass. This is another boot through the same returned-media
 bytes, not physical cold-power or warm-reset qualification.
+
+
+## Read-only userspace boot-medium selection
+
+The [selection checkpoint](../../verification/boot-medium-selection-20261110.json)
+adds bounded GEOM metadata and v4 kernel/session correlation policy. It selects
+one GPT DATRACE extent through its physical DISK provider, preserving an explicit
+read-only result. A real retained x86 boot exposed the same GPT through both
+vtbd0 and an ISO LABEL alias. The first observer refused it; the corrected
+resolver collapses only a proven zero-offset, whole-provider alias with the
+same partition geometry. Duplicate UUIDs on another disk remain refused.
+
+Eleven test groups pass on Linux and native FreeBSD ARM64. The actual x86
+kernel snapshot and v4 ready/pre-exit/kenv observations also replay natively,
+selecting the physical partition with one equivalent alias. The private raw
+snapshot, first refusal and corrected replay remain retained.
+
+This library admits no device writes. Raw GPT/FAT/map validation, mounted/busy
+state, identity checks around opening devices, writers/hooks and full trace
+retention remain work. Missing fresh entropy is an explicit correlation gap;
+it must not prevent ordinary boot or installation.

@@ -1,0 +1,70 @@
+{
+  "schema": "daemonarchy/boot-medium-selection-checkpoint@1",
+  "source_parent": "ccfdb6df",
+  "source_sha256": {
+    "tools/boottrace/boot-medium.py": "de9a26e674bedb25d67419c230167f1cf085ac692e565539fbd0a51f25166415",
+    "tests/boot-medium.py": "65a41c97c082c6ec196a7f776a0685faef5724f817a2e76db92daabf2239e6a4"
+  },
+  "tests": {
+    "linux_groups_passed": 11,
+    "native_freebsd_arm64_groups_passed": 11,
+    "skipped": 0,
+    "native_test_log_sha256": "3b52011ddb85c3795764931547f62fbcee4c81e94589221c5beb2a88028afd86",
+    "coverage": [
+      "Absent/duplicate/foreign UUIDs and references; wrong partition types, names and geometry.",
+      "Bounded XML; unsafe entities and incomplete snapshots.",
+      "Equivalent full-span LABEL alias, shifted/truncated aliases and cycles.",
+      "Replayed kernel/session values, missing entropy, incomplete or legacy later checkpoints."
+    ]
+  },
+  "actual_kernel_observation": {
+    "scope": "Real x86 retained diagnostic RAM-root boot with uname and kern.geom.confxml probes; no full CURRENT media.",
+    "kernel_osreldate": 1600029,
+    "efi_source": "97d15adddd39d1dee09f3baa9b89758d96a8b005",
+    "image_sha256": "a8fe339b43a92881f89e6aa9b3fdc8db8fc1ef1b8368506a3a138a29a547b19c",
+    "serial_sha256": "2bcbc0e47b4d1734b4bb6b793942929ac8709aa3b3d0ed6ed23e94340e47b229",
+    "captured_geom_sha256": "2e103d7be9d93102ae0f8f3c600fe8ecc3ff3668371a112a61f96539b8c86b0c",
+    "observation_result_sha256": "965b3773ebaad81ead0a56b7e65071d8ad874acee9e27e3d467d1f24b3bbf058",
+    "native_replay": {
+      "schema": "daemonarchy/boot-medium-selection@1",
+      "device": "/dev/vtbd0p2",
+      "disk": "/dev/vtbd0",
+      "partition_uuid": "ce3daf08-dd1b-11f1-1d08-61407e6af4da",
+      "start_lba": 1038336,
+      "sectors": 524288,
+      "sector_bytes": 512,
+      "disk_bytes": 800080384,
+      "gpt_state": "OK",
+      "geom_sha256": "27af2a7c534a75b9f818110a51d54d45cb8094a4cc771fa54960ea1faf121707",
+      "read_only": true,
+      "writes_admitted": false,
+      "raw_gpt_and_fat_validation_required": true,
+      "equivalent_aliases": 1,
+      "session": "f7c1c00d-236f-4024-84a9-d8a31ae2c480-0001",
+      "boot_nonce_sha256": "74e0ef7b3794b6fa7a58485aa51baa2754f31f866236c52beac054d370214a79",
+      "archive_sha256": "8b3ad389afb122ce02c95abd6b614541d901a70e75d9d3498239d169fe66b109",
+      "session_correlated": true
+    },
+    "same_snapshot_replayed_natively": true
+  },
+  "retained_failure": {
+    "initial_observer_exit": 1,
+    "reason": "The kernel exposed identical GPTs through the raw disk and ISO LABEL alias. Initial selection refused ambiguity.",
+    "correction": "Canonicalize only proven full-span zero-offset LABEL aliases to the same physical provider and partition byte range; retain different-disk duplicate UUID refusal.",
+    "initial_log_sha256": "a2ecc475ffbac78ea29eb961c7f7003af1ce8c9439aa42734c7bedcb5c2ab847"
+  },
+  "limits": [
+    "This is an in-memory selection/correlation library. It does not open or write selected devices.",
+    "Raw GPT CRC/identity, FAT/map ownership, mounted/busy state and identity revalidation around device access remain required before any write.",
+    "RNG absence returns an unadmitted correlation; ordinary boot and installation must remain available.",
+    "Actual init/installer writers, complete bounded log retention, power-loss, physical hardware, canonical lifecycle and final media remain open."
+  ],
+  "qualification": {
+    "read_only_selection_policy": true,
+    "actual_kernel_snapshot_correlation": true,
+    "device_write_admission": false,
+    "automatic_capture": false,
+    "sdk": false,
+    "release": false
+  }
+}
