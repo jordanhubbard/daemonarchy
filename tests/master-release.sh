@@ -42,13 +42,13 @@ cat >"$work/lsblk" <<'EOF'
 #!/bin/sh
 for last; do :; done
 case $last in
-  /dev/sdb) echo 'sdb 125829120000 usb GOODSERIAL1 disk' ;;
-  /dev/sdc) echo 'sdc 8053063680 usb GOODSERIAL2 disk' ;;
-  /dev/sdd) echo 'sdd 125829120000 sata SATASERIAL disk' ;;
-  /dev/sda) echo 'sda 256060514304 usb 03A0423110011698 disk' ;;
-  /dev/sde) echo 'sde 1000000 usb TINYSERIAL disk' ;;
-  /dev/sdf) echo 'sdf 125829120000 usb GOODSERIAL3 part' ;;
-  /dev/sdg) echo 'sdg 500107862016 usb BIGSERIAL disk' ;;
+  /dev/sdzzb) echo 'sdb 125829120000 usb GOODSERIAL1 disk' ;;
+  /dev/sdzzc) echo 'sdc 8053063680 usb GOODSERIAL2 disk' ;;
+  /dev/sdzzd) echo 'sdd 125829120000 sata SATASERIAL disk' ;;
+  /dev/sdzza) echo 'sda 256060514304 usb 03A0423110011698 disk' ;;
+  /dev/sdzze) echo 'sde 1000000 usb TINYSERIAL disk' ;;
+  /dev/sdzzf) echo 'sdf 125829120000 usb GOODSERIAL3 part' ;;
+  /dev/sdzzg) echo 'sdg 500107862016 usb BIGSERIAL disk' ;;
   *) exit 1 ;;
 esac
 EOF
@@ -63,22 +63,22 @@ refuse() {
   fi
   grep -q "$why" "$work/refused" || { echo "wrong refusal for $*: wanted '$why'" >&2; cat "$work/refused" >&2; exit 1; }
 }
-refuse 'deny list' --device /dev/sda:03A0423110011698
-refuse 'not a USB' --device /dev/sdd:SATASERIAL
-refuse 'smaller than' --device /dev/sde:TINYSERIAL
-refuse 'not a whole disk' --device /dev/sdf:GOODSERIAL3
-refuse 'over the' --device /dev/sdg:BIGSERIAL
-refuse "not the 'WRONG' you named" --device /dev/sdc:WRONG
-refuse 'whole-disk device path' --device /dev/sdb1:GOODSERIAL1
-refuse 'cannot read' --device /dev/sdx:NOPE
+refuse 'deny list' --device /dev/sdzza:03A0423110011698
+refuse 'not a USB' --device /dev/sdzzd:SATASERIAL
+refuse 'smaller than' --device /dev/sdzze:TINYSERIAL
+refuse 'not a whole disk' --device /dev/sdzzf:GOODSERIAL3
+refuse 'over the' --device /dev/sdzzg:BIGSERIAL
+refuse "not the 'WRONG' you named" --device /dev/sdzzc:WRONG
+refuse 'whole-disk device path' --device /dev/sdzzb1:GOODSERIAL1
+refuse 'cannot read' --device /dev/sdzzx:NOPE
 refuse 'at least one'
 refuse '/dev/NAME:SERIAL' --device sdb:GOODSERIAL1
 # One bad device in the list stops the whole run before any write.
-refuse 'deny list' --device /dev/sdc:GOODSERIAL2 --device /dev/sda:03A0423110011698
+refuse 'deny list' --device /dev/sdzzc:GOODSERIAL2 --device /dev/sdzza:03A0423110011698
 
 # Two good sticks: the dry run prints the writes (and reads back) and writes nothing.
 good=$(LSBLK=$work/lsblk STATE=$work/state bash "$script" --dry-run sticks --iso "$work/image.iso.xz" \
-        --raw-sha256 "$sha" --raw-size 3553460224 --device /dev/sdb:GOODSERIAL1 --device /dev/sdc:GOODSERIAL2 2>&1)
-grep -q 'of=./dev/sdb' <<<"$good" && grep -q 'of=./dev/sdc' <<<"$good"
+        --raw-sha256 "$sha" --raw-size 3553460224 --device /dev/sdzzb:GOODSERIAL1 --device /dev/sdzzc:GOODSERIAL2 2>&1)
+grep -qF 'of=/dev/sdzzb' <<<"$good" && grep -qF 'of=/dev/sdzzc' <<<"$good"
 ! grep -q 'sda' <<<"$good"
 echo 'master-release checks passed'

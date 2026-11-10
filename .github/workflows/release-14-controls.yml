@@ -108,6 +108,8 @@ on:
       - 'tests/build-release-packages.sh'
       - 'scripts/master-release.sh'
       - 'tests/master-release.sh'
+      - 'scripts/master-media.py'
+      - 'tests/master-split-media.py'
       - 'overlay/usr/local/bin/daemonarchy-wine'
       - 'overlay/usr/local/bin/daemonarchy-steam'
       - 'overlay/usr/local/libexec/daemonarchy-installer/windows-apps'
@@ -233,6 +235,8 @@ on:
       - 'tests/build-release-packages.sh'
       - 'scripts/master-release.sh'
       - 'tests/master-release.sh'
+      - 'scripts/master-media.py'
+      - 'tests/master-split-media.py'
       - 'overlay/usr/local/bin/daemonarchy-wine'
       - 'overlay/usr/local/bin/daemonarchy-steam'
       - 'overlay/usr/local/libexec/daemonarchy-installer/windows-apps'
@@ -372,6 +376,7 @@ jobs:
         run: |
           bash tests/build-release-packages.sh
           bash tests/master-release.sh
+          python3 tests/master-split-media.py -v
           bash tests/windows-launchers.sh
           bash tests/windows-apps-install.sh
 

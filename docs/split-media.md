@@ -9,7 +9,8 @@ No installer payload is removed or modified.
 This is a development transport under ARM-005. The staged release verifier and
 fill/current-record tools accept an explicit split selection from planned 1.6.0
 onward. Existing release records retain their original single-image semantics.
-Mastering/QA/device-writing integration and final source/world/ABI, signatures,
+Mastering/QA/device-writing controls now accept explicit split media. Actual
+final source/world/ABI, signatures,
 native boot, installation, desktop, recovery, physical hardware and lifecycle
 acceptance remain open. Existing release tags,
 asset bytes and size gates are unchanged.
@@ -106,3 +107,52 @@ do not publish, sign or establish native/hardware acceptance. The full-size
 [retained-media control](../verification/split-media-development-20261110.json)
 reconstructed 3,732,947,456 bytes in four independently verified parts. Its
 source was an earlier retained installer/world, not the refreshed final release.
+
+## Mastering and QA transfer controls
+
+For a planned release, set `RELEASE`, `ARCH=amd64` or `ARCH=aarch64`,
+`MEDIA_MANIFEST` and `MEDIA_MANIFEST_SHA256` in the reviewed mastering config.
+Leave the manifest unset for the retained single-file path. `verify` reconstructs
+into a new private directory, checks the unchanged raw budget, then applies the
+retained image-content checks. `hwtrace` extracts that selected image's own boot
+payload. Resume entries include the manifest pin, and cached split steps recheck
+all input bytes. Failed reconstructions and earlier evidence remain available.
+
+`qa` verifies the transport locally, transfers exactly its manifest/sidecar/parts
+and codec tools into a new private QA directory, reconstructs there with the
+same pin, and invokes the selected product's `test-qemu.sh`. It selects
+`ARCH=x86_64` for amd64 and `ARCH=aarch64` for ARM, retaining the desktop check and
+package-feed identity. It does not erase the preceding QA directory. Tools,
+Python, firmware, graphics and native runtime dependencies must exist on the
+allocated QA worker; a controller transfer test cannot supply native acceptance.
+
+The retained content verifier reads installer files from the ISO root. Complete
+the packed RAM-root content/runtime adapter for full ARM release media before
+admission; reconstruction alone does not satisfy version or live-Python checks.
+The independent packed-root inspector remains required under ARM-005.
+
+To prepare a reviewed stick-writing command, use the existing explicit device
+serials and raw identity with the manifest instead of `--iso`:
+
+```sh
+bash scripts/master-release.sh --dry-run sticks \
+  --manifest /staged/daemonarchy-1.6.0-aarch64.iso.parts.json.xz \
+  --manifest-sha256 "$MEDIA_MANIFEST_SHA256" \
+  --raw-sha256 "$MEDIA_RAW_SHA256" --raw-size "$MEDIA_RAW_BYTES" \
+  --device /dev/sdX:OPERATOR_READ_SERIAL
+```
+
+The real command first checks every named device, independently verifies the
+complete raw identity, reconstructs a new regular file privately, then uses the
+existing write/readback checks. Any raw-identity mismatch, corrupt part, mounted
+or unsafe device stops before the first write. A failed readback cannot record
+success. A dry run verifies the parts but neither reconstructs files nor writes
+devices. Physical device selection and writing remain explicit operator actions.
+
+`tests/master-split-media.py` covers the real codec, reconstruction and archive
+transfer with small fixtures. SSH/QEMU and device I/O are controlled test
+boundaries, including tamper-after-transfer and readback failure. These controls
+are not native installation, boot, desktop or physical-media results.
+
+The [mastering control record](../verification/split-media-mastering-development-20261110.json)
+retains those boundaries and the remaining packed-root/native requirements.

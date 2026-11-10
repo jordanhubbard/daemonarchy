@@ -89,6 +89,9 @@ asset maps and full raw-image verification. `tests/release-split-media.py` must
 exercise the existing signed-boot/certificate and closure gates;
 `tests/release-split-flow.py` must cover draft authoring, published-current metadata,
 refusal before writes and download-document consistency. Preserve historical
-single-image semantics. Complete mastering, QA transfer, device-writing and actual
-publication/target checks before release admission; controller controls alone do
-not establish it.
+single-image semantics. `tests/master-split-media.py` must exercise complete
+reconstruction, both architecture selections, transfer tampering, private evidence
+retention, pin-bound resume, all-device preflight and write/readback refusal.
+Keep fixture boundaries explicit. Complete packed RAM-root content/runtime
+integration and actual publication/target/device checks before release admission;
+controller controls alone do not establish it.

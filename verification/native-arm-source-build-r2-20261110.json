@@ -1,8 +1,8 @@
 {
   "schema": "daemonarchy/native-arm-source-build-observation@1",
   "status": "running",
-  "scope": "Clean independent native ARM64 CURRENT aggregate rebuild after interrupted r1; no completed phase or artifact qualification",
-  "observation_recorded_utc": "2026-11-10T01:43:45.592734+00:00",
+  "scope": "Clean native ARM64 CURRENT rebuild: world and kernel passed; packaging continues; no final image or target qualification",
+  "observation_recorded_utc": "2026-11-10T03:42:33.979118+00:00",
   "source_commit": "af55b6f9042e15b635e90926d476e7cbeb48a069",
   "source_tree": "b5bbcc0fe5f8fa1b1f3653b2a4d692f414d64850",
   "upstream_base": "d0fd70983b6b93d4a6a4671457619eb34786b38d",
@@ -11,8 +11,11 @@
   "target_arch": "aarch64",
   "jobs": 4,
   "profile": "baseline",
-  "active_phase": "buildworld",
-  "completed_phases": [],
+  "active_phase": "packages",
+  "completed_phases": [
+    "buildworld",
+    "buildkernel"
+  ],
   "planned_phases": [
     "buildworld",
     "buildkernel",
@@ -73,5 +76,62 @@
     "authority_and_receipt_gates": "fail-documentation-authority-review-stale",
     "locks": "8 current",
     "ci_regression_fix": "Wait for rendered dashboard and named tmux progress pane; isolate inherited LC_ALL/LC_CTYPE while retaining explicit test overrides."
-  }
+  },
+  "completed_phase_records": [
+    {
+      "elapsed_seconds": 6702.513,
+      "exit": 0,
+      "log": "logs/buildworld-1.log",
+      "log_sha256": "0acfdc37c59b473f14f95aae43616dafd0e791654e7376ff41a278138adc3e03",
+      "name": "buildworld"
+    },
+    {
+      "elapsed_seconds": 419.574,
+      "exit": 0,
+      "log": "logs/buildkernel-1.log",
+      "log_sha256": "0af78ef478ea69ff51d6442111afc887669c36101d8f13bf474e9c2a69e0a6c0",
+      "name": "buildkernel"
+    }
+  ],
+  "exported_buildworld_log": {
+    "bytes": 88696582,
+    "sha256": "0acfdc37c59b473f14f95aae43616dafd0e791654e7376ff41a278138adc3e03",
+    "independently_verified_after_phase": true
+  },
+  "kernel_version_helper_traversal": {
+    "status": "recovered-in-same-running-build",
+    "cause": "Private covered nullfs mountpoints had root-only search permission; newvers VCS traversal looped at the source mount boundary",
+    "before": {
+      "mode": "0700",
+      "uid": 0,
+      "gid": 0
+    },
+    "after": {
+      "mode": "0710",
+      "uid": 0,
+      "gid": 1017
+    },
+    "scope": "Covered source/output mountpoint directory metadata only; original snapshot wrapper restored",
+    "build_uid_parent_traversal_probes_pass": true,
+    "same_controller_pid": 3413,
+    "source_remained_read_only": true,
+    "newvers_loop_process_exited": true,
+    "kernel_compilation_resumed": true,
+    "future_private_worker_preparation_updated": true,
+    "native_final_qualification": false
+  },
+  "exported_completed_phase_logs": [
+    {
+      "phase": "buildworld",
+      "bytes": 88696582,
+      "sha256": "0acfdc37c59b473f14f95aae43616dafd0e791654e7376ff41a278138adc3e03",
+      "independently_verified_after_phase": true
+    },
+    {
+      "phase": "buildkernel",
+      "bytes": 1185769149,
+      "sha256": "0af78ef478ea69ff51d6442111afc887669c36101d8f13bf474e9c2a69e0a6c0",
+      "independently_verified_after_phase": true
+    }
+  ]
 }
