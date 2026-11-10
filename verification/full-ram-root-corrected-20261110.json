@@ -258,5 +258,29 @@
     "linux_exit": 0,
     "native_freebsd_exit": 0
   },
-  "updated_utc": "2026-11-10T13:30:56.211857+00:00"
+  "updated_utc": "2026-11-10T13:30:56.211857+00:00",
+  "bios_source": {
+    "source_pr_head": "e1fd8a4ddc9d934049debe72dc8de7b4bf943e59",
+    "ci_merge_commit": "b15801bd9b08d274796abed40f62ede6757e6a39",
+    "ci_source_tree": "cf196b514f10477cbb6f0b09f31b75fc89d90d03",
+    "matched_stand_file_hashes": 779,
+    "bios_files": {
+      "loader": {
+        "bytes": 503808,
+        "sha256": "380e0f8ca86176c5dddd40f43276b65ca42feaaaa3ee593b9a14f4ea3e994de6"
+      },
+      "cdboot": {
+        "bytes": 1185,
+        "sha256": "247831c13bb424ef75a47a09e4644336f0819e8372dc822a598e4ee1e0c09f3f"
+      },
+      "isoboot": {
+        "bytes": 12747,
+        "sha256": "81f11106ca209abb2365163aecffc4267cbc67749cda86e14874227905e84108"
+      },
+      "pmbr": {
+        "bytes": 512,
+        "sha256": "68afb25b1d1367fca58f75ffed8b69cd70c5a5bb80587c1ce1827a3a5e5d73a5"
+      }
+    }
+  }
 }
