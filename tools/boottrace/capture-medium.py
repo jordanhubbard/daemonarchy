@@ -16,6 +16,7 @@ observer = importlib.util.module_from_spec(spec)
 spec.loader.exec_module(observer)
 stick, medium = observer.stick, observer.medium
 session_log = observer.module('session_log','session-log.py')
+evidence = observer.module('installer_evidence','installer-evidence.py')
 DIOCGFLUSH = 0x20006487
 PHASES = {'init-ready': (2,'kernel-console'), 'installer': (3,'installer-events')}
 
@@ -79,7 +80,7 @@ def commit_bank(read, write, flush, guard, slot_offset, original, index, bank):
                 bank_sha256=hashlib.sha256(bank).hexdigest())
 
 
-def capture(phase, content, truncated=False):
+def capture(phase, content, truncated=False, structured=False):
     if phase not in PHASES or type(content) is not bytes:
         raise ValueError('bounded checkpoint phase/content required')
     with observer.open_medium(writable=True) as state:
@@ -101,10 +102,13 @@ def capture(phase, content, truncated=False):
             full_truncated=truncated or len(content)>session_log.CONTENT_LIMIT
             if phase=='installer' and latest is not None:
                 previous=frames[latest]['content']
-                full_content=previous if previous.endswith(content) else previous+content
+                full_content=(evidence.append_batch(previous,content) if structured else
+                              previous if previous.endswith(content) else previous+content)
                 full_truncated=truncated or frames[latest]['metadata']['content_truncated']
                 if len(full_content)>session_log.CONTENT_LIMIT:
                     raise ValueError('installer log full; previous progress retained')
+            elif phase=='installer' and structured:
+                full_content=evidence.append_batch(b'',content)
             full=session_log.commit(state['read'],write,flush,state['guard'],offset,
                                     original,state['record'],kind,full_content,full_truncated)
         bank=encode_checkpoint(state['record'],phase,content[:2048],truncated or len(content)>2048)
@@ -131,20 +135,27 @@ def capture(phase, content, truncated=False):
 def main():
     parser=argparse.ArgumentParser(description=__doc__)
     parser.add_argument('phase',choices=PHASES)
-    parser.add_argument('--event',choices=('started','completed','failed'))
+    source=parser.add_mutually_exclusive_group()
+    source.add_argument('--event',choices=('started','completed','failed'))
+    source.add_argument('--events-file',type=Path)
     args=parser.parse_args()
     try:
+        readiness=None
         if args.phase=='init-ready':
-            if args.event is not None:
+            if args.event is not None or args.events_file is not None:
                 raise ValueError('installer event is not kernel-console content')
+            readiness=observer.wait_for_partition()
             content=observer.command(['/sbin/dmesg'])
             truncated=False
         else:
-            if args.event is None:
+            if args.event is None and args.events_file is None:
                 raise ValueError('explicit sanitized installer event required')
-            content=('installer='+args.event+'\n').encode()
+            content=(evidence.batch(args.events_file) if args.events_file is not None else
+                     ('installer='+args.event+'\n').encode())
             truncated=False
-        result=capture(args.phase,content,truncated)
+        result=capture(args.phase,content,truncated,structured=args.events_file is not None)
+        if readiness is not None:
+            result['boot_medium_readiness']=readiness
     except (ValueError,OSError,UnicodeError,subprocess.SubprocessError) as error:
         print(json.dumps(dict(status='unavailable',writes_admitted=False,reason=str(error))))
         return 1

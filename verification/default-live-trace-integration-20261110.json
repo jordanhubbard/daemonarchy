@@ -115,7 +115,7 @@
     "hardlink_preservation": true,
     "native_readonly_mount_and_abi_refusal": true,
     "automatic_rc_capture": true,
-    "matching_worker_full_runtime_audit": false,
+    "matching_worker_full_runtime_audit": true,
     "final_CURRENT_media": false,
     "physical": false,
     "release": false,
@@ -204,14 +204,14 @@
     "qualification_scope": "Retained complete 1.5.1 live root on native amd64 FreeBSD in QEMU USB; actual default rc service, read-only observer fixture; no real installation or final CURRENT qualification."
   },
   "matching_worker_audit_repeat": {
-    "status": "Detached native driver verified the corrected full-root image and auditor identities, passed tool/import/GTK/desktop checks and discovered 8006 regular paths; full ELF scan and terminal integrity checks pending",
+    "status": "pass: complete matching-worker read-only runtime audit, all retained ELF dependencies, owned cleanup and final original-image checksum",
     "auditor_source_sha256": "b703a54a3394580ac99f8a0fe155da4258da24b45a4664bc095b47553bf08942",
     "image_sha256": "6392e01e31d914f42e8d5767c1d24a79b724ff65e25fefd4a4671f9e79d927e2",
     "whole_driver_timeout_seconds": 10800,
     "classification_batch_paths": 128,
-    "all_regular_paths_classified": "required; full-image execution pending",
-    "ldd_per_dynamic_elf_path": "required, including hardlink aliases; full-image execution pending",
-    "qualified": false,
+    "all_regular_paths_classified": true,
+    "ldd_per_dynamic_elf_path": true,
+    "qualified": true,
     "native_classifier_control": {
       "exit": 0,
       "regular_paths": 7,
@@ -221,7 +221,16 @@
       "initial_control_refused_escaped_pathname": true,
       "correction": "Use file -r with two NUL delimiters; verify each returned pathname and result count before invoking ldd."
     },
-    "regular_paths_discovered": 8006
+    "regular_paths_discovered": 8006,
+    "driver_exit": 0,
+    "owned_md_devices_released": true,
+    "owned_mounts_released": true,
+    "image_unchanged": true,
+    "regular_paths_classified": 8006,
+    "dynamic_elf_paths_resolved": 2395,
+    "scope": "Retained complete AMD64 1.5.1 root with then-current eight trace helpers; later installer-relay source not present.",
+    "installed_trace_helpers": 8,
+    "new_installer_relay_included": false
   },
   "corrected_image_compression": {
     "raw_bytes": 2554348032,

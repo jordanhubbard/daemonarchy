@@ -10,6 +10,14 @@ install_trace_start_us=0
 install_trace_phase=none
 install_trace_phase_us=0
 declare -A install_trace_op_us=()
+install_evidence_tool=${BASH_SOURCE[0]%/*}/../daemonarchy-boottrace/installer-evidence.py
+if [[ -x /usr/local/bin/python3.12 ]]; then
+  install_evidence_python=/usr/local/bin/python3.12
+else
+  install_evidence_python=$(command -v python3.12 || command -v python3 || true)
+fi
+install_evidence_state=
+install_evidence_packages_recorded=false
 
 # Microseconds since the Unix epoch. EPOCHREALTIME is bash 5's wall clock.
 trace_now() {
@@ -20,7 +28,7 @@ trace_now() {
 # Strip what would break the JSON line; quote anything that is not an integer.
 trace_value() {
   local value=$1
-  if [[ $value =~ ^-?[0-9]+$ ]]; then
+  if [[ ${2:-} != string && $value =~ ^-?[0-9]+$ ]]; then
     printf '%s' "$value"
     return
   fi
@@ -33,7 +41,7 @@ trace_value() {
 # trace_event EVENT [KEY VALUE]...
 trace_event() {
   [[ -n $install_trace_file ]] || return 0
-  local event=$1 now line key
+  local event=$1 now line key value_kind
   shift
   now=$(trace_now)
   line=$(printf '{"t_us":%s,"since_start_us":%s,"event":"%s","phase":"%s"' \
@@ -41,7 +49,9 @@ trace_event() {
   while (( $# >= 2 )); do
     key=$1
     [[ $key =~ ^[a-z_][a-z0-9_]*$ ]] || { shift 2; continue; }
-    line+=$(printf ',"%s":%s' "$key" "$(trace_value "$2")")
+    value_kind=
+    case $key in name|version|image_version|device|sha256|identity_sha256|uuid|mode) value_kind=string ;; esac
+    line+=$(printf ',"%s":%s' "$key" "$(trace_value "$2" "$value_kind")")
     shift 2
   done
   printf '%s}\n' "$line" >>"$install_trace_file" 2>/dev/null || true
@@ -49,13 +59,63 @@ trace_event() {
 
 trace_init() {
   install_trace_file=$1
-  : >"$install_trace_file" 2>/dev/null || { install_trace_file=; return 0; }
+  install_evidence_state=
+  install_evidence_packages_recorded=false
+  if [[ -n $install_evidence_python && -r $install_evidence_tool ]]; then
+    "$install_evidence_python" "$install_evidence_tool" prepare "$install_trace_file" 2>/dev/null || { install_trace_file=; return 0; }
+  else
+    # Older standalone consumers can create a fresh file, never follow or
+    # truncate a pre-existing predictable path without the atomic helper.
+    (umask 077; set -o noclobber; : >"$install_trace_file") 2>/dev/null || { install_trace_file=; return 0; }
+  fi
   chmod 600 "$install_trace_file" 2>/dev/null || true
   install_trace_start_us=$(trace_now)
   export DAEMONARCHY_TRACE_FILE=$install_trace_file DAEMONARCHY_TRACE_START_US=$install_trace_start_us
   trace_event trace_start schema daemonarchy/install-trace@1 \
     image_version "$(cat "${ISO_SHARE:-/nonexistent}/version" 2>/dev/null || echo unknown)" \
     kernel "$(uname -r 2>/dev/null || echo unknown)" arch "$(uname -m 2>/dev/null || echo unknown)"
+  local producer_pid=$BASHPID
+  if [[ -n $install_evidence_python && -r $install_evidence_tool ]]; then
+    install_evidence_state=$("$install_evidence_python" "$install_evidence_tool" start "$install_trace_file" "$producer_pid" 2>/dev/null) || install_evidence_state=
+  fi
+}
+
+# Device details remain private; only a canonical selected name and the hash
+# of its actual diskinfo response enter the persistent evidence projection.
+trace_target() {
+  local device=$1 identity=
+  [[ $device =~ ^[a-z][a-z0-9]{0,30}[0-9](p[0-9]+)?$ ]] || return 0
+  if declare -F disk_fingerprint >/dev/null; then
+    identity=$(disk_fingerprint "$device" 2>/dev/null) || identity=
+  fi
+  trace_event target device "$device" identity_sha256 "$identity"
+}
+
+# This runs from the install engine's final EXIT handler, after pool export,
+# separately from trace_finish (which closes performance collection earlier).
+trace_installer_result() {
+  trace_event installer_result status "$1"
+  if [[ -n $install_evidence_state ]]; then
+    "$install_evidence_python" "$install_evidence_tool" drain "$install_evidence_state" >/dev/null 2>&1 || true
+  fi
+  return 0
+}
+
+# Persist actual name/version registrations once, rather than copying every
+# download/extract/progress event and exhausting the bounded medium log.
+trace_package_inventory() {
+  $install_evidence_packages_recorded && return 0
+  local inventory
+  if ! inventory=$(pkg_target query '%n %v' 2>/dev/null); then
+    trace_event package_inventory status unavailable count 0
+    return 0
+  fi
+  if [[ -n $install_evidence_python && -r $install_evidence_tool ]] &&
+      printf '%s\n' "$inventory" | "$install_evidence_python" "$install_evidence_tool" inventory "$install_trace_file" "$install_trace_phase" 2>/dev/null; then
+    install_evidence_packages_recorded=true
+  else
+    trace_event package_inventory status unavailable count 0
+  fi
 }
 
 # Entering a phase closes the previous one with its duration.

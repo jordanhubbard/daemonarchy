@@ -12,7 +12,7 @@ import tempfile
 
 SOURCE = Path(__file__).resolve().parents[1]
 MODULES = ('stick.py','boot-medium.py','fat-volume.py','observe-medium.py',
-           'capture-medium.py','session-log.py')
+           'capture-medium.py','session-log.py','installer-evidence.py')
 
 
 def checked_path(root, relative):

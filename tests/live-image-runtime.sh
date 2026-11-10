@@ -73,6 +73,7 @@ if [ "$2" = ram ]; then
       /usr/local/libexec/daemonarchy-boottrace/fat-volume.py \
       /usr/local/libexec/daemonarchy-boottrace/observe-medium.py \
       /usr/local/libexec/daemonarchy-boottrace/capture-medium.py \
+      /usr/local/libexec/daemonarchy-boottrace/installer-evidence.py \
       /usr/local/libexec/daemonarchy-boottrace/session-log.py; do
     [ -f "$path" ] && [ ! -L "$path" ] && [ "$(stat -f '%u:%Lp' "$path")" = 0:555 ] || {
       echo "Missing or unsafe default trace helper: $path" >&2; exit 1;

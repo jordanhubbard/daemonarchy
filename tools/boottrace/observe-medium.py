@@ -8,10 +8,12 @@ import json
 import os
 from pathlib import Path
 import re
+import select
 import stat
 import struct
 import subprocess
 import sys
+import time
 
 
 def module(name, filename):
@@ -217,6 +219,66 @@ def observe():
     with open_medium() as state:
         result = state['result']
     return result
+
+
+@contextmanager
+def device_changes():
+    """Use devfs notifications where supported; keep a bounded fallback."""
+    queue = None
+    fd = None
+    try:
+        fd = os.open('/dev', os.O_RDONLY | os.O_DIRECTORY | os.O_CLOEXEC)
+        queue = select.kqueue()
+        event = select.kevent(fd, filter=select.KQ_FILTER_VNODE,
+                             flags=select.KQ_EV_ADD | select.KQ_EV_CLEAR,
+                             fflags=select.KQ_NOTE_WRITE)
+        queue.control([event], 0, 0)
+    except OSError:
+        if queue is not None:
+            queue.close()
+        queue = None
+    try:
+        def pause(seconds):
+            if queue is None:
+                select.select([], [], [], seconds)
+            else:
+                queue.control(None, 1, seconds)
+        yield pause
+    finally:
+        if queue is not None:
+            queue.close()
+        if fd is not None:
+            os.close(fd)
+
+
+def wait_for_partition(seconds=30, pause=None, clock=time.monotonic):
+    """Read-only readiness before a single capture attempt, never a write retry.
+
+    RAM-root rc can start before USB/PART enumeration. A typed absence can
+    wait, but ambiguous/foreign/malformed observations must still refuse.
+    """
+    if not sys.platform.startswith('freebsd') or os.geteuid() != 0:
+        raise ValueError('native privileged boot-medium observation required')
+    if pause is None:
+        with device_changes() as changed:
+            return wait_for_partition(seconds, changed, clock)
+    original = environment()
+    partition = medium.canonical_uuid(original['daemonarchy.trace.partition'])
+    deadline = clock() + seconds
+    observations = missing = 0
+    while True:
+        if environment() != original:
+            raise ValueError('kernel session changed during boot-medium readiness')
+        observations += 1
+        try:
+            medium.resolve_partition(snapshot(), partition)
+            return dict(observations=observations, not_enumerated=missing)
+        except medium.PartitionNotReady:
+            missing += 1
+            remaining = deadline - clock()
+            if remaining <= 0:
+                raise
+            pause(min(remaining, 0.25))
 
 
 def main():

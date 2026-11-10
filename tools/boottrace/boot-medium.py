@@ -11,6 +11,10 @@ MAX_NODES = 16384
 BASIC_DATA = 'ebd0a0a2-b9e5-4433-87c0-68b6b72699c7'
 
 
+class PartitionNotReady(ValueError):
+    """A valid GEOM snapshot does not yet expose the declared partition."""
+
+
 def text(element, name, optional=False):
     children = element.findall(name)
     if optional and not children:
@@ -95,7 +99,7 @@ def resolve_partition(data, partition_uuid):
                 if raw_uuid is not None and raw_uuid.lower() == partition_uuid:
                     candidates.append((class_name, geom, provider))
     if not candidates:
-        raise ValueError('boot partition UUID is missing or ambiguous')
+        raise PartitionNotReady('boot partition UUID is not yet enumerated')
 
     def parent_of(owner):
         consumers = owner.findall('consumer')

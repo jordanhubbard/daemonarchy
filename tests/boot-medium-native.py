@@ -7,7 +7,7 @@ import os
 import tempfile
 from types import SimpleNamespace
 import unittest
-from unittest.mock import patch
+from unittest.mock import patch, Mock
 import xml.etree.ElementTree as ET
 
 ROOT=Path(__file__).resolve().parents[1]
@@ -28,6 +28,38 @@ def topology():
 
 
 class NativeObservation(unittest.TestCase):
+    def test_readiness_waits_for_absence_before_any_native_device_open(self):
+        absent=topology()
+        absent.find('class/geom/provider/config/rawuuid').text='ffffffff-ffff-ffff-ffff-ffffffffffff'
+        environment,_=fixtures.session()
+        pause=Mock()
+        with patch.object(observer.sys,'platform','freebsd16'), patch.object(observer.os,'geteuid',return_value=0), \
+                patch.object(observer,'environment',return_value=environment), \
+                patch.object(observer,'snapshot',side_effect=[fixtures.encode(absent),fixtures.encode(topology())]), \
+                patch.object(observer.os,'open') as opened:
+            result=observer.wait_for_partition(1,pause,clock=Mock(side_effect=[0,0.1]))
+            self.assertEqual(result,dict(observations=2,not_enumerated=1))
+            pause.assert_called_once_with(0.25)
+            opened.assert_not_called()
+
+    def test_readiness_does_not_retry_ambiguity_session_change_or_expired_absence(self):
+        environment,_=fixtures.session()
+        for error in (ValueError('ambiguous provider'),medium.PartitionNotReady('not enumerated')):
+            pause=Mock()
+            with patch.object(observer.sys,'platform','freebsd16'), patch.object(observer.os,'geteuid',return_value=0), \
+                    patch.object(observer,'environment',return_value=environment), patch.object(observer,'snapshot',return_value=b'fixture'), \
+                    patch.object(medium,'resolve_partition',side_effect=error), patch.object(observer.os,'open') as opened:
+                with self.assertRaises(type(error)):
+                    observer.wait_for_partition(1,pause,clock=Mock(side_effect=[0,2]))
+                pause.assert_not_called()
+                opened.assert_not_called()
+        with patch.object(observer.sys,'platform','freebsd16'), patch.object(observer.os,'geteuid',return_value=0), \
+                patch.object(observer,'environment',side_effect=[environment,dict(environment,changed='yes')]), \
+                patch.object(observer,'snapshot') as snapshot:
+            with self.assertRaisesRegex(ValueError,'session changed'):
+                observer.wait_for_partition(1,Mock(),clock=lambda:0)
+            snapshot.assert_not_called()
+
     def test_large_extents_use_complete_bounded_aligned_requests(self):
         data = bytes(range(256)) * 4096
         pread, pwrite = os.pread, os.pwrite

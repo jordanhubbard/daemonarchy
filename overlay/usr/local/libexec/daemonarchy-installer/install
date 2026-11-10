@@ -27,6 +27,18 @@ DIST=/usr/freebsd-dist
 REPO=$ISO_SHARE/repo
 TARGET=/mnt
 POOL=zroot
+# Start passive evidence before ABI/configuration/feed preflight can fail.
+# The full cleanup handler below takes over after its dependencies exist.
+source "$(dirname "$0")/install-trace"
+trace_init /tmp/daemonarchy-install-trace.jsonl
+trace_preflight_cleanup() {
+  local status=$?
+  trace_finish "$status" || true
+  trace_installer_result "$status" || true
+}
+trap trace_preflight_cleanup EXIT
+trap 'exit 130' INT
+trap 'exit 143' TERM HUP
 ABI=$(cat "$ISO_SHARE/ABI")
 case "$ABI" in
   FreeBSD:16:amd64) image_arch=amd64 efi_boot_file=BOOTX64.EFI ;;
@@ -49,7 +61,6 @@ source "$(dirname "$0")/secureboot-options"
 source "$(dirname "$0")/package-repository"
 source "$(dirname "$0")/apple-firmware"
 source "$(dirname "$0")/sound-setup"
-source "$(dirname "$0")/install-trace"
 package_repository_prepare "$ISO_SHARE"
 package_cache_validate
 if [[ -n ${package_cache_url:-} && $package_repository_tag == "$package_repository_stable_tag" ]]; then
@@ -73,7 +84,6 @@ log() { printf '\033[32m==>\033[0m %s\n' "$*"; }
 # A microsecond trace of every timed installation event: phases, operations,
 # package downloads and unpacks, device events and network/disk/CPU samples.
 # docs/install-trace.md. It records names, counts and times, never answers.
-trace_init /tmp/daemonarchy-install-trace.jsonl
 trace_sampler_pid=
 if [[ -n $install_trace_file ]]; then
   trace_python=$(command -v python3.12 || command -v python3 || true)
@@ -125,6 +135,7 @@ phase() {
 target() {
   [[ $2 =~ ^[A-Za-z][A-Za-z0-9_.:-]{0,63}$ ]] || return 0
   printf '@@target %s %s\n' "$1" "$2"
+  if [[ $1 == disk ]]; then trace_target "$2" || true; fi
 }
 
 # Only report completed operations. Labels and phases are fixed protocol values;
@@ -160,6 +171,9 @@ trace_close() {
 }
 cleanup() {
   local status=$?
+  if $diagnostics_ready && declare -F pkg_target >/dev/null; then
+    trace_package_inventory || true
+  fi
   trace_close "$status"
   if [[ -n ${fetch_events_pid:-} ]]; then kill "$fetch_events_pid" 2>/dev/null || true; fi
   if [[ -n ${fetch_events_dir:-} ]]; then rm -rf "$fetch_events_dir"; fi
@@ -176,6 +190,7 @@ cleanup() {
   if $cuda_setup_started; then cuda_unmount_target "$TARGET" || true; fi
   umount "$TARGET/dev" 2>/dev/null || true
   umount "$TARGET/boot/efi" 2>/dev/null || true
+  trace_installer_result "$status" || true
 }
 trap cleanup EXIT
 trap 'exit 130' INT
@@ -249,6 +264,8 @@ target disk "${disk#/dev/}"
 progress_count disk 0 3
 trace_begin storage_layout
 apply_install_layout
+target_partition_identity=$(partition_uuid "$disk" "$partition_index" 2>/dev/null) || target_partition_identity=
+trace_event target_partition device "${disk}p${partition_index}" mode "$install_mode" uuid "$target_partition_identity"
 trace_end storage_layout
 progress_count disk 1 3
 if [[ $encrypt_installation == true ]]; then
@@ -301,6 +318,8 @@ phase base "Installing the FreeBSD base system"
 expanded_sets=0
 progress_count base 0 3
 for set in base kernel lib32; do
+  set_identity=$(/bin/timeout -k 1 30 sha256 -q "$DIST/$set.txz" 2>/dev/null) || set_identity=
+  trace_event artifact name "$set" sha256 "$set_identity"
   traced "extract_$set" tar -xpf "$DIST/$set.txz" -C "$TARGET"
   expanded_sets=$((expanded_sets + 1))
   progress_count base "$expanded_sets" 3
@@ -872,6 +891,7 @@ fi
 # ---------------------------------------------------------------- done
 
 phase finish "Finishing up"
+trace_package_inventory || true
 chroot "$TARGET" pw usershow "$username" >/dev/null
 for package in daemonarchy omarchy sddm hyprland; do
   pkg_target info -e "$package" || { echo "Missing required desktop package: $package" >&2; exit 1; }

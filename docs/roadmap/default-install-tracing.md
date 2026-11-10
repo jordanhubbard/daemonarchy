@@ -831,3 +831,67 @@ hints and reports that fixture limitation. These are CURRENT base-system
 controls; complete packaged ARM installer media, real installation, desktop,
 earlier kernel/panic persistence, unexpected reset/power loss and physical
 platform acceptance remain open.
+
+
+The replacement [matching-worker audit](../../verification/default-live-trace-integration-20261110.json)
+now completes on the exact corrected amd64 retained-root image: all 8,006 regular
+paths are classified and all 2,395 dynamic ELF paths resolve. Native cleanup
+and an unchanged final image checksum pass, with an independent owned-mount/MD
+check. This qualifies that retained image with its then-current eight helpers;
+it does not qualify the later installer relay or final CURRENT media.
+
+## 1.6 installer evidence relay
+
+The [source integration checkpoint](../../verification/installer-evidence-integration-20261110.json)
+adds real installer hooks for phases, observed archive hashes, selected disk
+fingerprints and partition identities, actual package registrations and the
+final installer status. The older performance trace closes before pool export,
+so its `exit` row is excluded from the persistent outcome. The actual EXIT
+handler supplies the terminal result, including ABI/configuration preflight
+failures before the full cleanup handler is ready. Tests retain status 23 at
+that entry boundary and status 37 after a simulated
+export failure even when the performance trace had already closed with zero.
+
+A background collector pins the private performance-file inode and projects
+only defined fields and bounded values. It never copies raw rows, output,
+answers, URLs or configuration. Package identities come from one actual
+name/version registry snapshot at finish or failure, avoiding duplicated
+download/extraction events that would consume the bounded log. Numeric-only
+versions remain strings. A 1,500-package control fits the unchanged content
+limit with terminal-event reserve. The new ninth staged helper uses the
+existing serialized native writer, contiguous attempt/event sequences, retry
+idempotency and unchanged two-frame commit ordering. Invalid input and full
+logs preserve earlier evidence; diagnostic failure cannot replace the
+installer's result. The final drain is bounded independently of device I/O.
+
+All 81 control groups pass on native FreeBSD ARM64, without skips; Linux passes
+79 with two explicit native kqueue groups skipped. The native unit collector
+uses a test delivery callback. A subsequent actual EFI/USB fixture tests
+the real relay and writer; neither these controls nor that controlled producer
+constitute a complete real installation. Actual target mutation/export, real
+installation and final-media acceptance remain open.
+
+
+The native relay control persists ten structured events through the production
+writer and retains the controlled exit status 37 while excluding the earlier
+performance-trace zero and a fake secret marker. All four banks decode, all
+5,296 sampled kernel bytes and 1,638 installer-event bytes are retained, and
+only 14,753 current-session bytes change. Linux and native FreeBSD read-only
+FAT checks pass. No actual target layout or export operation is performed.
+
+That control first exposed a real init race: RAM-root rc can start while the
+boot USB partition is absent from GEOM. The failed boot retains an empty init
+bank and its recorded refusal; the later installer relay succeeded. Shared
+init capture now waits read-only for a specifically absent provider within a
+30-second bound. It still refuses ambiguous/malformed candidates immediately
+and does not retry payload writes. The repaired native boot observes two
+absent snapshots followed by the ready provider, then records the complete
+kernel snapshot and the installer control. This is a shared readiness repair,
+not a fixed boot delay or a board-specific workaround.
+
+A second native EFI/USB relay control forces an actual first-batch commit
+before the producer finishes. Both frame sequences decode; the final ten
+events retain status 37, preserve the complete earlier batch as a prefix,
+and leave the first installer bank unchanged. Only 15,514 bytes change, all
+within the current session. This validates incremental delivery on the actual
+medium; it remains a controlled producer rather than a complete installation.

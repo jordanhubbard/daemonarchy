@@ -66,7 +66,7 @@ class StageTests(unittest.TestCase):
                 data[18:20] = machine.to_bytes(2,'little')
                 py.write_bytes(data)
                 result = self.stage()
-                self.assertEqual(len(result['files']), 8)
+                self.assertEqual(len(result['files']), 9)
                 for entry in result['files']:
                     path = self.root/entry['path']
                     self.assertEqual(hashlib.sha256(path.read_bytes()).hexdigest(), entry['sha256'])
