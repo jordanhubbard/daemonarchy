@@ -1,0 +1,75 @@
+{
+  "schema": "daemonarchy/native-arm64-v4-efi-build@1",
+  "observed_utc": "2026-11-10T19:47:25.803405+00:00",
+  "source": {
+    "source_commit": "97d15adddd39d1dee09f3baa9b89758d96a8b005",
+    "source_tree": "c0b403dc78858b23d22bbf686e781ef3f682e27c",
+    "archive_sha256": "af262e121e3e4534d658a36c11db77fb04689bdbc7c1484090171becb58cca68",
+    "archive_bytes": 344349717
+  },
+  "worker": {
+    "system": "FreeBSD",
+    "architecture": "arm64/aarch64",
+    "osreldate": 1600031,
+    "kernel_source_commit": "af55b6f9042e15b635e90926d476e7cbeb48a069",
+    "compiler": "FreeBSD clang 21.1.8; aarch64-unknown-freebsd16.0",
+    "linker": "FreeBSD LLD 21.1.8",
+    "build_uid": 1017,
+    "build_gid": 1017,
+    "installed_bootstrap_provenance": "not independently qualified"
+  },
+  "execution": {
+    "source_mount_readonly": true,
+    "objects_outside_source": true,
+    "jobs": 2,
+    "build_timeout_seconds": 3600,
+    "controller_exit": 0,
+    "build_exit": 0,
+    "owned_source_mount_released": true,
+    "configuration": [
+      "NO_ROOT=yes",
+      "WITHOUT_LOADER_BIOS=yes",
+      "WITH_LOADER_CD9660=yes",
+      "LOADER_NET_SUPPORT=yes",
+      "__MAKE_CONF=/dev/null",
+      "SRCCONF=/dev/null"
+    ],
+    "commands": [
+      "make -C stand -j2 [configuration] obj",
+      "make -C stand -j2 [configuration] all"
+    ]
+  },
+  "native_controls": {
+    "boot_medium_parser": 17,
+    "normal_record_policy": 44,
+    "fat_extent_controls": 19,
+    "block_map": "pass; 4096-byte banks at aligned and 2048-byte-misaligned positions",
+    "lua_normal_startup": 4,
+    "amd64_bootinfo_fixture": "not applicable: fixture requires native FreeBSD amd64; no ARM64 handoff coverage inferred"
+  },
+  "product": {
+    "kind": "loader_lua.efi",
+    "bytes": 1384876,
+    "sha256": "14394269940e640a943f294061bad7a18ddbc9387f7000ce2ce71c79649a9806",
+    "file": "PE32+ executable for EFI (application), ARM64, 2 sections"
+  },
+  "initial_preparation": {
+    "controller_exit": 1,
+    "build_exit": 1,
+    "compile_started": false,
+    "reason": "Incorrect kern.osversion sysctl query; corrected to kern.osreldate in separate attempt",
+    "failed_attempt_retained": true
+  },
+  "qualification": {
+    "native_arm64_stand_build": true,
+    "native_controls": true,
+    "firmware_boot": false,
+    "handoff_runtime": false,
+    "default_rc_capture": false,
+    "whole_source_build": false,
+    "final_CURRENT_release_media": false,
+    "physical": false,
+    "signing": false,
+    "release": false
+  }
+}

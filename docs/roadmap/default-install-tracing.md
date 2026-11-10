@@ -794,3 +794,12 @@ The preceding full-root image separately passes native xz integrity, exact
 decompression and unchanged size limits: raw 2,555,396,608 bytes, compressed
 1,882,527,364 bytes. Its runtime capture failure remains a failure; these
 compression checks do not qualify its default trace service.
+
+
+The [native ARM64 v4 EFI build](../../verification/normal-v4-arm64-build-20261110.json)
+now produces an ARM64 EFI executable from the pinned source, using native
+Clang/LLD 21.1.8, a read-only source view and separate unprivileged objects.
+Native media, record-policy, FAT, block-map and Lua controls pass. The initial
+metadata-query failure is retained separately. The repository's amd64-only
+bootinfo fixture supplies no ARM handoff result; actual ARM64 firmware boot,
+userspace capture and final-media acceptance remain open.
