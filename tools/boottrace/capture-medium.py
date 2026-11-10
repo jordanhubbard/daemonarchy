@@ -15,6 +15,7 @@ spec = importlib.util.spec_from_file_location('native_observer',Path(__file__).w
 observer = importlib.util.module_from_spec(spec)
 spec.loader.exec_module(observer)
 stick, medium = observer.stick, observer.medium
+session_log = observer.module('session_log','session-log.py')
 DIOCGFLUSH = 0x20006487
 PHASES = {'init-ready': (2,'kernel-console'), 'installer': (3,'installer-events')}
 
@@ -79,19 +80,51 @@ def commit_bank(read, write, flush, guard, slot_offset, original, index, bank):
 
 
 def capture(phase, content, truncated=False):
+    if phase not in PHASES or type(content) is not bytes:
+        raise ValueError('bounded checkpoint phase/content required')
     with observer.open_medium(writable=True) as state:
-        bank=encode_checkpoint(state['record'],phase,content,truncated)
         def flush():
             os.fsync(state['fd'])
             observer.fcntl.ioctl(state['fd'],DIOCGFLUSH)
-        committed=commit_bank(state['read'],
-            lambda off,data:os.pwrite(state['fd'],data,off-state['write_base']),
-            flush,state['guard'],state['slot_offset'],state['slot'],PHASES[phase][0],bank)
+        write=lambda off,data:os.pwrite(state['fd'],data,off-state['write_base'])
+        extents=state['result']['filesystem'].get('log_extents')
+        full=None
+        if extents is not None:
+            kind=PHASES[phase][1]
+            relative,size=extents[kind]
+            if size!=session_log.FILE_SIZE:
+                raise ValueError('wrong userspace log extent size')
+            offset=state['write_base']+relative
+            original=state['read'](offset,size)
+            frames,latest=session_log.inspect(original,state['record'],kind)
+            full_content=content[:session_log.CONTENT_LIMIT]
+            full_truncated=truncated or len(content)>session_log.CONTENT_LIMIT
+            if phase=='installer' and latest is not None:
+                previous=frames[latest]['content']
+                full_content=previous if previous.endswith(content) else previous+content
+                full_truncated=truncated or frames[latest]['metadata']['content_truncated']
+                if len(full_content)>session_log.CONTENT_LIMIT:
+                    raise ValueError('installer log full; previous progress retained')
+            full=session_log.commit(state['read'],write,flush,state['guard'],offset,
+                                    original,state['record'],kind,full_content,full_truncated)
+        bank=encode_checkpoint(state['record'],phase,content[:2048],truncated or len(content)>2048)
+        index=PHASES[phase][0]
+        if full is not None and state['slot'][index*4096:(index+1)*4096] not in (b'\n'*4096,bank):
+            name='init' if phase=='init-ready' else 'installer'
+            committed=dict(status='preserved',writes_performed=0,
+                           previous_bank_status=state['record'][name]['status'])
+        else:
+            committed=commit_bank(state['read'],write,flush,state['guard'],
+                                  state['slot_offset'],state['slot'],index,bank)
         result=dict(schema='daemonarchy/native-userspace-checkpoint@1',
                     phase=phase,session=state['result']['selection']['session'],
                     boot_nonce_sha256=state['result']['selection']['boot_nonce_sha256'],
-                    content_bytes=len(content),content_truncated=truncated,
-                    writes_admitted=True,full_log_retention=False,**committed)
+                    content_bytes=min(len(content),2048),
+                    content_truncated=truncated or len(content)>2048,
+                    writes_admitted=True,full_log_retention=full is not None,**committed)
+        if full is not None:
+            result['bounded_log']=full
+            result['bounded_log_limit']=session_log.CONTENT_LIMIT
     return result
 
 
@@ -105,8 +138,7 @@ def main():
             if args.event is not None:
                 raise ValueError('installer event is not kernel-console content')
             content=observer.command(['/sbin/dmesg'])
-            truncated=len(content)>2048
-            content=content[:2048]
+            truncated=False
         else:
             if args.event is None:
                 raise ValueError('explicit sanitized installer event required')

@@ -648,3 +648,39 @@ log retention or installer progress capture. Default live/installer integration,
 full bounded logs, ARM and BIOS capture, final CURRENT media, actual interrupted
 device writes/reset/power loss, physical hardware and release acceptance remain
 open. Older records and published images retain their original scope.
+
+## Full bounded per-session logs
+
+The [session-log checkpoint](../../verification/bounded-session-logs-20261110.json)
+extends new native trace filesystems with 64 preallocated USPACE files:
+one kernel and one installer file for each of 32 sessions. Each file is 1 MiB,
+split into two frames with a 4 KiB checksummed identity header and at most
+520,192 payload bytes per frame. The firmware's existing 233-entry raw map is
+unchanged. Native admission verifies every file's size, contiguous extent and
+allocation ownership before exposing the selected session's log extents.
+
+An update writes and flushes the inactive payload before committing and flushing
+its header. The most recent complete frame remains readable if that update is
+interrupted. A damaged inactive frame is retained rather than silently reused;
+exhaustion is explicit. Foreign identities and ambiguous sequences refuse writes.
+The standalone reader exports the latest valid payload through a correlated
+normal-slot identity without modifying inputs. The small v4 banks remain first
+checkpoints; installer progress appends to the full log while preserving them.
+Media without USPACE retains the preceding bounded-bank behavior.
+
+All 48 test groups pass on Linux and native FreeBSD ARM64. The actual retained
+x86 fixture captures all 5,183 dmesg bytes without truncation, retains installer
+start and completion fixtures in sequences 1 and 2, and retries the terminal
+event without rewriting the log. Native and Linux extraction produce identical
+payload bytes. The subsequent boot preserves the prior complete normal slot
+and both full files byte-for-byte, then captures a fresh session. Each boot
+changes only 11,441 bytes inside its own normal and log files. Both returned
+FATs pass Linux and native FreeBSD read-only checks; the original image remains
+unchanged. The initial host metadata-comparison and native probe-invocation
+failures remain retained separately from these passing results.
+
+The installer events are fixtures, not a real installation. Default boot and
+installer hooks, actual phase/package/target/terminal evidence, ARM and BIOS,
+final CURRENT images, real interrupted device writes/reset/power loss and
+physical hardware acceptance remain required. Complete early-kernel or panic
+persistence does not follow from an init-time dmesg snapshot.

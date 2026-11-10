@@ -172,6 +172,20 @@ def validate_fat(read_at, selection, selected_path=None):
     if map_size != 16384 or read(map_off,map_size) != expected_map.ljust(map_size,b'\n'):
         raise ValueError('trace map does not match actual FAT allocations')
     selected = {'selected_extent': extent(selected_path), 'identity_extent': extent('INSTALL.ID')} if selected_path is not None else {}
+    if selected_path is not None:
+        selected['log_extents'] = None
+        if any(path.startswith('USPACE/') for path in files):
+            for session in range(1,33):
+                for extension in ('KRN','INS'):
+                    _,length = extent('USPACE/%04d.%s'%(session,extension))
+                    if length != 1<<20:
+                        raise ValueError('wrong preallocated userspace log size')
+            session = selected_path.rsplit('/',1)[-1].split('.')[0]
+            if re.fullmatch('[0-9]{4}',session) is None:
+                raise ValueError('invalid userspace log session')
+            selected['log_extents'] = {
+                kind:extent('USPACE/'+session+'.'+extension)
+                for kind,extension in (('kernel-console','KRN'),('installer-events','INS'))}
     return dict(**selected, schema='daemonarchy/boot-medium-fat-observation@1',
                 map_sha256=hashlib.sha256(expected_map).hexdigest(),
                 fat_sha256=hashlib.sha256(fat).hexdigest(),

@@ -189,9 +189,12 @@ def assemble(image, output, work, stick_path, size_mib=256, identity_path=None):
     if identity_data is not None:
         (data / 'INSTALL.ID').write_bytes(identity_data)
         (data / 'NORMAL').mkdir()
+        (data / 'USPACE').mkdir()
         for slot in range(1, stick.NORMAL_SLOTS + 1):
             (data / 'NORMAL' / f'{slot:04d}.TXT').write_bytes(
                 stick.padded(stick.NORMAL_EMPTY, stick.SLOT_SIZE))
+            for kind in ('KRN','INS'):
+                (data / 'USPACE' / f'{slot:04d}.{kind}').write_bytes(b'\n' * (1 << 20))
     (data / 'INSTALL.JSON').write_text(json.dumps(dict(
         schema=1, mode='observe-only', payload_sha256=identity,
         payload_bytes=original_size, declared_identity=declared,
@@ -251,6 +254,7 @@ def assemble(image, output, work, stick_path, size_mib=256, identity_path=None):
     return dict(schema=1, input_sha256=identity, output_sha256=digest(output),
                 output_bytes=output.stat().st_size, trace_start_lba=start // SECTOR,
                 mapped_files=len(mapping['files']), normal_boot_slots=normal_slots,
+                userspace_log_files=normal_slots*2, userspace_file_bytes=1<<20,
                 retained_partition_types=partition_types, retained_partition_entries=True,
                 mbr_boot_code_preserved=True, bios_boot_data_preserved=True,
                 declared_identity=declared, automatic_capture_qualified=False)
