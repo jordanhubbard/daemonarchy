@@ -128,3 +128,5 @@ another version are historical records. 1.5.1 entries describe planned work.
 - [Verified package retention and iterative installer cache](verified-artifact-cache.md)
 
 - [Cross-repository retained input graph](release-input-graph.md)
+
+- [Split media transport (development)](split-media.md)

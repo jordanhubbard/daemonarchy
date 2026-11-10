@@ -1,0 +1,81 @@
+{
+  "schema": "daemonarchy/split-media-development@1",
+  "observed_utc": "2026-11-10T02:47:44.942318+00:00",
+  "status": "controller-controls-pass-full-image-running",
+  "scope": "Bounded transport preparation; publication-format integration and final image qualification remain open",
+  "helper_sha256": "9972893dc0f95966fb66d80a41156a92961f7eba173c5784e4c0f559e14f1184",
+  "controller_tests": {
+    "cases": 30,
+    "pass": 30,
+    "fail": 0,
+    "skip": 0,
+    "ci_registered": true,
+    "ci_result": "pending"
+  },
+  "documentation_tests": {
+    "lifecycle_cases": 4,
+    "release_sync_cases": 13,
+    "pass": 17
+  },
+  "lock_review": {
+    "old_release_revision": "6a423e3784c3f26c4329ec4ba802762127796bf5fd76aa03028b887820867e08",
+    "new_release_revision": "c8d66fe11ca51224e5f9aee4f586dc9724755bbd67733b6cb25b92483a55f011",
+    "acceptance_sha256": "156ea7852183ba9a5c60d337cf26abaadd2c77e01b5e110f0b50c0b981ec6169",
+    "nodes": 8,
+    "edges": 13,
+    "independent_provider_nodes_unchanged": true,
+    "dependency_edges_unchanged_after_root_revision_substitution": true,
+    "allowed_changes": [
+      "Release acceptance identity",
+      "Release revision and its references",
+      "Derived release target selection and requirement-satisfaction identities"
+    ],
+    "runtime_or_receipt_admission": false
+  },
+  "literate_verify": {
+    "exit": 1,
+    "locks": "8 current",
+    "authority": "fail-human-review-marker-stale",
+    "receipt": "fail-human-review-marker-stale",
+    "review_marker_unchanged": true
+  },
+  "full_image_control": {
+    "status": "running",
+    "controller": "Linux AArch64 allocated build controller",
+    "expected_input": {
+      "bytes": 3732947456,
+      "sha256": "2317fd7e2b47d4510e4fff882ecf7cb011d3dc57cf1b5e1e9b368438d49c27e3"
+    },
+    "source_checkpoint": "verification/normal-full-arm-trace-20261109.json",
+    "source_scope": "Retained 1.5.0 installer/world with native kernel/EFI and Omarchy 4.5.0_4; not refreshed CURRENT final media",
+    "raw_budget_exit": 0,
+    "raw_budget_bytes_exclusive": 3758096384,
+    "raw_bytes_per_part": 1073741824,
+    "asset_budget_bytes_exclusive": 2147483648,
+    "expected_parts": 4,
+    "trusted_manifest_pin_required": true,
+    "process_live_verified": true,
+    "same_process_preserved": true,
+    "controller_memory_cap_bytes": 536870912,
+    "controller_nice": 19,
+    "controller_runtime_limit_seconds": 3600,
+    "runtime_limit_note": "Extended only this new lab deadline using a runtime-only unit override after observing encoding throughput; no process restarted and byte/memory gates unchanged",
+    "full_roundtrip_complete": false
+  },
+  "qualification": {
+    "format_controls": true,
+    "full_image_roundtrip": false,
+    "release_verifier_integration": false,
+    "signed_final_media": false,
+    "boot_install_desktop_recovery": false,
+    "physical_hardware": false,
+    "lifecycle_receipt": false,
+    "release": false
+  },
+  "remaining": [
+    "Complete and independently inspect the same retained-image pack/verify/join job",
+    "Integrate split-image representation into release verification, authoring/current records and publication/download documentation before publication",
+    "Produce and qualify matched final ARM and amd64 images from selected source and signed closures",
+    "Complete native/VM/per-board boot, installation, desktop, update/recovery and human/lifecycle gates"
+  ]
+}

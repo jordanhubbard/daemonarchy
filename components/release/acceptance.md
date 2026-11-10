@@ -70,3 +70,19 @@ complete declarations and external/native gaps are in [the acceptance inventory]
   target, and retain a negative/failure case where applicable.
 - **Honest release decisions:** demonstrate the stated requirement on its actual supported
   target, and retain a negative/failure case where applicable.
+
+## Development split media transport
+
+`tests/split-media.py` must prove that bounded independent XZ parts reconstruct
+exactly the selected raw-image identity, with a trusted manifest pin, canonical
+part order, complete geometry and individual compressed/raw hashes. Refuse
+missing/extra parts, unsafe names, duplicate/unknown fields, corrupt/truncated or
+concatenated streams, oversized expansion, nonregular inputs and output races.
+Retain failed outputs privately and never overwrite earlier media. Keep the
+existing raw-image and strictly less than 2 GiB public-asset limits unchanged.
+
+Run the transport against actual complete retained media as well as refusal
+fixtures. Source/world/ABI, signing, platform boot/install/desktop/recovery and
+lifecycle admission remain artifact-specific requirements. The existing
+single-image publication verifier and release records must explicitly admit
+this format before it can be published; transport checks alone do not do so.

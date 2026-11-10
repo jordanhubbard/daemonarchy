@@ -30,6 +30,8 @@ on:
       - 'scripts/check-arm-kernel-set.py'
       - 'scripts/arm-package-closure.py'
       - 'scripts/assemble-arm-media.py'
+      - 'scripts/split-media.py'
+      - 'tests/split-media.py'
       - 'scripts/arm-ram-inspect.py'
       - 'tests/arm-media.py'
       - 'tests/arm-ram-inspect.py'
@@ -155,6 +157,8 @@ on:
       - 'scripts/check-arm-kernel-set.py'
       - 'scripts/arm-package-closure.py'
       - 'scripts/assemble-arm-media.py'
+      - 'scripts/split-media.py'
+      - 'tests/split-media.py'
       - 'scripts/arm-ram-inspect.py'
       - 'tests/arm-media.py'
       - 'tests/arm-ram-inspect.py'
@@ -286,6 +290,7 @@ jobs:
           sudo apt-get install -y -q sleuthkit
           python3 tests/arm-ram-inspect.py -v
           python3 tests/arm-media.py -v
+          python3 tests/split-media.py -v
       - name: One release version
         env:
           PYTHONDONTWRITEBYTECODE: '1'

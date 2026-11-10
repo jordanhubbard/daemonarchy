@@ -58,3 +58,8 @@ An initial assembly check using the published 1.5.1 ARM installer proves the con
 Run `python3 tests/arm-media.py` for damaged-input and wrong-board refusal. Set `DAEMONARCHY_APPLE_BOOTSTRAP_ZIP` to the pinned published asset to include the real bootstrap/FDT control. Record full-image assembly and actual per-target boot/install results separately.
 
 Run `python3 tests/arm-ram-inspect.py -v` with Sleuth Kit available for packed-root decoder and real UFS2 refusal controls. These tiny synthetic filesystem fixtures are parser inputs, not bootable OS products.
+
+For candidates that fit the raw-media budget but exceed the single compressed
+asset limit, the [development split transport](split-media.md) preserves the
+complete raw-image identity in bounded XZ parts. Publication integration and
+final artifact acceptance remain separate required work.
