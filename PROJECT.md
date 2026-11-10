@@ -70,7 +70,9 @@ are not admitted build evidence.
 
 The in-place Literate AI authority layer defines nine product goals, eight
 Component contracts, interface ownership and acceptance mapping. Authority
-validation, all eight contract locks and static skill checks pass. Existing source remains implementation
+validation, all eight contract locks and static skill checks passed at the
+adoption checkpoint. Current authority review and native receipt admission remain
+separate gates; the active 1.6 work has not completed them. Existing source remains implementation
 and release authority; it has not been relocated, regenerated or qualified as
 fungible source. The automatic adoption plan reports `blocked-no-driver` for the
 current shell-script build entrypoints, so its quarantine conversion was not
@@ -79,9 +81,10 @@ original source authority in place, preserving all 272 tracked source entries at
 its reviewed commit. Native retained-project execution and release enforcement
 require separate demonstrated integration.
 
-The current product release is 1.5.0. Its published artifact identity is recorded in
+The current product release is 1.5.1. Its published artifact identity is recorded in
 [`release/current.json`](release/current.json) and its actual qualification scope in the
-[release notes](docs/release-1.5.0.md); 1.4.1 (October 31, 2026) keeps its [notes](docs/release-1.4.1.md),
+[release notes](docs/release-1.5.1.md); 1.5.0 keeps its [notes](docs/release-1.5.0.md),
+1.4.1 (October 31, 2026) keeps its [notes](docs/release-1.4.1.md),
 1.4.0 its [notes](docs/release-1.4.0.md) and 1.1.1 its [record](docs/testing-1.1.1.md).
 Product responsibilities and current acceptance coverage are mapped in
 [the architecture](docs/architecture/design-traceability.md). G7 remains unfinished:
