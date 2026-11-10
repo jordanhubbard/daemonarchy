@@ -55,15 +55,15 @@ CURRENT installer qualification remain tracked in the
 [1.6 release plan](roadmap/release-1.6.0.md) and
 [normal tracing plan](roadmap/default-install-tracing.md).
 
-The [retained amd64 full-root control](../verification/full-ram-live-control-20261110.json)
-passes native assembly and complete nested-filesystem readback, EFI USB boot,
-269 live-package identities, SQLite import and same-medium trace writes. Both
-owned Lua hooks survive unchanged. Linux and FreeBSD FAT checks pass after
-shutdown; the raw image and compressed round trip pass the existing budgets.
-This uses retained 1.5.1 world/kernel inputs with the new EFI, not final CURRENT
-media. BIOS, ARM use of this shared helper, installation, desktop, signing and
-physical qualification remain open. Failed incomplete inputs and host emulator
-aborts remain recorded.
+The earlier [retained amd64 control](../verification/full-ram-live-control-20261110.json)
+records native assembly, descendant-only nested-filesystem readback, EFI USB
+boot, 269 live-package identities, SQLite import and same-medium trace writes.
+Those runtime commands ran as root. Both owned Lua hooks survive unchanged;
+returned FAT checks, raw size and compressed round-trip identity pass. Its
+retained 1.5.1 world/kernel and new EFI are not final CURRENT media, and the
+later root-inode defect below limits that observation. ARM use of the shared
+helper, installation, desktop, signing and physical qualification remain open.
+Failed incomplete inputs and host emulator aborts remain recorded.
 
 A later BIOS run exposed a root-inode defect in that retained preparation: ISO
 archive extraction omitted the root entry, leaving the private staging mode

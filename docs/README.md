@@ -5,11 +5,11 @@ build and release commands are in root `HACKING.md` (narrative first, then the f
 reference); the newcomer's overview is root `README.md`. This index makes the retained evidence
 reachable without changing its historical scope.
 
-The current release is **1.5.0**: start with its
-[release notes](release-1.5.0.md) and the [getting-started guide](getting-started.md).
+The current release is **1.5.1**: start with its
+[release notes](release-1.5.1.md) and the [getting-started guide](getting-started.md).
 Its published identity is recorded in
 [`release/current.json`](../release/current.json); documents dated or named for
-another version are historical records. 1.5.1 entries describe planned work.
+another published version are historical records. 1.6 entries describe planned work.
 
 - Licenses of the components in this repository: see `licenses/README.md` at the repository root
 - [Application note: MacBook Pro 16-inch (2019)](application-note-macbookpro16-1.md)

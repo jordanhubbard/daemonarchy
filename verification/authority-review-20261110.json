@@ -1,0 +1,56 @@
+{
+  "schema": "daemonarchy/authority-review-checkpoint@1",
+  "reviewed_since": "54413704f74e764df4766431aa1b302c20c094e8",
+  "authority_identity": "sha256:f52af17972d1d4351abee517d7facb507acd773260ddaa89b7c1629016de99eb",
+  "review_scope": "Changed declared documentation and release acceptance since the preceding review, including ARM/Pi simulator versus physical boundaries, source aggregate versus Component lifecycle boundaries, split/packed transport and corrected root-inode/runtime scope.",
+  "corrections": [
+    "PROJECT.md and documentation index identify published 1.5.1; 1.6 remains planned.",
+    "The architecture describes the 1.1.1 CLI and adoption observations as historical.",
+    "Earlier RAM-root readback excludes the root inode and runtime commands ran as root; replacement non-root evidence remains artifact-specific."
+  ],
+  "verification": {
+    "counts": {
+      "fail": 1,
+      "pass": 2,
+      "skipped": 2
+    },
+    "gates": [
+      {
+        "detail": "project authority and documentation review",
+        "gate": "authority",
+        "state": "pass"
+      },
+      {
+        "detail": "8 committed lock(s) current",
+        "gate": "locks",
+        "state": "pass"
+      },
+      {
+        "detail": "project selects provider 'none'",
+        "gate": "source-intelligence",
+        "state": "skipped"
+      },
+      {
+        "artifacts": [],
+        "detail": "no declared HTML artifacts to verify",
+        "gate": "html-observability",
+        "state": "skipped"
+      },
+      {
+        "detail": "project.test_receipt_missing: configured project test receipt has not been committed",
+        "gate": "receipt",
+        "state": "fail"
+      }
+    ],
+    "ok": false,
+    "project": ".",
+    "schema": "literate-ai/project-verify@1"
+  },
+  "remaining_gate": "Configured native lifecycle receipt verification/current.json is absent. Documentation and lock validation do not supply it.",
+  "qualification": {
+    "authority_review": true,
+    "contract_locks": true,
+    "native_lifecycle_receipt": false,
+    "release": false
+  }
+}
