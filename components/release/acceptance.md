@@ -83,6 +83,12 @@ existing raw-image and strictly less than 2 GiB public-asset limits unchanged.
 
 Run the transport against actual complete retained media as well as refusal
 fixtures. Source/world/ABI, signing, platform boot/install/desktop/recovery and
-lifecycle admission remain artifact-specific requirements. The existing
-single-image publication verifier and release records must explicitly admit
-this format before it can be published; transport checks alone do not do so.
+lifecycle admission remain artifact-specific requirements. Require explicit
+`xz-parts@1` release descriptors, trusted manifest pins, complete approved physical
+asset maps and full raw-image verification. `tests/release-split-media.py` must
+exercise the existing signed-boot/certificate and closure gates;
+`tests/release-split-flow.py` must cover draft authoring, published-current metadata,
+refusal before writes and download-document consistency. Preserve historical
+single-image semantics. Complete mastering, QA transfer, device-writing and actual
+publication/target checks before release admission; controller controls alone do
+not establish it.

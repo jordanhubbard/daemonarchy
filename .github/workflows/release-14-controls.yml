@@ -32,6 +32,8 @@ on:
       - 'scripts/assemble-arm-media.py'
       - 'scripts/split-media.py'
       - 'tests/split-media.py'
+      - 'tests/release-split-media.py'
+      - 'tests/release-split-flow.py'
       - 'scripts/arm-ram-inspect.py'
       - 'tests/arm-media.py'
       - 'tests/arm-ram-inspect.py'
@@ -159,6 +161,8 @@ on:
       - 'scripts/assemble-arm-media.py'
       - 'scripts/split-media.py'
       - 'tests/split-media.py'
+      - 'tests/release-split-media.py'
+      - 'tests/release-split-flow.py'
       - 'scripts/arm-ram-inspect.py'
       - 'tests/arm-media.py'
       - 'tests/arm-ram-inspect.py'
@@ -291,6 +295,8 @@ jobs:
           python3 tests/arm-ram-inspect.py -v
           python3 tests/arm-media.py -v
           python3 tests/split-media.py -v
+          python3 tests/release-split-media.py -v
+          python3 tests/release-split-flow.py -v
       - name: One release version
         env:
           PYTHONDONTWRITEBYTECODE: '1'

@@ -58,7 +58,7 @@ HISTORY_CLOSE = "<!-- /release-sync -->"
 
 SHA = re.compile(r"(?<![0-9a-f])[0-9a-f]{64}(?![0-9a-f])")
 IMAGE = re.compile(
-    r"daemonarchy-(?:[a-z][a-z0-9]*-)*?(\d+\.\d+\.\d+)(?:-[a-z0-9]+)*\.(?:iso|img)(?:\.xz)?(?![\w.])"
+    r"daemonarchy-(?:[a-z][a-z0-9]*-)*?(\d+\.\d+\.\d+)(?:-[a-z0-9]+)*\.(?:iso|img)(?:\.parts\.json\.xz|\.part[0-9]{4}\.xz|\.xz)?(?:\.sha256)?(?![\w.])"
 )
 # A product version such as 1.3.1 or 1.4, not part of a name, path, address or
 # FreeBSD branch (16.0).
@@ -181,42 +181,73 @@ def preceded_by(sentence, index, pattern, words=5):
     return bool(pattern.search(" ".join(before)))
 
 
+def media_identities(current):
+    result = {}
+    for image in current["images"]:
+        for name in [image["asset"], *image.get("transport", {}).get("parts", [])]:
+            result[name] = current["assets"][name]
+        if "transport" in image:
+            transport = image["transport"]
+            result[transport["logical_asset"].removesuffix(".xz")] = transport["raw_image"]
+    return result
+
+
+def mentions(name, line):
+    return re.search(r"(?<![A-Za-z0-9._-])" + re.escape(name) + r"(?![A-Za-z0-9._-])", line) is not None
+
+
 def audit(root=ROOT, current=None):
     """Return a list of 'path:line: problem' strings."""
     current = current or load_current()
     version = version_tuple(current["version"])
     assets = current["assets"]
-    current_digests = {entry[1].split(":", 1)[1] for entry in assets.values()}
+    identities = media_identities(current)
+    current_digests = {entry[1].split(":", 1)[1] for entry in [*assets.values(), *identities.values()]}
+    current_sizes = {entry[0] for entry in [*assets.values(), *identities.values()]}
     stale_digests = {}
     stale_sizes = {}
     for previous in current.get("previous_releases", []):
         name, size, digest = previous["image"]
         stale_digests[digest.split(":", 1)[1]] = previous["version"]
-        stale_sizes[f"{size:,}"] = previous["version"]
+        if size not in current_sizes:
+            stale_sizes[f"{size:,}"] = previous["version"]
         record = previous.get("record")
         if record and (root / record).is_file():
             for asset, (_, identity) in json.loads((root / record).read_text())["assets"].items():
                 stale_digests[identity.split(":", 1)[1]] = previous["version"]
-    image_names = {image["asset"] for image in current["images"]}
+    image_names = set(identities)
+    download_base = f"https://github.com/jordanhubbard/daemonarchy/releases/download/{current['tag']}/"
     problems = []
     for relative, text in current_state_documents(root):
         for number, line, _ in lines_outside_history(text):
             where = f"{relative}:{number}"
+            for filename in re.findall(re.escape(download_base) + r"([A-Za-z0-9._-]+)", line):
+                if filename not in assets:
+                    problems.append(f"{where}: download URL names unpublished asset {filename}")
             for match in IMAGE.finditer(line):
                 if match.group(1) != current["version"] and version_tuple(match.group(1)) < version:
                     problems.append(f"{where}: names older image {match.group(0)}")
+            # Tables and split-media identity lines bind a digest to the named asset.
+            # Legacy prose can wrap one image's hash onto a line naming the next image.
+            split_names = {name for image in current["images"] if "transport" in image
+                           for name in [image["asset"], *image["transport"]["parts"],
+                                        image["transport"]["logical_asset"].removesuffix(".xz")]}
+            bind_names = set(identities) if line.lstrip().startswith("|") else split_names
+            named_digests = {identity[1].split(":", 1)[1] for name, identity in identities.items()
+                             if name in bind_names and mentions(name, line)}
             for digest in SHA.findall(line):
-                if digest in stale_digests:
+                if digest in stale_digests and digest not in current_digests:
                     problems.append(f"{where}: carries the {stale_digests[digest]} checksum {digest}")
-                elif any(name in line for name in image_names) and digest not in current_digests:
+                elif ((any(mentions(name, line) for name in image_names) and digest not in current_digests)
+                      or (named_digests and digest not in named_digests)):
                     problems.append(f"{where}: checksum {digest} does not match the published assets")
             for size, old in stale_sizes.items():
                 if size in line:
                     problems.append(f"{where}: carries the {old} image size {size}")
             for name in image_names:
-                if name in line:
-                    for size in re.findall(r"(\d{1,3}(?:,\d{3})+) bytes", line):
-                        if size != f"{assets[name][0]:,}":
+                if mentions(name, line):
+                    for size in re.findall(r"(?<![\d,])(\d+(?:,\d{3})*) bytes", line):
+                        if size != f"{identities[name][0]:,}":
                             problems.append(f"{where}: says {name} is {size} bytes")
         for number, sentence in sentences(text):
             where = f"{relative}:{number}"
@@ -270,6 +301,19 @@ class SourceOfTruth(unittest.TestCase):
             self.assertIn(image["asset"], current["assets"])
             self.assertIn(image["checksum_asset"], current["assets"])
             self.assertRegex(image["asset"], IMAGE)
+            if "transport" in image:
+                transport = image["transport"]
+                self.assertEqual(set(transport), {"format", "logical_asset", "parts", "raw_image"})
+                self.assertEqual(transport["format"], "xz-parts@1")
+                self.assertEqual(image["asset"], transport["logical_asset"].removesuffix(".xz") + ".parts.json.xz")
+                self.assertTrue(transport["parts"])
+                for number, part in enumerate(transport["parts"], 1):
+                    self.assertEqual(part, transport["logical_asset"].removesuffix(".xz") + f".part{number:04d}.xz")
+                    self.assertIn(part, current["assets"])
+                    self.assertLess(current["assets"][part][0], 2147483648)
+                self.assertLess(transport["raw_image"][0], 3758096384)
+                self.assertRegex(transport["raw_image"][1], r"^sha256:[0-9a-f]{64}$")
+
         for previous in current["previous_releases"]:
             self.assertLess(version_tuple(previous["version"]), version_tuple(current["version"]))
 
@@ -300,6 +344,12 @@ class CurrentStateDocuments(unittest.TestCase):
             self.assertIn(base + image["checksum_asset"], self.readme)
             self.assertIn(digest.split(":", 1)[1], self.readme)
             self.assertIn(f"{size:,} bytes", self.readme)
+            for part in image.get("transport", {}).get("parts", []):
+                self.assertIn(base + part, self.readme)
+                self.assertIn(current["assets"][part][1][7:], self.readme)
+                self.assertIn(f"{current['assets'][part][0]:,} bytes", self.readme)
+            if "transport" in image:
+                self.assertIn(image["transport"]["raw_image"][1][7:], self.readme)
         self.assertIn(current["notes"], self.readme)
 
     def test_documentation_index_links_current_notes(self):

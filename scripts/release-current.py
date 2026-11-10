@@ -14,6 +14,7 @@ then checked against the file by tests/docs-release-sync.py.
 """
 
 import argparse
+import importlib.util
 import json
 from pathlib import Path
 import re
@@ -29,7 +30,7 @@ SCHEMA = "daemonarchy/current-release@1"
 # hardware-trace bring-up image, name themselves.
 IMAGE = re.compile(
     r"daemonarchy-(?:(?P<product>[a-z][a-z0-9-]*?)-)?(?P<version>\d+\.\d+\.\d+)-"
-    r"(?P<arch>amd64|aarch64)\.(?:iso|img)(?:\.xz)?\Z"
+    r"(?P<arch>amd64|aarch64)\.(?:iso|img)(?:\.parts\.json\.xz|\.xz)?\Z"
 )
 
 
@@ -49,8 +50,31 @@ def published(tag=None):
     return release
 
 
-def images(version, assets):
-    result = []
+def media_helpers():
+    spec = importlib.util.spec_from_file_location("daemonarchy_current_media", Path(__file__).resolve().parent / "verify-release-assets.py")
+    module = importlib.util.module_from_spec(spec)
+    spec.loader.exec_module(module)
+    return module
+
+
+def approved_record(version, assets):
+    if not any(name.endswith(".parts.json.xz") for name in assets):
+        return None
+    path = ROOT / f"verification/release-{version}.json"
+    if not path.is_file():
+        raise SystemExit("published split images require their approved release input record")
+    record, _ = media_helpers().read_record(path)
+    if record["version"] != version or record["assets"] != assets:
+        raise SystemExit("published split assets differ from the approved release input record")
+    return record
+
+
+def images(version, assets, record=None):
+    result, claimed_parts = [], set()
+    helper = media_helpers() if record is not None else None
+    transports = helper.image_transports(record) if helper else {}
+    if record is not None and record["assets"] != assets:
+        raise SystemExit("published assets differ from the approved release input record")
     for name in sorted(assets):
         match = IMAGE.match(name)
         if not match or match["version"] != version:
@@ -58,14 +82,23 @@ def images(version, assets):
         checksum = name + ".sha256"
         if checksum not in assets:
             raise SystemExit(f"{name} has no published {checksum}")
-        result.append({
-            "type": match["product"] or "installer",
-            "arch": match["arch"],
-            "asset": name,
-            "checksum_asset": checksum,
-        })
+        if name.endswith(".parts.json.xz"):
+            logical = name.removesuffix(".parts.json.xz") + ".xz"
+            if logical not in transports or transports[logical]["manifest"] != name:
+                raise SystemExit("published split image has no approved logical-image selection")
+            claimed_parts.update(transports[logical]["parts"])
+            result.append(helper.current_image(logical, transports[logical], match["product"] or "installer", match["arch"]))
+        else:
+            result.append({"type": match["product"] or "installer", "arch": match["arch"],
+                           "asset": name, "checksum_asset": checksum})
+    unclaimed = {name for name in assets if re.search(r"\.(?:iso|img)\.part[0-9]{4}\.xz$", name)} - claimed_parts
+    if unclaimed:
+        raise SystemExit("published image parts have no approved manifest")
     if not result:
         raise SystemExit(f"no published image for {version}")
+    pairs = [(entry["type"], entry["arch"]) for entry in result]
+    if len(set(pairs)) != len(pairs):
+        raise SystemExit("published image has multiple competing transports")
     return result
 
 
@@ -86,6 +119,11 @@ def check_published(current):
         problems.append(f"GitHub's latest release is {release['tagName']}, the record says {current['tag']}")
     elif asset_map(release) != current["assets"]:
         problems.append("published asset names, sizes or digests differ from the record")
+    if not problems:
+        expected = images(current["version"], current["assets"], approved_record(current["version"], current["assets"]))
+        ordered = lambda entries: sorted(entries, key=lambda entry: (entry["type"], entry["arch"]))
+        if ordered(current["images"]) != ordered(expected):
+            problems.append("published image transports differ from the approved record")
     if not problems and release["publishedAt"] != current["published_at"]:
         problems.append("publication time differs from the record")
     return problems
@@ -100,6 +138,7 @@ def update(current, tag, args):
     notes = f"docs/release-{version}.md"
     if not (ROOT / notes).is_file():
         raise SystemExit(f"write {notes} before recording the release")
+    selected_images = images(version, assets, approved_record(version, assets))
     previous = list(current.get("previous_releases", []))
     if current["version"] != version:
         installer = next(image for image in current["images"] if image["type"] == "installer")
@@ -110,6 +149,8 @@ def update(current, tag, args):
             "published_at": current["published_at"],
             "image": [installer["asset"], size, digest],
         }
+        if "transport" in installer:
+            entry["image_transport"] = installer["transport"]
         record = f"verification/release-{current['version']}.json"
         if (ROOT / record).is_file():
             entry["record"] = record
@@ -125,7 +166,7 @@ def update(current, tag, args):
         "osversion": args.osversion,
         "application_feed": args.application_feed,
         "checkout_feed": args.checkout_feed,
-        "images": images(version, assets),
+        "images": selected_images,
         "assets": assets,
         "previous_releases": previous,
     }
@@ -148,6 +189,11 @@ def main():
         for image in current["images"]:
             size, digest = current["assets"][image["asset"]]
             print(f"  {image['type']}/{image['arch']}: {image['asset']} {size:,} bytes {digest}")
+            if "transport" in image:
+                transport = image["transport"]
+                print(f"    raw image: {transport['raw_image'][0]:,} bytes {transport['raw_image'][1]}")
+                for part in transport["parts"]:
+                    print(f"    part: {part} {current['assets'][part][0]:,} bytes {current['assets'][part][1]}")
         return 0
     if args.command == "check-published":
         problems = check_published(current)

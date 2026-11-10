@@ -266,6 +266,13 @@ The release is a sequence of resumable steps, driven by `scripts/master-release.
 1. **Pin** one daemonarchy-ports commit and one daemonarchy-src commit, and set the version once with `python3 scripts/version.py set X.Y.Z`.
 2. **List what changed** against the last release's feed with `scripts/diff-release-packages.sh`, which only evaluates `make -V PKGNAME` and builds nothing.
 3. **Build**: `master-release.sh packages` (poudriere, seeded from the previous set so retained packages are not rebuilt), `secureboot` (regenerate the module inventory; re-signing is the operator's), `feed` (collect and sign the application feed on the builder, which holds the key), `resolve`, `catalogue`, `iso`, `verify`, `hwtrace` and `qa`. `master-release.sh --dry-run --config master.env all` prints every command without running anything; `all` never writes sticks and never publishes.
+
+For planned 1.6 split media, follow [the transport and record procedure](docs/split-media.md).
+Authoring requires explicit manifest pins and separate raw-image/download fields.
+The retained mastering, QA transfer and stick-writing commands below still consume
+single-file media; complete their split integration and exact-image acceptance
+before publishing split assets.
+
 4. **Draft the release pull request** with `scripts/prepare-release.py` (placeholders) and `scripts/fill-release.py` (from the verified artifacts), and check staged assets with `scripts/verify-release-assets.py`. The documentation guard is expected to fail until the placeholders are filled; that is why the pull request stays a draft.
 5. **Sign and publish are the release owner's steps**, in one signing session: the feeds, the boot bundle and the GitHub release. Nobody and nothing else holds those keys.
 6. **Bring the documents into step**: `scripts/release-current.py update` rewrites `release/current.json` from the published release, then `tests/docs-release-sync.py` shows every document that still carries the old release.

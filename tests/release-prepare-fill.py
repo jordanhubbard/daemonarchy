@@ -166,7 +166,7 @@ class PrepareAndFill(unittest.TestCase):
         self.assertEqual(current["published_at"], "2026-11-07T12:00:00Z")
         self.assertEqual((record["installer_commit"], record["ports_commit"]), (INSTALLER, PORTS))
         self.assertEqual(record["aarch64_application_feed"], FEEDS["--packages-aarch64"])
-        self.assertEqual(record["evidence_status"], "published release record")
+        self.assertEqual(record["evidence_status"], "staged release record; publication and target qualification unverified")
         self.assertNotIn("closure_feed_records", record)
         self.assertEqual([feed["tag"] for feed in record["closure_feeds"]],
                          sorted(p.stem for p in (ROOT / "verification/closure-feeds").glob("packages-16-*.json")))

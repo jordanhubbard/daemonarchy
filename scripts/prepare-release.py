@@ -114,6 +114,11 @@ def main(argv=None):
         "version": current["version"], "tag": current["tag"], "published_at": current["published_at"],
         "image": [installer["asset"], size, digest],
     }] + list(current.get("previous_releases", []))
+    if "transport" in installer:
+        previous[0]["image_transport"] = installer["transport"]
+    previous_record = f"verification/release-{current['version']}.json"
+    if (ROOT / previous_record).is_file():
+        previous[0]["record"] = previous_record
     new_current = {
         "schema": current["schema"],
         "version": version,
