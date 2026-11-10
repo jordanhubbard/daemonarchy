@@ -1,0 +1,219 @@
+{
+  "schema": "daemonarchy/full-ram-root-corrected@1",
+  "observed_utc": "2026-11-10T13:09:54.310390+00:00",
+  "scope": "Complete retained amd64 1.5.1 payload with v3 EFI/Lua and corrected native BIOS products; not final CURRENT media",
+  "producer_source": "d84fd5b4d08350018967fe2ece802a20a9e42a10",
+  "producer_files": {
+    "scripts/make-ram-iso.sh": "8ec234f726f458d5337c327137dc8fd421090a7fffad7c23d9ffde91bb0ef494",
+    "tests/ram-live-image.py": "bc12fc671135835b086bcc30e8783e1c22313c4a3955e5d3f94c9abb73552f78"
+  },
+  "assembly": {
+    "schema": "daemonarchy/ram-live-image@1",
+    "abi": "FreeBSD:16:amd64",
+    "input_archive_sha256": "d19795d71b020f0cf5b41d280d82003019a072f87a662ad7f0b8dbc07b825832",
+    "outer_archive": {
+      "bytes": 2257067008,
+      "sha256": "674ea5bc355c3a6deba384cca2c712782f8dd92ab80a122015f12d41915afd81"
+    },
+    "kernel": {
+      "bytes": 31539640,
+      "sha256": "a0e9278e4c8a4790644814d839be6ccc027b7afad4bac9fa6952ad88eabce4b8"
+    },
+    "package_database": {
+      "bytes": 27926528,
+      "sha256": "3bd4bdfd01311ea36a888c0e9e4a44d0415b1d9c2fd0f813159579e093ab2a96"
+    },
+    "root_directory": {
+      "mode": "0755",
+      "uid": 0,
+      "gid": 1002
+    },
+    "var_seed": "/usr/local/share/daemonarchy-installer/ram-var-d19795d71b020f0c",
+    "ram_root": {
+      "bytes": 4293918720,
+      "sha256": "7bd0a81d08a74c1866b7bfe7a1ed93a4a70f2a4e12629ebb00239d9ef894990c"
+    },
+    "packed_root": {
+      "bytes": 1792859648,
+      "sha256": "d8befd9668bd20b08f79902a312c49e1c09ec3681befae7e54608009f3559e7a"
+    },
+    "codec": "lzma",
+    "cluster_bytes": 262144,
+    "expanded_media_bytes": 4293918720,
+    "boot_file": "BOOTX64.EFI",
+    "boot_mode": "bios",
+    "image": {
+      "bytes": 2555396608,
+      "sha256": "cd7bb3429fec11594d91306eb9c6d0b15cd67a439ed427b91e6e5e2902a49d22"
+    },
+    "qualification": {
+      "assembly": true,
+      "native_root_fsck": true,
+      "vm_boot": false,
+      "installation": false,
+      "desktop": false,
+      "recovery": false,
+      "physical": false,
+      "signing": false
+    }
+  },
+  "independent_readback": {
+    "status": "pass",
+    "root": "kernel-mounted actual ISO then nested read-only GEOM UZIP/UFS2",
+    "actual_iso_packed_kernel_efi_hashes_match": true,
+    "entries": 62776,
+    "root_inode_included": true,
+    "root_inode_matches_original_iso": true,
+    "root_directory": {
+      "mode": "0755",
+      "uid": 0,
+      "gid": 1002
+    },
+    "actual_inner_outer_bios_hashes_match": true,
+    "regular_files": 56734,
+    "file_bytes": 6615039924,
+    "all_entries_byte_and_mode_uid_gid_type_equal": true,
+    "hardlink_groups_equal": true,
+    "all_original_paths_retained": true,
+    "owned_brand_and_profile_hooks_unchanged": true,
+    "original_entries_preserved_without_declared_changes": 62644,
+    "declared_replacements": [
+      "boot/cdboot",
+      "boot/isoboot",
+      "boot/loader",
+      "boot/loader.efi",
+      "boot/lua",
+      "boot/lua/boottrace.lua",
+      "boot/lua/cli.lua",
+      "boot/lua/color.lua",
+      "boot/lua/config.lua",
+      "boot/lua/core.lua",
+      "boot/lua/drawer.lua",
+      "boot/lua/gfx-beastie.lua",
+      "boot/lua/gfx-beastiebw.lua",
+      "boot/lua/gfx-fbsdbw.lua",
+      "boot/lua/gfx-install.lua",
+      "boot/lua/gfx-orb.lua",
+      "boot/lua/gfx-orbbw.lua",
+      "boot/lua/hook.lua",
+      "boot/lua/loader.lua",
+      "boot/lua/menu.lua",
+      "boot/lua/netdebug.lua",
+      "boot/lua/password.lua",
+      "boot/lua/screen.lua",
+      "boot/lua/splash.lua",
+      "boot/pmbr",
+      "etc/fstab",
+      "etc/rc.conf"
+    ],
+    "var_seed_entries": 104,
+    "package_database_sha256": "3bd4bdfd01311ea36a888c0e9e4a44d0415b1d9c2fd0f813159579e093ab2a96",
+    "var_seed_database_sha256": "3bd4bdfd01311ea36a888c0e9e4a44d0415b1d9c2fd0f813159579e093ab2a96",
+    "installer_base_sha256": "f03d5787afbbe53074b9246ee5bfe90b9c66870702cb9ed1f630560831af5002",
+    "installer_kernel_sha256": "3ced37da5bbc2990d771330f6a5c54aa75c9da059b25af7d4af4e67003482dcd"
+  },
+  "source_root_metadata": {
+    "mode": 493,
+    "uid": 0,
+    "gid": 1002,
+    "source": "read-only kernel-mounted original published ISO root inode"
+  },
+  "native_admission": {
+    "groups": 4,
+    "skipped": 0,
+    "root_cases": [
+      "unsafe mode",
+      "nonroot owner",
+      "missing root entry",
+      "final root entry restores declared metadata"
+    ]
+  },
+  "bios_usb": {
+    "status": "pass",
+    "image_sha256": "cd7bb3429fec11594d91306eb9c6d0b15cd67a439ed427b91e6e5e2902a49d22",
+    "normal_record": null,
+    "manual_same_medium_write": true,
+    "live_inventory_count": 269,
+    "live_inventory_sha256": "ce104c10c197401472760ac7e8b990fe2f7dab0f02aa7325b539d849f91fa234",
+    "elapsed_launch_to_qa_seconds": 407.3538136482239,
+    "changed_bytes": 19892,
+    "changes_only_in_datrace": true,
+    "legacy_state_queue_traces_unchanged": true,
+    "input_unchanged": true,
+    "normal_synced_shutdown": true,
+    "no_nic": true,
+    "boot_device": "virtual USB mass storage on qemu-xhci",
+    "owned_hooks_retained": true,
+    "native_sqlite_import": true,
+    "root_inode_mode": "0755",
+    "nonroot_inventory_and_sqlite": true,
+    "guest_shutdown_event": {
+      "guest": true,
+      "reason": "guest-shutdown"
+    },
+    "shutdown_console_oracle": "actual retained VGA/serial buffer",
+    "bios_normal_capture": "unimplemented",
+    "manual_binding": "GPT GUID from only attached known input image",
+    "keyboard_input": "VGA tty root login after unattended boot; local console enables serial QA shell, no NIC",
+    "serial_sha256": "9dbc90ad4c3db3ff23d681906e4f00a94c26a5e96a1ed1b44b0cda474709ee32"
+  },
+  "returned_fat": {
+    "status": "pass",
+    "sha256": "f8920f44fe2c704af7d350e66167380f9b6a95d09f6d380623075c4f7cfab3e4",
+    "linux_exit": 0,
+    "native_freebsd_exit": 0
+  },
+  "compression": {
+    "status": "pass",
+    "input_sha256": "cd7bb3429fec11594d91306eb9c6d0b15cd67a439ed427b91e6e5e2902a49d22",
+    "size_gate_exit": 0,
+    "compressed_bytes": 1882668424,
+    "compressed_sha256": "17b5b39e65d19d10642169c490ba39e71d65d825aa3cc95b3319ed9a45cd27f8",
+    "decompressed_sha256": "cd7bb3429fec11594d91306eb9c6d0b15cd67a439ed427b91e6e5e2902a49d22",
+    "decompression_round_trip": true,
+    "command_template": [
+      "nice",
+      "-n",
+      "19",
+      "xz",
+      "-T2",
+      "-9",
+      "-c",
+      "<selected-image>"
+    ]
+  },
+  "efi_regression": {
+    "state": "pending",
+    "same_image": true
+  },
+  "prior_failures_retained": [
+    "original per-entry inventory excluded root inode and inherited mode 0700 from ISO extraction",
+    "first root repair tar append did not restore extracted directory metadata; refused before authoring",
+    "old BIOS one-GiB mapping alias triple-faulted; native fix uses two PT2 pages",
+    "earlier BIOS shutdown console oracle absent; retained as partial, not promoted"
+  ],
+  "qualification": {
+    "complete_retained_payload": true,
+    "root_inode": true,
+    "bios_usb_boot": true,
+    "nonroot_inventory_and_sqlite": true,
+    "guest_shutdown_and_sync": true,
+    "returned_fat": true,
+    "raw_and_compressed_budgets": true,
+    "efi_same_image": false,
+    "arm_shared_helper_runtime": false,
+    "current_source_media": false,
+    "installation": false,
+    "desktop": false,
+    "update_rollback": false,
+    "signing": false,
+    "canonical_lifecycle": false,
+    "physical": false,
+    "performance": false
+  },
+  "physical_untested": [
+    "Raspberry Pi 4",
+    "Raspberry Pi 5",
+    "Apple M2"
+  ]
+}

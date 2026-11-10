@@ -81,3 +81,15 @@ and returned manual trace files pass. The input still has the bad root inode,
 and its final shutdown console oracle is missing, so full runtime qualification
 remains open. The corrected native loader fits the unchanged 505,000-byte bound;
 preload data outside its two-GiB kernel window is refused at handoff.
+
+The [repaired full-root control](../verification/full-ram-root-corrected-20261110.json)
+now passes actual ISO/nested-filesystem readback of 62,776 entries including the
+root inode. Mode 0755, UID 0 and GID 1002 match the original ISO; both inner and
+outer BIOS products match the new native build. BIOS USB boot verifies all 269
+package identities and SQLite as root and UID 65534. A guest-requested shutdown
+and retained VGA buffer prove the final sync, and returned-media comparison
+finds only 19,892 DATRACE bytes changed. Native FreeBSD and Linux FAT checks
+pass. The 2,555,396,608-byte raw image and 1,882,668,424-byte xz asset pass existing
+budgets with exact round-trip identity. EFI regression of these exact bytes is
+pending; current-source, installation, desktop, signing and physical gates remain
+open. This checkpoint does not qualify a different source/image selection.

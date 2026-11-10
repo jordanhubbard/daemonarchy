@@ -124,7 +124,14 @@
   },
   "compression": {
     "status": "pass",
-    "argv": [
+    "input_sha256": "2a97d6309ff0abe5070e6efd7b137bea92bc77c61d22b5fcfeb2277d8f0c4951",
+    "size_gate_exit": 0,
+    "compressed_bytes": 1883066408,
+    "compressed_sha256": "b083e273f3d5d02847ae2b636a16ed5fb0e64198a0436685316bf9c05d9a57c3",
+    "decompressed_sha256": "2a97d6309ff0abe5070e6efd7b137bea92bc77c61d22b5fcfeb2277d8f0c4951",
+    "decompression_round_trip": true,
+    "elapsed_seconds": 1029.8501648319943,
+    "command_template": [
       "nice",
       "-n",
       "19",
@@ -132,15 +139,8 @@
       "-T2",
       "-9",
       "-c",
-      "/home/jkh/.local/state/daemonarchy/16-native-worker-20261109/amd64-full-ram-r3/control.iso"
-    ],
-    "input_sha256": "2a97d6309ff0abe5070e6efd7b137bea92bc77c61d22b5fcfeb2277d8f0c4951",
-    "size_gate_exit": 0,
-    "compressed_bytes": 1883066408,
-    "compressed_sha256": "b083e273f3d5d02847ae2b636a16ed5fb0e64198a0436685316bf9c05d9a57c3",
-    "decompressed_sha256": "2a97d6309ff0abe5070e6efd7b137bea92bc77c61d22b5fcfeb2277d8f0c4951",
-    "decompression_round_trip": true,
-    "elapsed_seconds": 1029.8501648319943
+      "<selected-image>"
+    ]
   },
   "failures_retained": [
     {

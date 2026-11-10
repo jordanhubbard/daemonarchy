@@ -459,3 +459,14 @@ entry's final owner/group/mode after extraction. Native refusal and restoration
 controls pass; a complete repaired image is rebuilding. The original shutdown
 console-oracle failure remains recorded. Final BIOS runtime, CURRENT media,
 automatic BIOS tracing, non-root services, desktop and physical gates remain open.
+
+
+The [repaired full-root follow-up](../../verification/full-ram-root-corrected-20261110.json)
+includes the root inode in all 62,776 independently inspected entries and restores
+its exact original ISO metadata. BIOS USB boot now passes root and UID-65534
+package/SQLite checks. The guest shutdown event and actual final VGA buffer
+confirm sync; readback changes only 19,892 DATRACE bytes and both FAT checkers
+pass. Raw/xz budgets and exact decompression pass. The earlier malformed inputs
+and partial outcomes remain retained. Same-image EFI regression is running;
+final CURRENT media, automatic BIOS/deeper-stage capture, installation, desktop,
+lifecycle, signing and physical qualification remain open.
