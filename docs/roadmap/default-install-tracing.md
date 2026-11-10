@@ -801,8 +801,9 @@ now produces an ARM64 EFI executable from the pinned source, using native
 Clang/LLD 21.1.8, a read-only source view and separate unprivileged objects.
 Native media, record-policy, FAT, block-map and Lua controls pass. The initial
 metadata-query failure is retained separately. The repository's amd64-only
-bootinfo fixture supplies no ARM handoff result; actual ARM64 firmware boot,
-userspace capture and final-media acceptance remain open.
+bootinfo fixture supplies no ARM handoff result. The subsequent actual ARM64
+firmware and userspace controls below provide their own scoped evidence;
+final-media acceptance remains open.
 
 
 The corrected full default-rc image also passes native xz integrity, exact
@@ -810,3 +811,23 @@ decompression identity and the original size gates: raw 2,554,348,032 bytes;
 xz 1,882,519,844 bytes, 264,963,804 bytes below the compressed limit. This result
 binds the corrected image's own bytes, separately from the preceding failed
 runtime control and its compression result.
+
+
+The [ARM64 EFI/USB runtime checkpoint](../../verification/normal-v4-arm64-runtime-20261110.json)
+now boots that exact loader with the native CURRENT base/kernel and Python
+runtime through ordinary rc startup. The production background trace service
+retains all 5,296 sampled kernel-log bytes on each of two actual boots. All
+three boot banks decode; the installer log remains empty. Each boot changes
+only 9,837 bytes confined to its own trace session. The second boot uses a
+fresh nonce and preserves the complete first session byte-for-byte. Both
+returned FATs pass Linux and native FreeBSD read-only checks. Both guests
+synchronize and stop themselves without network or keyboard input.
+
+The initial fixture outer archive omitted `/etc`; its failed assembly and
+sealed, valid RAM root are retained. A fresh outer archive fixes the omission.
+The observer's optional `uname` probe used the wrong path and failed; no guest
+`uname` result is inferred. The base-only RAM root also lacks kernel linker
+hints and reports that fixture limitation. These are CURRENT base-system
+controls; complete packaged ARM installer media, real installation, desktop,
+earlier kernel/panic persistence, unexpected reset/power loss and physical
+platform acceptance remain open.

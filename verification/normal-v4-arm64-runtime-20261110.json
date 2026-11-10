@@ -1,0 +1,184 @@
+{
+  "schema": "daemonarchy/native-arm64-v4-default-rc-runtime@1",
+  "observed_utc": "2026-11-10T20:09:55.162312+00:00",
+  "scope": "Two actual EFI/USB boots of an ARM64 CURRENT base-system fixture using the production default rc trace service; not complete packaged installer or final release media.",
+  "inputs": {
+    "producer_commit": "f92290aef871d3d0ecde91c3888efc93cdd9e4f8",
+    "producer_sha256": "57aa31911adb1f346de135a91da2d69fd95a5b1f0e0a10acda701a93e3a17769",
+    "lua_source_commit": "97d15adddd39d1dee09f3baa9b89758d96a8b005",
+    "lua_sha256": "ee377300bbdf6fa4e9c378ed2fb45ea6513823ebf65434593c70a7218baaa767"
+  },
+  "base_system": {
+    "source_commit": "af55b6f9042e15b635e90926d476e7cbeb48a069",
+    "base_archive_sha256": "32924d5e234aa31bc7455bae49b349694a902d8e97fba9c2acdb2f4c91537c3f",
+    "kernel_set_sha256": "00da5c69cbd3b002db40791211c41fc47768f2d7f9c9eb6e15fe8c64b10b1633",
+    "kernel_sha256": "d4bb617d30643b623623221bf5833a627c65a3f97f2344b4ae6bea0052622d6c",
+    "kernel_bytes": 19771800,
+    "kernel_banner": "FreeBSD 16.0-CURRENT, native-controls-af55b6f9042e, arm64",
+    "kernel_set_matches_boot_kernel": true,
+    "base_artifact_record": "native-arm-source-build-r2-artifacts-20261110.json",
+    "python": "3.12.15; native worker standard library and dependency closure; third-party site-packages excluded",
+    "python_imports_in_native_chroot": "pass",
+    "root_metadata": {
+      "uid": 0,
+      "gid": 0,
+      "mode": "0755"
+    },
+    "root_fsck_exit": 0,
+    "real_rcorder_pass": true,
+    "staged_helpers": [
+      {
+        "path": "usr/local/libexec/daemonarchy-boottrace/stick.py",
+        "sha256": "fbf42dbfbc45ab08b5dd56b2e6127c2e7774b608a1b5d088d84238d92bb26e82"
+      },
+      {
+        "path": "usr/local/libexec/daemonarchy-boottrace/boot-medium.py",
+        "sha256": "c7664713f92908ef7b4402a3cf92d955c0e6462298cc6ec716dd6ff05a7d3367"
+      },
+      {
+        "path": "usr/local/libexec/daemonarchy-boottrace/fat-volume.py",
+        "sha256": "fbcf7eac21fbebce41bb47575829001f346ebc8ff5482ca1a906298c4e2ab11b"
+      },
+      {
+        "path": "usr/local/libexec/daemonarchy-boottrace/observe-medium.py",
+        "sha256": "6d130a1669666c8583d5ceea8fc31cbaf4ffe08325d1add10b9f979e66673696"
+      },
+      {
+        "path": "usr/local/libexec/daemonarchy-boottrace/capture-medium.py",
+        "sha256": "c4337f82d7105c1ca4d76a8f9ed39f9832df4e5d3a0bc8f3baedfdf902ed9e39"
+      },
+      {
+        "path": "usr/local/libexec/daemonarchy-boottrace/session-log.py",
+        "sha256": "d1ee6bdfea562baa50f009b71789afb7035fac7f76b39ee816e75f2a6515ae0f"
+      },
+      {
+        "path": "etc/rc.d/daemonarchy_trace",
+        "sha256": "c660b20f792f48ebb1973b5263e57f38af13137530bd3af0adb2d2ca3de4dbd7"
+      },
+      {
+        "path": "usr/local/libexec/daemonarchy-installer/boot-trace",
+        "sha256": "7de088fb32529bb00f945cd96dee97caedf29f2550f339d704a0db44c0f5454d"
+      }
+    ]
+  },
+  "boot_products": {
+    "loader_source_commit": "97d15adddd39d1dee09f3baa9b89758d96a8b005",
+    "loader_sha256": "14394269940e640a943f294061bad7a18ddbc9387f7000ce2ce71c79649a9806",
+    "loader_bytes": 1384876,
+    "boottrace_lua_sha256": "ee377300bbdf6fa4e9c378ed2fb45ea6513823ebf65434593c70a7218baaa767",
+    "ram_root_bytes": 1063059456,
+    "ram_root_sha256": "67e3c13b6f72b45749e5e1826851403eae0ed2ba32c7dc219411a924ade080af",
+    "outer_archive_sha256": "b0dfe480ae24c0f64ba1e689a1802cf07dfd9cc6918225388091ea4951fc6334",
+    "image_bytes": 1456488960,
+    "image_sha256": "5f3cbecf3e9f50bafdbf89096e8646f43d9dfc2c7b14fa5287e9a3a958d848d1",
+    "virtual_medium_bytes": 8589934592,
+    "raw_size_limit_unchanged": true
+  },
+  "platform": {
+    "qemu": "QEMU emulator version 8.2.2 (Debian 1:8.2.2+ds-0ubuntu1.18)",
+    "firmware_bytes": 2097152,
+    "firmware_sha256": "d2d1228a664adbaed2148c2661e30c930af9bf09f03b6d5aa2a8bbc9cb5cab43",
+    "machine": "virt,gic-version=max",
+    "accelerator": "kvm",
+    "cpu": "host",
+    "cpus": 2,
+    "memory": "4G"
+  },
+  "boots": [
+    {
+      "schema": "daemonarchy/default-trace-rc-runtime-control@1",
+      "image_sha256": "5f3cbecf3e9f50bafdbf89096e8646f43d9dfc2c7b14fa5287e9a3a958d848d1",
+      "returned_sha256": "cb3026664d84314c271f364bd259149188a9a394ba83f5afea1ba72fef7c07b6",
+      "serial_sha256": "e071f50f0fe377adeb12a594f22d0b7063ed7c6df8cc9762a73477aaddbf0255",
+      "kernel_content_sha256": "4e2f0f01c9cb0e729bb1d939abe2b912e8d9f0e5904261852369335e704ba4f4",
+      "kernel_bytes": 5296,
+      "kernel_truncated": false,
+      "changed_bytes": 9837,
+      "changes_confined_to_current_normal_and_log_files": true,
+      "installer_log_untouched": true,
+      "init_bank_status": "recorded",
+      "serial_observer_marker_present": true,
+      "serial_observer_exit_zero": true,
+      "guest_shutdown_confirmed": true,
+      "host_cleanup_after_guest_shutdown": true,
+      "default_rc_service": true,
+      "base_system_fixture": true,
+      "optional_uname_query": "failed: fixture used /bin/uname instead of /usr/bin/uname",
+      "observer_fixture": true,
+      "real_installer": false,
+      "final_CURRENT_release_media": false,
+      "physical": false,
+      "linux_readonly_fat_exit": 0,
+      "native_freebsd_readonly_fat_exit": 0,
+      "all_three_boot_banks_recorded": true,
+      "serial_primary": true,
+      "no_usb_ccb_errors": true,
+      "no_keyboard_input": true,
+      "no_nic": true
+    },
+    {
+      "schema": "daemonarchy/default-trace-rc-runtime-control@1",
+      "image_sha256": "cb3026664d84314c271f364bd259149188a9a394ba83f5afea1ba72fef7c07b6",
+      "returned_sha256": "d0559fe1adc292240d14ab929d127e08297edea6a56157498bd088c38ba766c7",
+      "serial_sha256": "581fae7374fc83268eb36104f337c74d95f567607475b43c795222facff6ff77",
+      "kernel_content_sha256": "3398128d1ddcc549f8967c73f6c103be0e1abc38b67bff2d966240ce8a81bd89",
+      "kernel_bytes": 5296,
+      "kernel_truncated": false,
+      "changed_bytes": 9837,
+      "changes_confined_to_current_normal_and_log_files": true,
+      "installer_log_untouched": true,
+      "session": 2,
+      "prior_complete_session_preserved": true,
+      "fresh_boot_nonce": true,
+      "init_bank_status": "recorded",
+      "serial_observer_marker_present": true,
+      "serial_observer_exit_zero": true,
+      "guest_shutdown_confirmed": true,
+      "host_cleanup_after_guest_shutdown": true,
+      "default_rc_service": true,
+      "base_system_fixture": true,
+      "optional_uname_query": "failed: fixture used /bin/uname instead of /usr/bin/uname",
+      "observer_fixture": true,
+      "real_installer": false,
+      "final_CURRENT_release_media": false,
+      "physical": false,
+      "linux_readonly_fat_exit": 0,
+      "native_freebsd_readonly_fat_exit": 0,
+      "all_three_boot_banks_recorded": true,
+      "serial_primary": true,
+      "no_usb_ccb_errors": true,
+      "no_keyboard_input": true,
+      "no_nic": true
+    }
+  ],
+  "retained_preparation_failure": {
+    "author_exit": 2,
+    "reason": "Outer fixture boot archive omitted etc directory; common EFI assembler could not append its fstab",
+    "root_fsck_and_native_imports_had_passed": true,
+    "correction": "Fresh outer archive with etc; exact native RAM root and EFI products preserved",
+    "failed_outputs_retained": true
+  },
+  "fixture_limits": [
+    "Base system plus native Python; no complete offline desktop/package repository or actual installation.",
+    "Optional uname probe used /bin/uname instead of /usr/bin/uname and failed; no guest uname result inferred.",
+    "Kernel and modules are provided by the outer boot archive; the base-only RAM root lacks kernel linker hints and devmatch reports that gap.",
+    "Two clean guest shutdowns/fresh host processes do not qualify unexpected reset or physical power loss."
+  ],
+  "qualification": {
+    "native_arm64_efi_usb_boot": true,
+    "v4_kernel_userspace_session_handoff": true,
+    "production_default_rc_capture": true,
+    "complete_sampled_kernel_log": true,
+    "fresh_session_and_previous_session_preservation": true,
+    "native_and_linux_readonly_fat_checks": true,
+    "real_installer": false,
+    "complete_packaged_live_root": false,
+    "whole_default_build_pipeline": false,
+    "final_CURRENT_release_media": false,
+    "early_kernel_persistence": false,
+    "panic_reset_power_loss": false,
+    "physical": false,
+    "signing": false,
+    "release": false
+  }
+}

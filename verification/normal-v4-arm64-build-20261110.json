@@ -71,5 +71,12 @@
     "physical": false,
     "signing": false,
     "release": false
+  },
+  "runtime_followup": {
+    "evidence": "normal-v4-arm64-runtime-20261110.json",
+    "scope": "Native generic ARM64 KVM EFI/USB base-system fixture; production default rc capture; two clean boots and readback; no final-media or physical qualification",
+    "firmware_boot": true,
+    "kernel_userspace_handoff": true,
+    "default_rc_capture": true
   }
 }
