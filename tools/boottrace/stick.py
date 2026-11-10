@@ -137,6 +137,8 @@ def _normal_stage(data, version, phase):
         raise ValueError('normal boot slot checksum mismatch')
     keys = ('image_id', 'archive_sha256', 'trace_partition', 'session',
             'phase', 'identity', 'early_kernel_backend')
+    if version == 3:
+        keys += ('boot_nonce', 'boot_identity')
     if (len(lines) != len(keys) + 2 or
             lines[0] != f'Daemonarchy normal boot trace v{version}'.encode()):
         raise ValueError('unsupported normal boot slot schema')
@@ -156,18 +158,32 @@ def _normal_stage(data, version, phase):
             values['identity'] != 'declared-archive' or
             values['early_kernel_backend'] != 'not-enabled'):
         raise ValueError('invalid normal boot slot metadata')
+    if version == 3:
+        nonce = values['boot_nonce']
+        if nonce == 'unavailable':
+            valid = values['boot_identity'] == 'unavailable'
+        else:
+            valid = (re.fullmatch('[0-9a-f]{64}', nonce) is not None and
+                     len(set(bytes.fromhex(nonce))) > 1 and
+                     values['boot_identity'] == 'firmware-rng')
+        if not valid:
+            raise ValueError('invalid normal boot identity metadata')
     return dict(schema=f'daemonarchy/normal-boot-trace@{version}', **values)
 
 
 def normal_record(data):
-    """Decode legacy slots or independent v2 checkpoint banks without writes."""
+    """Decode v1/v2/v3 slots and independent banks without changing the medium."""
     if len(data) != SLOT_SIZE:
         raise ValueError('normal boot slot has the wrong size')
     if data == padded(NORMAL_EMPTY, SLOT_SIZE):
         return None
-    if not data.startswith(b'Daemonarchy normal boot trace v2\n'):
+    if data.startswith(b'Daemonarchy normal boot trace v3\n'):
+        version = 3
+    elif data.startswith(b'Daemonarchy normal boot trace v2\n'):
+        version = 2
+    else:
         return _normal_stage(data, 1, 'loader-ready')
-    primary = _normal_stage(data[:NORMAL_STAGE_SIZE], 2, 'loader-ready')
+    primary = _normal_stage(data[:NORMAL_STAGE_SIZE], version, 'loader-ready')
     end = NORMAL_PREEXIT_OFF + NORMAL_STAGE_SIZE
     if data[end:] != b'\n' * (SLOT_SIZE - end):
         raise ValueError('unsupported data in reserved normal checkpoint space')
@@ -177,8 +193,11 @@ def normal_record(data):
         checkpoint['status'] = 'not-recorded'
     else:
         try:
-            record = _normal_stage(later, 2, 'pre-exit')
-            for key in ('image_id', 'archive_sha256', 'trace_partition', 'session'):
+            record = _normal_stage(later, version, 'pre-exit')
+            bound = ('image_id', 'archive_sha256', 'trace_partition', 'session')
+            if version == 3:
+                bound += ('boot_nonce', 'boot_identity')
+            for key in bound:
                 if record[key] != primary[key]:
                     raise ValueError('pre-exit identity does not match loader-ready')
             checkpoint.update(status='recorded', record=record)

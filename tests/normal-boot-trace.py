@@ -21,14 +21,16 @@ def record(version=1, **changes):
                   archive_sha256='ab' * 32, trace_partition='fedcba98-7654-3210-fedc-ba9876543210',
                   session='0001', phase='loader-ready', identity='declared-archive',
                   early_kernel_backend='not-enabled')
+    if version == 3:
+        values.update(boot_nonce=bytes(range(32)).hex(), boot_identity='firmware-rng')
     values.update(changes)
     body = (f'Daemonarchy normal boot trace v{version}\n' +
             ''.join(f'{key}={value}\n' for key, value in values.items())).encode()
     return stick.padded(body + f'sum={stick.fnv1a(body):08x}\n'.encode(), stick.SLOT_SIZE)
 
 
-def staged_record(later=None):
-    primary = record(version=2)[:stick.NORMAL_STAGE_SIZE]
+def staged_record(later=None, version=2, **changes):
+    primary = record(version=version, **changes)[:stick.NORMAL_STAGE_SIZE]
     if later is None:
         later = b'\n' * stick.NORMAL_STAGE_SIZE
     return primary + later + b'\n' * (stick.SLOT_SIZE - 2 * stick.NORMAL_STAGE_SIZE)
@@ -135,6 +137,52 @@ class Normal(unittest.TestCase):
         result = json.loads((output / 'normal.json').read_text())
         self.assertEqual(result['records'][0]['status'], 'partial')
         self.assertEqual(result['records'][0]['record']['phase'], 'loader-ready')
+        self.assertEqual((output / '0001.TXT').read_bytes(), data)
+        self.assertEqual((self.volume / 'NORMAL/0001.TXT').read_bytes(), data)
+
+    def test_v3_nonce_is_shared_across_independent_banks(self):
+        later = record(version=3, phase='pre-exit')[:stick.NORMAL_STAGE_SIZE]
+        value = stick.normal_record(staged_record(later, version=3))
+        self.assertEqual(value['schema'], 'daemonarchy/normal-boot-trace@3')
+        self.assertEqual(value['boot_nonce'], bytes(range(32)).hex())
+        self.assertEqual(value['pre_exit']['record']['boot_nonce'], value['boot_nonce'])
+
+    def test_v3_reports_missing_rng_without_a_fabricated_nonce(self):
+        changes = dict(boot_nonce='unavailable', boot_identity='unavailable')
+        later = record(version=3, phase='pre-exit', **changes)[:stick.NORMAL_STAGE_SIZE]
+        value = stick.normal_record(staged_record(later, version=3, **changes))
+        self.assertEqual(value['boot_identity'], 'unavailable')
+        self.assertEqual(value['pre_exit']['status'], 'recorded')
+
+    def test_v3_correct_checksums_cannot_admit_bad_identity_metadata(self):
+        for changes in [dict(boot_nonce='00' * 32), dict(boot_nonce='ab' * 32),
+                        dict(boot_nonce='0A' * 32), dict(boot_nonce='short'),
+                        dict(boot_nonce='unavailable'), dict(boot_identity='unavailable')]:
+            with self.subTest(changes=changes), self.assertRaises(ValueError):
+                stick.normal_record(staged_record(version=3, **changes))
+
+    def test_v3_foreign_boot_nonce_keeps_the_earlier_bank(self):
+        later = record(version=3, phase='pre-exit',
+                       boot_nonce=bytes(reversed(range(32))).hex())[:stick.NORMAL_STAGE_SIZE]
+        value = stick.normal_record(staged_record(later, version=3))
+        self.assertEqual(value['boot_nonce'], bytes(range(32)).hex())
+        self.assertEqual(value['pre_exit']['status'], 'unreadable')
+
+    def test_v3_cannot_mix_a_legacy_later_bank(self):
+        later = record(version=2, phase='pre-exit')[:stick.NORMAL_STAGE_SIZE]
+        value = stick.normal_record(staged_record(later, version=3))
+        self.assertEqual(value['pre_exit']['status'], 'unreadable')
+
+    def test_v3_partial_export_preserves_exact_slot_and_boot_identity(self):
+        data = staged_record(stick.padded(b'partial later write', stick.NORMAL_STAGE_SIZE),
+                             version=3)
+        (self.volume / 'NORMAL/0001.TXT').write_bytes(data)
+        output = self.root / 'v3-export'
+        with contextlib.redirect_stdout(io.StringIO()):
+            stick.cmd_normal(argparse.Namespace(target=str(self.volume), out=str(output)))
+        value = json.loads((output / 'normal.json').read_text())['records'][0]
+        self.assertEqual(value['status'], 'partial')
+        self.assertEqual(value['record']['boot_identity'], 'firmware-rng')
         self.assertEqual((output / '0001.TXT').read_bytes(), data)
         self.assertEqual((self.volume / 'NORMAL/0001.TXT').read_bytes(), data)
 

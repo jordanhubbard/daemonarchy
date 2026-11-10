@@ -371,3 +371,28 @@ composed or qualified by this checkpoint. Automatic BIOS tracing, deeper stage
 capture, final size budgets, signing, lifecycle and physical gates remain open.
 The previous full augmented amd64 payload's raw-budget failure remains; the
 smaller boot-only control does not resolve it.
+
+
+## Boot correlation across cloned media
+
+The [native nonce checkpoint](../../verification/normal-boot-identity-20261110.json)
+adds v3 records with a cached 256-bit firmware-RNG nonce shared by both banks.
+The product decoder reads all three versions, checks later-bank nonce equality,
+and retains earlier evidence when the later bank is malformed. New EFI
+construction accepts the explicit v3 capability marker. Slot/map geometry and
+the experiment queue remain unchanged.
+
+Both native-built ARM64 and amd64 EFI controls boot the exact same cloned input
+with different nonces, preserve the same nonce across their two stages, and enter
+the kernel. Only 809 bytes in each current session slot change. ARM restart
+retains its first slot and records a new nonce in the next slot. Removing the RNG
+device on each architecture records boot_nonce=unavailable and
+boot_identity=unavailable, changes only 701 slot bytes and still enters the
+kernel. No clock, image ID or counter is promoted to an independent nonce.
+
+The nonce is public correlation metadata, with only its hash in this public
+record. It does not authenticate a target or establish firmware entropy quality.
+Stable hardware descriptors, actual kernel/userspace handoff querying and
+backend-specific identity acceptance remain open. These tests stop at a
+deliberately unavailable root and do not qualify full media, init, installation,
+desktop, physical reset/power loss or the remaining release gates.
