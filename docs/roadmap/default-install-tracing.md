@@ -284,3 +284,11 @@ into CI with results checked separately. Selected kernel/module identities,
 bounded firmware facts, early kernel/panic/init/installer capture, clone-independent
 identity, interrupted writes, power loss, amd64/BIOS, full refreshed media and
 physical acceptance remain open. Pi 4, Pi 5 and Apple M2 remain untested physically.
+
+A subsequent complete-GPT control also leaves both writable primary and foreign
+disks byte-for-byte unchanged. Before boot, both GPT header checksums and
+mirrored entry arrays pass independent validation. The first input lacked its
+backup GPT and remains separately recorded. Exact a486e309 native amd64 CI now
+passes the production handoff fixture in plain and sanitized modes and builds
+the EFI; its outputs and feature manifest are retained and hash-verified.
+This does not qualify an amd64 firmware boot, BIOS or final installation medium.
