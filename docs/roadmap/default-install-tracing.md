@@ -467,6 +467,8 @@ its exact original ISO metadata. BIOS USB boot now passes root and UID-65534
 package/SQLite checks. The guest shutdown event and actual final VGA buffer
 confirm sync; readback changes only 19,892 DATRACE bytes and both FAT checkers
 pass. Raw/xz budgets and exact decompression pass. The earlier malformed inputs
-and partial outcomes remain retained. Same-image EFI regression is running;
-final CURRENT media, automatic BIOS/deeper-stage capture, installation, desktop,
+and partial outcomes remain retained. Same-image EFI USB boot now passes the
+root and UID-65534 inventory/SQLite checks, v3 loader/userspace correlation, synced
+shutdown and both FAT checkers, with only 20,430 DATRACE bytes changed. Final
+CURRENT media, automatic BIOS/deeper-stage capture, installation, desktop,
 lifecycle, signing and physical qualification remain open.

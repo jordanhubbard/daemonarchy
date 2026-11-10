@@ -90,6 +90,8 @@ package identities and SQLite as root and UID 65534. A guest-requested shutdown
 and retained VGA buffer prove the final sync, and returned-media comparison
 finds only 19,892 DATRACE bytes changed. Native FreeBSD and Linux FAT checks
 pass. The 2,555,396,608-byte raw image and 1,882,668,424-byte xz asset pass existing
-budgets with exact round-trip identity. EFI regression of these exact bytes is
-pending; current-source, installation, desktop, signing and physical gates remain
-open. This checkpoint does not qualify a different source/image selection.
+budgets with exact round-trip identity. The same-image EFI USB regression also
+passes root/UID-65534 inventory and SQLite, loader-ready/pre-exit nonce binding
+through userspace kenv, synced shutdown and both returned-FAT checks. Only 20,430
+DATRACE bytes change. Current-source, installation, desktop, signing and physical
+gates remain open. This checkpoint does not qualify a different source/image selection.
