@@ -315,7 +315,9 @@ class MeasuredProgressTests(unittest.TestCase):
 
 def clean_env():
     env = dict(os.environ)
-    for name in ('NO_COLOR', 'COLORTERM', 'DAEMONARCHY_REDUCED_MOTION', 'DAEMONARCHY_CONSOLE',
+    # Locale probes must not inherit the host Python's coerced LC_CTYPE.
+    for name in ('LC_ALL', 'LC_CTYPE', 'NO_COLOR', 'COLORTERM', 'DAEMONARCHY_REDUCED_MOTION',
+                 'DAEMONARCHY_CONSOLE',
                  'DAEMONARCHY_COLOR', 'DAEMONARCHY_GLYPHS', 'DAEMONARCHY_PROGRESS_STYLE',
                  'DAEMONARCHY_SOUND', 'DAEMONARCHY_SOUND_DEVICE', 'DAEMONARCHY_UNATTENDED'):
         env.pop(name, None)
@@ -762,8 +764,9 @@ class TmuxWindowControlTests(unittest.TestCase):
         self.press(tty, key)
 
     def started(self, tty):
-        self.until(tty, lambda: 'Base sets' in self.capture('install:0.0'), 10)
-        self.assertEqual(self.panes()[0][2], 'progress')
+        # The dashboard can render before the wrapper names/configures its pane.
+        self.until(tty, lambda: 'Base sets' in self.capture('install:0.0')
+                   and self.panes()[0][2] == 'progress', 10)
 
     def test_splits_windows_views_and_navigation_use_tmux_default_keys(self):
         with self.screen() as tty:
