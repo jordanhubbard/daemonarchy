@@ -803,3 +803,10 @@ Native media, record-policy, FAT, block-map and Lua controls pass. The initial
 metadata-query failure is retained separately. The repository's amd64-only
 bootinfo fixture supplies no ARM handoff result; actual ARM64 firmware boot,
 userspace capture and final-media acceptance remain open.
+
+
+The corrected full default-rc image also passes native xz integrity, exact
+decompression identity and the original size gates: raw 2,554,348,032 bytes;
+xz 1,882,519,844 bytes, 264,963,804 bytes below the compressed limit. This result
+binds the corrected image's own bytes, separately from the preceding failed
+runtime control and its compression result.

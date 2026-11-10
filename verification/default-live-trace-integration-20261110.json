@@ -222,5 +222,17 @@
       "correction": "Use file -r with two NUL delimiters; verify each returned pathname and result count before invoking ldd."
     },
     "regular_paths_discovered": 8006
+  },
+  "corrected_image_compression": {
+    "raw_bytes": 2554348032,
+    "raw_sha256": "6392e01e31d914f42e8d5767c1d24a79b724ff65e25fefd4a4671f9e79d927e2",
+    "xz_bytes": 1882519844,
+    "xz_sha256": "963b9e7893254030db40aea19a3b3a4960a7a018dec5517798ebc9ee2cdc366c",
+    "native_exit": 0,
+    "xz_integrity_test": true,
+    "exact_decompression_identity": true,
+    "original_size_limits_passed": true,
+    "raw_limit_bytes": 3758096384,
+    "xz_limit_bytes": 2147483648
   }
 }
