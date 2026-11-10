@@ -721,7 +721,13 @@ The canonical manifest name and existing raw/compressed size gates are retained.
 The runtime auditor can open the outer ISO and packed UFS root read-only;
 native ARM64 controls verify matching-worker refusal, unchanged image bytes and
 cleanup of every MD device the auditor allocated. Full runtime execution of the
-x86 payload requires its matching worker and remains in progress.
+x86 payload on its matching worker passed the tool, import, GTK and desktop
+wiring checks, then reached the one-hour limit in its retained ELF dependency
+scan. That incomplete audit does not qualify full runtime execution.
+The replacement batches `file(1)` classification while preserving every regular
+pathname and every per-path `ldd` check. Native controls resolve four dynamic
+ELF paths, including hardlink aliases and a newline filename, and refuse a
+removed linked library. Its full-image execution remains pending.
 
 The initial control used `cp -Rp`, breaking 2,077 original hardlink groups and
 duplicating 3,128,137,688 bytes. Its automatic boot launch was stopped; the
@@ -730,8 +736,9 @@ the retained original archive with explicit loader and test-observer updates.
 Independent native checks now preserve all 2,077 unaffected hardlink groups and
 root mode 0755, UID 0 and GID 1002. The image is 2,555,396,608 bytes. Actual native
 manifest generation preserves its identity and records all eight staged helpers.
-The complete root is booting through EFI/USB with a normal rc service; returned
-userspace trace evidence is still pending. Neither this retained-world control
+The corrected complete root now passes its normal rc trace service through
+EFI/USB; its independently checked returned-media results are described below.
+Neither this retained-world control
 nor static default-call wiring closes final CURRENT or physical qualification.
 
 The [amd64 CURRENT build continuation](../../verification/native-amd64-build-continuation-20261110.json)
@@ -769,9 +776,19 @@ and native FreeBSD read-only FAT checks both return zero. This is device-I/O
 fixture evidence. A subsequent actual boot retains a fresh nonce in slot 2,
 preserves the whole prior session byte-for-byte and repeats the same checks;
 each boot changes only 12,191 bytes in its own session. Both subsequent FAT
-checks also return zero. The full default-rc image with the correction has
-completed native authoring and is booting for its own returned-media checks. Real installation, final CURRENT,
-ARM/BIOS, physical and interruption/power-loss gates remain open.
+checks also return zero.
+
+The corrected full default-rc image (2,554,348,032 bytes) boots through ordinary
+rc startup without network or keyboard input. The actual default service
+records the init checkpoint and all 6,232 sampled kernel-log bytes, with no
+full-log truncation. Its read-only observer visibly reports
+`DEFAULT-TRACE-RC-PASS` and exits zero on the video-primary console. Independent
+returned-media decoding confirms all three boot banks, an untouched installer
+log and only 10,754 changed bytes confined to the current trace session. Linux
+and FreeBSD read-only FAT checks both return zero; the input image is unchanged.
+Native authoring preserves all 2,077 unaffected hardlink groups and root metadata.
+This qualifies default rc capture on the retained complete root; real installation,
+final CURRENT, ARM/BIOS, physical and interruption/power-loss gates remain open.
 
 The preceding full-root image separately passes native xz integrity, exact
 decompression and unchanged size limits: raw 2,555,396,608 bytes, compressed

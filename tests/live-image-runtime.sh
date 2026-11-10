@@ -193,18 +193,53 @@ installer_python=${installer_python#\#!}
 echo 'PASS: live desktop tools, startup wiring and installer runtime'
 # A compiler-only library accidentally removed from a retained executable's
 # dependency chain must fail here, even if that command is not on our tool list.
-find /bin /sbin /lib /libexec /usr/bin /usr/sbin /usr/lib /usr/libexec \
-  /usr/local/bin /usr/local/sbin /usr/local/lib /usr/local/libexec /usr/local/llvm[0-9]* -type f |
-while IFS= read -r path; do
-  case "$(file -b "$path")" in
-    *ELF*dynamically\ linked*)
-      if ! result=$(ldd "$path" 2>&1); then
-        printf 'Cannot resolve live ELF dependencies: %s\n%s\n' "$path" "$result" >&2
-        exit 1
-      fi
-      case "$result" in *'not found'*) printf '%s\n%s\n' "$path" "$result" >&2; exit 1 ;; esac
-      ;;
-  esac
-done
+# Batch only file(1) classification. Every regular pathname is still inspected,
+# and every dynamic ELF gets its own ldd invocation (including hardlink aliases
+# whose dependency resolution may depend on their path). NUL framing preserves
+# whitespace/newlines in names and descriptions without a file process per path.
+/usr/local/bin/python3.12 - <<'ELF_AUDIT'
+import glob
+import subprocess
+import sys
+
+roots = [b'/bin', b'/sbin', b'/lib', b'/libexec', b'/usr/bin', b'/usr/sbin',
+         b'/usr/lib', b'/usr/libexec', b'/usr/local/bin', b'/usr/local/sbin',
+         b'/usr/local/lib', b'/usr/local/libexec']
+roots += glob.glob(b'/usr/local/llvm[0-9]*') or [b'/usr/local/llvm[0-9]*']
+raw = subprocess.run([b'find', *roots, b'-type', b'f', b'-print0'],
+                     check=True, stdout=subprocess.PIPE).stdout
+if not raw or not raw.endswith(b'\0'):
+    raise SystemExit('Missing or malformed retained-file enumeration')
+paths = raw[:-1].split(b'\0')
+checked = dynamic = 0
+print(f'ELF audit: discovered {len(paths)} regular paths', flush=True)
+for offset in range(0, len(paths), 128):
+    batch = paths[offset:offset + 128]
+    result = subprocess.run([b'file', b'-E', b'-r', b'-0', b'-0', b'--', *batch],
+                            stdout=subprocess.PIPE, stderr=subprocess.PIPE)
+    fields = result.stdout.split(b'\0')
+    if result.returncode or fields[-1] != b'' or len(fields) != 2 * len(batch) + 1:
+        sys.stderr.buffer.write(result.stderr)
+        raise SystemExit('Cannot classify retained files')
+    for index, path in enumerate(batch):
+        name, description = fields[2 * index:2 * index + 2]
+        if name != path:
+            raise SystemExit('Retained-file classification pathname mismatch')
+        checked += 1
+        if b'ELF' not in description or b'dynamically linked' not in description:
+            continue
+        result = subprocess.run([b'ldd', path], stdout=subprocess.PIPE,
+                                stderr=subprocess.STDOUT)
+        if result.returncode or b'not found' in result.stdout:
+            sys.stderr.buffer.write(b'Cannot resolve live ELF dependencies: ' +
+                                    path + b'\n' + result.stdout + b'\n')
+            raise SystemExit(1)
+        dynamic += 1
+    if checked % 4096 == 0 or checked == len(paths):
+        print(f'ELF audit: classified {checked}/{len(paths)} paths; '
+              f'resolved {dynamic} dynamic ELF paths', flush=True)
+print(f'PASS: all {checked} retained paths classified; '
+      f'all {dynamic} dynamic ELF paths resolved', flush=True)
+ELF_AUDIT
 echo 'PASS: live tools, install payloads and retained ELF dependencies'
 AUDIT

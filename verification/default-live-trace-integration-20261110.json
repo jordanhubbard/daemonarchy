@@ -1,7 +1,7 @@
 {
   "schema": "daemonarchy/default-live-trace-integration@1",
   "source_parent": "ba0e15b7781a5513b2b1525ccb673e1105ff557a",
-  "observed_utc": "2026-11-10T18:24:03.559913+00:00",
+  "observed_utc": "2026-11-10T19:32:53.768000+00:00",
   "source_sha256": {
     "build-iso.sh": "6e3210b99b6f2f042a73ed35819992bfe14eac8cc9e14b43217044c00ccccb36",
     "scripts/make-ram-iso.sh": "4c29aa66024b790a8b56651630851060e01b0fae4a1a7d904f8b23d79d0a1344",
@@ -114,7 +114,7 @@
     "native_composition": true,
     "hardlink_preservation": true,
     "native_readonly_mount_and_abi_refusal": true,
-    "automatic_rc_capture": false,
+    "automatic_rc_capture": true,
     "matching_worker_full_runtime_audit": false,
     "final_CURRENT_media": false,
     "physical": false,
@@ -122,10 +122,21 @@
     "whole_default_build_pipeline": false
   },
   "matching_worker_audit": {
-    "status": "detached native driver started; checksum/runtime/terminal observations pending",
+    "status": "Terminated at the one-hour whole-driver limit (exit 143) during retained ELF dependency scan; no full runtime pass",
     "input_hashes_checked_before_runtime": true,
     "whole_driver_timeout_seconds": 3600,
-    "original_precheck_observation": "120-second SSH observation timeout; hash processes remained live, then were confirmed missing. No pass or full runtime result was inferred. The detached driver retains checksum and terminal observations."
+    "original_precheck_observation": "120-second SSH observation timeout; hash processes remained live, then were confirmed missing. No pass or full runtime result was inferred. The detached driver retains checksum and terminal observations.",
+    "completed_checks": [
+      "Default trace helper imports",
+      "Public image authorization exclusion",
+      "Required live tools and install payloads",
+      "Command, tmux, enterprise Wi-Fi imports",
+      "GTK 3.24 and live desktop startup wiring"
+    ],
+    "full_elf_dependency_scan": false,
+    "owned_md_devices_released": true,
+    "owned_mounts_released": true,
+    "driver_exit": 143
   },
   "portable_checks": {
     "architecture_policy": "pass",
@@ -143,5 +154,72 @@
     "xz_integrity_test": true,
     "exact_decompression_identity": true,
     "original_size_limits_passed": true
+  },
+  "corrected_runtime": {
+    "schema": "daemonarchy/default-trace-rc-runtime-control@1",
+    "image_sha256": "6392e01e31d914f42e8d5767c1d24a79b724ff65e25fefd4a4671f9e79d927e2",
+    "returned_sha256": "18e0a23a77d0db975de918c64120da592c11f3f518e980be2e5114f29e607894",
+    "serial_sha256": "171cedc34363cffd3a39f7a6dee96e90f643f187570573b1dff8a1d945ce719e",
+    "kernel_content_sha256": "6297b0225c2786690ab205581e13cbe604e488383afed38ba1921f00a7bd104f",
+    "kernel_bytes": 6232,
+    "kernel_truncated": false,
+    "changed_bytes": 10754,
+    "changes_confined_to_current_normal_and_log_files": true,
+    "installer_log_untouched": true,
+    "init_bank_status": "recorded",
+    "serial_observer_marker_present": false,
+    "serial_observer_exit_zero": false,
+    "video_observer_verification": {
+      "video_sha256": "8ac10415a1ea358c984ed8ebc8309d41fee69f5fe96d317ff0349452a67fd85d",
+      "console": "video-primary",
+      "visible_service_status": "recorded",
+      "visible_observer_pass_marker": "DEFAULT-TRACE-RC-PASS",
+      "visible_observer_exit": 0,
+      "retained_after_confirmed_guest_shutdown": true,
+      "verification": "agent inspected actual retained QMP frame; UART markers absent on video-primary userspace console"
+    },
+    "observer_fixture": true,
+    "real_installer": false,
+    "final_CURRENT": false,
+    "image": {
+      "bytes": 2554348032,
+      "sha256": "6392e01e31d914f42e8d5767c1d24a79b724ff65e25fefd4a4671f9e79d927e2"
+    },
+    "kernel_osversion": 1600029,
+    "default_rc_service": true,
+    "normal_rc_startup": true,
+    "network_attached": false,
+    "keyboard_input": false,
+    "loader_ready": true,
+    "pre_exit": true,
+    "original_image_unchanged": true,
+    "linux_readonly_fat_exit": 0,
+    "native_freebsd_readonly_fat_exit": 0,
+    "guest_shutdown_confirmed": true,
+    "host_cleanup_after_guest_shutdown": true,
+    "unmodified_hardlink_groups_preserved": 2077,
+    "root_metadata_preserved": true,
+    "physical": false,
+    "source_commit": "acf9cd7140da8e5f697a617808e448fb8308cc44",
+    "qualification_scope": "Retained complete 1.5.1 live root on native amd64 FreeBSD in QEMU USB; actual default rc service, read-only observer fixture; no real installation or final CURRENT qualification."
+  },
+  "matching_worker_audit_repeat": {
+    "status": "corrected full-root image transfer in progress; native driver not launched yet",
+    "auditor_source_sha256": "b703a54a3394580ac99f8a0fe155da4258da24b45a4664bc095b47553bf08942",
+    "image_sha256": "6392e01e31d914f42e8d5767c1d24a79b724ff65e25fefd4a4671f9e79d927e2",
+    "whole_driver_timeout_seconds": 10800,
+    "classification_batch_paths": 128,
+    "all_regular_paths_classified": "required; full-image execution pending",
+    "ldd_per_dynamic_elf_path": "required, including hardlink aliases; full-image execution pending",
+    "qualified": false,
+    "native_classifier_control": {
+      "exit": 0,
+      "regular_paths": 7,
+      "dynamic_elf_paths_resolved": 4,
+      "hardlink_aliases_and_newline_path": true,
+      "removed_linked_library_refused": true,
+      "initial_control_refused_escaped_pathname": true,
+      "correction": "Use file -r with two NUL delimiters; verify each returned pathname and result count before invoking ldd."
+    }
   }
 }
