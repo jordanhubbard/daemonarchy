@@ -360,7 +360,13 @@ world, kernel, base packages, release objects and distribution sets. All
 and all five phase logs were independently verified after export from the allocated
 FreeBSD AArch64 worker. The kernel-set inspector accepts the new archive and its
 kernel matches the compiled object. The new native EFI/Lua retain their normal
-trace capability markers; they have not yet been boot-tested.
+trace capability markers. The subsequent [private CURRENT worker boot](../verification/native-current-arm-worker-boot-20261110.json)
+passes under AArch64 KVM with four CPUs and 8 GiB RAM. Both the running kernel
+and the installed userland header report OSVERSION `1600031`. The running
+kernel matches the compiled object; the EFI file on the read-only inspected ESP,
+root loader, shell, libc and header match the new distribution sets. Native shell
+execution and SSH with a pinned host identity pass. The disk contains private
+lab credentials and is not publishable installer media.
 
 These are unsigned aggregate development products. The private mountpoint
 traversal recovery remains recorded, and the elapsed times are not a controlled

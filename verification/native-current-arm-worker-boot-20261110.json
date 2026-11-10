@@ -1,0 +1,62 @@
+{
+  "schema": "daemonarchy/native-current-arm-worker-boot@1",
+  "status": "private-worker-boot-passed",
+  "recorded_utc": "2026-11-10T05:18:57.575535+00:00",
+  "source_commit": "af55b6f9042e15b635e90926d476e7cbeb48a069",
+  "predecessor": "verification/native-arm-source-build-r2-20261110.json",
+  "inputs": {
+    "base.txz": "32924d5e234aa31bc7455bae49b349694a902d8e97fba9c2acdb2f4c91537c3f",
+    "kernel.txz": "00da5c69cbd3b002db40791211c41fc47768f2d7f9c9eb6e15fe8c64b10b1633"
+  },
+  "target": {
+    "system": "FreeBSD",
+    "machine": "arm64",
+    "processor": "aarch64",
+    "kernel_osversion": 1600031,
+    "userland_version": "16.0-CURRENT",
+    "cpus": 4,
+    "memory_gib": 8,
+    "accelerator": "KVM",
+    "firmware": "QEMU AArch64 UEFI",
+    "kernel_version": "FreeBSD 16.0-CURRENT #0 native-controls-af55b6f9042e: Mon Nov  9 23:18:25 UTC 2026"
+  },
+  "checks": {
+    "pinned_ssh_host_identity": true,
+    "kernel_matches_compiled_object": true,
+    "root_efi_matches_built_base_set": true,
+    "booted_esp_efi_matches_built_base_set": true,
+    "shell_libc_and_header_match_built_base_set": true,
+    "userland_exec": true,
+    "source_osversion": 1600031,
+    "esp_inspected_readonly_and_unmounted": true
+  },
+  "identities": {
+    "kernel_sha256": "d4bb617d30643b623623221bf5833a627c65a3f97f2344b4ae6bea0052622d6c",
+    "efi_sha256": "0f6bf23472af39c41c75861d04ffff4c7c5c11590438f7b19049a9003e75133a",
+    "shell_sha256": "5de79b55920c54693657cefacbe51de1d001045b5de11b51a5bfd9a2b8cef3e6",
+    "libc_sha256": "f5954e2f540ae276073b2631a362b07ef29b72e6b4785ed68c88ccf6fba25e53",
+    "sys_param_header_sha256": "ff537896516d7a00078cda5fdae3c76780eaea8071afa0c4638350ba2040f09f"
+  },
+  "private_image": {
+    "bytes": 8594163200,
+    "sha256": "b762244ad47051fa43de8ab25a4a6c6838c5a0c31a7795970c77376b0449809e",
+    "contains_lab_credentials": true,
+    "publishable": false
+  },
+  "qualification": {
+    "native_current_world_kernel_boot": true,
+    "final_installer_media": false,
+    "matched_current_ports_closure": false,
+    "desktop": false,
+    "physical_pi4": false,
+    "physical_pi5": false,
+    "physical_apple_m2": false,
+    "lifecycle_receipt": false,
+    "release": false
+  },
+  "limitations": [
+    "Private boot worker made directly from new distribution sets; no installer, desktop or target installation exercised",
+    "Lab keys remain private; this worker disk is not a release asset",
+    "No aggregate build or boot result supplies canonical per-component lifecycle or performance evidence"
+  ]
+}
