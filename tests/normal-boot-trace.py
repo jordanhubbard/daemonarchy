@@ -1,6 +1,7 @@
 #!/usr/bin/env python3
 """Normal record readback, corruption, retention and read-only extraction."""
 import argparse
+import base64
 import contextlib
 import hashlib
 import importlib.util
@@ -21,7 +22,7 @@ def record(version=1, **changes):
                   archive_sha256='ab' * 32, trace_partition='fedcba98-7654-3210-fedc-ba9876543210',
                   session='0001', phase='loader-ready', identity='declared-archive',
                   early_kernel_backend='not-enabled')
-    if version == 3:
+    if version in (3, 4):
         values.update(boot_nonce=bytes(range(32)).hex(), boot_identity='firmware-rng')
     values.update(changes)
     body = (f'Daemonarchy normal boot trace v{version}\n' +
@@ -36,6 +37,22 @@ def staged_record(later=None, version=2, **changes):
     return primary + later + b'\n' * (stick.SLOT_SIZE - 2 * stick.NORMAL_STAGE_SIZE)
 
 
+def userspace_bank(phase='init-ready', content=b'bounded kernel console\n', **changes):
+    values = dict(phase=phase,
+                  content_kind={'init-ready': 'kernel-console', 'installer': 'installer-events'}[phase],
+                  content_bytes=str(len(content)), content_sha256=hashlib.sha256(content).hexdigest(),
+                  content_truncated='no', content_base64=base64.b64encode(content).decode('ascii'))
+    values.update(changes)
+    return record(version=4, **values)[:stick.NORMAL_STAGE_SIZE]
+
+
+def userspace_slot(init=None, installer=None):
+    blank = b'\n' * stick.NORMAL_STAGE_SIZE
+    return (record(version=4)[:stick.NORMAL_STAGE_SIZE] +
+            record(version=4, phase='pre-exit')[:stick.NORMAL_STAGE_SIZE] +
+            (blank if init is None else init) + (blank if installer is None else installer))
+
+
 class Normal(unittest.TestCase):
     def setUp(self):
         self.temp = tempfile.TemporaryDirectory()
@@ -43,6 +60,72 @@ class Normal(unittest.TestCase):
         self.root = Path(self.temp.name)
         self.volume = self.root / 'volume'
         (self.volume / 'NORMAL').mkdir(parents=True)
+
+    def test_v4_empty_later_banks_keep_loader_and_preexit_results(self):
+        value = stick.normal_record(userspace_slot())
+        self.assertEqual(value['schema'], 'daemonarchy/normal-boot-trace@4')
+        self.assertEqual(value['pre_exit']['status'], 'recorded')
+        self.assertEqual(value['init']['status'], 'not-recorded')
+        self.assertEqual(value['installer']['status'], 'not-recorded')
+
+    def test_v4_bounded_content_identity_and_independent_stages(self):
+        content = b'kernel console\nwith binary \x00\xff bytes'
+        events = b'{"event":"phase_begin","phase":"base"}\n'
+        value = stick.normal_record(userspace_slot(
+            userspace_bank(content=content), userspace_bank('installer', events, content_truncated='yes')))
+        for key, expected in (('init', content), ('installer', events)):
+            bank = value[key]
+            self.assertEqual(bank['status'], 'recorded')
+            self.assertEqual(base64.b64decode(bank['record']['content_base64']), expected)
+            self.assertEqual(bank['record']['content_sha256'], hashlib.sha256(expected).hexdigest())
+            self.assertEqual(int(bank['record']['content_bytes']), len(expected))
+        self.assertEqual(value['installer']['record']['content_truncated'], 'yes')
+
+    def test_v4_wrong_or_oversized_content_and_replayed_identity_preserve_other_banks(self):
+        faults = [dict(content_bytes='2049'), dict(content_bytes='00'),
+                  dict(content_bytes='-1'), dict(content_bytes='3'),
+                  dict(content_sha256='00' * 32), dict(content_base64='!invalid'),
+                  dict(content_base64='YQ==\t'), dict(content_truncated='unknown'),
+                  dict(content_kind='arbitrary-command'), dict(phase='installer'),
+                  dict(boot_nonce=bytes(range(1, 33)).hex()), dict(session='0002'),
+                  dict(archive_sha256='cd' * 32),
+                  dict(trace_partition='aaaaaaaa-aaaa-aaaa-aaaa-aaaaaaaaaaaa')]
+        for fault in faults:
+            with self.subTest(fault=fault):
+                bad = userspace_bank(**fault) if fault.get('phase') != 'installer' else userspace_bank('installer')
+                value = stick.normal_record(userspace_slot(bad, userspace_bank('installer')))
+                self.assertEqual(value['phase'], 'loader-ready')
+                self.assertEqual(value['pre_exit']['status'], 'recorded')
+                self.assertEqual(value['init']['status'], 'unreadable')
+                self.assertEqual(value['installer']['status'], 'recorded')
+
+    def test_v4_torn_installer_write_preserves_init_and_readonly_raw_extraction(self):
+        bad = bytearray(userspace_bank('installer')); bad[100] ^= 1
+        slot = userspace_slot(userspace_bank(), bytes(bad))
+        (self.volume / 'NORMAL/0001.TXT').write_bytes(slot)
+        before = hashlib.sha256(slot).hexdigest()
+        output = self.root / 'extracted'
+        with contextlib.redirect_stdout(io.StringIO()) as stdout:
+            stick.cmd_normal(argparse.Namespace(target=str(self.volume), out=str(output)))
+        result = json.loads(stdout.getvalue())
+        row = result['records'][0]
+        self.assertEqual(row['status'], 'partial')
+        self.assertEqual(row['record']['init']['status'], 'recorded')
+        self.assertEqual(row['record']['installer']['status'], 'unreadable')
+        self.assertFalse(result['volume_modified'])
+        self.assertEqual((output / '0001.TXT').read_bytes(), slot)
+        self.assertEqual(hashlib.sha256((self.volume / 'NORMAL/0001.TXT').read_bytes()).hexdigest(), before)
+
+    def test_v4_content_limit_and_legacy_reserved_space_remain_enforced(self):
+        maximum = userspace_bank(content=b'x' * 2048)
+        self.assertEqual(stick.normal_record(userspace_slot(maximum))['init']['status'], 'recorded')
+        oversized = userspace_bank(content=b'x' * 2049)
+        self.assertEqual(stick.normal_record(userspace_slot(oversized))['init']['status'], 'unreadable')
+        # Old v3 slots do not silently adopt a new use of their reserved space.
+        legacy = staged_record(version=3)
+        legacy = legacy[:2 * stick.NORMAL_STAGE_SIZE] + maximum + legacy[3 * stick.NORMAL_STAGE_SIZE:]
+        with self.assertRaisesRegex(ValueError, 'reserved'):
+            stick.normal_record(legacy)
 
     def test_empty_is_distinct_from_a_record_and_short_or_partial_data(self):
         self.assertIsNone(stick.normal_record(stick.padded(stick.NORMAL_EMPTY, stick.SLOT_SIZE)))

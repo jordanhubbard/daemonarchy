@@ -38,6 +38,7 @@ EXPERIMENTS: blocks headed "[name]", each line a loader setting
 """
 
 import argparse
+import base64
 import hashlib
 import json
 import os
@@ -63,6 +64,7 @@ EMPTY = b"(empty trace slot)\n"
 NORMAL_SLOTS = 32
 NORMAL_STAGE_SIZE = 4096
 NORMAL_PREEXIT_OFF = NORMAL_STAGE_SIZE
+NORMAL_CONTENT_LIMIT = 2048
 NORMAL_EMPTY = b"(empty normal boot slot)\n"
 MAP_NAME = "SLOTS.MAP"
 MAP_SIZE = 16384
@@ -137,7 +139,7 @@ def _normal_stage(data, version, phase):
         raise ValueError('normal boot slot checksum mismatch')
     keys = ('image_id', 'archive_sha256', 'trace_partition', 'session',
             'phase', 'identity', 'early_kernel_backend')
-    if version == 3:
+    if version in (3, 4):
         keys += ('boot_nonce', 'boot_identity')
     if (len(lines) != len(keys) + 2 or
             lines[0] != f'Daemonarchy normal boot trace v{version}'.encode()):
@@ -158,7 +160,7 @@ def _normal_stage(data, version, phase):
             values['identity'] != 'declared-archive' or
             values['early_kernel_backend'] != 'not-enabled'):
         raise ValueError('invalid normal boot slot metadata')
-    if version == 3:
+    if version in (3, 4):
         nonce = values['boot_nonce']
         if nonce == 'unavailable':
             valid = values['boot_identity'] == 'unavailable'
@@ -171,13 +173,48 @@ def _normal_stage(data, version, phase):
     return dict(schema=f'daemonarchy/normal-boot-trace@{version}', **values)
 
 
+
+def _normal_userspace_stage(data, phase):
+    """Decode a v4 bounded content bank; no persistence or execution claim."""
+    lines = data.rstrip(b'\n').split(b'\n')
+    if (len(lines) != 16 or not re.fullmatch(rb'sum=[0-9a-f]{8}', lines[-1])):
+        raise ValueError('userspace checkpoint has no complete schema/checksum')
+    body = b'\n'.join(lines[:-1]) + b'\n'
+    if fnv1a(body) != int(lines[-1][4:], 16):
+        raise ValueError('userspace checkpoint checksum mismatch')
+    common = b'\n'.join(lines[:10]) + b'\n'
+    record = _normal_stage(common + f'sum={fnv1a(common):08x}\n'.encode(), 4, phase)
+    fields = {}
+    for key, line in zip(('content_kind', 'content_bytes', 'content_sha256',
+                          'content_truncated', 'content_base64'), lines[10:-1]):
+        prefix = key.encode() + b'='
+        if not line.startswith(prefix):
+            raise ValueError('invalid userspace checkpoint fields')
+        fields[key] = line[len(prefix):].decode('ascii')
+    expected = {'init-ready': 'kernel-console', 'installer': 'installer-events'}[phase]
+    if (fields['content_kind'] != expected or
+            re.fullmatch(r'0|[1-9][0-9]{0,3}', fields['content_bytes']) is None or
+            int(fields['content_bytes']) > NORMAL_CONTENT_LIMIT or
+            fields['content_truncated'] not in ('yes', 'no') or
+            re.fullmatch('[0-9a-f]{64}', fields['content_sha256']) is None):
+        raise ValueError('invalid userspace checkpoint content metadata')
+    content = base64.b64decode(fields['content_base64'], validate=True)
+    if (len(content) != int(fields['content_bytes']) or
+            base64.b64encode(content).decode('ascii') != fields['content_base64'] or
+            hashlib.sha256(content).hexdigest() != fields['content_sha256']):
+        raise ValueError('userspace checkpoint content identity mismatch')
+    return dict(record, **fields)
+
+
 def normal_record(data):
-    """Decode v1/v2/v3 slots and independent banks without changing the medium."""
+    """Decode v1-v4 slots and independent banks without changing the medium."""
     if len(data) != SLOT_SIZE:
         raise ValueError('normal boot slot has the wrong size')
     if data == padded(NORMAL_EMPTY, SLOT_SIZE):
         return None
-    if data.startswith(b'Daemonarchy normal boot trace v3\n'):
+    if data.startswith(b'Daemonarchy normal boot trace v4\n'):
+        version = 4
+    elif data.startswith(b'Daemonarchy normal boot trace v3\n'):
         version = 3
     elif data.startswith(b'Daemonarchy normal boot trace v2\n'):
         version = 2
@@ -185,7 +222,7 @@ def normal_record(data):
         return _normal_stage(data, 1, 'loader-ready')
     primary = _normal_stage(data[:NORMAL_STAGE_SIZE], version, 'loader-ready')
     end = NORMAL_PREEXIT_OFF + NORMAL_STAGE_SIZE
-    if data[end:] != b'\n' * (SLOT_SIZE - end):
+    if version != 4 and data[end:] != b'\n' * (SLOT_SIZE - end):
         raise ValueError('unsupported data in reserved normal checkpoint space')
     later = data[NORMAL_PREEXIT_OFF:end]
     checkpoint = dict(sha256=hashlib.sha256(later).hexdigest())
@@ -195,7 +232,7 @@ def normal_record(data):
         try:
             record = _normal_stage(later, version, 'pre-exit')
             bound = ('image_id', 'archive_sha256', 'trace_partition', 'session')
-            if version == 3:
+            if version in (3, 4):
                 bound += ('boot_nonce', 'boot_identity')
             for key in bound:
                 if record[key] != primary[key]:
@@ -205,6 +242,23 @@ def normal_record(data):
             # A torn later write cannot erase an intact earlier checkpoint.
             checkpoint.update(status='unreadable', error=str(error))
     primary['pre_exit'] = checkpoint
+    if version == 4:
+        for index, name, phase in ((2, 'init', 'init-ready'), (3, 'installer', 'installer')):
+            bank = data[index * NORMAL_STAGE_SIZE:(index + 1) * NORMAL_STAGE_SIZE]
+            checkpoint = dict(sha256=hashlib.sha256(bank).hexdigest())
+            if bank == b'\n' * NORMAL_STAGE_SIZE:
+                checkpoint['status'] = 'not-recorded'
+            else:
+                try:
+                    record = _normal_userspace_stage(bank, phase)
+                    for key in ('image_id', 'archive_sha256', 'trace_partition', 'session',
+                                'boot_nonce', 'boot_identity'):
+                        if record[key] != primary[key]:
+                            raise ValueError('userspace identity does not match loader-ready')
+                    checkpoint.update(status='recorded', record=record)
+                except (ValueError, UnicodeError) as error:
+                    checkpoint.update(status='unreadable', error=str(error))
+            primary[name] = checkpoint
     return primary
 
 
@@ -726,7 +780,8 @@ def cmd_normal(args):
             if int(record['session']) != slot:
                 raise ValueError('normal boot session does not match its slot')
             metadata.update(status='recorded', record=record)
-            if record.get('pre_exit', {}).get('status') == 'unreadable':
+            if any(record.get(stage, {}).get('status') == 'unreadable'
+                   for stage in ('pre_exit', 'init', 'installer')):
                 metadata['status'] = 'partial'
         except (ValueError, OSError) as error:
             metadata.update(status='unreadable', error=str(error))

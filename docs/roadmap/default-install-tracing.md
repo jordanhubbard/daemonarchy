@@ -472,3 +472,24 @@ root and UID-65534 inventory/SQLite checks, v3 loader/userspace correlation, syn
 shutdown and both FAT checkers, with only 20,430 DATRACE bytes changed. Final
 CURRENT media, automatic BIOS/deeper-stage capture, installation, desktop,
 lifecycle, signing and physical qualification remain open.
+
+
+## Versioned userspace-bank decoder preparation
+
+The [v4 decoder controls](../../verification/normal-userspace-codec-20261110.json)
+reserve four independent 4 KiB banks in the existing 16 KiB normal slot:
+loader-ready, pre-exit, init-ready and installer. The latter two carry at most
+2 KiB of canonical-base64 content, its retained-byte SHA-256 and an explicit
+truncation flag. Each bank binds the declared image/archive, trace partition,
+slot and boot nonce. Invalid or torn later content cannot erase a valid earlier
+checkpoint. The extractor retains exact raw bytes and reports partial sessions.
+
+All 23 decoder/extraction controls pass on Linux and native FreeBSD ARM64 without
+skips. They reject malformed/oversized content and replayed identities while
+retaining v1-v3 reads. Version 3 reserved space keeps its old refusal semantics;
+existing records are not relabeled or changed.
+
+This is reader preparation. Existing EFI producers still emit v3. A matched v4
+producer, safe native boot-medium selection, bounded bank writes, init/installer
+hooks and exact-image runtime/failure/power-loss acceptance remain open. Bounded
+bank content is not a complete kernel-console or installer-log retention result.

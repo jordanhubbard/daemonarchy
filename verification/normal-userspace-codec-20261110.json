@@ -1,0 +1,55 @@
+{
+  "schema": "daemonarchy/normal-userspace-codec-checkpoint@1",
+  "source_parent": "8d90c6b0",
+  "source_tools_sha256": {
+    "tools/boottrace/stick.py": "fbf42dbfbc45ab08b5dd56b2e6127c2e7774b608a1b5d088d84238d92bb26e82",
+    "tests/normal-boot-trace.py": "b396f11b3e6c4adc4800c609534888fe7037fc281a7976f7cf3d3ee0fb31d9d3"
+  },
+  "format": {
+    "version": 4,
+    "slot_bytes": 16384,
+    "bank_bytes": 4096,
+    "banks": [
+      "loader-ready",
+      "pre-exit",
+      "init-ready",
+      "installer"
+    ],
+    "content_limit_bytes": 2048,
+    "content_encoding": "canonical base64",
+    "content_identity": "SHA-256 of retained bytes",
+    "truncation": "explicit yes/no",
+    "session_binding": [
+      "image_id",
+      "archive_sha256",
+      "trace_partition",
+      "session",
+      "boot_nonce",
+      "boot_identity"
+    ]
+  },
+  "controls": {
+    "linux_tests_passed": 23,
+    "native_freebsd_arm64_tests_passed": 23,
+    "skipped": 0,
+    "native_log_sha256": "6e5fc0135b577f79b4ab5f07d5ee851e81de5d8a916e3e68fd2a6abb80f947ce",
+    "later_corruption_preserves_earlier_banks": true,
+    "read_only_raw_export_preserved": true,
+    "legacy_v1_v2_v3_readback_retained": true,
+    "v3_reserved_space_not_reinterpreted": true,
+    "replayed_identity_and_oversized_or_malformed_content_refused": true
+  },
+  "limits": [
+    "Decoder fixtures are not firmware records or evidence that init/installer capture ran.",
+    "Existing EFI producers still emit v3; a matching versioned producer remains required.",
+    "Native boot-media selection, bounded writes, writer lifecycle, runtime/failure/power-loss controls and full-image acceptance remain open.",
+    "A bounded bank payload does not establish complete kernel-console or installer-log retention."
+  ],
+  "qualification": {
+    "decoder_controls": true,
+    "automatic_init_capture": false,
+    "automatic_installer_capture": false,
+    "panic_or_reset_persistence": false,
+    "release": false
+  }
+}
