@@ -13,7 +13,7 @@
     "resolution": "Keep owned ACK-each-completion flag 0x2000 and new upstream IGNORE_RAB at distinct 0x4000; T2 gets both. Keep upstream NVMe/API changes. Twelve recorded ARM/trace inputs remain byte-identical.",
     "source_evidence": "https://github.com/jordanhubbard/daemonarchy-src/blob/ca6c32213c25d0950dc4be1a9af3c543bd2a3468/verification/source-upstream-sync-20261109.json",
     "native_world_kernel_build_started": true,
-    "native_build_dependency": "The pinned unprivileged native ARM64 aggregate build is now running with unchanged resource guards on a 16 GiB worker. No phase completion or artifact qualification is claimed.",
+    "native_build_dependency": "The pinned ARM64 build was interrupted before any completed phase was established. Read-only disk recovery found no controller exit record and a zero-filled recovered log candidate. Preserve the original disks and complete a clean independently supervised build; see verification/native-arm-source-build-recovery-20261110.json.",
     "import_commit": "ca6c32213c25d0950dc4be1a9af3c543bd2a3468"
   },
   "ports_preflight": {
@@ -58,6 +58,7 @@
     "output_created_by_root_refusal": false,
     "original_amd64_plan_objects_preserved": true,
     "aggregate_build_started": true,
-    "build_observation": "verification/native-arm-source-build-20261109.json"
+    "build_observation": "verification/native-arm-source-build-20261109.json",
+    "build_recovery_observation": "verification/native-arm-source-build-recovery-20261110.json"
   }
 }

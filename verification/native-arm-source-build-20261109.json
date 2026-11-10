@@ -54,5 +54,6 @@
     "framework_receipt": false
   },
   "next_evidence": "Inspect the same live supervised job and its source-bound phase statuses; preserve any failure and do not restart after observation timeouts",
-  "observation_recorded_utc": "2026-11-09T23:38:52.194330+00:00"
+  "observation_recorded_utc": "2026-11-09T23:38:52.194330+00:00",
+  "followup_observation": "verification/native-arm-source-build-recovery-20261110.json"
 }
