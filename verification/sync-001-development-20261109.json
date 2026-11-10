@@ -64,7 +64,7 @@
   },
   "ports_candidate": {
     "pr": "https://github.com/jordanhubbard/daemonarchy-ports/pull/56",
-    "commit": "d75b96ea947537362867a1df97529d12d04a86c8",
+    "commit": "2f98c787cf7ac28ea815b843597096ba01aefa89",
     "merge_commit": "a128bcefc8d1e7708d112753a17c3c507c04bbc3",
     "owned_parent": "48561eaaf50086b2a6f469e307f26d1292024de6",
     "upstream_parent": "5dcb3b799d588df1559edc4d0dfeb028b64ef70f",
@@ -89,7 +89,19 @@
     "controller_native_only_skips": 1,
     "real_aquamarine_patch_controls_pass": 4,
     "package_build_or_desktop_qualified": false,
-    "framework_validation": "project.manifest_invalid for unchanged inherited manifest",
-    "upstream_whitespace_preserved": true
+    "framework_validation": "Global CLI 0a267a66 rejects scale_limits; developer CLI 8b83f5b9 parses it and reaches stale human authority review. Scale limits and lifecycle pins unchanged; declared review branch corrected to owned main.",
+    "upstream_whitespace_preserved": true,
+    "native_aquamarine_observation": "https://github.com/jordanhubbard/daemonarchy-ports/blob/2f98c787cf7ac28ea815b843597096ba01aefa89/verification/native-aquamarine-20261110.json",
+    "native_aquamarine": {
+      "compilation_exit": 0,
+      "tests_pass": 3,
+      "tests_fail": 1,
+      "full_upstream_suite_exit": 1,
+      "failed_test": "simpleWindow",
+      "failure": "No running Wayland compositor; actual graphics fixture remains required",
+      "package_phase_run": false,
+      "runtime_worker": "Installed-baseline FreeBSD ARM64 worker, not newly compiling world",
+      "release_qualified": false
+    }
   }
 }
