@@ -180,11 +180,25 @@
     "update_rollback": false,
     "signing": false,
     "physical": false,
-    "performance": false
+    "performance": false,
+    "nonroot_services": false
   },
   "physical_untested": [
     "Raspberry Pi 4",
     "Raspberry Pi 5",
     "Apple M2"
-  ]
+  ],
+  "root_inode_review_correction": {
+    "status": "input defect discovered after root-only controls",
+    "assembled_root_mode": "0700",
+    "actual_original_iso_root": {
+      "mode": "0755",
+      "uid": 0,
+      "gid": 1002
+    },
+    "cause": "libarchive ISO extraction omitted the root-directory entry; private staging umask became filesystem root mode",
+    "inventory_scope": "rglob entries exclude the root inode; previous per-entry equality remains scoped to those entries",
+    "observed_failure": "non-root ntpd shell permission denied in corrected BIOS control; root QA alone does not qualify non-root services",
+    "action": "admit root inode explicitly; rebuild from original ISO root metadata and retest non-root execution"
+  }
 }

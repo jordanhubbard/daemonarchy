@@ -29,10 +29,26 @@ mkdir "$world"
 tar -xpf "$archive" -C "$world"
 # Validate the selected ABI, actual kernel/shell ELF machines and complete
 # installer payload before modifying the private extracted copy.
-"$py" - "$world" "$boot_file" <<'CHECK'
+"$py" - "$world" "$boot_file" "$archive" <<'CHECK'
 from pathlib import Path
-import struct, sys
+import os, stat, struct, sys, tarfile
 root = Path(sys.argv[1])
+# libarchive may retain the destination directory's private staging mode for
+# an existing '.'. Require the archive's own root entry, then apply its exact
+# final owner/group/mode instead of inheriting umask or guessing a default.
+root_entry = None
+with tarfile.open(sys.argv[3], 'r:*') as source:
+    for entry in source:
+        if entry.name.rstrip('/') == '.':
+            if not entry.isdir():
+                raise ValueError('Live-root archive root entry must be a directory')
+            root_entry = entry
+if root_entry is None:
+    raise ValueError('Explicit live-root archive directory entry is required')
+if root_entry.uid != 0 or root_entry.mode not in (0o555, 0o755):
+    raise ValueError("Live-root inode must be root-owned and mode 0555 or 0755")
+os.chown(root, root_entry.uid, root_entry.gid)
+os.chmod(root, root_entry.mode)
 abi, machine = {'BOOTAA64.EFI': ('FreeBSD:16:aarch64', 183),
                 'BOOTX64.EFI': ('FreeBSD:16:amd64', 62)}[sys.argv[2]]
 for name in ('etc', 'var', 'boot', 'usr', 'usr/local', 'usr/local/share',
@@ -94,7 +110,7 @@ sh "$here/make-efi-iso.sh" "$work/outer.tar" "$label" "$output" "$work/iso" "$bo
 [ "$(sha256 -q "$archive")" = "$archive_hash" ] || { echo 'Live-root input changed during authoring' >&2; exit 1; }
 "$py" - "$archive" "$archive_hash" "$world" "$work" "$output" "$seed" "$boot_file" "$boot_mode" <<'RECORD'
 from pathlib import Path
-import hashlib, json, struct, sys
+import hashlib, json, stat, struct, sys
 archive, expected, root, work, image, seed, boot, mode = sys.argv[1:]
 root, work, image = map(Path, (root, work, image))
 def artifact(p):
@@ -115,6 +131,8 @@ record = dict(schema='daemonarchy/ram-live-image@1',
     input_archive_sha256=expected, outer_archive=artifact(work / 'outer.tar'),
     kernel=artifact(root / 'boot/kernel/kernel'),
     package_database=artifact(root / 'var/db/pkg/local.sqlite'),
+    root_directory=dict(mode=format(stat.S_IMODE(root.stat().st_mode), '04o'),
+                        uid=root.stat().st_uid, gid=root.stat().st_gid),
     var_seed=seed, ram_root=expanded, packed_root=artifact(packed),
     codec='lzma', cluster_bytes=cluster, expanded_media_bytes=cluster * blocks,
     boot_file=boot, boot_mode=mode, image=artifact(image),

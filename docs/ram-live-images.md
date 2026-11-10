@@ -26,6 +26,10 @@ The helper requires the declared FreeBSD ABI to match the EFI selection, checks
 actual kernel, shell and UZIP-module ELF machines, requires the owned brand and
 profile Lua hooks, retains the complete live
 root, and seeds its packaged `/var` before rc.d/var mounts writable memory.
+The archive must declare its root directory explicitly. The helper applies that
+entry's exact owner/group/mode because extraction can retain the staging mode.
+The root inode must be owned by root and have mode 0555 or 0755; an omitted
+archive root entry must not turn a private staging mode into the live root mode.
 It changes the private root's fstab and appends the seed configuration; the
 outer loader configuration selects `/dev/md0.uzip`. The original archive is
 unchanged. Existing work, images and RAM manifests are refused and preserved.
@@ -35,7 +39,7 @@ existing 4 GiB compressed-bootstrap profile and media size limits remain in
 force. The shared ISO helper retains BIOS/EFI optical and USB entries on amd64,
 creates a fresh declared boot identity, and appends the standard trace volume.
 The `.ram.json` sibling records actual source, root, packed-root and final-image
-hashes and explicitly leaves VM/install/desktop/recovery/physical/signing gates false.
+hashes, root-directory mode/owner/group and explicitly leaves VM/install/desktop/recovery/physical/signing gates false.
 
 Retain failed work and logs. Independently inspect the actual ISO's nested
 packed filesystem, compare the complete payload and metadata, and boot the exact
@@ -60,3 +64,20 @@ This uses retained 1.5.1 world/kernel inputs with the new EFI, not final CURRENT
 media. BIOS, ARM use of this shared helper, installation, desktop, signing and
 physical qualification remain open. Failed incomplete inputs and host emulator
 aborts remain recorded.
+
+A later BIOS run exposed a root-inode defect in that retained preparation: ISO
+archive extraction omitted the root entry, leaving the private staging mode
+0700. The earlier per-entry inventory excluded the root inode. Root-only package
+checks passed, but non-root service execution failed. The helper now refuses
+that input before filesystem authoring. Independent readback must include the
+root inode, and runtime acceptance must execute as a non-root account. Retain
+the original failed preparation and obtain replacement metadata from the actual
+source filesystem; do not normalize ownership or permissions by assumption.
+
+The [large BIOS handoff control](../verification/bios-large-ram-handoff-20261110.json)
+reaches the kernel and native init after replacing the repeated first-GiB
+bootstrap mapping with a two-GiB window. Its 269-package inventory, SQLite import
+and returned manual trace files pass. The input still has the bad root inode,
+and its final shutdown console oracle is missing, so full runtime qualification
+remains open. The corrected native loader fits the unchanged 505,000-byte bound;
+preload data outside its two-GiB kernel window is refused at handoff.

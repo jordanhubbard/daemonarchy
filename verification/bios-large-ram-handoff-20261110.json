@@ -1,0 +1,99 @@
+{
+  "schema": "daemonarchy/bios-large-ram-handoff@1",
+  "observed_utc": "2026-11-10T12:39:38.774187+00:00",
+  "scope": "Retained 1.5.1 full live payload; corrected outer BIOS handoff only, not final CURRENT media",
+  "source_head": "e1fd8a4ddc9d934049debe72dc8de7b4bf943e59",
+  "native_ci_runs": [
+    42814733075,
+    42814720129
+  ],
+  "native_build": {
+    "ci_merge_commit": "b15801bd9b08d274796abed40f62ede6757e6a39",
+    "ci_source_tree": "cf196b514f10477cbb6f0b09f31b75fc89d90d03",
+    "matched_stand_file_hashes": 779,
+    "bios_files": {
+      "loader": {
+        "bytes": 503808,
+        "sha256": "380e0f8ca86176c5dddd40f43276b65ca42feaaaa3ee593b9a14f4ea3e994de6"
+      },
+      "cdboot": {
+        "bytes": 1185,
+        "sha256": "247831c13bb424ef75a47a09e4644336f0819e8372dc822a598e4ee1e0c09f3f"
+      },
+      "isoboot": {
+        "bytes": 12747,
+        "sha256": "81f11106ca209abb2365163aecffc4267cbc67749cda86e14874227905e84108"
+      },
+      "pmbr": {
+        "bytes": 512,
+        "sha256": "68afb25b1d1367fca58f75ffed8b69cd70c5a5bb80587c1ce1827a3a5e5d73a5"
+      }
+    }
+  },
+  "problem": "Single repeated first-GiB PT2 aliases physical preload metadata beyond 1 GiB when the kernel adds KERNBASE; retained control triple-faults after entering long mode",
+  "fix": "Two PT2 pages map both GiB of the initial kernel window with 2 MiB pages; reject preload extent beyond 2 GiB without adding a 1 GiB-page CPU requirement",
+  "sanitized_table_walk": {
+    "source_sha256": {
+      "stand/i386/libi386/elf64_freebsd.c": "ebb8fc73c11748c5ec99d1b3d1e3bb1519fe7c02cb42060e53c9cb4ecd2c75b4"
+    },
+    "function_sha256": [
+      "4497785b193a8c363d3a6f556f390871420e2807383962eb3487b5fb0287bfe1"
+    ],
+    "scope": "Verbatim production table construction, independent x86 page walker; not firmware or kernel execution",
+    "build_exit_code": 0,
+    "cases": [
+      {
+        "name": "boundary",
+        "exit_code": 0
+      },
+      {
+        "name": "legacy-alias",
+        "exit_code": 0
+      },
+      {
+        "name": "bounds",
+        "exit_code": 0
+      }
+    ]
+  },
+  "vm": {
+    "emulator": "QEMU 11.1.3, private verified signed-source build on Linux ARM64",
+    "machine": "pc-q35-8.2 with SMM on",
+    "firmware": "Retained distro SeaBIOS",
+    "cpu": "Westmere",
+    "cpus": 2,
+    "memory_gib": 6,
+    "nic": false,
+    "medium": "xHCI removable USB",
+    "boot": "unattended default, followed by root VGA tty login and explicit serial QA shell",
+    "packed_root_unchanged_from_audited_r3": true,
+    "handed_off_to_kernel_and_native_init": true,
+    "sqlite_import": true
+  },
+  "readback": {
+    "status": "partial",
+    "image_sha256": "a803b9ce7404f7d74e837364fb0967bd61f31ab2f74075981c3d209806e13e58",
+    "live_inventory_count": 269,
+    "manual_same_medium_write": true,
+    "returned_package_inventory_matches": true,
+    "changed_bytes": 19962,
+    "changes_only_in_datrace": true,
+    "legacy_state_queue_normal_unchanged": true,
+    "input_unchanged": true,
+    "qemu_exit_status": 0,
+    "shutdown_console_oracle": "missing All buffers synced on serial; original QA failure retained",
+    "normal_synced_shutdown": false,
+    "bios_normal_capture": "unimplemented",
+    "nonroot_services": false,
+    "root_inode_mode": "0700",
+    "scope": "Outer corrected BIOS with complete retained R3 RAM root; input root inode still malformed"
+  },
+  "limitations": [
+    "Root inode 0700 inherited from original ISO archive extraction; non-root ntpd shell execution failed",
+    "The earlier per-entry inventory excluded the root inode; root-only QA cannot qualify services or desktop",
+    "Expected final shutdown console text was not observed on serial; original QA failure retained even though QEMU exits zero and manual files read back",
+    "BIOS automatic normal capture remains unimplemented; manual binding uses known input GPT GUID",
+    "No final CURRENT media, ARM regression, install, desktop, signing, performance, lifecycle or physical acceptance"
+  ],
+  "follow_up": "Native authoring now checks the final explicit archive root entry and applies its exact owner/group/mode; clean full rebuild and non-root runtime checks pending"
+}

@@ -69,10 +69,15 @@ class Preflight(unittest.TestCase):
 @unittest.skipUnless(platform.system() == 'FreeBSD' and os.geteuid() == 0,
                      'native archive admission requires allocated FreeBSD root')
 class NativeAdmission(unittest.TestCase):
-    def test_wrong_abi_and_truncated_elf_cannot_author_a_filesystem(self):
-        for fault in ('abi', 'elf', 'hook'):
+    def test_bad_inputs_and_root_inode_cannot_author_a_filesystem(self):
+        for fault in ('abi', 'elf', 'hook', 'root-mode', 'root-owner', 'root-missing', 'root-last'):
             with self.subTest(fault=fault), tempfile.TemporaryDirectory() as directory:
                 root = Path(directory); world = root / 'input'; world.mkdir()
+                world.chmod(0o755)
+                if fault == 'root-mode':
+                    world.chmod(0o700)
+                if fault == 'root-owner':
+                    os.chown(world, 1001, 1001)
                 for name in ('etc/fstab', 'etc/rc.conf', 'boot/loader.efi', 'boot/kernel/kernel',
                              'boot/kernel/geom_uzip.ko', 'boot/lua/local.lua',
                              'boot/lua/brand-daemonarchy.lua', 'bin/sh', 'usr/freebsd-dist/base.txz',
@@ -86,16 +91,31 @@ class NativeAdmission(unittest.TestCase):
                 (share / 'ABI').write_text('FreeBSD:16:aarch64' if fault == 'abi' else 'FreeBSD:16:amd64')
                 archive = root / 'world.tar'
                 with tarfile.open(archive, 'w') as out:
-                    out.add(world, arcname='.')
+                    if fault == 'root-last':
+                        old_root = out.gettarinfo(world, arcname='.')
+                        old_root.mode = 0o700
+                        out.addfile(old_root)
+                    if fault == 'root-missing':
+                        for child in world.iterdir():
+                            out.add(child, arcname=child.name)
+                    else:
+                        out.add(world, arcname='.')
                 result = subprocess.run(['sh', str(BUILDER), str(archive), 'RAMREFUSE',
                                          str(root / 'out.iso'), str(root / 'stage'), 'BOOTX64.EFI', 'bios'],
                                         capture_output=True, text=True)
                 self.assertNotEqual(result.returncode, 0)
                 expected = {'abi': 'ABI does not match', 'elf': 'Wrong native ELF',
-                            'hook': 'Regular installer payload required: boot/lua/local.lua'}[fault]
+                            'hook': 'Regular installer payload required: boot/lua/local.lua',
+                            'root-mode': 'Live-root inode must be root-owned',
+                            'root-owner': 'Live-root inode must be root-owned',
+                            'root-missing': 'Explicit live-root archive directory entry is required',
+                            'root-last': 'Wrong native ELF'}[fault]
                 self.assertIn(expected, result.stderr)
                 self.assertFalse((root / 'out.iso').exists())
                 self.assertFalse((root / 'stage/mfsroot').exists())
+                if fault in ('abi', 'elf', 'hook', 'root-last'):
+                    self.assertEqual((root / 'stage/world').stat().st_mode & 0o7777, 0o755)
+                    self.assertEqual((root / 'stage/world').stat().st_uid, 0)
 
 if __name__ == '__main__':
     unittest.main()

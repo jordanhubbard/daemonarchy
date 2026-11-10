@@ -439,3 +439,23 @@ emulator aborted on its host lock assertion, while the private new-emulator VM
 ended before acceptance. The retained 1.5.1 world/kernel control does not qualify
 final CURRENT media, ARM shared-helper boot, installation, desktop, signing,
 lifecycle, performance or physical targets. Default archive production is unchanged.
+
+
+## Large BIOS handoff and root-inode correction
+
+The [BIOS control](../../verification/bios-large-ram-handoff-20261110.json)
+exposes and corrects a one-GiB bootstrap mapping alias: metadata after the large
+RAM filesystem was read through the first physical GiB. Native BIOS/EFI CI and
+sanitized table-walk checks pass with a two-GiB mapping using ordinary two-MiB
+pages. The exact corrected outer BIOS boot reaches FreeBSD init, verifies 269
+packages and SQLite, and preserves manual writes with only 19,962 DATRACE bytes
+changed. All normal slots and legacy data remain unchanged.
+
+This also reveals an input error in the earlier per-entry audit: archive
+extraction omitted the original ISO root inode, leaving mode 0700. Root QA
+passed while non-root service execution failed. The helper now requires an
+explicit root entry, validates its root ownership and mode, and applies that
+entry's final owner/group/mode after extraction. Native refusal and restoration
+controls pass; a complete repaired image is rebuilding. The original shutdown
+console-oracle failure remains recorded. Final BIOS runtime, CURRENT media,
+automatic BIOS tracing, non-root services, desktop and physical gates remain open.
