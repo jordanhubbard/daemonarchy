@@ -11,7 +11,8 @@
 #   resolve     prove the MSI and MacBook selections resolve from the image's own repositories (builder)
 #   catalogue   check the checkout catalogue against the source and ports revisions (builder)
 #   iso         build the ISO from a clean checkout of MAIN_COMMIT      (builder, ~26 min)
-#   verify      xz test, hashes, size budget, version string, ISO contents (builder)
+#   inspect     hashes, budget and static image contents; no native admission (controller)
+#   verify      static checks plus required native Python import from planned 1.6 (builder)
 #   hwtrace     build the hardware trace image from the verified ISO's own kernel and loader (builder, ~10 s)
 #   qa          copy the ISO to QA_HOST and run test-qemu.sh there      (QA host, ~35 min)
 #   sticks      write verified single/split media to named USB sticks and read back (workstation)
@@ -78,26 +79,53 @@ run() {
   $DRY_RUN || "$@"
 }
 
+master_python() {
+  if command -v python3 >/dev/null; then python3 "$@"; else python3.12 "$@"; fi
+}
+
 short() { printf '%s' "${MAIN_COMMIT:0:12}"; }
+
+native_verify_required() {
+  [[ $RELEASE =~ ^[0-9]+\.[0-9]+\.[0-9]+$ ]] || fail 'release version must be X.Y.Z'
+  local major minor
+  IFS=. read -r major minor <<<"${RELEASE%.*}"
+  [ "$major" -gt 1 ] || { [ "$major" -eq 1 ] && [ "$minor" -ge 6 ]; }
+}
 
 # ---- state: each step records when it last succeeded, so a rerun resumes -------------
 state_key() {
   case $1 in
-    verify | hwtrace | qa)
-      if [ -n "$MEDIA_MANIFEST" ]; then printf '%s:xz-parts@1:%s' "$1" "$MEDIA_MANIFEST_SHA256"; return; fi ;;
+    inspect | verify | hwtrace | qa)
+      if [ -n "$MEDIA_MANIFEST" ]; then
+        printf '%s:xz-parts@1:%s:packed-content@2:%s:%s:%s' "$1" "$MEDIA_MANIFEST_SHA256" "$MAIN_COMMIT" "$RELEASE" "${ARCH:-amd64}"
+        return
+      elif native_verify_required; then
+        local pin=unselected candidates=("$WORK/out-$(short)"/*.iso.xz)
+        if [ "${#candidates[@]}" -eq 1 ] && [ -f "${candidates[0]}" ] && [ ! -L "${candidates[0]}" ]; then
+          pin=$(sha256_of <"${candidates[0]}")
+        fi
+        printf '%s:single-xz:%s:packed-content@2:%s:%s:%s' "$1" "$pin" "$MAIN_COMMIT" "$RELEASE" "${ARCH:-amd64}"
+        return
+      fi ;;
   esac
   printf '%s' "$1"
 }
+
 state_mark() { $DRY_RUN || { mkdir -p "$(dirname "$STATE")"; printf '%s\tok\t%s\n' "$(state_key "$1")" "$(date -u +%FT%TZ)" >>"$STATE"; }; }
 state_done() { [ -f "$STATE" ] && awk -F '\t' -v key="$(state_key "$1")" '$1 == key && $2 == "ok" { found = 1 } END { exit !found }' "$STATE"; }
 step_enabled() {
+  # Fresh single-file inspection also checks any cached raw ISO against its stream.
+  case $1 in
+    inspect | verify)
+      if [ -z "$MEDIA_MANIFEST" ] && native_verify_required; then echo "== $1"; return 0; fi ;;
+  esac
   # Skip a step already done unless --force; a dry run always shows it.
   if ! $FORCE && ! $DRY_RUN && state_done "$1"; then
     case $1 in
-      verify | hwtrace | qa)
+      inspect | verify | hwtrace | qa)
         if [ -n "$MEDIA_MANIFEST" ]; then
           split_selection
-          python3 "$here/scripts/master-media.py" "$MEDIA_MANIFEST" --sha256 "$MEDIA_MANIFEST_SHA256" \
+          master_python "$here/scripts/master-media.py" "$MEDIA_MANIFEST" --sha256 "$MEDIA_MANIFEST_SHA256" \
             --image "$SELECTED_NAME" >/dev/null || fail 'previous split step input no longer verifies'
         fi ;;
     esac
@@ -223,27 +251,59 @@ step_iso() {
 # On a FreeBSD builder as root: mount the built image read-only and import sqlite3 with the live
 # root's own Python (parallel-fetch needs it for exact install-plan byte totals).
 live_root_import_check() {
-  local iso=$1 md mnt status=1
+  local iso=$1 mode=${2:-required} md mnt status=1 ram_md='' ram_mnt='' selected_root=''
   if [ "$(uname -s)" != FreeBSD ] || [ "$(id -u)" != 0 ]; then
-    echo "live-root import check skipped (needs a FreeBSD builder and root)" >&2
-    return 0
+    echo "native live-root Python import unrun (needs a FreeBSD builder and root); static content checks do not replace it" >&2
+    [ "$mode" != legacy-static ] || return 0
+    return 77
   fi
   mnt=$(mktemp -d)
-  md=$(mdconfig -a -t vnode -o readonly -f "$iso") || return 1
-  # Clean up by hand: a RETURN trap set here outlives the function and fires on later returns.
+  md=$(mdconfig -a -t vnode -o readonly -f "$iso") || { rmdir "$mnt"; return 1; }
   if mount -t cd9660 -o ro "/dev/$md" "$mnt"; then
-    chroot "$mnt" /usr/local/bin/python3.12 -c 'import sqlite3; c = sqlite3.connect(":memory:"); assert c.execute("select 42").fetchone()[0] == 42; print("live root: import sqlite3 ok, sqlite", sqlite3.sqlite_version)' && status=0
-    umount "$mnt" 2>/dev/null || true
+    if [ -f "$mnt/boot/mfsroot.uzip" ]; then
+      ram_mnt=$(mktemp -d)
+      if ram_md=$(mdconfig -a -t vnode -o readonly -f "$mnt/boot/mfsroot.uzip"); then
+        if [ -c "/dev/$ram_md.uzip" ] && mount -t ufs -o ro "/dev/$ram_md.uzip" "$ram_mnt"; then
+          selected_root=$ram_mnt
+        else
+          echo 'cannot mount packed live root read-only; native GEOM UZIP is required' >&2
+        fi
+      fi
+    else
+      selected_root=$mnt
+    fi
+    if [ -n "$selected_root" ]; then
+      if master_python - "$selected_root" <<'NATIVE_SQLITE'
+import subprocess, sys
+try:
+    subprocess.run(['chroot', sys.argv[1], '/usr/local/bin/python3.12', '-c',
+                    'import sqlite3; c = sqlite3.connect(":memory:"); assert c.execute("select 42").fetchone()[0] == 42; print("native live root: import sqlite3 ok, sqlite", sqlite3.sqlite_version)'],
+                   check=True, timeout=60)
+except (subprocess.SubprocessError, OSError) as exc:
+    print(f'native live-root import failed: {exc}', file=sys.stderr)
+    raise SystemExit(1)
+NATIVE_SQLITE
+      then
+        status=0
+      fi
+    fi
+    if [ -n "$ram_mnt" ]; then
+      if [ -n "$selected_root" ]; then umount "$ram_mnt" || status=1; fi
+      [ -z "$ram_md" ] || mdconfig -d -u "${ram_md#md}" || status=1
+      rmdir "$ram_mnt" 2>/dev/null || true
+    fi
+    umount "$mnt" || status=1
   fi
-  mdconfig -d -u "${md#md}" 2>/dev/null || true
+  mdconfig -d -u "${md#md}" || status=1
   rmdir "$mnt" 2>/dev/null || true
-  return $status
+  return "$status"
 }
 
 # Quote one remote POSIX-shell argument (ssh joins its command arguments).
 shell_quote() { printf "'%s'" "${1//\'/\'\\\'\'}"; }
 
 split_selection() {
+  [[ $MAIN_COMMIT =~ ^[0-9a-f]{40}$ ]] || fail 'split media requires a full selected MAIN_COMMIT'
   [[ $MEDIA_MANIFEST_SHA256 =~ ^[0-9a-f]{64}$ ]] || fail 'split media requires MEDIA_MANIFEST_SHA256'
   [[ $RELEASE =~ ^[0-9]+\.[0-9]+\.[0-9]+$ ]] || fail 'split media requires a release version'
   local major minor
@@ -259,21 +319,43 @@ materialize_split() {
   local tmp
   tmp=$(mktemp -d "$WORK/master-media.XXXXXX")
   SELECTED_ISO=$tmp/$SELECTED_NAME
+  SELECTED_RECORD=$tmp/verified.json
   echo "split reconstruction/evidence retained in $tmp"
-  python3 "$here/scripts/master-media.py" "$MEDIA_MANIFEST" --sha256 "$MEDIA_MANIFEST_SHA256" \
+  master_python "$here/scripts/master-media.py" "$MEDIA_MANIFEST" --sha256 "$MEDIA_MANIFEST_SHA256" \
     --image "$SELECTED_NAME" --out "$SELECTED_ISO" >"$tmp/verified.json" || fail "split verification failed; retained $tmp"
   sh "$here/scripts/check-image-size.sh" "$SELECTED_ISO"
   echo "raw_sha256=$(jq -r '.image.sha256' "$tmp/verified.json") raw_size=$(jq -r '.image.bytes' "$tmp/verified.json")"
 }
 
+finish_image_checks() {
+  local iso=$1 stage=$2 runtime_status=0 mode=required
+  if [ "$stage" = inspect ]; then
+    echo 'static image inspection passed; native Python import remains unqualified'
+    state_mark inspect
+    return 0
+  fi
+  native_verify_required || mode=legacy-static
+  live_root_import_check "$iso" "$mode" || runtime_status=$?
+  if [ "$runtime_status" -eq 77 ]; then
+    echo 'native verification is unrun; no verify success recorded (inspect provides static checks)' >&2
+    return 77
+  fi
+  [ "$runtime_status" -eq 0 ] || fail 'native import sqlite3 fails in the live root'
+  state_mark verify
+}
+
+step_inspect() { step_verify inspect; }
+
 step_verify() {
-  step_enabled verify || return 0
-  local out=$WORK/out-$(short) xz iso want got size version
+  local stage=${1:-verify}
+  step_enabled "$stage" || return 0
+  local out=$WORK/out-$(short) xz iso want got size version inspection
   if [ -n "$MEDIA_MANIFEST" ]; then
     split_selection
     if $DRY_RUN; then echo "+ verify/reconstruct pinned split $MEDIA_MANIFEST ($MEDIA_MANIFEST_SHA256), raw budget, version and live-root checks"; return 0; fi
     materialize_split
     iso=$SELECTED_ISO
+    got=$(jq -r '.image.sha256' "$SELECTED_RECORD")
   else
     if $DRY_RUN; then echo "+ verify $out/*.iso.xz: xz -t, sha256, size under $XZ_BUDGET, version"; return 0; fi
     xz=$(ls "$out"/*.iso.xz 2>/dev/null | head -1) || true
@@ -293,20 +375,31 @@ step_verify() {
   # The version of the commit being mastered, not of wherever this script runs from.
   version=$(tr -d '[:space:]' <"$WORK/product-$(short)/VERSION")
   if command -v bsdtar >/dev/null; then
+    inspection=$(mktemp -d "$WORK/master-inspect.XXXXXX")
+    bsdtar -tf "$iso" >"$inspection/members.txt" || fail "cannot inventory image; retained $inspection"
+    if grep -E '^(\./)?boot/mfsroot\.uzip$' "$inspection/members.txt" >/dev/null; then
+      [ "${ARCH:-amd64}" = aarch64 ] || fail 'packed ARM root requires ARCH=aarch64'
+      [ "$version" = "$RELEASE" ] || fail 'selected product version differs from the planned packed release'
+      master_python "$here/scripts/check-packed-installer.py" "$iso" --sha256 "$got" --version "$version" \
+        >"$inspection/packed-inspection.json" || fail "packed ARM content inspection failed; retained $inspection"
+      finish_image_checks "$iso" "$stage"
+      return $?
+    fi
     [ "$(bsdtar -xOf "$iso" ./usr/local/share/daemonarchy-installer/version 2>/dev/null | head -1)" = "$version" ] \
       || fail "the image's installer version is not $version"
     # parallel-fetch reads pkg's databases with the live Python's sqlite3 module (exact @@plan byte totals).
-    bsdtar -tf "$iso" 2>/dev/null | grep '_sqlite3' >/dev/null \
+    grep '_sqlite3' "$inspection/members.txt" >/dev/null \
       || fail "the image's live Python has no sqlite3 module: add py312-sqlite3 to the live packages"
-    live_root_import_check "$iso" || fail "import sqlite3 fails in the image's live root"
   else
+    [ -z "$MEDIA_MANIFEST" ] || fail 'bsdtar is required for split image content verification'
     echo "bsdtar not found: image version not checked" >&2
   fi
-  state_mark verify
+  finish_image_checks "$iso" "$stage"
 }
 
 step_hwtrace() {
   step_enabled hwtrace || return 0
+  [ -z "$MEDIA_MANIFEST" ] || split_selection
   fetch_product
   local product=$WORK/product-$(short) out=$WORK/out-$(short) iso xz tmp name=daemonarchy-hwtrace-$RELEASE-${ARCH:-amd64}.img.xz
   if [ -n "$MEDIA_MANIFEST" ]; then split_selection; fi
@@ -354,7 +447,7 @@ qa_split() {
     return 0
   fi
   tmp=$(mktemp -d "$WORK/master-qa.XXXXXX")
-  python3 "$here/scripts/master-media.py" "$MEDIA_MANIFEST" --sha256 "$MEDIA_MANIFEST_SHA256" \
+  master_python "$here/scripts/master-media.py" "$MEDIA_MANIFEST" --sha256 "$MEDIA_MANIFEST_SHA256" \
     --image "$SELECTED_NAME" >"$tmp/verified.json" || fail "split QA input failed; retained $tmp"
   manifest_name=$(basename "$MEDIA_MANIFEST")
   files+=("$manifest_name" "$manifest_name.sha256")
@@ -370,7 +463,8 @@ qa_split() {
   ssh "$QA_USER@$QA_HOST" "sh -s -- $(shell_quote "$remote_dir") $(shell_quote "$MEDIA_MANIFEST_SHA256") $(shell_quote "$SELECTED_NAME") $(shell_quote "$qa_arch") $(shell_quote "$PACKAGE_REPOSITORY_TAG") $(shell_quote "$QA_VIRGL_RENDER_NODE")" <<'REMOTE_SPLIT_QA' || qa_status=$?
 set -eu
 root=$1 pin=$2 image=$3 arch=$4 feed=$5 render=$6
-python3 "$root/transport-tools/master-media.py" "$root/$image.parts.json.xz" --sha256 "$pin" \
+if command -v python3 >/dev/null; then qa_python=python3; else qa_python=python3.12; fi
+"$qa_python" "$root/transport-tools/master-media.py" "$root/$image.parts.json.xz" --sha256 "$pin" \
   --image "$image" --out "$root/$image" >"$root/reconstructed.json"
 cd "$root/repo"
 env ARCH="$arch" EXPECTED_PACKAGE_REPOSITORY_TAG="$feed" \
@@ -383,6 +477,7 @@ REMOTE_SPLIT_QA
 
 step_qa() {
   step_enabled qa || return 0
+  [ -z "$MEDIA_MANIFEST" ] || split_selection
   fetch_product
   local product=$WORK/product-$(short) out=$WORK/out-$(short) xz
   if [ -n "$MEDIA_MANIFEST" ]; then qa_split; return; fi
@@ -463,7 +558,7 @@ step_sticks() {
   done
   if [ -n "$manifest" ]; then
     image_name=$(basename "${manifest%.parts.json.xz}")
-    verified=$(python3 "$here/scripts/master-media.py" "$manifest" --sha256 "$manifest_pin" --image "$image_name") \
+    verified=$(master_python "$here/scripts/master-media.py" "$manifest" --sha256 "$manifest_pin" --image "$image_name") \
       || fail 'sticks: split media verification failed before writes'
     [ "$(jq -r '.image.sha256' <<<"$verified")" = "$raw_sha" ] && \
       [ "$(jq -r '.image.bytes' <<<"$verified")" = "$raw_size" ] || fail 'sticks: selected raw identity differs from the manifest'
@@ -473,7 +568,7 @@ step_sticks() {
     else
       tmp=$(mktemp -d "${TMPDIR:-/tmp}/daemonarchy-sticks.XXXXXX")
       raw_source=$tmp/$image_name
-      python3 "$here/scripts/master-media.py" "$manifest" --sha256 "$manifest_pin" --image "$image_name" \
+      master_python "$here/scripts/master-media.py" "$manifest" --sha256 "$manifest_pin" --image "$image_name" \
         --out "$raw_source" >"$tmp/reconstructed.json" || fail "sticks: reconstruction failed; retained $tmp"
     fi
   else
@@ -530,7 +625,7 @@ main() {
     case $s in
       all) step_preflight; step_packages; step_secureboot; step_feed; step_resolve; step_catalogue; step_iso; step_verify; step_hwtrace; step_qa ;;
       status) [ -f "$STATE" ] && cat "$STATE" || echo 'no state yet' ;;
-      preflight | packages | secureboot | feed | resolve | catalogue | iso | verify | hwtrace | qa) "step_$s" ;;
+      preflight | packages | secureboot | feed | resolve | catalogue | iso | inspect | verify | hwtrace | qa) "step_$s" ;;
       *) fail "unknown step: $s" ;;
     esac
   done

@@ -349,3 +349,22 @@ admission remain open. Its preflight also found a Linux expectation in the
 FreeBSD installed-wheel smoke harness. The current native focused runtime
 checks are not a complete native wheel-smoke or platform acceptance result;
 keep that qualification under framework issue #67.
+
+
+## CURRENT ARM64 aggregate development checkpoint
+
+The [November 10 native checkpoint](../verification/native-arm-source-build-r2-20261110.json)
+records all five phases passing for source `af55b6f9042e15b635e90926d476e7cbeb48a069`:
+world, kernel, base packages, release objects and distribution sets. All
+[529 output identities](../verification/native-arm-source-build-r2-artifacts-20261110.json)
+and all five phase logs were independently verified after export from the allocated
+FreeBSD AArch64 worker. The kernel-set inspector accepts the new archive and its
+kernel matches the compiled object. The new native EFI/Lua retain their normal
+trace capability markers; they have not yet been boot-tested.
+
+These are unsigned aggregate development products. The private mountpoint
+traversal recovery remains recorded, and the elapsed times are not a controlled
+executor benchmark. A matched current ports closure, final installer images,
+boot/install/desktop/recovery, per-unit canonical Component coverage and admitted
+native lifecycle receipts remain open. Earlier retained-world media does not
+qualify this new source selection.

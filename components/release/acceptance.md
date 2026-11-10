@@ -92,6 +92,15 @@ refusal before writes and download-document consistency. Preserve historical
 single-image semantics. `tests/master-split-media.py` must exercise complete
 reconstruction, both architecture selections, transfer tampering, private evidence
 retention, pin-bound resume, all-device preflight and write/readback refusal.
-Keep fixture boundaries explicit. Complete packed RAM-root content/runtime
-integration and actual publication/target/device checks before release admission;
-controller controls alone do not establish it.
+Keep fixture boundaries explicit. `tests/packed-mastering.py` and the extended
+`tests/arm-ram-inspect.py` must verify complete packed contents against the trusted
+raw identity and selected version, consistent boot/EFI and archive manifests,
+AArch64 Python/SQLite payloads and bounded image-internal package aliases. Refuse
+stale cached raw bytes, namespace escape, loops, missing and foreign payloads.
+Exercise read-only native root mounts and real Python import/query, plus missing
+extension and cleanup controls on the allocated FreeBSD worker. A controller
+static record must keep native import unqualified. For planned 1.6, `inspect`
+records only static success, while `verify` returns an unrun outcome without a
+success record when native FreeBSD root execution is unavailable. Complete these checks on the
+actual final images alongside publication/target/device gates before admission;
+retained-image and helper controls cannot qualify a different final product.

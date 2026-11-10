@@ -1,8 +1,8 @@
 {
   "schema": "daemonarchy/native-arm-source-build-observation@1",
-  "status": "running",
-  "scope": "Clean native ARM64 CURRENT rebuild: world and kernel passed; packaging continues; no final image or target qualification",
-  "observation_recorded_utc": "2026-11-10T03:42:33.979118+00:00",
+  "status": "built-not-qualified",
+  "scope": "All five native ARM64 CURRENT aggregate build phases passed; complete outputs independently exported; runtime, component/lifecycle and final distribution qualification remain open",
+  "observation_recorded_utc": "2026-11-10T04:20:49.899281+00:00",
   "source_commit": "af55b6f9042e15b635e90926d476e7cbeb48a069",
   "source_tree": "b5bbcc0fe5f8fa1b1f3653b2a4d692f414d64850",
   "upstream_base": "d0fd70983b6b93d4a6a4671457619eb34786b38d",
@@ -11,10 +11,13 @@
   "target_arch": "aarch64",
   "jobs": 4,
   "profile": "baseline",
-  "active_phase": "packages",
+  "active_phase": null,
   "completed_phases": [
     "buildworld",
-    "buildkernel"
+    "buildkernel",
+    "packages",
+    "release-obj",
+    "sets"
   ],
   "planned_phases": [
     "buildworld",
@@ -54,11 +57,15 @@
   },
   "predecessor": "verification/native-arm-source-build-recovery-20261110.json",
   "qualification": {
-    "native_build_complete": false,
-    "artifact_bytes_verified": false,
-    "runtime": false,
-    "release": false,
-    "framework_receipt": false
+    "aggregate_build": true,
+    "independent_output_export": true,
+    "native_current_world_kernel_boot": false,
+    "matched_current_ports_closure": false,
+    "final_installer_media": false,
+    "canonical_components": false,
+    "lifecycle_receipt": false,
+    "performance_benchmark": false,
+    "release": false
   },
   "next_evidence": "Poll the same independent worker/capture units and source-bound phase results; preserve failures and require final exit status and exact artifact checks.",
   "validation": {
@@ -91,6 +98,27 @@
       "log": "logs/buildkernel-1.log",
       "log_sha256": "0af78ef478ea69ff51d6442111afc887669c36101d8f13bf474e9c2a69e0a6c0",
       "name": "buildkernel"
+    },
+    {
+      "elapsed_seconds": 376.117,
+      "exit": 0,
+      "log": "logs/packages-1.log",
+      "log_sha256": "9909c3d9e38c5922e55cb4f3a1529c63ff1779d3d78d80d7bd995be06dfa22f0",
+      "name": "packages"
+    },
+    {
+      "elapsed_seconds": 4.183,
+      "exit": 0,
+      "log": "logs/release-obj-1.log",
+      "log_sha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855",
+      "name": "release-obj"
+    },
+    {
+      "elapsed_seconds": 626.273,
+      "exit": 0,
+      "log": "logs/sets-1.log",
+      "log_sha256": "955b95581e607287fbd44baa6a5a893d2513fdfb345aa92aa616a01235dc9533",
+      "name": "sets"
     }
   ],
   "exported_buildworld_log": {
@@ -132,6 +160,114 @@
       "bytes": 1185769149,
       "sha256": "0af78ef478ea69ff51d6442111afc887669c36101d8f13bf474e9c2a69e0a6c0",
       "independently_verified_after_phase": true
+    },
+    {
+      "phase": "packages",
+      "bytes": 16095691,
+      "sha256": "9909c3d9e38c5922e55cb4f3a1529c63ff1779d3d78d80d7bd995be06dfa22f0",
+      "independently_verified_after_phase": true
+    },
+    {
+      "phase": "release-obj",
+      "bytes": 0,
+      "sha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855",
+      "independently_verified_after_phase": true
+    },
+    {
+      "phase": "sets",
+      "bytes": 28043987,
+      "sha256": "955b95581e607287fbd44baa6a5a893d2513fdfb345aa92aa616a01235dc9533",
+      "independently_verified_after_phase": true
     }
-  ]
+  ],
+  "native_controller_exit": 0,
+  "artifact_export": {
+    "count": 529,
+    "bytes": 1681915331,
+    "all_hashes_independently_verified": true,
+    "index": "verification/native-arm-source-build-r2-artifacts-20261110.json",
+    "index_sha256": "9f09b0a442f8a5844d42d552766feace72d940785534a130dfbb6685676f4015",
+    "distribution_sets": [
+      {
+        "path": "MANIFEST",
+        "sha256": "e192b0462aab168ed45e8a675a0985e8760905c1574da4d4c9165992e9c3676f",
+        "size": 938
+      },
+      {
+        "path": "base-dbg.txz",
+        "sha256": "bea11501a083f0badce05bcc1a62dcc92a516618aca5ab38c54616c2f6f44cf9",
+        "size": 163087532
+      },
+      {
+        "path": "base.txz",
+        "sha256": "32924d5e234aa31bc7455bae49b349694a902d8e97fba9c2acdb2f4c91537c3f",
+        "size": 165500364
+      },
+      {
+        "path": "kernel-dbg.txz",
+        "sha256": "8504d3ce3c40706d58274dfe2bb9ed76b255dba95ae7bb2826a605641ff86d2c",
+        "size": 80708824
+      },
+      {
+        "path": "kernel.txz",
+        "sha256": "00da5c69cbd3b002db40791211c41fc47768f2d7f9c9eb6e15fe8c64b10b1633",
+        "size": 32287028
+      },
+      {
+        "path": "lib32-dbg.txz",
+        "sha256": "855e25eb443b1f97cb29a91f58cf92dcc4a0e3b9d02199a8081b8ed8170ed446",
+        "size": 23120816
+      },
+      {
+        "path": "lib32.txz",
+        "sha256": "ce11cc6866e6581b3815641a823d367eb3dca4264a5aa7cca99d986bc821123f",
+        "size": 64246532
+      },
+      {
+        "path": "src.txz",
+        "sha256": "46e923796547bef2fe347307e93416adedf2bdcb64422052f54c12366cfa6142",
+        "size": 230501172
+      },
+      {
+        "path": "tests.txz",
+        "sha256": "ca98d386a79fcf282c888afdcd31f00724990cc56fd5c108c37724893bf8213d",
+        "size": 19137192
+      }
+    ],
+    "base_package_count": 516
+  },
+  "terminal_capture": {
+    "status": "terminal-snapshot-verified",
+    "bytes": 10936320,
+    "sha256": "1233ad31658aed21b95096a231972157928432d8981af128282f14f91a86684b",
+    "phase_count": 5,
+    "artifact_count": 529,
+    "capture_process_no_longer_running": true,
+    "capture_unit_already_unloaded": true
+  },
+  "boot_output_static_checks": {
+    "efi": {
+      "bytes": 1348012,
+      "sha256": "0f6bf23472af39c41c75861d04ffff4c7c5c11590438f7b19049a9003e75133a",
+      "pe_machine": 43620,
+      "normal_trace_capability": true
+    },
+    "boottrace_lua": {
+      "bytes": 5505,
+      "sha256": "ee377300bbdf6fa4e9c378ed2fb45ea6513823ebf65434593c70a7218baaa767",
+      "automatic_observe_startup": true
+    },
+    "qualification": "static native source-build output only; new EFI and kernel not yet boot-tested",
+    "kernel": {
+      "bytes": 19771800,
+      "sha256": "d4bb617d30643b623623221bf5833a627c65a3f97f2344b4ae6bea0052622d6c",
+      "elf_machine": 183,
+      "aarch64": true,
+      "source_revision_in_version": true,
+      "qualification": "compiled development kernel only; not boot/runtime/driver or image qualification"
+    },
+    "kernel_set_inspector": "pass; archived kernel matches compiled native kernel SHA-256"
+  },
+  "timing_note": "Observed development build elapsed times include recovery of private covered mountpoints during buildkernel; these are not equivalent executor/performance benchmark results.",
+  "source_osversion": 1600031
 }

@@ -217,7 +217,7 @@ def check_ram_bootstrap(config):
         raise ValueError('packed RAM payload requires the admitted RAM bootstrap settings')
 
 
-def inspect_installer(image, tar, mtype, ifind='ifind', icat='icat', istat='istat'):
+def inspect_installer(image, tar, mtype, ifind='ifind', icat='icat', istat='istat', expected_version=None):
     with image.open("rb") as stream:
         stream.seek(16 * 2048)
         if stream.read(7) != b"\x01CD001\x01":
@@ -273,7 +273,7 @@ def inspect_installer(image, tar, mtype, ifind='ifind', icat='icat', istat='ista
             unpacked = ram.unpack_root(payload, root)
             unpacked['compressed_bytes'] = payload.stat().st_size
             unpacked['compressed_sha256'] = digest(payload)
-            unpacked['files'] = ram.inspect_root(root, identities, ifind, icat, istat)
+            unpacked['files'] = ram.inspect_root(root, identities, ifind, icat, istat, expected_version=expected_version)
             identities['packed_root'] = unpacked
     return identities
 

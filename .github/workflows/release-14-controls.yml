@@ -110,6 +110,8 @@ on:
       - 'tests/master-release.sh'
       - 'scripts/master-media.py'
       - 'tests/master-split-media.py'
+      - 'scripts/check-packed-installer.py'
+      - 'tests/packed-mastering.py'
       - 'overlay/usr/local/bin/daemonarchy-wine'
       - 'overlay/usr/local/bin/daemonarchy-steam'
       - 'overlay/usr/local/libexec/daemonarchy-installer/windows-apps'
@@ -237,6 +239,8 @@ on:
       - 'tests/master-release.sh'
       - 'scripts/master-media.py'
       - 'tests/master-split-media.py'
+      - 'scripts/check-packed-installer.py'
+      - 'tests/packed-mastering.py'
       - 'overlay/usr/local/bin/daemonarchy-wine'
       - 'overlay/usr/local/bin/daemonarchy-steam'
       - 'overlay/usr/local/libexec/daemonarchy-installer/windows-apps'
@@ -295,8 +299,9 @@ jobs:
       - name: Packed ARM installer contents and refusal controls
         run: |
           sudo apt-get update -q
-          sudo apt-get install -y -q sleuthkit
+          sudo apt-get install -y -q sleuthkit xorriso mtools libarchive-tools
           python3 tests/arm-ram-inspect.py -v
+          python3 tests/packed-mastering.py -v
           python3 tests/arm-media.py -v
           python3 tests/split-media.py -v
           python3 tests/release-split-media.py -v

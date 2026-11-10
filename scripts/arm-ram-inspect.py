@@ -151,7 +151,58 @@ class UFS:
             raise ValueError('incomplete RAM root file: ' + path)
         return data
 
-    def identity(self, path, inspect=None):
+    def resolve_file(self, path):
+        """Resolve bounded final-file aliases entirely in the image namespace."""
+        original, chain, seen = path, [], set()
+        for _ in range(16):
+            if path in seen:
+                raise ValueError('RAM root symlink loop: ' + original)
+            seen.add(path)
+            inode = subprocess.check_output([self.ifind, '-f', 'ufs2', '-n', path, str(self.image)],
+                                             text=True, timeout=60).strip()
+            if not re.fullmatch('[0-9]+', inode):
+                raise ValueError('cannot locate required RAM root file: ' + path)
+            info = subprocess.check_output([self.istat, '-f', 'ufs2', str(self.image), inode],
+                                            text=True, timeout=60)
+            if not re.search(r'^Allocated\s*$', info, re.MULTILINE):
+                raise ValueError('RAM root requires an allocated file: ' + path)
+            if re.search(r'^mode:\s+[r-]', info, re.MULTILINE | re.IGNORECASE):
+                self.file(path)
+                return path, chain
+            if not re.search(r'^mode:\s+l', info, re.MULTILINE | re.IGNORECASE):
+                raise ValueError('RAM root requires a regular file or bounded alias: ' + path)
+            size = re.search(r'^size:\s+(\d+)\s*$', info, re.MULTILINE | re.IGNORECASE)
+            if size is None or not 0 < int(size[1]) <= 4096:
+                raise ValueError('RAM root symlink target exceeds inspection budget')
+            # UFS2 fast symlinks live in the inode. icat yields zero-filled block
+            # data for them; istat decodes the actual inline target.
+            targets = re.findall(r'^symbolic link to: ([^\r\n]*)$', info, re.MULTILINE | re.IGNORECASE)
+            if len(targets) != 1:
+                raise ValueError('invalid RAM root symlink metadata')
+            text = targets[0]
+            target = text.encode('utf-8')
+            if len(target) != int(size[1]) or b'\0' in target:
+                raise ValueError('invalid RAM root symlink target')
+            if not re.fullmatch(r'[A-Za-z0-9._/+:-]+', text):
+                raise ValueError('unsafe RAM root symlink target')
+            chain.append(dict(path=path, target=text, bytes=len(target), sha256=hashlib.sha256(target).hexdigest()))
+            components = [] if text.startswith('/') else path.split('/')[:-1]
+            for part in text.split('/'):
+                if part in ('', '.'):
+                    continue
+                if part == '..':
+                    if not components:
+                        raise ValueError('RAM root symlink escapes the image namespace')
+                    components.pop()
+                else:
+                    components.append(part)
+            path = '/'.join(components)
+        raise ValueError('RAM root symlink chain exceeds inspection budget')
+
+    def identity(self, path, inspect=None, follow_links=False):
+        chain = []
+        if follow_links:
+            path, chain = self.resolve_file(path)
         inode, size = self.file(path)
         if shutil.disk_usage(self.image.parent).free < size:
             raise ValueError('insufficient scratch space for RAM file inspection')
@@ -166,10 +217,13 @@ class UFS:
                 checksum = hashlib.file_digest(output, 'sha256').hexdigest()
             if inspect is not None:
                 inspect(selected)
-        return dict(bytes=size, sha256=checksum)
+        identity = dict(bytes=size, sha256=checksum)
+        if chain:
+            identity.update(resolved_path=path, symlink_chain=chain)
+        return identity
 
 
-def inspect_root(image, outer, ifind='ifind', icat='icat', istat='istat'):
+def inspect_root(image, outer, ifind='ifind', icat='icat', istat='istat', expected_version=None):
     root = UFS(image, ifind, icat, istat)
     identities = {}
     required = ('boot/kernel/kernel', 'boot/loader.efi', 'boot/lua/loader.lua',
@@ -194,6 +248,30 @@ def inspect_root(image, outer, ifind='ifind', icat='icat', istat='istat'):
         rows = [line.split('\t') for line in manifest.splitlines() if line.split('\t')[0] == name]
         if len(rows) != 1 or len(rows[0]) < 2 or rows[0][1] != identities['usr/freebsd-dist/' + name]['sha256']:
             raise ValueError('packed installer archive does not match MANIFEST: ' + name)
+    if expected_version is not None:
+        if not re.fullmatch(r'[0-9]+\.[0-9]+\.[0-9]+', expected_version):
+            raise ValueError('expected installer version must be X.Y.Z')
+        version_path = 'usr/local/share/daemonarchy-installer/version'
+        version = root.read(version_path, limit=1024)
+        if version.decode('utf-8').strip() != expected_version:
+            raise ValueError('packed installer version differs from the selected release')
+        identities[version_path] = dict(bytes=len(version), sha256=hashlib.sha256(version).hexdigest())
+
+        def native_elf(path):
+            with path.open('rb') as stream:
+                header = stream.read(64)
+            if (len(header) != 64 or header[:6] != b'\x7fELF\x02\x01'
+                    or struct.unpack_from('<H', header, 16)[0] not in (2, 3)
+                    or struct.unpack_from('<H', header, 18)[0] != 183):
+                raise ValueError('packed Python/SQLite payload is not native AArch64 ELF')
+
+        # Static identities complement, but do not execute, the native import gate.
+        for path in ('usr/local/bin/python3.12',
+                     'usr/local/lib/python3.12/lib-dynload/_sqlite3.cpython-312.so',
+                     'usr/local/lib/libsqlite3.so.0'):
+            identities[path] = root.identity(path, native_elf, follow_links=True)
+        path = 'usr/local/lib/python3.12/sqlite3/__init__.py'
+        identities[path] = root.identity(path, follow_links=True)
     return identities
 
 

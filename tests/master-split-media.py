@@ -116,7 +116,7 @@ raise SystemExit(subprocess.run(command, shell=True).returncode)
             if arch == 'amd64':
                 self.select(arch)
             with self.subTest(arch=arch):
-                self.run_master('--force', 'verify')
+                self.run_master('--force', 'inspect')
                 outputs = list(self.work.glob('master-media.*/' + self.image))
                 self.assertTrue(outputs)
                 self.assertEqual(outputs[-1].read_bytes(), self.raw)
@@ -148,7 +148,7 @@ raise SystemExit(subprocess.run(command, shell=True).returncode)
         for environment in [dict(MEDIA_MANIFEST_SHA256='0' * 64), dict(ARCH='amd64'), dict(RELEASE='1.5.1'),
                             dict(MEDIA_MANIFEST_SHA256='')]:
             with self.subTest(environment=environment):
-                self.assertNotEqual(self.run_master('verify', check=False, **environment).returncode, 0)
+                self.assertNotEqual(self.run_master('inspect', check=False, **environment).returncode, 0)
         self.assertFalse((self.work / 'master-state.tsv').exists())
 
     def test_remote_tamper_refuses_before_qa_runner(self):
@@ -161,17 +161,17 @@ raise SystemExit(subprocess.run(command, shell=True).returncode)
     def test_old_resume_state_cannot_skip_split_checks(self):
         state = self.work / 'master-state.tsv'
         state.write_text('verify\tok\told\n')
-        self.run_master('verify')
-        self.assertIn('verify:xz-parts@1:' + self.packed['sha256'], state.read_text())
+        self.run_master('inspect')
+        self.assertIn('inspect:xz-parts@1:' + self.packed['sha256'], state.read_text())
         self.assertTrue(list(self.work.glob('master-media.*')))
         # Even the exact recorded selection rechecks all bytes before reusing a step.
         part = self.manifest.parent / self.packed['parts'][0]['name']
         part.write_bytes(b'changed')
-        self.assertNotEqual(self.run_master('verify', check=False).returncode, 0)
+        self.assertNotEqual(self.run_master('inspect', check=False).returncode, 0)
 
     def test_dry_run_does_not_create_outputs_or_contact_qa(self):
         before = sorted(str(p) for p in self.root.rglob('*'))
-        self.run_master('--dry-run', 'verify', 'qa')
+        self.run_master('--dry-run', 'inspect', 'qa')
         self.run_master('--dry-run', *self.stick_args())
         self.assertEqual(sorted(str(p) for p in self.root.rglob('*')), before)
 
@@ -275,6 +275,15 @@ else:
         self.assertNotEqual(self.run_master('qa', QA_DIR='relative', check=False).returncode, 0)
         self.assertFalse((self.root / 'ssh.log').exists())
 
+    def test_changed_selected_product_cannot_reuse_cached_qa(self):
+        import shutil
+        self.run_master('qa')
+        (self.root / 'qa-receipt.json').unlink()
+        commit = 'b' * 40
+        shutil.copytree(self.product, self.work / ('product-' + commit[:12]))
+        self.run_master('qa', MAIN_COMMIT=commit)
+        self.assertTrue((self.root / 'qa-receipt.json').exists())
+
     def test_listing_probe_drains_producer_after_sqlite_match(self):
         self.script('bsdtar', """#!/bin/sh
 if [ "$1" = -tf ]; then
@@ -284,7 +293,7 @@ else
   exec tar "$@"
 fi
 """)
-        self.run_master('verify')
+        self.run_master('inspect')
 
     def test_mounted_device_probe_drains_producer_before_refusing(self):
         self.fake_device()

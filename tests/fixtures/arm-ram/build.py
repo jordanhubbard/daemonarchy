@@ -69,3 +69,34 @@ for label in ('complete', 'missing-installer'):
     subprocess.run(['makefs', '-t', 'ffs', '-B', 'little', '-o', 'version=2', '-T', '0',
                     '-s', '16m', str(image), str(root)], check=True)
     subprocess.run(['mkuzip', '-o', str(args.output / (label + '.uzip')), str(image)], check=True)
+
+# Additional mastering fixtures preserve the two original fixtures above.
+write('usr/local/libexec/daemonarchy-installer/install', b'#!/bin/sh\nexit 1 # Synthetic fixture, never install\n')
+write('usr/local/share/daemonarchy-installer/version', b'1.6.0\n')
+python = bytearray(64)
+python[:6] = b'\x7fELF\x02\x01'
+struct.pack_into('<HH', python, 16, 2, 183)
+shared = bytearray(python)
+struct.pack_into('<H', shared, 16, 3)
+write('usr/local/bin/python3.12', python)
+write('usr/local/lib/python3.12/site-packages/_sqlite3.cpython-312.so', shared)
+write('usr/local/lib/libsqlite3.so.3.fixture', shared)
+(root / 'usr/local/lib/libsqlite3.so.0').symlink_to('libsqlite3.so.3.fixture')
+write('usr/local/lib/python3.12/sqlite3/__init__.py', b'# Synthetic parser fixture; not usable Python\n')
+link = root / 'usr/local/lib/python3.12/lib-dynload/_sqlite3.cpython-312.so'
+link.parent.mkdir(parents=True, exist_ok=True)
+for label in ('master-complete', 'master-missing-sqlite', 'master-escaping-sqlite', 'master-sqlite-loop'):
+    if link.is_symlink(): link.unlink()
+    write('usr/local/lib/python3.12/site-packages/_sqlite3.cpython-312.so', shared)
+    if label == 'master-missing-sqlite':
+        (root / 'usr/local/lib/python3.12/site-packages/_sqlite3.cpython-312.so').unlink()
+    elif label == 'master-escaping-sqlite':
+        link.symlink_to('../../../../../../../../outside-image')
+    elif label == 'master-sqlite-loop':
+        link.symlink_to('_sqlite3.cpython-312.so')
+    else:
+        link.symlink_to('../site-packages/_sqlite3.cpython-312.so')
+    image = args.work / (label + '.ufs')
+    subprocess.run(['makefs', '-t', 'ffs', '-B', 'little', '-o', 'version=2', '-T', '0',
+                    '-s', '16m', str(image), str(root)], check=True)
+    subprocess.run(['mkuzip', '-j', '1', '-o', str(args.output / (label + '.uzip')), str(image)], check=True)

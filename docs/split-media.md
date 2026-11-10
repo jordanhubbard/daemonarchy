@@ -112,9 +112,10 @@ source was an earlier retained installer/world, not the refreshed final release.
 
 For a planned release, set `RELEASE`, `ARCH=amd64` or `ARCH=aarch64`,
 `MEDIA_MANIFEST` and `MEDIA_MANIFEST_SHA256` in the reviewed mastering config.
-Leave the manifest unset for the retained single-file path. `verify` reconstructs
-into a new private directory, checks the unchanged raw budget, then applies the
-retained image-content checks. `hwtrace` extracts that selected image's own boot
+Leave the manifest unset for the retained single-file path. `inspect` reconstructs
+into a new private directory, checks the unchanged raw budget and image contents,
+and records static inspection only. `verify` repeats the required checks and
+adds native Python/SQLite execution from planned 1.6.0 onward. `hwtrace` extracts that selected image's own boot
 payload. Resume entries include the manifest pin, and cached split steps recheck
 all input bytes. Failed reconstructions and earlier evidence remain available.
 
@@ -126,10 +127,25 @@ package-feed identity. It does not erase the preceding QA directory. Tools,
 Python, firmware, graphics and native runtime dependencies must exist on the
 allocated QA worker; a controller transfer test cannot supply native acceptance.
 
-The retained content verifier reads installer files from the ISO root. Complete
-the packed RAM-root content/runtime adapter for full ARM release media before
-admission; reconstruction alone does not satisfy version or live-Python checks.
-The independent packed-root inspector remains required under ARM-005.
+The static inspection used by `inspect` and `verify` inventories the selected raw
+ISO and routes packed ARM roots to
+`scripts/check-packed-installer.py`. This independent reader checks the trusted
+raw hash before and after inspection, ISO/GPT/FAT EFI identity, outer/inner boot
+consistency, loader configuration, installation archive MANIFEST hashes, ABI,
+selected installer version and AArch64 Python/SQLite files. Package aliases are
+resolved only inside the UFS image, with at most 16 inode lookups, exact target
+metadata, and loop/namespace-escape refusal. The record includes resolved-file
+and alias-chain identities; host symlinks are never followed for those targets.
+Historical nonpacked inspection keeps its original behavior.
+
+On a FreeBSD builder running as root, the runtime helper mounts the ISO and its
+UZIP/UFS root read-only and runs the image's own Python/SQLite query with a
+60-second timeout, then detaches its memory disks and mounts. On other controllers,
+`verify` returns status 77 (unrun) and records no verification success; use
+`inspect` for static checks. Static inspection has its own resume state and cannot
+satisfy native verification. The driver selects `python3` or `python3.12`
+without adding global aliases. Static records explicitly keep native import
+unqualified; exact final-image runtime acceptance remains separate.
 
 To prepare a reviewed stick-writing command, use the existing explicit device
 serials and raw identity with the manifest instead of `--iso`:
@@ -156,3 +172,25 @@ are not native installation, boot, desktop or physical-media results.
 
 The [mastering control record](../verification/split-media-mastering-development-20261110.json)
 retains those boundaries and the remaining packed-root/native requirements.
+
+The [packed mastering checkpoint](../verification/packed-media-mastering-development-20261110.json)
+records real UFS/ISO/FAT parser controls, the complete retained-image inspection
+and refusal as a future version, and a native read-only Python/SQLite helper
+control with a missing-extension negative case. It retains both initial failures
+and their scoped corrections. The native helper control uses retained interpreter
+inputs; it does not qualify the refreshed CURRENT installer. Cached split steps
+also bind the selected product commit, release, architecture and inspection
+profile so preceding content checks cannot silently satisfy the stronger gate.
+
+The allocated inspection controller needs `bsdtar`, `mtools` and Sleuth Kit
+(`ifind`, `icat`, `istat`). The native runtime worker additionally needs GEOM UZIP
+and the matching architecture/interpreter; native mount/import refusal remains
+an error. Controller fixtures are generated with native FreeBSD `makefs`/`mkuzip`
+and contain synthetic nonexecutable boot payloads. Their generation is not a
+native product boot result.
+
+For planned 1.6, both single-file and split `verify` require native execution.
+Earlier single-file releases retain their historical static-only controller
+behavior. New single-file inspections recheck cached raw bytes against the
+verified compressed stream; they cannot reuse an earlier static success as a
+native result.

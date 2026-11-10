@@ -270,8 +270,11 @@ The release is a sequence of resumable steps, driven by `scripts/master-release.
 For planned 1.6 split media, follow [the transport and record procedure](docs/split-media.md).
 Authoring requires explicit manifest pins and separate raw-image/download fields.
 The mastering verifier, hwtrace extractor, QA transfer and stick writer accept an
-explicit pinned split selection. Complete the packed RAM-root content/runtime
-adapter and exact-image native/physical acceptance before publishing split assets.
+explicit pinned split selection. Packed ARM inspection checks the reconstructed
+root independently. `inspect` is static-only; from planned 1.6, `verify` requires
+native Python/SQLite execution through read-only mounts and returns unrun without
+success on other controllers. Complete exact final-image native/physical acceptance before
+publishing split assets.
 
 4. **Draft the release pull request** with `scripts/prepare-release.py` (placeholders) and `scripts/fill-release.py` (from the verified artifacts), and check staged assets with `scripts/verify-release-assets.py`. The documentation guard is expected to fail until the placeholders are filled; that is why the pull request stays a draft.
 5. **Sign and publish are the release owner's steps**, in one signing session: the feeds, the boot bundle and the GitHub release. Nobody and nothing else holds those keys.

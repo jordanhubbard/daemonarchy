@@ -172,6 +172,49 @@ class UFSFixtures(unittest.TestCase):
         with self.assertRaisesRegex(ValueError, 'does not match MANIFEST'):
             ram.inspect_root(self.raw, self.outer)
 
+    def test_master_profile_checks_version_and_python_sqlite_elf(self):
+        ram.unpack_root(self.fixtures / 'master-complete.uzip', self.raw)
+        result = ram.inspect_root(self.raw, self.outer, expected_version='1.6.0')
+        self.assertEqual(result['usr/local/bin/python3.12']['bytes'], 64)
+        self.assertIn('usr/local/lib/python3.12/lib-dynload/_sqlite3.cpython-312.so', result)
+        self.assertIn('usr/local/lib/libsqlite3.so.0', result)
+
+    def test_master_profile_refuses_stale_version(self):
+        ram.unpack_root(self.fixtures / 'master-complete.uzip', self.raw)
+        with self.assertRaisesRegex(ValueError, 'version differs'):
+            ram.inspect_root(self.raw, self.outer, expected_version='1.6.1')
+
+    def test_master_profile_refuses_missing_sqlite_extension(self):
+        ram.unpack_root(self.fixtures / 'master-missing-sqlite.uzip', self.raw)
+        with self.assertRaisesRegex(ValueError, '_sqlite3'):
+            ram.inspect_root(self.raw, self.outer, expected_version='1.6.0')
+
+    def test_master_profile_records_internal_alias_targets(self):
+        ram.unpack_root(self.fixtures / 'master-complete.uzip', self.raw)
+        result = ram.inspect_root(self.raw, self.outer, expected_version='1.6.0')
+        module = result['usr/local/lib/python3.12/lib-dynload/_sqlite3.cpython-312.so']
+        self.assertEqual(module['resolved_path'], 'usr/local/lib/python3.12/site-packages/_sqlite3.cpython-312.so')
+        self.assertEqual(module['symlink_chain'][0]['target'], '../site-packages/_sqlite3.cpython-312.so')
+
+    def test_master_profile_refuses_alias_escape_and_loop(self):
+        for label, message in [('master-escaping-sqlite', 'escapes'), ('master-sqlite-loop', 'loop')]:
+            with self.subTest(label=label):
+                image = self.raw.with_name(label + '.ufs')
+                ram.unpack_root(self.fixtures / (label + '.uzip'), image)
+                with self.assertRaisesRegex(ValueError, message):
+                    ram.inspect_root(image, self.outer, expected_version='1.6.0')
+
+    def test_master_profile_refuses_foreign_python_machine(self):
+        ram.unpack_root(self.fixtures / 'master-complete.uzip', self.raw)
+        python = ram.UFS(self.raw).read('usr/local/bin/python3.12')
+        original = self.raw.read_bytes()
+        self.assertEqual(original.count(python), 1)
+        foreign = bytearray(python)
+        struct.pack_into('<H', foreign, 18, 62)
+        self.raw.write_bytes(original.replace(python, foreign))
+        with self.assertRaisesRegex(ValueError, 'AArch64 ELF'):
+            ram.inspect_root(self.raw, self.outer, expected_version='1.6.0')
+
 
 if __name__ == '__main__':
     unittest.main()

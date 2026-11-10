@@ -15,3 +15,14 @@ Regenerate on an allocated FreeBSD worker, using fresh paths:
 
 Copy the two .uzip files and outer.json together after running the inspector
 tests. No target disks, firmware or signing operations are involved.
+
+master-complete.uzip adds a 1.6.0 installer-version file and synthetic AArch64
+Python/SQLite ELF headers and standard-library file. master-missing-sqlite.uzip
+omits the extension. These files test static identity/refusal only; the fake
+Python binary cannot execute and must fail any native runtime import gate.
+The original complete and missing-installer fixture bytes remain unchanged.
+
+The mastering fixtures use real UFS2 symlinks matching the FreeBSD SQLite port's
+extension and shared-library aliases. master-escaping-sqlite.uzip and
+master-sqlite-loop.uzip exercise namespace-escape and cycle refusal. Alias
+metadata and resolved file bytes are inspected without following host paths.
