@@ -9,7 +9,7 @@ MAX_READ = 16 * 1024 * 1024
 MAX_CLUSTERS = 1024 * 1024
 
 
-def validate_fat(read_at, selection):
+def validate_fat(read_at, selection, selected_path=None):
     """Observe one selected partition; does not open devices or admit writes."""
     start, size = selection['start_lba'] * 512, selection['sectors'] * 512
     budget = MAX_READ
@@ -171,7 +171,8 @@ def validate_fat(read_at, selection):
     map_off,map_size = extent('SLOTS.MAP')
     if map_size != 16384 or read(map_off,map_size) != expected_map.ljust(map_size,b'\n'):
         raise ValueError('trace map does not match actual FAT allocations')
-    return dict(schema='daemonarchy/boot-medium-fat-observation@1',
+    selected = {'selected_extent': extent(selected_path)} if selected_path is not None else {}
+    return dict(**selected, schema='daemonarchy/boot-medium-fat-observation@1',
                 map_sha256=hashlib.sha256(expected_map).hexdigest(),
                 fat_sha256=hashlib.sha256(fat).hexdigest(),
                 mapped_files=len(observed), allocated_clusters=len(owners),

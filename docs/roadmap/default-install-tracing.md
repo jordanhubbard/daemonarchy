@@ -582,3 +582,31 @@ This remains read-only metadata validation. Native device opening and identity
 revalidation, mounted/busy checks, userspace writers/hooks and complete bounded
 kernel/installer evidence remain required. No final CURRENT media, physical
 hardware or release acceptance follows from this checkpoint.
+
+## Native read-only device observation
+
+The [native observer checkpoint](../../verification/native-boot-medium-observer-20261110.json)
+connects GEOM, GPT, FAT/map and v4 kernel/session observations through an actual
+FreeBSD character-device descriptor. It opens only the canonical physical disk,
+read-only, without following symlinks. Device identity and ioctl provider/geometry
+must agree before and after bounded reads. GEOM descendants must be idle apart
+from the observer's own physical-disk reader. Repeated topology, raw metadata,
+slot and kernel-environment observations must remain consistent.
+
+All 31 selection/GPT/FAT/native-refusal groups pass on Linux and native FreeBSD
+ARM64. A retained x86 kernel with a minimal diagnostic RAM root and native Python
+runs the observer automatically without keyboard input or networking. It selects
+vtbd0p2, validates all 233 map entries and correlates the actual v4 record. Only
+809 bytes in the loader ready/pre-exit banks change; userspace adds no writes.
+The returned FAT passes both Linux and native FreeBSD read-only checks.
+
+A second attached image with duplicate partition identities causes an explicit
+observer refusal; the diagnostic boot still synchronizes and powers off normally.
+The initial Python dependency-closure failure and an overlong-QMP-path launch
+failure remain retained separately from these successful runtime controls.
+
+This qualifies read-only device observation on the retained x86 fixture. It does
+not qualify writable-device admission, cross-checking the installation identity
+file, full retained logs, init/installer persistence hooks, final CURRENT media,
+physical devices or release acceptance. Future default hooks must treat missing
+or refused capture as best effort and continue ordinary boot/installation.

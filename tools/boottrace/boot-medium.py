@@ -331,5 +331,49 @@ def validate_gpt(read_at, selection):
                 fat_and_map_validation_required=True)
 
 
+def require_idle(data, selection, own_reader=False):
+    """Refuse active consumers anywhere below the physical boot disk."""
+    current = resolve_partition(data, selection['partition_uuid'])
+    for key in ('device','disk','partition_uuid','start_lba','sectors','sector_bytes','disk_bytes','gpt_state'):
+        if current[key] != selection[key]:
+            raise ValueError('boot-medium topology changed')
+    mesh = ET.fromstring(data.rstrip(b'\0'))
+    geoms, providers = [], {}
+    for klass in mesh.findall('class'):
+        for geom in klass.findall('geom'):
+            geoms.append((text(klass,'name'),geom))
+            for provider in geom.findall('provider'):
+                providers[provider.get('id')] = provider
+    disks = [p for kind,g in geoms if kind == 'DISK' for p in g.findall('provider')
+             if '/dev/'+text(p,'name') == selection['disk']]
+    if len(disks) != 1:
+        raise ValueError('canonical physical disk missing')
+    disk_id = disks[0].get('id')
+    reachable = {disk_id}
+    for _ in range(len(geoms)+1):
+        added = {p.get('id') for _,g in geoms
+                 if any(reference(c,'provider') in reachable for c in g.findall('consumer'))
+                 for p in g.findall('provider')}
+        if added <= reachable:
+            break
+        reachable |= added
+    else:
+        raise ValueError('unbounded GEOM descendants')
+    expected_disk_mode = 'r1w0e0' if own_reader else 'r0w0e0'
+    for identity in reachable:
+        expected = expected_disk_mode if identity == disk_id else 'r0w0e0'
+        if text(providers[identity],'mode') != expected:
+            raise ValueError('boot disk or descendant provider is busy')
+    for kind,geom in geoms:
+        for consumer in geom.findall('consumer'):
+            if reference(consumer,'provider') not in reachable:
+                continue
+            own = (own_reader and kind == 'DEV' and
+                   '/dev/'+text(geom,'name') == selection['disk'])
+            if text(consumer,'mode') != ('r1w0e0' if own else 'r0w0e0'):
+                raise ValueError('boot disk has an active consumer')
+    return current
+
+
 if __name__ == '__main__':
     raise SystemExit('Import this read-only policy module; device I/O is not implemented.')
