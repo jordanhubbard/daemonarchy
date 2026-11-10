@@ -107,6 +107,8 @@ on:
       - 'tools/boottrace/boot-medium.py'
       - 'tests/boot-medium.py'
       - 'tests/boot-medium-gpt.py'
+      - 'tests/boot-medium-fat.py'
+      - 'tools/boottrace/fat-volume.py'
       - 'tests/hwtrace-net.sh'
       - 'tests/hwtrace-capture.sh'
       - 'tests/hwtrace-pi4-simulator.py'
@@ -222,6 +224,8 @@ on:
       - 'tools/boottrace/boot-medium.py'
       - 'tests/boot-medium.py'
       - 'tests/boot-medium-gpt.py'
+      - 'tests/boot-medium-fat.py'
+      - 'tools/boottrace/fat-volume.py'
       - 'tests/hwtrace-net.sh'
       - 'tests/hwtrace-capture.sh'
       - 'tests/hwtrace-pi4-simulator.py'
@@ -267,6 +271,7 @@ jobs:
           python3 tests/normal-boot-trace.py -v
           python3 tests/boot-medium.py
           python3 tests/boot-medium-gpt.py -v
+          python3 tests/boot-medium-fat.py -v
           sh -n scripts/make-ram-iso.sh
           python3 tests/live-root-metadata.py -v
           python3 tests/ram-live-image.py -v

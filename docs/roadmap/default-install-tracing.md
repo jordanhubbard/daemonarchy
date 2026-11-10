@@ -560,3 +560,25 @@ natively with the same result. This is observation replay, not native device
 opening or writable-device admission. FAT/map validation, mounted/busy and
 open-identity checks, userspace writers/hooks and full trace retention remain
 required.
+
+## Read-only FAT allocation and map validation
+
+The [FAT checkpoint](../../verification/boot-medium-fat-20261110.json)
+adds a bounded FAT32 observation policy. It requires matching boot-sector and
+allocation-table copies, a clean allocation state, bounded directory traversal,
+valid long-name sequences and unique short names. Every allocated cluster must
+belong to exactly one live directory or file; cycles, cross-links, orphaned
+allocations and invalid chains are refused. All required trace files must have
+their exact preallocated sizes and contiguous extents. SLOTS.MAP must match
+the canonical map reconstructed from those actual extents.
+
+Seven independent corruption-test groups pass on Linux and native FreeBSD
+ARM64. Metadata from the actual returned x86 v4 medium also replays natively:
+233 mapped files and 1,876 allocated clusters are accounted for. The first
+development probe refused the formatter's archive-marked volume label; the
+policy now accepts that standard root-label attribute combination.
+
+This remains read-only metadata validation. Native device opening and identity
+revalidation, mounted/busy checks, userspace writers/hooks and complete bounded
+kernel/installer evidence remain required. No final CURRENT media, physical
+hardware or release acceptance follows from this checkpoint.
