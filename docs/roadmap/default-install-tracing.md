@@ -544,3 +544,19 @@ This library admits no device writes. Raw GPT/FAT/map validation, mounted/busy
 state, identity checks around opening devices, writers/hooks and full trace
 retention remain work. Missing fresh entropy is an explicit correlation gap;
 it must not prevent ordinary boot or installation.
+
+## Raw GPT observation validation
+
+The [raw GPT checkpoint](../../verification/boot-medium-gpt-20261110.json)
+adds bounded primary/backup header and partition-table checksum validation,
+copy agreement, usable-space bounds, unique partition identities and overlap
+refusal. The raw trace partition must match the kernel-selected UUID, index,
+type, exact label, attributes and extent. Expanded media may retain an original
+backup location; this read-only policy validates that pair without repairing it.
+
+All 18 selection and GPT test groups pass on Linux and native FreeBSD ARM64.
+Raw GPT blocks from the actual returned x86 v4 control medium also replay
+natively with the same result. This is observation replay, not native device
+opening or writable-device admission. FAT/map validation, mounted/busy and
+open-identity checks, userspace writers/hooks and full trace retention remain
+required.

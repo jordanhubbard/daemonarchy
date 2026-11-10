@@ -230,5 +230,106 @@ def bind_session(data, kenv, record):
                 archive_sha256=selected['archive_sha256'], session_correlated=True)
 
 
+def validate_gpt(read_at, selection):
+    """Validate bounded raw GPT observations. read_at(offset, length) is read-only."""
+    import struct
+    import zlib
+
+    sector = selection['sector_bytes']
+    size = selection['disk_bytes']
+    if sector != 512 or size % sector or size < 68 * sector:
+        raise ValueError('unsupported raw disk geometry')
+    limit = size // sector
+
+    def read(offset, length):
+        if offset < 0 or length < 0 or offset + length > size:
+            raise ValueError('GPT read outside disk')
+        data = read_at(offset, length)
+        if not isinstance(data, bytes) or len(data) != length:
+            raise ValueError('short GPT read')
+        return data
+
+    def header(lba):
+        raw = read(lba * sector, sector)
+        signature, revision, length, checksum, reserved = struct.unpack_from('<8sIIII', raw)
+        if signature != b'EFI PART' or revision != 0x10000 or length != 92 or reserved:
+            raise ValueError('unsupported GPT header')
+        checked = bytearray(raw[:length])
+        checked[16:20] = bytes(4)
+        if zlib.crc32(checked) != checksum:
+            raise ValueError('GPT header checksum mismatch')
+        current, backup, first, last = struct.unpack_from('<QQQQ', raw, 24)
+        disk_guid = str(uuid.UUID(bytes_le=raw[56:72]))
+        canonical_uuid(disk_guid)
+        table_lba, count, stride, table_crc = struct.unpack_from('<QIII', raw, 72)
+        if (current != lba or not 1 <= backup < limit or backup == current or
+                not 34 <= first <= last < limit - 1 or
+                not 1 <= count <= 4096 or stride != 128):
+            raise ValueError('invalid or unsupported GPT geometry')
+        table_sectors = (count * stride + sector - 1) // sector
+        if (table_lba < 2 or table_lba + table_sectors > limit or
+                not (table_lba + table_sectors <= first or table_lba > last) or
+                table_lba <= current < table_lba + table_sectors or
+                table_lba <= backup < table_lba + table_sectors):
+            raise ValueError('GPT table overlaps usable space or headers')
+        table = read(table_lba * sector, count * stride)
+        if zlib.crc32(table) != table_crc:
+            raise ValueError('GPT table checksum mismatch')
+        return dict(current=current, backup=backup, first=first, last=last,
+                    disk_guid=disk_guid, table_lba=table_lba,
+                    count=count, table_sectors=table_sectors, table=table)
+
+    primary = header(1)
+    # Expanded USB media may retain the original backup location. Validate that
+    # explicit pair without repairing it or claiming writable-device admission.
+    backup = header(primary['backup'])
+    if (backup['backup'] != 1 or
+            any(primary[key] != backup[key] for key in
+                ('first', 'last', 'disk_guid', 'count', 'table')) or
+            primary['table_lba'] + primary['table_sectors'] > primary['first'] or
+            backup['table_lba'] <= primary['last'] or
+            backup['table_lba'] + backup['table_sectors'] > backup['current']):
+        raise ValueError('GPT copies disagree or overlap')
+    partitions, guids, selected = [], set(), []
+    for index in range(primary['count']):
+        entry = primary['table'][index*128:(index+1)*128]
+        if entry[:16] == bytes(16):
+            if entry != bytes(128):
+                raise ValueError('nonempty unused GPT entry')
+            continue
+        type_guid = str(uuid.UUID(bytes_le=entry[:16]))
+        part_guid = str(uuid.UUID(bytes_le=entry[16:32]))
+        canonical_uuid(part_guid)
+        if part_guid in guids:
+            raise ValueError('duplicate GPT partition UUID')
+        guids.add(part_guid)
+        first, last, attributes = struct.unpack_from('<QQQ', entry, 32)
+        if not primary['first'] <= first <= last <= primary['last']:
+            raise ValueError('partition outside GPT usable bounds')
+        if any(first <= prior_last and last >= prior_first for prior_first, prior_last in partitions):
+            raise ValueError('overlapping GPT partitions')
+        partitions.append((first, last))
+        if part_guid == selection['partition_uuid']:
+            try:
+                name = entry[56:128].decode('utf-16-le')
+            except UnicodeDecodeError as error:
+                raise ValueError('invalid GPT trace name') from error
+            if (name != 'DATRACE'.ljust(36, '\0') or type_guid != BASIC_DATA or
+                    attributes != 0 or first != selection['start_lba'] or
+                    last - first + 1 != selection['sectors'] or
+                    not selection['device'].endswith('p' + str(index+1))):
+                raise ValueError('raw GPT and selected provider disagree')
+            selected.append(index+1)
+    if len(selected) != 1:
+        raise ValueError('raw GPT trace identity missing or ambiguous')
+    return dict(schema='daemonarchy/boot-medium-gpt-observation@1',
+                partition_uuid=selection['partition_uuid'], partition_index=selected[0],
+                disk_guid=primary['disk_guid'], backup_lba=primary['backup'],
+                backup_at_disk_end=primary['backup'] == limit-1,
+                table_sha256=hashlib.sha256(primary['table']).hexdigest(),
+                read_only=True, writes_admitted=False,
+                fat_and_map_validation_required=True)
+
+
 if __name__ == '__main__':
     raise SystemExit('Import this read-only policy module; device I/O is not implemented.')
