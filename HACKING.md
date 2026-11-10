@@ -81,13 +81,13 @@ Expect the first package build to be long. When the pinned ports tree is ahead o
 Package names below were checked against daemonarchy-ports. On a FreeBSD 16.0-CURRENT builder:
 
 ```sh
-pkg install git gh jq bash python312 poudriere xorriso
+pkg install git gh jq bash python312 poudriere mtools xorriso
 ```
 
-- `poudriere-devel` can replace `poudriere` (the maintainers' VM runs poudriere-devel 3.4.99). `gh` is only needed where you create GitHub releases or upload feeds; `jq` is used by `build-iso.sh` and the release steps; `bash` is the interpreter of `master-release.sh` and `build-release-packages.sh`; `xorriso` is what the builder uses for the hybrid ISO.
+- `poudriere-devel` can replace `poudriere` (the maintainers' VM runs poudriere-devel 3.4.99). `gh` is only needed where you create GitHub releases or upload feeds; `jq` is used by `build-iso.sh` and the release steps; `bash` is the interpreter of `master-release.sh` and `build-release-packages.sh`; `mtools` supplies the image's raw-map/readback operations, and `xorriso` remains useful for controller-side hybrid fixtures. The default assembler uses native makefs, mkimg and etdump.
 - For `test-bhyve.sh` add `edk2-bhyve` (the package `sysutils/edk2` builds for bhyve). For `test-qemu.sh` on FreeBSD add `qemu` and `mtools`.
 - On Debian or Ubuntu, `test-qemu.sh` wants `qemu-system-x86` (and `qemu-system-arm`), `ovmf` (and `qemu-efi-aarch64` for arm64), `mtools`, `dosfstools` and `xorriso`, plus `git`, `python3`, `bash` and `lua5.4` to run the portable tests. The harness looks for OVMF at `/usr/share/ovmf/OVMF.fd` and takes `OVMF=` to override it.
-- `xz`, `openssl`, `makefs`, `mkimg` and `bsdtar` are in FreeBSD's base system.
+- `xz`, `openssl`, `makefs`, `mkimg`, `etdump` and `bsdtar` are in FreeBSD's base system.
 - Shell scripts are checked with `shellcheck` in CI (`devel/hs-ShellCheck` on FreeBSD).
 - Literate AI is optional; see [its section](#literate-ai-what-it-is-and-whether-you-need-it).
 
@@ -124,6 +124,8 @@ The installer is shell, in `overlay/usr/local/libexec/daemonarchy-installer/` (`
    ```
 
    What you will see: `==> ISO staging: /var/tmp/...` (each run gets a new private staging directory and keeps it), `==> Collecting the Omarchy package repository` with a package count, checks that the sets match the jail and the checkout catalogue, then `poudriere image`. The image and its `.sha256` land in `/usr/local/poudriere/data/images`, named `daemonarchy-<VERSION>-<arch>.iso`. Set `NAME` and `PREVIEW_LABEL` for a development image so its welcome screen says what it is.
+   Both architectures now build a live-root tar archive and use the shared trace-aware assembler. AMD64 keeps BIOS and EFI optical/USB boot; ARM uses EFI. New media requires a matching trace-capable EFI/Lua pair. Set OUTDIR to fresh output paths for each attempt: existing images, checksums and compressed files are refused and preserved. Boot-only native controls are recorded in [the default-builder checkpoint](verification/default-hybrid-trace-20261110.json); they do not qualify the full selected 1.6 media or automatic BIOS capture.
+
 4. **Install it in a VM, unattended.** Copy the ISO to any machine with QEMU and run:
 
    ```sh

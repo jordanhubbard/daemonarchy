@@ -329,3 +329,45 @@ and fails the unchanged strict 3,758,096,384-byte raw budget. No compressed asse
 is qualified, no features are dropped and no size limit is raised. Exact refreshed
 world/ports/desktop media, complete boot/install/recovery and all remaining
 TRACE-001 and physical acceptance gates stay open.
+
+
+## Shared default amd64 and ARM assembler
+
+The [default-builder checkpoint](../../verification/default-hybrid-trace-20261110.json)
+changes build-iso.sh to request a complete Poudriere live-root tar archive on
+both architectures, then uses the shared trace-aware assembler. The actual
+archive hash and a fresh image identity are placed in the boot filesystem and
+owned DATRACE volume. AMD64 selects BIOS/EFI mode; ARM keeps EFI-only mode.
+All selected live packages, installer sets, repository and driver checks remain.
+
+BIOS/EFI mode creates both El Torito entries and the USB BIOS boot partition.
+It selects the explicit EFI catalogue entry, rather than mistaking the first
+BIOS entry for the ESP. Regular BIOS boot files are required, and an isoboot
+larger than the 15 KiB system-area allowance is refused before image creation.
+Existing output images, checksums, compressed assets and dangling links are
+preserved; repeat authoring requires fresh output paths.
+
+Native unprivileged assembly passes with 32 NORMAL slots and 233 mapped files.
+Six exact amd64 boot controls pass: writable EFI captures both stages and enters
+the kernel with only 607 changed bytes in its session slot; BIOS enters the
+kernel with the whole image unchanged; read-only and foreign-disk EFI cases
+refuse capture and preserve the writable foreign disk; both El Torito optical
+paths enter the kernel without writes. EFI uses separate private pflash
+variables. The returned trace FAT passes independent read-only checking; its
+free-cluster summary is uninitialized and no repair is performed.
+
+The same new assembler's default ARM path also passes native construction and
+KVM boot, recording both stages with only 607 session-slot bytes changed. An
+initial ARM harness attempt exceeded the Unix socket path limit before QEMU
+started; that failure is retained separately from the passing short-path retry.
+Native oversized/symlink-isoboot controls refuse before output and preserve
+their source archive and failed staging.
+
+These are boot-only fixtures. AMD64 retains the earlier kernel and BIOS products
+with the exact new EFI/Lua; ARM retains its separately qualified control inputs.
+They stop at an intentionally unavailable root. The full selected Poudriere
+closure, refreshed world and final default-media installation have not been
+composed or qualified by this checkpoint. Automatic BIOS tracing, deeper stage
+capture, final size budgets, signing, lifecycle and physical gates remain open.
+The previous full augmented amd64 payload's raw-budget failure remains; the
+smaller boot-only control does not resolve it.

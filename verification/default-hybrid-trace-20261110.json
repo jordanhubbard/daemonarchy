@@ -1,0 +1,399 @@
+{
+  "schema": "daemonarchy/default-hybrid-trace-builder@1",
+  "recorded_date": "2026-11-10",
+  "status": "native-assembler-and-boot-controls-pass",
+  "product_base_commit": "b3be20676cb4f3bfdfb7e6a9144106c57fed37a7",
+  "producer_inputs": [
+    {
+      "path": "scripts/make-efi-iso.sh",
+      "sha256": "037614b45faf2ae26bfd8b92b6c94cac23f7639693a0047fb88c646b79fe34fd"
+    },
+    {
+      "path": "scripts/make-install-trace.py",
+      "sha256": "f5168199fbc3e01a8b12fc5c8f00f3a80e59958943073c6df75d9071ead6e48d"
+    },
+    {
+      "path": "tools/boottrace/stick.py",
+      "sha256": "f120fb261543155b339efa8ad1b3b61bbeb5c36960e773a68e63bd1722d21fd1"
+    },
+    {
+      "path": "build-iso.sh",
+      "sha256": "e46378d2713130c5096b40741d51e2f9da2986e570158adf60e9498ebba27493",
+      "scope": "Default integration code; full Poudriere closure assembly not run yet"
+    },
+    {
+      "path": "scripts/iso-stage.sh",
+      "sha256": "0472810452d14d0a068dc307fd15293cee2cd60a19d37ceeb5a1e118e4bd2a58",
+      "scope": "Default integration output preservation; portable filesystem controls"
+    }
+  ],
+  "control_inputs": {
+    "scope": "Boot-only control; old retained kernel/BIOS products with exact a486 EFI/Lua; no init, installer or desktop",
+    "world_archive_sha256": "2b618113ba428903e4aea48b520441373f9fbacd0e830be9ecc2ad51cd64c6a1",
+    "kernel_sha256": "a0e9278e4c8a4790644814d839be6ccc027b7afad4bac9fa6952ad88eabce4b8",
+    "efi_sha256": "d2b652aa47c10e7bd9492acba338ac7e6c31c53f467142975a8f68f9fa74d45e",
+    "efi_source_commit": "a486e309004eefbe4cc36e695a05332dd2880899",
+    "retained_kernel_bios_source": "cb38d6498a24606aba3b3ca22fceedc61b31f9bf",
+    "files": [
+      {
+        "path": "boot/pmbr",
+        "sha256": "68afb25b1d1367fca58f75ffed8b69cd70c5a5bb80587c1ce1827a3a5e5d73a5"
+      },
+      {
+        "path": "boot/cdboot",
+        "sha256": "247831c13bb424ef75a47a09e4644336f0819e8372dc822a598e4ee1e0c09f3f"
+      },
+      {
+        "path": "boot/isoboot",
+        "sha256": "7f9da748ba5999ee27ebac1b890705c645fb5a6a616ea4488a72fa5245d2f14f"
+      },
+      {
+        "path": "boot/loader",
+        "sha256": "2a2c8ec483214982bca75cd91f73f20bc8dbb98794903636388b8fcee6aafd4d"
+      },
+      {
+        "path": "boot/lua/core.lua",
+        "sha256": "58dd38abe9d46d16338a3e889f15e1d8f457b3c04f14ea73bb116f25bba4c98e"
+      },
+      {
+        "path": "boot/lua/splash.lua",
+        "sha256": "3f9054953db3d556042a892612e727c00a4daeff96cdb1ebd4a1587ac7699c45"
+      },
+      {
+        "path": "boot/lua/cli.lua",
+        "sha256": "57aec8f2b5cc5ba67a1de57e9aa9418c5cb7e8571d150315896b7d4b5d250c44"
+      },
+      {
+        "path": "boot/lua/drawer.lua",
+        "sha256": "73f625b154e8434e52f8ef1ca339a2600ec975d94e4c213bb391aa38cd6ebc8e"
+      },
+      {
+        "path": "boot/lua/gfx-beastie.lua",
+        "sha256": "5d44eb798a3968dcc43ae66bda79e0d822f9cc428b3a9cf5f575efabe666c4d6"
+      },
+      {
+        "path": "boot/lua/gfx-fbsdbw.lua",
+        "sha256": "089fb67532019438a3e9483683986e7cf87b70b26c03e6ab17e31f558a92f3f5"
+      },
+      {
+        "path": "boot/lua/netdebug.lua",
+        "sha256": "d51eec814419e635edd18ea43c6b927468590ea6c562eccc05477e78972f2bb4"
+      },
+      {
+        "path": "boot/lua/hook.lua",
+        "sha256": "a0b693e2acacc7fdabe0a709f568af8be4a9a0726600493269977c607ed03a55"
+      },
+      {
+        "path": "boot/lua/gfx-install.lua",
+        "sha256": "9c333eaebd80554e4d592725b9549f9ca3d2041c75b3b2970194b9cf2987904d"
+      },
+      {
+        "path": "boot/lua/password.lua",
+        "sha256": "6e5f507d9dbc71a8969476bafc07e62b90f55207aed544941ae31ab97ac7e31b"
+      },
+      {
+        "path": "boot/lua/loader.lua",
+        "sha256": "854cd3143d9d1b237773a50f8905df45e598a2c5590db258cfdea20e2639d75b"
+      },
+      {
+        "path": "boot/lua/screen.lua",
+        "sha256": "54ee24b85364bc279ee88eab5af635dc1322a8cf74cb08107360364b595c9b27"
+      },
+      {
+        "path": "boot/lua/gfx-orb.lua",
+        "sha256": "428694c11681ab70939bf89d1a00f5fba01a183c7a95cea7b5553fb8bcc677d7"
+      },
+      {
+        "path": "boot/lua/gfx-orbbw.lua",
+        "sha256": "5665a60796afc47d421ab2c4f643324c9f10f04fa84aaf20e733365743965a0b"
+      },
+      {
+        "path": "boot/lua/config.lua",
+        "sha256": "a9174b0b1be9aafce525576b21b8f90b37b4478b2a921325a17291576a8607ee"
+      },
+      {
+        "path": "boot/lua/gfx-beastiebw.lua",
+        "sha256": "86a2b7dc0574af213a90dffbedb9685563c36224155c9a99d4e416d70b243a28"
+      },
+      {
+        "path": "boot/lua/color.lua",
+        "sha256": "eb533bc685107bb631fd53905719708e1af5e131cb62c56e4e49c8ccf6e9e016"
+      },
+      {
+        "path": "boot/lua/menu.lua",
+        "sha256": "5d16efefee4422447a81222de5624684341e11a0ec4e049fb5f7c134de744847"
+      },
+      {
+        "path": "boot/lua/boottrace.lua",
+        "sha256": "ee377300bbdf6fa4e9c378ed2fb45ea6513823ebf65434593c70a7218baaa767"
+      }
+    ]
+  },
+  "assembly": {
+    "automatic_capture_qualified": false,
+    "bios_boot_data_preserved": true,
+    "declared_identity": {
+      "archive_sha256": "2b618113ba428903e4aea48b520441373f9fbacd0e830be9ecc2ad51cd64c6a1",
+      "image_id": "1286f8ad-e940-4482-9f55-aef1979b3479"
+    },
+    "input_sha256": "bba823e0b2a53c8b162cefd892f0d17a450d94e5f7f091a96ffac837a8d2c738",
+    "mapped_files": 233,
+    "mbr_boot_code_preserved": true,
+    "normal_boot_slots": 32,
+    "output_bytes": 760234496,
+    "output_sha256": "61cb07052538a45e2cda2464af5de647cc8f5b28f990f1f2e5c8342caa8b0161",
+    "retained_partition_entries": true,
+    "retained_partition_types": [
+      "freebsd-boot",
+      "efi"
+    ],
+    "schema": 1,
+    "trace_start_lba": 960512
+  },
+  "assembler_runtime": "Native FreeBSD 16.0-CURRENT arm64; makefs/mkimg/etdump; builder uid/gid 1017",
+  "x86_vm": {
+    "execution": "x86_64 TCG",
+    "cpus": 2,
+    "memory_gib": 2,
+    "network_devices": 0,
+    "keyboard_input": false,
+    "boundary": "Held at deliberately unavailable root after real kernel entry; no init, desktop or installation"
+  },
+  "cases": {
+    "efi-r1": {
+      "result": {
+        "status": "pass",
+        "mode": "amd64 OVMF/TCG with private writable pflash variables",
+        "kernel_control_boundary_reached": true,
+        "no_keyboard_input": true,
+        "network_devices": 0,
+        "record": {
+          "schema": "daemonarchy/normal-boot-trace@2",
+          "image_id": "1286f8ad-e940-4482-9f55-aef1979b3479",
+          "archive_sha256": "2b618113ba428903e4aea48b520441373f9fbacd0e830be9ecc2ad51cd64c6a1",
+          "trace_partition": "75c0be9e-dcdd-11f1-17a5-d14fff7c5968",
+          "session": "0001",
+          "phase": "loader-ready",
+          "identity": "declared-archive",
+          "early_kernel_backend": "not-enabled",
+          "pre_exit": {
+            "sha256": "d33a0ce464ba625fd9e43d1bdb2a69bba5d7f25dfcaa1953b5e442784ea01dfc",
+            "status": "recorded",
+            "record": {
+              "schema": "daemonarchy/normal-boot-trace@2",
+              "image_id": "1286f8ad-e940-4482-9f55-aef1979b3479",
+              "archive_sha256": "2b618113ba428903e4aea48b520441373f9fbacd0e830be9ecc2ad51cd64c6a1",
+              "trace_partition": "75c0be9e-dcdd-11f1-17a5-d14fff7c5968",
+              "session": "0001",
+              "phase": "pre-exit",
+              "identity": "declared-archive",
+              "early_kernel_backend": "not-enabled"
+            }
+          }
+        },
+        "changed_bytes": 607,
+        "only_current_normal_slot_changed": true,
+        "mapped_files": 233,
+        "normal_boot_slots": 32,
+        "legacy_state_queue_and_traces_unchanged": true,
+        "esp_and_gpt_unchanged": true,
+        "scope": "Boot-only control; no init, installer or desktop qualification"
+      },
+      "serial_sha256": "eae769ff7a2f0f781e5dcc3794202b2446dffe82c59c3ccd8d47b06748a81364",
+      "argv_sha256": "808a06c093edcf1f3242fd84f9b19c6f1a4be6975ea5ebbba92827f778543eb9",
+      "returned_sha256": "8202c5c91f93ebfaf8ed4ebac863a99a2375f1e43b2539bed0d7538b3b40abca"
+    },
+    "bios-r1": {
+      "result": {
+        "status": "pass",
+        "mode": "amd64 SeaBIOS/TCG raw USB-equivalent disk",
+        "kernel_control_boundary_reached": true,
+        "no_keyboard_input": true,
+        "network_devices": 0,
+        "disk_write_operations": 0,
+        "whole_image_unchanged": true,
+        "no_bios_automatic_capture_claim": true,
+        "scope": "Boot-only control with retained BIOS loader/kernel; no init or installer"
+      },
+      "serial_sha256": "dd9e3bc0c7a45d8a686adecf94a59920fdc1333bd99daf1ea7456cf2cac2683d",
+      "argv_sha256": "d76d2b3e60b0e7df983205bc7379083938b1a1ce509824d064201c499b0e7388",
+      "returned_sha256": "61cb07052538a45e2cda2464af5de647cc8f5b28f990f1f2e5c8342caa8b0161"
+    },
+    "readonly-r1": {
+      "result": {
+        "status": "pass",
+        "case": "readonly-r1",
+        "capture_status": "media-unavailable",
+        "kernel_control_boundary_reached": true,
+        "no_keyboard_input": true,
+        "trace_source_image_unchanged": true,
+        "writable_foreign_disk_unchanged": false,
+        "private_pflash_variables": true
+      },
+      "serial_sha256": "0fcc2b55b68439ba5d7e10d63133c5335c2af1e062d16f6da789307239e9bf4c",
+      "argv_sha256": "974a77815606f4990ae36d773644fb8de7b734374860939830e22cb2e6bd889c"
+    },
+    "foreign-r1": {
+      "result": {
+        "status": "pass",
+        "case": "foreign-r1",
+        "capture_status": "media-unavailable",
+        "kernel_control_boundary_reached": true,
+        "no_keyboard_input": true,
+        "trace_source_image_unchanged": true,
+        "writable_foreign_disk_unchanged": true,
+        "private_pflash_variables": true
+      },
+      "serial_sha256": "9fcab03c64731f44fc943249031a14f8347d3960a168bc0679bea693a27cf11a",
+      "argv_sha256": "c437560063c29e62ff39402f5f23f9570eec47de2060b5ae2d6b8e1c06dd4b55"
+    },
+    "optical-efi-r1": {
+      "result": {
+        "status": "pass",
+        "case": "optical-efi-r1",
+        "media": "read-only El Torito optical",
+        "kernel_control_boundary_reached": true,
+        "no_keyboard_input": true,
+        "disk_write_operations": 0,
+        "efi_capture_refused": true,
+        "scope": "Boot-only control, no init or installation"
+      },
+      "serial_sha256": "ab7a8a5ac8de2ba2e107fe00dd49e01b82964eb61a4466cbcea5d3bb92024d34",
+      "argv_sha256": "ac129b3bf45951c27e3503de90f281d3d60b3d3d1b8464eb1ca5541fcacc3ca4"
+    },
+    "optical-bios-r1": {
+      "result": {
+        "status": "pass",
+        "case": "optical-bios-r1",
+        "media": "read-only El Torito optical",
+        "kernel_control_boundary_reached": true,
+        "no_keyboard_input": true,
+        "disk_write_operations": 0,
+        "efi_capture_refused": false,
+        "scope": "Boot-only control, no init or installation"
+      },
+      "serial_sha256": "2b76d69da5fd4ef591b25a0b51027ebc817dcf0879a9bbac7d3138ebf2d7347d",
+      "argv_sha256": "96d38ce3b38594d7e229677b3c5bcbdfb20e0b9b75326ff23e91e2cdacaaa1e2"
+    }
+  },
+  "native_guard_cases": [
+    {
+      "case": "oversized-isoboot",
+      "exit": 1,
+      "refused_before_image": true,
+      "archive_unchanged": true,
+      "failed_work_preserved": true,
+      "build_uid": 1017
+    },
+    {
+      "case": "symlink-isoboot",
+      "exit": 1,
+      "refused_before_image": true,
+      "archive_unchanged": true,
+      "failed_work_preserved": true,
+      "build_uid": 1017
+    }
+  ],
+  "returned_efi_fat_check": {
+    "exit": 0,
+    "checker": "Linux fsck.fat -n on exact returned FAT slice"
+  },
+  "fat_check_note": "Checker exits zero and notes an uninitialized free-cluster summary; no repair performed.",
+  "arm_default_regression": {
+    "assembly": {
+      "automatic_capture_qualified": false,
+      "bios_boot_data_preserved": true,
+      "declared_identity": {
+        "archive_sha256": "75fd14d4c6ded786b6d2eb957466ebc9c1f36b44928c86022a9a472878451ae8",
+        "image_id": "721c1b1b-d2c9-4b52-b840-ae942f8d97a9"
+      },
+      "input_sha256": "6fb4a914eabb60c6f6db4e1329c7d8ada221c704bbc8b1d85d0c307725953c59",
+      "mapped_files": 233,
+      "mbr_boot_code_preserved": true,
+      "normal_boot_slots": 32,
+      "output_bytes": 393232896,
+      "output_sha256": "c49ae097a03d1e901dfa225f9cd4462f8689e12fc31073301cf78036a8ee5166",
+      "retained_partition_entries": true,
+      "retained_partition_types": [
+        "efi"
+      ],
+      "schema": 1,
+      "trace_start_lba": 243712
+    },
+    "result": {
+      "status": "pass",
+      "name": "boot-da-r2",
+      "records": {
+        "1": {
+          "schema": "daemonarchy/normal-boot-trace@2",
+          "image_id": "721c1b1b-d2c9-4b52-b840-ae942f8d97a9",
+          "archive_sha256": "75fd14d4c6ded786b6d2eb957466ebc9c1f36b44928c86022a9a472878451ae8",
+          "trace_partition": "21791406-dcdf-11f1-1d08-61407e6af4da",
+          "session": "0001",
+          "phase": "loader-ready",
+          "identity": "declared-archive",
+          "early_kernel_backend": "not-enabled",
+          "pre_exit": {
+            "sha256": "cd6d3eb572b2194520d996aa2724768595471bc447d7afbfff2afed469be64e5",
+            "status": "recorded",
+            "record": {
+              "schema": "daemonarchy/normal-boot-trace@2",
+              "image_id": "721c1b1b-d2c9-4b52-b840-ae942f8d97a9",
+              "archive_sha256": "75fd14d4c6ded786b6d2eb957466ebc9c1f36b44928c86022a9a472878451ae8",
+              "trace_partition": "21791406-dcdf-11f1-1d08-61407e6af4da",
+              "session": "0001",
+              "phase": "pre-exit",
+              "identity": "declared-archive",
+              "early_kernel_backend": "not-enabled"
+            }
+          }
+        }
+      },
+      "changed_bytes": 607,
+      "only_expected_slot_changed": true,
+      "readonly": false,
+      "foreign_disk_unchanged": false,
+      "input_unchanged": true,
+      "kernel_control_boundary_reached": true,
+      "no_keyboard_input": true
+    },
+    "execution": "native AArch64 KVM/UEFI",
+    "input_archive_sha256": "75fd14d4c6ded786b6d2eb957466ebc9c1f36b44928c86022a9a472878451ae8",
+    "source_evidence": "normal-preexit-20261110.json",
+    "scope": "Retained af55 control kernel and fe12 stand; no full world/installer qualification"
+  },
+  "retained_harness_failure": "First ARM regression had a Unix socket path over 108 bytes and QEMU refused to start. Raw failure retained; shorter-path retry passes. Not a product boot failure.",
+  "default_integration": {
+    "implemented": true,
+    "whole_poudriere_selected_closure_run": false,
+    "archive_then_common_builder": true,
+    "amd64_bios_and_efi": true,
+    "normal_boot_slots": 32,
+    "mapped_files": 233,
+    "fresh_output_requirement": true
+  },
+  "tests": {
+    "portable_integrity_groups": 13,
+    "staging_and_output_preservation_groups": 4
+  },
+  "remaining": [
+    "Full default Poudriere live-root composition using complete refreshed package closure and world",
+    "Automatic BIOS capture; kernel/panic/init/installer persistence and remaining TRACE-001 scope",
+    "Final ARM and amd64 media installation, desktop, update and recovery",
+    "Unchanged full-media raw/compressed publication budgets; small controls do not qualify final size",
+    "Canonical SDK, Component/lifecycle/receipt, signing and documentation-review gates",
+    "Physical Pi 4, Pi 5, Apple M2 and other required targets"
+  ],
+  "release_qualified": false,
+  "private_evidence": "Exact archives, native logs, serial/QMP output, pflash variables, returned disks and failed control retained privately; credentials and worker addresses excluded.",
+  "firmware_files": [
+    {
+      "name": "OVMF_CODE_4M.fd",
+      "sha256": "ad23261d43116abc3747d59a7837fbf578c9586a8993f4eeba064cd07eccb083"
+    },
+    {
+      "name": "OVMF_VARS_4M.fd",
+      "sha256": "5d2ac383371b408398accee7ec27c8c09ea5b74a0de0ceea6513388b15be5d1e"
+    }
+  ]
+}

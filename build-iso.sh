@@ -290,20 +290,21 @@ done <"$stage/live-packages"
 cp "$here/scripts/live-image-excludes" "$stage/exclude"
 
 # poudriere image names (also the ISO volume label) are alphanumeric only.
-rm -f "$OUTDIR/$NAME.iso.sha256" "$OUTDIR/$NAME.iso.xz" "$OUTDIR/$NAME.iso.xz.sha256"
+iso_stage_require_fresh_outputs "$OUTDIR/$image.iso" "$OUTDIR/$NAME.iso" \
+    "$OUTDIR/$NAME.iso.sha256" "$OUTDIR/$NAME.iso.xz" "$OUTDIR/$NAME.iso.xz.sha256"
+
+# Build one complete live-root archive on both architectures. The shared
+# assembler binds its actual hash to normal tracing before creating the ISO.
+poudriere_run image -t tar -j "$JAIL" -p "$PTREE" -n "$image" \
+    -h daemonarchy-installer -c "$stage/overlay" -f "$stage/live-packages" \
+    -A "$here/live-post.sh" -X "$stage/exclude" -o "$stage"
 if [ "$image_type" = hybridiso ]; then
-poudriere_run image -t hybridiso -j "$JAIL" -p "$PTREE" -n "$image" \
-	-h daemonarchy-installer -c "$stage/overlay" -f "$stage/live-packages" \
-	-A "$here/live-post.sh" -X "$stage/exclude" -o "$OUTDIR"
+    # Keep amd64 BIOS/El Torito/USB boot alongside EFI and owned trace storage.
+    sh "$here/scripts/make-efi-iso.sh" "$stage/$image.txz" "$image" "$OUTDIR/$image.iso" \
+        "$stage/efi-iso" BOOTX64.EFI bios
 else
-	# poudriere's ISO types embed x86 BIOS boot code. Build the same live root
-	# as a tar image, then a UEFI-only hybrid ISO with this architecture's loader.
-	poudriere_run image -t tar -j "$JAIL" -p "$PTREE" -n "$image" \
-		-h daemonarchy-installer -c "$stage/overlay" -f "$stage/live-packages" \
-		-A "$here/live-post.sh" -X "$stage/exclude" -o "$stage"
-	rm -f "$OUTDIR/$image.iso"
-	sh "$here/scripts/make-efi-iso.sh" "$stage/$image.txz" "$image" "$OUTDIR/$image.iso" \
-		"$stage/efi-iso" "$image_efi_boot_file"
+    sh "$here/scripts/make-efi-iso.sh" "$stage/$image.txz" "$image" "$OUTDIR/$image.iso" \
+        "$stage/efi-iso" "$image_efi_boot_file"
 fi
 
 iso=$OUTDIR/$NAME.iso

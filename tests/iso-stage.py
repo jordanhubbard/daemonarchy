@@ -39,6 +39,37 @@ class ISOStage(unittest.TestCase):
             self.assertEqual(sentinel.read_bytes(), b'prior failure evidence')
             self.assertEqual((stages[0] / 'partial-product').read_bytes(), b'failed attempt')
 
+    def fresh_outputs(self, *paths):
+        return subprocess.run(
+            ['sh', '-c', '. "$1"; shift; iso_stage_require_fresh_outputs "$@"',
+             'fresh-test', str(ROOT / 'scripts/iso-stage.sh'), *map(str, paths)],
+            text=True, capture_output=True)
+
+    def test_fresh_outputs_check_does_not_create_files(self):
+        with tempfile.TemporaryDirectory() as directory:
+            root = Path(directory)
+            result = self.fresh_outputs(root / 'image.iso', root / 'image.iso.sha256',
+                                        root / 'image.iso.xz')
+            self.assertEqual(result.returncode, 0, result.stderr)
+            self.assertEqual(list(root.iterdir()), [])
+
+    def test_existing_files_directories_and_links_are_preserved(self):
+        with tempfile.TemporaryDirectory() as directory:
+            root = Path(directory)
+            sentinel = root / 'previous.iso'
+            sentinel.write_bytes(b'previous published or failed image')
+            (root / 'stage').mkdir()
+            (root / 'alias').symlink_to(sentinel)
+            (root / 'dangling').symlink_to(root / 'absent')
+            for existing in [sentinel, root / 'stage', root / 'alias', root / 'dangling']:
+                with self.subTest(existing=existing.name):
+                    before = sorted(p.name for p in root.iterdir())
+                    result = self.fresh_outputs(root / 'new.iso', existing)
+                    self.assertNotEqual(result.returncode, 0)
+                    self.assertIn('Preserve existing image evidence', result.stderr)
+                    self.assertEqual(sentinel.read_bytes(), b'previous published or failed image')
+                    self.assertEqual(sorted(p.name for p in root.iterdir()), before)
+
     def test_invalid_parent_refuses_without_creation(self):
         with tempfile.TemporaryDirectory() as directory:
             root = Path(directory)

@@ -3,6 +3,7 @@
 import importlib.util
 from pathlib import Path
 import struct
+import subprocess
 import uuid
 import tempfile
 import unittest
@@ -108,6 +109,19 @@ class Integrity(unittest.TestCase):
         return media.assemble(kwargs.pop('image', self.image),
                               self.base / 'output.iso', self.base / 'work',
                               ROOT / 'tools/boottrace/stick.py', **kwargs)
+
+    def test_builder_refuses_wrong_architecture_or_unknown_boot_mode(self):
+        for filename, mode in [('BOOTAA64.EFI', 'bios'), ('BOOTX64.EFI', 'unknown')]:
+            with self.subTest(filename=filename, mode=mode):
+                output, work = self.base / 'built.iso', self.base / 'builder-work'
+                result = subprocess.run(
+                    ['sh', str(ROOT / 'scripts/make-efi-iso.sh'), str(self.image),
+                     'CONTROL', str(output), str(work), filename, mode],
+                    text=True, capture_output=True)
+                self.assertEqual(result.returncode, 2, result.stderr)
+                self.assertIn('BIOS hybrid mode requires BOOTX64.EFI', result.stderr)
+                self.assertFalse(output.exists())
+                self.assertFalse(work.exists())
 
     def test_valid_primary_gpt(self):
         result = media.read_gpt(self.image)
