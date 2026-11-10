@@ -3,6 +3,7 @@
 import importlib.util
 from pathlib import Path
 import struct
+import uuid
 import tempfile
 import unittest
 import zlib
@@ -36,6 +37,64 @@ def fixture(path):
         stream.write(b'installer data outside the GPT partition')
 
 
+def gpt_table(path, table):
+    """Replace a primary table and recompute both checksums."""
+    with path.open('r+b') as stream:
+        stream.seek(512)
+        header = bytearray(stream.read(512))
+        struct.pack_into('<I', header, 88, zlib.crc32(table))
+        struct.pack_into('<I', header, 16, 0)
+        struct.pack_into('<I', header, 16, zlib.crc32(header[:92]))
+        stream.seek(512)
+        stream.write(header)
+        stream.write(table)
+
+
+def bios_fixture(path, hole=False):
+    fixture(path)
+    table = bytearray(16384)
+    first = 1 if hole else 0
+    for index, kind, start, end in [(first, media.FREEBSD_BOOT, 34, 58),
+                                    (first + 1, media.EFI, 80, 20559)]:
+        off = index * 128
+        table[off:off + 16] = kind
+        table[off + 16:off + 32] = uuid.uuid4().bytes_le
+        struct.pack_into('<QQQ', table, off + 32, start, end, 1 << 59)
+        name = ('BIOS' if kind == media.FREEBSD_BOOT else 'ESP').encode('utf-16le')
+        table[off + 56:off + 56 + len(name)] = name
+    gpt_table(path, table)
+    with path.open('r+b') as stream:
+        stream.seek(34 * 512)
+        stream.write(b'BIOS isoboot must survive'.ljust(25 * 512, b'!'))
+
+
+def generated_layout(path, original):
+    """Independent GPT fixture for native-generated placeholders and trace."""
+    fixture(path)
+    table = bytearray(16384)
+    for index, entry in enumerate(original['entries']):
+        off = index * 128
+        table[off:off + 16] = entry['type']
+        table[off + 16:off + 32] = uuid.uuid4().bytes_le
+        struct.pack_into('<QQ', table, off + 32, entry['start'], entry['end'])
+    off = len(original['entries']) * 128
+    table[off:off + 16] = uuid.UUID('ebd0a0a2-b9e5-4433-87c0-68b6b72699c7').bytes_le
+    table[off + 16:off + 32] = uuid.uuid4().bytes_le
+    struct.pack_into('<QQ', table, off + 32, 24576, 28671)
+    gpt_table(path, table)
+    with path.open('r+b') as stream:
+        stream.seek(512)
+        backup = bytearray(stream.read(512))
+        struct.pack_into('<QQ', backup, 24, 32767, 1)
+        struct.pack_into('<Q', backup, 72, 32735)
+        struct.pack_into('<I', backup, 16, 0)
+        struct.pack_into('<I', backup, 16, zlib.crc32(backup[:92]))
+        stream.seek(32735 * 512)
+        stream.write(table)
+        stream.seek(32767 * 512)
+        stream.write(backup)
+
+
 class Integrity(unittest.TestCase):
     def setUp(self):
         self.temp = tempfile.TemporaryDirectory()
@@ -53,6 +112,57 @@ class Integrity(unittest.TestCase):
     def test_valid_primary_gpt(self):
         result = media.read_gpt(self.image)
         self.assertEqual(result['entries'], [dict(type=media.EFI, start=2048, end=4095)])
+
+    def test_standard_bios_partition_inside_system_area_is_admitted(self):
+        bios_fixture(self.image)
+        parsed = media.read_gpt(self.image)
+        self.assertEqual(media.admit_layout(parsed), ['freebsd-boot', 'efi'])
+        self.assertLess((parsed['entries'][0]['end'] + 1) * 512, media.SYSTEM_AREA)
+
+    def test_unknown_and_duplicate_boot_layouts_refused_before_mutation(self):
+        for kind in (media.EFI, media.FREEBSD_BOOT, bytes(range(16))):
+            bios_fixture(self.image)
+            gpt = media.read_gpt(self.image)
+            table = bytearray(gpt['table'])
+            table[256:272] = kind
+            table[272:288] = uuid.uuid4().bytes_le
+            struct.pack_into('<QQ', table, 288, 22000, 23000)
+            gpt_table(self.image, table)
+            with self.subTest(kind=kind), self.assertRaisesRegex(ValueError, 'one ESP'):
+                self.assemble()
+            self.assertFalse((self.base / 'work').exists())
+
+    def test_smaller_gpt_table_is_not_expanded_over_boot_code(self):
+        bios_fixture(self.image)
+        with self.image.open('r+b') as stream:
+            stream.seek(512)
+            header = bytearray(stream.read(512))
+            stream.seek(1024)
+            table = stream.read(512)
+            struct.pack_into('<II', header, 80, 4, 128)
+            struct.pack_into('<I', header, 88, zlib.crc32(table))
+            struct.pack_into('<I', header, 16, 0)
+            struct.pack_into('<I', header, 16, zlib.crc32(header[:92]))
+            stream.seek(512)
+            stream.write(header)
+        with self.assertRaisesRegex(ValueError, '16 KiB'):
+            self.assemble()
+        self.assertFalse((self.base / 'work').exists())
+
+    def test_original_partition_identity_attributes_and_holes_are_retained(self):
+        for hole in (False, True):
+            bios_fixture(self.image, hole)
+            original = media.read_gpt(self.image)
+            layout = self.base / ('layout-hole' if hole else 'layout')
+            generated_layout(layout, original)
+            primary, backup = media.retain_gpt_entries(layout, original)
+            self.assertEqual(primary['table'], backup['table'])
+            self.assertEqual(primary['guid'], original['guid'])
+            for offset in range(0, len(original['table']), 128):
+                if original['table'][offset:offset + 16] != bytes(16):
+                    self.assertEqual(primary['table'][offset:offset + 128],
+                                     original['table'][offset:offset + 128])
+            self.assertEqual(len(primary['entries']), 3)
 
     def test_corrupt_header_refused_before_output_or_work(self):
         with self.image.open('r+b') as stream:

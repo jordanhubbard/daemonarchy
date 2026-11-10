@@ -292,3 +292,40 @@ backup GPT and remains separately recorded. Exact a486e309 native amd64 CI now
 passes the production handoff fixture in plain and sanitized modes and builds
 the EFI; its outputs and feature manifest are retained and hash-verified.
 This does not qualify an amd64 firmware boot, BIOS or final installation medium.
+
+
+## BIOS/EFI hybrid layout preservation
+
+The [native hybrid layout checkpoint](../../verification/hybrid-trace-layout-20261110.json)
+extends the assembler from a single ESP to the standard amd64 layout with one
+FreeBSD BIOS boot partition and one ESP. Other layouts remain refused. It keeps
+the original disk GUID and complete occupied partition entries, including UUIDs,
+names, attributes and holes. Smaller GPT tables are refused rather than expanded
+over possible boot code.
+
+The amd64 BIOS partition occupies LBAs 34 through 58, inside the ISO system
+area. Assembly therefore copies only the protective MBR and exact GPT metadata,
+preserving the MBR boot code and every original byte from LBA 34 onward. Copying
+a whole 32 KiB system area would erase the BIOS loader. The previous assembler
+refused this layout; it did not ship that destructive operation on amd64.
+
+Native unprivileged FreeBSD assembly of the retained 1.5.1 amd64 payload adds
+201 mapped legacy trace files. Independent full-byte comparison and a native
+read-only FAT check pass. The exact output boots through both SeaBIOS and OVMF
+under x86 TCG, reaches the kernel and userspace without keyboard input, and has
+no network device. BIOS records zero disk writes. The EFI run creates a
+10,213-byte NvVars file: all 1,336 changed bytes are inside the original ESP;
+DATRACE remains unchanged. That is not a whole-image zero-write result.
+
+The single-ESP path also passes native assembly with 32 NORMAL slots and 233
+map entries. Its exact new output boots under native AArch64 KVM, records both
+loader-ready and pre-exit checkpoints, enters the CURRENT control kernel, and
+changes only 607 bytes in the expected session slot.
+
+This checkpoint preserves an existing payload; it does not qualify final 1.6
+media or automatic BIOS tracing. The default amd64 build path still needs matched
+identity/loader integration. The augmented old amd64 image is 3,824,173,568 bytes
+and fails the unchanged strict 3,758,096,384-byte raw budget. No compressed asset
+is qualified, no features are dropped and no size limit is raised. Exact refreshed
+world/ports/desktop media, complete boot/install/recovery and all remaining
+TRACE-001 and physical acceptance gates stay open.

@@ -1,6 +1,6 @@
 #!/usr/bin/env python3
 # SPDX-License-Identifier: BSD-2-Clause
-"""Append initialized trace storage to an EFI-only hybrid ISO on FreeBSD.
+"""Append initialized trace storage to an EFI or BIOS/EFI hybrid ISO on FreeBSD.
 
 Uses native makefs/mkimg, without mounting filesystems or accessing devices.
 The input remains immutable; output and work paths must be fresh. This prepares
@@ -22,6 +22,7 @@ import zlib
 SECTOR = 512
 SYSTEM_AREA = 32768
 EFI = uuid.UUID('c12a7328-f81f-11d2-ba4b-00a0c93ec93b').bytes_le
+FREEBSD_BOOT = uuid.UUID('83bd6b9d-7f41-11dc-be0b-001560b84f0f').bytes_le
 
 
 def digest(path):
@@ -71,6 +72,61 @@ def read_gpt(path, lba=1):
                 table_lba=table_lba, table=table, guid=bytes(header[56:72]), entries=entries)
 
 
+
+def admit_layout(gpt):
+    """Admit only the retained EFI or standard amd64 BIOS/EFI hybrid layout."""
+    types = [entry['type'] for entry in gpt['entries']]
+    if types.count(EFI) != 1 or types.count(FREEBSD_BOOT) > 1 or any(
+            kind not in (EFI, FREEBSD_BOOT) for kind in types):
+        raise ValueError('requires one ESP and at most one FreeBSD BIOS boot partition')
+    # Native mkimg reserves a 16 KiB table. Do not expand a smaller input
+    # table over boot code or other system-area data.
+    if gpt['table_lba'] != 2 or len(gpt['table']) != 16384:
+        raise ValueError('requires the native 16 KiB GPT table at LBA 2')
+    table_end = gpt['table_lba'] * SECTOR + len(gpt['table'])
+    if any(entry['start'] * SECTOR < table_end for entry in gpt['entries']):
+        raise ValueError('boot partition overlaps GPT metadata')
+    if not any(gpt['table'][i:i + 16] == bytes(16)
+               for i in range(0, len(gpt['table']), 128)):
+        raise ValueError('no free GPT entry for trace storage')
+    return ['efi' if kind == EFI else 'freebsd-boot' for kind in types]
+
+
+def retain_gpt_entries(layout, original):
+    """Keep original partition UUIDs, attributes, names and disk identity."""
+    primary = read_gpt(layout)
+    backup = read_gpt(layout, primary['backup'])
+    if (len(primary['table']) != len(original['table']) or
+            primary['table_lba'] != original['table_lba'] or
+            primary['table'] != backup['table'] or
+            len(primary['entries']) != len(original['entries']) + 1):
+        raise ValueError('native GPT cannot retain the original boot layout')
+    for retained, generated in zip(original['entries'], primary['entries']):
+        if retained != generated:
+            raise ValueError('native GPT moved or changed a retained partition')
+    # mkimg receives dense placeholders followed by DATRACE. The original
+    # table may have holes; preserve every occupied slot at its old index.
+    offset = len(original['entries']) * 128
+    trace_entry = primary['table'][offset:offset + 128]
+    table = bytearray(original['table'])
+    free = next(i for i in range(0, len(table), 128) if table[i:i + 16] == bytes(16))
+    table[free:free + 128] = trace_entry
+    with layout.open('r+b') as stream:
+        for gpt in (primary, backup):
+            stream.seek(gpt['current'] * SECTOR)
+            header = bytearray(stream.read(SECTOR))
+            header[56:72] = original['guid']
+            struct.pack_into('<I', header, 88, zlib.crc32(table))
+            struct.pack_into('<I', header, 16, 0)
+            length = struct.unpack_from('<I', header, 12)[0]
+            struct.pack_into('<I', header, 16, zlib.crc32(header[:length]))
+            stream.seek(gpt['current'] * SECTOR)
+            stream.write(header)
+            stream.seek(gpt['table_lba'] * SECTOR)
+            stream.write(table)
+    return read_gpt(layout), read_gpt(layout, primary['backup'])
+
+
 def copy_range(source, dest, offset, count):
     source.seek(offset)
     dest.seek(offset)
@@ -104,8 +160,7 @@ def assemble(image, output, work, stick_path, size_mib=256, identity_path=None):
     if not 256 <= size_mib <= 4096:
         raise ValueError('trace size must be 256..4096 MiB')
     gpt = read_gpt(image)
-    if len(gpt['entries']) != 1 or gpt['entries'][0]['type'] != EFI:
-        raise ValueError('requires an EFI-only hybrid ISO with one ESP')
+    partition_types = admit_layout(gpt)
     if gpt['table_lba'] * SECTOR + len(gpt['table']) > SYSTEM_AREA:
         raise ValueError('GPT table extends into ISO payload')
     with image.open('rb') as stream:
@@ -147,19 +202,20 @@ def assemble(image, output, work, stick_path, size_mib=256, identity_path=None):
                    check=True)
     if not fat.is_file() or fat.stat().st_size != size_mib * (1 << 20):
         raise ValueError('makefs did not create the expected FAT32 image')
-    esp = gpt['entries'][0]
     layout = work / 'layout.img'
-    subprocess.run(['mkimg', '-s', 'gpt', '-f', 'raw', '-p',
-                    f"efi::{(esp['end'] - esp['start'] + 1) * SECTOR}:{esp['start'] * SECTOR}",
-                    '-p', f'ms-basic-data/DATRACE:={fat}:{start}', '-o', str(layout)], check=True)
-    primary = read_gpt(layout)
-    backup = read_gpt(layout, primary['backup'])
+    command = ['mkimg', '-s', 'gpt', '-f', 'raw']
+    for kind, entry in zip(partition_types, gpt['entries']):
+        command += ['-p', f"{kind}::{(entry['end'] - entry['start'] + 1) * SECTOR}:{entry['start'] * SECTOR}"]
+    command += ['-p', f'ms-basic-data/DATRACE:={fat}:{start}', '-o', str(layout)]
+    subprocess.run(command, check=True)
+    primary, backup = retain_gpt_entries(layout, gpt)
+    trace = next(entry for entry in primary['entries']
+                 if entry['type'] not in (EFI, FREEBSD_BOOT))
     if (primary['backup'] != layout.stat().st_size // SECTOR - 1 or
             backup['backup'] != 1 or primary['guid'] != backup['guid'] or
-            primary['table'] != backup['table'] or len(primary['entries']) != 2 or
-            primary['entries'][0]['start'] != esp['start'] or
-            primary['entries'][0]['end'] != esp['end'] or
-            primary['entries'][1]['start'] * SECTOR != start):
+            primary['table'] != backup['table'] or
+            len(primary['entries']) != len(gpt['entries']) + 1 or
+            primary['guid'] != gpt['guid'] or trace['start'] * SECTOR != start):
         raise ValueError('assembled GPT does not match the requested layout')
     # O_EXCL creation prevents replacing any existing output. All ISO bytes
     # after its 32 KiB system area remain unchanged, including the embedded ESP.
@@ -167,7 +223,11 @@ def assemble(image, output, work, stick_path, size_mib=256, identity_path=None):
         shutil.copyfileobj(source, dest, 1 << 20)
         dest.truncate(layout.stat().st_size)
         # Retain boot code/disk signature; update protective MBR and both GPTs.
-        copy_range(native, dest, 446, SYSTEM_AREA - 446)
+        # BIOS isoboot occupies LBAs 34..58 in standard amd64 media.
+        # Copy metadata only; copying the whole system area erases it.
+        copy_range(native, dest, 446, SECTOR - 446)
+        copy_range(native, dest, SECTOR, SECTOR)
+        copy_range(native, dest, primary['table_lba'] * SECTOR, len(primary['table']))
         copy_range(native, dest, start, layout.stat().st_size - start)
     stick.write_map(str(output))
     mapping = stick.check_map(str(output))
@@ -178,8 +238,11 @@ def assemble(image, output, work, stick_path, size_mib=256, identity_path=None):
     read_gpt(output, primary['backup'])
     # Compare every payload byte, not just files exposed by an ISO reader.
     with image.open('rb') as source, output.open('rb') as dest:
-        source.seek(SYSTEM_AREA)
-        dest.seek(SYSTEM_AREA)
+        if source.read(446) != dest.read(446):
+            raise ValueError('original MBR boot code was changed')
+        retained_start = gpt['table_lba'] * SECTOR + len(gpt['table'])
+        source.seek(retained_start)
+        dest.seek(retained_start)
         while block := source.read(1 << 20):
             if dest.read(len(block)) != block:
                 raise ValueError('original ISO payload was changed')
@@ -188,6 +251,8 @@ def assemble(image, output, work, stick_path, size_mib=256, identity_path=None):
     return dict(schema=1, input_sha256=identity, output_sha256=digest(output),
                 output_bytes=output.stat().st_size, trace_start_lba=start // SECTOR,
                 mapped_files=len(mapping['files']), normal_boot_slots=normal_slots,
+                retained_partition_types=partition_types, retained_partition_entries=True,
+                mbr_boot_code_preserved=True, bios_boot_data_preserved=True,
                 declared_identity=declared, automatic_capture_qualified=False)
 
 
