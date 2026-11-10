@@ -8,31 +8,94 @@
     "ci_merge_revision": "29e06d03432ff1701a695488038017552ab8214a",
     "ci_tree": "c0b403dc78858b23d22bbf686e781ef3f682e27c",
     "stand_hashes_verified": 779,
-    "artifact_hashes": {
-      "loader.efi": "2caa44c41810f2c6f7d0a463d89a6fd3a6313a92e2422debc454cdb7a557e48f",
-      "lua/boottrace.lua": "ee377300bbdf6fa4e9c378ed2fb45ea6513823ebf65434593c70a7218baaa767",
-      "lua/cli.lua": "57aec8f2b5cc5ba67a1de57e9aa9418c5cb7e8571d150315896b7d4b5d250c44",
-      "lua/color.lua": "eb533bc685107bb631fd53905719708e1af5e131cb62c56e4e49c8ccf6e9e016",
-      "lua/config.lua": "a9174b0b1be9aafce525576b21b8f90b37b4478b2a921325a17291576a8607ee",
-      "lua/core.lua": "58dd38abe9d46d16338a3e889f15e1d8f457b3c04f14ea73bb116f25bba4c98e",
-      "lua/drawer.lua": "73f625b154e8434e52f8ef1ca339a2600ec975d94e4c213bb391aa38cd6ebc8e",
-      "lua/gfx-beastie.lua": "5d44eb798a3968dcc43ae66bda79e0d822f9cc428b3a9cf5f575efabe666c4d6",
-      "lua/gfx-beastiebw.lua": "86a2b7dc0574af213a90dffbedb9685563c36224155c9a99d4e416d70b243a28",
-      "lua/gfx-fbsdbw.lua": "089fb67532019438a3e9483683986e7cf87b70b26c03e6ab17e31f558a92f3f5",
-      "lua/gfx-install.lua": "9c333eaebd80554e4d592725b9549f9ca3d2041c75b3b2970194b9cf2987904d",
-      "lua/gfx-orb.lua": "428694c11681ab70939bf89d1a00f5fba01a183c7a95cea7b5553fb8bcc677d7",
-      "lua/gfx-orbbw.lua": "5665a60796afc47d421ab2c4f643324c9f10f04fa84aaf20e733365743965a0b",
-      "lua/hook.lua": "a0b693e2acacc7fdabe0a709f568af8be4a9a0726600493269977c607ed03a55",
-      "lua/loader.lua": "854cd3143d9d1b237773a50f8905df45e598a2c5590db258cfdea20e2639d75b",
-      "lua/menu.lua": "5d16efefee4422447a81222de5624684341e11a0ec4e049fb5f7c134de744847",
-      "lua/netdebug.lua": "d51eec814419e635edd18ea43c6b927468590ea6c562eccc05477e78972f2bb4",
-      "lua/password.lua": "6e5f507d9dbc71a8969476bafc07e62b90f55207aed544941ae31ab97ac7e31b",
-      "lua/screen.lua": "54ee24b85364bc279ee88eab5af635dc1322a8cf74cb08107360364b595c9b27",
-      "lua/splash.lua": "3f9054953db3d556042a892612e727c00a4daeff96cdb1ebd4a1587ac7699c45",
-      "daemonarchy-1.3.1-firmware-inventory-amd64.img": "77f2b5bafac70e242ad1ddb70a86fc3ea70f4e42ade2f2c60fef71bc9eb94a19"
-    },
     "efi_machine": "amd64",
-    "scope": "stand-only native FreeBSD15 build; CURRENT authoring/runtime retained separately"
+    "scope": "stand-only native FreeBSD15 build; CURRENT authoring/runtime retained separately",
+    "artifacts": [
+      {
+        "path": "loader.efi",
+        "sha256": "2caa44c41810f2c6f7d0a463d89a6fd3a6313a92e2422debc454cdb7a557e48f"
+      },
+      {
+        "path": "lua/boottrace.lua",
+        "sha256": "ee377300bbdf6fa4e9c378ed2fb45ea6513823ebf65434593c70a7218baaa767"
+      },
+      {
+        "path": "lua/cli.lua",
+        "sha256": "57aec8f2b5cc5ba67a1de57e9aa9418c5cb7e8571d150315896b7d4b5d250c44"
+      },
+      {
+        "path": "lua/color.lua",
+        "sha256": "eb533bc685107bb631fd53905719708e1af5e131cb62c56e4e49c8ccf6e9e016"
+      },
+      {
+        "path": "lua/config.lua",
+        "sha256": "a9174b0b1be9aafce525576b21b8f90b37b4478b2a921325a17291576a8607ee"
+      },
+      {
+        "path": "lua/core.lua",
+        "sha256": "58dd38abe9d46d16338a3e889f15e1d8f457b3c04f14ea73bb116f25bba4c98e"
+      },
+      {
+        "path": "lua/drawer.lua",
+        "sha256": "73f625b154e8434e52f8ef1ca339a2600ec975d94e4c213bb391aa38cd6ebc8e"
+      },
+      {
+        "path": "lua/gfx-beastie.lua",
+        "sha256": "5d44eb798a3968dcc43ae66bda79e0d822f9cc428b3a9cf5f575efabe666c4d6"
+      },
+      {
+        "path": "lua/gfx-beastiebw.lua",
+        "sha256": "86a2b7dc0574af213a90dffbedb9685563c36224155c9a99d4e416d70b243a28"
+      },
+      {
+        "path": "lua/gfx-fbsdbw.lua",
+        "sha256": "089fb67532019438a3e9483683986e7cf87b70b26c03e6ab17e31f558a92f3f5"
+      },
+      {
+        "path": "lua/gfx-install.lua",
+        "sha256": "9c333eaebd80554e4d592725b9549f9ca3d2041c75b3b2970194b9cf2987904d"
+      },
+      {
+        "path": "lua/gfx-orb.lua",
+        "sha256": "428694c11681ab70939bf89d1a00f5fba01a183c7a95cea7b5553fb8bcc677d7"
+      },
+      {
+        "path": "lua/gfx-orbbw.lua",
+        "sha256": "5665a60796afc47d421ab2c4f643324c9f10f04fa84aaf20e733365743965a0b"
+      },
+      {
+        "path": "lua/hook.lua",
+        "sha256": "a0b693e2acacc7fdabe0a709f568af8be4a9a0726600493269977c607ed03a55"
+      },
+      {
+        "path": "lua/loader.lua",
+        "sha256": "854cd3143d9d1b237773a50f8905df45e598a2c5590db258cfdea20e2639d75b"
+      },
+      {
+        "path": "lua/menu.lua",
+        "sha256": "5d16efefee4422447a81222de5624684341e11a0ec4e049fb5f7c134de744847"
+      },
+      {
+        "path": "lua/netdebug.lua",
+        "sha256": "d51eec814419e635edd18ea43c6b927468590ea6c562eccc05477e78972f2bb4"
+      },
+      {
+        "path": "lua/password.lua",
+        "sha256": "6e5f507d9dbc71a8969476bafc07e62b90f55207aed544941ae31ab97ac7e31b"
+      },
+      {
+        "path": "lua/screen.lua",
+        "sha256": "54ee24b85364bc279ee88eab5af635dc1322a8cf74cb08107360364b595c9b27"
+      },
+      {
+        "path": "lua/splash.lua",
+        "sha256": "3f9054953db3d556042a892612e727c00a4daeff96cdb1ebd4a1587ac7699c45"
+      },
+      {
+        "path": "daemonarchy-1.3.1-firmware-inventory-amd64.img",
+        "sha256": "77f2b5bafac70e242ad1ddb70a86fc3ea70f4e42ade2f2c60fef71bc9eb94a19"
+      }
+    ]
   },
   "image": {
     "bytes": 800080384,
