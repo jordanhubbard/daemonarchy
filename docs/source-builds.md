@@ -375,6 +375,14 @@ clean snapshot also includes the matching kernel, lib32 and source sets. The
 zero ignored, failed or skipped entries. This is a dry run: no package products
 were built or fetched by the plan, and no signed release closure is admitted.
 
+The [subsequent native pkg bootstrap](../verification/native-current-arm-pkg-bootstrap-20261110.json)
+builds `ports-mgmt/pkg` version `2.9.0` against that CURRENT jail. Poudriere
+test-mode staging, package installation/deinstallation and leftover checks pass;
+the package and full logs independently hash-match after export. Its manifest
+records OSVERSION `1600031`, and the extracted `pkg-static` executes as `2.9.0`
+on the new worker. This single producer does not qualify the remaining closure,
+upstream test suite, final media or framework lifecycle.
+
 These are unsigned aggregate development products. The private mountpoint
 traversal recovery remains recorded, and the elapsed times are not a controlled
 executor benchmark. A matched current ports closure, final installer images,
