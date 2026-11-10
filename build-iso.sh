@@ -291,24 +291,29 @@ cp "$here/scripts/live-image-excludes" "$stage/exclude"
 
 # poudriere image names (also the ISO volume label) are alphanumeric only.
 iso_stage_require_fresh_outputs "$OUTDIR/$image.iso" "$OUTDIR/$NAME.iso" \
+    "$OUTDIR/$image.iso.ram.json" "$OUTDIR/$NAME.iso.ram.json" \
     "$OUTDIR/$NAME.iso.sha256" "$OUTDIR/$NAME.iso.xz" "$OUTDIR/$NAME.iso.xz.sha256"
 
 # Build one complete live-root archive on both architectures. The shared
-# assembler binds its actual hash to normal tracing before creating the ISO.
+# RAM-root assembler retains the complete payload before storage takeover and
+# stages automatic userspace tracing. It binds the archive hash to the ISO.
 poudriere_run image -t tar -j "$JAIL" -p "$PTREE" -n "$image" \
     -h daemonarchy-installer -c "$stage/overlay" -f "$stage/live-packages" \
     -A "$here/live-post.sh" -X "$stage/exclude" -o "$stage"
 if [ "$image_type" = hybridiso ]; then
     # Keep amd64 BIOS/El Torito/USB boot alongside EFI and owned trace storage.
-    sh "$here/scripts/make-efi-iso.sh" "$stage/$image.txz" "$image" "$OUTDIR/$image.iso" \
-        "$stage/efi-iso" BOOTX64.EFI bios
+    sh "$here/scripts/make-ram-iso.sh" "$stage/$image.txz" "$image" "$OUTDIR/$image.iso" \
+        "$stage/ram-iso" BOOTX64.EFI bios
 else
-    sh "$here/scripts/make-efi-iso.sh" "$stage/$image.txz" "$image" "$OUTDIR/$image.iso" \
-        "$stage/efi-iso" "$image_efi_boot_file"
+    sh "$here/scripts/make-ram-iso.sh" "$stage/$image.txz" "$image" "$OUTDIR/$image.iso" \
+        "$stage/ram-iso" "$image_efi_boot_file"
 fi
 
 iso=$OUTDIR/$NAME.iso
-[ "$image" = "$NAME" ] || mv "$OUTDIR/$image.iso" "$iso"
+if [ "$image" != "$NAME" ]; then
+    mv "$OUTDIR/$image.iso" "$iso"
+    mv "$OUTDIR/$image.iso.ram.json" "$iso.ram.json"
+fi
 # The raw budget fails before compression; the published .xz is checked below.
 sh "$here/scripts/check-image-size.sh" "$iso"
 digest=$(sha256 -q "$iso")

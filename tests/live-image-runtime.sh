@@ -10,32 +10,79 @@ case "$mode" in public|headless) ;; *) echo 'Choose public or headless image rol
 [ -f "$iso" ] || { echo "Image not found: $iso" >&2; exit 1; }
 work=$(mktemp -d /var/tmp/daemonarchy-live-audit.XXXXXX)
 device=''
-mounted=false
+ram_device=''
+outer_mounted=false
+root_mounted=false
 devfs_mounted=false
 tmp_mounted=false
 cleanup() {
-  if "$tmp_mounted"; then umount "$work/root/tmp"; fi
-  if "$devfs_mounted"; then umount "$work/root/dev"; fi
-  if "$mounted"; then umount "$work/root"; fi
-  [ -z "$device" ] || mdconfig -d -u "$device"
-  rmdir "$work/root" "$work"
+  status=$?
+  trap - EXIT
+  set +e
+  failed=0
+  if "$tmp_mounted"; then umount "$root/tmp" || failed=1; fi
+  if "$devfs_mounted"; then umount "$root/dev" || failed=1; fi
+  if "$root_mounted"; then umount "$work/root" || failed=1; fi
+  if [ -n "$ram_device" ]; then mdconfig -d -u "$ram_device" || failed=1; fi
+  if "$outer_mounted"; then umount "$work/outer" || failed=1; fi
+  if [ -n "$device" ]; then mdconfig -d -u "$device" || failed=1; fi
+  rmdir "$work/root" "$work/outer" "$work" || failed=1
+  if [ "$status" -eq 0 ] && [ "$failed" -ne 0 ]; then status=1; fi
+  exit "$status"
 }
 trap cleanup EXIT
 trap 'exit 130' INT
 trap 'exit 143' TERM HUP
-mkdir "$work/root"
+mkdir "$work/root" "$work/outer"
 device=$(mdconfig -a -t vnode -f "$iso" -o readonly)
-mount -t cd9660 -o ro "/dev/$device" "$work/root"
-mounted=true
-mount -t devfs devfs "$work/root/dev"
+mount -t cd9660 -o ro "/dev/$device" "$work/outer"
+outer_mounted=true
+root=$work/outer
+layout=legacy
+if [ -e "$work/outer/boot/mfsroot.uzip" ]; then
+  [ -f "$work/outer/boot/mfsroot.uzip" ] && [ ! -L "$work/outer/boot/mfsroot.uzip" ] || {
+    echo 'RAM root must be a regular packed filesystem' >&2; exit 1;
+  }
+  kldload -n geom_uzip
+  ram_device=$(mdconfig -a -t vnode -f "$work/outer/boot/mfsroot.uzip" -o readonly)
+  mount -t ufs -o ro "/dev/$ram_device.uzip" "$work/root"
+  root_mounted=true
+  root=$work/root
+  layout=ram
+fi
+abi=$(cat "$root/usr/local/share/daemonarchy-installer/ABI")
+case "$abi:$(uname -p)" in
+  FreeBSD:16:amd64:amd64|FreeBSD:16:aarch64:aarch64) ;;
+  *) echo 'Audit requires a native worker matching the live-root ABI' >&2; exit 1 ;;
+esac
+mount -t devfs devfs "$root/dev"
 devfs_mounted=true
-# The image is read-only cd9660; tmux needs a writable /tmp for its socket.
-mount -t tmpfs -o size=16m tmpfs "$work/root/tmp"
+# Both legacy ISO roots and packed UFS roots stay read-only. Only tmux's
+# scratch directory and devfs are mounted over them for these runtime checks.
+mount -t tmpfs -o size=16m tmpfs "$root/tmp"
 tmp_mounted=true
-chroot "$work/root" /bin/sh -s -- "$mode" <<'AUDIT'
+chroot "$root" /bin/sh -s -- "$mode" "$layout" <<'AUDIT'
 set -eu
 PATH=/bin:/sbin:/usr/bin:/usr/sbin:/usr/local/bin:/usr/local/sbin
 export PATH
+if [ "$2" = ram ]; then
+  for path in /etc/rc.d/daemonarchy_trace \
+      /usr/local/libexec/daemonarchy-installer/boot-trace \
+      /usr/local/libexec/daemonarchy-boottrace/stick.py \
+      /usr/local/libexec/daemonarchy-boottrace/boot-medium.py \
+      /usr/local/libexec/daemonarchy-boottrace/fat-volume.py \
+      /usr/local/libexec/daemonarchy-boottrace/observe-medium.py \
+      /usr/local/libexec/daemonarchy-boottrace/capture-medium.py \
+      /usr/local/libexec/daemonarchy-boottrace/session-log.py; do
+    [ -f "$path" ] && [ ! -L "$path" ] && [ "$(stat -f '%u:%Lp' "$path")" = 0:555 ] || {
+      echo "Missing or unsafe default trace helper: $path" >&2; exit 1;
+    }
+  done
+  for path in /etc/rc.d/daemonarchy_trace /usr/local/libexec/daemonarchy-installer/boot-trace; do
+    sh -n "$path"
+  done
+  /usr/local/bin/python3.12 -c 'import runpy; runpy.run_path("/usr/local/libexec/daemonarchy-boottrace/capture-medium.py", run_name="audit"); print("PASS: default trace helper runtime imports")'
+fi
 payload=/usr/local/share/daemonarchy-installer/headless
 if [ "$1" = public ]; then
   [ ! -e "$payload" ] && [ ! -e /usr/local/etc/rc.d/daemonarchy-headless ] || {
@@ -57,7 +104,10 @@ for tool in sh bash gum tmux infocmp jq pkg pkg-static fetch timeout lockf fsync
   wpa_cli dhclient ntpd date file ldd; do
   command -v "$tool" >/dev/null || { echo "Missing live tool: $tool" >&2; exit 1; }
 done
-for path in /usr/freebsd-dist/base.txz /usr/freebsd-dist/kernel.txz /usr/freebsd-dist/lib32.txz \
+if [ "$(cat /usr/local/share/daemonarchy-installer/ABI)" = FreeBSD:16:amd64 ]; then
+  [ -s /usr/freebsd-dist/lib32.txz ] || { echo 'Missing amd64 lib32 install set' >&2; exit 1; }
+fi
+for path in /usr/freebsd-dist/base.txz /usr/freebsd-dist/kernel.txz \
   /boot/kernel/kernel /boot/kernel/zfs.ko /boot/loader.efi \
   /usr/local/libexec/daemonarchy-installer/install-integrity \
   /usr/local/libexec/daemonarchy-installer/debug-observe \

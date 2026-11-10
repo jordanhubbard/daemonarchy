@@ -710,3 +710,33 @@ and integrity checks have completed. This preparation does not yet prove
 that the service runs at boot or that returned media contains its output.
 Real installer hooks, final CURRENT media, ARM/BIOS runtime, failure/reset/
 power-loss and physical acceptance remain open.
+
+
+## Archive-preserving default composition
+
+The [default composition checkpoint](../../verification/default-live-trace-integration-20261110.json)
+wires the ordinary ISO build through the complete RAM-root assembler on both
+architectures and includes staged helper hashes in each assembly manifest.
+The canonical manifest name and existing raw/compressed size gates are retained.
+The runtime auditor can open the outer ISO and packed UFS root read-only;
+native ARM64 controls verify matching-worker refusal, unchanged image bytes and
+cleanup of every MD device the auditor allocated. Full runtime execution of the
+x86 payload requires its matching worker and remains in progress.
+
+The initial control used `cp -Rp`, breaking 2,077 original hardlink groups and
+duplicating 3,128,137,688 bytes. Its automatic boot launch was stopped; the
+preparation and output remain unqualified evidence. The corrected control uses
+the retained original archive with explicit loader and test-observer updates.
+Independent native checks now preserve all 2,077 unaffected hardlink groups and
+root mode 0755, UID 0 and GID 1002. The image is 2,555,396,608 bytes. Actual native
+manifest generation preserves its identity and records all eight staged helpers.
+The complete root is booting through EFI/USB with a normal rc service; returned
+userspace trace evidence is still pending. Neither this retained-world control
+nor static default-call wiring closes final CURRENT or physical qualification.
+
+The [amd64 CURRENT build continuation](../../verification/native-amd64-build-continuation-20261110.json)
+retains a second confirmed five-hour world-build timeout and its objects/logs.
+A fresh worker uses the exact same pinned source and plan with a twelve-hour
+phase bound, fourteen-hour VM bound and unchanged four-CPU, memory and free-space
+checks. Its restored source view is read-only; the third world attempt is live.
+No world product or lifecycle receipt is inferred from that continuation.

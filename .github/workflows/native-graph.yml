@@ -299,7 +299,9 @@ jobs:
           python3 tests/live-root-metadata.py -v
           python3 tests/ram-live-image.py -v
           python3 tests/live-trace-stage.py -v
-          sh -n tools/boottrace/daemonarchy_trace overlay/usr/local/libexec/daemonarchy-installer/boot-trace
+          for script in tools/boottrace/daemonarchy_trace overlay/usr/local/libexec/daemonarchy-installer/boot-trace scripts/make-arm-ram-installer.sh tests/live-image-runtime.sh; do
+            sh -n "$script"
+          done
       - name: Measured installer progress and completion controls
         env:
           PYTHONDONTWRITEBYTECODE: '1'

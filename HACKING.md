@@ -227,6 +227,16 @@ With a jail, a pinned ports tree registered with poudriere, and a bulk-built pac
 
 Every `build-iso.sh` run creates a new staging directory and prints it; failed and finished ones stay for inspection. The ISO is written next to a `.sha256`, and the release image is also published xz-compressed (the build checks that the `.xz` decompresses to exactly the built image and that it fits the 2 GiB asset limit). `bash tests/live-image-budget.sh` checks the size boundaries; on FreeBSD, `sudo sh tests/live-image-runtime.sh <iso>` audits the live root's commands and shared libraries read-only.
 
+The development build now passes the complete poudriere archive through
+`scripts/make-ram-iso.sh` for both architectures. The assembler preserves archive
+ownership, modes and hardlinks in an LZMA-packed UFS2 root, stages the default
+boot-trace service and retains amd64 BIOS/EFI or aarch64 EFI boot support. The
+adjacent `.iso.ram.json` records the actual archive, kernel, packed root and
+staged helper identities. The read-only runtime auditor follows the outer ISO
+into the packed root and requires a FreeBSD worker matching its ABI. The
+[1.6 tracing plan](docs/roadmap/default-install-tracing.md) records the exact
+development controls and remaining final-media acceptance.
+
 ## Running the tests
 
 There is no single `make test`. The suites are standalone Python and shell programs under `tests/`, and CI runs them one by one (`.github/workflows/`). Most need nothing but the standard library, run on any machine, and finish in seconds. Start with the three that guard the documentation and the release record, which are the ones every pull request must keep green:

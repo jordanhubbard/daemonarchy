@@ -113,6 +113,7 @@ expanded = artifact(work / 'mfsroot')
 if cluster != 262144 or not expanded['bytes'] <= cluster * blocks < expanded['bytes'] + cluster:
     raise ValueError('Unexpected packed-root geometry')
 record = dict(schema='daemonarchy/ram-live-image@1',
+    live_trace_stage=json.loads((work / 'live-trace-stage.json').read_text()),
     abi=(root / 'usr/local/share/daemonarchy-installer/ABI').read_text().strip(),
     input_archive_sha256=expected, outer_archive=artifact(work / 'outer.tar'),
     kernel=artifact(root / 'boot/kernel/kernel'),

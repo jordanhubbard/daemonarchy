@@ -1,0 +1,131 @@
+{
+  "schema": "daemonarchy/default-live-trace-integration@1",
+  "source_parent": "ba0e15b7781a5513b2b1525ccb673e1105ff557a",
+  "observed_utc": "2026-11-10T18:24:03.559913+00:00",
+  "source_sha256": {
+    "build-iso.sh": "6e3210b99b6f2f042a73ed35819992bfe14eac8cc9e14b43217044c00ccccb36",
+    "scripts/make-ram-iso.sh": "4c29aa66024b790a8b56651630851060e01b0fae4a1a7d904f8b23d79d0a1344",
+    "scripts/make-arm-ram-installer.sh": "bbd87cbe3c849cd4bf0aa2e4f118d259fed2579c0b7c7859fe37de5b294d9a1c",
+    "tests/live-image-runtime.sh": "4e5d04b6805f065941191215bcd8a4c738bf90df3dac6dee7431fd1c041ccff9"
+  },
+  "default_composition": {
+    "both_architectures_use_complete_ram_root": true,
+    "amd64_boot_modes": [
+      "bios",
+      "efi"
+    ],
+    "aarch64_boot_modes": [
+      "efi"
+    ],
+    "existing_size_limits_unchanged": true,
+    "canonical_manifest_name_preserved": true,
+    "staged_helper_identities_in_manifest": true,
+    "whole_poudriere_to_final_CURRENT_pipeline": "not yet executed"
+  },
+  "native_preparation": {
+    "image": {
+      "bytes": 2555396608,
+      "sha256": "9148b391e9319648a0a1db8d84a061bfff5a6620c6dd5b11b4bcc85640524793"
+    },
+    "kernel": {
+      "bytes": 31539640,
+      "sha256": "a0e9278e4c8a4790644814d839be6ccc027b7afad4bac9fa6952ad88eabce4b8"
+    },
+    "ram_root": {
+      "bytes": 4294082560,
+      "sha256": "8a674b50f5ac18c77e8efe06c894b7a5af9b4e1a348ce38f629f2ac024b7d352"
+    },
+    "packed_root": {
+      "bytes": 1792876032,
+      "sha256": "5b0dc88e7dd761b38dd98c685d78ec7b8c3c5b45f67b654ce08299cb9191de72"
+    },
+    "root_directory": {
+      "mode": "0755",
+      "uid": 0,
+      "gid": 1002
+    },
+    "unmodified_hardlink_groups_preserved": 2077,
+    "root_metadata_preserved": true,
+    "real_rcorder_pass": true,
+    "trace_helpers": [
+      {
+        "path": "usr/local/libexec/daemonarchy-boottrace/stick.py",
+        "sha256": "fbf42dbfbc45ab08b5dd56b2e6127c2e7774b608a1b5d088d84238d92bb26e82"
+      },
+      {
+        "path": "usr/local/libexec/daemonarchy-boottrace/boot-medium.py",
+        "sha256": "c7664713f92908ef7b4402a3cf92d955c0e6462298cc6ec716dd6ff05a7d3367"
+      },
+      {
+        "path": "usr/local/libexec/daemonarchy-boottrace/fat-volume.py",
+        "sha256": "fbcf7eac21fbebce41bb47575829001f346ebc8ff5482ca1a906298c4e2ab11b"
+      },
+      {
+        "path": "usr/local/libexec/daemonarchy-boottrace/observe-medium.py",
+        "sha256": "b8ed1c834808ce7f331adc71afcfe49233096f5f37a4a9eb67839cd29acb9058"
+      },
+      {
+        "path": "usr/local/libexec/daemonarchy-boottrace/capture-medium.py",
+        "sha256": "e2b6d1fa6d5a370006d1aad1daa4cbb5dbc742f507f01202650bb634e790e75f"
+      },
+      {
+        "path": "usr/local/libexec/daemonarchy-boottrace/session-log.py",
+        "sha256": "d1ee6bdfea562baa50f009b71789afb7035fac7f76b39ee816e75f2a6515ae0f"
+      },
+      {
+        "path": "etc/rc.d/daemonarchy_trace",
+        "sha256": "c660b20f792f48ebb1973b5263e57f38af13137530bd3af0adb2d2ca3de4dbd7"
+      },
+      {
+        "path": "usr/local/libexec/daemonarchy-installer/boot-trace",
+        "sha256": "7de088fb32529bb00f945cd96dee97caedf29f2550f339d704a0db44c0f5454d"
+      }
+    ],
+    "manifest_generation_on_actual_native_outputs": "pass; unchanged image identity and all eight helper hashes"
+  },
+  "independent_native_readonly_audit": {
+    "native_nested_readonly_mount": true,
+    "wrong_worker_abi_refused": true,
+    "allocated_md_devices_cleaned": true,
+    "image_unchanged": true,
+    "execution_qualified": false,
+    "auditor_source_sha256": "49060011b3fd42aea5d6bdfa63870eea6c305a0d947e17b5ea6cf5e02ae34ec0"
+  },
+  "first_control_refused": {
+    "reason": "cp -Rp broke retained hardlink groups",
+    "hardlink_groups": 2077,
+    "duplicated_bytes": 3128137688,
+    "automatic_boot_launch_stopped": true,
+    "failed_preparation_retained": true,
+    "correction": "retained original archive with explicit three-file fixture/loader updates; actual tar extraction preserves all unaffected groups"
+  },
+  "runtime": {
+    "status": "running; complete-root USB boot under EFI with RNG; no keyboard input or NIC",
+    "real_installer": false,
+    "final_CURRENT": false
+  },
+  "qualification": {
+    "native_composition": true,
+    "hardlink_preservation": true,
+    "native_readonly_mount_and_abi_refusal": true,
+    "automatic_rc_capture": false,
+    "matching_worker_full_runtime_audit": false,
+    "final_CURRENT_media": false,
+    "physical": false,
+    "release": false,
+    "whole_default_build_pipeline": false
+  },
+  "matching_worker_audit": {
+    "status": "detached native driver started; checksum/runtime/terminal observations pending",
+    "input_hashes_checked_before_runtime": true,
+    "whole_driver_timeout_seconds": 3600,
+    "original_precheck_observation": "120-second SSH observation timeout; hash processes remained live, then were confirmed missing. No pass or full runtime result was inferred. The detached driver retains checksum and terminal observations."
+  },
+  "portable_checks": {
+    "architecture_policy": "pass",
+    "image_budget_boundaries": "pass",
+    "shell_syntax": "all modified shell entrypoints checked individually",
+    "documentation_release_sync_groups_passed": 13,
+    "documentation_lifecycle_groups_passed": 4
+  }
+}
