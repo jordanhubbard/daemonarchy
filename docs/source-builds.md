@@ -389,3 +389,36 @@ executor benchmark. A matched current ports closure, final installer images,
 boot/install/desktop/recovery, per-unit canonical Component coverage and admitted
 native lifecycle receipts remain open. Earlier retained-world media does not
 qualify this new source selection.
+
+
+## CURRENT Omarchy compatibility controls
+
+The [native CURRENT compatibility checkpoint](../verification/native-current-omarchy-compatibility-20261110.json)
+runs all 31 selected tests against compatibility source cba62618afb4bf99fe868cc9d010e7c2efed5fae
+and upstream Omarchy ac2690cd7be4f47e4a255f5e2e78d904d436b068 on the new
+FreeBSD ARM64 world/kernel at OSVERSION 1600031. All pass without skips.
+Both source trees are mounted read-only, their mount flags are checked, and the
+owned mounts are removed afterward. The initial missing-jq/bindings-fixture run
+and the passing result remain independently hash-verified after export.
+
+Use an allocated native worker with the recorded QA dependency closure, including
+Bash, jq, Node and Python 3.12/PyGObject. Keep this separate from a workstation's
+installed desktop and from release package admission. With the pinned read-only
+compatibility and upstream source views already prepared:
+
+~~~sh
+DAEMONARCHY_COMPAT_TREE=/path/to/pinned/compatibility
+DAEMONARCHY_OMARCHY_TREE=/path/to/pinned/upstream-omarchy
+PYTHONDONTWRITEBYTECODE=1 \
+OMARCHY_TEST_ROUTER="$DAEMONARCHY_OMARCHY_TREE/bin/omarchy" \
+OMARCHY_TEST_MENU="$DAEMONARCHY_OMARCHY_TREE/default/omarchy/omarchy-menu.jsonc" \
+OMARCHY_TEST_BINDINGS="$DAEMONARCHY_OMARCHY_TREE/default/hypr/bindings/applications.lua" \
+python3.12 -m unittest discover -s "$DAEMONARCHY_COMPAT_TREE/tests" -p 'test_*.py' -v
+~~~
+
+Native GIO launches use synthetic desktop entries and an argument-capture program;
+WPA/OpenSSL parsing uses synthetic credentials and isolated rollback/transfer
+controls. Menu/router translation and indicator policy use the real pinned
+upstream code. Update tests use fixture package catalogs. These results do not
+qualify browser rendering, the compositor, real AP authentication, Bluetooth
+radio/audio, update/rollback, final installer media or Component lifecycle.
