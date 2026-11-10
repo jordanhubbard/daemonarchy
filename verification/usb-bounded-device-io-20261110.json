@@ -1,0 +1,135 @@
+{
+  "schema": "daemonarchy/usb-bounded-device-io-evidence@1",
+  "source_parent": "2cce817be61c12539ca06d5c64b63f7a1f2e016e",
+  "observed_utc": "2026-11-10T19:14:06.944307+00:00",
+  "source_sha256": {
+    "tools/boottrace/observe-medium.py": "6d130a1669666c8583d5ceea8fc31cbaf4ffe08325d1add10b9f979e66673696",
+    "tools/boottrace/capture-medium.py": "c4337f82d7105c1ca4d76a8f9ed39f9832df4e5d3a0bc8f3baedfdf902ed9e39",
+    "tests/boot-medium-native.py": "6c739cb3e9b1e429a0078af9cad38f7ce8300e5b29d0943b0cb60a16b387c616"
+  },
+  "original_default_rc_control": {
+    "schema": "daemonarchy/default-rc-usb-failure@1",
+    "image": {
+      "bytes": 2555396608,
+      "sha256": "9148b391e9319648a0a1db8d84a061bfff5a6620c6dd5b11b4bcc85640524793"
+    },
+    "loader_ready": true,
+    "pre_exit": true,
+    "init_checkpoint": "not-recorded",
+    "installer_checkpoint": "not-recorded",
+    "userspace_logs_unchanged_empty": {
+      "USPACE/0001.KRN": true,
+      "USPACE/0001.INS": true
+    },
+    "observer_exit": 1,
+    "reason": "CAM USB READ(10) CCB request failures on a 522240-byte raw FAT read; observer wait bound expired",
+    "failed_request": {
+      "operation": "READ(10)",
+      "lba": 4466720,
+      "sectors": 1020,
+      "bytes": 522240
+    },
+    "guest_shutdown_confirmed": true,
+    "host_framebuffer_retained_after_guest_shutdown": true,
+    "host_qemu_quit_only_after_guest_shutdown": true,
+    "original_image_unchanged": true,
+    "automatic_rc_capture_qualified": false,
+    "observer_source_sha256": "b8ed1c834808ce7f331adc71afcfe49233096f5f37a4a9eb67839cd29acb9058",
+    "capture_source_sha256": "e2b6d1fa6d5a370006d1aad1daa4cbb5dbc742f507f01202650bb634e790e75f"
+  },
+  "request_policy": {
+    "maximum_request_bytes": 65536,
+    "logical_sector_bytes": 512,
+    "complete_metadata_coverage_unchanged": true,
+    "short_reads_refused": true,
+    "partial_writes_not_retried": true,
+    "frame_flush_readback_header_order_unchanged": true
+  },
+  "tests": {
+    "linux_groups_passed": 51,
+    "native_freebsd_arm64_groups_passed": 51,
+    "skipped": 0,
+    "scope": "Request bounds/alignment, complete byte coverage, short transfers and unchanged selection/GPT/FAT/checkpoint/frame controls"
+  },
+  "native_usb_probe": {
+    "schema": "daemonarchy/native-usb-bounded-io@1",
+    "image_sha256": "88dbd86c98bef954f3451fe6b569e1ef24c83e55a2d4de335c3a2018ad3684f3",
+    "returned_sha256": "2a2a8134ce246f5d584c66106d846c9dbe91beab72274d50b5ecb4377d0c0c24",
+    "serial_sha256": "3b125fa9a6a4b69de798cbcd5b300c57a74111f634d2693e32dad72819228e46",
+    "kernel_osversion": 1600029,
+    "trace_start_lba": 4466688,
+    "fat_start_lba": 4466720,
+    "same_failing_fat_lba": true,
+    "changed_bytes": 12191,
+    "changes_confined_to_current_session": true,
+    "all_four_banks_recorded": true,
+    "kernel_bytes": 5951,
+    "kernel_content_sha256": "1bb0ed13581c9ab6dbe2ede3871493c9c93acd08fc81c09dadf47e15e7251d95",
+    "kernel_truncated": false,
+    "installer_fixture_bytes": 38,
+    "installer_frame_sequences": [
+      1,
+      2
+    ],
+    "repeated_terminal_event_writes": 0,
+    "reported_flush_readback_and_guard_success": true,
+    "no_usb_ccb_errors": true,
+    "guest_shutdown_confirmed": true,
+    "host_cleanup_after_guest_shutdown": true,
+    "minimal_root": true,
+    "default_rc_service": false,
+    "real_installer": false,
+    "final_CURRENT": false,
+    "physical": false,
+    "linux_readonly_fat_exit": 0,
+    "native_freebsd_readonly_fat_exit": 0
+  },
+  "full_root_repeat": {
+    "state": "native author exit 0 with all 2077 unaffected hardlink groups and rcorder preserved; fresh default-rc USB boot live",
+    "qualified": false
+  },
+  "qualification": {
+    "bounded_io_native_usb_probe": true,
+    "default_rc_full_root_capture": false,
+    "real_installer": false,
+    "final_CURRENT": false,
+    "physical": false,
+    "release": false
+  },
+  "subsequent_native_usb_boot": {
+    "schema": "daemonarchy/native-usb-bounded-io@1",
+    "image_sha256": "2a2a8134ce246f5d584c66106d846c9dbe91beab72274d50b5ecb4377d0c0c24",
+    "returned_sha256": "b502a364e07e8bb36cae14a0dee04aad7e7c85ee9996b3db3e600689e0182ec4",
+    "serial_sha256": "13cc9ff177ba4d4cbc7fd6395ba5582f87b50529f3de4cefadee90b92264366b",
+    "kernel_osversion": 1600029,
+    "trace_start_lba": 4466688,
+    "fat_start_lba": 4466720,
+    "same_failing_fat_lba": true,
+    "changed_bytes": 12191,
+    "changes_confined_to_current_session": true,
+    "all_four_banks_recorded": true,
+    "kernel_bytes": 5951,
+    "kernel_content_sha256": "eec91ee72392fabd5becfbdb91ea70f67514b7951a595c3a7a89c7da76b0892f",
+    "kernel_truncated": false,
+    "installer_fixture_bytes": 38,
+    "installer_frame_sequences": [
+      1,
+      2
+    ],
+    "repeated_terminal_event_writes": 0,
+    "reported_flush_readback_and_guard_success": true,
+    "no_usb_ccb_errors": true,
+    "guest_shutdown_confirmed": true,
+    "host_cleanup_after_guest_shutdown": true,
+    "session": 2,
+    "prior_complete_session_preserved": true,
+    "fresh_boot_nonce": true,
+    "minimal_root": true,
+    "default_rc_service": false,
+    "real_installer": false,
+    "final_CURRENT": false,
+    "physical": false,
+    "linux_readonly_fat_exit": 0,
+    "native_freebsd_readonly_fat_exit": 0
+  }
+}

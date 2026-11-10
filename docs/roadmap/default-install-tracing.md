@@ -740,3 +740,40 @@ A fresh worker uses the exact same pinned source and plan with a twelve-hour
 phase bound, fourteen-hour VM bound and unchanged four-CPU, memory and free-space
 checks. Its restored source view is read-only; the third world attempt is live.
 No world product or lifecycle receipt is inferred from that continuation.
+
+
+## USB raw-request failure and bounded I/O
+
+The [USB request checkpoint](../../verification/usb-bounded-device-io-20261110.json)
+retains the completed full-root failure: normal rc startup reached its observer,
+but the kernel repeatedly rejected a 522,240-byte USB CAM READ(10) request at
+LBA 4,466,720. The observer timed out, and the guest shut down with only the
+loader-ready/pre-exit banks recorded. Both userspace logs remain empty. The
+video-primary console result and returned bytes are retained; an absent serial
+observer message was not used as a success or failure verdict.
+
+Shared device reads and writes now use at most 64 KiB per request, retaining
+512-byte alignment, complete metadata validation and existing frame commit
+ordering. Short reads refuse the extent; a partial write returns its short
+total without retry, so the committer retains the interrupted inactive frame.
+All 51 observation/checkpoint/log test groups pass on Linux and native FreeBSD
+ARM64 without skips.
+
+A smaller retained-kernel USB control places DATRACE and the FAT at the exact
+failed physical LBAs, beyond 2 GiB. Actual FreeBSD 1600029 observation and
+checkpoint calls complete without USB CCB errors, retaining all 5,951 sampled
+dmesg bytes and 38 bytes of installer event fixtures. All four banks decode;
+the full installer log reaches sequences 1/2, and a repeated terminal event
+performs no log rewrite. Only 12,191 bytes in the current session change. Linux
+and native FreeBSD read-only FAT checks both return zero. This is device-I/O
+fixture evidence. A subsequent actual boot retains a fresh nonce in slot 2,
+preserves the whole prior session byte-for-byte and repeats the same checks;
+each boot changes only 12,191 bytes in its own session. Both subsequent FAT
+checks also return zero. The full default-rc image with the correction has
+completed native authoring and is booting for its own returned-media checks. Real installation, final CURRENT,
+ARM/BIOS, physical and interruption/power-loss gates remain open.
+
+The preceding full-root image separately passes native xz integrity, exact
+decompression and unchanged size limits: raw 2,555,396,608 bytes, compressed
+1,882,527,364 bytes. Its runtime capture failure remains a failure; these
+compression checks do not qualify its default trace service.

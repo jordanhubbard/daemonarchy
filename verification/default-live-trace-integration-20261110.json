@@ -100,7 +100,13 @@
     "correction": "retained original archive with explicit three-file fixture/loader updates; actual tar extraction preserves all unaffected groups"
   },
   "runtime": {
-    "status": "running; complete-root USB boot under EFI with RNG; no keyboard input or NIC",
+    "status": "failed: USB CAM READ(10) on 522240-byte FAT request; no userspace checkpoint",
+    "observer_exit": 1,
+    "loader_ready": true,
+    "pre_exit": true,
+    "init_checkpoint": false,
+    "userspace_logs_empty": true,
+    "guest_shutdown_confirmed": true,
     "real_installer": false,
     "final_CURRENT": false
   },
@@ -127,5 +133,15 @@
     "shell_syntax": "all modified shell entrypoints checked individually",
     "documentation_release_sync_groups_passed": 13,
     "documentation_lifecycle_groups_passed": 4
+  },
+  "compression": {
+    "raw_bytes": 2555396608,
+    "raw_sha256": "9148b391e9319648a0a1db8d84a061bfff5a6620c6dd5b11b4bcc85640524793",
+    "xz_bytes": 1882527364,
+    "xz_sha256": "513f28ac21e6bb89c0d2796dc1203cd9b1a770a8585ce0fa26671aa325a9456c",
+    "native_exit": 0,
+    "xz_integrity_test": true,
+    "exact_decompression_identity": true,
+    "original_size_limits_passed": true
   }
 }

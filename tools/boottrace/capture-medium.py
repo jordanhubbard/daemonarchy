@@ -86,7 +86,7 @@ def capture(phase, content, truncated=False):
         def flush():
             os.fsync(state['fd'])
             observer.fcntl.ioctl(state['fd'],DIOCGFLUSH)
-        write=lambda off,data:os.pwrite(state['fd'],data,off-state['write_base'])
+        write=lambda off,data:observer.bounded_write(state['fd'],off-state['write_base'],data)
         extents=state['result']['filesystem'].get('log_extents')
         full=None
         if extents is not None:

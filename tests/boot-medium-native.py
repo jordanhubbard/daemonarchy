@@ -3,6 +3,8 @@
 import importlib.util
 from pathlib import Path
 import stat
+import os
+import tempfile
 from types import SimpleNamespace
 import unittest
 from unittest.mock import patch
@@ -26,6 +28,65 @@ def topology():
 
 
 class NativeObservation(unittest.TestCase):
+    def test_large_extents_use_complete_bounded_aligned_requests(self):
+        data = bytes(range(256)) * 4096
+        pread, pwrite = os.pread, os.pwrite
+        reads, writes = [], []
+        with tempfile.TemporaryFile() as file:
+            file.write(bytes(len(data) + 1024));file.flush()
+            def write(fd, block, offset):
+                self.assertLessEqual(len(block), 65536)
+                self.assertEqual((offset % 512, len(block) % 512), (0, 0))
+                writes.append((offset, len(block)))
+                return pwrite(fd, block, offset)
+            with patch.object(observer.os, 'pwrite', side_effect=write):
+                self.assertEqual(observer.bounded_write(file.fileno(), 512, data), len(data))
+            self.assertEqual(pread(file.fileno(), len(data) + 1024, 0),
+                             bytes(512) + data + bytes(512))
+            def read(fd, length, offset):
+                self.assertLessEqual(length, 65536)
+                self.assertEqual((offset % 512, length % 512), (0, 0))
+                reads.append((offset, length))
+                return pread(fd, length, offset)
+            with patch.object(observer.os, 'pread', side_effect=read):
+                self.assertEqual(observer.bounded_read(file.fileno(), 512, 522240), data[:522240])
+                self.assertEqual(observer.bounded_read(file.fileno(), 512, len(data)), data)
+            self.assertGreater(len(reads), 1);self.assertGreater(len(writes), 1)
+
+    def test_short_device_transfers_are_not_retried_or_hidden(self):
+        data = b'x' * (3 * 65536)
+        pread, pwrite = os.pread, os.pwrite
+        with tempfile.TemporaryFile() as file:
+            file.write(bytes(len(data)));file.flush()
+            calls = []
+            def write(fd, block, offset):
+                calls.append(offset)
+                count = len(block) if len(calls) == 1 else 512
+                return pwrite(fd, block[:count], offset)
+            with patch.object(observer.os, 'pwrite', side_effect=write):
+                self.assertEqual(observer.bounded_write(file.fileno(), 0, data), 65536 + 512)
+            self.assertEqual(calls, [0, 65536])
+            self.assertEqual(pread(file.fileno(), len(data), 0),
+                             data[:65536 + 512] + bytes(len(data) - 65536 - 512))
+            calls.clear()
+            def read(fd, length, offset):
+                calls.append(offset)
+                return pread(fd, length if len(calls) == 1 else length - 1, offset)
+            with patch.object(observer.os, 'pread', side_effect=read):
+                with self.assertRaisesRegex(OSError, 'short device read'):
+                    observer.bounded_read(file.fileno(), 0, len(data))
+            self.assertEqual(calls, [0, 65536])
+
+    def test_invalid_device_extents_refuse_before_io(self):
+        with patch.object(observer.os, 'pread') as read, patch.object(observer.os, 'pwrite') as write:
+            for offset, length in ((-512, 512), (1, 512), (0, 513), (False, 512)):
+                with self.subTest(offset=offset, length=length), self.assertRaises(ValueError):
+                    observer.bounded_read(3, offset, length)
+            for offset, block in ((-512, bytes(512)), (1, bytes(512)), (0, bytes(513)), (0, 'secret')):
+                with self.subTest(offset=offset), self.assertRaises(ValueError):
+                    observer.bounded_write(3, offset, block)
+            read.assert_not_called();write.assert_not_called()
+
     def test_only_own_disk_reader_is_allowed(self):
         mesh=topology();data=fixtures.encode(mesh)
         selected=medium.resolve_partition(data,fixtures.GUID)

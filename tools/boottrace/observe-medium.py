@@ -86,6 +86,50 @@ def assert_identity_file(read, selection, filesystem, record):
         raise ValueError('installation identity disagrees with loader session')
 
 
+DEVICE_IO_LIMIT = 64 * 1024
+
+
+def bounded_read(fd, offset, length):
+    """Read the complete extent using sector-aligned device requests.
+
+    USB CAM paths can refuse a large raw request even when the same sectors
+    are readable in smaller transfers. Never accept a short metadata read.
+    """
+    if (type(offset) is not int or type(length) is not int or
+            offset < 0 or length < 0 or offset % 512 or length % 512):
+        raise ValueError('sector-aligned device read required')
+    content = bytearray()
+    while len(content) < length:
+        count = min(DEVICE_IO_LIMIT, length - len(content))
+        part = os.pread(fd, count, offset + len(content))
+        if len(part) != count:
+            raise OSError('short device read; incomplete extent refused')
+        content.extend(part)
+    return bytes(content)
+
+
+def bounded_write(fd, offset, data):
+    """Keep payload transfers bounded without retrying a partial write.
+
+    The frame committer must see the short total and retain the interrupted
+    inactive frame. Its flush/readback and header commit order remain intact.
+    """
+    if (type(offset) is not int or offset < 0 or offset % 512 or
+            type(data) is not bytes or len(data) % 512):
+        raise ValueError('sector-aligned device write required')
+    total = 0
+    view = memoryview(data)
+    while total < len(data):
+        count = min(DEVICE_IO_LIMIT, len(data) - total)
+        written = os.pwrite(fd, view[total:total + count], offset + total)
+        if type(written) is not int or not 0 <= written <= count:
+            raise OSError('invalid device write count')
+        total += written
+        if written != count:
+            break
+    return total
+
+
 @contextmanager
 def open_medium(writable=False):
     """Hold one verified descriptor; writable does not bypass admission checks."""
@@ -127,7 +171,7 @@ def open_medium(writable=False):
             if environment() != kenv:
                 raise ValueError('kernel session changed during observation')
         guard()
-        read = lambda offset,length: os.pread(fd,length,offset)
+        read = lambda offset,length: bounded_read(fd,offset,length)
         gpt = medium.validate_gpt(read,selection)
         filesystem = fat.validate_fat(read,selection,'NORMAL/'+match[2]+'.TXT')
         off,length = filesystem['selected_extent']
