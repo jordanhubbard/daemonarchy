@@ -489,7 +489,30 @@ skips. They reject malformed/oversized content and replayed identities while
 retaining v1-v3 reads. Version 3 reserved space keeps its old refusal semantics;
 existing records are not relabeled or changed.
 
-This is reader preparation. Existing EFI producers still emit v3. A matched v4
-producer, safe native boot-medium selection, bounded bank writes, init/installer
-hooks and exact-image runtime/failure/power-loss acceptance remain open. Bounded
+This checkpoint preceded the matching v4 producer below. Safe native userspace
+boot-medium selection, bounded bank writes, init/installer hooks and exact-image
+runtime/failure/power-loss acceptance remain open. Bounded
 bank content is not a complete kernel-console or installer-log retention result.
+
+
+## Native v4 loader-to-init handoff
+
+The [v4 handoff record](../../verification/normal-v4-kernel-handoff-20261110.json)
+binds source PR #86 and its native EFI export to all 779 stand input hashes.
+Independent inspection of the actual ISO and ESP matches that loader. The kernel
+matches the prior retained x86 fixture; its minimal RAM root adds the actual x86
+uname binary and a strict kernel-version probe. The initial missing-command
+probe and refused source-path repair remain recorded.
+
+Both corrected x86 TCG boots reach kernel/init without keyboard input, save v4
+ready/pre-exit banks, compare partition/session/capture/nonce through kenv, and
+report kernel OSVERSION 1600029 before synchronized shutdown. With firmware RNG,
+only 809 bytes change; without it, 701 bytes change and nonce absence is explicit.
+All changes are inside the current normal slot. Original images and all earlier,
+unused and legacy data remain intact. Both returned FAT filesystems pass Linux
+and native FreeBSD read-only checks.
+
+Init/installer banks remain empty. This qualifies the loader format through the
+retained kernel/userspace boundary, not automatic userspace writes, full CURRENT
+media, USB-specific v4 behavior, physical hardware or release acceptance. Native
+medium admission, writers/hooks and failure/power-loss controls remain required.
