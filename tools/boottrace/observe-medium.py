@@ -1,6 +1,7 @@
 #!/usr/bin/env python3
 # SPDX-License-Identifier: BSD-2-Clause
 """Native FreeBSD read-only boot-medium observation; never opens for writing."""
+from contextlib import contextmanager
 import fcntl
 import importlib.util
 import json
@@ -54,7 +55,7 @@ def device_identity(info):
     return info.st_dev, info.st_ino, info.st_rdev
 
 
-def geometry(fd, selection):
+def geometry(fd, selection, partition=False):
     def ioctl(request, length):
         buf = bytearray(length)
         fcntl.ioctl(fd, request, buf)
@@ -62,13 +63,33 @@ def geometry(fd, selection):
     sector = struct.unpack('<I',ioctl(DIOCGSECTORSIZE,4))[0]
     size = struct.unpack('<q',ioctl(DIOCGMEDIASIZE,8))[0]
     name = ioctl(DIOCGPROVIDERNAME,1024).split(b'\0',1)[0].decode('ascii')
-    if (sector != selection['sector_bytes'] or size != selection['disk_bytes'] or
-            '/dev/'+name != selection['disk']):
+    expected_size = selection['sectors']*512 if partition else selection['disk_bytes']
+    expected_name = selection['device'] if partition else selection['disk']
+    if (sector != selection['sector_bytes'] or size != expected_size or
+            '/dev/'+name != expected_name):
         raise ValueError('open device does not match selected provider')
 
 
-def observe():
-    if sys.platform != 'freebsd' and not sys.platform.startswith('freebsd'):
+def assert_identity_file(read, selection, filesystem, record):
+    off,length = filesystem['identity_extent']
+    if not 0 < length <= 512:
+        raise ValueError('bounded installation identity required')
+    rounded = (length+511)//512*512
+    data = read(selection['start_lba']*512+off,rounded)
+    if len(data) != rounded:
+        raise ValueError('short installation identity read')
+    actual = data[:length]
+    expected = ('Daemonarchy installation trace identity v1\nimage_id='+
+                record['image_id']+'\narchive_sha256='+record['archive_sha256']+
+                '\nmode=observe-only\n').encode('ascii')
+    if actual != expected:
+        raise ValueError('installation identity disagrees with loader session')
+
+
+@contextmanager
+def open_medium(writable=False):
+    """Hold one verified descriptor; writable does not bypass admission checks."""
+    if not sys.platform.startswith('freebsd'):
         raise ValueError('native FreeBSD observation required')
     if os.geteuid() != 0:
         raise ValueError('native device observation requires root')
@@ -84,13 +105,28 @@ def observe():
     medium.require_idle(snapshot(), selection)
     path = selection['disk']
     before = device_identity(os.lstat(path))
+    # O_EXCL is ignored by geom_dev.c. Keep a read-only whole-disk view;
+    # a whole-disk write open would spoil its PART consumers. The writer
+    # instead holds the selected partition, whose access propagates
+    # write-exclusive ownership through g_part_access.
     flags = os.O_RDONLY | os.O_NOFOLLOW | os.O_CLOEXEC
     fd = os.open(path,flags)
+    write_fd = None
+    write_identity = None
     try:
-        if device_identity(os.fstat(fd)) != before:
-            raise ValueError('device identity changed during open')
-        geometry(fd,selection)
-        medium.require_idle(snapshot(),selection,own_reader=True)
+        def guard():
+            if device_identity(os.fstat(fd)) != before or device_identity(os.lstat(path)) != before:
+                raise ValueError('device identity changed during open')
+            geometry(fd,selection)
+            if write_fd is not None:
+                if (device_identity(os.fstat(write_fd)) != write_identity or
+                        device_identity(os.lstat(selection['device'])) != write_identity):
+                    raise ValueError('writable partition identity changed')
+                geometry(write_fd,selection,partition=True)
+            medium.require_idle(snapshot(),selection,own_reader=write_fd is None,own_writer=write_fd is not None)
+            if environment() != kenv:
+                raise ValueError('kernel session changed during observation')
+        guard()
         read = lambda offset,length: os.pread(fd,length,offset)
         gpt = medium.validate_gpt(read,selection)
         filesystem = fat.validate_fat(read,selection,'NORMAL/'+match[2]+'.TXT')
@@ -99,21 +135,44 @@ def observe():
         slot = read(slot_offset,length)
         record = stick.normal_record(slot)
         correlated = medium.bind_session(snapshot(),kenv,record)
-        if environment() != kenv:
-            raise ValueError('kernel session changed during observation')
+        assert_identity_file(read,selection,filesystem,record)
         if (medium.validate_gpt(read,selection) != gpt or
                 fat.validate_fat(read,selection,'NORMAL/'+match[2]+'.TXT') != filesystem or
                 read(slot_offset,length) != slot):
             raise ValueError('boot-medium metadata changed during observation')
-        geometry(fd,selection)
-        medium.require_idle(snapshot(),selection,own_reader=True)
-        if device_identity(os.lstat(path)) != before or device_identity(os.fstat(fd)) != before:
-            raise ValueError('open device identity no longer matches path')
-        return dict(schema='daemonarchy/native-boot-medium-observation@1',
-                    selection=correlated,gpt=gpt,filesystem=filesystem,
-                    read_only=True,writes_admitted=False)
+        guard()
+        if writable:
+            write_identity = device_identity(os.lstat(selection['device']))
+            write_fd = os.open(selection['device'],os.O_RDWR|os.O_NOFOLLOW|os.O_CLOEXEC)
+            guard()
+            if (medium.validate_gpt(read,selection) != gpt or
+                    fat.validate_fat(read,selection,'NORMAL/'+match[2]+'.TXT') != filesystem or
+                    read(slot_offset,length) != slot):
+                raise ValueError('medium changed during partition writer open')
+        result = dict(schema='daemonarchy/native-boot-medium-observation@1',
+                      selection=correlated,gpt=gpt,filesystem=filesystem,
+                      installation_identity_verified=True,
+                      read_only=not writable,writes_admitted=False)
+        yield dict(fd=write_fd if writable else fd,read=read,guard=guard,
+                   write_base=selection['start_lba']*512,
+                   result=result,record=record,slot=slot,slot_offset=slot_offset)
+        guard()
+        if (medium.validate_gpt(read,selection) != gpt or
+                fat.validate_fat(read,selection,'NORMAL/'+match[2]+'.TXT') != filesystem):
+            raise ValueError('boot-medium layout changed during device operation')
+        assert_identity_file(read,selection,filesystem,record)
+        if not writable and read(slot_offset,length) != slot:
+            raise ValueError('normal slot changed during read-only observation')
     finally:
+        if write_fd is not None:
+            os.close(write_fd)
         os.close(fd)
+
+
+def observe():
+    with open_medium() as state:
+        result = state['result']
+    return result
 
 
 def main():

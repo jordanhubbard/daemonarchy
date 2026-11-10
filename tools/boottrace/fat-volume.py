@@ -171,7 +171,7 @@ def validate_fat(read_at, selection, selected_path=None):
     map_off,map_size = extent('SLOTS.MAP')
     if map_size != 16384 or read(map_off,map_size) != expected_map.ljust(map_size,b'\n'):
         raise ValueError('trace map does not match actual FAT allocations')
-    selected = {'selected_extent': extent(selected_path)} if selected_path is not None else {}
+    selected = {'selected_extent': extent(selected_path), 'identity_extent': extent('INSTALL.ID')} if selected_path is not None else {}
     return dict(**selected, schema='daemonarchy/boot-medium-fat-observation@1',
                 map_sha256=hashlib.sha256(expected_map).hexdigest(),
                 fat_sha256=hashlib.sha256(fat).hexdigest(),

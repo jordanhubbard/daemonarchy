@@ -109,6 +109,8 @@ on:
       - 'tests/boot-medium-gpt.py'
       - 'tests/boot-medium-fat.py'
       - 'tests/boot-medium-native.py'
+      - 'tests/boot-medium-capture.py'
+      - 'tools/boottrace/capture-medium.py'
       - 'tools/boottrace/observe-medium.py'
       - 'tools/boottrace/fat-volume.py'
       - 'tests/hwtrace-net.sh'
@@ -228,6 +230,8 @@ on:
       - 'tests/boot-medium-gpt.py'
       - 'tests/boot-medium-fat.py'
       - 'tests/boot-medium-native.py'
+      - 'tests/boot-medium-capture.py'
+      - 'tools/boottrace/capture-medium.py'
       - 'tools/boottrace/observe-medium.py'
       - 'tools/boottrace/fat-volume.py'
       - 'tests/hwtrace-net.sh'
@@ -277,6 +281,7 @@ jobs:
           python3 tests/boot-medium-gpt.py -v
           python3 tests/boot-medium-fat.py -v
           python3 tests/boot-medium-native.py -v
+          python3 tests/boot-medium-capture.py -v
           sh -n scripts/make-ram-iso.sh
           python3 tests/live-root-metadata.py -v
           python3 tests/ram-live-image.py -v

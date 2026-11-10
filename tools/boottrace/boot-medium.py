@@ -331,8 +331,10 @@ def validate_gpt(read_at, selection):
                 fat_and_map_validation_required=True)
 
 
-def require_idle(data, selection, own_reader=False):
+def require_idle(data, selection, own_reader=False, own_writer=False):
     """Refuse active consumers anywhere below the physical boot disk."""
+    if own_reader and own_writer:
+        raise ValueError('ambiguous observer ownership')
     current = resolve_partition(data, selection['partition_uuid'])
     for key in ('device','disk','partition_uuid','start_lba','sectors','sector_bytes','disk_bytes','gpt_state'):
         if current[key] != selection[key]:
@@ -359,18 +361,29 @@ def require_idle(data, selection, own_reader=False):
         reachable |= added
     else:
         raise ValueError('unbounded GEOM descendants')
-    expected_disk_mode = 'r1w0e0' if own_reader else 'r0w0e0'
+    selected_ids = [identity for identity,p in providers.items() if '/dev/'+text(p,'name') == selection['device']]
+    if own_writer and len(selected_ids) != 1:
+        raise ValueError('one writable partition provider required')
+    selected_id = selected_ids[0] if own_writer else None
+    selected_geoms = {reference(providers[selected_id],'geom')} if own_writer else set()
+    expected_disk_mode = 'r2w1e1' if own_writer else ('r1w0e0' if own_reader else 'r0w0e0')
     for identity in reachable:
-        expected = expected_disk_mode if identity == disk_id else 'r0w0e0'
+        expected = expected_disk_mode if identity == disk_id else (
+            'r1w1e0' if own_writer and identity == selected_id else 'r0w0e0')
         if text(providers[identity],'mode') != expected:
             raise ValueError('boot disk or descendant provider is busy')
     for kind,geom in geoms:
         for consumer in geom.findall('consumer'):
             if reference(consumer,'provider') not in reachable:
                 continue
-            own = (own_reader and kind == 'DEV' and
-                   '/dev/'+text(geom,'name') == selection['disk'])
-            if text(consumer,'mode') != ('r1w0e0' if own else 'r0w0e0'):
+            expected = 'r0w0e0'
+            if (own_reader or own_writer) and kind == 'DEV' and '/dev/'+text(geom,'name') == selection['disk']:
+                expected = 'r1w0e0'
+            elif own_writer and kind == 'DEV' and '/dev/'+text(geom,'name') == selection['device']:
+                expected = 'r1w1e0'
+            elif own_writer and kind == 'PART' and geom.get('id') in selected_geoms:
+                expected = 'r1w1e1'
+            if text(consumer,'mode') != expected:
                 raise ValueError('boot disk has an active consumer')
     return current
 

@@ -34,6 +34,17 @@ class NativeObservation(unittest.TestCase):
         medium.require_idle(fixtures.encode(mesh),selected,own_reader=True)
         with self.assertRaises(ValueError):medium.require_idle(fixtures.encode(mesh),selected)
 
+    def test_partition_writer_and_separate_disk_reader_counts(self):
+        mesh=topology()
+        selected=medium.resolve_partition(fixtures.encode(mesh),fixtures.GUID)
+        mesh.find('class/geom/provider/mode').text='r1w1e0'
+        mesh.find('class/geom/consumer/mode').text='r1w1e1'
+        disk=mesh.findall('class')[1].find('geom/provider/mode')
+        disk.text='r2w1e1'
+        medium.require_idle(fixtures.encode(mesh),selected,own_writer=True)
+        disk.text='r3w1e1'
+        with self.assertRaises(ValueError):medium.require_idle(fixtures.encode(mesh),selected,own_writer=True)
+
     def test_partition_reader_writer_or_exclusive_consumer_refused(self):
         selected=medium.resolve_partition(fixtures.encode(topology()),fixtures.GUID)
         for mode in ('r1w0e0','r0w1e0','r0w0e1','r0w0e2','unknown'):
@@ -60,6 +71,16 @@ class NativeObservation(unittest.TestCase):
         with patch.object(observer.sys,'platform','freebsd16'),patch.object(observer.os,'geteuid',return_value=1001),patch.object(observer.os,'open') as opened:
             with self.assertRaises(ValueError):observer.observe()
             opened.assert_not_called()
+
+    def test_installation_identity_disagreement_refused(self):
+        _,record=fixtures.session()
+        expected=('Daemonarchy installation trace identity v1\nimage_id='+record['image_id']+
+                  '\narchive_sha256='+record['archive_sha256']+'\nmode=observe-only\n').encode()
+        selected=dict(start_lba=10)
+        fs=dict(identity_extent=(1024,len(expected)))
+        observer.assert_identity_file(lambda off,n:expected.ljust(n,b'\n'),selected,fs,record)
+        with self.assertRaises(ValueError):
+            observer.assert_identity_file(lambda off,n:expected.replace(b'observe-only',b'observe-evil').ljust(n,b'\n'),selected,fs,record)
 
     def test_regular_file_and_symlink_are_not_native_devices(self):
         for mode in (stat.S_IFREG|0o600,stat.S_IFLNK|0o777):

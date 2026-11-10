@@ -610,3 +610,41 @@ not qualify writable-device admission, cross-checking the installation identity
 file, full retained logs, init/installer persistence hooks, final CURRENT media,
 physical devices or release acceptance. Future default hooks must treat missing
 or refused capture as best effort and continue ordinary boot/installation.
+
+## Native bounded userspace checkpoint writes
+
+The [userspace checkpoint evidence](../../verification/native-userspace-checkpoints-20261110.json)
+adds a v4 bank encoder and a native one-bank commit path. It cross-checks the
+installation identity file against the loader record, uses aligned raw reads,
+holds the selected partition writable alongside a read-only physical-disk
+descriptor, and verifies the exact GEOM access counts. FreeBSD ignores O_EXCL
+for these character devices; the implementation does not claim that flag
+provides an exclusive lock. Device/path/provider identities and GPT/FAT/map
+observations are checked around the operation.
+
+A bank is written only while empty, then fsynced, device-cache-flushed and
+independently decoded from readback. Existing evidence is never replaced.
+Identical retries avoid a replacement write but still flush and read back.
+Partial writes remain inspectable and refuse automatic replacement; completed
+loader banks remain readable. Forty test groups pass on Linux and native
+FreeBSD ARM64 without skips, including partial-write, flush-failure, stale-session,
+readback-corruption and existing-evidence controls.
+
+The first native attempt exposed two real constraints and is retained: an
+unaligned identity-file read failed, and a whole-disk write open spoiled its
+partition views. The corrected x86 diagnostic fixture automatically records
+a 2 KiB kernel-console snapshot with explicit truncation, plus a sanitized
+18-byte installer-start event fixture. A later installer event is refused
+because that bank already contains evidence. This is not a real installation.
+
+The actual returned medium is booted again. Slot 1 remains byte-identical;
+slot 2 records all four banks with a fresh nonce. Each boot changes only
+4,695 bytes in its own normal slot. Both returned FAT filesystems pass Linux
+and native FreeBSD read-only checks. The original image remains unchanged.
+
+This is bounded checkpoint persistence on the retained kernel/minimal-root
+fixture. The 2 KiB payload and single installer event do not establish complete
+log retention or installer progress capture. Default live/installer integration,
+full bounded logs, ARM and BIOS capture, final CURRENT media, actual interrupted
+device writes/reset/power loss, physical hardware and release acceptance remain
+open. Older records and published images retain their original scope.

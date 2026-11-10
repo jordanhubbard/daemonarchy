@@ -1,0 +1,203 @@
+{
+  "schema": "daemonarchy/native-userspace-checkpoint-evidence@1",
+  "source_parent": "299a816b7a96cc8a4bfe0028fd5196730255e17b",
+  "source_sha256": {
+    "tools/boottrace/boot-medium.py": "c7664713f92908ef7b4402a3cf92d955c0e6462298cc6ec716dd6ff05a7d3367",
+    "tools/boottrace/fat-volume.py": "d7bcf569697f15b7ef43007b22b4466af4ffba9179755af97d1c841f00a83d92",
+    "tools/boottrace/observe-medium.py": "b8ed1c834808ce7f331adc71afcfe49233096f5f37a4a9eb67839cd29acb9058",
+    "tools/boottrace/capture-medium.py": "87d634375c09d0eebc31e799fcca7c452c32a070a467a3f6866d2fdfe7a5216b",
+    "tests/boot-medium-native.py": "e99c35cef7bf1ddd5cc6ac1a5051517f8d5a670990417d523f4356f039732e7d",
+    "tests/boot-medium-capture.py": "5275a92eec917625314568fb2b37d64dd8d99d63b94499d5d4f74157c5c7b748"
+  },
+  "tests": {
+    "linux_groups_passed": 40,
+    "native_freebsd_arm64_groups_passed": 40,
+    "skipped": 0,
+    "linux_log_sha256": "3a50b086509cf047a136c5d2f3ca0f95673ed12f449954a346d96447631e55ab",
+    "native_log_sha256": "f2c1974627d1d25a92bf591a37b81c73f4d340bce55bafa4dad4e98ca1fa608d",
+    "controls": [
+      "Binary payload bounds and explicit truncation; absent entropy and legacy parent refusal.",
+      "Partial writes, failed cache flush, readback corruption, changed/foreign sessions and nonempty-bank refusal.",
+      "Idempotent writes perform no replacement and still flush/read back existing evidence.",
+      "Installation identity cross-check with sector-aligned reads; exact partition-writer plus disk-reader ownership."
+    ]
+  },
+  "first_boot": {
+    "status": "pass",
+    "kernel_osreldate": 1600029,
+    "image_sha256": "a7c03df310e0395ae0be54d6a4feee74fc2c70b7ac76ee1db3f198441125ed7f",
+    "returned_sha256": "bc800b0d189421cb0e1f66edb3a9636e6aa5af122517c169913f43fef0eca117",
+    "serial_sha256": "09ab7d777a932c08a9d55ad042650c33bb04a8582b6f3613b80bf0ee40fa8fc5",
+    "changed_bytes": 4695,
+    "only_current_normal_slot_changed": true,
+    "all_four_banks_recorded": true,
+    "init_content_bytes": 2048,
+    "init_content_truncated": true,
+    "installer_content_bytes": 18,
+    "installer_event_fixture": true,
+    "actual_installation": false,
+    "existing_bank_preserved": true,
+    "normal_shutdown": true,
+    "no_keyboard_input": true,
+    "no_nic": true,
+    "observation": {
+      "filesystem": {
+        "allocated_clusters": 1876,
+        "fat_sha256": "f7136ad358dd4c2686240a91dc7dcd291fa340f9c71da35aff54e3bb66f0126a",
+        "identity_extent": [
+          1067008,
+          187
+        ],
+        "map_sha256": "9ca03753835c9d314412562d4392fbeec8c24a1a66d2c9545ed11d32e1e64d71",
+        "mapped_files": 233,
+        "read_only": true,
+        "schema": "daemonarchy/boot-medium-fat-observation@1",
+        "selected_extent": [
+          1073152,
+          16384
+        ],
+        "writes_admitted": false
+      },
+      "gpt": {
+        "backup_at_disk_end": true,
+        "backup_lba": 1683488,
+        "disk_guid": "a6ccd936-dd24-11f1-1d08-61407e6af4da",
+        "fat_and_map_validation_required": true,
+        "partition_index": 2,
+        "partition_uuid": "a7f1e00e-dd24-11f1-1d08-61407e6af4da",
+        "read_only": true,
+        "schema": "daemonarchy/boot-medium-gpt-observation@1",
+        "table_sha256": "4ca5d9e4dab0b07902465a16b7fd8f5ed41849792877ca9305381d2bcd39553f",
+        "writes_admitted": false
+      },
+      "installation_identity_verified": true,
+      "read_only": true,
+      "schema": "daemonarchy/native-boot-medium-observation@1",
+      "selection": {
+        "archive_sha256": "804669a125510e34da2e3d6d4db0ab5e2eb873c7727b9e0a7fc274d86c078b1b",
+        "boot_nonce_sha256": "e97f3cc4935107aeb7aeada7dc6514fe7ca67c49eb56b59b85137633b4eb7eb4",
+        "device": "/dev/vtbd0p2",
+        "disk": "/dev/vtbd0",
+        "disk_bytes": 861946368,
+        "equivalent_aliases": 1,
+        "geom_sha256": "52d6eecdbbc9b1af84a37cfe31dcd3dbdf96a807f4c9fc0e8992d9675988ca99",
+        "gpt_state": "OK",
+        "partition_uuid": "a7f1e00e-dd24-11f1-1d08-61407e6af4da",
+        "raw_gpt_and_fat_validation_required": true,
+        "read_only": true,
+        "schema": "daemonarchy/boot-medium-selection@1",
+        "sector_bytes": 512,
+        "sectors": 524288,
+        "session": "8c48e07d-4896-4be1-a0d7-168f519bdb78-0001",
+        "session_correlated": true,
+        "start_lba": 1159168,
+        "writes_admitted": false
+      },
+      "writes_admitted": false
+    },
+    "captures": [
+      {
+        "bank_bytes": 4096,
+        "bank_sha256": "a364c9abe01ddf22ff64d6c0f7116f76241a9fe7809b597f70c1b6ae9e21be08",
+        "boot_nonce_sha256": "e97f3cc4935107aeb7aeada7dc6514fe7ca67c49eb56b59b85137633b4eb7eb4",
+        "content_bytes": 2048,
+        "content_truncated": true,
+        "full_log_retention": false,
+        "phase": "init-ready",
+        "schema": "daemonarchy/native-userspace-checkpoint@1",
+        "session": "8c48e07d-4896-4be1-a0d7-168f519bdb78-0001",
+        "status": "recorded",
+        "writes_admitted": true,
+        "writes_performed": 1
+      },
+      {
+        "bank_bytes": 4096,
+        "bank_sha256": "6a0ff0e73cc12bf32e2f389fb6e5fd396ad73d2b31f09e06ad3ce6946a32e567",
+        "boot_nonce_sha256": "e97f3cc4935107aeb7aeada7dc6514fe7ca67c49eb56b59b85137633b4eb7eb4",
+        "content_bytes": 18,
+        "content_truncated": false,
+        "full_log_retention": false,
+        "phase": "installer",
+        "schema": "daemonarchy/native-userspace-checkpoint@1",
+        "session": "8c48e07d-4896-4be1-a0d7-168f519bdb78-0001",
+        "status": "recorded",
+        "writes_admitted": true,
+        "writes_performed": 1
+      }
+    ]
+  },
+  "subsequent_boot": {
+    "status": "pass",
+    "input_is_actual_first_returned_image": true,
+    "prior_complete_session_byte_identical": true,
+    "all_four_new_banks_recorded": true,
+    "fresh_nonce": true,
+    "changed_bytes": 4695,
+    "only_new_normal_slot_changed": true,
+    "kernel_osreldate": 1600029,
+    "normal_shutdown": true,
+    "no_keyboard_input": true,
+    "no_nic": true,
+    "returned_sha256": "9381040156e1ffe669861578e994d2d4829d2d9d6c2184f397f8927a985260f1",
+    "serial_sha256": "da0a69ba2400de339f8c94e242082f63441aba0656db572c5165d161f789054f",
+    "prior_slot_sha256": "03df6427892c7bf353be858df529da6a67d038ef3004b97a1eee0cd8b8f010bf"
+  },
+  "filesystem_checks": {
+    "run": {
+      "linux_readonly_exit": 0,
+      "native_freebsd_readonly_exit": 0,
+      "linux_log_sha256": "745fb17d511adee79e0d3e5ad94c677eb738af0f69049ca660412f164cc7cd3e",
+      "native_log_sha256": "898d6873c68ec6308700e70d973c5fcb09f5af9a16e86399446ed4ec267c0432"
+    },
+    "again": {
+      "linux_readonly_exit": 0,
+      "native_freebsd_readonly_exit": 0,
+      "linux_log_sha256": "44ed68295aca08c1384f05100e1419ae273899393c597bdeaaf8902ae507ac31",
+      "native_log_sha256": "898d6873c68ec6308700e70d973c5fcb09f5af9a16e86399446ed4ec267c0432"
+    }
+  },
+  "native_scope": "Retained amd64 kernel OSVERSION 1600029, minimal diagnostic RAM root plus retained native Python and dmesg. Automatically invoked diagnostic fixture, not default final CURRENT media.",
+  "retained_first_failure": {
+    "status": "capture-unavailable-before-userspace-commit",
+    "reason": "An unaligned identity read returned EINVAL; opening the entire physical disk writable spoiled its PART views. Corrected code aligns reads and holds a partition writer plus read-only disk descriptor.",
+    "serial_sha256": "6064e7c04f481324d96ec7367b83709660f2be76960f68ab0717a1732f8e9aad"
+  },
+  "lifecycle": {
+    "gates": [
+      {
+        "detail": "project authority and documentation review",
+        "gate": "authority",
+        "state": "pass"
+      },
+      {
+        "detail": "8 committed lock(s) current",
+        "gate": "locks",
+        "state": "pass"
+      },
+      {
+        "detail": "project selects provider 'none'",
+        "gate": "source-intelligence",
+        "state": "skipped"
+      },
+      {
+        "artifacts": [],
+        "detail": "no declared HTML artifacts to verify",
+        "gate": "html-observability",
+        "state": "skipped"
+      },
+      {
+        "detail": "project.test_receipt_missing: configured project test receipt has not been committed",
+        "gate": "receipt",
+        "state": "fail"
+      }
+    ]
+  },
+  "real_installer_execution": false,
+  "full_log_retention": false,
+  "default_live_hooks_installed": false,
+  "bios_capture_qualified": false,
+  "arm_capture_qualified": false,
+  "physical_power_loss_qualified": false,
+  "final_current_media_qualified": false,
+  "release_qualified": false
+}
