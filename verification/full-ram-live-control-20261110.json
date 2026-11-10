@@ -1,0 +1,190 @@
+{
+  "schema": "daemonarchy/full-ram-live-control@1",
+  "observed_utc": "2026-11-10T12:08:15.901603+00:00",
+  "scope": "Complete retained 1.5.1 amd64 live payload with new v3 EFI/Lua; not final CURRENT release media",
+  "authoring_host": "native FreeBSD ARM64",
+  "runtime": "QEMU 8.2.2 TCG amd64, OVMF, 6 GiB, 2 CPUs, no NIC, virtual xHCI removable USB",
+  "producer_sha256": "f5816b9ec376eb5fcf5bbad774e15f2a30bdb08f5609900fe902561b1370e2b4",
+  "assembly": {
+    "schema": "daemonarchy/ram-live-image@1",
+    "abi": "FreeBSD:16:amd64",
+    "input_archive_sha256": "ad5b50bcae8d045cde2832fc105c63034c41a755c696d473c410daeb537c1553",
+    "outer_archive": {
+      "bytes": 2256815616,
+      "sha256": "48daf901d2d8a8e3dd3c4622a140fed7f7b18e27024bb4b0a3a32e5dc9872f31"
+    },
+    "kernel": {
+      "bytes": 31539640,
+      "sha256": "a0e9278e4c8a4790644814d839be6ccc027b7afad4bac9fa6952ad88eabce4b8"
+    },
+    "package_database": {
+      "bytes": 27926528,
+      "sha256": "3bd4bdfd01311ea36a888c0e9e4a44d0415b1d9c2fd0f813159579e093ab2a96"
+    },
+    "var_seed": "/usr/local/share/daemonarchy-installer/ram-var-ad5b50bcae8d045c",
+    "ram_root": {
+      "bytes": 4293328896,
+      "sha256": "155b986af3e581ddf240884ab963cfcba88f683c43e61e0cb5d3ccadd249b05c"
+    },
+    "packed_root": {
+      "bytes": 1792612352,
+      "sha256": "ef2ff5620acf5e33cbe7442be4c66742a67265fc030b43de4a2a62c1e5e87eaf"
+    },
+    "codec": "lzma",
+    "cluster_bytes": 262144,
+    "expanded_media_bytes": 4293394432,
+    "boot_file": "BOOTX64.EFI",
+    "boot_mode": "bios",
+    "image": {
+      "bytes": 2554348032,
+      "sha256": "2a97d6309ff0abe5070e6efd7b137bea92bc77c61d22b5fcfeb2277d8f0c4951"
+    },
+    "qualification": {
+      "assembly": true,
+      "native_root_fsck": true,
+      "vm_boot": false,
+      "installation": false,
+      "desktop": false,
+      "recovery": false,
+      "physical": false,
+      "signing": false
+    }
+  },
+  "readback": {
+    "status": "pass",
+    "root": "kernel-mounted actual ISO then nested read-only GEOM UZIP/UFS2",
+    "actual_iso_packed_kernel_efi_hashes_match": true,
+    "entries": 62775,
+    "regular_files": 56734,
+    "file_bytes": 6615035848,
+    "all_entries_byte_and_mode_uid_gid_type_equal": true,
+    "hardlink_groups_equal": true,
+    "all_original_paths_retained": true,
+    "owned_brand_and_profile_hooks_unchanged": true,
+    "original_entries_preserved_without_declared_changes": 62648,
+    "declared_replacements": [
+      "boot/loader.efi",
+      "boot/lua",
+      "boot/lua/boottrace.lua",
+      "boot/lua/cli.lua",
+      "boot/lua/color.lua",
+      "boot/lua/config.lua",
+      "boot/lua/core.lua",
+      "boot/lua/drawer.lua",
+      "boot/lua/gfx-beastie.lua",
+      "boot/lua/gfx-beastiebw.lua",
+      "boot/lua/gfx-fbsdbw.lua",
+      "boot/lua/gfx-install.lua",
+      "boot/lua/gfx-orb.lua",
+      "boot/lua/gfx-orbbw.lua",
+      "boot/lua/hook.lua",
+      "boot/lua/loader.lua",
+      "boot/lua/menu.lua",
+      "boot/lua/netdebug.lua",
+      "boot/lua/password.lua",
+      "boot/lua/screen.lua",
+      "boot/lua/splash.lua",
+      "etc/fstab",
+      "etc/rc.conf"
+    ],
+    "var_seed_entries": 104,
+    "package_database_sha256": "3bd4bdfd01311ea36a888c0e9e4a44d0415b1d9c2fd0f813159579e093ab2a96",
+    "var_seed_database_sha256": "3bd4bdfd01311ea36a888c0e9e4a44d0415b1d9c2fd0f813159579e093ab2a96",
+    "installer_base_sha256": "f03d5787afbbe53074b9246ee5bfe90b9c66870702cb9ed1f630560831af5002",
+    "installer_kernel_sha256": "3ced37da5bbc2990d771330f6a5c54aa75c9da059b25af7d4af4e67003482dcd"
+  },
+  "efi_usb": {
+    "status": "pass",
+    "manual_same_medium_write": true,
+    "live_inventory_count": 269,
+    "live_inventory_sha256": "ce104c10c197401472760ac7e8b990fe2f7dab0f02aa7325b539d849f91fa234",
+    "changed_bytes": 20816,
+    "changes_only_in_datrace": true,
+    "legacy_state_queue_traces_unchanged": true,
+    "input_unchanged": true,
+    "normal_synced_shutdown": true,
+    "owned_hooks_retained": true,
+    "native_sqlite_import": true
+  },
+  "selected_kernel_candidates": {
+    "/boot/kernel/kernel": "a0e9278e4c8a4790644814d839be6ccc027b7afad4bac9fa6952ad88eabce4b8",
+    "/boot/kernel.secure/kernel": "a93f4c8388b1cf3d79aa842319083a89856e3052ca9a3c4be85df8b2e9432648"
+  },
+  "normal_trace": {
+    "ready_and_preexit_bound": true,
+    "userspace_kenv_matches": true,
+    "boot_identity": "firmware-rng",
+    "nonce_sha256": "75c16d0eba9a00ba1c993f743e6f495462ee98dd977051a9af02da9188b48935"
+  },
+  "returned_trace_filesystem": {
+    "status": "pass",
+    "sha256": "da6248b557fb42775fa84eeaeb49e9b06178aa8c4c8714306ef00512b44bb925",
+    "linux_exit": 0,
+    "native_freebsd_exit": 0
+  },
+  "compression": {
+    "status": "pass",
+    "argv": [
+      "nice",
+      "-n",
+      "19",
+      "xz",
+      "-T2",
+      "-9",
+      "-c",
+      "/home/jkh/.local/state/daemonarchy/16-native-worker-20261109/amd64-full-ram-r3/control.iso"
+    ],
+    "input_sha256": "2a97d6309ff0abe5070e6efd7b137bea92bc77c61d22b5fcfeb2277d8f0c4951",
+    "size_gate_exit": 0,
+    "compressed_bytes": 1883066408,
+    "compressed_sha256": "b083e273f3d5d02847ae2b636a16ed5fb0e64198a0436685316bf9c05d9a57c3",
+    "decompressed_sha256": "2a97d6309ff0abe5070e6efd7b137bea92bc77c61d22b5fcfeb2277d8f0c4951",
+    "decompression_round_trip": true,
+    "elapsed_seconds": 1029.8501648319943
+  },
+  "failures_retained": [
+    {
+      "case": "initial prototype",
+      "status": "not boot qualified; missing writable var seed"
+    },
+    {
+      "case": "second full input",
+      "status": "incomplete preparation omitted owned profile and brand hooks; narrower runtime result retained, not promoted"
+    },
+    {
+      "case": "corrected admission negative control",
+      "status": "previous incomplete input refused before filesystem authoring; native admission tests pass"
+    },
+    {
+      "case": "initial corrected readback",
+      "status": "module lookup used wrong name; failed evidence retained before successful independent audit"
+    },
+    {
+      "case": "BIOS QEMU 8.2.2 multi and single TCG",
+      "status": "host emulator aborted on iothread-lock assertion; no guest qualification"
+    },
+    {
+      "case": "BIOS private signed-source QEMU 11.1.3",
+      "status": "VM terminal before acceptance; no runtime result or BIOS qualification"
+    }
+  ],
+  "qualification": {
+    "native_assembly": true,
+    "complete_retained_payload_readback": true,
+    "efi_usb_live_boot": true,
+    "source_current_media": false,
+    "bios_runtime": false,
+    "arm_shared_helper_runtime": false,
+    "installation": false,
+    "desktop": false,
+    "update_rollback": false,
+    "signing": false,
+    "physical": false,
+    "performance": false
+  },
+  "physical_untested": [
+    "Raspberry Pi 4",
+    "Raspberry Pi 5",
+    "Apple M2"
+  ]
+}

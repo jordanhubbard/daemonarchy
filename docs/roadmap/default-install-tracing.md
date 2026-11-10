@@ -417,3 +417,25 @@ kernel/init/installer diagnostics or qualify refreshed whole media, a desktop,
 BIOS tracing, hardware identity, physical targets or final release. Initial
 fixture assembly and readback-harness failures remain recorded. Pi 4, Pi 5 and
 Apple M2 remain untested physically.
+
+
+## Complete retained live-root control
+
+The [full RAM-root checkpoint](../../verification/full-ram-live-control-20261110.json)
+retains all original payload paths and both owned Lua hooks, verifies the actual
+nested UZIP filesystem, and boots the corrected amd64 image through EFI USB.
+All 269 live package identities survive the writable var mount; SQLite imports,
+userspace kenv matches the ready/pre-exit nonce, and manual same-medium files
+survive shutdown. Only 20,816 DATRACE bytes change; legacy traces, state, queue
+and unused normal slots are preserved. Native FreeBSD and Linux FAT checks pass.
+The 2,554,348,032-byte raw image and 1,883,066,408-byte xz asset pass existing
+budgets, including exact decompression identity.
+
+The shared [RAM authoring helper](../ram-live-images.md) preserves archive
+ownership and the packaged var seed. An earlier preparation omitted the brand
+and profile hooks; the corrected helper now refuses that input, and complete
+readback requires every original path. BIOS attempts remain unqualified: the old
+emulator aborted on its host lock assertion, while the private new-emulator VM
+ended before acceptance. The retained 1.5.1 world/kernel control does not qualify
+final CURRENT media, ARM shared-helper boot, installation, desktop, signing,
+lifecycle, performance or physical targets. Default archive production is unchanged.

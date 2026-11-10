@@ -30,6 +30,7 @@ another version are historical records. 1.5.1 entries describe planned work.
 - [Hardware quirks](hardware-quirks.md)
 - [GPU report: which GPU the desktop uses](gpu-report.md)
 - [Hardware trace stick: reset-surviving boot trace](boottrace.md)
+- [RAM-root installer image authoring](ram-live-images.md)
 - [Normal pre-exit trace checkpoint: native evidence and remaining gates](roadmap/default-install-tracing.md#independent-pre-exit-checkpoint)
 - [Pi 4 / Pi 500 software bootstrap checkpoint: current controls and physical gates](testing-pi-bootstrap-checkpoint-20261108.md)
 - [Pi 4 simulator checkpoint: Linux control and UEFI model gaps](testing-pi4-simulator-20261107.md)

@@ -59,6 +59,8 @@ on:
       - 'scripts/image-architecture.sh'
       - 'origins.sh'
       - 'scripts/make-efi-iso.sh'
+      - 'scripts/make-ram-iso.sh'
+      - 'tests/ram-live-image.py'
       - 'scripts/make-install-trace.py'
       - 'tests/install-trace-media.py'
       - 'tests/normal-boot-trace.py'
@@ -167,6 +169,8 @@ on:
       - 'scripts/image-architecture.sh'
       - 'origins.sh'
       - 'scripts/make-efi-iso.sh'
+      - 'scripts/make-ram-iso.sh'
+      - 'tests/ram-live-image.py'
       - 'scripts/make-install-trace.py'
       - 'tests/install-trace-media.py'
       - 'tests/normal-boot-trace.py'
@@ -251,6 +255,8 @@ jobs:
           bash tests/image-architecture.sh
           python3 tests/install-trace-media.py -v
           python3 tests/normal-boot-trace.py -v
+          sh -n scripts/make-ram-iso.sh
+          python3 tests/ram-live-image.py -v
       - name: Measured installer progress and completion controls
         env:
           PYTHONDONTWRITEBYTECODE: '1'
