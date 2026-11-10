@@ -27,28 +27,13 @@ mkdir -m 0700 "$work"
 world=$work/world
 mkdir "$world"
 tar -xpf "$archive" -C "$world"
+"$py" "$here/live-root-metadata.py" "$archive" "$world" > "$work/root-directory.json"
 # Validate the selected ABI, actual kernel/shell ELF machines and complete
 # installer payload before modifying the private extracted copy.
 "$py" - "$world" "$boot_file" "$archive" <<'CHECK'
 from pathlib import Path
-import os, stat, struct, sys, tarfile
+import struct, sys
 root = Path(sys.argv[1])
-# libarchive may retain the destination directory's private staging mode for
-# an existing '.'. Require the archive's own root entry, then apply its exact
-# final owner/group/mode instead of inheriting umask or guessing a default.
-root_entry = None
-with tarfile.open(sys.argv[3], 'r:*') as source:
-    for entry in source:
-        if entry.name.rstrip('/') == '.':
-            if not entry.isdir():
-                raise ValueError('Live-root archive root entry must be a directory')
-            root_entry = entry
-if root_entry is None:
-    raise ValueError('Explicit live-root archive directory entry is required')
-if root_entry.uid != 0 or root_entry.mode not in (0o555, 0o755):
-    raise ValueError("Live-root inode must be root-owned and mode 0555 or 0755")
-os.chown(root, root_entry.uid, root_entry.gid)
-os.chmod(root, root_entry.mode)
 abi, machine = {'BOOTAA64.EFI': ('FreeBSD:16:aarch64', 183),
                 'BOOTX64.EFI': ('FreeBSD:16:amd64', 62)}[sys.argv[2]]
 for name in ('etc', 'var', 'boot', 'usr', 'usr/local', 'usr/local/share',

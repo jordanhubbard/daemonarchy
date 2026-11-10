@@ -69,6 +69,16 @@ are installed only into the private root, with remote repositories disabled.
 The local ISO package catalogue is refreshed, preserving configured signed
 public dependency feeds. The package inventory is retained with the medium.
 
+Both RAM-root builders require an explicit final archive root directory entry,
+owned by UID 0 with mode 0555 or 0755. The co-located
+`scripts/live-root-metadata.py` restores its exact UID, GID and mode after
+extraction, preserving the archive group rather than guessing wheel. Missing or
+unsafe root metadata fails before filesystem authoring. The ARM manifest records
+that metadata; staging permissions cannot silently become the live root.
+The [native shared-root controls](../verification/shared-live-root-metadata-20261110.json)
+pass both the metadata cases and existing generic RAM-image refusal suite. They
+do not establish a newly assembled ARM image or runtime result.
+
 All installer files, release archives and the package repository remain in a
 UFS2 filesystem. The builder requires the full filesystem check to complete
 and rejects integrity diagnostics even if `fsck_ffs` returns zero. UFS1's

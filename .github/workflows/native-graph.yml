@@ -60,6 +60,8 @@ on:
       - 'origins.sh'
       - 'scripts/make-efi-iso.sh'
       - 'scripts/make-ram-iso.sh'
+      - 'scripts/live-root-metadata.py'
+      - 'tests/live-root-metadata.py'
       - 'tests/ram-live-image.py'
       - 'scripts/make-install-trace.py'
       - 'tests/install-trace-media.py'
@@ -170,6 +172,8 @@ on:
       - 'origins.sh'
       - 'scripts/make-efi-iso.sh'
       - 'scripts/make-ram-iso.sh'
+      - 'scripts/live-root-metadata.py'
+      - 'tests/live-root-metadata.py'
       - 'tests/ram-live-image.py'
       - 'scripts/make-install-trace.py'
       - 'tests/install-trace-media.py'
@@ -256,6 +260,7 @@ jobs:
           python3 tests/install-trace-media.py -v
           python3 tests/normal-boot-trace.py -v
           sh -n scripts/make-ram-iso.sh
+          python3 tests/live-root-metadata.py -v
           python3 tests/ram-live-image.py -v
       - name: Measured installer progress and completion controls
         env:

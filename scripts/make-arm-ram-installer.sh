@@ -58,6 +58,7 @@ mkdir "$work/no-repos"
 world=$work/world
 mkdir "$world"
 tar -xpf "$archive" -C "$world"
+python3.12 "$here/live-root-metadata.py" "$archive" "$world" > "$work/root-directory.json"
 share=$world/usr/local/share/daemonarchy-installer
 for required in boot/loader.efi usr/freebsd-dist/base.txz usr/freebsd-dist/kernel.txz \
     usr/freebsd-dist/MANIFEST usr/local/libexec/daemonarchy-installer/install \
@@ -183,7 +184,7 @@ if [ "$(sha256 -q "$archive")" != "$archive_hash" ] ||
     echo 'Inputs changed during assembly' >&2; exit 1;
 fi
 python3.12 "$here/arm-package-closure.py" verify "$closure" "$closure_hash" "$package_hash"
-python3.12 - "$output" "$work/mfsroot.uzip" "$set_hash" "$work/installed-packages.txt" "$work/package-closure.json" <<'PY'
+python3.12 - "$output" "$work/mfsroot.uzip" "$set_hash" "$work/installed-packages.txt" "$work/package-closure.json" "$work/root-directory.json" <<'PY'
 import hashlib, json, os, struct, sys
 from pathlib import Path
 image, compressed = map(Path, sys.argv[1:3])
@@ -199,6 +200,7 @@ root_size = int(os.environ['RAM_ROOT_SIZE'])
 if cluster != 262144 or not root_size <= cluster * blocks < root_size + cluster:
     raise ValueError('Unexpected UZIP cluster geometry')
 record = dict(schema='daemonarchy/arm-ram-installer@1', abi='FreeBSD:16:aarch64',
+    root_directory=json.loads(Path(sys.argv[6]).read_text()),
     world_archive_sha256=os.environ['RAM_ARCHIVE_HASH'], kernel_sha256=os.environ['RAM_KERNEL_HASH'],
     kernel_set_sha256=sys.argv[3], omarchy_package_sha256=os.environ['RAM_PACKAGE_HASH'],
     omarchy_version=os.environ['RAM_PACKAGE_VERSION'],
