@@ -368,6 +368,13 @@ root loader, shell, libc and header match the new distribution sets. Native shel
 execution and SSH with a pinned host identity pass. The disk contains private
 lab credentials and is not publishable installer media.
 
+The [matched native package plan](../verification/native-current-arm-package-plan-20261110.json)
+now passes using that worker and a Poudriere jail made from the new base set. Its
+clean snapshot also includes the matching kernel, lib32 and source sets. The
+31 architecture-selected product origins resolve to 1,415 planned ports with
+zero ignored, failed or skipped entries. This is a dry run: no package products
+were built or fetched by the plan, and no signed release closure is admitted.
+
 These are unsigned aggregate development products. The private mountpoint
 traversal recovery remains recorded, and the elapsed times are not a controlled
 executor benchmark. A matched current ports closure, final installer images,
