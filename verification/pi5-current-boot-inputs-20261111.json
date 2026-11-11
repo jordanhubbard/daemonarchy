@@ -1,0 +1,365 @@
+{
+  "schema": "daemonarchy/pi5-boot-input-observation@1",
+  "source_revision": "99515abc74aaa49a6bafedc672ca1d49bfd22ec3",
+  "native_model_run": 42999849876,
+  "native_model_results": {
+    "passed": true,
+    "profiles": [
+      {
+        "memory_gib": 1,
+        "size_cells": 1,
+        "banks": [
+          [
+            0,
+            1006632960
+          ]
+        ],
+        "board_revision": "0xa04171",
+        "ram_addresses": [
+          1048576,
+          1073741820
+        ],
+        "passed": true
+      },
+      {
+        "memory_gib": 1,
+        "size_cells": 2,
+        "banks": [
+          [
+            0,
+            1006632960
+          ]
+        ],
+        "board_revision": "0xa04171",
+        "ram_addresses": [
+          1048576,
+          1073741820
+        ],
+        "passed": true
+      },
+      {
+        "memory_gib": 2,
+        "size_cells": 1,
+        "banks": [
+          [
+            0,
+            1006632960
+          ],
+          [
+            1073741824,
+            1073741824
+          ]
+        ],
+        "board_revision": "0xb04170",
+        "ram_addresses": [
+          1048576,
+          2147483644
+        ],
+        "passed": true
+      },
+      {
+        "memory_gib": 2,
+        "size_cells": 2,
+        "banks": [
+          [
+            0,
+            1006632960
+          ],
+          [
+            1073741824,
+            1073741824
+          ]
+        ],
+        "board_revision": "0xb04170",
+        "ram_addresses": [
+          1048576,
+          2147483644
+        ],
+        "passed": true
+      },
+      {
+        "memory_gib": 4,
+        "size_cells": 1,
+        "banks": [
+          [
+            0,
+            1006632960
+          ],
+          [
+            1073741824,
+            1073741824
+          ],
+          [
+            2147483648,
+            2147483648
+          ]
+        ],
+        "board_revision": "0xc04170",
+        "ram_addresses": [
+          1048576,
+          2147483648,
+          4294967292
+        ],
+        "passed": true
+      },
+      {
+        "memory_gib": 4,
+        "size_cells": 2,
+        "banks": [
+          [
+            0,
+            1006632960
+          ],
+          [
+            1073741824,
+            1073741824
+          ],
+          [
+            2147483648,
+            2147483648
+          ]
+        ],
+        "board_revision": "0xc04170",
+        "ram_addresses": [
+          1048576,
+          2147483648,
+          4294967292
+        ],
+        "passed": true
+      },
+      {
+        "memory_gib": 8,
+        "size_cells": 1,
+        "banks": [
+          [
+            0,
+            1006632960
+          ],
+          [
+            1073741824,
+            1073741824
+          ],
+          [
+            2147483648,
+            2147483648
+          ],
+          [
+            4294967296,
+            2147483648
+          ],
+          [
+            6442450944,
+            2147483648
+          ]
+        ],
+        "board_revision": "0xd04170",
+        "ram_addresses": [
+          1048576,
+          2147483648,
+          4294967296,
+          8589934588
+        ],
+        "passed": true
+      },
+      {
+        "memory_gib": 8,
+        "size_cells": 2,
+        "banks": [
+          [
+            0,
+            1006632960
+          ],
+          [
+            1073741824,
+            1073741824
+          ],
+          [
+            2147483648,
+            2147483648
+          ],
+          [
+            4294967296,
+            2147483648
+          ],
+          [
+            6442450944,
+            2147483648
+          ]
+        ],
+        "board_revision": "0xd04170",
+        "ram_addresses": [
+          1048576,
+          2147483648,
+          4294967296,
+          8589934588
+        ],
+        "passed": true
+      },
+      {
+        "memory_gib": 16,
+        "size_cells": 1,
+        "banks": [
+          [
+            0,
+            1006632960
+          ],
+          [
+            1073741824,
+            1073741824
+          ],
+          [
+            2147483648,
+            2147483648
+          ],
+          [
+            4294967296,
+            2147483648
+          ],
+          [
+            6442450944,
+            2147483648
+          ],
+          [
+            8589934592,
+            2147483648
+          ],
+          [
+            10737418240,
+            2147483648
+          ],
+          [
+            12884901888,
+            2147483648
+          ],
+          [
+            15032385536,
+            2147483648
+          ]
+        ],
+        "board_revision": "0xe04171",
+        "ram_addresses": [
+          1048576,
+          2147483648,
+          4294967296,
+          8589934592,
+          17179869180
+        ],
+        "passed": true
+      },
+      {
+        "memory_gib": 16,
+        "size_cells": 2,
+        "banks": [
+          [
+            0,
+            1006632960
+          ],
+          [
+            1073741824,
+            1073741824
+          ],
+          [
+            2147483648,
+            2147483648
+          ],
+          [
+            4294967296,
+            2147483648
+          ],
+          [
+            6442450944,
+            2147483648
+          ],
+          [
+            8589934592,
+            2147483648
+          ],
+          [
+            10737418240,
+            2147483648
+          ],
+          [
+            12884901888,
+            2147483648
+          ],
+          [
+            15032385536,
+            2147483648
+          ]
+        ],
+        "board_revision": "0xe04171",
+        "ram_addresses": [
+          1048576,
+          2147483648,
+          4294967296,
+          8589934592,
+          17179869180
+        ],
+        "passed": true
+      }
+    ],
+    "family_controls": [
+      {
+        "pi500_gib": 1,
+        "accepted": false
+      },
+      {
+        "pi500_gib": 2,
+        "accepted": false
+      },
+      {
+        "pi500_gib": 4,
+        "accepted": false
+      },
+      {
+        "pi500_gib": 8,
+        "accepted": true
+      },
+      {
+        "pi500_gib": 16,
+        "accepted": true
+      }
+    ],
+    "scope": "native QEMU qtest RAM/FDT/mailbox; no OS or hardware acceptance"
+  },
+  "host_input_controls": 13,
+  "firmware_input_controls": 4,
+  "package": {
+    "run": 42999849913,
+    "artifact": 13846540709,
+    "source_revision": "99515abc74aaa49a6bafedc672ca1d49bfd22ec3",
+    "archive_bytes": 156017112,
+    "archive_sha256": "d8966598d120c2fdc4398bfab472de90d52c25569b1083aa1687db264d12ead0",
+    "binary_extraction": "Unmodified original packaged QEMU executables; host package job passed. No per-unit source admission implied."
+  },
+  "old_model_regression": {
+    "memory_gib": 1,
+    "size_cells": 2,
+    "actual_reg_bytes": 12,
+    "required_reg_bytes": 16,
+    "result": "failed as expected; malformed old model memory tuple"
+  },
+  "os_attempt": {
+    "ok": false,
+    "checks": {
+      "natural_exit": false,
+      "all_commands": false,
+      "four_cpus": true,
+      "a76": true,
+      "cpu_affinity": true,
+      "psci": true,
+      "bcm2712_sd": false,
+      "rng": true,
+      "buffers_synced": false,
+      "no_panic": true,
+      "inputs_unchanged": true
+    },
+    "failure": "TimeoutError('deadline in boot')",
+    "phase": "boot",
+    "memory_gib": 1
+  },
+  "os_attempt_scope": "Unchanged retained older kernel c3612c03838a7c53b75443cf2eab1ab8ad28db5b490fa8d34f57bbe03d90ccaf lacks BCM2712 SD/GPIO drivers. Actual Model B D0 1GiB boot reaches four Cortex-A76 CPUs/PSCI and RNG with no panic; no SD root or multi-user acceptance. Original disk stays unchanged.",
+  "next_input": "Current reviewed source87e0a125850c5c791515fb7ae31ebcb6e8cfce72 ARM64 GENERIC cross-kernel is building on registered FreeBSD16 amd64 worker. Fresh matching lab disk/prepared boot inputs and actual1/16GiB OS tests remain pending. No native ARM64 or final distribution qualification inferred.",
+  "full_peripheral_fidelity": false,
+  "os_boot_acceptance": false
+}

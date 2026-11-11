@@ -1,0 +1,58 @@
+{
+  "run": 43001470729,
+  "revision": "49ee09fa4d7e14b2d088c51ba4d9cff7cdc292cf",
+  "driver_exit": 0,
+  "phases": {
+    "restricted-bootstrap": 0,
+    "platform": 0,
+    "package": 0,
+    "package-checksums": 0,
+    "libdvdcss-package": 0,
+    "libdvdcss-options": 0,
+    "libdvdcss-install": 0,
+    "libdvdcss-dependencies": 0,
+    "libdvdcss-checksum": 0,
+    "install": 0,
+    "generated-plist": 0,
+    "desktop-version": 0,
+    "dependency-expression": 0,
+    "dependencies": 0,
+    "checksum": 0,
+    "check-plist": 0,
+    "architecture-x86": 0
+  },
+  "packages": [
+    {
+      "name": "libdvdcss-1.6.0.pkg",
+      "bytes": 67970,
+      "sha256": "40532d56864f3d57399838c5a2476a80567120d7406733c7d3eac65510ac177f",
+      "manifest": {
+        "name": "libdvdcss",
+        "version": "1.6.0",
+        "abi": "FreeBSD:15:amd64"
+      }
+    },
+    {
+      "name": "omarchy-4.5.0.20261111.pkg",
+      "bytes": 168626343,
+      "sha256": "0b0a63c6fa8fdee5ce1598e87adbf768aaecb2c8d4c8d9176add318bbc4654fb",
+      "manifest": {
+        "name": "omarchy",
+        "version": "4.5.0.20261111",
+        "abi": "FreeBSD:15:amd64"
+      }
+    }
+  ],
+  "version": "4.5.0.20261111",
+  "platform": "x86",
+  "scope": "Actual FreeBSD15.1 package/stage/plist/install/checksum/version controls; no GUI or full CURRENT closure/SDK/lifecycle qualification.",
+  "independent_native_archive_readback": true,
+  "schema": "daemonarchy/native-omarchy-port-observation@1",
+  "main_merge": "b6c0b492da8df763cc3f8f5933d1027993ac7f9d",
+  "owned_source_revision": "c39121a4746c0ea533ffdf437788c62810a0f19e",
+  "compatibility_source_revision": "648954b3a7bba9872f899e1afffda527f014dfd9",
+  "architecture_metadata_run": 43001470815,
+  "lifecycle_receipt": false,
+  "gui_acceptance": false,
+  "current_package_closure": false
+}

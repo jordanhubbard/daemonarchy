@@ -221,7 +221,7 @@
     "tested_code_revision": "a191f19fc896b05afe203363ec955f4f1287f06f",
     "architecture_guard": "unchanged, strict removal and reviewed additions",
     "full_current_native_package_closure": false,
-    "owned_main_merge": "af9753f6bd7eb86f39228b238f5c34205047c336",
+    "owned_main_merge": "b6c0b492da8df763cc3f8f5933d1027993ac7f9d",
     "merged": true,
     "included_reviews": [
       54,
@@ -230,7 +230,7 @@
     ],
     "open_pull_requests": 1,
     "exact_revision_metadata_run": 42956065010,
-    "remaining_branch_reconciliation": "Retained T2 feature merged via PR58; Omarchy snapshot PR59 and remaining semantic history reconciliation are open.",
+    "remaining_branch_reconciliation": "PR58,60,61 and current Omarchy59 merged. Retained draft and older sync merge resolutions remain; inotify fallback difference in old owe merge requires explicit disposition.",
     "branch_reconciliation_pr": 58,
     "branch_reconciliation_revision": "969df5ad58b86d27557144800ebd3f79dff3a674",
     "t2_software": {
@@ -280,6 +280,13 @@
       "native_tested_same_tree": "969df5ad58b86d27557144800ebd3f79dff3a674",
       "included_history_count": 6,
       "scope": "Four patch-equivalent branches, six exact retained-acceptance files, and fourteen exact T2 implementation/changelog files. Later main category additions retained. Other distinct histories remain open."
+    },
+    "semantic_history_review": {
+      "pull_request": 61,
+      "review_revision": "e048296bb1fcaabc677e949e61fd270ba472a103",
+      "main_merge": "d3e52563199351df6a813a70bc8fa74a61043df2",
+      "reviewed_histories": 7,
+      "tree_changed": false
     }
   },
   "omarchy": {
@@ -319,7 +326,7 @@
     "primary_quattro_synchronized": true,
     "port_snapshot_review": {
       "pull_request": 59,
-      "revision": "de3f375cb5036dc6eb1f78008d1953dc56819200",
+      "revision": "49ee09fa4d7e14b2d088c51ba4d9cff7cdc292cf",
       "version": "4.5.0.20261111",
       "owned_source": "c39121a4746c0ea533ffdf437788c62810a0f19e",
       "compatibility_source": "648954b3a7bba9872f899e1afffda527f014dfd9",
@@ -329,14 +336,23 @@
       ],
       "remaining_patches": 12,
       "forward_patch_zero_fuzz": true,
-      "architecture_metadata_run": 42995093371,
+      "architecture_metadata_run": 43001470815,
       "architecture_metadata_result": "passed",
-      "native_package_run": 42995093231,
-      "native_package_result": "running; prior native staging exposed outdated plist, now reviewed with 219 additions and 11 removals, preserving all five configuration/security policy rows",
+      "native_package_run": 43001470729,
+      "native_package_result": "all17 captured phases pass: checksum/package/plist/install/file hashes/version/x86 platform; independently rehashed archives and native manifest readback",
       "initial_findings": "Corrected snapshot distfile naming. Original selected libdvdcss dependency is not distributed in the binary repository; selected native job now builds/packages/installs its original checksum-bound port before resolving remaining dependencies.",
       "superseded_native_run": 42986959890,
       "superseded_native_result": "cancelled when the corrected dependency driver superseded its inputs; no test result claimed. Its original script could recursively build documentation tools because it did not resolve libdvdcss DOCS dependencies first.",
-      "native_profile": "Original DOCS option preserved; resolve declared native build dependencies first. The disposable guest command has a 40-minute deadline plus forced-stop grace, leaving time to return logs under the outer one-hour job."
+      "native_profile": "Original DOCS/options and40-minute guest deadline retained; original dependency walker now traced with UTC phase start/exit evidence.",
+      "merged": true,
+      "main_merge": "b6c0b492da8df763cc3f8f5933d1027993ac7f9d",
+      "public_observation": "verification/native-omarchy-port-20261111.json",
+      "preceding_timeout": {
+        "run": 42995093231,
+        "exit": 124,
+        "phase": "native missing dependency enumeration",
+        "staging_reached": false
+      }
     }
   },
   "issues": {
@@ -385,7 +401,7 @@
     "merge_revision": "69843c9be8f976f7ca1604c3ad564174f18bb89f",
     "primary_master_synchronized": true,
     "primary_build_products": "not replaced; isolated qualified model binary retained separately",
-    "new_profile_boot_inputs": "Fresh native FreeBSD multi-user disk assembled successfully from the retained original ARM installer and kernel. Hashes independently verified after transfer; original complete disk is retained on the native worker. Current official D0 Model B DTB prepares 1/16 GiB profiles. OS execution waits for the corrected two-size-cell QEMU model; no old boot acceptance is carried forward.",
+    "new_profile_boot_inputs": "Current reviewed source87e0a125850c5c791515fb7ae31ebcb6e8cfce72 ARM64 GENERIC cross-kernel is building on registered FreeBSD16 amd64 worker. Fresh matching lab disk/prepared boot inputs and actual1/16GiB OS tests remain pending. No native ARM64 or final distribution qualification inferred.",
     "boot_board_and_fdt_review": {
       "pull_request": 11,
       "revision": "99515abc74aaa49a6bafedc672ca1d49bfd22ec3",
@@ -401,7 +417,31 @@
       "fresh_native_disk_bytes": 2147483648,
       "fresh_native_disk_xz_sha256": "652a04a3823aafe136f8bda1a20869c8649c4c49594f0864cc5de66d14798ec3",
       "os_boot_acceptance": false,
-      "final_current_qualification": false
+      "final_current_qualification": false,
+      "hosted_native_model_run": 42999849876,
+      "hosted_native_model_result": "passed all10 RAM/FDT cell-width profiles, actual high-memory/mailbox/family controls plus original boot/reset/migration cases",
+      "hosted_package_run": 42999849913,
+      "linux_package_jobs": "both architectures passed; macOS jobs pending",
+      "public_observation": "verification/pi5-current-boot-inputs-20261111.json"
+    },
+    "one_gib_os_attempt": {
+      "ok": false,
+      "checks": {
+        "natural_exit": false,
+        "all_commands": false,
+        "four_cpus": true,
+        "a76": true,
+        "cpu_affinity": true,
+        "psci": true,
+        "bcm2712_sd": false,
+        "rng": true,
+        "buffers_synced": false,
+        "no_panic": true,
+        "inputs_unchanged": true
+      },
+      "failure": "TimeoutError('deadline in boot')",
+      "phase": "boot",
+      "memory_gib": 1
     }
   },
   "puck_consolidation": {
