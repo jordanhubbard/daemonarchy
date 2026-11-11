@@ -153,7 +153,7 @@
       "strict_patch_equivalent_tips": 15,
       "pull_request": 90,
       "review_revision": "f1b5d719ce33a38f5a3a45f0d09b4515abad5c17",
-      "merged": false,
+      "merged": true,
       "legacy_timer_fix": "Restore missing ARM32/RISC-V EFI cleanup guards; handle creation/arming failures, repeated initialization and retry. Separate ARM64 timer and current amd64 behavior preserved.",
       "observations": "Child source verification/efi-legacy-timer-20261111.json: original mock-firmware unit fails five of six cases, corrected six pass on Linux and FreeBSD; 150 controller cases run, 145 pass and five native-only skips. Original FreeBSD/EDK2 headers produce actual ARM32 and RISC-V standalone objects with warnings as errors. No complete EFI link/boot claimed.",
       "hosted_cross_kernel_run": 42992803476,
@@ -163,7 +163,10 @@
       ],
       "hosted_style_run": 42992803542,
       "hosted_style_result": "passed",
-      "remaining": "Distinct upstream-review variants, retained draft and other non-equivalent local semantics remain under review; no claim that every source branch is already reconciled."
+      "remaining": "Distinct upstream-review variants, retained draft and other non-equivalent local semantics remain under review; no claim that every source branch is already reconciled.",
+      "main_merge": "87e0a125850c5c791515fb7ae31ebcb6e8cfce72",
+      "hosted_cross_kernel_result": "all six passed on exact f1b5d719ce33a38f5a3a45f0d09b4515abad5c17; controller, native loader, style and CodeQL also passed",
+      "local_main_synchronized": true
     }
   },
   "ports": {
@@ -340,7 +343,24 @@
     "merge_revision": "69843c9be8f976f7ca1604c3ad564174f18bb89f",
     "primary_master_synchronized": true,
     "primary_build_products": "not replaced; isolated qualified model binary retained separately",
-    "new_profile_boot_inputs": "The prior retained multi-user disk has not yet been located on the controller. Current official Pi500 DTB was retrieved and identity-recorded; it differs from the previously enrolled DTB, so old boot acceptance is not attributed to this new input. Reconstructing current native root and qualifying 1/16 GiB OS boots remains open."
+    "new_profile_boot_inputs": "Fresh native FreeBSD multi-user disk assembled successfully from the retained original ARM installer and kernel. Hashes independently verified after transfer; original complete disk is retained on the native worker. Current official D0 Model B DTB prepares 1/16 GiB profiles. OS execution waits for the corrected two-size-cell QEMU model; no old boot acceptance is carried forward.",
+    "boot_board_and_fdt_review": {
+      "pull_request": 11,
+      "revision": "99515abc74aaa49a6bafedc672ca1d49bfd22ec3",
+      "direct_board_binding": "Prepared FDT board identity and memory capacity bind the manifest and QEMU mailbox revision; old or cross-board manifests refused before disk mutation. Firmware runner shares the same policy.",
+      "memory_cells": "Current official firmware declares two memory size cells. Old helper refused it; old model writes an invalid 12-byte tuple into a 16-byte layout. Candidate supports and preserves one/two size cells at all capacities.",
+      "preparation_and_runner_controls": 13,
+      "firmware_input_controls": 4,
+      "native_baseline_regression": "Original model fails the expanded 1 GiB/two-size-cell FDT tuple-length control (12 bytes instead of 16). Corrected hosted native model checks pending.",
+      "official_firmware_revision": "016253866bbd6c77fcb2a744a97d81e79ad4884f",
+      "official_model_b_d0_dtb_sha256": "c30d39bdb91f7b85b0cd7303a96fe5ed88693d587d9565730c2c7245afbdee06",
+      "retained_reference_kernel_sha256": "c3612c03838a7c53b75443cf2eab1ab8ad28db5b490fa8d34f57bbe03d90ccaf",
+      "fresh_native_disk_sha256": "f21af3067e9af80f5825c3676000833119626fa91fddc10c56252f7f8e94c575",
+      "fresh_native_disk_bytes": 2147483648,
+      "fresh_native_disk_xz_sha256": "652a04a3823aafe136f8bda1a20869c8649c4c49594f0864cc5de66d14798ec3",
+      "os_boot_acceptance": false,
+      "final_current_qualification": false
+    }
   },
   "puck_consolidation": {
     "worktrees_removed": 37,
