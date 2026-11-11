@@ -201,3 +201,28 @@ firmware/FDT handoff, collect serial and durable loader/init checkpoints, then
 audit SD/USB/NVMe, full-RAM DMA, RP1 clocks/interrupts and Cadence GEM. Pi 5
 revision profiles, Pi 500 input, actual graphics, installed boot and recovery
 remain separate gates. The initial cap and staging result close none of them.
+
+## Integrated SD provider candidate, 2026-11-08
+
+The next candidate contains the native-built kernel
+`8ec36736678f4de5308164fe6dfe990119b6ff042bf6eec6887ddd3ee84c60c9`
+from sealed source `91204d3c8f22504eb4a346e5304d682618aea0d6`. It adds the
+selected D0 main/AON pinctrl and AON GPIO providers, checked pinctrl admission,
+GPIO regulator settling and failure ownership; the same kernel includes the
+[Pi4 ACPI USB DMA repair](testing-pi4-fullram-20261108.md). Source review is
+[draft PR65](https://github.com/jordanhubbard/daemonarchy-src/pull/65), stacked
+on draft PR64. Original upstream source notices remain intact.
+
+The new regular-file Pi500 candidate is 389,056,000 bytes, SHA256
+`96e7265b1df0060bc2855a6d04a4428998363e199a8b5ba2e0daa11a87a34e59`.
+Native UFS readback verifies the actual kernel, established loader, root-owned
+account files, ACPI-disabled four-CPU configuration and initial 3 GiB kernel
+limit. Staged pinned U-Boot, board DTB, boot script, configuration and loader
+all pass ESP byte readback; the 211-slot map passes and the native root
+partition remains unchanged. Earlier candidates are preserved.
+
+Pi4 FDT15, UEFI/USB19 and uncapped8GB USB20 compatibility checks pass with
+that exact kernel. They do not execute BCM2712 drivers. No Pi500 boot was
+attempted: MMC0 ordering, actual provider attachment, SD rail/card-detect
+behavior, full-RAM BCM2712 DMA and RP1 remain unqualified. Physical boards
+remain unattended and unchanged.

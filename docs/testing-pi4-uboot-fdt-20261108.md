@@ -133,3 +133,19 @@ reports that the backup GPT is not at the final virtual LBA and that partitions
 are not aligned to its preferred erase size. This control does not qualify
 partition geometry, full 8 GB DMA, native USB/network/display/input, installed
 boot, updates or rollback. Those physical and final-distribution gates stay open.
+
+## Full-memory handoff follow-on
+
+The [4/8 GB FDT controls](testing-pi4-fullram-20261108.md) now boot the native
+kernel `8ec36736678f4de5308164fe6dfe990119b6ff042bf6eec6887ddd3ee84c60c9`
+with 4,135,047,168 and 8,430,014,464 bytes of durable guest `hw.physmem`.
+Both complete four-CPU SD/UFS bootstrap, seven probes, ten durable files and
+clean reset. The source image remains unchanged. SD runs in PIO; this is not
+SD DMA acceptance.
+
+The runner additionally rejects UFS/CAM/MMC read errors and controller timeouts
+in serial or saved dmesg even when every probe completes. A regression test
+uses completed collections with failed reads in both locations. The preserved
+2/4/8 GB readbacks pass this stricter offline assessment (16/17/17 checks;
+4/8 GB include guest-memory bounds). These results retain the original FDT
+fixture and physical-hardware limitations above.

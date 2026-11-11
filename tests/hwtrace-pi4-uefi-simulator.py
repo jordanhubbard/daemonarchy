@@ -76,6 +76,14 @@ class UefiUsbChecks(unittest.TestCase):
             self.assertTrue(checks["done_marker"])
             self.assertFalse(checks["storage_io_clean"])
 
+    def test_full_ram_acceptance_requires_actual_guest_memory(self):
+        path = self.root / "sysctl.txt"
+        original = path.read_text()
+        for amount, accepted in ((2147483648, False), (3221225472, False), (8418725888, True)):
+            path.write_text(original + f"hw.physmem: {amount}\n")
+            checks = control.assess(self.serial, self.root, self.snapshot, self.label, 7 << 30, 8 << 30)
+            self.assertEqual(checks["guest_physical_memory_bounds"], accepted)
+
 
 if __name__ == "__main__":
     unittest.main()

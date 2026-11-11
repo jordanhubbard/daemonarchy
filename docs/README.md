@@ -33,6 +33,7 @@ another version are historical records. 1.5.1 entries describe planned work.
 - [Pi 4 simulator checkpoint: Linux control and UEFI model gaps](testing-pi4-simulator-20261107.md)
 - [Pi 4 U-Boot/FDT bootstrap: SMP, SD root and durable diagnostics](testing-pi4-uboot-fdt-20261108.md)
 - [Pi 4 UEFI/PCIe/USB bootstrap control and measured simulator blockers](testing-pi4-uefi-usb-20261108.md)
+- [Pi 4 memory variants and USB DMA](testing-pi4-fullram-20261108.md)
 - [Login trace: timing from the login screen to a usable desktop](login-trace.md)
 - [Post-mortem: the 1.4.0 image stopped installing (tigervnc-viewer)](post-mortem-1.4.0-tigervnc.md)
 - [Mastering a release image: resumable steps](mastering-1.4.1.md)
