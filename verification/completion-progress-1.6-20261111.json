@@ -1,0 +1,107 @@
+{
+  "schema": "daemonarchy/16-completion-progress@1",
+  "observed_utc": "2026-11-11T04:28:27.276938+00:00",
+  "goal_scope": "Complete all Daemonarchy 1.6 work not requiring physical hardware access, full documented RPi4/RPi5 emulator behavior, upstream tip synchronization, all branch/PR integration and stale-issue review.",
+  "product_main_merges": [
+    {
+      "pull_request": 314,
+      "sha": "8e41380e951735c4159bf6b708a21c2805c8e646",
+      "merged": true,
+      "message": "Pull Request successfully merged"
+    },
+    {
+      "pull_request": 315,
+      "sha": "53110494fc2e2f788af1e96255ebfbb1fe584fea",
+      "merged": true,
+      "message": "Pull Request successfully merged"
+    },
+    {
+      "pull_request": 316,
+      "sha": "fe67f288264ac260bcbeca4fac3e4f5c9ae3c3fd",
+      "merged": true,
+      "message": "Pull Request successfully merged"
+    },
+    {
+      "pull_request": 317,
+      "sha": "4660a6ad2d03a3b2aa8d9a0d124159b06ee71264",
+      "merged": true,
+      "message": "Pull Request successfully merged"
+    },
+    {
+      "pull_request": 318,
+      "sha": "849b33ce41c5ddb55ba37ba4617458d171e8e399",
+      "merged": true,
+      "message": "Pull Request successfully merged"
+    },
+    {
+      "pull_request": 319,
+      "sha": "3cd00f456273c8dc4a859ef37b9bb9c763690056",
+      "merged": true,
+      "message": "Pull Request successfully merged"
+    }
+  ],
+  "source": {
+    "pull_request": 87,
+    "revision": "4c7ae4481eb22310dbcfe2ad2922734424ba5836",
+    "upstream": "2af08ab3f125ce5988a641c32c777afc52f917e1",
+    "upstream_commits_added": 106,
+    "integrated_feature_stacks": [
+      78,
+      79,
+      85
+    ],
+    "five_hosted_jobs": "passed on exact revision",
+    "controller_tests": {
+      "run": 136,
+      "passed": 131,
+      "skipped": 5
+    },
+    "portable_pi5_policy_suites": 10,
+    "apple_layout_bounds": "pass",
+    "native_resume_regression": "original fails; corrected passes on FreeBSD ARM64 with synthetic child",
+    "authority": "pass",
+    "locks": 5,
+    "lifecycle_receipt": "missing",
+    "full_native_kernel_world": "not yet qualified for this revision",
+    "remaining_open_pr_head_outside_ancestry": [
+      71
+    ]
+  },
+  "ports": {
+    "pull_request": 57,
+    "revision": "887944d0cd0e2116d9b9a1bd83718efb7872ee36",
+    "upstream": "8ff8a871c096bef22a37351ef623b78e226b5a05",
+    "upstream_commits_added": 175,
+    "hyprland": "0.57.2_1",
+    "hosted_native_metadata_run": 42955226738,
+    "tested_code_revision": "a191f19fc896b05afe203363ec955f4f1287f06f",
+    "architecture_guard": "unchanged, strict removal and reviewed additions",
+    "full_current_native_package_closure": false
+  },
+  "omarchy": {
+    "upstream": "74a67e9cbc1052674e1e2ae37eeefa358157079e",
+    "owned_input_pr": 1,
+    "owned_input_revision": "2cf57816486129371445749883656975aadf2825",
+    "status": "merge in progress; not committed or qualified",
+    "semantic_translation_files_resolved": 99,
+    "remaining_conflicting_paths": 27
+  },
+  "issues": {
+    "open_reviewed": 25,
+    "stale_descriptions_refreshed": [
+      62,
+      161
+    ],
+    "checksum_failure_293": "annotated; current, unresolved and assigned 1.6",
+    "closures_justified_at_checkpoint": 0
+  },
+  "remaining": [
+    "Resolve and qualify Omarchy top-of-tree and update native adaptations and port pin.",
+    "Complete full documented RPi4/RPi5 emulator behavior and its software acceptance ledger.",
+    "Complete remaining PR and local/remote branch reconciliation across all repositories, preserving current requirements and source.",
+    "Finish canonical Components/SDK/native lifecycle, matched CURRENT closures and final ARM/x86 media and virtual install/desktop/update/recovery acceptance.",
+    "Resolve the genuine checksum report; preserve verification and existing published bytes."
+  ],
+  "physical_acceptance": "excluded from current execution; no new qualification claimed",
+  "complete": false
+}

@@ -216,5 +216,6 @@
     "Old release wording does not establish completion.",
     "The physical-access exclusion does not waive remaining software acceptance.",
     "Revisit after implementation and exact-artifact acceptance."
-  ]
+  ],
+  "initial_open_issue_review_complete": true
 }
