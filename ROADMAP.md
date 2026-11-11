@@ -20,6 +20,12 @@ breaks fifteen work items into hwtrace/prerequisite discovery, final implementat
 and native validation. The [1.6 release plan](docs/roadmap/release-1.6.0.md) owns the
 per-model matrix, order, exact-image distribution gates and remaining Spark experiments.
 
+The [Pi software checkpoint](docs/testing-pi-bootstrap-checkpoint-20261108.md)
+records passed Pi 4 SD/USB/GENET/full-memory controls and selected synthetic
+BCM2712 PCIe2 MSI-X/MSI, USB data and console-recovery tests. Versioned regular
+candidates are prepared for review; no physical Pi boot, full RP1 support,
+installer/desktop or update/rollback acceptance follows from those results.
+
 The operator expanded the 1.6 goals on 2026-11-08 to include
 [SYNC-001](docs/roadmap/active-work.md#sync-001-synchronize-current-upstream-omarchy-450-and-freebsd-current-source-and-ports-for-16):
 synchronize the desktop and compatibility adaptation with **current upstream Omarchy (4.5.0)**, and
