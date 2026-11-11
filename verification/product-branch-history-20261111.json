@@ -217,5 +217,29 @@
         "merge_revision": "2dc7771dec71f5b4aa33dae4458f1dbb6c83c53b"
       }
     ]
+  },
+  "retained_and_release_tooling_review": {
+    "observed_utc": "2026-11-11T11:45:57.268602+00:00",
+    "base": "c2b512a4e1186edb48754c5f233404a9f236f271",
+    "tree_before_documentation": "89bb24f369ceb939c953b6f07553416c5284c747",
+    "original_policy_cases_retained": 397,
+    "current_policy_cases": 398,
+    "histories": [
+      {
+        "revision": "64ddf8e52f66803bb0af24b3cdfe0835f4237d90",
+        "disposition": "Six retained helper/provenance files exactly match current source; the other six match the newer retained-acceptance implementation. Keep sealed input paths, native tool closure, tmux/sudo coverage, unprivileged tests and deterministic captured Python staging.",
+        "merge_revision": "438e19d7fc13872e8e301ba839a376caa9f857ee"
+      },
+      {
+        "revision": "88be2ae177ca054a83d74d4f15c3def487283047",
+        "disposition": "Preserve newer retained draft. All 397 original policy cases retained unchanged plus one ARM trace case. Unknown echo acceptance is superseded by explicitly static image verification; runtime/physical and canonical 1.6 lifecycle qualification remain open.",
+        "merge_revision": "d4599df4ae476cc34b5d78c7c72883f99fcf6d47"
+      },
+      {
+        "revision": "1b97bc28acfb5f568c5b724f5da4e75697faa4fe",
+        "disposition": "Keep both-architecture trace assets, token validation and twelve-asset original test. Preserve newer explicit split transport, asset identity checks, staged-unverified status and historical template limits. Restore two mistakenly advanced 1.5.0 example names.",
+        "merge_revision": "ef496d47a3d4d57b443ec71c7588725d7c680158"
+      }
+    ]
   }
 }
