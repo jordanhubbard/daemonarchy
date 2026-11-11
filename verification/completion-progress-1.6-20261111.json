@@ -1,6 +1,6 @@
 {
   "schema": "daemonarchy/16-completion-progress@1",
-  "observed_utc": "2026-11-11T07:02:13.659601+00:00",
+  "observed_utc": "2026-11-11T07:36:54.941320+00:00",
   "goal_scope": "Complete all Daemonarchy 1.6 work not requiring physical hardware access, full documented RPi4/RPi5 emulator behavior, upstream tip synchronization, all branch/PR integration and stale-issue review.",
   "product_main_merges": [
     {
@@ -86,10 +86,10 @@
     "owned_main": {
       "pull_request": 88,
       "revision": "4b6dd598234450bf82278a846bfec809e4cc0077",
-      "controller": "new revision checks in progress",
-      "native_loader": "new revision checks in progress",
-      "native_metadata": "new revision checks in progress",
-      "codeql": "previous source-code revision passed; inspect current checks",
+      "controller": "pass",
+      "native_loader": "pass",
+      "native_metadata": "pass",
+      "codeql": "pass",
       "cross_build_and_style": "current revision cross-build running; corrected-range style gate failed",
       "merged": false,
       "previous_cross_build_revision": "88e4de261fd6ebca15374f0c1545944a8dc1d567",
@@ -129,7 +129,7 @@
     "exact_revision_metadata_run": 42956065010,
     "remaining_branch_reconciliation": "PR58 incorporates retained T2 feature; other equivalence/branch reconciliation remains",
     "branch_reconciliation_pr": 58,
-    "branch_reconciliation_revision": "342155d2c8f8b1dc9d70a9192d6d8bd25d22449d",
+    "branch_reconciliation_revision": "1a9f30174f7f4d36d940c16fdd7652c012a7f74a",
     "t2_software": {
       "native_revision": "bbda0c98849a2f047bee2e17b6dcab9735394549",
       "run": 42975098461,
@@ -141,7 +141,9 @@
       "libfprint_virtual_tests": "fp-context SIGSEGV and fp-device timeout; required job remains red",
       "dependency_controls": "100 cycles each of GLib directory/cancellation, GUsb enumeration and GUsb explicit disposal pass",
       "sanitizer": "binaries compiled; diagnostic packaging failed in gtk-doc GCC runtime naming. New build-only diagnostic run pending.",
-      "current_native_closure": false
+      "current_native_closure": false,
+      "dependency_fix": "Move the GUsb mutex clear from repeatable dispose to finalize; original and fixed disposal controls plus full selected native suites are running.",
+      "pending_fix_run": 42979725474
     }
   },
   "omarchy": {
@@ -185,8 +187,9 @@
       62,
       161
     ],
-    "checksum_failure_293": "annotated; current, unresolved and assigned 1.6",
-    "closures_justified_at_checkpoint": 0
+    "checksum_failure_293": "Published ISO digest verified. Both firmware archives match the on-media catalogue through native pkg 2.8.4 and 2.9.0 (six positives); six one-byte corruptions refused. Reported install failure remains unreproduced and open.",
+    "closures_justified_at_checkpoint": 0,
+    "checksum_observation": "verification/issue293-media-checksum-20261111.json"
   },
   "remaining": [
     "Update and qualify native Omarchy adaptations and ports pin against the merged official tip.",
