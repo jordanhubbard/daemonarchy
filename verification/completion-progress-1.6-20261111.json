@@ -287,6 +287,13 @@
       "main_merge": "d3e52563199351df6a813a70bc8fa74a61043df2",
       "reviewed_histories": 7,
       "tree_changed": false
+    },
+    "owe_compatibility_review": {
+      "pull_request": 62,
+      "revision": "f8e99dd90bbe5b2458bfd8c6b2e585a84085bef8",
+      "scope": "Restore the missing conditional inotify fallback from the old sync merge, bump port revision, preserve newer source versions and reconcile both older sync histories. Native FreeBSD14.4/15.1 build/package/install/link/deinstall checks pending.",
+      "bootstrap_fix": "First matrix stopped before testing because the driver assumed Git in the guest. Corrected workflow passes reviewed SHA explicitly; failed logs retained.",
+      "merged": false
     }
   },
   "omarchy": {
@@ -395,13 +402,13 @@
     "macos_gui_suite": "pass",
     "windows_host_controls": "pass",
     "hosted_package_jobs": "all passed; release publication skipped",
-    "os_boot_acceptance_for_new_profiles": false,
+    "os_boot_acceptance_for_new_profiles": true,
     "full_peripheral_fidelity": false,
     "merged": true,
     "merge_revision": "69843c9be8f976f7ca1604c3ad564174f18bb89f",
     "primary_master_synchronized": true,
     "primary_build_products": "not replaced; isolated qualified model binary retained separately",
-    "new_profile_boot_inputs": "Current reviewed source87e0a125850c5c791515fb7ae31ebcb6e8cfce72 ARM64 GENERIC cross-kernel is building on registered FreeBSD16 amd64 worker. Fresh matching lab disk/prepared boot inputs and actual1/16GiB OS tests remain pending. No native ARM64 or final distribution qualification inferred.",
+    "new_profile_boot_inputs": "Actual Model B D0 multi-user SD boots pass all21 checks at every1/2/4/8/16GiB capacity using current reviewed cross-kernel and a fresh matching native-assembled lab disk. Exact memory banks, getty/login, init/services, kernel/UFS/storage identity, sync/reboot and unchanged source inputs verified. Other pinctrl/peripheral and final-distribution scopes remain open.",
     "boot_board_and_fdt_review": {
       "pull_request": 11,
       "revision": "99515abc74aaa49a6bafedc672ca1d49bfd22ec3",
@@ -422,7 +429,10 @@
       "hosted_native_model_result": "passed all10 RAM/FDT cell-width profiles, actual high-memory/mailbox/family controls plus original boot/reset/migration cases",
       "hosted_package_run": 42999849913,
       "linux_package_jobs": "both architectures passed; macOS jobs pending",
-      "public_observation": "verification/pi5-current-boot-inputs-20261111.json"
+      "public_observation": "verification/pi5-current-boot-inputs-20261111.json",
+      "merged": true,
+      "main_merge": "2a2912cf770b47d8e855701ac38cace618807fc1",
+      "all_hosted_checks": "passed, including Linux/macOS/Windows, native models and all three package jobs; publication skipped"
     },
     "one_gib_os_attempt": {
       "ok": false,
@@ -441,7 +451,28 @@
       },
       "failure": "TimeoutError('deadline in boot')",
       "phase": "boot",
-      "memory_gib": 1
+      "memory_gib": 1,
+      "scope": "Historical negative run with old kernel; superseded by the separately recorded current-kernel D0 OS successes. This earlier run remains failed."
+    },
+    "primary_master_revision": "2a2912cf770b47d8e855701ac38cace618807fc1",
+    "exact_os_memory_review": {
+      "pull_request": 12,
+      "revision": "fb3568890314a9cb4e677a5048c2dc57337a56ee",
+      "runner_revision": "ee4b1dfe77fd5d25e9b6152da2227dfc4a1979d6",
+      "profiles_gib": [
+        1,
+        2,
+        4,
+        8,
+        16
+      ],
+      "checks_passed": 105,
+      "source_revision": "87e0a125850c5c791515fb7ae31ebcb6e8cfce72",
+      "kernel_sha256": "3604ee5b36b898bec6c069cb1a3d58b13f3e282bf386eeecd86544febc413f54",
+      "dtb_sha256": "d01e2104a8b747e99e310bfb22aeac8100e3b98df29951b296b5cdc2e95afb53",
+      "observation": "verification/pi5-five-profile-os-20261111.json",
+      "merged": false,
+      "scope": "Actual direct multi-user SD model OS acceptance; kernel cross-build on FreeBSD16amd64, no native ARM64 or canonical SDK/lifecycle/final distribution admission."
     }
   },
   "puck_consolidation": {

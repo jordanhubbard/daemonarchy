@@ -1,0 +1,323 @@
+{
+  "schema": "uconsole/pi5-os-observation@1",
+  "model_source_revision": "99515abc74aaa49a6bafedc672ca1d49bfd22ec3",
+  "model_main_merge": "2a2912cf770b47d8e855701ac38cace618807fc1",
+  "runner_revision": "ee4b1dfe77fd5d25e9b6152da2227dfc4a1979d6",
+  "runner_sha256": "7b651b423e3986d15cedf12704524271a5488600bd20ca5a6c534efc28ca4460",
+  "model_package": {
+    "run": 42999849913,
+    "artifact": 13846540709,
+    "source_revision": "99515abc74aaa49a6bafedc672ca1d49bfd22ec3",
+    "archive_bytes": 156017112,
+    "archive_sha256": "d8966598d120c2fdc4398bfab472de90d52c25569b1083aa1687db264d12ead0",
+    "binary_extraction": "Unmodified original packaged QEMU executables; host package job passed. No per-unit source admission implied."
+  },
+  "kernel": {
+    "source_revision": "87e0a125850c5c791515fb7ae31ebcb6e8cfce72",
+    "source_tree": "f47a39fe2824e23a8987fcf730e9ec1be1c66304",
+    "sha256": "3604ee5b36b898bec6c069cb1a3d58b13f3e282bf386eeecd86544febc413f54",
+    "bytes": 19903392,
+    "host": "FreeBSD16 amd64",
+    "target": "ARM64 GENERIC",
+    "native_arm64_build": false,
+    "compiler": "FreeBSD clang version 21.1.8 (https://github.com/llvm/llvm-project.git llvmorg-21.1.8-0-g2078da43e25a)\nTarget: x86_64-unknown-freebsd16.0\nThread model: posix\nInstalledDir: /usr/bin\nBuild config: +assertions\n",
+    "phases": [
+      {
+        "name": "fetch",
+        "exit": 0,
+        "elapsed_seconds": 0.918
+      },
+      {
+        "name": "worktree",
+        "exit": 0,
+        "elapsed_seconds": 3.469
+      },
+      {
+        "name": "kernel-toolchain",
+        "exit": 0,
+        "elapsed_seconds": 708.8
+      },
+      {
+        "name": "buildkernel",
+        "exit": 0,
+        "elapsed_seconds": 61.839
+      }
+    ],
+    "required_objects": {
+      "bcm2712_pinctrl.o": {
+        "bytes": 82128,
+        "sha256": "fe5079387038e37cc9529e53611ba5f7d11000809207e78bf077bd361b0008f1"
+      },
+      "bcmstb_gpio.o": {
+        "bytes": 95880,
+        "sha256": "b47797414ba7ad031b2bc3d6bdc6c5616d7749f5895afe684aadfb53734709f4"
+      },
+      "bcmstb_reset.o": {
+        "bytes": 54152,
+        "sha256": "6d6e9612989fa87f0cc2332e54ea0e016d5c35540f5877a7d56cac970684aac0"
+      },
+      "bcm2712_mip.o": {
+        "bytes": 66320,
+        "sha256": "6572c3ddf7f7617d85a58787035226edc378a202e66149a8cd5e9c7673fe9de6"
+      },
+      "sdhci_fdt_bcm2712.o": {
+        "bytes": 95416,
+        "sha256": "4ce06c66aa8ea28e16f377bebd21ce07162633f42ba3c701860b71785f3d1971"
+      },
+      "gpioregulator.o": {
+        "bytes": 50896,
+        "sha256": "5314c3e6fd11f00df0e202ff35d76cc1ad740cab7d304620654bee1fdeb18f7f"
+      },
+      "regulator.o": {
+        "bytes": 141408,
+        "sha256": "1e0bdcd6b5d1cce8ded2e6681f674c149f117c1dc0608a8e5b508d40c41a8343"
+      }
+    }
+  },
+  "firmware": {
+    "revision": "016253866bbd6c77fcb2a744a97d81e79ad4884f",
+    "file": "bcm2712d0-rpi-5-b.dtb",
+    "sha256": "d01e2104a8b747e99e310bfb22aeac8100e3b98df29951b296b5cdc2e95afb53",
+    "source": "https://github.com/raspberrypi/firmware/blob/016253866bbd6c77fcb2a744a97d81e79ad4884f/boot/bcm2712d0-rpi-5-b.dtb"
+  },
+  "disk": {
+    "source_revision": "87e0a125850c5c791515fb7ae31ebcb6e8cfce72",
+    "kernel_sha256": "3604ee5b36b898bec6c069cb1a3d58b13f3e282bf386eeecd86544febc413f54",
+    "disk_sha256": "66f2e8b890506186771387344fd727085565f40d592cae20bd6366aba936451a",
+    "xz_sha256": "9c774dac6d0647e747d7c8bdc1bfa6a04cee7f969f18bc83e22383c4c3482477",
+    "bytes": 2147483648,
+    "native_build_exit": 0,
+    "scope": "Original native image assembler and verified transfer. Still awaiting OS acceptance; cross-kernel is not native ARM64 qualification."
+  },
+  "profiles": [
+    {
+      "memory_gib": 1,
+      "ok": true,
+      "checks": {
+        "natural_exit": true,
+        "all_commands": true,
+        "four_cpus": true,
+        "a76": true,
+        "cpu_affinity": true,
+        "psci": true,
+        "bcm2712_sd": true,
+        "rng": true,
+        "buffers_synced": true,
+        "no_panic": true,
+        "root_login": true,
+        "ncpu": true,
+        "init": true,
+        "login_process": true,
+        "userspace_services": true,
+        "ufs_root": true,
+        "matching_kernel": true,
+        "storage_roundtrip": true,
+        "full_modeled_memory": true,
+        "memory_banks_exact": true,
+        "inputs_unchanged": true
+      },
+      "real_memory_bytes": 1006628864,
+      "page_size": 4096,
+      "available_physical_memory_bytes": 983773184,
+      "expected_real_memory_bytes": 1006628864,
+      "input_sha256": {
+        "qemu-system-aarch64": "60f75d3c79a4f0e41d9a0cb9836cc44a2898b278fdf13dfdea69ea112611ad58",
+        "qemu-img": "ad9d623362f9203f0e0ebff59f93d3cb206a6e0dc5b5f2bb1d65bac385c6c80b",
+        "FreeBSD-Image": "02839a682ed150c6d0ab2daba48e88efbbc246167c0ac7c2bd91e5bdee121322",
+        "pi5-sd.dtb": "702c850901cf86cbc3fb1503b6ab65ffed19b73e34688b14ee25131f8485c424",
+        "inputs.json": "65ba7ba30255dcb7a93f30e53049866d842640b6839c451fb89d44d079738d57",
+        "pi5-current-87e0a125.img": "66f2e8b890506186771387344fd727085565f40d592cae20bd6366aba936451a"
+      },
+      "serial_sha256": "42b10625de055d572c8bdf563a27401189dfaf7ba5fd84433600d1ae338c3a92",
+      "serial_bytes": 10959,
+      "qemu_log_sha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855"
+    },
+    {
+      "memory_gib": 2,
+      "ok": true,
+      "checks": {
+        "natural_exit": true,
+        "all_commands": true,
+        "four_cpus": true,
+        "a76": true,
+        "cpu_affinity": true,
+        "psci": true,
+        "bcm2712_sd": true,
+        "rng": true,
+        "buffers_synced": true,
+        "no_panic": true,
+        "root_login": true,
+        "ncpu": true,
+        "init": true,
+        "login_process": true,
+        "userspace_services": true,
+        "ufs_root": true,
+        "matching_kernel": true,
+        "storage_roundtrip": true,
+        "full_modeled_memory": true,
+        "memory_banks_exact": true,
+        "inputs_unchanged": true
+      },
+      "real_memory_bytes": 2080370688,
+      "page_size": 4096,
+      "available_physical_memory_bytes": 2057515008,
+      "expected_real_memory_bytes": 2080370688,
+      "input_sha256": {
+        "qemu-system-aarch64": "60f75d3c79a4f0e41d9a0cb9836cc44a2898b278fdf13dfdea69ea112611ad58",
+        "qemu-img": "ad9d623362f9203f0e0ebff59f93d3cb206a6e0dc5b5f2bb1d65bac385c6c80b",
+        "FreeBSD-Image": "02839a682ed150c6d0ab2daba48e88efbbc246167c0ac7c2bd91e5bdee121322",
+        "pi5-sd.dtb": "27ff0f321cdbcc98d40ba22516f2815eafff9cd5f1b34b0e98dff00488849e58",
+        "inputs.json": "00c9c1a3f792e29774c23d09e7ec7d4371bc753db4962fa5d2bf1cd0b1b9c4a5",
+        "pi5-current-87e0a125.img": "66f2e8b890506186771387344fd727085565f40d592cae20bd6366aba936451a"
+      },
+      "serial_sha256": "8327f888aa95438309af96e2df2ed18a9228423815210507daba72a42158dc2f",
+      "serial_bytes": 10664,
+      "qemu_log_sha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855"
+    },
+    {
+      "memory_gib": 4,
+      "ok": true,
+      "checks": {
+        "natural_exit": true,
+        "all_commands": true,
+        "four_cpus": true,
+        "a76": true,
+        "cpu_affinity": true,
+        "psci": true,
+        "bcm2712_sd": true,
+        "rng": true,
+        "buffers_synced": true,
+        "no_panic": true,
+        "root_login": true,
+        "ncpu": true,
+        "init": true,
+        "login_process": true,
+        "userspace_services": true,
+        "ufs_root": true,
+        "matching_kernel": true,
+        "storage_roundtrip": true,
+        "full_modeled_memory": true,
+        "memory_banks_exact": true,
+        "inputs_unchanged": true
+      },
+      "real_memory_bytes": 4227854336,
+      "page_size": 4096,
+      "available_physical_memory_bytes": 4204998656,
+      "expected_real_memory_bytes": 4227854336,
+      "input_sha256": {
+        "qemu-system-aarch64": "60f75d3c79a4f0e41d9a0cb9836cc44a2898b278fdf13dfdea69ea112611ad58",
+        "qemu-img": "ad9d623362f9203f0e0ebff59f93d3cb206a6e0dc5b5f2bb1d65bac385c6c80b",
+        "FreeBSD-Image": "02839a682ed150c6d0ab2daba48e88efbbc246167c0ac7c2bd91e5bdee121322",
+        "pi5-sd.dtb": "6e092de7e213bedde035fc1150d72126e501a23e7bf65e517d4ccd12a9420d6d",
+        "inputs.json": "b05e9573029ba30de4997d916958ec3ee94b038eecdde249642e46f0d872f7d6",
+        "pi5-current-87e0a125.img": "66f2e8b890506186771387344fd727085565f40d592cae20bd6366aba936451a"
+      },
+      "serial_sha256": "33870067ec99623baa4ed96b35be34b50fb45677818afa555746eaeb3a348ed7",
+      "serial_bytes": 10978,
+      "qemu_log_sha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855"
+    },
+    {
+      "memory_gib": 8,
+      "ok": true,
+      "checks": {
+        "natural_exit": true,
+        "all_commands": true,
+        "four_cpus": true,
+        "a76": true,
+        "cpu_affinity": true,
+        "psci": true,
+        "bcm2712_sd": true,
+        "rng": true,
+        "buffers_synced": true,
+        "no_panic": true,
+        "root_login": true,
+        "ncpu": true,
+        "init": true,
+        "login_process": true,
+        "userspace_services": true,
+        "ufs_root": true,
+        "matching_kernel": true,
+        "storage_roundtrip": true,
+        "full_modeled_memory": true,
+        "memory_banks_exact": true,
+        "inputs_unchanged": true
+      },
+      "real_memory_bytes": 8522821632,
+      "page_size": 4096,
+      "available_physical_memory_bytes": 8499965952,
+      "expected_real_memory_bytes": 8522821632,
+      "input_sha256": {
+        "qemu-system-aarch64": "60f75d3c79a4f0e41d9a0cb9836cc44a2898b278fdf13dfdea69ea112611ad58",
+        "qemu-img": "ad9d623362f9203f0e0ebff59f93d3cb206a6e0dc5b5f2bb1d65bac385c6c80b",
+        "FreeBSD-Image": "02839a682ed150c6d0ab2daba48e88efbbc246167c0ac7c2bd91e5bdee121322",
+        "pi5-sd.dtb": "91ea5c858f0a81e95c97dc53513511f9cbc31838a7d3405fe765a2a580407462",
+        "inputs.json": "a488b1c85ffcf5eb4d301808328310db57c59022617f662551a86efffbb01ba0",
+        "pi5-current-87e0a125.img": "66f2e8b890506186771387344fd727085565f40d592cae20bd6366aba936451a"
+      },
+      "serial_sha256": "8a3fee98e4af33c388cf9484c4d182ac9b2af05d59cae69ca0ab8e4a524a9126",
+      "serial_bytes": 10963,
+      "qemu_log_sha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855"
+    },
+    {
+      "memory_gib": 16,
+      "ok": true,
+      "checks": {
+        "natural_exit": true,
+        "all_commands": true,
+        "four_cpus": true,
+        "a76": true,
+        "cpu_affinity": true,
+        "psci": true,
+        "bcm2712_sd": true,
+        "rng": true,
+        "buffers_synced": true,
+        "no_panic": true,
+        "root_login": true,
+        "ncpu": true,
+        "init": true,
+        "login_process": true,
+        "userspace_services": true,
+        "ufs_root": true,
+        "matching_kernel": true,
+        "storage_roundtrip": true,
+        "full_modeled_memory": true,
+        "memory_banks_exact": true,
+        "inputs_unchanged": true
+      },
+      "real_memory_bytes": 17112756224,
+      "page_size": 4096,
+      "available_physical_memory_bytes": 17089900544,
+      "expected_real_memory_bytes": 17112756224,
+      "input_sha256": {
+        "qemu-system-aarch64": "60f75d3c79a4f0e41d9a0cb9836cc44a2898b278fdf13dfdea69ea112611ad58",
+        "qemu-img": "ad9d623362f9203f0e0ebff59f93d3cb206a6e0dc5b5f2bb1d65bac385c6c80b",
+        "FreeBSD-Image": "02839a682ed150c6d0ab2daba48e88efbbc246167c0ac7c2bd91e5bdee121322",
+        "pi5-sd.dtb": "326280d444e83b68478ed84a42c92e101c4108688d26bc0c5de39127ff72aac1",
+        "inputs.json": "81b2067efd6c2ca98e4c86a6e8ec57f7cd740fffac2c48597584c9ce99c46841",
+        "pi5-current-87e0a125.img": "66f2e8b890506186771387344fd727085565f40d592cae20bd6366aba936451a"
+      },
+      "serial_sha256": "727f50f97feb72b603a058f1f9f5d2cbd8e0c67720f2ba90e02ea28b476e0d8d",
+      "serial_bytes": 11052,
+      "qemu_log_sha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855"
+    }
+  ],
+  "total_passed_checks": 105,
+  "negative_observations": [
+    {
+      "kernel_sha256": "c3612c03838a7c53b75443cf2eab1ab8ad28db5b490fa8d34f57bbe03d90ccaf",
+      "result": "Old retained kernel lacks BCM2712 SD/GPIO drivers; no SD root."
+    },
+    {
+      "dtb_sha256": "c30d39bdb91f7b85b0cd7303a96fe5ed88693d587d9565730c2c7245afbdee06",
+      "file": "bcm2712-d-rpi-5-b.dtb",
+      "result": "Mixed pinctrl input fails D0 driver default pinctrl admission; no SD root. Not silently relabeled or patched into a D0 tree."
+    }
+  ],
+  "scope": "Actual serial multi-user FreeBSD SD boot, console login, exact memory-bank count, four CPUs/PSCI, native init/services, UFS/kernel identity, storage I/O, sync/reboot and unchanged source disk at all five capacities.",
+  "limitations": [
+    "SD-only digital BCM2712 D0 model; not full documented peripheral fidelity",
+    "No VideoCore/EEPROM execution, RP1 USB/Ethernet/input or GPU/electrical qualification",
+    "Cross-built kernel and retained lab userland are not a final matched CURRENT distribution",
+    "No native ARM64 build, canonical Component/SDK/lifecycle admission or physical acceptance"
+  ]
+}
