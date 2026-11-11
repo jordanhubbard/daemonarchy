@@ -241,5 +241,34 @@
         "merge_revision": "ef496d47a3d4d57b443ec71c7588725d7c680158"
       }
     ]
-  }
+  },
+  "final_semantic_history_review": {
+    "observed_utc": "2026-11-11T11:50:33.394945+00:00",
+    "base": "42716b54aca67feda7afeb3d40c09d9282298ce4",
+    "preserved_tree": "7381a37869f6f0b0ece635a0ada48341e76774a0",
+    "histories": [
+      {
+        "revision": "741f50822e1a5239eb73ec20167933f3791f31e4",
+        "disposition": "Retain current binding, same original input-graph/coverage files, current1.5.1 version, expanded ARM/split-media CI and historically scoped authority explanation. No actual active framework binding differs beyond product version; no rebind/admission inferred.",
+        "merge_revision": "260ab4c973c8474e05484daea8b24c50ccb7e9d1"
+      },
+      {
+        "revision": "bc1a1c6ff47f4595f18e3bc196fb7bcc9461124b",
+        "disposition": "Preserve both exact original unticked qualification disclaimers. Keep historical partial1.5.0 plan, explicit unfinished1.5.0 acceptance in1.5.1 and complete1.6 ARM/synchronization/tracing targets. Publication does not complete native/SDK or signed-asset gates.",
+        "merge_revision": "5ba103a0ee403dd4258230e60bedaa738eb0d3bf"
+      },
+      {
+        "revision": "e9b28c11a197adabed300836fcfe460bb8531e56",
+        "disposition": "Ten original release/license/hardware records match exactly, including verification/release1.5.0. Preserve corrected FreeBSD source identity, later1.5.1 current release/catalogue, historical1.5.0 shipping notes and measured checkout sizing. Do not roll the live catalogue or release selection backward.",
+        "merge_revision": "a03b37034ae3eacd43c8510cde46cdb8adc72d0e"
+      },
+      {
+        "revision": "1dfe277fec1627427111565064f3841c62251b3f",
+        "disposition": "Seven T2 network implementation/test files exactly match current source. Retain T2 helper deployment in installer and native image audit, newer installation trace/package/media/ARM controls and all HW004/NET001/NET002 limits. The merge resolution touches only active-work and its T2 transport/port reference is present. No physical login/resume qualification inferred.",
+        "merge_revision": "dbfc4de3a36c068fdfb82072c911f8c71825dfe6"
+      }
+    ]
+  },
+  "all_audited_product_refs_contained_in_integration": true,
+  "owned_main_merge_pending": true
 }
