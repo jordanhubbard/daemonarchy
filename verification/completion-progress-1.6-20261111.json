@@ -1,6 +1,6 @@
 {
   "schema": "daemonarchy/16-completion-progress@1",
-  "observed_utc": "2026-11-11T14:04:12.759393+00:00",
+  "observed_utc": "2026-11-11T14:14:28.316883+00:00",
   "goal_scope": "Complete all Daemonarchy 1.6 work not requiring physical hardware access, full documented RPi4/RPi5 emulator behavior, upstream tip synchronization, all branch/PR integration and stale-issue review.",
   "product_main_merges": [
     {
@@ -346,7 +346,10 @@
           "independent_transfer_readback": "matches",
           "primary_head_preserved": true
         },
-        "acceptance_scope": "Actual matched lab kernel/userland boot and workspace admission; not final distribution, package closure, canonical SDK or lifecycle qualification."
+        "acceptance_scope": "Actual matched lab kernel/userland boot and workspace admission; not final distribution, package closure, canonical SDK or lifecycle qualification.",
+        "jail_and_ports_preparation": "All14 preparation phases pass, including independent input SHA readbacks,181570-file ports extraction,matched base/source jail,kernel/source1600031 check and private ports registration. Cache transfer finished; independent guest archive hashing still running. Full-bulk controller waits for verified cache and fresh disk/RAM gates.",
+        "parallel_builders": 1,
+        "make_jobs": 3
       }
     }
   },
@@ -428,7 +431,8 @@
     "repository_inventory_review": "Live user repository enumeration found four daemonarchy-named repositories plus Omarchy, compatibility and uConsole. Only the product repository has open issues (25); other reported open counts are pull requests. Existing open issues retain unresolved acceptance requirements; none closed merely for age.",
     "open_pull_request_counts_are_not_issue_counts": true,
     "checksum_filesystem_observation": "verification/issue293-native-cd9660-20261111.json",
-    "existing_checksum_comment_updated": 6790036791
+    "existing_checksum_comment_updated": 6790036791,
+    "rp1_checkpoint_comment": 6725014531
   },
   "remaining": [
     "Qualify merged current Omarchy/ports integrations in the full matched CURRENT desktop closure and rendered desktop.",
@@ -509,7 +513,7 @@
       "memory_gib": 1,
       "scope": "Historical negative run with old kernel; superseded by the separately recorded current-kernel D0 OS successes. This earlier run remains failed."
     },
-    "primary_master_revision": "319fa1afc737fb956888ef6fccf503a00987e502",
+    "primary_master_revision": "edc00332da9b25f7a2de32a011585ad71409090a",
     "exact_os_memory_review": {
       "pull_request": 12,
       "revision": "fb3568890314a9cb4e677a5048c2dc57337a56ee",
@@ -546,36 +550,48 @@
     "rp1_endpoint_review": {
       "pull_request": 14,
       "review_revision": "cddad22288e32b37eca6f5fd4e0ddc9683be7fee",
-      "merged": false,
+      "merged": true,
       "connected_vectors": 61,
       "native_result": "Passed real PCI BAR geometry/decode, all61 MSI-X DMA routes, TEST/physical-source interaction, raw status, vector/function masks/PBA, local IACK race, SRAM/blocked/pending migration and reset. Existing Pi5 boot and ten RAM/FDT layouts, preparation/firmware checks also pass;33 host controls pass.",
       "observation": "https://github.com/jordanhubbard/uConsole/blob/e95f252fc65bebf74819fa455ff26f262d306c0d/docs/rp1-endpoint-verification-20261111.json",
       "scope": "Endpoint tested on generic ARM virt. Actual Pi5 BCM2712 host integration and RP1 peripheral engines remain open; no whole-board fidelity claim.",
-      "hosted_checks": "Linux/Windows/native models, firmware and Linux package jobs pass; remaining macOS jobs running/queued at observation. Not merged.",
-      "portable_patch_recovery": "Initial macOS package build rejected a one-context-line hunk. Full3-line context replaces it; native BSD patch applies with zero fuzz. New exact-head native model jobs pass; package/macOS gates still pending. Original failure retained."
+      "hosted_checks": "All exact-reviewed-revision host/model/firmware/package checks passed or legitimately skipped before merge. Release publication skipped.",
+      "portable_patch_recovery": "Initial macOS package build rejected a one-context-line hunk. Full3-line context replaces it; native BSD patch applies with zero fuzz. All corrected exact-head model/macOS/package gates passed before merge; original failure retained.",
+      "main_merge": "3f270be030fbce7eeeb028dc7076cdc758175aec"
     },
     "rp1_uart_review": {
       "pull_request": 15,
       "review_revision": "810837646bf7842802626723c84eb84c9e74b3c8",
       "stacked_on": 14,
-      "merged": false,
+      "merged": true,
       "instances": 6,
       "rx_fifo_characters": 32,
       "native_result": "All six BAR/identity/MSI-X paths and external host RX/TX pass, along with32/1entry receive boundaries, overrun/no-overwrite, independent wrapped FIFO migration, post-migration interrupts/reset, actual old/new and new/old16-entry migration, profile mismatch/invalid-depth refusals. Existing RP1/Pi5 boot and10 memory/FDT layouts plus33 host controls pass.",
       "observation": "https://github.com/jordanhubbard/uConsole/blob/810837646bf7842802626723c84eb84c9e74b3c8/docs/rp1-uart-verification-20261111.json",
       "full_uart_fidelity": false,
       "remaining": "Timed TX FIFOs, serial framing/error timing, complete flow control, DMA, clock/reset/pin integration and actual Pi5 PCIe host wiring remain required. RX threshold/timeout implementation is separately reviewed in PR16.",
-      "hosted_checks": "All Linux/macOS/Windows, native models, firmware and three package jobs passed; release publication skipped."
+      "hosted_checks": "All exact-reviewed-revision host/model/firmware/package checks passed or legitimately skipped before merge. Release publication skipped.",
+      "main_merge": "df7a83ccd83eb69e76b9acdb9f22fa11fe30d0a7"
     },
     "rp1_rx_review": {
       "pull_request": 16,
       "review_revision": "e0061a8610cb5cd2bc308f7dace8ccf70ff08497",
       "stacked_on": 15,
-      "merged": false,
+      "merged": true,
       "observation": "https://github.com/jordanhubbard/uConsole/blob/e0061a8610cb5cd2bc308f7dace8ccf70ff08497/docs/rp1-rx-verification-20261111.json",
       "native_result": "All six UARTs/all five RX thresholds,32baud-period timeout boundaries,fractional rounding,LCR divisor latching,UARTEN/RXE gates,restart/partial-drain behavior,masked/raw interrupts,actual MSI-X DMA,remaining-deadline migration and reset pass. Original PR15 executable fails the below-threshold negative control. Extended UART/profile and RP1/Pi5 boot/memory regressions pass. Seven final test groups pass; checkpatch0errors0warnings.",
-      "hosted_checks": "All Linux/macOS/Windows,native models,firmware and three package jobs passed; release publication skipped.",
-      "scope": "Controlled model receive arrivals and virtual timers; nominal fixed48MHz. Serial-bit framing/TX timing and whole-board fidelity not qualified."
+      "hosted_checks": "All exact-reviewed-revision host/model/firmware/package checks passed or legitimately skipped before merge. Release publication skipped.",
+      "scope": "Controlled model receive arrivals and virtual timers; nominal fixed48MHz. Serial-bit framing/TX timing and whole-board fidelity not qualified.",
+      "main_merge": "edc00332da9b25f7a2de32a011585ad71409090a"
+    },
+    "rp1_stack_reconciliation": {
+      "refs_audited": 37,
+      "refs_outside_master": [],
+      "untracked_primary_performance_files_preserved": 6,
+      "reviewed_uart_trees_preserved": true,
+      "post_merge_ci_run": 43036213118,
+      "post_merge_ci_status": "queued at observation; separate from passing reviewed-head checks",
+      "full_peripheral_fidelity": false
     }
   },
   "puck_consolidation": {
