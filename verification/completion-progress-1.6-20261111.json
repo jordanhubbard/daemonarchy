@@ -112,7 +112,7 @@
     },
     "hosted_capacity_merge": "0c56dfa6a76ad6faa93593fd5bb7f7b28acbcab4",
     "native_current_amd64": {
-      "observed_utc": "2026-11-11T08:01:14.599794+00:00",
+      "observed_utc": "2026-11-11T09:51:13.181978+00:00",
       "identity": "0c8a980330f853b8730c5da6f44fb17f63eed309df6304ce84fa77500e97b987",
       "source_revision": "4b6dd598234450bf82278a846bfec809e4cc0077",
       "source_tree": "14c3b3abd3824d0cc3ef38be1b2a5f6f26214b96",
@@ -125,11 +125,26 @@
       "acceptance": "not-qualified",
       "state": {
         "status": "running",
-        "active_phase": "buildworld",
-        "phases": []
+        "active_phase": "packages",
+        "phases": [
+          {
+            "elapsed_seconds": 5828.322,
+            "exit": 0,
+            "log": "logs/buildworld-1.log",
+            "log_sha256": "5fb2e138dee072e55bd7b02e60cb42b2a0ce3297694f94253e4dae6b598d2b3d",
+            "name": "buildworld"
+          },
+          {
+            "elapsed_seconds": 1462.29,
+            "exit": 0,
+            "log": "logs/buildkernel-1.log",
+            "log_sha256": "01b5174a0158b4b0a0fcb71541a3aa7ffc35a7f2c05b2adc4ea28ad121c9da2f",
+            "name": "buildkernel"
+          }
+        ]
       },
       "native_controller_confirmed_live": true,
-      "scope": "Registered FreeBSD 16 amd64 KVM guest. Source revision remains frozen; review tree equals merged main. Unprivileged original build controller, eight jobs, 90 GiB free-storage guard and original per-job memory guard. Unsigned development products; no SDK/lifecycle or runtime qualification."
+      "scope": "Registered FreeBSD 16 amd64 KVM guest. Source revision remains frozen; review tree equals merged main. Unprivileged original build controller, eight jobs, 90 GiB free-storage guard and original per-job memory guard. Unsigned development products; no SDK/lifecycle or runtime qualification. World and GENERIC kernel complete with exit zero; pkgbase and later release phases still running. The subsequent ARM32/RISC-V EFI fix is outside this frozen source revision."
     },
     "branch_history_review": {
       "audited_refs_before_review": 144,
@@ -259,7 +274,7 @@
     "primary_quattro_synchronized": true,
     "port_snapshot_review": {
       "pull_request": 59,
-      "revision": "19ac11e6ce7bbbca67bc4af103598c2fbf37bd3a",
+      "revision": "de3f375cb5036dc6eb1f78008d1953dc56819200",
       "version": "4.5.0.20261111",
       "owned_source": "c39121a4746c0ea533ffdf437788c62810a0f19e",
       "compatibility_source": "648954b3a7bba9872f899e1afffda527f014dfd9",
@@ -269,10 +284,10 @@
       ],
       "remaining_patches": 12,
       "forward_patch_zero_fuzz": true,
-      "architecture_metadata_run": 42993411082,
-      "architecture_metadata_result": "running on the current candidate; preceding exact snapshot check passed",
-      "native_package_run": 42993411086,
-      "native_package_result": "running; original native dependency options retained",
+      "architecture_metadata_run": 42995093371,
+      "architecture_metadata_result": "passed",
+      "native_package_run": 42995093231,
+      "native_package_result": "running; prior native staging exposed outdated plist, now reviewed with 219 additions and 11 removals, preserving all five configuration/security policy rows",
       "initial_findings": "Corrected snapshot distfile naming. Original selected libdvdcss dependency is not distributed in the binary repository; selected native job now builds/packages/installs its original checksum-bound port before resolving remaining dependencies.",
       "superseded_native_run": 42986959890,
       "superseded_native_result": "cancelled when the corrected dependency driver superseded its inputs; no test result claimed. Its original script could recursively build documentation tools because it did not resolve libdvdcss DOCS dependencies first.",
