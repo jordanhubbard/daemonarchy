@@ -1,6 +1,6 @@
 {
   "schema": "daemonarchy/16-completion-progress@1",
-  "observed_utc": "2026-11-11T11:31:16.198422+00:00",
+  "observed_utc": "2026-11-11T11:39:23.634110+00:00",
   "goal_scope": "Complete all Daemonarchy 1.6 work not requiring physical hardware access, full documented RPi4/RPi5 emulator behavior, upstream tip synchronization, all branch/PR integration and stale-issue review.",
   "product_main_merges": [
     {
@@ -536,7 +536,14 @@
       "authority": "pass"
     },
     "hosted_controller_run": 42986686889,
-    "hosted_discovery_run": 42986686860
+    "hosted_discovery_run": 42986686860,
+    "strict_patch_equivalent_histories": {
+      "count": 17,
+      "history_revision": "dcd741ac1cc685babec01914c4c07c088a573286",
+      "tree_before_evidence_unchanged": "5d7d501d495bb0c88c61326f275d361452718a4d",
+      "observation": "verification/product-branch-history-20261111.json",
+      "remaining": "Non-equivalent plans, licensing/docs/release tooling, boottrace and T2 histories still require semantic review. PR325 remains draft pending GitGuardian disposition and its own CI."
+    }
   },
   "desktop_repository": {
     "history_review": 7,

@@ -1,0 +1,194 @@
+{
+  "schema": "daemonarchy/patch-equivalent-history-review@1",
+  "observed_utc": "2026-11-11T11:39:23.634110+00:00",
+  "base": "55ee3780bb9803273c05f3ea3cba3631605fbf62",
+  "base_tree": "5d7d501d495bb0c88c61326f275d361452718a4d",
+  "decision": "Reconcile strictly patch-equivalent tips while preserving the complete current tree. No native, lifecycle or release qualification inferred. Merge commits and non-equivalent semantics excluded.",
+  "included": [
+    {
+      "revision": "8365798dd9a50f3289d93a61984b683357b32f09",
+      "refs": [
+        "refs/heads/authority-marker",
+        "refs/remotes/origin/authority-marker"
+      ],
+      "equivalent_patches": [
+        "- 8365798dd9a50f3289d93a61984b683357b32f09"
+      ],
+      "merge_revision": "54deccb34ee7ea3315c7b5b3a538bc3eaf7e266f"
+    },
+    {
+      "revision": "f509543ae512948f7a798d8871d075c8f101826e",
+      "refs": [
+        "refs/heads/authority-marker-2",
+        "refs/remotes/origin/authority-marker-2"
+      ],
+      "equivalent_patches": [
+        "- f509543ae512948f7a798d8871d075c8f101826e"
+      ],
+      "merge_revision": "55cc6d03c1d62101e65357d7eedf0754289b3701"
+    },
+    {
+      "revision": "ae81f47ff924cc5fd03babd4b8e82f2b5e9701c0",
+      "refs": [
+        "refs/heads/docs-roots-151",
+        "refs/remotes/origin/docs-roots-151"
+      ],
+      "equivalent_patches": [
+        "- ae81f47ff924cc5fd03babd4b8e82f2b5e9701c0"
+      ],
+      "merge_revision": "5a612e4be587c7b94ae6fcb6042748849b0d71b2"
+    },
+    {
+      "revision": "6fbc0fdf74f31279680ba154ae3a0386162b5f38",
+      "refs": [
+        "refs/heads/feat/checkout-arm64-window",
+        "refs/remotes/origin/feat/checkout-arm64-window"
+      ],
+      "equivalent_patches": [
+        "- 6fbc0fdf74f31279680ba154ae3a0386162b5f38"
+      ],
+      "merge_revision": "c352ff75c602ea8ca8fbd1b4bf8ead24e7b2ad6b"
+    },
+    {
+      "revision": "b5142a8c581bef40ab902938ff8bf95d77a308e2",
+      "refs": [
+        "refs/heads/fix-hwtrace-hardlink",
+        "refs/remotes/origin/fix-hwtrace-hardlink"
+      ],
+      "equivalent_patches": [
+        "- b5142a8c581bef40ab902938ff8bf95d77a308e2"
+      ],
+      "merge_revision": "8382babad2e1d58999ecfe9fb4e39bcfc2f5c2e6"
+    },
+    {
+      "revision": "f58e45e198076943e78fd90ab44d299531ee3da1",
+      "refs": [
+        "refs/heads/installer-dead-shard-order",
+        "refs/remotes/origin/installer-dead-shard-order"
+      ],
+      "equivalent_patches": [
+        "- f58e45e198076943e78fd90ab44d299531ee3da1"
+      ],
+      "merge_revision": "d98ab58fecb8c3bc3895f87cc4bacb78e1a2bbd6"
+    },
+    {
+      "revision": "5558d005f5d3d73095c1b969053eaf466b93a903",
+      "refs": [
+        "refs/heads/locks-151",
+        "refs/remotes/origin/locks-151"
+      ],
+      "equivalent_patches": [
+        "- 5558d005f5d3d73095c1b969053eaf466b93a903"
+      ],
+      "merge_revision": "762b3558f18725db7a035bd289d8503f05a125f9"
+    },
+    {
+      "revision": "d17bbf51ab624562bee8ee7b1ef0c05dd3917152",
+      "refs": [
+        "refs/heads/marker-151",
+        "refs/remotes/origin/marker-151"
+      ],
+      "equivalent_patches": [
+        "- d17bbf51ab624562bee8ee7b1ef0c05dd3917152"
+      ],
+      "merge_revision": "44c8b2f58d6698d230f2910ab4683671821e8b17"
+    },
+    {
+      "revision": "e763971e459b0d5dc06992d3cf75ea8babbc4af2",
+      "refs": [
+        "refs/heads/markers-150",
+        "refs/remotes/origin/markers-150"
+      ],
+      "equivalent_patches": [
+        "- e763971e459b0d5dc06992d3cf75ea8babbc4af2"
+      ],
+      "merge_revision": "1c8d22fe0ef643bd7b944ad0855c485347e962b7"
+    },
+    {
+      "revision": "ce0d4454276edb0c0e05b699f4cc9f26803f5b06",
+      "refs": [
+        "refs/heads/qemu-usb-kbd",
+        "refs/remotes/origin/qemu-usb-kbd"
+      ],
+      "equivalent_patches": [
+        "- ce0d4454276edb0c0e05b699f4cc9f26803f5b06"
+      ],
+      "merge_revision": "ea13a0acab8bfb88a5d5a9a14690dd441f110bf5"
+    },
+    {
+      "revision": "3865f7298f9db70245ece1f2ce4df6a20feb7c32",
+      "refs": [
+        "refs/heads/recovery/puck/1.4.1-install-baseline"
+      ],
+      "equivalent_patches": [
+        "- 3865f7298f9db70245ece1f2ce4df6a20feb7c32"
+      ],
+      "merge_revision": "a54dd8d10046bdc80e48eaba2cd284f63af49dd3"
+    },
+    {
+      "revision": "bb8bb057aef348e9cc2347f5f0efdb8893fe9d3e",
+      "refs": [
+        "refs/heads/recovery/puck/1.4.1-local-package-media"
+      ],
+      "equivalent_patches": [
+        "- bb8bb057aef348e9cc2347f5f0efdb8893fe9d3e"
+      ],
+      "merge_revision": "856732e71e2f73105bad934e36519deb9b8e099d"
+    },
+    {
+      "revision": "9c3d291f1fea09fcf48b562503d1c3938a1a83de",
+      "refs": [
+        "refs/heads/spark-defer",
+        "refs/remotes/origin/spark-defer"
+      ],
+      "equivalent_patches": [
+        "- 9c3d291f1fea09fcf48b562503d1c3938a1a83de"
+      ],
+      "merge_revision": "a2c412afc437f3daff8ba9cd4810a88c5c024430"
+    },
+    {
+      "revision": "7cfe69c175512118bd98d07bf3ae891afa826f00",
+      "refs": [
+        "refs/heads/spark-release-note",
+        "refs/remotes/origin/spark-release-note"
+      ],
+      "equivalent_patches": [
+        "- 7cfe69c175512118bd98d07bf3ae891afa826f00"
+      ],
+      "merge_revision": "9fbc80824eedc7b572f439b721831667cdb88b03"
+    },
+    {
+      "revision": "2ebbb7e168fbf319389161ee7e0afd31c8283df7",
+      "refs": [
+        "refs/heads/work/hwtrace-aarch64",
+        "refs/remotes/origin/work/hwtrace-aarch64"
+      ],
+      "equivalent_patches": [
+        "- 2ebbb7e168fbf319389161ee7e0afd31c8283df7"
+      ],
+      "merge_revision": "c1494a2d6e3fc84accfa1a12cf4476103eca03e1"
+    },
+    {
+      "revision": "831ae806fb43b044b88a1005698684da85193126",
+      "refs": [
+        "refs/heads/work/strip-contributor-headers",
+        "refs/remotes/origin/work/strip-contributor-headers"
+      ],
+      "equivalent_patches": [
+        "- 831ae806fb43b044b88a1005698684da85193126"
+      ],
+      "merge_revision": "6a67266228f2cfb8b60e58e32a9868ca1b5c39b5"
+    },
+    {
+      "revision": "ea46a8535f60bb6d3b00fc3dfd6ff79b1e61cada",
+      "refs": [
+        "refs/remotes/origin/docs/visual-sdk-completion-boundary"
+      ],
+      "equivalent_patches": [
+        "- ea46a8535f60bb6d3b00fc3dfd6ff79b1e61cada"
+      ],
+      "merge_revision": "dcd741ac1cc685babec01914c4c07c088a573286"
+    }
+  ],
+  "history_revision": "dcd741ac1cc685babec01914c4c07c088a573286"
+}
