@@ -1,4 +1,9 @@
+<!-- release-sync: historical -->
 # Mastering notes for 1.5.0
+
+This records the historical 1.5.0 mastering cycle. Use [HACKING.md](../HACKING.md)
+for the current release procedure and [release/current.json](../release/current.json)
+for the published release identity.
 
 What changed in how an amd64 release image is mastered after 1.4.1, so the 1.5.0 run
 starts from it. The steps themselves are in [mastering-1.4.1.md](mastering-1.4.1.md).

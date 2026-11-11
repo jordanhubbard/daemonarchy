@@ -1,6 +1,6 @@
 {
   "schema": "daemonarchy/16-completion-progress@1",
-  "observed_utc": "2026-11-11T11:50:33.394945+00:00",
+  "observed_utc": "2026-11-11T12:04:43.448875+00:00",
   "goal_scope": "Complete all Daemonarchy 1.6 work not requiring physical hardware access, full documented RPi4/RPi5 emulator behavior, upstream tip synchronization, all branch/PR integration and stale-issue review.",
   "product_main_merges": [
     {
@@ -462,7 +462,7 @@
       "memory_gib": 1,
       "scope": "Historical negative run with old kernel; superseded by the separately recorded current-kernel D0 OS successes. This earlier run remains failed."
     },
-    "primary_master_revision": "3521d47b8e4fc7f4f96be9224870504334ac75db",
+    "primary_master_revision": "319fa1afc737fb956888ef6fccf503a00987e502",
     "exact_os_memory_review": {
       "pull_request": 12,
       "revision": "fb3568890314a9cb4e677a5048c2dc57337a56ee",
@@ -483,6 +483,18 @@
       "scope": "Actual direct multi-user SD model OS acceptance; kernel cross-build on FreeBSD16amd64, no native ARM64 or canonical SDK/lifecycle/final distribution admission.",
       "main_merge": "3521d47b8e4fc7f4f96be9224870504334ac75db",
       "all_hosted_checks": "Linux/macOS GUI tests, Windows portability, native models and all three package jobs passed; publication skipped."
+    },
+    "help_history_review": {
+      "pull_request": 13,
+      "review_revision": "c1a381c80ce462b54e0460521dd4a95e9b5fc813",
+      "main_merge": "319fa1afc737fb956888ef6fccf503a00987e502",
+      "all_host_and_package_checks": "passed; release publication skipped",
+      "reviewed_commits": 6,
+      "exact_files": 8,
+      "evolved_files": 9,
+      "implementation_changes": false,
+      "documentation_change": "README states all five actual Pi5 OS RAM capacities.",
+      "all_audited_local_and_origin_refs_in_master": true
     }
   },
   "puck_consolidation": {
@@ -542,7 +554,7 @@
       "history_revision": "dcd741ac1cc685babec01914c4c07c088a573286",
       "tree_before_evidence_unchanged": "5d7d501d495bb0c88c61326f275d361452718a4d",
       "observation": "verification/product-branch-history-20261111.json",
-      "remaining": "Non-equivalent plans, licensing/docs/release tooling, boottrace and T2 histories still require semantic review. PR325 remains draft pending GitGuardian disposition and its own CI."
+      "remaining": "All28 audited product tips are now contained in the integration branch after the separate semantic reviews. Owned main merge remains pending PR325 and its unresolved GitGuardian finding."
     },
     "remaining_history_review": {
       "audited_tips": 28,
