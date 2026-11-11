@@ -20,7 +20,7 @@ is not a base/ABI migration.
 
 A Daemonarchy image is five things stacked up, each with its own repository (the [full table](#the-repositories-that-make-up-daemonarchy) is in the reference):
 
-1. **FreeBSD itself**, from [daemonarchy-src](https://github.com/jordanhubbard/daemonarchy-src): an ordinary FreeBSD source tree, a fork that tracks upstream FreeBSD `main` and keeps Daemonarchy's own changes on an integration branch (`daemonarchy`). It produces the base system, the kernel and the 32-bit libraries as tarball sets.
+1. **FreeBSD itself**, from [daemonarchy-src](https://github.com/jordanhubbard/daemonarchy-src): an ordinary FreeBSD source tree, a fork that retains pristine upstream history in `freebsd/main` and integrates reviewed Daemonarchy changes through `daemonarchy` and owned `main`. It produces the base system, the kernel and the 32-bit libraries as tarball sets.
 2. **The ports**, from [daemonarchy-ports](https://github.com/jordanhubbard/daemonarchy-ports): the FreeBSD ports tree plus the Omarchy ports. Poudriere builds them into packages, and the ones Daemonarchy publishes itself are signed and uploaded as GitHub release assets (the "feeds").
 3. **The desktop layers**, [omarchy-freebsd](https://github.com/jordanhubbard/omarchy-freebsd) and [daemonarchy-desktop](https://github.com/jordanhubbard/daemonarchy-desktop). They are not built separately: the ports `x11-wm/omarchy` and `x11-wm/daemonarchy` fetch them at pinned commits, so they reach a machine as packages.
 4. **The installer and the image**, this repository: the installer in `overlay/`, `build-iso.sh`, `pkg-repo.sh`, the test harnesses, the release scripts and the documentation.
@@ -102,7 +102,7 @@ git clone https://github.com/jordanhubbard/daemonarchy.git ~/src/daemonarchy
 | Repository | Check it out when | Where, and which branch |
 |---|---|---|
 | [daemonarchy](https://github.com/jordanhubbard/daemonarchy) | Always | Anywhere. Branch from `main`; the release machinery masters from a clean checkout of one full commit. |
-| [daemonarchy-src](https://github.com/jordanhubbard/daemonarchy-src) | You change the kernel or base system, or build the sets | `/usr/src` is the conventional path and the optional checkout the installer offers uses it; `~/daemonarchy-src` also works for the controller. `main` tracks upstream FreeBSD; Daemonarchy's changes and the optional `/usr/src` checkout use the `daemonarchy` branch. Check out an exact commit (`git checkout --detach <40-hex>`) for any build you will keep, and keep the tree clean while it builds. |
+| [daemonarchy-src](https://github.com/jordanhubbard/daemonarchy-src) | You change the kernel or base system, or build the sets | `/usr/src` is the conventional path and the optional checkout the installer offers uses it; `~/daemonarchy-src` also works for the controller. Reviewed changes integrate through `daemonarchy` and owned `main`; pristine upstream remains in `freebsd/main`. The optional `/usr/src` checkout uses the published catalogue's source branch. Check out an exact commit (`git checkout --detach <40-hex>`) for any build you will keep, and keep the tree clean while it builds. |
 | [daemonarchy-ports](https://github.com/jordanhubbard/daemonarchy-ports) | You change or add a port, or build packages | `main` is the integration branch (the 1.5.0 pin is `e84b4c4c` on it). Register it with poudriere as a null tree (`poudriere ports -c -p omarchyiso -m null -M <path>`); on a Daemonarchy machine it can also be `/usr/ports`. A shallow clone is enough for poudriere. |
 | [daemonarchy-desktop](https://github.com/jordanhubbard/daemonarchy-desktop) and [omarchy-freebsd](https://github.com/jordanhubbard/omarchy-freebsd) | You change the look, the System > FreeBSD tools or the FreeBSD adaptation of Omarchy | Anywhere (`~/src`). The ports fetch them pinned, so test your checkout by laying it over the port's extracted sources ([The FreeBSD layer and the desktop layer](#the-freebsd-layer-and-the-desktop-layer)) and then bump the pin in the port. |
 
@@ -570,9 +570,11 @@ ports revisions for a release.
 
 For a fresh development workspace, clone the owned repositories and the
 framework separately. A native build host needs sufficient space for the full
-source and ports trees. Source and ports use `daemonarchy` for owned integration
-and `main` for upstream tracking; a published checkout catalogue may select a
-different branch at its exact release commit. The 1.5.0 catalogue selects
+source and ports trees. Source reviews target `daemonarchy`, with reviewed
+history also synchronized into owned `main`; pristine source upstream remains
+in `freebsd/main`. Ports reviews target owned `main`, with upstream history kept
+in its separate remote. A published checkout catalogue selects exact release
+commits and may select a different branch. The 1.5.0 catalogue selects
 source `daemonarchy` and ports `main`.
 
 ```sh
