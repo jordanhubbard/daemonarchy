@@ -1953,6 +1953,18 @@ remains open; report files do not establish a passing gate.
   - [ ] Each claimed ARM32 target has native boot, working application/role, package/update and recovery evidence for its actual ABI.
   - [ ] Unsupported architectures and unresolved feasibility are disclosed in the 1.6 support matrix and are never hidden by the ARM theme.
 
+### [x] ARM-PI5-MEM-001 — Explicit Pi 5 bootstrap memory profiles
+
+- **Priority:** P1
+- **Owner:** product diagnostics tooling
+- **Direction:** Keep capped discovery compatible and make uncapped experimental inputs explicit
+- **Conclusion:** Explicit bundle profiles and validation are implemented; native base-image readback and usable-RAM acceptance remain separate
+- **Depends on:** none
+- **Implementation:**
+  - [x] Add validated memory profile, queue and retained base-profile audit identity
+- **Evidence:**
+  - [x] Eighteen host controls plus retained-input default/uncapped staging and repeatability checks; no image or physical boot claim
+
 ### [ ] SYNC-001 — Synchronize current upstream Omarchy (4.5.0) and FreeBSD-CURRENT source and ports for 1.6
 
 - **Priority:** P1

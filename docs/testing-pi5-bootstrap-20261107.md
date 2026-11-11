@@ -36,6 +36,71 @@ metadata. Pi 5B C1, Pi 5B D0 and Pi 500 have explicit, separate selections.
 The bundle needs the matching hwtrace Lua/rootfs/trace-map support before it
 can become an image.
 
+
+## Explicit candidate memory profiles
+
+`pi5-bootstrap.py` keeps the existing command and **3 GiB** default. Select
+`--memory-cap none` only for a separate experimental uncapped candidate. New
+v1 manifests record `memory_profile.memory_cap`, the expected kernel cap in
+bytes (or `null`), and `runtime_memory_verified: false`. Historical v1 bundles
+without that metadata remain 3 GiB profiles; they cannot satisfy an explicit
+uncapped request.
+
+Each new bundle contains both `boot/loader.conf.local` and `queue.txt`. The
+capped loader configuration and queue set `hw.physmem=3G`; the uncapped loader
+configuration omits that assignment and its queue explicitly uses
+`unset hw.physmem`. Both retain the four-CPU/FDT discovery selection. The
+existing trace queue parser accepts the generated queue. Before copying boot
+inputs or queuing an experiment, validate its requested profile and retained
+bytes:
+
+```sh
+python3 tools/hwtrace/pi5-bootstrap.py --verify-bundle BUNDLE --memory-cap none \
+  --queue-file BUNDLE/queue.txt
+python3 tools/boottrace/stick.py queue NEW_REGULAR_IMAGE BUNDLE/queue.txt
+```
+
+`--queue-file PATH` compares the selected experiment source byte-for-byte with
+the profile-bound bundle queue, before `stick.py queue` converts it into the
+on-disk CNF format. Legacy bundles cannot use this optional comparison because
+they have no profile-bound queue.
+
+The validator rehashes every declared file and checks exact loader/profile/queue
+consistency. It refuses changed files, extra members, explicit cap mismatches,
+and conflicting settings even when their file hashes have been recomputed.
+This is internal consistency and retained-input checking, not authenticated
+provenance or a claim that the image boots. Legacy bundles have no generated
+queue; their established 3 GiB queue must be retained separately.
+
+The base UFS image is a separate layer. Copying the ESP files does **not**
+install the bundle's loader configuration into UFS. Build a new base image with
+matching effective settings in `/boot/loader.conf` and, when present,
+`/boot/loader.conf.local`, then independently read back those actual UFS files
+and the kernel before assembly. Record an absent local configuration explicitly. Check the
+final ESP and actual experiment queue separately. An `unset` in the queue does
+not establish that the UFS image has the intended profile, that firmware
+exposes all RAM, or that native DMA is qualified.
+
+Optionally, `--base-profile-audit FILE` retains an external native-readback
+record inside the bundle. Its schema is
+`daemonarchy/pi5-base-profile-audit@1`; required fields are `memory_cap`,
+`image_sha256`, `kernel_sha256`, `loader_conf_sha256`, and
+`loader_conf_local_sha256`. Hashes identify the independently inspected base
+image, kernel and exact configuration files. A native check that proves the
+local configuration is absent records `loader_conf_local_exists: false` and
+`loader_conf_local_sha256: null`; it must not invent a file hash. The tool requires the cap and
+kernel to match the bundle and binds the complete receipt bytes. It records
+`external-readback-recorded` and `ufs_verified_by_this_tool: false`; supplying
+JSON is not independent UFS verification. Without a receipt, the manifest
+still explicitly requires independent base-UFS readback. Neither form claims
+actual usable RAM or physical Pi 500 acceptance.
+
+Host tests cover legacy default handling, both profile/queue selections,
+explicit mismatch and tamper refusal, external audit binding and the actual
+trace queue parser. They do not replace native image readback or hardware
+qualification. Existing candidate images and their historical 3 GiB evidence
+below remain unchanged.
+
 | Selected input | SHA-256 |
 | --- | --- |
 | SD-only U-Boot `u-boot.bin`, 919,616 bytes | `6016da23bfe2f142982e606621d13104a991f8b710150df2336b3d0514c837b9` |
