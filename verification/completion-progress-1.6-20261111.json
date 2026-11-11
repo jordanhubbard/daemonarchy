@@ -1,6 +1,6 @@
 {
   "schema": "daemonarchy/16-completion-progress@1",
-  "observed_utc": "2026-11-11T12:04:43.448875+00:00",
+  "observed_utc": "2026-11-11T12:35:15.104968+00:00",
   "goal_scope": "Complete all Daemonarchy 1.6 work not requiring physical hardware access, full documented RPi4/RPi5 emulator behavior, upstream tip synchronization, all branch/PR integration and stale-issue review.",
   "product_main_merges": [
     {
@@ -205,12 +205,23 @@
       "tree_unchanged": true,
       "tree": "f47a39fe2824e23a8987fcf730e9ec1be1c66304",
       "remaining_cases": [
-        "retained draft framework/scale-limit binding",
-        "RTC v2 unconditional I/O resource refusal versus owned UEFI-specific policy"
+        "retained draft framework/scale-limit binding"
       ],
       "merged": true,
       "main_merge": "9a06d9f3c5de504deda3dcb75bda7447d4d0c095",
       "all_hosted_checks": "All six cross-kernels, controller, native loader and CodeQL passed on exact reviewed head.",
+      "local_main_synchronized": true
+    },
+    "rtc_history_review": {
+      "pull_request": 92,
+      "review_revision": "473004a9a97647eb3ff6bd202b5ab273091c738e",
+      "main_merge": "c061ea3a9da41abe6d41ca6600e993ed7a5e96b4",
+      "tree_unchanged": true,
+      "tree": "f47a39fe2824e23a8987fcf730e9ec1be1c66304",
+      "result": "All16 hosted checks passed or legitimately skipped. Upstream unconditional RTC resource-refusal history reconciled while retaining the owned amd64 UEFI policy and documented override. No hardware behavior changed.",
+      "remaining_refs_outside_main": [
+        "draft/retained-src-plan8031c592877d1761b36338b797213fa01a71b83f"
+      ],
       "local_main_synchronized": true
     }
   },
@@ -301,6 +312,14 @@
       "native_run": 43009997972,
       "native_result": "Both FreeBSD 14.4 and 15.1 passed; 14.4 uses libinotify in the owed daemon, 15.1 uses the system header. All three installed ELF dependency graphs resolve.",
       "public_observation": "verification/native-owe-port-20261111.json"
+    },
+    "current_desktop_closure_plan": {
+      "source_revision": "4b6dd598234450bf82278a846bfec809e4cc0077",
+      "ports_revision": "b6c0b492da8df763cc3f8f5933d1027993ac7f9d",
+      "status": "running",
+      "completed": "Full exact181568file ports checkout and matched CURRENT base/source jail creation pass. Initial plan failed for a missing task-private distfiles directory; original failure preserved, directory created, planning-only recovery started against the same jail/tree.",
+      "scope": "Dependency/size plan only; full package bulk and final desktop closure not yet qualified.",
+      "global_configuration_changed": false
     }
   },
   "omarchy": {
@@ -495,6 +514,16 @@
       "implementation_changes": false,
       "documentation_change": "README states all five actual Pi5 OS RAM capacities.",
       "all_audited_local_and_origin_refs_in_master": true
+    },
+    "rp1_endpoint_review": {
+      "pull_request": 14,
+      "review_revision": "e95f252fc65bebf74819fa455ff26f262d306c0d",
+      "merged": false,
+      "connected_vectors": 61,
+      "native_result": "Passed real PCI BAR geometry/decode, all61 MSI-X DMA routes, TEST/physical-source interaction, raw status, vector/function masks/PBA, local IACK race, SRAM/blocked/pending migration and reset. Existing Pi5 boot and ten RAM/FDT layouts, preparation/firmware checks also pass;33 host controls pass.",
+      "observation": "https://github.com/jordanhubbard/uConsole/blob/e95f252fc65bebf74819fa455ff26f262d306c0d/docs/rp1-endpoint-verification-20261111.json",
+      "scope": "Endpoint tested on generic ARM virt. Actual Pi5 BCM2712 host integration and RP1 peripheral engines remain open; no whole-board fidelity claim.",
+      "hosted_checks": "running; not yet qualified"
     }
   },
   "puck_consolidation": {
