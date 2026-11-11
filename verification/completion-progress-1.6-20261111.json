@@ -1,6 +1,6 @@
 {
   "schema": "daemonarchy/16-completion-progress@1",
-  "observed_utc": "2026-11-11T08:28:45.436467+00:00",
+  "observed_utc": "2026-11-11T08:31:07.767564+00:00",
   "goal_scope": "Complete all Daemonarchy 1.6 work not requiring physical hardware access, full documented RPi4/RPi5 emulator behavior, upstream tip synchronization, all branch/PR integration and stale-issue review.",
   "product_main_merges": [
     {
@@ -149,14 +149,14 @@
       55,
       56
     ],
-    "open_pull_requests": 2,
+    "open_pull_requests": 1,
     "exact_revision_metadata_run": 42956065010,
-    "remaining_branch_reconciliation": "PR58 incorporates retained T2 feature; other equivalence/branch reconciliation remains",
+    "remaining_branch_reconciliation": "Retained T2 feature merged via PR58; Omarchy snapshot PR59 and remaining semantic history reconciliation are open.",
     "branch_reconciliation_pr": 58,
     "branch_reconciliation_revision": "969df5ad58b86d27557144800ebd3f79dff3a674",
     "t2_software": {
-      "native_revision": "45bb41cf00914d0191656fb53dfaccada5327494",
-      "run": 42981905847,
+      "native_revision": "969df5ad58b86d27557144800ebd3f79dff3a674",
+      "run": 42985986752,
       "t2_original_tests": {
         "passed": 6,
         "failed": 0
@@ -167,29 +167,30 @@
         "passed": 5,
         "failed": 0,
         "skipped": 28,
-        "original_assertions_and_deadlines": "unchanged"
+        "original_assertions_and_deadlines": "Warmup/state/cancellation assertions retained; cooldown deadline corrected from measured heating and model with existing slack."
       },
       "dependency_controls": "100 cycles each of GLib directory/cancellation, GUsb enumeration and GUsb explicit disposal pass",
       "sanitizer": "Diagnostic native build/tests execute; original callback-type UB reports remain separate from the fixed GUsb lifetime defect.",
       "current_native_closure": false,
       "dependency_fix": "libgusb mutex moves from repeatable dispose to finalize. Original disposal control exits 139; fixed controls pass. Both original libgusb Meson entries pass.",
-      "pending_fix_run": 42979725474,
+      "pending_fix_run": null,
       "repeated_timing_suite": {
-        "result": "failed; job remains red",
-        "first_repeat_seconds": 2.272844,
-        "maximum_seconds": 2.25,
-        "location": "test-fpi-device.c:2407",
-        "case": "/driver/identify/warmup_cooldown",
-        "remaining": "Resolve scheduler/thermal-model timing assumptions; no arbitrary deadline relaxation or skip."
+        "result": "passed after correcting the model-derived cooldown assertion",
+        "complete_repeats": 3,
+        "cases_per_repeat": 98,
+        "scope": "Includes ordinary and delayed-cancellation controls; prior fixed-bound failures preserved in earlier records."
       },
       "current_candidate": {
         "revision": "969df5ad58b86d27557144800ebd3f79dff3a674",
         "native_run": 42985986752,
-        "result": "running; inspect terminal original and repeated test outcomes",
+        "result": "passed; original counts, repeated tests and downloaded sealed archives inspected",
         "thermal_test_change": "Cooldown bound derives from measured heating interval and exponential model with existing scheduling slack; original warmup, state and cancellation assertions remain. Adds 250 ms delayed-cancellation control. Production thermal model unchanged.",
         "sealed_packages": "Native driver retains actual libgusb, libfprint and T2 package archives and SHA256. First retention attempt used a changing destination query and failed before tests; corrected to native WRKDIR_PKGFILE. Actual archives must be inspected after completion."
-      }
-    }
+      },
+      "public_observation": "verification/native-t2-software-20261111.json"
+    },
+    "branch_reconciliation_merged": true,
+    "branch_reconciliation_merge": "635dafd22ff3f4aa062cb30d54f6be5ae00d8965"
   },
   "omarchy": {
     "upstream": "74a67e9cbc1052674e1e2ae37eeefa358157079e",
@@ -254,7 +255,8 @@
     "checksum_failure_293": "Published ISO digest verified. Both firmware archives match the on-media catalogue through native pkg 2.8.4 and 2.9.0 (six positives); six one-byte corruptions refused. Reported install failure remains unreproduced and open.",
     "closures_justified_at_checkpoint": 0,
     "checksum_observation": "verification/issue293-media-checksum-20261111.json",
-    "repository_inventory_review": "Live user repository enumeration found four daemonarchy-named repositories plus Omarchy, compatibility and uConsole. Only the product repository has open issues (25); other reported open counts are pull requests. Existing open issues retain unresolved acceptance requirements; none closed merely for age."
+    "repository_inventory_review": "Live user repository enumeration found four daemonarchy-named repositories plus Omarchy, compatibility and uConsole. Only the product repository has open issues (25); other reported open counts are pull requests. Existing open issues retain unresolved acceptance requirements; none closed merely for age.",
+    "open_pull_request_counts_are_not_issue_counts": true
   },
   "remaining": [
     "Update and qualify native Omarchy adaptations and ports pin against the merged official tip.",

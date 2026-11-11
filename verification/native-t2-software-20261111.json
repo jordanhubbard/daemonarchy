@@ -1,0 +1,107 @@
+{
+  "schema": "daemonarchy/native-selected-t2-software@1",
+  "observed_utc": "2026-11-11T08:31:07.767564+00:00",
+  "source_repository": "jordanhubbard/daemonarchy-ports",
+  "source_revision": "969df5ad58b86d27557144800ebd3f79dff3a674",
+  "owned_main_merge": "635dafd22ff3f4aa062cb30d54f6be5ae00d8965",
+  "pull_request": 58,
+  "native_run": 42985986752,
+  "platform": "FreeBSD 15.1 amd64, disposable guest",
+  "result": "passed",
+  "libgusb": {
+    "meson_entries_passed": 2,
+    "meson_entries_failed": 0,
+    "original_dispose_control_exit": 139,
+    "fixed_disposal_and_enumeration_controls": "pass",
+    "fix": "Clear the mutex once in finalize rather than repeatable dispose."
+  },
+  "libfprint": {
+    "meson_entries": 33,
+    "passed": 5,
+    "failed": 0,
+    "skipped": 28,
+    "skips": "Original native log retains each unavailable hardware/fixture suite and its exit77. No unexecuted driver test is claimed passed.",
+    "internal_device_cases_per_run": 98,
+    "complete_internal_device_runs": 4,
+    "extra_complete_repeats": 3,
+    "thermal_controls": "Ordinary plus deliberately 250 ms delayed cancellation pass in the full suite and all three complete repeats. Deadlines follow measured heating and exponential cooling with original scheduling slack; production thermal behavior is unchanged.",
+    "delayed_control_observation": "Original native log observes HOT-to-WARM after 2.40 seconds, demonstrating why the former constant 2.25-second cooldown assertion is invalid for delayed cancellation."
+  },
+  "bridge": {
+    "original_tests_passed": 6,
+    "failed": 0,
+    "package_install_cli_refusal_service_syntax": "passed"
+  },
+  "packages": [
+    {
+      "name": "libfprint",
+      "version": "1.94.10_2",
+      "origin": "security/libfprint",
+      "abi": "FreeBSD:15:amd64",
+      "bytes": 355881,
+      "sha256": "665b941cf35a542aea1e05b9c48a363d76c94ac15dc28c5030f13b2e61903e73",
+      "declared_dependencies": {
+        "gettext-runtime": {
+          "origin": "devel/gettext-runtime",
+          "version": "1.0_1"
+        },
+        "glib": {
+          "origin": "devel/glib20",
+          "version": "2.88.3,2"
+        },
+        "libgusb": {
+          "origin": "devel/libgusb",
+          "version": "0.4.9_2"
+        },
+        "pixman": {
+          "origin": "x11/pixman",
+          "version": "0.46.4"
+        }
+      }
+    },
+    {
+      "name": "libgusb",
+      "version": "0.4.9_2",
+      "origin": "devel/libgusb",
+      "abi": "FreeBSD:15:amd64",
+      "bytes": 1161364,
+      "sha256": "63305abb1fc6089459898125641f2643d6fe68343522e3d2c70c59e0948ab7ba",
+      "declared_dependencies": {
+        "gettext-runtime": {
+          "origin": "devel/gettext-runtime",
+          "version": "1.0_1"
+        },
+        "glib": {
+          "origin": "devel/glib20",
+          "version": "2.88.3,2"
+        },
+        "json-glib": {
+          "origin": "devel/json-glib",
+          "version": "1.10.8"
+        }
+      }
+    },
+    {
+      "name": "t2-touchid",
+      "version": "0.1.0.20261028",
+      "origin": "security/t2-touchid",
+      "abi": "FreeBSD:15:amd64",
+      "bytes": 703513,
+      "sha256": "d4574dc8cfe3e98447f63e3367e5229755e7ae8f563c1dfb64ed0dbe175af774",
+      "declared_dependencies": {
+        "fprintd": {
+          "origin": "security/fprintd",
+          "version": "1.94.4"
+        }
+      }
+    }
+  ],
+  "archive_verification": "All three copied archives independently SHA256-verified against the native phase output; compact manifests independently read after download.",
+  "not_qualified": [
+    "Physical Touch ID",
+    "Full matched FreeBSD-CURRENT dependency closure",
+    "Independent virtual-fprintd end-to-end behavior",
+    "Canonical Component execution and SDK/lifecycle admission"
+  ],
+  "complete_release": false
+}
