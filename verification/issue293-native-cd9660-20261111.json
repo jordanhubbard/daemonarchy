@@ -1,0 +1,133 @@
+{
+  "schema": "daemonarchy/issue293-native-cd9660-observation@1",
+  "observed_utc": "2026-11-11T08:47:31.859739+00:00",
+  "issue": 293,
+  "published_tag": "daemonarchy-1.5.1",
+  "compressed_iso_sha256": "de9311416cf29c88525efcec0dcae3990c38cbffe8235035b50b3a8e4d1b84ad",
+  "uncompressed_iso_sha256": "e61b8112815e5f25a6f8e3c619402392c5305a81140817aad44f32a7761bc904",
+  "uncompressed_iso_bytes": 3555328000,
+  "platform": "Registered FreeBSD 16 CURRENT amd64 guest; current worker kernel, not the released live kernel",
+  "method": "Attach the exact ISO as a new read-only file-backed md device, mount cd9660 read-only at a private empty directory, read both selected package paths three times including reversed order, and run both published-ISO pkg-static2.8.4 and repository pkg-static2.9.0 checksum checks against the on-media catalogue.",
+  "reads": [
+    {
+      "name": "gpu-firmware-amd-kmod-dcn-3-5-1-20260519.1600029.pkg",
+      "bytes": 313575,
+      "inode": 2197891470,
+      "expected_sha256": "0ec3d3d135ea16e8d60d79dd175c6d233f56c6c92670d2e52d91feb3ce986e2d",
+      "actual_sha256": "0ec3d3d135ea16e8d60d79dd175c6d233f56c6c92670d2e52d91feb3ce986e2d",
+      "sha256_matches": true,
+      "pkg_checks": [
+        {
+          "tool": "iso-pkg-static",
+          "exit": 0
+        },
+        {
+          "tool": "current-pkg-static",
+          "exit": 0
+        }
+      ]
+    },
+    {
+      "name": "gpu-firmware-amd-kmod-dcn-3-5-20260519.1600029.pkg",
+      "bytes": 313656,
+      "inode": 2197891272,
+      "expected_sha256": "98db81e5405049e840a8de829de6fb52cd5554ed47d3b9669339cee6367656c1",
+      "actual_sha256": "98db81e5405049e840a8de829de6fb52cd5554ed47d3b9669339cee6367656c1",
+      "sha256_matches": true,
+      "pkg_checks": [
+        {
+          "tool": "iso-pkg-static",
+          "exit": 0
+        },
+        {
+          "tool": "current-pkg-static",
+          "exit": 0
+        }
+      ]
+    },
+    {
+      "name": "gpu-firmware-amd-kmod-dcn-3-5-20260519.1600029.pkg",
+      "bytes": 313656,
+      "inode": 2197891272,
+      "expected_sha256": "98db81e5405049e840a8de829de6fb52cd5554ed47d3b9669339cee6367656c1",
+      "actual_sha256": "98db81e5405049e840a8de829de6fb52cd5554ed47d3b9669339cee6367656c1",
+      "sha256_matches": true,
+      "pkg_checks": [
+        {
+          "tool": "iso-pkg-static",
+          "exit": 0
+        },
+        {
+          "tool": "current-pkg-static",
+          "exit": 0
+        }
+      ]
+    },
+    {
+      "name": "gpu-firmware-amd-kmod-dcn-3-5-1-20260519.1600029.pkg",
+      "bytes": 313575,
+      "inode": 2197891470,
+      "expected_sha256": "0ec3d3d135ea16e8d60d79dd175c6d233f56c6c92670d2e52d91feb3ce986e2d",
+      "actual_sha256": "0ec3d3d135ea16e8d60d79dd175c6d233f56c6c92670d2e52d91feb3ce986e2d",
+      "sha256_matches": true,
+      "pkg_checks": [
+        {
+          "tool": "iso-pkg-static",
+          "exit": 0
+        },
+        {
+          "tool": "current-pkg-static",
+          "exit": 0
+        }
+      ]
+    },
+    {
+      "name": "gpu-firmware-amd-kmod-dcn-3-5-1-20260519.1600029.pkg",
+      "bytes": 313575,
+      "inode": 2197891470,
+      "expected_sha256": "0ec3d3d135ea16e8d60d79dd175c6d233f56c6c92670d2e52d91feb3ce986e2d",
+      "actual_sha256": "0ec3d3d135ea16e8d60d79dd175c6d233f56c6c92670d2e52d91feb3ce986e2d",
+      "sha256_matches": true,
+      "pkg_checks": [
+        {
+          "tool": "iso-pkg-static",
+          "exit": 0
+        },
+        {
+          "tool": "current-pkg-static",
+          "exit": 0
+        }
+      ]
+    },
+    {
+      "name": "gpu-firmware-amd-kmod-dcn-3-5-20260519.1600029.pkg",
+      "bytes": 313656,
+      "inode": 2197891272,
+      "expected_sha256": "98db81e5405049e840a8de829de6fb52cd5554ed47d3b9669339cee6367656c1",
+      "actual_sha256": "98db81e5405049e840a8de829de6fb52cd5554ed47d3b9669339cee6367656c1",
+      "sha256_matches": true,
+      "pkg_checks": [
+        {
+          "tool": "iso-pkg-static",
+          "exit": 0
+        },
+        {
+          "tool": "current-pkg-static",
+          "exit": 0
+        }
+      ]
+    }
+  ],
+  "selected_distinct_inodes": true,
+  "pkg_checksum_checks": 12,
+  "pkg_checksum_failures": 0,
+  "iso_unchanged": true,
+  "owned_mount_cleanup": {
+    "umount_exit": 0,
+    "detach_exit": 0
+  },
+  "module_loaded": false,
+  "global_packages_changed": false,
+  "reported_install_failure_reproduced": false,
+  "remaining": "Obtain the reporter image digest and complete installation log, including repository selection and checksum mismatch details. The current file-backed readback does not qualify the released live kernel, USB medium or physical optical path."
+}

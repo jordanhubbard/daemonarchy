@@ -1,6 +1,6 @@
 {
   "schema": "daemonarchy/16-completion-progress@1",
-  "observed_utc": "2026-11-11T08:31:07.767564+00:00",
+  "observed_utc": "2026-11-11T09:22:20.816828+00:00",
   "goal_scope": "Complete all Daemonarchy 1.6 work not requiring physical hardware access, full documented RPi4/RPi5 emulator behavior, upstream tip synchronization, all branch/PR integration and stale-issue review.",
   "product_main_merges": [
     {
@@ -130,6 +130,25 @@
       },
       "native_controller_confirmed_live": true,
       "scope": "Registered FreeBSD 16 amd64 KVM guest. Source revision remains frozen; review tree equals merged main. Unprivileged original build controller, eight jobs, 90 GiB free-storage guard and original per-job memory guard. Unsigned development products; no SDK/lifecycle or runtime qualification."
+    },
+    "branch_history_review": {
+      "audited_refs_before_review": 144,
+      "unique_tips_before_review": 111,
+      "outside_owned_main_before_review": 40,
+      "strict_patch_equivalent_tips": 15,
+      "pull_request": 90,
+      "review_revision": "f1b5d719ce33a38f5a3a45f0d09b4515abad5c17",
+      "merged": false,
+      "legacy_timer_fix": "Restore missing ARM32/RISC-V EFI cleanup guards; handle creation/arming failures, repeated initialization and retry. Separate ARM64 timer and current amd64 behavior preserved.",
+      "observations": "Child source verification/efi-legacy-timer-20261111.json: original mock-firmware unit fails five of six cases, corrected six pass on Linux and FreeBSD; 150 controller cases run, 145 pass and five native-only skips. Original FreeBSD/EDK2 headers produce actual ARM32 and RISC-V standalone objects with warnings as errors. No complete EFI link/boot claimed.",
+      "hosted_cross_kernel_run": 42992803476,
+      "hosted_controller_runs": [
+        42992791557,
+        42992803541
+      ],
+      "hosted_style_run": 42992803542,
+      "hosted_style_result": "passed",
+      "remaining": "Distinct upstream-review variants, retained draft and other non-equivalent local semantics remain under review; no claim that every source branch is already reconciled."
     }
   },
   "ports": {
@@ -142,7 +161,7 @@
     "tested_code_revision": "a191f19fc896b05afe203363ec955f4f1287f06f",
     "architecture_guard": "unchanged, strict removal and reviewed additions",
     "full_current_native_package_closure": false,
-    "owned_main_merge": "b4de5732ce380fd964a36308a8a4f88b29e2af62",
+    "owned_main_merge": "af9753f6bd7eb86f39228b238f5c34205047c336",
     "merged": true,
     "included_reviews": [
       54,
@@ -190,7 +209,18 @@
       "public_observation": "verification/native-t2-software-20261111.json"
     },
     "branch_reconciliation_merged": true,
-    "branch_reconciliation_merge": "635dafd22ff3f4aa062cb30d54f6be5ae00d8965"
+    "branch_reconciliation_merge": "635dafd22ff3f4aa062cb30d54f6be5ae00d8965",
+    "tip_import_main_merge": "b4de5732ce380fd964a36308a8a4f88b29e2af62",
+    "incorporated_history_review": {
+      "pull_request": 60,
+      "review_revision": "0874ffe34d0c41ecb41449f73cbdd6b4d93dd383",
+      "main_merge": "af9753f6bd7eb86f39228b238f5c34205047c336",
+      "tree_changed": false,
+      "tree": "0a1faa841916b5b906d32b81cd7ce49c4d8b93ad",
+      "native_tested_same_tree": "969df5ad58b86d27557144800ebd3f79dff3a674",
+      "included_history_count": 6,
+      "scope": "Four patch-equivalent branches, six exact retained-acceptance files, and fourteen exact T2 implementation/changelog files. Later main category additions retained. Other distinct histories remain open."
+    }
   },
   "omarchy": {
     "upstream": "74a67e9cbc1052674e1e2ae37eeefa358157079e",
@@ -229,7 +259,7 @@
     "primary_quattro_synchronized": true,
     "port_snapshot_review": {
       "pull_request": 59,
-      "revision": "0fc09c65108b",
+      "revision": "19ac11e6ce7bbbca67bc4af103598c2fbf37bd3a",
       "version": "4.5.0.20261111",
       "owned_source": "c39121a4746c0ea533ffdf437788c62810a0f19e",
       "compatibility_source": "648954b3a7bba9872f899e1afffda527f014dfd9",
@@ -239,11 +269,14 @@
       ],
       "remaining_patches": 12,
       "forward_patch_zero_fuzz": true,
-      "architecture_metadata_run": 42986959887,
-      "architecture_metadata_result": "passed",
-      "native_package_run": 42986959890,
-      "native_package_result": "running; no native package qualification yet",
-      "initial_findings": "Corrected snapshot distfile naming. Original selected libdvdcss dependency is not distributed in the binary repository; selected native job now builds/packages/installs its original checksum-bound port before resolving remaining dependencies."
+      "architecture_metadata_run": 42993411082,
+      "architecture_metadata_result": "running on the current candidate; preceding exact snapshot check passed",
+      "native_package_run": 42993411086,
+      "native_package_result": "running; original native dependency options retained",
+      "initial_findings": "Corrected snapshot distfile naming. Original selected libdvdcss dependency is not distributed in the binary repository; selected native job now builds/packages/installs its original checksum-bound port before resolving remaining dependencies.",
+      "superseded_native_run": 42986959890,
+      "superseded_native_result": "cancelled when the corrected dependency driver superseded its inputs; no test result claimed. Its original script could recursively build documentation tools because it did not resolve libdvdcss DOCS dependencies first.",
+      "native_profile": "Original DOCS option preserved; resolve declared native build dependencies first. The disposable guest command has a 40-minute deadline plus forced-stop grace, leaving time to return logs under the outer one-hour job."
     }
   },
   "issues": {
@@ -252,11 +285,13 @@
       62,
       161
     ],
-    "checksum_failure_293": "Published ISO digest verified. Both firmware archives match the on-media catalogue through native pkg 2.8.4 and 2.9.0 (six positives); six one-byte corruptions refused. Reported install failure remains unreproduced and open.",
+    "checksum_failure_293": "The unchanged published ISO also passes native read-only cd9660 path checks: selected firmware paths have distinct inodes, all six repeated SHA256 reads match and all twelve pkg checksum checks pass. Image unchanged and owned mount/device cleanup succeeds. The reporter installation failure remains unreproduced; actual image digest, complete log and feed selection remain needed.",
     "closures_justified_at_checkpoint": 0,
     "checksum_observation": "verification/issue293-media-checksum-20261111.json",
     "repository_inventory_review": "Live user repository enumeration found four daemonarchy-named repositories plus Omarchy, compatibility and uConsole. Only the product repository has open issues (25); other reported open counts are pull requests. Existing open issues retain unresolved acceptance requirements; none closed merely for age.",
-    "open_pull_request_counts_are_not_issue_counts": true
+    "open_pull_request_counts_are_not_issue_counts": true,
+    "checksum_filesystem_observation": "verification/issue293-native-cd9660-20261111.json",
+    "existing_checksum_comment_updated": 6790036791
   },
   "remaining": [
     "Update and qualify native Omarchy adaptations and ports pin against the merged official tip.",
@@ -289,7 +324,8 @@
     "merged": true,
     "merge_revision": "69843c9be8f976f7ca1604c3ad564174f18bb89f",
     "primary_master_synchronized": true,
-    "primary_build_products": "not replaced; isolated qualified model binary retained separately"
+    "primary_build_products": "not replaced; isolated qualified model binary retained separately",
+    "new_profile_boot_inputs": "The prior retained multi-user disk has not yet been located on the controller. Current official Pi500 DTB was retrieved and identity-recorded; it differs from the previously enrolled DTB, so old boot acceptance is not attributed to this new input. Reconstructing current native root and qualifying 1/16 GiB OS boots remains open."
   },
   "puck_consolidation": {
     "worktrees_removed": 37,
@@ -343,5 +379,20 @@
     },
     "hosted_controller_run": 42986686889,
     "hosted_discovery_run": 42986686860
+  },
+  "desktop_repository": {
+    "history_review": 7,
+    "main_revision": "4b2525533600f37d2c6249112c3d2d4e22989f36",
+    "review_revision": "965d979f845ed90a3b9a9bdbdefeffd18423db5c",
+    "ci_run": 42988727555,
+    "ci_result": "passed",
+    "original_static_checks": 5,
+    "tree_changed": false,
+    "refs_audited": 14,
+    "refs_outside_main": [],
+    "local_main_synchronized": true,
+    "missing_worktree_registrations_pruned": 2,
+    "existing_worktree_sources": "All three existing worktrees clean. Two additional registrations pointed to nonexistent temporary directories; only stale registration metadata was pruned.",
+    "native_graphical_acceptance": false
   }
 }
