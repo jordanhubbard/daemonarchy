@@ -112,7 +112,7 @@
     },
     "hosted_capacity_merge": "0c56dfa6a76ad6faa93593fd5bb7f7b28acbcab4",
     "native_current_amd64": {
-      "observed_utc": "2026-11-11T09:51:13.181978+00:00",
+      "observed_utc": "2026-11-11T10:06:47.864841+00:00",
       "identity": "0c8a980330f853b8730c5da6f44fb17f63eed309df6304ce84fa77500e97b987",
       "source_revision": "4b6dd598234450bf82278a846bfec809e4cc0077",
       "source_tree": "14c3b3abd3824d0cc3ef38be1b2a5f6f26214b96",
@@ -124,27 +124,57 @@
       "publication": "unsigned-development-only",
       "acceptance": "not-qualified",
       "state": {
-        "status": "running",
-        "active_phase": "packages",
+        "status": "built",
         "phases": [
           {
             "elapsed_seconds": 5828.322,
             "exit": 0,
             "log": "logs/buildworld-1.log",
             "log_sha256": "5fb2e138dee072e55bd7b02e60cb42b2a0ce3297694f94253e4dae6b598d2b3d",
-            "name": "buildworld"
+            "name": "buildworld",
+            "independent_log_sha256": "5fb2e138dee072e55bd7b02e60cb42b2a0ce3297694f94253e4dae6b598d2b3d"
           },
           {
             "elapsed_seconds": 1462.29,
             "exit": 0,
             "log": "logs/buildkernel-1.log",
             "log_sha256": "01b5174a0158b4b0a0fcb71541a3aa7ffc35a7f2c05b2adc4ea28ad121c9da2f",
-            "name": "buildkernel"
+            "name": "buildkernel",
+            "independent_log_sha256": "01b5174a0158b4b0a0fcb71541a3aa7ffc35a7f2c05b2adc4ea28ad121c9da2f"
+          },
+          {
+            "elapsed_seconds": 835.437,
+            "exit": 0,
+            "log": "logs/packages-1.log",
+            "log_sha256": "332fe1e42659591397e12de2f9bfbd2afc534715a91a8664b1db37c3b12492af",
+            "name": "packages",
+            "independent_log_sha256": "332fe1e42659591397e12de2f9bfbd2afc534715a91a8664b1db37c3b12492af"
+          },
+          {
+            "elapsed_seconds": 0.594,
+            "exit": 0,
+            "log": "logs/release-obj-1.log",
+            "log_sha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855",
+            "name": "release-obj",
+            "independent_log_sha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855"
+          },
+          {
+            "elapsed_seconds": 388.608,
+            "exit": 0,
+            "log": "logs/sets-1.log",
+            "log_sha256": "29bc58faffa096c7726cad826a9fc75f47df686b7639ccebf685d147fb009392",
+            "name": "sets",
+            "independent_log_sha256": "29bc58faffa096c7726cad826a9fc75f47df686b7639ccebf685d147fb009392"
           }
         ]
       },
-      "native_controller_confirmed_live": true,
-      "scope": "Registered FreeBSD 16 amd64 KVM guest. Source revision remains frozen; review tree equals merged main. Unprivileged original build controller, eight jobs, 90 GiB free-storage guard and original per-job memory guard. Unsigned development products; no SDK/lifecycle or runtime qualification. World and GENERIC kernel complete with exit zero; pkgbase and later release phases still running. The subsequent ARM32/RISC-V EFI fix is outside this frozen source revision."
+      "native_controller_confirmed_live": false,
+      "scope": "Original native FreeBSD 16 amd64 aggregate build completed all five phases. All 537 retained products (1,839,253,005 bytes) and all five phase logs independently rehashed; 524 package archives report the exact expected version and FreeBSD:16:amd64 ABI. All eight installer sets independently match MANIFEST. The source stays clean and frozen at 4b6dd598; later legacy EFI fix is outside this revision. Unsigned development products only; no runtime, canonical per-unit Component/SDK/lifecycle admission.",
+      "controller_exit": 0,
+      "independent_products": "verification/native-current-amd64-20261111.json",
+      "artifacts_verified": 537,
+      "package_archives_verified": 524,
+      "sets_verified": 8
     },
     "branch_history_review": {
       "audited_refs_before_review": 144,
@@ -167,6 +197,18 @@
       "main_merge": "87e0a125850c5c791515fb7ae31ebcb6e8cfce72",
       "hosted_cross_kernel_result": "all six passed on exact f1b5d719ce33a38f5a3a45f0d09b4515abad5c17; controller, native loader, style and CodeQL also passed",
       "local_main_synchronized": true
+    },
+    "semantic_history_review": {
+      "pull_request": 91,
+      "revision": "7e76521c363693a2d6742ea7d413067bf7caed15",
+      "reviewed_tips": 22,
+      "tree_unchanged": true,
+      "tree": "f47a39fe2824e23a8987fcf730e9ec1be1c66304",
+      "remaining_cases": [
+        "retained draft framework/scale-limit binding",
+        "RTC v2 unconditional I/O resource refusal versus owned UEFI-specific policy"
+      ],
+      "merged": false
     }
   },
   "ports": {
