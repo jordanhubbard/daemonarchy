@@ -1,6 +1,6 @@
 {
   "schema": "daemonarchy/16-completion-progress@1",
-  "observed_utc": "2026-11-11T08:06:26.404963+00:00",
+  "observed_utc": "2026-11-11T08:28:45.436467+00:00",
   "goal_scope": "Complete all Daemonarchy 1.6 work not requiring physical hardware access, full documented RPi4/RPi5 emulator behavior, upstream tip synchronization, all branch/PR integration and stale-issue review.",
   "product_main_merges": [
     {
@@ -149,11 +149,11 @@
       55,
       56
     ],
-    "open_pull_requests": 1,
+    "open_pull_requests": 2,
     "exact_revision_metadata_run": 42956065010,
     "remaining_branch_reconciliation": "PR58 incorporates retained T2 feature; other equivalence/branch reconciliation remains",
     "branch_reconciliation_pr": 58,
-    "branch_reconciliation_revision": "45bb41cf00914d0191656fb53dfaccada5327494",
+    "branch_reconciliation_revision": "969df5ad58b86d27557144800ebd3f79dff3a674",
     "t2_software": {
       "native_revision": "45bb41cf00914d0191656fb53dfaccada5327494",
       "run": 42981905847,
@@ -181,6 +181,13 @@
         "location": "test-fpi-device.c:2407",
         "case": "/driver/identify/warmup_cooldown",
         "remaining": "Resolve scheduler/thermal-model timing assumptions; no arbitrary deadline relaxation or skip."
+      },
+      "current_candidate": {
+        "revision": "969df5ad58b86d27557144800ebd3f79dff3a674",
+        "native_run": 42985986752,
+        "result": "running; inspect terminal original and repeated test outcomes",
+        "thermal_test_change": "Cooldown bound derives from measured heating interval and exponential model with existing scheduling slack; original warmup, state and cancellation assertions remain. Adds 250 ms delayed-cancellation control. Production thermal model unchanged.",
+        "sealed_packages": "Native driver retains actual libgusb, libfprint and T2 package archives and SHA256. First retention attempt used a changing destination query and failed before tests; corrected to native WRKDIR_PKGFILE. Actual archives must be inspected after completion."
       }
     }
   },
@@ -217,8 +224,26 @@
       "test_files": 427,
       "graphical_acceptance_suite": "not run"
     },
-    "remaining_native_adaptation": "FreeBSD adaptation and ports pin still require review",
-    "primary_quattro_synchronized": true
+    "remaining_native_adaptation": "Merged compatibility main passes its native suite; current port snapshot and final graphical/runtime qualification remain under review.",
+    "primary_quattro_synchronized": true,
+    "port_snapshot_review": {
+      "pull_request": 59,
+      "revision": "0fc09c65108b",
+      "version": "4.5.0.20261111",
+      "owned_source": "c39121a4746c0ea533ffdf437788c62810a0f19e",
+      "compatibility_source": "648954b3a7bba9872f899e1afffda527f014dfd9",
+      "distfile_sha256": [
+        "b79280d4bda43e2fb92446b2fa79a4b909fcb468dd5685d671ae0c22f1428ddb",
+        "48675a48f493faa0319fdd12e349a423c16b2176a86816a1a10a1cebc55bdcdf"
+      ],
+      "remaining_patches": 12,
+      "forward_patch_zero_fuzz": true,
+      "architecture_metadata_run": 42986959887,
+      "architecture_metadata_result": "passed",
+      "native_package_run": 42986959890,
+      "native_package_result": "running; no native package qualification yet",
+      "initial_findings": "Corrected snapshot distfile naming. Original selected libdvdcss dependency is not distributed in the binary repository; selected native job now builds/packages/installs its original checksum-bound port before resolving remaining dependencies."
+    }
   },
   "issues": {
     "open_reviewed": 25,
@@ -228,7 +253,8 @@
     ],
     "checksum_failure_293": "Published ISO digest verified. Both firmware archives match the on-media catalogue through native pkg 2.8.4 and 2.9.0 (six positives); six one-byte corruptions refused. Reported install failure remains unreproduced and open.",
     "closures_justified_at_checkpoint": 0,
-    "checksum_observation": "verification/issue293-media-checksum-20261111.json"
+    "checksum_observation": "verification/issue293-media-checksum-20261111.json",
+    "repository_inventory_review": "Live user repository enumeration found four daemonarchy-named repositories plus Omarchy, compatibility and uConsole. Only the product repository has open issues (25); other reported open counts are pull requests. Existing open issues retain unresolved acceptance requirements; none closed merely for age."
   },
   "remaining": [
     "Update and qualify native Omarchy adaptations and ports pin against the merged official tip.",
@@ -267,7 +293,12 @@
     "worktrees_removed": 37,
     "local_redundant_branches_removed": 63,
     "reclaimed_bytes": 41985630208,
-    "active_iflib_diagnostic": "copied byte-for-byte to sparky recovery worktree; remains uncommitted and unqualified"
+    "active_iflib_diagnostic": "Reconciled as stale: owned main includes allocator-class fix 7c615b91185 (PR29), issue18 already closed, and all four current sanitizer cases pass (matching/jumbo-reserve/mixed/repeated). Exact dirty files, modes, hashes and original patch archived before removing only the newly recovered worktree and redundant branch on Sparky. Live driver and non-panic resume remain unqualified.",
+    "additional_stale_primaries_removed": [
+      "daemonarchy-src",
+      "daemonarchy-ports-release"
+    ],
+    "additional_reclaimed_bytes": 6389325824
   },
   "omarchy_freebsd": {
     "licensing_pr": 3,
@@ -292,5 +323,23 @@
     "exact_merge_native_run": 42981485869,
     "exact_merge_native_result": "34 original tests pass, zero skips; Bluetooth backend policy passes"
   },
-  "framework_v2_scale_observation": "verification/framework-v2-scale-20261111.json"
+  "framework_v2_scale_observation": "verification/framework-v2-scale-20261111.json",
+  "product_branch_reconciliation": {
+    "revision": "f3f8f1f6",
+    "owned_main_merged": "3cd00f456273c8dc4a859ef37b9bb9c763690056",
+    "included_reviews": [
+      322,
+      323,
+      324
+    ],
+    "result": "Main and the complete ARM register review incorporated without any tree change relative to 92b34215317a6bd5f23cf0f0ce03aa4784e87a86. Current tracing and synchronization requirements retained. Integration review remains draft, missing release/receipt acceptance is not changed.",
+    "local_checks": {
+      "arm_register": 11,
+      "docs_release_sync": 13,
+      "docs_lifecycle": 4,
+      "authority": "pass"
+    },
+    "hosted_controller_run": 42986686889,
+    "hosted_discovery_run": 42986686860
+  }
 }
