@@ -1,6 +1,6 @@
 {
   "schema": "daemonarchy/16-completion-progress@1",
-  "observed_utc": "2026-11-11T12:56:14.445175+00:00",
+  "observed_utc": "2026-11-11T14:04:12.759393+00:00",
   "goal_scope": "Complete all Daemonarchy 1.6 work not requiring physical hardware access, full documented RPi4/RPi5 emulator behavior, upstream tip synchronization, all branch/PR integration and stale-issue review.",
   "product_main_merges": [
     {
@@ -316,15 +316,37 @@
     "current_desktop_closure_plan": {
       "source_revision": "4b6dd598234450bf82278a846bfec809e4cc0077",
       "ports_revision": "b6c0b492da8df763cc3f8f5933d1027993ac7f9d",
-      "status": "running",
-      "completed": "Full exact181568file ports checkout and matched CURRENT base/source jail creation pass. Initial plan failed for a missing task-private distfiles directory; original failure preserved, directory created, planning-only recovery started against the same jail/tree.",
+      "status": "dry-run-finished",
+      "completed": "The original same source4b/portsb6 dry run finished after its observation controller timed out:1465 queued,683 fetched,782 remaining,0 built/failed/skipped. Original child processes are gone and retained log records done and filesystem cleanup. Its eventual exit code was not captured; this is planning evidence, not completed builds.",
       "scope": "Dependency/size plan only; full package bulk and final desktop closure not yet qualified.",
       "global_configuration_changed": false,
       "kernel_admission": {
         "host_osversion": 1600029,
         "matched_jail_osversion": 1600031,
         "full_build_dispatched": false,
-        "remaining": "Matching/newer guest kernel required before full build/runtime admission; planning only continues. Private QEMU userspace acquisition not yet successful; no live host kernel/feed/install change or mismatch override."
+        "remaining": "Matching isolated CURRENT guest now boots successfully; guest build tools installed and exact portsF2 snapshot transferred. Preparing a fresh private jail/ports registration inside the guest. Full closure/SDK/lifecycle acceptance remains incomplete."
+      },
+      "matched_guest": {
+        "source_revision": "4b6dd598234450bf82278a846bfec809e4cc0077",
+        "kernel_osversion": 1600031,
+        "userland_osversion": 1600031,
+        "host_kernel_osversion_unchanged": 1600029,
+        "kernel_sha256": "0a0b23697b2e75aae37fa3828b5c50745e19913e27d19deeffffc28bd0811e72",
+        "vcpus": 4,
+        "physical_memory_bytes": 12846604288,
+        "root_free_bytes_at_boot_admission": 117667893248,
+        "guest_build_tools": "poudriere/git/CA roots installed successfully only in the isolated guest",
+        "private_emulator": "Official QEMU11.1.3 userspace plus dependencies extracted privately; no host package registration, feed, boot or kernel changes",
+        "ports_snapshot": {
+          "revision": "f2dc1f814002ad09d25a3ee87ee1502dabb92cb6",
+          "tree": "738e2a0fbd138ec1e454aea4085ceb2a156d1151",
+          "tracked_files": 181570,
+          "archive_sha256": "2d31e067b61c02c23e7ab683aa1b47950d38833e0835410aaec18c5af8137233",
+          "archive_bytes": 109245608,
+          "independent_transfer_readback": "matches",
+          "primary_head_preserved": true
+        },
+        "acceptance_scope": "Actual matched lab kernel/userland boot and workspace admission; not final distribution, package closure, canonical SDK or lifecycle qualification."
       }
     }
   },
@@ -529,7 +551,7 @@
       "native_result": "Passed real PCI BAR geometry/decode, all61 MSI-X DMA routes, TEST/physical-source interaction, raw status, vector/function masks/PBA, local IACK race, SRAM/blocked/pending migration and reset. Existing Pi5 boot and ten RAM/FDT layouts, preparation/firmware checks also pass;33 host controls pass.",
       "observation": "https://github.com/jordanhubbard/uConsole/blob/e95f252fc65bebf74819fa455ff26f262d306c0d/docs/rp1-endpoint-verification-20261111.json",
       "scope": "Endpoint tested on generic ARM virt. Actual Pi5 BCM2712 host integration and RP1 peripheral engines remain open; no whole-board fidelity claim.",
-      "hosted_checks": "running; not yet qualified",
+      "hosted_checks": "Linux/Windows/native models, firmware and Linux package jobs pass; remaining macOS jobs running/queued at observation. Not merged.",
       "portable_patch_recovery": "Initial macOS package build rejected a one-context-line hunk. Full3-line context replaces it; native BSD patch applies with zero fuzz. New exact-head native model jobs pass; package/macOS gates still pending. Original failure retained."
     },
     "rp1_uart_review": {
@@ -542,8 +564,18 @@
       "native_result": "All six BAR/identity/MSI-X paths and external host RX/TX pass, along with32/1entry receive boundaries, overrun/no-overwrite, independent wrapped FIFO migration, post-migration interrupts/reset, actual old/new and new/old16-entry migration, profile mismatch/invalid-depth refusals. Existing RP1/Pi5 boot and10 memory/FDT layouts plus33 host controls pass.",
       "observation": "https://github.com/jordanhubbard/uConsole/blob/810837646bf7842802626723c84eb84c9e74b3c8/docs/rp1-uart-verification-20261111.json",
       "full_uart_fidelity": false,
-      "remaining": "Timed TX FIFOs, proper RX thresholds/timeouts, serial framing/error timing, flow control, DMA, clock/reset/pin integration and actual Pi5 PCIe host wiring remain required.",
-      "hosted_checks": "running"
+      "remaining": "Timed TX FIFOs, serial framing/error timing, complete flow control, DMA, clock/reset/pin integration and actual Pi5 PCIe host wiring remain required. RX threshold/timeout implementation is separately reviewed in PR16.",
+      "hosted_checks": "All Linux/macOS/Windows, native models, firmware and three package jobs passed; release publication skipped."
+    },
+    "rp1_rx_review": {
+      "pull_request": 16,
+      "review_revision": "e0061a8610cb5cd2bc308f7dace8ccf70ff08497",
+      "stacked_on": 15,
+      "merged": false,
+      "observation": "https://github.com/jordanhubbard/uConsole/blob/e0061a8610cb5cd2bc308f7dace8ccf70ff08497/docs/rp1-rx-verification-20261111.json",
+      "native_result": "All six UARTs/all five RX thresholds,32baud-period timeout boundaries,fractional rounding,LCR divisor latching,UARTEN/RXE gates,restart/partial-drain behavior,masked/raw interrupts,actual MSI-X DMA,remaining-deadline migration and reset pass. Original PR15 executable fails the below-threshold negative control. Extended UART/profile and RP1/Pi5 boot/memory regressions pass. Seven final test groups pass; checkpatch0errors0warnings.",
+      "hosted_checks": "All Linux/macOS/Windows,native models,firmware and three package jobs passed; release publication skipped.",
+      "scope": "Controlled model receive arrivals and virtual timers; nominal fixed48MHz. Serial-bit framing/TX timing and whole-board fidelity not qualified."
     }
   },
   "puck_consolidation": {
@@ -627,5 +659,14 @@
     "missing_worktree_registrations_pruned": 2,
     "existing_worktree_sources": "All three existing worktrees clean. Two additional registrations pointed to nonexistent temporary directories; only stale registration metadata was pruned.",
     "native_graphical_acceptance": false
+  },
+  "sparky_legacy_checkout_cleanup": {
+    "obsolete_worktrees_removed": 25,
+    "redundant_sync_clones_removed": 2,
+    "stale_local_branches_removed": 24,
+    "net_free_bytes_gained": 20355792896,
+    "preserved_small_files": 45,
+    "preserved_small_file_bytes": 463076,
+    "guards": "All removed heads/refs contained canonical main or published integration. Clean worktrees; no root-process/open-file or container-mount use; no shared object-store dependencies found. Primary heads/local changes and active worktrees preserved. Tiny upstream patch-submission directory retained."
   }
 }
