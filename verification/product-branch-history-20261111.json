@@ -190,5 +190,32 @@
       "merge_revision": "dcd741ac1cc685babec01914c4c07c088a573286"
     }
   ],
-  "history_revision": "dcd741ac1cc685babec01914c4c07c088a573286"
+  "history_revision": "dcd741ac1cc685babec01914c4c07c088a573286",
+  "semantic_additions": {
+    "observed_utc": "2026-11-11T11:41:53.562525+00:00",
+    "base": "835b65ffed0fa89c45e6bbf20342055315d48e7d",
+    "preserved_tree_before_documentation": "ebbefbd854684af697da9dd6f68b309192e94c7a",
+    "histories": [
+      {
+        "revision": "8a7eab021e8a02d0eae6e789d12555419e302709",
+        "disposition": "Licensing statement and every license file match current source; current README license paragraph retained, documentation index intentionally plain text.",
+        "merge_revision": "4c37e214d72be1dbb3cbd15432994fe81d7bbe71"
+      },
+      {
+        "revision": "d7703f935f75552779df1b3440b4cecf04de350c",
+        "disposition": "Earlier duplicate licensing change; retain later license inventory that records contributor-header removal and loader fixture provenance.",
+        "merge_revision": "8a8370c0c1715b21a75fbda524b4f2a41e2ecefb"
+      },
+      {
+        "revision": "22fc2b3dec4e49ea1673c6d3966acc787b7a627f",
+        "disposition": "Ten original implementation/profile/evidence files exactly match current source. Preserve the newer test expectation: staged release record, publication and target qualification unverified.",
+        "merge_revision": "10416e90f9c4211914b55aa06dbca01a8aec7086"
+      },
+      {
+        "revision": "be5e734e1c9706ce3aabe1c19daf0c1d30225fae",
+        "disposition": "Missing guide paragraph restored separately from original branch; source stand/efi/loader/boottrace.c at current f47 tree requires pending queue identity before a complete trace stops iteration.",
+        "merge_revision": "2dc7771dec71f5b4aa33dae4458f1dbb6c83c53b"
+      }
+    ]
+  }
 }

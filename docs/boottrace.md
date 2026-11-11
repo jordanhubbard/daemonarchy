@@ -55,7 +55,7 @@ to the stick. The loader prints `Hardware trace: running the next queued
 experiment in 5 s`, files the previous boot's trace as `TRACES/NNNN.TXT` on
 the stick, clears the NVRAM variable and boots the next `QUEUE/NNNN.CNF`
 with `boot -v`, `debug.boottrace=1` and panic settings (trace on panic, no
-debugger, reset after 15 s). When a boot reaches init, or the queue is
+debugger, reset after 15 s). When a queued boot reaches init, or the queue is
 empty, the loader shows **HARDWARE TRACE: STOPPED** with the reason and
 waits at the `OK` prompt. Pressing a key during the 5 s countdown gives the
 normal menu instead; its **Hardware trace** entry (`W`) runs one cycle by
@@ -74,6 +74,13 @@ or run `acpidump` through `/dev/mem`; both stalled on the Spark control.
 A kernel hang can still require a reset, but the earlier completed files and the last
 `start` checkpoint remain on the stick. `done.txt` means collection finished;
 inspect the per-command statuses for failures or timeouts.
+
+Only a queued experiment that reaches init stops the loop. A complete trace
+left in NVRAM by a boot outside the queue (an earlier campaign or a normal
+boot) is filed as `experiment: (none: booted outside the queue)`, cleared,
+and the queue starts as usual. Loaders built before this change stopped on
+such a trace; on those, booting the stick again runs the queue, because the
+filed trace was cleared from NVRAM.
 
 Then unplug the stick and bring it to the controller host. Remove it only
 when the loader is at the STOPPED prompt or the machine is off.
