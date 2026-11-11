@@ -55,6 +55,24 @@ disk_fingerprint() {
 
 layout_error() { echo "$*" >&2; return 1; }
 
+# A RAM root can release every open count on its original USB disk. Keep
+# live-medium identity separate from the transient mounted/busy checks.
+disk_is_live_medium() {
+  local candidate=$1 info=${2:-} trace_uuid
+  if glabel status 2>/dev/null | awk '
+    $1 ~ /^iso9660\// { sub(/[sp][0-9]+.*$/, "", $3); print $3 }
+  ' | grep -Fx -- "$candidate" >/dev/null; then
+    return 0
+  fi
+  trace_uuid=$(kenv -q daemonarchy.trace.partition 2>/dev/null) || trace_uuid=''
+  trace_uuid=${trace_uuid,,}
+  [[ $trace_uuid =~ ^[0-9a-f]{8}-[0-9a-f]{4}-[0-9a-f]{4}-[0-9a-f]{4}-[0-9a-f]{12}$ &&
+     $trace_uuid != 00000000-0000-0000-0000-000000000000 ]] || return 1
+  if [[ -z $info ]]; then info=$(gpart list "$candidate" 2>/dev/null) || return 1; fi
+  awk -v uuid="$trace_uuid" '$1 == "rawuuid:" && tolower($2) == uuid { found=1 }
+    END { exit !found }' <<<"$info"
+}
+
 # Refuse disks used by mounted filesystems, swap, imported pools, or the live
 # image, including consumers reached through GPT/diskid aliases and GELI.
 # GEOM exposes their open counts on the underlying partition providers.
@@ -64,6 +82,10 @@ disk_is_idle() {
     info=$(geom disk list "$1" 2>/dev/null) || {
       layout_error "Cannot determine whether disk $1 is in use."; return 1;
     }
+  fi
+  if disk_is_live_medium "$1" "$info"; then
+    layout_error "Disk $1 contains installation media. Select another target disk."
+    return 1
   fi
   if awk '$1 == "Mode:" && $2 != "r0w0e0" { busy=1 } END { exit !busy }' <<<"$info"; then
     layout_error "Disk $1 is in use. Boot the installer from another disk and retry."

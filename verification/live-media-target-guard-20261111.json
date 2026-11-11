@@ -1,0 +1,171 @@
+{
+  "schema": "daemonarchy/live-media-target-guard@1",
+  "observed_utc": "2026-11-11T01:52:51.775808+00:00",
+  "source_parent": "6a669ae5807e3c15d723f8515fb7abca38dbe594",
+  "source_sha256": {
+    "overlay/usr/local/libexec/daemonarchy-installer/disk-layout": "012f4bcf363f6dca26f93cb25f1a6d936498be86330499d49693eaf66e449c48",
+    "overlay/usr/local/libexec/daemonarchy-installer/configurator": "fe4b88a00fb05c4f600e3b60a0fb7a4d26366136c5b70f44cbf559ecd48cf62d",
+    "tests/live-media-target.py": "251682f23e2c030c7f8da3ea1a96660274f0a7f029030902797c9702fa111635"
+  },
+  "problem": "A RAM-root boot releases live USB open counts. The UI hid the boot disk, but final whole-disk admission accepted it.",
+  "implementation": {
+    "shared_identity": "ISO9660 label disk identity or valid nonzero kernel-declared trace partition UUID",
+    "final_admission": "Reject installation medium before transient GEOM open-count checks",
+    "ui": "Use the same shared identity helper",
+    "preservation": "Retain mounted/busy-disk checks; read-only identity queries"
+  },
+  "baseline": {
+    "image_sha256": "e568113a5afe1178b419c930d29127c7f6fe52150182ad1484ce5e7e978fdc6c",
+    "observation_sha256": "70f952b08a5c8ad1e23a5d366bd6bcb456adef2b141608a27bf138111a6fa0ef",
+    "boot_disk_offered": false,
+    "idle_status": 0,
+    "layout_admission_status": 0,
+    "installer_target_writes": false
+  },
+  "corrected_native_control": {
+    "system": "FreeBSD CURRENT ARM64",
+    "kernel_osreldate": 1600031,
+    "acceleration": "KVM",
+    "cpu_count": 2,
+    "memory_gib": 4,
+    "network": false,
+    "input_injected": false,
+    "boot_usb_virtual_bytes": 25769803776,
+    "spare_usb_virtual_bytes": 25769803776,
+    "image_sha256": "f70096fdb65a8bdb5d6acb4a73f12283b482a13b53e5c333b1328307f9ae3f09",
+    "source_bundle_sha256": "0433add2f1dc7950f441f41d39bf1c094d2b141d430d691ceee8b1965965442a",
+    "native_test_log_sha256": "1c59552a59c031809aac478a5525e37ec6c5bca5fbbedc583e86cdfb210f86a4",
+    "native_regression_groups": 6,
+    "native_regression_skips": 0,
+    "boot_disk_offered": false,
+    "idle_status": 1,
+    "layout_admission_status": 1,
+    "identity_fallback_controls": "Each query suppressed separately in probe shell; both deny boot disk",
+    "unrelated_spare_admitted": true,
+    "spare_byte_identical": true,
+    "installer_target_writes": false,
+    "guest_synced_shutdown_confirmed": true,
+    "qemu_exit": 0,
+    "returned_sha256": "b8cbbe9f38a21f98c3e8447e0d4514113c132a07425189d6c417345bd1964440",
+    "serial_sha256": "c71e29d2a118450ec8663722cc0e12abc7ca60632e165c523898d1af48c8f16e",
+    "changed_bytes": 9839,
+    "changes_confined_to_current_normal_and_kernel_log_extents": true,
+    "installer_log_untouched": true,
+    "kernel_log_bytes": 5298,
+    "kernel_log_truncated": false
+  },
+  "fat_checks": {
+    "linux": {
+      "efi": {
+        "exit": 0,
+        "log_sha256": "07f2c67e481c974b04a2c0638eaff1027e2168fd15397b3d401e8f7605a2b953"
+      },
+      "trace": {
+        "exit": 0,
+        "log_sha256": "bc86d92e5590e12d7e907f500819fbd92c47cfbb57bf10966847526a78f6ccac"
+      }
+    },
+    "native": {
+      "efi": {
+        "exit": 0,
+        "log_sha256": "9c3b30490d66ebc657194b0195b4f4dc8f0ba4ccacd668682d31921adda195ac"
+      },
+      "trace": {
+        "exit": 0,
+        "log_sha256": "2c812188b9b51dba7b729a1be34df6b958a2c8ab439ce184fb3cd950b2dfcf3e"
+      }
+    }
+  },
+  "portable_suites": [
+    {
+      "test": "tests/live-media-target.py",
+      "groups": 6,
+      "skipped": 0,
+      "exit": 0,
+      "log_sha256": "0500d7d8835f2fc2a42ebb0eeefcd7c64bf6d9fbb58a935d780ad3d925135c4d"
+    },
+    {
+      "test": "tests/install-trace-media.py",
+      "groups": 13,
+      "skipped": 0,
+      "exit": 0,
+      "log_sha256": "0ff3928f9e788d9b819d142cf754b90deb02b4d0cfb6de009d50f97ff00f0116"
+    },
+    {
+      "test": "tests/normal-boot-trace.py",
+      "groups": 23,
+      "skipped": 0,
+      "exit": 0,
+      "log_sha256": "425c50be9c452dc1adabcda39b2136f1500343bbd2fe4f2902a0e9575f9a1b1e"
+    },
+    {
+      "test": "tests/boot-medium.py",
+      "groups": 11,
+      "skipped": 0,
+      "exit": 0,
+      "log_sha256": "d962229067387c47b8abb1c62a7fb54031f81879ba3e0d1a4a5a7ebb77fd5202"
+    },
+    {
+      "test": "tests/boot-medium-gpt.py",
+      "groups": 7,
+      "skipped": 0,
+      "exit": 0,
+      "log_sha256": "7ddcc1e5d2a2359d92b9739658e159b4341a4fea2f009f717a815c86687261bf"
+    },
+    {
+      "test": "tests/boot-medium-fat.py",
+      "groups": 7,
+      "skipped": 0,
+      "exit": 0,
+      "log_sha256": "916b385ab7c4a917b08d01c87243f29acd827a0918160cb6e65576c6b5a95663"
+    },
+    {
+      "test": "tests/boot-medium-native.py",
+      "groups": 13,
+      "skipped": 0,
+      "exit": 0,
+      "log_sha256": "363c6c9e54d954ff376a33943716076e3a69055e56a037b205efc671277b6687"
+    },
+    {
+      "test": "tests/boot-medium-capture.py",
+      "groups": 7,
+      "skipped": 0,
+      "exit": 0,
+      "log_sha256": "d25c5f582822b264609810452eee3c461f429ab279cc861a15914b720c37177a"
+    },
+    {
+      "test": "tests/installer-evidence.py",
+      "groups": 10,
+      "skipped": 2,
+      "exit": 0,
+      "log_sha256": "1b90fa90e2e38cc4bc09c7769f0bc44d0a6c17b5fff24721aea2f311b0d1b663"
+    },
+    {
+      "test": "tests/session-log.py",
+      "groups": 8,
+      "skipped": 0,
+      "exit": 0,
+      "log_sha256": "8e3d15d32484589b7fc052635ea87b06fd1de8499c0472798f770cdb748ef92f"
+    },
+    {
+      "test": "tests/docs-release-sync.py",
+      "groups": 13,
+      "skipped": 0,
+      "exit": 0,
+      "log_sha256": "81150dace611a5136e086b7f0cf5e9146a8c1e78519d04e6d9e9816541e3479f"
+    }
+  ],
+  "authority": {
+    "project_validate": "pass",
+    "authority": "pass",
+    "eight_locks": "pass",
+    "litai_verify": "fails missing verification/current.json native lifecycle receipt"
+  },
+  "limitations": [
+    "Read-only validator probes exercise actual production functions; no complete install or destructive target operation was run.",
+    "Native RAM-root control uses source af55 base/kernel and source97 loader; it is not final packaged CURRENT release media.",
+    "Cloned UUID, malformed identity, multi-label and busy-disk cases are command-stub regression controls.",
+    "Oversized boot USB retains authored hybrid GPT backup location; no GPT repair was attempted.",
+    "Physical Pi4/Pi5/Apple M2 and wider hardware acceptance, final installation/desktop/update/recovery, signing/publication and framework lifecycle gates remain open."
+  ]
+}

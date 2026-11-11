@@ -896,3 +896,17 @@ and leave the first installer bank unchanged. Only 15,514 bytes change, all
 within the current session. Linux and native FreeBSD read-only FAT checks
 pass. This validates incremental delivery on the actual
 medium; it remains a controlled producer rather than a complete installation.
+
+
+### RAM-root boot disk admission, 2026-11-11
+
+The [native before/after control](../../verification/live-media-target-guard-20261111.json)
+reproduces a boot USB with no GEOM open counts: the existing UI hides it, but
+the final validator accepts it. The shared live-medium check now refuses it
+using ISO identity or the kernel-declared trace partition UUID. The corrected
+EFI/USB boot refuses that disk, accepts a separate blank target, and passes
+with either identity query suppressed separately. The spare is byte-identical;
+only 9,839 permitted boot-trace bytes change on the boot image, and both FATs
+pass native and Linux read-only checks. Six regression groups pass natively.
+These are read-only admission probes, not a completed installation. Final
+CURRENT media, real installation and physical hardware acceptance remain open.

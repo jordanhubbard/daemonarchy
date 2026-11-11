@@ -116,6 +116,7 @@ on:
       - 'tests/boot-medium-capture.py'
       - 'tests/installer-evidence.py'
       - 'tests/session-log.py'
+      - 'tests/live-media-target.py'
       - 'tools/boottrace/session-log.py'
       - 'tools/boottrace/capture-medium.py'
       - 'tools/boottrace/installer-evidence.py'
@@ -245,6 +246,7 @@ on:
       - 'tests/boot-medium-capture.py'
       - 'tests/installer-evidence.py'
       - 'tests/session-log.py'
+      - 'tests/live-media-target.py'
       - 'tools/boottrace/session-log.py'
       - 'tools/boottrace/capture-medium.py'
       - 'tools/boottrace/installer-evidence.py'
@@ -318,6 +320,7 @@ jobs:
           sh -n overlay/usr/local/libexec/daemonarchy-installer/sound overlay/usr/local/libexec/daemonarchy-installer/charm overlay/usr/local/share/daemonarchy-installer/greeting/daemonarchy_greeting
           for view in install-views pkg-events; do python3 -c 'import ast, sys; ast.parse(open(sys.argv[1]).read())' "overlay/usr/local/libexec/daemonarchy-installer/$view"; done
           command -v tmux >/dev/null || sudo apt-get install -y tmux
+          python3 tests/live-media-target.py -v
           python3 tests/installer-progress.py
           bash tests/installer-charm.sh
           bash tests/install-failed.sh
