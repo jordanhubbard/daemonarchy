@@ -1,6 +1,6 @@
 {
   "schema": "daemonarchy/16-completion-progress@1",
-  "observed_utc": "2026-11-11T05:35:20.295544+00:00",
+  "observed_utc": "2026-11-11T07:02:13.659601+00:00",
   "goal_scope": "Complete all Daemonarchy 1.6 work not requiring physical hardware access, full documented RPi4/RPi5 emulator behavior, upstream tip synchronization, all branch/PR integration and stale-issue review.",
   "product_main_merges": [
     {
@@ -85,15 +85,17 @@
     ],
     "owned_main": {
       "pull_request": 88,
-      "revision": "88e4de261fd6ebca15374f0c1545944a8dc1d567",
-      "controller": "pass",
-      "native_loader": "pass",
-      "native_metadata": "pass",
-      "codeql": "pass",
-      "cross_build_and_style": "pending",
-      "merged": false
+      "revision": "4b6dd598234450bf82278a846bfec809e4cc0077",
+      "controller": "new revision checks in progress",
+      "native_loader": "new revision checks in progress",
+      "native_metadata": "new revision checks in progress",
+      "codeql": "previous source-code revision passed; inspect current checks",
+      "cross_build_and_style": "current revision cross-build running; corrected-range style gate failed",
+      "merged": false,
+      "previous_cross_build_revision": "88e4de261fd6ebca15374f0c1545944a8dc1d567",
+      "previous_cross_build_matrix": "all six passed; does not qualify later commit"
     },
-    "complete_tree_scale_limits": "requested draft retained; installed framework does not support the field",
+    "complete_tree_scale_limits": "Installed isolated current-source framework accepts the field and passes six boundary controls. Real source/ports probes demonstrate per-file and source-symlink boundaries; complete catalogs/locks/native admission remain unqualified.",
     "hosted_capacity_review": 89,
     "ubuntu2604_capacity": {
       "profile_admitted": false,
@@ -103,7 +105,8 @@
         "less than 80 GiB native workspace plus 10 GiB bootstrap reserve"
       ],
       "native_execution": false
-    }
+    },
+    "hosted_capacity_merge": "0c56dfa6a76ad6faa93593fd5bb7f7b28acbcab4"
   },
   "ports": {
     "pull_request": 57,
@@ -122,9 +125,24 @@
       55,
       56
     ],
-    "open_pull_requests": 0,
+    "open_pull_requests": 1,
     "exact_revision_metadata_run": 42956065010,
-    "remaining_branch_reconciliation": "64 unique tips inspected; 17 require patch-equivalence or feature reconciliation"
+    "remaining_branch_reconciliation": "PR58 incorporates retained T2 feature; other equivalence/branch reconciliation remains",
+    "branch_reconciliation_pr": 58,
+    "branch_reconciliation_revision": "342155d2c8f8b1dc9d70a9192d6d8bd25d22449d",
+    "t2_software": {
+      "native_revision": "bbda0c98849a2f047bee2e17b6dcab9735394549",
+      "run": 42975098461,
+      "t2_original_tests": {
+        "passed": 6,
+        "failed": 0
+      },
+      "t2_package_install_cli_service": "passed",
+      "libfprint_virtual_tests": "fp-context SIGSEGV and fp-device timeout; required job remains red",
+      "dependency_controls": "100 cycles each of GLib directory/cancellation, GUsb enumeration and GUsb explicit disposal pass",
+      "sanitizer": "binaries compiled; diagnostic packaging failed in gtk-doc GCC runtime naming. New build-only diagnostic run pending.",
+      "current_native_closure": false
+    }
   },
   "omarchy": {
     "upstream": "74a67e9cbc1052674e1e2ae37eeefa358157079e",
@@ -193,16 +211,37 @@
     "existing_pi5_boot_reset_migration": "pass",
     "hosted_native_model_job": "pass",
     "linux_gui_suite": "pass",
-    "macos_gui_suite": "pass on direct PR workflow; other workflow instances pending",
+    "macos_gui_suite": "pass",
     "windows_host_controls": "pass",
-    "hosted_package_jobs": "pending",
+    "hosted_package_jobs": "all passed; release publication skipped",
     "os_boot_acceptance_for_new_profiles": false,
-    "full_peripheral_fidelity": false
+    "full_peripheral_fidelity": false,
+    "merged": true,
+    "merge_revision": "69843c9be8f976f7ca1604c3ad564174f18bb89f"
   },
   "puck_consolidation": {
     "worktrees_removed": 37,
     "local_redundant_branches_removed": 63,
     "reclaimed_bytes": 41985630208,
     "active_iflib_diagnostic": "copied byte-for-byte to sparky recovery worktree; remains uncommitted and unqualified"
-  }
+  },
+  "omarchy_freebsd": {
+    "licensing_pr": 3,
+    "licensing_merge": "f1dc68a0a640e01979a5520131e788a64a421956",
+    "reconciliation_pr": 5,
+    "revision": "c857be5",
+    "omarchy_revision": "c39121a4746c0ea533ffdf437788c62810a0f19e",
+    "native_run": 42975560663,
+    "native_platform": "FreeBSD 15.1 amd64",
+    "original_tests": {
+      "run": 34,
+      "passed": 34,
+      "skipped": 0
+    },
+    "bluetooth_backend_policy": "pass; mocked transport, no radio acceptance",
+    "gitguardian": "red: historical unsupported indicator-name string classified as Generic Password; no disposition or suppression",
+    "merged": false,
+    "graphical_acceptance": false
+  },
+  "framework_v2_scale_observation": "verification/framework-v2-scale-20261111.json"
 }

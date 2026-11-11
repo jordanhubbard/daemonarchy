@@ -1,0 +1,75 @@
+{
+  "schema": "daemonarchy/framework-v2-scale-observation@1",
+  "observed_utc": "2026-11-11T07:02:13.659601+00:00",
+  "framework_revision": "274b35f9d6e05d51650ba0a9d567c43d02ae1fd0",
+  "framework_version": "1.4.0 unreleased candidate",
+  "wheel_sha256": "8e66d8a461f3f5eb4db9174dab3139f78c46399ca20e2e1f42b7339e48d26fb0",
+  "installed_distribution_identity": "sha256:2002490982d23d8a5fc840bf41c4d36314caebf2661446970ea1ebd5fa05b3ce",
+  "installed_boundary_controls": {
+    "run": 6,
+    "passed": 6
+  },
+  "method": "Direct installed PinnedInputClosure.for_project exercise with exact requested scale limits over tracked regular files, followed by require_unchanged. No repository manifest or active binding was changed.",
+  "projects": [
+    {
+      "repo": "daemonarchy-ports",
+      "commit": "a29eb27ccd90a4f113954007353aa0b73de927b8",
+      "configured_limits": {
+        "schema": "literate-ai/project-scale-limits@1",
+        "pinned_input_files": 500000,
+        "pinned_input_total_bytes": 2147483648,
+        "catalog_files": 250000,
+        "catalog_entries": 1000000,
+        "catalog_total_bytes": 2147483648
+      },
+      "pinned_regular_files": 181531,
+      "pinned_bytes": 454541155,
+      "closure_identity": "sha256:863b3c8e2e3b57c4716567f0381a5e2433b5a2e6815ef8192799a2677679aa27",
+      "capture_seconds": 103.66218794399902,
+      "revalidation_seconds": 21.937891135003156,
+      "peak_rss_kib": 1045424,
+      "default_refusal": {
+        "path": "archivers/lzip/distinfo",
+        "files": 1024,
+        "code": "inputs.closure_file_limit",
+        "message": "pinned-input files: observed 1025, allowed 1024"
+      },
+      "refusals_by_code": {
+        "inputs.closure_file_size_limit": 35
+      },
+      "tracked_symlinks_not_generation_authority": 0
+    },
+    {
+      "repo": "daemonarchy-src",
+      "commit": "4b6dd598234450bf82278a846bfec809e4cc0077",
+      "configured_limits": {
+        "schema": "literate-ai/project-scale-limits@1",
+        "pinned_input_files": 500000,
+        "pinned_input_total_bytes": 2147483648,
+        "catalog_files": 250000,
+        "catalog_entries": 1000000,
+        "catalog_total_bytes": 2147483648
+      },
+      "pinned_regular_files": 115250,
+      "pinned_bytes": 1272901735,
+      "closure_identity": "sha256:ddd4afc84f61f4e8dce4ec2b956216c8ea4f8d175b1f791d6bdffb0c8cec51ca",
+      "capture_seconds": 75.9590524339983,
+      "revalidation_seconds": 19.08955386999878,
+      "peak_rss_kib": 1665664,
+      "default_refusal": {
+        "path": "bin/sh/tests/parser/alias12.0",
+        "files": 1024,
+        "code": "inputs.closure_file_limit",
+        "message": "pinned-input files: observed 1025, allowed 1024"
+      },
+      "refusals_by_code": {
+        "inputs.closure_file_size_limit": 40
+      },
+      "tracked_symlinks_not_generation_authority": 138
+    }
+  ],
+  "complete_component_catalog": false,
+  "native_qualification": false,
+  "lifecycle_receipt": false,
+  "remaining": "Qualify real complete Component catalogs and lock planning; preserve bounded generation authority and typed retained-source membership for large source files and symlinks. Review canonical Standard rebind before execution. This direct closure probe does not admit either whole source tree."
+}
