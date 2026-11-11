@@ -1,6 +1,6 @@
 {
   "schema": "daemonarchy/16-completion-progress@1",
-  "observed_utc": "2026-11-11T14:14:28.316883+00:00",
+  "observed_utc": "2026-11-11T14:25:44.662940+00:00",
   "goal_scope": "Complete all Daemonarchy 1.6 work not requiring physical hardware access, full documented RPi4/RPi5 emulator behavior, upstream tip synchronization, all branch/PR integration and stale-issue review.",
   "product_main_merges": [
     {
@@ -324,7 +324,7 @@
         "host_osversion": 1600029,
         "matched_jail_osversion": 1600031,
         "full_build_dispatched": false,
-        "remaining": "Matching isolated CURRENT guest now boots successfully; guest build tools installed and exact portsF2 snapshot transferred. Preparing a fresh private jail/ports registration inside the guest. Full closure/SDK/lifecycle acceptance remains incomplete."
+        "remaining": "Full matched-kernel guest bulk job has started with the updated1.6desktop/package-manager candidate. Dependency processing is underway; completed package closure and native SDK/lifecycle acceptance remain pending."
       },
       "matched_guest": {
         "source_revision": "4b6dd598234450bf82278a846bfec809e4cc0077",
@@ -347,10 +347,41 @@
           "primary_head_preserved": true
         },
         "acceptance_scope": "Actual matched lab kernel/userland boot and workspace admission; not final distribution, package closure, canonical SDK or lifecycle qualification.",
-        "jail_and_ports_preparation": "All14 preparation phases pass, including independent input SHA readbacks,181570-file ports extraction,matched base/source jail,kernel/source1600031 check and private ports registration. Cache transfer finished; independent guest archive hashing still running. Full-bulk controller waits for verified cache and fresh disk/RAM gates.",
+        "jail_and_ports_preparation": "All13 preparation phases passed: verified input transfers, ports extraction, matching base/source jail, kernel/source1600031 check and private ports registration.",
         "parallel_builders": 1,
-        "make_jobs": 3
+        "make_jobs": 3,
+        "eligible_ordinary_cache": {
+          "regular_archives": 893,
+          "alias_symlinks": 893,
+          "bytes": 4821271487,
+          "independent_guest_hashes": "all1786 archive/alias paths match the original expected digests",
+          "verifier_recovery": "Original checks refused legitimate cache symlinks, then parsed BSD escaped filenames incorrectly. Those failures remain retained. Corrected verification uses raw names and quiet hashes with identical C-locale ordering; source and transferred package bytes were unchanged."
+        },
+        "full_bulk": {
+          "ports_revision": "378954db127eb5126a65b45fca31b29ea2f93e83",
+          "ports_tree": "327f34560deaaf07f905141756be4f71b77b7e5c",
+          "ports_review": 63,
+          "status": "building",
+          "started_utc": "2026-11-11T14:23:05.222977+00:00",
+          "selected_roots": 36,
+          "parallel_builders": 1,
+          "make_jobs": 3,
+          "initial_phase": "reference jail created; initial dependency processing",
+          "scope": "Original full bulk, unchanged options/QA and owned-package build exclusions. No package completion, publication, SDK/lifecycle/final-media acceptance yet."
+        }
       }
+    },
+    "desktop_snapshot_review": {
+      "pull_request": 63,
+      "revision": "378954db127eb5126a65b45fca31b29ea2f93e83",
+      "merged": false,
+      "desktop_version": "1.6.0",
+      "desktop_source": "4b2525533600f37d2c6249112c3d2d4e22989f36",
+      "package_manager_source": "3cd00f456273c8dc4a859ef37b9bb9c763690056",
+      "package_manager_version": "0.1.0_1",
+      "package_manager_license": "BSD2CLAUSE from selected original source",
+      "result": "Both new archives independently match selected Git source files (144 desktop/17 application-engine). All13 original native metadata, checksum/extraction, file identity and preserved-default controls passed. Full CURRENT package bulk running; review remains draft.",
+      "observation": "verification/native-desktop-inputs-20261111.json"
     }
   },
   "omarchy": {
@@ -590,7 +621,10 @@
       "untracked_primary_performance_files_preserved": 6,
       "reviewed_uart_trees_preserved": true,
       "post_merge_ci_run": 43036213118,
-      "post_merge_ci_status": "queued at observation; separate from passing reviewed-head checks",
+      "post_merge_ci_status": {
+        "conclusion": "",
+        "status": "queued"
+      },
       "full_peripheral_fidelity": false
     }
   },

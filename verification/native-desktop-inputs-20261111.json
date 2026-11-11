@@ -1,0 +1,155 @@
+{
+  "schema": "daemonarchy/native-desktop-inputs@1",
+  "observed_utc": "2026-11-11T14:24:55.215093+00:00",
+  "native_platform": "FreeBSD16amd64 guest",
+  "kernel_userland_osversion": 1600031,
+  "source_revision": "4b6dd598234450bf82278a846bfec809e4cc0077",
+  "ports_review": 63,
+  "ports_revision": "378954db127eb5126a65b45fca31b29ea2f93e83",
+  "ports_tree": "327f34560deaaf07f905141756be4f71b77b7e5c",
+  "ports_base": "f2dc1f814002ad09d25a3ee87ee1502dabb92cb6",
+  "status": "passed",
+  "default_options_dependencies_preserved": true,
+  "phases": [
+    {
+      "name": "f2-before-identity",
+      "exit": 0,
+      "elapsed_seconds": 0.512,
+      "log_sha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855"
+    },
+    {
+      "name": "before-daemonarchy",
+      "exit": 0,
+      "elapsed_seconds": 1.345,
+      "log_sha256": "84f702c51634bb548c903229b3a5568e5afb993d5cc3754db2da281fe5fb3974"
+    },
+    {
+      "name": "before-daemonarchy-pkg",
+      "exit": 0,
+      "elapsed_seconds": 0.915,
+      "log_sha256": "c7fa93a2bc317c6db87a5757a5344c9b556d559a1ccad68a50a59baab3b28933"
+    },
+    {
+      "name": "backup-original-metadata",
+      "exit": 0,
+      "elapsed_seconds": 0.483,
+      "log_sha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855"
+    },
+    {
+      "name": "metadata-transfer",
+      "exit": 0,
+      "elapsed_seconds": 0.492,
+      "log_sha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855"
+    },
+    {
+      "name": "candidate-after-identity",
+      "exit": 0,
+      "elapsed_seconds": 0.458,
+      "log_sha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855"
+    },
+    {
+      "name": "distfile-daemonarchy",
+      "exit": 0,
+      "elapsed_seconds": 0.504,
+      "log_sha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855"
+    },
+    {
+      "name": "distfile-daemonarchy-pkg",
+      "exit": 0,
+      "elapsed_seconds": 1.135,
+      "log_sha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855"
+    },
+    {
+      "name": "after-daemonarchy",
+      "exit": 0,
+      "elapsed_seconds": 1.116,
+      "log_sha256": "f0f48aea41fd6a721ee26346cfd8d3539807048e024b21576c935b8f2ecd5b86"
+    },
+    {
+      "name": "checksum-extract-daemonarchy",
+      "exit": 0,
+      "elapsed_seconds": 1.798,
+      "log_sha256": "0653778bf685ebe3eeeeab2588b42760298564794e5b3e0ab1ef8ebab97459d0"
+    },
+    {
+      "name": "after-daemonarchy-pkg",
+      "exit": 0,
+      "elapsed_seconds": 0.964,
+      "log_sha256": "879c0e0d93bd79ce767107640a7ca1d6d305ad497d1e5c39c7c4f7a64cc0d5b9"
+    },
+    {
+      "name": "checksum-extract-daemonarchy-pkg",
+      "exit": 0,
+      "elapsed_seconds": 2.696,
+      "log_sha256": "4af2556f8e101e2b7633ce7de74d2c2ba437b38be3d921500d535762c14ca9c0"
+    },
+    {
+      "name": "license-source",
+      "exit": 0,
+      "elapsed_seconds": 0.892,
+      "log_sha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855"
+    }
+  ],
+  "distfiles": [
+    {
+      "origin": "x11-wm/daemonarchy",
+      "revision": "4b2525533600f37d2c6249112c3d2d4e22989f36",
+      "filename": "jordanhubbard-daemonarchy-desktop-v1.6.0-4b2525533600f37d2c6249112c3d2d4e22989f36_GH0.tar.gz",
+      "sha256": "4e0ecf84f54443ff2fcc40f4f68aca4642a086bc820bd297e3d8fd4dcb6299b0",
+      "bytes": 384857,
+      "url": "https://codeload.github.com/jordanhubbard/daemonarchy-desktop/tar.gz/4b2525533600f37d2c6249112c3d2d4e22989f36",
+      "archive_selected_files_match_git": 144
+    },
+    {
+      "origin": "ports-mgmt/daemonarchy-pkg",
+      "revision": "3cd00f456273c8dc4a859ef37b9bb9c763690056",
+      "filename": "jordanhubbard-daemonarchy-0.1.0-3cd00f456273c8dc4a859ef37b9bb9c763690056_GH0.tar.gz",
+      "sha256": "466b0b5177f3df711b64742199547fd3bd99ea762056330553dd83bc1986b552",
+      "bytes": 9047565,
+      "url": "https://codeload.github.com/jordanhubbard/daemonarchy/tar.gz/3cd00f456273c8dc4a859ef37b9bb9c763690056",
+      "archive_selected_files_match_git": 17
+    }
+  ],
+  "eligible_cache": {
+    "regular_archives": 893,
+    "alias_symlinks": 893,
+    "regular_archive_bytes": 4821271487,
+    "independent_guest_hashes_match": true
+  },
+  "full_bulk": {
+    "status": "building",
+    "build_started_utc": "2026-11-11T14:23:05.222977+00:00",
+    "parallel_builders": 1,
+    "make_jobs": 3,
+    "acceptance": "pending; initial dependency processing underway"
+  },
+  "scope": "Original native make metadata/checksum/extraction and existing dependency cache identity checks. Full native package output/install/desktop/SDK/lifecycle qualification remains incomplete. Host kernel/feed/package registration unchanged.",
+  "selected_metadata": {
+    "daemonarchy": {
+      "pkgname": "daemonarchy-1.6.0,1",
+      "distfiles": "jordanhubbard-daemonarchy-desktop-v1.6.0-4b2525533600f37d2c6249112c3d2d4e22989f36_GH0.tar.gz",
+      "default_options": [
+        "APPS",
+        "BLUETOOTH",
+        "CLI",
+        "DEV",
+        "INPUT",
+        "OMAAPPS",
+        "PRINT",
+        "VAAPI"
+      ],
+      "licenses": [
+        "BSD2CLAUSE",
+        "MIT"
+      ]
+    },
+    "daemonarchy-pkg": {
+      "pkgname": "daemonarchy-pkg-0.1.0_1",
+      "distfiles": "jordanhubbard-daemonarchy-0.1.0-3cd00f456273c8dc4a859ef37b9bb9c763690056_GH0.tar.gz",
+      "default_options": [],
+      "licenses": [
+        "BSD2CLAUSE"
+      ]
+    }
+  }
+}
