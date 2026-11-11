@@ -1,0 +1,220 @@
+{
+  "schema": "daemonarchy/open-issue-review@1",
+  "observed_utc": "2026-11-11T03:30:44.890620+00:00",
+  "repository_issue_counts": {
+    "daemonarchy": 25,
+    "daemonarchy-src": 0,
+    "daemonarchy-ports": 0,
+    "daemonarchy-desktop": 0,
+    "omarchy-freebsd": 0
+  },
+  "review": [
+    {
+      "issue": 33,
+      "url": "https://github.com/jordanhubbard/daemonarchy/issues/33",
+      "title": "bidirectional network debugging from loader through panic",
+      "reviewed_body_sha256": "554f4dda4cf83ab7030a40b2224313a8ea56ab9b7bff52d9c20dff4ce4c3e101",
+      "disposition": "retain-open-unresolved",
+      "reason": "Early-kernel/panic bidirectional networking and fault-injection acceptance incomplete."
+    },
+    {
+      "issue": 39,
+      "url": "https://github.com/jordanhubbard/daemonarchy/issues/39",
+      "title": "coordinate all Daemonarchy builds and releases with Literate AI workers",
+      "reviewed_body_sha256": "ff97d9ad27ca77387a7cb4eb95f7babec54670826f072691510582f8c0b19cec",
+      "disposition": "retain-open-unresolved",
+      "reason": "Canonical complete source/ports execution, per-unit provenance and native lifecycle orchestration incomplete."
+    },
+    {
+      "issue": 62,
+      "url": "https://github.com/jordanhubbard/daemonarchy/issues/62",
+      "title": "support aarch64 alongside amd64",
+      "reviewed_body_sha256": "f0c0a103cc78dc4eb7183d0f8b7a44f233587dc0f4c2f9cc196c8588f28f7329",
+      "disposition": "retain-open-unresolved",
+      "reason": "Matched ARM artifacts and full VM install/desktop/update/rollback/debug matrix incomplete."
+    },
+    {
+      "issue": 80,
+      "url": "https://github.com/jordanhubbard/daemonarchy/issues/80",
+      "title": "Proactive installer network bring-up: adapters, DHCP, DNS, clock, firmware, Wi-Fi (NET-001)",
+      "reviewed_body_sha256": "a412e453bf1435d15e560b8ef7785a0f7aadf60ef1c01c887476b64660fa6d79",
+      "disposition": "retain-open-unresolved",
+      "reason": "Complete exact-image network pipeline acceptance incomplete; physical radio checks separate."
+    },
+    {
+      "issue": 101,
+      "url": "https://github.com/jordanhubbard/daemonarchy/issues/101",
+      "title": "cross-vendor GPU diagnostics and Daemonarchy showcase (GPU-001)",
+      "reviewed_body_sha256": "8cf24bc9bd4a5529896d01c6dace09a9702669f8dad7c482c7e56b90cb856b86",
+      "disposition": "retain-open-unresolved",
+      "reason": "Software diagnostics and exact-image behavior remain; cross-vendor physical GPU acceptance separate."
+    },
+    {
+      "issue": 134,
+      "url": "https://github.com/jordanhubbard/daemonarchy/issues/134",
+      "title": "make exact-image installation at least 10x faster (INSTALL-PERF-001)",
+      "reviewed_body_sha256": "f785040815ab0b4a486264d5428e0c1149ba3dac6e5de064c3e20700ed445c7f",
+      "disposition": "retain-open-unresolved",
+      "reason": "Equivalent VM baseline/candidate performance and fault/retry evidence incomplete; physical 10x measurements separate."
+    },
+    {
+      "issue": 139,
+      "url": "https://github.com/jordanhubbard/daemonarchy/issues/139",
+      "title": "extract installer visual SDK and animation/game plugin system (VISUAL-SDK-001)",
+      "reviewed_body_sha256": "d9d0f7a834149e924e9235741f036d3ad070799375f81f7894da8a30f5079b5c",
+      "disposition": "retain-open-unresolved",
+      "reason": "Independent SDK packaging, API lifecycle and exact-image native acceptance incomplete."
+    },
+    {
+      "issue": 142,
+      "url": "https://github.com/jordanhubbard/daemonarchy/issues/142",
+      "title": "PKG-002: Self-host the installer's package closure (both architectures) off pkg.FreeBSD.org",
+      "reviewed_body_sha256": "b7f905981d3259a69b6ce33577b3287d0041fb15ab0278e003c33e857149524b",
+      "disposition": "retain-open-unresolved",
+      "reason": "Complete signed self-hosted CURRENT closures and exact-image/public-feed validation incomplete."
+    },
+    {
+      "issue": 161,
+      "url": "https://github.com/jordanhubbard/daemonarchy/issues/161",
+      "title": "EXT-001: Installer extensions (menu, SDK windows, signed compressed feed)",
+      "reviewed_body_sha256": "cba1b39cc8fe1ade7605b202ab6f50aa7e9af9a3a5c4d922d37b5359bf9c8d59",
+      "disposition": "retain-open-unresolved",
+      "reason": "Feed publication text obsolete, but gum form decision and exact-image offline/corrupt-bundle acceptance unresolved."
+    },
+    {
+      "issue": 291,
+      "url": "https://github.com/jordanhubbard/daemonarchy/issues/291",
+      "title": "SPARK-001: boot, install and run the desktop on the NVIDIA RTX Spark laptop",
+      "reviewed_body_sha256": "a03ad0936e35c9fce43561d78583489c73de2a9a10eb97650a7f412dadaf6550",
+      "disposition": "retain-open-unresolved",
+      "reason": "CPU/firmware/debug software and final integration unresolved; physical all-core acceptance separate."
+    },
+    {
+      "issue": 293,
+      "url": "https://github.com/jordanhubbard/daemonarchy/issues/293",
+      "title": "Installation failed due to failed package checksum from remote",
+      "reviewed_body_sha256": "c4c3953a041a7c0385c844f18345acd00987bc67e4635f014db6480a1efee7f8",
+      "disposition": "retain-open-unresolved",
+      "reason": "Screenshots confirm cached and remote checksum failures for gpu-firmware-amd-kmod-dcn-3-5-20260519.1600029; reproduction and correction required."
+    },
+    {
+      "issue": 295,
+      "url": "https://github.com/jordanhubbard/daemonarchy/issues/295",
+      "title": "ARM-001: Maintain the ARM platform and upstream evidence register",
+      "reviewed_body_sha256": "435d8f62b9f45a4ecb63297353d8c3b394db355182ab9af0319bcf4e81ec8435",
+      "disposition": "retain-open-unresolved",
+      "reason": "Concrete platform inventory, upstream evidence and software coverage remain active."
+    },
+    {
+      "issue": 296,
+      "url": "https://github.com/jordanhubbard/daemonarchy/issues/296",
+      "title": "ARM-002: Make hwtrace discovery durable across ARM boot chains",
+      "reviewed_body_sha256": "0a0d9ced7504f1049085d3799829403f973b84e3e9e0274edf408fea3b35b646",
+      "disposition": "retain-open-unresolved",
+      "reason": "Scoped normal EFI/rc trace passes do not complete early kernel/panic/interruption or final-media evidence."
+    },
+    {
+      "issue": 297,
+      "url": "https://github.com/jordanhubbard/daemonarchy/issues/297",
+      "title": "SPARK-002: Qualify DGX Spark and GB10 partner systems separately",
+      "reviewed_body_sha256": "4b8b7629ea9cab9385453a308c6269e1f24495e005f98876105b2e59b692d280",
+      "disposition": "retain-open-unresolved",
+      "reason": "Distinct GB10/partner software and matched distribution coverage incomplete."
+    },
+    {
+      "issue": 298,
+      "url": "https://github.com/jordanhubbard/daemonarchy/issues/298",
+      "title": "RPI-001: Port Raspberry Pi 4 before Raspberry Pi 5",
+      "reviewed_body_sha256": "146f8da08766936d97136a25d60fc43504ecf078af1e53e3f8485850a6ed7f87",
+      "disposition": "retain-open-unresolved",
+      "reason": "Scoped Pi4 emulator controls do not complete documented device fidelity and final install/desktop/update/recovery."
+    },
+    {
+      "issue": 299,
+      "url": "https://github.com/jordanhubbard/daemonarchy/issues/299",
+      "title": "RPI-002: Port Raspberry Pi 5 and resolve RP1 and firmware quirks",
+      "reviewed_body_sha256": "753eb8d1e5fecc91306985a4dd7d30f9d83d3deed8058c86af13651d5eec5d6b",
+      "disposition": "retain-open-unresolved",
+      "reason": "RP1/BCM2712 device/IRQ/clock/reset/USB/Ethernet/firmware models and drivers incomplete."
+    },
+    {
+      "issue": 300,
+      "url": "https://github.com/jordanhubbard/daemonarchy/issues/300",
+      "title": "APPLE-001: Bring up native Apple Silicon across board generations",
+      "reviewed_body_sha256": "f5eb65a89698fc2c0648e9f67f58a50121f68c1e9d09d27ab9a7db0e5ba64bf6",
+      "disposition": "retain-open-unresolved",
+      "reason": "AICv2 preparation does not complete Apple boot/recovery/storage/input/graphics and media software."
+    },
+    {
+      "issue": 301,
+      "url": "https://github.com/jordanhubbard/daemonarchy/issues/301",
+      "title": "SBC-001: Port other popular ARM boards with model-specific profiles",
+      "reviewed_body_sha256": "37aab54619970bd2f5df490be86c4e2fb24b6d6bea8b57fcfdaaa80c5aba0229",
+      "disposition": "retain-open-unresolved",
+      "reason": "Other SBC model-specific source, firmware and device prerequisites incomplete."
+    },
+    {
+      "issue": 302,
+      "url": "https://github.com/jordanhubbard/daemonarchy/issues/302",
+      "title": "QUALCOMM-001: Bring up Qualcomm ARM laptops as distinct hardware targets",
+      "reviewed_body_sha256": "43e67228b30895af0b9cea94e79b6c4213a7fdaed66812cfd128ceae0d6f7b16",
+      "disposition": "retain-open-unresolved",
+      "reason": "Qualcomm laptop boot/device/firmware/desktop implementation incomplete."
+    },
+    {
+      "issue": 303,
+      "url": "https://github.com/jordanhubbard/daemonarchy/issues/303",
+      "title": "ARM-003: Qualify ARM base, page-size ABIs and package closures",
+      "reviewed_body_sha256": "a2bd3fcd940e3881e6a39871e53e9152aa501da6d06548f87fa6c23c1e561ff6",
+      "disposition": "retain-open-unresolved",
+      "reason": "Signed native base/modules/packages and selected page-size/ABI closures incomplete."
+    },
+    {
+      "issue": 304,
+      "url": "https://github.com/jordanhubbard/daemonarchy/issues/304",
+      "title": "ARM-004: Deliver ARM graphics, input, network and power integration",
+      "reviewed_body_sha256": "5b67da0bbcf27ff3fe6a10f79486f2259753b90265d1ad21a95e1bea9e82d3cc",
+      "disposition": "retain-open-unresolved",
+      "reason": "Complete native graphics/input/network/power integration and exact-image acceptance incomplete."
+    },
+    {
+      "issue": 305,
+      "url": "https://github.com/jordanhubbard/daemonarchy/issues/305",
+      "title": "ARM-005: Ship coherent ARM discovery, installer and recovery media",
+      "reviewed_body_sha256": "2bbf4ba084b3906f9ab3d91e5884aa6d7bce8d143fb948ec592a8d6b7314b6d4",
+      "disposition": "retain-open-unresolved",
+      "reason": "Final board-selected media and VM install/boot-set/update/rollback/failure acceptance incomplete."
+    },
+    {
+      "issue": 306,
+      "url": "https://github.com/jordanhubbard/daemonarchy/issues/306",
+      "title": "ARM-006: Qualify and document the complete 1.6 ARM distribution",
+      "reviewed_body_sha256": "5b8ff3c48758b28d8069959c855b1644b380cda230f39ec211b5d254303342b9",
+      "disposition": "retain-open-unresolved",
+      "reason": "Final software/VM ledger and collateral incomplete; physical acceptance separate."
+    },
+    {
+      "issue": 307,
+      "url": "https://github.com/jordanhubbard/daemonarchy/issues/307",
+      "title": "ARM-007: Qualify ARM servers, cloud systems and virtual machines",
+      "reviewed_body_sha256": "69f843230faaff15dd5ce7ab84234af2d5b4c0361880ed4249037c4a05c9ebd1",
+      "disposition": "retain-open-unresolved",
+      "reason": "Complete VM/cloud profiles and exact-image load/install/update/recovery matrix incomplete."
+    },
+    {
+      "issue": 308,
+      "url": "https://github.com/jordanhubbard/daemonarchy/issues/308",
+      "title": "ARM-008: Resolve legacy ARM32 coverage and feasibility explicitly",
+      "reviewed_body_sha256": "7dd1d35c7d70a36c6f0ee49022834461ac8f8f48a6e6b0f263c416d53a92f606",
+      "disposition": "retain-open-unresolved",
+      "reason": "Maintained ARM32 baseline/toolchain/package feasibility and explicit scope decisions incomplete."
+    }
+  ],
+  "stale_closures_justified_at_this_checkpoint": [],
+  "completed": false,
+  "notes": [
+    "Old release wording does not establish completion.",
+    "The physical-access exclusion does not waive remaining software acceptance.",
+    "Revisit after implementation and exact-artifact acceptance."
+  ]
+}
