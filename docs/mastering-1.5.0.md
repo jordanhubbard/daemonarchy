@@ -1,7 +1,7 @@
 <!-- release-sync: historical -->
 # Mastering notes for 1.5.0
 
-This records the historical 1.5.0 mastering cycle. Use [HACKING.md](../HACKING.md)
+This records the historical 1.5.0 mastering cycle. Use [HACKING.md](https://github.com/jordanhubbard/daemonarchy/blob/main/HACKING.md)
 for the current release procedure and [release/current.json](../release/current.json)
 for the published release identity.
 
