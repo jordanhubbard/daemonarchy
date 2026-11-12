@@ -1,0 +1,68 @@
+{
+  "schema": "daemonarchy/apple-hardware-reference@1",
+  "recorded_at": "2026-11-09T18:18:31.225924+00:00",
+  "profile": "apple-m2-pro-mini",
+  "operator_allocated": true,
+  "hardware": {
+    "model": "Mac14,12",
+    "name": "Mac mini",
+    "chip": "Apple M2 Pro",
+    "reported_processors": "proc 10:0:6:4",
+    "memory": "16 GB",
+    "device_tree_compatible": [
+      "J474sAP",
+      "Mac14,12",
+      "AppleARM"
+    ],
+    "target_type": "J474s",
+    "system_firmware": "20457.41.3",
+    "macos_loader_version": "20457.41.3",
+    "os_stub_stage2_firmware": null
+  },
+  "reference_os": {
+    "name": "macOS",
+    "version": "27.2",
+    "build": "26B123",
+    "architecture": "arm64"
+  },
+  "access": {
+    "macos_ssh_observed": true,
+    "native_remote_console": "Problematic per operator; prefer boot-stage capture to the hwtrace volume.",
+    "hwtrace_volume_attached": false
+  },
+  "qualification": {
+    "native_freebsd_boot": false,
+    "installation": false,
+    "desktop": false,
+    "recovery": false
+  },
+  "limitations": [
+    "Read-only macOS observations only. The disk inventory lists the existing ISC, main APFS and Recovery partitions, with no separate EFI or trace partition. Native OS-stub ownership and boot enrollment remain unqualified.",
+    "The macOS loader version is not the per-OS m1n1/U-Boot/stub firmware identity.",
+    "No firmware, partition, boot selection or operating-system changes were made.",
+    "Raw IORegistry data remains private; public fields exclude serials, UUIDs and worker addresses."
+  ],
+  "boot_storage_inspection": {
+    "observed_at": "2026-11-09T19:04:54.670687+00:00",
+    "read_only": true,
+    "physical_disks": 1,
+    "physical_disk_bytes": 1000555581440,
+    "partitions": [
+      {
+        "type": "Apple_APFS_ISC",
+        "bytes": 524288000
+      },
+      {
+        "type": "Apple_APFS",
+        "bytes": 994662584320
+      },
+      {
+        "type": "Apple_APFS_Recovery",
+        "bytes": 5368664064
+      }
+    ],
+    "separate_efi_partition_listed": false,
+    "trace_volume_listed": false,
+    "raw_disk_inventory_shared": false
+  }
+}

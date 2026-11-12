@@ -1,0 +1,51 @@
+{
+  "schema": "daemonarchy/native-arm-source-build-recovery@1",
+  "observed_utc": "2026-11-10T01:33:59.040773+00:00",
+  "source_commit": "af55b6f9042e15b635e90926d476e7cbeb48a069",
+  "plan_identity": "72bfce4e2deb47eb28873c4df4fcea3c9251523fa45b53cc29f4c24fb2e7eeb2",
+  "status": "interrupted",
+  "previous_observation": "verification/native-arm-source-build-20261109.json",
+  "observations": {
+    "recorded_vm_pid_absent": true,
+    "ssh_and_qmp_connection_refused": true,
+    "original_disks_preserved": true,
+    "recovery_vm_uses_disposable_snapshot_overlays": true,
+    "world_filesystem_initially_unclean": true,
+    "log_directory_initially_unreadable": true,
+    "overlay_fsck_completed": true,
+    "controller_exit_record_missing": true,
+    "controller_finish_record_missing": true,
+    "retained_result_status": "running",
+    "retained_result_active_phase": "buildworld",
+    "retained_result_completed_phases": [],
+    "retained_result_artifacts": [],
+    "retained_result_sha256": "455d8296cb888687283a905cd85539907a3528d54679c8e8ff645f3d5ba1fcaf",
+    "reconnected_log_candidate_bytes": 393216,
+    "reconnected_log_candidate_nonzero_bytes": 0,
+    "reconnected_log_candidate_sha256": "a6619f482fee91a315f76cdcd8705d39b6ce11077c435ccc696142e130c27762",
+    "host_oom_observed_utc": "2026-11-09T23:50:27Z",
+    "oom_connection_to_vm_exit": "unproven"
+  },
+  "qualification": {
+    "native_build_complete": false,
+    "artifact_bytes_verified": false,
+    "runtime": false,
+    "release": false,
+    "framework_receipt": false
+  },
+  "next_action": "Prepare a clean independent source-bound build with durable log export and an independent worker supervisor. Preserve original failed-run disks; do not admit stale running state or recovered zero-filled log as passing evidence.",
+  "validation": {
+    "documentation_lifecycle_cases": 4,
+    "documentation_release_sync_cases": 13,
+    "documentation_tests_pass": true,
+    "whitespace_check_pass": true,
+    "project_validate": "blocked-documentation-authority-review-stale",
+    "litai_verify_exit": 1,
+    "litai_verify_gates": {
+      "authority": "fail-documentation-authority-review-stale",
+      "locks": "pass-8-current",
+      "receipt": "fail-documentation-authority-review-stale"
+    },
+    "release_qualified": false
+  }
+}

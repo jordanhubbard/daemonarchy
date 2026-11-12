@@ -26,6 +26,25 @@ on:
       - 'overlay/usr/local/libexec/daemonarchy-installer/install'
       - 'overlay/usr/local/libexec/daemonarchy-installer/package-repository'
       - 'tests/docs-release-sync.py'
+      - 'scripts/arm-platform-register.py'
+      - 'scripts/check-arm-kernel-set.py'
+      - 'scripts/arm-package-closure.py'
+      - 'scripts/assemble-arm-media.py'
+      - 'scripts/split-media.py'
+      - 'tests/split-media.py'
+      - 'tests/release-split-media.py'
+      - 'tests/release-split-flow.py'
+      - 'scripts/arm-ram-inspect.py'
+      - 'tests/arm-media.py'
+      - 'tests/arm-ram-inspect.py'
+      - 'tests/fixtures/arm-ram/**'
+      - 'tests/arm-package-closure.py'
+      - 'scripts/make-arm-ram-installer.sh'
+      - 'scripts/live-root-metadata.py'
+      - 'tests/live-root-metadata.py'
+      - 'tests/arm-kernel-set.py'
+      - 'tests/arm-platform-register.py'
+      - 'docs/roadmap/arm-platforms.json'
       - 'tests/docs-lifecycle.py'
       - 'scripts/release-check-1.4.py'
       - 'tests/release-check-1.4.py'
@@ -91,6 +110,10 @@ on:
       - 'tests/build-release-packages.sh'
       - 'scripts/master-release.sh'
       - 'tests/master-release.sh'
+      - 'scripts/master-media.py'
+      - 'tests/master-split-media.py'
+      - 'scripts/check-packed-installer.py'
+      - 'tests/packed-mastering.py'
       - 'overlay/usr/local/bin/daemonarchy-wine'
       - 'overlay/usr/local/bin/daemonarchy-steam'
       - 'overlay/usr/local/libexec/daemonarchy-installer/windows-apps'
@@ -138,6 +161,25 @@ on:
       - 'overlay/usr/local/libexec/daemonarchy-installer/install'
       - 'overlay/usr/local/libexec/daemonarchy-installer/package-repository'
       - 'tests/docs-release-sync.py'
+      - 'scripts/arm-platform-register.py'
+      - 'scripts/check-arm-kernel-set.py'
+      - 'scripts/arm-package-closure.py'
+      - 'scripts/assemble-arm-media.py'
+      - 'scripts/split-media.py'
+      - 'tests/split-media.py'
+      - 'tests/release-split-media.py'
+      - 'tests/release-split-flow.py'
+      - 'scripts/arm-ram-inspect.py'
+      - 'tests/arm-media.py'
+      - 'tests/arm-ram-inspect.py'
+      - 'tests/fixtures/arm-ram/**'
+      - 'tests/arm-package-closure.py'
+      - 'scripts/make-arm-ram-installer.sh'
+      - 'scripts/live-root-metadata.py'
+      - 'tests/live-root-metadata.py'
+      - 'tests/arm-kernel-set.py'
+      - 'tests/arm-platform-register.py'
+      - 'docs/roadmap/arm-platforms.json'
       - 'VERSION'
       - 'scripts/version.py'
       - 'tests/version-sync.py'
@@ -199,6 +241,10 @@ on:
       - 'tests/build-release-packages.sh'
       - 'scripts/master-release.sh'
       - 'tests/master-release.sh'
+      - 'scripts/master-media.py'
+      - 'tests/master-split-media.py'
+      - 'scripts/check-packed-installer.py'
+      - 'tests/packed-mastering.py'
       - 'overlay/usr/local/bin/daemonarchy-wine'
       - 'overlay/usr/local/bin/daemonarchy-steam'
       - 'overlay/usr/local/libexec/daemonarchy-installer/windows-apps'
@@ -248,6 +294,22 @@ jobs:
         env:
           PYTHONDONTWRITEBYTECODE: '1'
         run: python3 tests/release-check-1.4.py -v
+      - name: ARM kernel set integrity
+        run: |
+          python3 tests/arm-kernel-set.py -v
+          python3 tests/arm-package-closure.py -v
+      - name: ARM platform scope and discovery inventory
+        run: python3 tests/arm-platform-register.py -v
+      - name: Packed ARM installer contents and refusal controls
+        run: |
+          sudo apt-get update -q
+          sudo apt-get install -y -q sleuthkit xorriso mtools libarchive-tools
+          python3 tests/arm-ram-inspect.py -v
+          python3 tests/packed-mastering.py -v
+          python3 tests/arm-media.py -v
+          python3 tests/split-media.py -v
+          python3 tests/release-split-media.py -v
+          python3 tests/release-split-flow.py -v
       - name: One release version
         env:
           PYTHONDONTWRITEBYTECODE: '1'
@@ -323,6 +385,7 @@ jobs:
         run: |
           bash tests/build-release-packages.sh
           bash tests/master-release.sh
+          python3 tests/master-split-media.py -v
           bash tests/windows-launchers.sh
           bash tests/windows-apps-install.sh
 

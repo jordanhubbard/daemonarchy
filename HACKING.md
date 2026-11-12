@@ -20,7 +20,7 @@ is not a base/ABI migration.
 
 A Daemonarchy image is five things stacked up, each with its own repository (the [full table](#the-repositories-that-make-up-daemonarchy) is in the reference):
 
-1. **FreeBSD itself**, from [daemonarchy-src](https://github.com/jordanhubbard/daemonarchy-src): an ordinary FreeBSD source tree, a fork that tracks upstream FreeBSD `main` and keeps Daemonarchy's own changes on an integration branch (`daemonarchy`). It produces the base system, the kernel and the 32-bit libraries as tarball sets.
+1. **FreeBSD itself**, from [daemonarchy-src](https://github.com/jordanhubbard/daemonarchy-src): an ordinary FreeBSD source tree, a fork that retains pristine upstream history in `freebsd/main` and integrates reviewed Daemonarchy changes through `daemonarchy` and owned `main`. It produces the base system, the kernel and the 32-bit libraries as tarball sets.
 2. **The ports**, from [daemonarchy-ports](https://github.com/jordanhubbard/daemonarchy-ports): the FreeBSD ports tree plus the Omarchy ports. Poudriere builds them into packages, and the ones Daemonarchy publishes itself are signed and uploaded as GitHub release assets (the "feeds").
 3. **The desktop layers**, [omarchy-freebsd](https://github.com/jordanhubbard/omarchy-freebsd) and [daemonarchy-desktop](https://github.com/jordanhubbard/daemonarchy-desktop). They are not built separately: the ports `x11-wm/omarchy` and `x11-wm/daemonarchy` fetch them at pinned commits, so they reach a machine as packages.
 4. **The installer and the image**, this repository: the installer in `overlay/`, `build-iso.sh`, `pkg-repo.sh`, the test harnesses, the release scripts and the documentation.
@@ -81,13 +81,13 @@ Expect the first package build to be long. When the pinned ports tree is ahead o
 Package names below were checked against daemonarchy-ports. On a FreeBSD 16.0-CURRENT builder:
 
 ```sh
-pkg install git gh jq bash python312 poudriere xorriso
+pkg install git gh jq bash python312 poudriere mtools xorriso
 ```
 
-- `poudriere-devel` can replace `poudriere` (the maintainers' VM runs poudriere-devel 3.4.99). `gh` is only needed where you create GitHub releases or upload feeds; `jq` is used by `build-iso.sh` and the release steps; `bash` is the interpreter of `master-release.sh` and `build-release-packages.sh`; `xorriso` is what the builder uses for the hybrid ISO.
+- `poudriere-devel` can replace `poudriere` (the maintainers' VM runs poudriere-devel 3.4.99). `gh` is only needed where you create GitHub releases or upload feeds; `jq` is used by `build-iso.sh` and the release steps; `bash` is the interpreter of `master-release.sh` and `build-release-packages.sh`; `mtools` supplies the image's raw-map/readback operations, and `xorriso` remains useful for controller-side hybrid fixtures. The default assembler uses native makefs, mkimg and etdump.
 - For `test-bhyve.sh` add `edk2-bhyve` (the package `sysutils/edk2` builds for bhyve). For `test-qemu.sh` on FreeBSD add `qemu` and `mtools`.
 - On Debian or Ubuntu, `test-qemu.sh` wants `qemu-system-x86` (and `qemu-system-arm`), `ovmf` (and `qemu-efi-aarch64` for arm64), `mtools`, `dosfstools` and `xorriso`, plus `git`, `python3`, `bash` and `lua5.4` to run the portable tests. The harness looks for OVMF at `/usr/share/ovmf/OVMF.fd` and takes `OVMF=` to override it.
-- `xz`, `openssl`, `makefs`, `mkimg` and `bsdtar` are in FreeBSD's base system.
+- `xz`, `openssl`, `makefs`, `mkimg`, `etdump` and `bsdtar` are in FreeBSD's base system.
 - Shell scripts are checked with `shellcheck` in CI (`devel/hs-ShellCheck` on FreeBSD).
 - Literate AI is optional; see [its section](#literate-ai-what-it-is-and-whether-you-need-it).
 
@@ -102,7 +102,7 @@ git clone https://github.com/jordanhubbard/daemonarchy.git ~/src/daemonarchy
 | Repository | Check it out when | Where, and which branch |
 |---|---|---|
 | [daemonarchy](https://github.com/jordanhubbard/daemonarchy) | Always | Anywhere. Branch from `main`; the release machinery masters from a clean checkout of one full commit. |
-| [daemonarchy-src](https://github.com/jordanhubbard/daemonarchy-src) | You change the kernel or base system, or build the sets | `/usr/src` is the conventional path and the optional checkout the installer offers uses it; `~/daemonarchy-src` also works for the controller. `main` tracks upstream FreeBSD; Daemonarchy's changes and the optional `/usr/src` checkout use the `daemonarchy` branch. Check out an exact commit (`git checkout --detach <40-hex>`) for any build you will keep, and keep the tree clean while it builds. |
+| [daemonarchy-src](https://github.com/jordanhubbard/daemonarchy-src) | You change the kernel or base system, or build the sets | `/usr/src` is the conventional path and the optional checkout the installer offers uses it; `~/daemonarchy-src` also works for the controller. Reviewed changes integrate through `daemonarchy` and owned `main`; pristine upstream remains in `freebsd/main`. The optional `/usr/src` checkout uses the published catalogue's source branch. Check out an exact commit (`git checkout --detach <40-hex>`) for any build you will keep, and keep the tree clean while it builds. |
 | [daemonarchy-ports](https://github.com/jordanhubbard/daemonarchy-ports) | You change or add a port, or build packages | `main` is the integration branch (the 1.5.0 pin is `e84b4c4c` on it). Register it with poudriere as a null tree (`poudriere ports -c -p omarchyiso -m null -M <path>`); on a Daemonarchy machine it can also be `/usr/ports`. A shallow clone is enough for poudriere. |
 | [daemonarchy-desktop](https://github.com/jordanhubbard/daemonarchy-desktop) and [omarchy-freebsd](https://github.com/jordanhubbard/omarchy-freebsd) | You change the look, the System > FreeBSD tools or the FreeBSD adaptation of Omarchy | Anywhere (`~/src`). The ports fetch them pinned, so test your checkout by laying it over the port's extracted sources ([The FreeBSD layer and the desktop layer](#the-freebsd-layer-and-the-desktop-layer)) and then bump the pin in the port. |
 
@@ -124,6 +124,8 @@ The installer is shell, in `overlay/usr/local/libexec/daemonarchy-installer/` (`
    ```
 
    What you will see: `==> ISO staging: /var/tmp/...` (each run gets a new private staging directory and keeps it), `==> Collecting the Omarchy package repository` with a package count, checks that the sets match the jail and the checkout catalogue, then `poudriere image`. The image and its `.sha256` land in `/usr/local/poudriere/data/images`, named `daemonarchy-<VERSION>-<arch>.iso`. Set `NAME` and `PREVIEW_LABEL` for a development image so its welcome screen says what it is.
+   Both architectures now build a live-root tar archive and use the shared trace-aware assembler. AMD64 keeps BIOS and EFI optical/USB boot; ARM uses EFI. New media requires a matching trace-capable EFI/Lua pair. Set OUTDIR to fresh output paths for each attempt: existing images, checksums and compressed files are refused and preserved. Boot-only native controls are recorded in [the default-builder checkpoint](verification/default-hybrid-trace-20261110.json); they do not qualify the full selected 1.6 media or automatic BIOS capture.
+
 4. **Install it in a VM, unattended.** Copy the ISO to any machine with QEMU and run:
 
    ```sh
@@ -225,6 +227,16 @@ With a jail, a pinned ports tree registered with poudriere, and a bulk-built pac
 
 Every `build-iso.sh` run creates a new staging directory and prints it; failed and finished ones stay for inspection. The ISO is written next to a `.sha256`, and the release image is also published xz-compressed (the build checks that the `.xz` decompresses to exactly the built image and that it fits the 2 GiB asset limit). `bash tests/live-image-budget.sh` checks the size boundaries; on FreeBSD, `sudo sh tests/live-image-runtime.sh <iso>` audits the live root's commands and shared libraries read-only.
 
+The development build now passes the complete poudriere archive through
+`scripts/make-ram-iso.sh` for both architectures. The assembler preserves archive
+ownership, modes and hardlinks in an LZMA-packed UFS2 root, stages the default
+boot-trace service and retains amd64 BIOS/EFI or aarch64 EFI boot support. The
+adjacent `.iso.ram.json` records the actual archive, kernel, packed root and
+staged helper identities. The read-only runtime auditor follows the outer ISO
+into the packed root and requires a FreeBSD worker matching its ABI. The
+[1.6 tracing plan](docs/roadmap/default-install-tracing.md) records the exact
+development controls and remaining final-media acceptance.
+
 ## Running the tests
 
 There is no single `make test`. The suites are standalone Python and shell programs under `tests/`, and CI runs them one by one (`.github/workflows/`). Most need nothing but the standard library, run on any machine, and finish in seconds. Start with the three that guard the documentation and the release record, which are the ones every pull request must keep green:
@@ -266,6 +278,16 @@ The release is a sequence of resumable steps, driven by `scripts/master-release.
 1. **Pin** one daemonarchy-ports commit and one daemonarchy-src commit, and set the version once with `python3 scripts/version.py set X.Y.Z`.
 2. **List what changed** against the last release's feed with `scripts/diff-release-packages.sh`, which only evaluates `make -V PKGNAME` and builds nothing.
 3. **Build**: `master-release.sh packages` (poudriere, seeded from the previous set so retained packages are not rebuilt), `secureboot` (regenerate the module inventory; re-signing is the operator's), `feed` (collect and sign the application feed on the builder, which holds the key), `resolve`, `catalogue`, `iso`, `verify`, `hwtrace` and `qa`. `master-release.sh --dry-run --config master.env all` prints every command without running anything; `all` never writes sticks and never publishes.
+
+For planned 1.6 split media, follow [the transport and record procedure](docs/split-media.md).
+Authoring requires explicit manifest pins and separate raw-image/download fields.
+The mastering verifier, hwtrace extractor, QA transfer and stick writer accept an
+explicit pinned split selection. Packed ARM inspection checks the reconstructed
+root independently. `inspect` is static-only; from planned 1.6, `verify` requires
+native Python/SQLite execution through read-only mounts and returns unrun without
+success on other controllers. Complete exact final-image native/physical acceptance before
+publishing split assets.
+
 4. **Draft the release pull request** with `scripts/prepare-release.py` (placeholders) and `scripts/fill-release.py` (from the verified artifacts), and check staged assets with `scripts/verify-release-assets.py`. The documentation guard is expected to fail until the placeholders are filled; that is why the pull request stays a draft.
 5. **Sign and publish are the release owner's steps**, in one signing session: the feeds, the boot bundle and the GitHub release. Nobody and nothing else holds those keys.
 6. **Bring the documents into step**: `scripts/release-current.py update` rewrites `release/current.json` from the published release, then `tests/docs-release-sync.py` shows every document that still carries the old release.
@@ -548,9 +570,11 @@ ports revisions for a release.
 
 For a fresh development workspace, clone the owned repositories and the
 framework separately. A native build host needs sufficient space for the full
-source and ports trees. Source and ports use `daemonarchy` for owned integration
-and `main` for upstream tracking; a published checkout catalogue may select a
-different branch at its exact release commit. The 1.5.0 catalogue selects
+source and ports trees. Source reviews target `daemonarchy`, with reviewed
+history also synchronized into owned `main`; pristine source upstream remains
+in `freebsd/main`. Ports reviews target owned `main`, with upstream history kept
+in its separate remote. A published checkout catalogue selects exact release
+commits and may select a different branch. The 1.5.0 catalogue selects
 source `daemonarchy` and ports `main`.
 
 ```sh
@@ -1345,6 +1369,33 @@ custom-port, reconnect and shutdown evidence belongs in the
 [remote debug validation record](docs/testing-1.1-remote-debug.md).
 
 ## Hardware bring-up trace image
+
+For the planned 1.6 workflow, start with
+[default installation tracing and target-specific image recipes](docs/roadmap/default-install-tracing.md).
+New hardware should be described to a coding LLM with its exact model, firmware,
+boot chain and symptoms, using the returned hwtrace volume to guide the next
+image. Normal users must receive automatic tracing on standard installation
+media; they should not need to know when to choose an experiment menu. This
+work is tracked under TRACE-001 and is not yet a shipped default.
+
+The development EFI builder now requires matching automatic-trace EFI/Lua
+inputs and enables an observe-only loader-start checkpoint. Retrieve a returned
+image or mounted hwtrace volume without changing it:
+
+```sh
+python3 tools/boottrace/stick.py normal TARGET --out FRESH_EVIDENCE_DIRECTORY
+```
+
+Keep that directory and the original returned bytes for the coding LLM. Supply
+the exact model/board, firmware, boot path, image identity, last visible output
+and the point where console access disappeared. Ask it to distinguish observed
+facts from proposed experiments and preserve the working OS/recovery path.
+A `loader-ready` record proves only that checkpoint: kernel, panic and installer
+capture remain unfinished. See the linked default-tracing procedure for the
+current native controls, full/readonly behavior and remaining persistence gaps.
+
+The following reference retains the existing 1.5.x tools and separate-image
+procedures for reproducible research and historical artifacts.
 
 When a machine hangs or resets during kernel startup and nothing on screen
 says why, use the hardware bring-up trace image. It is a separate image type

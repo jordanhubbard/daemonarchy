@@ -9,6 +9,45 @@
 
 ## Scope and release contract
 
+**Operator direction, 2026-11-11:** complete all Daemonarchy 1.6 work that
+does not require physical hardware access, with execution on Sparky. This
+includes extending the Raspberry Pi 4 and Pi 5 emulators in the uConsole
+repository toward all documented hardware behavior; synchronizing Omarchy,
+FreeBSD src and FreeBSD ports to their upstream tips; integrating developer
+branches, feature branches and existing PRs into the owned repositories'
+main branches; and reviewing every GitHub issue, annotating and closing those
+shown to be stale.
+
+This expands the previous stable-Omarchy selection and software execution
+scope. Record exact upstream tips and refresh deltas before qualifying a new
+selection. Preserve frozen source views and artifacts used by existing builds;
+their results qualify their original pins only. A fresh upstream import does
+not invalidate reusable unchanged products, but changed dependency closures
+must be rebuilt and tested. Repository integration must preserve branch
+history, published releases and retained evidence.
+
+Documented register/bus/interrupt/reset/migration and firmware/driver behavior
+is emulator work. Physical timing, electrical and analog behavior requires
+distinct evidence and cannot be inferred from a simulated boot. Physical Pi 4,
+Pi 5 and Apple M2 qualification remains explicitly untested; completing the
+software queue does not assert those physical acceptance results.
+
+Issue review distinguishes unresolved requirements from obsolete versions,
+duplicates and demonstrated fixes. Close stale issues with evidence and a
+successor reference where appropriate. Neither age nor an old milestone alone
+makes an unresolved requirement stale.
+
+
+**Operator direction, 2026-11-09:** add
+[TRACE-001](default-install-tracing.md). Default installation media must carry a
+standard writable hwtrace partition and automatically retain early-boot,
+installation and post-mortem evidence. Normal users do not select a special
+experiment menu. For new hardware, prefer a coding LLM and detailed target
+description to produce a customized hwtrace image; revisit separate generic
+pre-built diagnostic assets while preserving published artifacts. Apple M2
+qualification uses the allocated Mac14,12 reference, with trace-volume capture
+covering remote-console gaps. Implementation and acceptance remain open.
+
 **Operator direction, 2026-11-07: the theme for 1.6 is ARM, covering popular ARM
 platforms, explicitly including Raspberry Pi 4 and Raspberry Pi 5. Pi 4 is a
 separate porting target ahead of Pi 5 in the SBC implementation queue.** This
@@ -73,6 +112,12 @@ VM and required physical results for the selected artifacts. A newer revision,
 successful merge or green documentation check alone does not establish acceptance.
 
 ## Initial platform matrix
+
+The [machine-readable register](arm-platforms.json) retains 47 scope anchors with
+explicit unresolved identities, hardware allocation and feature states. The
+[register guide](../arm-platform-register.md) explains concrete variant enrollment
+and the inventory checker. These rows are discovery obligations, not accepted
+hardware profiles.
 
 All rows below are **planned/unqualified for 1.6**. The physical Spark diagnostic
 checkpoint is recorded separately; it does not change these release states.

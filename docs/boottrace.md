@@ -1,5 +1,34 @@
 # Hardware trace stick: reset-surviving boot trace
 
+**Planned 1.6 direction:** [default installation tracing](roadmap/default-install-tracing.md)
+will capture ordinary boots and installations to a standard writable hwtrace
+volume, without a special experiment-menu choice. For brand-new hardware,
+start with its exact description and a coding LLM to prepare a target-specific
+hwtrace image and retrieve the resulting volume. Remote console access,
+especially on Apple machines, cannot replace local evidence capture.
+Implementation and persistence acceptance are tracked under TRACE-001.
+
+The development EFI builder now enables an automatic loader-start checkpoint
+on its owned DATRACE volume. It requires matching new EFI and Lua files;
+kernel, panic and installer capture remain open. See the
+[exact scope and native controls](roadmap/default-install-tracing.md#automatic-loader-start-checkpoint).
+Retrieve these separate NORMAL records with:
+
+```sh
+python3 tools/boottrace/stick.py normal returned-media.img --out fresh-evidence
+```
+
+The [pre-exit follow-up](roadmap/default-install-tracing.md#independent-pre-exit-checkpoint)
+adds an independent later bank in the same slot. A valid loader-ready record is
+still exported if the later checkpoint is partial; this does not prove firmware
+exit succeeded or add kernel/init/installer capture.
+
+Extraction preserves partial/corrupt slot bytes and leaves the volume unchanged.
+Thirty-two occupied slots report full rather than erasing earlier attempts.
+
+The mechanism below describes the existing 1.5.x separate-image workflow and
+retained research tools; it does not claim the new default behavior is shipped.
+
 When a machine hangs or resets during kernel startup with nothing on screen
 that explains why (the MSI Raider 18 HX AI A2XWIG in
 [hardware quirks](hardware-quirks.md#msi-raider-18-hx-ai-a2xwig-early-installer-reset)),
@@ -26,7 +55,7 @@ to the stick. The loader prints `Hardware trace: running the next queued
 experiment in 5 s`, files the previous boot's trace as `TRACES/NNNN.TXT` on
 the stick, clears the NVRAM variable and boots the next `QUEUE/NNNN.CNF`
 with `boot -v`, `debug.boottrace=1` and panic settings (trace on panic, no
-debugger, reset after 15 s). When a boot reaches init, or the queue is
+debugger, reset after 15 s). When a queued boot reaches init, or the queue is
 empty, the loader shows **HARDWARE TRACE: STOPPED** with the reason and
 waits at the `OK` prompt. Pressing a key during the 5 s countdown gives the
 normal menu instead; its **Hardware trace** entry (`W`) runs one cycle by
@@ -45,6 +74,13 @@ or run `acpidump` through `/dev/mem`; both stalled on the Spark control.
 A kernel hang can still require a reset, but the earlier completed files and the last
 `start` checkpoint remain on the stick. `done.txt` means collection finished;
 inspect the per-command statuses for failures or timeouts.
+
+Only a queued experiment that reaches init stops the loop. A complete trace
+left in NVRAM by a boot outside the queue (an earlier campaign or a normal
+boot) is filed as `experiment: (none: booted outside the queue)`, cleared,
+and the queue starts as usual. Loaders built before this change stopped on
+such a trace; on those, booting the stick again runs the queue, because the
+filed trace was cleared from NVRAM.
 
 Then unplug the stick and bring it to the controller host. Remove it only
 when the loader is at the STOPPED prompt or the machine is off.

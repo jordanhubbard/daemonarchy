@@ -1,0 +1,72 @@
+{
+  "schema": "daemonarchy/arm-native-kernel-checkpoint@1",
+  "recorded_at": "2026-11-09T17:22:27.715962+00:00",
+  "source": {
+    "repository": "https://github.com/jordanhubbard/daemonarchy-src",
+    "commit": "0e1ddb782d1e27390cd380b5e3560b794607f78e",
+    "archive_sha256": "f7243d82b9f35e520c29995e710ae72a131c3c69d496ca2cfc5e89c006b098bf",
+    "review": "https://github.com/jordanhubbard/daemonarchy-src/pull/80",
+    "freebsd_version": 1600029,
+    "post_build_members_verified": 114908,
+    "original_source_preserved": true
+  },
+  "worker": {
+    "execution": "QEMU 8.2.2/KVM ARM64 VM",
+    "os": "FreeBSD 16.0-CURRENT",
+    "cpus": 4,
+    "memory_gib": 8,
+    "network": "e1000e control",
+    "build_user_uid": 1001,
+    "isolation": "Private chroot and object/stage directories on a newly allocated virtual work disk; live kernel and installed host feeds unchanged."
+  },
+  "bootstrap": {
+    "base_archive_sha256": "f2e66bde663066536a46354610b915f0abbef3af11fde73dfa629538fa40c7ff",
+    "clang_version": "21.1.8, target aarch64-unknown-freebsd16.0",
+    "cc_sha256": "f7beef1a9289c42701295d6c6117a5b9c913ae14722e6c052b96e239c6234f43",
+    "make_sha256": "9bcacb5dbaca52563e413d507b179df58bd5884c9f30ec495978075e81f1fce0",
+    "compiler_source_build_provenance": "Not independently established; installed base tool bytes and reported version are retained."
+  },
+  "build": {
+    "command": "env MAKEOBJDIRPREFIX=/obj make -j4 TARGET=arm64 TARGET_ARCH=aarch64 KERNCONF=GENERIC SRCCONF=/dev/null __MAKE_CONF=/dev/null buildkernel",
+    "exit_code": 0,
+    "reported_seconds": 330,
+    "scope": "Native GENERIC kernel and all selected modules, fresh object directory."
+  },
+  "stage": {
+    "command": "env MAKEOBJDIRPREFIX=/obj make -C /usr/src TARGET=arm64 TARGET_ARCH=aarch64 KERNCONF=GENERIC SRCCONF=/dev/null __MAKE_CONF=/dev/null DESTDIR=/stage installkernel",
+    "exit_code": 0,
+    "reported_seconds": 14,
+    "scope": "Private destination only."
+  },
+  "artifact": {
+    "kind": "Complete kernel.txz with native modules, DTBs and debug tree",
+    "bytes": 112238508,
+    "sha256": "7b66c3e0dc4a89fe7eb8bf38de114e6aaf052dbc6d0960ee0a36158f544a9573",
+    "kernel_sha256": "c3612c03838a7c53b75443cf2eab1ab8ad28db5b490fa8d34f57bbe03d90ccaf",
+    "archive_check_exit_code": 0,
+    "controller_copy_sha256_verified": true
+  },
+  "private_evidence_sha256": {
+    "kernel-build.log": "3e34570981cf349e6cd45c6e141f5e5f47556041e83f89fca4fea7589866aac9",
+    "kernel-stage.log": "cad57e76e2d3a0c352347b23d09cbe42eb0094804cd70f6ee78900e790a41640",
+    "kernel-package.log": "f110671ae7841233c28f4b2e55127c897e114e8591138cf206e9c2bf9376b22c",
+    "kernel-source-audit.json": "5e28dc02ce56ab1be128e2ad6960b4afebd5f9fb2ffd4e9bb379d73a0a4bbac3"
+  },
+  "qualification": {
+    "native_compile": true,
+    "source_retention_audit": true,
+    "kernel_set_archive_check": true,
+    "rebuilt_image": false,
+    "new_kernel_vm_boot": false,
+    "physical_apple_boot": false,
+    "physical_spark_boot": false,
+    "current_omarchy_distribution": false,
+    "component_lifecycle_receipt": false
+  },
+  "limitations": [
+    "Compilation and archive inspection do not qualify interrupts, CPUs, DMA, storage, graphics or any physical board.",
+    "This is a development candidate, not the required final CURRENT source/ports refresh or a frozen release closure.",
+    "The current Omarchy package/dependency build and complete RAM-image runtime remain open.",
+    "Native build/stage logs and actual artifacts remain private; no signing material is included."
+  ]
+}

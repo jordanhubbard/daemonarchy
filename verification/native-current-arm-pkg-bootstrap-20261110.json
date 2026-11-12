@@ -1,0 +1,56 @@
+{
+  "status": "built-and-exported",
+  "files": [
+    {
+      "name": "pkg-2.9.0.pkg",
+      "bytes": 5626562,
+      "sha256": "07149357493453d0c811b51d1a915cee6882ab1477c3d666ab3b1b9c1876fb94"
+    },
+    {
+      "name": "pkg-2.9.0.log",
+      "bytes": 544807,
+      "sha256": "cad0420aab8645d85ecf02c83a639e8a3abd8bd5aad7b4a48917930f5b3332f9"
+    },
+    {
+      "name": "controller.log",
+      "bytes": 2781,
+      "sha256": "2b02d13114655b875644700e336d2afdf852ae184417078a8d7b247ac6508274"
+    }
+  ],
+  "manifest_osversion": 1600031,
+  "abi": "FreeBSD:16:aarch64",
+  "controller_exit": 0,
+  "schema": "daemonarchy/native-current-pkg-bootstrap@1",
+  "recorded_utc": "2026-11-10T05:38:17.129790+00:00",
+  "ports_commit": "2f98c787cf7ac28ea815b843597096ba01aefa89",
+  "source_commit": "af55b6f9042e15b635e90926d476e7cbeb48a069",
+  "source_osversion": 1600031,
+  "origin": "ports-mgmt/pkg",
+  "version": "2.9.0",
+  "poudriere_test_mode": true,
+  "poudriere_counts": {
+    "queued": 1,
+    "built": 1,
+    "failed": 0,
+    "skipped": 0,
+    "ignored": 0,
+    "remaining": 0
+  },
+  "port_build_seconds": 83,
+  "controller_seconds": 88,
+  "install_deinstall_and_leftover_checks": true,
+  "native_extracted_pkg_static_version": "2.9.0",
+  "native_extracted_pkg_static_sha256": "72feb6ec1b67058aedef805cfca02b54ddc0d15218ecff815fbbbb8e200d6c02",
+  "canonical_receipt": false,
+  "full_ports_closure": false,
+  "release_qualified": false,
+  "configured_build_as": "nobody:nobody 65534:65534",
+  "scope": "Single selected native CURRENT ARM64 port built and exported, with Poudriere package QA and native pkg-static version execution; no complete closure or canonical lifecycle admission",
+  "predecessor": "verification/native-current-arm-package-plan-20261110.json",
+  "limitations": [
+    "Poudriere test mode covers staging, package installation/deinstallation and leftover checks; no complete upstream unit-test or final installer acceptance claim",
+    "Build duration is a development observation, not a controlled performance comparison",
+    "Full source/ports Component coverage, canonical SDK and lifecycle receipts, matched signed release closures, both final media architectures and physical acceptance remain open",
+    "Raw logs and development package remain private; public record binds their independently checked bytes"
+  ]
+}

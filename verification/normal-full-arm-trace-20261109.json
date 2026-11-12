@@ -1,0 +1,124 @@
+{
+  "schema": "daemonarchy/normal-full-arm-trace-checkpoint@1",
+  "scope": "Full retained-world ARM RAM installer boots normally and preserves an automatic loader-ready checkpoint; kernel/init/installer diagnostics are not yet written to the trace volume",
+  "source_efi_commit": "5cd6b69402a125577c00f98dfd9b1638b549bf2f",
+  "native_source_base": "0e1ddb782d1e27390cd380b5e3560b794607f78e",
+  "source_upstream_pr82_qualification_inherited": false,
+  "main_producer_commit": "e1da26937406906cee290c4a430f6a91492b7cf4",
+  "producer_sha256": {
+    "scripts/make-arm-ram-installer.sh": "fcf5691df0698497a7a0a506fda2f63f42e8e23ca9651599c9add8b552b7d0b9",
+    "scripts/make-efi-iso.sh": "84c73ffab21f4b2086f683098a1580f514cb06aa69ac99b784c94febc7b9b217",
+    "scripts/make-install-trace.py": "b232321e0fd5cc2defd10be9c98ef41f762d4692b6762cdc99577b9d2f6fb760",
+    "scripts/check-arm-kernel-set.py": "7f94cd5cf2a2c6a0da4b9c36e9bc121db59bb917e222b5d7445922618af431e5",
+    "scripts/arm-package-closure.py": "e667d37a9ef3ca46ed402acb7ff36df7e5b3b565fb2019449f5cf4086861d4c7",
+    "tools/boottrace/stick.py": "f66bd4df6c70170fc394ce3bc3ca48ef762aeba9c15a7fd4d66a8a1a719c38a2"
+  },
+  "producer": {
+    "schema": "daemonarchy/arm-ram-installer@1",
+    "abi": "FreeBSD:16:aarch64",
+    "world_archive_sha256": "14f948181171b5aad067066e3d94e1a35051da5891374ebd5bc0988a2c847b8b",
+    "kernel_sha256": "c3612c03838a7c53b75443cf2eab1ab8ad28db5b490fa8d34f57bbe03d90ccaf",
+    "kernel_set_sha256": "7b66c3e0dc4a89fe7eb8bf38de114e6aaf052dbc6d0960ee0a36158f544a9573",
+    "omarchy_package_sha256": "79cb85bb7d921384e0a8e15b03ab4016f8b133d5ed17c8125782a7ad295d062b",
+    "omarchy_version": "4.5.0_4",
+    "package_closure_manifest_sha256": "b893cefc06315492374a1bac058d949365b2969e0e2941ec71059b0e99c1e848",
+    "package_closure_inventory_sha256": "d627249843b7aa1e971a86663cd91848210fcb19ff90c46e321c4aed796f7d49",
+    "package_closure_count": 316,
+    "ram_root": {
+      "bytes": 9690972160,
+      "sha256": "5ce51a9c20e3bef6ec9014070d08698540862e143b2dfd9b7f58e39dea826a82",
+      "format": "ufs-geom-uzip",
+      "codec": "lzma",
+      "cluster_bytes": 262144,
+      "expanded_media_bytes": 9691201536,
+      "zero_padding_bytes": 229376,
+      "compressed_bytes": 3085712896,
+      "compressed_sha256": "0cb16572e8702a7826e40927d88d1b29c701d83fef937a071cc07873a9e799ec"
+    },
+    "installed_packages_sha256": "5d020ea5e04d6344408a58bd357bebd2fd58658b0f9ccfc9476a0b0560c3301c",
+    "image": {
+      "bytes": 3732947456,
+      "sha256": "2317fd7e2b47d4510e4fff882ecf7cb011d3dc57cf1b5e1e9b368438d49c27e3"
+    },
+    "qualification": {
+      "assembly": true,
+      "vm_boot": false,
+      "physical_boot": false,
+      "installation": false,
+      "desktop": false,
+      "recovery": false
+    }
+  },
+  "boot": {
+    "machine": "QEMU virt/GIC, native AArch64 KVM, eight CPUs, 16 GiB RAM, 8 GiB writable USB QCOW2 over immutable native ISO",
+    "efi_sha256": "42ca0a5ab7dcd425702f0f72fab44e7c61fdc3cbbf07856a060705bafb707793",
+    "automatic_checkpoint_before_keyboard_input": true,
+    "observed_cpus": 8,
+    "smp_active": true,
+    "runtime_inner_efi_and_kernel_hashes_match": true,
+    "runtime_package_inventory_sha256": "5d020ea5e04d6344408a58bd357bebd2fd58658b0f9ccfc9476a0b0560c3301c",
+    "runtime_package_count": 378,
+    "installer_welcome_rendered": true,
+    "welcome_version": "Retained 1.5.0 world/UI with current native kernel set, Omarchy package closure and matching new EFI/Lua",
+    "local_console_runtime_observation": true,
+    "shutdown": "Normal guest shutdown; all buffers synced; VM exit zero",
+    "diagnostic_listener_started_for_observation": false
+  },
+  "readback": {
+    "records": {
+      "1": {
+        "record": {
+          "schema": "daemonarchy/normal-boot-trace@1",
+          "image_id": "83b8ecac-1684-4622-8a6d-7fd5c480b7c9",
+          "archive_sha256": "b29cf4a0786c313d3e316cdf8c0c9c0e7b9616da65d4aee35f7aa8af5bb7fb41",
+          "trace_partition": "c7ff7f52-dc91-11f1-1d08-61407e6af4da",
+          "session": "0001",
+          "phase": "loader-ready",
+          "identity": "declared-archive",
+          "early_kernel_backend": "not-enabled"
+        },
+        "sha256": "d2c5c1688d768f56e439e1ed8c5ba29eff1d4baf57c5713e060f0a163ff14e51"
+      }
+    },
+    "preserved_nonempty_initial_slots": {},
+    "mapped_files": 233,
+    "legacy_state_unchanged": true,
+    "queued_experiment_unchanged": true,
+    "all_200_legacy_traces_unchanged": true,
+    "only_expected_normal_slots_changed": true,
+    "changed_bytes": 304,
+    "source_backing_unchanged": true,
+    "source_sha256": "2317fd7e2b47d4510e4fff882ecf7cb011d3dc57cf1b5e1e9b368438d49c27e3",
+    "returned_image_sha256": "b96b86deaed699c22ba7fe362bccf593588f37feeefc6f72a9ad2d291bc2d57e",
+    "fat_check_status": 0,
+    "virtual_device_bytes": 8589934592
+  },
+  "raw_media_budget": {
+    "limit_bytes": 3758096384,
+    "actual_bytes": 3732947456,
+    "headroom_bytes": 25148928,
+    "passed": true,
+    "limit_changed": false
+  },
+  "publication": "This artifact has not passed compressed-publication acceptance. The preceding full RAM artifact fails the unchanged 2 GiB compressed asset gate; no limit increase or scope cut.",
+  "native_builder_refusals": {
+    "stale_efi": "Old input world refused before output image creation: EFI loader lacks normal installation trace capture",
+    "stale_lua": "Matching new EFI with old startup Lua refused before output image creation: loader Lua lacks automatic normal trace startup"
+  },
+  "preserved_controller_failure": {
+    "reason": "Initial runtime controller assumed a queued experiment file; standard default media correctly has an empty queue",
+    "vm_started": false,
+    "media_modified": false,
+    "repair": "Fresh second control accepts missing queue as expected and verifies it remains absent"
+  },
+  "remaining": [
+    "Pre-exit/firmware detail, kernel/panic/init/installer automatic diagnostics",
+    "Clone-independent target and cross-stage session identity; declared archive identity is not runtime measured",
+    "Actual interrupted writes, physical warm reset and power loss",
+    "Current upstream world/kernel/modules/ports rebuild and final 1.6 UI/overlay",
+    "Signed final closure, full installation, rendered desktop and recovery acceptance on all required targets",
+    "Final publication packaging within unchanged limits",
+    "Framework authority/lifecycle/receipt acceptance"
+  ],
+  "release_qualified": false
+}

@@ -1,0 +1,37 @@
+{
+  "schema": "daemonarchy/boot-medium-fat-checkpoint@1",
+  "source_parent": "339f81e633e90609ebc48ade97a8cdc09ff05910",
+  "source_sha256": {
+    "tools/boottrace/fat-volume.py": "a5105b5d1b3374d3030a31807f1078b9dc3397201f968d92128c307ad6fbe88a",
+    "tests/boot-medium-fat.py": "070f0afb46335e1482b69d467810faa0f62895c9b4518ea49eb925f15161a87a"
+  },
+  "tests": {
+    "linux_groups_passed": 7,
+    "native_freebsd_arm64_groups_passed": 7,
+    "skipped": 0,
+    "native_log_sha256": "4a30385a1cba53d333fcc5d8b19b28fb095bc6baf5ba5562279355bb9e87a9bb",
+    "scope": [
+      "Independent FAT32 fixture with 233 preallocated map entries.",
+      "Boot geometry and backup mismatch, allocation-copy mismatch, cycles, cross-links, free/bad clusters and orphan allocations.",
+      "Short and noncontiguous file chains, duplicate directory entries, map corruption, short reads and partition bounds."
+    ]
+  },
+  "actual_returned_x86_medium": {
+    "scope": "Read-only metadata blocks from the retained x86 v4 returned image, replayed under native ARM64; not native device opening.",
+    "observation": {
+      "schema": "daemonarchy/boot-medium-fat-observation@1",
+      "map_sha256": "89fad5f9666bb45c0dc5b29ba27e069b19f2df690c7dd763b4b26b2bfcbd4a52",
+      "fat_sha256": "f7136ad358dd4c2686240a91dc7dcd291fa340f9c71da35aff54e3bb66f0126a",
+      "mapped_files": 233,
+      "allocated_clusters": 1876,
+      "read_only": true,
+      "writes_admitted": false
+    },
+    "raw_blocks_sha256": "691ce5e24e63d16208f03668950ca0dbe2358dabac137c811b726c8b72451083"
+  },
+  "writes_admitted": false,
+  "native_device_open_qualified": false,
+  "init_installer_capture_qualified": false,
+  "full_current_media_qualified": false,
+  "release_qualified": false
+}

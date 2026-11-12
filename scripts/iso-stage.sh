@@ -13,3 +13,13 @@ iso_stage_create() (
     umask 077
     mktemp -d "$parent/daemonarchy-iso-stage.XXXXXXXX"
 )
+
+# Repeated authoring must retain previous images, checksums and failed products.
+iso_stage_require_fresh_outputs() {
+    for candidate in "$@"; do
+        if [ -e "$candidate" ] || [ -L "$candidate" ]; then
+            echo "Preserve existing image evidence: $candidate; use a fresh output directory" >&2
+            return 1
+        fi
+    done
+}

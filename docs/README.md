@@ -5,11 +5,11 @@ build and release commands are in root `HACKING.md` (narrative first, then the f
 reference); the newcomer's overview is root `README.md`. This index makes the retained evidence
 reachable without changing its historical scope.
 
-The current release is **1.5.0**: start with its
-[release notes](release-1.5.0.md) and the [getting-started guide](getting-started.md).
+The current release is **1.5.1**: start with its
+[release notes](release-1.5.1.md) and the [getting-started guide](getting-started.md).
 Its published identity is recorded in
 [`release/current.json`](../release/current.json); documents dated or named for
-another version are historical records. 1.5.1 entries describe planned work.
+another published version are historical records. 1.6 entries describe planned work.
 
 - Licenses of the components in this repository: see `licenses/README.md` at the repository root
 - [Application note: MacBook Pro 16-inch (2019)](application-note-macbookpro16-1.md)
@@ -30,6 +30,8 @@ another version are historical records. 1.5.1 entries describe planned work.
 - [Hardware quirks](hardware-quirks.md)
 - [GPU report: which GPU the desktop uses](gpu-report.md)
 - [Hardware trace stick: reset-surviving boot trace](boottrace.md)
+- [RAM-root installer image authoring](ram-live-images.md)
+- [Normal pre-exit trace checkpoint: native evidence and remaining gates](roadmap/default-install-tracing.md#independent-pre-exit-checkpoint)
 - [Pi 4 / Pi 500 software bootstrap checkpoint: current controls and physical gates](testing-pi-bootstrap-checkpoint-20261108.md)
 - [Pi 4 simulator checkpoint: Linux control and UEFI model gaps](testing-pi4-simulator-20261107.md)
 - [Pi 4 U-Boot/FDT bootstrap: SMP, SD root and durable diagnostics](testing-pi4-uboot-fdt-20261108.md)
@@ -60,6 +62,8 @@ another version are historical records. 1.5.1 entries describe planned work.
 - [EFI loader cannot find loader.lua](repair-efi-root.md)
 - [Installation logs and the rescue console](rescue-console.md)
 - [Active work](roadmap/active-work.md)
+- [Planned 1.6 ARM platform discovery register](arm-platform-register.md)
+- [Planned 1.6 default installation tracing and custom hardware images](roadmap/default-install-tracing.md)
 - [Historical 1.3.2 network debugging plan](roadmap/release-1.3.2.md)
 - [1.4.0 plan: Literate AI cross-repository build and release orchestration](roadmap/release-1.4.0.md)
 - [1.4.1 plan: measured faster installation and deferred exact-image checks](roadmap/release-1.4.1.md)
@@ -70,6 +74,7 @@ another version are historical records. 1.5.1 entries describe planned work.
 - [ARM implementation, hwtrace discovery and final-distribution validation](roadmap/arm-implementation.md)
 - [aarch64 inventory and VMware worker bring-up (ARCH-001)](aarch64.md)
 - [Platform-selected ARM installer media (ARM-005)](arm-media.md)
+- [Full ARM installer RAM-root bring-up](arm-ram-installer.md)
 - [Pi 500 physical Linux reference and RP1 Ethernet correction](testing-pi500-linux-20261107.md)
 - [Pi 4 physical Linux baseline and first FreeBSD diagnostic media](testing-pi4-linux-20261107.md)
 - [Pi 5-family SD/FDT bootstrap inputs and native kernel build](testing-pi5-bootstrap-20261107.md)
@@ -125,3 +130,5 @@ another version are historical records. 1.5.1 entries describe planned work.
 - [Verified package retention and iterative installer cache](verified-artifact-cache.md)
 
 - [Cross-repository retained input graph](release-input-graph.md)
+
+- [Split media transport (development)](split-media.md)

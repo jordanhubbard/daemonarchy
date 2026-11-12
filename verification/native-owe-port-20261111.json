@@ -1,0 +1,97 @@
+{
+  "schema": "daemonarchy/native-owe-port-observation@1",
+  "observed_utc": "2026-11-11T11:31:16.198422+00:00",
+  "review_revision": "d70c9b884f5987fde5caaa0a7930edb3078be977",
+  "main_merge": "f2dc1f814002ad09d25a3ee87ee1502dabb92cb6",
+  "workflow_run": 43009997972,
+  "port": "x11/owe",
+  "version": "0.2.12_1",
+  "native_profiles": [
+    {
+      "freebsd_release": "14.4",
+      "provider": "compatibility",
+      "phases": {
+        "check-plist": 0,
+        "checksum": 0,
+        "daemon-linked-libraries": 0,
+        "deinstall": 0,
+        "dependencies": 0,
+        "install": 0,
+        "libdvdcss-checksum": 0,
+        "libdvdcss-dependencies": 0,
+        "libdvdcss-install": 0,
+        "libdvdcss-options": 0,
+        "libdvdcss-package": 0,
+        "linked-libraries": 0,
+        "options": 0,
+        "package-checksums": 0,
+        "package": 0,
+        "restricted-bootstrap": 0
+      },
+      "all_installed_elf_links_resolve": true,
+      "daemon_uses_compatibility_library": true
+    },
+    {
+      "freebsd_release": "15.1",
+      "provider": "system",
+      "phases": {
+        "check-plist": 0,
+        "checksum": 0,
+        "deinstall": 0,
+        "dependencies": 0,
+        "install": 0,
+        "libdvdcss-checksum": 0,
+        "libdvdcss-dependencies": 0,
+        "libdvdcss-install": 0,
+        "libdvdcss-options": 0,
+        "libdvdcss-package": 0,
+        "linked-libraries": 0,
+        "options": 0,
+        "package-checksums": 0,
+        "package": 0,
+        "restricted-bootstrap": 0
+      },
+      "all_installed_elf_links_resolve": true,
+      "daemon_uses_compatibility_library": false
+    }
+  ],
+  "independently_hashed_archives": [
+    {
+      "release": "14.4",
+      "archive": "owe-0.2.12_1.pkg",
+      "sha256": "2508ef015af241fd61b92d55502eed78c13166e2d4fac8dcb8613bf14458ec2c",
+      "name": "owe",
+      "version": "0.2.12_1",
+      "abi": "FreeBSD:14:amd64",
+      "arch": "freebsd:14:x86:64"
+    },
+    {
+      "release": "14.4",
+      "archive": "libdvdcss-1.6.0.pkg",
+      "sha256": "3b0664eee253b1a388197351e28d29b96645370fa4b1fab8417b8f8c18ebbad1",
+      "name": "libdvdcss",
+      "version": "1.6.0",
+      "abi": "FreeBSD:14:amd64",
+      "arch": "freebsd:14:x86:64"
+    },
+    {
+      "release": "15.1",
+      "archive": "owe-0.2.12_1.pkg",
+      "sha256": "9b1317e8352115812b27f6f16645e46ec87b98ffb2f53a51d6fc5e835f8258cf",
+      "name": "owe",
+      "version": "0.2.12_1",
+      "abi": "FreeBSD:15:amd64",
+      "arch": "freebsd:15:x86:64"
+    },
+    {
+      "release": "15.1",
+      "archive": "libdvdcss-1.6.0.pkg",
+      "sha256": "96bd6328c2c6983af1b2dfacc5d6d5683e541c4a331e099bb81bf6e8296a28a3",
+      "name": "libdvdcss",
+      "version": "1.6.0",
+      "abi": "FreeBSD:15:amd64",
+      "arch": "freebsd:15:x86:64"
+    }
+  ],
+  "scope": "Selected native port compatibility, checksum, package QA, installation, installed checksums, ELF links and removal. No GUI, full CURRENT closure, Component, SDK or lifecycle qualification."
+}

@@ -9,6 +9,7 @@ Assembly checks do not establish hardware boot, installation or desktop support.
 """
 import argparse
 import hashlib
+import importlib.util
 import io
 import json
 from pathlib import Path
@@ -17,6 +18,8 @@ import shutil
 import stat
 import struct
 import subprocess
+import tempfile
+import threading
 import uuid
 import zipfile
 import zlib
@@ -170,15 +173,61 @@ def esp_offset(image):
     return offsets[0]
 
 
-def inspect_installer(image, tar, mtype):
+def extract_member(image, name, output, tar, limit):
+    """Bound both extracted bytes and elapsed time; never extract host paths."""
+    with output.open('xb') as target, tempfile.TemporaryFile() as errors:
+        with subprocess.Popen([tar, '-xOf', str(image), name], stdout=subprocess.PIPE,
+                              stderr=errors) as process:
+            watchdog = threading.Timer(300, process.kill)
+            watchdog.daemon = True
+            watchdog.start()
+            try:
+                total = 0
+                while block := process.stdout.read(1 << 20):
+                    total += len(block)
+                    if total > limit:
+                        process.kill()
+                        raise ValueError('packed RAM payload exceeds inspection budget')
+                    target.write(block)
+                if process.wait(timeout=10) != 0:
+                    errors.seek(0)
+                    raise ValueError('cannot extract RAM payload: ' + errors.read(4096).decode(errors='replace'))
+            finally:
+                watchdog.cancel()
+                if process.poll() is None:
+                    process.kill()
+                process.wait(timeout=10)
+
+
+def check_ram_bootstrap(config):
+    expected = dict(mfsroot_load='YES', mfsroot_type='md_image',
+                    mfsroot_name='/boot/mfsroot.uzip', geom_uzip_load='YES',
+                    **{'vfs.root.mountfrom': 'ufs:/dev/md0.uzip'})
+    prefix = re.compile(r'^\s*(' + '|'.join(re.escape(key) for key in expected) + r')\b')
+    settings = {}
+    for line in config.splitlines():
+        if not prefix.match(line):
+            continue
+        assignment = re.fullmatch(
+            r'''\s*([A-Za-z0-9_.]+)\s*=\s*(?:"([^"\n]*)"|'([^'\n]*)'|([^#\s]+))\s*(?:#.*)?''', line)
+        if assignment is None:
+            raise ValueError('unsupported packed RAM bootstrap assignment')
+        settings[assignment[1]] = next(value for value in assignment.groups()[1:] if value is not None)
+    if any(settings.get(name) != value for name, value in expected.items()):
+        raise ValueError('packed RAM payload requires the admitted RAM bootstrap settings')
+
+
+def inspect_installer(image, tar, mtype, ifind='ifind', icat='icat', istat='istat', expected_version=None):
     with image.open("rb") as stream:
         stream.seek(16 * 2048)
         if stream.read(7) != b"\x01CD001\x01":
             raise ValueError("installer must be an uncompressed ISO9660 image")
     members = subprocess.check_output([tar, "-tf", str(image)], text=True).splitlines()
-    required = ("boot/kernel/kernel", "boot/loader.efi", "boot/lua/loader.lua",
-                "usr/freebsd-dist/base.txz", "usr/freebsd-dist/kernel.txz",
-                "usr/local/libexec/daemonarchy-installer/install")
+    packed = any(item.removeprefix('./') == 'boot/mfsroot.uzip' for item in members)
+    required = ("boot/kernel/kernel", "boot/loader.efi", "boot/lua/loader.lua")
+    required += (("boot/mfsroot.uzip", "boot/loader.conf.local") if packed else
+                 ("usr/freebsd-dist/base.txz", "usr/freebsd-dist/kernel.txz",
+                  "usr/local/libexec/daemonarchy-installer/install"))
     selected = {}
     for name in required:
         matches = [item for item in members if item.removeprefix("./") == name]
@@ -209,6 +258,23 @@ def inspect_installer(image, tar, mtype):
         [mtype, "-i", str(image) + "@@" + str(esp_offset(image)), "::/EFI/BOOT/BOOTAA64.EFI"])
     if hashlib.sha256(loader).hexdigest() != identities["boot/loader.efi"]["sha256"]:
         raise ValueError("removable-media EFI loader differs from the installer boot set")
+    if packed:
+        config = subprocess.check_output([tar, '-xOf', str(image), selected['boot/loader.conf.local']],
+                                         timeout=60).decode('utf-8')
+        check_ram_bootstrap(config)
+        helper = Path(__file__).with_name('arm-ram-inspect.py')
+        spec = importlib.util.spec_from_file_location('arm_ram_inspect', helper)
+        ram = importlib.util.module_from_spec(spec)
+        spec.loader.exec_module(ram)
+        with tempfile.TemporaryDirectory(prefix='daemonarchy-ram-inspect-') as directory:
+            work = Path(directory)
+            payload, root = work / 'root.uzip', work / 'root.ufs'
+            extract_member(image, selected['boot/mfsroot.uzip'], payload, tar, (1 << 32) - 1)
+            unpacked = ram.unpack_root(payload, root)
+            unpacked['compressed_bytes'] = payload.stat().st_size
+            unpacked['compressed_sha256'] = digest(payload)
+            unpacked['files'] = ram.inspect_root(root, identities, ifind, icat, istat, expected_version=expected_version)
+            identities['packed_root'] = unpacked
     return identities
 
 
@@ -221,6 +287,9 @@ def main():
     parser.add_argument("--bootstrap-sha256")
     parser.add_argument("--tar", default="tar", help="libarchive tar with ISO9660 support")
     parser.add_argument("--mtype", default="mtype", help="mtools read-only FAT reader")
+    parser.add_argument('--ifind', default='ifind', help='Sleuth Kit path lookup for packed UFS2 roots')
+    parser.add_argument('--icat', default='icat', help='Sleuth Kit read-only UFS2 file reader')
+    parser.add_argument('--istat', default='istat', help='Sleuth Kit UFS2 inode inspector')
     parser.add_argument("--output", type=Path, required=True)
     args = parser.parse_args()
     apple = args.platform == "apple-m2-pro-mini"
@@ -229,7 +298,7 @@ def main():
     if not apple and (args.bootstrap_zip or args.bootstrap_sha256):
         parser.error("Apple bootstrap inputs do not belong in RTX media")
     image = checked(args.installer, args.installer_sha256)
-    identities = inspect_installer(image, args.tar, args.mtype)
+    identities = inspect_installer(image, args.tar, args.mtype, args.ifind, args.icat, args.istat)
     payload = board = bootstrap = None
     if apple:
         bootstrap = checked(args.bootstrap_zip, args.bootstrap_sha256)

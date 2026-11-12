@@ -1,0 +1,722 @@
+{
+  "schema": "daemonarchy/16-completion-progress@1",
+  "observed_utc": "2026-11-11T14:25:44.662940+00:00",
+  "goal_scope": "Complete all Daemonarchy 1.6 work not requiring physical hardware access, full documented RPi4/RPi5 emulator behavior, upstream tip synchronization, all branch/PR integration and stale-issue review.",
+  "product_main_merges": [
+    {
+      "pull_request": 314,
+      "sha": "8e41380e951735c4159bf6b708a21c2805c8e646",
+      "merged": true,
+      "message": "Pull Request successfully merged"
+    },
+    {
+      "pull_request": 315,
+      "sha": "53110494fc2e2f788af1e96255ebfbb1fe584fea",
+      "merged": true,
+      "message": "Pull Request successfully merged"
+    },
+    {
+      "pull_request": 316,
+      "sha": "fe67f288264ac260bcbeca4fac3e4f5c9ae3c3fd",
+      "merged": true,
+      "message": "Pull Request successfully merged"
+    },
+    {
+      "pull_request": 317,
+      "sha": "4660a6ad2d03a3b2aa8d9a0d124159b06ee71264",
+      "merged": true,
+      "message": "Pull Request successfully merged"
+    },
+    {
+      "pull_request": 318,
+      "sha": "849b33ce41c5ddb55ba37ba4617458d171e8e399",
+      "merged": true,
+      "message": "Pull Request successfully merged"
+    },
+    {
+      "pull_request": 319,
+      "sha": "3cd00f456273c8dc4a859ef37b9bb9c763690056",
+      "merged": true,
+      "message": "Pull Request successfully merged"
+    }
+  ],
+  "source": {
+    "pull_request": 87,
+    "revision": "1aac7b31b064a310723de5d81a9ee2eada54d6f2",
+    "upstream": "2af08ab3f125ce5988a641c32c777afc52f917e1",
+    "upstream_commits_added": 106,
+    "integrated_feature_stacks": [
+      71,
+      78,
+      79,
+      85
+    ],
+    "five_hosted_jobs": "passed on exact revision",
+    "controller_tests": {
+      "run": 144,
+      "passed": 139,
+      "skipped": 5
+    },
+    "portable_pi5_policy_suites": 10,
+    "apple_layout_bounds": "pass",
+    "native_resume_regression": "original fails; corrected passes on FreeBSD ARM64 with synthetic child",
+    "authority": "pass",
+    "locks": 5,
+    "lifecycle_receipt": "missing",
+    "full_native_kernel_world": "not yet qualified for this revision",
+    "remaining_open_pr_head_outside_ancestry": [],
+    "integration_merged": true,
+    "integration_merge": "eeb5205d9116a61d9ef0f1503736c7ffa7a5bb3f",
+    "stacked_reviews_closed_as_incorporated": [
+      65,
+      66,
+      67,
+      68,
+      69,
+      70,
+      71,
+      72,
+      73,
+      74,
+      75,
+      76,
+      77,
+      78
+    ],
+    "owned_main": {
+      "pull_request": 88,
+      "revision": "e67d7848a0223a4a22599ba52347b742594d70b4",
+      "controller": "pass",
+      "native_loader": "pass",
+      "native_metadata": "pass",
+      "codeql": "pass",
+      "cross_build_and_style": "all six cross-kernel jobs pass on reviewed revision; experimental style check remains red",
+      "merged": true,
+      "previous_cross_build_revision": "88e4de261fd6ebca15374f0c1545944a8dc1d567",
+      "previous_cross_build_matrix": "all six passed; does not qualify later commit",
+      "reviewed_revision": "4b6dd598234450bf82278a846bfec809e4cc0077",
+      "merge_policy_review": "main unprotected, no active branch rules, project main_state free; reviewed nonrequired style findings retained without a required-rule override",
+      "local_main_synchronized": true,
+      "exact_merge_ci": "inspect current runs; no blanket green claim"
+    },
+    "complete_tree_scale_limits": "Installed isolated current-source framework accepts the field and passes six boundary controls. Real source/ports probes demonstrate per-file and source-symlink boundaries; complete catalogs/locks/native admission remain unqualified.",
+    "hosted_capacity_review": 89,
+    "ubuntu2604_capacity": {
+      "profile_admitted": false,
+      "disk_free_bytes": 91963658240,
+      "required_free_bytes": 96636764160,
+      "reasons": [
+        "less than 80 GiB native workspace plus 10 GiB bootstrap reserve"
+      ],
+      "native_execution": false
+    },
+    "hosted_capacity_merge": "0c56dfa6a76ad6faa93593fd5bb7f7b28acbcab4",
+    "native_current_amd64": {
+      "observed_utc": "2026-11-11T10:06:47.864841+00:00",
+      "identity": "0c8a980330f853b8730c5da6f44fb17f63eed309df6304ce84fa77500e97b987",
+      "source_revision": "4b6dd598234450bf82278a846bfec809e4cc0077",
+      "source_tree": "14c3b3abd3824d0cc3ef38be1b2a5f6f26214b96",
+      "upstream_base": "2af08ab3f125ce5988a641c32c777afc52f917e1",
+      "target": "amd64",
+      "jobs": 8,
+      "profile": "baseline",
+      "package_version": "16.0.snap20261111064110.4b6dd5982344.baseline",
+      "publication": "unsigned-development-only",
+      "acceptance": "not-qualified",
+      "state": {
+        "status": "built",
+        "phases": [
+          {
+            "elapsed_seconds": 5828.322,
+            "exit": 0,
+            "log": "logs/buildworld-1.log",
+            "log_sha256": "5fb2e138dee072e55bd7b02e60cb42b2a0ce3297694f94253e4dae6b598d2b3d",
+            "name": "buildworld",
+            "independent_log_sha256": "5fb2e138dee072e55bd7b02e60cb42b2a0ce3297694f94253e4dae6b598d2b3d"
+          },
+          {
+            "elapsed_seconds": 1462.29,
+            "exit": 0,
+            "log": "logs/buildkernel-1.log",
+            "log_sha256": "01b5174a0158b4b0a0fcb71541a3aa7ffc35a7f2c05b2adc4ea28ad121c9da2f",
+            "name": "buildkernel",
+            "independent_log_sha256": "01b5174a0158b4b0a0fcb71541a3aa7ffc35a7f2c05b2adc4ea28ad121c9da2f"
+          },
+          {
+            "elapsed_seconds": 835.437,
+            "exit": 0,
+            "log": "logs/packages-1.log",
+            "log_sha256": "332fe1e42659591397e12de2f9bfbd2afc534715a91a8664b1db37c3b12492af",
+            "name": "packages",
+            "independent_log_sha256": "332fe1e42659591397e12de2f9bfbd2afc534715a91a8664b1db37c3b12492af"
+          },
+          {
+            "elapsed_seconds": 0.594,
+            "exit": 0,
+            "log": "logs/release-obj-1.log",
+            "log_sha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855",
+            "name": "release-obj",
+            "independent_log_sha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855"
+          },
+          {
+            "elapsed_seconds": 388.608,
+            "exit": 0,
+            "log": "logs/sets-1.log",
+            "log_sha256": "29bc58faffa096c7726cad826a9fc75f47df686b7639ccebf685d147fb009392",
+            "name": "sets",
+            "independent_log_sha256": "29bc58faffa096c7726cad826a9fc75f47df686b7639ccebf685d147fb009392"
+          }
+        ]
+      },
+      "native_controller_confirmed_live": false,
+      "scope": "Original native FreeBSD 16 amd64 aggregate build completed all five phases. All 537 retained products (1,839,253,005 bytes) and all five phase logs independently rehashed; 524 package archives report the exact expected version and FreeBSD:16:amd64 ABI. All eight installer sets independently match MANIFEST. The source stays clean and frozen at 4b6dd598; later legacy EFI fix is outside this revision. Unsigned development products only; no runtime, canonical per-unit Component/SDK/lifecycle admission.",
+      "controller_exit": 0,
+      "independent_products": "verification/native-current-amd64-20261111.json",
+      "artifacts_verified": 537,
+      "package_archives_verified": 524,
+      "sets_verified": 8
+    },
+    "branch_history_review": {
+      "audited_refs_before_review": 144,
+      "unique_tips_before_review": 111,
+      "outside_owned_main_before_review": 40,
+      "strict_patch_equivalent_tips": 15,
+      "pull_request": 90,
+      "review_revision": "f1b5d719ce33a38f5a3a45f0d09b4515abad5c17",
+      "merged": true,
+      "legacy_timer_fix": "Restore missing ARM32/RISC-V EFI cleanup guards; handle creation/arming failures, repeated initialization and retry. Separate ARM64 timer and current amd64 behavior preserved.",
+      "observations": "Child source verification/efi-legacy-timer-20261111.json: original mock-firmware unit fails five of six cases, corrected six pass on Linux and FreeBSD; 150 controller cases run, 145 pass and five native-only skips. Original FreeBSD/EDK2 headers produce actual ARM32 and RISC-V standalone objects with warnings as errors. No complete EFI link/boot claimed.",
+      "hosted_cross_kernel_run": 42992803476,
+      "hosted_controller_runs": [
+        42992791557,
+        42992803541
+      ],
+      "hosted_style_run": 42992803542,
+      "hosted_style_result": "passed",
+      "remaining": "Distinct upstream-review variants, retained draft and other non-equivalent local semantics remain under review; no claim that every source branch is already reconciled.",
+      "main_merge": "87e0a125850c5c791515fb7ae31ebcb6e8cfce72",
+      "hosted_cross_kernel_result": "all six passed on exact f1b5d719ce33a38f5a3a45f0d09b4515abad5c17; controller, native loader, style and CodeQL also passed",
+      "local_main_synchronized": true
+    },
+    "semantic_history_review": {
+      "pull_request": 91,
+      "revision": "7e76521c363693a2d6742ea7d413067bf7caed15",
+      "reviewed_tips": 22,
+      "tree_unchanged": true,
+      "tree": "f47a39fe2824e23a8987fcf730e9ec1be1c66304",
+      "remaining_cases": [
+        "retained draft framework/scale-limit binding"
+      ],
+      "merged": true,
+      "main_merge": "9a06d9f3c5de504deda3dcb75bda7447d4d0c095",
+      "all_hosted_checks": "All six cross-kernels, controller, native loader and CodeQL passed on exact reviewed head.",
+      "local_main_synchronized": true
+    },
+    "rtc_history_review": {
+      "pull_request": 92,
+      "review_revision": "473004a9a97647eb3ff6bd202b5ab273091c738e",
+      "main_merge": "c061ea3a9da41abe6d41ca6600e993ed7a5e96b4",
+      "tree_unchanged": true,
+      "tree": "f47a39fe2824e23a8987fcf730e9ec1be1c66304",
+      "result": "All16 hosted checks passed or legitimately skipped. Upstream unconditional RTC resource-refusal history reconciled while retaining the owned amd64 UEFI policy and documented override. No hardware behavior changed.",
+      "remaining_refs_outside_main": [
+        "draft/retained-src-plan8031c592877d1761b36338b797213fa01a71b83f"
+      ],
+      "local_main_synchronized": true
+    }
+  },
+  "ports": {
+    "pull_request": 57,
+    "revision": "887944d0cd0e2116d9b9a1bd83718efb7872ee36",
+    "upstream": "8ff8a871c096bef22a37351ef623b78e226b5a05",
+    "upstream_commits_added": 175,
+    "hyprland": "0.57.2_1",
+    "hosted_native_metadata_run": 42955226738,
+    "tested_code_revision": "a191f19fc896b05afe203363ec955f4f1287f06f",
+    "architecture_guard": "unchanged, strict removal and reviewed additions",
+    "full_current_native_package_closure": false,
+    "owned_main_merge": "f2dc1f814002ad09d25a3ee87ee1502dabb92cb6",
+    "merged": true,
+    "included_reviews": [
+      54,
+      55,
+      56
+    ],
+    "open_pull_requests": 0,
+    "exact_revision_metadata_run": 42956065010,
+    "remaining_branch_reconciliation": "PR62 restores the original owe fallback and reconciles both older sync histories. Retained draft still needs qualified framework binding; re-audit all refs before claiming all branches integrated.",
+    "branch_reconciliation_pr": 58,
+    "branch_reconciliation_revision": "969df5ad58b86d27557144800ebd3f79dff3a674",
+    "t2_software": {
+      "native_revision": "969df5ad58b86d27557144800ebd3f79dff3a674",
+      "run": 42985986752,
+      "t2_original_tests": {
+        "passed": 6,
+        "failed": 0
+      },
+      "t2_package_install_cli_service": "passed",
+      "libfprint_virtual_tests": {
+        "meson_entries": 33,
+        "passed": 5,
+        "failed": 0,
+        "skipped": 28,
+        "original_assertions_and_deadlines": "Warmup/state/cancellation assertions retained; cooldown deadline corrected from measured heating and model with existing slack."
+      },
+      "dependency_controls": "100 cycles each of GLib directory/cancellation, GUsb enumeration and GUsb explicit disposal pass",
+      "sanitizer": "Diagnostic native build/tests execute; original callback-type UB reports remain separate from the fixed GUsb lifetime defect.",
+      "current_native_closure": false,
+      "dependency_fix": "libgusb mutex moves from repeatable dispose to finalize. Original disposal control exits 139; fixed controls pass. Both original libgusb Meson entries pass.",
+      "pending_fix_run": null,
+      "repeated_timing_suite": {
+        "result": "passed after correcting the model-derived cooldown assertion",
+        "complete_repeats": 3,
+        "cases_per_repeat": 98,
+        "scope": "Includes ordinary and delayed-cancellation controls; prior fixed-bound failures preserved in earlier records."
+      },
+      "current_candidate": {
+        "revision": "969df5ad58b86d27557144800ebd3f79dff3a674",
+        "native_run": 42985986752,
+        "result": "passed; original counts, repeated tests and downloaded sealed archives inspected",
+        "thermal_test_change": "Cooldown bound derives from measured heating interval and exponential model with existing scheduling slack; original warmup, state and cancellation assertions remain. Adds 250 ms delayed-cancellation control. Production thermal model unchanged.",
+        "sealed_packages": "Native driver retains actual libgusb, libfprint and T2 package archives and SHA256. First retention attempt used a changing destination query and failed before tests; corrected to native WRKDIR_PKGFILE. Actual archives must be inspected after completion."
+      },
+      "public_observation": "verification/native-t2-software-20261111.json"
+    },
+    "branch_reconciliation_merged": true,
+    "branch_reconciliation_merge": "635dafd22ff3f4aa062cb30d54f6be5ae00d8965",
+    "tip_import_main_merge": "b4de5732ce380fd964a36308a8a4f88b29e2af62",
+    "incorporated_history_review": {
+      "pull_request": 60,
+      "review_revision": "0874ffe34d0c41ecb41449f73cbdd6b4d93dd383",
+      "main_merge": "af9753f6bd7eb86f39228b238f5c34205047c336",
+      "tree_changed": false,
+      "tree": "0a1faa841916b5b906d32b81cd7ce49c4d8b93ad",
+      "native_tested_same_tree": "969df5ad58b86d27557144800ebd3f79dff3a674",
+      "included_history_count": 6,
+      "scope": "Four patch-equivalent branches, six exact retained-acceptance files, and fourteen exact T2 implementation/changelog files. Later main category additions retained. Other distinct histories remain open."
+    },
+    "semantic_history_review": {
+      "pull_request": 61,
+      "review_revision": "e048296bb1fcaabc677e949e61fd270ba472a103",
+      "main_merge": "d3e52563199351df6a813a70bc8fa74a61043df2",
+      "reviewed_histories": 7,
+      "tree_changed": false
+    },
+    "owe_compatibility_review": {
+      "pull_request": 62,
+      "revision": "d70c9b884f5987fde5caaa0a7930edb3078be977",
+      "scope": "Original checksum/package/check-plist/install/package-checksum/link/deinstall checks; retained all source, defaults and QA. No graphical or final CURRENT closure qualification.",
+      "bootstrap_fix": "First matrix stopped before testing because the driver assumed Git in the guest. Corrected workflow passes reviewed SHA explicitly; failed logs retained.",
+      "merged": true,
+      "main_merge": "f2dc1f814002ad09d25a3ee87ee1502dabb92cb6",
+      "native_run": 43009997972,
+      "native_result": "Both FreeBSD 14.4 and 15.1 passed; 14.4 uses libinotify in the owed daemon, 15.1 uses the system header. All three installed ELF dependency graphs resolve.",
+      "public_observation": "verification/native-owe-port-20261111.json"
+    },
+    "current_desktop_closure_plan": {
+      "source_revision": "4b6dd598234450bf82278a846bfec809e4cc0077",
+      "ports_revision": "b6c0b492da8df763cc3f8f5933d1027993ac7f9d",
+      "status": "dry-run-finished",
+      "completed": "The original same source4b/portsb6 dry run finished after its observation controller timed out:1465 queued,683 fetched,782 remaining,0 built/failed/skipped. Original child processes are gone and retained log records done and filesystem cleanup. Its eventual exit code was not captured; this is planning evidence, not completed builds.",
+      "scope": "Dependency/size plan only; full package bulk and final desktop closure not yet qualified.",
+      "global_configuration_changed": false,
+      "kernel_admission": {
+        "host_osversion": 1600029,
+        "matched_jail_osversion": 1600031,
+        "full_build_dispatched": false,
+        "remaining": "Full matched-kernel guest bulk job has started with the updated1.6desktop/package-manager candidate. Dependency processing is underway; completed package closure and native SDK/lifecycle acceptance remain pending."
+      },
+      "matched_guest": {
+        "source_revision": "4b6dd598234450bf82278a846bfec809e4cc0077",
+        "kernel_osversion": 1600031,
+        "userland_osversion": 1600031,
+        "host_kernel_osversion_unchanged": 1600029,
+        "kernel_sha256": "0a0b23697b2e75aae37fa3828b5c50745e19913e27d19deeffffc28bd0811e72",
+        "vcpus": 4,
+        "physical_memory_bytes": 12846604288,
+        "root_free_bytes_at_boot_admission": 117667893248,
+        "guest_build_tools": "poudriere/git/CA roots installed successfully only in the isolated guest",
+        "private_emulator": "Official QEMU11.1.3 userspace plus dependencies extracted privately; no host package registration, feed, boot or kernel changes",
+        "ports_snapshot": {
+          "revision": "f2dc1f814002ad09d25a3ee87ee1502dabb92cb6",
+          "tree": "738e2a0fbd138ec1e454aea4085ceb2a156d1151",
+          "tracked_files": 181570,
+          "archive_sha256": "2d31e067b61c02c23e7ab683aa1b47950d38833e0835410aaec18c5af8137233",
+          "archive_bytes": 109245608,
+          "independent_transfer_readback": "matches",
+          "primary_head_preserved": true
+        },
+        "acceptance_scope": "Actual matched lab kernel/userland boot and workspace admission; not final distribution, package closure, canonical SDK or lifecycle qualification.",
+        "jail_and_ports_preparation": "All13 preparation phases passed: verified input transfers, ports extraction, matching base/source jail, kernel/source1600031 check and private ports registration.",
+        "parallel_builders": 1,
+        "make_jobs": 3,
+        "eligible_ordinary_cache": {
+          "regular_archives": 893,
+          "alias_symlinks": 893,
+          "bytes": 4821271487,
+          "independent_guest_hashes": "all1786 archive/alias paths match the original expected digests",
+          "verifier_recovery": "Original checks refused legitimate cache symlinks, then parsed BSD escaped filenames incorrectly. Those failures remain retained. Corrected verification uses raw names and quiet hashes with identical C-locale ordering; source and transferred package bytes were unchanged."
+        },
+        "full_bulk": {
+          "ports_revision": "378954db127eb5126a65b45fca31b29ea2f93e83",
+          "ports_tree": "327f34560deaaf07f905141756be4f71b77b7e5c",
+          "ports_review": 63,
+          "status": "building",
+          "started_utc": "2026-11-11T14:23:05.222977+00:00",
+          "selected_roots": 36,
+          "parallel_builders": 1,
+          "make_jobs": 3,
+          "initial_phase": "reference jail created; initial dependency processing",
+          "scope": "Original full bulk, unchanged options/QA and owned-package build exclusions. No package completion, publication, SDK/lifecycle/final-media acceptance yet."
+        }
+      }
+    },
+    "desktop_snapshot_review": {
+      "pull_request": 63,
+      "revision": "378954db127eb5126a65b45fca31b29ea2f93e83",
+      "merged": false,
+      "desktop_version": "1.6.0",
+      "desktop_source": "4b2525533600f37d2c6249112c3d2d4e22989f36",
+      "package_manager_source": "3cd00f456273c8dc4a859ef37b9bb9c763690056",
+      "package_manager_version": "0.1.0_1",
+      "package_manager_license": "BSD2CLAUSE from selected original source",
+      "result": "Both new archives independently match selected Git source files (144 desktop/17 application-engine). All13 original native metadata, checksum/extraction, file identity and preserved-default controls passed. Full CURRENT package bulk running; review remains draft.",
+      "observation": "verification/native-desktop-inputs-20261111.json"
+    }
+  },
+  "omarchy": {
+    "upstream": "74a67e9cbc1052674e1e2ae37eeefa358157079e",
+    "owned_input_pr": 1,
+    "owned_input_revision": "2cf57816486129371445749883656975aadf2825",
+    "status": "merged into owned quattro; supported VM suite passed",
+    "semantic_translation_files_resolved": 99,
+    "remaining_conflicting_paths": 0,
+    "pull_request": 2,
+    "revision": "ef8001dd1c60b639bdfefca3e370a7d8c5e73118",
+    "portable_comparison": {
+      "candidate_files": 427,
+      "upstream_files": 421,
+      "candidate_failed_files": 33,
+      "upstream_failed_files": 33,
+      "candidate_only_failures": 0
+    },
+    "initial_supported_vm_result": {
+      "files": 427,
+      "failed_files": [
+        "config-test.sh"
+      ],
+      "run": 42963160484
+    },
+    "fix": "Recognize installed shipped-unit symlinks from literal sourced setup helpers; late-install controls retained",
+    "focused_config_with_current_package_recipes": "pass",
+    "supported_vm_rerun": 42965331342,
+    "owned_default_merge": "c39121a4746c0ea533ffdf437788c62810a0f19e",
+    "supported_vm_result": {
+      "run": 42965331342,
+      "result": "passed",
+      "test_files": 427,
+      "graphical_acceptance_suite": "not run"
+    },
+    "remaining_native_adaptation": "Merged compatibility main passes its native suite; current port snapshot and final graphical/runtime qualification remain under review.",
+    "primary_quattro_synchronized": true,
+    "port_snapshot_review": {
+      "pull_request": 59,
+      "revision": "49ee09fa4d7e14b2d088c51ba4d9cff7cdc292cf",
+      "version": "4.5.0.20261111",
+      "owned_source": "c39121a4746c0ea533ffdf437788c62810a0f19e",
+      "compatibility_source": "648954b3a7bba9872f899e1afffda527f014dfd9",
+      "distfile_sha256": [
+        "b79280d4bda43e2fb92446b2fa79a4b909fcb468dd5685d671ae0c22f1428ddb",
+        "48675a48f493faa0319fdd12e349a423c16b2176a86816a1a10a1cebc55bdcdf"
+      ],
+      "remaining_patches": 12,
+      "forward_patch_zero_fuzz": true,
+      "architecture_metadata_run": 43001470815,
+      "architecture_metadata_result": "passed",
+      "native_package_run": 43001470729,
+      "native_package_result": "all17 captured phases pass: checksum/package/plist/install/file hashes/version/x86 platform; independently rehashed archives and native manifest readback",
+      "initial_findings": "Corrected snapshot distfile naming. Original selected libdvdcss dependency is not distributed in the binary repository; selected native job now builds/packages/installs its original checksum-bound port before resolving remaining dependencies.",
+      "superseded_native_run": 42986959890,
+      "superseded_native_result": "cancelled when the corrected dependency driver superseded its inputs; no test result claimed. Its original script could recursively build documentation tools because it did not resolve libdvdcss DOCS dependencies first.",
+      "native_profile": "Original DOCS/options and40-minute guest deadline retained; original dependency walker now traced with UTC phase start/exit evidence.",
+      "merged": true,
+      "main_merge": "b6c0b492da8df763cc3f8f5933d1027993ac7f9d",
+      "public_observation": "verification/native-omarchy-port-20261111.json",
+      "preceding_timeout": {
+        "run": 42995093231,
+        "exit": 124,
+        "phase": "native missing dependency enumeration",
+        "staging_reached": false
+      }
+    }
+  },
+  "issues": {
+    "open_reviewed": 25,
+    "stale_descriptions_refreshed": [
+      62,
+      161
+    ],
+    "checksum_failure_293": "The unchanged published ISO also passes native read-only cd9660 path checks: selected firmware paths have distinct inodes, all six repeated SHA256 reads match and all twelve pkg checksum checks pass. Image unchanged and owned mount/device cleanup succeeds. The reporter installation failure remains unreproduced; actual image digest, complete log and feed selection remain needed.",
+    "closures_justified_at_checkpoint": 0,
+    "checksum_observation": "verification/issue293-media-checksum-20261111.json",
+    "repository_inventory_review": "Live user repository enumeration found four daemonarchy-named repositories plus Omarchy, compatibility and uConsole. Only the product repository has open issues (25); other reported open counts are pull requests. Existing open issues retain unresolved acceptance requirements; none closed merely for age.",
+    "open_pull_request_counts_are_not_issue_counts": true,
+    "checksum_filesystem_observation": "verification/issue293-native-cd9660-20261111.json",
+    "existing_checksum_comment_updated": 6790036791,
+    "rp1_checkpoint_comment": 6725014531
+  },
+  "remaining": [
+    "Qualify merged current Omarchy/ports integrations in the full matched CURRENT desktop closure and rendered desktop.",
+    "Complete full documented RPi4/RPi5 emulator behavior and its software acceptance ledger.",
+    "Complete remaining PR and local/remote branch reconciliation across all repositories, preserving current requirements and source.",
+    "Finish canonical Components/SDK/native lifecycle, matched CURRENT closures and final ARM/x86 media and virtual install/desktop/update/recovery acceptance.",
+    "Resolve the genuine checksum report; preserve verification and existing published bytes."
+  ],
+  "physical_acceptance": "excluded from current execution; no new qualification claimed",
+  "complete": false,
+  "uconsole": {
+    "pull_request": 10,
+    "revision": "15f64c45986a1f2cc0c9f06f09666dc580d230b6",
+    "memory_gib_profiles": [
+      1,
+      2,
+      4,
+      8,
+      16
+    ],
+    "native_qtest_on_sparky": "all capacities pass RAM/FDT/revision and family controls",
+    "existing_pi5_boot_reset_migration": "pass",
+    "hosted_native_model_job": "pass",
+    "linux_gui_suite": "pass",
+    "macos_gui_suite": "pass",
+    "windows_host_controls": "pass",
+    "hosted_package_jobs": "all passed; release publication skipped",
+    "os_boot_acceptance_for_new_profiles": true,
+    "full_peripheral_fidelity": false,
+    "merged": true,
+    "merge_revision": "69843c9be8f976f7ca1604c3ad564174f18bb89f",
+    "primary_master_synchronized": true,
+    "primary_build_products": "not replaced; isolated qualified model binary retained separately",
+    "new_profile_boot_inputs": "Actual Model B D0 multi-user SD boots pass all21 checks at every1/2/4/8/16GiB capacity using current reviewed cross-kernel and a fresh matching native-assembled lab disk. Exact memory banks, getty/login, init/services, kernel/UFS/storage identity, sync/reboot and unchanged source inputs verified. Other pinctrl/peripheral and final-distribution scopes remain open.",
+    "boot_board_and_fdt_review": {
+      "pull_request": 11,
+      "revision": "99515abc74aaa49a6bafedc672ca1d49bfd22ec3",
+      "direct_board_binding": "Prepared FDT board identity and memory capacity bind the manifest and QEMU mailbox revision; old or cross-board manifests refused before disk mutation. Firmware runner shares the same policy.",
+      "memory_cells": "Current official firmware declares two memory size cells. Old helper refused it; old model writes an invalid 12-byte tuple into a 16-byte layout. Candidate supports and preserves one/two size cells at all capacities.",
+      "preparation_and_runner_controls": 13,
+      "firmware_input_controls": 4,
+      "native_baseline_regression": "Original model fails two-size-cell tuple control; corrected hosted native model passes all ten RAM/cell-width profiles.",
+      "official_firmware_revision": "016253866bbd6c77fcb2a744a97d81e79ad4884f",
+      "retained_reference_kernel_sha256": "c3612c03838a7c53b75443cf2eab1ab8ad28db5b490fa8d34f57bbe03d90ccaf",
+      "fresh_native_disk_sha256": "f21af3067e9af80f5825c3676000833119626fa91fddc10c56252f7f8e94c575",
+      "fresh_native_disk_bytes": 2147483648,
+      "fresh_native_disk_xz_sha256": "652a04a3823aafe136f8bda1a20869c8649c4c49594f0864cc5de66d14798ec3",
+      "os_boot_acceptance": false,
+      "final_current_qualification": false,
+      "hosted_native_model_run": 42999849876,
+      "hosted_native_model_result": "passed all10 RAM/FDT cell-width profiles, actual high-memory/mailbox/family controls plus original boot/reset/migration cases",
+      "hosted_package_run": 42999849913,
+      "linux_package_jobs": "Both Linux architectures and macOS ARM64 passed.",
+      "public_observation": "verification/pi5-current-boot-inputs-20261111.json",
+      "merged": true,
+      "main_merge": "2a2912cf770b47d8e855701ac38cace618807fc1",
+      "all_hosted_checks": "passed, including Linux/macOS/Windows, native models and all three package jobs; publication skipped",
+      "historical_mixed_variant_dtb_sha256": "c30d39bdb91f7b85b0cd7303a96fe5ed88693d587d9565730c2c7245afbdee06",
+      "historical_mixed_variant_scope": "The bcm2712-d file combines C0 main pinctrl and D0 AON; its current-kernel SD attach failed. The successful exact OS record uses the distinct official bcm2712d0 file."
+    },
+    "one_gib_os_attempt": {
+      "ok": false,
+      "checks": {
+        "natural_exit": false,
+        "all_commands": false,
+        "four_cpus": true,
+        "a76": true,
+        "cpu_affinity": true,
+        "psci": true,
+        "bcm2712_sd": false,
+        "rng": true,
+        "buffers_synced": false,
+        "no_panic": true,
+        "inputs_unchanged": true
+      },
+      "failure": "TimeoutError('deadline in boot')",
+      "phase": "boot",
+      "memory_gib": 1,
+      "scope": "Historical negative run with old kernel; superseded by the separately recorded current-kernel D0 OS successes. This earlier run remains failed."
+    },
+    "primary_master_revision": "edc00332da9b25f7a2de32a011585ad71409090a",
+    "exact_os_memory_review": {
+      "pull_request": 12,
+      "revision": "fb3568890314a9cb4e677a5048c2dc57337a56ee",
+      "runner_revision": "ee4b1dfe77fd5d25e9b6152da2227dfc4a1979d6",
+      "profiles_gib": [
+        1,
+        2,
+        4,
+        8,
+        16
+      ],
+      "checks_passed": 105,
+      "source_revision": "87e0a125850c5c791515fb7ae31ebcb6e8cfce72",
+      "kernel_sha256": "3604ee5b36b898bec6c069cb1a3d58b13f3e282bf386eeecd86544febc413f54",
+      "dtb_sha256": "d01e2104a8b747e99e310bfb22aeac8100e3b98df29951b296b5cdc2e95afb53",
+      "observation": "verification/pi5-five-profile-os-20261111.json",
+      "merged": true,
+      "scope": "Actual direct multi-user SD model OS acceptance; kernel cross-build on FreeBSD16amd64, no native ARM64 or canonical SDK/lifecycle/final distribution admission.",
+      "main_merge": "3521d47b8e4fc7f4f96be9224870504334ac75db",
+      "all_hosted_checks": "Linux/macOS GUI tests, Windows portability, native models and all three package jobs passed; publication skipped."
+    },
+    "help_history_review": {
+      "pull_request": 13,
+      "review_revision": "c1a381c80ce462b54e0460521dd4a95e9b5fc813",
+      "main_merge": "319fa1afc737fb956888ef6fccf503a00987e502",
+      "all_host_and_package_checks": "passed; release publication skipped",
+      "reviewed_commits": 6,
+      "exact_files": 8,
+      "evolved_files": 9,
+      "implementation_changes": false,
+      "documentation_change": "README states all five actual Pi5 OS RAM capacities.",
+      "all_audited_local_and_origin_refs_in_master": true
+    },
+    "rp1_endpoint_review": {
+      "pull_request": 14,
+      "review_revision": "cddad22288e32b37eca6f5fd4e0ddc9683be7fee",
+      "merged": true,
+      "connected_vectors": 61,
+      "native_result": "Passed real PCI BAR geometry/decode, all61 MSI-X DMA routes, TEST/physical-source interaction, raw status, vector/function masks/PBA, local IACK race, SRAM/blocked/pending migration and reset. Existing Pi5 boot and ten RAM/FDT layouts, preparation/firmware checks also pass;33 host controls pass.",
+      "observation": "https://github.com/jordanhubbard/uConsole/blob/e95f252fc65bebf74819fa455ff26f262d306c0d/docs/rp1-endpoint-verification-20261111.json",
+      "scope": "Endpoint tested on generic ARM virt. Actual Pi5 BCM2712 host integration and RP1 peripheral engines remain open; no whole-board fidelity claim.",
+      "hosted_checks": "All exact-reviewed-revision host/model/firmware/package checks passed or legitimately skipped before merge. Release publication skipped.",
+      "portable_patch_recovery": "Initial macOS package build rejected a one-context-line hunk. Full3-line context replaces it; native BSD patch applies with zero fuzz. All corrected exact-head model/macOS/package gates passed before merge; original failure retained.",
+      "main_merge": "3f270be030fbce7eeeb028dc7076cdc758175aec"
+    },
+    "rp1_uart_review": {
+      "pull_request": 15,
+      "review_revision": "810837646bf7842802626723c84eb84c9e74b3c8",
+      "stacked_on": 14,
+      "merged": true,
+      "instances": 6,
+      "rx_fifo_characters": 32,
+      "native_result": "All six BAR/identity/MSI-X paths and external host RX/TX pass, along with32/1entry receive boundaries, overrun/no-overwrite, independent wrapped FIFO migration, post-migration interrupts/reset, actual old/new and new/old16-entry migration, profile mismatch/invalid-depth refusals. Existing RP1/Pi5 boot and10 memory/FDT layouts plus33 host controls pass.",
+      "observation": "https://github.com/jordanhubbard/uConsole/blob/810837646bf7842802626723c84eb84c9e74b3c8/docs/rp1-uart-verification-20261111.json",
+      "full_uart_fidelity": false,
+      "remaining": "Timed TX FIFOs, serial framing/error timing, complete flow control, DMA, clock/reset/pin integration and actual Pi5 PCIe host wiring remain required. RX threshold/timeout implementation is separately reviewed in PR16.",
+      "hosted_checks": "All exact-reviewed-revision host/model/firmware/package checks passed or legitimately skipped before merge. Release publication skipped.",
+      "main_merge": "df7a83ccd83eb69e76b9acdb9f22fa11fe30d0a7"
+    },
+    "rp1_rx_review": {
+      "pull_request": 16,
+      "review_revision": "e0061a8610cb5cd2bc308f7dace8ccf70ff08497",
+      "stacked_on": 15,
+      "merged": true,
+      "observation": "https://github.com/jordanhubbard/uConsole/blob/e0061a8610cb5cd2bc308f7dace8ccf70ff08497/docs/rp1-rx-verification-20261111.json",
+      "native_result": "All six UARTs/all five RX thresholds,32baud-period timeout boundaries,fractional rounding,LCR divisor latching,UARTEN/RXE gates,restart/partial-drain behavior,masked/raw interrupts,actual MSI-X DMA,remaining-deadline migration and reset pass. Original PR15 executable fails the below-threshold negative control. Extended UART/profile and RP1/Pi5 boot/memory regressions pass. Seven final test groups pass; checkpatch0errors0warnings.",
+      "hosted_checks": "All exact-reviewed-revision host/model/firmware/package checks passed or legitimately skipped before merge. Release publication skipped.",
+      "scope": "Controlled model receive arrivals and virtual timers; nominal fixed48MHz. Serial-bit framing/TX timing and whole-board fidelity not qualified.",
+      "main_merge": "edc00332da9b25f7a2de32a011585ad71409090a"
+    },
+    "rp1_stack_reconciliation": {
+      "refs_audited": 37,
+      "refs_outside_master": [],
+      "untracked_primary_performance_files_preserved": 6,
+      "reviewed_uart_trees_preserved": true,
+      "post_merge_ci_run": 43036213118,
+      "post_merge_ci_status": {
+        "conclusion": "",
+        "status": "queued"
+      },
+      "full_peripheral_fidelity": false
+    }
+  },
+  "puck_consolidation": {
+    "worktrees_removed": 37,
+    "local_redundant_branches_removed": 63,
+    "reclaimed_bytes": 41985630208,
+    "active_iflib_diagnostic": "Reconciled as stale: owned main includes allocator-class fix 7c615b91185 (PR29), issue18 already closed, and all four current sanitizer cases pass (matching/jumbo-reserve/mixed/repeated). Exact dirty files, modes, hashes and original patch archived before removing only the newly recovered worktree and redundant branch on Sparky. Live driver and non-panic resume remain unqualified.",
+    "additional_stale_primaries_removed": [
+      "daemonarchy-src",
+      "daemonarchy-ports-release"
+    ],
+    "additional_reclaimed_bytes": 6389325824
+  },
+  "omarchy_freebsd": {
+    "licensing_pr": 3,
+    "licensing_merge": "f1dc68a0a640e01979a5520131e788a64a421956",
+    "reconciliation_pr": 5,
+    "revision": "c857be5450493271a6dedeafed38821317960d82",
+    "omarchy_revision": "c39121a4746c0ea533ffdf437788c62810a0f19e",
+    "native_run": 42975560663,
+    "native_platform": "FreeBSD 15.1 amd64",
+    "original_tests": {
+      "run": 34,
+      "passed": 34,
+      "skipped": 0
+    },
+    "bluetooth_backend_policy": "pass; mocked transport, no radio acceptance",
+    "gitguardian": "remains red; reviewed indicator-name literals are not credentials. Main unprotected, no required branch rules. No external incident suppression or passing-status claim.",
+    "merged": true,
+    "graphical_acceptance": false,
+    "merge_revision": "648954b3a7bba9872f899e1afffda527f014dfd9",
+    "incorporated_review": 4,
+    "local_main_synchronized": true,
+    "exact_merge_native_run": 42981485869,
+    "exact_merge_native_result": "34 original tests pass, zero skips; Bluetooth backend policy passes"
+  },
+  "framework_v2_scale_observation": "verification/framework-v2-scale-20261111.json",
+  "product_branch_reconciliation": {
+    "revision": "f3f8f1f6",
+    "owned_main_merged": "3cd00f456273c8dc4a859ef37b9bb9c763690056",
+    "included_reviews": [
+      322,
+      323,
+      324
+    ],
+    "result": "Main and the complete ARM register review incorporated without any tree change relative to 92b34215317a6bd5f23cf0f0ce03aa4784e87a86. Current tracing and synchronization requirements retained. Integration review remains draft, missing release/receipt acceptance is not changed.",
+    "local_checks": {
+      "arm_register": 11,
+      "docs_release_sync": 13,
+      "docs_lifecycle": 4,
+      "authority": "pass"
+    },
+    "hosted_controller_run": 42986686889,
+    "hosted_discovery_run": 42986686860,
+    "strict_patch_equivalent_histories": {
+      "count": 17,
+      "history_revision": "dcd741ac1cc685babec01914c4c07c088a573286",
+      "tree_before_evidence_unchanged": "5d7d501d495bb0c88c61326f275d361452718a4d",
+      "observation": "verification/product-branch-history-20261111.json",
+      "remaining": "All28 audited product tips are now contained in the integration branch after the separate semantic reviews. Owned main merge remains pending PR325 and its unresolved GitGuardian finding."
+    },
+    "remaining_history_review": {
+      "audited_tips": 28,
+      "all_contained_in_integration": true,
+      "owned_main_merge_pending": true,
+      "observation": "verification/product-branch-history-20261111.json",
+      "remaining": "PR325 must resolve its historical GitGuardian finding and satisfy its own checks. Full native/lifecycle/media/installation requirements remain open."
+    }
+  },
+  "desktop_repository": {
+    "history_review": 7,
+    "main_revision": "4b2525533600f37d2c6249112c3d2d4e22989f36",
+    "review_revision": "965d979f845ed90a3b9a9bdbdefeffd18423db5c",
+    "ci_run": 42988727555,
+    "ci_result": "passed",
+    "original_static_checks": 5,
+    "tree_changed": false,
+    "refs_audited": 14,
+    "refs_outside_main": [],
+    "local_main_synchronized": true,
+    "missing_worktree_registrations_pruned": 2,
+    "existing_worktree_sources": "All three existing worktrees clean. Two additional registrations pointed to nonexistent temporary directories; only stale registration metadata was pruned.",
+    "native_graphical_acceptance": false
+  },
+  "sparky_legacy_checkout_cleanup": {
+    "obsolete_worktrees_removed": 25,
+    "redundant_sync_clones_removed": 2,
+    "stale_local_branches_removed": 24,
+    "net_free_bytes_gained": 20355792896,
+    "preserved_small_files": 45,
+    "preserved_small_file_bytes": 463076,
+    "guards": "All removed heads/refs contained canonical main or published integration. Clean worktrees; no root-process/open-file or container-mount use; no shared object-store dependencies found. Primary heads/local changes and active worktrees preserved. Tiny upstream patch-submission directory retained."
+  }
+}

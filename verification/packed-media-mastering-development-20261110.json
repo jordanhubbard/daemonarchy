@@ -1,0 +1,198 @@
+{
+  "schema": "daemonarchy/packed-media-mastering-development@1",
+  "observed_utc": "2026-11-10T04:20:49.910699+00:00",
+  "status": "static-and-native-helper-controls-pass-final-current-media-unqualified",
+  "scope": "Pinned packed ARM content verification and native read-only Python import helper; retained controls do not qualify refreshed CURRENT final media",
+  "implementation_sha256": {
+    "scripts/check-packed-installer.py": "e220540480e2e3fa485391ee0daa439b79abb39a5ffd86d8ce3f734937641389",
+    "scripts/assemble-arm-media.py": "daed828ecc617fabec9e91271dc68a948320c2c4eb481a3c652dce7a045f4526",
+    "scripts/arm-ram-inspect.py": "b7ee040c491ddd2ba674ce2c3c2daf7303f3f81af236f21e47af05d21a22ae38",
+    "scripts/master-release.sh": "a87295e00b9ef639f4d3502ee56df46d4a51454bbdef0cb23dfffede3cfa9b1e"
+  },
+  "controller_controls": {
+    "ufs_parser_cases": 19,
+    "packed_mastering_cases": 9,
+    "master_split_cases": 17,
+    "result": "pass",
+    "ci_registered": true,
+    "ci_result": "pending",
+    "native_unrun_refuses_without_success_record": true,
+    "focused_unittest_total": 191
+  },
+  "full_retained_image_control": {
+    "image": "2317fd7e2b47d4510e4fff882ecf7cb011d3dc57cf1b5e1e9b368438d49c27e3",
+    "bytes": 3732947456,
+    "retained_version": "1.5.0",
+    "retained_version_exit": 0,
+    "future_1_6_refusal_exit": 1,
+    "source_unchanged": true,
+    "elapsed_seconds": 196.444,
+    "static_record": {
+      "boot_install_desktop_hardware_qualified": false,
+      "identities": {
+        "boot/kernel/kernel": {
+          "bytes": 19744040,
+          "sha256": "c3612c03838a7c53b75443cf2eab1ab8ad28db5b490fa8d34f57bbe03d90ccaf",
+          "version": "16.0-CURRENT"
+        },
+        "boot/loader.efi": {
+          "bytes": 1348012,
+          "sha256": "42ca0a5ab7dcd425702f0f72fab44e7c61fdc3cbbf07856a060705bafb707793"
+        },
+        "packed_root": {
+          "cluster_bytes": 262144,
+          "codec": "lzma",
+          "compressed_bytes": 3085712896,
+          "compressed_sha256": "0cb16572e8702a7826e40927d88d1b29c701d83fef937a071cc07873a9e799ec",
+          "expanded_bytes": 9691201536,
+          "expanded_sha256": "507e16298f2dc31f55bc3b988730c799f04d62d05f8f2456d8d3216091bb1a7a",
+          "files": {
+            "boot/kernel/kernel": {
+              "bytes": 19744040,
+              "sha256": "c3612c03838a7c53b75443cf2eab1ab8ad28db5b490fa8d34f57bbe03d90ccaf"
+            },
+            "boot/loader.efi": {
+              "bytes": 1348012,
+              "sha256": "42ca0a5ab7dcd425702f0f72fab44e7c61fdc3cbbf07856a060705bafb707793"
+            },
+            "boot/lua/loader.lua": {
+              "bytes": 3059,
+              "sha256": "854cd3143d9d1b237773a50f8905df45e598a2c5590db258cfdea20e2639d75b"
+            },
+            "usr/freebsd-dist/base.txz": {
+              "bytes": 164377708,
+              "sha256": "f2e66bde663066536a46354610b915f0abbef3af11fde73dfa629538fa40c7ff"
+            },
+            "usr/freebsd-dist/kernel.txz": {
+              "bytes": 112238508,
+              "sha256": "7b66c3e0dc4a89fe7eb8bf38de114e6aaf052dbc6d0960ee0a36158f544a9573"
+            },
+            "usr/local/bin/python3.12": {
+              "bytes": 3696,
+              "sha256": "e40597382070a73ebfe86e5d8bb97ee7b79f9f5fd41027154ba669abb24859c2"
+            },
+            "usr/local/lib/libsqlite3.so.0": {
+              "bytes": 1894480,
+              "resolved_path": "usr/local/lib/libsqlite3.so.3.53.4",
+              "sha256": "80f97c0ab26bbfcde4db37b970c9a16a2c66f93b4d28c2c8135021c0e578890f",
+              "symlink_chain": [
+                {
+                  "bytes": 20,
+                  "path": "usr/local/lib/libsqlite3.so.0",
+                  "sha256": "3401904ccda646b245f41ea890d2c2f0cb01d2638bb3101e57ac6d6cc155ac32",
+                  "target": "libsqlite3.so.3.53.4"
+                }
+              ]
+            },
+            "usr/local/lib/python3.12/lib-dynload/_sqlite3.cpython-312.so": {
+              "bytes": 112872,
+              "resolved_path": "usr/local/lib/python3.12/site-packages/_sqlite3.cpython-312.so",
+              "sha256": "3cc7bb700a9d57cd5000729027c052c6e875c5c5e02ecdb65cd9fec0517314f8",
+              "symlink_chain": [
+                {
+                  "bytes": 40,
+                  "path": "usr/local/lib/python3.12/lib-dynload/_sqlite3.cpython-312.so",
+                  "sha256": "ad8ecfa4400023c7f1a9573b7ae7909e0dfccf40c62002b92e68d092fffdc554",
+                  "target": "../site-packages/_sqlite3.cpython-312.so"
+                }
+              ]
+            },
+            "usr/local/lib/python3.12/sqlite3/__init__.py": {
+              "bytes": 2501,
+              "sha256": "f7cc982617b68e147540ef352d38310fe4d25c2c9c2542b67d0590c871df09a8"
+            },
+            "usr/local/libexec/daemonarchy-installer/install": {
+              "bytes": 38596,
+              "sha256": "d01cbaae137baa94b29a33f64e09db647817c15b07bd14d40a94891328bce1e5"
+            },
+            "usr/local/share/daemonarchy-installer/version": {
+              "bytes": 6,
+              "sha256": "acb57a7135b2d7d6e665f67f056e21353023b93835f54def1ae523bf76f1bfb3"
+            }
+          },
+          "format": "ufs-geom-uzip",
+          "zero_padded_bytes": 229376
+        }
+      },
+      "image": {
+        "bytes": 3732947456,
+        "sha256": "2317fd7e2b47d4510e4fff882ecf7cb011d3dc57cf1b5e1e9b368438d49c27e3"
+      },
+      "installer_version": "1.5.0",
+      "native_python_import": false,
+      "schema": "daemonarchy/packed-installer-inspection@1",
+      "static_content": true
+    },
+    "native_import_for_this_exact_image": false,
+    "controller_memory_max_bytes": 1073741824,
+    "nice": 19
+  },
+  "native_runtime_helper_control": {
+    "status": "pass",
+    "outcomes": {
+      "complete": 0,
+      "missing-sqlite": 1
+    },
+    "native_sqlite_stdout": "native live root: import sqlite3 ok, sqlite 3.53.4\n",
+    "mounts_restored": true,
+    "md_units_restored": true,
+    "geom_module_restored": true,
+    "images_unchanged": true,
+    "image_sha256": {
+      "complete": "3d391decb9e90a830f0e353caa2b805530dab8e3aed928ec2ac36f4c501463fe",
+      "missing-sqlite": "107ecd8b1a479c093bcd278aea251acfac54c0262badb0ab5145ebef212be6ba"
+    },
+    "helper_sha256": "a87295e00b9ef639f4d3502ee56df46d4a51454bbdef0cb23dfffede3cfa9b1e",
+    "elapsed_seconds": 0.561,
+    "qualification": "Real FreeBSD AArch64 read-only packed mount and Python/SQLite control using retained interpreter/libraries; not CURRENT world, final installer, boot or hardware qualification",
+    "prior_control": "r1 failed because unversioned python3 absent; private outputs and fixture images retained"
+  },
+  "failed_controls_retained": [
+    {
+      "control": "full retained image r1",
+      "status": "fail",
+      "cause": "Initial profile rejected legitimate FreeBSD package symlinks; corrected to bounded in-image metadata resolution with escape/loop controls"
+    },
+    {
+      "control": "native runtime helper r1",
+      "status": "fail",
+      "cause": "Worker has python3.12 without unversioned python3; driver now selects available interpreter without system-wide aliases"
+    }
+  ],
+  "fixture_scope": "Native-generated synthetic UFS2 and real ISO/GPT/FAT parser fixtures contain nonexecutable fake boot/Python payloads; the separate native runtime control uses retained real interpreter/libraries and is not a final installer",
+  "qualification": {
+    "pinned_static_packed_content": true,
+    "bounded_image_alias_resolution": true,
+    "native_readonly_mount_import_helper_control": true,
+    "refreshed_current_final_installer": false,
+    "current_final_image_native_import": false,
+    "boot_install_desktop_recovery": false,
+    "physical_hardware": false,
+    "signatures": false,
+    "lifecycle_receipt": false,
+    "release": false,
+    "static_inspection_and_native_verify_states_separate": true
+  },
+  "remaining": [
+    "Build matched refreshed CURRENT ARM and x86 installer roots and signed package closures",
+    "Run native import, exact-image boot/install/desktop/recovery checks on the final bytes",
+    "Pi 4, Pi 5 and Apple M2 physical final-media acceptance remains untested",
+    "Complete human authority review, canonical per-unit native coverage and admitted lifecycle gates"
+  ],
+  "lock_review": {
+    "old_release_revision": "5f9dd30475968185cbdbbcce3d6e0a23311ffec9a998309003c76fe2cd7be400",
+    "new_release_revision": "cffe77763a2a840dd2a42a85e9e9dd826f7f5afb41907ae1c7ffcbde0d8eaf89",
+    "nodes": 8,
+    "edges": 13,
+    "providers_unchanged": true,
+    "edges_unchanged_after_root_revision_substitution": true,
+    "only_acceptance_root_and_derived_selection_identities_changed": true,
+    "native_or_receipt_admission": false
+  },
+  "literate_verify": {
+    "locks": "8 current",
+    "authority": "fail-stale-human-documentation-review",
+    "receipt": "fail-stale-human-documentation-review",
+    "review_marker_unchanged": true
+  }
+}

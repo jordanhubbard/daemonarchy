@@ -1,0 +1,105 @@
+{
+  "schema": "daemonarchy/native-boot-medium-observer-checkpoint@1",
+  "source_parent": "c0104dd49ff3a97e738fa2d753fe55e3b70af05c",
+  "source_sha256": {
+    "tools/boottrace/boot-medium.py": "7a4f0681290241dc79f5cbc9eaa73421aacacd9911f5431a441b55184aedf57e",
+    "tools/boottrace/fat-volume.py": "8e911791b65d8c9e35a2c633d99faba1006ddfa3978e0483cfe08b9ad5f2afd0",
+    "tools/boottrace/observe-medium.py": "4881d63c0af7d122abe7ff6d0cfc0d1bebe05fec4bcb70cf49ca62b6d2d444dd",
+    "tests/boot-medium-native.py": "438af938d8858fa161b4cdce91325e90fef1c13d9bcbb2e4443e4601b28bcd0c"
+  },
+  "tests": {
+    "linux_groups_passed": 31,
+    "native_freebsd_arm64_groups_passed": 31,
+    "skipped": 0,
+    "native_log_sha256": "4e1f896b985efd9e1a962ff45c1fa3fc31a7dbe516f07b42783addb894df5d51",
+    "controls": [
+      "Active physical/partition/alias consumers refused; only the observer disk reader allowed.",
+      "Changed topology, regular files, symlinks, mismatched ioctl provider and nonnative/unprivileged execution refused."
+    ]
+  },
+  "actual_native_x86": {
+    "scope": "Retained kernel OSVERSION 1600029 with minimal diagnostic RAM root plus retained x86 Python standard library/dependencies; not full CURRENT media.",
+    "kernel_osreldate": 1600029,
+    "image_sha256": "124e93bd8d3fa7db5d6f30fb1fbc1f3176cf714004f19c8a49b3725cf7355bb9",
+    "returned_sha256": "9404800b7dd11607677203bf040720c8d90042b0f97c1a84080693d9311f850a",
+    "serial_sha256": "454c16d61708ed325b7adb369927aec5b61b3feb7bd73112f71e34ccd1114169",
+    "observation": {
+      "filesystem": {
+        "allocated_clusters": 1876,
+        "fat_sha256": "f7136ad358dd4c2686240a91dc7dcd291fa340f9c71da35aff54e3bb66f0126a",
+        "map_sha256": "9ca03753835c9d314412562d4392fbeec8c24a1a66d2c9545ed11d32e1e64d71",
+        "mapped_files": 233,
+        "read_only": true,
+        "schema": "daemonarchy/boot-medium-fat-observation@1",
+        "selected_extent": [
+          1073152,
+          16384
+        ],
+        "writes_admitted": false
+      },
+      "gpt": {
+        "backup_at_disk_end": true,
+        "backup_lba": 1683488,
+        "disk_guid": "8c55e2a2-dd22-11f1-1d08-61407e6af4da",
+        "fat_and_map_validation_required": true,
+        "partition_index": 2,
+        "partition_uuid": "8de03b18-dd22-11f1-1d08-61407e6af4da",
+        "read_only": true,
+        "schema": "daemonarchy/boot-medium-gpt-observation@1",
+        "table_sha256": "48346b0bcdaed60996990d8383ff418466a8e5e298da693187d3752ca9f7fa6d",
+        "writes_admitted": false
+      },
+      "read_only": true,
+      "schema": "daemonarchy/native-boot-medium-observation@1",
+      "selection": {
+        "archive_sha256": "dedf35506f3fdcc806e48eed0db3cf19188944e3e568340eb566d883954efc41",
+        "boot_nonce_sha256": "b83404bb818d4663a4b539632d53dd49ccb37bb882d65d177b4a2de74ba2bbb9",
+        "device": "/dev/vtbd0p2",
+        "disk": "/dev/vtbd0",
+        "disk_bytes": 861946368,
+        "equivalent_aliases": 1,
+        "geom_sha256": "81f229f5e60044e6c1c627d19cb1007e0225bfa81760da1bc039caf16780db13",
+        "gpt_state": "OK",
+        "partition_uuid": "8de03b18-dd22-11f1-1d08-61407e6af4da",
+        "raw_gpt_and_fat_validation_required": true,
+        "read_only": true,
+        "schema": "daemonarchy/boot-medium-selection@1",
+        "sector_bytes": 512,
+        "sectors": 524288,
+        "session": "5c0332ed-8b92-448e-b94c-1a100f9cb31f-0001",
+        "session_correlated": true,
+        "start_lba": 1159168,
+        "writes_admitted": false
+      },
+      "writes_admitted": false
+    },
+    "normal_shutdown": true,
+    "no_keyboard_input": true,
+    "no_nic": true,
+    "changed_bytes": 809,
+    "only_loader_banks_changed": true,
+    "observer_added_no_writes": true,
+    "linux_readonly_fat_exit": 0,
+    "native_freebsd_readonly_fat_exit": 0,
+    "linux_fat_log_sha256": "057bf533a7a4f9514e707148bcf4fdfd21102177f49164d3b88720349eab7f1f",
+    "native_fat_log_sha256": "898d6873c68ec6308700e70d973c5fcb09f5af9a16e86399446ed4ec267c0432",
+    "ioctl_constants": "0x40046480 0x40086481 0x4400648a",
+    "python_dependency_manifest_sha256": "f95647141e524ec1fec0607b3e27b00c7c629c8e273787c65d47d8769e0ff6b9"
+  },
+  "actual_duplicate_media": {
+    "status": "expected-refusal",
+    "reason": "duplicate-partition-uuid",
+    "natural_shutdown": true,
+    "observer_writes_admitted": false,
+    "serial_sha256": "6d609a73da31fbd4da3ced8ab10355d65b17f651bef0786f9b60b93b685e0706"
+  },
+  "retained_failures": [
+    "Initial Python fixture authoring stopped at an unrelated site-package dependency; second attempt retained standard-library closure only.",
+    "First duplicate-media VM refused its overlong QMP socket path before boot; shorter independent case exercised the actual refusal."
+  ],
+  "writes_admitted": false,
+  "installed_default_capture_qualified": false,
+  "full_current_media_qualified": false,
+  "physical_hardware_qualified": false,
+  "release_qualified": false
+}

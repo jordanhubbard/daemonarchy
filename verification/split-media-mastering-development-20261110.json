@@ -1,0 +1,80 @@
+{
+  "schema": "daemonarchy/split-media-mastering-development@1",
+  "observed_utc": "2026-11-10T03:40:48.473039+00:00",
+  "status": "controller-controls-pass-packed-root-native-adapter-open",
+  "scope": "Explicit pinned split selection in mastering/QA/device-writing; fixture controls are not native or release admission",
+  "implementation_sha256": {
+    "scripts/master-media.py": "651abc1ac449b70d76ed8127119e19ff1ced77ed18d6394c8630b7497c503ec7",
+    "scripts/master-release.sh": "5f7134c99485d369155e4c4e3e253ddddd194b7b38da3135f4e6503e27bce95a"
+  },
+  "controls": {
+    "new_cases": 16,
+    "passed": 16,
+    "failed": 0,
+    "legacy_mastering_script": "pass",
+    "documentation_sync_cases": 13,
+    "documentation_lifecycle_cases": 4,
+    "shell_syntax": "pass",
+    "shellcheck_error_severity": "pass",
+    "ci_registered": true,
+    "ci_result": "pending",
+    "focused_unittest_total": 162
+  },
+  "covered": [
+    "Real XZ decoding and complete raw reconstruction",
+    "Both architecture mappings in private QA transfer",
+    "Trusted pin, selected raw identity and raw-budget refusal before output",
+    "Tamper after transfer refuses before simulated QA runner",
+    "Selected raw-image boot payload extraction for hwtrace",
+    "Pin-bound resume and byte revalidation before cached-step reuse",
+    "All-device preflight before simulated writes",
+    "Complete simulated write/readback and failed-readback refusal",
+    "Literal quoted paths and mount/listing producer draining under pipefail",
+    "Private outputs retained, no overwrite or preceding QA deletion"
+  ],
+  "fixture_boundaries": [
+    "SSH commands execute in private local scratch directories",
+    "QEMU runner is an identity-checking fixture; no VM is booted",
+    "Device commands are intercepted; no device is opened",
+    "Tiny tar image and hwtrace products are controller fixtures, not bootable release media"
+  ],
+  "unchanged_limits": {
+    "raw_bytes_exclusive": 3758096384,
+    "public_asset_bytes_exclusive": 2147483648
+  },
+  "related_full_image_transport_record": "verification/split-media-development-20261110.json",
+  "qualification": {
+    "controller_format_integration": true,
+    "packed_arm_root_content_runtime_adapter": false,
+    "actual_native_qa": false,
+    "physical_device_write": false,
+    "refreshed_final_media": false,
+    "signatures": false,
+    "lifecycle_receipt": false,
+    "release": false
+  },
+  "remaining": [
+    "Wire independent packed RAM-root contents and live runtime checks into mastering before ARM admission",
+    "Complete refreshed matched source/world/kernel/modules/closures and final ARM/x86 media",
+    "Exercise actual native QA, signing, installation, desktop, recovery and target gates",
+    "Pi 4, Pi 5 and Apple M2 physical final-media qualification remain untested",
+    "Complete human authority review and admitted lifecycle receipts"
+  ],
+  "lock_review": {
+    "old_release_revision": "7b57457bb46c520fdfd2fc566dd4b0151c7fae76b3f09488d924a223d8e7c7e2",
+    "new_release_revision": "5f9dd30475968185cbdbbcce3d6e0a23311ffec9a998309003c76fe2cd7be400",
+    "acceptance_sha256": "87fe880edb9c14e0671336471b69b89ea1d45791c68386db9c5581ede0f8f5d8",
+    "nodes": 8,
+    "edges": 13,
+    "independent_provider_nodes_unchanged": true,
+    "edges_unchanged_after_root_revision_substitution": true,
+    "only_acceptance_root_and_derived_selection_identities_changed": true,
+    "runtime_or_receipt_admission": false
+  },
+  "literate_verify": {
+    "locks": "8 current",
+    "authority": "fail-stale-human-documentation-review",
+    "receipt": "fail-stale-human-documentation-review",
+    "review_marker_unchanged": true
+  }
+}

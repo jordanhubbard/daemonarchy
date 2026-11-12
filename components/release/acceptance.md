@@ -70,3 +70,37 @@ complete declarations and external/native gaps are in [the acceptance inventory]
   target, and retain a negative/failure case where applicable.
 - **Honest release decisions:** demonstrate the stated requirement on its actual supported
   target, and retain a negative/failure case where applicable.
+
+## Development split media transport
+
+`tests/split-media.py` must prove that bounded independent XZ parts reconstruct
+exactly the selected raw-image identity, with a trusted manifest pin, canonical
+part order, complete geometry and individual compressed/raw hashes. Refuse
+missing/extra parts, unsafe names, duplicate/unknown fields, corrupt/truncated or
+concatenated streams, oversized expansion, nonregular inputs and output races.
+Retain failed outputs privately and never overwrite earlier media. Keep the
+existing raw-image and strictly less than 2 GiB public-asset limits unchanged.
+
+Run the transport against actual complete retained media as well as refusal
+fixtures. Source/world/ABI, signing, platform boot/install/desktop/recovery and
+lifecycle admission remain artifact-specific requirements. Require explicit
+`xz-parts@1` release descriptors, trusted manifest pins, complete approved physical
+asset maps and full raw-image verification. `tests/release-split-media.py` must
+exercise the existing signed-boot/certificate and closure gates;
+`tests/release-split-flow.py` must cover draft authoring, published-current metadata,
+refusal before writes and download-document consistency. Preserve historical
+single-image semantics. `tests/master-split-media.py` must exercise complete
+reconstruction, both architecture selections, transfer tampering, private evidence
+retention, pin-bound resume, all-device preflight and write/readback refusal.
+Keep fixture boundaries explicit. `tests/packed-mastering.py` and the extended
+`tests/arm-ram-inspect.py` must verify complete packed contents against the trusted
+raw identity and selected version, consistent boot/EFI and archive manifests,
+AArch64 Python/SQLite payloads and bounded image-internal package aliases. Refuse
+stale cached raw bytes, namespace escape, loops, missing and foreign payloads.
+Exercise read-only native root mounts and real Python import/query, plus missing
+extension and cleanup controls on the allocated FreeBSD worker. A controller
+static record must keep native import unqualified. For planned 1.6, `inspect`
+records only static success, while `verify` returns an unrun outcome without a
+success record when native FreeBSD root execution is unavailable. Complete these checks on the
+actual final images alongside publication/target/device gates before admission;
+retained-image and helper controls cannot qualify a different final product.

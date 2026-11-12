@@ -1,0 +1,37 @@
+{
+  "input_sha256": "960c083d4f5c26113536a08478e8b511df43793b7ff261dfc5a90298344c97a9",
+  "input_bytes": 3025698816,
+  "output_bytes": 3294134272,
+  "trace_partition": [
+    2,
+    5910528,
+    523295
+  ],
+  "mapped_files": 201,
+  "iso_payload_preserved": true,
+  "automatic_capture": false,
+  "output_sha256": "585ef6edf96d8c71178e0d20f268336bb1dea126c498e7fc2c90e0f8de774225",
+  "schema": "daemonarchy/install-trace-layout-checkpoint@1",
+  "scope": "Partition preparation only; automatic default capture is not implemented.",
+  "source_tool": "tools/boottrace/stick.py",
+  "regression": {
+    "before_fix": "The ESP-only GPT fixture lost the installer bytes in the apparent free gap.",
+    "after_fix_tests": 29,
+    "failed": 0,
+    "skipped": 0
+  },
+  "qualification": {
+    "partition_appended_after_original_eof": true,
+    "original_iso_filesystem_bytes_preserved": true,
+    "raw_map_readback": true,
+    "automatic_loader_capture": false,
+    "automatic_kernel_capture": false,
+    "automatic_installer_capture": false,
+    "boot_with_augmented_image": false,
+    "physical_test": false
+  },
+  "limitations": [
+    "Prepared from the retained-root normal ISO kernel control, not the final current-Omarchy installation image.",
+    "This proves layout and raw-map preparation only. TRACE-001 remains open for default build integration, observe-only loader/kernel/installer behavior and reset/power-loss qualification."
+  ]
+}

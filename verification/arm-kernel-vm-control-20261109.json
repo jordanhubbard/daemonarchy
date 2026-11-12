@@ -1,0 +1,81 @@
+{
+  "schema": "daemonarchy/arm-kernel-vm-control@1",
+  "recorded_at": "2026-11-09T17:41:40.906897+00:00",
+  "scope": "Normal ISO control using the retained 1.5.0 live root and a rebuilt complete kernel set; not the current-Omarchy final distribution.",
+  "kernel_build_record": "verification/arm-native-kernel-20261109.json",
+  "image": {
+    "image_sha256": "960c083d4f5c26113536a08478e8b511df43793b7ff261dfc5a90298344c97a9",
+    "image_bytes": 3025698816,
+    "embedded": {
+      "boot/kernel/kernel": {
+        "bytes": 19744040,
+        "sha256": "c3612c03838a7c53b75443cf2eab1ab8ad28db5b490fa8d34f57bbe03d90ccaf",
+        "version": "16.0-CURRENT"
+      },
+      "boot/loader.efi": {
+        "bytes": 1151404,
+        "sha256": "8f2ac2b7f9d5beebe832b091f32ae11563cb9110992c79452eee266812c66547"
+      }
+    }
+  },
+  "assembly": {
+    "exit_code": 0,
+    "world_input_sha256": "058a987b9338dbdc7df4a17f9d5884bb617c44f44ae03f7774f78bf004d3be18",
+    "kernel_set_sha256": "7b66c3e0dc4a89fe7eb8bf38de114e6aaf052dbc6d0960ee0a36158f544a9573",
+    "helper_sha256": "960bbaf4d03d65a5d87fe4a0236513dd521055e1bc3c678e2c03259c5d688c3f",
+    "private_recipe_sha256": "fb46b94049c1321a126c3a8dc54a9fa46ebd64a3fad95350920be691ab29053c"
+  },
+  "vm": {
+    "hypervisor": "QEMU 8.2.2/KVM",
+    "architecture": "aarch64",
+    "machine": "virt,gic-version=max",
+    "cpus": 4,
+    "memory_gib": 12,
+    "firmware_sha256": "d2d1228a664adbaed2148c2661e30c930af9bf09f03b6d5aa2a8bbc9cb5cab43",
+    "network": "virtio-net-pci with user-mode networking; no interface/offload reset intervention in this control",
+    "storage": "Read-only ISO on virtio-scsi; no installation disk attached"
+  },
+  "boot": {
+    "efi_to_root_login": true,
+    "running_kernel_banner": "FreeBSD 16.0-CURRENT #0: Mon Nov 9 17:12:44 UTC 2026",
+    "root_kernel_sha256": "c3612c03838a7c53b75443cf2eab1ab8ad28db5b490fa8d34f57bbe03d90ccaf",
+    "installation_archive_sha256": "7b66c3e0dc4a89fe7eb8bf38de114e6aaf052dbc6d0960ee0a36158f544a9573",
+    "observed_cpus": 4,
+    "smp_active": 1,
+    "root_filesystem": "Read-only cd9660"
+  },
+  "network": {
+    "exit_code": 0,
+    "single_transfers": 1,
+    "concurrent_transfers": 8,
+    "payload_bytes_per_transfer": 344874671,
+    "verified_total_bytes": 3103872039,
+    "payload_sha256": "f7243d82b9f35e520c29995e710ae72a131c3c69d496ca2cfc5e89c006b098bf",
+    "test_script_sha256": "5d53ad90feb9619241747e11cfc48043c57d321e10ec6b678891e751d231ebeb",
+    "post_test_ssh": true,
+    "scope": "Local controller HTTP payloads and native guest SHA-256 readback; no WAN bandwidth claim."
+  },
+  "private_evidence_sha256": {
+    "normal-control-build.log": "1d122fe107078ca88b987dd0defe46490e155f31064e145400b70a139153e23b",
+    "normal-control-inspection.json": "55a3ef5dab3cbf8b874ebfe6370ec62ebe7a8e96142f931359e5d414041ef0c5",
+    "kernel-control/identity.log": "93531fd2b1e3c44e0d9a3e5a13a376621443fca42f7b7d32991a82e4a6d8e250",
+    "kernel-control/network-test.log": "dadb3f17d6807db184a6da0dd2615e3f985c0de16be5bc3ce956fbb1880bd466",
+    "kernel-control/serial.log": "7a602fc70163668c7861d47f2dc6455744238892e700ce59c2a822e1325d5b1a"
+  },
+  "qualification": {
+    "normal_iso_vm_boot": true,
+    "local_network_payload_integrity": true,
+    "large_ram_preload_boot": false,
+    "current_omarchy_image": false,
+    "physical_boot": false,
+    "installation": false,
+    "desktop": false,
+    "update_rollback": false,
+    "component_lifecycle_receipt": false
+  },
+  "limitations": [
+    "One VM cold boot and one transfer control do not qualify all ARM VM profiles or physical boards.",
+    "The earlier retained-image VirtIO installer reached its explicit 2400-second timeout with package fetching incomplete. No root cause or repaired installer is claimed.",
+    "This control does not test the complete RAM-root image, the final source/ports refresh, signed closure, installation, GUI or recovery."
+  ]
+}

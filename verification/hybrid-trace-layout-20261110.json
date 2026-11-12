@@ -1,0 +1,185 @@
+{
+  "schema": "daemonarchy/native-hybrid-trace-layout@1",
+  "recorded_date": "2026-11-10",
+  "status": "scoped-native-assembly-and-firmware-controls",
+  "product_base_commit": "04f1fd57f6116cc32bddad0994bcea22cec5c745",
+  "producer_inputs": [
+    {
+      "path": "scripts/make-install-trace.py",
+      "sha256": "f5168199fbc3e01a8b12fc5c8f00f3a80e59958943073c6df75d9071ead6e48d"
+    },
+    {
+      "path": "tools/boottrace/stick.py",
+      "sha256": "f120fb261543155b339efa8ad1b3b61bbeb5c36960e773a68e63bd1722d21fd1"
+    },
+    {
+      "path": "published-amd64.iso",
+      "sha256": "e61b8112815e5f25a6f8e3c619402392c5305a81140817aad44f32a7761bc904",
+      "bytes": 3555328000
+    }
+  ],
+  "assembler_runtime": "Native FreeBSD 16.0-CURRENT arm64; output owned by build uid/gid 1017",
+  "native_result": {
+    "automatic_capture_qualified": false,
+    "bios_boot_data_preserved": true,
+    "declared_identity": null,
+    "input_sha256": "e61b8112815e5f25a6f8e3c619402392c5305a81140817aad44f32a7761bc904",
+    "mapped_files": 201,
+    "mbr_boot_code_preserved": true,
+    "normal_boot_slots": 0,
+    "output_bytes": 3824173568,
+    "output_sha256": "77471c5e72cfe915f63276fab02608a2297e206d25da031be95b0facbee34490",
+    "retained_partition_entries": true,
+    "retained_partition_types": [
+      "freebsd-boot",
+      "efi"
+    ],
+    "schema": 1,
+    "trace_start_lba": 6944768,
+    "native_fat_check_exit": 0,
+    "producer_uid": 1017,
+    "producer_gid": 1017,
+    "controller_full_input_preservation": {
+      "bytes_0_through_445": true,
+      "all_bytes_from_lba_34_through_original_end": true,
+      "original_two_partition_entries_unchanged": true,
+      "disk_guid_unchanged": true,
+      "bios_isoboot_sha256": "19be7e889513ba4b5858078b9eba8b286d7851858fced4c77d3b49a8931de3a4",
+      "original_still_sha256": "e61b8112815e5f25a6f8e3c619402392c5305a81140817aad44f32a7761bc904"
+    },
+    "existing_raw_size_gate": {
+      "exit": 1,
+      "output": "Raw image is 3824173568 bytes; it must be smaller than 3758096384 bytes.\n"
+    }
+  },
+  "bios_control": {
+    "status": "BIOS kernel and userspace boot observed",
+    "firmware": "SeaBIOS",
+    "mode": "raw USB-equivalent virtio disk under x86 TCG",
+    "no_keyboard_input": true,
+    "no_network_devices": true,
+    "disk_write_operations": 0,
+    "scope": "Preserved published 1.5.1 payload with appended trace storage; no 1.6 or automatic capture qualification",
+    "shutdown": "QMP quit after userspace startup observation; not OS shutdown or power-loss qualification"
+  },
+  "efi_control": {
+    "status": "EFI kernel and userspace boot observed",
+    "firmware": "OVMF monolithic BIOS image",
+    "mode": "raw USB-equivalent virtio disk under x86 TCG",
+    "no_keyboard_input": true,
+    "no_network_devices": true,
+    "changed_bytes": 1336,
+    "all_changes_within_original_esp": true,
+    "nvvars_file_created_bytes": 10213,
+    "trace_partition_unchanged": true,
+    "whole_disk_zero_write": false,
+    "scope": "Preserved published 1.5.1 payload plus trace storage; no final 1.6 or automatic capture qualification",
+    "retained_warnings": "Read-only hostid, machine-id and entropy writes in retained live root",
+    "shutdown": "QMP quit after userspace startup; not OS shutdown or power-loss qualification"
+  },
+  "one_esp_assembly": {
+    "automatic_capture_qualified": false,
+    "bios_boot_data_preserved": true,
+    "declared_identity": {
+      "archive_sha256": "75fd14d4c6ded786b6d2eb957466ebc9c1f36b44928c86022a9a472878451ae8",
+      "image_id": "05e92d6f-08cd-4d8e-b764-9adc7589c3aa"
+    },
+    "input_sha256": "4cb0bc0b75feef933104766bfd73cd47e0937a199c21f1fbbf10829f584ce295",
+    "mapped_files": 233,
+    "mbr_boot_code_preserved": true,
+    "normal_boot_slots": 32,
+    "output_bytes": 393232896,
+    "output_sha256": "70b1f3e1d876ed1fb06ab5faa15b28876c68daf8f4581394a04e8eeb57143f64",
+    "retained_partition_entries": true,
+    "retained_partition_types": [
+      "efi"
+    ],
+    "schema": 1,
+    "trace_start_lba": 243712
+  },
+  "one_esp_capture": {
+    "status": "pass",
+    "name": "boot-hybrid-oneesp-r1",
+    "records": {
+      "1": {
+        "schema": "daemonarchy/normal-boot-trace@2",
+        "image_id": "05e92d6f-08cd-4d8e-b764-9adc7589c3aa",
+        "archive_sha256": "75fd14d4c6ded786b6d2eb957466ebc9c1f36b44928c86022a9a472878451ae8",
+        "trace_partition": "cf90ee3c-dcdb-11f1-1d08-61407e6af4da",
+        "session": "0001",
+        "phase": "loader-ready",
+        "identity": "declared-archive",
+        "early_kernel_backend": "not-enabled",
+        "pre_exit": {
+          "sha256": "f1dc52d54cbca9efdaba4df9ebc51e968dc4306e286e0e6018f35ff77732b125",
+          "status": "recorded",
+          "record": {
+            "schema": "daemonarchy/normal-boot-trace@2",
+            "image_id": "05e92d6f-08cd-4d8e-b764-9adc7589c3aa",
+            "archive_sha256": "75fd14d4c6ded786b6d2eb957466ebc9c1f36b44928c86022a9a472878451ae8",
+            "trace_partition": "cf90ee3c-dcdb-11f1-1d08-61407e6af4da",
+            "session": "0001",
+            "phase": "pre-exit",
+            "identity": "declared-archive",
+            "early_kernel_backend": "not-enabled"
+          }
+        }
+      }
+    },
+    "changed_bytes": 607,
+    "only_expected_slot_changed": true,
+    "readonly": false,
+    "foreign_disk_unchanged": false,
+    "input_unchanged": true,
+    "kernel_control_boundary_reached": true,
+    "no_keyboard_input": true
+  },
+  "portable_integrity_test_groups": 12,
+  "normal_record_test_groups": 12,
+  "preservation": "All original bytes outside protective MBR/GPT header/table update are compared; original disk GUID, partition entry bytes, BIOS code and data, ESP and ISO payload are retained.",
+  "evidence_hashes": [
+    {
+      "name": "native-build.log",
+      "sha256": "9e913aa478ad4e9faaa4cbd98f77e763cea8f77506aef01b0e618f959c944a05"
+    },
+    {
+      "name": "fsck.log",
+      "sha256": "a82e6d690c2255c3fe0c3f41b47ddbae22a7d836bf0cb4314712a2be180d4b7f"
+    },
+    {
+      "name": "controller-verification.json",
+      "sha256": "dc9f8036aab88b36343959fed1975287bc4bc71db981c2caedf45ac7c859af71"
+    },
+    {
+      "name": "bios-boot-r1/screen-later.png",
+      "sha256": "a83e2d06cfec37760ad5464d8fb96388b858202271d40c9306735d6306aa02ea"
+    },
+    {
+      "name": "bios-boot-r1/blockstats.json",
+      "sha256": "070bd9f54f9682f224ae904993df08573f8a7088a02b25866fc850c1346ad027"
+    },
+    {
+      "name": "efi-boot-r1/screen.png",
+      "sha256": "3a1fced0aedfd1e391e18ab59f078cd31fdc1254c9519db45766365ca9910aae"
+    },
+    {
+      "name": "efi-boot-r1/byte-diff.json",
+      "sha256": "c6f959679513ed7f2caa9801c365e7b5785ca10758892e2226576c645476239e"
+    },
+    {
+      "name": "oneesp-boot.log",
+      "sha256": "a0c0c95acc44d3ee64265cb3abaa1542a70b93d3d06c5f7b1816afad6df70b5f"
+    }
+  ],
+  "remaining": [
+    "Default amd64 build-iso integration with matching normal trace identity and current loaders",
+    "Automatic BIOS capture and complete refreshed amd64/ARM final-media installation/recovery",
+    "Early kernel/panic/init/installer capture and remaining TRACE-001 scope",
+    "Raw image size gate fails: 3824173568 bytes versus strict 3758096384-byte limit; no limit change or feature cuts",
+    "Compressed publication-budget check not run because raw budget already fails",
+    "Signed final package closure, canonical lifecycle/SDK/receipt and documentation-review gates",
+    "Physical Pi 4, Pi 5, Apple M2 and other required targets remain untested"
+  ],
+  "release_qualified": false,
+  "raw_evidence": "Full images, returned disks, serial/QMP output and console snapshots retained privately; no credentials, worker addresses or raw logs committed."
+}

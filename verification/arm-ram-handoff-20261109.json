@@ -1,0 +1,450 @@
+{
+  "schema": "daemonarchy/arm-ram-handoff-checkpoint@1",
+  "scope": "Read-only packed-root platform assembly and full-filesystem LZMA repack; exact EFI/USB VM boot with manual trace persistence. Not final 1.6 media or automatic capture.",
+  "inputs": {
+    "prior_checkpoint": "arm-ram-native-20261109.json",
+    "kernel_source_commit": "0e1ddb782d1e27390cd380b5e3560b794607f78e",
+    "ports_commit": "48561eaaf50086b2a6f469e307f26d1292024de6",
+    "world": "Retained 1.5.0 installer world with selected kernel set and complete Omarchy 4.5.0_4 closure"
+  },
+  "controller_tools_sha256": {
+    "scripts/assemble-arm-media.py": "f13e70c96b3b0a9822de9909490799e59cfa6c986554acb01e9750b314517faf",
+    "scripts/arm-ram-inspect.py": "b67dfa91c55ddec4cfeaeb522f06c2e7d620178a9a15fec7fd56f9d7586fdfe4",
+    "scripts/check-arm-kernel-set.py": "7f94cd5cf2a2c6a0da4b9c36e9bc121db59bb917e222b5d7445922618af431e5"
+  },
+  "inspection": {
+    "filesystem": "UFS2",
+    "decoder": "Read-only bounded zlib/LZMA CLOOP decoder; no host filesystem mount",
+    "reader": "Sleuth Kit 4.12.1, ifind/istat/icat",
+    "inner_outer_kernel_and_loader_match": true,
+    "installation_kernel_set_complete_and_matching": true,
+    "installation_archives_match_manifest": true,
+    "installer_abi": "FreeBSD:16:aarch64",
+    "producer_sidecar_used_as_proof": false,
+    "expanded_root_budget_bytes": 68719476736,
+    "cluster_budget_bytes": 1048576,
+    "processing_budgets_limit_target_ram_or_cpu": false
+  },
+  "compression": {
+    "method": "Native mkuzip -L -s 262144 -j 4 applied to the previous native UFS2 image, followed by native EFI ISO construction",
+    "fresh_full_updated_recipe_qualified": true,
+    "original_root": {
+      "original_bytes": 9690742784,
+      "original_sha256": "a18a53cede87a4b4ca79289688255372d785ea260e2e6115dfe0541cc034dc9a",
+      "expanded_bytes": 9690939392,
+      "zero_padding_bytes": 196608,
+      "all_original_bytes_preserved": true
+    },
+    "packed_root": {
+      "format": "ufs-geom-uzip",
+      "codec": "lzma",
+      "cluster_bytes": 262144,
+      "expanded_bytes": 9690939392,
+      "expanded_sha256": "643bc8af518e62fcc07ede9ee3408737728ac2b6ca0b9b73af572d30e225e301",
+      "zero_padded_bytes": 196608,
+      "compressed_bytes": 3085586944,
+      "compressed_sha256": "4b3619a5e92bfcbeee121fe663fc911597506cb9d303cafcdc0f7deae0820f5f",
+      "files": {
+        "boot/kernel/kernel": {
+          "bytes": 19744040,
+          "sha256": "c3612c03838a7c53b75443cf2eab1ab8ad28db5b490fa8d34f57bbe03d90ccaf"
+        },
+        "boot/loader.efi": {
+          "bytes": 1151404,
+          "sha256": "8f2ac2b7f9d5beebe832b091f32ae11563cb9110992c79452eee266812c66547"
+        },
+        "boot/lua/loader.lua": {
+          "bytes": 3059,
+          "sha256": "854cd3143d9d1b237773a50f8905df45e598a2c5590db258cfdea20e2639d75b"
+        },
+        "usr/freebsd-dist/base.txz": {
+          "bytes": 164377708,
+          "sha256": "f2e66bde663066536a46354610b915f0abbef3af11fde73dfa629538fa40c7ff"
+        },
+        "usr/freebsd-dist/kernel.txz": {
+          "bytes": 112238508,
+          "sha256": "7b66c3e0dc4a89fe7eb8bf38de114e6aaf052dbc6d0960ee0a36158f544a9573"
+        },
+        "usr/local/libexec/daemonarchy-installer/install": {
+          "bytes": 38596,
+          "sha256": "d01cbaae137baa94b29a33f64e09db647817c15b07bd14d40a94891328bce1e5"
+        }
+      }
+    },
+    "variants": [
+      {
+        "codec": "lzma",
+        "cluster_bytes": 16384,
+        "compressed_bytes": 3498276352,
+        "sha256": "98471b945f3db5e426bb5b9f4cb696ecc2745def64858b0d5f9fcbbd79cd949f"
+      },
+      {
+        "codec": "lzma",
+        "cluster_bytes": 131072,
+        "compressed_bytes": 3157038592,
+        "sha256": "d73ec5351ab26d59bb7772edefaf9c897487d09e1f127d00223f1ba678274704"
+      }
+    ]
+  },
+  "image": {
+    "bytes": 3731898880,
+    "sha256": "0a9786022f49d62377a894755f385bcdaac63341271272cbe38ffc70575f49a7",
+    "raw_budget_bytes": 3758096384,
+    "raw_budget_margin_bytes": 26197504,
+    "raw_budget_check_passed": true,
+    "published_asset_budget_bytes": 2147483648,
+    "compressed_publication_size_measured": true
+  },
+  "platform_assemblies": {
+    "rtx-spark-n1x": {
+      "schema": "daemonarchy/arm-installer-media@1",
+      "platform": "rtx-spark-n1x",
+      "abi": "FreeBSD:16:aarch64",
+      "installer_sha256": "0a9786022f49d62377a894755f385bcdaac63341271272cbe38ffc70575f49a7",
+      "embedded": {
+        "boot/kernel/kernel": {
+          "bytes": 19744040,
+          "sha256": "c3612c03838a7c53b75443cf2eab1ab8ad28db5b490fa8d34f57bbe03d90ccaf",
+          "version": "16.0-CURRENT"
+        },
+        "boot/loader.efi": {
+          "bytes": 1151404,
+          "sha256": "8f2ac2b7f9d5beebe832b091f32ae11563cb9110992c79452eee266812c66547"
+        },
+        "packed_root": {
+          "format": "ufs-geom-uzip",
+          "codec": "lzma",
+          "cluster_bytes": 262144,
+          "expanded_bytes": 9690939392,
+          "expanded_sha256": "643bc8af518e62fcc07ede9ee3408737728ac2b6ca0b9b73af572d30e225e301",
+          "zero_padded_bytes": 196608,
+          "compressed_bytes": 3085586944,
+          "compressed_sha256": "4b3619a5e92bfcbeee121fe663fc911597506cb9d303cafcdc0f7deae0820f5f",
+          "files": {
+            "boot/kernel/kernel": {
+              "bytes": 19744040,
+              "sha256": "c3612c03838a7c53b75443cf2eab1ab8ad28db5b490fa8d34f57bbe03d90ccaf"
+            },
+            "boot/loader.efi": {
+              "bytes": 1151404,
+              "sha256": "8f2ac2b7f9d5beebe832b091f32ae11563cb9110992c79452eee266812c66547"
+            },
+            "boot/lua/loader.lua": {
+              "bytes": 3059,
+              "sha256": "854cd3143d9d1b237773a50f8905df45e598a2c5590db258cfdea20e2639d75b"
+            },
+            "usr/freebsd-dist/base.txz": {
+              "bytes": 164377708,
+              "sha256": "f2e66bde663066536a46354610b915f0abbef3af11fde73dfa629538fa40c7ff"
+            },
+            "usr/freebsd-dist/kernel.txz": {
+              "bytes": 112238508,
+              "sha256": "7b66c3e0dc4a89fe7eb8bf38de114e6aaf052dbc6d0960ee0a36158f544a9573"
+            },
+            "usr/local/libexec/daemonarchy-installer/install": {
+              "bytes": 38596,
+              "sha256": "d01cbaae137baa94b29a33f64e09db647817c15b07bd14d40a94891328bce1e5"
+            }
+          }
+        }
+      },
+      "files": {
+        "daemonarchy-rtx-spark-n1x.iso": {
+          "bytes": 3731898880,
+          "sha256": "0a9786022f49d62377a894755f385bcdaac63341271272cbe38ffc70575f49a7"
+        }
+      },
+      "apple_dtb": null,
+      "bootstrap_sha256": null,
+      "qualification": {
+        "assembly": true,
+        "physical_boot": false,
+        "installation": false,
+        "desktop": false,
+        "recovery": false
+      }
+    },
+    "apple-m2-pro-mini": {
+      "schema": "daemonarchy/arm-installer-media@1",
+      "platform": "apple-m2-pro-mini",
+      "abi": "FreeBSD:16:aarch64",
+      "installer_sha256": "0a9786022f49d62377a894755f385bcdaac63341271272cbe38ffc70575f49a7",
+      "embedded": {
+        "boot/kernel/kernel": {
+          "bytes": 19744040,
+          "sha256": "c3612c03838a7c53b75443cf2eab1ab8ad28db5b490fa8d34f57bbe03d90ccaf",
+          "version": "16.0-CURRENT"
+        },
+        "boot/loader.efi": {
+          "bytes": 1151404,
+          "sha256": "8f2ac2b7f9d5beebe832b091f32ae11563cb9110992c79452eee266812c66547"
+        },
+        "packed_root": {
+          "format": "ufs-geom-uzip",
+          "codec": "lzma",
+          "cluster_bytes": 262144,
+          "expanded_bytes": 9690939392,
+          "expanded_sha256": "643bc8af518e62fcc07ede9ee3408737728ac2b6ca0b9b73af572d30e225e301",
+          "zero_padded_bytes": 196608,
+          "compressed_bytes": 3085586944,
+          "compressed_sha256": "4b3619a5e92bfcbeee121fe663fc911597506cb9d303cafcdc0f7deae0820f5f",
+          "files": {
+            "boot/kernel/kernel": {
+              "bytes": 19744040,
+              "sha256": "c3612c03838a7c53b75443cf2eab1ab8ad28db5b490fa8d34f57bbe03d90ccaf"
+            },
+            "boot/loader.efi": {
+              "bytes": 1151404,
+              "sha256": "8f2ac2b7f9d5beebe832b091f32ae11563cb9110992c79452eee266812c66547"
+            },
+            "boot/lua/loader.lua": {
+              "bytes": 3059,
+              "sha256": "854cd3143d9d1b237773a50f8905df45e598a2c5590db258cfdea20e2639d75b"
+            },
+            "usr/freebsd-dist/base.txz": {
+              "bytes": 164377708,
+              "sha256": "f2e66bde663066536a46354610b915f0abbef3af11fde73dfa629538fa40c7ff"
+            },
+            "usr/freebsd-dist/kernel.txz": {
+              "bytes": 112238508,
+              "sha256": "7b66c3e0dc4a89fe7eb8bf38de114e6aaf052dbc6d0960ee0a36158f544a9573"
+            },
+            "usr/local/libexec/daemonarchy-installer/install": {
+              "bytes": 38596,
+              "sha256": "d01cbaae137baa94b29a33f64e09db647817c15b07bd14d40a94891328bce1e5"
+            }
+          }
+        }
+      },
+      "files": {
+        "daemonarchy-apple-m2-pro-mini.iso": {
+          "bytes": 3731898880,
+          "sha256": "0a9786022f49d62377a894755f385bcdaac63341271272cbe38ffc70575f49a7"
+        },
+        "owned-esp/m1n1/boot.bin": {
+          "bytes": 7560845,
+          "sha256": "8aec627384acc4e80e0d1c9bcd65891923c3d96891d1b53e2ffae430b3fbf8ef"
+        }
+      },
+      "apple_dtb": {
+        "offset": 4634928,
+        "bytes": 99064,
+        "compatible": [
+          "apple,j474s",
+          "apple,t6020",
+          "apple,arm-platform"
+        ],
+        "sha256": "6b1e7f4994fe7170e2de8694cdf0a44f9821768dfd71277ebde23aa27c3eb2d5"
+      },
+      "bootstrap_sha256": "e7ca644649bc4989abef005250cd606937111c4da7701d90a85d885a36cf5cd9",
+      "qualification": {
+        "assembly": true,
+        "physical_boot": false,
+        "installation": false,
+        "desktop": false,
+        "recovery": false
+      }
+    }
+  },
+  "apple_bootstrap": {
+    "release": "https://github.com/AsahiLinux/m1n1/releases/tag/v1.9.9",
+    "asset": "ci-uefi-only-v1.9.9-asahi-7.1.9-1.zip",
+    "publisher_sha256": "e7ca644649bc4989abef005250cd606937111c4da7701d90a85d885a36cf5cd9",
+    "downloaded_bytes_match_publisher_digest": true,
+    "physical_mac_storage_or_boot_modified": false,
+    "compiler_provenance_qualified": false
+  },
+  "vm_control": {
+    "machine": "QEMU virt/GIC, AArch64 KVM, host CPU, eight vCPUs, 16 GiB RAM",
+    "boot_medium": "xHCI USB mass storage with writable qcow2 overlay and unchanged source ISO",
+    "firmware": "QEMU AArch64 EFI",
+    "default_installer_welcome_rendered": true,
+    "root": "/dev/md0.uzip",
+    "hw_ncpu": 8,
+    "kern_smp_active": 1,
+    "omarchy": "4.5.0_4",
+    "hyprland_version_command_passed": true,
+    "rendered_desktop": false,
+    "package_dependency_check_passed": true,
+    "runtime_inventory_sha256": "5d020ea5e04d6344408a58bd357bebd2fd58658b0f9ccfc9476a0b0560c3301c",
+    "closure_inventory_sha256": "d627249843b7aa1e971a86663cd91848210fcb19ff90c46e321c4aed796f7d49",
+    "manual_same_medium_write": true,
+    "saved_files": [
+      "DUMPS/RAMCTRL/RESULT.TXT",
+      "DUMPS/RAMCTRL/PKGS.TXT",
+      "DUMPS/RAMCTRL/DMESG.TXT"
+    ],
+    "marker": "ARM16_RAM_USB_PASS",
+    "orderly_shutdown": true,
+    "qemu_exit_status": 0,
+    "readonly_root_shutdown_warnings_retained": true
+  },
+  "controller_readback": {
+    "base_image_unchanged": true,
+    "base_image_sha256": "0a9786022f49d62377a894755f385bcdaac63341271272cbe38ffc70575f49a7",
+    "returned_image_sha256": "ab9db9db3ee48b600c7795ebd7c7f2c5ba55a8c62577dcae11260f83ff8571a0",
+    "mapped_files": 201,
+    "trace_partition": [
+      2,
+      6764544,
+      524288
+    ],
+    "runtime_packages_sha256": "5d020ea5e04d6344408a58bd357bebd2fd58658b0f9ccfc9476a0b0560c3301c",
+    "controller_readback": true,
+    "readonly_fat_check_status": 0
+  },
+  "controller_tests": {
+    "packed_root_decoder_and_ufs_refusal_passed": 13,
+    "arm_media_with_real_published_bootstrap_passed": 5,
+    "arm_kernel_set_passed": 7,
+    "arm_package_closure_passed": 16,
+    "documentation_lifecycle_passed": 4,
+    "documentation_release_sync_passed": 13,
+    "version_sync_passed": 4,
+    "shellcheck_warning_or_error": false
+  },
+  "preserved_attempts": [
+    "Initial strict decoder rejected the valid short final native cluster; native mkuzip source confirmed short final reads. The decoder now permits only sector-aligned final short clusters and pads their logical tail; short nonfinal clusters remain refused.",
+    "The 16 KiB and 128 KiB LZMA payload variants were measured and retained; only the 256 KiB repack received the complete ISO/VM/platform control recorded here.",
+    "Initial documentation link checks ran before this checkpoint existed and failed on its pending links; rerun after writing the evidence.",
+    "The 8 GiB USB control prints secondary-GPT-not-at-last-LBA warnings. QEMU itself reports exit 0 after orderly shutdown, while its command launcher reports 143; independent image/FAT/map/inventory readback passed.",
+    "The fresh-producer VM control initially held its QMP connection while starting a second QMP client; that harness deadlock was released by terminating only its owning controller, with the same live VM retained. The pending control then passed and the returned bytes independently verified."
+  ],
+  "qualification": {
+    "packed_root_handoff": true,
+    "raw_budget_pass": true,
+    "vm_boot": true,
+    "manual_trace_write_readback": true,
+    "fresh_full_updated_recipe": true,
+    "full_16_world_and_overlay": false,
+    "automatic_loader_capture": false,
+    "automatic_kernel_capture": false,
+    "automatic_installer_capture": false,
+    "installation": false,
+    "rendered_desktop": false,
+    "physical_boot": false,
+    "reset_or_cold_power_survival": false,
+    "recovery": false,
+    "signed_repository_admission": false,
+    "framework_lifecycle_admission": false,
+    "release": false,
+    "published_asset_budget_pass": false,
+    "larger_usb_manual_trace_readback": true,
+    "fresh_full_updated_recipe_vm_boot_and_manual_readback": true
+  },
+  "project_verification": {
+    "locks_current": 8,
+    "authority": "fail: documentation authority human review stale",
+    "receipt": "fail: blocked by stale authority review",
+    "review_marker_synthesized": false
+  },
+  "publication_compression": {
+    "options": [
+      "-T0",
+      "-9"
+    ],
+    "bytes": 3144154384,
+    "sha256": "3946adcf385f628c9e2497a44ec0189896ef7a3f8394489899635989f5e57acb",
+    "source_sha256": "0a9786022f49d62377a894755f385bcdaac63341271272cbe38ffc70575f49a7",
+    "roundtrip_verified": true,
+    "asset_budget_bytes": 2147483648,
+    "asset_budget_passed": false,
+    "elapsed_seconds": 138.96
+  },
+  "larger_usb_control": {
+    "virtual_device_bytes": 8589934592,
+    "base_image_sha256": "0a9786022f49d62377a894755f385bcdaac63341271272cbe38ffc70575f49a7",
+    "base_image_unchanged": true,
+    "returned_image_sha256": "9269d8608d9d1abfee710b49fed73a790f733e53aac7c93f2304090bdad81418",
+    "mapped_files": 201,
+    "trace_partition": [
+      2,
+      6764544,
+      524288
+    ],
+    "runtime_packages_sha256": "5d020ea5e04d6344408a58bd357bebd2fd58658b0f9ccfc9476a0b0560c3301c",
+    "controller_readback": true,
+    "readonly_fat_check_status": 0,
+    "backup_gpt_not_at_last_lba_warning": true,
+    "source_backed_qemu_exit_status": 0,
+    "launcher_status": 143
+  },
+  "fresh_full_producer": {
+    "source_commit": "a5261d91c3efebf6f99f9a38e581c6bd5a687f2c",
+    "record": {
+      "schema": "daemonarchy/arm-ram-installer@1",
+      "abi": "FreeBSD:16:aarch64",
+      "world_archive_sha256": "766b856cd93e58e2f19808070046c5a9a6c97d492a4b901b676a26ce23bd64d8",
+      "kernel_sha256": "c3612c03838a7c53b75443cf2eab1ab8ad28db5b490fa8d34f57bbe03d90ccaf",
+      "kernel_set_sha256": "7b66c3e0dc4a89fe7eb8bf38de114e6aaf052dbc6d0960ee0a36158f544a9573",
+      "omarchy_package_sha256": "79cb85bb7d921384e0a8e15b03ab4016f8b133d5ed17c8125782a7ad295d062b",
+      "omarchy_version": "4.5.0_4",
+      "package_closure_manifest_sha256": "b893cefc06315492374a1bac058d949365b2969e0e2941ec71059b0e99c1e848",
+      "package_closure_inventory_sha256": "d627249843b7aa1e971a86663cd91848210fcb19ff90c46e321c4aed796f7d49",
+      "package_closure_count": 316,
+      "ram_root": {
+        "bytes": 9690742784,
+        "sha256": "496e96ca81602a341a3b956549909edd36d3b0901559bf146682680b67a50279",
+        "format": "ufs-geom-uzip",
+        "codec": "lzma",
+        "cluster_bytes": 262144,
+        "expanded_media_bytes": 9690939392,
+        "zero_padding_bytes": 196608,
+        "compressed_bytes": 3085583360,
+        "compressed_sha256": "a59e2b6312b8af9086808ac4a18e755961e3fedbcb2822a4c2235faf3fdf939d"
+      },
+      "installed_packages_sha256": "5d020ea5e04d6344408a58bd357bebd2fd58658b0f9ccfc9476a0b0560c3301c",
+      "image": {
+        "bytes": 3731898880,
+        "sha256": "85d547ae31fe3c733413493ded39a6b413fbcff4fb66307668533a5561c36e98"
+      },
+      "qualification": {
+        "assembly": true,
+        "vm_boot": false,
+        "physical_boot": false,
+        "installation": false,
+        "desktop": false,
+        "recovery": false
+      }
+    },
+    "native_command_exit": 0,
+    "scope": "Full fresh producer assembly and exact EFI/USB VM boot with default LZMA/256 KiB/two compression workers, eight vCPUs/16 GiB and manual trace-write/shutdown/readback on an 8 GiB USB device; not installed-system or automatic-capture acceptance",
+    "controller_readback": {
+      "virtual_device_bytes": 8589934592,
+      "base_image_sha256": "85d547ae31fe3c733413493ded39a6b413fbcff4fb66307668533a5561c36e98",
+      "base_image_unchanged": true,
+      "returned_image_sha256": "c2befcb9fc5415b0db4e94958c2be977fabad5024a317853ea2d8876da0464fe",
+      "mapped_files": 201,
+      "trace_partition": [
+        2,
+        6764544,
+        524288
+      ],
+      "runtime_packages_sha256": "5d020ea5e04d6344408a58bd357bebd2fd58658b0f9ccfc9476a0b0560c3301c",
+      "controller_readback": true,
+      "readonly_fat_check_status": 0,
+      "qemu_exit": 0,
+      "manual_control_pass": "ARM16_RAM_USB_PASS"
+    },
+    "source_tools_sha256": {
+      "scripts/make-arm-ram-installer.sh": "fcf5691df0698497a7a0a506fda2f63f42e8e23ca9651599c9add8b552b7d0b9",
+      "scripts/arm-package-closure.py": "e667d37a9ef3ca46ed402acb7ff36df7e5b3b565fb2019449f5cf4086861d4c7",
+      "scripts/check-arm-kernel-set.py": "7f94cd5cf2a2c6a0da4b9c36e9bc121db59bb917e222b5d7445922618af431e5",
+      "scripts/make-efi-iso.sh": "c08a07e204dc569a9daef440bc8fb5d3f5e60dea712340744bd091138ebdf9bf",
+      "scripts/make-install-trace.py": "d9b05d7bda208efd6a86b339c11352d4c1e7f40113a26324345fcdeb0303746c",
+      "tools/boottrace/stick.py": "8f4cb7b3e427a1c4f997677142188c3233f917f0a7b8fbf11b5656bd0aa76d95"
+    }
+  },
+  "solid_root_diagnostic": {
+    "scope": "Diagnostic solid-XZ measurement of the exact original UFS root; not a bootable image or supported bootstrap recipe",
+    "bytes": 2578350100,
+    "sha256": "2d53a0946c34d087f67d516b9db5c7df57a38792be12f8f0c3b0a642dbb27df8",
+    "root_sha256": "a18a53cede87a4b4ca79289688255372d785ea260e2e6115dfe0541cc034dc9a",
+    "options": [
+      "-T0",
+      "-9"
+    ],
+    "roundtrip_verified": true,
+    "elapsed_seconds": 244.81
+  }
+}

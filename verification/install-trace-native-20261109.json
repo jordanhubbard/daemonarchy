@@ -1,0 +1,93 @@
+{
+  "schema": "daemonarchy/install-trace-native-checkpoint@1",
+  "scope": "Native EFI trace storage construction and scoped USB/independent-write controls; automatic capture remains unimplemented.",
+  "worker": {
+    "os": "FreeBSD 16.0-CURRENT",
+    "architecture": "arm64/aarch64",
+    "osversion": 1600029,
+    "environment": "Disposable ARM64 KVM worker, retained 1.5.0 live root and private build volume",
+    "related_kernel_evidence": "arm-native-kernel-20261109.json"
+  },
+  "tools_sha256": {
+    "scripts/make-install-trace.py": "d9b05d7bda208efd6a86b339c11352d4c1e7f40113a26324345fcdeb0303746c",
+    "scripts/make-efi-iso.sh": "c08a07e204dc569a9daef440bc8fb5d3f5e60dea712340744bd091138ebdf9bf",
+    "tools/boottrace/stick.py": "8f4cb7b3e427a1c4f997677142188c3233f917f0a7b8fbf11b5656bd0aa76d95"
+  },
+  "native_builder": {
+    "command": "sh scripts/make-efi-iso.sh world.tar DAEMONARCHY150AARCH64 output.iso new-work BOOTAA64.EFI",
+    "world_tar_sha256": "766b856cd93e58e2f19808070046c5a9a6c97d492a4b901b676a26ce23bd64d8",
+    "pretrace_iso_sha256": "18f39abd1d0d50a7377b7ab0163c1e67feb9e1d780d5c204761f67565467d2de",
+    "output_sha256": "e36399080858dbd7d8e89e9f7cafeda80007d4e16e16a4fbf3c73c76ee79118f",
+    "output_bytes": 3294642688,
+    "kernel_sha256": "c3612c03838a7c53b75443cf2eab1ab8ad28db5b490fa8d34f57bbe03d90ccaf",
+    "loader_sha256": "8f2ac2b7f9d5beebe832b091f32ae11563cb9110992c79452eee266812c66547",
+    "exit_status": 0,
+    "both_gpt_copies_checked": true,
+    "original_iso_payload_preserved": true,
+    "trace_bytes": 268435456,
+    "trace_start_lba": 5910528,
+    "mapped_files_read_back": 201,
+    "boot_tested": false
+  },
+  "tests": {
+    "portable_integrity_and_refusal_passed": 6,
+    "native_integrity_and_refusal_passed": 6,
+    "portable_boottrace_passed": 29,
+    "portable_boottrace_skipped": 0,
+    "architecture_controls_passed": true,
+    "shellcheck_warning_or_error": false
+  },
+  "usb_control": {
+    "input_iso_sha256": "960c083d4f5c26113536a08478e8b511df43793b7ff261dfc5a90298344c97a9",
+    "assembled_sha256_before_tests": "318e17b468ec533961506104ab586bbca4ed0f3e04bd513f181b29a375ac787a",
+    "assembled_bytes": 3294642688,
+    "transport": "QEMU xHCI USB mass storage, raw writable image, EFI/KVM, four CPUs, 8 GiB RAM",
+    "first_boot": "No virtual RNG: stopped before userspace after randomdev_wait_until_seeded messages; terminated and original image digest unchanged. Cause not established.",
+    "second_boot": "Same image with virtio-rng-pci added: reached userspace and a local root console.",
+    "root": "cd9660 read-only ISO9660 label over da0",
+    "trace_partition": "da0p2, GPT DATRACE, FAT32, 256 MiB",
+    "same_medium_writable_mount": false,
+    "write_mount_error": "mount_msdosfs: /dev/da0p2: Operation not permitted",
+    "same_medium_readonly_mount": true,
+    "securelevel": -1,
+    "geom_debugflags": 0,
+    "inference": "The shared raw-disk root access prevents the sibling writable mount; an independently attached filesystem from the same image writes successfully. No global GEOM protection override was applied.",
+    "shutdown": "Orderly poweroff after diagnostic controls"
+  },
+  "independent_write_control": {
+    "method": "Attach the tested image to the separate retained-root FreeBSD worker; verify allocated virtual disk serial before selecting its trace partition",
+    "mount_sync_write_unmount": true,
+    "fsck_msdosfs_readonly_status": 0,
+    "readonly_remount_and_readback": true,
+    "device_detached_before_controller_readback": true,
+    "controller_file": "DUMPS/WRITECTRL/RESULT.TXT",
+    "controller_contents": "independent native FreeBSD FAT32 write and remount control\n",
+    "controller_raw_map_files": 201,
+    "artifact_sha256_after_write": "84040e72d87567c7abe22dafe692384e22b44775341594101f9bb9a1df4effac"
+  },
+  "qualification": {
+    "automatic_loader_capture": false,
+    "automatic_kernel_capture": false,
+    "automatic_installer_capture": false,
+    "same_medium_ram_root_persistence": false,
+    "amd64_bios_layout": false,
+    "physical_hardware": false,
+    "reset_or_power_loss": false,
+    "lifecycle_receipt_admitted": false
+  },
+  "limitations": [
+    "Both images retain the old live root and are not the complete current-Omarchy RAM installer.",
+    "The end-to-end builder artifact and the booted append-control artifact have distinct identities; only the latter received USB boot and independent write tests.",
+    "Independent filesystem persistence does not establish default same-medium boot/install capture.",
+    "Default userspace persistence needs a qualified root arrangement that releases the installation disk, or another proven layout.",
+    "Raw logs and screenshots remain private; these development results are not lifecycle receipts."
+  ],
+  "private_evidence_sha256": {
+    "trace-native-r1.log": "4003047c4fecd067fbda2d13d888a5b014f726bc6584ec1a50ef883e73655e25",
+    "trace-builder-r1.log": "32b4da6c10ef38755429592399cdb755ac204f61c9b5a04a91de5187c6d9ebb2",
+    "trace-builder-r2.log": "3dcd28add0cb4580df325cb655c790502065c7bab546aa208b040bfc77d4dd04",
+    "trace-control/serial.log": "85ad1438f3642a348e47b5ae87590312e8ca5a63f5bd25553517eff428afb5ba",
+    "trace-control-r2/serial.log": "fb3088b58c7f8894fb0fecccaf8b32657d35f067c828663f78736eebcbe5b8ec",
+    "trace-independent-write.log": "69c9135a10666db118710862cfbe8d9a26453c23de6efe33a69bd79296da94a0"
+  }
+}

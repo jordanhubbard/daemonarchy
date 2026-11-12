@@ -1,0 +1,107 @@
+{
+  "schema": "daemonarchy/sync-001-development@1",
+  "source_candidate": {
+    "pr": "https://github.com/jordanhubbard/daemonarchy-src/pull/82",
+    "commit": "af55b6f9042e15b635e90926d476e7cbeb48a069",
+    "upstream_revision": "d0fd70983b6b93d4a6a4671457619eb34786b38d",
+    "full_tree_merge_base": "8721f68642c392afa0413eafa3cefde66d65b6eb",
+    "vendor_root_common_base": "a8dfdb79eb008614ad3674feabcb0a25ca93abba",
+    "resolved_files": [
+      "sys/dev/nvme/nvme_pci.c",
+      "sys/dev/nvme/nvme_private.h"
+    ],
+    "resolution": "Keep owned ACK-each-completion flag 0x2000 and new upstream IGNORE_RAB at distinct 0x4000; T2 gets both. Keep upstream NVMe/API changes. Twelve recorded ARM/trace inputs remain byte-identical.",
+    "source_evidence": "https://github.com/jordanhubbard/daemonarchy-src/blob/ca6c32213c25d0950dc4be1a9af3c543bd2a3468/verification/source-upstream-sync-20261109.json",
+    "native_world_kernel_build_started": true,
+    "native_build_dependency": "The first build was interrupted before any completed phase was established; original disks and recovery evidence remain preserved. A clean independent r2 ARM64 build is now running with a fresh output disk and dedicated VM/capture services. No completed phase or artifact acceptance is claimed. See verification/native-arm-source-build-r2-20261110.json.",
+    "import_commit": "ca6c32213c25d0950dc4be1a9af3c543bd2a3468"
+  },
+  "ports_preflight": {
+    "owned_head": "48561eaaf50086b2a6f469e307f26d1292024de6",
+    "upstream_head": "5dcb3b799d588df1559edc4d0dfeb028b64ef70f",
+    "merge_bases": [
+      "a7c9a97bae26bf342e1bffb2273b7ef331cdb289"
+    ],
+    "conflict_messages": 457,
+    "import_performed": false,
+    "failed_merge_plan_retained": true,
+    "candidate_worktree_unchanged": true
+  },
+  "scope": "Source and ports upstream refresh candidates with scoped native controls; no 1.6 release item complete",
+  "remaining": [
+    "Complete native amd64 metadata checks and both-architecture package/desktop acceptance for the reviewed ports import; original conflict preflight remains historical evidence",
+    "Review current Omarchy desktop and compatibility delta",
+    "Complete an unprivileged native ARM64 aggregate source build",
+    "Exact new world/kernel/modules/sets, package and media rebuilds for both architectures",
+    "Signed final inputs, VM/physical desktop/install/update/recovery acceptance",
+    "Framework authority/lifecycle/receipt acceptance"
+  ],
+  "release_qualified": false,
+  "native_arm_controller": {
+    "source_evidence": "https://github.com/jordanhubbard/daemonarchy-src/blob/af55b6f9042e15b635e90926d476e7cbeb48a069/verification/native-arm-controller-20261109.json",
+    "linux_cases": 132,
+    "linux_pass": 127,
+    "linux_native_only_skips": 5,
+    "native_freebsd_16_arm64_cases": 29,
+    "native_pass": 29,
+    "native_skips": 0,
+    "clean_pinned_cli_plan": {
+      "source_commit": "af55b6f9042e15b635e90926d476e7cbeb48a069",
+      "source_tree": "b5bbcc0fe5f8fa1b1f3653b2a4d692f414d64850",
+      "target": "arm64",
+      "target_arch": "aarch64",
+      "kernel": "GENERIC",
+      "upstream_base": "d0fd70983b6b93d4a6a4671457619eb34786b38d",
+      "plan_identity": "95772680f75ebf6b82bbf57c64619105e0f1420382646617b825ec91a342e43d"
+    },
+    "actual_native_root_execution_refused": true,
+    "output_created_by_root_refusal": false,
+    "original_amd64_plan_objects_preserved": true,
+    "aggregate_build_started": true,
+    "build_observation": "verification/native-arm-source-build-20261109.json",
+    "build_recovery_observation": "verification/native-arm-source-build-recovery-20261110.json",
+    "current_build_observation": "verification/native-arm-source-build-r2-20261110.json"
+  },
+  "ports_candidate": {
+    "pr": "https://github.com/jordanhubbard/daemonarchy-ports/pull/56",
+    "commit": "2f98c787cf7ac28ea815b843597096ba01aefa89",
+    "merge_commit": "a128bcefc8d1e7708d112753a17c3c507c04bbc3",
+    "owned_parent": "48561eaaf50086b2a6f469e307f26d1292024de6",
+    "upstream_parent": "5dcb3b799d588df1559edc4d0dfeb028b64ef70f",
+    "code_tree": "5c40f49e6e53c55a5fcba80e15890e0a89803db0",
+    "evidence": "https://github.com/jordanhubbard/daemonarchy-ports/blob/d75b96ea947537362867a1df97529d12d04a86c8/verification/ports-upstream-sync-20261110.json",
+    "draft": true,
+    "unmerged_paths": 0,
+    "downstream_delta_paths": 229,
+    "protected_history_paths": 390,
+    "unexpected_delta_paths": 0,
+    "categories_checked": 63,
+    "category_origin_entries_checked": 35528,
+    "missing_category_origins": 0,
+    "native_arm64_current_origins_evaluated": 35,
+    "native_arm64_make_failures": 0,
+    "explicit_amd64_only_origins": 2,
+    "declared_direct_dependency_origins": 300,
+    "missing_direct_dependency_origins": 0,
+    "historical_omarchy_desktop_probe_failure_retained": true,
+    "controller_cases": 24,
+    "controller_pass": 23,
+    "controller_native_only_skips": 1,
+    "real_aquamarine_patch_controls_pass": 4,
+    "package_build_or_desktop_qualified": false,
+    "framework_validation": "Global CLI 0a267a66 rejects scale_limits; developer CLI 8b83f5b9 parses it and reaches stale human authority review. Scale limits and lifecycle pins unchanged; declared review branch corrected to owned main.",
+    "upstream_whitespace_preserved": true,
+    "native_aquamarine_observation": "https://github.com/jordanhubbard/daemonarchy-ports/blob/2f98c787cf7ac28ea815b843597096ba01aefa89/verification/native-aquamarine-20261110.json",
+    "native_aquamarine": {
+      "compilation_exit": 0,
+      "tests_pass": 3,
+      "tests_fail": 1,
+      "full_upstream_suite_exit": 1,
+      "failed_test": "simpleWindow",
+      "failure": "No running Wayland compositor; actual graphics fixture remains required",
+      "package_phase_run": false,
+      "runtime_worker": "Installed-baseline FreeBSD ARM64 worker, not newly compiling world",
+      "release_qualified": false
+    }
+  }
+}

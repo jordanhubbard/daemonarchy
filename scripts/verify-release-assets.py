@@ -10,6 +10,7 @@ import argparse
 import hashlib
 import importlib.util
 import json
+import lzma
 import os
 from pathlib import Path
 import re
@@ -90,6 +91,100 @@ def hwtrace_assets(record):
 
 def checked_images(record):
     return iso_assets(record) + hwtrace_assets(record)
+
+
+
+# A future release can select a split transport explicitly. The logical image
+# keeps its normal name; every physical download remains pinned in assets.
+RAW_IMAGE_LIMIT = 3758096384
+PUBLIC_ASSET_LIMIT = 2147483648
+
+
+def image_transports(record):
+    if "image_transports" not in record:
+        return {}
+    if release_tuple(record["version"]) < (1, 6, 0):
+        raise ValueError("Split image transports begin with 1.6.0")
+    transports = record["image_transports"]
+    if not isinstance(transports, dict) or not set(transports) <= set(checked_images(record)):
+        raise ValueError("Image transports must select declared logical images")
+    for image, transport in transports.items():
+        if (not image.endswith(".xz") or not isinstance(transport, dict)
+                or set(transport) != {"format", "manifest", "parts", "raw_image"}
+                or transport["format"] != "xz-parts@1"):
+            raise ValueError("Invalid split image transport")
+        raw_name = image.removesuffix(".xz")
+        if transport["manifest"] != raw_name + ".parts.json.xz":
+            raise ValueError("Split manifest must name the declared image")
+        parts = transport["parts"]
+        if (not isinstance(parts, list) or not 1 <= len(parts) <= 64
+                or parts != [f"{raw_name}.part{n:04d}.xz" for n in range(1, len(parts) + 1)]):
+            raise ValueError("Split image parts must be complete and canonically ordered")
+        raw = transport["raw_image"]
+        if (not isinstance(raw, list) or len(raw) != 2 or type(raw[0]) is not int
+                or not 0 < raw[0] < RAW_IMAGE_LIMIT or not isinstance(raw[1], str)
+                or not raw[1].startswith("sha256:") or not HEX.fullmatch(raw[1][7:])):
+            raise ValueError("Split raw image identity is invalid or exceeds the unchanged media budget")
+    return transports
+
+
+def image_asset_names(record):
+    transports = image_transports(record)
+    names = []
+    for image in checked_images(record):
+        if image in transports:
+            transport = transports[image]
+            manifest = transport["manifest"]
+            names.extend([manifest, manifest + ".sha256", *transport["parts"]])
+        else:
+            names.extend([image, image + ".sha256"])
+    return names
+
+
+def split_verifier():
+    spec = importlib.util.spec_from_file_location("daemonarchy_split_media", ROOT / "scripts/split-media.py")
+    if spec is None or spec.loader is None:
+        raise ValueError("Split media verifier is unavailable")
+    module = importlib.util.module_from_spec(spec)
+    spec.loader.exec_module(module)
+    return module
+
+
+def verify_split_image(record, directory, image):
+    transport = image_transports(record)[image]
+    manifest = transport["manifest"]
+    assets = record["assets"]
+    module = split_verifier()
+    observed = module.stream_image(directory / manifest, assets[manifest][1][7:])
+    raw = observed["image"]
+    if (raw["name"] != image.removesuffix(".xz")
+            or [raw["bytes"], "sha256:" + raw["sha256"]] != transport["raw_image"]
+            or [p["name"] for p in observed["parts"]] != transport["parts"]):
+        raise ValueError("Split manifest differs from the approved logical image")
+    for part in observed["parts"]:
+        if assets[part["name"]] != [part["bytes"], "sha256:" + part["sha256"]]:
+            raise ValueError("Split part differs from the approved release asset")
+    return observed
+
+
+
+def staged_image_transport(directory, image, manifest_sha256):
+    """Authoring only: load explicitly pinned metadata; verify bytes after hashing assets."""
+    module = split_verifier()
+    manifest = image.removesuffix(".xz") + ".parts.json.xz"
+    observed = module.load_manifest(directory / manifest, manifest_sha256)
+    if observed["image"]["name"] != image.removesuffix(".xz"):
+        raise ValueError("Split manifest names a different logical image")
+    return {"format": "xz-parts@1", "manifest": manifest,
+            "parts": [p["name"] for p in observed["parts"]],
+            "raw_image": [observed["image"]["bytes"], "sha256:" + observed["image"]["sha256"]]}
+
+
+def current_image(image, transport, product, arch):
+    manifest = transport["manifest"]
+    return {"type": product, "arch": arch, "asset": manifest, "checksum_asset": manifest + ".sha256",
+            "transport": {"format": transport["format"], "logical_asset": image,
+                          "parts": list(transport["parts"]), "raw_image": list(transport["raw_image"])}}
 
 
 def unique_pairs(pairs):
@@ -191,7 +286,7 @@ def read_record(path):
     if not isinstance(assets, dict):
         raise ValueError("Release asset map is missing")
     prefix = f"daemonarchy-{version}"
-    expected = {name for image in checked_images(record) for name in (image, image + ".sha256")}
+    expected = set(image_asset_names(record))
     expected |= {
         f"{prefix}-boot.txz",
         f"{prefix}-boot.txz.sig",
@@ -209,6 +304,12 @@ def read_record(path):
         size, identity = entry
         if type(size) is not int or size <= 0 or not isinstance(identity, str) or not identity.startswith("sha256:") or not HEX.fullmatch(identity[7:]):
             raise ValueError(f"Invalid asset size or digest: {name}")
+    for transport in image_transports(record).values():
+        for name in transport["parts"]:
+            if assets[name][0] >= PUBLIC_ASSET_LIMIT:
+                raise ValueError("Split part exceeds the unchanged public-asset budget")
+        if assets[transport["manifest"]][0] > 1024 * 1024 or assets[transport["manifest"] + ".sha256"][0] > 512:
+            raise ValueError("Split manifest or checksum exceeds its metadata budget")
     closure_feeds(record)
     return record, certificate
 
@@ -238,7 +339,11 @@ def verify(record_path, directory, closure_directory=None):
         for name, entry in record["assets"].items()
     }
     prefix = f"daemonarchy-{record['version']}"
+    transports = image_transports(record)
     for iso in checked_images(record):
+        if iso in transports:
+            verify_split_image(record, directory, iso)
+            continue
         checksum = paths[iso + ".sha256"].read_bytes()
         if checksum != f"{record['assets'][iso][1][7:]}  {iso}\n".encode():
             raise ValueError(f"ISO checksum file differs from the verified image: {iso}")
@@ -291,6 +396,17 @@ def verify_published(record):
             or release.get("id") != latest.get("id")):
         raise ValueError("Published release is not the exact stable latest selection")
     observed = release.get("assets")
+    # Four split image products can exceed the release object's inline listing.
+    if isinstance(observed, list) and (len(observed) >= 100 or len(record["assets"]) > 100):
+        observed, page = [], 1
+        while True:
+            chunk = github(f"releases/{release.get('id')}/assets?per_page=100&page={page}")
+            if not isinstance(chunk, list):
+                raise ValueError("Published asset listing is invalid")
+            observed += chunk
+            if len(chunk) < 100:
+                break
+            page += 1
     if not isinstance(observed, list) or len(observed) != len(record["assets"]):
         raise ValueError("Published asset count differs")
     assets = {entry.get("name"): entry for entry in observed if isinstance(entry, dict)}
@@ -353,7 +469,7 @@ if __name__ == "__main__":
         if args.published:
             verify_published(selection)
     except (ValueError, OSError, KeyError, TypeError, json.JSONDecodeError,
-            subprocess.CalledProcessError) as error:
+            subprocess.CalledProcessError, lzma.LZMAError) as error:
         parser.exit(1, f"Release asset verification failed: {error}\n")
     suffix = " and published stable release" if args.published else ""
     print(f"Verified {len(selection['assets'])} staged assets and signed boot bundle{suffix} for {selection['tag']}")

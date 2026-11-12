@@ -1,0 +1,137 @@
+{
+  "schema": "daemonarchy/split-media-development@1",
+  "observed_utc": "2026-11-10T03:17:36.160210+00:00",
+  "status": "full-retained-image-transport-pass-release-integration-in-development",
+  "scope": "Bounded transport preparation; publication-format integration and final image qualification remain open",
+  "helper_sha256": "9972893dc0f95966fb66d80a41156a92961f7eba173c5784e4c0f559e14f1184",
+  "controller_tests": {
+    "cases": 30,
+    "pass": 30,
+    "fail": 0,
+    "skip": 0,
+    "ci_registered": true,
+    "ci_result": "pass at e73cddfdbacf47e28623a10050ad586c7a379114; publication integration CI pending"
+  },
+  "documentation_tests": {
+    "lifecycle_cases": 4,
+    "release_sync_cases": 13,
+    "pass": 17
+  },
+  "lock_review": {
+    "old_release_revision": "c8d66fe11ca51224e5f9aee4f586dc9724755bbd67733b6cb25b92483a55f011",
+    "new_release_revision": "7b57457bb46c520fdfd2fc566dd4b0151c7fae76b3f09488d924a223d8e7c7e2",
+    "acceptance_sha256": "01d1dae6b452ed525923bf728db8fa6d1013b410df8670ea0224fb7a26250863",
+    "nodes": 8,
+    "edges": 13,
+    "independent_provider_nodes_unchanged": true,
+    "dependency_edges_unchanged_after_root_revision_substitution": true,
+    "allowed_changes": [
+      "Release acceptance identity",
+      "Release revision and its references",
+      "Derived release target selection and requirement-satisfaction identities"
+    ],
+    "runtime_or_receipt_admission": false
+  },
+  "literate_verify": {
+    "exit": 1,
+    "locks": "8 current",
+    "authority": "fail-human-review-marker-stale",
+    "receipt": "fail-human-review-marker-stale",
+    "review_marker_unchanged": true
+  },
+  "full_image_control": {
+    "status": "pass",
+    "controller": "Linux AArch64 allocated build controller",
+    "expected_input": {
+      "bytes": 3732947456,
+      "sha256": "2317fd7e2b47d4510e4fff882ecf7cb011d3dc57cf1b5e1e9b368438d49c27e3"
+    },
+    "source_checkpoint": "verification/normal-full-arm-trace-20261109.json",
+    "source_scope": "Retained 1.5.0 installer/world with native kernel/EFI and Omarchy 4.5.0_4; not refreshed CURRENT final media",
+    "raw_budget_exit": 0,
+    "raw_budget_bytes_exclusive": 3758096384,
+    "raw_bytes_per_part": 1073741824,
+    "asset_budget_bytes_exclusive": 2147483648,
+    "expected_parts": 4,
+    "trusted_manifest_pin_required": true,
+    "process_live_verified": false,
+    "same_process_preserved": true,
+    "controller_memory_cap_bytes": 536870912,
+    "controller_nice": 19,
+    "controller_runtime_limit_seconds": 3600,
+    "runtime_limit_note": "Extended only this new lab deadline using a runtime-only unit override after observing encoding throughput; no process restarted and byte/memory gates unchanged",
+    "full_roundtrip_complete": true,
+    "terminal_exit": 0,
+    "manifest": "current-normal-r1.iso.parts.json.xz",
+    "manifest_sha256": "ce0598d5b0f7e40e8f3a55dc11a83d18573ea193690cfaf9bc13d6d229b094ee",
+    "parts": [
+      {
+        "bytes": 787158808,
+        "name": "current-normal-r1.iso.part0001.xz",
+        "raw_bytes": 1073741824,
+        "raw_sha256": "c3036dbae89267f8b5af6b5ece103cad04dd142a6e7e22e2eb69fec057e2ca4f",
+        "sha256": "7ab891f387d0af8349c47d75f291eda0d44da610d91c0d72541debb40d82adf9"
+      },
+      {
+        "bytes": 1062459724,
+        "name": "current-normal-r1.iso.part0002.xz",
+        "raw_bytes": 1073741824,
+        "raw_sha256": "919392be2aeeb73d262c4ca3ad02548978f0b1e736778f56f21980201b4150e4",
+        "sha256": "cfc3175ceaa685992defc6c5757dcb7aaf0b93bffa6ff80677858a03bedd19cc"
+      },
+      {
+        "bytes": 1069357432,
+        "name": "current-normal-r1.iso.part0003.xz",
+        "raw_bytes": 1073741824,
+        "raw_sha256": "702de3ac7027438d2c5fbd6198f6e4f9e02756a8d6001efba53ea8e521320dff",
+        "sha256": "05ca20e64d23103fc5e67b853a48d2f3f237027bd95a4a6cc472a550793c8c9d"
+      },
+      {
+        "bytes": 241422940,
+        "name": "current-normal-r1.iso.part0004.xz",
+        "raw_bytes": 511721984,
+        "raw_sha256": "32d5b181f15743a29189335c2d761f9405bc31fa96cc2d0c7c6f7b04cd8bd0be",
+        "sha256": "e7a11cd8692bc0521ce820a7ea1a23000edc98585209663733c026d5ab9abf52"
+      }
+    ],
+    "verify_exit": 0,
+    "join_exit": 0,
+    "reconstructed_sha256": "2317fd7e2b47d4510e4fff882ecf7cb011d3dc57cf1b5e1e9b368438d49c27e3",
+    "source_rechecked_sha256": "2317fd7e2b47d4510e4fff882ecf7cb011d3dc57cf1b5e1e9b368438d49c27e3",
+    "source_unchanged": true,
+    "elapsed_seconds": 2406.4,
+    "completed_utc": "2026-11-10T03:11:59.569068+00:00"
+  },
+  "qualification": {
+    "format_controls": true,
+    "full_image_roundtrip": true,
+    "release_verifier_integration": false,
+    "signed_final_media": false,
+    "boot_install_desktop_recovery": false,
+    "physical_hardware": false,
+    "lifecycle_receipt": false,
+    "release": false,
+    "staged_release_verifier_controls": true,
+    "authoring_and_published_metadata_controls": true
+  },
+  "remaining": [
+    "Complete mastering/QA/device-writing integration and qualify actual published split assets; staged authoring/current/verifier controls are development evidence",
+    "Produce and qualify matched final ARM and amd64 images from selected source and signed closures",
+    "Complete native/VM/per-board boot, installation, desktop, update/recovery and human/lifecycle gates"
+  ],
+  "release_integration_controls": {
+    "real_codec_refusal": 30,
+    "release_record_signature_and_closure_boundaries": 18,
+    "mixed_media_authoring_current_and_documentation": 14,
+    "historical_asset_names": 51,
+    "historical_prepare_fill": 8,
+    "documentation_lifecycle": 4,
+    "documentation_release_sync": 13,
+    "release_refusal": 4,
+    "version_sync": 4,
+    "result": "pass",
+    "scope": "controller controls; mocked remote metadata is not published-release evidence",
+    "new_controls_ci_registered": true,
+    "total": 146
+  }
+}

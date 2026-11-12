@@ -59,6 +59,17 @@ on:
       - 'scripts/image-architecture.sh'
       - 'origins.sh'
       - 'scripts/make-efi-iso.sh'
+      - 'scripts/make-ram-iso.sh'
+      - 'scripts/live-root-metadata.py'
+      - 'tests/live-root-metadata.py'
+      - 'scripts/stage-live-trace.py'
+      - 'tests/live-trace-stage.py'
+      - 'tools/boottrace/daemonarchy_trace'
+      - 'overlay/usr/local/libexec/daemonarchy-installer/boot-trace'
+      - 'tests/ram-live-image.py'
+      - 'scripts/make-install-trace.py'
+      - 'tests/install-trace-media.py'
+      - 'tests/normal-boot-trace.py'
       - 'scripts/check-gpu-packages.sh'
       - 'pkg-repo.sh'
       - 'overlay/usr/local/libexec/daemonarchy-installer/disk-layout'
@@ -97,6 +108,20 @@ on:
       - 'build-hwtrace-image.sh'
       - 'tools/hwtrace/**'
       - 'tools/boottrace/stick.py'
+      - 'tools/boottrace/boot-medium.py'
+      - 'tests/boot-medium.py'
+      - 'tests/boot-medium-gpt.py'
+      - 'tests/boot-medium-fat.py'
+      - 'tests/boot-medium-native.py'
+      - 'tests/boot-medium-capture.py'
+      - 'tests/installer-evidence.py'
+      - 'tests/session-log.py'
+      - 'tests/live-media-target.py'
+      - 'tools/boottrace/session-log.py'
+      - 'tools/boottrace/capture-medium.py'
+      - 'tools/boottrace/installer-evidence.py'
+      - 'tools/boottrace/observe-medium.py'
+      - 'tools/boottrace/fat-volume.py'
       - 'tests/hwtrace-net.sh'
       - 'tests/hwtrace-capture.sh'
       - 'tests/hwtrace-pi4-simulator.py'
@@ -164,6 +189,17 @@ on:
       - 'scripts/image-architecture.sh'
       - 'origins.sh'
       - 'scripts/make-efi-iso.sh'
+      - 'scripts/make-ram-iso.sh'
+      - 'scripts/live-root-metadata.py'
+      - 'tests/live-root-metadata.py'
+      - 'scripts/stage-live-trace.py'
+      - 'tests/live-trace-stage.py'
+      - 'tools/boottrace/daemonarchy_trace'
+      - 'overlay/usr/local/libexec/daemonarchy-installer/boot-trace'
+      - 'tests/ram-live-image.py'
+      - 'scripts/make-install-trace.py'
+      - 'tests/install-trace-media.py'
+      - 'tests/normal-boot-trace.py'
       - 'scripts/check-gpu-packages.sh'
       - 'pkg-repo.sh'
       - 'overlay/usr/local/libexec/daemonarchy-installer/disk-layout'
@@ -202,6 +238,20 @@ on:
       - 'build-hwtrace-image.sh'
       - 'tools/hwtrace/**'
       - 'tools/boottrace/stick.py'
+      - 'tools/boottrace/boot-medium.py'
+      - 'tests/boot-medium.py'
+      - 'tests/boot-medium-gpt.py'
+      - 'tests/boot-medium-fat.py'
+      - 'tests/boot-medium-native.py'
+      - 'tests/boot-medium-capture.py'
+      - 'tests/installer-evidence.py'
+      - 'tests/session-log.py'
+      - 'tests/live-media-target.py'
+      - 'tools/boottrace/session-log.py'
+      - 'tools/boottrace/capture-medium.py'
+      - 'tools/boottrace/installer-evidence.py'
+      - 'tools/boottrace/observe-medium.py'
+      - 'tools/boottrace/fat-volume.py'
       - 'tests/hwtrace-net.sh'
       - 'tests/hwtrace-capture.sh'
       - 'tests/hwtrace-pi4-simulator.py'
@@ -243,6 +293,22 @@ jobs:
           bash -n overlay/usr/local/libexec/daemonarchy-installer/disk-layout overlay/usr/local/libexec/daemonarchy-installer/gpu-config
           sh tests/package-repository.sh
           bash tests/image-architecture.sh
+          python3 tests/install-trace-media.py -v
+          python3 tests/normal-boot-trace.py -v
+          python3 tests/boot-medium.py
+          python3 tests/boot-medium-gpt.py -v
+          python3 tests/boot-medium-fat.py -v
+          python3 tests/boot-medium-native.py -v
+          python3 tests/boot-medium-capture.py -v
+          python3 tests/installer-evidence.py -v
+          python3 tests/session-log.py -v
+          sh -n scripts/make-ram-iso.sh
+          python3 tests/live-root-metadata.py -v
+          python3 tests/ram-live-image.py -v
+          python3 tests/live-trace-stage.py -v
+          for script in tools/boottrace/daemonarchy_trace overlay/usr/local/libexec/daemonarchy-installer/boot-trace scripts/make-arm-ram-installer.sh tests/live-image-runtime.sh; do
+            sh -n "$script"
+          done
       - name: Measured installer progress and completion controls
         env:
           PYTHONDONTWRITEBYTECODE: '1'
@@ -254,6 +320,7 @@ jobs:
           sh -n overlay/usr/local/libexec/daemonarchy-installer/sound overlay/usr/local/libexec/daemonarchy-installer/charm overlay/usr/local/share/daemonarchy-installer/greeting/daemonarchy_greeting
           for view in install-views pkg-events; do python3 -c 'import ast, sys; ast.parse(open(sys.argv[1]).read())' "overlay/usr/local/libexec/daemonarchy-installer/$view"; done
           command -v tmux >/dev/null || sudo apt-get install -y tmux
+          python3 tests/live-media-target.py -v
           python3 tests/installer-progress.py
           bash tests/installer-charm.sh
           bash tests/install-failed.sh
@@ -278,6 +345,7 @@ jobs:
         env:
           PYTHONDONTWRITEBYTECODE: '1'
         run: |
+          sudo apt-get install -y -q gdisk dosfstools mtools
           sh -n build-hwtrace-image.sh tools/hwtrace/rc tools/hwtrace/net.sh
           sh tests/hwtrace-net.sh
           sh tests/hwtrace-capture.sh
@@ -286,7 +354,7 @@ jobs:
           python3 tests/hwtrace-pi4-usb-network.py -v
           python3 tests/hwtrace-pi4-uefi-simulator.py -v
           python3 tests/pi5-bootstrap.py -v
-          python3 tests/boottrace-tools.py Stick.test_keys_add_replace_and_refuse_private Stick.test_network_reports_the_address -v
+          python3 tests/boottrace-tools.py -v
       - name: Offline MacBook firmware sources and image size budgets
         env:
           PYTHONDONTWRITEBYTECODE: '1'

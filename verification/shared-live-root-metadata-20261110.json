@@ -1,0 +1,47 @@
+{
+  "schema": "daemonarchy/live-root-metadata-checkpoint@1",
+  "scope": "Shared archive-root admission for ARM and generic RAM-root authoring; no new complete image or release acceptance.",
+  "source_parent": "92a5e116864ff45552340af1320a246804768708",
+  "source_tools_sha256": {
+    "scripts/live-root-metadata.py": "ce0ded0c3dd60da7b08bae9e5c518bc58be542a0f11b56003b4acce16f47e4af",
+    "scripts/make-ram-iso.sh": "fda1bf85e56423bbdd58a1e0c670f2fff6fe0097b3be8ca64aad9d20481487fe",
+    "scripts/make-arm-ram-installer.sh": "75196bd40f48806a726e3610f6e4ac02ba463bcb3d39b5a00a376d40e838e03d",
+    "tests/live-root-metadata.py": "3fcde4db896f2bb0bb0687a18cf6db1eb84998f138bdc914e0d376f8b71fe320",
+    "tests/ram-live-image.py": "bc12fc671135835b086bcc30e8783e1c22313c4a3955e5d3f94c9abb73552f78"
+  },
+  "native_worker": {
+    "release_and_architecture": "16.0-CURRENT arm64",
+    "osreldate": 1600031,
+    "uid": 0
+  },
+  "native_controls": {
+    "root_metadata_groups_passed": 3,
+    "ram_image_admission_groups_passed": 4,
+    "ram_image_fault_subcases": 7,
+    "skipped": 0,
+    "final_root_permissions": [
+      "0555",
+      "0755"
+    ],
+    "archive_group_preserved": 1002,
+    "native_tar_extraction": true,
+    "missing_or_invalid_root_refused": true,
+    "symlink_inputs_and_staging_refused": true,
+    "native_log_sha256": "3708eb474997fb30fe2331c2f1a90f0c00490477e9d35dd9957bcfc86088aee7"
+  },
+  "retained_failure": {
+    "first_run": "Root helper tests passed; RAM-image tests failed because test transfer omitted iso-stage.sh.",
+    "correction": "Transfer the unchanged required shell helper; repeat tests using a fresh log.",
+    "failed_log_sha256": "02cf6dee067e02ec15e04baf4020c7e57eb9029ef2add1c1385e48dc56b15bcc"
+  },
+  "qualification": {
+    "native_metadata_controls": true,
+    "full_arm_image_assembly": false,
+    "vm_boot": false,
+    "installation": false,
+    "desktop": false,
+    "physical": false,
+    "sdk": false,
+    "release": false
+  }
+}

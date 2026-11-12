@@ -1,0 +1,46 @@
+{
+  "schema": "daemonarchy/native-amd64-build-continuation@1",
+  "source_revision": "84d608a1100eb51c0ae5284cacfc20f823c5f643",
+  "plan_identity": "0e543deb84242256b6e28588fd302d4b56e3f9a84a5f9c3bcd52634a2ac1a7d7",
+  "second_attempt": {
+    "status": "failed",
+    "wrapper_exit": 1,
+    "phase": {
+      "elapsed_seconds": 18000.345,
+      "exit": -1,
+      "log": "logs/buildworld-2.log",
+      "log_sha256": "f3ac3d9fa77fd7c57e504acae2bbecd679447fee261befd79acccf57cd8bd167",
+      "name": "buildworld"
+    },
+    "reason": "confirmed native buildworld phase timeout; no successful phase"
+  },
+  "continuation": {
+    "fresh_overlay": true,
+    "previous_vm_clean_exit": 0,
+    "previous_disk_seal_retained_privately": true,
+    "exact_plan_equal": true,
+    "source_view": "read-only nullfs",
+    "worker_kernel_osversion": 1600029,
+    "compiler": "FreeBSD clang 21.1.8",
+    "cpus": 4,
+    "guest_memory_gib": 12,
+    "memory_limit_gib": 16,
+    "minimum_free_gib": 80,
+    "phase_timeout_seconds": 43200,
+    "vm_runtime_seconds": 50400,
+    "global_controller_timeout_seconds": 48600,
+    "state": "live native buildworld attempt 3; not complete"
+  },
+  "worker_recovery": {
+    "sshd_enable": "YES",
+    "read_only_source_remounted": true,
+    "console_authentication": "existing private lab credential; no credential retained in authority"
+  },
+  "qualification": {
+    "native_world_built": false,
+    "canonical_lifecycle": false,
+    "final_CURRENT_media": false,
+    "release": false
+  },
+  "observed_utc": "2026-11-10T18:14:49.468439+00:00"
+}

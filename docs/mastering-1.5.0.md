@@ -1,4 +1,9 @@
+<!-- release-sync: historical -->
 # Mastering notes for 1.5.0
+
+This records the historical 1.5.0 mastering cycle. Use [HACKING.md](https://github.com/jordanhubbard/daemonarchy/blob/main/HACKING.md)
+for the current release procedure and [release/current.json](../release/current.json)
+for the published release identity.
 
 What changed in how an amd64 release image is mastered after 1.4.1, so the 1.5.0 run
 starts from it. The steps themselves are in [mastering-1.4.1.md](mastering-1.4.1.md).
@@ -74,9 +79,9 @@ image pins the 1.4.2-named feeds. The names below are the 1.5.0 ones.
    image from the verified amd64 ISO (`master-release.sh hwtrace`): it extracts the ISO's
    kernel, `loader_lua.efi` and `boot/lua` (without `brand-daemonarchy.lua` and
    `local.lua`), runs `build-hwtrace-image.sh -Z`, and copies
-   `daemonarchy-hwtrace-1.5.1-amd64.img.xz` and its `.sha256` into `ASSETS_DIR`. Rerun it
+   `daemonarchy-hwtrace-1.5.0-amd64.img.xz` and its `.sha256` into `ASSETS_DIR`. Rerun it
    if the ISO is rebuilt, so the published image's provenance is the final ISO. The arm64
-   trace image `daemonarchy-hwtrace-1.5.1-aarch64.img.xz` (and its `.sha256`) is built the same
+   trace image `daemonarchy-hwtrace-1.5.0-aarch64.img.xz` (and its `.sha256`) is built the same
    way from the verified aarch64 ISO and also goes into `ASSETS_DIR`.
 10. **QEMU QA** against the public URLs from a workstation (`master-release.sh qa`, with the
     config's own `WORK` and a `QA_DIR` of its own). Count `[FreeBSD]` in the install log: it

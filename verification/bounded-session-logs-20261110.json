@@ -1,0 +1,270 @@
+{
+  "schema": "daemonarchy/bounded-session-log-evidence@1",
+  "source_parent": "58b15ed710dbca85d3b6f0800721286819c06bb6",
+  "source_sha256": {
+    "scripts/make-install-trace.py": "5c5878a100fc15347003402873f0ee2b04190d2c6cea9aa96d8f636d7ae4deb7",
+    "tools/boottrace/fat-volume.py": "fbcf7eac21fbebce41bb47575829001f346ebc8ff5482ca1a906298c4e2ab11b",
+    "tools/boottrace/capture-medium.py": "e2b6d1fa6d5a370006d1aad1daa4cbb5dbc742f507f01202650bb634e790e75f",
+    "tools/boottrace/session-log.py": "d1ee6bdfea562baa50f009b71789afb7035fac7f76b39ee816e75f2a6515ae0f",
+    "tests/session-log.py": "a3a37a54ed2f0c02e71b4863f748161715541a4c55bb42af1c5ffb842fe9e4bd"
+  },
+  "storage": {
+    "sessions": 32,
+    "files_per_session": 2,
+    "file_bytes": 1048576,
+    "frames_per_file": 2,
+    "header_bytes": 4096,
+    "max_payload_bytes": 520192,
+    "total_preallocated_bytes": 67108864,
+    "firmware_map_entries_unchanged": 233
+  },
+  "tests": {
+    "linux_groups_passed": 48,
+    "native_freebsd_arm64_groups_passed": 48,
+    "skipped": 0,
+    "linux_log_sha256": "c9a3406e0509687657a26a35027e60989848094957e75a5c24c3e7e431e02d55",
+    "native_log_sha256": "994dcc8354f9e8b56eef883432a604d226406ef3cb323691b09abcbd251ed41d",
+    "scope": [
+      "Bounded binary frames, canonical metadata and parent identity; foreign-frame refusal.",
+      "Payload/header corruption, padding, ambiguous/exhausted sequences and stale observations.",
+      "Inactive-frame commit ordering, torn payload/header and cache-flush failure preserve the prior frame.",
+      "Idempotent retries; an interrupted first frame can use the other empty frame without erasing failed bytes."
+    ]
+  },
+  "first_boot": {
+    "status": "pass",
+    "kernel_osreldate": 1600029,
+    "image_sha256": "c913f4f732010a7037753941e9446bff21d61ee36e8671463cb91cdc4e46767b",
+    "returned_sha256": "76e93e7372b058a81caeb30db7ba50634cfcb084a26b5842d9618f8ba1637c1a",
+    "serial_sha256": "b3ce4c194aa09bea115851da69afd610750b670c1bd38a19ec4db9c79c5ed3a6",
+    "changed_bytes": 11441,
+    "only_current_normal_and_log_files_changed": true,
+    "original_image_unchanged": true,
+    "kernel_bytes_retained": 5183,
+    "kernel_content_sha256": "44c5e8d3194a425c36c06e44d40b8957f746168c79248756d621f9dba035cd23",
+    "kernel_truncated": false,
+    "installer_frame_sequences": [
+      1,
+      2
+    ],
+    "installer_bytes_retained": 38,
+    "installer_event_fixture": true,
+    "real_installation": false,
+    "idempotent_retry_writes": 0,
+    "bank_checkpoints_preserved": true,
+    "normal_shutdown": true,
+    "no_keyboard_input": true,
+    "no_nic": true,
+    "observation": {
+      "filesystem": {
+        "allocated_clusters": 34646,
+        "fat_sha256": "df2f52c32119ba416e836b8ad7955c560084aa5e68bfc277d716f778cf966d6d",
+        "identity_extent": [
+          1067008,
+          187
+        ],
+        "log_extents": {
+          "installer-events": [
+            4904960,
+            1048576
+          ],
+          "kernel-console": [
+            5953536,
+            1048576
+          ]
+        },
+        "map_sha256": "9ca03753835c9d314412562d4392fbeec8c24a1a66d2c9545ed11d32e1e64d71",
+        "mapped_files": 233,
+        "read_only": true,
+        "schema": "daemonarchy/boot-medium-fat-observation@1",
+        "selected_extent": [
+          1073152,
+          16384
+        ],
+        "writes_admitted": false
+      },
+      "gpt": {
+        "backup_at_disk_end": true,
+        "backup_lba": 1683488,
+        "disk_guid": "c0459540-dd26-11f1-1d08-61407e6af4da",
+        "fat_and_map_validation_required": true,
+        "partition_index": 2,
+        "partition_uuid": "c249abb0-dd26-11f1-1d08-61407e6af4da",
+        "read_only": true,
+        "schema": "daemonarchy/boot-medium-gpt-observation@1",
+        "table_sha256": "777009c37915410534609349f80c45e53440f31f42c620e67a5e5bc82e4913a7",
+        "writes_admitted": false
+      },
+      "installation_identity_verified": true,
+      "read_only": true,
+      "schema": "daemonarchy/native-boot-medium-observation@1",
+      "selection": {
+        "archive_sha256": "96e25230a48d980af729c74b9234ac4407a33fe4349af1613b0610c794ef2824",
+        "boot_nonce_sha256": "2c1a09ac240e1eea1a180acce9ce1d58b36e0a92744c01b055b0e709f0f41594",
+        "device": "/dev/vtbd0p2",
+        "disk": "/dev/vtbd0",
+        "disk_bytes": 861946368,
+        "equivalent_aliases": 1,
+        "geom_sha256": "c37ba9e85d278657cfaa82055a60d9b3913853fcbc91dd4d0a0c9d273d21fd19",
+        "gpt_state": "OK",
+        "partition_uuid": "c249abb0-dd26-11f1-1d08-61407e6af4da",
+        "raw_gpt_and_fat_validation_required": true,
+        "read_only": true,
+        "schema": "daemonarchy/boot-medium-selection@1",
+        "sector_bytes": 512,
+        "sectors": 524288,
+        "session": "5225d363-c799-48f9-b2ba-e622bc2121cb-0001",
+        "session_correlated": true,
+        "start_lba": 1159168,
+        "writes_admitted": false
+      },
+      "writes_admitted": false
+    },
+    "captures": [
+      {
+        "bank_bytes": 4096,
+        "bank_sha256": "7439d9ce4a59d26cd251d159255c991da8c7abcccba0adf43cb75e1356dd1379",
+        "boot_nonce_sha256": "2c1a09ac240e1eea1a180acce9ce1d58b36e0a92744c01b055b0e709f0f41594",
+        "bounded_log": {
+          "content_bytes": 5183,
+          "content_sha256": "44c5e8d3194a425c36c06e44d40b8957f746168c79248756d621f9dba035cd23",
+          "content_truncated": false,
+          "frame": 0,
+          "sequence": 1,
+          "status": "recorded",
+          "writes_performed": 2
+        },
+        "bounded_log_limit": 520192,
+        "content_bytes": 2048,
+        "content_truncated": true,
+        "full_log_retention": true,
+        "phase": "init-ready",
+        "schema": "daemonarchy/native-userspace-checkpoint@1",
+        "session": "5225d363-c799-48f9-b2ba-e622bc2121cb-0001",
+        "status": "recorded",
+        "writes_admitted": true,
+        "writes_performed": 1
+      },
+      {
+        "bank_bytes": 4096,
+        "bank_sha256": "b025bb827f708f269378ca6909ea19d89478027f95af5599fd784a8c9cbdafd4",
+        "boot_nonce_sha256": "2c1a09ac240e1eea1a180acce9ce1d58b36e0a92744c01b055b0e709f0f41594",
+        "bounded_log": {
+          "content_bytes": 18,
+          "content_sha256": "f8df74863082934272a59ac06a6745be3ba546e8bafd9c14d42a2bce45a59b62",
+          "content_truncated": false,
+          "frame": 0,
+          "sequence": 1,
+          "status": "recorded",
+          "writes_performed": 2
+        },
+        "bounded_log_limit": 520192,
+        "content_bytes": 18,
+        "content_truncated": false,
+        "full_log_retention": true,
+        "phase": "installer",
+        "schema": "daemonarchy/native-userspace-checkpoint@1",
+        "session": "5225d363-c799-48f9-b2ba-e622bc2121cb-0001",
+        "status": "recorded",
+        "writes_admitted": true,
+        "writes_performed": 1
+      },
+      {
+        "boot_nonce_sha256": "2c1a09ac240e1eea1a180acce9ce1d58b36e0a92744c01b055b0e709f0f41594",
+        "bounded_log": {
+          "content_bytes": 38,
+          "content_sha256": "acced5433e23461366eeb38cfac3db30e3bfdf99a0550b0bd78e04cde8733076",
+          "content_truncated": false,
+          "frame": 1,
+          "sequence": 2,
+          "status": "recorded",
+          "writes_performed": 2
+        },
+        "bounded_log_limit": 520192,
+        "content_bytes": 20,
+        "content_truncated": false,
+        "full_log_retention": true,
+        "phase": "installer",
+        "previous_bank_status": "recorded",
+        "schema": "daemonarchy/native-userspace-checkpoint@1",
+        "session": "5225d363-c799-48f9-b2ba-e622bc2121cb-0001",
+        "status": "preserved",
+        "writes_admitted": true,
+        "writes_performed": 0
+      },
+      {
+        "boot_nonce_sha256": "2c1a09ac240e1eea1a180acce9ce1d58b36e0a92744c01b055b0e709f0f41594",
+        "bounded_log": {
+          "sequence": 2,
+          "status": "already-recorded",
+          "writes_performed": 0
+        },
+        "bounded_log_limit": 520192,
+        "content_bytes": 20,
+        "content_truncated": false,
+        "full_log_retention": true,
+        "phase": "installer",
+        "previous_bank_status": "recorded",
+        "schema": "daemonarchy/native-userspace-checkpoint@1",
+        "session": "5225d363-c799-48f9-b2ba-e622bc2121cb-0001",
+        "status": "preserved",
+        "writes_admitted": true,
+        "writes_performed": 0
+      }
+    ],
+    "linux_readonly_extraction_matches": true
+  },
+  "subsequent_boot": {
+    "status": "pass",
+    "input_is_actual_first_returned_image": true,
+    "prior_complete_slot_and_both_full_log_files_byte_identical": true,
+    "new_session_all_four_banks_and_full_logs_decode": true,
+    "fresh_nonce": true,
+    "changed_bytes": 11441,
+    "only_current_normal_and_log_files_changed": true,
+    "idempotent_retry_writes": 0,
+    "kernel_osreldate": 1600029,
+    "normal_shutdown": true,
+    "no_keyboard_input": true,
+    "no_nic": true,
+    "returned_sha256": "c06ecb561ba8d1a3e40ff522c68b536ae57f2cc4fbd085b52f4f2b2ab7dbb4db",
+    "serial_sha256": "f4b896cdf7c6ebe830c9d5cc96e37eaca87f8ea0791caaee99d1b2b9a8ee7ba2"
+  },
+  "native_loader": {
+    "source_revision": "97d15adddd39d1dee09f3baa9b89758d96a8b005",
+    "sha256": "2caa44c41810f2c6f7d0a463d89a6fd3a6313a92e2422debc454cdb7a557e48f"
+  },
+  "readonly_extraction": {
+    "linux_payload_matches": true,
+    "native_freebsd_payload_matches": true,
+    "inputs_unchanged": true,
+    "native_log_sha256": "c487388f048859abd3dc60c74f5e4eb41e8360a2fa62c67de1de19e02feaf1a0",
+    "kernel_content_sha256": "44c5e8d3194a425c36c06e44d40b8957f746168c79248756d621f9dba035cd23",
+    "installer_content_sha256": "acced5433e23461366eeb38cfac3db30e3bfdf99a0550b0bd78e04cde8733076"
+  },
+  "filesystem_checks": {
+    "run": {
+      "linux_readonly_exit": 0,
+      "native_freebsd_readonly_exit": 0,
+      "linux_log_sha256": "b2601dae34d683e1a5c91c5fb1790029e06f3bd4ff82391a7c53eb6d0d2dea59",
+      "native_log_sha256": "2c812188b9b51dba7b729a1be34df6b958a2c8ab439ce184fb3cd950b2dfcf3e"
+    },
+    "again": {
+      "linux_readonly_exit": 0,
+      "native_freebsd_readonly_exit": 0,
+      "linux_log_sha256": "4bbcf0b7c043dcc73df299217f1eaf4ec0ff3b0aa356a70b6fd606f77f94c027",
+      "native_log_sha256": "2c812188b9b51dba7b729a1be34df6b958a2c8ab439ce184fb3cd950b2dfcf3e"
+    }
+  },
+  "retained_validation_failures": [
+    "Initial host comparison rejected Python tuples versus JSON lists; normalized replay uses the exact same returned image.",
+    "Initial native read-only FAT probe had a shell-trap quoting error; the corrected Python-managed image device was checked and detached."
+  ],
+  "scope": "Retained amd64 kernel OSVERSION 1600029 and diagnostic RAM root; installer events are explicit fixtures, not an actual installation.",
+  "default_live_hooks_installed": false,
+  "real_installer_execution": false,
+  "final_current_media_qualified": false,
+  "arm_bios_capture_qualified": false,
+  "physical_reset_power_loss_qualified": false,
+  "release_qualified": false
+}

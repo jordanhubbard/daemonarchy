@@ -1,0 +1,73 @@
+{
+  "schema": "daemonarchy/issue293-media-checksum-observation@1",
+  "observed_utc": "2026-11-11T07:36:54.941320+00:00",
+  "issue": 293,
+  "release": "daemonarchy-1.5.1",
+  "published_iso": {
+    "asset": {
+      "browser_download_url": "https://github.com/jordanhubbard/daemonarchy/releases/download/daemonarchy-1.5.1/daemonarchy-1.5.1-amd64.iso.xz",
+      "digest": "sha256:de9311416cf29c88525efcec0dcae3990c38cbffe8235035b50b3a8e4d1b84ad",
+      "id": 719163730,
+      "name": "daemonarchy-1.5.1-amd64.iso.xz",
+      "size": 1593471020
+    },
+    "observed_sha256": "de9311416cf29c88525efcec0dcae3990c38cbffe8235035b50b3a8e4d1b84ad",
+    "bytes": 1593471020,
+    "published_asset_changed": false
+  },
+  "uncompressed_iso_bytes": 3555328000,
+  "catalogue_sha256": "cf5e9a3fcca785dc676265e4cc27e2dbd849005f445bb187b284e53fc2fd3d7c",
+  "native_platform": {
+    "os": "FreeBSD",
+    "release": "16.0-CURRENT",
+    "architecture": "amd64"
+  },
+  "archives": [
+    {
+      "name": "gpu-firmware-amd-kmod-dcn-3-5-1",
+      "version": "20260519.1600029",
+      "bytes": 313575,
+      "sha256": "0ec3d3d135ea16e8d60d79dd175c6d233f56c6c92670d2e52d91feb3ce986e2d",
+      "catalogue_checksum": "2$eqempiojsdc7i1rr7iy6a7y8webatqzajhc7d8xmx9bc4c51arcbdfp3hhotexn5sxsstaikd4qbtmog6q4iwrhibippckp4gqs869b"
+    },
+    {
+      "name": "gpu-firmware-amd-kmod-dcn-3-5",
+      "version": "20260519.1600029",
+      "bytes": 313656,
+      "sha256": "98db81e5405049e840a8de829de6fb52cd5554ed47d3b9669339cee6367656c1",
+      "catalogue_checksum": "2$szbs8sdynhqsy9acebbopyfnwqepkej7n4xzpa8gpd1mre3o4e88s1kt6ba9sntzms9bp431o6ynnqxxs6hj8yth1j5ayc1if5cc3bd"
+    }
+  ],
+  "native_tools": {
+    "registered-native-runtime-pkg": {
+      "version": "2.8.4",
+      "original_archive_cases": 2,
+      "tampered_archive_refusals": 2,
+      "binary_sha256": "6aa088572c7f7a6f7d1149bc9e2f2efc1d4f059ed490cd79dbf15afe277ca174"
+    },
+    "published-iso-pkg-static": {
+      "version": "2.8.4",
+      "original_archive_cases": 2,
+      "tampered_archive_refusals": 2,
+      "binary_sha256": "a38101eebd9953f51ffd3c68f0f685b3b6bf6a67e30ad9ad960be6ae2cfed1fc"
+    },
+    "freebsd-repository-pkg-static": {
+      "version": "2.9.0",
+      "original_archive_cases": 2,
+      "tampered_archive_refusals": 2,
+      "binary_sha256": "80a61279350201ab045a60af2e85b5739c01ba1c665207e13c83e2abefe50e8a"
+    }
+  },
+  "method": "Extract the exact on-media archives and packagesite from the digest-verified published ISO. Execute pkg checksum -c with each catalogue checksum using the original ISO pkg-static, the installed native runtime, and the current FreeBSD repository pkg-static. In independent copies flip one byte halfway through each archive and require refusal.",
+  "current_freebsd_pkg_archive": {
+    "url": "https://pkg.freebsd.org/FreeBSD:16:amd64/latest/Latest/pkg.pkg",
+    "version": "2.9.0",
+    "sha256": "952f715cfbdf37a567af182ad4339b6310833355c30e9dd8b10d3f248911e2c8"
+  },
+  "positive_cases_passed": 6,
+  "tampered_cases_refused": 6,
+  "reported_install_failure_reproduced": false,
+  "root_cause": "not established",
+  "remaining": "Replay the actual selected repository catalogue and optical-media path. The reported image digest and full installation log are needed to distinguish corruption, repository selection and a filesystem/runtime problem.",
+  "qualification": "Catalogue/archive consistency and checksum refusal only. No complete installation, signature-policy, current closure, Component SDK or lifecycle acceptance is claimed. Published release bytes are unchanged."
+}

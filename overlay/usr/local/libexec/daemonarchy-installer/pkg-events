@@ -104,7 +104,9 @@ class Converter:
         if (isinstance(kind, str) and kind.replace('_', '').isalnum() and kind.isupper()
                 and kind not in ('INFO_PROGRESS_TICK', 'INFO_PROGRESS_START')
                 and kind not in ('INFO_FETCH_BEGIN', 'INFO_FETCH_FINISHED')):
-            self.trace.event('pkg_event', type=kind, name=event_name(data))
+            package = data.get('pkg') if isinstance(data, dict) else None
+            version = package.get('version') if isinstance(package, dict) else None
+            self.trace.event('pkg_event', type=kind, name=event_name(data), version=version)
         if kind == 'INFO_FETCH_BEGIN':
             self.file = archive_name(data.get('url'))
             self.file_started = self.trace.now_us()

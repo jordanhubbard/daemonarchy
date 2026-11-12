@@ -1,0 +1,42 @@
+{
+  "schema": "daemonarchy/boot-medium-gpt-checkpoint@1",
+  "source_parent": "ead1d192b80f66a3dcec4b060661ae77c3e2b0a0",
+  "source_sha256": {
+    "tools/boottrace/boot-medium.py": "a9dd318430447c7a2b29747b939c0b1df63c1c16ce5ee8123aa8094a8e9604b8",
+    "tests/boot-medium-gpt.py": "31b01bd1d04e0eda34e4cd9c337dd8f31488e28ae224035efa58e358d5f7024b"
+  },
+  "tests": {
+    "linux_groups_passed": 18,
+    "native_freebsd_arm64_groups_passed": 18,
+    "skipped": 0,
+    "native_log_sha256": "c832f89e9ecbfba9eec304d1259626c5a8e66f84d388b052c767ca6368e583db",
+    "coverage": [
+      "Primary/backup header and table CRC failures; valid-CRC copy disagreement.",
+      "Raw/kernel partition UUID, index, type, label, attributes and geometry mismatch.",
+      "Duplicate UUIDs, overlapping partitions, short reads and bounded table allocation.",
+      "Original and expanded disk geometry; no GPT repair or write admission."
+    ]
+  },
+  "actual_returned_x86_medium": {
+    "scope": "Raw GPT blocks from the retained x86 v4 returned image, replayed under native ARM64; not native raw-device opening.",
+    "observed": {
+      "schema": "daemonarchy/boot-medium-gpt-observation@1",
+      "partition_uuid": "ce3daf08-dd1b-11f1-1d08-61407e6af4da",
+      "partition_index": 2,
+      "disk_guid": "cd76604c-dd1b-11f1-1d08-61407e6af4da",
+      "backup_lba": 1562656,
+      "backup_at_disk_end": true,
+      "table_sha256": "5e73245d5c7a22c5452b7ac1ea1f97df4634a294d66c400f826aa12d66d7cc2a",
+      "read_only": true,
+      "writes_admitted": false,
+      "fat_and_map_validation_required": true
+    },
+    "raw_blocks_sha256": "1f6f01340a6754ad384b999b7bf167e902e145d71fecbc5d29578f6b2e8ffc26"
+  },
+  "writes_admitted": false,
+  "native_device_open_qualified": false,
+  "fat_map_validation_qualified": false,
+  "init_installer_capture_qualified": false,
+  "full_current_media_qualified": false,
+  "release_qualified": false
+}

@@ -349,3 +349,76 @@ admission remain open. Its preflight also found a Linux expectation in the
 FreeBSD installed-wheel smoke harness. The current native focused runtime
 checks are not a complete native wheel-smoke or platform acceptance result;
 keep that qualification under framework issue #67.
+
+
+## CURRENT ARM64 aggregate development checkpoint
+
+The [November 10 native checkpoint](../verification/native-arm-source-build-r2-20261110.json)
+records all five phases passing for source `af55b6f9042e15b635e90926d476e7cbeb48a069`:
+world, kernel, base packages, release objects and distribution sets. All
+[529 output identities](../verification/native-arm-source-build-r2-artifacts-20261110.json)
+and all five phase logs were independently verified after export from the allocated
+FreeBSD AArch64 worker. The kernel-set inspector accepts the new archive and its
+kernel matches the compiled object. The new native EFI/Lua retain their normal
+trace capability markers. The subsequent [private CURRENT worker boot](../verification/native-current-arm-worker-boot-20261110.json)
+passes under AArch64 KVM with four CPUs and 8 GiB RAM. Both the running kernel
+and the installed userland header report OSVERSION `1600031`. The running
+kernel matches the compiled object; the EFI file on the read-only inspected ESP,
+root loader, shell, libc and header match the new distribution sets. Native shell
+execution and SSH with a pinned host identity pass. The disk contains private
+lab credentials and is not publishable installer media.
+
+The [matched native package plan](../verification/native-current-arm-package-plan-20261110.json)
+now passes using that worker and a Poudriere jail made from the new base set. Its
+clean snapshot also includes the matching kernel, lib32 and source sets. The
+31 architecture-selected product origins resolve to 1,415 planned ports with
+zero ignored, failed or skipped entries. This is a dry run: no package products
+were built or fetched by the plan, and no signed release closure is admitted.
+
+The [subsequent native pkg bootstrap](../verification/native-current-arm-pkg-bootstrap-20261110.json)
+builds `ports-mgmt/pkg` version `2.9.0` against that CURRENT jail. Poudriere
+test-mode staging, package installation/deinstallation and leftover checks pass;
+the package and full logs independently hash-match after export. Its manifest
+records OSVERSION `1600031`, and the extracted `pkg-static` executes as `2.9.0`
+on the new worker. This single producer does not qualify the remaining closure,
+upstream test suite, final media or framework lifecycle.
+
+These are unsigned aggregate development products. The private mountpoint
+traversal recovery remains recorded, and the elapsed times are not a controlled
+executor benchmark. A matched current ports closure, final installer images,
+boot/install/desktop/recovery, per-unit canonical Component coverage and admitted
+native lifecycle receipts remain open. Earlier retained-world media does not
+qualify this new source selection.
+
+
+## CURRENT Omarchy compatibility controls
+
+The [native CURRENT compatibility checkpoint](../verification/native-current-omarchy-compatibility-20261110.json)
+runs all 31 selected tests against compatibility source cba62618afb4bf99fe868cc9d010e7c2efed5fae
+and upstream Omarchy ac2690cd7be4f47e4a255f5e2e78d904d436b068 on the new
+FreeBSD ARM64 world/kernel at OSVERSION 1600031. All pass without skips.
+Both source trees are mounted read-only, their mount flags are checked, and the
+owned mounts are removed afterward. The initial missing-jq/bindings-fixture run
+and the passing result remain independently hash-verified after export.
+
+Use an allocated native worker with the recorded QA dependency closure, including
+Bash, jq, Node and Python 3.12/PyGObject. Keep this separate from a workstation's
+installed desktop and from release package admission. With the pinned read-only
+compatibility and upstream source views already prepared:
+
+~~~sh
+DAEMONARCHY_COMPAT_TREE=/path/to/pinned/compatibility
+DAEMONARCHY_OMARCHY_TREE=/path/to/pinned/upstream-omarchy
+PYTHONDONTWRITEBYTECODE=1 \
+OMARCHY_TEST_ROUTER="$DAEMONARCHY_OMARCHY_TREE/bin/omarchy" \
+OMARCHY_TEST_MENU="$DAEMONARCHY_OMARCHY_TREE/default/omarchy/omarchy-menu.jsonc" \
+OMARCHY_TEST_BINDINGS="$DAEMONARCHY_OMARCHY_TREE/default/hypr/bindings/applications.lua" \
+python3.12 -m unittest discover -s "$DAEMONARCHY_COMPAT_TREE/tests" -p 'test_*.py' -v
+~~~
+
+Native GIO launches use synthetic desktop entries and an argument-capture program;
+WPA/OpenSSL parsing uses synthetic credentials and isolated rollback/transfer
+controls. Menu/router translation and indicator policy use the real pinned
+upstream code. Update tests use fixture package catalogs. These results do not
+qualify browser rendering, the compositor, real AP authentication, Bluetooth
+radio/audio, update/rollback, final installer media or Component lifecycle.

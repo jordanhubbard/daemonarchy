@@ -109,10 +109,12 @@ instead authors the supported project/Component contracts in place and explicitl
 selects root repository authority through the reviewed `litai reparent none`
 operation. No converted-stage or regenerated-source evidence is fabricated.
 
-The stable installed CLI remains Literate AI 1.3.0 from the 1.1.1 system. A
-separate `litai-dev` on the HP uses the exact reviewed framework wheel for the
-source fork's Standard binding. It validates `/usr/src` authority and three
-locks; no retained test receipt or native execution qualification exists.
+At the 1.1.1 adoption checkpoint, the stable installed CLI was Literate AI
+1.3.0. A separate `litai-dev` on the HP used the exact reviewed framework
+wheel for the source fork's Standard binding. It validated `/usr/src` authority
+and three locks; that observation supplied no retained test receipt or native
+execution qualification. This historical checkpoint does not identify the
+currently selected controller or native worker tooling.
 Framework issue [#22](https://github.com/jordanhubbard/literate-ai/issues/22)
 tracks the remaining executable capability and evidence gates. ADOPT-002 must
 qualify native FreeBSD execution and mixed-input custody before release
@@ -143,7 +145,7 @@ the public repository paths so mutable resolver mutexes are not documentation
 assets. Source
 indexing is disabled. Future framework updates must preserve these boundaries.
 
-<!-- literate-ai:authority-reviewed sha256:87a01b2439b5a1438edf2658aab8090cee1b4b07e4e9265d39164da614026a1a -->
+<!-- literate-ai:authority-reviewed sha256:f52af17972d1d4351abee517d7facb507acd773260ddaa89b7c1629016de99eb -->
 
 
 ## Rechecking preservation

@@ -1,0 +1,446 @@
+{
+  "schema": "daemonarchy/native-current-omarchy-compatibility@1",
+  "status": "native-controls-passed-not-distribution-qualified",
+  "recorded_utc": "2026-11-10T06:05:20.144077+00:00",
+  "predecessor": "verification/native-current-arm-worker-boot-20261110.json",
+  "source_world_kernel_commit": "af55b6f9042e15b635e90926d476e7cbeb48a069",
+  "ports_commit": "2f98c787cf7ac28ea815b843597096ba01aefa89",
+  "port_selection": "omarchy-4.5.0_4",
+  "source_inputs": [
+    {
+      "name": "compat",
+      "commit": "cba62618afb4bf99fe868cc9d010e7c2efed5fae",
+      "bytes": 79973,
+      "sha256": "292fed9efd4e5dfa48b1244477a2e5fb06e751cf89ed3b5f5afc125d04024317"
+    },
+    {
+      "name": "upstream",
+      "commit": "ac2690cd7be4f47e4a255f5e2e78d904d436b068",
+      "bytes": 182967606,
+      "sha256": "ba6423fd5ab0858bd5e2c2d199ac15b5a6a01f92debf5cc3f3595ffb6bf0c185"
+    }
+  ],
+  "native_result": {
+    "schema": "daemonarchy/native-current-compatibility-tests@1",
+    "status": "pass",
+    "platform": "freebsd16",
+    "machine": "arm64",
+    "processor": "aarch64",
+    "kernel_osversion": 1600031,
+    "userland_header_osversion": 1600031,
+    "tests": 31,
+    "failures": [],
+    "errors": [],
+    "skipped": [],
+    "elapsed_seconds": 2.855,
+    "compat_commit": "cba62618afb4bf99fe868cc9d010e7c2efed5fae",
+    "upstream_commit": "ac2690cd7be4f47e4a255f5e2e78d904d436b068",
+    "sources_mounted_readonly": true,
+    "readonly_mount_flag_verified": true,
+    "rendered_desktop": false,
+    "physical_access_point": false,
+    "lifecycle_receipt": false,
+    "owned_mounts_removed": true
+  },
+  "test_modules": {
+    "test_desktop_defaults": 11,
+    "test_update_identity": 8,
+    "test_wifi_enterprise": 12
+  },
+  "qa_bootstrap": {
+    "new_packages": 37,
+    "installed_packages_after_qa_setup": 59,
+    "packages": [
+      {
+        "name": "bash",
+        "version": "5.3.20",
+        "abi": "FreeBSD:16:aarch64",
+        "osversion": "1600027",
+        "bytes": 1914895,
+        "sha256": "ff864100b6d5416c5cf8daa98abc53e6d355b84f7ae9d0fd2007fde0c787c528"
+      },
+      {
+        "name": "c-ares",
+        "version": "1.34.9",
+        "abi": "FreeBSD:16:aarch64",
+        "osversion": "1600027",
+        "bytes": 231270,
+        "sha256": "59a21a1d1c329762c78d138ef393a9724ed69b973c010d6e71b42a35d4e68d86"
+      },
+      {
+        "name": "cairo",
+        "version": "1.18.6,3",
+        "abi": "FreeBSD:16:aarch64",
+        "osversion": "1600027",
+        "bytes": 754015,
+        "sha256": "1cb3781333d90e54f6548ded828c11429017f8e36122bee67bfb71f240b490c4"
+      },
+      {
+        "name": "corepack",
+        "version": "0.36.0",
+        "abi": "FreeBSD:16:*",
+        "osversion": null,
+        "bytes": 111039,
+        "sha256": "4598b0a50bfad903461e8931e24c8ff09489e4ff521b8dc4a1b59d82d7577ec4"
+      },
+      {
+        "name": "fontconfig",
+        "version": "2.18.3,1",
+        "abi": "FreeBSD:16:aarch64",
+        "osversion": "1600027",
+        "bytes": 488877,
+        "sha256": "ad9bd1ed83b4f746ed70062e81361431f9c1735492a1335117a084d18ce024df"
+      },
+      {
+        "name": "freetype2",
+        "version": "2.14.3",
+        "abi": "FreeBSD:16:aarch64",
+        "osversion": "1600027",
+        "bytes": 1228005,
+        "sha256": "8f225e77ac466710943ad1232306c3bd60504fb5ce951465923366bc22b8dca2"
+      },
+      {
+        "name": "glib",
+        "version": "2.88.3,2",
+        "abi": "FreeBSD:16:aarch64",
+        "osversion": "1600027",
+        "bytes": 11266986,
+        "sha256": "aadc694b5e9a69206cc477a9fcd7174241db9414589e8890c27240f7f9025766"
+      },
+      {
+        "name": "gobject-introspection",
+        "version": "1.86.0,1",
+        "abi": "FreeBSD:16:aarch64",
+        "osversion": "1600027",
+        "bytes": 653727,
+        "sha256": "ebfb18c28a197c143501aa067ed14dabf52c8787f977f1a1978ba3b4c82bc3e7"
+      },
+      {
+        "name": "icu",
+        "version": "76.1,1",
+        "abi": "FreeBSD:16:aarch64",
+        "osversion": "1600027",
+        "bytes": 13368801,
+        "sha256": "ffddee3ab29d838062fa6dd6ceb1779cce381470b28faf4ed2bfdab03c943dcd"
+      },
+      {
+        "name": "jq",
+        "version": "1.8.2",
+        "abi": "FreeBSD:16:aarch64",
+        "osversion": "1600027",
+        "bytes": 307882,
+        "sha256": "4d36ed339e1373dea7074947eaa4a9ade8d8a02cb7de6416c899c0c67b11064f"
+      },
+      {
+        "name": "libX11",
+        "version": "1.8.14,1",
+        "abi": "FreeBSD:16:aarch64",
+        "osversion": "1600027",
+        "bytes": 1737569,
+        "sha256": "e11777c67cb100b3299ffaafbd56e84a82d6bbbfc7135df2213cd1bd51437509"
+      },
+      {
+        "name": "libXau",
+        "version": "1.0.12",
+        "abi": "FreeBSD:16:aarch64",
+        "osversion": "1600027",
+        "bytes": 12977,
+        "sha256": "9f671488f35a786e6b0fad01e2c306096a527b420c805b43997b64aed5ba0044"
+      },
+      {
+        "name": "libXdmcp",
+        "version": "1.1.5",
+        "abi": "FreeBSD:16:aarch64",
+        "osversion": "1600027",
+        "bytes": 15772,
+        "sha256": "80e76027a7b3ceb20f235a8a884f36a1a1742842f6ab1f5f3c9690bdc2139080"
+      },
+      {
+        "name": "libXext",
+        "version": "1.3.7,1",
+        "abi": "FreeBSD:16:aarch64",
+        "osversion": "1600027",
+        "bytes": 100976,
+        "sha256": "1f8b8d034c6b12dadba7944698847819a2f9f5bcda486c18350e7c226b7b1541"
+      },
+      {
+        "name": "libXrender",
+        "version": "0.9.13",
+        "abi": "FreeBSD:16:aarch64",
+        "osversion": "1600027",
+        "bytes": 33593,
+        "sha256": "ccc298cc3bcc96becba00e91fdfc4db817a11a93a90e6cc310a1e074a8cfdb26"
+      },
+      {
+        "name": "libada",
+        "version": "3.4.4",
+        "abi": "FreeBSD:16:aarch64",
+        "osversion": "1600027",
+        "bytes": 246379,
+        "sha256": "9cb3001aac04e0a26bc0fd10268fe4b62916dd17eb3efdc5559005dd2e84142c"
+      },
+      {
+        "name": "libedit",
+        "version": "3.1.20260512,1",
+        "abi": "FreeBSD:16:aarch64",
+        "osversion": "1600027",
+        "bytes": 148070,
+        "sha256": "10859ecbbaf09e53b23fd808b6274247271328dcad727d61620d68978bbc95f7"
+      },
+      {
+        "name": "libiconv",
+        "version": "1.18_1",
+        "abi": "FreeBSD:16:aarch64",
+        "osversion": "1600027",
+        "bytes": 740965,
+        "sha256": "e9da4139d43b5f4cf966a274d95a668980a3c01d99d4af0fef7c8a40deaa50b4"
+      },
+      {
+        "name": "libnghttp3",
+        "version": "1.18.0",
+        "abi": "FreeBSD:16:aarch64",
+        "osversion": "1600027",
+        "bytes": 118031,
+        "sha256": "1368bf186d99fb4368cfb50392b15dcb868dfdc06c76a24e0e84a391f3ea382a"
+      },
+      {
+        "name": "libngtcp2",
+        "version": "1.25.0",
+        "abi": "FreeBSD:16:aarch64",
+        "osversion": "1600027",
+        "bytes": 251994,
+        "sha256": "062d6590db4dca106070c1ee785da31673c9513d0937808f80122456c9d9d005"
+      },
+      {
+        "name": "libuv",
+        "version": "1.52.1_1",
+        "abi": "FreeBSD:16:aarch64",
+        "osversion": "1600027",
+        "bytes": 138100,
+        "sha256": "926399a67872d8c2dc402566517e392a7bfe09084c4c5c35ebff5e843cb05697"
+      },
+      {
+        "name": "libxcb",
+        "version": "1.17.0",
+        "abi": "FreeBSD:16:aarch64",
+        "osversion": "1600027",
+        "bytes": 1173720,
+        "sha256": "6a562b6ca8bc6974f252903f5b6be33b6739679ddef4db477570eda9869898b8"
+      },
+      {
+        "name": "llhttp",
+        "version": "9.4.3",
+        "abi": "FreeBSD:16:aarch64",
+        "osversion": "1600027",
+        "bytes": 39697,
+        "sha256": "51faefb93e61f5aaa05a0c6fde99274b77ddbcb98c510da64138460dbd7c104e"
+      },
+      {
+        "name": "lzo2",
+        "version": "2.10_2",
+        "abi": "FreeBSD:16:aarch64",
+        "osversion": "1600027",
+        "bytes": 111018,
+        "sha256": "35c5d04eabbf8ae7c1c57583685d76797bca1607ab6e2ce6dcf2017466ba126b"
+      },
+      {
+        "name": "node22",
+        "version": "22.23.4",
+        "abi": "FreeBSD:16:aarch64",
+        "osversion": "1600027",
+        "bytes": 12349025,
+        "sha256": "e6cd551be148995dcceec28f07bef53992b7c298b4e8792011925698f1087f77"
+      },
+      {
+        "name": "oniguruma",
+        "version": "6.9.10",
+        "abi": "FreeBSD:16:aarch64",
+        "osversion": "1600027",
+        "bytes": 246983,
+        "sha256": "081013d56877e368a0213e185a74d243d119899d3fb8126f5840b5e1298b9fb3"
+      },
+      {
+        "name": "pixman",
+        "version": "0.46.4",
+        "abi": "FreeBSD:16:aarch64",
+        "osversion": "1600027",
+        "bytes": 205083,
+        "sha256": "24be7f1f78b8897f083ca0765de8fd4b91a3e23f2608e8cd4d263ddceb643f79"
+      },
+      {
+        "name": "png",
+        "version": "1.6.59_1",
+        "abi": "FreeBSD:16:aarch64",
+        "osversion": "1600027",
+        "bytes": 293272,
+        "sha256": "4afce44e304823c83a3b35bf27b04d63fe8999cbdd0dbf616fcc1c0d410e31d9"
+      },
+      {
+        "name": "py312-packaging",
+        "version": "26.3",
+        "abi": "FreeBSD:16:*",
+        "osversion": null,
+        "bytes": 245142,
+        "sha256": "e059f52e1e891c9709a9f84f516d85f5da4f4e9e0cd6f5026012239285e4c45c"
+      },
+      {
+        "name": "py312-pycairo",
+        "version": "1.29.1",
+        "abi": "FreeBSD:16:aarch64",
+        "osversion": "1600027",
+        "bytes": 119204,
+        "sha256": "810e60697fcf9e604996b3743030488d95575559903e87c4c7c93c343f3d5f21"
+      },
+      {
+        "name": "py312-pygobject",
+        "version": "3.58.0",
+        "abi": "FreeBSD:16:aarch64",
+        "osversion": "1600027",
+        "bytes": 321810,
+        "sha256": "f6c29ebfb9a3d767e772b1db3f48c4dcf800e707f0563af1a85a22a869a94e54"
+      },
+      {
+        "name": "py312-setuptools",
+        "version": "63.1.0_3",
+        "abi": "FreeBSD:16:*",
+        "osversion": null,
+        "bytes": 1450786,
+        "sha256": "74ad6650ea874fd0914b83c00cf5ef36a038fd3218a55d78b5716c2f78edd1c4"
+      },
+      {
+        "name": "pygobject-common",
+        "version": "3.58.0",
+        "abi": "FreeBSD:16:*",
+        "osversion": null,
+        "bytes": 16389,
+        "sha256": "4468c3ad2baba17324370bbc1b965cc1910b77b572e49c63554924656a7de341"
+      },
+      {
+        "name": "simdjson",
+        "version": "5.0.5",
+        "abi": "FreeBSD:16:aarch64",
+        "osversion": "1600027",
+        "bytes": 390876,
+        "sha256": "c45605bd87c015377c164ad37607b08979c5bab902ebd1d43593f486105aa23a"
+      },
+      {
+        "name": "sqlite3",
+        "version": "3.53.4,1",
+        "abi": "FreeBSD:16:aarch64",
+        "osversion": "1600027",
+        "bytes": 1315717,
+        "sha256": "b5624102d099c38bec21b1c1ad8ad687e313786e249f20c221adb9a43a23d8a8"
+      },
+      {
+        "name": "uvwasi",
+        "version": "0.0.23",
+        "abi": "FreeBSD:16:aarch64",
+        "osversion": "1600027",
+        "bytes": 41341,
+        "sha256": "9c386b1ef25aa08c87489a054a07e80b0244282c032dfc634ea5c2fe6429e84b"
+      },
+      {
+        "name": "xorgproto",
+        "version": "2026.1",
+        "abi": "FreeBSD:16:*",
+        "osversion": null,
+        "bytes": 248501,
+        "sha256": "fb5893164f62e1a167eaf2b33b6c7be01d3e8dd56314369f02c1e62ba6233886"
+      }
+    ],
+    "executed_runtime_file_identities": {
+      "/usr/local/bin/bash": "aedd0a04d6a6f8868ac4252b19b65b8bdb3770256faa03b49ad8437593dab272",
+      "/usr/local/bin/node": "6ca1020c9060f9bab2870f631121c4f6b84f2b5ec16da4c3a18ea02e2cfbb44f",
+      "/usr/local/bin/jq": "1416906a0415fd70a5232069398f6ddce90e32253dafe8e32c604d00eef51cb0",
+      "/usr/local/bin/python3.12": "e40597382070a73ebfe86e5d8bb97ee7b79f9f5fd41027154ba669abb24859c2",
+      "/usr/local/lib/python3.12/site-packages/gi/_gi.cpython-312.so": "2644b5c8a1ba72a3cf0fd8483124c1c8872965d7cdeb56299195224203623530",
+      "/usr/local/lib/libgio-2.0.so.0": "ca7285c5b50df1be8fd70fa0db2e90c026471aaeb0b8c32271ba050ea4ad4647",
+      "/lib/libc.so.7": "f5954e2f540ae276073b2631a362b07ef29b72e6b4785ed68c88ccf6fba25e53"
+    },
+    "selected_runtime_pkg_checksum_exit": 0,
+    "source_build_and_sdk_admission": false
+  },
+  "independent_export": {
+    "status": "verified",
+    "files": [
+      {
+        "name": "native-tests-r1.log",
+        "bytes": 6643,
+        "sha256": "11ae0f1255b8326a7909ca46a5e74ca6dc55592d4ab4881e4f27db769f76ee52"
+      },
+      {
+        "name": "native-result-r1.json",
+        "bytes": 743,
+        "sha256": "f4c5b3cc6b924cbdd0300a99e15e39afb5d088834d072281dbee6d08765ef024"
+      },
+      {
+        "name": "native-tests-r2.log",
+        "bytes": 4606,
+        "sha256": "15b5f3d026a46d1c2f752c5b0cd6c1f396dd3135447f370bed5bd29197c535dd"
+      },
+      {
+        "name": "native-result-r2.json",
+        "bytes": 656,
+        "sha256": "f8cc1dbdc048de7c72a6b37a6d11cf5d2964b8f70ccd402109b028bf6c012450"
+      },
+      {
+        "name": "qa-package-archives.json",
+        "bytes": 8155,
+        "sha256": "3f610a3ce54cf4eddea135987942bd7a92df4f88a4216d0560d0d0db84faf9fa"
+      },
+      {
+        "name": "installed-tool-inventory.txt",
+        "bytes": 2081,
+        "sha256": "425631a9983d9b9ad0731c18d90a0cfb35b39dc00df5062ec85b6235a64efc4b"
+      },
+      {
+        "name": "runtime-identities.json",
+        "bytes": 706,
+        "sha256": "133b76c1ca2169c59f0a39fc50d579aaa733d3c5ba5d6d5c8f2f0e98decf63ee"
+      },
+      {
+        "name": "qa-runtime-checksums.log",
+        "bytes": 148,
+        "sha256": "19898c247e61fb7525e05624ab6beaaa8bd7518a32a704077d9f4b5cd2982d2a"
+      },
+      {
+        "name": "qa-runtime-checksums.exit",
+        "bytes": 2,
+        "sha256": "9a271f2a916b0b6ee6cecb2426f0b3206ef074578be55d9bc94f6f3fe3ab86aa"
+      }
+    ]
+  },
+  "preceding_run": {
+    "status": "fail",
+    "tests": 31,
+    "failures": [
+      "test_desktop_defaults.DesktopDefaults.test_real_router_help_dispatch_metadata_and_exit_status"
+    ],
+    "errors": [
+      "test_desktop_defaults.DesktopDefaults.test_real_upstream_menu_has_native_package_paths"
+    ],
+    "skipped": [],
+    "cause": "QA bootstrap omitted the declared jq dependency and did not set OMARCHY_TEST_BINDINGS for the upstream source layout",
+    "correction": "Installed signed jq dependency closure and supplied the exact pinned upstream bindings path; no compatibility source, assertions or skip policy changed",
+    "original_log_and_result_retained": true
+  },
+  "scope": {
+    "native_browser_launch": "Real FreeBSD GIO DesktopAppInfo with synthetic desktop entries invoking a private Python argument-capture program; not browser rendering",
+    "enterprise_wifi": "Real native OpenSSL/PEM and wpa_supplicant profile parsing; synthetic PKI, private UNIX control sockets and isolated failure/rollback/credential-transfer fixtures; no real AP authentication",
+    "menu_translation": "Pinned upstream menu/router/translation and indicator functions through the FreeBSD adaptation with native Bash/jq/Node",
+    "update_identity": "Fixture package catalog and failure responses; no system update or boot-environment operation"
+  },
+  "qualification": {
+    "native_current_compatibility_controls": true,
+    "complete_installed_omarchy_package": false,
+    "rendered_desktop": false,
+    "real_wireless_access_point": false,
+    "real_bluetooth_audio": false,
+    "full_signed_current_package_closure": false,
+    "final_arm_or_x86_media": false,
+    "physical_pi4_pi5_apple_m2": false,
+    "canonical_component_receipt": false,
+    "performance_benchmark": false,
+    "release": false
+  }
+}

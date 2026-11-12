@@ -1,0 +1,10 @@
+{
+  "boot/kernel/kernel": {
+    "bytes": 143,
+    "sha256": "07de9028a00c3fb354ad14019aa56f65408802e38e89b8b0b444133c18864148"
+  },
+  "boot/loader.efi": {
+    "bytes": 256,
+    "sha256": "1099b44e30d3d8404146ab7ab244c81b5bb041d93cc5ffa4ad2f29706ea8fde2"
+  }
+}

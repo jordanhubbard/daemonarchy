@@ -974,13 +974,10 @@ checkout_step() {
 MIN_DISK_BYTES=${MIN_DISK_BYTES:-$((20 * 1024 * 1024 * 1024))}
 
 disk_choices() {
-  local disk bytes desc media
-  # The disk the live system runs from (a USB stick written with the hybrid
-  # ISO) carries the image's ISO 9660 label.
-  media=$(glabel status 2>/dev/null | awk '$1 ~ /^iso9660\// { sub(/[sp][0-9]+.*$/, "", $3); print $3 }')
+  local disk bytes desc
   for disk in $(sysctl -n kern.disks); do
     case "$disk" in cd* | md*) continue ;; esac
-    [[ " $media " == *" $disk "* ]] && continue
+    disk_is_live_medium "$disk" && continue
     bytes=$(diskinfo "$disk" 2>/dev/null | awk '{ print $3 }')
     [[ $bytes =~ ^[0-9]+$ ]] || continue
     ((bytes >= MIN_DISK_BYTES)) || continue

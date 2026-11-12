@@ -7,16 +7,19 @@ catalogue. See [the build and runtime instructions](https://github.com/jordanhub
 The seed packages contain no full historical repository; users can deepen
 history explicitly with Git.
 
-## Current 1.5.0 shallow checkout packages
+## Historical 1.5.0 shallow checkout packages
 
-The checked-in [catalogue](../overlay/usr/local/share/daemonarchy-installer/checkouts.json)
-is byte-identical to the one published with the
+The historical 1.5.0 catalogue was published with the
 [1.5.0 amd64 checkout feed](https://github.com/jordanhubbard/daemonarchy/releases/tag/checkouts-16-amd64-1.5.0-r2)
 (checked-in catalogue SHA-256 `b3977667195fe71882ea05014513f7576bfe8024271cd4cf508421d4450f4eb4`).
 It selects daemonarchy-ports `e84b4c4cde0df8ee645ee46e7ad1e99ef8ffa181` on
 `main` and daemonarchy-src `303b3646270ffa4bf7cec65c5c1d28bd8000cbce` on
 `daemonarchy`. Use the aarch64 catalogue in its own
 `checkouts-16-aarch64-1.5.0-r3` feed for that architecture.
+
+The [checked-in catalogue](../overlay/usr/local/share/daemonarchy-installer/checkouts.json)
+now selects the later release. The identities and measurements in this section
+apply only to the historical 1.5.0 snapshot.
 
 | Selection | Package download, bytes | Extracted content including `.git`, bytes | Peak free-space allowance, bytes |
 | --- | ---: | ---: | ---: |

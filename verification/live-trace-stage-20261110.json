@@ -1,0 +1,60 @@
+{
+  "schema": "daemonarchy/live-trace-stage-evidence@1",
+  "source_parent": "ff07304248506762c85f8e9e03f198fb7ab5a1af",
+  "source_sha256": {
+    "scripts/stage-live-trace.py": "05b000d735ec81f19c5bb74254f08bf6bc8ead3a4758fd55c3c4dbbfc1e35b67",
+    "tools/boottrace/daemonarchy_trace": "c660b20f792f48ebb1973b5263e57f38af13137530bd3af0adb2d2ca3de4dbd7",
+    "overlay/usr/local/libexec/daemonarchy-installer/boot-trace": "7de088fb32529bb00f945cd96dee97caedf29f2550f339d704a0db44c0f5454d",
+    "scripts/make-ram-iso.sh": "c62137684c14d69269d0322e0436d3c9e860b2cc36d4498cad4d831f190e4143",
+    "scripts/make-arm-ram-installer.sh": "1cdded0cd3c4bc0630d5d6662de61d9a04234f795c89cce96f90e28872ab4cbb",
+    "tests/live-trace-stage.py": "4cfa0880aed2056cb6811b5e773f7e8866e1e172f541177919bf203f28ec66aa"
+  },
+  "implementation": {
+    "default_rc_service": true,
+    "ram_builders_stage_helpers": true,
+    "service_background": true,
+    "operation_timeout_seconds": 120,
+    "kill_grace_seconds": 5,
+    "lock_wait_seconds": 110,
+    "real_installer_events": false
+  },
+  "tests": {
+    "linux_staging_groups_passed": 9,
+    "native_freebsd_arm64_staging_groups_passed": 9,
+    "native_ram_admission_groups_passed": 4,
+    "native_skips": 0,
+    "linux_ram_admission_groups_passed": 3,
+    "linux_ram_admission_native_group_skipped": 1,
+    "existing_session_log_groups_passed": 8,
+    "fixture_scope": "Staging tests use synthetic ELF headers for both supported machines; they do not execute target programs."
+  },
+  "native_preparation": {
+    "complete_retained_live_root_staged": true,
+    "staged_files": 8,
+    "root_mode": "0755",
+    "root_uid": 0,
+    "root_gid": 1002,
+    "rcorder_prerequisites": [
+      "FILESYSTEMS",
+      "var",
+      "tmp",
+      "ldconfig"
+    ],
+    "before_LOGIN": true,
+    "full_image_assembly": "running; native makefs and read-only fsck completed, LZMA packing in progress",
+    "automatic_rc_runtime": "not yet tested"
+  },
+  "retained_failure": {
+    "local_repeat_staging": "Initial test exposed PermissionError while truncating mode-0555 helpers. Atomic entry replacement passes corrected repeat-staging tests.",
+    "unsafe_paths": "Symlinked prerequisite ancestors and multiply linked destinations now refuse before any staged helper writes."
+  },
+  "qualification": {
+    "staging_admission": true,
+    "native_rcorder": true,
+    "automatic_runtime_capture": false,
+    "actual_installer": false,
+    "CURRENT_final_media": false,
+    "physical": false,
+    "release": false
+  }
+}

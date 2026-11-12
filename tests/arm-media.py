@@ -30,6 +30,15 @@ def fdt(board, nested=False):
 
 
 class MediaInputs(unittest.TestCase):
+    def test_ram_bootstrap_does_not_ignore_later_unquoted_overrides(self):
+        config = ('mfsroot_load="YES"\nmfsroot_type=md_image\n'
+                  'mfsroot_name="/boot/mfsroot.uzip"\ngeom_uzip_load=YES\n'
+                  'vfs.root.mountfrom="ufs:/dev/md0.uzip"\n')
+        media.check_ram_bootstrap(config)
+        for suffix in ('mfsroot_load=NO\n', "mfsroot_load='NO'\n", 'mfsroot_load+=NO\n'):
+            with self.assertRaises(ValueError):
+                media.check_ram_bootstrap(config + suffix)
+
     def test_nested_or_foreign_compatible_cannot_enroll_the_mini(self):
         with tempfile.TemporaryDirectory() as directory:
             archive = Path(directory) / "bootstrap.zip"
