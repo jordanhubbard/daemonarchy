@@ -1,0 +1,75 @@
+{
+  "schema": "daemonarchy/completion-progress@1",
+  "observed_utc": "2026-11-13T13:19:44.001289+00:00",
+  "goal": "sync with freebsd upstream, review and update all outstanding PRs, complete 1.6 release work",
+  "goal_status": "active",
+  "release_status": "not-qualified",
+  "prior_scope": "docs/roadmap/release-1.6.0.md",
+  "merged": {
+    "uconsole_pr17": {
+      "head": "c3a18fe5c35885c49fe49937a4d40774db6ad2f9",
+      "merge": "d32a7ab4af124fe4661c982e9c180ed885692ea3",
+      "checks": 17,
+      "result": "success or legitimate skip",
+      "scope": "Timed RP1 UART TX, CTS/RTS and compatible migration; full documented peripheral fidelity remains incomplete."
+    }
+  },
+  "reviews": {
+    "source93": {
+      "head": "c20531da2e3d42f1867ee606496b9d56f98cf7e2",
+      "upstream": "fabdac3abcbb06551415ca64b69b0e29946834f9",
+      "upstream_commits": 622,
+      "controller_tests": 150,
+      "native_only_skips": 5,
+      "status": "draft; cross-build and analysis gates pending; historical upstream style findings fail Style Checker, no gate override or history rewrite"
+    },
+    "ports63": {
+      "head": "4d5e9d02be26c74ff5f83a775b4c459ccb0e6a01",
+      "hosted_checks": "all five passed",
+      "status": "draft; CURRENT closure not qualified"
+    },
+    "ports64": {
+      "head": "232a80bdd18175a7086f4193b179007b4da89a63",
+      "scope": "OpenBLAS host probe skips -march=native only when AVX512 explicitly disabled",
+      "native_probe": "original compile fails; both corrected host probes compile and execute in both output modes",
+      "status": "draft; isolated original testport controller preparing snapshot/cache, full library/QA/install acceptance pending"
+    },
+    "ports65": {
+      "head": "2d06d3126e8b374f4524fae2f5b8bce6529e6b41",
+      "upstream": "a13fb0f8a05cb6c8546d23efe7e14b5e1702b60b",
+      "upstream_commits": 1548,
+      "controller_tests": 40,
+      "native_only_skips": 1,
+      "category_indexes": 62,
+      "origin_entries_resolved": 35580,
+      "status": "draft stacked on 64; native metadata run43432191775 pending; changed CURRENT closure not qualified"
+    },
+    "omarchy3": {
+      "head": "5410fbbba9ff205849a11356058e5cadd15c36dd",
+      "upstream": "3f974d011575c53dcec452dea1c253d03b8d96bf",
+      "upstream_commits": 145,
+      "local_checks": "structural i18n and extraction scan passed; all 61 downstream paths preserved",
+      "status": "draft; hosted full VM run43432454492 pending, native FreeBSD adaptation and visual acceptance remain open"
+    }
+  },
+  "original_current_bulk": {
+    "source": "4b6dd598234450bf82278a846bfec809e4cc0077",
+    "ports": "378954db127eb5126a65b45fca31b29ea2f93e83",
+    "status": "running",
+    "observed_source_built": 129,
+    "observed_fetched": 683,
+    "observed_failed": 1,
+    "observed_skipped": 65,
+    "failure": "math/openblas: Clang21 -march=native resolves to unsupported athlon-xp CPU",
+    "in_flight_inputs_preserved": true
+  },
+  "remaining": [
+    "Review and land current source/ports/Omarchy imports after their applicable gates and CI policy findings are resolved.",
+    "Complete matched amd64/aarch64 base/module/package closures and independent native acceptance.",
+    "Complete documented RPi4/RPi5 emulation and software platform/driver work in the full 1.6 plan.",
+    "Qualify exact final media, virtual installation, desktop, update/rollback/recovery and default trace behavior.",
+    "Complete canonical per-unit Components/SDK/lifecycle admission, performance work, release signing and publication."
+  ],
+  "physical_acceptance": "Not claimed; prior operator scope excludes physical access from this software execution program.",
+  "publication_performed": false
+}
