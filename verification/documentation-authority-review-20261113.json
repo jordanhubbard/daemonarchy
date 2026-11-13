@@ -33,14 +33,6 @@
     "Full 1.6 software/emulator/upstream scope and separate physical evidence.",
     "Native receipt, package/SDK/lifecycle, signing and publication gates remain required."
   ],
-  "authority_review": {
-    "authority_identity": "sha256:40032e16c1c215729eeec35c9a5bd6ec23463f2ec6682f1c5f000cdb7ea2cb0f",
-    "document": "docs/architecture/design-traceability.md",
-    "expected_marker": "<!-- literate-ai:authority-reviewed sha256:40032e16c1c215729eeec35c9a5bd6ec23463f2ec6682f1c5f000cdb7ea2cb0f -->",
-    "recorded": true,
-    "schema": "literate-ai/authority-review@1",
-    "state": "current"
-  },
   "lock_review": [
     {
       "component": "compatibility",
@@ -108,7 +100,7 @@
     }
   ],
   "checks": {
-    "project_validate": true,
+    "project_validate": "Historical agent-recorded observation passed; current authority gate deliberately remains stale pending human re-attestation.",
     "host_locks_current": 8,
     "native_receipt_present": false,
     "verify": {
@@ -118,5 +110,15 @@
     }
   },
   "native_execution_performed": false,
-  "release_qualified": false
+  "release_qualified": false,
+  "human_attestation": "pending; agent-recorded marker restored to prior human marker under HACKING.md requirement",
+  "agent_review_observation": {
+    "authority_identity": "sha256:40032e16c1c215729eeec35c9a5bd6ec23463f2ec6682f1c5f000cdb7ea2cb0f",
+    "document": "docs/architecture/design-traceability.md",
+    "expected_marker": "<!-- literate-ai:authority-reviewed sha256:40032e16c1c215729eeec35c9a5bd6ec23463f2ec6682f1c5f000cdb7ea2cb0f -->",
+    "recorded": true,
+    "schema": "literate-ai/authority-review@1",
+    "state": "current"
+  },
+  "current_authority_gate": "stale until human re-attestation"
 }
