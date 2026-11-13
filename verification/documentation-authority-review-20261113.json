@@ -1,0 +1,122 @@
+{
+  "schema": "daemonarchy/documentation-authority-review@1",
+  "observed_utc": "2026-11-13T13:42:48.896973+00:00",
+  "review_kind": "Agent review of current authority and incremental documentation changes, not native execution acceptance.",
+  "previous_recorded_review_commit": "8d90c6b05cd0c9dc65022327c0e7ca1112213324",
+  "reviewed_delta": [
+    "docs/boottrace.md",
+    "docs/mastering-1.5.0.md",
+    "docs/optional-source-sizing.md",
+    "docs/roadmap/active-work.md",
+    "docs/roadmap/default-install-tracing.md",
+    "docs/roadmap/release-1.6.0.md"
+  ],
+  "reviewed_authority": [
+    "literate.project.json",
+    "SKILL.md",
+    "PROJECT.md",
+    "docs/README.md",
+    "docs/architecture/design-traceability.md",
+    "components/*/component.md",
+    "components/*/interfaces/contract.md",
+    "routing/retained.json",
+    "workflows/retained.md",
+    "skills/specification-to-source/retained-boundaries/SKILL.md"
+  ],
+  "corrections": [
+    "Identify published 1.5.1 and planned 1.6 in PROJECT.md while retaining deferred obligations.",
+    "Distinguish selected exact-wheel Standard binding from unqualified original product execution in retained workflow/skill guidance."
+  ],
+  "preserved_invariants": [
+    "Original FreeBSD source authority and immutable release history.",
+    "Exact-image and actual-target acceptance, failures/skips, explicit evidence scope and no aggregate-to-per-unit inference.",
+    "Full 1.6 software/emulator/upstream scope and separate physical evidence.",
+    "Native receipt, package/SDK/lifecycle, signing and publication gates remain required."
+  ],
+  "authority_review": {
+    "authority_identity": "sha256:40032e16c1c215729eeec35c9a5bd6ec23463f2ec6682f1c5f000cdb7ea2cb0f",
+    "document": "docs/architecture/design-traceability.md",
+    "expected_marker": "<!-- literate-ai:authority-reviewed sha256:40032e16c1c215729eeec35c9a5bd6ec23463f2ec6682f1c5f000cdb7ea2cb0f -->",
+    "recorded": true,
+    "schema": "literate-ai/authority-review@1",
+    "state": "current"
+  },
+  "lock_review": [
+    {
+      "component": "compatibility",
+      "nodes": 1,
+      "edges": 0,
+      "contract_fields_preserved": true,
+      "resolver_policy_target_preserved": true,
+      "normalized_graph_preserved": true
+    },
+    {
+      "component": "desktop",
+      "nodes": 2,
+      "edges": 1,
+      "contract_fields_preserved": true,
+      "resolver_policy_target_preserved": true,
+      "normalized_graph_preserved": true
+    },
+    {
+      "component": "diagnostics",
+      "nodes": 1,
+      "edges": 0,
+      "contract_fields_preserved": true,
+      "resolver_policy_target_preserved": true,
+      "normalized_graph_preserved": true
+    },
+    {
+      "component": "installer",
+      "nodes": 6,
+      "edges": 5,
+      "contract_fields_preserved": true,
+      "resolver_policy_target_preserved": true,
+      "normalized_graph_preserved": true
+    },
+    {
+      "component": "package-engine",
+      "nodes": 1,
+      "edges": 0,
+      "contract_fields_preserved": true,
+      "resolver_policy_target_preserved": true,
+      "normalized_graph_preserved": true
+    },
+    {
+      "component": "release",
+      "nodes": 8,
+      "edges": 13,
+      "contract_fields_preserved": true,
+      "resolver_policy_target_preserved": true,
+      "normalized_graph_preserved": true
+    },
+    {
+      "component": "updates",
+      "nodes": 3,
+      "edges": 2,
+      "contract_fields_preserved": true,
+      "resolver_policy_target_preserved": true,
+      "normalized_graph_preserved": true
+    },
+    {
+      "component": "verified-boot",
+      "nodes": 1,
+      "edges": 0,
+      "contract_fields_preserved": true,
+      "resolver_policy_target_preserved": true,
+      "normalized_graph_preserved": true
+    }
+  ],
+  "checks": {
+    "project_validate": true,
+    "host_locks_current": 8,
+    "native_receipt_present": false,
+    "verify": {
+      "fail": 1,
+      "pass": 2,
+      "skipped": 2
+    }
+  },
+  "native_execution_performed": false,
+  "release_qualified": false
+}

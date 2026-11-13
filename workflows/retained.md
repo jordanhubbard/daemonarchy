@@ -109,8 +109,11 @@ stages:
 
 This declaration satisfies the framework's generation-workflow schema. It does
 not qualify generation, native execution or source-authority transfer. The
-current routing policy is metadata-only and no lifecycle driver is configured.
-Existing commands remain in HACKING.md and the acceptance inventory.
+current routing policy is metadata-only. The project selects an exact-wheel
+Standard lifecycle driver, but its original product execution profile and native
+receipt remain unqualified. That binding does not authorize this declaration's
+generation stages. Existing commands remain in HACKING.md and the acceptance
+inventory.
 
 ## Stage: plan
 

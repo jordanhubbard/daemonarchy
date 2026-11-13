@@ -21,8 +21,9 @@ original implementation into specifications or overwrite retained files. Keep
 FreeBSD source/ports and separately maintained repositories as exact external
 inputs. A contract, lock or generated candidate does not transfer source authority.
 
-Current execution is not bound to a qualified lifecycle driver. Stop generation
-until the selected task has an acknowledged execution plan and compatible native
+The project binds a Standard lifecycle driver, but its original product execution
+profile and native receipt remain unqualified. Stop generation until the selected
+task has an acknowledged execution plan and compatible native
 worker, toolchain, input custody and independent acceptance. For a future admitted
 candidate, use only the approved specification and public contracts, write inside
 the declared disposable candidate tree, and retain failures and scope limitations.
