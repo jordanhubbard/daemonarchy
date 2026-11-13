@@ -1,6 +1,6 @@
 {
   "schema": "daemonarchy/completion-progress@1",
-  "observed_utc": "2026-11-13T13:19:44.001289+00:00",
+  "observed_utc": "2026-11-13T13:21:31.712650+00:00",
   "goal": "sync with freebsd upstream, review and update all outstanding PRs, complete 1.6 release work",
   "goal_status": "active",
   "release_status": "not-qualified",
@@ -21,7 +21,17 @@
       "upstream_commits": 622,
       "controller_tests": 150,
       "native_only_skips": 5,
-      "status": "draft; cross-build and analysis gates pending; historical upstream style findings fail Style Checker, no gate override or history rewrite"
+      "status": "draft; cross-build and analysis gates pending; historical upstream style findings fail Style Checker, no gate override or history rewrite",
+      "style_audit": {
+        "workflow_run": 43431556483,
+        "head": "c20531da2e3d42f1867ee606496b9d56f98cf7e2",
+        "style_findings": 399,
+        "upstream_commits_with_findings": 51,
+        "all_finding_commits_proven_ancestors_of_official_upstream": true,
+        "upstream": "fabdac3abcbb06551415ca64b69b0e29946834f9",
+        "log_sha256": "73e5542cb931e8b077d7c159d832cd983ac4a524826a7698aa260a23db956c8a",
+        "gate_overridden": false
+      }
     },
     "ports63": {
       "head": "4d5e9d02be26c74ff5f83a775b4c459ccb0e6a01",
@@ -32,7 +42,9 @@
       "head": "232a80bdd18175a7086f4193b179007b4da89a63",
       "scope": "OpenBLAS host probe skips -march=native only when AVX512 explicitly disabled",
       "native_probe": "original compile fails; both corrected host probes compile and execute in both output modes",
-      "status": "draft; isolated original testport controller preparing snapshot/cache, full library/QA/install acceptance pending"
+      "status": "draft; original isolated poudriere testport running after independent cache hashes and fresh resource admission; full library/QA/install acceptance pending",
+      "cache_paths_independently_hashed": 1892,
+      "cache_manifest_sha256": "b8ccc6ca63a13fb8e1d5adaadede1153fe1c86527ba012f91679a82470bca452"
     },
     "ports65": {
       "head": "2d06d3126e8b374f4524fae2f5b8bce6529e6b41",
@@ -42,7 +54,14 @@
       "native_only_skips": 1,
       "category_indexes": 62,
       "origin_entries_resolved": 35580,
-      "status": "draft stacked on 64; native metadata run43432191775 pending; changed CURRENT closure not qualified"
+      "status": "draft stacked on 64; native metadata passed on exact head; changed CURRENT package closure and runtime not qualified",
+      "native_metadata": {
+        "run": 43432191775,
+        "head": "2d06d3126e8b374f4524fae2f5b8bce6529e6b41",
+        "result": "success",
+        "scope": "Native FreeBSD 15.0 BSD make metadata and portlint for amd64/aarch64 selections, not ARM binary execution or CURRENT package qualification",
+        "log_sha256": "89e29c0d964c805f8aff5bcac4e28f065620ae0acec703b72c37ee4584347ede"
+      }
     },
     "omarchy3": {
       "head": "5410fbbba9ff205849a11356058e5cadd15c36dd",
