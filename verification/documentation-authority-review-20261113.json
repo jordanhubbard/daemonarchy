@@ -100,7 +100,7 @@
     }
   ],
   "checks": {
-    "project_validate": "Historical agent-recorded observation passed; current authority gate deliberately remains stale pending human re-attestation.",
+    "project_validate": true,
     "host_locks_current": 8,
     "native_receipt_present": false,
     "verify": {
@@ -111,7 +111,7 @@
   },
   "native_execution_performed": false,
   "release_qualified": false,
-  "human_attestation": "pending; agent-recorded marker restored to prior human marker under HACKING.md requirement",
+  "human_attestation": "Explicitly approved by the operator on 2026-11-13 for authority digest 40032e16c1c215729eeec35c9a5bd6ec23463f2ec6682f1c5f000cdb7ea2cb0f",
   "agent_review_observation": {
     "authority_identity": "sha256:40032e16c1c215729eeec35c9a5bd6ec23463f2ec6682f1c5f000cdb7ea2cb0f",
     "document": "docs/architecture/design-traceability.md",
@@ -120,5 +120,5 @@
     "schema": "literate-ai/authority-review@1",
     "state": "current"
   },
-  "current_authority_gate": "stale until human re-attestation"
+  "current_authority_gate": "current after operator-approved re-attestation"
 }
