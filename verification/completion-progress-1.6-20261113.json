@@ -90,5 +90,19 @@
     "Complete canonical per-unit Components/SDK/lifecycle admission, performance work, release signing and publication."
   ],
   "physical_acceptance": "Not claimed; prior operator scope excludes physical access from this software execution program.",
-  "publication_performed": false
+  "publication_performed": false,
+  "product_framework_gates": {
+    "authority": "stale documentation authority marker",
+    "same_failure_on_unchanged_main": "af602b7ea36d6e87924c8d0e3fa82e5234cfcb6e",
+    "authority_files_changed": false,
+    "marker_modified": false,
+    "locks_current": 8,
+    "verify_counts": {
+      "fail": 2,
+      "pass": 1,
+      "skipped": 2
+    },
+    "current_receipt_file_present": false,
+    "native_lifecycle_admission": false
+  }
 }
