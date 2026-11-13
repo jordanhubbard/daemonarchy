@@ -1,0 +1,20 @@
+{
+  "schema": "daemonarchy/issue-review@1",
+  "observed_utc": "2026-11-13T14:10:20.187754+00:00",
+  "issue": 326,
+  "url": "https://github.com/jordanhubbard/daemonarchy/issues/326",
+  "title": "1.5.1, upgraded: black screen, immovable pointer, non-blinking cursor at top left, unable to switch tty",
+  "reviewed_body_sha256": "719006602688261894e5e613fb4a4f781dfd8b343b0500b96c0dc020141b3668",
+  "comments_reviewed": 2,
+  "disposition": "retain-open-unresolved",
+  "observations": [
+    "Reporter clarified KDE installation is unnecessary to reproduce; upgrading existing packages was sufficient.",
+    "Reported pkg check -d output identifies missing libhyprgraphics.so.4 for hyprland/hyprtoolkit and other shared libraries.",
+    "Reporter observed graphical startup even after disabling SDDM."
+  ],
+  "limits": [
+    "No independent exact-environment reproduction yet.",
+    "Missing libraries support investigation of dependency/feed coherence; they do not establish the sole cause of display/focus/TTY failures."
+  ],
+  "scope": "Current software regression; preserve issue and include upgrade dependency/session/recovery behavior in qualification."
+}

@@ -1,6 +1,6 @@
 {
   "schema": "daemonarchy/completion-progress@1",
-  "observed_utc": "2026-11-13T13:21:31.712650+00:00",
+  "observed_utc": "2026-11-13T14:16:30.379318+00:00",
   "goal": "sync with freebsd upstream, review and update all outstanding PRs, complete 1.6 release work",
   "goal_status": "active",
   "release_status": "not-qualified",
@@ -12,6 +12,25 @@
       "checks": 17,
       "result": "success or legitimate skip",
       "scope": "Timed RP1 UART TX, CTS/RTS and compatible migration; full documented peripheral fidelity remains incomplete."
+    },
+    "product328": {
+      "head": "1ee9da458550ccb1631fb579c36a96eaefc045aa",
+      "merge": "de33db515bd1d9542d9289505c4e0d5fdb4368a2",
+      "checks": "all five passed",
+      "scope": "Correct current release and retained Standard binding documentation; review six changed documents and preserve all eight Component graphs while refreshing workflow/skill lock identities."
+    },
+    "product329": {
+      "head": "e9c97f756648988972ceb16416c83de6fb876949",
+      "merge": "48d3aed832c50019d76732dab58c8192b4b0ec01",
+      "checks": "all three passed",
+      "scope": "Record explicit human approval for authority digest 40032e16c1c215729eeec35c9a5bd6ec23463f2ec6682f1c5f000cdb7ea2cb0f; no native qualification or lifecycle receipt granted."
+    },
+    "source93": {
+      "head": "c20531da2e3d42f1867ee606496b9d56f98cf7e2",
+      "merge": "3e840da9243d7321b95eeecc6650793522a23dde",
+      "tree": "5b518d982ed5477c06f251d4e9e3bbe42b1f1d39",
+      "upstream": "fabdac3abcbb06551415ca64b69b0e29946834f9",
+      "status": "merged after all six kernel builds and every non-style check passed; exact operator style exception recorded"
     }
   },
   "reviews": {
@@ -21,7 +40,7 @@
       "upstream_commits": 622,
       "controller_tests": 150,
       "native_only_skips": 5,
-      "status": "draft; cross-build and analysis gates pending; historical upstream style findings fail Style Checker, no gate override or history rewrite",
+      "status": "merged after all six kernel builds and every non-style check passed; exact operator style exception recorded",
       "style_audit": {
         "workflow_run": 43431556483,
         "head": "c20531da2e3d42f1867ee606496b9d56f98cf7e2",
@@ -30,8 +49,15 @@
         "all_finding_commits_proven_ancestors_of_official_upstream": true,
         "upstream": "fabdac3abcbb06551415ca64b69b0e29946834f9",
         "log_sha256": "73e5542cb931e8b077d7c159d832cd983ac4a524826a7698aa260a23db956c8a",
-        "gate_overridden": false
-      }
+        "gate_overridden": false,
+        "operator_exception": {
+          "approved": true,
+          "head": "c20531da2e3d42f1867ee606496b9d56f98cf7e2",
+          "scope": "This import only; inherited upstream findings remain visible; no later change, native build/runtime or release waiver."
+        }
+      },
+      "merge": "3e840da9243d7321b95eeecc6650793522a23dde",
+      "tree": "5b518d982ed5477c06f251d4e9e3bbe42b1f1d39"
     },
     "ports63": {
       "head": "4d5e9d02be26c74ff5f83a775b4c459ccb0e6a01",
@@ -64,11 +90,13 @@
       }
     },
     "omarchy3": {
-      "head": "5410fbbba9ff205849a11356058e5cadd15c36dd",
+      "head": "ec225b6d0bc5aa1c9b27d12fb2eb033e4bf08495",
       "upstream": "3f974d011575c53dcec452dea1c253d03b8d96bf",
       "upstream_commits": 145,
       "local_checks": "structural i18n and extraction scan passed; all 61 downstream paths preserved",
-      "status": "draft; hosted full VM run43432454492 pending, native FreeBSD adaptation and visual acceptance remain open"
+      "status": "draft; opt-in disposable VM visual run 43440732210 active; actual screenshot/motion inspection and FreeBSD adaptation remain open",
+      "capture_scope": "Both trees run under the same disposable guest dependency transaction; captures are review artifacts outside source, not automatic visual acceptance.",
+      "capture_preparation": "Earlier capture attempts stopped before screenshots on fixture tool provisioning. Exact recorder install now uses the disposable guest package guards documented opt-out; original test suites and product update policy unchanged."
     }
   },
   "original_current_bulk": {
@@ -83,7 +111,7 @@
     "in_flight_inputs_preserved": true
   },
   "remaining": [
-    "Review and land current source/ports/Omarchy imports after their applicable gates and CI policy findings are resolved.",
+    "Land ports and Omarchy imports after native package and actual visual gates; qualify merged source on exact matched native artifacts.",
     "Complete matched amd64/aarch64 base/module/package closures and independent native acceptance.",
     "Complete documented RPi4/RPi5 emulation and software platform/driver work in the full 1.6 plan.",
     "Qualify exact final media, virtual installation, desktop, update/rollback/recovery and default trace behavior.",
@@ -92,17 +120,37 @@
   "physical_acceptance": "Not claimed; prior operator scope excludes physical access from this software execution program.",
   "publication_performed": false,
   "product_framework_gates": {
-    "authority": "stale documentation authority marker",
-    "same_failure_on_unchanged_main": "af602b7ea36d6e87924c8d0e3fa82e5234cfcb6e",
-    "authority_files_changed": false,
-    "marker_modified": false,
+    "authority": "pass after explicit human re-attestation of exact reviewed digest",
     "locks_current": 8,
     "verify_counts": {
-      "fail": 2,
-      "pass": 1,
+      "fail": 1,
+      "pass": 2,
       "skipped": 2
     },
     "current_receipt_file_present": false,
-    "native_lifecycle_admission": false
+    "native_lifecycle_admission": false,
+    "postmerge_functional_workflows": "No eligible workflow runs on merged main 48d3aed832c50019d76732dab58c8192b4b0ec01; none invented."
+  },
+  "accelerated_development_worker": {
+    "status": "admitted",
+    "kernel_osversion": 1600031,
+    "userland_osversion": 1600031,
+    "arch": "amd64",
+    "cpus": 4,
+    "physical_memory_bytes": 17141571584,
+    "vm_guest": "kvm",
+    "kernel_sha256": "0a0b23697b2e75aae37fa3828b5c50745e19913e27d19deeffffc28bd0811e72",
+    "guest_root_free_bytes": 117667893248,
+    "seed_source": "4b6dd598234450bf82278a846bfec809e4cc0077",
+    "storage": "Private native-worker disk through encrypted UNIX-socket NBD; no large image placed on the compute host.",
+    "tools": "python312, git-lite and poudriere-devel installed in this disposable guest; unprivileged build account prepared",
+    "new_source_revision": "3e840da9243d7321b95eeecc6650793522a23dde",
+    "new_source_build": "exact snapshot transferring; not yet built or qualified",
+    "limits": "Seed boot admission only; no SDK/lifecycle/release qualification, no original build inputs changed.",
+    "build_output_volume": "Separate 200 GiB sparse disk prepared on admitted native storage; attach/format and source build still pending, 90 GiB per-phase output reserve retained."
+  },
+  "issue_review_delta": {
+    "issue326": "Reviewed report and both clarifications; retain open. Shared-library dependency failures and graphical startup/TTY recovery require independent reproduction; KDE is not required by the clarified reproducer.",
+    "evidence": "verification/issue326-review-20261113.json"
   }
 }
