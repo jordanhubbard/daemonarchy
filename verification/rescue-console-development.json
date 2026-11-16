@@ -1,0 +1,118 @@
+{
+  "schema": "daemonarchy/rescue-console-development@1",
+  "work_item": "RECOVERY-001",
+  "issue": "https://github.com/jordanhubbard/daemonarchy/issues/326",
+  "status": "bounded-native-candidate-passed",
+  "candidate": {
+    "parent_product_commit": "adf41d7671cfb8fedd108b3f3ecbe584a0dcfb58",
+    "script": "overlay/usr/local/sbin/daemonarchy-rescue",
+    "script_sha256": "e503bcc2746d3f79d932d53b40a50e8d24671ba60f9ea6911540dc2f1c7c4a60",
+    "script_git_blob": "61a1069e06ac3690e370dfb0ebf5eb9d262596e3",
+    "test_sha256": "004565a0a9c0ceef7e07035a823beb854f2aafd4a88d3ead1035248d4e5bbbbe",
+    "mode": "Only this rescue script was applied to private boot environments of the preserved released installation; the full current product tree was not installed."
+  },
+  "baseline": {
+    "published_product_commit": "b6b9151771bab8961cec7001688c0ff95163f628",
+    "iso_sha256": "e61b8112815e5f25a6f8e3c619402392c5305a81140817aad44f32a7761bc904",
+    "kernel_source_commit": "cb38d6498a24606aba3b3ca22fceedc61b31f9bf",
+    "osversion": 1600029,
+    "kernel_sha256": "a0e9278e4c8a4790644814d839be6ccc027b7afad4bac9fa6952ad88eabce4b8",
+    "original_script_sha256": "d9e69f2ab15acd399181fb116e5ae46f17711b2e709b117d4c2af87e87f76c48",
+    "failure": "Normal desktop update breaks library closure; failed SDDM repeatedly selects VT9 while the original rescue menu stays hidden on ttyv0.",
+    "target": "Private amd64 QEMU 10.2.1 KVM/VirGL, UEFI, 4 CPUs, 4 GiB, GELI/ZFS; no physical result."
+  },
+  "controls": [
+    {
+      "name": "portable rescue and authentication regressions",
+      "target": "Linux arm64 controller",
+      "exit": 0
+    },
+    {
+      "name": "original source with new regression",
+      "target": "Linux arm64 controller",
+      "exit": 1,
+      "expected_failure": true,
+      "observed": "Original public monitor path draws the menu without stopping the failed SDDM or selecting ttyv0."
+    },
+    {
+      "name": "FreeBSD timeout background-daemon negative/positive control",
+      "target": "FreeBSD amd64 1600029",
+      "observed": "Default group supervision returns 124 and terminates the background child; foreground supervision returns 0 with the child alive.",
+      "first_prototype": "fa3e52cb3f281df9040228f3cdfeeb75e47c4576180f4892cba75955b4d18446",
+      "first_prototype_rejected_by_current_regression": true
+    },
+    {
+      "name": "native rescue suite including actual foreground-child survival",
+      "target": "FreeBSD amd64 1600029",
+      "exit": 0
+    },
+    {
+      "name": "native rescue suite including actual foreground-child survival",
+      "target": "FreeBSD arm64 bootstrap worker 1600031",
+      "exit": 0,
+      "scope": "Shell/utility controls; not ARM GUI or resulting CURRENT-image acceptance."
+    },
+    {
+      "name": "automatic failed graphical boot",
+      "observed": "After normal GELI unlock, real VNC output shows the public menu on ttyv0 with no guest SSH or VT-switch input before the observation. Read-only audit then confirms VT1, no SDDM process, exact candidate hash and unchanged enabled/login configuration.",
+      "passed": true
+    },
+    {
+      "name": "root authentication and failed desktop retry",
+      "observed": "Actual console rejects an incorrect root password. After correct authentication, SDDM restarts on VT9, fails on the real missing library, and the menu returns visibly on VT1 without remote intervention.",
+      "passed": true
+    },
+    {
+      "name": "healthy boot environment and desktop preservation",
+      "observed": "Authenticated console selects the pre-update BE containing the same candidate. Encrypted boot/autologin and the unchanged published graphical helper pass; SDDM remains on VT9 for 93 seconds before deliberate failure injection.",
+      "graphical_helper_exit": 0
+    },
+    {
+      "name": "desktop-loss fallback and successful authenticated retry",
+      "observed": "Controlled SSH stop injects desktop loss without a VT switch. VNC observes the public menu after the crash grace period. Correct console authentication/retry restores the desktop; the same published helper passes again and the new SDDM survives 153 seconds before clean shutdown.",
+      "graphical_helper_exit": 0
+    }
+  ],
+  "graphical_helper": {
+    "published_commit": "b6b9151771bab8961cec7001688c0ff95163f628",
+    "path": "tests/qemu-desktop.py",
+    "sha256": "c599b6a58b555f678b9af32b3a5b0b6b262d77a6ba907651c2b8769d2ecd9793",
+    "checks": [
+      "encrypted autologin",
+      "monitor and config errors",
+      "panel",
+      "keyboard terminal",
+      "absolute pointer",
+      "native browser page",
+      "native package-manager UI"
+    ]
+  },
+  "evidence_archive": {
+    "bytes": 471004,
+    "sha256": "df08b988e218931a548b76decd079b84a509bc4c0b512038f5dba7ce21402fd3",
+    "files": 116,
+    "independently_verified_filesystems": 2,
+    "private_contents_excluded": [
+      "private keys",
+      "raw guest cores",
+      "disk images"
+    ],
+    "failed_prototype_and_control_results_retained": true
+  },
+  "boundaries": {
+    "package_closure_repair_included": false,
+    "preexisting_moonlight_missing_library_resolved": false,
+    "full_current_product_tree_qualified": false,
+    "literate_ai_lifecycle_receipt_earned": false,
+    "final_1_6_media_qualified": false,
+    "physical_hardware_qualified": false,
+    "new_arm_gui_qualified": false,
+    "published_release_bytes_changed": false,
+    "signing_or_publication_performed": false
+  },
+  "remaining": [
+    "Human documentation authority review and exact-head CI",
+    "Validate the package solver repair and full selected application closure",
+    "Qualify resulting release media and remaining complete 1.6 requirements"
+  ]
+}

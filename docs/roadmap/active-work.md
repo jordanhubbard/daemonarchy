@@ -2019,3 +2019,17 @@ remains open; report files do not establish a passing gate.
   - [ ] Update new-hardware documentation and tooling around a conversational hardware description and a coding LLM; reassess separate generic pre-built diagnostic assets without changing published bytes.
 - **Evidence:**
   - [ ] Exact-image VM and physical boot/install, failure/reset and post-mortem readback prove automatic trace persistence without opting into an experiment menu; unsupported persistence windows remain explicit.
+
+### [ ] RECOVERY-001 — Expose the rescue console after graphical startup fails
+
+- **GitHub issue:** [#326](https://github.com/jordanhubbard/daemonarchy/issues/326)
+- **Release target:** 1.6.0
+- **Priority:** P1
+- **Owner:** diagnostics Component
+- **Direction:** For issue #326, stop a failed SDDM restart loop and activate ttyv0 automatically after the existing startup/crash grace period; preserve authenticated recovery and healthy graphical sessions.
+- **Conclusion:** The unchanged 1.5.1 image reproduces a hidden rescue menu after a normal package update. The rescue-only candidate now passes portable and native amd64/ARM64 controls plus actual amd64 UEFI/GELI/KVM startup, authentication, failed-retry, healthy-desktop, desktop-loss and successful-retry checks. See the [bounded native record](../../verification/rescue-console-development.json). Human authority review, exact-head CI and resulting release-media qualification remain open; package-closure repair is separate and no deployed fix is claimed.
+- **Depends on:** none
+- **Implementation:**
+  - [x] Handle initial graphical failure and an unsuccessful authenticated desktop retry without requiring function keys, SSH or persistent SDDM configuration changes.
+- **Evidence:**
+  - [x] Run original portable rescue/security controls and independent exact released-image FreeBSD VM checks for automatic menu visibility, healthy-desktop preservation, authenticated retry and boot-environment recovery.

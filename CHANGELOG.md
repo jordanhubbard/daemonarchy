@@ -1,5 +1,12 @@
 # Changelog
 
+## Unreleased
+
+- Bring the rescue console forward after graphical startup or an authenticated
+  desktop retry fails, stopping the failed SDDM instance so it cannot keep
+  selecting a blank graphical VT (#326). Keep the configured graphical login
+  and root authentication; package-closure repair remains separate.
+
 ## 1.5.1 (November 7, 2026)
 
 Base: FreeBSD 16.0-CURRENT (OSVERSION `1600029`), daemonarchy-src `cb38d64`, ports `8e28793a`, installer

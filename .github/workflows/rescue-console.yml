@@ -1,0 +1,26 @@
+name: Rescue console controls
+
+on:
+  push:
+    paths:
+      - '.github/workflows/rescue-console.yml'
+      - 'overlay/usr/local/sbin/daemonarchy-rescue'
+      - 'tests/rescue-console.sh'
+  pull_request:
+    paths:
+      - '.github/workflows/rescue-console.yml'
+      - 'overlay/usr/local/sbin/daemonarchy-rescue'
+      - 'tests/rescue-console.sh'
+
+permissions:
+  contents: read
+
+jobs:
+  rescue:
+    runs-on: ubuntu-latest
+    steps:
+      - uses: actions/checkout@v4
+      - name: Check the retained shell and rescue behavior
+        run: |
+          sh -n overlay/usr/local/sbin/daemonarchy-rescue
+          bash tests/rescue-console.sh
