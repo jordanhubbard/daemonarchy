@@ -2027,7 +2027,7 @@ remains open; report files do not establish a passing gate.
 - **Priority:** P1
 - **Owner:** diagnostics Component
 - **Direction:** For issue #326, stop a failed SDDM restart loop and activate ttyv0 automatically after the existing startup/crash grace period; preserve authenticated recovery and healthy graphical sessions.
-- **Conclusion:** The unchanged 1.5.1 image reproduces a hidden rescue menu after a normal package update. The rescue-only candidate now passes portable and native amd64/ARM64 controls plus actual amd64 UEFI/GELI/KVM startup, authentication, failed-retry, healthy-desktop, desktop-loss and successful-retry checks. See the [bounded native record](../../verification/rescue-console-development.json). Human authority review, exact-head CI and resulting release-media qualification remain open; package-closure repair is separate and no deployed fix is claimed.
+- **Conclusion:** The unchanged 1.5.1 image reproduces a hidden rescue menu after a normal package update. The rescue-only candidate now passes portable and native amd64/ARM64 controls plus actual amd64 UEFI/GELI/KVM startup, authentication, failed-retry, healthy-desktop, desktop-loss and successful-retry checks. See the [bounded native record](../../verification/rescue-console-development.json). Resulting release-media qualification remains open; package-closure repair is separate and no deployed fix is claimed.
 - **Depends on:** none
 - **Implementation:**
   - [x] Handle initial graphical failure and an unsuccessful authenticated desktop retry without requiring function keys, SSH or persistent SDDM configuration changes.
