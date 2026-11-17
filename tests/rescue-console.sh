@@ -52,6 +52,120 @@ desktop_ready() { [[ $ticks -lt 4 ]]; }
 monitor_desktop >"$work/crashed"
 [[ $ticks == 6 ]]
 grep -q 'graphical login or desktop is not running' "$work/crashed"
+# A failed SDDM can keep stealing the visible VT even after the menu is drawn.
+# Exercise the public startup/retry paths with a display-manager and VT model.
+(
+  calls=$work/console-actions
+  console_tty=/dev/ttyv0
+  id() { echo 0; }
+  tty() { echo "$console_tty"; }
+  desktop_ready() { [[ -e $work/desktop-ready ]]; }
+  pgrep() { [[ $* == '-x sddm' && -e $work/sddm-running ]]; }
+  timeout() {
+    [[ $1 == -f && $2 == -k && $3 -gt 0 && $3 -le 2 && $4 -gt 0 && $4 -le 15 ]] || return 99
+    shift 4
+    "$@"
+  }
+  service() {
+    case $* in
+      'daemonarchy-graphics start')
+        [[ ! -e $work/graphics-fails ]] || { echo graphics-failed >>"$calls"; return 1; }
+        return 0 ;;
+      'sddm restart')
+        echo restart >>"$calls"
+        touch "$work/sddm-running"
+        [[ ! -e $work/restart-fails ]]
+        ;;
+      'sddm onestop')
+        echo stop >>"$calls"
+        [[ ! -e $work/stop-fails ]] || return 1
+        rm "$work/sddm-running"
+        ;;
+      *) echo "unexpected service action: $*" >&2; exit 99 ;;
+    esac
+  }
+  vidcontrol() {
+    [[ $* == '-s 1' ]] || exit 99
+    echo select-ttyv0 >>"$calls"
+    [[ ! -e $work/select-fails ]]
+  }
+  rescue_watch_debug() { :; }
+  rescue_resume_debug() { :; }
+  monitor_desktop() { :; }
+  rescue_wait_boot_output() { :; }
+  rescue_record() { echo record >>"$calls"; }
+  rescue_menu() { echo "menu-$1" >>"$calls"; }
+  touch "$work/sddm-running"
+  rescue_main monitor </dev/null >"$work/reclaim.out"
+  [[ $(cat "$calls") == $'stop\nselect-ttyv0\nrecord\nmenu-no' ]]
+  # No display manager: still bring the local fallback to the foreground.
+  : >"$calls"
+  rescue_main monitor </dev/null >"$work/no-sddm.out"
+  [[ $(cat "$calls") == $'select-ttyv0\nrecord\nmenu-no' ]]
+  # Remote and serial invocations must not stop or switch a physical desktop.
+  for console_tty in /dev/pts/1 /dev/ttyu0; do
+    : >"$calls"
+    touch "$work/sddm-running"
+    rescue_main monitor </dev/null >"$work/remote.out"
+    [[ $(cat "$calls") == $'record\nmenu-no' ]]
+    [[ -e $work/sddm-running ]]
+  done
+  console_tty=/dev/ttyv0
+  # A desktop that recovers while boot messages settle must not be stopped.
+  : >"$calls"
+  observations=0
+  monitor_desktop() {
+    observations=$((observations + 1))
+    [[ ! -s $calls ]]
+    if ((observations == 2)); then rm "$work/desktop-ready"; fi
+  }
+  rescue_wait_boot_output() {
+    if ((observations == 1)); then touch "$work/desktop-ready"; fi
+  }
+  rescue_main monitor </dev/null >"$work/late-login.out"
+  [[ $observations == 2 ]]
+  [[ $(cat "$calls") == $'stop\nselect-ttyv0\nrecord\nmenu-no' ]]
+  monitor_desktop() { :; }
+  rescue_wait_boot_output() { :; }
+  # A failed authenticated retry must bring the same menu back into view.
+  : >"$calls"
+  rescue_main authenticated desktop </dev/null
+  [[ $(cat "$calls") == $'restart\nstop\nselect-ttyv0\nmenu-yes' ]]
+  if [[ -x /usr/local/etc/rc.d/daemonarchy-graphics ]]; then
+    : >"$calls"
+    touch "$work/sddm-running" "$work/graphics-fails"
+    rescue_main authenticated desktop </dev/null
+    [[ $(cat "$calls") == $'graphics-failed\nstop\nselect-ttyv0\nmenu-yes' ]]
+    rm "$work/graphics-fails"
+  fi
+  # Even a failed restart command can already have changed the active VT.
+  : >"$calls"
+  touch "$work/restart-fails"
+  rescue_main authenticated desktop </dev/null
+  [[ $(cat "$calls") == $'restart\nstop\nselect-ttyv0\nmenu-yes' ]]
+  # Failed stop/switch operations are explicit diagnostics, not a silent pass.
+  rm "$work/restart-fails"
+  : >"$calls"
+  touch "$work/sddm-running" "$work/stop-fails" "$work/select-fails"
+  if rescue_main monitor </dev/null >"$work/reclaim-errors.out"; then :; fi
+  grep -q 'Could not stop the failed graphical login' "$rescue_log"
+  grep -q 'Could not select the recovery console' "$rescue_log"
+  [[ $(cat "$calls") == $'stop\nselect-ttyv0\nrecord\nmenu-no' ]]
+)
+# FreeBSD timeout's default mode also waits for background descendants. A real
+# rc-style background child must survive successful foreground supervision.
+if [[ $(uname -s) == FreeBSD ]]; then
+  (
+    child=
+    trap '[[ -z $child ]] || kill "$child" 2>/dev/null || true' EXIT
+    /usr/bin/timeout -f -k 2 3 /bin/sh -c \
+      '/bin/sleep 30 </dev/null >/dev/null 2>&1 & echo $! >"$1"' \
+      rc-background-control "$work/background-child.pid"
+    child=$(cat "$work/background-child.pid")
+    kill -0 "$child"
+    [[ $(ps -p "$child" -o comm=) == *sleep ]]
+  )
+fi
 # Public menu never calls a privileged action directly; it executes login.
 (
   rescue_action() { echo 'UNAUTHENTICATED ACTION' >&2; exit 99; }
