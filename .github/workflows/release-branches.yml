@@ -1,21 +1,8 @@
 name: Release branch synchronization
 
+# Hosted execution is opt-in while GitHub credits are exhausted.
+# The installed local hourly timer runs the same policy checker.
 on:
-  push:
-    branches: [main, 'release/**']
-    paths:
-      - '.github/workflows/release-branches.yml'
-      - 'scripts/check-release-branches.py'
-      - 'tests/release-branches.py'
-      - 'release/branches.json'
-  pull_request:
-    paths:
-      - '.github/workflows/release-branches.yml'
-      - 'scripts/check-release-branches.py'
-      - 'tests/release-branches.py'
-      - 'release/branches.json'
-  schedule:
-    - cron: '23 * * * *'
   workflow_dispatch:
 
 permissions:

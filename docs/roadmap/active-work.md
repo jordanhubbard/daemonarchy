@@ -2045,4 +2045,4 @@ remains open; report files do not establish a passing gate.
   - [x] scripts/check-release-branches.py; release/branches.json; .github/workflows/release-branches.yml
 - **Evidence:**
   - [x] tests/release-branches.py; all six live owned main/release audits pass.
-  - [ ] Land the policy after human documentation authority review; activate and verify the hosted audit.
+  - [ ] Record human documentation authority review separately; the operator waived hosted CI in favor of local testing. Activate and verify the local hourly audit.

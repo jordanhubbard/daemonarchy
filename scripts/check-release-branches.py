@@ -1,5 +1,5 @@
 #!/usr/bin/env python3
-"""Read-only audit of owned main versus release tips; never merge or waive CI."""
+"""Audit owned main versus release tips; optional refresh never changes worktrees."""
 import argparse
 import json
 from pathlib import Path
@@ -98,11 +98,15 @@ def main():
     parser.add_argument("--config", type=Path, default=Path(__file__).resolve().parents[1] / "release/branches.json")
     parser.add_argument("--repo", action="append", default=[], metavar="NAME=PATH")
     parser.add_argument("--prefix", default="refs/remotes/origin/")
-    parser.add_argument("--only", help="Audit one configured repository (CI matrix)")
+    parser.add_argument("--only", help="Audit one configured repository")
+    parser.add_argument("--refresh", action="store_true",
+                        help="Fetch owned main/release refs into a dedicated audit namespace")
     parser.add_argument("--github-contained", action="store_true",
                         help="Ancestry fast path via public GitHub API; divergence needs local audit")
     args = parser.parse_args()
     try:
+        if args.refresh and not args.prefix.startswith("refs/daemonarchy-release-audit/"):
+            raise ValueError("--refresh requires --prefix refs/daemonarchy-release-audit/")
         config = json.loads(args.config.read_text())
         if config["schema"] != "daemonarchy/release-branches@1":
             raise ValueError("unsupported branch policy")
@@ -116,6 +120,13 @@ def main():
             if args.github_contained:
                 results[name] = github_contained(name, config["release_branch"], legacy)
             else:
+                if args.refresh:
+                    refspecs = ["+refs/heads/main:" + args.prefix + "main",
+                                "+refs/heads/release/*:" + args.prefix + "release/*"]
+                    refspecs.extend("+refs/heads/" + ref + ":" + args.prefix + ref for ref in legacy)
+                    subprocess.run(["git", "-C", bindings[name], "fetch", "--no-tags",
+                                    "https://github.com/jordanhubbard/" + name + ".git",
+                                    *refspecs], check=True)
                 results[name] = inspect(bindings[name], args.prefix, config["release_branch"], legacy)
         print(json.dumps({"schema": "daemonarchy/release-branch-audit@1",
                           "repositories": results, "ok": all(r["ok"] for r in results.values())}, indent=2))

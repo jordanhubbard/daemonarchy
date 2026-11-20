@@ -53,7 +53,8 @@ Commit messages remain review authority; a trailer is not a waiver of testing.
 
 `release/branches.json` registers the six owned repositories and required
 upcoming release branch. `scripts/check-release-branches.py` reads Git objects
-without editing worktrees or refs. Fetch complete owned branch histories before
+without editing worktrees. Its optional `--refresh` updates a dedicated audit
+ref namespace from the six fixed owned remotes. Fetch complete owned branch histories before
 running it (a shallow history is insufficient):
 
 ```sh
@@ -71,14 +72,22 @@ even if a maintainer believes an equivalent resolution already exists; reconcile
 the history explicitly. It does not silently use an `ours` merge to mark work
 as integrated.
 
-The product's **Release branch synchronization** workflow runs the audit across
-all six repositories hourly and on demand, and runs policy regression tests on
-policy changes. GitHub ancestry comparisons handle the common case; only
-branches with divergence require downloading history for a patch and exception
-audit. This is a read-only drift alarm. It does not automatically merge
-code, grant a style exception, enforce branch protection in another repository,
-or assert native or hardware qualification. Paired review and forward-port work
-remain part of completing every release repair. The initial November 20 audit
-found every historical release tip already ancestral to its owned `main`.
-The new release branches are development lines, not a declaration that 1.6 is
-qualified or published.
+The local `daemonarchy-release-audit.timer` runs hourly with its corresponding
+user service. It invokes this checker with `--refresh`, six local checkout
+bindings and `--prefix refs/daemonarchy-release-audit/`. Inspect it with
+`systemctl --user status daemonarchy-release-audit.service` and
+`journalctl --user -u daemonarchy-release-audit.service`. A failed fetch or audit
+makes the service fail. The service updates only audit refs, without changing
+checked-out branches, source bytes or remote branches.
+
+Per the operator's November 20 direction, integration relies entirely on local
+testing while GitHub credits are exhausted. GitHub Actions are disabled in the
+six owned repositories. Their prior permissions are retained in controller-local
+evidence for restoration. The optional **Release branch synchronization**
+workflow has only a manual trigger; it is not the active monitoring path.
+
+The audit does not automatically merge code or assert native or hardware
+qualification. Paired review and forward-port work remain part of completing
+every release repair. The initial November 20 audit found every historical
+release tip already ancestral to its owned `main`. The new release branches
+are development lines, not a declaration that 1.6 is qualified or published.
