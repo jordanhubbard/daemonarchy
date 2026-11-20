@@ -5,6 +5,7 @@ from pathlib import Path
 import subprocess
 import tempfile
 import unittest
+from unittest.mock import patch
 
 spec = importlib.util.spec_from_file_location('branches', Path(__file__).resolve().parents[1] / 'scripts/check-release-branches.py')
 module = importlib.util.module_from_spec(spec)
@@ -80,6 +81,20 @@ class ReleaseBranches(unittest.TestCase):
         self.git('switch', '-qc', 'release/1.5.1')
         self.commit('fix', 'Fix old release and main')
         self.assertFalse(self.inspect()['ok'])
+
+    def test_shallow_history_is_refused(self):
+        with tempfile.TemporaryDirectory() as destination:
+            self.git('clone', '--depth=1', self.repo.as_uri(), destination)
+            with self.assertRaisesRegex(ValueError, 'shallow repository refused'):
+                module.inspect(destination, 'refs/heads/', 'release/1.6')
+
+    def test_remote_divergence_requires_local_patch_audit(self):
+        pages = [[{'name': 'main', 'commit': {'sha': 'a' * 40}},
+                  {'name': 'release/1.6', 'commit': {'sha': 'b' * 40}}]]
+        import json
+        with patch.object(module.subprocess, 'check_output', side_effect=[
+                json.dumps(pages), json.dumps({'status': 'diverged'})]):
+            self.assertFalse(module.github_contained('daemonarchy', 'release/1.6')['ok'])
 
     def test_unique_merge_resolution_is_not_hidden_by_cherry(self):
         self.git('switch', '-qc', 'topic')
