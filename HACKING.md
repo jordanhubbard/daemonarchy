@@ -467,11 +467,25 @@ submissions; releases since use daemonarchy-ports.
 
 ### Contributing
 
-There is no CONTRIBUTING file in this repository (*checked*). Work on a short-lived
-topic branch and submit a pull request to the owning integration branch: product
-`main`, source/ports `daemonarchy`. CI must pass and a maintainer merges. Do not
-commit to a release branch, and do not push signing keys, private worker evidence or generated images.
-Upstream FreeBSD or Omarchy fixes are submitted upstream independently of Daemonarchy releases.
+Work on a short-lived topic branch and submit a pull request. Owned `main` is
+the cumulative development branch in every Daemonarchy repository. Source
+reviews may also target `daemonarchy`; synchronize accepted changes into owned
+`main`. Ports integration targets owned `main`. Pristine FreeBSD history and
+Omarchy upstream channels remain separate inputs.
+
+Use `release/1.6` for the upcoming release in all six owned repositories. Prefer
+landing general fixes on `main` first, then backport them to the affected release
+branches through reviewed pull requests. A release-first repair needs a paired
+forward port to `main`; do not finish the repair with ordinary changes present
+only on a release branch. Resolve conflicts explicitly and retain the checks for
+each target. A clean textual merge does not waive tests or review.
+
+A workaround confined to one release may diverge only when its commit message
+names that release and explains why it must not carry forward. Use the exact
+trailers and audit procedure in [the branch policy](docs/release-branches.md).
+Published tags and release assets stay immutable. Do not push signing keys,
+private worker evidence or generated images. Upstream FreeBSD or Omarchy fixes
+are submitted upstream independently of Daemonarchy releases.
 
 ## The upgrade model today
 

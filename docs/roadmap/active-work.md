@@ -2033,3 +2033,16 @@ remains open; report files do not establish a passing gate.
   - [x] Handle initial graphical failure and an unsuccessful authenticated desktop retry without requiring function keys, SSH or persistent SDDM configuration changes.
 - **Evidence:**
   - [x] Run original portable rescue/security controls and independent exact released-image FreeBSD VM checks for automatic menu visibility, healthy-desktop preservation, authenticated retry and boot-environment recovery.
+
+### [ ] RELEASE-FLOW-001 — Keep release branches forward integrated into owned main
+
+- **Priority:** P1
+- **Owner:** release
+- **Direction:** Use release/1.6 across the six owned repositories; keep main cumulative except explicitly documented release-only workarounds.
+- **Conclusion:** Implement and validate a read-only cross-repository audit and document paired forward ports.
+- **Depends on:** none
+- **Implementation:**
+  - [x] scripts/check-release-branches.py; release/branches.json; .github/workflows/release-branches.yml
+- **Evidence:**
+  - [x] tests/release-branches.py; all six live owned main/release audits pass.
+  - [ ] Land the policy after human documentation authority review; activate and verify the hosted audit.

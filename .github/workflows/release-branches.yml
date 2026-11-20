@@ -1,0 +1,63 @@
+name: Release branch synchronization
+
+on:
+  push:
+    branches: [main, 'release/**']
+    paths:
+      - '.github/workflows/release-branches.yml'
+      - 'scripts/check-release-branches.py'
+      - 'tests/release-branches.py'
+      - 'release/branches.json'
+  pull_request:
+    paths:
+      - '.github/workflows/release-branches.yml'
+      - 'scripts/check-release-branches.py'
+      - 'tests/release-branches.py'
+      - 'release/branches.json'
+  schedule:
+    - cron: '23 * * * *'
+  workflow_dispatch:
+
+permissions:
+  contents: read
+
+jobs:
+  controls:
+    runs-on: ubuntu-latest
+    steps:
+      - uses: actions/checkout@v4
+      - run: python3 tests/release-branches.py
+  audit:
+    runs-on: ubuntu-latest
+    strategy:
+      fail-fast: false
+      matrix:
+        repository: [daemonarchy, daemonarchy-src, daemonarchy-ports, daemonarchy-desktop, omarchy, omarchy-freebsd]
+    steps:
+      - uses: actions/checkout@v4
+      - name: Check whether release tips are already ancestral to main
+        id: ancestry
+        env:
+          GH_TOKEN: ${{ github.token }}
+          REPOSITORY: ${{ matrix.repository }}
+        run: |
+          if python3 scripts/check-release-branches.py --github-contained --only "$REPOSITORY"; then
+            echo 'contained=true' >> "$GITHUB_OUTPUT"
+          else
+            echo 'contained=false' >> "$GITHUB_OUTPUT"
+          fi
+      - name: Fetch owned branch histories without file checkout
+        if: steps.ancestry.outputs.contained != 'true'
+        env:
+          REPOSITORY: ${{ matrix.repository }}
+        run: |
+          git init --bare "$RUNNER_TEMP/target.git"
+          git -C "$RUNNER_TEMP/target.git" remote add origin "https://github.com/jordanhubbard/$REPOSITORY.git"
+          git -C "$RUNNER_TEMP/target.git" config remote.origin.promisor true
+          git -C "$RUNNER_TEMP/target.git" config remote.origin.partialclonefilter blob:none
+          git -C "$RUNNER_TEMP/target.git" fetch --filter=blob:none --no-tags origin '+refs/heads/*:refs/remotes/origin/*'
+      - name: All ordinary release changes are present in owned main
+        if: steps.ancestry.outputs.contained != 'true'
+        env:
+          REPOSITORY: ${{ matrix.repository }}
+        run: python3 scripts/check-release-branches.py --only "$REPOSITORY" --repo "$REPOSITORY=$RUNNER_TEMP/target.git"

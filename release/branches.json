@@ -1,0 +1,12 @@
+{
+  "schema": "daemonarchy/release-branches@1",
+  "release_branch": "release/1.6",
+  "repositories": {
+    "daemonarchy": {},
+    "daemonarchy-src": {},
+    "daemonarchy-ports": {"legacy_release_branches": ["daemonarchy-1.1.1"]},
+    "daemonarchy-desktop": {},
+    "omarchy": {},
+    "omarchy-freebsd": {}
+  }
+}
