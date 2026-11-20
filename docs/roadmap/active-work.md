@@ -1743,7 +1743,7 @@ remains open; report files do not establish a passing gate.
 - **Plan:** [Research](arm-research-20261107.md), [implementation and discovery](arm-implementation.md), [release gates](release-1.6.0.md).
 - **Priority:** P0
 - **Owner:** SBC boot, owned FreeBSD source and release integration
-- **Direction:** Finish Pi 4 media, installer, installed boot and recovery first; reuse the common infrastructure for Pi 5 without treating Pi 4 drivers as RP1 support.
+- **Direction:** Finish Pi 4 media, installer, installed boot and recovery first; reuse the common infrastructure for Pi 5 without treating Pi 4 drivers as RP1 support. Per the November 20 operator requirement, onboard Ethernet and native SD controller operation are required for completion on both boards.
 - **Conclusion:** The [current software checkpoint](../testing-pi-bootstrap-checkpoint-20261108.md) binds source `4cf77572` / kernel `d520d762` to five passed native Pi 4 simulator controls: SD/FDT and USB-only FDT/GENET at 2/8 GiB, plus uncapped 8 GiB UEFI/ACPI USB. Actual payloads, seven probes and natural reset pass. Earlier physical Linux/media observations remain historical controls. The D520 regular USB candidate has passed assembly/readback and exact-queue simulator controls; attended physical boot and final install/desktop/update/rollback acceptance remain open.
 - **Depends on:** ARM-002, ARM-003
 - **Implementation:**
@@ -1755,6 +1755,7 @@ remains open; report files do not establish a passing gate.
 - **Evidence:**
   - [x] Five scoped Pi 4 software controls pass with exact kernel, payload and durable reset evidence.
   - [ ] Pi 4B completes the shared exact-image install/desktop/network/update/rollback suite, cold/warm boots and full-RAM USB/storage DMA stress.
+  - [ ] Pass physical onboard GENET link, DHCP and bidirectional payload hashes, plus native SD attach/read and approved scratch-write/readback, with cold/warm boot repetition. The November 20 source99 ACPI return reached userland and completed seven probes but left Ethernet and both SD controller nodes unattached. Use the [per-board network and SD acceptance](../testing-pi-net-sd.md); simulated FDT success does not close physical support.
   - [ ] Pi 400/CM4 extensions require their own input, carrier, network and storage evidence; Pi 4 completion does not close the Pi 5 item.
 
 ### [ ] RPI-002 — Port Raspberry Pi 5 and resolve RP1 and firmware quirks
@@ -1764,7 +1765,7 @@ remains open; report files do not establish a passing gate.
 - **Plan:** [Research](arm-research-20261107.md), [implementation and discovery](arm-implementation.md), [release gates](release-1.6.0.md).
 - **Priority:** P1
 - **Owner:** SBC boot and owned FreeBSD RP1/BCM2712 source
-- **Direction:** Deliver the board-specific final image and installed boot, default application/graphics stack and working network; document peripherals still under development per model.
+- **Direction:** Deliver the board-specific final image and installed boot, default application/graphics stack and working network; document peripherals still under development per model. Onboard Ethernet and native SD controller operation are completion requirements for Pi 5 as well as Pi 4; firmware-only SD access is insufficient.
 - **Conclusion:** The [current software checkpoint](../testing-pi-bootstrap-checkpoint-20261108.md) binds native selected PCIe2 MSI-X/MSI, USB payloads, message-specific interrupts and finite PL011 overflow recovery to source `4cf77572` / kernel `d520d762`. The explicit synthetic profile uses a standard QEMU endpoint; it is not a physical Pi 500 or RP1 peripheral result. Source changes remain draft. Separate D520 regular SD-control/PCIe/full-RAM candidate lanes are prepared with readback evidence; physical boot/MMC ordering, runtime full RAM and real RP1 qualification remain pending. Pi 4 stays first.
 - **Depends on:** RPI-001, ARM-002, ARM-003
 - **Implementation:**
@@ -1778,6 +1779,7 @@ remains open; report files do not establish a passing gate.
   - [x] Selected synthetic PCIe2 MSI-X/MSI data/IRQ/reset and finite UART recovery controls pass; full RP1 and hardware acceptance remain open.
   - [ ] Pi 5 C1 and D0 plus enrolled RAM variants pass final-image boot, full memory/DMA, SD/USB/NVMe, desktop/input, network, thermal and update/rollback tests.
   - [ ] RP1 Ethernet and cooling are exercised natively; USB adapters or manual fan settings do not establish built-in-device acceptance. CM5/Pi 500 results remain separate.
+  - [ ] The Pi 5 Model B BCM2712 D0 physical profile passes native SD attach/read and approved scratch-write/readback, plus onboard RP1 Ethernet link, DHCP and bidirectional payload hashes through the actual RP1 interrupt/DMA path. Apply the [per-board network and SD acceptance](../testing-pi-net-sd.md). The prepared early-stage control image only locates firmware/U-Boot/EFI/kernel progress and does not deliver these peripheral results.
 
 ### [ ] APPLE-001 — Bring up native Apple Silicon across board generations
 
