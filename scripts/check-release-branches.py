@@ -28,8 +28,6 @@ def exception(repo, commit, branch):
 
 
 def inspect(repo, prefix, required, legacy=()):
-    if git(repo, "rev-parse", "--is-shallow-repository") == "true":
-        raise ValueError("complete branch histories are required; shallow repository refused")
     refs = dict(line.split(" ", 1) for line in git(
         repo, "for-each-ref", "--format=%(refname) %(objectname)", prefix).splitlines())
     main = refs.get(prefix + "main")
@@ -45,6 +43,10 @@ def inspect(repo, prefix, required, legacy=()):
         row = {"branch": branch, "tip": tip, "missing": [], "exceptions": [],
                "patch_equivalent": [], "unresolved_merge_commits": []}
         if missing:
+            # Proved containment needs no older history. Divergent shallow refs
+            # cannot establish patch equivalence or complete exception coverage.
+            if git(repo, "rev-parse", "--is-shallow-repository") == "true":
+                raise ValueError("complete divergent histories required; shallow repository refused")
             # git cherry compares actual patches, including cherry-picked backports.
             for line in git(repo, "cherry", main, tip).splitlines():
                 sign, commit = line.split()

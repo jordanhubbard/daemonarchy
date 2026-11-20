@@ -82,11 +82,20 @@ class ReleaseBranches(unittest.TestCase):
         self.commit('fix', 'Fix old release and main')
         self.assertFalse(self.inspect()['ok'])
 
-    def test_shallow_history_is_refused(self):
+    def test_divergent_shallow_history_is_refused(self):
+        self.git('switch', '-q', 'release/1.6')
+        self.commit('fix', 'Release-only tip needing comparison')
+        self.git('switch', '-q', 'main')
+        self.commit('other', 'Independent main change')
         with tempfile.TemporaryDirectory() as destination:
-            self.git('clone', '--depth=1', self.repo.as_uri(), destination)
+            self.git('clone', '--depth=1', '--no-single-branch', self.repo.as_uri(), destination)
             with self.assertRaisesRegex(ValueError, 'shallow repository refused'):
-                module.inspect(destination, 'refs/heads/', 'release/1.6')
+                module.inspect(destination, 'refs/remotes/origin/', 'release/1.6')
+
+    def test_identical_tips_need_no_older_history(self):
+        with tempfile.TemporaryDirectory() as destination:
+            self.git('clone', '--depth=1', '--no-single-branch', self.repo.as_uri(), destination)
+            self.assertTrue(module.inspect(destination, 'refs/remotes/origin/', 'release/1.6')['ok'])
 
     def test_remote_divergence_requires_local_patch_audit(self):
         pages = [[{'name': 'main', 'commit': {'sha': 'a' * 40}},

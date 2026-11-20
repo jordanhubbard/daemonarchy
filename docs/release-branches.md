@@ -55,7 +55,7 @@ Commit messages remain review authority; a trailer is not a waiver of testing.
 upcoming release branch. `scripts/check-release-branches.py` reads Git objects
 without editing worktrees. Its optional `--refresh` updates a dedicated audit
 ref namespace from the six fixed owned remotes. Fetch complete owned branch histories before
-running it (a shallow history is insufficient):
+running it (divergence needs complete history; proved ancestry does not):
 
 ```sh
 git fetch --no-tags origin '+refs/heads/*:refs/remotes/origin/*'
