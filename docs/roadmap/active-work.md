@@ -2025,10 +2025,10 @@ remains open; report files do not establish a passing gate.
 - **Priority:** P1
 - **Owner:** desktop and diagnostics Components
 - **Direction:** Retain Pi 4 display progress and prepare separately selected Pi 5 firmware test media on the build controller.
-- **Conclusion:** Opt-in startup passes exact-image generic ARM64 UEFI desktop, framebuffer and emulated USB keyboard controls. The separate offline VM allocation was refused by the host memory guard. Physical Pi 5 and full product acceptance remain open; this control uses software rendering.
+- **Conclusion:** Opt-in startup passes exact-image generic ARM64 UEFI desktop, framebuffer, emulated USB keyboard and no-network-device boot controls. Compositor exit resumes the trace cycle and clean guest reboot. Physical Pi 5 and full product acceptance remain open; this control uses software rendering.
 - **Depends on:** RPI-001
 - **Implementation:**
   - [x] Additive root/firmware inputs, opt-in startup before network handover, isolated RAM runtime and bounded socket readiness.
 - **Evidence:**
   - [x] Five overlay preservation checks, existing network/capture checks, native ARM64 compile/socket/fresh-shell controls, native image readback and exact-image automatic software desktop with emulated USB input. See the [development checkpoint](../testing-pi-display-control-20261122.md).
-  - [ ] Physical Pi 5 boot, input, SD, network and full-RAM acceptance; no-network VM boot; acceleration and the installed product session; canonical lifecycle receipt.
+  - [ ] Physical Pi 5 boot, input, SD, network and full-RAM acceptance; acceleration and the installed product session; canonical lifecycle receipt.

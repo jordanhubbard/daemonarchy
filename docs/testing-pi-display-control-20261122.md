@@ -42,9 +42,21 @@ before network handover. The actual 800×600 capture shows the graphical
 terminal, and compositor IPC identifies its window. Emulated USB keyboard
 input through that terminal created a previously absent file whose contents
 were independently observed. Earlier missing-termcap, module-order and
-observer-command failures remain separate retained evidence. A separate boot
-without a network device was not launched because the host memory preflight
-refused allocation.
+observer-command failures remain separate retained evidence. An additional
+exact-image boot without a network device renders the identical terminal
+framebuffer and holds the desktop after network handover fails. The configured
+compositor exit binding resumes the trace cycle; guest reboot and successful
+VM exit were independently observed. The initial refused memory allocation
+remains retained separately.
+
+The subsequent [owned port candidate](https://github.com/jordanhubbard/daemonarchy-ports/pull/85)
+packages the opt-in driver for ARM. Native build, layout tests, stage/plist QA
+and package creation pass. Actual installation with its original scripts,
+installed-file ownership and hashes, deletion/reinstallation and checksum
+checks pass in a separate RAM root in a disposable ARM64 UEFI VM. Modules
+loaded from that package pass the KMS controls and 1,440,000 captured pixels
+with zero mismatches; a software terminal renders and accepts emulated USB
+keyboard input. Those results remain separate from physical package acceptance.
 
 The Pi 5 firmware input is upstream
 [worproject v0.3](https://github.com/worproject/rpi5-uefi/releases/tag/v0.3).
