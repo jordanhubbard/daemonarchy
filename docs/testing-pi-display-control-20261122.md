@@ -66,9 +66,25 @@ graphics failures. The original firmware archive is retained. The selected
 configuration omits its optional forced turbo and USB-current overrides; no
 EEPROM updater files are included. The discovery queue caps memory to 3 GiB.
 
+The R4 candidate composes this software desktop with the bounded ACPI namespace
+loader. Its kernel, runtime, modules and selected C1 firmware retain their R3
+bytes; 39 of the 41 selected product files are unchanged. The image builder
+adds namespace slots and the offline decoder recognizes them. Native readback
+checks both filesystems, the new loader, kernel, runtime and all Lua files.
+
+The exact R4 image boots a four-CPU, 4 GiB generic UEFI machine and observes the
+configured 3 GiB allocation cap. It renders the terminal before networking,
+accepts actual emulated USB input through that terminal, and captures its DSDT
+above 4 GiB. All 29 capture-slot/index/state files persist after power-off.
+The same frozen image also starts and holds the desktop without a network
+device; its actual GUI exit binding resumes the trace cycle and clean reboot.
+Full XZ decoding equals the frozen raw candidate. The
+[R4 record](../verification/pi5-namespace-desktop-20261122.json) binds exact
+artifacts and scope. Original R3 files and failed attempts remain retained.
+
 Physical Pi 5 boot, native SD/network/RP1 peripherals, full RAM, input, thermal
 behavior, GPU acceleration, WiFi, the installed product session and
 update/rollback acceptance remain open. These upstream binary userspace
 controls and observed native build tools do not establish owned source
-qualification or SDK admission. Authority and eight contract locks pass;
-canonical verification still reports the missing configured test receipt.
+qualification or SDK admission. Eight contract locks remain current; human
+documentation authority review and an earned current receipt remain open.

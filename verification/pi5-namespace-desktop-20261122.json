@@ -1,0 +1,66 @@
+{
+  "schema": "daemonarchy/pi5-namespace-desktop-image@1",
+  "date": "2026-11-22",
+  "product_input_commit": "1a37e928027b8aceb7c6029753b73039a2541807",
+  "selected_input_manifest_sha256": "c0301684f7bf427143c89d8071ddcf187816ebb3b7d3674a6ef2333eaf6de169",
+  "selected_product_inputs": 41,
+  "original_R3_product_inputs_unchanged": 39,
+  "changed_product_inputs": [
+    "build-hwtrace-image.sh",
+    "tools/hwtrace/acpi-summary.py"
+  ],
+  "kernel_sha256": "bb3278a22dd15933d10b4c393004e9cfab922d7973532405d087d4282f110090",
+  "loader_sha256": "90d61e8cd9a9c77290506ca724e130c46c754260b218c9b3d11d8c22954c54fa",
+  "compressed_image": {
+    "name": "daemonarchy-pi5-c1-desktop-r4-20261122.img.xz",
+    "bytes": 39527420,
+    "sha256": "eb33da3245c6be4c61b8feb4806ffa8b9ceae99492e7d2f42ba55e772dbab6d1"
+  },
+  "raw_image": {
+    "bytes": 443581952,
+    "sha256": "689d812149ab2e7254eced64cb6a07bb84dd3dffe9b9d92fe4370ba938866570"
+  },
+  "native_readonly_image_inputs_verified": true,
+  "complete_xz_decode_equals_frozen_raw": true,
+  "original_overlay_runtime_modules_and_C1_firmware_unchanged": true,
+  "generic_UEFI_runtime": {
+    "virtual_hardware_RAM_GiB": 4,
+    "virtual_hardware_CPUs": 4,
+    "actual_hw_physmem_bytes": 3221225472,
+    "actual_hw_ncpu": 4,
+    "actual_software_terminal_rendered": true,
+    "actual_USB_keyboard_input_through_terminal": true,
+    "desktop_started_before_network_handover": true,
+    "actual_DSDT_address_above_4GiB": true,
+    "actual_DSDT_sha256": "3ee3114cddc684887220cbdd4dfb1afb424eb1753f2f16ed52d5a55674bcdbc8",
+    "all_29_namespace_slot_index_state_files_persist_after_poweroff": true,
+    "same_frozen_image_boots_without_any_network_device": true,
+    "actual_PCI_inventory_without_network_class_verified": true,
+    "actual_desktop_exit_key_binding_and_rc_reboot": true,
+    "both_owned_VM_processes_off_and_frozen_base_unchanged": true
+  },
+  "controller_checks": {
+    "original_boottrace_tests": 33,
+    "overlay_preservation_cases": 5,
+    "passed": true
+  },
+  "physical_Pi5_acceptance": false,
+  "limitations": [
+    "Physical Pi5 firmware/boot/keyboard/SD/RP1/Ethernet/WiFi/GPU",
+    "D0 or recent EEPROM compatibility; original upstream v0.3 early C1 firmware retained",
+    "Full RAM discovery or use: queue deliberately caps allocation at 3 GiB",
+    "Complete installed Daemonarchy desktop, update/rollback, canonical unit/SDK/lifecycle or 1.6 release acceptance"
+  ],
+  "source_reviews": {
+    "mailbox_kernel": [
+      "daemonarchy-src#132",
+      "daemonarchy-src#133"
+    ],
+    "namespace_loader": [
+      "daemonarchy-src#134",
+      "daemonarchy-src#135"
+    ]
+  },
+  "canonical_admission": "Not earned. Eight locks current; human documentation authority review and current lifecycle receipt remain open.",
+  "artifact_handling": "Private diagnostic image retained on build controller for operator transfer/burn. Original R3 artifacts retained; no agent media writes or Puck staging."
+}
