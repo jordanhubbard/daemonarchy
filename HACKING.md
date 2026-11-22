@@ -1435,6 +1435,30 @@ The builder needs Python 3 (`python3` or `python3.12`): it runs
 `tools/boottrace/stick.py write-map` on the assembled image, which fails the
 build unless `STATE.TXT` and every `TRACES/` slot are contiguous.
 
+Private hardware controls can add files with `-O ROOT-OVERLAY`. The overlay
+accepts regular files and directories, refuses symlinks, special nodes and
+set-id modes, and cannot replace the selected kernel, loader or generated
+configuration. `-E ESP-FIRMWARE` applies the same additive rule to board
+firmware and selects a 64 MiB FAT32 ESP. Firmware is an explicit target input;
+Pi 4 and Pi 5 firmware must be selected separately. Both options write a file
+hash manifest beside the image. Without these options the original image
+layout and payload selection are retained.
+
+The opt-in `hwtrace.desktop="YES"` loader setting runs an EFI framebuffer
+software desktop control before network handover. Supply the compiled
+`tools/hwtrace/desktop-control.c` as `/sbin/hwtrace-desktop-control`,
+`tools/hwtrace/desktop.sh` as `/etc/hwtrace-desktop.sh`, the selected matching
+modules in `/boot/modules`, and the independently verified runtime archive as
+`/usr/local/share/hwtrace/desktop-runtime.tar.gz`, through the root overlay.
+The archive needs its own accounts, libraries, fonts, locale and terminal
+databases. Explicitly enable the selected EFI display driver with
+`hw.efifb_drm.enable="1"`; this control does not provide V3D acceleration.
+The runtime mounts in RAM, uses bounded socket readiness waits, and keeps the
+boot active while the compositor runs even without Ethernet. It remains a
+bring-up control rather than the installed Daemonarchy session. Run
+`python3 tests/hwtrace-root-overlay.py`, the existing network/capture checks,
+and native exact-image boot/display controls when changing this path.
+
 The result is `out/daemonarchy-hwtrace-<version>-amd64.img` (about 390 MB)
 and its `.sha256`. It has three GPT partitions:
 

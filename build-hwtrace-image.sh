@@ -34,6 +34,13 @@
 # usage: build-hwtrace-image.sh -I RELEASE.iso -k KERNEL -l LOADER.efi
 #            -L LUADIR -V VERSION [-o OUTDIR] [-m "MODULE ..."] [-s DATA-MIB]
 #            [-S] [-Z] [-x EXTRA.conf] [-K AUTHORIZED_KEYS] [-H] [-a ARCH]
+#            [-O ROOT-OVERLAY] [-E ESP-FIRMWARE]
+#   -O  add regular files from this directory to the rescue root. Existing
+#       files, symlinks, special nodes and set-id modes are refused. The
+#       overlay cannot replace the selected kernel, loader or generated rc.
+#   -E  add regular firmware files from this directory to a 64 MiB FAT32
+#       ESP. Existing EFI loader files cannot be replaced. Without this
+#       option the original 40 MiB FAT16 ESP is retained.
 #   -S  also use a serial console (VM testing)
 #   -Z  also write the published form, .img.xz with its .sha256
 #   -K  put these public keys on the stick as KEYS/authorized_keys: the
@@ -56,18 +63,19 @@ set -eu
 usage() { sed -n '/^# usage:/,/^set -eu/p' "$0" | sed '$d'; exit 64; }
 here=$(cd "$(dirname "$0")" && pwd)
 iso= kernel= loader= luadir= version= outdir=. datamib=256 serial= compress=
-extra= keys= hostkey= arch=${ARCH:-amd64}
+extra= keys= hostkey= overlay= firmware= arch=${ARCH:-amd64}
 # msdosfs for DATRACE; the NIC drivers GENERIC lacks (USB Ethernet, bge, msk;
 # em, igb, igc, ix, re and rge are built into the kernel) and the helpers they
 # depend on.  Missing ones are
 # skipped with a note.
 modules="msdosfs miibus uether if_ure if_axge if_axe if_cdce if_cdceem if_mos if_smsc if_muge if_urndis if_ipheth if_aue if_bge if_msk"
-while getopts I:k:l:L:V:o:m:s:SZx:K:Ha: opt; do
+while getopts I:k:l:L:V:o:m:s:SZx:K:Ha:O:E: opt; do
 	case $opt in
 	I) iso=$OPTARG ;; k) kernel=$OPTARG ;; l) loader=$OPTARG ;;
 	L) luadir=$OPTARG ;; V) version=$OPTARG ;; o) outdir=$OPTARG ;;
 	m) modules=$OPTARG ;; s) datamib=$OPTARG ;; S) serial=1 ;; Z) compress=1 ;;
-	x) extra=$OPTARG ;; K) keys=$OPTARG ;; H) hostkey=1 ;; a) arch=$OPTARG ;; *) usage ;;
+	x) extra=$OPTARG ;; K) keys=$OPTARG ;; H) hostkey=1 ;; a) arch=$OPTARG ;;
+	O) overlay=$OPTARG ;; E) firmware=$OPTARG ;; *) usage ;;
 	esac
 done
 [ -n "$iso" ] && [ -n "$kernel" ] && [ -n "$loader" ] && [ -n "$luadir" ] &&
@@ -217,6 +225,13 @@ EOF
 [ -n "$extra" ] && cat "$extra" >>"$root/boot/loader.conf"
 printf 'daemonarchy-hwtrace %s\n' "$version" >"$root/boot/version"
 
+# Optional, private hardware controls are additive. The original image inputs
+# and generated recovery configuration remain authoritative.
+if [ -n "$overlay" ]; then
+	"$py" "$here/tools/hwtrace/root-overlay.py" "$overlay" "$root" \
+	    >"$work/root-overlay.json"
+fi
+
 # makefs otherwise copies the staging user's ownership into the rescue root.
 # Native images must also be usable when assembled without root privileges:
 # login.conf, account databases and sshd's empty directory require root custody.
@@ -232,8 +247,17 @@ makefs -t ffs -B little -F "$work/root.mtree" \
 
 mkdir -p "$work/esp/EFI/BOOT"
 cp "$loader" "$work/esp/EFI/BOOT/$efiname"
-makefs -t msdos -s 40m -o fat_type=16,volume_label=EFISYS \
-    "$work/esp.img" "$work/esp"
+if [ -n "$firmware" ]; then
+	"$py" "$here/tools/hwtrace/root-overlay.py" "$firmware" "$work/esp" \
+	    >"$work/esp-firmware.json"
+	makefs -t msdos -s 64m \
+	    -o fat_type=32,sectors_per_cluster=1,volume_label=EFISYS \
+	    "$work/esp.img" "$work/esp"
+else
+	makefs -t msdos -s 40m -o fat_type=16,volume_label=EFISYS \
+	    "$work/esp.img" "$work/esp"
+fi
+[ -s "$work/esp.img" ] || { echo "makefs did not create ESP" >&2; exit 1; }
 
 # Preallocated files, rewritten in place by the loader (see stick.py):
 # 200 trace slots of 16 KiB and a 512-byte STATE.TXT, newline padded, and
@@ -282,6 +306,8 @@ mkimg -s gpt -f raw -p efi/EFISYS:="$work/esp.img" \
     -p ms-basic-data/DATRACE:="$work/data.img" -o "$out"
 # Record where STATE.TXT and the trace slots are; fails unless contiguous.
 "$py" "$here/tools/boottrace/stick.py" write-map "$out"
+[ -n "$overlay" ] && cp "$work/root-overlay.json" "$out.overlay.json"
+[ -n "$firmware" ] && cp "$work/esp-firmware.json" "$out.firmware.json"
 [ -n "$hostkey" ] && { printf '%s\n' "$fingerprint" >"$out.hostkey"; echo "host key $fingerprint"; }
 (cd "$outdir" && sha256 -r "$name" | awk '{ print $1 "  " $2 }' >"$name.sha256")
 cat "$out.sha256"
