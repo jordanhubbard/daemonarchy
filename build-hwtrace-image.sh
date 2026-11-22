@@ -267,7 +267,9 @@ while [ $i -le 200 ]; do
 done
 # Optional loader-stage ACPI capture: bounded tables, fixed mapped extents.
 mkdir -p "$work/data/ACPI"
-for table in RSDP ROOT APIC PPTT FACP IORT SRAT SLIT SPCR; do
+for table in RSDP ROOT APIC PPTT FACP IORT SRAT SLIT SPCR DSDT SSOV \
+    SS00 SS01 SS02 SS03 SS04 SS05 SS06 SS07 \
+    SS08 SS09 SS0A SS0B SS0C SS0D SS0E SS0F; do
 	cp "$work/slot" "$work/data/ACPI/$table.BIN"
 done
 cp "$work/slot" "$work/data/ACPI/INDEX.TXT"
