@@ -99,7 +99,15 @@ Unpair/Pair after a reboot; both helpers must be updated for resumption.
 For a completed installation, the console waits up to 60 seconds for SDDM
 and either its greeter or a Hyprland session process. It keeps monitoring while
 those processes run. If they disappear for 15 seconds, the rescue menu appears.
-Normal graphical login and its selected username remain configured as before.
+On ttyv0, recovery stops the failed SDDM instance before selecting the text
+console, so repeated greeter failures cannot keep the menu hidden on another
+VT. Stop/restart commands are bounded; failures to stop SDDM or select the
+console are recorded in the rescue log. A desktop that becomes ready while
+boot messages settle returns to monitoring. An unsuccessful **Try the
+graphical login again** action brings the console back into view as well.
+Normal graphical startup, autologin and its selected username remain configured
+as before; this does not permanently disable SDDM. Direct remote or serial
+invocations do not switch the local display.
 The monitor detects missing/exited processes; it cannot identify every frozen
 compositor or prove that the screen renders correctly. An authenticated root
 can also run `daemonarchy-rescue menu` at any time from an approved remote debug

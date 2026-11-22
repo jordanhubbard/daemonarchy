@@ -18,6 +18,17 @@ complete declarations and external/native gaps are in [the acceptance inventory]
 
 ## Required scenarios
 
+- **Visible local recovery:** boot an identified installed image whose real
+  compositor cannot start while SDDM repeatedly selects its graphical VT.
+  Observe the actual rescue screen and active VT after the grace period,
+  without post-boot SSH intervention or console-switch input. Reject an
+  incorrect root password; exercise authenticated desktop retry and require
+  the fallback to become visible again when that retry fails. A healthy
+  graphical boot must remain usable beyond the startup grace period. Retain
+  separate stop/switch failure, late recovery and remote/serial controls;
+  do not infer rendered output from process names or a menu written to a
+  hidden console. Package-closure repair and final-image acceptance remain
+  separate requirements.
 - **Approval and revocation:** test first approval, legacy listener adoption,
   shutdown/stale-state resumption with stable host pin and existing agent key,
   unknown-key refusal, reused-PID/generation safety and explicit revocation.

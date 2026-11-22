@@ -397,7 +397,7 @@
     {
       "path": "overlay/usr/local/sbin/daemonarchy-rescue",
       "owner": "diagnostics",
-      "sha256": "9dcb3e4cbdb606040a51c60c9e90d8a0b699b2b9b7fb220e597b7833bf37c69e",
+      "sha256": "e503bcc2746d3f79d932d53b40a50e8d24671ba60f9ea6911540dc2f1c7c4a60",
       "executable": true
     },
     {
@@ -931,7 +931,7 @@
     {
       "path": "tests/rescue-console.sh",
       "owner": "diagnostics",
-      "sha256": "fe23b1ec1199f7545e1b1c8e019545fa6981c244c48a02135031252c7428fcb2",
+      "sha256": "004565a0a9c0ceef7e07035a823beb854f2aafd4a88d3ead1035248d4e5bbbbe",
       "executable": true
     },
     {
@@ -995,6 +995,13 @@
       "sha256": "b1fb7cce1f6889f001f4450ba6f3b965dede9a67b38f210ea180ad4e5a39f014",
       "executable": false,
       "reason": "PERF-001/COMP-001 reviewed unqualified-target classification and returned-query output custody; no native lifecycle qualification"
+    },
+    {
+      "path": ".github/workflows/rescue-console.yml",
+      "owner": "diagnostics",
+      "sha256": "955d528e8ca8801998ef538d5ed899a2b3776aa054220a32b27a4192190d13d6",
+      "executable": false,
+      "reason": "RECOVERY-001 portable failure/visibility/authentication controls in CI; native execution remains independently evidenced"
     }
   ],
   "implementation_updates": [
@@ -1083,6 +1090,25 @@
           "preceding_source_sha256": "9faf4de88494e1144b055efeae6326c31d29fd485ebaa926887e5781e3c9a8ab",
           "current_sha256": "2879828220c1cc1bef7d7454b9107d70ba4fb8f671baf7aa3883a1149d8bb43e",
           "preceding_baseline_sha256": "9faf4de88494e1144b055efeae6326c31d29fd485ebaa926887e5781e3c9a8ab"
+        }
+      ]
+    },
+    {
+      "work_item": "RECOVERY-001",
+      "preceding_commit": "adf41d7671cfb8fedd108b3f3ecbe584a0dcfb58",
+      "reason": "Make failed graphical startup and authenticated retry reveal ttyv0, using foreground timeout supervision to preserve rc background daemons; retain original source authority and separate native acceptance.",
+      "files": [
+        {
+          "path": "overlay/usr/local/sbin/daemonarchy-rescue",
+          "preceding_source_sha256": "d9e69f2ab15acd399181fb116e5ae46f17711b2e709b117d4c2af87e87f76c48",
+          "current_sha256": "e503bcc2746d3f79d932d53b40a50e8d24671ba60f9ea6911540dc2f1c7c4a60",
+          "preceding_baseline_sha256": "9dcb3e4cbdb606040a51c60c9e90d8a0b699b2b9b7fb220e597b7833bf37c69e"
+        },
+        {
+          "path": "tests/rescue-console.sh",
+          "preceding_source_sha256": "5eda93a40ecfa476141fefb2215bb510d5036d677b8278a8f0516cba1efaaae8",
+          "current_sha256": "004565a0a9c0ceef7e07035a823beb854f2aafd4a88d3ead1035248d4e5bbbbe",
+          "preceding_baseline_sha256": "fe23b1ec1199f7545e1b1c8e019545fa6981c244c48a02135031252c7428fcb2"
         }
       ]
     }

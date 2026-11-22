@@ -160,6 +160,41 @@ monitor_desktop() {
   done
 }
 
+# SDDM can stay alive while its compositor repeatedly fails to load. Its
+# retries keep selecting the graphical VT, hiding the recovery menu on ttyv0.
+rescue_reclaim_console() {
+  [ "$(tty)" = /dev/ttyv0 ] || return 0
+  # Startup can finish during the boot-output settling period. Keep monitoring
+  # instead of stopping a session that has just become ready.
+  if ! rescue_reason >/dev/null && desktop_ready; then return 1; fi
+  console_status=0
+  if pgrep -x sddm >/dev/null 2>&1; then
+    if ! timeout -f -k 2 15 service sddm onestop >>"$rescue_log" 2>&1; then
+      echo 'Could not stop the failed graphical login.' >>"$rescue_log"
+      console_status=2
+    fi
+  fi
+  # tty above verifies that stdin is the console. Leave remote/serial callers
+  # alone, and do not change sddm_enable or the selected login/session.
+  if ! vidcontrol -s 1 >>"$rescue_log" 2>&1; then
+    echo 'Could not select the recovery console.' >>"$rescue_log"
+    console_status=2
+  fi
+  return "$console_status"
+}
+
+rescue_wait_for_console() {
+  while :; do
+    monitor_desktop
+    rescue_wait_boot_output
+    console_status=0
+    rescue_reclaim_console || console_status=$?
+    # A late successful login renews monitoring. Other failures are recorded
+    # above; still offer the menu on ttyv0 rather than hiding its actions.
+    [ "$console_status" = 1 ] || return "$console_status"
+  done
+}
+
 rescue_logs() {
   echo '=== Installation state ==='
   for name in status phase requested-user ssh-requested exit-code started-utc updated-utc; do
@@ -193,10 +228,18 @@ rescue_action() {
         return 1
       fi
       if [ -x /usr/local/etc/rc.d/daemonarchy-graphics ]; then
-        service daemonarchy-graphics start || return
+        if ! service daemonarchy-graphics start; then
+          rescue_reclaim_console || true
+          return 1
+        fi
       fi
-      service sddm restart || return
-      monitor_desktop
+      # FreeBSD timeout must supervise only rc's command, not the background
+      # daemon it starts; otherwise a successful start is killed at the limit.
+      if ! timeout -f -k 2 15 service sddm restart; then
+        rescue_reclaim_console || true
+        return 1
+      fi
+      rescue_wait_for_console
       ;;
     reboot) sync; shutdown -r now ;;
     *) return 1 ;;
@@ -260,8 +303,7 @@ rescue_main() {
       rescue_watch_debug </dev/null >>"$rescue_log" 2>&1 &
       rescue_resume_debug </dev/null >>"$rescue_log" 2>&1 &
       echo 'Waiting for graphical login; this console shows recovery options if it fails.'
-      monitor_desktop
-      rescue_wait_boot_output
+      rescue_wait_for_console
       rescue_record
       rescue_menu no
       ;;

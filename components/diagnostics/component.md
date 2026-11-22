@@ -45,6 +45,17 @@ Passive collectors retain bounded private kernel/system/process/device observati
 
 Distinguish a new boot from an SSH/listener restart using target identity and retained evidence. Missing panic or event output does not identify the cause of a reset.
 
+## Requirement: Visible local recovery
+
+After graphical startup or a previously ready desktop fails its grace period,
+make the ttyv0 rescue menu visible without function keys or SSH. Stop a failed
+SDDM retry loop before selecting the console, with bounded service operations
+and recorded stop/switch failures. Renew monitoring if the desktop recovers
+before that transition. Apply the same recovery after an unsuccessful
+authenticated desktop retry. Preserve configured SDDM startup/autologin,
+root authentication for menu actions and approved diagnostic grants. Direct
+serial or remote invocations must not seize the physical console.
+
 ## Requirement: Cleanup and wired boot transport
 
 Finite diagnostic jobs clean up only their owned state. For the existing authenticated mode, provide an explicitly enabled wired UEFI loader console with authenticated, session-bound and sequenced input. Preserve ordinary loader variable inspection/update and boot commands, bounded private output retention, local console recovery and boot without an available peer. Reject forged, replayed, malformed and oversized input. Remove pairing key material from inspectable environment variables after activation and revoke it when disabled.
