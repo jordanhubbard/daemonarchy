@@ -2062,3 +2062,18 @@ remains open; report files do not establish a passing gate.
 - **Evidence:**
   - [x] Five overlay preservation checks, existing network/capture checks, native ARM64 compile/socket/fresh-shell controls, native image readback and exact-image automatic software desktop with emulated USB input. See the [development checkpoint](../testing-pi-display-control-20261122.md).
   - [ ] Physical Pi 5 boot, input, SD, network and full-RAM acceptance; acceleration and the installed product session; canonical lifecycle receipt.
+
+### [ ] RPI-ACPI-NS-001 — Preserve actual ACPI namespace tables for Pi device qualification
+
+- **Priority:** P1
+- **Owner:** Hardware discovery images and offline controller
+- **Direction:** Reserve bounded DSDT and SSDT slots without changing old images or invoking AML.
+- **Conclusion:** Source discovery currently omits the namespace tables needed to inspect Pi SDIO/GPIO wiring.
+- **Depends on:** none
+- **Implementation:**
+  - [x] Reserve eighteen additional 16 KiB slots; validate table signatures and report bounded namespace completeness independently of physical hardware acceptance.
+- **Evidence:**
+  - [x] All 33 original boottrace/controller checks pass on the current owned-main candidate, including ten ACPI controls. Native reader controls pass 24 sanitized FreeBSD ARM64 cases; original stand build and three independent AArch64 EFI product checks pass.
+  - [x] Exact private image boots the new EFI loader; all 29 capture/index/state files match the returned disk after power-off. Complete native work archive independently reopened against selected inputs.
+  - [x] Complete native work archive independently reopened on a second healthy physical host; all selected source/bootstrap inputs, actual products, retained work and gzip integrity validate.
+  - [ ] Physical capture, human authority and canonical lifecycle gates remain open. See [the scoped record](../../verification/pi-acpi-namespace-20261122.json).
