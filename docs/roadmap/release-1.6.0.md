@@ -79,6 +79,15 @@ then conduct one operator signing session. Preserve published release bytes.
 
 ## Upstream synchronization goal (SYNC-001)
 
+**Operator direction, 2026-11-23:** synchronize owned main branches with current
+upstream first, then synchronize the 1.6 release branches and active review work.
+The [November 23 synchronization and PMC review](pmc-1.6-review-20261123.md)
+records the completed repository imports, all six matching main/release branch
+pairs and all 27 existing review heads containing their respective main. It also
+reviews the eleven landed and eight pending PMC revisions requested for possible
+1.6 inclusion. Native rebuild, package adaptation and release acceptance remain
+open; none of the pending PMC diffs was added to main or release by this review.
+
 **Operator direction, 2026-11-08:** 1.6 also synchronizes with **current upstream Omarchy (4.5.0)**
 and refreshes **FreeBSD-CURRENT src and ports**. This adds release scope to the
 ARM program; it preserves the Pi 4-before-Pi 5 priority and existing amd64 coverage.
@@ -86,15 +95,17 @@ The operator clarified that the target is current upstream Omarchy, rather than
 historical 1.5.x. The selected stable release is
 [Omarchy v4.5.0](https://github.com/omacom/omarchy/releases/tag/v4.5.0), published
 2026-11-05, tag object `97e664bd971fa5a8691d89440d3738143499c438`, commit
-`ac2690cd7be4f47e4a255f5e2e78d904d436b068`. The currently packaged Omarchy
-baseline is 4.0.4. Import, adaptation and native qualification remain open.
+`ac2690cd7be4f47e4a255f5e2e78d904d436b068`. The packaged Omarchy baseline at
+that planning checkpoint was 4.0.4. The November 23 review above records the
+newer repository and packaged selections separately; native adaptation and
+qualification of the newest desktop remain open.
 
 - [x] Select and pin the current upstream Omarchy release (identity above).
 - [ ] Review its delta
   against the selected desktop and compatibility forks; port applicable desktop,
   configuration, application and service changes to native FreeBSD behavior.
   Record Linux-specific features requiring adaptation or an explicit limitation.
-- [ ] Refresh the owned source fork from upstream FreeBSD src `main` (CURRENT)
+- [x] Refresh the owned source fork from upstream FreeBSD src `main` (CURRENT)
   and the owned ports fork from upstream FreeBSD ports `main`. Record upstream
   and resulting fork commits, resolve conflicts, and preserve Daemonarchy fixes,
   board support, packaging and contribution history. Ports has its own revision;
