@@ -1,0 +1,940 @@
+{
+  "schema": "daemonarchy/upstream-sync-pmc-review@1",
+  "observed_at_utc": "2026-11-24T02:52:00.043977+00:00",
+  "operator_local_date": "2026-11-23",
+  "target_release": "1.6.0",
+  "scope": "Repository synchronization and source-level review; not native release qualification.",
+  "upstream_heads": {
+    "freebsd_src": "97fd69b0b88405e08c0b23d0a9a3a64e5b47fc84",
+    "freebsd_ports": "d5f50f314664fa2ad99c3b922abeea419e30b210",
+    "omarchy_quattro": "94a8c3c3321129fae87a329947711355897e69fd"
+  },
+  "main_and_release_heads_before_this_documentation": [
+    {
+      "repository": "daemonarchy",
+      "main_and_local_and_remote_release": "89f94c28cc7a510856a112c2321e8e954daf56cf",
+      "release_ahead_behind": "0\t0"
+    },
+    {
+      "repository": "daemonarchy-src",
+      "main_and_local_and_remote_release": "1d78373ea7b03096e751f5f9a308410561893203",
+      "release_ahead_behind": "0\t0"
+    },
+    {
+      "repository": "daemonarchy-ports",
+      "main_and_local_and_remote_release": "e6b24255020e080668e527d54cea197d6897de60",
+      "release_ahead_behind": "0\t0"
+    },
+    {
+      "repository": "daemonarchy-desktop",
+      "main_and_local_and_remote_release": "4b2525533600f37d2c6249112c3d2d4e22989f36",
+      "release_ahead_behind": "0\t0"
+    },
+    {
+      "repository": "omarchy-freebsd",
+      "main_and_local_and_remote_release": "029e0eba6ff69392e416abb5bbd58206d4d20443",
+      "release_ahead_behind": "0\t0"
+    },
+    {
+      "repository": "omarchy",
+      "main_and_local_and_remote_release": "acdf15e738e7df517f1534202cf3ab797ed0e5b2",
+      "release_ahead_behind": "0\t0"
+    }
+  ],
+  "all_35_existing_open_PRs_27_distinct_heads_contain_current_repository_main": true,
+  "review_branches": [
+    {
+      "repository": "daemonarchy",
+      "PRs": [
+        {
+          "baseRefName": "release/1.6",
+          "headRefName": "work/pi-acpi-namespace-20261122",
+          "headRefOid": "a736e783d86c86b32ce08eca0bdf9eff5cf6447d",
+          "isDraft": true,
+          "number": 340,
+          "url": "https://github.com/jordanhubbard/daemonarchy/pull/340",
+          "current_main_is_ancestor": true
+        },
+        {
+          "baseRefName": "main",
+          "headRefName": "work/pi-acpi-namespace-20261122",
+          "headRefOid": "a736e783d86c86b32ce08eca0bdf9eff5cf6447d",
+          "isDraft": true,
+          "number": 339,
+          "url": "https://github.com/jordanhubbard/daemonarchy/pull/339",
+          "current_main_is_ancestor": true
+        },
+        {
+          "baseRefName": "release/1.6",
+          "headRefName": "work/pi-display-20261122",
+          "headRefOid": "604af0a6de05b8ccecdd955fd7fa4ee1ce45c770",
+          "isDraft": true,
+          "number": 338,
+          "url": "https://github.com/jordanhubbard/daemonarchy/pull/338",
+          "current_main_is_ancestor": true
+        },
+        {
+          "baseRefName": "main",
+          "headRefName": "work/pi-display-20261122",
+          "headRefOid": "604af0a6de05b8ccecdd955fd7fa4ee1ce45c770",
+          "isDraft": true,
+          "number": 337,
+          "url": "https://github.com/jordanhubbard/daemonarchy/pull/337",
+          "current_main_is_ancestor": true
+        }
+      ]
+    },
+    {
+      "repository": "daemonarchy-src",
+      "PRs": [
+        {
+          "baseRefName": "release/1.6",
+          "headRefName": "work/sdhci-completion-20261122",
+          "headRefOid": "c4c35fe8a37ec8efc07c1f9be87e436b5a211e00",
+          "isDraft": true,
+          "number": 139,
+          "url": "https://github.com/jordanhubbard/daemonarchy-src/pull/139",
+          "current_main_is_ancestor": true
+        },
+        {
+          "baseRefName": "main",
+          "headRefName": "work/sdhci-completion-20261122",
+          "headRefOid": "c4c35fe8a37ec8efc07c1f9be87e436b5a211e00",
+          "isDraft": true,
+          "number": 138,
+          "url": "https://github.com/jordanhubbard/daemonarchy-src/pull/138",
+          "current_main_is_ancestor": true
+        },
+        {
+          "baseRefName": "release/1.6",
+          "headRefName": "work/mmccam-sdio-init-20261122",
+          "headRefOid": "b9c69ad1f9b29ef01699f9eabd5a8600e488ee9a",
+          "isDraft": true,
+          "number": 137,
+          "url": "https://github.com/jordanhubbard/daemonarchy-src/pull/137",
+          "current_main_is_ancestor": true
+        },
+        {
+          "baseRefName": "main",
+          "headRefName": "work/mmccam-sdio-init-20261122",
+          "headRefOid": "b9c69ad1f9b29ef01699f9eabd5a8600e488ee9a",
+          "isDraft": true,
+          "number": 136,
+          "url": "https://github.com/jordanhubbard/daemonarchy-src/pull/136",
+          "current_main_is_ancestor": true
+        },
+        {
+          "baseRefName": "release/1.6",
+          "headRefName": "work/pi-acpi-namespace-20261122",
+          "headRefOid": "ea55ed3d585b3c6f6ca2fa17d191dcd75668e7a2",
+          "isDraft": true,
+          "number": 135,
+          "url": "https://github.com/jordanhubbard/daemonarchy-src/pull/135",
+          "current_main_is_ancestor": true
+        },
+        {
+          "baseRefName": "main",
+          "headRefName": "work/pi-acpi-namespace-20261122",
+          "headRefOid": "ea55ed3d585b3c6f6ca2fa17d191dcd75668e7a2",
+          "isDraft": true,
+          "number": 134,
+          "url": "https://github.com/jordanhubbard/daemonarchy-src/pull/134",
+          "current_main_is_ancestor": true
+        },
+        {
+          "baseRefName": "release/1.6",
+          "headRefName": "work/pi4-broadcom-review-20261122",
+          "headRefOid": "a8c0c54018c89e4edc39b3f6c94f5706df8ba4bb",
+          "isDraft": true,
+          "number": 133,
+          "url": "https://github.com/jordanhubbard/daemonarchy-src/pull/133",
+          "current_main_is_ancestor": true
+        },
+        {
+          "baseRefName": "main",
+          "headRefName": "work/pi4-broadcom-review-20261122",
+          "headRefOid": "a8c0c54018c89e4edc39b3f6c94f5706df8ba4bb",
+          "isDraft": true,
+          "number": 132,
+          "url": "https://github.com/jordanhubbard/daemonarchy-src/pull/132",
+          "current_main_is_ancestor": true
+        },
+        {
+          "baseRefName": "daemonarchy",
+          "headRefName": "fix/arm64-dtrace-predicate",
+          "headRefOid": "b7c4de83caaa9510216dfc898e6e1366aa70928e",
+          "isDraft": true,
+          "number": 131,
+          "url": "https://github.com/jordanhubbard/daemonarchy-src/pull/131",
+          "current_main_is_ancestor": true
+        },
+        {
+          "baseRefName": "daemonarchy",
+          "headRefName": "fix/posix-tz-weekday-overflow",
+          "headRefOid": "7421ba04a7c79f4fc40b5c5dd74836b05b434e3c",
+          "isDraft": true,
+          "number": 130,
+          "url": "https://github.com/jordanhubbard/daemonarchy-src/pull/130",
+          "current_main_is_ancestor": true
+        },
+        {
+          "baseRefName": "daemonarchy",
+          "headRefName": "work/pi5-c1-sd-20261120",
+          "headRefOid": "46dc5a7316ce8fb0dea93f3d1f21f201376c530e",
+          "isDraft": true,
+          "number": 116,
+          "url": "https://github.com/jordanhubbard/daemonarchy-src/pull/116",
+          "current_main_is_ancestor": true
+        },
+        {
+          "baseRefName": "daemonarchy",
+          "headRefName": "work/rp1-nexus-20261120",
+          "headRefOid": "b9cafdf5379236a9e1a6b66252b988851d20f604",
+          "isDraft": true,
+          "number": 114,
+          "url": "https://github.com/jordanhubbard/daemonarchy-src/pull/114",
+          "current_main_is_ancestor": true
+        },
+        {
+          "baseRefName": "daemonarchy",
+          "headRefName": "fix/100-ufs-ctime",
+          "headRefOid": "09d6f406c9a127c4cd5c056612b77c174ff04790",
+          "isDraft": true,
+          "number": 101,
+          "url": "https://github.com/jordanhubbard/daemonarchy-src/pull/101",
+          "current_main_is_ancestor": true
+        }
+      ]
+    },
+    {
+      "repository": "daemonarchy-ports",
+      "PRs": [
+        {
+          "baseRefName": "main",
+          "headRefName": "fix/llvm19-cmake-tests-20261123",
+          "headRefOid": "91ddd4ddb7372200308e3002d200cff8b10a1387",
+          "isDraft": true,
+          "number": 93,
+          "url": "https://github.com/jordanhubbard/daemonarchy-ports/pull/93",
+          "current_main_is_ancestor": true
+        },
+        {
+          "baseRefName": "daemonarchy",
+          "headRefName": "fix/rabbitmq-source-441",
+          "headRefOid": "0fa392bbbe3560d0f5e4377030c74d0c7dc85841",
+          "isDraft": true,
+          "number": 92,
+          "url": "https://github.com/jordanhubbard/daemonarchy-ports/pull/92",
+          "current_main_is_ancestor": true
+        },
+        {
+          "baseRefName": "main",
+          "headRefName": "fix/git-lite-request-pull",
+          "headRefOid": "be6f9e1887786044c08818a5e52d62acd5c86ebf",
+          "isDraft": true,
+          "number": 91,
+          "url": "https://github.com/jordanhubbard/daemonarchy-ports/pull/91",
+          "current_main_is_ancestor": true
+        },
+        {
+          "baseRefName": "main",
+          "headRefName": "fix/setuptools-download-containment",
+          "headRefOid": "a579ba10e2d3cdcad2a57f07a5aa9cdfb420bcf1",
+          "isDraft": true,
+          "number": 90,
+          "url": "https://github.com/jordanhubbard/daemonarchy-ports/pull/90",
+          "current_main_is_ancestor": true
+        },
+        {
+          "baseRefName": "main",
+          "headRefName": "fix/elixir-deterministic-source",
+          "headRefOid": "ee9225427cb75987193bd43b3365e903685c2700",
+          "isDraft": true,
+          "number": 89,
+          "url": "https://github.com/jordanhubbard/daemonarchy-ports/pull/89",
+          "current_main_is_ancestor": true
+        },
+        {
+          "baseRefName": "release/1.6",
+          "headRefName": "work/pi4-brcmfmac-20261122",
+          "headRefOid": "b9c0be6a58a8e7354900a90a20991ff787f07efb",
+          "isDraft": true,
+          "number": 88,
+          "url": "https://github.com/jordanhubbard/daemonarchy-ports/pull/88",
+          "current_main_is_ancestor": true
+        },
+        {
+          "baseRefName": "main",
+          "headRefName": "work/pi4-brcmfmac-20261122",
+          "headRefOid": "b9c0be6a58a8e7354900a90a20991ff787f07efb",
+          "isDraft": true,
+          "number": 87,
+          "url": "https://github.com/jordanhubbard/daemonarchy-ports/pull/87",
+          "current_main_is_ancestor": true
+        },
+        {
+          "baseRefName": "release/1.6",
+          "headRefName": "work/pi-efi-display-20261122",
+          "headRefOid": "149ff9e62e596f40f6f2204f960d670f9648b8cf",
+          "isDraft": true,
+          "number": 86,
+          "url": "https://github.com/jordanhubbard/daemonarchy-ports/pull/86",
+          "current_main_is_ancestor": true
+        },
+        {
+          "baseRefName": "main",
+          "headRefName": "work/pi-efi-display-20261122",
+          "headRefOid": "149ff9e62e596f40f6f2204f960d670f9648b8cf",
+          "isDraft": true,
+          "number": 85,
+          "url": "https://github.com/jordanhubbard/daemonarchy-ports/pull/85",
+          "current_main_is_ancestor": true
+        },
+        {
+          "baseRefName": "main",
+          "headRefName": "fix/python312-mail-command-validation",
+          "headRefOid": "49546e755f203bbcb0b880a7189a8245af62cd25",
+          "isDraft": true,
+          "number": 84,
+          "url": "https://github.com/jordanhubbard/daemonarchy-ports/pull/84",
+          "current_main_is_ancestor": true
+        },
+        {
+          "baseRefName": "main",
+          "headRefName": "fix/perl542-dtrace-predicates",
+          "headRefOid": "5660c87ba5b6f1b0845d611d3350b2d05bade8f5",
+          "isDraft": true,
+          "number": 82,
+          "url": "https://github.com/jordanhubbard/daemonarchy-ports/pull/82",
+          "current_main_is_ancestor": true
+        },
+        {
+          "baseRefName": "main",
+          "headRefName": "fix/python312-native-dtrace",
+          "headRefOid": "6406ac8a368fafccfab540a8ac517cac0e3e9ea7",
+          "isDraft": true,
+          "number": 81,
+          "url": "https://github.com/jordanhubbard/daemonarchy-ports/pull/81",
+          "current_main_is_ancestor": true
+        },
+        {
+          "baseRefName": "main",
+          "headRefName": "fix/334-freebsd-snapshot-migration-20261121",
+          "headRefOid": "64e240f1007256000db77170e90045976483f1a7",
+          "isDraft": true,
+          "number": 80,
+          "url": "https://github.com/jordanhubbard/daemonarchy-ports/pull/80",
+          "current_main_is_ancestor": true
+        },
+        {
+          "baseRefName": "main",
+          "headRefName": "fix/herdr-freebsd-current-20261119",
+          "headRefOid": "08e6db996cb4983ef6427adb14c11d0a69453986",
+          "isDraft": true,
+          "number": 79,
+          "url": "https://github.com/jordanhubbard/daemonarchy-ports/pull/79",
+          "current_main_is_ancestor": true
+        },
+        {
+          "baseRefName": "main",
+          "headRefName": "fix/current-desktop-snapshots-20261118",
+          "headRefOid": "67969495ccfa6985c12eb15119b13b10dbf32526",
+          "isDraft": true,
+          "number": 75,
+          "url": "https://github.com/jordanhubbard/daemonarchy-ports/pull/75",
+          "current_main_is_ancestor": true
+        },
+        {
+          "baseRefName": "main",
+          "headRefName": "fix/herdr-zig016-20261118",
+          "headRefOid": "67344bf854a4ce703471f9201eda79fa58f9ded9",
+          "isDraft": true,
+          "number": 74,
+          "url": "https://github.com/jordanhubbard/daemonarchy-ports/pull/74",
+          "current_main_is_ancestor": true
+        },
+        {
+          "baseRefName": "main",
+          "headRefName": "sync/freebsd-ports-20261118",
+          "headRefOid": "431a374933ee6cbf0e2c0a6a9347661cf0882596",
+          "isDraft": true,
+          "number": 73,
+          "url": "https://github.com/jordanhubbard/daemonarchy-ports/pull/73",
+          "current_main_is_ancestor": true
+        },
+        {
+          "baseRefName": "main",
+          "headRefName": "fix/333-mono-arm64-bootstrap",
+          "headRefOid": "d6eaaae25eb5ba65dfcde9de653391d9e37dc874",
+          "isDraft": true,
+          "number": 72,
+          "url": "https://github.com/jordanhubbard/daemonarchy-ports/pull/72",
+          "current_main_is_ancestor": true
+        }
+      ]
+    }
+  ],
+  "merge_conflicts": {
+    "omarchy": {
+      "bin/omarchy-system": "Preserve owned session-exit cancellation and upstream deferred translated failure helper.",
+      "default/i18n/en/menu.json": "Retain owned session/preferences/backup keys. Remove34 orphan agent/oldpassword labels matching explicit upstream menu removals d2eeaf2ce and d99df1d98; agent functionality now lives in the upstream agents panel.",
+      "manual/24-commercial-apps-services.md": "Retain owned backup guidance and upstream new tray-panel instructions.",
+      "test/shell.d/hw-platform-test.sh": "Retain BSD architecture predicate controls and new upstream PCI hardware probe controls."
+    },
+    "rabbitmq": "Preserve the original-source 4.4.1 revision 1 build and both source digests; candidate origin bodies remain unchanged.",
+    "setuptools": "Retain all 671 complete advisory records with unique UUIDs, preserving every main entry and both exact owned changed entries.",
+    "other_review_branches": "Retain additive work/evidence sections and newer owned-main desktop snapshot metadata; preserve both parent histories."
+  },
+  "host_controller_checks": {
+    "source_tests_run": 84,
+    "source_tests_skipped": 2,
+    "source_failures": 0,
+    "ports_tests_run": 39,
+    "ports_failures": 0,
+    "omarchy_suites_pass": [
+      "CLI",
+      "menu",
+      "i18n",
+      "system-power",
+      "hardware-platform",
+      "session"
+    ],
+    "omarchy_translation_completeness_remains_explicit_structural_skip": true,
+    "native_kernel_or_hardware_PMC_results_claimed": false,
+    "product_documentation_lifecycle_and_release_sync": "pass after adding the required roadmap lifecycle header",
+    "product_authority_and_receipt": "fail: stale human documentation review; no attestation or lifecycle receipt synthesized",
+    "product_component_locks": "all eight current",
+    "source_and_ports_authority": "pass",
+    "source_and_ports_component_locks": "all five source and two ports locks current",
+    "source_and_ports_lifecycle_receipts": "missing; no receipt synthesized"
+  },
+  "pmc_surface_identical_to_upstream": true,
+  "PMC_ATF_source_inventory": {
+    "tracked_files": 35,
+    "literal_source_registration_calls": 126,
+    "runtime_discovery_or_outcomes_claimed": false
+  },
+  "reviews": [
+    {
+      "revision": "D56914",
+      "url": "https://reviews.freebsd.org/D56914",
+      "title": "hwpmc: Add Zen6 IBS ctl2 filters and alternate disable",
+      "review_status_when_observed": "Closed",
+      "page_sha256": "533d89a42621f99f7264e03e2d2e9b2e2580ea8d2bf47cbe1c200b8859a95d42",
+      "diff": {
+        "url": "https://reviews.freebsd.org/file/data/bi7io5k77dsmgmyp4m7w/PHID-FILE-eh37geu6ieheya6dqkrm/D56914.1795573507.diff",
+        "bytes": 24471,
+        "sha256": "9f303faeb9d12f4671d09a6072bf5fc6fb97bd306304be8a8d9186be13375990"
+      },
+      "files": [
+        "lib/libpmc/libpmc.c",
+        "lib/libpmc/pmc.ibs.3",
+        "sys/dev/hwpmc/hwpmc_ibs.h",
+        "sys/dev/hwpmc/hwpmc_ibs.c",
+        "usr.sbin/pmcstat/pmcstat_log.c"
+      ],
+      "landed_commits": [
+        "0aa4c25f3e836e98da419a37526bd51c9e04427b"
+      ],
+      "included_through_current_upstream": true
+    },
+    {
+      "revision": "D57630",
+      "url": "https://reviews.freebsd.org/D57630",
+      "title": "sys: hwpmc PMU group/multiplex ABI additions",
+      "review_status_when_observed": "Needs Review",
+      "page_sha256": "d03743f3fe5efa71674872db552ed9362976b82a9f323305b2f2f560ac95d6e0",
+      "diff": {
+        "url": "https://reviews.freebsd.org/file/data/lrb5rxqmy56alpgxfsvk/PHID-FILE-nmqh46qib5mufmw3gv3k/D57630.1795573510.diff",
+        "bytes": 8476,
+        "sha256": "5d54078edb4d98381bcf11cb8e3eab4c1d25fc2898c21781902bfff27564e38f"
+      },
+      "files": [
+        "sys/sys/pmc.h"
+      ],
+      "landed_commits": [],
+      "applies_to_synchronized_main": true,
+      "apply_check_diagnostic": "",
+      "applied_to_main_or_release": false
+    },
+    {
+      "revision": "D57633",
+      "url": "https://reviews.freebsd.org/D57633",
+      "title": "hwpmc: PMC group syscalls, attach hook, and process-exit drain",
+      "review_status_when_observed": "Needs Review",
+      "page_sha256": "3f6216ac59023982b461d1a9cfb0bd10b1b4c9f67e95c53eeadc0a4e59d05f85",
+      "diff": {
+        "url": "https://reviews.freebsd.org/file/data/cnxr73i4t5ct5pqaqhry/PHID-FILE-2wtqeort7n45ryorsbwj/D57633.1795573510.diff",
+        "bytes": 84219,
+        "sha256": "90116867f98636879a2b7da4ba13289563d560a832ecdc2d7753c3ca3b423248"
+      },
+      "files": [
+        "sys/conf/files",
+        "sys/dev/hwpmc/hwpmc_mod.c",
+        "sys/modules/hwpmc/Makefile"
+      ],
+      "landed_commits": [],
+      "applies_to_synchronized_main": true,
+      "apply_check_diagnostic": "",
+      "applied_to_main_or_release": false
+    },
+    {
+      "revision": "D58028",
+      "url": "https://reviews.freebsd.org/D58028",
+      "title": "hwpmc: add RAPL energy-counter class (AMD + Intel)",
+      "review_status_when_observed": "Closed",
+      "page_sha256": "6cf99a30730c8f9d527571940c156934fab97f7c43d4297a5e354100126ff592",
+      "diff": {
+        "url": "https://reviews.freebsd.org/file/data/7jiz2w62nt32dxgfo76e/PHID-FILE-ugeqyqxmbzzdjsviaunm/D58028.1795573507.diff",
+        "bytes": 22968,
+        "sha256": "5938134820650ab874830277de0d79431577f1ccda5f79799300096bc505962f"
+      },
+      "files": [
+        "sys/amd64/include/pmc_mdep.h",
+        "sys/conf/files.x86",
+        "sys/dev/hwpmc/hwpmc_amd.c",
+        "sys/dev/hwpmc/hwpmc_intel.c",
+        "sys/dev/hwpmc/hwpmc_rapl.h",
+        "sys/dev/hwpmc/hwpmc_rapl.c",
+        "sys/dev/hwpmc/pmc_events.h",
+        "sys/i386/include/pmc_mdep.h",
+        "sys/modules/hwpmc/Makefile",
+        "sys/sys/pmc.h"
+      ],
+      "landed_commits": [
+        "a99d04f39dab0eac88eb4f5af425aceaf9238207"
+      ],
+      "included_through_current_upstream": true
+    },
+    {
+      "revision": "D58256",
+      "url": "https://reviews.freebsd.org/D58256",
+      "title": "hwpmc/amd: add PerfMonV2 global-control path",
+      "review_status_when_observed": "Closed",
+      "page_sha256": "ae2416bf60ed57dc083f21143e4258fdb955f825299530b92c1e0d64eeeefd87",
+      "diff": {
+        "url": "https://reviews.freebsd.org/file/data/atcmnnfymeqalvivwals/PHID-FILE-phrfboweabr6qkgs7zdc/D58256.1795573507.diff",
+        "bytes": 22853,
+        "sha256": "691abf5998a83c0cd0cf62310104f3d9e1d96b2399a0da8192f58d2c3180c12c"
+      },
+      "files": [
+        "sys/dev/hwpmc/hwpmc_amd.h",
+        "sys/dev/hwpmc/hwpmc_amd.c",
+        "sys/dev/hwpmc/hwpmc_mod.c",
+        "sys/sys/pmc.h"
+      ],
+      "landed_commits": [
+        "9d30640105900a72437380636f70dd1872ca9e22"
+      ],
+      "included_through_current_upstream": true
+    },
+    {
+      "revision": "D58698",
+      "url": "https://reviews.freebsd.org/D58698",
+      "title": "pmc: Branch history interface",
+      "review_status_when_observed": "Needs Review",
+      "page_sha256": "f65c7ae3b93e077c3aababb943be181e58f01173c41e884dc1698b9755067ab5",
+      "diff": {
+        "url": "https://reviews.freebsd.org/file/data/gtav7p3abjl7wclxzl7l/PHID-FILE-qmlvi4h7hcbmgadj7rkt/D58698.1795573511.diff",
+        "bytes": 4219,
+        "sha256": "a62964e0944d51c8c74ab425bbf95c9d45f37498e4debbb7ab0ade363791b9b5"
+      },
+      "files": [
+        "sys/dev/hwpmc/hwpmc_mod.c",
+        "sys/sys/pmc.h",
+        "sys/sys/pmclog.h",
+        "usr.sbin/pmcstat/pmcstat.8",
+        "usr.sbin/pmcstat/pmcstat.c"
+      ],
+      "landed_commits": [],
+      "applies_to_synchronized_main": true,
+      "apply_check_diagnostic": "",
+      "applied_to_main_or_release": false
+    },
+    {
+      "revision": "D59549",
+      "url": "https://reviews.freebsd.org/D59549",
+      "title": "tests/sys/pmc: add pidtrack, callchain, pmc(8), RAPL and AMD tests",
+      "review_status_when_observed": "Closed",
+      "page_sha256": "f217db8200eae1e4153aa5e9270b4cf7161da4f77032b1a00cc117bf3fa8d6c4",
+      "diff": {
+        "url": "https://reviews.freebsd.org/file/data/ibnrpbiyq7cgziuwmbfw/PHID-FILE-25pxsjiqan7kht7tsnyu/D59549.1795573509.diff",
+        "bytes": 78038,
+        "sha256": "b063c5300c3acbbc1daa61ff45d7ed3a815faf5cc6e096c8afc2ad96e72e1707"
+      },
+      "files": [
+        "etc/mtree/BSD.tests.dist",
+        "tests/sys/pmc/Makefile",
+        "tests/sys/pmc/amd/Makefile",
+        "tests/sys/pmc/amd/amd_pmc_test_common.h",
+        "tests/sys/pmc/amd/pmc_frontend_test.sh",
+        "tests/sys/pmc/amd/pmu_detect_test.c",
+        "tests/sys/pmc/amd/pmu_event_neg_test.c",
+        "tests/sys/pmc/amd/pmu_event_test.c",
+        "tests/sys/pmc/amd/pmu_mux_test.c",
+        "tests/sys/pmc/amd/rapl_domains_test.c",
+        "tests/sys/pmc/pmc_callchain_ur_test.sh",
+        "tests/sys/pmc/pmc_cli_test.sh",
+        "tests/sys/pmc/pmc_pidtrack_test.c",
+        "tests/sys/pmc/pmc_rapl_test.c",
+        "tests/sys/pmc/pmcstat_tsc_test.sh"
+      ],
+      "landed_commits": [
+        "546a7646312352237e49c3a7144e967d2e89b044"
+      ],
+      "included_through_current_upstream": true
+    },
+    {
+      "revision": "D59554",
+      "url": "https://reviews.freebsd.org/D59554",
+      "title": "hwpmc: Add support for AMD-only IRPERF in hwpmc PERF class",
+      "review_status_when_observed": "Closed",
+      "page_sha256": "c7288eecd368c2ae82dfe9e7171284613383dd82065a723789890c2897277ca7",
+      "diff": {
+        "url": "https://reviews.freebsd.org/file/data/qztrzdjbusxhkzgzh7et/PHID-FILE-yehayulpyetlb7n3iyni/D59554.1795573507.diff",
+        "bytes": 19211,
+        "sha256": "31a49508ba68c81abfa784712c50e7517c4f5cecfaf4044403c67494dd96b018"
+      },
+      "files": [
+        "lib/libpmc/pmc.perf.3",
+        "sys/amd64/amd64/initcpu.c",
+        "sys/amd64/include/pmc_mdep.h",
+        "sys/dev/hwpmc/hwpmc_amd.c",
+        "sys/dev/hwpmc/hwpmc_perf.h",
+        "sys/dev/hwpmc/hwpmc_perf.c",
+        "sys/dev/hwpmc/pmc_events.h",
+        "sys/x86/include/specialreg.h"
+      ],
+      "landed_commits": [
+        "2272fac218a88a6f25e696ec54ece2eedec39a38"
+      ],
+      "included_through_current_upstream": true
+    },
+    {
+      "revision": "D60004",
+      "url": "https://reviews.freebsd.org/D60004",
+      "title": "hwpmc: fix IBS fetch and op",
+      "review_status_when_observed": "Closed",
+      "page_sha256": "9b93eb91babf748fb0875474cf3bed8daac4e27f55b53fd1f7bb92e1ae10f54f",
+      "diff": {
+        "url": "https://reviews.freebsd.org/file/data/gaoihrl73km57ozwdsbg/PHID-FILE-4slrha3jp3koyaurqutl/D60004.1795573507.diff",
+        "bytes": 1482,
+        "sha256": "340a72bf167c16749fc740db4b670f4cb354168ae4421d7a4215f7c7408e8d70"
+      },
+      "files": [
+        "sys/dev/hwpmc/hwpmc_ibs.c"
+      ],
+      "landed_commits": [
+        "34b00ed041a49eecc85b9a91748145ada14d83c5"
+      ],
+      "included_through_current_upstream": true
+    },
+    {
+      "revision": "D60548",
+      "url": "https://reviews.freebsd.org/D60548",
+      "title": "hwpmc: add the AMD IOMMU performance counter class",
+      "review_status_when_observed": "Needs Revision",
+      "page_sha256": "6721ff22fb7de716c098e804fe4312f368276c920cda45152d5f76b3a71a3b5c",
+      "diff": {
+        "url": "https://reviews.freebsd.org/file/data/6ra4aaff3g66v53xewxv/PHID-FILE-cdjslbqbgvm45j6z54fy/D60548.1795573512.diff",
+        "bytes": 37678,
+        "sha256": "e5ddd8424a5331085fbdc81daca2a95d01d1fdf62da97e273f95e7116c2e5f2d"
+      },
+      "files": [
+        "lib/libpmc/Makefile",
+        "lib/libpmc/libpmc.c",
+        "lib/libpmc/pmc.3",
+        "lib/libpmc/pmc.amdiommu.3",
+        "sys/amd64/include/pmc_mdep.h",
+        "sys/conf/files.amd64",
+        "sys/dev/hwpmc/hwpmc_amd.c",
+        "sys/dev/hwpmc/hwpmc_amdiommu.h",
+        "sys/dev/hwpmc/hwpmc_amdiommu.c",
+        "sys/dev/hwpmc/pmc_events.h",
+        "sys/modules/hwpmc/Makefile",
+        "sys/sys/pmc.h"
+      ],
+      "landed_commits": [],
+      "applies_to_synchronized_main": true,
+      "apply_check_diagnostic": "",
+      "applied_to_main_or_release": false
+    },
+    {
+      "revision": "D60570",
+      "url": "https://reviews.freebsd.org/D60570",
+      "title": "hwpmc/amd: add LBR v2 sampling on the PerfMonV2 path",
+      "review_status_when_observed": "Needs Review",
+      "page_sha256": "96899ef222da8ba010e424448e19d28d541829f7fadd71f23b95c7f35a0c82be",
+      "diff": {
+        "url": "https://reviews.freebsd.org/file/data/57fjxdzknpjqxebbmief/PHID-FILE-pmvmyuktxemc3gwuk2o4/D60570.1795573511.diff",
+        "bytes": 16133,
+        "sha256": "6d5abcf8a4af6157d00c8418b9a592f46632e1d98a8aafa0dffa356f329d90b1"
+      },
+      "files": [
+        "sys/dev/hwpmc/hwpmc_amd.c",
+        "sys/dev/hwpmc/hwpmc_amd_lbr.h",
+        "tests/sys/pmc/pmc_lbr_test.c"
+      ],
+      "landed_commits": [],
+      "applies_to_synchronized_main": false,
+      "apply_check_diagnostic": "error: patch failed: sys/dev/hwpmc/hwpmc_amd.c:33\nerror: sys/dev/hwpmc/hwpmc_amd.c: patch does not apply\nerror: sys/dev/hwpmc/hwpmc_amd_lbr.h: No such file or directory\nerror: tests/sys/pmc/pmc_lbr_test.c: No such file or directory",
+      "applied_to_main_or_release": false
+    },
+    {
+      "revision": "D60769",
+      "url": "https://reviews.freebsd.org/D60769",
+      "title": "hwpmc: use the PerfMonV2 DF encoding on Family 19h",
+      "review_status_when_observed": "Closed",
+      "page_sha256": "890fe92cde0e2eb4bf99afc827c90e1a5ab1f1a6b84300d6d93afcb2227d8da6",
+      "diff": {
+        "url": "https://reviews.freebsd.org/file/data/sschgmwlokf5jrh5mtiw/PHID-FILE-eh3a2ihunceogamwbda6/D60769.1795573508.diff",
+        "bytes": 2109,
+        "sha256": "4786982da407c08d1674e07dde6527e69fedf6066bce5a8850f2c896ecb8630d"
+      },
+      "files": [
+        "lib/libpmc/libpmc_pmu_util.c",
+        "sys/dev/hwpmc/hwpmc_amd.h",
+        "sys/dev/hwpmc/hwpmc_amd.c"
+      ],
+      "landed_commits": [
+        "869bb2bbb7809e79cd672a6adc46bdc79a38f382"
+      ],
+      "included_through_current_upstream": true
+    },
+    {
+      "revision": "D60771",
+      "url": "https://reviews.freebsd.org/D60771",
+      "title": "hwpmc: keep AMD UMC counters from saturating",
+      "review_status_when_observed": "Closed",
+      "page_sha256": "d64c4ff62f4cc1b8ee870be74f809b3aae004e6b23289a618ca41832e7f2b00f",
+      "diff": {
+        "url": "https://reviews.freebsd.org/file/data/m2odnwki3dxi4lxh4eoa/PHID-FILE-p26c6jvkgox6k6c5ivph/D60771.1795573508.diff",
+        "bytes": 1661,
+        "sha256": "d948fd430ac7e5dfa5c8138233980d4ea5ebb1ea19dbbf289b39b1c1222f98e0"
+      },
+      "files": [
+        "sys/dev/hwpmc/hwpmc_amd.c"
+      ],
+      "landed_commits": [
+        "1768d483ef9dedd6ea5652401c5a693f49b2066c"
+      ],
+      "included_through_current_upstream": true
+    },
+    {
+      "revision": "D61053",
+      "url": "https://reviews.freebsd.org/D61053",
+      "title": "hwpmc_amd: Support Large Increment per Cycle events",
+      "review_status_when_observed": "Accepted",
+      "page_sha256": "7f563d59fcd1367ba908e8f3b3f5f21d8818c3ef7dd955ac01fbd50c20f865fd",
+      "diff": {
+        "url": "https://reviews.freebsd.org/file/data/qo7u5rvhu2vwbkibcwvv/PHID-FILE-7sby6e62r3yoftx3d55f/D61053.1795573512.diff",
+        "bytes": 22040,
+        "sha256": "60e5dcc5b3ace47bcdc4687592a58cab39100b04c6078ad8e346473083ccbd2e"
+      },
+      "files": [
+        "sys/dev/hwpmc/hwpmc_amd.h",
+        "sys/dev/hwpmc/hwpmc_amd.c",
+        "sys/dev/hwpmc/hwpmc_mod.c",
+        "sys/sys/pmc.h"
+      ],
+      "landed_commits": [],
+      "applies_to_synchronized_main": false,
+      "apply_check_diagnostic": "error: patch failed: sys/dev/hwpmc/hwpmc_amd.c:463\nerror: sys/dev/hwpmc/hwpmc_amd.c: patch does not apply",
+      "applied_to_main_or_release": false
+    },
+    {
+      "revision": "D61062",
+      "url": "https://reviews.freebsd.org/D61062",
+      "title": "tests/sys/pmc: add PERF, RDPMC, row, sampling and unload tests",
+      "review_status_when_observed": "Closed",
+      "page_sha256": "8f0c48386546e1935780544e481bfddbfad667128da708a72279ebc2d8f80d1a",
+      "diff": {
+        "url": "https://reviews.freebsd.org/file/data/lqgvlxdcikfnpzohswko/PHID-FILE-fholsxqhor3nb5mv377i/D61062.1795573509.diff",
+        "bytes": 31209,
+        "sha256": "54676f613eb9fc167d269c45d3b894510552ebd402225508ca6d51c739003272"
+      },
+      "files": [
+        "tests/sys/pmc/Makefile",
+        "tests/sys/pmc/pmc_perf_test.c",
+        "tests/sys/pmc/pmc_rdpmc_test.c",
+        "tests/sys/pmc/pmc_row_test.c",
+        "tests/sys/pmc/pmc_ss_test.c",
+        "tests/sys/pmc/pmc_unload_test.c"
+      ],
+      "landed_commits": [
+        "d546356523f3e4856611fe25e0d9c8cf34ba1941"
+      ],
+      "included_through_current_upstream": true
+    },
+    {
+      "revision": "D61063",
+      "url": "https://reviews.freebsd.org/D61063",
+      "title": "tests/sys/pmc/amd: add IBS, row allocation, PerfEvtSel and PerfMonV2 tests",
+      "review_status_when_observed": "Closed",
+      "page_sha256": "ef4815f28174f01e5aa8cbceeecc8de49fec5563c308c875362138d56e984438",
+      "diff": {
+        "url": "https://reviews.freebsd.org/file/data/v6hfjqsenrggdcjcnjj5/PHID-FILE-wsjdgocy7okwcp7hnn3s/D61063.1795573509.diff",
+        "bytes": 49385,
+        "sha256": "cf77c10bae576cb1d2166ec06ec9175ba657b2f32776a6ddae024b7aeb8d4548"
+      },
+      "files": [
+        "tests/sys/pmc/amd/Makefile",
+        "tests/sys/pmc/amd/amd_pmc_test_common.h",
+        "tests/sys/pmc/amd/pmc_ibs_fetch_op_test.c",
+        "tests/sys/pmc/amd/pmc_ibs_test.c",
+        "tests/sys/pmc/amd/pmc_rowalloc_test.c",
+        "tests/sys/pmc/amd/pmc_start_msr_test.c",
+        "tests/sys/pmc/amd/pmcstat_ibs_test.sh",
+        "tests/sys/pmc/amd/pmu_perfmonv2_test.c"
+      ],
+      "landed_commits": [
+        "7c743e3ba6c1efc4aca9c0bb59e952cbdb63c1c7"
+      ],
+      "included_through_current_upstream": true
+    },
+    {
+      "revision": "D61365",
+      "url": "https://reviews.freebsd.org/D61365",
+      "title": "hwpmc_ibs: keep stalled units stopped",
+      "review_status_when_observed": "Accepted",
+      "page_sha256": "69724c3e6e4257a782cb8130098d25fe44169ade93c1737338795e65a534d1a3",
+      "diff": {
+        "url": "https://reviews.freebsd.org/file/data/pdkidez5sits7cibcxsd/PHID-FILE-owrygh7mwz5x6bvwlead/D61365.1795573510.diff",
+        "bytes": 2572,
+        "sha256": "03b8cb6b63310065452f600c111a4d338b4ae28b894f2dff54dca5e405565e55"
+      },
+      "files": [
+        "sys/dev/hwpmc/hwpmc_ibs.c"
+      ],
+      "landed_commits": [],
+      "applies_to_synchronized_main": true,
+      "apply_check_diagnostic": "",
+      "applied_to_main_or_release": false
+    },
+    {
+      "revision": "D61371",
+      "url": "https://reviews.freebsd.org/D61371",
+      "title": "hwpmc: limit PMC sample rates",
+      "review_status_when_observed": "Needs Review",
+      "page_sha256": "abe1a1e3556719149b29b3e4f0db19404d5d3947aeee66ef9d9760c133fced33",
+      "diff": {
+        "url": "https://reviews.freebsd.org/file/data/vr2umv5g3revxez73ern/PHID-FILE-neqebj5jemrk5ez3fwat/D61371.1795573511.diff",
+        "bytes": 21643,
+        "sha256": "5a0eef57185d112e2b7e18d2c384f66070a7ba37478ee1d6bc7e8473b55776ba"
+      },
+      "files": [
+        "share/man/man4/hwpmc.4",
+        "sys/dev/hwpmc/hwpmc_logging.c",
+        "sys/dev/hwpmc/hwpmc_mod.c",
+        "sys/sys/pmc.h",
+        "tests/sys/pmc/Makefile",
+        "tests/sys/pmc/pmc_throttle_test.c"
+      ],
+      "landed_commits": [],
+      "applies_to_synchronized_main": false,
+      "apply_check_diagnostic": "error: patch failed: tests/sys/pmc/Makefile:7\nerror: tests/sys/pmc/Makefile: patch does not apply",
+      "applied_to_main_or_release": false
+    },
+    {
+      "revision": "D61451",
+      "url": "https://reviews.freebsd.org/D61451",
+      "title": "hwpmc_amd: Service the core counters when IBS claims the NMI",
+      "review_status_when_observed": "Closed",
+      "page_sha256": "a9c8471a4dbc04cfe6fc6914152fd74601da5200b318aa7b34b3d531d8e6426b",
+      "diff": {
+        "url": "https://reviews.freebsd.org/file/data/vacelfmaa5lq26m4mr2n/PHID-FILE-hziailpbmo5te2kryysf/D61451.1795573508.diff",
+        "bytes": 8311,
+        "sha256": "32b15706bb0086986eff478fb72b0a8d6cdefbc806cf69af86e9f92b5406cae5"
+      },
+      "files": [
+        "sys/dev/hwpmc/hwpmc_amd.c",
+        "tests/sys/pmc/amd/Makefile",
+        "tests/sys/pmc/amd/ibs_core_test.c"
+      ],
+      "landed_commits": [
+        "c0c2c80b647f712798c507cc76cbdf882c132a9c"
+      ],
+      "included_through_current_upstream": true
+    }
+  ],
+  "older_commit_ancestry_due_to_local_shallow_history": {
+    "a99d04f39dab0eac88eb4f5af425aceaf9238207": {
+      "ahead_by": 4861,
+      "behind_by": 0,
+      "merge_base_commit": "a99d04f39dab0eac88eb4f5af425aceaf9238207",
+      "status": "ahead"
+    },
+    "0aa4c25f3e836e98da419a37526bd51c9e04427b": {
+      "ahead_by": 6082,
+      "behind_by": 0,
+      "merge_base_commit": "0aa4c25f3e836e98da419a37526bd51c9e04427b",
+      "status": "ahead"
+    }
+  },
+  "unmerged_review_findings": {
+    "D61365": "Accepted; applies alone. Prioritize isolated buffer-exhaustion and NMI qualification with existing D61451 retained.",
+    "D61053": "Accepted, but the current diff fails to apply in hwpmc_amd.c. Rebase and verify paired-row reservation, overflow and SMP teardown before inclusion.",
+    "D61371": "Needs Review; tests/sys/pmc/Makefile conflict. Minimum-period and drop-log companion changes require separate review.",
+    "D57630_D57633": "ABI additions and glue omit required PMU/assignment source/header implementations and the complete userland/rotation/test stack.",
+    "D58698": "The retained diff dereferences nonexistent pmd_branch on struct pmc_multipart *, before its null check. It proposes a major ABI bump and flag 0x400 also proposed for GROUP_MUX by D57630. Multipart capacity and callback-result handling require review.",
+    "D60570": "Depends on D60569 and earlier LBR header/test/backend prerequisites absent from current main; the diff does not apply.",
+    "D60548": "Needs Revision. Require underlying IOMMU counter interfaces, system privilege, matching-register ownership, row-budget checks and teardown/runtime/negative tests before admission."
+  },
+  "remaining_gates": [
+    "Rebase and qualify selected unmerged PMC candidates; no in-review patch was added to main/release.",
+    "Build matched native amd64/aarch64 world/kernel/modules and required packages against new snapshots.",
+    "Refresh the packaged Omarchy pin from 0640b8c1 to acdf15e7 after adaptation, source/plist/package and native installed qualification.",
+    "Run original PMC ATF on suitable AMD/Intel hardware; CPU feature or VM unsupported results remain distinct.",
+    "Complete canonical SDK/TCB/lifecycle, image/installed desktop/network/upgrade/rollback/signing/release gates."
+  ],
+  "final_upstream_tip_cutoff": {
+    "checked": "2026-11-24T02:44:03.313054+00:00",
+    "pending_reviews": [
+      {
+        "revision": "D57630",
+        "diff_sha256": "5d54078edb4d98381bcf11cb8e3eab4c1d25fc2898c21781902bfff27564e38f",
+        "same_as_reviewed": true
+      },
+      {
+        "revision": "D57633",
+        "diff_sha256": "90116867f98636879a2b7da4ba13289563d560a832ecdc2d7753c3ca3b423248",
+        "same_as_reviewed": true
+      },
+      {
+        "revision": "D61365",
+        "diff_sha256": "03b8cb6b63310065452f600c111a4d338b4ae28b894f2dff54dca5e405565e55",
+        "same_as_reviewed": true
+      },
+      {
+        "revision": "D61371",
+        "diff_sha256": "5a0eef57185d112e2b7e18d2c384f66070a7ba37478ee1d6bc7e8473b55776ba",
+        "same_as_reviewed": true
+      },
+      {
+        "revision": "D58698",
+        "diff_sha256": "a62964e0944d51c8c74ab425bbf95c9d45f37498e4debbb7ab0ade363791b9b5",
+        "same_as_reviewed": true
+      },
+      {
+        "revision": "D60570",
+        "diff_sha256": "6d5abcf8a4af6157d00c8418b9a592f46632e1d98a8aafa0dffa356f329d90b1",
+        "same_as_reviewed": true
+      },
+      {
+        "revision": "D60548",
+        "diff_sha256": "e5ddd8424a5331085fbdc81daca2a95d01d1fdf62da97e273f95e7116c2e5f2d",
+        "same_as_reviewed": true
+      },
+      {
+        "revision": "D61053",
+        "diff_sha256": "60e5dcc5b3ace47bcdc4687592a58cab39100b04c6078ad8e346473083ccbd2e",
+        "same_as_reviewed": true
+      }
+    ],
+    "upstream_heads": {
+      "freebsd_src": "97fd69b0b88405e08c0b23d0a9a3a64e5b47fc84",
+      "freebsd_ports": "d5f50f314664fa2ad99c3b922abeea419e30b210",
+      "omarchy": "94a8c3c3321129fae87a329947711355897e69fd"
+    }
+  }
+}
