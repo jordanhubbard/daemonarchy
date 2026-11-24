@@ -1,0 +1,120 @@
+{
+  "schema": "daemonarchy/upstream-sync-pmc-review@1",
+  "observed_at_utc": "2026-11-24T13:08:08.123612+00:00",
+  "target_release": "1.6",
+  "scope": "Later same-day upstream refresh after the morning record. Repository history and selected host-controller checks only; no replacement of original native evidence or release acceptance.",
+  "upstream_heads": {
+    "daemonarchy-src": "96c545176df7be2c33587fe4a35ac18af40d8dea",
+    "daemonarchy-ports": "deb3f9d2f40f52f6a3cc8c590c3220fdbde20c1a",
+    "omarchy": "7427fab86f67c5d5587a9ee4574a7d063e527aac"
+  },
+  "main_release_heads": {
+    "daemonarchy-src": "759e93f1bbc79103eda36077e7c28d17317f15c8",
+    "daemonarchy-ports": "aef72724d2a2000dcafe6d7523223eaa523188d5"
+  },
+  "additional_upstream_commits": {
+    "daemonarchy-src": 3,
+    "daemonarchy-ports": 21
+  },
+  "source_import_changes": [
+    "sys/dev/acpica/acpi_ec.c",
+    "sys/netpfil/pf/pf.c",
+    "sys/netpfil/pf/pf_ioctl.c"
+  ],
+  "selected_checks": {
+    "checked": "2026-11-24T13:10:45.186376+00:00",
+    "all7selected_suites_exit0": true,
+    "source_cases": 84,
+    "source_original_skips": 2,
+    "ports_cases": 39,
+    "both_authority_pass": true,
+    "both_lifecycle_only_receipt_failure": true,
+    "native_OS_and_package_qualification_not_implied": true
+  },
+  "PMC": {
+    "checked": "2026-11-24T13:11:51.198390+00:00",
+    "source_main": "759e93f1bbc79103eda36077e7c28d17317f15c8",
+    "all_PMC_surface_unchanged_by_three_source_import_files": true,
+    "eleven_landed_changes_still_in_ancestry": true,
+    "eight_pending_original_diff_applicability": [
+      {
+        "revision": "D57630",
+        "raw_diff_sha256": "5d54078edb4d98381bcf11cb8e3eab4c1d25fc2898c21781902bfff27564e38f",
+        "apply_check_exit": 0,
+        "output": "",
+        "review_status_observed": "2026-11-24T09:58:53.425649+00:00"
+      },
+      {
+        "revision": "D57633",
+        "raw_diff_sha256": "90116867f98636879a2b7da4ba13289563d560a832ecdc2d7753c3ca3b423248",
+        "apply_check_exit": 0,
+        "output": "",
+        "review_status_observed": "2026-11-24T09:58:54.093640+00:00"
+      },
+      {
+        "revision": "D61365",
+        "raw_diff_sha256": "03b8cb6b63310065452f600c111a4d338b4ae28b894f2dff54dca5e405565e55",
+        "apply_check_exit": 0,
+        "output": "",
+        "review_status_observed": "2026-11-24T09:58:54.400518+00:00"
+      },
+      {
+        "revision": "D61371",
+        "raw_diff_sha256": "5a0eef57185d112e2b7e18d2c384f66070a7ba37478ee1d6bc7e8473b55776ba",
+        "apply_check_exit": 1,
+        "output": "error: patch failed: tests/sys/pmc/Makefile:7\nerror: tests/sys/pmc/Makefile: patch does not apply\n",
+        "review_status_observed": "2026-11-24T09:58:54.813469+00:00"
+      },
+      {
+        "revision": "D58698",
+        "raw_diff_sha256": "a62964e0944d51c8c74ab425bbf95c9d45f37498e4debbb7ab0ade363791b9b5",
+        "apply_check_exit": 0,
+        "output": "",
+        "review_status_observed": "2026-11-24T09:58:55.420933+00:00"
+      },
+      {
+        "revision": "D60570",
+        "raw_diff_sha256": "6d5abcf8a4af6157d00c8418b9a592f46632e1d98a8aafa0dffa356f329d90b1",
+        "apply_check_exit": 1,
+        "output": "error: patch failed: sys/dev/hwpmc/hwpmc_amd.c:33\nerror: sys/dev/hwpmc/hwpmc_amd.c: patch does not apply\nerror: sys/dev/hwpmc/hwpmc_amd_lbr.h: No such file or directory\nerror: tests/sys/pmc/pmc_lbr_test.c: No such file or directory\n",
+        "review_status_observed": "2026-11-24T09:58:55.249304+00:00"
+      },
+      {
+        "revision": "D60548",
+        "raw_diff_sha256": "e5ddd8424a5331085fbdc81daca2a95d01d1fdf62da97e273f95e7116c2e5f2d",
+        "apply_check_exit": 0,
+        "output": "",
+        "review_status_observed": "2026-11-24T09:58:55.813678+00:00"
+      },
+      {
+        "revision": "D61053",
+        "raw_diff_sha256": "60e5dcc5b3ace47bcdc4687592a58cab39100b04c6078ad8e346473083ccbd2e",
+        "apply_check_exit": 1,
+        "output": "error: patch failed: sys/dev/hwpmc/hwpmc_amd.c:463\nerror: sys/dev/hwpmc/hwpmc_amd.c: patch does not apply\n",
+        "review_status_observed": "2026-11-24T09:58:56.509115+00:00"
+      }
+    ],
+    "no_pending_diff_imported": true,
+    "original19diffs_retrieved_today_reference": "verification/upstream-sync-pmc-review-20261124.json"
+  },
+  "native_evidence_boundaries": {
+    "M4_merged_PR": 98,
+    "Bison_merged_PR": 100,
+    "M4_native_source": "d2302d9fab91168ac3b419b78b9a246914afb195",
+    "Bison_native_source": "6f4344ac1a89be99906ee594e771e84f556f4dc5",
+    "current_main_not_relabelled_as_native_tested": true,
+    "Bash_default_package_built_original_regress_has_unresolved_diagnostics": true,
+    "Omarchy_current_snapshot_PR": 99,
+    "full_current_OS_packages_PMC_hardware_and_release_acceptance_pending": true
+  },
+  "product_documentation_validation": {
+    "original_docs_lifecycle_cases": 4,
+    "original_docs_release_sync_cases": 13,
+    "all17pass": true,
+    "authority_exit": 2,
+    "lifecycle_exit": 1,
+    "remaining_existing_error_code": "project.documentation_authority_review_stale",
+    "eight_committed_locks_current": true,
+    "no_review_attestation_or_receipt_synthesized": true
+  }
+}
