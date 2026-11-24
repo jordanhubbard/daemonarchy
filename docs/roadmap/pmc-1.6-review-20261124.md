@@ -105,3 +105,27 @@ Repository synchronization leaves SYNC-001 active. Matching world/kernel/modules
 source-built package closures, actual PMC ATF runs, desktop adaptation, installer,
 update/rollback and recovery, Pi 4 before Pi 5 device acceptance, fleet updates,
 canonical Component/SDK/TCB admission and signing remain release requirements.
+
+## Later same-day refresh
+
+The upstream tips observed at 13:08 UTC on November 24 advanced again after the
+morning synchronization. A further three FreeBSD source commits and 21 ports
+commits are imported, preserving both histories. Source main, `daemonarchy` and
+`release/1.6` now select `759e93f1bbc7`; the corresponding ports branches select
+`aef72724d2a2`. Omarchy's selected upstream tip remains `7427fab86f67`.
+
+The source changes correct ACPI ECDT namepath interpretation and PF initialization
+and interface cleanup. Ports includes the py7zr security update, a calibreweb
+backport, Qt flavor changes and application updates. The selected source
+controller suites again run 84 cases with two original skips and no failures;
+ports again passes 39 cases. Both repositories pass authority validation. Their
+lifecycle checks still fail only for the missing configured test receipt.
+
+The PMC surface is unchanged. All eight original pending diffs were checked
+against the new source main and retain the applicability results above; the
+eleven landed changes remain in its ancestry. No pending PMC diff is imported.
+The [later revision record](../../verification/upstream-sync-pmc-review-20261124-later.json)
+records these inputs and keeps earlier native results at their tested revisions.
+M4 and Bison fixes have separately merged after native tests on both architectures;
+Bash qualification, the current Omarchy package, full matching OS builds and
+hardware/release acceptance remain open.
