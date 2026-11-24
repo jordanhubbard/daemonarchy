@@ -1,0 +1,1690 @@
+{
+  "schema": "daemonarchy/upstream-sync-pmc-review@1",
+  "observed_at_utc": "2026-11-24T10:04:57.304924+00:00",
+  "operator_local_date": "2026-11-24",
+  "target_release": "1.6",
+  "scope": "Current upstream source imports, main then release synchronization, active review-head ancestry and refreshed source review. No new native or release acceptance.",
+  "upstream_heads": {
+    "daemonarchy-src": "a82c04293ecc72ea87f68c9506e160944ec26047",
+    "daemonarchy-ports": "e9ccafded492191d5aa411e4fc9470009bbb2c9f",
+    "omarchy": "7427fab86f67c5d5587a9ee4574a7d063e527aac"
+  },
+  "main_and_release_heads_before_this_documentation": [
+    {
+      "repository": "daemonarchy",
+      "main": "4f351f605f6fad43eeefbeb1ce7a9817bafad230",
+      "release_1_6": "4f351f605f6fad43eeefbeb1ce7a9817bafad230"
+    },
+    {
+      "repository": "daemonarchy-src",
+      "main": "ebd6178257dc239986bfde2b7852eff2683ef20f",
+      "release_1_6": "ebd6178257dc239986bfde2b7852eff2683ef20f"
+    },
+    {
+      "repository": "daemonarchy-ports",
+      "main": "d32c635423e1b8a92db21ec788fc716c15c2a1b5",
+      "release_1_6": "d32c635423e1b8a92db21ec788fc716c15c2a1b5"
+    },
+    {
+      "repository": "daemonarchy-desktop",
+      "main": "4b2525533600f37d2c6249112c3d2d4e22989f36",
+      "release_1_6": "4b2525533600f37d2c6249112c3d2d4e22989f36"
+    },
+    {
+      "repository": "omarchy-freebsd",
+      "main": "029e0eba6ff69392e416abb5bbd58206d4d20443",
+      "release_1_6": "029e0eba6ff69392e416abb5bbd58206d4d20443"
+    },
+    {
+      "repository": "omarchy",
+      "main": "41fd84ddabc2b45e5f28e04102b8231f9c00b458",
+      "release_1_6": "41fd84ddabc2b45e5f28e04102b8231f9c00b458"
+    }
+  ],
+  "all_36_open_PRs_28_distinct_heads_contain_current_main_before_this_documentation": true,
+  "product_review_heads_require_followup_for_this_documentation_commit": true,
+  "review_branches": [
+    {
+      "repository": "daemonarchy",
+      "PRs": [
+        {
+          "baseRefName": "release/1.6",
+          "headRefName": "work/pi-acpi-namespace-20261122",
+          "headRefOid": "fe8fa523ce266454df46d353af99fdffeafdba3a",
+          "number": 340,
+          "url": "https://github.com/jordanhubbard/daemonarchy/pull/340"
+        },
+        {
+          "baseRefName": "main",
+          "headRefName": "work/pi-acpi-namespace-20261122",
+          "headRefOid": "fe8fa523ce266454df46d353af99fdffeafdba3a",
+          "number": 339,
+          "url": "https://github.com/jordanhubbard/daemonarchy/pull/339"
+        },
+        {
+          "baseRefName": "release/1.6",
+          "headRefName": "work/pi-display-20261122",
+          "headRefOid": "35ba43bfdeba9410543c032c9d126d22e512df0b",
+          "number": 338,
+          "url": "https://github.com/jordanhubbard/daemonarchy/pull/338"
+        },
+        {
+          "baseRefName": "main",
+          "headRefName": "work/pi-display-20261122",
+          "headRefOid": "35ba43bfdeba9410543c032c9d126d22e512df0b",
+          "number": 337,
+          "url": "https://github.com/jordanhubbard/daemonarchy/pull/337"
+        }
+      ],
+      "all_heads_contain_main": true
+    },
+    {
+      "repository": "daemonarchy-src",
+      "PRs": [
+        {
+          "baseRefName": "daemonarchy",
+          "headRefName": "fix/localedef-gb18030-wide-encoding",
+          "headRefOid": "c4d0d31398668a3f349f919237650ca3adb023d4",
+          "number": 140,
+          "url": "https://github.com/jordanhubbard/daemonarchy-src/pull/140"
+        },
+        {
+          "baseRefName": "release/1.6",
+          "headRefName": "work/sdhci-completion-20261122",
+          "headRefOid": "ece1bfba5b38147e80f5503c40da9c784e2babbe",
+          "number": 139,
+          "url": "https://github.com/jordanhubbard/daemonarchy-src/pull/139"
+        },
+        {
+          "baseRefName": "main",
+          "headRefName": "work/sdhci-completion-20261122",
+          "headRefOid": "ece1bfba5b38147e80f5503c40da9c784e2babbe",
+          "number": 138,
+          "url": "https://github.com/jordanhubbard/daemonarchy-src/pull/138"
+        },
+        {
+          "baseRefName": "release/1.6",
+          "headRefName": "work/mmccam-sdio-init-20261122",
+          "headRefOid": "ba461a57ca3a790e7894ae188e7b2d92a56dd162",
+          "number": 137,
+          "url": "https://github.com/jordanhubbard/daemonarchy-src/pull/137"
+        },
+        {
+          "baseRefName": "main",
+          "headRefName": "work/mmccam-sdio-init-20261122",
+          "headRefOid": "ba461a57ca3a790e7894ae188e7b2d92a56dd162",
+          "number": 136,
+          "url": "https://github.com/jordanhubbard/daemonarchy-src/pull/136"
+        },
+        {
+          "baseRefName": "release/1.6",
+          "headRefName": "work/pi-acpi-namespace-20261122",
+          "headRefOid": "459420b3de08f6e1e855d7e43ce52009ec3e30a2",
+          "number": 135,
+          "url": "https://github.com/jordanhubbard/daemonarchy-src/pull/135"
+        },
+        {
+          "baseRefName": "main",
+          "headRefName": "work/pi-acpi-namespace-20261122",
+          "headRefOid": "459420b3de08f6e1e855d7e43ce52009ec3e30a2",
+          "number": 134,
+          "url": "https://github.com/jordanhubbard/daemonarchy-src/pull/134"
+        },
+        {
+          "baseRefName": "release/1.6",
+          "headRefName": "work/pi4-broadcom-review-20261122",
+          "headRefOid": "8b697c7914861d117c23fa25010b0bafb23f621a",
+          "number": 133,
+          "url": "https://github.com/jordanhubbard/daemonarchy-src/pull/133"
+        },
+        {
+          "baseRefName": "main",
+          "headRefName": "work/pi4-broadcom-review-20261122",
+          "headRefOid": "8b697c7914861d117c23fa25010b0bafb23f621a",
+          "number": 132,
+          "url": "https://github.com/jordanhubbard/daemonarchy-src/pull/132"
+        },
+        {
+          "baseRefName": "daemonarchy",
+          "headRefName": "fix/arm64-dtrace-predicate",
+          "headRefOid": "f9ed623ec520698e4cae7f7937eaa455d0b6a6bb",
+          "number": 131,
+          "url": "https://github.com/jordanhubbard/daemonarchy-src/pull/131"
+        },
+        {
+          "baseRefName": "daemonarchy",
+          "headRefName": "fix/posix-tz-weekday-overflow",
+          "headRefOid": "8295568723e77db40a48e9bccd1c432d1c0896c8",
+          "number": 130,
+          "url": "https://github.com/jordanhubbard/daemonarchy-src/pull/130"
+        },
+        {
+          "baseRefName": "daemonarchy",
+          "headRefName": "work/pi5-c1-sd-20261120",
+          "headRefOid": "d0ddfe7e88c8c3279eb599ee1ba2315067ef3989",
+          "number": 116,
+          "url": "https://github.com/jordanhubbard/daemonarchy-src/pull/116"
+        },
+        {
+          "baseRefName": "daemonarchy",
+          "headRefName": "work/rp1-nexus-20261120",
+          "headRefOid": "516d2ba45c89359ec6fe169b71d93fd7af2f1ca1",
+          "number": 114,
+          "url": "https://github.com/jordanhubbard/daemonarchy-src/pull/114"
+        },
+        {
+          "baseRefName": "daemonarchy",
+          "headRefName": "fix/100-ufs-ctime",
+          "headRefOid": "e7affce23ca7c069d31f1fcca1d2c83eb670748a",
+          "number": 101,
+          "url": "https://github.com/jordanhubbard/daemonarchy-src/pull/101"
+        }
+      ],
+      "all_heads_contain_main": true
+    },
+    {
+      "repository": "daemonarchy-ports",
+      "PRs": [
+        {
+          "baseRefName": "main",
+          "headRefName": "fix/llvm19-cmake-tests-20261123",
+          "headRefOid": "283ff500a7fb3f943eedd3cff1aa9c0870365878",
+          "number": 93,
+          "url": "https://github.com/jordanhubbard/daemonarchy-ports/pull/93"
+        },
+        {
+          "baseRefName": "daemonarchy",
+          "headRefName": "fix/rabbitmq-source-441",
+          "headRefOid": "56af159ded78eb5516af2e97561313b9a3d778f5",
+          "number": 92,
+          "url": "https://github.com/jordanhubbard/daemonarchy-ports/pull/92"
+        },
+        {
+          "baseRefName": "main",
+          "headRefName": "fix/git-lite-request-pull",
+          "headRefOid": "f04fae9c14dd8e47ebff58a7f2aca34da2ba6e76",
+          "number": 91,
+          "url": "https://github.com/jordanhubbard/daemonarchy-ports/pull/91"
+        },
+        {
+          "baseRefName": "main",
+          "headRefName": "fix/setuptools-download-containment",
+          "headRefOid": "31c681130c99baa5cdb62e5ad409634b63d48f94",
+          "number": 90,
+          "url": "https://github.com/jordanhubbard/daemonarchy-ports/pull/90"
+        },
+        {
+          "baseRefName": "main",
+          "headRefName": "fix/elixir-deterministic-source",
+          "headRefOid": "157c3d4f55b91cbff12dd368d63bbdd8b93c844f",
+          "number": 89,
+          "url": "https://github.com/jordanhubbard/daemonarchy-ports/pull/89"
+        },
+        {
+          "baseRefName": "release/1.6",
+          "headRefName": "work/pi4-brcmfmac-20261122",
+          "headRefOid": "05dc6598af56fe28bdf14b1b6b0351c26c1540f0",
+          "number": 88,
+          "url": "https://github.com/jordanhubbard/daemonarchy-ports/pull/88"
+        },
+        {
+          "baseRefName": "main",
+          "headRefName": "work/pi4-brcmfmac-20261122",
+          "headRefOid": "05dc6598af56fe28bdf14b1b6b0351c26c1540f0",
+          "number": 87,
+          "url": "https://github.com/jordanhubbard/daemonarchy-ports/pull/87"
+        },
+        {
+          "baseRefName": "release/1.6",
+          "headRefName": "work/pi-efi-display-20261122",
+          "headRefOid": "547668dcabae6a7a55d779e39aa3fdcf7e8dab5b",
+          "number": 86,
+          "url": "https://github.com/jordanhubbard/daemonarchy-ports/pull/86"
+        },
+        {
+          "baseRefName": "main",
+          "headRefName": "work/pi-efi-display-20261122",
+          "headRefOid": "547668dcabae6a7a55d779e39aa3fdcf7e8dab5b",
+          "number": 85,
+          "url": "https://github.com/jordanhubbard/daemonarchy-ports/pull/85"
+        },
+        {
+          "baseRefName": "main",
+          "headRefName": "fix/python312-mail-command-validation",
+          "headRefOid": "9524d9ee35014f43edee1b967572f6201c1a0d72",
+          "number": 84,
+          "url": "https://github.com/jordanhubbard/daemonarchy-ports/pull/84"
+        },
+        {
+          "baseRefName": "main",
+          "headRefName": "fix/perl542-dtrace-predicates",
+          "headRefOid": "3dd8bf06ceaca1ed255cc7b828e5a44e42984648",
+          "number": 82,
+          "url": "https://github.com/jordanhubbard/daemonarchy-ports/pull/82"
+        },
+        {
+          "baseRefName": "main",
+          "headRefName": "fix/python312-native-dtrace",
+          "headRefOid": "565fb9568a040e49237c4dfcbb7c75d6eddd3b44",
+          "number": 81,
+          "url": "https://github.com/jordanhubbard/daemonarchy-ports/pull/81"
+        },
+        {
+          "baseRefName": "main",
+          "headRefName": "fix/334-freebsd-snapshot-migration-20261121",
+          "headRefOid": "69a0156ce19663b17756680a09e7f1608380a98e",
+          "number": 80,
+          "url": "https://github.com/jordanhubbard/daemonarchy-ports/pull/80"
+        },
+        {
+          "baseRefName": "main",
+          "headRefName": "fix/herdr-freebsd-current-20261119",
+          "headRefOid": "6d448bac2e76f376e0e83e75d0a034564bae153a",
+          "number": 79,
+          "url": "https://github.com/jordanhubbard/daemonarchy-ports/pull/79"
+        },
+        {
+          "baseRefName": "main",
+          "headRefName": "fix/current-desktop-snapshots-20261118",
+          "headRefOid": "963c54b9d95b92ae29a0f2f126276a4ba922784a",
+          "number": 75,
+          "url": "https://github.com/jordanhubbard/daemonarchy-ports/pull/75"
+        },
+        {
+          "baseRefName": "main",
+          "headRefName": "fix/herdr-zig016-20261118",
+          "headRefOid": "6c929b6d81eb65d1615aca0618deb88a4702bf15",
+          "number": 74,
+          "url": "https://github.com/jordanhubbard/daemonarchy-ports/pull/74"
+        },
+        {
+          "baseRefName": "main",
+          "headRefName": "sync/freebsd-ports-20261118",
+          "headRefOid": "a1d980b019b5b219c26ac824ccb2104dfcc81f8e",
+          "number": 73,
+          "url": "https://github.com/jordanhubbard/daemonarchy-ports/pull/73"
+        },
+        {
+          "baseRefName": "main",
+          "headRefName": "fix/333-mono-arm64-bootstrap",
+          "headRefOid": "10c9a21ecb70b34b488f3b500a1fca035d21cd0f",
+          "number": 72,
+          "url": "https://github.com/jordanhubbard/daemonarchy-ports/pull/72"
+        }
+      ],
+      "all_heads_contain_main": true
+    },
+    {
+      "repository": "daemonarchy-desktop",
+      "PRs": [],
+      "all_heads_contain_main": true
+    },
+    {
+      "repository": "omarchy-freebsd",
+      "PRs": [],
+      "all_heads_contain_main": true
+    },
+    {
+      "repository": "omarchy",
+      "PRs": [],
+      "all_heads_contain_main": true
+    }
+  ],
+  "imported_history_and_overlap": [
+    {
+      "repository": "daemonarchy-src",
+      "new_upstream_commits": 13,
+      "upstream_changed_paths": 19,
+      "overlap": [
+        "sys/dev/acpica/acpi.c"
+      ],
+      "whole_PMC_surface_matches_current_upstream": true,
+      "PMC_surface_unchanged_from_previous_import": true
+    },
+    {
+      "repository": "daemonarchy-ports",
+      "new_upstream_commits": 37,
+      "upstream_changed_paths": 112,
+      "overlap": [],
+      "upstream_patch_whitespace_blobs_identical": {
+        "databases/py-deltalake/files/patch-crates_kernel-executor_Cargo.toml": true,
+        "deskutils/joplin-desktop/files/patch-packages_lib_models_settings_builtInMetadata.ts": true,
+        "dns/nextdns/files/patch-host_service_run__unix.go": true,
+        "www/freenginx/files/patch-src_core_ngx__output__chain.c": true,
+        "www/freenginx/files/patch-src_http_ngx__http__write__filter__module.c": true
+      }
+    },
+    {
+      "repository": "omarchy",
+      "new_upstream_commits": 19,
+      "upstream_changed_paths": 113,
+      "overlap": [
+        "bin/omarchy",
+        "bin/omarchy-hw-platform"
+      ]
+    }
+  ],
+  "review_conflict_resolution": {
+    "upstream_entries": 674,
+    "resolved_entries": 675,
+    "added_owned_ids": [
+      "5e63ecc4-23ac-4f2f-b01a-0ac4e942f3e4"
+    ],
+    "preserved_owned_modified_ids": [
+      "690144e9-4f88-11f1-982e-00a098b42aeb"
+    ],
+    "other_upstream_blocks_byte_exact": true,
+    "xml_syntax_pass": true
+  },
+  "host_controller_and_selected_shell_checks": [
+    {
+      "repository": "daemonarchy-src",
+      "test": "test_build.py",
+      "exit": 0,
+      "skips": [],
+      "tail": "s...............s.....{\"phase\": \"buildworld\", \"log\": \"/tmp/tmpn2u65vzh/output/logs/buildworld-5.log\", \"plan_identity\": \"5754d1d50d9ef3863434cd7d3d677077dabaf41aeb12948ed43bc4228c0acd99\"}\n......{\"phase\": \"buildworld\", \"log\": \"/tmp/tmpezccvu_y/output/logs/buildworld-1.log\", \"plan_identity\": \"87b0f38cf4142fe729f8f4cd0479428d5e161088cf97083cc45071f7df8ea885\"}\n....................\n----------------------------------------------------------------------\nRan 48 tests in 1.820s\n\nOK (skipped=2)\n"
+    },
+    {
+      "repository": "daemonarchy-src",
+      "test": "test_loader_kernel_handoff.py",
+      "exit": 0,
+      "skips": [],
+      "tail": "....\n----------------------------------------------------------------------\nRan 4 tests in 0.403s\n\nOK\n"
+    },
+    {
+      "repository": "daemonarchy-src",
+      "test": "test_efi_time_cleanup.py",
+      "exit": 0,
+      "skips": [],
+      "tail": "......\n----------------------------------------------------------------------\nRan 6 tests in 0.054s\n\nOK\n"
+    },
+    {
+      "repository": "daemonarchy-src",
+      "test": "test_observe_unit_inputs.py",
+      "exit": 0,
+      "skips": [],
+      "tail": "..........................\n----------------------------------------------------------------------\nRan 26 tests in 1.751s\n\nOK\n"
+    },
+    {
+      "repository": "daemonarchy-ports",
+      "test": "test_ci_apt.py",
+      "exit": 0,
+      "skips": [],
+      "tail": "................\n----------------------------------------------------------------------\nRan 16 tests in 0.812s\n\nOK\n"
+    },
+    {
+      "repository": "daemonarchy-ports",
+      "test": "test_observe_unit_inputs.py",
+      "exit": 0,
+      "skips": [],
+      "tail": "................\n----------------------------------------------------------------------\nRan 16 tests in 1.900s\n\nOK\n"
+    },
+    {
+      "repository": "daemonarchy-ports",
+      "test": "test_omarchy_debug_status.py",
+      "exit": 0,
+      "skips": [],
+      "tail": ".......\n----------------------------------------------------------------------\nRan 7 tests in 0.779s\n\nOK\n"
+    },
+    {
+      "repository": "omarchy",
+      "test": "test_cli",
+      "exit": 0,
+      "skips": [],
+      "tail": "lp flag still forward\nok - a --help behind -- belongs to the command and still forwards\nok - help lookalike tokens do not trigger help\nok - an alias route dispatches with its arguments\nok - the longest alias route wins\nok - a metadata-moved route dispatches\nok - help on an alias route still renders from the full table\nok - a tab-separated alias still wins as the longer route\nok - a colliding alias runs the command help names\nok - an alias dispatch reads only the commands that can own its route\nok - an alias dispatch costs a fraction of loading the whole command table (20ms vs 270ms)\nok - flag-only parent metadata does not glob against files in PWD\nok - wildcard input reports unknown command\n"
+    },
+    {
+      "repository": "omarchy",
+      "test": "test_shell.d_app-icon-scan-test.sh",
+      "exit": 0,
+      "skips": [],
+      "tail": "ok - icon scan completes\nok - scan includes app and device icons and excludes action icons\nok - SVG icons are emitted before PNG icons\nok - no SVG icons follow PNG icons\nok - scan preserves format preference and XDG directory precedence\nok - scan preserves directory precedence for PNG-only icons\nok - PNG-only icons list their largest size first\nok - scan preserves spaces in filenames\nok - scan visits all icon roots and pixmaps\nok - scan visits each root only once\n"
+    },
+    {
+      "repository": "omarchy",
+      "test": "test_shell.d_clipboard-test.sh",
+      "exit": 0,
+      "skips": [],
+      "tail": "h shift insert\nok - clipboard paste helper copy-only copies history entry text\nok - clipboard paste helper copy-only skips typing\nok - clipboard file paste helper copy-only copies file content\nok - clipboard file paste helper copy-only skips paste keystroke\nok - clipboard open helper opens URL entries in browser\nok - clipboard open helper opens text entries in editor\nok - clipboard open helper writes text entries to a temporary file\nok - clipboard open helper opens image entries in Omasnap\nok - clipboard orphan sweep fails safe on missing or malformed history\nok - clipboard orphan sweep removes only old unreferenced images\nok - clipboard orphan sweep cleans aged images when history is empty\n"
+    },
+    {
+      "repository": "omarchy",
+      "test": "test_shell.d_default-apps-test.sh",
+      "exit": 0,
+      "skips": [],
+      "tail": "ser repairs its bundled extensions when they are stale\nok - picking an editor opens text files in it from every app\nok - the migration keeps the user's own choices\nok - the migration reads mimeapps.list the way GLib does\nok - the migration reads CRLF lists and spaced headers\nok - the migration reads a repeated type by its last line\nok - the migration treats a type and its aliases as one\nok - the migration reads a type's names in the order GLib does\nok - picking an editor wins over the desktop's own list\nok - new installs open text files in the default editor\nok - failed installation preserves the current default\nok - default terminal fast path answers standard configs and falls back cleanly\n"
+    },
+    {
+      "repository": "omarchy",
+      "test": "test_shell.d_desktop-helpers-test.sh",
+      "exit": 0,
+      "skips": [],
+      "tail": "ok - omarchy-font-set escapes special characters and preserves symlinked configs\nok - omarchy-display-text-size preserves symlinked shell and terminal configs\nok - clipboard helpers fail cleanly when --history-index lacks a value\nok - omarchy-clipboard-paste-text passes -- before typed text\nok - omarchy-transcode percent-encodes clipboard file URIs\n"
+    },
+    {
+      "repository": "omarchy",
+      "test": "test_shell.d_dock-test.sh",
+      "exit": 0,
+      "skips": [],
+      "tail": "ace\nok - a click on a workspace app opens another when none is on this workspace\nok - dock bringForward rejects non-hex window addresses before Lua dispatch\nok - dock bringForward falls back to toplevel.activate on invalid address\nok - dock bringForward dispatches valid hex addresses\nok - dock position is set and read through omarchy-dock\nok - dock pins and unpins apps through omarchy-dock\nok - dock pin order is set through omarchy-dock pinned\nok - dock auto-hide is set through omarchy-dock autohide\nok - minimize sends a window to the dock and keeps focus on its workspace\nok - minimize remembers only the workspace the window is leaving\nok - minimize leaves windows on a tiled workspace alone\n"
+    },
+    {
+      "repository": "omarchy",
+      "test": "test_shell.d_hibernation-setup-test.sh",
+      "exit": 0,
+      "skips": [
+        "ok - hibernation is unavailable; skipping setup prompt test # SKIP"
+      ],
+      "tail": " a rerun renames a kernel-name resume device once\nok - a rebuild that failed or was interrupted is retried on the next run\nok - setup leaves device-mapper and hand-edited drop-ins alone\nok - an ARM computer gets hibernation only when asked with --experimental\nok - hibernation remove cleans up the Limine resume drop-in and rebuild marker\nok - hibernation remove repairs a machine left with only resume.conf\nok - hibernation remove stops before rebuilding if resume.conf deletion fails\nok - hibernation remove finishes cleanup when only the rebuild marker remains\nok - hibernation remove cleans up a partial swapfile and fstab setup\nok - hibernation is unavailable; skipping setup prompt test # SKIP\n"
+    },
+    {
+      "repository": "omarchy",
+      "test": "test_shell.d_hw-platform-test.sh",
+      "exit": 0,
+      "skips": [],
+      "tail": "rchy on PATH\nok - real Apple and Snapdragon device trees are recognised\nok - unknown aarch64 and x86 machines need no family\nok - only a token's vendor prefix identifies the board\nok - sysfs is the fallback for the device tree\nok - contradictory identity fails with an explanation\nok - the NVIDIA N1x and GB10 are platforms of their own, and Snapdragon, the N1x and the GB10 have predicates of their own\nok - an unreadable CPU architecture fails instead of guessing generic\nok - omarchy-hw-x86 and omarchy-hw-aarch64 split every platform by its CPU\nok - architecture predicates accept BSD names and reject the other CPU family\nok - omarchy-hw-pci matches PCI vendor/device IDs and classes from sysfs\n"
+    },
+    {
+      "repository": "omarchy",
+      "test": "test_shell.d_hyprland-keyboard-layout-test.sh",
+      "exit": 1,
+      "skips": [],
+      "tail": "not ok - required command is available: xkbcli\n"
+    },
+    {
+      "repository": "omarchy",
+      "test": "test_shell.d_hyprland-window-transparency-test.sh",
+      "exit": 0,
+      "skips": [],
+      "tail": "tart out transparent\nok - glassy windows override the theme\nok - opaque windows replace glassy ones\nok - transparent windows drop the override\nok - unknown transparency is refused\nok - a failed save keeps the transparency already chosen\nok - glassy GTK apps get a backdrop blur, and leaving glassy takes it out\nok - glassy terminals ask for blur and leave their background to the window\nok - an earlier glassy background comes out\nok - leaving glassy restores the terminal files byte for byte\nok - glassy preserves symlinked gtk.css and theme files\nok - running foot terminals take the theme's background alpha, found in one process scan\nok - foot terminals retint without the kernel's children list\n"
+    },
+    {
+      "repository": "omarchy",
+      "test": "test_shell.d_i18n-test.sh",
+      "exit": 0,
+      "skips": [
+        "ok - no translations are pending (structural mode) # SKIP"
+      ],
+      "tail": "extract-scan catches any display property, ternaries, and phrase lists\nok - collect rejects a sidecar naming another locale\nok - collect accepts an empty patch with a truthful sidecar\nok - collect rejects completion for units not in the tree\nok - collect accepts the completion record of a pruned unit\nok - a pruned unit leaves the manifest\nok - collect rejects a patch that creates a symlink\nok - collect rejects a patch that creates an executable file\nok - collect rejects a rename patch from outside the locale\nok - collect accepts a valid patch with regular-file edit, creation, and deletion\nok - valid edit patch updates existing translation\nok - every registry locale exists in glibc SUPPORTED\n"
+    },
+    {
+      "repository": "omarchy",
+      "test": "test_shell.d_input-devices-test.sh",
+      "exit": 0,
+      "skips": [
+        "ok - inotifywait not installed; skipping input watcher reap check # SKIP"
+      ],
+      "tail": "ok - inotifywait not installed; skipping input watcher reap check # SKIP\n"
+    },
+    {
+      "repository": "omarchy",
+      "test": "test_shell.d_launch-tui-test.sh",
+      "exit": 0,
+      "skips": [],
+      "tail": "ok - a window opened from an agent's command gets its colors and pager back\nok - what the user set for themselves stays as it is\nok - launch-or-focus-webapp preserves URL metacharacters without eval\nok - launch-or-focus-tui preserves multi-arg spaces without eval and keeps legacy single-string commands\nok - single-arg launch-or-focus avoids eval\n"
+    },
+    {
+      "repository": "omarchy",
+      "test": "test_shell.d_launcher-remove-test.sh",
+      "exit": 0,
+      "skips": [],
+      "tail": "ok - launcher remove routes web apps by desktop name\nok - launcher remove routes TUIs by desktop name\nok - launcher remove opens package uninstall flow\nok - launcher remove announces an uninstall that needs a terminal\nok - launcher remove deletes user-owned desktop files without a terminal\nok - launcher remove deletes user-owned desktop files\nok - launcher remove does not notify for user-owned desktop files\nok - launcher remove rejects traversal and option-shaped desktop IDs\n"
+    },
+    {
+      "repository": "omarchy",
+      "test": "test_shell.d_lock-state-test.sh",
+      "exit": 0,
+      "skips": [],
+      "tail": "ok - the lock state is read from the session lock itself, not a cached binding\nok - lock, isLocked and status decide from the current lock state\nok - password onError followed by onCompleted counts a single failure\nok - password failure scrubs pendingPassword\nok - password onCompleted followed by onError counts a single failure\nok - password error after unlock does not increment failedAttempts\nok - password error after unlock still scrubs pendingPassword\nok - password error after unlock clears authenticatingPassword\n"
+    },
+    {
+      "repository": "omarchy",
+      "test": "test_shell.d_menu-test.sh",
+      "exit": 0,
+      "skips": [],
+      "tail": "stead of duplicating it\nok - app merge leaves the map it was handed untouched\nok - provider merge appends its rows\nok - repeating a provider merge does not duplicate rows\nok - provider merge drops rows the provider no longer lists\nok - provider merge leaves rows belonging to another provider alone\nok - keybindings record parser keeps tabs inside command arguments and skips blank lines\nok - the menu draws some glyphs in the Omarchy font\nok - every menu glyph drawn in the Omarchy font is one the font carries\nok - omarchy-menu-select builds the expected JSON payload\nok - omarchy-menu-select omits unset dimensions and keeps selected empty\nok - omarchy-menu-input builds the expected JSON payload\n"
+    },
+    {
+      "repository": "omarchy",
+      "test": "test_shell.d_network-qr-test.sh",
+      "exit": 0,
+      "skips": [],
+      "tail": "ok - network QR helper escapes WPA credentials through stdin\nok - network QR helper keeps the bare matrix without --meta\nok - network QR helper detects the Wi-Fi interface\nok - network QR helper detects Wi-Fi when route lookup fails\nok - network QR helper supports open networks\nok - network QR helper marks hidden networks\nok - network QR helper encodes WEP networks\nok - network QR helper rejects enterprise networks\nok - wifiqr close marks an in-flight password fetch as expectedStop\nok - wifiqr close clears the password from memory\nok - wifiqr rejects dash-prefixed interface names\nok - wifiqr runs generator for valid interface names\n"
+    },
+    {
+      "repository": "omarchy",
+      "test": "test_shell.d_network-wifi-connected-test.sh",
+      "exit": 0,
+      "skips": [],
+      "tail": "ok - an activated Wi-Fi default route is connected Wi-Fi\nok - Ethernet and no route at all are not Wi-Fi\nok - Wi-Fi counts only once NetworkManager has it activated, as omarchy-network-status does\nok - first-run wifi.sh backs off on immediate nm-online failure and runs hooks once online\n"
+    },
+    {
+      "repository": "omarchy",
+      "test": "test_shell.d_pacman-templates-test.sh",
+      "exit": 1,
+      "skips": [],
+      "tail": "not ok - required command is available: pacman-conf\n"
+    },
+    {
+      "repository": "omarchy",
+      "test": "test_shell.d_plugin-manifest-scan-test.sh",
+      "exit": 0,
+      "skips": [],
+      "tail": "reserves manifest content for widgets/Clock.manifest.json\nok - scan preserves source directory for panels/audio/manifest.json\nok - scan preserves manifest content for panels/audio/manifest.json\nok - scan preserves source directory for local plugin/manifest.json\nok - scan preserves manifest content for local plugin/manifest.json\nok - scan preserves source directory for empty/manifest.json\nok - scan preserves manifest content for empty/manifest.json\nok - scan preserves source directory for invalid/manifest.json\nok - scan preserves manifest content for invalid/manifest.json\nok - scan preserves source directory for spoof/manifest.json\nok - scan preserves manifest content for spoof/manifest.json\n"
+    },
+    {
+      "repository": "omarchy",
+      "test": "test_shell.d_screenrecording-test.sh",
+      "exit": 0,
+      "skips": [],
+      "tail": "\nok - wf-recorder records when gpu-screen-recorder cannot start\nok - a recorder that cannot start records no state, and clears a stale pid\nok - a stale saved pid leaves every other recorder alone\nok - without a saved pid, status and stop select the user's recorders\nok - --status answers what stop would act on, without a recordings directory, notifications or signals\nok - --status releases audio capture after the saved recorder exits\nok - --stop-recording releases audio capture after the saved recorder exits\nok - status preserves the active recorder's audio capture\nok - status leaves the starting recorder's audio mix alone\nok - process helper verifies recorders directly via OMARCHY_PROC_ROOT\n"
+    },
+    {
+      "repository": "omarchy",
+      "test": "test_shell.d_session-test.sh",
+      "exit": 0,
+      "skips": [],
+      "tail": ".............\n----------------------------------------------------------------------\nRan 13 tests in 0.056s\n\nOK\nAlready running: example.desktop\nSkipped unavailable application: example.desktop\nReopened example.desktop on workspace 3\nok - session save, restore, desktop identities and shutdown snapshot behavior\nok - session setup is opt-in, seeds before activation, and preserves state on disable\n"
+    },
+    {
+      "repository": "omarchy",
+      "test": "test_shell.d_setup-security-sshd-test.sh",
+      "exit": 0,
+      "skips": [],
+      "tail": "ok - SSH setup authorizes a key and disables password logins\nok - SSH setup verifies settings across sshd -T keyword casings\nok - SSH setup verifies the effective daemon settings\nok - SSH setup fails safely when sshd rejects the config\nok - SSH setup starts nothing and opens nothing when no key is authorized\nok - SSH setup starts nothing and opens nothing when the key prompt is cancelled\nok - SSH setup rejects multi-line keys\nok - SSH setup rejects invalid GitHub usernames before installing packages\nok - SSH setup saves valid keys and completes when a GitHub key list contains an invalid entry\n"
+    },
+    {
+      "repository": "omarchy",
+      "test": "test_shell.d_system-lock-test.sh",
+      "exit": 0,
+      "skips": [],
+      "tail": "ok - system lock gives the screensaver a second to restore the cursor before killing it, then restores it itself\nok - system lock refuses a FIFO 1Password lock without hanging or skipping cleanup\nok - system lock ignores an unsafe runtime directory and keeps screensaver cleanup\nok - 1Password lock uses the private per-UID directory when XDG_RUNTIME_DIR is unset\n"
+    },
+    {
+      "repository": "omarchy",
+      "test": "test_shell.d_system-power-test.sh",
+      "exit": 0,
+      "skips": [],
+      "tail": "ication failure preserves the shutdown error\nok - logout aliases and system routes forward the action safely\nok - reboot aliases and system routes forward the action safely\nok - shutdown aliases and system routes forward the action safely\nok - direct logout help and invalid arguments are safe\nok - direct reboot help and invalid arguments are safe\nok - direct shutdown help and invalid arguments are safe\nok - existing system subcommands keep their routes\nok - logout preserves session preparation and cancellation\nok - reboot preserves session preparation and cancellation\nok - shutdown preserves session preparation and cancellation\nok - firmware reboot checks support before closing applications\n"
+    },
+    {
+      "repository": "omarchy",
+      "test": "test_shell.d_tailscale-receive-test.sh",
+      "exit": 0,
+      "skips": [],
+      "tail": "ok - taildrop receive saves incoming files\nok - taildrop receive previews images over the send glyph and gives other files the glyph\nok - taildrop receive keeps critical urgency and literal click-to-open paths\nok - taildrop receive leaves the rest of the downloads directory alone\nok - taildrop receive keeps both files on a name clash\nok - taildrop receive ignores downloads that arrive while it waits\nok - taildrop receive empties its staging directory\nok - taildrop receive preserves localized notifications\nok - taildrop receive shortens a save location under HOME\nok - taildrop receive advances past a broken symlink\n"
+    },
+    {
+      "repository": "omarchy",
+      "test": "test_shell.d_tailscale-test.sh",
+      "exit": 0,
+      "skips": [],
+      "tail": " JSON\nok - tailscale handles invalid account JSON\nok - mullvad search lets \"j\" reach the text field\nok - mullvad search lets \"k\" reach the text field\nok - typing j/k in mullvad search does not move region cursor\nok - mullvad search still navigates regions with Down arrow\nok - idle tailscale poll runs light status\nok - idle tailscale poll skips exit-node list while panel is closed\nok - idle tailscale poll skips account list while panel is closed\nok - open tailscale panel polls full peers\nok - open tailscale panel fetches Mullvad exit nodes\nok - open tailscale panel fetches account list\nok - tailscale operator auth rejects malformed username\nok - tailscale operator auth accepts valid username\n"
+    },
+    {
+      "repository": "omarchy",
+      "test": "test_shell.d_theme-templates-test.sh",
+      "exit": 0,
+      "skips": [
+        "ok - no rsvg-convert or magick; skipping the drawn icon set preview # SKIP"
+      ],
+      "tail": "tes only its own icon files\nok - the Original icon set shows every app's own icon\nok - every built-in icon set draws its icons with all their colors resolved\nok - a draw that waited its turn draws the icon set that is current\nok - updating icon sets pulls only the ones cloned from git\nok - removing the icon set in use falls back to the default\nok - no rsvg-convert or magick; skipping the drawn icon set preview # SKIP\nok - the icon switcher shows one preview per set and opens on the set in use\nok - removing an icon set never wipes one picked at the same moment\nok - a theme that can't draw app icons brings the packaged ones back\nok - omarchy-theme-color fails cleanly when --file lacks a value\n"
+    },
+    {
+      "repository": "omarchy",
+      "test": "test_shell.d_tmux-functions-test.sh",
+      "exit": 0,
+      "skips": [],
+      "tail": "ok - tdlm runs tdl in a first folder named with quotes, $ and backticks\nok - tdlm preserves agent argument boundaries\nok - tdlm passes no second agent when none is given\nok - tdl focuses the editor pane\n"
+    },
+    {
+      "repository": "omarchy",
+      "test": "test_shell.d_update-lock-test.sh",
+      "exit": 0,
+      "skips": [],
+      "tail": "es use sudo instead of Polkit for sleep inhibition\nok - terminal cancellation rolls back delayed publication\nok - graphical cancellation rolls back delayed publication\nok - omarchy-update restores only its own Stay Awake state before restart handling\nok - first upgrade cleans old inhibitor state with the newly installed helper\nok - stale update ownership preserves a newer Stay Awake choice\nok - stale inhibitor state does not terminate a reused PID\nok - update lock falls back to a private 0700 per-UID directory when XDG_RUNTIME_DIR is unset\nok - update lock refuses a symlinked lock path\nok - update lock refuses a FIFO promptly\nok - update lock requires a private non-symlink runtime directory\n"
+    },
+    {
+      "repository": "omarchy",
+      "test": "test_shell.d_update-sequence-test.sh",
+      "exit": 0,
+      "skips": [],
+      "tail": "ok - an update where every step works runs all of them, in order\nok - an unattended update approves orphan removal\nok - a finished update clears the shell update indicator without rechecking\nok - -y is what marks an update unattended, not the update itself\nok - a confirmed update approves orphan removal\nok - an update restarts the shell before migrating only when migrations are pending\nok - a blocked package upgrade stops the update before it migrates\nok - a mise failure still finishes the update, offers a reboot and explains how to retry\nok - omarchy-update-restart checks every Hyprland PID for a deleted executable\n"
+    },
+    {
+      "repository": "omarchy",
+      "test": "test_shell.d_video-background-test.sh",
+      "exit": 0,
+      "skips": [],
+      "tail": "ok - direct picker handles legacy thumbnails, backslash paths, and empty caches\nok - menu image generator creates thumbnails consumed by the picker\nok - direct picker generates and reuses still thumbnails\nok - direct picker omits videos whose thumbnails cannot be generated\nok - a rejected video is remembered so it costs nothing on the next open\nok - a timed out video is left to retry\nok - theme transitions skip snapshots whenever either side is a video\nok - theme changes recover from a missing preselected background\n"
+    },
+    {
+      "repository": "omarchy",
+      "test": "test_shell.d_webapp-name-test.sh",
+      "exit": 0,
+      "skips": [],
+      "tail": "ok - webapp install rejects a name that would nest the launcher\nok - webapp install refuses a name that would escape the applications directory\nok - webapp install refuses a slashed name before fetching its icon\nok - webapp install and remove round-trip an ordinary name\nok - webapp remove reaches a nested legacy launcher\nok - webapp remove stays quiet when there is no applications directory\nok - webapp remove rejects path traversal names\nok - tui install and remove guard against path traversal, key injection, and icon clobbering\nok - retro install canonicalizes and escapes Exec paths\nok - zoom and hey protocol handlers validate and encode URL parameters\n"
+    }
+  ],
+  "authority": {
+    "source_validate_exit": 0,
+    "ports_validate_exit": 0,
+    "source_verify_exit": 1,
+    "ports_verify_exit": 1,
+    "source_and_ports_missing_configured_test_receipt": true,
+    "omarchy_no_project_manifest": true,
+    "product": {
+      "documentation_lifecycle_tests": {
+        "exit": 0,
+        "cases": 4
+      },
+      "documentation_release_sync_tests": {
+        "exit": 0,
+        "cases": 13
+      },
+      "project_validate_exit": 2,
+      "project_validate_error": "project.documentation_authority_review_stale",
+      "lifecycle_verify_exit": 1,
+      "all_eight_component_locks_current": true,
+      "human_attestation_not_synthesized": true
+    }
+  },
+  "whitespace": "Original upstream patch warnings retained with blob identity checks; source and Omarchy import whitespace checks pass.",
+  "reviews": [
+    {
+      "revision": "D58256",
+      "status": "Closed",
+      "observed": "2026-11-24T09:58:51.419380+00:00",
+      "url": "https://reviews.freebsd.org/D58256",
+      "raw_diff_url": "https://reviews.freebsd.org/file/data/yeknnidssfib2c2u3fkq/PHID-FILE-kmqqfkij4o6bqruw36j3/D58256.1795600730.diff",
+      "diff_bytes": 22853,
+      "sha256": "691abf5998a83c0cd0cf62310104f3d9e1d96b2399a0da8192f58d2c3180c12c",
+      "same_as_previous_review": true
+    },
+    {
+      "revision": "D58028",
+      "status": "Closed",
+      "observed": "2026-11-24T09:58:50.759671+00:00",
+      "url": "https://reviews.freebsd.org/D58028",
+      "raw_diff_url": "https://reviews.freebsd.org/file/data/tvqc5epj4t6qfzlvloxo/PHID-FILE-4oamyu3sz457zowm2xko/D58028.1795600730.diff",
+      "diff_bytes": 22968,
+      "sha256": "5938134820650ab874830277de0d79431577f1ccda5f79799300096bc505962f",
+      "same_as_previous_review": true
+    },
+    {
+      "revision": "D59554",
+      "status": "Closed",
+      "observed": "2026-11-24T09:58:50.603511+00:00",
+      "url": "https://reviews.freebsd.org/D59554",
+      "raw_diff_url": "https://reviews.freebsd.org/file/data/f7wk4vycdlfa5si6hkdd/PHID-FILE-nt5vb3fdnsdcv3v2kw27/D59554.1795600730.diff",
+      "diff_bytes": 19211,
+      "sha256": "31a49508ba68c81abfa784712c50e7517c4f5cecfaf4044403c67494dd96b018",
+      "same_as_previous_review": true
+    },
+    {
+      "revision": "D60004",
+      "status": "Closed",
+      "observed": "2026-11-24T09:58:50.389677+00:00",
+      "url": "https://reviews.freebsd.org/D60004",
+      "raw_diff_url": "https://reviews.freebsd.org/file/data/j2hi6sni3sfiapcm2cr7/PHID-FILE-3ehjfxcwjj6fwy6y42oy/D60004.1795600730.diff",
+      "diff_bytes": 1482,
+      "sha256": "340a72bf167c16749fc740db4b670f4cb354168ae4421d7a4215f7c7408e8d70",
+      "same_as_previous_review": true
+    },
+    {
+      "revision": "D56914",
+      "status": "Closed",
+      "observed": "2026-11-24T09:58:50.722570+00:00",
+      "url": "https://reviews.freebsd.org/D56914",
+      "raw_diff_url": "https://reviews.freebsd.org/file/data/bff7c7mxfi32vrdfgizh/PHID-FILE-ajutnonqgcsz2gclw5d3/D56914.1795600730.diff",
+      "diff_bytes": 24471,
+      "sha256": "9f303faeb9d12f4671d09a6072bf5fc6fb97bd306304be8a8d9186be13375990",
+      "same_as_previous_review": true
+    },
+    {
+      "revision": "D61451",
+      "status": "Closed",
+      "observed": "2026-11-24T09:58:51.670700+00:00",
+      "url": "https://reviews.freebsd.org/D61451",
+      "raw_diff_url": "https://reviews.freebsd.org/file/data/rq6qw3szmyxbrduqfuqr/PHID-FILE-g422eeqggazlvvlgo5if/D61451.1795600731.diff",
+      "diff_bytes": 8311,
+      "sha256": "32b15706bb0086986eff478fb72b0a8d6cdefbc806cf69af86e9f92b5406cae5",
+      "same_as_previous_review": true
+    },
+    {
+      "revision": "D60769",
+      "status": "Closed",
+      "observed": "2026-11-24T09:58:51.877666+00:00",
+      "url": "https://reviews.freebsd.org/D60769",
+      "raw_diff_url": "https://reviews.freebsd.org/file/data/v2egujbyhpjqnq5pbj2d/PHID-FILE-lftwiydusevemxouncwa/D60769.1795600731.diff",
+      "diff_bytes": 2109,
+      "sha256": "4786982da407c08d1674e07dde6527e69fedf6066bce5a8850f2c896ecb8630d",
+      "same_as_previous_review": true
+    },
+    {
+      "revision": "D60771",
+      "status": "Closed",
+      "observed": "2026-11-24T09:58:51.993995+00:00",
+      "url": "https://reviews.freebsd.org/D60771",
+      "raw_diff_url": "https://reviews.freebsd.org/file/data/a2ab7n7vazy2d5uorfwq/PHID-FILE-ac2lj5ln3hr4u6s5yykf/D60771.1795600731.diff",
+      "diff_bytes": 1661,
+      "sha256": "d948fd430ac7e5dfa5c8138233980d4ea5ebb1ea19dbbf289b39b1c1222f98e0",
+      "same_as_previous_review": true
+    },
+    {
+      "revision": "D59549",
+      "status": "Closed",
+      "observed": "2026-11-24T09:58:53.841161+00:00",
+      "url": "https://reviews.freebsd.org/D59549",
+      "raw_diff_url": "https://reviews.freebsd.org/file/data/metygomn4vfybfpcpats/PHID-FILE-ehohjif4nmazfyik3oeu/D59549.1795600733.diff",
+      "diff_bytes": 78038,
+      "sha256": "b063c5300c3acbbc1daa61ff45d7ed3a815faf5cc6e096c8afc2ad96e72e1707",
+      "same_as_previous_review": true
+    },
+    {
+      "revision": "D61062",
+      "status": "Closed",
+      "observed": "2026-11-24T09:58:53.123740+00:00",
+      "url": "https://reviews.freebsd.org/D61062",
+      "raw_diff_url": "https://reviews.freebsd.org/file/data/acuvpmblcghp7kuweoih/PHID-FILE-vtzr2zhiacsqgoigp3nx/D61062.1795600732.diff",
+      "diff_bytes": 31209,
+      "sha256": "54676f613eb9fc167d269c45d3b894510552ebd402225508ca6d51c739003272",
+      "same_as_previous_review": true
+    },
+    {
+      "revision": "D61063",
+      "status": "Closed",
+      "observed": "2026-11-24T09:58:53.069475+00:00",
+      "url": "https://reviews.freebsd.org/D61063",
+      "raw_diff_url": "https://reviews.freebsd.org/file/data/flkv6f4bi2uggs62m2rj/PHID-FILE-teykntopzew5g4ydci2q/D61063.1795600732.diff",
+      "diff_bytes": 49385,
+      "sha256": "cf77c10bae576cb1d2166ec06ec9175ba657b2f32776a6ddae024b7aeb8d4548",
+      "same_as_previous_review": true
+    },
+    {
+      "revision": "D57630",
+      "status": "Needs Review",
+      "observed": "2026-11-24T09:58:53.425649+00:00",
+      "url": "https://reviews.freebsd.org/D57630",
+      "raw_diff_url": "https://reviews.freebsd.org/file/data/ombq2srayc3odpgadicy/PHID-FILE-4s6nj7obuukinumkmwzh/D57630.1795600733.diff",
+      "diff_bytes": 8476,
+      "sha256": "5d54078edb4d98381bcf11cb8e3eab4c1d25fc2898c21781902bfff27564e38f",
+      "same_as_previous_review": true,
+      "apply_check_exit": 0,
+      "apply_check_output": ""
+    },
+    {
+      "revision": "D57633",
+      "status": "Needs Review",
+      "observed": "2026-11-24T09:58:54.093640+00:00",
+      "url": "https://reviews.freebsd.org/D57633",
+      "raw_diff_url": "https://reviews.freebsd.org/file/data/6geye4gcy3tpsaaok2vd/PHID-FILE-h64td7sfmiwysbdgjza7/D57633.1795600733.diff",
+      "diff_bytes": 84219,
+      "sha256": "90116867f98636879a2b7da4ba13289563d560a832ecdc2d7753c3ca3b423248",
+      "same_as_previous_review": true,
+      "apply_check_exit": 0,
+      "apply_check_output": ""
+    },
+    {
+      "revision": "D61365",
+      "status": "Accepted",
+      "observed": "2026-11-24T09:58:54.400518+00:00",
+      "url": "https://reviews.freebsd.org/D61365",
+      "raw_diff_url": "https://reviews.freebsd.org/file/data/g3xvudzbba65nbjvuxoq/PHID-FILE-fmmppht6seee5di4lpnz/D61365.1795600734.diff",
+      "diff_bytes": 2572,
+      "sha256": "03b8cb6b63310065452f600c111a4d338b4ae28b894f2dff54dca5e405565e55",
+      "same_as_previous_review": true,
+      "apply_check_exit": 0,
+      "apply_check_output": ""
+    },
+    {
+      "revision": "D61371",
+      "status": "Needs Review",
+      "observed": "2026-11-24T09:58:54.813469+00:00",
+      "url": "https://reviews.freebsd.org/D61371",
+      "raw_diff_url": "https://reviews.freebsd.org/file/data/oxck4xpylbqp3eezxrfw/PHID-FILE-f6dadymy7kwf7jfp3n4t/D61371.1795600734.diff",
+      "diff_bytes": 21643,
+      "sha256": "5a0eef57185d112e2b7e18d2c384f66070a7ba37478ee1d6bc7e8473b55776ba",
+      "same_as_previous_review": true,
+      "apply_check_exit": 1,
+      "apply_check_output": "error: patch failed: tests/sys/pmc/Makefile:7\nerror: tests/sys/pmc/Makefile: patch does not apply\n"
+    },
+    {
+      "revision": "D58698",
+      "status": "Needs Review",
+      "observed": "2026-11-24T09:58:55.420933+00:00",
+      "url": "https://reviews.freebsd.org/D58698",
+      "raw_diff_url": "https://reviews.freebsd.org/file/data/fr3kvccwiyuymgvtfzjg/PHID-FILE-xwqxnyobpyv5ernnweeh/D58698.1795600735.diff",
+      "diff_bytes": 4219,
+      "sha256": "a62964e0944d51c8c74ab425bbf95c9d45f37498e4debbb7ab0ade363791b9b5",
+      "same_as_previous_review": true,
+      "apply_check_exit": 0,
+      "apply_check_output": ""
+    },
+    {
+      "revision": "D60570",
+      "status": "Needs Review",
+      "observed": "2026-11-24T09:58:55.249304+00:00",
+      "url": "https://reviews.freebsd.org/D60570",
+      "raw_diff_url": "https://reviews.freebsd.org/file/data/m5ulwa5qevs3n7qhx6jz/PHID-FILE-mq5mqz5rj5fnqlktatxv/D60570.1795600734.diff",
+      "diff_bytes": 16133,
+      "sha256": "6d5abcf8a4af6157d00c8418b9a592f46632e1d98a8aafa0dffa356f329d90b1",
+      "same_as_previous_review": true,
+      "apply_check_exit": 1,
+      "apply_check_output": "error: patch failed: sys/dev/hwpmc/hwpmc_amd.c:33\nerror: sys/dev/hwpmc/hwpmc_amd.c: patch does not apply\nerror: sys/dev/hwpmc/hwpmc_amd_lbr.h: No such file or directory\nerror: tests/sys/pmc/pmc_lbr_test.c: No such file or directory\n"
+    },
+    {
+      "revision": "D60548",
+      "status": "Needs Revision",
+      "observed": "2026-11-24T09:58:55.813678+00:00",
+      "url": "https://reviews.freebsd.org/D60548",
+      "raw_diff_url": "https://reviews.freebsd.org/file/data/hobybbjp33uevleasf7w/PHID-FILE-plf63uw7cokwzctpj6ok/D60548.1795600735.diff",
+      "diff_bytes": 37678,
+      "sha256": "e5ddd8424a5331085fbdc81daca2a95d01d1fdf62da97e273f95e7116c2e5f2d",
+      "same_as_previous_review": true,
+      "apply_check_exit": 0,
+      "apply_check_output": ""
+    },
+    {
+      "revision": "D61053",
+      "status": "Accepted",
+      "observed": "2026-11-24T09:58:56.509115+00:00",
+      "url": "https://reviews.freebsd.org/D61053",
+      "raw_diff_url": "https://reviews.freebsd.org/file/data/uokvo3x4bwwue6li34wm/PHID-FILE-nm62eliyxukeev277cjr/D61053.1795600736.diff",
+      "diff_bytes": 22040,
+      "sha256": "60e5dcc5b3ace47bcdc4687592a58cab39100b04c6078ad8e346473083ccbd2e",
+      "same_as_previous_review": true,
+      "apply_check_exit": 1,
+      "apply_check_output": "error: patch failed: sys/dev/hwpmc/hwpmc_amd.c:463\nerror: sys/dev/hwpmc/hwpmc_amd.c: patch does not apply\n"
+    }
+  ],
+  "retained_older_commit_ancestry_evidence": "upstream-sync-pmc-review-20261123.json",
+  "PMC_ATF_source_inventory": {
+    "source": "1d78373ea7b03096e751f5f9a308410561893203",
+    "files": {
+      "tests/sys/pmc/Makefile": {
+        "bytes": 1338,
+        "sha256": "b18e3c70c4540e942f76182049b5e507f25da101b22708609db9f4440e2d814b"
+      },
+      "tests/sys/pmc/amd/Makefile": {
+        "bytes": 1116,
+        "sha256": "4fc4c58e6ced8cd5da880fa03b89ed79c22abba5ae7e7b7817d782ee04be18b1"
+      },
+      "tests/sys/pmc/amd/amd_pmc_test_common.h": {
+        "bytes": 7792,
+        "sha256": "ee97625c3ceeba1c1ed74bbfe180d02cc725d88fdbbc01938ee2c29379b62506"
+      },
+      "tests/sys/pmc/amd/ibs_core_test.c": {
+        "bytes": 4664,
+        "sha256": "057d99ae8da81da74bb6ada9f297959bebc0661ce5c3a214be56a8ed158f1db7"
+      },
+      "tests/sys/pmc/amd/pmc_frontend_test.sh": {
+        "bytes": 1370,
+        "sha256": "1cce104cca5a6aa17287d626e4dbd5c3700dd142e8fc808201e0d2452ff897be"
+      },
+      "tests/sys/pmc/amd/pmc_ibs_fetch_op_test.c": {
+        "bytes": 9230,
+        "sha256": "3d3006f6341715294c1c6b78626ccc0012689c99825738b5811946bdcd1a4909"
+      },
+      "tests/sys/pmc/amd/pmc_ibs_test.c": {
+        "bytes": 13550,
+        "sha256": "adba4d502fe13b1fd90ec5e7eb911b12785506013be870e9c5b2cd0a72c06f45"
+      },
+      "tests/sys/pmc/amd/pmc_rowalloc_test.c": {
+        "bytes": 7182,
+        "sha256": "c4fc75aae34e4d0bcc6c29b883e47ebfa220c71fcd74e596eb303a3f1f16a5ec"
+      },
+      "tests/sys/pmc/amd/pmc_start_msr_test.c": {
+        "bytes": 7187,
+        "sha256": "181ec8a63e8e7580b2fd2d92a35087de81de02a7cffc1e556c93fc2bb3dea561"
+      },
+      "tests/sys/pmc/amd/pmcstat_ibs_test.sh": {
+        "bytes": 1810,
+        "sha256": "78ad32617c78b949b9079e80d33e08ca3586d1db190fdfb9bdff5cbd49adaf51"
+      },
+      "tests/sys/pmc/amd/pmu_detect_test.c": {
+        "bytes": 3622,
+        "sha256": "e9cb940068f2a2d96269b4f6dbe5f35beb1868eb64a65fcb9236016c86df9649"
+      },
+      "tests/sys/pmc/amd/pmu_event_neg_test.c": {
+        "bytes": 6897,
+        "sha256": "a25fcef4c1eca0114d93a234abe023b61894b84650cf797d69faab09fc980ebb"
+      },
+      "tests/sys/pmc/amd/pmu_event_test.c": {
+        "bytes": 14552,
+        "sha256": "18c3dfb5e679d957b6573f0b20ad872373479acc218aa2cc5ac3d4a3850ea5c7"
+      },
+      "tests/sys/pmc/amd/pmu_mux_test.c": {
+        "bytes": 7041,
+        "sha256": "97675fcc2e3a67524870a1da47319b217da5b0da3904e328d68f7e0b35a44ca6"
+      },
+      "tests/sys/pmc/amd/pmu_perfmonv2_test.c": {
+        "bytes": 4992,
+        "sha256": "6f12e2120f7db0ae4872046610a0212a0aed7f6a68bd47f018a2c7f0e910c79e"
+      },
+      "tests/sys/pmc/amd/rapl_domains_test.c": {
+        "bytes": 3369,
+        "sha256": "9e1f10114ac98de4fa24bbea11de359b8fc9ed0eec0c7b27b9d702b4b60f52b2"
+      },
+      "tests/sys/pmc/pmc_api_test.c": {
+        "bytes": 14538,
+        "sha256": "b904ce8a412cbf0bf152ef483e1053756e823886cbf294160f28d3b37848f31d"
+      },
+      "tests/sys/pmc/pmc_callchain_ur_test.sh": {
+        "bytes": 2904,
+        "sha256": "8d8de33a30b4beab6e04895114c7f0cc6fe0a6f26011e0dac07456765505d80c"
+      },
+      "tests/sys/pmc/pmc_cli_test.sh": {
+        "bytes": 2621,
+        "sha256": "e74506fdea5c96d4ad574dd560d0aca0c66ace5d485c979b73d250b2aee6a0df"
+      },
+      "tests/sys/pmc/pmc_credexec_test.c": {
+        "bytes": 10505,
+        "sha256": "68b791184dfccbd241c03f9726bd8bd7878f70036949137723e462fb1a94e514"
+      },
+      "tests/sys/pmc/pmc_detach_test.c": {
+        "bytes": 5324,
+        "sha256": "f5175615bb5a9fbeb72d6e192b49c156d636b1d80cf6edb98b0ce104c71c5097"
+      },
+      "tests/sys/pmc/pmc_exec_test.c": {
+        "bytes": 7346,
+        "sha256": "7406b98330cb68410a521b04c7d21689813263699228f78e791a013d2d8e95e4"
+      },
+      "tests/sys/pmc/pmc_exterr_test.c": {
+        "bytes": 11360,
+        "sha256": "e03244f0b73e0e18c9c9780d8e06575bc2f948964996102ce48fbee4957db0fb"
+      },
+      "tests/sys/pmc/pmc_lifecycle_test.c": {
+        "bytes": 12314,
+        "sha256": "b913ab36ca049f175867b95b35934850b4280def960bceb439ca2b4e2c8240bf"
+      },
+      "tests/sys/pmc/pmc_log_test.c": {
+        "bytes": 13846,
+        "sha256": "c20b2dd0deddd8abb1af203670976a4749522072e13007d3ee5166964bf55960"
+      },
+      "tests/sys/pmc/pmc_mapfile_test.c": {
+        "bytes": 4589,
+        "sha256": "b78554ccbbe580cbbc1a2bf73441f7037af6a33d776475702a287fcbfc35eac2"
+      },
+      "tests/sys/pmc/pmc_perf_test.c": {
+        "bytes": 8998,
+        "sha256": "85e4eead833ab916d0fb4f72e10b07d791203cb86ac5258a328b6fd5072757e8"
+      },
+      "tests/sys/pmc/pmc_pidtrack_test.c": {
+        "bytes": 10710,
+        "sha256": "246fb9b361e3fbe3432e1503de0adafb57073ae8c7408f366c35b6ecc101612a"
+      },
+      "tests/sys/pmc/pmc_rapl_test.c": {
+        "bytes": 6801,
+        "sha256": "03a59ab554987d967ee7b981b9c21b41e3470baa55e6855adecd8b51adb59370"
+      },
+      "tests/sys/pmc/pmc_rdpmc_test.c": {
+        "bytes": 4120,
+        "sha256": "eeeb38e227baf5ade39bf926af6301e477f9b73559caa9b41f744088239afe39"
+      },
+      "tests/sys/pmc/pmc_row_test.c": {
+        "bytes": 3305,
+        "sha256": "2f7b96fe7d3452bbdba03258ef415c9994c6c147a1e4d2a82645a75dbaec1896"
+      },
+      "tests/sys/pmc/pmc_ss_test.c": {
+        "bytes": 8442,
+        "sha256": "592047ef0ee6742e3f10623f851d8a9a73959654121feaa9be0bcf83843a04f2"
+      },
+      "tests/sys/pmc/pmc_unload_test.c": {
+        "bytes": 3376,
+        "sha256": "9fbd4738544186e2de2fe7978649ae428beab877a971c617bffced51ac0760f1"
+      },
+      "tests/sys/pmc/pmc_wrap_test.c": {
+        "bytes": 6990,
+        "sha256": "d641a2485137c054cf3493a87fc6e423d9b4b57b49cdf312aba254374588235f"
+      },
+      "tests/sys/pmc/pmcstat_tsc_test.sh": {
+        "bytes": 3404,
+        "sha256": "d293758c54a1201b15fe2357ce99b9764bbc0d69e4540af845be2e55c8a98aec"
+      }
+    },
+    "explicit_registrations": [
+      {
+        "file": "tests/sys/pmc/amd/ibs_core_test.c",
+        "name": "core_sampling_with_ibs",
+        "kind": "ATF_TP_ADD_TC"
+      },
+      {
+        "file": "tests/sys/pmc/amd/pmc_frontend_test.sh",
+        "name": "pmc_frontend_ibs",
+        "kind": "atf_add_test_case"
+      },
+      {
+        "file": "tests/sys/pmc/amd/pmc_ibs_fetch_op_test.c",
+        "name": "fetch_and_op_together",
+        "kind": "ATF_TP_ADD_TC"
+      },
+      {
+        "file": "tests/sys/pmc/amd/pmc_ibs_fetch_op_test.c",
+        "name": "interrupts_counted_once",
+        "kind": "ATF_TP_ADD_TC"
+      },
+      {
+        "file": "tests/sys/pmc/amd/pmc_ibs_test.c",
+        "name": "class_info",
+        "kind": "ATF_TP_ADD_TC"
+      },
+      {
+        "file": "tests/sys/pmc/amd/pmc_ibs_test.c",
+        "name": "class_and_event_names",
+        "kind": "ATF_TP_ADD_TC"
+      },
+      {
+        "file": "tests/sys/pmc/amd/pmc_ibs_test.c",
+        "name": "pmcinfo_rows",
+        "kind": "ATF_TP_ADD_TC"
+      },
+      {
+        "file": "tests/sys/pmc/amd/pmc_ibs_test.c",
+        "name": "alloc_system_sampling",
+        "kind": "ATF_TP_ADD_TC"
+      },
+      {
+        "file": "tests/sys/pmc/amd/pmc_ibs_test.c",
+        "name": "alloc_refusals",
+        "kind": "ATF_TP_ADD_TC"
+      },
+      {
+        "file": "tests/sys/pmc/amd/pmc_ibs_test.c",
+        "name": "fetch_attach_detach",
+        "kind": "ATF_TP_ADD_TC"
+      },
+      {
+        "file": "tests/sys/pmc/amd/pmc_ibs_test.c",
+        "name": "fetch_self_count",
+        "kind": "ATF_TP_ADD_TC"
+      },
+      {
+        "file": "tests/sys/pmc/amd/pmc_ibs_test.c",
+        "name": "fetch_child_samples",
+        "kind": "ATF_TP_ADD_TC"
+      },
+      {
+        "file": "tests/sys/pmc/amd/pmc_ibs_test.c",
+        "name": "getmsr_rejected",
+        "kind": "ATF_TP_ADD_TC"
+      },
+      {
+        "file": "tests/sys/pmc/amd/pmc_rowalloc_test.c",
+        "name": "alloc_reserves_distinct_rows",
+        "kind": "ATF_TP_ADD_TC"
+      },
+      {
+        "file": "tests/sys/pmc/amd/pmc_rowalloc_test.c",
+        "name": "failed_alloc_leaves_no_trace",
+        "kind": "ATF_TP_ADD_TC"
+      },
+      {
+        "file": "tests/sys/pmc/amd/pmc_rowalloc_test.c",
+        "name": "thread_rows_refuse_system_pmc",
+        "kind": "ATF_TP_ADD_TC"
+      },
+      {
+        "file": "tests/sys/pmc/amd/pmc_start_msr_test.c",
+        "name": "system_start_enables_now",
+        "kind": "ATF_TP_ADD_TC"
+      },
+      {
+        "file": "tests/sys/pmc/amd/pmc_start_msr_test.c",
+        "name": "system_start_sets_global_ctl",
+        "kind": "ATF_TP_ADD_TC"
+      },
+      {
+        "file": "tests/sys/pmc/amd/pmc_start_msr_test.c",
+        "name": "process_start_waits_for_target",
+        "kind": "ATF_TP_ADD_TC"
+      },
+      {
+        "file": "tests/sys/pmc/amd/pmcstat_ibs_test.sh",
+        "name": "fetch_record_replay",
+        "kind": "atf_add_test_case"
+      },
+      {
+        "file": "tests/sys/pmc/amd/pmcstat_ibs_test.sh",
+        "name": "fetch_and_op_record_replay",
+        "kind": "atf_add_test_case"
+      },
+      {
+        "file": "tests/sys/pmc/amd/pmu_detect_test.c",
+        "name": "pmu_detect_k8_class_present",
+        "kind": "ATF_TP_ADD_TC"
+      },
+      {
+        "file": "tests/sys/pmc/amd/pmu_detect_test.c",
+        "name": "pmu_detect_counter_width",
+        "kind": "ATF_TP_ADD_TC"
+      },
+      {
+        "file": "tests/sys/pmc/amd/pmu_detect_test.c",
+        "name": "pmu_detect_core_pmc_count",
+        "kind": "ATF_TP_ADD_TC"
+      },
+      {
+        "file": "tests/sys/pmc/amd/pmu_detect_test.c",
+        "name": "pmu_detect_tsc_class_coexists",
+        "kind": "ATF_TP_ADD_TC"
+      },
+      {
+        "file": "tests/sys/pmc/amd/pmu_event_neg_test.c",
+        "name": "pmu_neg_valid_config_accepted",
+        "kind": "ATF_TP_ADD_TC"
+      },
+      {
+        "file": "tests/sys/pmc/amd/pmu_event_neg_test.c",
+        "name": "pmu_neg_host_bit_rejected",
+        "kind": "ATF_TP_ADD_TC"
+      },
+      {
+        "file": "tests/sys/pmc/amd/pmu_event_neg_test.c",
+        "name": "pmu_neg_guest_bit_rejected",
+        "kind": "ATF_TP_ADD_TC"
+      },
+      {
+        "file": "tests/sys/pmc/amd/pmu_event_neg_test.c",
+        "name": "pmu_neg_host_and_guest_bits_rejected",
+        "kind": "ATF_TP_ADD_TC"
+      },
+      {
+        "file": "tests/sys/pmc/amd/pmu_event_neg_test.c",
+        "name": "pmu_neg_reserved_bits_rejected",
+        "kind": "ATF_TP_ADD_TC"
+      },
+      {
+        "file": "tests/sys/pmc/amd/pmu_event_neg_test.c",
+        "name": "pmu_neg_preciseretire_without_cap_rejected",
+        "kind": "ATF_TP_ADD_TC"
+      },
+      {
+        "file": "tests/sys/pmc/amd/pmu_event_test.c",
+        "name": "pmu_event_unit_evsel_hi_encoding",
+        "kind": "ATF_TP_ADD_TC"
+      },
+      {
+        "file": "tests/sys/pmc/amd/pmu_event_test.c",
+        "name": "pmu_event_smoke_pmu_enabled",
+        "kind": "ATF_TP_ADD_TC"
+      },
+      {
+        "file": "tests/sys/pmc/amd/pmu_event_test.c",
+        "name": "pmu_event_smoke_lookup_by_name",
+        "kind": "ATF_TP_ADD_TC"
+      },
+      {
+        "file": "tests/sys/pmc/amd/pmu_event_test.c",
+        "name": "pmu_event_smoke_evsel_encoding",
+        "kind": "ATF_TP_ADD_TC"
+      },
+      {
+        "file": "tests/sys/pmc/amd/pmu_event_test.c",
+        "name": "pmu_event_smoke_umask_encoding",
+        "kind": "ATF_TP_ADD_TC"
+      },
+      {
+        "file": "tests/sys/pmc/amd/pmu_event_test.c",
+        "name": "pmu_event_smoke_osuser_bits",
+        "kind": "ATF_TP_ADD_TC"
+      },
+      {
+        "file": "tests/sys/pmc/amd/pmu_event_test.c",
+        "name": "pmu_event_smoke_host_guest_bits_default",
+        "kind": "ATF_TP_ADD_TC"
+      },
+      {
+        "file": "tests/sys/pmc/amd/pmu_event_test.c",
+        "name": "pmu_event_e2e_counter_counts",
+        "kind": "ATF_TP_ADD_TC"
+      },
+      {
+        "file": "tests/sys/pmc/amd/pmu_mux_test.c",
+        "name": "pmu_mux_slot_count",
+        "kind": "ATF_TP_ADD_TC"
+      },
+      {
+        "file": "tests/sys/pmc/amd/pmu_mux_test.c",
+        "name": "pmu_mux_fill_all_slots",
+        "kind": "ATF_TP_ADD_TC"
+      },
+      {
+        "file": "tests/sys/pmc/amd/pmu_mux_test.c",
+        "name": "pmu_mux_over_allocation_rejected",
+        "kind": "ATF_TP_ADD_TC"
+      },
+      {
+        "file": "tests/sys/pmc/amd/pmu_mux_test.c",
+        "name": "pmu_mux_sequential_reuse",
+        "kind": "ATF_TP_ADD_TC"
+      },
+      {
+        "file": "tests/sys/pmc/amd/pmu_perfmonv2_test.c",
+        "name": "pmv2_sysctl_matches_cpuid",
+        "kind": "ATF_TP_ADD_TC"
+      },
+      {
+        "file": "tests/sys/pmc/amd/pmu_perfmonv2_test.c",
+        "name": "pmv2_process_counting",
+        "kind": "ATF_TP_ADD_TC"
+      },
+      {
+        "file": "tests/sys/pmc/amd/pmu_perfmonv2_test.c",
+        "name": "pmv2_all_core_counters",
+        "kind": "ATF_TP_ADD_TC"
+      },
+      {
+        "file": "tests/sys/pmc/amd/rapl_domains_test.c",
+        "name": "rapl_metadata_names",
+        "kind": "ATF_TP_ADD_TC"
+      },
+      {
+        "file": "tests/sys/pmc/amd/rapl_domains_test.c",
+        "name": "rapl_no_dram_on_amd",
+        "kind": "ATF_TP_ADD_TC"
+      },
+      {
+        "file": "tests/sys/pmc/pmc_api_test.c",
+        "name": "never_allocated_id",
+        "kind": "ATF_TP_ADD_TC"
+      },
+      {
+        "file": "tests/sys/pmc/pmc_api_test.c",
+        "name": "released_id",
+        "kind": "ATF_TP_ADD_TC"
+      },
+      {
+        "file": "tests/sys/pmc/pmc_api_test.c",
+        "name": "another_owners_id",
+        "kind": "ATF_TP_ADD_TC"
+      },
+      {
+        "file": "tests/sys/pmc/pmc_api_test.c",
+        "name": "read_write_before_start",
+        "kind": "ATF_TP_ADD_TC"
+      },
+      {
+        "file": "tests/sys/pmc/pmc_api_test.c",
+        "name": "pmcadmin_requires_privilege",
+        "kind": "ATF_TP_ADD_TC"
+      },
+      {
+        "file": "tests/sys/pmc/pmc_api_test.c",
+        "name": "system_mode_requires_privilege",
+        "kind": "ATF_TP_ADD_TC"
+      },
+      {
+        "file": "tests/sys/pmc/pmc_api_test.c",
+        "name": "attach_to_sugid_target",
+        "kind": "ATF_TP_ADD_TC"
+      },
+      {
+        "file": "tests/sys/pmc/pmc_callchain_ur_test.sh",
+        "name": "pmcstat_U_survives_and_samples",
+        "kind": "atf_add_test_case"
+      },
+      {
+        "file": "tests/sys/pmc/pmc_cli_test.sh",
+        "name": "pmc_info_missing_file",
+        "kind": "atf_add_test_case"
+      },
+      {
+        "file": "tests/sys/pmc/pmc_cli_test.sh",
+        "name": "pmc_list_events_present",
+        "kind": "atf_add_test_case"
+      },
+      {
+        "file": "tests/sys/pmc/pmc_cli_test.sh",
+        "name": "pmc_record_then_info",
+        "kind": "atf_add_test_case"
+      },
+      {
+        "file": "tests/sys/pmc/pmc_credexec_test.c",
+        "name": "exec_ordinary_keeps_pmc",
+        "kind": "ATF_TP_ADD_TC"
+      },
+      {
+        "file": "tests/sys/pmc/pmc_credexec_test.c",
+        "name": "exec_setid_traced_keeps_pmc",
+        "kind": "ATF_TP_ADD_TC"
+      },
+      {
+        "file": "tests/sys/pmc/pmc_credexec_test.c",
+        "name": "exec_fexecve_setid_drops_pmc",
+        "kind": "ATF_TP_ADD_TC"
+      },
+      {
+        "file": "tests/sys/pmc/pmc_detach_test.c",
+        "name": "detach_live_self",
+        "kind": "ATF_TP_ADD_TC"
+      },
+      {
+        "file": "tests/sys/pmc/pmc_detach_test.c",
+        "name": "detach_live_multithread",
+        "kind": "ATF_TP_ADD_TC"
+      },
+      {
+        "file": "tests/sys/pmc/pmc_exec_test.c",
+        "name": "exec_setgid_drops_pmc",
+        "kind": "ATF_TP_ADD_TC"
+      },
+      {
+        "file": "tests/sys/pmc/pmc_exec_test.c",
+        "name": "exec_setuid_no_double_unlink",
+        "kind": "ATF_TP_ADD_TC"
+      },
+      {
+        "file": "tests/sys/pmc/pmc_exterr_test.c",
+        "name": "pmcallocate_invalid_mode",
+        "kind": "ATF_TP_ADD_TC"
+      },
+      {
+        "file": "tests/sys/pmc/pmc_exterr_test.c",
+        "name": "pmcallocate_invalid_cpu",
+        "kind": "ATF_TP_ADD_TC"
+      },
+      {
+        "file": "tests/sys/pmc/pmc_exterr_test.c",
+        "name": "pmcallocate_invalid_flags",
+        "kind": "ATF_TP_ADD_TC"
+      },
+      {
+        "file": "tests/sys/pmc/pmc_exterr_test.c",
+        "name": "pmcattach_system_mode",
+        "kind": "ATF_TP_ADD_TC"
+      },
+      {
+        "file": "tests/sys/pmc/pmc_exterr_test.c",
+        "name": "pmcattach_running_pmc",
+        "kind": "ATF_TP_ADD_TC"
+      },
+      {
+        "file": "tests/sys/pmc/pmc_exterr_test.c",
+        "name": "pmcrw_no_flags",
+        "kind": "ATF_TP_ADD_TC"
+      },
+      {
+        "file": "tests/sys/pmc/pmc_exterr_test.c",
+        "name": "pmcrw_write_running",
+        "kind": "ATF_TP_ADD_TC"
+      },
+      {
+        "file": "tests/sys/pmc/pmc_exterr_test.c",
+        "name": "amd_invalid_subclass",
+        "kind": "ATF_TP_ADD_TC"
+      },
+      {
+        "file": "tests/sys/pmc/pmc_exterr_test.c",
+        "name": "amd_invalid_config_bits",
+        "kind": "ATF_TP_ADD_TC"
+      },
+      {
+        "file": "tests/sys/pmc/pmc_exterr_test.c",
+        "name": "amd_invalid_df_config_bits",
+        "kind": "ATF_TP_ADD_TC"
+      },
+      {
+        "file": "tests/sys/pmc/pmc_exterr_test.c",
+        "name": "ibs_missing_system_capability",
+        "kind": "ATF_TP_ADD_TC"
+      },
+      {
+        "file": "tests/sys/pmc/pmc_exterr_test.c",
+        "name": "ibs_invalid_type",
+        "kind": "ATF_TP_ADD_TC"
+      },
+      {
+        "file": "tests/sys/pmc/pmc_exterr_test.c",
+        "name": "ibs_invalid_config_bits",
+        "kind": "ATF_TP_ADD_TC"
+      },
+      {
+        "file": "tests/sys/pmc/pmc_exterr_test.c",
+        "name": "ibs_nonsampling_mode",
+        "kind": "ATF_TP_ADD_TC"
+      },
+      {
+        "file": "tests/sys/pmc/pmc_lifecycle_test.c",
+        "name": "attach_detach_bookkeeping",
+        "kind": "ATF_TP_ADD_TC"
+      },
+      {
+        "file": "tests/sys/pmc/pmc_lifecycle_test.c",
+        "name": "detach_after_target_reaped",
+        "kind": "ATF_TP_ADD_TC"
+      },
+      {
+        "file": "tests/sys/pmc/pmc_lifecycle_test.c",
+        "name": "release_running_attached",
+        "kind": "ATF_TP_ADD_TC"
+      },
+      {
+        "file": "tests/sys/pmc/pmc_lifecycle_test.c",
+        "name": "owner_exit_before_target",
+        "kind": "ATF_TP_ADD_TC"
+      },
+      {
+        "file": "tests/sys/pmc/pmc_lifecycle_test.c",
+        "name": "exhaust_then_release_reverse",
+        "kind": "ATF_TP_ADD_TC"
+      },
+      {
+        "file": "tests/sys/pmc/pmc_lifecycle_test.c",
+        "name": "descendants_inherit_and_release",
+        "kind": "ATF_TP_ADD_TC"
+      },
+      {
+        "file": "tests/sys/pmc/pmc_lifecycle_test.c",
+        "name": "descendants_fork_storm",
+        "kind": "ATF_TP_ADD_TC"
+      },
+      {
+        "file": "tests/sys/pmc/pmc_log_test.c",
+        "name": "sampling_owner_needs_no_log",
+        "kind": "ATF_TP_ADD_TC"
+      },
+      {
+        "file": "tests/sys/pmc/pmc_log_test.c",
+        "name": "sampling_foreign_target_needs_a_log",
+        "kind": "ATF_TP_ADD_TC"
+      },
+      {
+        "file": "tests/sys/pmc/pmc_log_test.c",
+        "name": "configurelog_refuses_unwritable_fd",
+        "kind": "ATF_TP_ADD_TC"
+      },
+      {
+        "file": "tests/sys/pmc/pmc_log_test.c",
+        "name": "configurelog_accepts_a_socket",
+        "kind": "ATF_TP_ADD_TC"
+      },
+      {
+        "file": "tests/sys/pmc/pmc_log_test.c",
+        "name": "configurelog_twice_is_refused",
+        "kind": "ATF_TP_ADD_TC"
+      },
+      {
+        "file": "tests/sys/pmc/pmc_log_test.c",
+        "name": "log_ops_without_an_owner",
+        "kind": "ATF_TP_ADD_TC"
+      },
+      {
+        "file": "tests/sys/pmc/pmc_log_test.c",
+        "name": "log_survives_userland_closing_the_fd",
+        "kind": "ATF_TP_ADD_TC"
+      },
+      {
+        "file": "tests/sys/pmc/pmc_log_test.c",
+        "name": "log_write_error_is_reported",
+        "kind": "ATF_TP_ADD_TC"
+      },
+      {
+        "file": "tests/sys/pmc/pmc_log_test.c",
+        "name": "owner_exit_with_log_and_running_pmc",
+        "kind": "ATF_TP_ADD_TC"
+      },
+      {
+        "file": "tests/sys/pmc/pmc_mapfile_test.c",
+        "name": "zen5_models",
+        "kind": "ATF_TP_ADD_TC"
+      },
+      {
+        "file": "tests/sys/pmc/pmc_mapfile_test.c",
+        "name": "zen6_models",
+        "kind": "ATF_TP_ADD_TC"
+      },
+      {
+        "file": "tests/sys/pmc/pmc_mapfile_test.c",
+        "name": "low_models",
+        "kind": "ATF_TP_ADD_TC"
+      },
+      {
+        "file": "tests/sys/pmc/pmc_mapfile_test.c",
+        "name": "non_amd_cpuid_unchanged",
+        "kind": "ATF_TP_ADD_TC"
+      },
+      {
+        "file": "tests/sys/pmc/pmc_perf_test.c",
+        "name": "class_rows",
+        "kind": "ATF_TP_ADD_TC"
+      },
+      {
+        "file": "tests/sys/pmc/pmc_perf_test.c",
+        "name": "mperf_counts",
+        "kind": "ATF_TP_ADD_TC"
+      },
+      {
+        "file": "tests/sys/pmc/pmc_perf_test.c",
+        "name": "aperf_counts",
+        "kind": "ATF_TP_ADD_TC"
+      },
+      {
+        "file": "tests/sys/pmc/pmc_perf_test.c",
+        "name": "irperf_counts",
+        "kind": "ATF_TP_ADD_TC"
+      },
+      {
+        "file": "tests/sys/pmc/pmc_perf_test.c",
+        "name": "irperf_matches_instructions",
+        "kind": "ATF_TP_ADD_TC"
+      },
+      {
+        "file": "tests/sys/pmc/pmc_perf_test.c",
+        "name": "mode_refusals",
+        "kind": "ATF_TP_ADD_TC"
+      },
+      {
+        "file": "tests/sys/pmc/pmc_pidtrack_test.c",
+        "name": "pidtrack_self_counts",
+        "kind": "ATF_TP_ADD_TC"
+      },
+      {
+        "file": "tests/sys/pmc/pmc_pidtrack_test.c",
+        "name": "pidtrack_no_leakage",
+        "kind": "ATF_TP_ADD_TC"
+      },
+      {
+        "file": "tests/sys/pmc/pmc_pidtrack_test.c",
+        "name": "pidtrack_ctxswitch",
+        "kind": "ATF_TP_ADD_TC"
+      },
+      {
+        "file": "tests/sys/pmc/pmc_rapl_test.c",
+        "name": "rapl_class_present",
+        "kind": "ATF_TP_ADD_TC"
+      },
+      {
+        "file": "tests/sys/pmc/pmc_rapl_test.c",
+        "name": "rapl_reject_process_mode",
+        "kind": "ATF_TP_ADD_TC"
+      },
+      {
+        "file": "tests/sys/pmc/pmc_rapl_test.c",
+        "name": "rapl_pkg_delta_under_load",
+        "kind": "ATF_TP_ADD_TC"
+      },
+      {
+        "file": "tests/sys/pmc/pmc_rapl_test.c",
+        "name": "rapl_cores_delta_under_load",
+        "kind": "ATF_TP_ADD_TC"
+      },
+      {
+        "file": "tests/sys/pmc/pmc_rdpmc_test.c",
+        "name": "rdpmc_reads_own_counter",
+        "kind": "ATF_TP_ADD_TC"
+      },
+      {
+        "file": "tests/sys/pmc/pmc_rdpmc_test.c",
+        "name": "getmsr_refusals",
+        "kind": "ATF_TP_ADD_TC"
+      },
+      {
+        "file": "tests/sys/pmc/pmc_row_test.c",
+        "name": "row_disposition_follows_mode",
+        "kind": "ATF_TP_ADD_TC"
+      },
+      {
+        "file": "tests/sys/pmc/pmc_row_test.c",
+        "name": "system_sampling_needs_logfile",
+        "kind": "ATF_TP_ADD_TC"
+      },
+      {
+        "file": "tests/sys/pmc/pmc_ss_test.c",
+        "name": "two_pmcs_deliver_samples",
+        "kind": "ATF_TP_ADD_TC"
+      },
+      {
+        "file": "tests/sys/pmc/pmc_ss_test.c",
+        "name": "interrupts_counted_once",
+        "kind": "ATF_TP_ADD_TC"
+      },
+      {
+        "file": "tests/sys/pmc/pmc_unload_test.c",
+        "name": "unload_frees_memory",
+        "kind": "ATF_TP_ADD_TC"
+      },
+      {
+        "file": "tests/sys/pmc/pmc_wrap_test.c",
+        "name": "counting_pmc_wraps_hardware_counter",
+        "kind": "ATF_TP_ADD_TC"
+      },
+      {
+        "file": "tests/sys/pmc/pmc_wrap_test.c",
+        "name": "counting_pmc_beyond_hardware_width",
+        "kind": "ATF_TP_ADD_TC"
+      },
+      {
+        "file": "tests/sys/pmc/pmcstat_tsc_test.sh",
+        "name": "tsc_freq_initlog",
+        "kind": "atf_add_test_case"
+      },
+      {
+        "file": "tests/sys/pmc/pmcstat_tsc_test.sh",
+        "name": "tsc_column_format",
+        "kind": "atf_add_test_case"
+      },
+      {
+        "file": "tests/sys/pmc/pmcstat_tsc_test.sh",
+        "name": "json_tsc_unsigned",
+        "kind": "atf_add_test_case"
+      },
+      {
+        "file": "tests/sys/pmc/pmcstat_tsc_test.sh",
+        "name": "callgraph_render",
+        "kind": "atf_add_test_case"
+      }
+    ],
+    "runtime_execution_not_performed": true
+  },
+  "remaining_gates": [
+    "Fresh matching source world/kernel/modules and package closures",
+    "Original PMC ATF execution with matching kernel/modules/tools on appropriate hardware",
+    "Complete pending-review dependency stacks and native candidates",
+    "Current Omarchy adaptation, packaging and rendered desktop",
+    "Installation, update, rollback and recovery",
+    "Pi 4 before Pi 5 physical device qualification and requested fleet updates",
+    "Canonical Component, typed SDK/TCB, lifecycle and trust admission",
+    "Signing and release publication"
+  ]
+}

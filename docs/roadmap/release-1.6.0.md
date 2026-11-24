@@ -81,11 +81,12 @@ then conduct one operator signing session. Preserve published release bytes.
 
 **Operator direction, 2026-11-23:** synchronize owned main branches with current
 upstream first, then synchronize the 1.6 release branches and active review work.
-The [November 23 synchronization and PMC review](pmc-1.6-review-20261123.md)
+The [November 24 synchronization and PMC refresh](pmc-1.6-review-20261124.md)
 records the completed repository imports, all six matching main/release branch
-pairs and all 27 existing review heads containing their respective main. It also
+pairs and all 28 current review heads containing their respective main. It also
 reviews the eleven landed and eight pending PMC revisions requested for possible
-1.6 inclusion. Native rebuild, package adaptation and release acceptance remain
+1.6 inclusion, retaining the [November 23 record](pmc-1.6-review-20261123.md).
+Native rebuild, package adaptation and release acceptance remain
 open; none of the pending PMC diffs was added to main or release by this review.
 
 **Operator direction, 2026-11-08:** 1.6 also synchronizes with **current upstream Omarchy (4.5.0)**
@@ -96,7 +97,7 @@ historical 1.5.x. The selected stable release is
 [Omarchy v4.5.0](https://github.com/omacom/omarchy/releases/tag/v4.5.0), published
 2026-11-05, tag object `97e664bd971fa5a8691d89440d3738143499c438`, commit
 `ac2690cd7be4f47e4a255f5e2e78d904d436b068`. The packaged Omarchy baseline at
-that planning checkpoint was 4.0.4. The November 23 review above records the
+that planning checkpoint was 4.0.4. The November 24 refresh above records the
 newer repository and packaged selections separately; native adaptation and
 qualification of the newest desktop remain open.
 
