@@ -63,6 +63,7 @@ another published version are historical records. 1.6 entries describe planned w
 - [EFI loader cannot find loader.lua](repair-efi-root.md)
 - [Installation logs and the rescue console](rescue-console.md)
 - [Active work](roadmap/active-work.md)
+- [Planned 1.6 upstream synchronization and PMC review refresh, November 24](roadmap/pmc-1.6-review-20261124.md)
 - [Planned 1.6 upstream synchronization and PMC source review, November 23](roadmap/pmc-1.6-review-20261123.md)
 - [Planned 1.6 ARM platform discovery register](arm-platform-register.md)
 - [Planned 1.6 default installation tracing and custom hardware images](roadmap/default-install-tracing.md)
