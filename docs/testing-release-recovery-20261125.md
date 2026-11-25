@@ -72,6 +72,12 @@ recorded 64 GiB build reserve; the separate scratch volume has approximately
 image. Guards for resumed
 writes must measure that writable volume.
 Guest free space alone does not reserve host backing capacity.
+A later storage recheck still finds the host root below its 64 GiB reserve,
+with approximately 46 GiB available, while local scratch has approximately
+187 GiB and the package worker has 132 GiB. The shared NAS still reports a
+degraded pool, one faulted member, another degraded member and two data errors.
+The current recovery continues on the separate local scratch and allocated
+worker storage.
 
 The original producer requires at least 100 GiB free when filemon tracing is
 enabled. Its guest had approximately 97.8 GiB free. A 16 GiB expansion of the
@@ -237,6 +243,41 @@ both evidence hosts, SHA-256
 An initial preflight observer used a retired result-field name and stopped
 before package mutation; that failed result is retained alongside the passing
 fresh attempt.
+
+Simplified DocBook 1.1_4,2 was then rebuilt with the same keyword and its
+normal Xmlcharent 0.3_5 dependency. All eight original construction targets,
+15 isolated payloads, 20 DTD commands and 24 decoded generated-hook controls
+pass. The normal 1.1_3,2 to 1.1_4,2 upgrade has empty stderr and no hook
+failures; all four catalogs retain bytes and timestamps, and the other 105
+prefixes remain unchanged. Fresh 20 default-global DTD commands and 136
+Xmlcharent dependency commands pass. The SDK count stays at 106. The port
+exposes no selected upstream self-suite bridge; these are independent consumer
+and hook checks. The 649-node source/private and 454-node normal archives were
+fully verified on both evidence hosts, with respective SHA-256 values
+`bcba754b5c8ae4f430bef1ea93dea40d30d8606ce1c764af76670af0b462a4cd`
+and `41abf49c1db80bb60f16040ecaab37f5e0000a7cc05a6b8eaf04416d97f43948`.
+
+ISO8879 1986_5 also passed eight construction targets, 24 isolated payload
+checks, 228 resource commands and 21 decoded generated-hook controls. Its
+normal 1986_4 to 1986_5 upgrade passed with empty stderr and no hook errors.
+All four catalog files retain bytes and timestamps, the other 105 package
+prefixes are preserved, and all 114 fresh default-global resource commands
+match the private results. The SDK count remains 106. The 1,869-node
+source/private and 258-node normal archives were verified on both evidence
+hosts, with respective SHA-256 values
+`872980a11c880bbf9b85f92d3f2fc30c9c538664abcbaa359488680f9d7fe85a`
+and `a4c41741ab028133d8e19178123947e3aa2c40f10828094e9f3c75af4eded2c6`.
+A pre-install verifier-field error remains retained with the fresh passing
+attempt. The external OpenSP test tool still uses its explicitly bound private
+libraries, and its six original suite failures remain open.
+
+Fresh DocBook SGML 4.5_3 and DocBook XML 5.0_5 packages then passed all eight
+original construction targets with the updated normal dependencies. Their
+package SHA-256 values are, respectively,
+`974d769e8db5ffefe66e6b2e153ce1eeed880949639f799ea5dc4771ee707514`
+and `1325b1bcdae273f3a226728e2ce88a7597b8384317c74184a489f050d716c2a5`.
+These are construction results; their isolated consumers, generated hooks and
+normal integration still require qualification.
 
 ## Intel MacBook tester
 
