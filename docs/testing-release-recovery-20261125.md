@@ -20,14 +20,47 @@ native recorded sizes and SHA-256 hashes. The base set is
 `382265eec4ae4f1511f405783eeabb3de78b72da6936893c976b724ed23b50d9`;
 the kernel set is
 `ad432d7189ed4cf706fb3f78e719a65a1851a1347350d01d92523e477f101226`.
-Independent semantic package/set/source review, boot, matched SDK and product
-image qualification remain open; producer success does not establish them.
+Independent semantic review subsequently passed for all 531 artifacts and all
+six phase logs, retaining the failed first attempt. Both repository catalogs
+match all 516 package manifests; their 1,063 dependency edges close, with no
+unprovided shared libraries. The file index matches all 157,087 manifest paths.
+Both source packages and the source set match all 115,712 selected Git entries,
+including modes and links. An actual isolated package installation verified all
+750 kernel/module nodes against the kernel set, including effective ownership
+and aliases. Raw package and set numeric owners differ; their actual installed
+payloads match.
+
+The completed source-products archive contains 573 non-directory members,
+including all original artifacts and the retained controls, inputs and logs.
+Its SHA-256 is
+`23236e2ac01a653f3be141c62c5ac15948d67a08b603d3eca6b9835414441244`.
+All member bodies and links and the complete gzip stream were independently
+verified on both evidence hosts; native capture also checked modes and owners.
+
+A private UEFI QA image was assembled from the matched base and kernel sets
+on the other scratch-backed native worker, preserving its complete installed
+105-package SDK inventory. The existing 120 GiB start and 100 GiB completion
+thresholds remained enforced. The image SHA-256 is
+`b68d9bc68e6ae20a4558ef0500c0d510085091431499d287250cef33ee4303cb`;
+compressed/raw identities and both GPT checksums passed before launch.
+
+A fresh ARM VM then booted that image through the EFI loader to multiuser mode
+and accepted authenticated SSH. Its kernel, loader, shell, libc and system-header
+hashes match the image. The complete running kernel version also matches the
+selected kernel's embedded bytes. UID 65534 shell/file/arithmetic/date controls
+passed, followed by actual native C and C++ compile/link/run checks covering
+threads, monotonic time, allocation, filesystem access and exceptions. These
+are bounded base-system checks, not original compiler or base-system suites.
+The private disk contains QA credentials and is not a publishable product image.
+Matched SDK, desktop, product media, physical-target and release acceptance
+remain open.
 
 The existing allocated ARM worker was recovered with fresh writable overlays
 on a separate local scratch disk. The crash disks remain unchanged backing
-files. The host root volume still has approximately 49 GiB free, below the
+files. The host root volume still has approximately 46.5 GiB free, below the
 recorded 64 GiB build reserve; the separate scratch volume has approximately
-204 GiB available after the recovered work and set export. Guards for resumed
+188 GiB available after the recovered work, evidence copies and private boot
+image. Guards for resumed
 writes must measure that writable volume.
 Guest free space alone does not reserve host backing capacity.
 
@@ -104,6 +137,19 @@ reclassified. The failures and isolated repair experiments are retained;
 no repair is qualified yet. OpenSP has not been installed, and the accepted
 SDK remains at 105 packages. The full SDK inventory was preserved by the build
 and test runs.
+
+An isolated production-code repair prototype passes 20 of the same 23 original
+cases, including `catalog-2`, `af-10` and `af-11`; no test bodies, expected
+outputs or suite membership changed. The remaining three failures include
+expected-output issues and an unresolved content-mapping semantic discrepancy.
+The prototype is not installed or accepted as a qualified parser repair.
+
+ISO8879 1986_4 also passed all eight original construction targets from the same
+selected ports tree. Its package SHA-256 is
+`b5287bac8795a9eede78ee8c9fe6257841a67918c86394aaab7fd4d03506a73e`.
+The installed prefix, logical registry and selected source/base guards passed.
+It remains uninstalled; independent SGML/catalog consumers and generated-hook
+checks are pending. Its original port exposes no selected upstream test bridge.
 
 ## Intel MacBook tester
 
