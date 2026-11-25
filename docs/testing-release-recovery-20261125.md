@@ -78,8 +78,7 @@ enabled. Its guest had approximately 97.8 GiB free. A 16 GiB expansion of the
 fresh overlay was completed without lowering that requirement. The crash-left
 UFS filesystem passed an offline check covering 2,938,148 files before growth.
 The mounted build filesystem had approximately 112 GiB available after growth.
-Original
-worker base-file hashes match their retained values, and filemon was restored
+Original worker base-file hashes match their retained values, and filemon was restored
 for the unprivileged producer. The supported resume is under a host monitor
 that measures the scratch-backed writable volume, retaining its 120 GiB start,
 64 GiB stop and 8 GiB available-memory thresholds. The monitor and native
@@ -107,7 +106,7 @@ and the other 103 package prefixes, and passed 136 entity commands covering
 development packages are accepted at that bounded integration checkpoint.
 This is not complete original-upstream-suite or canonical lifecycle acceptance.
 
-Continue Simplified DocBook, ISO8879, SGML, the DocBook metaport and XSL closure,
+Continue ISO8879, SGML, the DocBook metaport and XSL closure,
 then original-default D-Bus with MANPAGES/X11 and the full original GLib tests.
 The shared catalog keyword fix has 21 known port consumers; selected-package
 rebuild and upgrade-version coverage remains open.
@@ -122,15 +121,35 @@ remains 0.3_4. Kernel, fstab and main installed package-database bytes were
 unchanged by those metadata queries.
 
 Fresh Simplified DocBook 1.1_3,2 passed all eight original construction targets,
-15 sealed payload checks, 20 DTD consumer commands and 18 actual generated-hook
-commands. Its normal local-only installation passed with empty stderr, clean
+15 sealed payload checks and 20 DTD consumer commands. Its normal local-only
+installation passed with empty stderr, clean
 hooks, both master catalogs and all 104 inherited prefixes preserved. The two
 catalog indexes changed exactly as predicted; all 20 default-global consumer
-commands matched the sealed run. There are now 105 accepted development
-packages. The source/private/failure/observer archive has 625 nodes, and the
+commands matched the sealed run. The bounded development SDK then reached
+105 packages. The source/private/failure/observer archive has 625 nodes, and the
 normal-installation archive has 80; both were independently verified on both
 evidence hosts. Original upstream self-suite, canonical and release acceptance
 remain separate.
+
+The earlier direct hook controls executed percent-encoded manifest text;
+their claim to execute the exact pkg runtime bodies is withdrawn. The pinned
+pkg implementation decodes manifest scripts before execution. Fresh controls
+now apply that decoding: all 13 Xmlcharent, 18 Simplified DocBook and 17
+ISO8879 commands pass. An independently read, byte-verified copy of the installed
+package database confirms that all four Xmlcharent/Simplified DocBook script
+bodies exactly match the decoded manifests. The actual normal installations
+already passed through pkg's decoder and remain separate evidence.
+
+The corrected controls, original encoded-text controls, ISO8879 source/private
+checks, observer failures and original OpenSP build/suite evidence are retained
+in a 5,370-node archive, SHA-256
+`f142f4eafb4ec3eafede192015103dd5b1bffb6d6ea20be3ea238784f9a1868d`.
+All bodies, types, modes, owners, flags, nanosecond timestamps and links were
+verified on both evidence hosts. The installed 105-package SDK stayed unchanged
+during these controls. The SGML parser accepted the unfinished-quote negative
+fixture without error; its failed observer result is retained. The corrected
+SGML hook error control uses a real catalog I/O failure. XML malformed-catalog
+controls continue to pass.
 
 The initial sealed/hook attempts stopped before installation because only the
 SQLite shared-memory file's timestamp differed from the older inventory. Its
@@ -146,9 +165,8 @@ and NLS enabled. Its package SHA-256 is
 The complete original upstream suite ran all 23 selected cases: 17 passed;
 `catalog-2` and `af-7` through `af-11` failed. No cases were removed or
 reclassified. The failures and isolated repair experiments are retained;
-no repair is qualified yet. OpenSP has not been installed, and the accepted
-SDK remains at 105 packages. The full SDK inventory was preserved by the build
-and test runs.
+no repair is qualified yet. OpenSP remains uninstalled. Its build and test
+runs preserved the full 105-package SDK inventory.
 
 An isolated production-code repair prototype passes 20 of the same 23 original
 cases, including `catalog-2`, `af-10` and `af-11`; no test bodies, expected
@@ -160,8 +178,65 @@ ISO8879 1986_4 also passed all eight original construction targets from the same
 selected ports tree. Its package SHA-256 is
 `b5287bac8795a9eede78ee8c9fe6257841a67918c86394aaab7fd4d03506a73e`.
 The installed prefix, logical registry and selected source/base guards passed.
-It remains uninstalled; independent SGML/catalog consumers and generated-hook
-checks are pending. Its original port exposes no selected upstream test bridge.
+All 24 sealed payloads and 228 private SGML/catalog commands pass, covering
+978 definitions through 38 public identifiers in 19 resource files. These
+include invalid-document and missing-catalog rejection, changed-resource
+values and recovery. Its previous 1986_3 package was rebuilt from retained
+source to supply actual old script bodies for the 17 decoded hook controls.
+Its normal local-only installation then passed with clean hooks and empty
+stderr. All 24 payloads match; only the predicted SGML catalog index changed,
+and all 105 inherited package prefixes and the XML catalogs were preserved.
+All 114 default-global resource commands matched the private results, bringing
+the bounded development SDK to 106 packages. The 246-node normal-installation
+archive was verified on both evidence hosts, SHA-256
+`ab69a186df6a3910edbf7ff6827a622e8962e216f6e7422e6e18b262b56e5689`.
+
+Its original port exposes no selected upstream test bridge. The SGML resource
+checks use an uninstalled original OpenSP test tool with an explicitly bound
+private library directory. Default-global catalog discovery uses no catalog
+environment override. These checks do not qualify a normally installed parser
+or close its six suite failures. The next original DocBook SGML producer retains
+all nine selected DTD versions and the original dependencies.
+
+## Catalog error propagation follow-up
+
+The corrected runtime-script checks exposed another shared-keyword defect:
+with the first SGML catalog unreadable, its add or remove failed, but the
+following XML catalog operation succeeded and the whole generated script
+returned success. The remove case also changed the later XML catalog despite
+the earlier failure. Native reproductions and a six-command copied-body repair
+experiment are retained in a 1,190-node archive, verified on both evidence
+hosts, SHA-256
+`50b6fa2c27a4e9dd9dad316433f3f8bd89a89b1411ff4ac3ab5619fe9d7a8ae4`.
+These passing reproductions establish the defect, not product acceptance.
+
+Ports candidate `1d0dc88cb0d7e2087bd7acaefb2f030e1036b3de` stops on the
+first failed add or remove and increments all 21 keyword consumers. Native
+verification checked all 184,371 source members. All 42 original make queries
+and 21 native version comparisons confirm strictly newer consumer versions.
+Xmlcharent 0.3_5 passed eight original construction targets, its actual custom
+port test target with all 21 added regressions, 19 decoded generated-script
+controls, and 136 isolated consumer commands covering all 975 independent
+entity values. The new controls reproduce the installed 0.3_4 error masking
+and verify that 0.3_5 returns failure while preserving the later XML catalog.
+The added port regressions are separate from an original upstream self-suite.
+
+The 1,482-node source, build, test and isolated-consumer archive was verified
+on both evidence hosts, SHA-256
+`ae1ac3805284821562ef6180725bfdbd827e85305f4c7c89072deb4643ef8fdd`.
+The normal 0.3_4 to 0.3_5 local-only upgrade then passed with empty stderr
+and no hook failures. All 25 payloads match, all four global catalog files
+retain their bytes and timestamps, and the other 105 package prefixes are
+preserved. All 136 default-global entity commands, 20 Simplified DocBook
+commands and 21 added port regressions pass on the installed payload. The
+bounded SDK remains at 106 packages. The remaining selected consumer rebuilds
+require their own qualification; this count does not establish admission of
+every revised consumer. The 542-node normal-upgrade archive was verified on
+both evidence hosts, SHA-256
+`324ecf3da5120b53df21d9e9cfe92b0b4de41ea24f2d691f582f0d6e4626e83d`.
+An initial preflight observer used a retired result-field name and stopped
+before package mutation; that failed result is retained alongside the passing
+fresh attempt.
 
 ## Intel MacBook tester
 
