@@ -307,6 +307,71 @@ and `32cc97e62d6f38b900af533e017360db8c4700df18bfed675019b37228e1e2b1`.
 These independent consumers and transaction checks do not close original
 upstream self-suite, canonical lifecycle, desktop or release acceptance.
 
+### Legacy SGML mode repair and the 107-package checkpoint
+
+Actual SGML consumers exposed a further failure in DocBook 4.3 after the six
+older DTD versions passed. The shared 4.3/4.4 modules contain XML-only
+attributes and HTML table declarations that fail in SGML mode. Both original
+providers now apply the same narrowly scoped module repair: SGML attribute
+guards and tag-minimization declarations, with CDATA table rules only in SGML
+mode. XML 4.3 retains its original rules enumeration and rejects an invalid
+value. All original distributions, dependencies and options remain selected.
+
+Ports revision `6defff971350efcf84889a03120ab5462ece1508` was independently
+reconstructed and checked across all 184,377 native source members. Fresh
+DocBook SGML 4.5_4 and XML 5.0_6 packages each passed eight original construction
+targets. All six patched module bodies match the experimentally tested repair;
+the original patch targets report no fuzz or offsets. The package SHA-256
+values are, respectively,
+`ef144a868c625279a2074bc2a4e033fa4b70018919f2864c9f66f08cac6be8e4`
+and `e22952c7ae93156b3400ea5818ec5cd7b9ad9001ca7391e9bef252b0499c58ff`.
+
+The actual sealed pair passed all 141 SGML and 195 XML payload checks,
+63 SGML commands across all nine DTD versions and 42 XML commands across six
+DTDs and three shipped schemas. A further 23 commands cover reversed catalog
+order, HTML and CALS tables, XML attribute/rules rejection, original failures
+and patched recovery. The decoded generated hooks are byte-identical to the
+previously tested 17-control SGML and 24-control XML sets. Those hook controls
+were bound by exact bytes and receipt digests; they were not replayed.
+
+The normal XML 5.0_5 to 5.0_6 transaction passed with empty stderr and no hook
+errors. All 195 payloads, four catalog bodies and timestamps, and the other
+105 package prefixes verify. Fresh consumers passed 42 DTD/schema/catalog/
+conversion commands, 136 Xmlcharent dependency commands and seven XML table
+and strictness commands. The count stayed at 106.
+
+The subsequent normal SGML 4.5_4 installation passed its original local-only
+solver, dependencies and hooks with empty stderr. All 141 payloads verify.
+Only the predicted SGML catalog index changed; the other three catalogs and
+all 106 inherited prefixes outside that index are preserved. Fresh default
+global consumers passed 36 commands across nine DTD versions and three HTML/
+CALS table commands. The bounded development set is now **107 packages**.
+The frozen SDK, base/kernel and mount guards passed throughout.
+
+Both evidence hosts independently verified every node in four retained
+capsules: 5,362 nodes for original failures and derived prototypes
+(`d89598e0bc1d6078cc9995b666fed97f15d96c251518928811493dfd7dc42413`),
+3,450 for the actual source and sealed pair
+(`b3ce039396124736bc163d0469e02361ed0bd7cffa1c30361f312e99f66b6840`),
+532 for normal XML integration
+(`b2516cf1d4ec909645df99b9535b2dd8ee48530774f8c3b22ba384b5b294832d`),
+and 96 for normal SGML integration
+(`89f58f78da3fd46c036e116d7855af94c99adaddaa80b5471dbb61612a1ecbc3`).
+Earlier fixture and observer errors remain preserved with the real failures;
+derived prototypes are distinguished from actual package acceptance.
+
+Positive consumers use no catalog environment override. XML uses the default
+loader; SGML uses the uninstalled original OpenSP tool with explicitly bound
+private libraries. Its six original suite failures remain open. The four XML
+catalog aliases for two absent XInclude XSD files remain unqualified; ordinary
+XSD files do not substitute for those schemas. No upstream self-suite,
+canonical lifecycle, desktop or release acceptance follows from these checks.
+
+The DocBook 1.5 metaport has also passed all eight original construction targets
+with its three normally installed runtime providers. Its package acceptance
+and normal installation remain pending. Continue the original XSL defaults,
+D-Bus MANPAGES/X11 closure, full original GLib suite and desktop qualification.
+
 ## Intel MacBook tester
 
 The operator restored access to the physical MacBookPro16,1 tester. SSH and
