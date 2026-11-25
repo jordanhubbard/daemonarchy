@@ -7,9 +7,10 @@ native work and separates recovered results from new release qualification.
 
 The selected source is `759e93f1bbc79103eda36077e7c28d17317f15c8`, with retained
 plan `6ff1e029b20b618659a2953d8114fef2cddf3943eba5067e7492e7ee9a35b45e`.
-Its original four-job, filemon-traced producer completed world and kernel;
-packages, release objects and installer sets remain pending. The failed first
-world attempt and the successful phase logs remain retained.
+Its original four-job, filemon-traced producer completed world and kernel.
+The supported resume verified the retained phase evidence and entered packages;
+release objects and installer sets remain pending. The failed first world
+attempt and the successful phase logs remain retained.
 
 The existing allocated ARM worker was recovered with fresh writable overlays
 on a separate local scratch disk. The crash disks remain unchanged backing
@@ -37,6 +38,11 @@ inventory. The final 538-node upgrade capsule was then independently verified
 on both evidence hosts. Its compressed archive SHA-256 is
 `6a3f2eed16e04ffbb24c9520e387dfb6a011636a5f1d3dce376ef63bafa912a5`.
 
+The allocated desktop/package worker was then stopped cleanly and restarted
+with fresh writable overlays on the separate scratch volume too. Its retained
+104-package SDK was remounted and the installed Xmlcharent 0.3_4 registration
+confirmed. Original disks remain backing files, without further build writes.
+
 The normal upgrade had no hook diagnostics, preserved all four catalog files
 and the other 103 package prefixes, and passed 136 entity commands covering
 975 definitions plus 20 Simplified DocBook consumer commands. All 104 installed
@@ -47,6 +53,17 @@ Continue Simplified DocBook, ISO8879, SGML, the DocBook metaport and XSL closure
 then original-default D-Bus with MANPAGES/X11 and the full original GLib tests.
 The shared catalog keyword fix has 21 known port consumers; selected-package
 rebuild and upgrade-version coverage remains open.
+
+[Ports PR #117](https://github.com/jordanhubbard/daemonarchy-ports/pull/117)
+now bumps the other 20 consumers' package revisions so existing installations
+can receive the regenerated fixed hooks. The version-only source selection is
+`74ee006accba1fd1b9da68ac6e0579cf88527b6d`. Native verification passed all
+184,371 source entries. All 42 original-make queries and 21 package-version
+comparisons passed: the other 20 consumers are strictly newer, and Xmlcharent
+remains 0.3_4. The kernel, fstab and raw installed package registry were
+unchanged by those metadata queries. A fresh Simplified DocBook 1.1_3,2 build
+has started; construction, generated hooks and normal integration remain
+separate from both the version checks and the verified Xmlcharent result.
 
 ## Intel MacBook tester
 
