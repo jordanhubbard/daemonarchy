@@ -276,8 +276,36 @@ original construction targets with the updated normal dependencies. Their
 package SHA-256 values are, respectively,
 `974d769e8db5ffefe66e6b2e153ce1eeed880949639f799ea5dc4771ee707514`
 and `1325b1bcdae273f3a226728e2ce88a7597b8384317c74184a489f050d716c2a5`.
-These are construction results; their isolated consumers, generated hooks and
-normal integration still require qualification.
+SGML remains uninstalled; its isolated consumers, generated hooks and normal
+integration still require qualification. XML qualification follows.
+
+DocBook XML 5.0_5 subsequently passed all 195 isolated payload checks, 42
+DTD/schema/catalog/conversion commands and 24 decoded generated-hook controls.
+The controls parse and assert both script orders: XML precedes SGML. The old
+5.0_3 script masks a first XML add/remove error when the later SGML operation
+succeeds; the new script returns failure and preserves the SGML catalog. Two
+observers that assumed another operation order remain failed and retained.
+The old 5.0_3 bodies have no percent-decoding differences, so their seven
+historical direct controls remain runtime-byte-exact.
+
+Its normal 5.0_3 to 5.0_5 package transaction and all 42 consumer commands
+succeeded, but the wrapper then raised an error while reading an optional
+report flag absent from the older consumer. That original wrapper remains
+failed. A separate read-only completion binds its result and transaction,
+validates all 42 retained command outputs and the actual loader/catalog guards,
+and runs the remaining 136 Xmlcharent dependency commands. No package
+transaction or completed consumer commands were repeated. All 195 payloads,
+four catalog bodies and timestamps, and the other 105 prefixes verify; the
+complete SDK prefix and raw database stay unchanged through completion. The
+bounded SDK remains at 106 packages. Four original aliases for two absent
+schema targets remain explicitly unqualified.
+
+The 1,938-node source/private and 515-node original-normal/completion archives
+were fully verified on both evidence hosts, with respective SHA-256 values
+`701deb251972d52be8f4605d8c2f850fa652fcd00997126b3f792d9160d395a2`
+and `32cc97e62d6f38b900af533e017360db8c4700df18bfed675019b37228e1e2b1`.
+These independent consumers and transaction checks do not close original
+upstream self-suite, canonical lifecycle, desktop or release acceptance.
 
 ## Intel MacBook tester
 
