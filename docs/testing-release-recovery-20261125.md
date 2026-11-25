@@ -386,11 +386,76 @@ or self-suite. Fresh DocBook XSL 1.79.1_3,1 construction also passes all eight
 original targets with all 14 feature options and DOCS enabled. Its 20,690,058-byte
 package has SHA-256
 `0bae6553ac8373189fdb42bcd0d59337fc7af9238699c5e03ebe7db6c606db94`.
-It remains uninstalled pending independent consumers, decoded hook checks and
-custody. The initial observer's wrong epoch expectation is retained; no port
+Its subsequent consumer, hook, custody and normal integration results are
+recorded below. The initial observer's wrong epoch expectation is retained; no port
 metadata or options were weakened. The TESTS module option is not an original
 self-suite result. Continue XSL acceptance, D-Bus MANPAGES/X11 closure, full
 original GLib suite and desktop qualification.
+
+### Original XSL consumers and the 109-package checkpoint
+
+The actual XSL package now passes all 3,085 isolated payload checks. Its
+unchanged upstream smoke-test Makefile discovers and completes 45 transforms
+using both original fixtures. A small argument adapter maps its XML-first
+invocation to the native `xsltproc` CLI; every child exit and output is
+journaled separately so shell loops cannot hide a failed transform. All 45
+pass privately and again from the normal installed paths. These upstream
+smokes check successful execution; independent output checks are separate.
+
+Nineteen private commands check offline DTDs, HTML/XHTML/FO content and
+structure, profiling, generated man pages, all four original catalog rewrite
+rules and both advertised aliases. Empty, shadow and recovery controls bind
+the results to the selected resources. Seventeen actual pkg-decoded hook
+controls verify registration, idempotence, entry-type collisions, removal,
+reinstallation and add/remove I/O failures. All 15 default options remain on.
+
+The normal local-only package transaction, dependency and installed payload
+checks pass with empty stderr. Only the predicted XML catalog index changes;
+the other three catalog files and all 108 inherited prefixes outside that
+index are preserved. Fresh installed consumers pass all 45 upstream smokes
+and the first 17 semantic/API checks without positive loader/catalog overrides.
+
+The next counterfactual exposes an incomplete observer: its private shadow
+catalog overrides URI lookup only, while the now-installed global catalog also
+supplies system lookup. The original semantic and outer wrappers remain
+failed. A read-only completion binds those failures, independently revalidates
+all 17 retained outputs, demonstrates the URI/system distinction with two
+native API commands, then passes a dual-kind shadow and default-global
+recovery. It also queries the actual 109-package registry. The successful
+transaction, 45 smokes and 17 prior checks are not replayed.
+
+The complete SDK prefix/raw database stays unchanged through that completion
+following the explicitly recorded, known shared-memory timestamp transition
+from the read-only query. All payload, inherited-prefix, catalog, frozen SDK,
+base and mount guards pass. The bounded development set is now **109 packages**.
+
+Source/build, private and normal/completion capsules contain 7,179, 6,764 and
+297 nodes respectively, all independently verified on both evidence hosts.
+Their archive SHA-256 values are
+`53a52ca78380941cd6d54bdbb68bbdf20017a6e44b9b30006cf5ebf135840f08`,
+`02cf0c65237809720c1bd03972ddd7299fa40cbc15852146dfc979e2b9ee095c`
+and `82a46659c2e64c19a2cb98124727ff089d81a8585da399427435ef9df935e285`.
+Original epoch, generated-driver quoting, declared HTML charset and deprecated
+API observer failures remain retained. The final native API consumer uses
+nondeprecated interfaces while preserving compiler warning checks.
+
+Original default D-Bus 1.16.4_1,1 subsequently passed all eight construction
+targets with EXAMPLES, MANPAGES and X11 enabled. Its original `make test`
+target passed all six discovered programs. An independent audit binds every
+native command to the generated Meson inventory and accounts for all 43 TAP
+events: 30 pass and 13 original skips, with no failures. Skip reasons remain
+retained. The original disabled modular-test variant is not qualified.
+
+The first deep-directory build passed construction but its server test
+exceeded the Unix socket name limit. A fresh build uses the original port's
+`WRKDIR` setting beneath a short, separately owned parent; no source, test,
+expected output or options changed. The initial short-directory extraction
+and optional-stderr audit observer failures also remain retained. The fresh
+303,628-byte package has SHA-256
+`ee2bbb9870eeba634b2c75e63ee345f8a76e969d6c930971860beaf2916ff8c8`.
+It remains uninstalled pending sealed payload/runtime, lifecycle and custody
+checks. Full original GLib tests, complete desktop, matching AMD64,
+canonical lifecycle and full release acceptance remain open.
 
 ## Intel MacBook tester
 
