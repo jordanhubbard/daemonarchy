@@ -453,8 +453,14 @@ expected output or options changed. The initial short-directory extraction
 and optional-stderr audit observer failures also remain retained. The fresh
 303,628-byte package has SHA-256
 `ee2bbb9870eeba634b2c75e63ee345f8a76e969d6c930971860beaf2916ff8c8`.
-It remains uninstalled pending sealed payload/runtime, lifecycle and custody
-checks. Full original GLib tests, complete desktop, matching AMD64,
+Its 3,887-node source/build/failure/test capsule is fully verified on the
+native ARM worker and independent Intel tester, with archive SHA-256
+`a8ebc27e06fdcba68dc6694da3a2e146d5e0a547c73534cf66274f6b511351d9`.
+The original evidence destination refused this copy below the 64 GiB reserve;
+the same verifier and reserve guard were kept for the alternate healthy
+host. No software installation or aggregate build was needed on that tester.
+D-Bus remains uninstalled pending sealed payload/runtime, lifecycle and
+normal checks. Full original GLib tests, complete desktop, matching AMD64,
 canonical lifecycle and full release acceptance remain open.
 
 ## Intel MacBook tester
