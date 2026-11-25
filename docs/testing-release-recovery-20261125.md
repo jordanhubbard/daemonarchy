@@ -20,9 +20,14 @@ Guest free space alone does not reserve host backing capacity.
 
 The original producer requires at least 100 GiB free when filemon tracing is
 enabled. Its guest had approximately 97.8 GiB free. A 16 GiB expansion of the
-fresh overlay is being prepared without lowering that requirement. The
-crash-left UFS filesystem requires an offline check before filesystem growth.
-The build has not resumed at this checkpoint.
+fresh overlay was completed without lowering that requirement. The crash-left
+UFS filesystem passed an offline check covering 2,938,148 files before growth.
+The mounted build filesystem now has approximately 112 GiB available. Original
+worker base-file hashes match their retained values, and filemon was restored
+for the unprivileged producer. The supported resume is under a host monitor
+that measures the scratch-backed writable volume, retaining its 120 GiB start,
+64 GiB stop and 8 GiB available-memory thresholds. Completion of the remaining
+phases is not yet established.
 
 ## Desktop dependency closure
 
@@ -52,10 +57,11 @@ and 16 GiB of RAM. The ZFS pool reports healthy, with approximately 871 GiB
 available to the root dataset.
 
 The read-only baseline records all 1,195 installed packages and the kernel and
-EFI loader hashes. The boot-environment inventory contains one environment,
-`default`, which is active now and on the next boot. A separate recovery
-environment must be prepared before a qualified installed-system update; the
-inventory alone does not establish rollback.
+EFI loader hashes. The initial boot-environment inventory contained only
+`default`. A recovery environment, `pre-1.6-20261125`, was then created;
+`default` remains active now and on the next boot. No package or boot-setting
+change was made. The separate home dataset is outside this root recovery copy.
+Its creation does not establish boot or rollback acceptance.
 
 SDDM, seatd and Hyprland processes are running; the AMD graphics module is
 loaded and Broadcom Wi-Fi is associated. These observations do not qualify
