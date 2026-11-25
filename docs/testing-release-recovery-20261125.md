@@ -459,9 +459,55 @@ native ARM worker and independent Intel tester, with archive SHA-256
 The original evidence destination refused this copy below the 64 GiB reserve;
 the same verifier and reserve guard were kept for the alternate healthy
 host. No software installation or aggregate build was needed on that tester.
-D-Bus remains uninstalled pending sealed payload/runtime, lifecycle and
-normal checks. Full original GLib tests, complete desktop, matching AMD64,
-canonical lifecycle and full release acceptance remain open.
+D-Bus subsequently passed sealed payload, lifecycle, private/default runtime
+and normal integration checks. The bounded development set is now **110 packages**.
+
+The actual package contains 59 payloads and seven explicit directories.
+Six real `pkg -c` transactions exercise fresh installation, force reinstall,
+modified sample preservation, removal of unchanged samples, uninstall and
+reinstallation with original shell/Lua hooks enabled. Real locked fixture
+accounts acquire messagebus UID/GID 556, which original uninstall hooks retain.
+The actual private ldconfig hook materializes its cache. Dependency delivery
+uses verified SDK library copies and `-M`; missing dependency-record warnings
+remain retained. The actual normal solver separately passes with declared
+dependencies, original account/sample/loader hooks and empty stderr.
+
+Both private and normally installed default-loader/configuration consumers
+pass 12 independent C IPC checks, 13 service-activation checks, `dbus-send`,
+child exit-status propagation, unprivileged helper execution denial, repeated
+UUID generation and CRC/content checks for nine gzip manpages. Runtime actors
+use UID/GID 65534. The normal per-user service fixture lives outside the SDK.
+No manual library or D-Bus address override is used. All new payloads,
+existing package prefixes, frozen SDK, base files, account records, loader
+cache and mounts pass their applicable preservation checks.
+
+The successful normal installation initially hit an observer that incorrectly
+required unique soname keys. A real cache refresh includes existing named
+bootstrap libraries after the preferred full GLib entries. Read-only completion
+verifies ordered bindings and byte-identical preexisting bootstrap candidates;
+the default `gdbus` loader still selects full GLib. A second observer failure
+revealed that read-only package queries can unlink and recreate SQLite's empty
+WAL/SHM pair. Per-command snapshots retain these explicit sidecar transitions
+and directory mtimes, with the main database exactly preserved. Fresh consumer
+guards then preserve the entire SDK, including the raw database and sidecars.
+Both failed receipts remain retained; installation and hooks were not replayed.
+
+The 403-node private and 90-node normal/failure/completion capsules are fully
+verified on the native ARM worker and independent Intel tester. Their archive
+SHA-256 values are
+`e6b53d6a579114d807f59438d87973eaea1f7b28c75e34daae86cecf6fc37b76`
+and `8a5bec2a3d76e701f02a02b48a271ac6fbe1f57f4f5f3a42df05cc9cbabde4b0`.
+No extra archive was placed on the constrained Linux root or original second
+host. The system bus was not started; broader D-Bus modular coverage remains
+open.
+
+All original GLib test tools are now installed. Its earlier configuration
+listed 387 tests but found neither `dbus-1` nor `dbus-daemon`. A fresh original
+default build has therefore started in a short, separately owned work directory,
+with DOCS/MANPAGES/NLS/TEST preserved and the original test target selected.
+Its build, discovery and test results remain pending. Full original GLib tests,
+complete desktop, matching AMD64, canonical lifecycle and full release acceptance
+remain open.
 
 ## Intel MacBook tester
 
