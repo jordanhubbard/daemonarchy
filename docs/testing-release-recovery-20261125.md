@@ -505,7 +505,20 @@ All original GLib test tools are now installed. Its earlier configuration
 listed 387 tests but found neither `dbus-1` nor `dbus-daemon`. A fresh original
 default build has therefore started in a short, separately owned work directory,
 with DOCS/MANPAGES/NLS/TEST preserved and the original test target selected.
-Its build, discovery and test results remain pending. Full original GLib tests,
+Fresh configuration discovers 420 programs, including 33 additional D-Bus
+programs and every previously discovered test. All eight construction targets
+pass. The first original `make test` stops before upstream execution because
+its original pre-test overwrites root-owned `/var/lib/dbus/machine-id`; the
+unprivileged actor receives permission denied. All products and the failure
+remain retained, with SDK, registry, base and mount guards passing.
+
+A fresh second build is underway. Its original test bridge will run the
+required UUID setup as root, using the supported `DO_MAKE_TEST` hook to execute
+the exact original backend command, environment and target as UID/GID 65534.
+The adapter changes only execution identity; source, tests, options and
+selection stay unchanged. The expected generated UUID transition and account
+and cache preservation will be recorded. Terminal build/test results remain
+pending; no replacement GLib package is installed. Full original GLib tests,
 complete desktop, matching AMD64, canonical lifecycle and full release acceptance
 remain open.
 
