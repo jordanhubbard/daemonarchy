@@ -367,10 +367,30 @@ catalog aliases for two absent XInclude XSD files remain unqualified; ordinary
 XSD files do not substitute for those schemas. No upstream self-suite,
 canonical lifecycle, desktop or release acceptance follows from these checks.
 
-The DocBook 1.5 metaport has also passed all eight original construction targets
-with its three normally installed runtime providers. Its package acceptance
-and normal installation remain pending. Continue the original XSL defaults,
-D-Bus MANPAGES/X11 closure, full original GLib suite and desktop qualification.
+The DocBook 1.5 metaport then passed all eight original construction targets,
+all four license/SBOM payload checks and exact bindings to its three normally
+qualified providers. Its initialized empty-registry negative control confirms
+that the original solver rejects the first missing provider. Two earlier
+harness failures remain retained. Isolated extraction explicitly skips
+dependency delivery; the separate normal local-only transaction and original
+installed payload/dependency checks pass with the real providers. All 107
+inherited prefixes and four global catalog files remain unchanged. Frozen
+SDK, base and mounts verify. The bounded development set is now **108 packages**.
+
+The 486-node source/private capsule and 22-node normal capsule were fully
+verified on both evidence hosts, with respective archive SHA-256 values
+`82834030b5d934c2ff982ce0822c9180fdd68416e30d82b3fef768bac6f7e6b2`
+and `68d6c944f7977d90593a7c70434ae17bcf084c45cf2200ed110fe964b128ad97`.
+This metaport aggregates dependency metadata; it has no upstream distribution
+or self-suite. Fresh DocBook XSL 1.79.1_3,1 construction also passes all eight
+original targets with all 14 feature options and DOCS enabled. Its 20,690,058-byte
+package has SHA-256
+`0bae6553ac8373189fdb42bcd0d59337fc7af9238699c5e03ebe7db6c606db94`.
+It remains uninstalled pending independent consumers, decoded hook checks and
+custody. The initial observer's wrong epoch expectation is retained; no port
+metadata or options were weakened. The TESTS module option is not an original
+self-suite result. Continue XSL acceptance, D-Bus MANPAGES/X11 closure, full
+original GLib suite and desktop qualification.
 
 ## Intel MacBook tester
 
@@ -391,6 +411,42 @@ SDDM, seatd and Hyprland processes are running; the AMD graphics module is
 loaded and Broadcom Wi-Fi is associated. These observations do not qualify
 rendered desktop interaction, wireless traffic, a 1.6 deployment or update and
 rollback. The machine is a physical tester, not an allocated aggregate builder.
+
+## Physical Pi 4 diagnostic reconnection
+
+The operator brought the Pi 4 back online on November 25. Authenticated SSH
+uses the retained operator key, and the host key matches the retained f4
+Pi 4/Pi 400 diagnostic image. Its kernel and EFI loader bytes match that
+image exactly: source `f4eb2cff7f8b5c511c448f0158f071105d19aaf5`, kernel
+SHA-256 `a8c493095a72afff329f1b51a67a2ff125c9d289dc6c8193d2b28643350991d6`
+and loader SHA-256
+`a5f23fb00bdd7931c2e38d8948ccc9a19a39183b4dbc608ae212ed9e21077061`.
+This is the older diagnostic cohort; it does not qualify the newly recovered
+source/SDK cohort described above.
+
+Firmware identifies a Raspberry Pi 4 Model B, revision D03115, with 8 GiB
+installed and the diagnostic 3 GiB memory cap. The ACPI GENET interface has
+DHCP and a 1 Gbit/s full-duplex link. The authenticated transfer of the
+19,948,928-byte kernel and 1,389,068-byte loader verifies their bytes over
+that wired path; it is not a network performance qualification.
+
+The native BRCME88C SD controller enumerates the existing 64 GB card at
+50 MHz/4 bits. Six bounded read commands cover three 1 MiB ranges, each read
+twice with identical SHA-256 results and no reported read errors. Existing
+FAT/Linux partitions remain untouched. No SD writes, filesystem mount, boot
+acceptance, partition repair or disposable-media assumption is made for that
+card. Keyboard and mouse devices enumerate, and the kernel reports a
+1920-by-1080 EFI framebuffer; rendered desktop/input acceptance remains open.
+
+The diagnostic root stays read-only. The bounded network hold was extended
+to 86,400 seconds from its start to preserve debugger access. The target RTC
+is stale, so the controller supplies observation timestamps. Original boot,
+device and network evidence remains private, alongside the retained media.
+The original DATRACE was copied through a read-only mount and unmounted; its
+184,320-byte private archive has SHA-256
+`2c2e1daf5851dfa957c9328b73f652bc0fd5abfe152338c14f98a05bf0095e69`.
+No reboot, root remount, firmware change or full physical-release acceptance
+is claimed.
 
 ## Remaining release gates
 
