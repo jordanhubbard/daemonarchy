@@ -7,29 +7,41 @@ native work and separates recovered results from new release qualification.
 
 The selected source is `759e93f1bbc79103eda36077e7c28d17317f15c8`, with retained
 plan `6ff1e029b20b618659a2953d8114fef2cddf3943eba5067e7492e7ee9a35b45e`.
-Its original four-job, filemon-traced producer completed world and kernel.
-The supported resume verified the retained phase evidence, completed packages
-and release objects, and entered installer sets. Final source-producer and byte
-verification results remain pending. The failed first world attempt and the
-successful phase logs remain retained.
+Its original four-job, filemon-traced producer completed all five phases:
+world, kernel, packages, release objects and installer sets. The supported
+resume finished on November 25 at 19:07 UTC. The original byte-and-trace
+verifier passed for all 531 artifact records, and the complete source, plan
+and selected worker postguards passed. The failed first world attempt and
+the successful phase logs remain retained.
+
+All eight installer sets, their MANIFEST and three producer records were
+exported to separate local scratch storage. All 12 exported files match their
+native recorded sizes and SHA-256 hashes. The base set is
+`382265eec4ae4f1511f405783eeabb3de78b72da6936893c976b724ed23b50d9`;
+the kernel set is
+`ad432d7189ed4cf706fb3f78e719a65a1851a1347350d01d92523e477f101226`.
+Independent semantic package/set/source review, boot, matched SDK and product
+image qualification remain open; producer success does not establish them.
 
 The existing allocated ARM worker was recovered with fresh writable overlays
 on a separate local scratch disk. The crash disks remain unchanged backing
 files. The host root volume still has approximately 49 GiB free, below the
 recorded 64 GiB build reserve; the separate scratch volume has approximately
-214 GiB available. Guards for resumed writes must measure that writable volume.
+204 GiB available after the recovered work and set export. Guards for resumed
+writes must measure that writable volume.
 Guest free space alone does not reserve host backing capacity.
 
 The original producer requires at least 100 GiB free when filemon tracing is
 enabled. Its guest had approximately 97.8 GiB free. A 16 GiB expansion of the
 fresh overlay was completed without lowering that requirement. The crash-left
 UFS filesystem passed an offline check covering 2,938,148 files before growth.
-The mounted build filesystem now has approximately 112 GiB available. Original
+The mounted build filesystem had approximately 112 GiB available after growth.
+Original
 worker base-file hashes match their retained values, and filemon was restored
 for the unprivileged producer. The supported resume is under a host monitor
 that measures the scratch-backed writable volume, retaining its 120 GiB start,
-64 GiB stop and 8 GiB available-memory thresholds. Completion of the remaining
-phases is not yet established.
+64 GiB stop and 8 GiB available-memory thresholds. The monitor and native
+wrapper both completed successfully.
 
 ## Desktop dependency closure
 
@@ -82,6 +94,16 @@ an isolated database copy reproduced only that timestamp change, preserving
 all database bodies and the actual SDK. The failed attempts and both inventories
 are retained. Fresh attempts used the complete observed inventory and passed
 the same exact metadata guards; no timestamps were restored or fields ignored.
+
+OpenSP 1.5.2_4 then passed all eight original construction targets with DOCS
+and NLS enabled. Its package SHA-256 is
+`1a53c59be13df5825eb9c6c004c813974864f5329578d4bab5f4ce8e8a0aad23`.
+The complete original upstream suite ran all 23 selected cases: 17 passed;
+`catalog-2` and `af-7` through `af-11` failed. No cases were removed or
+reclassified. The failures and isolated repair experiments are retained;
+no repair is qualified yet. OpenSP has not been installed, and the accepted
+SDK remains at 105 packages. The full SDK inventory was preserved by the build
+and test runs.
 
 ## Intel MacBook tester
 
