@@ -8,9 +8,10 @@ native work and separates recovered results from new release qualification.
 The selected source is `759e93f1bbc79103eda36077e7c28d17317f15c8`, with retained
 plan `6ff1e029b20b618659a2953d8114fef2cddf3943eba5067e7492e7ee9a35b45e`.
 Its original four-job, filemon-traced producer completed world and kernel.
-The supported resume verified the retained phase evidence and entered packages;
-release objects and installer sets remain pending. The failed first world
-attempt and the successful phase logs remain retained.
+The supported resume verified the retained phase evidence, completed packages
+and release objects, and entered installer sets. Final source-producer and byte
+verification results remain pending. The failed first world attempt and the
+successful phase logs remain retained.
 
 The existing allocated ARM worker was recovered with fresh writable overlays
 on a separate local scratch disk. The crash disks remain unchanged backing
@@ -60,10 +61,27 @@ can receive the regenerated fixed hooks. The version-only source selection is
 `74ee006accba1fd1b9da68ac6e0579cf88527b6d`. Native verification passed all
 184,371 source entries. All 42 original-make queries and 21 package-version
 comparisons passed: the other 20 consumers are strictly newer, and Xmlcharent
-remains 0.3_4. The kernel, fstab and raw installed package registry were
-unchanged by those metadata queries. A fresh Simplified DocBook 1.1_3,2 build
-has started; construction, generated hooks and normal integration remain
-separate from both the version checks and the verified Xmlcharent result.
+remains 0.3_4. Kernel, fstab and main installed package-database bytes were
+unchanged by those metadata queries.
+
+Fresh Simplified DocBook 1.1_3,2 passed all eight original construction targets,
+15 sealed payload checks, 20 DTD consumer commands and 18 actual generated-hook
+commands. Its normal local-only installation passed with empty stderr, clean
+hooks, both master catalogs and all 104 inherited prefixes preserved. The two
+catalog indexes changed exactly as predicted; all 20 default-global consumer
+commands matched the sealed run. There are now 105 accepted development
+packages. The source/private/failure/observer archive has 625 nodes, and the
+normal-installation archive has 80; both were independently verified on both
+evidence hosts. Original upstream self-suite, canonical and release acceptance
+remain separate.
+
+The initial sealed/hook attempts stopped before installation because only the
+SQLite shared-memory file's timestamp differed from the older inventory. Its
+32 KiB body and every other node matched. A real read-only `pkg query` against
+an isolated database copy reproduced only that timestamp change, preserving
+all database bodies and the actual SDK. The failed attempts and both inventories
+are retained. Fresh attempts used the complete observed inventory and passed
+the same exact metadata guards; no timestamps were restored or fields ignored.
 
 ## Intel MacBook tester
 
