@@ -55,6 +55,15 @@ The private disk contains QA credentials and is not a publishable product image.
 Matched SDK, desktop, product media, physical-target and release acceptance
 remain open.
 
+The completed independent-review/kernel-consumer evidence has a separate
+793-member archive, SHA-256
+`f57dea296d0dd7b361242f440e9b0478febd36c7b47a3a84769ea6ccb95067d4`.
+The image-assembly guards, boot/runtime results, native compiler smoke and
+retained observer failures have a 58-node proof archive, SHA-256
+`f2132107b0858496a50d992abcf3b00f10f244622fd0faa7d14f2b829bf821cd`.
+Both archives were independently verified on both evidence hosts. The boot
+proof includes neither private SSH keys nor the private disk image.
+
 The existing allocated ARM worker was recovered with fresh writable overlays
 on a separate local scratch disk. The crash disks remain unchanged backing
 files. The host root volume still has approximately 46.5 GiB free, below the
@@ -75,6 +84,9 @@ for the unprivileged producer. The supported resume is under a host monitor
 that measures the scratch-backed writable volume, retaining its 120 GiB start,
 64 GiB stop and 8 GiB available-memory thresholds. The monitor and native
 wrapper both completed successfully.
+After the independent evidence copies passed, the source-builder VM was shut
+down cleanly with no active builder processes. Its disks and original outputs
+remain retained; the package worker and fresh boot tester remain available.
 
 ## Desktop dependency closure
 
