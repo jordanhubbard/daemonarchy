@@ -2,7 +2,7 @@
 
 The release remains in development. This checkpoint retains the interrupted
 native work and separates recovered results from new release qualification.
-The current accepted bounded ARM development set is **123 packages**; counts
+The current accepted bounded ARM development set is **124 packages**; counts
 below record successive qualification checkpoints. Libthai's inherited header gaps
 remain explicit.
 
@@ -1323,3 +1323,49 @@ canonical and legacy system-font locations, aligns the configuration path with
 LOCALBASE, and increments PORTREVISION to 1. Its complete source verification,
 fresh original TEST/default builds, runtime, real lifecycle/custody and normal
 acceptance remain pending. The accepted development set stays at 123 packages.
+
+
+## Repaired Fontconfig normal acceptance
+
+The repaired Fontconfig **2.18.3_1,1** package advances the bounded ARM development
+set to **124 packages**. Source `d76dd1dd` verifies all 184,388 Git members, with
+12 changed/added paths relative to the retained baseline and zero removals.
+Fresh original TEST construction and all 16 programs pass again. Independent
+discovery, TAP and JUnit agree on all 49 cases: 39 pass and 10 retain their
+original skips, with all 18 JSON configuration cases passing. The fresh default
+artifact passes its eight construction targets and zero-case bridge; this empty
+bridge is not reported as an upstream suite pass.
+
+The same 54 private/default commands pass with ten fonts and 13 faces; shared
+and static consumers each pass 180 positive and 46 XML-negative/recovery
+assertions. Actual default operation uses the original installed configuration,
+real HOME user fonts and no private loader/configuration/pkgconf overrides.
+All 344 payloads, the Lua-generated default fonts.conf, the root:wheel 0755
+outside-prefix cache directory, 123 inherited prefixes and 124 registry entries
+verify. The new loader provider preserves every prior candidate path and priority.
+Whole SDK124/raw database, frozen SDK, base, accounts, mounts, selected source and
+actual outside-prefix cache remain guarded through the consumers.
+
+The lifecycle covers six accepted Fontconfig transactions and six authored
+font/config fixture transactions. Deep canonical and legacy font-directory
+add/delete events run the original cache script; cache records are read before
+any discovery command. Configuration add/delete triggers apply and remove the
+actual XML alias. Modified configuration contents, UID/GID, mode 0600, flags and
+nanosecond mtime survive force reinstall/delete/readd; the unmodified sample is
+removed and freshly restored as intended. Original ldconfig hooks and full
+isolated mount cleanup pass.
+
+Two authored checker errors remain explicit. The alias fixture initially used
+weak binding, allowing documented language fallback; its intended exact match
+now requests strong binding. The no-font check initially expected default
+fc-match to fail, while upstream returns success with empty output. The corrected
+check verifies that result and the --sort no-font diagnostic/failure. The retained
+R2 fresh add and six passed trigger events are audited and bound to a copy of its
+post-delete root; only the five remaining Fontconfig transactions execute in R3.
+No passed trigger events or original upstream cases are replayed for that repair.
+Original failed roots and all historical source/artifact identities remain intact.
+
+History, corrected source/private/lifecycle and normal archives contain 18,019,
+5,723 and 165 nodes respectively, fully verified on ARM and Intel. Complete
+public API/ABI, a real older-version cache baseline, original optional skip scope,
+product fonts/desktop rendering and all wider 1.6 release requirements remain open.
