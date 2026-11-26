@@ -1128,3 +1128,12 @@ Pytest-tap, complete Fontconfig TEST/default-runtime acceptance and all wider
 faulted/degraded disks and two data errors; Madmax remains 99% full. Qualification
 uses the allocated ARM worker and healthy Intel tester. The Pi4 remains on its
 read-only diagnostic root with DDB only; resumable live attach is unqualified.
+
+
+The next pytest-tap 3.6 source candidate passes all eight original construction
+targets and all 17 unchanged upstream cases, with independent discovery/JUnit
+identity and ordered completion checks. All five test/conftest files match the
+verified source archive, and captured nested pytest output is retained. Three
+xdist cases exercise mock hook contracts; actual distributed transport remains
+unqualified. The candidate is not normally installed: sealed plugin/CLI/nested
+TAP oracles, lifecycle and both-host custody remain required before Fontconfig.
