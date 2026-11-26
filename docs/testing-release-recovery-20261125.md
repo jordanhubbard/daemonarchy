@@ -714,6 +714,39 @@ source/SDK/kernel, complete desktop/apps and all broader release gates remain op
 The previous Graphviz plan predates this integration and needs refreshing. See the
 [detailed libdatrie report](https://github.com/jordanhubbard/daemonarchy-ports/blob/work/native-python-bootstrap-20261124/docs/verification/libdatrie-original-default-20261126.json).
 
+## Libthai candidate and installed-header gap
+
+The unchanged original `devel/libthai` 0.1.30 candidate passes all eight
+construction targets and all **nine original default tests**, including both
+dictionary-dependent cases. An independent audit matches actual `TESTS` to native
+TRS/log outcomes and original test inputs to the verified distfile. Original
+static-disabled and documentation configuration choices remain preserved.
+The 187,178-byte package has SHA-256
+`652654b56c066669ba92a4c9b5c6448740a96679a703d9703a64dff0a68f72c8`.
+
+Private checks cover all 26 payloads and seven actual native client commands:
+215 conversions checked with Python's TIS-620 codec, normalization, cells,
+65,536 input pairs, 49 collation/transform pairs, controlled dictionary boundaries
+at positions 4 and 7, and the actual packaged dictionary. Six real isolated
+package transactions execute original ldconfig hooks; temporary mounts are removed.
+Whole SDK112/raw database, frozen SDK, base, accounts, actual loader cache, mounts
+and all 247 selected source inputs verify.
+
+The first client fails to link the wide-collation functions declared by installed
+`thwcoll.h`. A full installed-header audit finds **12 declarations without
+implementations or exports**, across `thwcoll.h`, `thwinp.h` and `thwrend.h`.
+All 17 headers match original distfile bytes, and every original versioned export
+definition is present in the library. Sixteen headers compile individually;
+`thwrend.h` fails because it uses an incomplete `struct thcell` in array parameters.
+The later positive client covers implemented interfaces and retains this gap.
+Complete API acceptance remains unresolved.
+
+The candidate stays **normally uninstalled** and the accepted development set
+remains **112 packages**. Full source/build/test/failure/private/lifecycle/header
+records (1,550 nodes) are independently verified on native ARM and Intel.
+Resolve the original declaration/implementation contract before claiming full API
+or normal acceptance. See the [detailed libthai report](https://github.com/jordanhubbard/daemonarchy-ports/blob/work/native-python-bootstrap-20261124/docs/verification/libthai-original-default-20261126.json).
+
 ## Intel MacBook tester
 
 The operator restored access to the physical MacBookPro16,1 tester. SSH and
