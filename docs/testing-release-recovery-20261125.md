@@ -512,15 +512,73 @@ its original pre-test overwrites root-owned `/var/lib/dbus/machine-id`; the
 unprivileged actor receives permission denied. All products and the failure
 remain retained, with SDK, registry, base and mount guards passing.
 
-A fresh second build is underway. Its original test bridge will run the
-required UUID setup as root, using the supported `DO_MAKE_TEST` hook to execute
-the exact original backend command, environment and target as UID/GID 65534.
-The adapter changes only execution identity; source, tests, options and
-selection stay unchanged. The expected generated UUID transition and account
-and cache preservation will be recorded. Terminal build/test results remain
-pending; no replacement GLib package is installed. Full original GLib tests,
-complete desktop, matching AMD64, canonical lifecycle and full release acceptance
-remain open.
+The second build completed the original selected target: **407 passed, nine
+skipped and two failed**, in pollability and authentication. The independent
+audit accounts for all 418 commands and 6,987 numbered TAP events. The two
+original upstream `failing` variants remain excluded and unqualified. Root
+runs the required UUID pre-test; the exact original backend, environment and
+target then execute as UID/GID 65534 through the supported identity hook.
+
+[Ports review 118](https://github.com/jordanhubbard/daemonarchy-ports/pull/118)
+backports pinned upstream test corrections. The pollability test checks the
+running FreeBSD version and positively asserts the supported capability. The
+authentication test accepts orderly EOF while preserving its other rejection
+assertions. Both pass in the full rerun, which reports **404 passed, nine
+skipped and five failed**. Independent base-C probes reproduce empty descriptor
+paths at the worker's saturated namecache. A bounded A/B/A experiment yields
+correct paths only with added capacity. A proposed null-device kqueue error
+hypothesis was disproved; no library change was made.
+
+The A/B/A observer failed because resizing back restored writable limits and
+capacity but rebuilt the read-only hash geometry. That failure remains retained.
+A separate read-only completion verifies the restored writable settings,
+explicitly records the current hash geometry and passes fresh preservation
+guards. Subsequent runs restore this recorded current geometry as well.
+
+The complete 65,018-node original source/build/failure/probe/resource capsule is
+fully verified on native ARM and the independent Intel tester. Its
+285,816,034-byte archive has SHA-256
+`281982442c0b4c2d6c1ea0fe8b950a35815c358db5b1e8c090293f8416856174`.
+All original live trees remain retained. This capsule contains the first three
+builds; later capacity reruns are separate evidence.
+
+With measured namecache headroom, all eight original construction targets pass
+and the full selected suite reports **408 passed, nine skipped and one failed**.
+All five prior cache-related failures pass. The independent audit accounts for
+6,988 numbered TAP events and isolates the remaining filename-completion order
+assumption. The minimum observed cache headroom is 1,275,601 entries. All
+original worker settings, capacity and current runtime hash geometry are
+restored and independently checked by a process-exit watchdog. The uninstalled
+11,263,642-byte package has SHA-256
+`732c10ac4b45c6286d2210a6861311f5205534caa241d6f60be7191f751aa230`.
+
+The review now adds the test portion of upstream commit
+`70355ac696600d7cd99dcb7e1cf110b52bd158b9`, which documents unspecified completion
+order. Sorting the compared arrays preserves expected membership, multiplicity,
+directory-only behavior and suffix assertions. All three changes affect test
+files only: no library source, options, dependencies, distinfo, added skips or
+exclusions, or package revision change. Zero-fuzz patch checks match the pinned
+upstream test bodies.
+
+Fresh complete source `fadd8b8b2e4bdd2a4a9c1af6deb6472bec9e4231` has 184,381 Git
+members. Every native source body and mode verifies, with the original retained
+source, SDK110, frozen SDK, base and mounts preserved. Fresh original construction
+and the full selected test target are now running. The same bounded worker
+profile has independent restoration monitoring; actual patched files will be
+checked against all three upstream bodies. Terminal results and actual
+new-package acceptance remain pending. Every terminal audited run preserves the
+whole SDK110 prefix/raw database, frozen SDK, base/kernel/shells, account records,
+loader cache, mounts and selected source inputs. Known read-only package-query
+sidecar transitions remain explicit. The installed development set stays at
+**110 packages**; no new GLib candidate is normally installed.
+
+Storage was rechecked at 00:29 UTC on November 26. The Linux root has about
+49 GiB free, below its 64 GiB archive reserve; scratch has about 182 GiB and
+the native build volume about 128 GiB, above its 100 GiB floor. The original
+second evidence host now has about 149 GiB free, clearing its 64 GiB reserve.
+The Intel tester's pool is healthy with about 870 GiB free. The NAS remains
+degraded with one faulted device, another degraded device and two reported data
+errors; migration and cutover remain on hold.
 
 ## Intel MacBook tester
 
