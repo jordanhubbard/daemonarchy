@@ -1036,5 +1036,8 @@ independent checks; its normal/lifecycle/custody acceptance remains pending.
 PyYAML builds with its original LibYAML option, but its original pytest target
 fails during collection because the compiled extension is unavailable on the
 test import path; the staged package contains that extension. This failure
-remains retained and qualification is pending. Neither the TAP tools
+remains retained. Adding staged site-packages to the test import path makes
+the original selection report 2,608 passed; the resulting port fix is in draft
+review. Corrected-source qualification and the per-case audit remain pending.
+Neither the TAP tools
 nor Fontconfig have normal acceptance yet; all broader release gates remain open.
