@@ -2,7 +2,7 @@
 
 The release remains in development. This checkpoint retains the interrupted
 native work and separates recovered results from new release qualification.
-The current accepted bounded ARM development set is **114 packages**; counts
+The current accepted bounded ARM development set is **115 packages**; counts
 below record successive qualification checkpoints. Libthai's inherited header gaps
 remain explicit.
 
@@ -828,9 +828,50 @@ identities and verifies that correct lifecycle result's body inside the already
 verified 1,550-node source/private capsule. Installation, hooks and the seven
 consumer commands are not replayed. The complete new normal/contract/binding
 capsule (71 nodes) verifies independently on native ARM and Intel.
-The accepted bounded ARM development set is now **114 packages**. Full Pango,
+At this checkpoint the accepted bounded ARM development set reached **114 packages**. Full Pango,
 installed-header API, canonical, matching AMD64/source/SDK/kernel, desktop,
 physical, installer/update/rollback/media and signing/publication gates remain open.
+
+## Brotli original default qualification
+
+Original Brotli 1.2.1_1,1 now advances the accepted bounded ARM development set
+to **115 packages**. All eight original construction targets and the original
+28-program CTest suite pass with zero failures or skips. A separate audit matches
+discovery, commands, working directories and actual completions; the original
+LastTest log was retained before discovery. The original STATIC-off option stays
+unchanged.
+
+Eighty-eight private and 88 normal native commands exercise shared C one-shot and
+streaming codecs, CLI behavior, pkg-config/loader bindings, malformed and truncated
+input, error recovery, output boundaries, overwrite controls and shipped manuals.
+Six corpora across 18 quality/mode cases produce 54 one-shot/streaming/CLI streams.
+Existing Linux AArch64 Brotli 1.2.1 libraries decode all 54 byte-exact; this is
+cross-binary/OS evidence on the same ISA, using the same upstream algorithm.
+Native clients also consume controller-encoded vectors.
+
+Six real lifecycle transactions verify original ldconfig hooks and all three
+provider cache transitions. Normal installation enables original offline solver,
+dependency/shlib checks and hooks. All 27 payloads, 114 inherited prefixes, exact
+115-row registry, previous loader candidates and priorities, package integrity,
+and fresh whole-SDK115/raw-database guards pass. Producer/private/lifecycle/normal
+package identities are explicitly bound. All 54 normal streams match the already
+controller-decoded private outputs. Frozen SDK, base, accounts, actual cache,
+mounts and all 248 selected source inputs remain preserved.
+
+The physical Intel tester's existing Brotli 1.2.1,1 decoder also decodes all 54 ARM
+streams byte-exact: actual FreeBSD ARM-to-amd64 interoperability. Its existing
+26 payloads, 1,195-row logical registry and selected system guards stay unchanged.
+This existing Daemonarchy 1.5.1 baseline supplies no new AMD64 package build,
+source provenance, installation, upgrade or 1.6 deployment acceptance.
+
+Complete source/private evidence (1,719 nodes) and normal installation evidence
+(266 nodes) verify independently on native ARM and Intel. The physical Intel
+baseline capsule (178 nodes) verifies on Intel and Linux scratch, preserving
+actual numeric BSD flags; mismatched-flag and missing-format controls reject.
+Originals remain retained. Custom dictionary, comment, concatenated and
+large-window extension surfaces remain unqualified by this standard-stream
+matrix. Matching source/SDK/kernel, canonical lifecycle, desktop, physical,
+installer/update/rollback, signing and full release gates remain open.
 
 ## Intel MacBook tester
 
