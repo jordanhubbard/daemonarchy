@@ -2,7 +2,7 @@
 
 The release remains in development. This checkpoint retains the interrupted
 native work and separates recovered results from new release qualification.
-The current accepted bounded ARM development set is **122 packages**; counts
+The current accepted bounded ARM development set is **123 packages**; counts
 below record successive qualification checkpoints. Libthai's inherited header gaps
 remain explicit.
 
@@ -1226,3 +1226,63 @@ lifecycle, both-host custody and normal json-c installation remain pending.
 Fontconfig still needs its fresh full TEST coverage and separate default runtime,
 font/cache/XML/CLI/shared/static and Lua/sample/trigger acceptance. All broader
 1.6 release requirements remain open.
+
+
+## json-c independent and normal acceptance
+
+Json-c advances the bounded ARM development set to **123 packages**. The exact
+original package identifies as 0.19_1, while pinned upstream commit `81092b3`
+consistently identifies as 0.19.99 in its headers, runtime, CMake and pkgconf.
+Four independent native consumers use shared and static libraries through
+pkgconf and the installed CMake exports. Each passes 88 checks across the same
+16-command run, with actual candidate/base loader bindings verified. Checks cover
+JSON types, Unicode/NUL bytes, integers, copying, ownership, iteration, arrays,
+pointers, patches, incremental/invalid UTF-8 parsing, limits, recovery and exact
+file bytes. This is selected public-consumer coverage; complete API/ABI, OOM,
+concurrency and fuzzing acceptance are not claimed.
+
+Six original package lifecycle transactions exercise the real ldconfig hooks.
+Actual normal offline dependency/integrity checks and the same four consumers
+pass without private loader/import overrides. All 28 payloads, 122 inherited
+prefixes and 123 registry entries verify. The new json-c loader provider preserves
+every prior path and candidate priority. Source/failure/private/lifecycle and
+normal capsules contain 2,897 and 106 nodes, fully verified on ARM and Intel.
+The initial normal capture expected an absent convenience field; the corrected
+capture checks the actual recorded package/source identities and result hashes,
+without repeating installation or consumers. Both observations remain retained.
+Whole SDK123/raw database, frozen SDK, base, accounts, cache, mounts and all 248
+selected source inputs pass their guards. Fresh Fontconfig TEST coverage follows;
+its default runtime/hooks and all wider 1.6 release gates remain open.
+
+
+## Fontconfig configuration cases restored
+
+The fresh TEST variant from source `82752667` passes all eight construction
+targets and all 16 original Meson programs after normal json-c acceptance.
+All 18 previously missing JSON configuration cases now execute and pass. All 49
+selected nested case identities, order and outcomes agree across independent
+discovery, the actual TAP stream and JUnit: **39 pass and 10 skip**. Two original
+network-marked cases remain deselected. The JUnit observer now preserves the
+original TEST_ENV and explicitly forwards only its reporting addition through
+the ports environment boundary. All 71 original test/data bodies bind to the
+source archive, allowing only three declared Python shebang substitutions.
+
+The ten retained skips require an actual older-version cache baseline (3),
+originally disabled network access (2), or Linux bwrap (5). No same-version build
+is substituted for the older baseline. Complete cross-version/platform TEST
+acceptance remains open. SDK123/raw database, frozen SDK, base, accounts, loader
+cache, mounts and all 250 selected source inputs remain preserved. A fresh default
+artifact and independent font/cache/XML/CLI/shared/static, Lua/sample/cache-trigger,
+custody and normal acceptance remain required; the TEST package is separate.
+
+
+The separate fresh default Fontconfig artifact now passes all eight construction
+targets and its original zero-case test bridge. Default options, effective
+arguments and dependencies match the retained original metadata. Its 344 payloads
+and declared `/var/db/fontconfig` directory (root:wheel, 0755) require independent
+runtime and actual Lua/sample/trigger/ldconfig lifecycle qualification before
+normal delivery. The first preconstruction observer queried a field absent from
+the narrower option probe; it ran no construction commands and remains retained.
+The corrected guard binds that probe's fields and the original producer's
+EXTRACT_DEPENDS/USES independently. The successful build preserves the complete
+SDK123/raw database, frozen SDK, base, accounts, cache, mounts and selected source.
