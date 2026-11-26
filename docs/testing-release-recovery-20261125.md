@@ -1506,3 +1506,51 @@ normal count remains 125 on revision1 source `6032dbfb`; independent custody and
 the actual revision1-to-revision3 upgrade are still required. The ports report
 retains the exact identities and scoped results. The NAS remains degraded with
 two data errors; no originals are reclaimed or new release publication claimed.
+
+### Signed-range Pixman normal upgrade completes at count 125
+
+Pixman 0.46.4_3 now passes actual normal admission at source `0b9e1861`.
+The package transaction runs once; all ten new payloads and registry file entries,
+124 other providers, loader priorities and the exact 125 registry count verify.
+The six original C/C++ consumers pass 24,824 checks each, as does the fresh client
+without RPATH or loader overrides. All nine small and signed-range SRC/ADD padded probes
+pass. Twenty successful consumer commands remain retained without replay; the
+final observer runs only the eight remaining wide-probe commands. Three old,
+unregistered license files remain exactly preserved. Initial license-deletion,
+missing-import and diagnostic-JSON observer failures remain with the successful
+raw transaction and consumer observations.
+
+The complete normal archive contains 84 nodes in 20,496,410 bytes, independently
+verified on ARM and Intel with exact bodies, metadata, links and gzip CRC. It
+includes the original raw before-database/prefix state, all observer failures,
+retained successful consumers, final remaining probes and the new SDK125 seal.
+All wider canonical, desktop, matching AMD64, physical and 1.6 release gates remain
+open.
+
+### LZO2 original checks pass; pkg-config header repair starts
+
+The refreshed default graph has 52 missing nodes and 29 ready prerequisites.
+LZO2's original DOCS/EXAMPLES shared/static construction, post-build `check test`
+and package checks pass without disabling checks. All 306 source files match
+both original patches, framework configure fixups and original staged doc edits.
+Its declared ports test bridge is empty and remains separate from those actual
+upstream self-tests.
+
+A real private-prefix compiler control exposes the packaged flags: only
+`-I${includedir}/lzo` is supplied, while public headers include qualified
+`lzo/...` paths. The unchanged client fails with the original flags and compiles
+when only the parent include directory is added. The initial metadata observer
+failure and complete original source/package/private/compiler evidence remain
+preserved in 1,622 nodes, fully verified on ARM and Intel. No independent LZO2
+runtime, package lifecycle or normal installation has passed yet.
+
+Review code `e3b88d6b` and native candidate `0164aca0` add the parent flag while
+preserving the legacy include directory and all original tests/options. Complete
+184,390-member native source verification and fresh original build/self-tests now
+pass. Four independent C/C++ shared/static consumers each pass 432 cases and
+11,179 checks, with both header styles and actual header/library bindings
+verified. Successful C runs remain retained through driver repairs without
+replay. Package lifecycle, repaired-capsule custody and normal LZO2 admission
+remain pending.
+The ports finding report records exact original package and custody identities;
+source verification alone grants no native or canonical release acceptance.
