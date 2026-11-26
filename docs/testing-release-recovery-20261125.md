@@ -2,7 +2,7 @@
 
 The release remains in development. This checkpoint retains the interrupted
 native work and separates recovered results from new release qualification.
-The current accepted bounded ARM development set is **115 packages**; counts
+The current accepted bounded ARM development set is **116 packages**; counts
 below record successive qualification checkpoints. Libthai's inherited header gaps
 remain explicit.
 
@@ -834,7 +834,7 @@ physical, installer/update/rollback/media and signing/publication gates remain o
 
 ## Brotli original default qualification
 
-Original Brotli 1.2.1_1,1 now advances the accepted bounded ARM development set
+Original Brotli 1.2.1_1,1 advanced the accepted bounded ARM development set
 to **115 packages**. All eight original construction targets and the original
 28-program CTest suite pass with zero failures or skips. A separate audit matches
 discovery, commands, working directories and actual completions; the original
@@ -872,6 +872,52 @@ Originals remain retained. Custom dictionary, comment, concatenated and
 large-window extension surfaces remain unqualified by this standard-stream
 matrix. Matching source/SDK/kernel, canonical lifecycle, desktop, physical,
 installer/update/rollback, signing and full release gates remain open.
+
+## FreeType original default qualification
+
+Original FreeType 2.14.3 advances the accepted bounded ARM development set to
+**116 packages**. All eight original construction targets pass, preserving
+BROTLI, DOCS, LONG_PCF_NAMES and PNG and the original HarfBuzz-disabled bootstrap.
+The final observer initially rejected CMake's enabled `true` spelling because it
+required `ON`. That failure is retained; a read-only completion verifies the
+actual enabled values, package identity and full preservation guards without
+rebuilding.
+
+Thirty-three private and 33 normal native commands exercise ten font inputs and
+13 faces: TrueType, CFF OpenType, a four-face collection, WOFF1, BDF, PCF, gzip PCF,
+bzip2 PCF and an immutable upstream WOFF2 fixture. Each matrix performs 372 glyph
+render operations through both file and memory loading. Metadata, metrics and
+bitmap outputs match byte-for-byte between those paths and between private and
+normal installations. A known 8-by-8 glyph matches its independent bitmap oracle;
+lossless WOFF1 matches its original TrueType, and both compressed PCFs match the
+original PCF. WOFF2 actually decodes and renders through the accepted Brotli
+provider. Truncated/malformed input and unsupported compressed-SFNT rejection,
+followed by valid recovery, pass.
+
+The original issue-1063 program and font are checked against the verified source
+distfile and original download declaration. Its unchanged 112-character loop
+completes with empty stdout/stderr; compilation supplies the standard `getenv`
+declaration through `-include stdlib.h`. This is a direct original regression
+program run. The original CMake port declares no test target, and no complete
+Meson suite pass is claimed. Earlier private failures from an omitted base
+pkg-config directory and an incorrect generic compressed-TrueType expectation
+are preserved with their corrections; the original PCF driver defines the
+compressed-font behavior. Product source, options and package bytes stay unchanged.
+
+Six real isolated package transactions verify the original ldconfig hooks and
+provider appearance, removal and restoration. Normal installation enables the
+original offline solver, dependency/shlib checks and hooks. All 184 payloads,
+115 inherited prefixes, exact 116-row registry, previous loader candidates/order,
+package integrity and fresh complete SDK116/raw-database guards pass, with no
+private loader or pkg-config override. Frozen SDK, base, accounts, cache, mounts
+and all 248 selected FreeType source inputs remain preserved.
+
+Complete source/private/failure/lifecycle evidence (2,956 nodes)
+and normal evidence (102 nodes) verify independently on native ARM
+and Intel, including all bodies, metadata, link topology and gzip CRC. Font
+fixtures copied from existing controller packages qualify runtime inputs only.
+Fontconfig, HarfBuzz, Pango, complete desktop applications and all matching
+source/SDK/kernel, AMD64, canonical, physical and release gates remain open.
 
 ## Intel MacBook tester
 
@@ -934,6 +980,22 @@ same diagnostic kernel, read-only root, 86,400-second hold and active 1 Gbit/s
 Ethernet link. The running kernel advertises only the DDB backend and EFI console.
 A remote kernel debugger attachment remains pending. The probe enumerated debugger
 control names without invoking entry, panic or control handlers.
+
+The embedded configuration, read back separately at 03:33 UTC, confirms that
+GDB, DDB, DEBUGNET and NETDUMP are compiled in, while NETGDB is not selected.
+An unknown `kern.features.gdb` OID does not establish that GDB was omitted.
+Only DDB is currently available as a backend. Exact running-source and selected
+release-source inspection finds no debugnet registration or callbacks in either
+GENET driver. The original NetGDB implementation requires a proxy and an active
+interface with debugnet support; ordinary SSH over GENET does not meet that
+requirement. The original debugnet connection code rejects unsupported interfaces.
+
+A matched NetGDB build and qualified GENET polled transport, or an independently
+working serial debugger path, are still needed before entering the debugger with
+a confirmed remote return path. Both source views and bounded configuration
+observations are retained. No debugger entry, module load, root remount, SD write
+or reboot was performed; this remains diagnostic evidence, not physical release
+acceptance.
 
 ## Remaining release gates
 
