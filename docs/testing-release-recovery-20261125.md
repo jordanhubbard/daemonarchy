@@ -1640,3 +1640,35 @@ remain exact. Full SDK128/database/frozen/base/accounts/cache/mount/source guard
 pass. Source/private/lifecycle and normal capsules are fully verified on ARM and
 independently on Intel. Original remaining runners and desktop closures,
 canonical/matched AMD64/physical/media and full 1.6 release gates remain open.
+
+
+### Nose and installed Python conversion feature are held
+
+The installed development count remains 128. It now has an explicit Python
+conversion-feature hold; the count does not establish a healthy or release-admitted
+SDK. Nose remains uninstalled.
+
+All eight original nose 1.3.7_2 construction targets pass, retaining successful
+phases through source observers without replay. Both original port patches and
+433 source references are accounted for. Original staging preserves 429 files,
+rewrites two independently derived egg metadata files and removes two generated
+metadata files. The custom self-test target then exits 1: `build_tests` is not
+registered, so `selftest.py` and its cases never execute. The sealed package's
+actual import and version CLI both fail on Python 2's `ConfigParser` name. An
+uncaught original `setup3lib` import confirms missing setuptools `Mixin2to3`;
+the original setup fallback drops conversion and custom command registration.
+
+A separate unprivileged `lib2to3` import fails with PermissionError. Both grammar
+pickles belong to the installed Python 3.12.16 package and match its retained
+original artifact's bytes, root ownership and mode 0600. The registered artifact
+itself ships those inaccessible modes; this was present before the nose probes.
+No chmod or reinstall was performed. That seed artifact's source-build provenance
+remains unproven, so this diagnosis does not establish original source-build or
+canonical acceptance.
+
+Complete source/object/package/test failure, observer, private CLI/import and
+permission evidence, including the entire registered Python artifact, is fully
+verified on ARM and independently on Intel. All SDK128/frozen/base/accounts/cache/
+mount/source guards pass, allowing only narrowly checked query sidecars. Source
+and package repairs, fresh unprivileged checks and the unchanged original five
+parameterized runners remain required, alongside every wider full 1.6 gate.

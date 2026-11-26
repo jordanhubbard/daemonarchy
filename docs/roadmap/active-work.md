@@ -2049,3 +2049,21 @@ remains open; report files do not establish a passing gate.
   - [x] tests/release-branches.py; all six live owned main/release audits pass.
   - [x] Activate the local hourly audit and verify a successful six-repository service run; hosted CI is bypassed by operator direction.
   - [ ] Record human documentation authority review separately; do not self-attest the stale marker.
+
+
+### Current 1.6 native Python conversion holds
+
+The [release checkpoint](../testing-release-recovery-20261125.md) records 128
+installed development packages with an explicit installed Python feature hold;
+this count is not release SDK health or admission. Nose remains uninstalled.
+
+- [ ] Repair and qualify unprivileged Python grammar delivery through retained
+  source/package changes; the registered original artifact ships both grammar
+  pickles root-owned mode 0600. Preserve its bytes and source-provenance gap.
+- [ ] Restore Nose package conversion and original custom test registration;
+  retain all five parameterized runners, original assertions/cases/deadlines,
+  complete declared test-tool closure and independent normal acceptance.
+
+Full canonical Component/provenance/lifecycle/SDK/TCB, matching source/kernel/
+AMD64, complete desktop, all 47 physical platform profiles, Pi4 before Pi5,
+installer/update/rollback/media/freeze/signing/publication remain required.
