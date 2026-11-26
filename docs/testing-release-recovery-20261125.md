@@ -1466,3 +1466,43 @@ verified on ARM and Intel. The ports report
 identities and bounded scope. Complete API/ABI, desktop/apps/hardware, canonical
 Component/provenance/lifecycle/SDK/TCB, matched source/kernel/AMD64 and all wider
 1.6 release gates remain open.
+
+### Signed-range fill follow-ups pass private qualification; normal upgrade held
+
+Additional Box32 probes found two gaps beyond revision1's bounded acceptance.
+A box spanning INT32_MIN to INT32_MAX reports success without painting when
+raw fills are unavailable. Revision2 repairs that path and passes its original
+suite, consumers and package lifecycle, but ADD still reports success without
+painting through the separate general-composite path. All failed probes and the
+complete intermediate revision2 remain retained; revision2 was never normally
+installed.
+
+Revision3 (`0b9e1861`, review code `91d12cb5`) keeps the bounded raw-fill region
+alive and clips each original general box before signed coordinate subtraction.
+It preserves repeated compositing of overlapping non-SRC boxes. All 184,389 Git
+members and 251 selected review/native inputs verify. The same 35 original
+programs and two extended regression runs pass with unchanged original options,
+arguments, deadlines and OpenMP scheduling. The added regression covers ADD and
+exact overlapping-box pixel values; its negative control detects the actual
+revision2 failure in both normal and forced-general dispatch.
+
+The fresh default package preserves all twelve selected dependency/option
+metadata fields and its original OPENMP/A64 NEON/shared choices. The default
+zero-case test bridge remains separate from the 37-case TEST result. Six
+independent C/C++ consumers pass 24,824 checks each. All nine original small,
+SRC signed-range and ADD signed-range probes paint exactly their expected
+logical pixels with no outside changes. All six real ldconfig package lifecycle
+transactions and fresh no-RPATH clients pass; temporary mounts are restored.
+SDK125, its raw database, frozen SDK, base, accounts, loader/system font caches
+and selected source remain preserved.
+
+Complete intermediate/current archives contain 2,430/2,414 nodes in
+25,100,320/25,096,883 bytes, with every body, type, mode, numeric owner, zero flag,
+nanosecond timestamp, literal/hard link and gzip CRC verified on ARM. The
+independent tester stopped accepting SSH during the intermediate archive copy.
+The partial destination remains retained, independent custody is incomplete,
+and neither revision2 nor revision3 has been normally installed. The accepted
+normal count remains 125 on revision1 source `6032dbfb`; independent custody and
+the actual revision1-to-revision3 upgrade are still required. The ports report
+retains the exact identities and scoped results. The NAS remains degraded with
+two data errors; no originals are reclaimed or new release publication claimed.
