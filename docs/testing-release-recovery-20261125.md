@@ -2,6 +2,8 @@
 
 The release remains in development. This checkpoint retains the interrupted
 native work and separates recovered results from new release qualification.
+The current accepted bounded ARM development set is **113 packages**; counts
+below record successive qualification checkpoints. Libthai remains uninstalled.
 
 ## ARM source producer
 
@@ -741,11 +743,57 @@ definition is present in the library. Sixteen headers compile individually;
 The later positive client covers implemented interfaces and retains this gap.
 Complete API acceptance remains unresolved.
 
-The candidate stays **normally uninstalled** and the accepted development set
-remains **112 packages**. Full source/build/test/failure/private/lifecycle/header
+The candidate stays **normally uninstalled**. This checkpoint left the accepted
+development set at **112 packages**; gperf advances it below. Full source/build/test/failure/private/lifecycle/header
 records (1,550 nodes) are independently verified on native ARM and Intel.
 Resolve the original declaration/implementation contract before claiming full API
 or normal acceptance. See the [detailed libthai report](https://github.com/jordanhubbard/daemonarchy-ports/blob/work/native-python-bootstrap-20261124/docs/verification/libthai-original-default-20261126.json).
+
+## Original default gperf qualification
+
+The original `devel/gperf` 3.3 port preserves source, options, dependencies and
+serial construction. All eight construction targets and original `make test`
+pass. An independent audit verifies nine default groups, 24 expected-output
+comparisons and three native SMTP generated-code runs; all original test inputs
+match the verified distfile. The optional `extracheck` language-syntax matrix
+remains unqualified. An initial source-list parser failure is retained; its
+read-only correction does not replay the completed original tests.
+
+The 88,319-byte package has SHA-256
+`5e5fa3933fe097cf3cf70ed235997dc012aa6bd3d4d5f70c0e4c31fc4248aae6`.
+Private and actual normal contexts each pass 21 commands and **31,992 native
+queries** against independent Python keyword, payload and nonmember oracles.
+Six generated ANSI C/C++ matrices cover readonly/global/enum/switch tables,
+string/length comparison, Unicode, embedded NUL and ASCII case folding. Actual
+version/help/error recovery, manpage, Info and HTML checks pass.
+
+Six real isolated package transactions execute original Info-index hooks with
+sealed qualified `indexinfo` bindings; the gperf menu appears, disappears and
+returns through reinstall/removal/readdition. Before normal installation,
+actual `indexinfo` rebuilds a private copy of the complete normal Info tree.
+The first rebuild matches the original global menu, adding the exact candidate
+adds only the expected gperf entry, and removal restores the original bytes.
+The actual normal hook then produces precisely the predicted 5,486-byte menu.
+
+Normal installation preserves all eight payloads and the other 112 package
+prefixes except this predicted index and shared parent directory mtimes. The
+registry is exactly the old 112 plus gperf. Package integrity/dependency checks
+pass. Actual loader cache bytes/metadata and ordered candidates remain unchanged.
+All default consumers preserve a fresh full SDK113 prefix/raw database; frozen
+SDK, base/C++ runtime, accounts, cache, mounts and 247 source inputs verify.
+The accepted bounded development set is **113 packages**; libthai remains held.
+
+Complete source/private and normal/prediction capsules contain
+1,518 and 152
+nodes, independently verified on native ARM and Intel. Matching AMD64,
+source/SDK/kernel, canonical lifecycle and complete desktop/physical/release gates
+remain open. See the [detailed gperf report](https://github.com/jordanhubbard/daemonarchy-ports/blob/work/native-python-bootstrap-20261124/docs/verification/gperf-original-default-20261126.json).
+
+Storage was rechecked at 02:38 UTC on November 26: local root has about 49 GiB
+free, below its 64 GiB archive reserve; scratch has 180 GiB, native ARM build
+126 GiB and the second evidence host 82 GiB. Intel's pool is healthy with about
+870 GiB available. The NAS still reports one faulted device, another degraded
+device and two data errors; migration and cutover remain held.
 
 ## Intel MacBook tester
 
