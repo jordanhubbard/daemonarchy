@@ -2,7 +2,7 @@
 
 The release remains in development. This checkpoint retains the interrupted
 native work and separates recovered results from new release qualification.
-The current accepted bounded ARM development set is **119 packages**; counts
+The current accepted bounded ARM development set is **120 packages**; counts
 below record successive qualification checkpoints. Libthai's inherited header gaps
 remain explicit.
 
@@ -1092,3 +1092,39 @@ refuse non-panic NetGDB. GENET polled callbacks and NETGDB configuration alone
 do not establish live resumable attach: preserve that restriction pending
 qualified buffer/transport/return lifecycle or an independently supported serial
 path. This source/readiness audit enters no debugger and changes no target state.
+
+
+## Tappy parser and package acceptance
+
+The accepted bounded ARM development set is now **120 packages** after Tappy
+3.2.1. Sealed tests reproduced six false passes across `tap` and `tappy`: the
+original parser accepted `1xx2` as a plan and `okay` as a test result. The port
+patch requires literal plan dots and word boundaries after `ok` and `not ok`.
+All 116 unchanged original tests pass, with 16 test/data files byte equal to the
+verified source archive. The first patched wheel accidentally included the
+patch backup; that 63-file candidate remains rejected and preserved. The final
+port retains the exact backup outside the wheel project and restores the
+original 62 payload names.
+
+Fresh native construction, the original suite, 90 independent checks with YAML
+available and 87 with optional dependencies actually absent, and 48 real CLI
+file/stdin/help/error checks pass. A separate producer oracle checks exact TAP
+records; malformed input, missing results, failures and bailouts propagate.
+Six real isolated package transactions pass without inventing scripts or shared
+providers. Actual normal offline dependency resolution and integrity checks,
+90 default library checks and the same 48 CLI checks pass without private import
+or loader overrides. The original checker shadows its payload map with an exit
+code after these consumers pass; that failed result and successful whole-SDK
+final guard remain retained. A fresh read-only completion independently verifies
+the missing payload/inherited-prefix checks without reinstalling or rerunning
+the consumers. All 62 new payloads, 119 inherited package prefixes, loader
+cache bytes/metadata/priorities and whole SDK/raw database/system guards verify.
+Source/failure/private/lifecycle and normal archives verify on native ARM and
+physical Intel. Detailed evidence and both rejected candidates are recorded in
+[draft PR119](https://github.com/jordanhubbard/daemonarchy-ports/pull/119).
+
+Pytest-tap, complete Fontconfig TEST/default-runtime acceptance and all wider
+1.6 release gates remain open. NAS migration remains held by the degraded pool,
+faulted/degraded disks and two data errors; Madmax remains 99% full. Qualification
+uses the allocated ARM worker and healthy Intel tester. The Pi4 remains on its
+read-only diagnostic root with DDB only; resumable live attach is unqualified.
