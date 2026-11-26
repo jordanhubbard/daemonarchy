@@ -1294,3 +1294,32 @@ locks are current, but its authority and receipt gates fail on that stale review
 source intelligence and HTML observability are skipped by the selected project
 configuration. The review attestation is unchanged. Native package checks and
 hosted security checks do not establish full framework or release acceptance.
+
+
+## Fontconfig runtime and descendant font trigger
+
+The revision-0 default Fontconfig package passes 54 private native commands with
+ten exact font files and 13 faces. Shared and static consumers each pass 180
+positive assertions and 46 malformed-XML/recovery assertions. Listing, matching,
+querying, scanning, validation, user caches and expected font formats work through
+the unchanged packaged sample configuration under explicit private paths. All
+344 payloads and the outside-prefix cache directory verify; the normal host font
+cache stays absent. Dependency metadata keeps its installed paths while only a
+private copy of the candidate PC prefix is relocated.
+
+The original lifecycle run then exposes a real delivery gap. Fontconfig's own
+configuration files run its trigger, but a valid package placing fonts below
+`share/fonts/daemonarchy-trigger` installs successfully without running fc-cache.
+pkg's exact path matching receives the immediate touched directory, which does
+not match the trigger's root-only path. The isolated cache has no font records.
+All SDK/host/source guards and mount cleanup pass; the failure remains retained.
+
+A copied isolated root changes only installed trigger path matching. Reinstalling
+the exact same font fixture now runs the original fc-cache script and populates
+both font records. The existing configuration-directory trigger and real XML
+alias substitution still work. This is a causal control, not rebuilt-package
+qualification. The source fix adds descendant matching for the configured
+canonical and legacy system-font locations, aligns the configuration path with
+LOCALBASE, and increments PORTREVISION to 1. Its complete source verification,
+fresh original TEST/default builds, runtime, real lifecycle/custody and normal
+acceptance remain pending. The accepted development set stays at 123 packages.
