@@ -1580,3 +1580,31 @@ is retained and a new capture checks only that established narrow transition.
 No completed producer or consumer was replayed. No additional Linux-root archive,
 NAS use, cleanup or reserve reduction was needed. All wider canonical, desktop,
 matched AMD64, physical and full 1.6 release gates remain open.
+
+
+### Full default GObject Introspection reaches normal SDK127
+
+Full default GObject Introspection 1.86.0,1 is now integrated separately from the
+required named bootstrap. Source `0164aca0` verifies all 184,390 Git members,
+249 selected native inputs and 2,634 independently referenced original source
+bodies. All eight construction targets and 64 selected original Meson programs
+pass with zero failures/skips. Original TEST-off, Cairo and documentation-tool
+selection remains unchanged. The project-name observer mismatch is retained;
+read-only completion binds the original inventory without replaying tests.
+
+Private and normal contexts each pass 27 real scanner, typelib compiler,
+inspection, generation and native reflection/invocation commands, including
+changed library values and typed error/recovery controls. Six actual original
+loader-hook lifecycle transactions pass with fresh processes and no RPATH.
+
+The first normal preflight stops before any package or consumer command because
+the named bootstrap already supplies the same SONAME. Its complete failure and
+corrected helper have independent custody. The corrected admission requires the
+new default library first according to the existing loader search order, keeps
+the original bootstrap candidate second, and preserves all other provider paths
+and priorities. All 239 new payloads, 126 inherited providers and exact 127-package
+registry verify. Normal consumers use no loader or pkg-config override; the fresh
+client has no RPATH. Full SDK127/database/frozen/base/accounts/cache/mount/source
+guards pass. Source/private, preflight and normal capsules are fully verified on
+ARM and independently on Intel. The original Cairo-test variant, full API/ABI,
+canonical, matching AMD64, desktop/physical and full 1.6 release gates remain open.
