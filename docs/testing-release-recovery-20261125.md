@@ -888,6 +888,12 @@ The original DATRACE was copied through a read-only mount and unmounted; its
 No reboot, root remount, firmware change or full physical-release acceptance
 is claimed.
 
+A further read-only reconnection at 02:51 UTC on November 26 confirms the
+same diagnostic kernel, read-only root, 86,400-second hold and active 1 Gbit/s
+Ethernet link. The running kernel advertises only the DDB backend and EFI console.
+A remote kernel debugger attachment remains pending. The probe enumerated debugger
+control names without invoking entry, panic or control handlers.
+
 ## Remaining release gates
 
 No new Pi image, 1.6 installed-system acceptance or signed release is claimed.
