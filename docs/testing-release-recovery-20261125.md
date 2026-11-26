@@ -561,21 +561,66 @@ exclusions, or package revision change. Zero-fuzz patch checks match the pinned
 upstream test bodies.
 
 Fresh complete source `fadd8b8b2e4bdd2a4a9c1af6deb6472bec9e4231` has 184,381 Git
-members. Every native source body and mode verifies, with the original retained
-source, SDK110, frozen SDK, base and mounts preserved. Fresh original construction
-and the full selected test target are now running. The same bounded worker
-profile has independent restoration monitoring; actual patched files will be
-checked against all three upstream bodies. Terminal results and actual
-new-package acceptance remain pending. Every terminal audited run preserves the
-whole SDK110 prefix/raw database, frozen SDK, base/kernel/shells, account records,
-loader cache, mounts and selected source inputs. Known read-only package-query
-sidecar transitions remain explicit. The installed development set stays at
-**110 packages**; no new GLib candidate is normally installed.
+members. Every native source body and mode verifies. All eight original
+construction targets now pass, and all three actual patched test bodies match
+the pinned upstream bodies. The full original selected default target passes:
+**409 passed, nine original skips, zero failures**. The independent audit matches
+all 418 native commands to the 420-program discovery list and accounts for
+6,989 numbered TAP events. The two original upstream failing variants and all
+skipped/optional coverage remain unqualified.
 
-Storage was rechecked at 00:29 UTC on November 26. The Linux root has about
-49 GiB free, below its 64 GiB archive reserve; scratch has about 182 GiB and
-the native build volume about 128 GiB, above its 100 GiB floor. The original
-second evidence host now has about 149 GiB free, clearing its 64 GiB reserve.
+Minimum measured namecache headroom is 1,640,459 entries. All original worker
+settings, capacity and current runtime hash geometry are restored and verified
+by the independent watchdog. The strict whole SDK110 prefix/raw database, frozen
+SDK, base/kernel/shells, accounts/loader cache, mounts and selected-source guards
+pass; known read-only package-query sidecar transitions remain explicit. This
+qualifies the selected native ARM target under the recorded worker profile; it
+does not qualify production kernel defaults or the complete release.
+
+The new 11,262,812-byte package has SHA-256
+`dc3256e613e4c6c957d0dbd404a66f45393edfa64cabb643fb9f40ae8b121925`.
+All 41 private API/tool/typelib/documentation/manpage/translation commands pass.
+All 8,130 payloads and two explicit directories verify. Six real isolated
+`pkg -c` transactions execute the original ldconfig install/deinstall hooks;
+cache bindings appear, disappear and return through forced reinstall, removal
+and reinstallation. Locked fixture accounts, SDK110, frozen SDK, base, host
+accounts/cache and selected sources verify. All temporary mounts are removed.
+Separate private `pkg -r` extraction disables hooks; the actual chroot
+transactions provide these hook observations.
+
+The complete latest 68,906-node source/build/failure/private/lifecycle capsule
+is independently verified on native ARM and Intel. Its 279,110,721-byte archive
+has SHA-256
+`a2912beb7bc836fca117a8faee2178e38c435703a533493a8ebb26f7dc075b07`.
+It includes both the failed adequate-capacity run and complete passing corrected
+run; the earlier 65,018-node capsule remains independently retained.
+
+The actual new package now replaces the old same-version GLib with original
+local-only dependency checks and hooks enabled. All 8,130 installed payloads,
+two directories and other 109 package prefixes verify. All 110 registry rows
+remain unchanged. The refreshed loader cache preserves every candidate and
+per-soname priority, including the required named bootstraps. All 41 consumers
+pass with the normal loader and no `LD_LIBRARY_PATH` override.
+
+A separate read-only check binds that successful transaction and its complete
+post-install SDK seal, records the explicit read-only package-query sidecar
+transition, then preserves a fresh full SDK110 prefix/raw database through all
+41 default consumers. Frozen SDK17, base, host accounts, actual normal loader
+cache, mounts and all 263 selected source inputs also verify. The bounded
+accepted development set remains **110 packages**. The final 233-node normal/completion
+capsule is independently verified on native ARM and Intel. Its 22,704,634-byte
+archive has SHA-256
+`1144fa1ddd37cf13db5740f1eb1f4f082d9ace5881be492b0cb9fd961805b93e`.
+A transient SSH banner timeout interrupted retention after metadata staging;
+its failure is retained and the resumed copy verifies the original archive,
+without replaying native installation or hooks. This is native ARM development
+acceptance; matching source,
+SDK and kernel, AMD64, canonical lifecycle and the complete release remain open.
+
+Storage was rechecked at 00:56 UTC on November 26. The Linux root has about
+48 GiB free, below its 64 GiB archive reserve; scratch has about 181 GiB and
+the native build volume about 126 GiB, above its 100 GiB floor. The original
+second evidence host has about 149 GiB free, clearing its 64 GiB reserve.
 The Intel tester's pool is healthy with about 870 GiB free. The NAS remains
 degraded with one faulted device, another degraded device and two reported data
 errors; migration and cutover remain on hold.
