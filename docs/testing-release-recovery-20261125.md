@@ -1608,3 +1608,35 @@ client has no RPATH. Full SDK127/database/frozen/base/accounts/cache/mount/sourc
 guards pass. Source/private, preflight and normal capsules are fully verified on
 ARM and independently on Intel. The original Cairo-test variant, full API/ABI,
 canonical, matching AMD64, desktop/physical and full 1.6 release gates remain open.
+
+
+### Mock reaches normal SDK128; original parameterized runners retained
+
+The original parameterized target runs nose, nose2, pytest, unittest and
+unittest2, with mock also declared. All five runners remain required. Native
+metadata shows mock and nose initially have their prerequisites present; nose2
+needs coverage/six and unittest2 needs six/traceback2. Their original closure
+also includes SQLite, pbr, linecache2 and six's gdbm/Tkinter test dependencies.
+
+Original mock 5.2.0_1 now passes all eight construction targets and 550 discovered,
+completed original pytest cases with zero failures/skips. Ordered identity,
+file and line correspondence is verified. All 33 independently referenced source
+bodies and 246 selected original ports inputs remain exact. The packaged
+artifact passes 575 independent private and normal checks across autospec,
+patch restoration, call recording, side effects, async and thread-wait behavior.
+
+Six real isolated pkg-root transactions pass. Fresh unprivileged native Python
+processes bind only that installed candidate, succeed after additions/reinstalls
+and fail with the expected missing module after deletions. This fixture uses the
+accepted host Python and skips private dependency delivery; no chroot or private
+solver qualification is claimed. The original package declares no scripts, Lua
+or shared providers; no hook coverage is invented.
+
+Actual normal offline dependency/integrity admission preserves all 127 inherited
+providers, verifies 18 new payloads and the exact 128-package registry, and
+passes the same 575 checks through normal module/distribution discovery without
+PYTHONPATH or loader overrides. The complete loader cache and provider priorities
+remain exact. Full SDK128/database/frozen/base/accounts/cache/mount/source guards
+pass. Source/private/lifecycle and normal capsules are fully verified on ARM and
+independently on Intel. Original remaining runners and desktop closures,
+canonical/matched AMD64/physical/media and full 1.6 release gates remain open.
