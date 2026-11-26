@@ -2,7 +2,7 @@
 
 The release remains in development. This checkpoint retains the interrupted
 native work and separates recovered results from new release qualification.
-The current accepted bounded ARM development set is **124 packages**; counts
+The current accepted bounded ARM development set is **125 packages**; counts
 below record successive qualification checkpoints. Libthai's inherited header gaps
 remain explicit.
 
@@ -1426,3 +1426,43 @@ mounts are removed. Pixman remains normally uninstalled, so the accepted
 development count stays 124. The ports ledger records details in
 `docs/verification/pixman-native-findings-20261126.json`. All wider release gates
 remain open.
+
+### Repaired Pixman qualifies at bounded development count 125
+
+Pixman 0.46.4_1 repairs the three retained original findings. Fast fills now
+respect destination bounds, unavailable raw fills use the existing composite
+fallback, and actual shared ldconfig hooks register/remove the library. The same
+copied failing client passes after only the original shared ldconfig action; the
+original failed root remains unchanged.
+
+Fresh complete source `6032dbfb` verifies 184,389 Git members, fourteen changed or
+added bodies and no removals. All 251 selected recipe/framework/template/keyword
+inputs match review code `30770cfb`. Both original Meson port patches and all 35
+original program names, arguments, environment, protocols and 600-second native
+deadlines remain preserved; all 35 pass. Two added normal/general regression
+runs also pass across ARGB32/RGB565/A8, both fill APIs, SRC/opaque OVER/CLEAR and
+three clip configurations with guarded backing storage.
+
+The fresh default package preserves its original OPENMP/A64 NEON/shared choices
+and dependency arguments. Its zero-case test bridge remains a zero-case bridge.
+The original unclipped C client passes in both C and C++, with normal, no-NEON
+and forced-general dispatch: six runs of 24,824 checks each. Its three padded
+controls now all paint exactly two logical pixels and no outside pixels. An
+observer initially predicted the wrong check counter; a read-only completion
+retains the successful original commands without replay. All original failures
+and the lifecycle preflight field mismatch remain in custody.
+
+All six actual package lifecycle transactions pass, including fresh executables
+without RPATH or loader overrides after each add/reinstall and expected failure
+after deletion. Normal offline dependency/integrity/hooks and the same six
+consumers pass, plus a fresh no-RPATH client. All ten payloads, 124 inherited
+prefixes, exact 125 registry entries and all prior loader priorities verify.
+Whole SDK125/raw database, frozen SDK, base, accounts, loader/system font caches,
+mounts and source guards pass. The accepted development count is now 125.
+
+Original/repaired/normal archives contain 4,411/2,496/39 nodes and are fully
+verified on ARM and Intel. The ports report
+`docs/verification/pixman-fill-qualified-20261126.json` records exact artifact
+identities and bounded scope. Complete API/ABI, desktop/apps/hardware, canonical
+Component/provenance/lifecycle/SDK/TCB, matched source/kernel/AMD64 and all wider
+1.6 release gates remain open.
