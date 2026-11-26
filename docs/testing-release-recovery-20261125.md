@@ -2,7 +2,7 @@
 
 The release remains in development. This checkpoint retains the interrupted
 native work and separates recovered results from new release qualification.
-The current accepted bounded ARM development set is **117 packages**; counts
+The current accepted bounded ARM development set is **119 packages**; counts
 below record successive qualification checkpoints. Libthai's inherited header gaps
 remain explicit.
 
@@ -1041,3 +1041,54 @@ the original selection report 2,608 passed; the resulting port fix is in draft
 review. Corrected-source qualification and the per-case audit remain pending.
 Neither the TAP tools
 nor Fontconfig have normal acceptance yet; all broader release gates remain open.
+
+
+## Python prerequisites for complete Fontconfig testing
+
+More-itertools 11.2.1 and PyYAML 6.0.3_1 advance the accepted bounded ARM
+development set to **119 packages**. More-itertools passes all 929 original
+case identities and ordered completions, plus 245 independent seeded iterator,
+streaming and differential checks. The retained initial audit parser mistook a
+method doctest for its parent class; the corrected audit preserves every case.
+
+PyYAML retains EXAMPLES/LIBYAML and all original upstream implementation,
+assertions and test data. Its original collection failure is traced to the
+compiled extension missing from the test import path. The port fix explicitly
+preserves `${MAKE_ENV}` and adds staged site-packages; the earlier `TEST_ENV+=`
+attempt suppresses the framework default and is retained as a failed metadata
+observation with zero construction targets run. Fresh corrected-source native
+construction and the original suite pass: 2,608 independently discovered cases
+match 2,608 unique JUnit ID/file/line signatures and ordered passes, with zero
+skips/errors/failures. All 598 original test/data files match the verified sdist.
+
+Sixty-two independent pure/compiled YAML checks cover UTF-8/UTF-16 byte/file/text
+inputs, scalar types, aliases, cycles, streams, custom types, token/event
+semantics, malformed inputs, safe-constructor rejection and recovery. The
+original warning about an ineffective assertion remains retained; normal
+`yaml.load` without its required Loader independently raises TypeError and
+subsequent valid `safe_load` succeeds.
+
+Each package passes six real isolated package transactions. Neither declares
+scripts/Lua/shared providers; none are suppressed or invented. Actual normal
+offline dependency resolution, package integrity, default Python module/metadata
+and compiled LibYAML binding checks pass. All 21/68 new payloads, 117/118 inherited
+prefixes, exact 118/119 registries, previous loader cache bytes/metadata/priorities
+and fresh whole SDK/raw database, frozen SDK, source and system guards verify.
+Private and normal independent outputs match without private LD/PYTHONPATH
+overrides. Source/failure/private/lifecycle capsules (1,062/3,283 nodes) and
+normal capsules (30/34 nodes) verify on native ARM and physical Intel.
+
+The two new TAP ports and complete Fontconfig TEST/default-runtime qualification
+remain pending in [draft PR119](https://github.com/jordanhubbard/daemonarchy-ports/pull/119).
+The source composition includes staged pytest-tap entry-point visibility for its
+original pytester child processes; older qualified artifacts retain their actual
+source revisions. Matching source/SDK/kernel and AMD64, canonical ownership,
+provenance/lifecycle/SDK/TCB, complete desktop/apps/physical/installer/update/
+rollback/media/freeze/signing/publication remain open.
+
+The physical Pi4 remains reachable on its original read-only diagnostic root,
+with only DDB available. Both exact running and selected source revisions also
+refuse non-panic NetGDB. GENET polled callbacks and NETGDB configuration alone
+do not establish live resumable attach: preserve that restriction pending
+qualified buffer/transport/return lifecycle or an independently supported serial
+path. This source/readiness audit enters no debugger and changes no target state.
