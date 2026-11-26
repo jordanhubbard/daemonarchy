@@ -2,7 +2,7 @@
 
 The release remains in development. This checkpoint retains the interrupted
 native work and separates recovered results from new release qualification.
-The current accepted bounded ARM development set is **120 packages**; counts
+The current accepted bounded ARM development set is **122 packages**; counts
 below record successive qualification checkpoints. Libthai's inherited header gaps
 remain explicit.
 
@@ -1137,3 +1137,92 @@ verified source archive, and captured nested pytest output is retained. Three
 xdist cases exercise mock hook contracts; actual distributed transport remains
 unqualified. The candidate is not normally installed: sealed plugin/CLI/nested
 TAP oracles, lifecycle and both-host custody remain required before Fontconfig.
+
+
+## Pytest-tap normal acceptance
+
+Pytest-tap 3.6 advances the bounded ARM development set to **121 packages**.
+All 17 original cases pass; the five test/conftest and seven total Python source
+bodies match the verified archive. The sealed package passes 172 independent
+checks across 25 commands, 22 TAP reports and 48 test points. Actual distribution
+entry-point loading and its disabled-autoload negative control, stream/alias,
+file/combined/outdir, help, logging, ordinary failures, call/setup errors, skips,
+TODO, strict/non-strict XPASS and unittest outcomes are checked with an independent
+stdlib TAP oracle. The three original xdist cases cover mock hook contracts only.
+
+A teardown error can follow a passing call-phase TAP point. The complete result
+must retain pytest's nonzero exit status: the actual Meson consumer independently
+returns OK for success, FAIL for an ordinary failure and ERROR for this teardown
+case. Reading only the TAP stream is insufficient.
+
+All six isolated package transactions pass. Actual normal offline resolution,
+integrity and the same 172 default-path checks pass without private import or
+loader overrides; typed TAP semantics and Meson statuses match the private run.
+All 16 new payloads, 120 inherited prefixes, loader cache bytes/metadata/priorities
+and whole SDK121/raw database/system/source guards verify. Source/private/lifecycle
+and normal capsules contain 1,531 and 291 nodes, fully verified on ARM and Intel.
+Fontconfig's fresh original TEST build follows this prerequisite; full case/TAP
+and default-runtime/Lua/sample/trigger acceptance remain open with the wider 1.6
+gates.
+
+
+The next Fontconfig TEST variant completes all 16 original Meson programs with
+exit 0. Its independently matched TAP plan has 49 unique ordered cases: 21 pass
+and 28 skip; two network-marked cases are deselected by the original selector.
+All original test/data bodies bind to the archive except declared shebang
+rewrites. The requested JUnit observer file is absent because ambient variables
+are cleared by the ports environment boundary; the failed observer result is
+retained and the actual TAP/discovery audit completes read-only.
+
+Eighteen skips expose a missing json-c test executable. The TEST build dependency
+is now declared before configuration. Other retained skips require an actual
+older-version baseline (3), original disabled network access (2), or unavailable
+Linux bwrap (5); these are not recorded as passes. Json-c 0.19_1 initially builds
+and packages, but its original suite has 27 passes and one CLI failure with
+`xxd: not found`. Its xxd test dependency is now declared without changing the
+regression input, assertions or golden output. No Fontconfig/json-c normal
+admission is claimed. Full source `82752667` verifies all 184,388 Git members,
+11 changed/added paths and zero removals with SDK121/system and retained-source
+guards. Prior qualified artifacts keep their original source pins.
+
+## xxd prerequisite acceptance
+
+Standalone xxd 9.2.1302 advances the bounded ARM development set to 122 packages.
+The original source port imports its version/checksum from the twelve selected
+editors/vim inputs and extracts only xxd plus the license/manual. All 257 selected
+Git inputs and the official 20 MB source checksum verify. Its original port bridge
+registers no source tests; this is not recorded as a full Vim suite pass.
+
+The sealed and normal executable each pass 211 independent checks across 69 CLI
+commands: byte-exact plain/reverse/formatted hex, widths/case, file seek/limit,
+non-truncating patching, C include output plus actual C compilation/execution,
+error statuses/recovery and the exact json-c 0xe2 fixture operation. The ELF binds
+only base libc, with no private loader override. Six real package transactions,
+all 6 payloads, 121 inherited prefixes, 122 exact registry entries, unchanged cache
+bytes/metadata/priorities and whole SDK/system/source guards verify. An early
+observer used the old SDK120 snapshot filename and ran no CLI cases; its failure
+and the corrected SDK121 proof remain retained. Source/failure/private/lifecycle
+and normal capsules contain 1,159 and 246 nodes, verified on ARM and Intel. The
+installed compressed manual also decompresses to the original source bytes.
+
+## json-c original suite after xxd
+
+The fresh default json-c 0.19_1 package uses source `82752667` with the declared
+xxd test prerequisite. All eight construction targets and all 28 original CTest
+cases pass. The original CMake testing bridge changes BUILD_TESTING from OFF to
+ON after packaging; production library, app and package bytes remain unchanged.
+All 79 original test C files, scripts, fixtures and golden bodies match the
+verified source archive, including the unchanged invalid UTF-8 regression input.
+
+The producer queried CTest discovery before saving LastTest.log, truncating that
+runtime trace to 121 bytes. The first healthy run's stdout and complete build/test
+outputs are preserved. One full original make-test replay captures all 28 native
+commands, working directories, outputs and PASS completions, matched to original
+discovery. All compiled production and test binaries remain byte-identical.
+SDK122/raw database, frozen SDK, base, accounts, cache, mounts and source guards
+pass. Independent C API/shared/static/pkgconf/CMake consumers, actual loader-cache
+lifecycle, both-host custody and normal json-c installation remain pending.
+
+Fontconfig still needs its fresh full TEST coverage and separate default runtime,
+font/cache/XML/CLI/shared/static and Lua/sample/trigger acceptance. All broader
+1.6 release requirements remain open.
