@@ -1541,8 +1541,7 @@ A real private-prefix compiler control exposes the packaged flags: only
 `lzo/...` paths. The unchanged client fails with the original flags and compiles
 when only the parent include directory is added. The initial metadata observer
 failure and complete original source/package/private/compiler evidence remain
-preserved in 1,622 nodes, fully verified on ARM and Intel. No independent LZO2
-runtime, package lifecycle or normal installation has passed yet.
+preserved in 1,622 nodes, fully verified on ARM and Intel. This original-version observation predates the repaired qualification below.
 
 Review code `e3b88d6b` and native candidate `0164aca0` add the parent flag while
 preserving the legacy include directory and all original tests/options. Complete
@@ -1550,7 +1549,34 @@ preserving the legacy include directory and all original tests/options. Complete
 pass. Four independent C/C++ shared/static consumers each pass 432 cases and
 11,179 checks, with both header styles and actual header/library bindings
 verified. Successful C runs remain retained through driver repairs without
-replay. Package lifecycle, repaired-capsule custody and normal LZO2 admission
-remain pending.
+replay. Six actual original package lifecycle transactions now pass with fresh
+clients after additions/reinstalls and expected loader failures after deletion.
 The ports finding report records exact original package and custody identities;
 source verification alone grants no native or canonical release acceptance.
+
+
+### LZO2 corrected package reaches normal SDK126
+
+Ports PR #121 preserves the legacy include flag and adds the required parent
+include directory. Repaired source `0164aca0` passes all 184,390 Git-member,
+251 selected-input and 306 independently referenced source-body comparisons.
+Original default construction and exhaustive `check test` pass unchanged. The
+four private C/C++ shared/static modes each pass 432 cases and 11,179 checks;
+six real original package lifecycle transactions pass.
+
+The actual normal offline package admission, integrity and dependency checks
+pass. All 40 new payloads and all 125 inherited providers remain exact. The
+registry now contains 126 packages, with one new LZO2 loader provider and all
+prior loader paths and priorities preserved. The same four fresh normal modes
+pass all 22 commands with both header styles and actual candidate bindings,
+without RPATH, loader or pkg-config overrides. Full SDK126/raw database, frozen
+SDK17, base, accounts, loader, font-cache, mount and selected-source guards pass.
+
+Original 1,622-node, repaired source/private 1,945-node and normal 84-node
+capsules are fully verified on ARM and independently on Intel, including all
+bodies, metadata, literal links, hardlinks and gzip CRC. The initial capture's
+strict anchor comparison failed on the known SQLite query sidecars; the failure
+is retained and a new capture checks only that established narrow transition.
+No completed producer or consumer was replayed. No additional Linux-root archive,
+NAS use, cleanup or reserve reduction was needed. All wider canonical, desktop,
+matched AMD64, physical and full 1.6 release gates remain open.
