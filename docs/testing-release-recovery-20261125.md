@@ -625,6 +625,60 @@ The Intel tester's pool is healthy with about 870 GiB free. The NAS remains
 degraded with one faulted device, another degraded device and two reported data
 errors; migration and cutover remain on hold.
 
+## Original default PNG qualification
+
+The original `graphics/png` port at source
+`fadd8b8b2e4bdd2a4a9c1af6deb6472bec9e4231` preserves APNG and ARM SIMD.
+Its original `make test` uses the CMake testing bridge despite an empty
+`TEST_TARGET`. All **37 original CTest cases pass**, with zero failures/skips;
+an independent audit matches every discovered name, command and working directory.
+The 293,396-byte package has SHA-256
+`58f084e06e8b41148dc63a49b3df507bfd90f994657b524a30de784efd05a3b3`.
+Production library bytes and the package remain unchanged by test reconfiguration.
+
+Private checks pass 31 actual codec and 15 tool commands. Shared/static clients
+exercise classic/simplified APIs, all five filters, APNG frame timing/sequence/CRC,
+error callbacks and recovery. Independent PNG parsing/unfiltering checks 32 RGBA
+planes. Actual CLI corruption repair, aliases and three manpages pass. Six real
+isolated package transactions execute original ldconfig hooks through installation,
+forced reinstall, removal and reinstallation. All 31 payloads verify.
+
+The original normal installation succeeds with dependency checks and hooks enabled;
+31 default codec commands pass. Its wrapper then fails because an observer scans
+unrelated packages' manpages. The retained failure is followed by a read-only
+completion restricted to the three owned pages. It passes 30 metadata/tool commands
+and builds three actual default-discovery CMake CONFIG/MODULE shared/static clients
+with Ninja. Installation, hooks and the earlier codecs are not replayed. All 110
+inherited package prefixes and a fresh whole SDK111 prefix/raw database verify;
+frozen SDK, base, accounts, actual loader cache, mounts and selected inputs remain
+preserved. The accepted bounded ARM development set is now **111 packages**.
+
+Complete source/private and normal capsules contain 3,552 and 298 nodes,
+respectively, independently verified on native ARM and physical Intel. Earlier
+observer failures and original sources remain retained. This does not qualify the
+open CMake BSD-make space-path case or all backends/upstream tests.
+
+The physical Intel tester separately passes the same 31 native codec commands
+against its existing PNG package. All 30 installed payloads, 1,195 registry rows,
+selected kernel/loader/base/accounts/cache and mounts remain unchanged. This is an
+existing 1.5.1 component baseline; it does not qualify a new AMD64 package, SDK,
+1.6 deployment, upgrade or rendered desktop. CMake is absent on this tester.
+Its complete 228-node evidence capsule verifies on Intel and Linux scratch,
+including actual nonzero BSD flags stored in an explicit numeric PAX field.
+Mismatched flags and missing format declarations are rejected. No restore is claimed.
+
+A fresh original-default Graphviz metadata plan preserves SDK111 and all feature
+options: 59 nodes remain unbuilt, with 32 ready missing dependencies. This plan
+provides no construction or runtime acceptance. See the
+[detailed PNG report](https://github.com/jordanhubbard/daemonarchy-ports/blob/work/native-python-bootstrap-20261124/docs/verification/png-original-default-20261126.json).
+
+Storage was rechecked at 02:06 UTC on November 26: local root has about 46 GiB
+free, below its 64 GiB archive reserve; scratch has 181 GiB and native ARM build
+126 GiB, above its 100 GiB floor. The second evidence host has about 88 GiB
+free. The Intel tester pool is healthy with about 870 GiB available. The NAS
+still has one faulted device, another degraded device and two data errors;
+migration and cutover remain on hold.
+
 ## Intel MacBook tester
 
 The operator restored access to the physical MacBookPro16,1 tester. SSH and
