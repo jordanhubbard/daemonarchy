@@ -679,6 +679,41 @@ free. The Intel tester pool is healthy with about 870 GiB available. The NAS
 still has one faulted device, another degraded device and two data errors;
 migration and cutover remain on hold.
 
+## Original default libdatrie qualification
+
+The unchanged original `devel/libdatrie` port at source
+`fadd8b8b2e4bdd2a4a9c1af6deb6472bec9e4231` passes all eight construction targets.
+All **10 unfiltered upstream tests pass**, with zero failures/skips; actual
+Automake TRS results and logs match the original `TESTS`. This is direct original
+`make check`; the port has no declared test bridge. Source files, production
+library and package bytes remain unchanged by testing. The 41,075-byte package
+has SHA-256 `44a9cfe14d503368ec101be17bdcd0c78489913889e39c3e170b58c45a109330`.
+
+Independent private and normal checks each pass 33 actual commands. Shared/static
+clients compare 8,192 mutations per writer with an independent 1,024-key model,
+using disjoint ASCII/Thai alphabets and three seeds. Six cross-library persistence
+pairs, serialization/file equality, embedded stream offsets, enumeration/iteration,
+state clone/copy/walk/rewind and invalid alphabet rejection pass. Real CLI checks
+cover aliases, UTF-8/Latin-1 conversion, add/query/delete, listing and export/import;
+both owned manpages verify. Original version/help switches return exit 1; an
+initial observer expecting 0 is retained and corrected from actual upstream source.
+
+Six real isolated package transactions execute original ldconfig hooks, using
+sealed qualified dependency libraries and read-only base mounts. All mounts are
+removed. Normal installation then succeeds with original offline dependency/shlib
+checks and hooks enabled. All 17 payloads, 111 inherited package prefixes, the
+exact 112-row registry and ordered loader candidates verify. Real package integrity
+and dependency checks pass. All 33 default consumers preserve a fresh whole SDK112
+prefix/raw database, frozen SDK, base, accounts, actual loader cache, mounts and
+248 selected source inputs. The accepted bounded development set is **112 packages**.
+
+Complete source/private and normal capsules contain 1,406
+and 113 nodes, respectively, independently verified on native ARM
+and physical Intel. This advances the text dependency closure; matching AMD64,
+source/SDK/kernel, complete desktop/apps and all broader release gates remain open.
+The previous Graphviz plan predates this integration and needs refreshing. See the
+[detailed libdatrie report](https://github.com/jordanhubbard/daemonarchy-ports/blob/work/native-python-bootstrap-20261124/docs/verification/libdatrie-original-default-20261126.json).
+
 ## Intel MacBook tester
 
 The operator restored access to the physical MacBookPro16,1 tester. SSH and
