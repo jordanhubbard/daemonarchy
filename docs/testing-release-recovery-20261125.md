@@ -1286,3 +1286,11 @@ the narrower option probe; it ran no construction commands and remains retained.
 The corrected guard binds that probe's fields and the original producer's
 EXTRACT_DEPENDS/USES independently. The successful build preserves the complete
 SDK123/raw database, frozen SDK, base, accounts, cache, mounts and selected source.
+
+
+The full framework checks remain open: `litai project validate` reports a stale
+human documentation-authority review. `litai verify` confirms all eight committed
+locks are current, but its authority and receipt gates fail on that stale review;
+source intelligence and HTML observability are skipped by the selected project
+configuration. The review attestation is unchanged. Native package checks and
+hosted security checks do not establish full framework or release acceptance.
