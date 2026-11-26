@@ -1369,3 +1369,27 @@ History, corrected source/private/lifecycle and normal archives contain 18,019,
 5,723 and 165 nodes respectively, fully verified on ARM and Intel. Complete
 public API/ABI, a real older-version cache baseline, original optional skip scope,
 product fonts/desktop rendering and all wider 1.6 release requirements remain open.
+
+### Genuine older Fontconfig cache baseline, November 26
+
+The three original cross-version cache cases now execute on ARM against a private
+Fontconfig 2.17.1 build. Its 1,326,312-byte archive matches the original ports
+`b70a2116` SHA-256; all 956 source bodies and 987 modes verify. Both actual runtime
+versions and private library bindings verify. The original assertions, marker
+filter and 600-second deadline remain unchanged.
+
+Binary-format forward compatibility and forward discovery pass. Backward
+discovery retains the original upstream XFAIL for baseline `.cache-9` versus
+current `.cache-12`; full cache compatibility is not established. Source function
+order, TAP and JUnit independently agree on two passes and one XFAIL. This is a
+separate three-case supplemental run; the retained original 49-case suite remains
+39 PASS and 10 SKIP with two original network marker deselections.
+
+The complete older source, build, tests, preparation failures and helpers contain
+3,338 nodes in a 17,523,916-byte archive, fully verified on ARM and Intel. Whole
+SDK124, raw registry, frozen SDK, base, accounts, loader/system caches, mounts,
+all 1,339 original current TEST nodes and 250 selected source inputs remain exact.
+The installed development count stays 124. Wider release, original optional
+network/Linux-bwrap, product font and desktop-rendering gates remain open. See
+`docs/verification/fontconfig-older-cache-baseline-20261126.json` in the ports
+review branch for the bounded report.
