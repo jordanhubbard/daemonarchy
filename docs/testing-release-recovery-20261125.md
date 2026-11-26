@@ -1393,3 +1393,36 @@ The installed development count stays 124. Wider release, original optional
 network/Linux-bwrap, product font and desktop-rendering gates remain open. See
 `docs/verification/fontconfig-older-cache-baseline-20261126.json` in the ports
 review branch for the bounded report.
+
+### Pixman original tests pass; runtime and package delivery remain held
+
+Fresh native Pixman 0.46.4 TEST and default constructions pass all eight original
+targets from source `d76dd1dd`. All 35 original native programs pass with the
+port's existing 600-second deadlines and OPENMP serialization. OPENMP, ARM A64
+NEON and the original shared-library choice remain enabled. The default variant
+has zero test programs; its successful bridge is not suite acceptance. All 207
+distfile source bodies match after the exact two existing port patch effects,
+and all 249 selected recipe/framework/template inputs verify.
+
+Four separate private C/C++ runs pass 24,826 checks each with normal dispatch or
+NEON disabled, covering 8,192 independently computed OVER pixels plus matching
+SRC/CLEAR vectors, masks, RGB565, explicit clipping, negative stride, transforms,
+regions and reference lifetime. All ten package/framework payloads verify.
+
+Three findings prevent normal admission. Without an explicit clip, the original
+fill writes beyond the logical image; a padded allocation confirms the behavior
+without an allocation overrun. The forced-general fill returns success without
+painting, retaining two failed C/C++ controls. Fresh package add/integrity pass,
+but a new executable with no RPATH or loader override cannot locate Pixman; the
+original package declares no ldconfig hook. The positive clipped controls do not
+resolve those original findings. Contract/source repair and fresh qualification
+remain required.
+
+All failed preparation checks, actual failures, original source, objects,
+packages and probes remain retained: 4,411 nodes in a 39,615,838-byte archive,
+fully verified on ARM and Intel. SDK124, its raw database, frozen SDK, base,
+accounts, loader/system font caches and source inputs remain preserved; temporary
+mounts are removed. Pixman remains normally uninstalled, so the accepted
+development count stays 124. The ports ledger records details in
+`docs/verification/pixman-native-findings-20261126.json`. All wider release gates
+remain open.
