@@ -2,7 +2,7 @@
 
 The release remains in development. This checkpoint retains the interrupted
 native work and separates recovered results from new release qualification.
-The current accepted bounded ARM development set is **116 packages**; counts
+The current accepted bounded ARM development set is **117 packages**; counts
 below record successive qualification checkpoints. Libthai's inherited header gaps
 remain explicit.
 
@@ -1004,3 +1004,37 @@ The [1.6 release plan](roadmap/release-1.6.0.md) retains matched amd64/aarch64
 source, modules, packages and media; desktop and application behavior;
 installation, update and rollback; canonical ownership/provenance/lifecycle;
 the enrolled physical targets; and final freeze, signing and publication.
+
+
+## LibYAML and Fontconfig test prerequisites
+
+Original LibYAML 0.2.5 advances the accepted bounded ARM development set to
+**117 packages**. All eight construction targets and the original `check`
+target pass. Both discovered upstream programs complete with PASS and no skips
+or errors. Independent shared and static clients preserve composed node, tag,
+scalar and alias identity through six UTF-8/UTF-16 plain/canonical round-trip
+matrices, each with two documents. Five malformed inputs exercise reader,
+scanner, parser and composer errors, followed by valid-input recovery.
+
+Six real package lifecycle transactions verify the original ldconfig hooks,
+locked fixture accounts, read-only base mounts and complete unmount. Normal
+offline installation preserves all 116 inherited package prefixes and loader
+priorities, adds ten exact payloads and one shared provider, and yields exactly
+117 registry rows. Shared and static consumers produce the same outputs as the
+private clients through default pkgconf and loader paths. Whole SDK117/raw
+database, frozen SDK, source, base, accounts, cache and mount guards pass.
+Source/private/lifecycle (1,237 nodes) and normal (44 nodes) evidence archives
+verify independently on native ARM and physical Intel; originals remain retained.
+
+Fontconfig TEST exposed an ignored Meson option helper and an undeclared TAP
+plugin. The helper correction runs all 16 original programs: 15 C programs pass,
+while Python exits 4 for missing `--tap` support. The full failure remains
+retained in [the draft fix and TAP source ports](https://github.com/jordanhubbard/daemonarchy-ports/pull/119).
+The complete 184,387-member source composition and build/test dependency graph
+verify. More-itertools completes all 929 original discovered cases and 245
+independent checks; its normal/lifecycle/custody acceptance remains pending.
+PyYAML builds with its original LibYAML option, but its original pytest target
+fails during collection because the compiled extension is unavailable on the
+test import path; the staged package contains that extension. This failure
+remains retained and qualification is pending. Neither the TAP tools
+nor Fontconfig have normal acceptance yet; all broader release gates remain open.
