@@ -2,8 +2,9 @@
 
 The release remains in development. This checkpoint retains the interrupted
 native work and separates recovered results from new release qualification.
-The current accepted bounded ARM development set is **113 packages**; counts
-below record successive qualification checkpoints. Libthai remains uninstalled.
+The current accepted bounded ARM development set is **114 packages**; counts
+below record successive qualification checkpoints. Libthai's inherited header gaps
+remain explicit.
 
 ## ARM source producer
 
@@ -716,7 +717,7 @@ source/SDK/kernel, complete desktop/apps and all broader release gates remain op
 The previous Graphviz plan predates this integration and needs refreshing. See the
 [detailed libdatrie report](https://github.com/jordanhubbard/daemonarchy-ports/blob/work/native-python-bootstrap-20261124/docs/verification/libdatrie-original-default-20261126.json).
 
-## Libthai candidate and installed-header gap
+## Initial libthai installed-header assessment
 
 The unchanged original `devel/libthai` 0.1.30 candidate passes all eight
 construction targets and all **nine original default tests**, including both
@@ -743,11 +744,11 @@ definition is present in the library. Sixteen headers compile individually;
 The later positive client covers implemented interfaces and retains this gap.
 Complete API acceptance remains unresolved.
 
-The candidate stays **normally uninstalled**. This checkpoint left the accepted
-development set at **112 packages**; gperf advances it below. Full source/build/test/failure/private/lifecycle/header
+The initial assessment held the candidate and left the accepted development set
+at **112 packages**; subsequent gperf and libthai admission records are below. Full source/build/test/failure/private/lifecycle/header
 records (1,550 nodes) are independently verified on native ARM and Intel.
-Resolve the original declaration/implementation contract before claiming full API
-or normal acceptance. See the [detailed libthai report](https://github.com/jordanhubbard/daemonarchy-ports/blob/work/native-python-bootstrap-20261124/docs/verification/libthai-original-default-20261126.json).
+The later original-ABI/consumer review below scopes normal admission; full
+installed-header API acceptance remains unqualified. See the [detailed libthai report](https://github.com/jordanhubbard/daemonarchy-ports/blob/work/native-python-bootstrap-20261124/docs/verification/libthai-original-default-20261126.json).
 
 ## Original default gperf qualification
 
@@ -781,7 +782,8 @@ registry is exactly the old 112 plus gperf. Package integrity/dependency checks
 pass. Actual loader cache bytes/metadata and ordered candidates remain unchanged.
 All default consumers preserve a fresh full SDK113 prefix/raw database; frozen
 SDK, base/C++ runtime, accounts, cache, mounts and 247 source inputs verify.
-The accepted bounded development set is **113 packages**; libthai remains held.
+At this checkpoint the accepted bounded development set reached **113 packages**;
+libthai's subsequent admission is recorded below.
 
 Complete source/private and normal/prediction capsules contain
 1,518 and 152
@@ -794,6 +796,41 @@ free, below its 64 GiB archive reserve; scratch has 180 GiB, native ARM build
 126 GiB and the second evidence host 82 GiB. Intel's pool is healthy with about
 870 GiB available. The NAS still reports one faulted device, another degraded
 device and two data errors; migration and cutover remain held.
+
+## Libthai admission against the original exported ABI
+
+The release contract retains original implementation authority and scoped
+acceptance. The exact selected Pango 1.58.2 distfile is verified against the
+original port's hash and size. Its Thai implementation calls `th_brk`,
+`th_brk_find_breaks`, `th_brk_new` and `th_uni2tis`; all exist in the actual
+candidate's original exported ABI. It uses none of the 12 unimplemented header
+functions. This source inspection establishes consumer requirements; actual Pango
+compilation, layout and runtime qualification remain pending.
+
+The earlier hold is reassessed against that original exported ABI and required
+consumer surface. All declarations and original source remain preserved. The
+12 absent implementations and `thwrend.h` compilation failure stay explicitly
+unsupported/unqualified; no new implementation or full-header API pass is claimed.
+
+Actual normal installation now passes with original offline dependency/shlib
+checks and ldconfig hooks enabled. All 26 payloads, the other 113 package prefixes,
+the exact 114-row registry, new libthai loader candidate and all previous
+per-soname priorities verify. Real package integrity/dependency checks pass.
+Seven native default-path commands exercise the implemented APIs and actual
+installed default dictionary with no loader/dictionary override. A fresh complete
+SDK114 prefix/raw database, frozen SDK, base, accounts, actual loader cache,
+mounts and all 247 selected source inputs remain preserved.
+
+The first normal observer accidentally referenced libdatrie's lifecycle result.
+Its actual transaction and consumer results are retained. A separate read-only
+completion binds producer/private/correct libthai lifecycle/normal package
+identities and verifies that correct lifecycle result's body inside the already
+verified 1,550-node source/private capsule. Installation, hooks and the seven
+consumer commands are not replayed. The complete new normal/contract/binding
+capsule (71 nodes) verifies independently on native ARM and Intel.
+The accepted bounded ARM development set is now **114 packages**. Full Pango,
+installed-header API, canonical, matching AMD64/source/SDK/kernel, desktop,
+physical, installer/update/rollback/media and signing/publication gates remain open.
 
 ## Intel MacBook tester
 
