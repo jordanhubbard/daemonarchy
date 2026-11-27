@@ -1,5 +1,9 @@
 # RC1 upstream selection, recorded 2026-11-27
 
+- **Status:** active
+- **Owning queue item:** [SYNC-001](active-work.md#sync-001-synchronize-current-upstream-omarchy-450-and-freebsd-current-source-and-ports-for-16)
+- **Completion / archival evidence:** [Exact branch observation](../../verification/active-release-branches-20261127-development.json) and the native port observation linked below; matched-world, desktop, hardware and canonical release acceptance remain pending.
+
 This record updates the selected inputs of the [1.6 plan](release-1.6.0.md).
 The operator selected the specific Omarchy release candidate rather than a
 moving development branch. The prior stable 4.5.0 planning records remain
