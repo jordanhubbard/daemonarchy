@@ -41,6 +41,21 @@ tag or artifact was rewritten. The
 retains before/after identities and the ancestry checks. Pending feature and
 review heads still need their own integration and qualification.
 
+Later on November 27, the qualified GDBM close-on-exec repair
+([ports PR #126](https://github.com/jordanhubbard/daemonarchy-ports/pull/126))
+and Nose Python 3.12 repair
+([ports PR #123](https://github.com/jordanhubbard/daemonarchy-ports/pull/123))
+landed with their original source and scoped native observations preserved.
+Ports `main` and `release/1.6` then advanced together to
+`7db3a135d48590e9cf8a5c327c3d7766194701af`; the selected upstream snapshot
+above remains an ancestor. All ten Nose port inputs and the GDBM implementation
+and control inputs match their qualified native source. These integrations
+retain the original optional-profile, canonical receipt and release acceptance
+gaps. The ARM worker's storage recovery is still in progress; historical
+package results do not establish that the recovered SDK or source tree is
+currently intact. Independent content readback is required before more native
+package qualification.
+
 ## Native package and test evidence
 
 The port selects `DISTVERSION=4.6.0-rc1` and the exact owned Omarchy import.
