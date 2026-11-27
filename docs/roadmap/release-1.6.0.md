@@ -79,6 +79,16 @@ then conduct one operator signing session. Preserve published release bytes.
 
 ## Upstream synchronization goal (SYNC-001)
 
+**Current operator selection, recorded 2026-11-27:** pin the specific upstream
+**Omarchy v4.6.0-rc1** release, superseding the stable 4.5.0 selection below.
+The [RC1 selection and qualification record](rc1-upstream-selection-20261127.md)
+binds the exact tag, source import, native port, and FreeBSD src/ports main
+snapshots. The owned main imports are merged; release-branch/review
+synchronization, changed native dependency closures, matched world/kernel,
+desktop and hardware acceptance remain separate work. Existing native results
+retain their original source and world identities. This selection does not
+close SYNC-001 or the 1.6 release.
+
 **Operator direction, 2026-11-23:** synchronize owned main branches with current
 upstream first, then synchronize the 1.6 release branches and active review work.
 The [November 24 synchronization and PMC refresh](pmc-1.6-review-20261124.md)
