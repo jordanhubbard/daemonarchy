@@ -26,6 +26,17 @@ the upstream delta. The shared Pi framebuffer path retains both the upstream
 pixel-order update and the owned VideoCore support guard. Each fork retains
 `verification/freebsd-main-sync-20261127-snapshot-development.json`.
 
+## Active release branches
+
+At the recorded observation, all six owned `main` / `release/1.6` pairs select
+the same commit in each repository. The src, ports and Omarchy release refs
+were plain fast-forwards from their prior ancestor commits; product,
+compatibility and desktop pairs already agreed. No branch history, published
+tag or artifact was rewritten. The
+[exact branch observation](../../verification/active-release-branches-20261127-development.json)
+retains before/after identities and the ancestry checks. Pending feature and
+review heads still need their own integration and qualification.
+
 ## Native package and test evidence
 
 The port selects `DISTVERSION=4.6.0-rc1` and the exact owned Omarchy import.
@@ -65,8 +76,9 @@ source/ports synchronization worktrees, while canonical receipts were missing.
 
 ## Remaining acceptance
 
-- Synchronize the 1.6 release branches and remaining review work with the newly
-  selected main histories, preserving work in progress and prior evidence.
+- Synchronize remaining feature and review work with the newly selected main
+  histories, preserving work in progress and prior evidence. The six active
+  main/release pairs are synchronized at the observation above.
 - Rebuild and qualify changed dependency closures and matched latest-source
   kernel, world, modules, seeds, packages and installer images on both amd64 and
   aarch64. The older tester world above does not meet this gate.
