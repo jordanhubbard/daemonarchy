@@ -2,9 +2,12 @@
 
 The release remains in development. This checkpoint retains the interrupted
 native work and separates recovered results from new release qualification.
-The current accepted bounded ARM development set is **125 packages**; counts
-below record successive qualification checkpoints. Libthai's inherited header gaps
-remain explicit.
+The initial November 25 bounded ARM development set contained **125 packages**;
+counts below record successive qualification checkpoints. The
+[November 28 checkpoint](#november-28-current-inputs-and-tk86-failure-checkpoint)
+records the later 136-package normal and 132-package private development sets.
+These counts do not establish release SDK admission. Libthai's inherited header
+gaps remain explicit.
 
 ## ARM source producer
 
@@ -1672,3 +1675,83 @@ verified on ARM and independently on Intel. All SDK128/frozen/base/accounts/cach
 mount/source guards pass, allowing only narrowly checked query sidecars. Source
 and package repairs, fresh unprivileged checks and the unchanged original five
 parameterized runners remain required, alongside every wider full 1.6 gate.
+
+
+## November 28: current inputs and Tk86 failure checkpoint
+
+The selected upstream desktop is
+[Omarchy v4.6.0-rc1](roadmap/rc1-upstream-selection-20261127.md), and the owned
+source and ports mains include the bounded FreeBSD CURRENT snapshots recorded
+there. These imports do not qualify a new kernel/world or changed package
+closure. The observations below use the existing older FreeBSD 16/aarch64
+worker, with a 136-package normal development set and a separate 132-package
+private set. Both sets, the older and frozen SDKs, and the retained source and
+work trees pass their complete preservation checks. Earlier Python and Nose
+failures above remain historical evidence, and their remaining profile and
+runner gaps are not closed by this Tk checkpoint.
+
+Tk 8.6.18 can crash while reporting an invalid canvas-item default when its
+option database name is null. A minimal fontless case reproduces the original
+segmentation fault. The exact
+[upstream 8.6 repair](https://github.com/tcltk/tk/commit/b2a472b634b2ad5aedb7b53e6edcd71ac0d313cd)
+uses the option name when that database name is absent. The incremental control
+returns the expected Tcl font error and option context; both original and fixed
+libraries still create text with the same declared font. The original core and
+all diagnostic objects, libraries and results remain retained.
+
+[Ports PR #131](https://github.com/jordanhubbard/daemonarchy-ports/pull/131)
+backports that repair and increments the package to `tk86-8.6.18_1`. Exact source
+`4e02513ef15a85fc4d9da61ee52cd323c83fa6e2`, tree
+`524194356668bb48ab22ac044269f77cc4ffd77b`, contains 184,516 independently
+verified source members. Fresh original extract, patch, configure and build
+targets pass. Native patch application produces the exact upstream C postimage
+without offsets or fuzz. Both fresh-product fontless error-context and fonted
+canvas-creation controls pass. These controls do not establish pixel rendering.
+
+Both complete original upstream suites then finish:
+
+| Suite | Total | Passed | Skipped | Failed |
+| --- | ---: | ---: | ---: | ---: |
+| Classic | 9,724 | 8,527 | 882 | 315 |
+| ttk | 506 | 485 | 17 | 4 |
+| Combined | 10,230 | 9,012 | 899 | 319 |
+
+The make target returns zero despite those failed aggregates. The harness
+correctly rejects the run, and all 319 complete failure descriptions are retained,
+including multiline descriptions. Original assertions, selectors and 1,200-second
+command deadlines are unchanged. The one-font fixture provokes upstream warnings
+that Courier resolves to proportional DejaVu Sans with width 12 where the tests
+require fixed width 6 through 8. Other failures include font-family, text geometry,
+focus and iconify behavior. Font and window-manager fixture corrections require
+independent controls; these observations do not excuse any failed assertion.
+
+The original port also executes `package require Tk` and `load libtk86.so`
+through `tclsh8.6` after the suites. Both report loader errors because Tk is not
+installed in the normal development set. Those original installed-product checks
+remain required. A provisional package may supply a controlled private
+installation for qualification; construction alone cannot establish test or
+release acceptance. No Tk package is admitted to the normal development set.
+
+The rejected run exits only after all final source, SDK, prior-work, account,
+loader, cache and mount preservation checks pass. Its complete build, outputs,
+raw copied registry, logs and typed input references cover 2,206 nodes in two
+archive parts. Each archive body, type, mode, numeric owner, flags, nanosecond
+mtime, symlink, hardlink and compression checksum is independently verified on
+ARM and Intel. The complete inventory SHA-256 is
+`e561d54cc37dc974511bbd476311317bc396b8c50f82140754a6856fdf6553d6`.
+The temporary auxiliary display and loopback tunnel are closed afterward. This
+is complete custody of a failed run, with no canonical or release admission.
+
+Next qualify the requested font families and metrics through default Fontconfig
+and check window-manager behavior on the same display. Then obtain a provisional
+package with preserved original work, qualify its dependency fixture and
+installed-product checks, and complete the unchanged full suites, sealed/private
+lifecycle and normal delivery. The private 132-package set must not be assumed
+to contain every dependency of the normal 136-package set.
+
+The full 1.6 goal remains open: matched current world/kernel/modules and both
+architecture closures; original Python/Nose and remaining runner profiles;
+canonical per-unit ownership, provenance, Component lifecycle and SDK/TCB
+receipts; desktop, applications and network; all 47 platform scope anchors and
+required physical/cloud/VM acceptance, with Pi 4 before Pi 5 and Ethernet plus
+native SD; installer, media, update/rollback, freeze, signing and publication.
