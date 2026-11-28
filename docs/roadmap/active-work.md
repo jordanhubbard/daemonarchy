@@ -2052,3 +2052,18 @@ remains open; report files do not establish a passing gate.
   - [x] tests/release-branches.py; all six live owned main/release audits pass.
   - [x] Activate the local hourly audit and verify a successful six-repository service run; hosted CI is bypassed by operator direction.
   - [ ] Record human documentation authority review separately; do not self-attest the stale marker.
+
+### [ ] RPI-ACPI-NS-001 — Preserve actual ACPI namespace tables for Pi device qualification
+
+- **Priority:** P1
+- **Owner:** Hardware discovery images and offline controller
+- **Direction:** Reserve bounded DSDT and SSDT slots without changing old images or invoking AML.
+- **Conclusion:** Source discovery currently omits the namespace tables needed to inspect Pi SDIO/GPIO wiring.
+- **Depends on:** none
+- **Implementation:**
+  - [x] Reserve eighteen additional 16 KiB slots; validate table signatures and report bounded namespace completeness independently of physical hardware acceptance.
+- **Evidence:**
+  - [x] All 33 original boottrace/controller checks pass on the current owned-main candidate, including ten ACPI controls. Native reader controls pass 24 sanitized FreeBSD ARM64 cases; original stand build and three independent AArch64 EFI product checks pass.
+  - [x] Exact private image boots the new EFI loader; all 29 capture/index/state files match the returned disk after power-off. Complete native work archive independently reopened against selected inputs.
+  - [x] Complete native work archive independently reopened on a second healthy physical host; all selected source/bootstrap inputs, actual products, retained work and gzip integrity validate.
+  - [ ] Physical capture, human authority and canonical lifecycle gates remain open. See [the scoped record](../../verification/pi-acpi-namespace-20261122.json).

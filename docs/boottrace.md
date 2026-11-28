@@ -91,6 +91,17 @@ A loader built with the ARM discovery changes accepts
 `boottrace_capture_acpi="YES"` in the image's extra loader configuration.
 Before starting an experiment, it copies RSDP, the root table, and selected
 APIC/PPTT/FACP/IORT/SRAT/SLIT/SPCR tables into preallocated `ACPI/` slots.
+New namespace-capable loaders and images also reserve `DSDT.BIN`, sixteen
+SSDT slots (`SS00.BIN` through `SS0F.BIN`, in root-table order), and `SSOV.BIN`
+for explicit overflow, unreadable-root or ambiguous-FADT outcomes. The DSDT pointer comes only from a validated
+FADT; a nonzero 64-bit X_DSDT takes precedence over its legacy pointer. These
+tables preserve AML bytes for offline inspection; the capture never evaluates
+them. A namespace-capable loader uses this extension only when every additional
+slot has its exact preallocated extent. Older media retains basic capture.
+The offline summary reports bounded namespace completeness separately from
+hardware acceptance; a partial capture does not become complete because its
+other tables validate. The [dated development record](../verification/pi-acpi-namespace-20261122.json)
+binds native reader/loader controls and the remaining exact-image/physical gates.
 Each table is limited to 16 KiB, the root to 256 entries; lengths, checksums
 and readable EFI memory ranges are checked before access. No AML runs.
 

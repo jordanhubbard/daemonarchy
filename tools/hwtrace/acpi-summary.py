@@ -85,6 +85,12 @@ def summary(volume):
                 raise ValueError("invalid RSDP")
         elif size < 36 or struct.unpack_from("<I", payload, 4)[0] != size:
             raise ValueError(f"invalid ACPI header length for {name}")
+        else:
+            signatures = ((b"RSDT", b"XSDT") if name == "ROOT" else
+                          (b"SSDT",) if re.fullmatch(r"SS0[0-9A-F]", name) else
+                          (name.encode("ascii"),))
+            if name == "SSOV" or payload[:4] not in signatures:
+                raise ValueError(f"invalid ACPI signature for {name}")
         entry["sha256"] = hashlib.sha256(payload).hexdigest()
         if name == "APIC":
             result["topology"] = madt(payload)
@@ -93,6 +99,21 @@ def summary(volume):
             raise ValueError(f"no validated required table: {required}")
     if "topology" not in result:
         raise ValueError("no validated MADT CPU topology")
+    tables = result["tables"]
+    namespace = {"DSDT", "SSOV"} | {f"SS0{i:X}" for i in range(16)}
+    if namespace & tables.keys():
+        if not namespace <= tables.keys():
+            raise ValueError("incomplete namespace capture index")
+        ssdts = [f"SS0{i:X}" for i in range(16)]
+        result["namespace"] = dict(
+            complete=("sha256" in tables["DSDT"] and
+                      tables["SSOV"]["status"] == "not present" and
+                      tables["SSOV"]["write_status"] == 0 and
+                      all("sha256" in tables[n] or
+                          (tables[n]["status"] == "not present" and
+                           tables[n]["write_status"] == 0) for n in ssdts)),
+            captured_ssdts=[n for n in ssdts if "sha256" in tables[n]],
+            aml_evaluated=False)
     return result
 
 
