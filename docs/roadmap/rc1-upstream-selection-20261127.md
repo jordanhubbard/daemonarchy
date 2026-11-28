@@ -56,6 +56,34 @@ package results do not establish that the recovered SDK or source tree is
 currently intact. Independent content readback is required before more native
 package qualification.
 
+## November 28 refresh and pkg upgrade regression
+
+The November 28 imports select FreeBSD src main
+`2496a1c6b14e7d2dc01b8e55412f54aca73a31a4`, integrated at owned
+`9720a99c26cbe281d84b86e9a88a82e8c34d091d`, and ports main
+`104508db6c34399e8e25685ca866c765fb564a8d`, imported at
+`4ec2ca87e198b3e5f08b785be8612ebf5845ce3d`. The source recipe also retains
+the accepted upstream Pi5 DTB/D0 overlay inclusion. Exact input preparation
+and a source build plan do not establish a completed build of this selection.
+
+[Ports PR116](https://github.com/jordanhubbard/daemonarchy-ports/pull/116)
+then landed the local-archive upgrade repair at
+`131cd72239551711cef66391fabe26ff1cf54b97`; its tree is identical to the
+tested candidate. The [development comparison](../../verification/pkg294-local-archive-upgrade-development-20261128.json)
+records fresh native builds of pkg 2.9.4_1 and pkg 2.9.4_2 on the existing
+amd64 tester. Both pass the eight original port construction targets and
+independent verification of 77 payloads and the declared directory. Using
+identical original 34-case upgrade-file tests, the baseline has 33 passes
+and one retained failure: an archive replacement is reported as a new install.
+The candidate passes all 34 with no skips using the packaged static binary.
+Normal registry, accounts, loader hints, mounts and source are preserved.
+
+These observations use the older cb38 kernel and existing userland, with ELF FreeBSD version
+1600029. They do not qualify the selected CURRENT world, the entire upstream
+pkg suite, another architecture at this version, canonical SDK/TCB/lifecycle,
+or final installation, update, rollback, signing or publication. The November 27
+branch observations and earlier native results below retain their original pins.
+
 ## Native package and test evidence
 
 The port selects `DISTVERSION=4.6.0-rc1` and the exact owned Omarchy import.
