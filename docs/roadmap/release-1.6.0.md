@@ -90,6 +90,11 @@ acceptance remain separate work. Existing native results
 retain their original source and world identities. This selection does not
 close SYNC-001 or the 1.6 release.
 
+The [November 25 release recovery checkpoint](../testing-release-recovery-20261125.md)
+records recovered native source and package work, storage placement and the
+restored Intel MacBook tester. Full matched builds and release acceptance remain
+open.
+
 **Operator direction, 2026-11-23:** synchronize owned main branches with current
 upstream first, then synchronize the 1.6 release branches and active review work.
 The [November 24 synchronization and PMC refresh](pmc-1.6-review-20261124.md)

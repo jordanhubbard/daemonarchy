@@ -2052,3 +2052,43 @@ remains open; report files do not establish a passing gate.
   - [x] tests/release-branches.py; all six live owned main/release audits pass.
   - [x] Activate the local hourly audit and verify a successful six-repository service run; hosted CI is bypassed by operator direction.
   - [ ] Record human documentation authority review separately; do not self-attest the stale marker.
+
+
+### November 25 Python conversion checkpoint (historical)
+
+The [release checkpoint](../testing-release-recovery-20261125.md) recorded 128
+installed development packages with an explicit installed Python feature hold;
+that count did not establish release SDK health or admission. Nose was
+uninstalled at that checkpoint. The unticked work below retains that observed
+repair queue; subsequent results do not rewrite those failures.
+
+- [ ] Repair and qualify unprivileged Python grammar delivery through retained
+  source/package changes; the registered original artifact ships both grammar
+  pickles root-owned mode 0600. Preserve its bytes and source-provenance gap.
+- [ ] Restore Nose package conversion and original custom test registration;
+  retain all five parameterized runners, original assertions/cases/deadlines,
+  complete declared test-tool closure and independent normal acceptance.
+
+Full canonical Component/provenance/lifecycle/SDK/TCB, matching source/kernel/
+AMD64, complete desktop, all 47 physical platform profiles, Pi4 before Pi5,
+installer/update/rollback/media/freeze/signing/publication remain required.
+
+
+### Current 1.6 native Tk qualification, November 28
+
+The [current checkpoint](../testing-release-recovery-20261125.md#november-28-current-inputs-and-tk86-failure-checkpoint)
+records preserved normal136/private132 development sets and fresh Tk86 build
+with the exact upstream crash repair. Both focused regression controls pass,
+but the full classic and ttk suites report 9,012 passes, 899 skips and 319
+failures. The harness rejects the zero-exit make target. Complete failed-run
+custody is independently verified on ARM and Intel; package and release
+acceptance remain pending.
+
+- [ ] Qualify font metrics and window-manager behavior in the declared fixture
+  without altering the original full suites or assertions.
+- [ ] Obtain a provisional Tk package and controlled dependency/installation
+  fixture for the original installed-product post-test checks; then finish full
+  suites, sealed/private lifecycle and normal delivery.
+- [ ] Complete the remaining original Python/Nose profiles and five-runner
+  dependency closure, followed by matched current source/kernel and amd64
+  qualification and the full canonical, desktop, platform, media and release gates.
