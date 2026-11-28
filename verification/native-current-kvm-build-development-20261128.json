@@ -115,5 +115,37 @@
     "Desktop installation update rollback freeze signing and publication"
   ],
   "canonical_admitted": false,
-  "release_admitted": false
+  "release_admitted": false,
+  "live_release_ref_audit": {
+    "observed_utc": "2026-11-28T15:31:37.155978+00:00",
+    "refs": {
+      "daemonarchy": {
+        "refs/heads/main": "5cff19a19e57c0cba2ef60ff0cab5f722d8b1414",
+        "refs/heads/release/1.6": "5cff19a19e57c0cba2ef60ff0cab5f722d8b1414"
+      },
+      "daemonarchy-src": {
+        "refs/heads/daemonarchy": "9720a99c26cbe281d84b86e9a88a82e8c34d091d",
+        "refs/heads/main": "9720a99c26cbe281d84b86e9a88a82e8c34d091d",
+        "refs/heads/release/1.6": "9720a99c26cbe281d84b86e9a88a82e8c34d091d"
+      },
+      "daemonarchy-ports": {
+        "refs/heads/daemonarchy": "131cd72239551711cef66391fabe26ff1cf54b97",
+        "refs/heads/main": "131cd72239551711cef66391fabe26ff1cf54b97",
+        "refs/heads/release/1.6": "131cd72239551711cef66391fabe26ff1cf54b97"
+      },
+      "daemonarchy-desktop": {
+        "refs/heads/main": "4b2525533600f37d2c6249112c3d2d4e22989f36",
+        "refs/heads/release/1.6": "4b2525533600f37d2c6249112c3d2d4e22989f36"
+      },
+      "omarchy": {
+        "refs/heads/main": "19abafa0b12560a7946b1e37444d3e6b2fc9f755",
+        "refs/heads/release/1.6": "19abafa0b12560a7946b1e37444d3e6b2fc9f755"
+      },
+      "omarchy-freebsd": {
+        "refs/heads/main": "1923ffefc9fb5328e7d2054a01433e7cb77551eb",
+        "refs/heads/release/1.6": "1923ffefc9fb5328e7d2054a01433e7cb77551eb"
+      }
+    },
+    "all_six_main_release_pairs_equal": true
+  }
 }
