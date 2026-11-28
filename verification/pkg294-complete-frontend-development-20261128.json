@@ -48,7 +48,31 @@
   "ATF_bootstrap": {
     "original_queue_status": "stopped-preserve-original-evidence",
     "original_bootstrap_started": false,
-    "reason": "Normal frontend wrapper exit 1 and database postguard failure prevent queued execution"
+    "reason": "Normal frontend wrapper exit 1 and database postguard failure prevent queued execution",
+    "separate_follow_on": {
+      "status": "pass-private-prefix-original-lifecycle",
+      "source_archive_sha256": "bae70930bef565faacb95b10e5673601df0d7f25db720cc735060d115c92ee73",
+      "cases": 383,
+      "passed": 373,
+      "skips": [
+        "atf-c.atf_c_test:include",
+        "atf-c.detail.process_test:status_coredump",
+        "atf-c.detail.sanity_test:inv",
+        "atf-c.detail.sanity_test:post",
+        "atf-c.detail.sanity_test:pre",
+        "atf-c.detail.sanity_test:unreachable",
+        "atf-c.macros_test:use",
+        "atf-c.tc_test:require_prog_negative_absolute",
+        "atf-sh.kmod_test:atf_require_kmod_skip",
+        "atf-sh.kmod_test:require_kmods_skip"
+      ],
+      "actual_installcheck_exit": 0,
+      "all_preservation_checks_passed": true,
+      "junit_sha256": "32aa2403d0cd8f2d483384a2e5ea5abc1fb712fcb92a5b043650a70c991ca1da",
+      "normal_installation_performed": false,
+      "ports_ATF_qualified": false,
+      "canonical_admitted": false
+    }
   },
   "remaining_gates": [
     "Resolve original package database preservation discrepancy; do not treat suite success as wrapper success",
@@ -66,14 +90,25 @@
     "historical_database_failure_cause": "unresolved; no durable before-snapshot",
     "separate_instrumented_diagnostic": {
       "worker_sha256": "d3957c56b2f28a3ef3e73243a35ca700d0d8377d8a059164568f70bc0196eb35",
-      "status": "running-at-last-observation",
+      "status": "passed-separate-run-original-failure-retained",
       "durable_before_snapshots": [
         "database",
         "accounts_loader",
         "mounts"
       ],
       "all_after_guards_attempted_independently": true,
-      "original_run_reclassified": false
+      "original_run_reclassified": false,
+      "actual_suite_exit": 0,
+      "wrapper_exit": 0,
+      "cases": 461,
+      "passed": 459,
+      "skipped_cases": [
+        "extract:chflags",
+        "extract:chflags_schg"
+      ],
+      "junit_sha256": "00f7055a5292b4cf48e52f290b688a87efea2a7bc9363fda9db9989276c6e33d",
+      "database_delta": {},
+      "all_preservation_guards_passed": true
     },
     "ATF_original_queue_remains_stopped": true
   }

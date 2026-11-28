@@ -103,6 +103,19 @@ ATF bootstrap stopped before launch, preserving that prerequisite failure.
 These are older-world development observations; canonical and release gates
 remain open.
 
+The separate instrumented follow-on saved durable before/after snapshots and
+passed all 461 cases with 459 passes and the same two skips. Both Kyua and
+wrapper returned 0; database, accounts, loader, mounts, complete ports source,
+dynamic libraries, runtime and frontend resources were preserved. This new
+observation retains the original run's unexplained preservation discrepancy.
+
+A separate private-prefix ATF 0.26 provider completed its original configure,
+build, check, install and installcheck sequence without modifying the normal
+installation. Installcheck reports 373 passes and ten skips across 383 cases;
+all host and source guards passed. The out-of-tree test-enabled pkg build is
+running against that provider to exercise the original C unit suite too. These
+older-world development results do not admit a source-built SDK or release.
+
 ## Recovered ARM aggregate source-build result
 
 [Readback of the interrupted controller's ARM build](../../verification/native-arm-world-recovery-development-20261128.json)
