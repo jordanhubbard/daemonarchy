@@ -1,0 +1,160 @@
+{
+  "schema": "daemonarchy/pkg-upgrade-regression-development@1",
+  "recorded_utc": "2026-11-28",
+  "scope": "Scoped old-world native package construction, sealed payload acceptance and complete retained upgrade-file suite; not canonical Component/SDK/TCB or release admission",
+  "review": "https://github.com/jordanhubbard/daemonarchy-ports/pull/116",
+  "owned_main_landing": "131cd72239551711cef66391fabe26ff1cf54b97",
+  "landed_tree_matches_tested_candidate": true,
+  "target": {
+    "os": "FreeBSD16-CURRENT",
+    "architecture": "amd64",
+    "worker_kind": "physical Intel tester",
+    "kernel_source_revision": "cb38d6498a24606aba3b3ca22fceedc61b31f9bf",
+    "ELF_FreeBSD_version": 1600029,
+    "matches_selected_1_6_world": false
+  },
+  "profile": {
+    "compiler_jobs": 1,
+    "OMP_NUM_THREADS": 1,
+    "phase_timeout_seconds": 1200,
+    "growth_cap_GiB": 4,
+    "minimum_free_GiB": 100
+  },
+  "baseline": {
+    "source_revision": "4ec2ca87e198b3e5f08b785be8612ebf5845ce3d",
+    "source_tree": "9c94e02c9d98f559db4dcda4cb2e357fc43fa30b",
+    "package": {
+      "bytes": 6413861,
+      "sha256": "a3392f06d5796e3cbae939b1e481b470245434293d192448f4f276984371fe8a"
+    },
+    "package_name": "pkg-2.9.4_1",
+    "original_port_targets": {
+      "checksum": 0,
+      "extract": 0,
+      "patch": 0,
+      "configure": 0,
+      "build": 0,
+      "stage": 0,
+      "check-plist": 0,
+      "package": 0
+    },
+    "verified_payload_files": 77,
+    "verified_declared_directories": 1,
+    "suite_exit": 1,
+    "original_cases": 34,
+    "failed_cases": [
+      "local_archive_upgrade"
+    ],
+    "skipped_cases": [],
+    "normal_pkgdb_accounts_loader_mounts_and_source_preserved": true
+  },
+  "candidate": {
+    "source_revision": "dab77f2baef87cbe65b352cdbbcc3c015e284378",
+    "source_tree": "0b76c29696ac909535701ca7bac99a66ad1f5164",
+    "package": {
+      "bytes": 6414713,
+      "sha256": "d386d3db57bdfa5a80ba2e1880a60ff1a45873c937e07eebe2410338edd34937"
+    },
+    "package_name": "pkg-2.9.4_2",
+    "original_port_targets": {
+      "checksum": 0,
+      "extract": 0,
+      "patch": 0,
+      "configure": 0,
+      "build": 0,
+      "stage": 0,
+      "check-plist": 0,
+      "package": 0
+    },
+    "verified_payload_files": 77,
+    "verified_declared_directories": 1,
+    "suite_exit": 0,
+    "original_cases": 34,
+    "failed_cases": [],
+    "skipped_cases": [],
+    "normal_pkgdb_accounts_loader_mounts_and_source_preserved": true
+  },
+  "comparison": {
+    "same_original34_case_test_bytes": true,
+    "original_test_script_sha256": "b16f2e518ecc019579e1a2012ed10e3e9529bb7542523258af333e72eb4e0bc0",
+    "original_test_environment_sha256": "ee833113c0314ffa614f86d7839c9ff0d336ac794307e1b3544bcfebb0980fda",
+    "same_observed_bootstrap_inputs": true,
+    "baseline_actual_failure": "The local archive preview reports a new installation instead of the required 1 -> 2 upgrade. Original case failure and suite exit 1 are retained.",
+    "candidate_case_result": "All 34 pass, no skips, using the sealed packaged static binary",
+    "original_ATF_case_timeout_seconds": 300,
+    "assertions_and_deadlines_unchanged": true,
+    "remaining_upstream_pkg_suites_run": false
+  },
+  "patch_context": {
+    "original_patch_sha256": "5c4651181c9f4ed10af7aa9a173f240b7c729b86bfecdb59e25f23ca8cdfd670",
+    "context_patch_sha256": "4e79a94d9bae14135b707080f7a798a3f9ba620c0b28ef4ed9d04c195aebe55b",
+    "pristine_C_sha256": "b04705c246543aa2b6c8db79458943fb78047aaaf5401b6fef4681e038420656",
+    "patched_C_sha256": "54e82b2ccb34b42cb525a0efa39b8da21d2a0543c37c0dbfb50b7c39439f5a26",
+    "native_zero_fuzz_applications_produce_identical_C": true
+  },
+  "artifact_acceptance": {
+    "candidate_archive_independently_copied_and_hashed": true,
+    "checksums_stage_bytes_types_links_and_declared_modes_verified": true,
+    "rc_script_packing_list_mode": [
+      {
+        "path": "/usr/local/etc/rc.d/pkg_triggers",
+        "stage_mode": 365,
+        "package_mode": 493,
+        "packing_list_entry": "@(root,wheel,0755) /usr/local/etc/rc.d/pkg_triggers"
+      }
+    ],
+    "compact_manifest_intentionally_omits_scripts": true,
+    "original_two_verifier_setup_failures_retained": true
+  },
+  "custody": {
+    "baseline_fresh_workdir_no_object_reuse": true,
+    "baseline_unchanged_source_shared_as_root_owned_read_only_links": true,
+    "changed_source_paths_unlinked_before_replacement": true,
+    "both_complete_source_Git_trees_verified": true,
+    "normal_install_performed": false
+  },
+  "bootstrap_observation": {
+    "/usr/bin/cc": {
+      "kind": "file",
+      "bytes": 124928,
+      "sha256": "f3bfb9c789e5434823d4dfe134856d528dfee97057a648229ae21fb922c025dd"
+    },
+    "/usr/bin/patch": {
+      "kind": "file",
+      "bytes": 59080,
+      "sha256": "0f0694fd21f24b8f0f52b1c97aa9702b3bf60948166a4f65d390f9bb8d966bb6"
+    },
+    "/usr/bin/make": {
+      "kind": "file",
+      "bytes": 223032,
+      "sha256": "e87e7f75e77a6de2589b95d62f3f47bb5a39a75ea733fb91c23322f7d6f6b37b"
+    },
+    "/usr/local/sbin/pkg-static": {
+      "kind": "file",
+      "bytes": 11947824,
+      "sha256": "5459f83b4de2ebd66b41328e1b65426e46be78b2bc96477832484e19515cd1eb"
+    },
+    "/lib/libc.so.7": {
+      "kind": "file",
+      "bytes": 2213568,
+      "sha256": "4c95644a60c7ba2c5c95094794c6e9c60abba1737bc24028c6c531f065227674"
+    },
+    "/libexec/ld-elf.so.1": {
+      "kind": "file",
+      "bytes": 122952,
+      "sha256": "9f9c4f0f57a9a52a85b14c178135eb04d5f13fc8be9045aac21d96a969289b1a"
+    },
+    "/usr/include/sys/param.h": {
+      "kind": "file",
+      "bytes": 13437,
+      "sha256": "c751fa465cced85ebfda67ea7eb792e121631bd5dc32514cb0a1ea8ae42bf36e"
+    }
+  },
+  "boundaries": {
+    "bootstrap_source_build_provenance_admitted": false,
+    "canonical_Component_SDK_TCB_lifecycle_admitted": false,
+    "other_architectures_at_new_version_qualified": false,
+    "matched_CURRENT_runtime_installer_update_rollback_qualified": false,
+    "signed_feed_or_release_admitted": false
+  }
+}
