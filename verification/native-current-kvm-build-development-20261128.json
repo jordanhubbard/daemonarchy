@@ -46,7 +46,8 @@
     },
     "initial_missing_Git_and_SQLite_failures_retained": true,
     "test_generated_outputs_retained_outside_source": true,
-    "bootstrap_world_matches_selected_source": false
+    "bootstrap_world_matches_selected_source": false,
+    "status": "running"
   },
   "AMD64_worker": {
     "host_architecture": "x86_64",
@@ -56,7 +57,7 @@
     "guest_RAM_GiB": 32,
     "status": "running",
     "artifacts": [],
-    "active_phase": "buildworld",
+    "active_phase": "buildkernel",
     "plan_identity": "2ecd916d421d0d1e9fa09e7baa96fda19e6cb8c61fbd0926f172a3a56f962332",
     "worker": {
       "compiler": "FreeBSD clang version 21.1.8 (https://github.com/llvm/llvm-project.git llvmorg-21.1.8-0-g2078da43e25a)\nTarget: x86_64-unknown-freebsd16.0\nThread model: posix\nInstalledDir: /usr/bin\nBuild config: +assertions\n",
@@ -66,7 +67,16 @@
       "os": "FreeBSD-16.0-CURRENT-amd64-64bit-ELF",
       "pkg_version": "2.9.3"
     },
-    "completed_phases": [],
+    "completed_phases": [
+      {
+        "command_exit": 0,
+        "elapsed_seconds": 3097.833,
+        "exit": 0,
+        "log": "logs/buildworld-1.log",
+        "log_sha256": "169e9b6c9950faa8a7bdf05842bbfdfb8000e4ec9b20a35d46964c377b95355e",
+        "name": "buildworld"
+      }
+    ],
     "bootstrap_world_matches_selected_source": false,
     "native_controller_tests": {
       "cases": 168,
@@ -89,7 +99,15 @@
         "sha256": "1253a709744f25788c5cd3b590c1768470dc3b96416204b0b8b32f57a39676f8",
         "size": 223320
       }
-    }
+    },
+    "independently_copied_phase_logs": [
+      {
+        "phase": "buildworld",
+        "log_bytes": 126092088,
+        "sha256": "169e9b6c9950faa8a7bdf05842bbfdfb8000e4ec9b20a35d46964c377b95355e",
+        "native_source_file_stable_during_copy": true
+      }
+    ]
   },
   "profile": {
     "jobs": 8,
@@ -147,5 +165,21 @@
       }
     },
     "all_six_main_release_pairs_equal": true
-  }
+  },
+  "progress_observations": [
+    {
+      "observed_utc": "2026-11-28T15:27:41.669962+00:00",
+      "ARM_phase": "buildworld",
+      "AMD64_phase": "buildworld",
+      "completed_phases": []
+    },
+    {
+      "observed_utc": "2026-11-28T16:17:55.680327+00:00",
+      "ARM_phase": "buildworld",
+      "AMD64_phase": "buildkernel",
+      "AMD64_completed_world_exit": 0,
+      "AMD64_world_log_independently_copied_and_hash_verified": true
+    }
+  ],
+  "updated_utc": "2026-11-28T16:17:55.680327+00:00"
 }

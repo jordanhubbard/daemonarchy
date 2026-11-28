@@ -155,8 +155,13 @@ ARM metadata profile, cache or release context.
 A separate eight-CPU, 32-GiB native FreeBSD amd64 KVM worker also passed
 all 168 controller tests and entered `buildworld` for the same source selection.
 Its fresh UFS work disk passed actual named-user POSIX ACL grant, read and
-revocation checks. Both workers currently run older bootstrap worlds; newly
-built worlds have not yet been installed or qualified. Both workers
+revocation checks. At the November 28 16:17 UTC observation, its original
+`buildworld` phase had completed with exit zero in 3,097.833 seconds and
+`buildkernel` was running. An independent copy of the complete 126,092,088-byte
+world log matches the controller digest
+`169e9b6c9950faa8a7bdf05842bbfdfb8000e4ec9b20a35d46964c377b95355e`.
+The ARM worker remained in `buildworld`. Both workers run older bootstrap
+worlds; newly built worlds have not yet been installed or qualified. Both workers
 use current reservations on their actual execution hosts. Original six-hour
 phase timeouts remain in force. Completed sets, matched-world package testing,
 independent product acceptance, canonical SDK/TCB and release gates remain open.
