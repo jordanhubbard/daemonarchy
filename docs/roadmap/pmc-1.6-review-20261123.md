@@ -1,7 +1,7 @@
 # 1.6 upstream synchronization and PMC review, November 23
 
 - **Status:** active
-- **Owning queue item:** [SYNC-001](active-work.md#sync-001-synchronize-current-upstream-omarchy-450-and-freebsd-current-source-and-ports-for-16)
+- **Owning queue item:** [SYNC-001](active-work.md#sync-001-synchronize-omarchy-v460-rc1-and-freebsd-current-source-and-ports-for-16)
 - **Completion / archival evidence:** [Source and branch review record](../../verification/upstream-sync-pmc-review-20261123.json); native acceptance remains open
 
 The repository synchronization is published. All six owned `main` branches and

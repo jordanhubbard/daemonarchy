@@ -1,7 +1,7 @@
 # RC1 upstream selection, recorded 2026-11-27
 
 - **Status:** active
-- **Owning queue item:** [SYNC-001](active-work.md#sync-001)
+- **Owning queue item:** [SYNC-001](active-work.md#sync-001-synchronize-omarchy-v460-rc1-and-freebsd-current-source-and-ports-for-16)
 - **Completion / archival evidence:** [Exact branch observation](../../verification/active-release-branches-20261127-development.json) and the native port observation linked below; matched-world, desktop, hardware and canonical release acceptance remain pending.
 
 This record updates the selected inputs of the [1.6 plan](release-1.6.0.md).
@@ -83,6 +83,25 @@ These observations use the older cb38 kernel and existing userland, with ELF Fre
 pkg suite, another architecture at this version, canonical SDK/TCB/lifecycle,
 or final installation, update, rollback, signing or publication. The November 27
 branch observations and earlier native results below retain their original pins.
+
+## Complete pkg frontend comparison recovered after interruption
+
+The [complete frontend comparison](../../verification/pkg294-complete-frontend-development-20261128.json)
+ran the unchanged 461-case upstream inventory on the normal packaged pkg
+2.9.4_2 binary: 459 passed, none failed, and two root-only extraction cases
+skipped. Kyua returned 0. Independent readback verifies every case identity,
+all 178 frontend resources and the sealed runtime binary. The prior static
+comparison retains 447 passes, one default-plugin configuration mismatch and
+13 skips; its actual suite exit remains 1.
+
+The normal-binary wrapper returned **1** because its normal package database
+snapshot comparison failed. The before-snapshot lived only in process memory,
+so the historical per-path difference and cause cannot be reconstructed from
+the saved result. Accounts, loader and mount checks following that assertion
+were not reached. Test success does not establish host preservation. The queued
+ATF bootstrap stopped before launch, preserving that prerequisite failure.
+These are older-world development observations; canonical and release gates
+remain open.
 
 ## Native package and test evidence
 

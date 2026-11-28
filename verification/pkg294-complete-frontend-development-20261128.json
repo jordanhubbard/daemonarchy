@@ -1,0 +1,80 @@
+{
+  "schema": "daemonarchy/pkg-complete-frontend-development@1",
+  "recorded_utc": "2026-11-28T14:32:56.808538+00:00",
+  "scope": "Retained complete upstream frontend suite on packaged pkg 2.9.4_2 using the existing older FreeBSD amd64 world; wrapper preservation failure remains unresolved",
+  "source": {
+    "revision": "dab77f2baef87cbe65b352cdbbcc3c015e284378",
+    "tree": "0b76c29696ac909535701ca7bac99a66ad1f5164"
+  },
+  "package": {
+    "bytes": 6414713,
+    "sha256": "d386d3db57bdfa5a80ba2e1880a60ff1a45873c937e07eebe2410338edd34937"
+  },
+  "runtime": {
+    "kind": "normal packaged binary with embedded libpkg and dynamic base libraries",
+    "sha256": "aa7462404437f513e67d0086e3d98ceae9543791cd192fc507900afb2e8ac56e",
+    "uid": 65534
+  },
+  "normal_binary_run": {
+    "actual_suite_exit": 0,
+    "wrapper_exit": 1,
+    "cases": 461,
+    "passed": 459,
+    "failures": 0,
+    "skipped_cases": [
+      "extract:chflags",
+      "extract:chflags_schg"
+    ],
+    "junit_sha256": "1b1243f1ae1d20ed3a4f366931adc20b48e1db76ca85699fadbbfc7eeba429f6",
+    "complete_classname_and_name_inventory_verified": true,
+    "original_assertions_and_deadlines_preserved": true,
+    "verified_payload_files": 77,
+    "verified_frontend_resources": 178,
+    "original_frontend_resources_preserved": true,
+    "runtime_binary_preserved": true,
+    "dynamic_base_libraries_preserved": true,
+    "normal_package_database_preservation": "failed comparison; historical per-path delta unavailable because baseline was kept only in exited process memory",
+    "accounts_loader_mounts_original_postguards": "not reached after database assertion; no preservation claim"
+  },
+  "static_comparison": {
+    "cases": 461,
+    "passed": 447,
+    "failed": 1,
+    "skipped": 13,
+    "failure": "pkg:pkg_config_defaults expects plugins=true; upstream pkg_config.c intentionally disables plugins when static dlopen fails",
+    "actual_suite_exit": 1,
+    "original_failure_and_assertion_retained": true
+  },
+  "ATF_bootstrap": {
+    "original_queue_status": "stopped-preserve-original-evidence",
+    "original_bootstrap_started": false,
+    "reason": "Normal frontend wrapper exit 1 and database postguard failure prevent queued execution"
+  },
+  "remaining_gates": [
+    "Resolve original package database preservation discrepancy; do not treat suite success as wrapper success",
+    "ATF private native provider lifecycle and original C unit suite",
+    "Matching selected CURRENT world and architecture qualification",
+    "Canonical Component SDK TCB lifecycle receipts",
+    "Full Pi4/Pi5 images and physical Ethernet/native SD acceptance",
+    "Installation update rollback signing publication"
+  ],
+  "canonical_admitted": false,
+  "release_admitted": false,
+  "raw_evidence_committed": false,
+  "post_crash_readback": {
+    "prepared_complete_ports_tree_reverified": true,
+    "historical_database_failure_cause": "unresolved; no durable before-snapshot",
+    "separate_instrumented_diagnostic": {
+      "worker_sha256": "d3957c56b2f28a3ef3e73243a35ca700d0d8377d8a059164568f70bc0196eb35",
+      "status": "running-at-last-observation",
+      "durable_before_snapshots": [
+        "database",
+        "accounts_loader",
+        "mounts"
+      ],
+      "all_after_guards_attempted_independently": true,
+      "original_run_reclassified": false
+    },
+    "ATF_original_queue_remains_stopped": true
+  }
+}
