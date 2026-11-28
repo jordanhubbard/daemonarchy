@@ -103,6 +103,17 @@ ATF bootstrap stopped before launch, preserving that prerequisite failure.
 These are older-world development observations; canonical and release gates
 remain open.
 
+## Recovered ARM aggregate source-build result
+
+[Readback of the interrupted controller's ARM build](../../verification/native-arm-world-recovery-development-20261128.json)
+shows that the frozen `5fad2676be7d0c1bc75f3f673165daa697c41b91` source
+attempt failed its original 21,600-second `buildworld` timeout. Its retained
+log was independently copied and hash-verified. The VM remains running, but
+no build or compiler process remains and the result contains no artifacts.
+The guest used 16 vCPUs and 48 GiB under TCG on an amd64 host. This attempt
+does not qualify the newer November 28 selection or supply matched-world
+inputs for full Pi4/Pi5 images. The failed attempt and its deadline are retained.
+
 ## Native package and test evidence
 
 The port selects `DISTVERSION=4.6.0-rc1` and the exact owned Omarchy import.
