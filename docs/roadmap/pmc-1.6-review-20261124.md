@@ -1,7 +1,7 @@
 # 1.6 upstream synchronization and PMC review, November 24
 
 - **Status:** active
-- **Owning queue item:** [SYNC-001](active-work.md#sync-001-synchronize-current-upstream-omarchy-450-and-freebsd-current-source-and-ports-for-16)
+- **Owning queue item:** [SYNC-001](active-work.md#sync-001-synchronize-omarchy-v460-rc1-and-freebsd-current-source-and-ports-for-16)
 - **Completion / archival evidence:** [Revision and validation record](../../verification/upstream-sync-pmc-review-20261124.json); native and release acceptance remain open
 
 This refresh imports the upstream tips observed on November 24, 2026, preserving

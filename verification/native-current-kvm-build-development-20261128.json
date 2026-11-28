@@ -1,0 +1,185 @@
+{
+  "schema": "daemonarchy/native-current-kvm-build-development@1",
+  "recorded_utc": "2026-11-28T15:27:41.669962+00:00",
+  "scope": "Exact selected-source native aggregate build progress; no matched-world runtime or canonical source SDK acceptance yet",
+  "source": {
+    "revision": "9720a99c26cbe281d84b86e9a88a82e8c34d091d",
+    "tree": "0f1ea8d51f47ff0242f24ac5adf77eb2b27a1f02",
+    "upstream_base": "2496a1c6b14e7d2dc01b8e55412f54aca73a31a4",
+    "expected_Git_blobs": 115685,
+    "source_archive_blobs_verified": 115658,
+    "restored_export_ignored_files": 27,
+    "archive_sha256": "0442a9ffd0bfe4c943e5ca8bbe04fa0a2ec603120e1eb454b621277787e73d1c",
+    "supplement_sha256": "ed8790d5ea51e87fb6636dab412ca2db984884f8fd9c2987843f4b7751686d4c",
+    "native_complete_snapshot_check_passed": true
+  },
+  "ARM_worker": {
+    "host_architecture": "aarch64",
+    "guest_os": "FreeBSD16-CURRENT",
+    "acceleration": "KVM",
+    "guest_cpus": 8,
+    "guest_RAM_GiB": 32,
+    "unprivileged_build": true,
+    "plan_identity": "8776f938c64b15103fe5751015a5e3ea5c78e54d13b5c8c873d6f7b81dbcdfb0",
+    "worker": {
+      "compiler": "FreeBSD clang version 21.1.8 (https://github.com/llvm/llvm-project.git llvmorg-21.1.8-0-g2078da43e25a)\nTarget: aarch64-unknown-freebsd16.0\nThread model: posix\nInstalledDir: /usr/bin\nBuild config: +assertions\n",
+      "cpus": 8,
+      "machine": "arm64",
+      "make_version": "20260704",
+      "os": "FreeBSD-16.0-CURRENT-arm64-aarch64-64bit-ELF",
+      "pkg_version": "2.9.0"
+    },
+    "active_phase": "buildworld",
+    "completed_phases": [],
+    "artifacts": [],
+    "native_controller_tests": {
+      "cases": 168,
+      "exit": 0,
+      "original_assertions_and_deadlines_unchanged": true,
+      "one_specifically_amd64_metadata_smoke_uses_documented_hosted_report": true,
+      "hosted_actual_source_revision": "9720a99c26cbe281d84b86e9a88a82e8c34d091d",
+      "hosted_architecture": "amd64",
+      "hosted_actual_osversion": "1600029",
+      "hosted_native_make_observed": true,
+      "ARM_metadata_profile_admitted": false,
+      "canonical_profile_admitted": false
+    },
+    "initial_missing_Git_and_SQLite_failures_retained": true,
+    "test_generated_outputs_retained_outside_source": true,
+    "bootstrap_world_matches_selected_source": false,
+    "status": "running"
+  },
+  "AMD64_worker": {
+    "host_architecture": "x86_64",
+    "guest_os": "FreeBSD16-CURRENT",
+    "acceleration": "KVM",
+    "guest_cpus": 8,
+    "guest_RAM_GiB": 32,
+    "status": "running",
+    "artifacts": [],
+    "active_phase": "buildkernel",
+    "plan_identity": "2ecd916d421d0d1e9fa09e7baa96fda19e6cb8c61fbd0926f172a3a56f962332",
+    "worker": {
+      "compiler": "FreeBSD clang version 21.1.8 (https://github.com/llvm/llvm-project.git llvmorg-21.1.8-0-g2078da43e25a)\nTarget: x86_64-unknown-freebsd16.0\nThread model: posix\nInstalledDir: /usr/bin\nBuild config: +assertions\n",
+      "cpus": 8,
+      "machine": "amd64",
+      "make_version": "20260704",
+      "os": "FreeBSD-16.0-CURRENT-amd64-64bit-ELF",
+      "pkg_version": "2.9.3"
+    },
+    "completed_phases": [
+      {
+        "command_exit": 0,
+        "elapsed_seconds": 3097.833,
+        "exit": 0,
+        "log": "logs/buildworld-1.log",
+        "log_sha256": "169e9b6c9950faa8a7bdf05842bbfdfb8000e4ec9b20a35d46964c377b95355e",
+        "name": "buildworld"
+      }
+    ],
+    "bootstrap_world_matches_selected_source": false,
+    "native_controller_tests": {
+      "cases": 168,
+      "exit": 0,
+      "original_assertions_and_deadlines_unchanged": true,
+      "one_specifically_amd64_metadata_smoke_uses_documented_hosted_report": true,
+      "hosted_control_architecture": "actual-amd64",
+      "canonical_profile_admitted": false
+    },
+    "fresh_UFS_POSIX_ACL": {
+      "named_user_grant_read_and_revocation_verified": true,
+      "grant_metadata_sha256": "76c3403599cf04ef164864f9d34545169bc0416c3f982ce46aa3ceffa666039f",
+      "revoked_metadata_sha256": "4cfde3ec2cfb51bb47977706af3de6322a8548394b5a1ecf8ebc1ccf996ef4f0",
+      "retained_backend_lifecycle_admitted": false
+    },
+    "selected_make_binding": {
+      "make_executable": {
+        "mode": 365,
+        "path": "/usr/bin/make",
+        "sha256": "1253a709744f25788c5cd3b590c1768470dc3b96416204b0b8b32f57a39676f8",
+        "size": 223320
+      }
+    },
+    "independently_copied_phase_logs": [
+      {
+        "phase": "buildworld",
+        "log_bytes": 126092088,
+        "sha256": "169e9b6c9950faa8a7bdf05842bbfdfb8000e4ec9b20a35d46964c377b95355e",
+        "native_source_file_stable_during_copy": true
+      }
+    ]
+  },
+  "profile": {
+    "jobs": 8,
+    "phase_timeout_seconds": 21600,
+    "minimum_guest_free_GiB": 80,
+    "through": "sets",
+    "source_write_bytecode_disabled": true
+  },
+  "custody": {
+    "prior_failed_ARM_TCG_attempt_retained": true,
+    "prior_ARM_guest_cleanly_shut_down": true,
+    "original_cold_disks_preserved": true,
+    "cold_copy_input_checksums_verified": true,
+    "both_native_workers_require_current_own_host_lease": true,
+    "private_bootstrap_images_never_publish": true
+  },
+  "remaining_acceptance": [
+    "Complete matched world kernel modules packages and sets for both architectures",
+    "Independently verify and boot exact new products",
+    "Rebuild changed package dependency closures and rerun original suites on the new worlds",
+    "Canonical per-unit Component provenance SDK TCB and retained lifecycle receipts",
+    "Full Pi4/Pi5 final images and physical Ethernet/native SD acceptance",
+    "Desktop installation update rollback freeze signing and publication"
+  ],
+  "canonical_admitted": false,
+  "release_admitted": false,
+  "live_release_ref_audit": {
+    "observed_utc": "2026-11-28T15:31:37.155978+00:00",
+    "refs": {
+      "daemonarchy": {
+        "refs/heads/main": "5cff19a19e57c0cba2ef60ff0cab5f722d8b1414",
+        "refs/heads/release/1.6": "5cff19a19e57c0cba2ef60ff0cab5f722d8b1414"
+      },
+      "daemonarchy-src": {
+        "refs/heads/daemonarchy": "9720a99c26cbe281d84b86e9a88a82e8c34d091d",
+        "refs/heads/main": "9720a99c26cbe281d84b86e9a88a82e8c34d091d",
+        "refs/heads/release/1.6": "9720a99c26cbe281d84b86e9a88a82e8c34d091d"
+      },
+      "daemonarchy-ports": {
+        "refs/heads/daemonarchy": "131cd72239551711cef66391fabe26ff1cf54b97",
+        "refs/heads/main": "131cd72239551711cef66391fabe26ff1cf54b97",
+        "refs/heads/release/1.6": "131cd72239551711cef66391fabe26ff1cf54b97"
+      },
+      "daemonarchy-desktop": {
+        "refs/heads/main": "4b2525533600f37d2c6249112c3d2d4e22989f36",
+        "refs/heads/release/1.6": "4b2525533600f37d2c6249112c3d2d4e22989f36"
+      },
+      "omarchy": {
+        "refs/heads/main": "19abafa0b12560a7946b1e37444d3e6b2fc9f755",
+        "refs/heads/release/1.6": "19abafa0b12560a7946b1e37444d3e6b2fc9f755"
+      },
+      "omarchy-freebsd": {
+        "refs/heads/main": "1923ffefc9fb5328e7d2054a01433e7cb77551eb",
+        "refs/heads/release/1.6": "1923ffefc9fb5328e7d2054a01433e7cb77551eb"
+      }
+    },
+    "all_six_main_release_pairs_equal": true
+  },
+  "progress_observations": [
+    {
+      "observed_utc": "2026-11-28T15:27:41.669962+00:00",
+      "ARM_phase": "buildworld",
+      "AMD64_phase": "buildworld",
+      "completed_phases": []
+    },
+    {
+      "observed_utc": "2026-11-28T16:17:55.680327+00:00",
+      "ARM_phase": "buildworld",
+      "AMD64_phase": "buildkernel",
+      "AMD64_completed_world_exit": 0,
+      "AMD64_world_log_independently_copied_and_hash_verified": true
+    }
+  ],
+  "updated_utc": "2026-11-28T16:17:55.680327+00:00"
+}

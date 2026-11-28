@@ -1,0 +1,254 @@
+{
+  "schema": "daemonarchy/pkg-complete-frontend-development@1",
+  "recorded_utc": "2026-11-28T14:32:56.808538+00:00",
+  "scope": "Retained complete upstream frontend suite on packaged pkg 2.9.4_2 using the existing older FreeBSD amd64 world; wrapper preservation failure remains unresolved",
+  "source": {
+    "revision": "dab77f2baef87cbe65b352cdbbcc3c015e284378",
+    "tree": "0b76c29696ac909535701ca7bac99a66ad1f5164"
+  },
+  "package": {
+    "bytes": 6414713,
+    "sha256": "d386d3db57bdfa5a80ba2e1880a60ff1a45873c937e07eebe2410338edd34937"
+  },
+  "runtime": {
+    "kind": "normal packaged binary with embedded libpkg and dynamic base libraries",
+    "sha256": "aa7462404437f513e67d0086e3d98ceae9543791cd192fc507900afb2e8ac56e",
+    "uid": 65534
+  },
+  "normal_binary_run": {
+    "actual_suite_exit": 0,
+    "wrapper_exit": 1,
+    "cases": 461,
+    "passed": 459,
+    "failures": 0,
+    "skipped_cases": [
+      "extract:chflags",
+      "extract:chflags_schg"
+    ],
+    "junit_sha256": "1b1243f1ae1d20ed3a4f366931adc20b48e1db76ca85699fadbbfc7eeba429f6",
+    "complete_classname_and_name_inventory_verified": true,
+    "original_assertions_and_deadlines_preserved": true,
+    "verified_payload_files": 77,
+    "verified_frontend_resources": 178,
+    "original_frontend_resources_preserved": true,
+    "runtime_binary_preserved": true,
+    "dynamic_base_libraries_preserved": true,
+    "normal_package_database_preservation": "failed comparison; historical per-path delta unavailable because baseline was kept only in exited process memory",
+    "accounts_loader_mounts_original_postguards": "not reached after database assertion; no preservation claim"
+  },
+  "static_comparison": {
+    "cases": 461,
+    "passed": 447,
+    "failed": 1,
+    "skipped": 13,
+    "failure": "pkg:pkg_config_defaults expects plugins=true; upstream pkg_config.c intentionally disables plugins when static dlopen fails",
+    "actual_suite_exit": 1,
+    "original_failure_and_assertion_retained": true
+  },
+  "ATF_bootstrap": {
+    "original_queue_status": "stopped-preserve-original-evidence",
+    "original_bootstrap_started": false,
+    "reason": "Normal frontend wrapper exit 1 and database postguard failure prevent queued execution",
+    "separate_follow_on": {
+      "status": "pass-private-prefix-original-lifecycle",
+      "source_archive_sha256": "bae70930bef565faacb95b10e5673601df0d7f25db720cc735060d115c92ee73",
+      "cases": 383,
+      "passed": 373,
+      "skips": [
+        "atf-c.atf_c_test:include",
+        "atf-c.detail.process_test:status_coredump",
+        "atf-c.detail.sanity_test:inv",
+        "atf-c.detail.sanity_test:post",
+        "atf-c.detail.sanity_test:pre",
+        "atf-c.detail.sanity_test:unreachable",
+        "atf-c.macros_test:use",
+        "atf-c.tc_test:require_prog_negative_absolute",
+        "atf-sh.kmod_test:atf_require_kmod_skip",
+        "atf-sh.kmod_test:require_kmods_skip"
+      ],
+      "actual_installcheck_exit": 0,
+      "all_preservation_checks_passed": true,
+      "junit_sha256": "32aa2403d0cd8f2d483384a2e5ea5abc1fb712fcb92a5b043650a70c991ca1da",
+      "normal_installation_performed": false,
+      "ports_ATF_qualified": false,
+      "canonical_admitted": false
+    },
+    "standalone_explicit_compiler_flags_follow_on": {
+      "cases": 383,
+      "passed": 375,
+      "nonpasses": [
+        {
+          "case": "atf-c.detail.process_test:status_coredump",
+          "kind": "skipped",
+          "message": null,
+          "text": null
+        },
+        {
+          "case": "atf-c.detail.sanity_test:inv",
+          "kind": "skipped",
+          "message": null,
+          "text": null
+        },
+        {
+          "case": "atf-c.detail.sanity_test:post",
+          "kind": "skipped",
+          "message": null,
+          "text": null
+        },
+        {
+          "case": "atf-c.detail.sanity_test:pre",
+          "kind": "skipped",
+          "message": null,
+          "text": null
+        },
+        {
+          "case": "atf-c.detail.sanity_test:unreachable",
+          "kind": "skipped",
+          "message": null,
+          "text": null
+        },
+        {
+          "case": "atf-c.tc_test:require_prog_negative_absolute",
+          "kind": "skipped",
+          "message": null,
+          "text": null
+        },
+        {
+          "case": "atf-sh.kmod_test:atf_require_kmod_skip",
+          "kind": "skipped",
+          "message": null,
+          "text": null
+        },
+        {
+          "case": "atf-sh.kmod_test:require_kmods_skip",
+          "kind": "skipped",
+          "message": null,
+          "text": null
+        }
+      ],
+      "skip_reasons": {
+        "atf-c/tc_test:require_prog_negative_absolute": "The required program /nonexistent could not be found",
+        "atf-c/detail/process_test:status_coredump": "Cannot unlimit the core file size; check limits manually",
+        "atf-c/detail/sanity_test:inv": "Sanity checks not available; code built with -DNDEBUG",
+        "atf-c/detail/sanity_test:post": "Sanity checks not available; code built with -DNDEBUG",
+        "atf-c/detail/sanity_test:pre": "Sanity checks not available; code built with -DNDEBUG",
+        "atf-c/detail/sanity_test:unreachable": "Sanity checks not available; code built with -DNDEBUG",
+        "atf-sh/kmod_test:atf_require_kmod_skip": "The required kmod bogus is not loaded",
+        "atf-sh/kmod_test:require_kmods_skip": "Required kmods are not loaded: nonexistent."
+      },
+      "actual_original_installcheck_exit": 0,
+      "archive_sha256": "bae70930bef565faacb95b10e5673601df0d7f25db720cc735060d115c92ee73",
+      "all_original_lifecycle_steps_exit_zero": true,
+      "all_preservation_checks_passed": true,
+      "junit_sha256": "6cd7072f3940ffc8827f0047d3f0dba297ba79bbceef4cf8cf330c8dadd88a93",
+      "all_received_bytes_verified": true,
+      "previous_two_compiler_option_prerequisite_skips_now_pass": true,
+      "explicit_compiler_flags": {
+        "CC": "/usr/local/llvm19/bin/clang",
+        "CXX": "/usr/local/llvm19/bin/clang++",
+        "CFLAGS": "-g -O2 -std=gnu23",
+        "CXXFLAGS": "-g -O2 -std=c++20"
+      },
+      "original_assertions_deadlines_and_source_unchanged": true,
+      "pkg611_prior_provider_not_retroactively_replaced": true,
+      "canonical_admitted": false
+    }
+  },
+  "remaining_gates": [
+    "Matching selected CURRENT world and both architecture qualification for package and provider closure",
+    "Canonical Component SDK TCB lifecycle receipts",
+    "Full Pi4/Pi5 images and physical Ethernet/native SD acceptance",
+    "Installation update rollback signing publication"
+  ],
+  "canonical_admitted": false,
+  "release_admitted": false,
+  "raw_evidence_committed": false,
+  "post_crash_readback": {
+    "prepared_complete_ports_tree_reverified": true,
+    "historical_database_failure_cause": "unresolved; no durable before-snapshot",
+    "separate_instrumented_diagnostic": {
+      "worker_sha256": "d3957c56b2f28a3ef3e73243a35ca700d0d8377d8a059164568f70bc0196eb35",
+      "status": "passed-separate-run-original-failure-retained",
+      "durable_before_snapshots": [
+        "database",
+        "accounts_loader",
+        "mounts"
+      ],
+      "all_after_guards_attempted_independently": true,
+      "original_run_reclassified": false,
+      "actual_suite_exit": 0,
+      "wrapper_exit": 0,
+      "cases": 461,
+      "passed": 459,
+      "skipped_cases": [
+        "extract:chflags",
+        "extract:chflags_schg"
+      ],
+      "junit_sha256": "00f7055a5292b4cf48e52f290b688a87efea2a7bc9363fda9db9989276c6e33d",
+      "database_delta": {},
+      "all_preservation_guards_passed": true
+    },
+    "ATF_original_queue_remains_stopped": true
+  },
+  "complete_original_C_and_frontend_follow_on": {
+    "actual_suite_exit": 0,
+    "wrapper_exit": 0,
+    "cases": 611,
+    "passed": 609,
+    "C_cases": 150,
+    "C_passed": 150,
+    "frontend_cases": 461,
+    "frontend_passed": 459,
+    "nonpasses": [
+      {
+        "case": "tests/frontend/extract:chflags",
+        "kind": "skipped",
+        "message": null,
+        "text": null
+      },
+      {
+        "case": "tests/frontend/extract:chflags_schg",
+        "kind": "skipped",
+        "message": null,
+        "text": null
+      }
+    ],
+    "complete_classname_and_name_inventory_verified": true,
+    "original_test_source_files_verified": 126,
+    "all_host_and_source_guards_passed": true,
+    "junit_sha256": "60388faeacbf4a72e848e94716ab49fdf5b7ed47bac2c391aa1a82a5b3400636",
+    "test_enabled_package": {
+      "bytes": 6416811,
+      "sha256": "f8ef671d35e6ff1103f2c84b5a0a39a18cbdd876b644113fcf7d22ee6d4f2cef"
+    },
+    "package_bytes_independently_copied_and_hashed": true,
+    "original_port_targets": {
+      "original-checksum": 0,
+      "original-extract": 0,
+      "original-patch": 0,
+      "original-configure": 0,
+      "original-build": 0,
+      "original-stage": 0,
+      "original-check-plist": 0,
+      "original-package": 0
+    },
+    "old_world_development_only": true,
+    "canonical_admitted": false,
+    "configuration": "Fresh original eight-target port build with --with-tests and qualified private ATF0.26 bootstrap; old-world amd64 scope",
+    "independent_package_acceptance": {
+      "payload_count": 77,
+      "declared_directories": 1,
+      "all_manifest_checksums_and_stage_payloads_exact": true,
+      "runtime_binary_sha256": "02d3dac52eb88c0d4460d2351d617ecec73f927ff36ec7d3e8f0242b6f75c09b",
+      "packing_list_sha256": "d55dbec41d573ed26af7c02963976a87671b261c6fe06853f2c96538a6f819d8",
+      "explicit_staged_mode_overrides": [
+        {
+          "path": "/usr/local/etc/rc.d/pkg_triggers",
+          "stage_mode": 365,
+          "package_mode": 493,
+          "packing_list_entry": "@(root,wheel,0755) /usr/local/etc/rc.d/pkg_triggers"
+        }
+      ]
+    }
+  }
+}

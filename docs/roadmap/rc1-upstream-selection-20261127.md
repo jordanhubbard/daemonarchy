@@ -1,7 +1,7 @@
 # RC1 upstream selection, recorded 2026-11-27
 
 - **Status:** active
-- **Owning queue item:** [SYNC-001](active-work.md#sync-001)
+- **Owning queue item:** [SYNC-001](active-work.md#sync-001-synchronize-omarchy-v460-rc1-and-freebsd-current-source-and-ports-for-16)
 - **Completion / archival evidence:** [Exact branch observation](../../verification/active-release-branches-20261127-development.json) and the native port observation linked below; matched-world, desktop, hardware and canonical release acceptance remain pending.
 
 This record updates the selected inputs of the [1.6 plan](release-1.6.0.md).
@@ -83,6 +83,89 @@ These observations use the older cb38 kernel and existing userland, with ELF Fre
 pkg suite, another architecture at this version, canonical SDK/TCB/lifecycle,
 or final installation, update, rollback, signing or publication. The November 27
 branch observations and earlier native results below retain their original pins.
+
+## Complete pkg frontend comparison recovered after interruption
+
+The [complete frontend comparison](../../verification/pkg294-complete-frontend-development-20261128.json)
+ran the unchanged 461-case upstream inventory on the normal packaged pkg
+2.9.4_2 binary: 459 passed, none failed, and two root-only extraction cases
+skipped. Kyua returned 0. Independent readback verifies every case identity,
+all 178 frontend resources and the sealed runtime binary. The prior static
+comparison retains 447 passes, one default-plugin configuration mismatch and
+13 skips; its actual suite exit remains 1.
+
+The normal-binary wrapper returned **1** because its normal package database
+snapshot comparison failed. The before-snapshot lived only in process memory,
+so the historical per-path difference and cause cannot be reconstructed from
+the saved result. Accounts, loader and mount checks following that assertion
+were not reached. Test success does not establish host preservation. The queued
+ATF bootstrap stopped before launch, preserving that prerequisite failure.
+These are older-world development observations; canonical and release gates
+remain open.
+
+The separate instrumented follow-on saved durable before/after snapshots and
+passed all 461 cases with 459 passes and the same two skips. Both Kyua and
+wrapper returned 0; database, accounts, loader, mounts, complete ports source,
+dynamic libraries, runtime and frontend resources were preserved. This new
+observation retains the original run's unexplained preservation discrepancy.
+
+A separate private-prefix ATF 0.26 provider completed its original configure,
+build, check, install and installcheck sequence without modifying the normal
+installation. Installcheck reports 373 passes and ten skips across 383 cases;
+all host and source guards passed. A fresh original port build with tests enabled then passed all eight
+construction targets and the complete 611-case inventory: all 150 C cases
+passed, 459 frontend cases passed and two root-only frontend cases skipped.
+Kyua and wrapper both returned 0; all host and source guards passed. Independent
+readback verifies every case identity and the newly produced package hash. These
+older-world development results do not admit a source-built SDK or release.
+
+A later standalone ATF provider run kept the same effective C23/C++20 language
+and optimization settings in explicit `CFLAGS`/`CXXFLAGS`. That prevents compiler
+options from becoming bogus required-program names in test metadata. The two
+previously skipped compiler checks now pass: 375 of 383 cases pass, with eight
+remaining skips covering four disabled sanity checks, the core-dump limit and
+three intentional negative fixtures. All original assertions, deadlines,
+source and host guards are preserved. This independent provider observation
+does not retroactively replace the provider used by the completed pkg run.
+
+## Recovered ARM aggregate source-build result
+
+[Readback of the interrupted controller's ARM build](../../verification/native-arm-world-recovery-development-20261128.json)
+shows that the frozen `5fad2676be7d0c1bc75f3f673165daa697c41b91` source
+attempt failed its original 21,600-second `buildworld` timeout. Its retained
+log was independently copied and hash-verified. No build or compiler process remained and the result contained no artifacts.
+The idle VM was subsequently shut down cleanly; its original disks remain
+preserved, and verified cold copies back a separate KVM worker.
+The guest used 16 vCPUs and 48 GiB under TCG on an amd64 host. This attempt
+does not qualify the newer November 28 selection or supply matched-world
+inputs for full Pi4/Pi5 images. The failed attempt and its deadline are retained.
+
+## Current matched-build execution on KVM
+
+[The current KVM build record](../../verification/native-current-kvm-build-development-20261128.json)
+binds source `9720a99c26cbe281d84b86e9a88a82e8c34d091d`, its complete
+115,685-blob tree and the November 28 upstream base. All archive blobs and the
+27 restored export-ignored files were checked against Git; the native complete
+snapshot check passed. The native FreeBSD ARM worker passed 168 controller
+tests and entered `buildworld` with eight jobs and 32 GiB RAM. The specifically
+amd64-only metadata smoke used its documented hosted-report interface with an
+actual Intel BSD-make observation for the same source. That report admits no
+ARM metadata profile, cache or release context.
+
+A separate eight-CPU, 32-GiB native FreeBSD amd64 KVM worker also passed
+all 168 controller tests and entered `buildworld` for the same source selection.
+Its fresh UFS work disk passed actual named-user POSIX ACL grant, read and
+revocation checks. At the November 28 16:17 UTC observation, its original
+`buildworld` phase had completed with exit zero in 3,097.833 seconds and
+`buildkernel` was running. An independent copy of the complete 126,092,088-byte
+world log matches the controller digest
+`169e9b6c9950faa8a7bdf05842bbfdfb8000e4ec9b20a35d46964c377b95355e`.
+The ARM worker remained in `buildworld`. Both workers run older bootstrap
+worlds; newly built worlds have not yet been installed or qualified. Both workers
+use current reservations on their actual execution hosts. Original six-hour
+phase timeouts remain in force. Completed sets, matched-world package testing,
+independent product acceptance, canonical SDK/TCB and release gates remain open.
+Private bootstrap images and raw worker evidence remain outside publication.
 
 ## Native package and test evidence
 

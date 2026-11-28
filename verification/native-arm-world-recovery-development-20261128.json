@@ -1,0 +1,43 @@
+{
+  "schema": "daemonarchy/native-arm-world-recovery-development@1",
+  "recorded_utc": "2026-11-28T14:36:01.493931+00:00",
+  "scope": "Post-crash readback of original bounded ARM source build; failed aggregate development attempt only",
+  "source_revision": "5fad2676be7d0c1bc75f3f673165daa697c41b91",
+  "source_tree": "8d21cd3ed3d8b03c39a7390422a31c333f68a100",
+  "upstream_base": "a972d2692bb789f9c79da4ee27dd3c32d3e3f349",
+  "plan_identity": "eb4edc69bfcd434a262d76055ce9be575bfa3af0f6a87bd4446f8107eb95884f",
+  "native_worker": {
+    "compiler": "FreeBSD clang version 21.1.8 (https://github.com/llvm/llvm-project.git llvmorg-21.1.8-0-g2078da43e25a)\nTarget: aarch64-unknown-freebsd16.0\nThread model: posix\nInstalledDir: /usr/bin\nBuild config: +assertions\n",
+    "cpus": 16,
+    "machine": "arm64",
+    "make_version": "20260704",
+    "os": "FreeBSD-16.0-CURRENT-arm64-aarch64-64bit-ELF",
+    "pkg_version": "2.9.0"
+  },
+  "host_execution": {
+    "virtualization": "QEMU TCG",
+    "guest_vcpus": 16,
+    "guest_RAM_GiB": 48,
+    "execution_host_architecture": "amd64"
+  },
+  "status": "failed",
+  "acceptance": "not-qualified",
+  "phase": {
+    "elapsed_seconds": 21600.173,
+    "exit": -1,
+    "log": "logs/buildworld-1.log",
+    "log_sha256": "ee1b64ac1d5221eb2dbc8aaf361f5570e2bbc1152a13f9eeaa35f83a2b70ed31",
+    "name": "buildworld"
+  },
+  "error": "buildworld exceeded original 21600-second command timeout",
+  "artifacts": [],
+  "post_crash_process_check": {
+    "VM_running": true,
+    "buildworld_or_compiler_processes_remaining": false
+  },
+  "original_build_log_independently_read_back_and_sha256_verified": true,
+  "original_timeout_preserved": true,
+  "failed_attempt_restarted": false,
+  "canonical_admitted": false,
+  "release_admitted": false
+}
