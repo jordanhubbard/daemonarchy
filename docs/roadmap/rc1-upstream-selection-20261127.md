@@ -112,8 +112,11 @@ observation retains the original run's unexplained preservation discrepancy.
 A separate private-prefix ATF 0.26 provider completed its original configure,
 build, check, install and installcheck sequence without modifying the normal
 installation. Installcheck reports 373 passes and ten skips across 383 cases;
-all host and source guards passed. The out-of-tree test-enabled pkg build is
-running against that provider to exercise the original C unit suite too. These
+all host and source guards passed. A fresh original port build with tests enabled then passed all eight
+construction targets and the complete 611-case inventory: all 150 C cases
+passed, 459 frontend cases passed and two root-only frontend cases skipped.
+Kyua and wrapper both returned 0; all host and source guards passed. Independent
+readback verifies every case identity and the newly produced package hash. These
 older-world development results do not admit a source-built SDK or release.
 
 ## Recovered ARM aggregate source-build result
@@ -121,11 +124,34 @@ older-world development results do not admit a source-built SDK or release.
 [Readback of the interrupted controller's ARM build](../../verification/native-arm-world-recovery-development-20261128.json)
 shows that the frozen `5fad2676be7d0c1bc75f3f673165daa697c41b91` source
 attempt failed its original 21,600-second `buildworld` timeout. Its retained
-log was independently copied and hash-verified. The VM remains running, but
-no build or compiler process remains and the result contains no artifacts.
+log was independently copied and hash-verified. No build or compiler process remained and the result contained no artifacts.
+The idle VM was subsequently shut down cleanly; its original disks remain
+preserved, and verified cold copies back a separate KVM worker.
 The guest used 16 vCPUs and 48 GiB under TCG on an amd64 host. This attempt
 does not qualify the newer November 28 selection or supply matched-world
 inputs for full Pi4/Pi5 images. The failed attempt and its deadline are retained.
+
+## Current matched-build execution on KVM
+
+[The current KVM build record](../../verification/native-current-kvm-build-development-20261128.json)
+binds source `9720a99c26cbe281d84b86e9a88a82e8c34d091d`, its complete
+115,685-blob tree and the November 28 upstream base. All archive blobs and the
+27 restored export-ignored files were checked against Git; the native complete
+snapshot check passed. The native FreeBSD ARM worker passed 168 controller
+tests and entered `buildworld` with eight jobs and 32 GiB RAM. The specifically
+amd64-only metadata smoke used its documented hosted-report interface with an
+actual Intel BSD-make observation for the same source. That report admits no
+ARM metadata profile, cache or release context.
+
+A separate eight-CPU, 32-GiB native FreeBSD amd64 KVM worker also passed
+all 168 controller tests and entered `buildworld` for the same source selection.
+Its fresh UFS work disk passed actual named-user POSIX ACL grant, read and
+revocation checks. Both workers currently run older bootstrap worlds; newly
+built worlds have not yet been installed or qualified. Both workers
+use current reservations on their actual execution hosts. Original six-hour
+phase timeouts remain in force. Completed sets, matched-world package testing,
+independent product acceptance, canonical SDK/TCB and release gates remain open.
+Private bootstrap images and raw worker evidence remain outside publication.
 
 ## Native package and test evidence
 
