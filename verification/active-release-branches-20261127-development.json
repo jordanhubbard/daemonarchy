@@ -1,0 +1,92 @@
+{
+  "observed": "2026-11-27T18:32:02.168925+00:00",
+  "scope": "Fast-forward active release/1.6 refs to exact already-reviewed owned mains; preserve history and every published release/tag/artifact. No new native qualification or freeze.",
+  "repositories": {
+    "daemonarchy-src": {
+      "before": {
+        "refs/heads/main": "5fad2676be7d0c1bc75f3f673165daa697c41b91",
+        "refs/heads/release/1.6": "759e93f1bbc79103eda36077e7c28d17317f15c8"
+      },
+      "selected_main": "5fad2676be7d0c1bc75f3f673165daa697c41b91",
+      "release_was_ancestor_of_main": true,
+      "mutation_needed": true,
+      "push_exit": 0,
+      "after": {
+        "refs/heads/main": "5fad2676be7d0c1bc75f3f673165daa697c41b91",
+        "refs/heads/release/1.6": "5fad2676be7d0c1bc75f3f673165daa697c41b91"
+      }
+    },
+    "daemonarchy-ports": {
+      "before": {
+        "refs/heads/main": "b6a7ad4c532be23758bd9348ff510ac6bbb73ac6",
+        "refs/heads/release/1.6": "1370ce77dd1539ac7c3ca301efaabac764814a07"
+      },
+      "selected_main": "b6a7ad4c532be23758bd9348ff510ac6bbb73ac6",
+      "release_was_ancestor_of_main": true,
+      "mutation_needed": true,
+      "push_exit": 0,
+      "after": {
+        "refs/heads/main": "b6a7ad4c532be23758bd9348ff510ac6bbb73ac6",
+        "refs/heads/release/1.6": "b6a7ad4c532be23758bd9348ff510ac6bbb73ac6"
+      }
+    },
+    "omarchy": {
+      "before": {
+        "refs/heads/main": "19abafa0b12560a7946b1e37444d3e6b2fc9f755",
+        "refs/heads/release/1.6": "9a8aad4c389194597316886576db3e0c84a31b5f"
+      },
+      "selected_main": "19abafa0b12560a7946b1e37444d3e6b2fc9f755",
+      "release_was_ancestor_of_main": true,
+      "mutation_needed": true,
+      "push_exit": 0,
+      "after": {
+        "refs/heads/main": "19abafa0b12560a7946b1e37444d3e6b2fc9f755",
+        "refs/heads/release/1.6": "19abafa0b12560a7946b1e37444d3e6b2fc9f755"
+      }
+    },
+    "omarchy-freebsd": {
+      "before": {
+        "refs/heads/main": "1923ffefc9fb5328e7d2054a01433e7cb77551eb",
+        "refs/heads/release/1.6": "1923ffefc9fb5328e7d2054a01433e7cb77551eb"
+      },
+      "selected_main": "1923ffefc9fb5328e7d2054a01433e7cb77551eb",
+      "release_was_ancestor_of_main": true,
+      "mutation_needed": false,
+      "after": {
+        "refs/heads/main": "1923ffefc9fb5328e7d2054a01433e7cb77551eb",
+        "refs/heads/release/1.6": "1923ffefc9fb5328e7d2054a01433e7cb77551eb"
+      }
+    },
+    "daemonarchy-desktop": {
+      "before": {
+        "refs/heads/main": "4b2525533600f37d2c6249112c3d2d4e22989f36",
+        "refs/heads/release/1.6": "4b2525533600f37d2c6249112c3d2d4e22989f36"
+      },
+      "selected_main": "4b2525533600f37d2c6249112c3d2d4e22989f36",
+      "release_was_ancestor_of_main": true,
+      "mutation_needed": false,
+      "after": {
+        "refs/heads/main": "4b2525533600f37d2c6249112c3d2d4e22989f36",
+        "refs/heads/release/1.6": "4b2525533600f37d2c6249112c3d2d4e22989f36"
+      }
+    },
+    "daemonarchy": {
+      "before": {
+        "refs/heads/main": "8b4fe1a97c2d34bcc4debea4df11c531ef85340d",
+        "refs/heads/release/1.6": "8b4fe1a97c2d34bcc4debea4df11c531ef85340d"
+      },
+      "selected_main": "8b4fe1a97c2d34bcc4debea4df11c531ef85340d",
+      "release_was_ancestor_of_main": true,
+      "mutation_needed": false,
+      "after": {
+        "refs/heads/main": "8b4fe1a97c2d34bcc4debea4df11c531ef85340d",
+        "refs/heads/release/1.6": "8b4fe1a97c2d34bcc4debea4df11c531ef85340d"
+      }
+    }
+  },
+  "all_six_pairs_identical": true,
+  "published_tags_or_artifacts_modified": false,
+  "native_qualification_claimed": false,
+  "finished": "2026-11-27T18:32:20.963167+00:00",
+  "schema": "daemonarchy/release-branch-sync-development@1"
+}
