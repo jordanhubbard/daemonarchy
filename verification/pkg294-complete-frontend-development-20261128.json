@@ -72,6 +72,86 @@
       "normal_installation_performed": false,
       "ports_ATF_qualified": false,
       "canonical_admitted": false
+    },
+    "standalone_explicit_compiler_flags_follow_on": {
+      "cases": 383,
+      "passed": 375,
+      "nonpasses": [
+        {
+          "case": "atf-c.detail.process_test:status_coredump",
+          "kind": "skipped",
+          "message": null,
+          "text": null
+        },
+        {
+          "case": "atf-c.detail.sanity_test:inv",
+          "kind": "skipped",
+          "message": null,
+          "text": null
+        },
+        {
+          "case": "atf-c.detail.sanity_test:post",
+          "kind": "skipped",
+          "message": null,
+          "text": null
+        },
+        {
+          "case": "atf-c.detail.sanity_test:pre",
+          "kind": "skipped",
+          "message": null,
+          "text": null
+        },
+        {
+          "case": "atf-c.detail.sanity_test:unreachable",
+          "kind": "skipped",
+          "message": null,
+          "text": null
+        },
+        {
+          "case": "atf-c.tc_test:require_prog_negative_absolute",
+          "kind": "skipped",
+          "message": null,
+          "text": null
+        },
+        {
+          "case": "atf-sh.kmod_test:atf_require_kmod_skip",
+          "kind": "skipped",
+          "message": null,
+          "text": null
+        },
+        {
+          "case": "atf-sh.kmod_test:require_kmods_skip",
+          "kind": "skipped",
+          "message": null,
+          "text": null
+        }
+      ],
+      "skip_reasons": {
+        "atf-c/tc_test:require_prog_negative_absolute": "The required program /nonexistent could not be found",
+        "atf-c/detail/process_test:status_coredump": "Cannot unlimit the core file size; check limits manually",
+        "atf-c/detail/sanity_test:inv": "Sanity checks not available; code built with -DNDEBUG",
+        "atf-c/detail/sanity_test:post": "Sanity checks not available; code built with -DNDEBUG",
+        "atf-c/detail/sanity_test:pre": "Sanity checks not available; code built with -DNDEBUG",
+        "atf-c/detail/sanity_test:unreachable": "Sanity checks not available; code built with -DNDEBUG",
+        "atf-sh/kmod_test:atf_require_kmod_skip": "The required kmod bogus is not loaded",
+        "atf-sh/kmod_test:require_kmods_skip": "Required kmods are not loaded: nonexistent."
+      },
+      "actual_original_installcheck_exit": 0,
+      "archive_sha256": "bae70930bef565faacb95b10e5673601df0d7f25db720cc735060d115c92ee73",
+      "all_original_lifecycle_steps_exit_zero": true,
+      "all_preservation_checks_passed": true,
+      "junit_sha256": "6cd7072f3940ffc8827f0047d3f0dba297ba79bbceef4cf8cf330c8dadd88a93",
+      "all_received_bytes_verified": true,
+      "previous_two_compiler_option_prerequisite_skips_now_pass": true,
+      "explicit_compiler_flags": {
+        "CC": "/usr/local/llvm19/bin/clang",
+        "CXX": "/usr/local/llvm19/bin/clang++",
+        "CFLAGS": "-g -O2 -std=gnu23",
+        "CXXFLAGS": "-g -O2 -std=c++20"
+      },
+      "original_assertions_deadlines_and_source_unchanged": true,
+      "pkg611_prior_provider_not_retroactively_replaced": true,
+      "canonical_admitted": false
     }
   },
   "remaining_gates": [

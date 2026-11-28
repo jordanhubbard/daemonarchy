@@ -119,6 +119,15 @@ Kyua and wrapper both returned 0; all host and source guards passed. Independent
 readback verifies every case identity and the newly produced package hash. These
 older-world development results do not admit a source-built SDK or release.
 
+A later standalone ATF provider run kept the same effective C23/C++20 language
+and optimization settings in explicit `CFLAGS`/`CXXFLAGS`. That prevents compiler
+options from becoming bogus required-program names in test metadata. The two
+previously skipped compiler checks now pass: 375 of 383 cases pass, with eight
+remaining skips covering four disabled sanity checks, the core-dump limit and
+three intentional negative fixtures. All original assertions, deadlines,
+source and host guards are preserved. This independent provider observation
+does not retroactively replace the provider used by the completed pkg run.
+
 ## Recovered ARM aggregate source-build result
 
 [Readback of the interrupted controller's ARM build](../../verification/native-arm-world-recovery-development-20261128.json)
