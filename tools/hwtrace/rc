@@ -16,6 +16,20 @@ say ""
 say "Daemonarchy hardware trace: init reached; saving diagnostics"
 kldload msdosfs 2>/dev/null
 handover=
+desktop= var_ready=
+# Start this control before networking, including when no cable or key is
+# present. Reuse /var below so network handover cannot hide the running RAM root.
+if [ "$(kenv -q hwtrace.desktop)" = YES ]; then
+	if mdmfs -s 32m md /var; then
+		var_ready=1
+		mkdir -p /var/run /var/db /var/log /var/tmp /var/empty
+		if [ -r /etc/hwtrace-desktop.sh ]; then
+			. /etc/hwtrace-desktop.sh
+			hwtrace_desktop_start >/var/log/hwtrace-desktop.log 2>&1 && desktop=1
+		fi
+	fi
+	say "Desktop control: ${desktop:-failed}; log in /var/log/hwtrace-desktop.log"
+fi
 # Commit data and FAT allocations even if a later probe hangs or panics.
 if mount -t msdosfs -o sync /dev/gpt/DATRACE /mnt; then
 	id=$(sed -n 's/^pending=//p' /mnt/STATE.TXT)
@@ -29,7 +43,7 @@ if mount -t msdosfs -o sync /dev/gpt/DATRACE /mnt; then
 		. /etc/hwtrace-net.sh
 		if hwtrace_wanted; then
 			# The root is read-only: a volatile /var for dhclient and sshd.
-			mdmfs -s 32m md /var 2>/dev/null
+			[ -n "$var_ready" ] || mdmfs -s 32m md /var 2>/dev/null
 			mkdir -p /var/run/dhclient /var/db /var/log /var/tmp /var/empty
 			say "Network hand-over: asking for an address, sshd on port $HW_PORT"
 			# What the hand-over said is kept on the stick (rc.log) as
@@ -49,6 +63,10 @@ fi
 if [ -n "$handover" ]; then
 	hwtrace_banner
 	hwtrace_hold
+fi
+if [ -n "$desktop" ]; then
+	say "Desktop control is active; exit the compositor to resume the trace cycle"
+	while kill -0 "$HW_DESKTOP_PID" 2>/dev/null; do sleep 5; done
 fi
 if [ "$(kenv -q hwtrace.shell)" = YES ]; then
 	say "hwtrace.shell=YES: starting a shell; 'reboot' continues the loop"

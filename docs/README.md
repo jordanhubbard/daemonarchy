@@ -33,6 +33,7 @@ another published version are historical records. 1.6 entries describe planned w
 - [RAM-root installer image authoring](ram-live-images.md)
 - [Normal pre-exit trace checkpoint: native evidence and remaining gates](roadmap/default-install-tracing.md#independent-pre-exit-checkpoint)
 - [Pi 4 / Pi 500 software bootstrap checkpoint: current controls and physical gates](testing-pi-bootstrap-checkpoint-20261108.md)
+- [Pi software display development checkpoint: private image and remaining physical gates](testing-pi-display-control-20261122.md)
 - [Pi 4 simulator checkpoint: Linux control and UEFI model gaps](testing-pi4-simulator-20261107.md)
 - [Pi 4 U-Boot/FDT bootstrap: SMP, SD root and durable diagnostics](testing-pi4-uboot-fdt-20261108.md)
 - [Pi 4 UEFI/PCIe/USB bootstrap control and measured simulator blockers](testing-pi4-uefi-usb-20261108.md)

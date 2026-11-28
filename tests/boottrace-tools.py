@@ -5,6 +5,7 @@
 import importlib.util
 import os
 from pathlib import Path
+import re
 import shutil
 import struct
 import subprocess
@@ -342,6 +343,52 @@ class AcpiDiscovery(unittest.TestCase):
     def test_short_gicc_rejected(self):
         with self.assertRaisesRegex(ValueError, "short GICC"):
             acpi.madt(b"APIC" + bytes(40) + bytes((11, 2)))
+
+    def namespace_fixture(self):
+        payload = bytearray(48)
+        payload[:4] = b"DSDT"
+        struct.pack_into("<I", payload, 4, len(payload))
+        payload[9] = -sum(payload) & 255
+        self.files["ACPI/DSDT.BIN"] = bytes(payload)
+        self.files["ACPI/INDEX.TXT"] += (
+            f"DSDT length=48 fnv1a={stick.fnv1a(payload):08x} write=0 captured\n"
+            + "".join(f"SS0{i:X} length=0 fnv1a=00000000 write=0 not present\n"
+                      for i in range(16))
+            + "SSOV length=0 fnv1a=00000000 write=0 not present\n").encode()
+
+    def test_namespace_tables_report_capture_without_evaluating_aml(self):
+        self.namespace_fixture()
+        result = acpi.summary(self.volume)["namespace"]
+        self.assertTrue(result["complete"])
+        self.assertEqual(result["captured_ssdts"], [])
+        self.assertFalse(result["aml_evaluated"])
+
+    def test_namespace_overflow_is_explicitly_incomplete(self):
+        self.namespace_fixture()
+        self.files["ACPI/INDEX.TXT"] = self.files["ACPI/INDEX.TXT"].replace(
+            b"SSOV length=0 fnv1a=00000000 write=0 not present",
+            b"SSOV length=0 fnv1a=00000000 write=0 SSDT capture limit exceeded; namespace incomplete")
+        self.assertFalse(acpi.summary(self.volume)["namespace"]["complete"])
+
+    def test_missing_namespace_slot_rejected(self):
+        self.namespace_fixture()
+        self.files["ACPI/INDEX.TXT"] = self.files["ACPI/INDEX.TXT"].replace(
+            b"SS0F length=0 fnv1a=00000000 write=0 not present\n", b"")
+        with self.assertRaisesRegex(ValueError, "incomplete namespace"):
+            acpi.summary(self.volume)
+
+    def test_checksum_valid_wrong_signature_rejected(self):
+        payload = bytearray(self.files["ACPI/APIC.BIN"][:204])
+        payload[:4] = b"DSDT"
+        payload[9] = 0
+        payload[9] = -sum(payload) & 255
+        self.files["ACPI/APIC.BIN"] = bytes(payload)
+        self.files["ACPI/INDEX.TXT"] = re.sub(
+            rb"APIC length=204 fnv1a=[0-9a-f]{8}",
+            f"APIC length=204 fnv1a={stick.fnv1a(payload):08x}".encode(),
+            self.files["ACPI/INDEX.TXT"])
+        with self.assertRaisesRegex(ValueError, "invalid ACPI signature"):
+            acpi.summary(self.volume)
 
 
 @unittest.skipUnless(all(shutil.which(t) for t in ("sgdisk", "mkfs.fat")),
